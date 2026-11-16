@@ -12,7 +12,8 @@ import {validatePublicEventAdmissionReceiptDocument} from
 import {validateEventAttendeeDocument} from
   "../../shared/generated/validators/eventAttendeeDocument";
 import {SeatIdentityAuthorityError} from "../seatIdentityAuthority";
-import {SeatAuthorityError} from "../seatAuthority/seatAuthority";
+import {SeatAuthorityError, reservationPlaces} from
+  "../seatAuthority/seatAuthority";
 import {
   FirestoreSeatTransaction,
   assertCurrentReadySeatSnapshot,
@@ -41,6 +42,7 @@ import {
   PUBLIC_PAYMENT_COLLECTION,
   PUBLIC_ADMISSION_COLLECTION,
   publicAdmissionId,
+  publicPaymentPlaces,
 } from "./paymentLedger";
 import {assertPublicPaidAdmission} from "./admissionProof";
 import {prepareCatchBookingAdmission} from "./catchBookingBridge";
@@ -160,10 +162,12 @@ export async function finalizePublicPayment(input: {
         reservation,
         expectedActive: false,
       });
+      const {placeCount, guestNames} = publicPaymentPlaces(p);
       if (
         !ledger ||
         !reservation ||
         ledger.migrationRevision !== p.migrationRevision ||
+        reservationPlaces(reservation) !== placeCount ||
         reservation.checkoutHold?.paymentId !== paymentId ||
         reservation.checkoutHold.expiresAtMillis !==
           p.checkoutExpiresAt.toMillis()
@@ -235,6 +239,16 @@ export async function finalizePublicPayment(input: {
         revenueOrderReference: p.providerOrderId,
         revenueOrderAmountMinor: p.amountPaise,
       };
+      // The paid booking decides the party: one row and one pass hold every
+      // place, with the guests' names beside the booker's, and an older
+      // row's size or names never survive into it.
+      if (placeCount > 1) {
+        attendee.partySize = placeCount;
+        attendee.guestNames = guestNames;
+      } else {
+        delete attendee.partySize;
+        delete attendee.guestNames;
+      }
       const receipt: Receipt = {
         organizerId,
         eventId,
@@ -245,6 +259,7 @@ export async function finalizePublicPayment(input: {
         migrationRevision: p.migrationRevision,
         registrationRevision: p.registrationRevision,
         amountPaise: p.amountPaise,
+        placeCount,
         currency: p.currency,
         routing: p.routing,
         paymentId,
@@ -264,7 +279,7 @@ export async function finalizePublicPayment(input: {
       applyCheckoutHold(seats, confirm);
       tx.set(guest.attendeeRef, attendee);
       tx.update(db.collection("events").doc(eventId), {
-        bookedCount: ledger.occupied + 1,
+        bookedCount: ledger.occupied + placeCount,
         ...catchBooking?.eventCounts(event),
       });
       if (!draft.exists) {
@@ -325,7 +340,9 @@ export async function finalizePublicPayment(input: {
   }
 }
 
-/** Membership savings never change admission; failures are dropped. */
+/** Membership savings never change admission; failures are dropped. The
+ * benefit counts one member place: the booker's, at unitAmountPaise. Guest
+ * places pay the list price and are not membership savings. */
 async function recordAdmittedMemberBenefitUse(
   db: FirebaseFirestore.Firestore, paymentId: string, nowMillis: number,
 ): Promise<void> {
@@ -334,7 +351,8 @@ async function recordAdmittedMemberBenefitUse(
       .collection(PUBLIC_PAYMENT_COLLECTION).doc(paymentId).get()).data(),
     paymentId);
     await recordPublicMemberBenefitUse({db, eventId: payment.eventId,
-      uid: payment.recipientUid, paidAmountPaise: payment.amountPaise,
+      uid: payment.recipientUid,
+      paidAmountPaise: publicPaymentPlaces(payment).unitAmountPaise,
       nowMillis});
   } catch {
     return;

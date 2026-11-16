@@ -1,7 +1,31 @@
-import {CatchButton, CatchSiteFooter, CatchStack, CatchText, CatchTopBar, CatchWordmark, type CatchSiteFooterGroup} from "@catch/web-ui";
+import {
+  CatchBanner,
+  CatchBreadcrumbRow,
+  CatchButton,
+  CatchIconAction,
+  CatchNavMenu,
+  CatchSiteFooter,
+  CatchStack,
+  CatchSurface,
+  CatchText,
+  CatchTopBar,
+  CatchWordmark,
+  type CatchSiteFooterColumns,
+  type CatchSiteFooterGroup,
+  type CatchTopBarAction,
+} from "@catch/web-ui";
 import {createContext, useContext, type ReactNode} from "react";
 import {openMarketingConsentPreferences} from "../../analytics";
-import {publicPageChromeCopy, publicSiteCopy, siteFooterCopy, siteFooterLegalLinks} from "../../content/site";
+import {
+  publicPageChromeCopy,
+  publicSiteCopy,
+  siteFooterCopy,
+  siteFooterLegalLinks,
+  siteHeaderCopy,
+  whatsappChatHref,
+  type SiteLinkCopy,
+  type SiteNavGroupCopy,
+} from "../../content/site";
 import {slugForTracking, trackSiteCtaClick} from "./siteTracking";
 
 /**
@@ -40,40 +64,157 @@ function wordmarkParts(title: string): {brand: string; subBrand?: string} {
 }
 
 /**
+ * Which header a page carries (the playbook kit's KitHeader). guest: What's
+ * on and For hosts, then the guest app. host: What's on, the For hosts
+ * dropdown and Resources, then WhatsApp and the free trial.
+ * minimal: the wordmark alone, for one-job flows such as a booking.
+ */
+export type SiteHeaderVariant = "guest" | "host" | "minimal";
+
+/** Which footer a page carries: the guest columns or the host columns. */
+export type SiteFooterVariant = "guest" | "host";
+
+/**
+ * A strip above the bar, such as a running offer: a lead in bold, its body
+ * and an optional action. It is persistent (catch.banner) and has no dismiss.
+ */
+export interface SiteOffer {
+  lead: string;
+  body: string;
+  action?: SiteNavItem;
+}
+
+/** The row under the bar: the pages above this one, outermost first, then this page's name. */
+export interface SiteBreadcrumbs {
+  links: readonly SiteNavItem[];
+  current: string;
+}
+
+const isGroup = (entry: SiteLinkCopy | SiteNavGroupCopy): entry is SiteNavGroupCopy => "links" in entry;
+
+/**
+ * Splits a variant's entries into the bar's plain links and its dropdowns.
+ * A group of one page is that page as a plain link, and an empty group is
+ * left out, so no dropdown opens onto nothing.
+ */
+function navPlan(entries: readonly (SiteLinkCopy | SiteNavGroupCopy)[]): {links: SiteNavItem[]; menus: SiteNavGroupCopy[]} {
+  const links: SiteNavItem[] = [];
+  const menus: SiteNavGroupCopy[] = [];
+  for (const entry of entries) {
+    if (!isGroup(entry)) links.push(entry);
+    else if (entry.links.length === 1) links.push(entry.links[0]);
+    else if (entry.links.length > 1) menus.push(entry);
+  }
+  return {links, menus};
+}
+
+const trackNav = (link: SiteNavItem) => trackSiteCtaClick(`nav_${slugForTracking(link.label)}`, link.href);
+const withNavTracking = (link: SiteNavItem): CatchTopBarAction => ({...link, onPressed: () => trackNav(link)});
+
+/**
  * The one public header, the system's site top bar, on every public route:
  * the wordmark (catch.wordmark) and the page links on the left; on the right
  * the page's actions, a setting such as the city and then the one primary
- * action, and last the visitor's account control. General pages carry the main
- * site's links and "Get the app"; a product page names itself and passes its
- * own sections and action, as the host landing does ("Catch for hosts", its
- * sections and Start free trial).
+ * action, and last the visitor's account control. `variant` picks the links
+ * and the primary action (guest, host or the one-job minimal); a product page
+ * may still name itself and pass its own sections and action. An offer strip
+ * may sit above the bar and a breadcrumb row below it; neither shows unless
+ * the page passes it.
  */
-export function PublicSiteHeader({title = publicSiteCopy.wordmark, links = publicSiteCopy.nav, actions = <GetTheAppButton />}: {
-  title?: string;
-  links?: readonly SiteNavItem[];
+export function PublicSiteHeader({
+  actions,
+  breadcrumbs,
+  links,
+  offer,
+  showWhatsOn = true,
+  title = publicSiteCopy.wordmark,
+  variant = "guest",
+  whatsOnHref,
+}: {
+  /** The page's own actions in place of the variant's primary action, such as the city picker and Get the app. */
   actions?: ReactNode;
+  breadcrumbs?: SiteBreadcrumbs;
+  /** A product page's own sections in place of the variant's links. */
+  links?: readonly SiteNavItem[];
+  /** The strip above the bar. No page shows one yet. */
+  offer?: SiteOffer;
+  /**
+   * What's on leads guest and host pages. A city with no events in the
+   * coming month will hide it; until that read exists it always shows.
+   */
+  showWhatsOn?: boolean;
+  title?: string;
+  variant?: SiteHeaderVariant;
+  /** Where What's on goes: a city's pages point it at that city's Explore. */
+  whatsOnHref?: string;
 }) {
   const account = useContext(SiteAccountActionContext);
   const {brand, subBrand} = wordmarkParts(title);
+  const minimal = variant === "minimal";
+  const whatsOn = showWhatsOn ? [{...publicSiteCopy.whatsOn, href: whatsOnHref ?? publicSiteCopy.whatsOn.href}] : [];
+  const plan = minimal ? {links: [], menus: []}
+    : links ? {links: [...links], menus: []}
+    : navPlan([...whatsOn, ...siteHeaderCopy[variant].nav]);
+  // Below 600px the dropdowns draw nothing, so the phone menu lists their pages after the links.
+  const menuLinks = plan.menus.flatMap((menu) => menu.links);
+  const primary = actions ?? (minimal ? null : <PrimaryAction link={siteHeaderCopy[variant].action} />);
   return (
-    <CatchTopBar
-      account={account?.bar}
-      actions={actions}
-      homeHref="/"
-      links={links.map((link) => ({...link, onPressed: () => trackSiteCtaClick(`nav_${slugForTracking(link.label)}`, link.href)}))}
-      linksLabel={publicSiteCopy.menu.navLabel}
-      menuExtras={account ? [account.menu] : undefined}
-      menuLabel={publicSiteCopy.menu.openLabel}
-      siteMenu={account?.phoneMenu?.(links, publicSiteCopy.menu.openLabel)}
-      subBrand={subBrand}
-      title={brand}
-      variant="site"
-    />
+    <>
+      {offer ? <SiteOfferStrip offer={offer} /> : null}
+      <CatchTopBar
+        account={minimal ? undefined : account?.bar}
+        actions={(
+          <>
+            {plan.menus.map((menu) => (
+              <CatchNavMenu align="end" key={menu.label} label={menu.label} links={menu.links} onLinkPressed={trackNav} />
+            ))}
+            {variant === "host" ? <HostWhatsAppAction /> : null}
+            {primary}
+          </>
+        )}
+        homeHref="/"
+        links={plan.links.map(withNavTracking)}
+        linksLabel={publicSiteCopy.menu.navLabel}
+        menuExtras={minimal ? undefined : [...menuLinks.map(withNavTracking), ...(account ? [account.menu] : [])]}
+        menuLabel={publicSiteCopy.menu.openLabel}
+        siteMenu={minimal ? undefined : account?.phoneMenu?.([...plan.links, ...menuLinks], publicSiteCopy.menu.openLabel)}
+        subBrand={subBrand}
+        title={brand}
+        variant="site"
+      />
+      {breadcrumbs ? (
+        <CatchSurface as="div" block="band" padding="sm">
+          <CatchBreadcrumbRow
+            current={breadcrumbs.current}
+            label={siteHeaderCopy.breadcrumbLabel}
+            links={breadcrumbs.links}
+            onLinkPressed={(link) => trackSiteCtaClick(`breadcrumb_${slugForTracking(link.label)}`, link.href)}
+          />
+        </CatchSurface>
+      ) : null}
+    </>
   );
 }
 
-function GetTheAppButton() {
-  return <CatchButton href={publicSiteCopy.getApp.href} label={publicSiteCopy.getApp.label} size="sm" />;
+function PrimaryAction({link}: {link: SiteNavItem}) {
+  return <CatchButton href={link.href} label={link.label} size="sm" />;
+}
+
+/** The host bar's WhatsApp link, an icon with its name, before the free trial. */
+function HostWhatsAppAction() {
+  const {label, message} = siteHeaderCopy.host.whatsapp;
+  return <CatchIconAction href={whatsappChatHref(message)} icon="chat" label={label} size="sm" variant="ghost" />;
+}
+
+/** The offer strip above the bar (catch.banner): persistent, never dismissed. */
+function SiteOfferStrip({offer}: {offer: SiteOffer}) {
+  return (
+    <CatchBanner
+      actions={offer.action ? <CatchButton href={offer.action.href} label={offer.action.label} size="sm" variant="secondary" /> : undefined}
+      message={offer.body}
+      title={offer.lead}
+    />
+  );
 }
 
 // The footer's own type and colour. Beside a tagline it is underlined so it
@@ -135,44 +276,109 @@ export interface SiteFooterCity {
   note?: string;
 }
 
+const trackFooter = (link: SiteNavItem) => trackSiteCtaClick(`footer_${slugForTracking(link.label)}`, link.href);
+
+/** The site's own links by path, in the order given. */
+function siteLinks(hrefs: readonly string[]): SiteNavItem[] {
+  const pool: readonly SiteNavItem[] = [publicSiteCopy.whatsOn, ...siteFooterLegalLinks];
+  return hrefs.map((href) => pool.find((link) => link.href === href)!);
+}
+
 /**
- * The one site footer on every public page: the ink band with Explore,
- * Hosts and Help and legal (and Cities where a page lists them), each link
- * flush with its column title on one row rhythm, then the wordmark with the
- * tagline on its baseline and the operator line. Help and legal ends with
- * Privacy choices. A product page may name itself ("Catch for weddings")
- * and give its own line; the columns stay the same everywhere.
+ * The footer's help band: a person answers on WhatsApp. Guest pages add
+ * Help; host pages add the walkthrough, asked for on WhatsApp. It states no
+ * hours.
  */
-export function PublicSiteFooter({appHref, cities, exploreHref, navLabel = siteFooterCopy.nav, tagline = siteFooterCopy.tagline, wordmark = publicSiteCopy.wordmark}: {
+function FooterHelpBand({variant}: {variant: SiteFooterVariant}) {
+  const band = siteFooterCopy.helpBand;
+  const whatsapp = {href: whatsappChatHref(variant === "host" ? band.hostMessage : band.guestMessage), label: band.whatsapp};
+  const second = variant === "host"
+    ? {href: whatsappChatHref(band.walkthrough.message), label: band.walkthrough.label}
+    : band.guestHelp;
+  return (
+    <>
+      <CatchText as="h2" variant="title-bar">{band.title}</CatchText>
+      <CatchStack direction="row" gap={8} wrap>
+        <CatchButton href={whatsapp.href} label={whatsapp.label} leadingIcon="chat" onPressed={() => trackFooter(whatsapp)} size="sm" variant="light" />
+        <CatchButton href={second.href} label={second.label} onPressed={() => trackFooter(second)} size="sm" variant="ghost" />
+      </CatchStack>
+    </>
+  );
+}
+
+/**
+ * The one site footer on every public page: the ink band with its link
+ * columns, each link flush with its column title on one row rhythm, then
+ * the wordmark with the tagline on its baseline and the operator line.
+ * Guest pages carry Explore, Hosts and Help and legal (and Cities where a
+ * page lists them); host pages carry Product, Get started, the brand's
+ * column and Legal. The last column ends with Privacy choices. The help band
+ * leads the footer unless the page turns it off (ad landing pages, one-job
+ * flows). A product page may name itself ("Catch for weddings") and give
+ * its own line.
+ */
+export function PublicSiteFooter({
+  appHref,
+  cities,
+  exploreHref,
+  footnotes,
+  helpBand = true,
+  navLabel = siteFooterCopy.nav,
+  tagline = siteFooterCopy.tagline,
+  variant = "guest",
+  wordmark = publicSiteCopy.wordmark,
+}: {
   /** Where Get the app goes: the homepage's own band from the homepage. */
   appHref?: string;
   cities?: readonly SiteFooterCity[];
   /** Where What's on goes: a city page links its own plans. */
   exploreHref?: string;
+  /** Numbered notes under the columns, such as a figure's source; each carries its own number. */
+  footnotes?: readonly string[];
+  /** The band across the top: a person answers on WhatsApp. */
+  helpBand?: boolean;
   /** The footer nav's name; only a page showing several footers needs another. */
   navLabel?: string;
   tagline?: string;
+  variant?: SiteFooterVariant;
   wordmark?: string;
 }) {
   const {brand, subBrand} = wordmarkParts(wordmark);
-  const [whatsOn, app] = siteFooterCopy.explore;
-  const help = siteFooterCopy.helpOrder.map((href) => siteFooterLegalLinks.find((link) => link.href === href)!);
-  const groups: CatchSiteFooterGroup[] = [
-    {title: siteFooterCopy.groups.explore, links: [{...whatsOn, href: exploreHref ?? whatsOn.href}, {...app, href: appHref ?? app.href}]},
-    ...(cities ? [{title: siteFooterCopy.groups.cities, links: cities.map((city) => ({href: city.href, label: city.label, note: city.note ?? (city.soon ? siteFooterCopy.soon : undefined)}))}] : []),
-    {title: siteFooterCopy.groups.hosts, links: siteFooterCopy.hosts},
-    {title: siteFooterCopy.groups.help, links: help, trailing: <PrivacyChoicesButton tone="link" />},
-  ];
+  const groups = variant === "host" ? hostFooterGroups(exploreHref) : guestFooterGroups({appHref, cities, exploreHref});
   return (
     <CatchSiteFooter
       brandHref="/"
       brandLabel={brand}
       brandSubBrand={subBrand}
+      columns={Math.min(5, Math.max(2, groups.length)) as CatchSiteFooterColumns}
+      footnotes={footnotes}
       groups={groups}
+      header={helpBand ? <FooterHelpBand variant={variant} /> : undefined}
       navLabel={navLabel}
       note={publicSiteCopy.footerOperator}
-      onLinkPressed={(link) => trackSiteCtaClick(`footer_${slugForTracking(link.label)}`, link.href)}
+      onLinkPressed={trackFooter}
       tagline={tagline}
     />
   );
+}
+
+function guestFooterGroups({appHref, cities, exploreHref}: {appHref?: string; cities?: readonly SiteFooterCity[]; exploreHref?: string}): CatchSiteFooterGroup[] {
+  const [whatsOn, app] = siteFooterCopy.explore;
+  return [
+    {title: siteFooterCopy.groups.explore, links: [{...whatsOn, href: exploreHref ?? whatsOn.href}, {...app, href: appHref ?? app.href}]},
+    ...(cities ? [{title: siteFooterCopy.groups.cities, links: cities.map((city) => ({href: city.href, label: city.label, note: city.note ?? (city.soon ? siteFooterCopy.soon : undefined)}))}] : []),
+    {title: siteFooterCopy.groups.hosts, links: siteFooterCopy.hosts},
+    {title: siteFooterCopy.groups.help, links: siteLinks(siteFooterCopy.helpOrder), trailing: <PrivacyChoicesButton tone="link" />},
+  ];
+}
+
+function hostFooterGroups(exploreHref?: string): CatchSiteFooterGroup[] {
+  const {host, groups} = siteFooterCopy;
+  const brandLinks = siteLinks(host.brandOrder).map((link) => link.href === publicSiteCopy.whatsOn.href && exploreHref ? {...link, href: exploreHref} : link);
+  return [
+    {title: groups.product, links: host.product},
+    {title: groups.getStarted, links: host.getStarted},
+    {title: groups.brand, links: brandLinks},
+    {title: groups.legal, links: siteLinks(host.legalOrder), trailing: <PrivacyChoicesButton tone="link" />},
+  ];
 }

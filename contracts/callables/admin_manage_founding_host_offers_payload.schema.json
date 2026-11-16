@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_founding_host_offers_payload.schema.json",
+  "title": "AdminManageFoundingHostOffersCallablePayload",
+  "description": "The Admin Owner reads every city's founding-host offer, or sets one city's cap and optional deadline. A replacement names the revision it reviewed (0 opens the offer in that city) and a reason; the cap may not fall below the places already taken. endsAtMillis null means no deadline; a deadline at or before now closes the offer. A read sends marketId (or null for every city) and nulls for the rest.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin Owner)",
+  "required": ["action", "marketId", "expectedRevision", "cap", "endsAtMillis", "reason"],
+  "properties": {
+    "action": {"enum": ["read", "replace"]},
+    "marketId": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9-]{1,49}$"},
+    "expectedRevision": {"type": ["integer", "null"], "minimum": 0},
+    "cap": {"type": ["integer", "null"], "minimum": 1, "maximum": 1000},
+    "endsAtMillis": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
+    "reason": {"type": ["string", "null"], "minLength": 3, "maxLength": 500}
+  }
+}

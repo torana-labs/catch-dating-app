@@ -1,0 +1,95 @@
+/*
+ * A comparison band (the playbook kit's comparison table): the table on a
+ * white card at radius xl under the ground card's outline. Headings are
+ * secondary label text over a hairline; cells are 14px by 16px, top
+ * aligned, between lighter hairlines. The highlighted column is tinted with
+ * the mint ground at 30% and its text set in mint's ink. Not-offered cells
+ * take the secondary ink, unknown ones the tertiary ink in italics.
+ *
+ * Below 840px the head is visually hidden (screen readers keep it) and each
+ * row is a block: its label, then each cell as its column's name over the
+ * cell's text.
+ */
+.card {
+  --catch-comparison-line: color-mix(in srgb, var(--catch-theme-ink)
+    calc(var(--catch-opacity-ground-card-outline) * 100%), transparent);
+
+  overflow: hidden;
+  border: var(--catch-stroke-hairline) solid var(--catch-comparison-line);
+  border-radius: var(--catch-radius-xl);
+  background: var(--catch-ground-white-fill);
+  color: var(--catch-ground-white-ink);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: start;
+}
+
+.table th,
+.table td {
+  padding: var(--catch-space-micro14) var(--catch-space-s4);
+  border-bottom: var(--catch-stroke-hairline) solid var(--catch-comparison-line);
+  text-align: start;
+  vertical-align: top;
+}
+
+.head th {
+  color: var(--catch-theme-ink2);
+  vertical-align: bottom;
+}
+
+.row:last-child > * { border-bottom: 0; }
+
+.table [data-highlight] {
+  background: color-mix(in srgb, var(--catch-ground-mint-fill) 30%, transparent);
+  color: var(--catch-ground-mint-ink);
+}
+
+.head th[data-highlight] { color: var(--catch-ground-mint-ink); }
+
+.cell[data-status="no"] { color: var(--catch-theme-ink2); }
+
+.cell[data-status="unknown"] {
+  color: var(--catch-theme-ink3);
+  font-style: italic;
+}
+
+.cellLabel { display: none; }
+
+@container catch-page (width < 840px) {
+  .table,
+  .table tbody,
+  .row,
+  .table .label,
+  .table .cell { display: block; }
+
+  .head {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .row { border-bottom: var(--catch-stroke-hairline) solid var(--catch-comparison-line); }
+
+  .row:last-child { border-bottom: 0; }
+
+  .table .label,
+  .table .cell { border-bottom: 0; }
+
+  .table .cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--catch-space-micro2);
+    padding-block: var(--catch-space-s1);
+  }
+
+  .table .cell:last-child { padding-bottom: var(--catch-space-micro14); }
+
+  .cellLabel { display: block; }
+}

@@ -5,8 +5,10 @@ import {
   PAGE_FETCH_ADAPTER_ID,
   PAGE_FETCH_POLICY_GAP_ID,
   RAW_PAYLOAD_PERSISTENCE,
+  SHARED_PAGE_ALLOWANCE,
   assertAcceptedAcquisitionDecision,
   assertPolicy,
+  monthlyPageFetchLimit,
 } from "./acquisition.mjs";
 import {snapshotFromHtml} from "./page-snapshot.mjs";
 
@@ -16,15 +18,21 @@ import {snapshotFromHtml} from "./page-snapshot.mjs";
 
 export const STATIC_PAGE_ADAPTER_ID = "static_page";
 
-export function pageFetchBudgetLedgers({policy, monthKey, intakeConsumed = 0, monthlyConsumed = 0}) {
+/**
+ * The per-intake and monthly page ledgers. `allowance` picks the monthly cap:
+ * the shared one, or the website instant draft tool's own.
+ */
+export function pageFetchBudgetLedgers({policy, monthKey, intakeConsumed = 0, monthlyConsumed = 0,
+  allowance = SHARED_PAGE_ALLOWANCE}) {
   assertPolicy(policy);
   invariant(/^\d{4}-\d{2}$/u.test(monthKey ?? ""), "INVALID_ACQUISITION_BUDGET",
     "The page fetch monthly budget requires a YYYY-MM window.", {monthKey: monthKey ?? null});
   return {
     monthKey,
+    allowance,
     intake: new BudgetLedger({limits: {networkRequests: policy.pageFetch.maxRequestsPerIntake},
       consumed: {networkRequests: intakeConsumed}}),
-    month: new BudgetLedger({limits: {networkRequests: policy.pageFetch.maxRequestsPerMonth},
+    month: new BudgetLedger({limits: {networkRequests: monthlyPageFetchLimit(policy, allowance)},
       consumed: {networkRequests: monthlyConsumed}}),
   };
 }
@@ -45,7 +53,8 @@ export class GuardedPageFetchPort {
     invariant(
       budgets && /^\d{4}-\d{2}$/u.test(budgets.monthKey ?? "") &&
         budgets.intake?.snapshot().limits.networkRequests === policy.pageFetch.maxRequestsPerIntake &&
-        budgets.month?.snapshot().limits.networkRequests === policy.pageFetch.maxRequestsPerMonth,
+        budgets.month?.snapshot().limits.networkRequests ===
+          monthlyPageFetchLimit(policy, budgets.allowance ?? SHARED_PAGE_ALLOWANCE),
       "ACQUISITION_BUDGET_MISMATCH",
       "Page fetch ledgers must match the frozen policy caps."
     );

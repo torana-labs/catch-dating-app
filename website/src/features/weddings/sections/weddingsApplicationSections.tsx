@@ -214,7 +214,7 @@ export function WeddingsApplicationView({application}: {application: WeddingsApp
           </CatchSurface>
         ) : <StepTwoPage application={application} />}
       </WebsitePageMain>
-      <PublicSiteFooter tagline={weddingsCopy.foot.applyBody} wordmark={weddingsCopy.foot.title} />
+      <PublicSiteFooter tagline={weddingsCopy.foot.applyBody} variant="host" wordmark={weddingsCopy.foot.title} />
     </CatchRoot>
   );
 }

@@ -240,6 +240,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `listEventChatParticipants` | `src/chats/listEventChatParticipants.ts` | Current joined/claimed participant names and roles; account-bound cursor and bidirectional block filtering |
 | `getEventChatProfile` / `getEventChatProfileSharing` / `updateEventChatProfileSharing` | `src/chats/eventChatProfiles.ts` | Private sharing choices and current admission-protected participant mini profiles; only explicitly selected core and same-organizer applicant fields |
 | `listParticipantMessagingPreferences` / `withdrawParticipantMessagingPermission` | `src/messaging/participantMessagingPreferences.ts` | Own-account paginated WhatsApp permission reads and sender-specific idempotent withdrawals; preserves other senders and SMS |
+| `onGuestMessagingPermissionCatchPreferenceChanged` / `onGuestMessagingPermissionOrganizerPreferenceChanged` / `onGuestMessagingPermissionCatchReceiptChanged` / `onGuestMessagingPermissionOrganizerReceiptChanged` | `src/messaging/guestMessagingPermissionTriggers.ts` | Write each guest's own messaging permission rows (`guestMessagingPermissions`) from preferences and receipts |
 | `getEventViewerState` | `src/events/eventViewerState.ts` | Auth-derived private current eligibility and independent admission/attendance facts for app builds before the listener viewer; shared canonical readers, bounded source queries, no seat or identity writes |
 | `listParticipantActivity` | `src/profiles/participantActivity.ts` | Auth-derived own form submission metadata, exact source/version/deletion proof and bounded subject-bound pagination; no profile claim or admission inference |
 | `listParticipantFormProfiles` / `getParticipantFormProfile` / `getParticipantFormPhoto` / `claimParticipantFormProfile` | `src/profiles/` | Verified owner-only form profile directory, designated-answer review, metadata-free private photo preview, and explicit revision-fenced claim; no event admission or sharing grant |
@@ -264,6 +265,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `dispatchOrganizerCampaign` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatch one approved organizer campaign snapshot |
 | `createAttendeeInviteLink` / `getEventInviteLinkToken` / `recordEventShareIntent` / `resolveEventInviteLanding` | `src/events/inviteLinks.ts` | Issue opaque attributable attendee links, record Catch share intent, and resolve verified invite landings |
 | `connectOrganizerLumaProvider` / `listOrganizerLumaEvents` / `syncOrganizerProviderEvent` / `disconnectOrganizerProvider` | `src/organizers/organizerProviderSetup.ts` | Configure, synchronize, and disconnect supported external booking providers |
+| `onHostFormVersionFilterSourceChanged` | `src/hostReadModels/formVersionFilterTriggers.ts` | Write each published form version's answer filter options (`hostFormVersionFilters`) for form-scoped response inboxes |
 | `onHostProviderConnectionViewConnectionChanged` / `onHostProviderConnectionViewOrganizerChanged` | `src/hostReadModels/providerConnectionViewTriggers.ts` | Write each organizer's manager-safe provider connection rows (`hostProviderConnectionViews`) ahead of time |
 | `getEventOperatorAccess` / `listEventStaff` / `grantEventStaff` / `revokeEventStaff` | `src/events/eventStaff.ts` | Grant and inspect time-bounded event staff access |
 | `heartbeatEventStaffPresence` | `src/events/eventStaffPresence.ts` | Record that a manager or viewRoster staff member is on the door; rows lapse at `expiresAt` (TTL) and door phones list them |
@@ -387,6 +389,10 @@ enter previews.
 | `programTravelLegMoments` | `src/moments/momentSchedule.ts` | Travel-leg writes emit Moment facts on leg changes |
 | `onSalesInboundIntentForIntake` | `src/operations/supplyIntake/nominations.ts` | `salesInboundIntents/{intentId}` onCreate — a website host application or partner nomination that names an organizer or a link also becomes a Supply Intake request (deterministic id, idempotent) |
 | `onSupplyIntakeRequestCreated` | `src/operations/supplyIntake/triggers.ts` | `supplyIntakeRequests/{requestId}` onCreate — leases the request, gathers its pages, runs Supply Intake and imports the reviewable listing; searches an unreadable nomination's handle once through SerpApi when `SERPAPI_KEY_VERSION` and the web search decision allow it (`linkSearch.ts`); retries until the third failure |
+| `requestInstantDraft` | `src/instantDrafts/request.ts` | Website "event page from a link" tool and demo request (App Check; signed-in caller with a verified phone, which must match any `whatsapp.phone` sent): an event or form link becomes a `web_instant_draft` Supply Intake request with private draft state; limits per verified number, per address, 25 a day and 200 a month; idempotent per website request id; never publishes. |
+| `getInstantDraft` | `src/instantDrafts/status.ts` | Draft page poll with the draft token: building, draft_ready (the private draft and up to ten events), needs_city (with the open markets; an optional `city` continues the same draft), staff_follow_up or expired; saves a finished build as a private draft if the worker hook did not. |
+| `expireInstantDrafts` | `src/instantDrafts/expiry.ts` | Daily 04:23 IST, at most 25 due drafts: removes an unclaimed, unpublished instant draft 30 days after it was saved and frees its route; never touches a claimed or published organizer. |
+| `onInstantDraftOrganizerPublished` | `src/instantDrafts/publishOnClaim.ts` | `organizers/{organizerId}` onUpdate: when a claimed instant-draft page turns published, publishes its imported events as the owner through the staff publishing path and its checks. |
 | `onSupplyIntakeListingApproved` | `src/operations/supplyIntake/eventPublicationTrigger.ts` | `supplyIntakeRequests/{requestId}` onUpdate — when a request is first both completed and approved, publishes the imported events the event publication policy allows; receipts keyed on the request make redelivery replay |
 | `syncOrganizerNextEvent` | `src/clubs/` | `events/{eventId}` onWrite — recomputes organizer next-event projection |
 | `syncPublicOrganizer` | `src/organizers/` | `organizers/{organizerId}` onWrite — mirrors the public allowlist into `publicOrganizers/{organizerId}` (#1221) |
@@ -496,6 +502,7 @@ enter previews.
 | Function | File | Purpose |
 |----------|------|---------|
 | `addEventHostPhoto` | `src/events/eventHostPhotos.ts` | Shares a staged host photo with checked-in guests, re-encoded without EXIF or location. |
+| `adminManageFoundingHostOffers` | `src/foundingHosts/adminManageFoundingHostOffers.ts` | Admin Owner reads every city's founding-host offer, or opens one city and sets its cap (50 decided) and optional deadline; rewrites the public counter. |
 | `cleanUpStagedHostPhotosDaily` | `src/events/eventHostPhotoStagingCleanup.ts` | Daily: deletes staged host photo originals (still carrying EXIF) older than 24 hours. |
 | `createProgramAssetUpload` | `src/programs/programAssets.ts` | Signs one private programme file upload (guest ID, hamper photo, function photo, cover). |
 | `decideProgramGuestId` | `src/programs/guestIds.ts` | Guest relations accept a guest's ID or ask again. |
@@ -531,6 +538,7 @@ enter previews.
 | `onSavedEventCardCreated` | `src/guestEvents/triggers.ts` | Writes a new saved-event edge's list card from its event |
 | `onEventGuestEntryFormWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest entry of the event an application form targets when the form is published, paused or retargeted |
 | `onEventGuestEntryOrganizerWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest entries of an organizer's published events when its visibility or public page changes |
+| `onFoundingHostOrganizerWritten` | `src/foundingHosts/foundingHostTriggers.ts` | When an organizer gains an owner, takes the next founding place in its city (capped in one transaction, one per owner per city) and writes the 90-day trial into its commercial terms override. |
 | `onGuestEventStatusApplicationWritten` | `src/guestEvents/triggers.ts` | Rebuilds the applicant's `guestEventStatuses` row when an event application changes |
 | `onGuestEventStatusAttendeeWritten` | `src/guestEvents/triggers.ts` | Rebuilds the linked guest's `guestEventStatuses` row when a roster row's link, source or status changes |
 | `onGuestEventStatusOfferRecipientWritten` | `src/guestEvents/triggers.ts` | Rebuilds the recipient's `guestEventStatuses` row when an offer invitation changes |
@@ -541,6 +549,7 @@ enter previews.
 | `onProgramHouseholdWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a household's primary phone changes. |
 | `onProgramWhatsappInboundMessageCreated` | `src/programs/programWhatsapp/inboundTrigger.ts` | Runs the wedding assistant (handleProgramWhatsappInbound) for each stored inbound guest message; replies through sendProgramServiceReply or passes the thread to the planner. |
 | `previewProgramAssistantReply` | `src/programs/assistant/preview.ts` | The wedding assistant's Try it: the same policy, fact pack, model and budget as a guest message, nothing sent. |
+| `reconcileFoundingHostPlacesDaily` | `src/foundingHosts/foundingHostTriggers.ts` | Daily 04:25 India time: takes the founding places the trigger missed for organizers that gained an owner in the last three days, still one per owner per city. |
 | `reconcileProgramVendorBill` | `src/programs/vendorBills.ts` | Reviews, checks, questions or approves a vendor bill against recorded trips. |
 | `resolveProgramAlert` | `src/programs/programLiveBoard.ts` | Not yet described. |
 | `rollupOrganizerInsightsDaily` | `src/organizerInsights/insightsRollup.ts` | Nightly organizerInsights roll-up per organiser-day from the host analytics marts and organizerFollows. |

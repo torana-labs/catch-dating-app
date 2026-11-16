@@ -81,6 +81,41 @@
       "minimum": 100,
       "maximum": 100000000
     },
+    "placeCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Places this one booking buys. amountPaise is the whole order (unitAmountPaise for the booker's place plus guestUnitAmountPaise, or unitAmountPaise, for each other place); refunds, provider fees and Catch billing follow amountPaise. Missing (single-place checkouts before multi-place booking) means 1."
+    },
+    "unitAmountPaise": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 100000000,
+      "description": "Price of the booker's place at checkout; every place costs this unless guestUnitAmountPaise is present. Missing means amountPaise."
+    },
+    "memberPlaceCount": {
+      "type": "integer",
+      "const": 1,
+      "description": "Present only when a host membership price applied to a multi-place booking: the member's own place is the one place at unitAmountPaise, and the membership benefit counts that one place. Present exactly when guestUnitAmountPaise is."
+    },
+    "guestUnitAmountPaise": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 100000000,
+      "description": "Present only with memberPlaceCount: the list price of each guest place. amountPaise is unitAmountPaise plus guestUnitAmountPaise for each other place."
+    },
+    "guestNames": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 19,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80,
+        "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+      },
+      "description": "Private names the booker gave for the other people on a multi-place booking, trimmed, exactly placeCount minus 1. Missing for one place. Admission copies them to the roster row; like displayName they are never sent to the provider."
+    },
     "currency": {
       "const": "INR"
     },

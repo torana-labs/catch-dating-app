@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_seat_reservations.schema.json",
   "title": "EventSeatReservationDocument",
-  "description": "One canonical guest's seat on a private event. Active while the seat is held; may carry a checkout hold (payment attempt) or a temporary hold (Cross Paths pair) that expires. The id is sha256(eventId, canonicalKey).",
+  "description": "One canonical guest's booking on a private event. Active while the booking holds its places; may carry a checkout hold (payment attempt) or a temporary hold (Cross Paths pair) that expires. A multi-place booking records its place count in places; ledger counts are places. The id is sha256(eventId, canonicalKey).",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "eventSeatReservations",
@@ -54,6 +54,13 @@
         "null"
       ],
       "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "places": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Places this booking holds or held, written only when more than one (multi-place public checkout). Missing means 1. Confirm adds and release returns every place at once.",
       "x-catch-ownership": "server-only"
     },
     "checkoutHold": {

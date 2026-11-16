@@ -5,6 +5,7 @@
   "test/rules/event_host_photos.rules.test.cjs",
   "test/rules/event_success.rules.test.cjs",
   "test/rules/events.rules.test.cjs",
+  "test/rules/founding_host_offers.rules.test.cjs",
   "test/rules/host_summary_reads.rules.test.cjs",
   "test/rules/launch_access_applications.rules.test.cjs",
   "test/rules/onboarding_drafts.rules.test.cjs",
@@ -117,5 +118,6 @@
   "lib/programs/programActivity.emulator.test.js",
   "lib/organizers/organizerFormDomainRegistry.emulator.test.js",
   "lib/publicPages/rebuild.emulator.test.js",
-  "lib/cityPlans/rebuild.emulator.test.js"
+  "lib/cityPlans/rebuild.emulator.test.js",
+  "lib/foundingHosts/foundingHostGrant.emulator.test.js"
 ]
