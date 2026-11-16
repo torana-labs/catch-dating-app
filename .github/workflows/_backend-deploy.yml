@@ -376,15 +376,18 @@ jobs:
           echo "Retired from $DEPLOY_ENVIRONMENT: ${present[*]}" >> "$GITHUB_STEP_SUMMARY"
 
       # Naming codebases (full) or Functions (named) makes the CLI deploy them
-      # even when unchanged. After a failed full deploy the second attempt uses
-      # plain `functions`, so whatever succeeded is skipped and only what
-      # failed is rebuilt.
-      # A broad deploy that adds a Function retrying on failure is refused
-      # before any change, with those Functions listed; they deploy by name
-      # with --force (which then deletes nothing), and the retry does the rest.
-      # A planned run deploys exactly the Functions the plan names, and skips
-      # this step when it names none; a retry then repeats those exact targets
-      # (plain `functions` would rebuild every codebase whose hash moved).
+      # even when unchanged. A broad deploy that adds a Function retrying on
+      # failure is refused before any change, with those Functions listed; they
+      # deploy by name with --force (which then deletes nothing), and the next
+      # attempt does the rest. A planned run deploys exactly the Functions the
+      # plan names, and skips this step when it names none.
+      # Up to three attempts, 60 seconds apart. When the CLI names the Functions
+      # that failed (an update, or setting the invoker: on 16 Nov 2026 Cloud
+      # Run read-quota 429s failed 3 invoker sets the CLI does not retry), the
+      # next attempt deploys exactly those, by name; the CLI never skips a
+      # Function named in --only, so the invoker is set again. Otherwise a
+      # planned or named run repeats its targets, and any other run deploys
+      # plain `functions`, whose unchanged codebases are skipped.
       - name: Deploy Functions
         if: ${{ steps.guard.outputs.skip != 'true' && steps.platform.outputs.available != 'false' && !(steps.plan.outputs.mode == 'planned' && steps.plan.outputs.count == '0') }}
         env:
@@ -392,13 +395,15 @@ jobs:
           DEPLOY_ONLY: ${{ (steps.choose.outputs.mode == 'named' || inputs.full) && steps.choose.outputs.only || steps.plan.outputs.only || steps.choose.outputs.only }}
           NAMED: ${{ steps.choose.outputs.mode == 'named' }}
           PLANNED: ${{ steps.plan.outputs.mode == 'planned' }}
+          RETRY_DELAY_SECONDS: "60"
         run: |
           set -euo pipefail
           mkdir -p build
           only="$DEPLOY_ONLY"
           force=()
           if [[ "$NAMED" == "true" ]]; then force=(--force); fi
-          for attempt in 1 2; do
+          attempts=3
+          for attempt in $(seq 1 "$attempts"); do
             status=0
             ./tool/firebase_with_env.sh "$DEPLOY_ENVIRONMENT" deploy --only "$only" \
               --config firebase.deploy.json --non-interactive "${force[@]}" 2>&1 |
@@ -413,9 +418,21 @@ jobs:
                 --config firebase.deploy.json --non-interactive --force ||
                 echo "::warning::Deploying the newly retrying Functions failed."
             fi
-            echo "::warning::Functions deploy attempt $attempt failed; retrying only what did not deploy."
-            if [[ "$NAMED" != "true" && "$PLANNED" != "true" ]]; then only=functions; fi
-            sleep 60
+            # The Functions the CLI lists as failed, as exact codebase targets.
+            failed="$(perl -ne 's/\e\[[0-9;]*m//g;
+              if (/^(Functions deploy had errors with|Unable to set the invoker for the IAM policy on) the following functions:/) {
+                $on = 1; next }
+              $on = 0 if /^\s*$/;
+              print "functions:$1\n" if $on && /^\s+([a-z0-9_-]+:[A-Za-z0-9_-]+)\(/' build/functions-deploy.log |
+              sort -u | paste -sd, -)"
+            if (( attempt == attempts )); then
+              echo "::error::Functions deploy failed after $attempts attempts${failed:+; still failing: $failed}."
+              break
+            fi
+            if [[ -n "$failed" ]]; then only="$failed"
+            elif [[ "$NAMED" != "true" && "$PLANNED" != "true" ]]; then only=functions; fi
+            echo "::warning::Functions deploy attempt $attempt failed; attempt $((attempt + 1)) deploys $only."
+            sleep "$RETRY_DELAY_SECONDS"
           done
           exit "$status"
 

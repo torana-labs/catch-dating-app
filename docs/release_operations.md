@@ -1580,10 +1580,15 @@ How a run works:
   (`tool/deploy_firebase_targets.sh --functions-postconditions-only`),
   Firestore and Storage rules, then the rules drift check. Indexes and rules
   deploy every run; the CLI leaves them unchanged when they match.
-- If the Functions deploy fails, the job retries once. A planned run retries
-  the same exact Functions. A fallback run retries plain `functions`:
-  everything that deployed the first time now matches its hash and is
-  skipped, so only the failed Functions rebuild.
+- If the Functions deploy fails, the job tries up to three times, 60 seconds
+  apart. When the CLI lists the Functions that failed (an update, or setting
+  the invoker), the next attempt deploys exactly those, by name. The CLI never
+  skips a Function named in `--only`, so a failed invoker is set again. On
+  16 Nov 2026 Cloud Run read-quota 429s failed three invoker sets that the CLI
+  itself does not retry. Without such a list, a planned or named run repeats
+  its targets, and a fallback run deploys plain `functions`, whose unchanged
+  codebases are skipped. After the third attempt the run fails and names what
+  still fails.
 - The indexes and rules deploys (including the CLI's rules compile check,
   firebaserules `:test`) retry a temporary Google API error up to three times,
   30 then 60 seconds apart, with a warning per retry
