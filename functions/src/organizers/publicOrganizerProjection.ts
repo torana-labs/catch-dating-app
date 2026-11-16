@@ -4,6 +4,7 @@ import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
 import {validatePublicOrganizerDocument} from
   "../shared/generated/validators/publicOrganizerDocument";
+import {organizerWomenLed} from "./womenLed";
 
 /**
  * Public organizer projection (#1221).
@@ -27,6 +28,12 @@ export const PUBLIC_ORGANIZER_FIELDS = [
   "publicCategoryLabel", "entityKind", "entitySubtypes", "displayCategory",
   "synthetic", "seedPrefix",
 ] as const;
+
+/**
+ * Public fields computed from the canonical document rather than copied.
+ * womenLed resolves organizers/{id}.womenLed, whose audit fields stay private.
+ */
+export const PUBLIC_ORGANIZER_DERIVED_FIELDS = ["womenLed"] as const;
 
 const COLLECTION = "publicOrganizers";
 
@@ -64,6 +71,8 @@ export function projectPublicOrganizer(source: Source): Source {
   for (const field of PUBLIC_ORGANIZER_FIELDS) {
     if (source[field] !== undefined) projection[field] = source[field];
   }
+  // Derived, never copied: the declaration's audit fields stay private.
+  projection.womenLed = organizerWomenLed(source);
   return projection;
 }
 

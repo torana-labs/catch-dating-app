@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {Timestamp} from "firebase-admin/firestore";
 import {parityCase, parityInputs} from "./publicPageTestFixtures";
 import {
   catchEventContribution,
@@ -50,6 +51,33 @@ test("bookings and public event edits rebuild; private fields do not", () => {
     publicationState: "unpublished"}, now), null);
   assert.deepEqual(catchEventOrganizerIds({organizerId: "a"},
     {organizerId: "b"}), ["a", "b"]);
+});
+
+test("women-led changes rebuild pages; who set them does not", () => {
+  const declaration = (value: boolean | null, extra = {}) => ({value,
+    setByUid: "host-1", setByRole: "owner", setAt: Timestamp.fromMillis(1),
+    lockedByAdmin: false, ...extra});
+  const organizer = parity.organizer;
+  const plain = organizerContribution(organizer.id, organizer.data, markets);
+  const declared = organizerContribution(organizer.id,
+    {...organizer.data, womenLed: declaration(true)}, markets);
+  assert.notEqual(declared, plain);
+  assert.equal(organizerContribution(organizer.id, {...organizer.data,
+    womenLed: declaration(true, {setByUid: "manager-1",
+      setAt: Timestamp.fromMillis(2)})},
+  markets), declared);
+  // A lock changes every event's label even when the default was false.
+  assert.notEqual(organizerContribution(organizer.id, {...organizer.data,
+    womenLed: declaration(false, {setByRole: "admin", lockedByAdmin: true})},
+  markets), organizerContribution(organizer.id, {...organizer.data,
+    womenLed: declaration(false)}, markets));
+
+  const {id, data} = doc(parity.catchEvents, "open-upcoming");
+  const before = catchEventContribution(id, data, now);
+  assert.notEqual(catchEventContribution(id, {...data,
+    womenLed: declaration(true)}, now), before);
+  assert.equal(catchEventContribution(id, {...data,
+    womenLed: declaration(null)}, now), before);
 });
 
 test("imported event takedowns rebuild their organizer's pages", () => {

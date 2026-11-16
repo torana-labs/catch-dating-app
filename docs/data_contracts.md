@@ -2105,6 +2105,28 @@ segment, `publicPage.canonicalPath` owns the website URL, and
 or rerouting an organizer therefore does not require changing its document id
 or relationship references.
 
+### Women-Led Label
+
+`organizers/{organizerId}.womenLed` and `events/{eventId}.womenLed` hold an
+audited declaration `{value, setByUid, setByRole, setAt, lockedByAdmin}`
+(shared definitions in `contracts/shared/women_led_common.schema.json`). The
+organizer value is the default; an event value of `true` or `false` overrides
+it, and `null` or absent follows the organizer. Imported events follow their
+organizer. It is a label, not an attendance rule: attendance limits stay in
+`constraints.maxMen`/`maxWomen` and the admission policy.
+
+Owners and managers set it through `updateOrganizer` and `updateEvent`;
+admins send `set`, `clear` or `release` through the admin detail callables.
+`clear` turns the label off and sets `lockedByAdmin`, so a Host cannot turn it
+back on until `release`; an organizer lock turns it off for every event.
+Writing the stored value is a no-op, and a label change is not a plan change.
+
+Public read models carry only the resolved boolean, never the audit fields:
+`publicOrganizers.womenLed` (derived), `organizerPublicPage.womenLed` and each
+`upcomingEvents`/`pastMoments` item, and `eventPublicPage` `item`,
+`organizer` and `moreEvents[]`. Readers treat a missing value as `false`.
+Explore search records carry `womenLed` as an Algolia filter-only facet.
+
 ### Organizer Supply Capabilities
 
 Every canonical organizer, compatibility club projection, and published

@@ -49,6 +49,10 @@
         "countryCode": {"type": ["string", "null"], "pattern": "^[A-Z]{2}$"},
         "countryName": {"type": ["string", "null"], "maxLength": 120},
         "appVisibility": {"type": "string", "enum": ["discoverable", "hidden"]},
+        "womenLed": {
+          "$ref": "../shared/women_led_common.schema.json#/definitions/adminAction",
+          "description": "Moderates the organizer's women-led default: set declares it, clear removes and locks it, release lifts the lock. Recorded with the admin uid, role and time, and in the admin audit log with the review note."
+        },
         "publicPage": {
           "type": "object",
           "additionalProperties": false,

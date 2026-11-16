@@ -4,6 +4,7 @@ import {publicExternalEvent} from "./publicExternalEvent";
 import {projectPublicOrganizer} from "./publicOrganizer";
 import {publicEventAuthorized} from "./publicReadPolicy";
 import {projectPublicReview} from "./publicReview";
+import {organizerWomenLed, womenLedLocked} from "../organizers/womenLed";
 
 /**
  * What one source document contributes to public pages. Triggers compare
@@ -31,9 +32,13 @@ export function organizerContribution(
   if (!data) return null;
   const listing = projectPublicOrganizer(id, data, liveMarkets);
   if (!listing) return null;
-  // Follower counts reach pages in batches, not on every follow.
+  // Follower counts reach pages in batches, not on every follow. The
+  // women-led default and its lock resolve every event's label; who set it
+  // and when never reach a page.
   return JSON.stringify({...listing,
-    metrics: without(listing.metrics ?? {}, ["followerCount"])});
+    metrics: without(listing.metrics ?? {}, ["followerCount"]),
+    womenLed: organizerWomenLed(data),
+    womenLedLocked: womenLedLocked(data.womenLed)});
 }
 
 export function catchEventContribution(
@@ -41,8 +46,11 @@ export function catchEventContribution(
 ): string | null {
   if (!data || !publicEventAuthorized(id, data)) return null;
   const row = projectLivePublicCatchEvent(id, data, now);
+  const womenLed = data.womenLed as {value?: unknown} | undefined;
   return row ? JSON.stringify({organizerId: row.organizerId,
-    event: withoutDatingFraming(row.event)}) : null;
+    event: withoutDatingFraming(row.event),
+    womenLed: womenLed?.value ?? null,
+    womenLedLocked: womenLedLocked(womenLed)}) : null;
 }
 
 export function externalEventContribution(

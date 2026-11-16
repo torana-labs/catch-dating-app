@@ -64,6 +64,10 @@
           "type": "boolean",
           "description": "Host-controlled website OTP registration switch. The event must belong to a published organizer before the public registration callable accepts users."
         },
+        "womenLed": {
+          "type": ["boolean", "null"],
+          "description": "Owner or manager override of the organizer's women-led default for this event: true or false overrides it, null follows the organizer again. Informational and filterable only; attendance limits stay in constraints and eventPolicy. Declaring true is refused while an admin lock is in place on the event or its organizer."
+        },
         "capacityLimit": {"type": "integer", "minimum": 1, "maximum": 1000},
         "priceInPaise": {"type": "integer", "minimum": 0, "maximum": 100000000},
         "constraints": {
