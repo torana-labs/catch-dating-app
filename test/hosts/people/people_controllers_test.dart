@@ -2,9 +2,7 @@ import 'package:catch_dating_app/chats/chats.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
@@ -36,55 +34,54 @@ const _org = 'organizer-1';
 
 class _Contacts extends Fake implements HostContactsRepository {
   final queries = <HostAudienceQuery>[];
+  final limits = <int>[];
 
   @override
-  Future<HostCrmSummary> getSummary(String organizerId) async =>
-      const HostCrmSummary(
-        organizerId: _org,
-        contactCount: 1284,
-        pastAttendeeCount: 900,
-        repeatAttendeeCount: 300,
-        linkedAccountCount: 800,
-        importedContactCount: 100,
-        whatsappOptInCount: 600,
-        smsOptInCount: 0,
-        truncated: false,
-        inAppReadiness: HostCrmChannelReadiness.currentEventOnly,
-        whatsappReadiness: HostCrmChannelReadiness.currentEventOnly,
-        smsReadiness: HostCrmChannelReadiness.providerSetupRequired,
+  Stream<HostContactDirectory> watchDirectory(String organizerId) =>
+      Stream.value(
+        const HostContactDirectory({
+          'summary': {
+            'organizerId': _org,
+            'contactCount': 1284,
+            'pastAttendeeCount': 900,
+            'repeatAttendeeCount': 300,
+            'advocateCount': 0,
+            'highImpactAdvocateCount': 0,
+            'linkedAccountCount': 800,
+            'importedContactCount': 100,
+            'whatsappOptInCount': 600,
+            'smsOptInCount': 0,
+            'truncated': false,
+            'readiness': {
+              'inApp': 'currentEventOnly',
+              'whatsapp': 'currentEventOnly',
+              'sms': 'providerSetupRequired',
+            },
+          },
+          'segmentCounts': {
+            'regular': 84,
+            'new_to_organizer': 148,
+            'lapsed_regular': 37,
+          },
+        }),
       );
 
   @override
-  Future<({int count, HostAudienceMatchCountCoverage coverage})> countContacts(
+  Stream<HostContactWindow> watchContacts(
     String organizerId, {
-    HostAudienceQuery query = const HostAudienceQuery(),
-  }) async => (
-    count: switch (query.segment) {
-      HostAudienceSegment.regular => 84,
-      HostAudienceSegment.newToOrganizer => 148,
-      _ => 37,
-    },
-    coverage: HostAudienceMatchCountCoverage.exact,
-  );
-
-  @override
-  Future<HostAudiencePage> listContacts(
-    String organizerId, {
-    HostAudienceQuery query = const HostAudienceQuery(),
-    int limit = 0,
-  }) async {
+    required HostAudienceQuery query,
+    required int limit,
+  }) {
     queries.add(query);
-    final first = query.cursor == null;
-    return HostAudiencePage(
-      organizerId: organizerId,
-      contacts: first
-          ? peopleContacts.take(2).toList()
-          : peopleContacts.skip(2).take(1).toList(),
-      nextCursor: first ? 'page-2' : null,
-      matchCount: 3,
-      matchCountCoverage: HostAudienceMatchCountCoverage.exact,
-      sourceCoverage: HostAudienceSourceCoverage.exact,
-      projectionVersion: 1,
+    limits.add(limit);
+    final first = limit <= hostPeoplePageSize;
+    return Stream.value(
+      HostContactWindow(
+        contacts: first
+            ? peopleContacts.take(2).toList()
+            : peopleContacts.take(3).toList(),
+        hasMore: first,
+      ),
     );
   }
 }
@@ -183,10 +180,12 @@ void main() {
     await container
         .read(hostPeopleDirectoryProvider(request).notifier)
         .loadMore();
+    // More rows means listening to a larger window.
+    await _settle(container);
     state = container.read(hostPeopleControllerProvider(request));
     expect(state.people.map((person) => person.contactId), ['rk', 'dp', 'as']);
     expect(state.canLoadMore, isFalse);
-    expect(contacts.queries.last.cursor, 'page-2');
+    expect(contacts.limits.last, hostPeoplePageSize * 2);
   });
 
   test('a filter asks the directory for its segment', () async {
