@@ -23,6 +23,9 @@ describe("host landing", {timeout: 20_000}, () => {
     const {container} = renderPage();
     const banner = within(screen.getByRole("banner"));
     expect(banner.getByRole("link", {name: "Catch"}).getAttribute("href")).toBe("/");
+    // A host page's primary action is the trial, never the guest app.
+    expect(banner.getByRole("link", {name: copy.sections.start}).getAttribute("href")).toBe("#start");
+    expect(banner.queryByRole("link", {name: /Get the app|Get notified/u})).toBeNull();
     // The site top bar only opens pages; the page's sections live in their own bar.
     const nav = within(screen.getByRole("navigation", {name: "Primary"}));
     expect(nav.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/explore/", "/host/"]);
@@ -123,13 +126,20 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(growth.getByText("5%")).toBeTruthy();
   });
 
-  it("closes with three steps, Catch Host's badges and no QR code, and a link to Catch for weddings", () => {
+  it("closes with three steps, Catch Host's badges (no QR code at phone width) and a link to Catch for weddings", () => {
     renderPage();
     const start = within(screen.getByRole("region", {name: copy.start.title}));
     expect(start.getAllByRole("listitem")).toHaveLength(3);
     expect(start.getByRole("link", {name: "Download on the App Store"}).getAttribute("href")).toBe(brand.stores.host.ios);
     expect(start.queryByRole("img", {name: /QR/i})).toBeNull();
     expect(start.getByRole("link", {name: copy.start.weddings}).getAttribute("href")).toBe("/weddings/");
+  });
+
+  it("offers a person on WhatsApp, with the question already typed", () => {
+    renderPage();
+    const talk = screen.getByRole("link", {name: copy.hero.talk}).getAttribute("href")!;
+    expect(talk.startsWith(`https://wa.me/${brand.support.whatsapp.replace(/\D/gu, "")}?text=`)).toBe(true);
+    expect(decodeURIComponent(talk.split("?text=")[1])).toContain("question about hosting");
   });
 
   it("answers the FAQ in place, one item open at a time, trial questions included", () => {

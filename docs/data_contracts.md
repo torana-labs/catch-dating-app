@@ -3204,6 +3204,17 @@ Responses screen reads its Offered list and per-filter counts from these fields.
 `launchWaitlist` and `salesInboundIntents` accept an optional E.164 `phone`; a
 website submission needs an email or a phone.
 
+A WhatsApp notice is one of two kinds, named by `whatsapp.notice` and stored
+as `notice` on its row: `cityLaunch` (the default, one message when Catch opens
+in the person's city, row `whatsapp_{phoneCityKey}`, consent purpose
+`cityLaunchNotice`, source `website_launching_soon`) or `appLaunch` (the guest
+app's "Get notified": one message when the Catch app is on the stores, row
+`whatsapp_app_{phoneCityKey}`, purpose `appLaunchNotice`, source
+`website_app_notify`). An app-launch request may also set `newPlans`, recorded
+as its own `cityNewPlans` consent that is off unless ticked; the contract
+rejects `newPlans: true` on a city-launch request. Only city-launch notices
+count toward `cityInterest`.
+
 ### Waitlist City Attribution
 
 The website launch notice names its city by catalog id. `joinWaitlist` accepts

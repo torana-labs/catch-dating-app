@@ -33,7 +33,21 @@ describe("useHomePageController", () => {
     const {result} = renderHook(() => useHomePageController(quiet));
     expect(result.current.live).toBe(true);
     expect(result.current.tiles.map((tile) => tile.kicker)).toEqual(Array(5).fill("In Mumbai"));
-    expect(result.current.note).toBe("Nothing on in Mumbai this week yet. New plans go up as hosts add them.");
+    expect(result.current.upcoming).toBe(false);
+    expect(result.current.note).toBe("No plans in Mumbai in the next two weeks yet. Follow the organisers below to hear about their next one first.");
+  });
+
+  it("widens a quiet week to the next two weeks, dated, instead of showing an empty section", () => {
+    const day = 24 * 60 * 60 * 1000;
+    const shift = (iso: string | null) => iso === null ? null : new Date(Date.parse(iso) + 9 * day).toISOString();
+    const later = mumbaiLiveCatalog.plans.plans.slice(0, 3).map((plan) => ({...plan, startTime: shift(plan.startTime)!, endTime: shift(plan.endTime)}));
+    const quietWeek = {...mumbaiLiveCatalog, plans: {...mumbaiLiveCatalog.plans, plans: later}};
+    const {result} = renderHook(() => useHomePageController(quietWeek));
+    expect(result.current.weekCount).toBe(0);
+    expect(result.current.upcoming).toBe(true);
+    expect(result.current.plans).toHaveLength(3);
+    expect(result.current.plans[0].when).toMatch(/^[A-Z][a-z]{2} \d{1,2} [A-Z][a-z]{2}, \d{1,2}:\d{2}/u);
+    expect(result.current.note).toBe("Nothing on this week, so here’s everything in Mumbai over the next two weeks: 3 of 3 shown.");
   });
 
   it("keeps a waitlist city's tiles on its launch line", () => {

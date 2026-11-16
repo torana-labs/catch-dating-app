@@ -1,4 +1,3 @@
-
 .consent-banner {
   position: fixed;
   inset: auto var(--website-gutter) calc(var(--website-gutter) + env(safe-area-inset-bottom, 0)) auto;
@@ -15,14 +14,15 @@
   box-shadow: var(--website-shadow-soft);
 }
 
-/* Phones: a bottom sheet; the page pads by its measured height so nothing stays covered. */
+/* Phones: a compact bottom sheet that keeps the hero's first button in view; the page pads by its height. */
 @media (width < 600px) {
   .consent-banner {
     inset: auto 0 0;
     width: auto;
-    padding-bottom: calc(var(--catch-space-s4) + env(safe-area-inset-bottom, 0));
+    max-height: 45dvh;
+    gap: var(--catch-space-s2);
+    padding: var(--catch-space-s3) var(--catch-space-s4) calc(var(--catch-space-s3) + env(safe-area-inset-bottom, 0));
     border-width: var(--catch-stroke-hairline) 0 0;
   }
-
   html[data-consent-open] body { padding-bottom: var(--consent-banner-height, 0); }
 }

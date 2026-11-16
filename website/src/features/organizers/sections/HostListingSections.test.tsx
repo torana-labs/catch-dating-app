@@ -13,6 +13,7 @@ import {hostListings as demoListings} from "../../../stories/fixtures/hostListin
 import {HostListingPage} from "../HostListingPage";
 import type {OrganizerPageRecord} from "../organizerPage";
 import type {HostListing} from "../types";
+import {guestAppActionLabel} from "../../../content/site";
 
 vi.mock("../../../analytics", () => ({trackMarketingEvent: vi.fn(), getMarketingConsent: () => null, openMarketingConsentPreferences: vi.fn(),
   marketingConsentChangedEvent: "catch:marketing-consent-changed"}));
@@ -48,7 +49,7 @@ describe("HostListingSections", () => {
     // Every organiser page carries the one site header, with the main site's links.
     const primary = screen.getByRole("navigation", {name: "Primary"});
     expect(within(primary).getAllByRole("link").map((link) => link.textContent)).toEqual(["What’s on", "For hosts"]);
-    expect(within(screen.getByRole("banner")).getByRole("link", {name: "Get the app"}).getAttribute("href")).toBe("/#app");
+    expect(within(screen.getByRole("banner")).getByRole("link", {name: guestAppActionLabel}).getAttribute("href")).toBe("/#app");
     // ...and the one site footer: Explore, Hosts and Help and legal.
     const footer = within(screen.getByRole("contentinfo"));
     expect(footer.getByRole("link", {name: "What’s on"}).getAttribute("href")).toBe("/explore/");

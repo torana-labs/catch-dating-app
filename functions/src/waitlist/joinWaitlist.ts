@@ -533,6 +533,18 @@ export function whatsappLaunchNoticeId(phone: string, city: string): string {
 }
 
 /**
+ * The launchWaitlist id for one number's app-launch notice in one city: its
+ * own row, so asking for the app never overwrites a city-opening notice.
+ * @param {string} phone The E.164 number.
+ * @param {string} city The city as submitted.
+ * @return {string} The launchWaitlist document id.
+ */
+export function whatsappAppNoticeId(phone: string, city: string): string {
+  return `whatsapp_app_${Buffer.from(`${phone}|${city.toLowerCase()}`)
+    .toString("base64url")}`;
+}
+
+/**
  * A member asks for one WhatsApp message when Catch opens in their city
  * (CAT-260). The launch notice is the form's explicit purpose; marketing
  * permission is a separate choice, recorded as made and off unless chosen
@@ -583,18 +595,26 @@ async function joinByWhatsapp(
     return;
   }
 
+  // An app-launch notice (the guest app's "Get notified") is its own row and
+  // consent purpose; the city-opening notice keeps its original meaning.
+  const appLaunch = whatsapp.notice === "appLaunch";
   const firestore = admin.firestore();
   const noticeRef = firestore.collection("launchWaitlist")
-    .doc(whatsappLaunchNoticeId(phone, city));
+    .doc(appLaunch ? whatsappAppNoticeId(phone, city) :
+      whatsappLaunchNoticeId(phone, city));
   const decidedAt = admin.firestore.Timestamp.now();
   const decision = (purpose: string, granted: boolean) => ({
     purpose, channel: "whatsapp", granted,
     consentVersion: String(whatsapp.consentVersion),
-    source: "website_launching_soon", decidedAt,
+    source: appLaunch ? "website_app_notify" : "website_launching_soon",
+    decidedAt,
   });
   const consents = {
-    launchNotice: decision("cityLaunchNotice", true),
+    launchNotice: decision(appLaunch ? "appLaunchNotice" : "cityLaunchNotice",
+      true),
     marketing: decision("marketing", whatsapp.marketing === true),
+    ...(appLaunch ? {newPlans: decision("cityNewPlans",
+      whatsapp.newPlans === true)} : {}),
   };
   let alreadyJoined = false;
   let firstForCity = false;
@@ -602,13 +622,15 @@ async function joinByWhatsapp(
   await firestore.runTransaction(async (transaction) => {
     const existing = await transaction.get(noticeRef);
     // Every read precedes the writes: count the person once per city.
-    const countInterest = cityAttribution ?
+    // Only a city-opening notice measures demand for a city that is not open.
+    const countInterest = cityAttribution && !appLaunch ?
       await prepareCityInterest(transaction, firestore, {personKey: phone,
         cityId: cityAttribution.cityId,
         countryIsoCode: cityAttribution.countryIsoCode, now}) : null;
     firstForCity = countInterest?.() ?? false;
     const data = {
       channel: "whatsapp",
+      notice: appLaunch ? "appLaunch" : "cityLaunch",
       phone,
       city,
       ...(cityAttribution ?? {}),
@@ -660,6 +682,7 @@ async function joinByWhatsapp(
   });
   // The number stays out of logs.
   logger.info("WhatsApp launch notice stored", {city,
+    notice: appLaunch ? "appLaunch" : "cityLaunch",
     cityId: cityAttribution?.cityId ?? null, alreadyJoined, firstForCity});
   sendWaitlistJson(response, 200, {ok: true, alreadyJoined});
 }

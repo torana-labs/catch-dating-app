@@ -56,6 +56,8 @@ export const hostLandingCopy = {
     start: startTrial,
     seeNight: `See a night on ${brand.name}`,
     terms: "Free for 30 days from your first event · then 5% of ticket sales, never more than ₹10,000 a month · iPhone, Android and iPad",
+    /** A person on WhatsApp, under the terms (leak 7). */
+    talk: "Prefer a person? WhatsApp us",
   },
   kinds: {
     title: "Built for every kind of night.",
@@ -212,6 +214,11 @@ export const hostLandingCopy = {
       {title: "Set up your page and your first event", body: "Pick a format, set the price and publish when you’re ready."},
       {title: "Your 30 days start when doors open", body: `No ${brand.name} fee on what you sell until 30 days after your first event.`},
     ],
+    /** Wide screens only (leak 6): the QR opens this band on the phone, where both store buttons are. */
+    qrTitle: "On a laptop? Scan with your phone’s camera.",
+    qrBody: `It opens this page on your phone, with both ${brand.stores.hostAppName} store buttons.`,
+    qrLabel: `QR code that opens ${brand.name} for hosts on your phone`,
+    whatsappLink: "Or WhatsApp us for the link",
     weddingsLead: "Running a wedding or a multi-day programme?",
     weddings: `${brand.name} for weddings`,
     weddingsHref: "/weddings/",

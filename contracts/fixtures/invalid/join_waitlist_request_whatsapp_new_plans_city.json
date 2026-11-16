@@ -1,0 +1,12 @@
+{
+  "city": "Pune",
+  "role": "member",
+  "website": "",
+  "whatsapp": {
+    "phone": "+919812345678",
+    "launchNotice": true,
+    "newPlans": true,
+    "marketing": false,
+    "consentVersion": "city-launch-whatsapp-v1"
+  }
+}

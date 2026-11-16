@@ -3,9 +3,11 @@
 // Catch is for meeting people in real life: no dating, singles, mixer or match
 // wording.
 import type {CatchFormat} from "@catch/web-ui";
+import {brand} from "./brand.ts";
+import {guestAppActionLabel} from "./site.ts";
 
 export const homePageCopy = {
-  header: {nav: "Main", app: "Get the app",
+  header: {nav: "Main", app: guestAppActionLabel,
     cityMenu: "Choose your city", allCities: "All cities", liveStatus: "{count} plans this week", liveStatusOne: "1 plan this week",
     /** A live city with no plans this week yet. */
     newStatus: "New", soonStatus: "Launching soon",
@@ -54,6 +56,14 @@ export const homePageCopy = {
     note: "{shown} of {total} plans shown. Hosts set their own prices.",
     /** An open city with nothing this week: not "0 of 0 plans shown". */
     emptyWeek: "Nothing on in {city} this week yet. New plans go up as hosts add them.",
+    /** An open city with nothing this week shows the next two weeks instead, under these lines. */
+    upcomingTitle: "Coming up in {city}",
+    upcomingEyebrow: "Next two weeks",
+    upcomingNote: "Nothing on this week, so here’s everything in {city} over the next two weeks: {shown} of {total} shown.",
+    upcomingFilteredNote: "Showing {shown} of {total} in the next two weeks · {format}",
+    upcomingEmptyFormat: "No {format} in the next two weeks. Try another format.",
+    /** Nothing in the whole window: point to the organisers below, never a dead end. */
+    emptyWindow: "No plans in {city} in the next two weeks yet. Follow the organisers below to hear about their next one first.",
     filteredNote: "Showing {shown} of {total} this week · {format}",
     emptyFormat: "No {format} this week. Try another format.",
     unavailable: "We couldn’t load this week’s plans. Please try again in a moment.",
@@ -139,6 +149,26 @@ export const homePageCopy = {
     body: "Book in a couple of taps, get reminders and directions, and keep your group chat after the night.",
     qr: "Scan to get the app",
     qrLabel: "QR code for the Catch app download link",
+    /** Until the app is on a store (guestAppLive), the band becomes a WhatsApp notice for the launch. */
+    soonEyebrow: `The ${brand.stores.consumerAppName} app · coming soon`,
+    soonTitle: `Be first in the ${brand.stores.consumerAppName} app.`,
+    soonBody: "Browse and book on the web today. Leave your WhatsApp number and we’ll message you the day the app is on the App Store and Google Play.",
+    /** Where store badges would stand before launch: a quiet link down to the notice. */
+    heroLink: "The app is coming · Get notified",
+    notify: {
+      phone: "WhatsApp number",
+      phoneHint: "98765 43210",
+      newPlans: "Also send me new plans in {city} on WhatsApp, about once a week",
+      action: "Notify me",
+      consent: "Tapping Notify me means we’ll send one WhatsApp message when the app launches. We only send new plans if you tick the box above.",
+      /** Names this wording on every stored consent; change it whenever the wording changes. */
+      consentVersion: "app-launch-whatsapp-v1",
+      privacy: "Privacy policy",
+      invalidPhone: "Enter your 10-digit mobile number.",
+      failed: "That didn’t go through. Please try again in a moment.",
+      joined: `Done. We’ll message you on WhatsApp the day the ${brand.stores.consumerAppName} app launches.`,
+      alreadyJoined: "You’re already on the list. We’ve kept your latest choice.",
+    },
   },
   faq: {
     eyebrow: "Questions",
