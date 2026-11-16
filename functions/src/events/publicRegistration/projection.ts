@@ -169,13 +169,16 @@ function paymentProjection(
   checkout: NonNullable<Response["payment"]>["checkout"],
   cancellationQuote: NonNullable<Response["payment"]>["cancellationQuote"],
 ): NonNullable<Response["payment"]> {
-  const {placeCount, unitAmountPaise} = publicPaymentPlaces(p);
+  const {placeCount, unitAmountPaise, memberPlaceCount, guestUnitAmountPaise} =
+    publicPaymentPlaces(p);
   return {
     paymentId,
     status: p.status,
     amountPaise: p.amountPaise,
     placeCount,
     unitAmountPaise,
+    ...(memberPlaceCount === 1 ? {memberPlaceCount, guestUnitAmountPaise} :
+      {}),
     currency: p.currency,
     mode: p.routing.selection.mode,
     refundedAmountPaise: p.refundedAmountPaise,

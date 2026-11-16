@@ -34,6 +34,7 @@ import {preparePublicGuestIdentity} from "./identity";
 import {
   publicCheckoutQuote,
   publicBookingPlaces,
+  publicGuestNames,
   assertReviewedPublicQuote,
   registrationUnavailable,
   type PublicCheckoutQuote,
@@ -53,6 +54,8 @@ export async function reservePublicPayment(input: {
   uid: string;
   phoneE164: string;
   displayName: string;
+  /** One name per place after the booker's; absent for one place. */
+  guestNames?: string[];
   requestId: string;
   reviewedQuote: PublicCheckoutQuote;
   routing: PaymentRoutingSnapshot;
@@ -84,6 +87,7 @@ export async function reservePublicPayment(input: {
   if (!displayName || displayName.length > 120) registrationUnavailable();
   // The reviewed quote names the places; absent (older clients) is one.
   const places = publicBookingPlaces(reviewedQuote.placeCount);
+  const guestNames = publicGuestNames(input.guestNames, places);
   const paymentId = publicPaymentId(eventId, uid, requestId);
   const requestHash = createHash("sha256")
     .update(
@@ -92,6 +96,8 @@ export async function reservePublicPayment(input: {
         uid,
         phoneE164,
         displayName,
+        // Absent for one place, so an older single-place request replays.
+        ...(guestNames.length > 0 ? {guestNames} : {}),
         requestId,
         reviewedQuote,
         inviteLinkId,
@@ -251,6 +257,9 @@ export async function reservePublicPayment(input: {
       amountPaise: quote.amountPaise,
       placeCount: places,
       unitAmountPaise: quote.unitAmountPaise ?? quote.amountPaise,
+      ...(quote.memberPlaceCount ? {memberPlaceCount: quote.memberPlaceCount,
+        guestUnitAmountPaise: quote.guestUnitAmountPaise} : {}),
+      ...(guestNames.length > 0 ? {guestNames} : {}),
       currency: quote.currency,
       receipt: paymentId,
       status: "creatingOrder",

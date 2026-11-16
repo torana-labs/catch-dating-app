@@ -162,7 +162,7 @@ export async function finalizePublicPayment(input: {
         reservation,
         expectedActive: false,
       });
-      const {placeCount} = publicPaymentPlaces(p);
+      const {placeCount, guestNames} = publicPaymentPlaces(p);
       if (
         !ledger ||
         !reservation ||
@@ -240,9 +240,15 @@ export async function finalizePublicPayment(input: {
         revenueOrderAmountMinor: p.amountPaise,
       };
       // The paid booking decides the party: one row and one pass hold every
-      // place, and an older row's size never survives into it.
-      if (placeCount > 1) attendee.partySize = placeCount;
-      else delete attendee.partySize;
+      // place, with the guests' names beside the booker's, and an older
+      // row's size or names never survive into it.
+      if (placeCount > 1) {
+        attendee.partySize = placeCount;
+        attendee.guestNames = guestNames;
+      } else {
+        delete attendee.partySize;
+        delete attendee.guestNames;
+      }
       const receipt: Receipt = {
         organizerId,
         eventId,
@@ -334,7 +340,9 @@ export async function finalizePublicPayment(input: {
   }
 }
 
-/** Membership savings never change admission; failures are dropped. */
+/** Membership savings never change admission; failures are dropped. The
+ * benefit counts one member place: the booker's, at unitAmountPaise. Guest
+ * places pay the list price and are not membership savings. */
 async function recordAdmittedMemberBenefitUse(
   db: FirebaseFirestore.Firestore, paymentId: string, nowMillis: number,
 ): Promise<void> {
@@ -343,7 +351,8 @@ async function recordAdmittedMemberBenefitUse(
       .collection(PUBLIC_PAYMENT_COLLECTION).doc(paymentId).get()).data(),
     paymentId);
     await recordPublicMemberBenefitUse({db, eventId: payment.eventId,
-      uid: payment.recipientUid, paidAmountPaise: payment.amountPaise,
+      uid: payment.recipientUid,
+      paidAmountPaise: publicPaymentPlaces(payment).unitAmountPaise,
       nowMillis});
   } catch {
     return;

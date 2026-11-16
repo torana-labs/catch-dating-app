@@ -38,6 +38,39 @@ export function publicBookingPlaces(value: unknown): number {
   return value as number;
 }
 
+/** One guest name, as the booker types it; the contract bounds the count. */
+export const MAX_PUBLIC_GUEST_NAME_LENGTH = 80;
+
+/**
+ * The names of the people on a booking after the booker: exactly one per
+ * extra place. One place takes none, so an older client that never sends the
+ * field still books. Names are trimmed with inner whitespace collapsed, like
+ * displayName, and a control character is refused rather than stripped.
+ */
+export function publicGuestNames(value: unknown, places: number): string[] {
+  const expected = places - 1;
+  const names = value === undefined ? [] : value;
+  if (!Array.isArray(names) || names.length !== expected) {
+    throw new HttpsError("invalid-argument", expected === 0 ?
+      "A booking for one place takes no guest names." :
+      `Add a name for each guest: ${expected} ` +
+        `${expected === 1 ? "name" : "names"} for ${places} places.`,
+    {reason: "guestNamesCount", expected,
+      received: Array.isArray(names) ? names.length : null});
+  }
+  return names.map((name: unknown, index) => {
+    const clean = typeof name === "string" && !/\p{Cc}/u.test(name) ?
+      name.trim().replace(/\s+/gu, " ") : "";
+    if (!clean || [...clean].length > MAX_PUBLIC_GUEST_NAME_LENGTH) {
+      throw new HttpsError("invalid-argument",
+        `Guest ${index + 1} needs a name of 1 to ` +
+          `${MAX_PUBLIC_GUEST_NAME_LENGTH} characters.`,
+        {reason: "guestNameInvalid", index});
+    }
+    return clean;
+  });
+}
+
 export function registrationUnavailable(
   message = "Registration is not available for this event.",
 ): never {
@@ -136,8 +169,11 @@ export function assertPublicRegistrationTerms(
 }
 
 /** The returned terms are reviewed before a hold and frozen in the ledger.
- * A multi-place quote charges every place the same unit price; a one-place
- * quote carries no place fields, so it matches what older clients echo.
+ * A multi-place quote prices the booker's place at unitAmountPaise and every
+ * other place at the list price. Without a member price those are the same;
+ * with one, the member's own place is the one member-priced place and the
+ * quote says so (memberPlaceCount, guestUnitAmountPaise). A one-place quote
+ * carries no place fields, so it matches what older clients echo.
  */
 export function publicCheckoutQuote(
   eventId: string,
@@ -159,14 +195,13 @@ export function publicCheckoutQuote(
   ) {
     registrationUnavailable();
   }
-  // A member price is the member's own benefit; guests' places have no
-  // reviewed price yet, so a member books one place at a time.
-  if (memberTerms && places > 1) {
-    registrationUnavailable(
-      "Member pricing covers one place. Book a single place to use it.");
-  }
-  const unitAmountPaise = memberTerms?.priceInPaise ?? event.priceInPaise!;
-  const amountPaise = unitAmountPaise * places;
+  // A member price is the member's own benefit: their place takes it, and
+  // each guest's place is an ordinary ticket at the list price.
+  const listAmountPaise = event.priceInPaise!;
+  const unitAmountPaise = memberTerms?.priceInPaise ?? listAmountPaise;
+  const memberParty = memberTerms !== null && places > 1;
+  const guestUnitAmountPaise = memberParty ? listAmountPaise : unitAmountPaise;
+  const amountPaise = unitAmountPaise + guestUnitAmountPaise * (places - 1);
   if (!Number.isSafeInteger(amountPaise) || amountPaise > 100_000_000) {
     registrationUnavailable("Choose fewer places for one booking.");
   }
@@ -177,6 +212,8 @@ export function publicCheckoutQuote(
     startTimeMillis: event.startTime.toMillis(),
     amountPaise,
     ...(places > 1 ? {unitAmountPaise, placeCount: places} : {}),
+    ...(memberParty ? {memberPlaceCount: 1 as const, guestUnitAmountPaise} :
+      {}),
     ...(memberTerms ? {listAmountPaise: memberTerms.listPriceInPaise} : {}),
     currency: "INR",
     cancellationPolicy: eventCancellationPolicy(event),

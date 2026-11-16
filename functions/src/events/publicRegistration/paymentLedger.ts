@@ -36,22 +36,40 @@ export function publicAdmissionId(paymentId: string): string {
   return `public_paid_${paymentId}`;
 }
 
-/** Places and unit price of a stored booking. Checkouts written before
- * multi-place booking carry neither field and are one place at amountPaise.
+/** The places, prices and guest names of a stored booking. Checkouts
+ * written before multi-place booking carry none of the place fields and are
+ * one place at amountPaise. The booker's place costs unitAmountPaise; each
+ * other place costs guestUnitAmountPaise when a member price applied to the
+ * party, and unitAmountPaise otherwise. A party names every other place.
  */
 export function publicPaymentPlaces(
-  p: Pick<Payment, "amountPaise" | "placeCount" | "unitAmountPaise">,
-): {placeCount: number; unitAmountPaise: number} {
+  p: Pick<Payment, "amountPaise" | "placeCount" | "unitAmountPaise" |
+    "memberPlaceCount" | "guestUnitAmountPaise" | "guestNames">,
+): {
+  placeCount: number;
+  unitAmountPaise: number;
+  guestUnitAmountPaise: number;
+  memberPlaceCount: 0 | 1;
+  guestNames: string[];
+} {
   const placeCount = p.placeCount ?? 1;
-  const unitAmountPaise = p.unitAmountPaise ?? p.amountPaise / placeCount;
+  const unitAmountPaise = p.unitAmountPaise ??
+    (placeCount === 1 ? p.amountPaise : NaN);
+  const guestUnitAmountPaise = p.guestUnitAmountPaise ?? unitAmountPaise;
+  const memberPlaceCount = p.memberPlaceCount ?? 0;
+  const guestNames = p.guestNames ?? [];
   if (!Number.isSafeInteger(placeCount) || placeCount < 1 ||
       !Number.isSafeInteger(unitAmountPaise) ||
-      unitAmountPaise * placeCount !== p.amountPaise ||
-      (p.placeCount === undefined) !== (p.unitAmountPaise === undefined) &&
-        placeCount !== 1) {
+      (p.memberPlaceCount === undefined) !==
+        (p.guestUnitAmountPaise === undefined) ||
+      memberPlaceCount === 1 && placeCount < 2 ||
+      unitAmountPaise + guestUnitAmountPaise * (placeCount - 1) !==
+        p.amountPaise ||
+      guestNames.length !== placeCount - 1) {
     registrationUnavailable();
   }
-  return {placeCount, unitAmountPaise};
+  return {placeCount, unitAmountPaise, guestUnitAmountPaise,
+    memberPlaceCount, guestNames};
 }
 
 export function parsePublicPayment(
