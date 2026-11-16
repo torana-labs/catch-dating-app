@@ -33,7 +33,9 @@ class HostOrganizerSectionList extends ConsumerWidget {
           summary: crmState.value,
           loading: crmState.isLoading,
           hasError: crmState.hasError,
-          onRetry: () => ref.invalidate(hostCrmSummaryProvider(organizer.id)),
+          // Retry the directory listener the summary is read from.
+          onRetry: () =>
+              ref.invalidate(hostContactDirectoryProvider(organizer.id)),
         ),
       ],
     );
