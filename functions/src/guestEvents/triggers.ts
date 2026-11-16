@@ -2,12 +2,16 @@ import * as admin from "firebase-admin";
 import {
   Change,
   DocumentSnapshot,
+  onDocumentCreated,
   onDocumentWritten,
 } from "firebase-functions/v2/firestore";
 import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import {eventGuestEntries, refreshEventGuestEntry} from "./eventGuestEntry";
 import {guestEventStatuses, refreshGuestEventStatus} from
   "./guestEventStatus";
+import {savedEvents} from "./guestEventCard";
+import {refreshSavedEventCard, refreshSavedEventCardsForEvent} from
+  "./savedEventCards";
 
 type Data = FirebaseFirestore.DocumentData | undefined;
 
@@ -181,8 +185,16 @@ export const onEventGuestEntryEventWritten = onDocumentWritten({
   if (!eventTermsChanged(before, after)) return;
   const db = admin.firestore();
   await refreshEventGuestEntry(db, event.params.documentId);
+  // Status rows carry the guest's list card, so this also refreshes it.
   await refreshGuestEventStatusesForEvent(db, event.params.documentId);
+  await refreshSavedEventCardsForEvent(db, event.params.documentId);
 });
+
+/** A new saved-event edge gets its list card; event changes keep it. */
+export const onSavedEventCardCreated = onDocumentCreated({
+  ...options, document: `${savedEvents}/{documentId}`,
+}, (event) => refreshSavedEventCard(admin.firestore(),
+  event.params.documentId).then(() => undefined));
 
 export const onEventGuestEntryOrganizerWritten = onDocumentWritten({
   ...options, document: "organizers/{documentId}",

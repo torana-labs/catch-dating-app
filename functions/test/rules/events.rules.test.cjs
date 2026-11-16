@@ -224,12 +224,21 @@ describe("firestore.rules", () => {
       // A guest with no record of their own reads a missing row.
       await assertSucceeds(getDoc(doc(guest, "guestEventStatuses", "event-2_guest-1")));
       await assertFails(getDoc(doc(guest, "guestEventStatuses", "event-1_guest-2")));
-      await assertFails(getDocs(query(collection(guest, "guestEventStatuses"),
+      // The booking lists read the guest's own rows, never anyone else's.
+      await assertSucceeds(getDocs(query(collection(guest, "guestEventStatuses"),
         where("uid", "==", "guest-1"))));
+      await assertSucceeds(getDocs(query(collection(guest, "guestEventStatuses"),
+        where("uid", "==", "guest-1"), where("participationStatus", "==", "signedUp"),
+        orderBy("eventCard.startTimeMillis"))));
+      await assertFails(getDocs(query(collection(guest, "guestEventStatuses"),
+        where("uid", "==", "guest-2"))));
+      await assertFails(getDocs(collection(guest, "guestEventStatuses")));
       await assertFails(setDoc(doc(guest, "guestEventStatuses", "event-1_guest-1"),
         status("guest-1")));
       await seed(["deletedUsers", "guest-1"], {deletedAt: Timestamp.now()});
       await assertFails(getDoc(doc(guest, "guestEventStatuses", "event-1_guest-1")));
+      await assertFails(getDocs(query(collection(guest, "guestEventStatuses"),
+        where("uid", "==", "guest-1"))));
     });
   });
 });

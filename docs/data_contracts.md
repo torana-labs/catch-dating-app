@@ -4440,6 +4440,21 @@ Triggers rebuild both from current records; the browser combines them with
 `guestBookingFacts/{uid}` and decides the step, closing it at the event's start
 or an invitation's expiry. The `surface: guest` adapter is retired.
 
+The same row and the guest's `savedEvents/{uid}_{eventId}` edges carry an
+`eventCard` (`contracts/embedded/guest_event_card.schema.json`): the event
+fields the guest's own lists show (name, times and timezone, format labels,
+distance and pace, meeting place, description, capacity and price terms,
+publication and lifecycle state), copied by the guest event triggers. It holds
+no live booking counts, so a booking never rewrites other guests' cards; event
+changes outside booking counters refresh every card of the event. The row also
+carries `participationStatus`, the guest's Catch booking status, and any Catch
+booking keeps the row (waitlisted and cancelled ones included). A guest lists
+only rows whose `uid` is theirs, so the booking, saved, payment and review
+lists read one bounded listener each instead of joining `events` per 30 ids.
+Clients never write the card. The `guest-event-cards` migration in
+`tool/data/lib/firestore_consolidation_migrations.mjs` creates the missing
+rows and fills the two fields on older documents, fill-only.
+
 `getEventViewerState` is an Auth/App-Check-protected, rate-limited callable over
 `readEventViewerStateSource`. Its strict request accepts no subject UID or
 organizer override; its response includes no private fields or checkout keys.

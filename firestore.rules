@@ -2210,10 +2210,14 @@ service cloud.firestore {
     // One guest's own records about one event, for the website's event page.
     // Triggers write it; only that guest gets it, and a guest with no row
     // reads it as missing.
+    // A guest lists only their own rows: the booking lists read the event
+    // card each row carries instead of joining events.
     match /guestEventStatuses/{statusId} {
       allow get: if isAuthed() && !isDeletedUser(request.auth.uid)
         && (resource == null || resource.data.uid == request.auth.uid);
-      allow list, write: if false;
+      allow list: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && resource.data.uid == request.auth.uid;
+      allow write: if false;
     }
     match /guestBookingFacts/{uid} {
       allow get: if isAuthed() && request.auth.uid == uid

@@ -35,6 +35,11 @@
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
       "x-catch-ownership": "client-writable"
     },
+    "eventCard": {
+      "$ref": "../embedded/guest_event_card.schema.json",
+      "description": "The saved event as the guest's lists show it, written by the guest event triggers when the edge is created and whenever the event's terms change. Clients never write it.",
+      "x-catch-ownership": "trigger-owned"
+    },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
     },
