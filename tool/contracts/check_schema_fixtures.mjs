@@ -59,6 +59,8 @@ export const fixtureSchemaCases = Object.freeze([
   ["valid/public_founding_host_offer_doc.json", "publicFoundingHostOfferDocumentSchema"],
   ["invalid/public_founding_host_offer_doc_organizer_identity.json", "publicFoundingHostOfferDocumentSchema"],
   ["valid/founding_host_place_doc.json", "foundingHostPlaceDocumentSchema"],
+  ["valid/founding_host_owner_place_doc.json", "foundingHostOwnerPlaceDocumentSchema"],
+  ["invalid/founding_host_owner_place_doc_organizer_missing.json", "foundingHostOwnerPlaceDocumentSchema"],
   ["valid/admin_manage_founding_host_offers_replace_payload.json", "adminManageFoundingHostOffersCallablePayloadSchema"],
   ["invalid/admin_manage_founding_host_offers_cap_over_limit.json", "adminManageFoundingHostOffersCallablePayloadSchema"],
   ["valid/create_chat_message_client_write.json", "createChatMessageClientWriteSchema"],

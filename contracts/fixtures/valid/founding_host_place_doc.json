@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "organizerId": "org-1",
+  "ownerUserId": "owner-1",
   "marketId": "in-mh-mumbai",
   "placeNumber": 12,
   "cap": 50,

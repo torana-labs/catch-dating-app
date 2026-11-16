@@ -339,6 +339,7 @@
     "FollowOrganizerByPhoneCallablePayload",
     "FollowOrganizerByPhoneCallableResponse",
     "FoundingHostOfferDocument",
+    "FoundingHostOwnerPlaceDocument",
     "FoundingHostPlaceDocument",
     "GenerateSalesPartnerOutreachCallablePayload",
     "GetCrossPathsSuggestionsCallablePayload",
