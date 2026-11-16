@@ -8,7 +8,7 @@
 // calls it with the created programWhatsappMessages document.
 //
 // Order: the planner has taken the thread -> skip. The assistant is off
-// (PROGRAM_ASSISTANT_ENABLED, the pinned key or the programme's setting)
+// (PROGRAM_ASSISTANT_ENABLED, the federation params or the programme's setting)
 // -> the thread needs the planner. The 24-hour window is closed -> pass
 // on (no free text is allowed). Media, a person, distress, money or a
 // change -> pass on. The daily budget is spent -> pass on. Otherwise the
