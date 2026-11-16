@@ -873,7 +873,6 @@
     "DispatchProgramTripCallableResponse",
     "DuplicateOrganizerFormCallableResponse",
     "EventAssistanceLateJoinDecision",
-    "EventIntakeReviewDecisionDocument",
     "EventOperatorAccessCallableResponse",
     "EventOrigin",
     "EventRehearsalBootstrapCallableResponse",
