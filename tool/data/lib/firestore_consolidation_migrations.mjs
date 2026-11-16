@@ -173,6 +173,20 @@ function missingGuestEventStatusStep(source, eventField, personField) {
   };
 }
 
+let formVersionFilterModule = null;
+function functionsFormVersionFilters() {
+  try {
+    formVersionFilterModule ??= createFunctionsRequire()(
+      "./lib/hostReadModels/formVersionFilterStore.js");
+  } catch (error) {
+    throw new Error(
+      "The host-form-version-filters migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return formVersionFilterModule;
+}
+
 const profilePromptCatalog = JSON.parse(fs.readFileSync(
   new URL("../../../contracts/catalogs/profile_prompts.json", import.meta.url), "utf8"));
 const defaultPrompt = profilePromptCatalog.prompts.find(
@@ -542,6 +556,26 @@ export const MIGRATIONS = [
             event.data());
           return card ? {eventCard: card} : null;
         },
+      },
+    ],
+  },
+  {
+    name: "host-form-version-filters",
+    description:
+      "Form-scoped response inboxes read a published form version's answer " +
+      "filters from hostFormVersionFilters (#1339) instead of the " +
+      "listOrganizerFormResponses callable. Every organizerFormVersions " +
+      "document without a view gets one, computed from the version exactly " +
+      "as the new trigger writes it. Existing views are never replaced and " +
+      "versions are never changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerFormVersions",
+        target: "hostFormVersionFilters",
+        skipReason: "no owner, form, version number or definition",
+        targetId: (id) => id,
+        transform: (data, id) =>
+          functionsFormVersionFilters().hostFormVersionFilter(id, data),
       },
     ],
   },
