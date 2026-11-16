@@ -433,6 +433,8 @@ async function applyBudgets(
       startsAt + 86_400_000 : decision.decision.validUntil;
     const common = {
       schemaVersion: 1 as const,
+      // One budgets collection holds every channel.
+      channel: channelForRoute(decision.routeId),
       budgetId: source.ids[index],
       revision: (before?.revision ?? 0) + 1,
       senderId: decision.senderId,
@@ -565,3 +567,10 @@ export const adminApplyEventMessagingBudget = onCall(
   appCheckCallableOptions,
   (request) => adminApplyEventMessagingBudgetHandler(request)
 );
+
+function channelForRoute(routeId: string): "sms" | "rcs" | "whatsapp" {
+  if (routeId === "catchEventSms") return "sms";
+  if (routeId === "catchEventRcs") return "rcs";
+  if (routeId === "organizerEventWhatsapp") return "whatsapp";
+  throw new HttpsError("failed-precondition", "Unknown messaging route.");
+}

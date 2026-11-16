@@ -133,23 +133,16 @@ describe("firestore.rules", () => {
         "eventAssistanceCaseReceipts", "eventAssistanceDeliveryRepairs",
         "eventAssistanceRcsCallbacks", "eventAssistanceRcsCallbackIdentities",
         "eventAssistanceRcsSubscriptions",
-        "eventAssistanceRcsBudgets", "eventAssistanceRcsDispatches",
+        "eventAssistanceRcsDispatches",
         "eventAssistanceRcsCallbackReceipts",
-        "eventAssistanceRcsSenders", "eventAssistanceRcsPermissions",
-        "eventAssistanceRcsConsentReceipts", "eventAssistanceRcsWithdrawalGrants",
-        "eventAssistanceSmsSenders", "eventAssistanceSmsPermissions",
-        "eventAssistanceSmsBudgets", "eventAssistanceSmsDispatches",
-        "eventAssistanceSmsConsentReceipts",
-        "eventAssistanceSmsWithdrawalGrants",
-        "eventAssistanceWhatsappWithdrawalGrants",
+        "eventAssistanceRcsSenders", "eventAssistanceSmsSenders",
+        "eventAssistanceSmsDispatches",
+        "eventAssistancePermissions", "eventAssistanceConsentReceipts",
+        "eventAssistanceWithdrawalGrants", "eventAssistanceBudgets",
         "eventAssistanceWhatsappReplyBindings",
         "eventAssistanceWhatsappPolicies",
-        "eventAssistanceWhatsappBudgets",
         "eventAssistanceWhatsappDispatches",
-        "organizerWhatsappEndpointStops",
-
-        "eventAssistanceWhatsappPermissions",
-        "eventAssistanceWhatsappConsentReceipts"]) {
+        "organizerWhatsappEndpointStops"]) {
         await seed([collectionName, "record-1"], {schemaVersion: 1});
         for (const client of [testEnv.unauthenticatedContext().firestore(),
           authedDb("host-1"), authedDb("admin-1", {admin: true})]) {

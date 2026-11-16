@@ -37,6 +37,7 @@ import {whatsappTemplateSnapshot} from
 import {start, keys, appSecret, harness, Harness, worker, queuedStatus} from
   "./whatsappTestHarness";
 import {BRAND} from "../../shared/generated/brand";
+import {withdrawalGrantId} from "./messageConsentCollections";
 
 function withdrawal(h: Harness) {
   const store = new WhatsappWithdrawalStore(h.db, () => h.clock.now);
@@ -57,12 +58,12 @@ test("WhatsApp withdrawal authority is issued atomically with dispatch",
       reserved.record.attempts[0].attemptId,
       h.store.prepare(h.link.linkId, h.expected)), /interruption/);
     assert.equal(await h.read(WHATSAPP_WITHDRAWAL_GRANTS + "/" +
-      h.link.linkId), undefined);
+      withdrawalGrantId("whatsapp", h.link.linkId)), undefined);
     await h.claim();
     const view = await w.store.get(w.credential);
     assert.equal(view.view.preference, "enabled");
     const authority = await h.read(WHATSAPP_WITHDRAWAL_GRANTS + "/" +
-      h.link.linkId);
+      withdrawalGrantId("whatsapp", h.link.linkId));
     assert.equal(authority!.providerPhoneNumberId,
       h.expected.connection.phoneNumberId);
     const serialized = JSON.stringify([authority, view]);

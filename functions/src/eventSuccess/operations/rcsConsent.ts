@@ -10,12 +10,14 @@ import {operationContentHash} from "../../operations/durableActions";
 import {guestIdentity, requireDocumentId} from "./guestRecords";
 import {rcsEndpointId, rcsPhoneHash} from "./rcsProtocol";
 import {RcsSubscription, rcsSubscriptionId} from "./rcsSubscriptions";
+import {EVENT_ASSISTANCE_CONSENT_RECEIPTS, EVENT_ASSISTANCE_PERMISSIONS} from
+  "./messageConsentCollections";
 
 export type {Permission, ConsentReceipt};
 export const rcsConsentCollections = {
   senders: "eventAssistanceRcsSenders",
-  permissions: "eventAssistanceRcsPermissions",
-  receipts: "eventAssistanceRcsConsentReceipts",
+  permissions: EVENT_ASSISTANCE_PERMISSIONS,
+  receipts: EVENT_ASSISTANCE_CONSENT_RECEIPTS,
 } as const;
 export const RCS_CONSENT_VERSION = "catch-event-service-rcs-v1";
 export const RCS_CONSENT_TEXT =

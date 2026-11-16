@@ -128,7 +128,8 @@ export async function harness(realDb?: Firestore, id = "test",
     const budgetId = whatsappBudgetId(scope.senderId, "INR", budgetScope);
     const path = WHATSAPP_BUDGETS + "/" + budgetId;
     budgetPaths.push(path);
-    await write(path, {schemaVersion: 1, budgetId, senderId: scope.senderId,
+    await write(path, {schemaVersion: 1, channel: "whatsapp", budgetId,
+      senderId: scope.senderId,
       revision: 1, scope: budgetScope, status: "active", approvalId: "fixture",
       currency: "INR", limitMicros: 2_000_000, chargedMicros: 0,
       startsAt: begins, endsAt: budgetScope.kind === "senderDay" ?

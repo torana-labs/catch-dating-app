@@ -36,6 +36,7 @@ import {SmsPreferenceStore} from "./smsPreferenceStore";
 import {SmsDeliveryReportStore} from "./smsDeliveryReports";
 import {eventAssistanceSmsDeliveryWebhookHandler} from "./smsDeliveryWebhook";
 import {BRAND} from "../../shared/generated/brand";
+import {withdrawalGrantId} from "./messageConsentCollections";
 
 const keys: GuestLinkSigningKeys = {currentKeyId: "sms-key-1",
   keyFor: () => Buffer.alloc(32, 7)};
@@ -120,7 +121,7 @@ async function harness(realDb?: Firestore, id = "test") {
   for (const scope of smsBudgetScopes(context, start)) {
     const begins = scope.kind === "senderDay" ?
       Date.parse(scope.day + "T00:00:00+05:30") : start - 1000;
-    const budget: Budget = {schemaVersion: 1,
+    const budget: Budget = {schemaVersion: 1, channel: "sms",
       budgetId: smsBudgetId(sender.senderId, scope), revision: 1,
       senderId: sender.senderId, scope, status: "active",
       approvalId: "fixture-spending", currency: "INR",
@@ -561,7 +562,8 @@ test("SMS claim installs withdrawal authority without exposing guest identity",
       h.permission.evidence!.subjectUid, h.context.eventId]) {
       assert.equal(JSON.stringify(view).includes(hidden), false);
     }
-    assert.ok(await h.read(SMS_WITHDRAWAL_GRANTS + "/" + h.link.linkId));
+    assert.ok(await h.read(SMS_WITHDRAWAL_GRANTS + "/" +
+      withdrawalGrantId("sms", h.link.linkId)));
     assert.equal(JSON.stringify(h.fake.entries()).includes(h.link.secret),
       false);
   });
@@ -653,8 +655,9 @@ test("failed claims and failed withdrawals leave no partial changes",
     await assert.rejects(outbox.claimLiveDispatch(h.messageId,
       reserved.record.attempts[0].attemptId,
       h.store.prepare(h.link.linkId, h.sender)), /interruption/);
-    assert.equal(await h.read(SMS_WITHDRAWAL_GRANTS + "/" + h.link.linkId),
-      undefined);
+    assert.equal(await h.read(SMS_WITHDRAWAL_GRANTS + "/" +
+      withdrawalGrantId("sms", h.link.linkId)),
+    undefined);
     await outbox.claimLiveDispatch(h.messageId,
       reserved.record.attempts[0].attemptId,
       h.store.prepare(h.link.linkId, h.sender));
@@ -728,8 +731,9 @@ test("SMS withholds a withdrawal binding stored under the wrong link",
     const grant = parseGrant(await h.read(guestCollections.grants +
       "/" + h.link.linkId));
     const authority = newSmsWithdrawalGrant(h.permission, grant, h.clock.now);
-    await h.write(SMS_WITHDRAWAL_GRANTS + "/" + h.link.linkId,
-      {...authority, linkId: "c".repeat(32)});
+    await h.write(SMS_WITHDRAWAL_GRANTS + "/" +
+      withdrawalGrantId("sms", h.link.linkId),
+    {...authority, linkId: "c".repeat(32)});
     const result = await h.worker.dispatch(h.messageId, h.link.linkId);
     assert.equal(result.kind, "withheld");
     assert.equal(h.requests.length, 0);

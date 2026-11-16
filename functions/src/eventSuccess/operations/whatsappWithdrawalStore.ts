@@ -19,6 +19,7 @@ import {
   WithdrawalGrant, parseWhatsappWithdrawalGrant, WHATSAPP_WITHDRAWAL_GRANTS,
   whatsappWithdrawalMatchesPermission,
 } from "./whatsappWithdrawalRecords";
+import {withdrawalGrantId} from "./messageConsentCollections";
 
 interface Facts {authority: WithdrawalGrant; permission: Permission}
 
@@ -67,7 +68,8 @@ export class WhatsappWithdrawalStore {
       const next = parseWhatsappPermission({...permission, status: "revoked",
         currentReceiptId: receiptId, revision: permission.revision + 1,
         updatedAt: now});
-      const receipt = parseWhatsappConsentReceipt({schemaVersion: 1, receiptId,
+      const receipt = parseWhatsappConsentReceipt({schemaVersion: 1,
+        channel: "whatsapp", receiptId,
         requestHash, source: "messageLink", linkId: authority.linkId,
         context: permission.context, attendeeId: permission.attendeeId,
         attendeeGeneration: permission.attendeeGeneration,
@@ -90,7 +92,8 @@ export class WhatsappWithdrawalStore {
     if (!/^[a-f0-9]{32}$/.test(input.linkId) ||
         !/^[A-Za-z0-9_-]{43}$/.test(input.secret)) throw unavailable();
     const [authoritySnap, guestSnap] = await tx.getAll(
-      this.db.collection(WHATSAPP_WITHDRAWAL_GRANTS).doc(input.linkId),
+      this.db.collection(WHATSAPP_WITHDRAWAL_GRANTS)
+        .doc(withdrawalGrantId("whatsapp", input.linkId)),
       this.db.collection(guestCollections.grants).doc(input.linkId),
     );
     if (!authoritySnap.exists || !guestSnap.exists) throw unavailable();

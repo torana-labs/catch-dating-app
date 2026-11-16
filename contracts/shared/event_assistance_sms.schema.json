@@ -267,6 +267,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "channel",
             "schemaVersion",
             "permissionId",
             "revision",
@@ -285,6 +286,10 @@
             "currentReceiptId"
           ],
           "properties": {
+            "channel": {
+              "const": "sms",
+              "description": "Which channel this record belongs to; one collection holds every channel."
+            },
             "schemaVersion": {
               "type": "integer",
               "const": 1
@@ -429,6 +434,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "channel",
             "schemaVersion",
             "permissionId",
             "revision",
@@ -447,6 +453,10 @@
             "currentReceiptId"
           ],
           "properties": {
+            "channel": {
+              "const": "sms",
+              "description": "Which channel this record belongs to; one collection holds every channel."
+            },
             "schemaVersion": {
               "type": "integer",
               "const": 1
@@ -600,6 +610,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "channel",
         "schemaVersion",
         "budgetId",
         "revision",
@@ -615,6 +626,10 @@
         "updatedAt"
       ],
       "properties": {
+        "channel": {
+          "const": "sms",
+          "description": "Which channel this record belongs to; one collection holds every channel."
+        },
         "schemaVersion": {
           "type": "integer",
           "const": 1
@@ -892,6 +907,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "channel",
             "schemaVersion",
             "receiptId",
             "requestHash",
@@ -912,6 +928,10 @@
             "linkId"
           ],
           "properties": {
+            "channel": {
+              "const": "sms",
+              "description": "Which channel this record belongs to; one collection holds every channel."
+            },
             "schemaVersion": {
               "type": "integer",
               "const": 1
@@ -1041,6 +1061,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "channel",
             "schemaVersion",
             "receiptId",
             "requestHash",
@@ -1061,6 +1082,10 @@
             "linkId"
           ],
           "properties": {
+            "channel": {
+              "const": "sms",
+              "description": "Which channel this record belongs to; one collection holds every channel."
+            },
             "schemaVersion": {
               "type": "integer",
               "const": 1
@@ -1294,6 +1319,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "channel",
         "schemaVersion",
         "linkId",
         "permissionId",
@@ -1309,6 +1335,10 @@
         "expiresAt"
       ],
       "properties": {
+        "channel": {
+          "const": "sms",
+          "description": "Which channel this record belongs to; one collection holds every channel."
+        },
         "schemaVersion": {
           "const": 1
         },

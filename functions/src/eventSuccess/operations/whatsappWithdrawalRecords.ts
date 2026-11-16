@@ -5,10 +5,10 @@ import {validateEventWhatsappWithdrawalGrantDocument} from
 import {operationContentHash} from "../../operations/durableActions";
 import {Grant} from "./guestRecords";
 import {Permission, whatsappPermissionId} from "./whatsappPermissionRecords";
+import {EVENT_ASSISTANCE_WITHDRAWAL_GRANTS} from "./messageConsentCollections";
 
 export type {WithdrawalGrant};
-export const WHATSAPP_WITHDRAWAL_GRANTS =
-  "eventAssistanceWhatsappWithdrawalGrants";
+export const WHATSAPP_WITHDRAWAL_GRANTS = EVENT_ASSISTANCE_WITHDRAWAL_GRANTS;
 
 export function parseWhatsappWithdrawalGrant(value: unknown): WithdrawalGrant {
   if (!validateEventWhatsappWithdrawalGrantDocument(value) ||
@@ -31,7 +31,8 @@ export function newWhatsappWithdrawalGrant(permission: Permission,
         operationContentHash(grant.context)) {
     throw new Error("Cannot issue WhatsApp withdrawal authority");
   }
-  return parseWhatsappWithdrawalGrant({schemaVersion: 1, linkId: grant.linkId,
+  return parseWhatsappWithdrawalGrant({schemaVersion: 1,
+    channel: "whatsapp", linkId: grant.linkId,
     permissionId: permission.permissionId, context: permission.context,
     attendeeId: permission.attendeeId,
     attendeeGeneration: permission.attendeeGeneration,

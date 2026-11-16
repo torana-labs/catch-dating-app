@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/event_assistance_whatsapp_consent_receipts.schema.json",
+  "title": "EventWhatsappConsentReceiptDocument",
+  "$ref": "../shared/event_assistance_whatsapp_consent.schema.json#/definitions/ConsentReceipt"
+}

@@ -3,9 +3,11 @@ import type {EventWhatsappBudgetDocument as WhatsappBudget} from
 import {validateEventWhatsappBudgetDocument} from
   "../../shared/generated/validators/eventWhatsappBudgetDocument";
 import {operationContentHash} from "../../operations/durableActions";
+import {EVENT_ASSISTANCE_BUDGETS} from
+  "./messageConsentCollections";
 
 export type {WhatsappBudget};
-export const WHATSAPP_BUDGETS = "eventAssistanceWhatsappBudgets";
+export const WHATSAPP_BUDGETS = EVENT_ASSISTANCE_BUDGETS;
 export const WHATSAPP_DISPATCHES = "eventAssistanceWhatsappDispatches";
 type Context = Extract<WhatsappBudget["scope"], {kind: "event"}>["context"];
 

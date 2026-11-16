@@ -1567,36 +1567,6 @@
       ]
     },
     {
-      "collectionGroup": "eventAssistanceSmsPermissions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "context.mode",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "context.organizerId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "context.eventId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "attendeeId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "evidence.subjectUid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "eventAttendees",
       "queryScope": "COLLECTION",
       "fields": [
@@ -1624,84 +1594,6 @@
         },
         {
           "fieldPath": "intent.eventId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "eventAssistanceWhatsappPermissions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "context.mode",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "context.organizerId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "context.eventId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "attendeeId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "evidence.subjectUid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "eventAssistanceRcsPermissions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "context.mode",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "context.organizerId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "context.eventId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "attendeeId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "subjectUid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "eventAssistanceRcsPermissions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "subscriptionId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "expiresAt",
           "order": "ASCENDING"
         },
         {
@@ -1850,28 +1742,6 @@
         },
         {
           "fieldPath": "configuration.expiresAt",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "eventAssistanceWhatsappPermissions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "context.organizerId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "recipientEndpointId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "expiresAt",
           "order": "ASCENDING"
         },
         {
@@ -7319,6 +7189,122 @@
         {
           "fieldPath": "eventStartAtMillis",
           "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistancePermissions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "channel",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.mode",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.eventId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "attendeeId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "evidence.subjectUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistancePermissions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "channel",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.mode",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.eventId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "attendeeId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "subjectUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistancePermissions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "channel",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "subscriptionId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistancePermissions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "channel",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "recipientEndpointId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
         }
       ]
     }

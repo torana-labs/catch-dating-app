@@ -8,9 +8,11 @@ import {Grant, guestCollections, parseGrant} from "./guestRecords";
 import {Permission, parseRcsPermission, rcsPermissionId, rcsConsentCollections,
   parseRcsConsentReceipt, rcsPermissionHasReceipt} from "./rcsConsent";
 import {rcsSubscriptionId} from "./rcsSubscriptions";
+import {EVENT_ASSISTANCE_WITHDRAWAL_GRANTS, withdrawalGrantId} from
+  "./messageConsentCollections";
 
 export type {WithdrawalGrant};
-export const RCS_WITHDRAWAL_GRANTS = "eventAssistanceRcsWithdrawalGrants";
+export const RCS_WITHDRAWAL_GRANTS = EVENT_ASSISTANCE_WITHDRAWAL_GRANTS;
 
 export function parseRcsWithdrawalGrant(value: unknown): WithdrawalGrant {
   if (!validateEventRcsWithdrawalGrantDocument(value) ||
@@ -38,7 +40,8 @@ export function newRcsWithdrawalGrant(permission: Permission,
         operationContentHash(grant.context)) {
     throw new Error("Cannot issue RCS withdrawal authority");
   }
-  return parseRcsWithdrawalGrant({schemaVersion: 1, linkId: grant.linkId,
+  return parseRcsWithdrawalGrant({schemaVersion: 1,
+    channel: "rcs", linkId: grant.linkId,
     permissionId: permission.permissionId, context: permission.context,
     attendeeId: permission.attendeeId,
     attendeeGeneration: permission.attendeeGeneration,
@@ -74,7 +77,8 @@ export function rcsWithdrawalMatchesPermission(grant: WithdrawalGrant,
 export async function prepareRcsWithdrawal(db: Firestore, tx: Transaction,
   permission: Permission, grant: Grant, now: number) {
   const candidate = newRcsWithdrawalGrant(permission, grant, now);
-  const ref = db.collection(RCS_WITHDRAWAL_GRANTS).doc(grant.linkId);
+  const ref = db.collection(RCS_WITHDRAWAL_GRANTS)
+    .doc(withdrawalGrantId("rcs", grant.linkId));
   const [existing, storedPermission, storedGuest, storedReceipt] =
     await tx.getAll(ref,
       db.collection(rcsConsentCollections.permissions)

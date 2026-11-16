@@ -5,9 +5,11 @@ import {validateEventAssistanceSmsWithdrawalGrantDocument} from
 import {operationContentHash} from "../../operations/durableActions";
 import {Grant} from "./guestRecords";
 import {Permission, smsPermissionId} from "./smsPermissionRecords";
+import {EVENT_ASSISTANCE_WITHDRAWAL_GRANTS} from
+  "./messageConsentCollections";
 
 export type {WithdrawalGrant};
-export const SMS_WITHDRAWAL_GRANTS = "eventAssistanceSmsWithdrawalGrants";
+export const SMS_WITHDRAWAL_GRANTS = EVENT_ASSISTANCE_WITHDRAWAL_GRANTS;
 
 export function parseSmsWithdrawalGrant(value: unknown): WithdrawalGrant {
   if (!validateEventAssistanceSmsWithdrawalGrantDocument(value) ||
@@ -30,7 +32,8 @@ export function newSmsWithdrawalGrant(permission: Permission,
         operationContentHash(grant.context)) {
     throw new Error("Cannot issue SMS withdrawal authority");
   }
-  return parseSmsWithdrawalGrant({schemaVersion: 1, linkId: grant.linkId,
+  return parseSmsWithdrawalGrant({schemaVersion: 1,
+    channel: "sms", linkId: grant.linkId,
     permissionId: permission.permissionId, context: permission.context,
     attendeeId: permission.attendeeId,
     attendeeGeneration: permission.attendeeGeneration,

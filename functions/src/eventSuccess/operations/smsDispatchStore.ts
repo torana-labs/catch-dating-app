@@ -33,6 +33,7 @@ import {newSmsWithdrawalGrant, parseSmsWithdrawalGrant,
 
 import {readSmsMessagePermission} from "./messagePermissionReader";
 import {messageAllowsSender} from "./lateJoinDispatchPolicy";
+import {withdrawalGrantId} from "./messageConsentCollections";
 
 export type {Permission, Budget};
 type Intent = MessageRecord["intent"];
@@ -188,7 +189,7 @@ export class SmsDispatchStore {
       if ((await tx.get(dispatchRef)).exists) return {kind: "withheld"};
       const {config, permission, rendered, budgets} = material;
       const withdrawalRef = this.db.collection(SMS_WITHDRAWAL_GRANTS)
-        .doc(linkId);
+        .doc(withdrawalGrantId("sms", linkId));
       const withdrawalSnap = await tx.get(withdrawalRef);
       const withdrawal = withdrawalSnap.exists ?
         parseSmsWithdrawalGrant(withdrawalSnap.data()) :

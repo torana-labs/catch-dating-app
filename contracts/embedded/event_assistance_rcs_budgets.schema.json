@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/event_assistance_rcs_budgets.schema.json",
+  "title": "EventRcsBudgetDocument",
+  "$ref": "../shared/event_assistance_rcs.schema.json#/definitions/Budget"
+}

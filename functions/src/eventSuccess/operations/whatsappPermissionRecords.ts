@@ -5,9 +5,11 @@ import {validateEventWhatsappPermissionDocument} from
 import {operationContentHash} from "../../operations/durableActions";
 import {guestIdentity, requireDocumentId} from "./guestRecords";
 import {whatsappEndpointId} from "./whatsappReplyProtocol";
+import {EVENT_ASSISTANCE_PERMISSIONS} from
+  "./messageConsentCollections";
 
 export type {Permission};
-export const WHATSAPP_PERMISSIONS = "eventAssistanceWhatsappPermissions";
+export const WHATSAPP_PERMISSIONS = EVENT_ASSISTANCE_PERMISSIONS;
 
 export function whatsappPermissionId(context: Permission["context"],
   attendeeId: string, senderId: string): string {

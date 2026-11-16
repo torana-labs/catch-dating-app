@@ -41,17 +41,25 @@ test("readiness filtering ignores debits and inbox counters but wakes repairs",
         value: before}, after: {generation: 1, value: after}});
     const budget = {scope: {kind: "senderDay", day: "2026-09-07"},
       senderId: "sender", limitMicros: 1000, chargedMicros: 300, revision: 1};
-    for (const collection of ["eventAssistanceSmsBudgets",
-      "eventAssistanceWhatsappBudgets"] as const) {
-      assert.deepEqual(change(collection, budget, {...budget,
+    // One budgets collection for every channel; `channel` picks the route.
+    const routes = {sms: "catchEventSms", rcs: "catchEventRcs",
+      whatsapp: "organizerEventWhatsapp"} as const;
+    for (const channel of ["sms", "rcs", "whatsapp"] as const) {
+      const collection = "eventAssistanceBudgets" as const;
+      const own = {...budget, channel};
+      assert.deepEqual(change(collection, own, {...own,
         chargedMicros: 600, revision: 2, updatedAt: 101}), []);
-      assert.equal(change(collection, budget, {...budget,
-        chargedMicros: 200, revision: 2}).length, 1);
-      assert.equal(change(collection, budget, {...budget,
+      assert.deepEqual(change(collection, own, {...own,
+        chargedMicros: 200, revision: 2}), [{kind: "sender",
+        routeId: routes[channel], senderId: "sender"}]);
+      assert.equal(change(collection, own, {...own,
         limitMicros: 2000, revision: 2}).length, 1);
-      assert.equal(change(collection, budget, {...budget,
+      assert.equal(change(collection, own, {...own,
         status: "paused"}).length, 1);
     }
+    // A budget without a known channel names no route.
+    assert.deepEqual(change("eventAssistanceBudgets", budget, {...budget,
+      status: "paused"}), []);
     const state = {organizerId: "organizer", channel: "whatsapp",
       endpointHash: "a".repeat(64), suppressionStatus: "none"};
     assert.deepEqual(change("organizerContactChannelStates", state,
@@ -174,8 +182,9 @@ test("SMS selection is separate from WhatsApp and both queries have indexes",
         {fieldPath: "configuration.expiresAt", order: "ASCENDING"},
         {fieldPath: "__name__", order: "ASCENDING"}])));
     assert.ok(indexes.some((i) =>
-      i.collectionGroup === "eventAssistanceWhatsappPermissions" &&
+      i.collectionGroup === "eventAssistancePermissions" &&
       JSON.stringify(i.fields) === JSON.stringify([
+        {fieldPath: "channel", order: "ASCENDING"},
         {fieldPath: "context.organizerId", order: "ASCENDING"},
         {fieldPath: "recipientEndpointId", order: "ASCENDING"},
         {fieldPath: "expiresAt", order: "ASCENDING"},

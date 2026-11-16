@@ -5,11 +5,13 @@ import type {EventAssistanceSmsConsentReceiptDocument as ConsentReceipt} from
 import {validateEventAssistanceSmsConsentReceiptDocument} from
   "../../shared/generated/validators/eventAssistanceSmsConsentReceiptDocument";
 import {operationContentHash} from "../../operations/durableActions";
+import {EVENT_ASSISTANCE_CONSENT_RECEIPTS} from
+  "./messageConsentCollections";
 
 export type {ConsentReceipt};
 // Stable Catch identity; rotating provider credentials never changes consent.
 export const CATCH_EVENT_SMS_SENDER_ID = "catch-event-sms";
-export const SMS_CONSENT_RECEIPTS = "eventAssistanceSmsConsentReceipts";
+export const SMS_CONSENT_RECEIPTS = EVENT_ASSISTANCE_CONSENT_RECEIPTS;
 export const SMS_CONSENT_VERSION = "catch-event-service-sms-v1";
 export const SMS_CONSENT_TEXT =
   "Receive text messages from Catch about joining, changes and follow-up " +

@@ -44,8 +44,10 @@ export class SourceReadinessTargets {
         "array-contains", {routeId: scope.routeId, senderId: scope.senderId}) :
       scope.kind === "rcsSubscription" ?
         this.db.collection(rcsConsentCollections.permissions)
+          .where("channel", "==", "rcs")
           .where("subscriptionId", "==", scope.subscriptionId) :
         this.db.collection(WHATSAPP_PERMISSIONS)
+          .where("channel", "==", "whatsapp")
           .where("context.organizerId", "==", scope.organizerId)
           .where("recipientEndpointId", "==", scope.recipientEndpointId);
     query = query.where(expiryField, ">", occurredAt).orderBy(expiryField)

@@ -748,23 +748,21 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    match /eventAssistanceSmsPermissions/{permissionId} {
+    // Event-day messaging consent and spend for every channel (sms, rcs,
+    // whatsapp), one collection per record type; server only.
+    match /eventAssistancePermissions/{permissionId} {
       allow read, write: if false;
     }
 
-    match /eventAssistanceWhatsappWithdrawalGrants/{linkId} {
+    match /eventAssistanceConsentReceipts/{receiptId} {
       allow read, write: if false;
     }
 
-    match /eventAssistanceSmsWithdrawalGrants/{linkId} {
+    match /eventAssistanceWithdrawalGrants/{grantId} {
       allow read, write: if false;
     }
 
-    match /eventAssistanceSmsConsentReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceSmsBudgets/{budgetId} {
+    match /eventAssistanceBudgets/{budgetId} {
       allow read, write: if false;
     }
 
@@ -860,27 +858,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    match /eventAssistanceRcsBudgets/{budgetId} {
-      allow read, write: if false;
-    }
-
     match /eventAssistanceRcsCallbackReceipts/{callbackId} {
       allow read, write: if false;
     }
 
     match /eventAssistanceRcsDispatches/{attemptId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceRcsWithdrawalGrants/{linkId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceRcsPermissions/{permissionId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceRcsConsentReceipts/{receiptId} {
       allow read, write: if false;
     }
 
@@ -893,18 +875,6 @@ service cloud.firestore {
     }
 
     match /eventAssistanceWhatsappReplyBindings/{attemptId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceWhatsappPermissions/{permissionId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceWhatsappConsentReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceWhatsappBudgets/{budgetId} {
       allow read, write: if false;
     }
 

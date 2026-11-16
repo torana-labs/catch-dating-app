@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assistance_permissions.schema.json",
+  "title": "EventAssistancePermissionDocument",
+  "description": "Event-day message permission for one guest on one channel (sms, rcs or whatsapp), recorded by verified participant preference callables. Each document carries `channel`; it matches exactly one channel shape.",
+  "oneOf": [
+    {
+      "$ref": "../embedded/event_assistance_sms_permissions.schema.json"
+    },
+    {
+      "$ref": "../embedded/event_assistance_rcs_permissions.schema.json"
+    },
+    {
+      "$ref": "../embedded/event_assistance_whatsapp_permissions.schema.json"
+    }
+  ],
+  "x-firestore-collection": "eventAssistancePermissions",
+  "x-firestore-path": "eventAssistancePermissions/{permissionId}",
+  "x-document-id-field": "permissionId",
+  "x-owner": "trusted event-assistance messaging services"
+}

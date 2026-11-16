@@ -159,14 +159,14 @@ test("RCS source scopes ignore START and debits and select exact repairs",
       senderId: h.rcsConfig.senderId}]);
     for (const path of h.rcsBudgetPaths) {
       const budget = (await h.read(path))!;
-      assert.equal(scopes("eventAssistanceRcsBudgets", path.split("/")[1],
+      assert.equal(scopes("eventAssistanceBudgets", path.split("/")[1],
         budget, {...budget, chargedMicros: 1, revision: 2}).length, 0);
       for (const patch of [{limitMicros: 3_000_000}, {agentId: "new-agent"},
         {status: "paused"}]) {
-        assert.equal(scopes("eventAssistanceRcsBudgets", path.split("/")[1],
+        assert.equal(scopes("eventAssistanceBudgets", path.split("/")[1],
           budget, {...budget, ...patch}).length, 1);
       }
-      assert.equal(scopes("eventAssistanceRcsBudgets", path.split("/")[1],
+      assert.equal(scopes("eventAssistanceBudgets", path.split("/")[1],
         {...budget, chargedMicros: 1}, budget).length, 1);
     }
     h.clock.now++;
@@ -291,6 +291,7 @@ test("RCS sender discovery requires an exact configured route and index",
     assert.ok(indexes.some((i) =>
       i.collectionGroup === rcsConsentCollections.permissions &&
       JSON.stringify(i.fields) === JSON.stringify([
+        {fieldPath: "channel", order: "ASCENDING"},
         {fieldPath: "subscriptionId", order: "ASCENDING"},
         {fieldPath: "expiresAt", order: "ASCENDING"},
         {fieldPath: "__name__", order: "ASCENDING"}])));

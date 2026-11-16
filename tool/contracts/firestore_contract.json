@@ -3563,39 +3563,85 @@
       ]
     },
     {
-      "id": "eventAssistanceRcsPermissions",
-      "path": "eventAssistanceRcsPermissions/{permissionId}",
-      "rulesMatch": "/eventAssistanceRcsPermissions/{permissionId}",
+      "id": "eventAssistancePermissions",
+      "path": "eventAssistancePermissions/{permissionId}",
+      "rulesMatch": "/eventAssistancePermissions/{permissionId}",
       "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "verified participant event-service preferences",
+      "owner": "trusted event-assistance messaging services (sms, rcs, whatsapp)",
       "read": "server only",
       "write": "server only",
-      "migrationNotes": [
-        "RCS consent remains separate from other channels. Verified participant callables write exact decision receipts and current permission atomically. Sender provisioning, dispatch and activation remain separate."
-      ],
       "exportedFunctions": [
         "getEventRcsPreference",
-        "setEventRcsPreference",
         "getEventRcsWithdrawal",
+        "setEventRcsPreference",
         "withdrawEventRcs"
+      ],
+      "migrationNotes": [
+        "One collection for every channel since lane L1 (16 Nov 2026); each document carries channel and every query filters on it first.",
+        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied.",
+        "RCS consent remains separate from other channels. Verified participant callables write exact decision receipts and current permission atomically. Sender provisioning, dispatch and activation remain separate.",
+        "Explicit organizer sender and verified event recipient. Exact immutable decisions commit with permission revisions; announcement consent does not grant this purpose. No client collection access or automatic provider activation."
       ]
     },
     {
-      "id": "eventAssistanceRcsConsentReceipts",
-      "path": "eventAssistanceRcsConsentReceipts/{receiptId}",
-      "rulesMatch": "/eventAssistanceRcsConsentReceipts/{receiptId}",
+      "id": "eventAssistanceConsentReceipts",
+      "path": "eventAssistanceConsentReceipts/{receiptId}",
+      "rulesMatch": "/eventAssistanceConsentReceipts/{receiptId}",
       "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "verified participant event-service preferences",
+      "owner": "trusted event-assistance messaging services (sms, rcs, whatsapp)",
       "read": "server only",
       "write": "server only",
-      "migrationNotes": [
-        "RCS consent remains separate from other channels. Verified participant callables write exact decision receipts and current permission atomically. Sender provisioning, dispatch and activation remain separate."
-      ],
       "exportedFunctions": [
         "getEventRcsPreference",
+        "getEventRcsWithdrawal",
         "setEventRcsPreference",
+        "withdrawEventRcs"
+      ],
+      "migrationNotes": [
+        "One collection for every channel since lane L1 (16 Nov 2026); each document carries channel and every query filters on it first.",
+        "Immutable exact-choice receipts written atomically with current SMS permission by verified participant callables. No direct client writes.",
+        "RCS consent remains separate from other channels. Verified participant callables write exact decision receipts and current permission atomically. Sender provisioning, dispatch and activation remain separate.",
+        "Explicit organizer sender and verified event recipient. Exact immutable decisions commit with permission revisions; announcement consent does not grant this purpose. No client collection access or automatic provider activation."
+      ]
+    },
+    {
+      "id": "eventAssistanceWithdrawalGrants",
+      "path": "eventAssistanceWithdrawalGrants/{grantId}",
+      "rulesMatch": "/eventAssistanceWithdrawalGrants/{grantId}",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+      "owner": "trusted event-assistance messaging services (sms, rcs, whatsapp)",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
         "getEventRcsWithdrawal",
         "withdrawEventRcs"
+      ],
+      "migrationNotes": [
+        "One collection for every channel since lane L1 (16 Nov 2026); each document carries channel and every query filters on it first.",
+        "Created atomically with dispatch. Authorizes only withdrawal for the original event, recipient, subject and consent lifetime; retain the referenced guest grant through this lifetime even when instructions expire.",
+        "Private revocation-only binding for the original event, source generations, subject, endpoint and RCS agent. Dispatch preparation stages immutable creation with the caller transaction. Retain the referenced guest grant through this independent withdrawal lifetime.",
+        "Issued with the atomic dispatch claim; revocation only for the original event, subject, recipient and provider sender. Retain the referenced guest grant through this independent consent lifetime."
+      ]
+    },
+    {
+      "id": "eventAssistanceBudgets",
+      "path": "eventAssistanceBudgets/{budgetId}",
+      "rulesMatch": "/eventAssistanceBudgets/{budgetId}",
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+      "owner": "trusted event-assistance messaging services (sms, rcs, whatsapp)",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "adminApplyEventMessagingBudget"
+      ],
+      "migrationNotes": [
+        "One collection for every channel since lane L1 (16 Nov 2026); each document carries channel and every query filters on it first.",
+        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied.",
+        "The finance apply callable may stage the event and India sender-day ceilings from one current approved decision; both remain paused pending a separate live activation boundary.",
+        "Explicit approved event and UTC sender-day limits. Agent and currency must match the current sender; both worst-case charges commit once with an outbox claim.",
+        "The finance apply callable source-fences the private agent binding and stages both ceilings in paused state without loading an RBM credential or activating dispatch.",
+        "Event and UTC sender-day limits are debited atomically with a claim. Currency-specific identity prevents mixing quote currencies; uncertain sends retain reservations.",
+        "The finance apply callable may stage both ceilings in paused state from one current approved decision without contacting Meta or enabling a worker."
       ]
     },
     {
@@ -3904,34 +3950,6 @@
       ]
     },
     {
-      "id": "eventAssistanceSmsPermissions",
-      "path": "eventAssistanceSmsPermissions/{permissionId}",
-      "rulesMatch": "/eventAssistanceSmsPermissions/{permissionId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "trusted event-assistance SMS worker",
-      "read": "server only",
-      "write": "server only",
-      "migrationNotes": [
-        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied."
-      ]
-    },
-    {
-      "id": "eventAssistanceSmsBudgets",
-      "path": "eventAssistanceSmsBudgets/{budgetId}",
-      "rulesMatch": "/eventAssistanceSmsBudgets/{budgetId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "trusted event-assistance SMS worker",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "adminApplyEventMessagingBudget"
-      ],
-      "migrationNotes": [
-        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied.",
-        "The finance apply callable may stage the event and India sender-day ceilings from one current approved decision; both remain paused pending a separate live activation boundary."
-      ]
-    },
-    {
       "id": "eventAssistanceSmsDispatches",
       "path": "eventAssistanceSmsDispatches/{attemptId}",
       "rulesMatch": "/eventAssistanceSmsDispatches/{attemptId}",
@@ -3941,42 +3959,6 @@
       "write": "server only",
       "migrationNotes": [
         "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied."
-      ]
-    },
-    {
-      "id": "eventAssistanceSmsConsentReceipts",
-      "path": "eventAssistanceSmsConsentReceipts/{receiptId}",
-      "rulesMatch": "/eventAssistanceSmsConsentReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "verified participant event-service preferences",
-      "read": "server only",
-      "write": "server only",
-      "migrationNotes": [
-        "Immutable exact-choice receipts written atomically with current SMS permission by verified participant callables. No direct client writes."
-      ]
-    },
-    {
-      "id": "eventAssistanceWhatsappWithdrawalGrants",
-      "path": "eventAssistanceWhatsappWithdrawalGrants/{linkId}",
-      "rulesMatch": "/eventAssistanceWhatsappWithdrawalGrants/{linkId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "event-service WhatsApp dispatch and withdrawal",
-      "read": "server only",
-      "write": "server only",
-      "migrationNotes": [
-        "Issued with the atomic dispatch claim; revocation only for the original event, subject, recipient and provider sender. Retain the referenced guest grant through this independent consent lifetime."
-      ]
-    },
-    {
-      "id": "eventAssistanceSmsWithdrawalGrants",
-      "path": "eventAssistanceSmsWithdrawalGrants/{linkId}",
-      "rulesMatch": "/eventAssistanceSmsWithdrawalGrants/{linkId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "event-service SMS dispatch and withdrawal",
-      "read": "server only",
-      "write": "server only",
-      "migrationNotes": [
-        "Created atomically with dispatch. Authorizes only withdrawal for the original event, recipient, subject and consent lifetime; retain the referenced guest grant through this lifetime even when instructions expire."
       ]
     },
     {
@@ -4001,46 +3983,6 @@
       "write": "server only",
       "migrationNotes": [
         "Reviewed content hashes and bounded quote for one organizer sender. Does not authorize guest consent or provider I/O by itself. No automated policy provisioning or activation."
-      ]
-    },
-    {
-      "id": "eventAssistanceWhatsappPermissions",
-      "path": "eventAssistanceWhatsappPermissions/{permissionId}",
-      "rulesMatch": "/eventAssistanceWhatsappPermissions/{permissionId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "verified participant event-service WhatsApp preferences",
-      "read": "server only",
-      "write": "server only",
-      "migrationNotes": [
-        "Explicit organizer sender and verified event recipient. Exact immutable decisions commit with permission revisions; announcement consent does not grant this purpose. No client collection access or automatic provider activation."
-      ]
-    },
-    {
-      "id": "eventAssistanceWhatsappConsentReceipts",
-      "path": "eventAssistanceWhatsappConsentReceipts/{receiptId}",
-      "rulesMatch": "/eventAssistanceWhatsappConsentReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "verified participant event-service WhatsApp preferences",
-      "read": "server only",
-      "write": "server only",
-      "migrationNotes": [
-        "Explicit organizer sender and verified event recipient. Exact immutable decisions commit with permission revisions; announcement consent does not grant this purpose. No client collection access or automatic provider activation."
-      ]
-    },
-    {
-      "id": "eventAssistanceWhatsappBudgets",
-      "path": "eventAssistanceWhatsappBudgets/{budgetId}",
-      "rulesMatch": "/eventAssistanceWhatsappBudgets/{budgetId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "trusted event-service WhatsApp dispatch",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "adminApplyEventMessagingBudget"
-      ],
-      "migrationNotes": [
-        "Event and UTC sender-day limits are debited atomically with a claim. Currency-specific identity prevents mixing quote currencies; uncertain sends retain reservations.",
-        "The finance apply callable may stage both ceilings in paused state from one current approved decision without contacting Meta or enabling a worker."
       ]
     },
     {
@@ -4077,38 +4019,6 @@
       "write": "server only",
       "exportedFunctions": [
         "resolveEventAssistanceAccountability"
-      ]
-    },
-    {
-      "id": "eventAssistanceRcsWithdrawalGrants",
-      "path": "eventAssistanceRcsWithdrawalGrants/{linkId}",
-      "rulesMatch": "/eventAssistanceRcsWithdrawalGrants/{linkId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "event-service RCS dispatch and withdrawal",
-      "read": "server only",
-      "write": "server only",
-      "migrationNotes": [
-        "Private revocation-only binding for the original event, source generations, subject, endpoint and RCS agent. Dispatch preparation stages immutable creation with the caller transaction. Retain the referenced guest grant through this independent withdrawal lifetime."
-      ],
-      "exportedFunctions": [
-        "getEventRcsWithdrawal",
-        "withdrawEventRcs"
-      ]
-    },
-    {
-      "id": "eventAssistanceRcsBudgets",
-      "path": "eventAssistanceRcsBudgets/{budgetId}",
-      "rulesMatch": "/eventAssistanceRcsBudgets/{budgetId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "event-service RCS dispatch",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "adminApplyEventMessagingBudget"
-      ],
-      "migrationNotes": [
-        "Explicit approved event and UTC sender-day limits. Agent and currency must match the current sender; both worst-case charges commit once with an outbox claim.",
-        "The finance apply callable source-fences the private agent binding and stages both ceilings in paused state without loading an RBM credential or activating dispatch."
       ]
     },
     {
