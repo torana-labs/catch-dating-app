@@ -4755,20 +4755,6 @@
       ]
     },
     {
-      "collectionGroup": "razorpayPendingOrders",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "mode": "ASCENDING"
-        }
-      ]
-    },
-    {
       "collectionGroup": "operationRuns",
       "queryScope": "COLLECTION",
       "fields": [

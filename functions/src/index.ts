@@ -46,9 +46,6 @@ export {reconcileOrganizerEventOfferPayments} from
   "./payments/offerPayments/offerPaymentRecovery";
 export {onCancelledEventOfferPayments} from
   "./payments/offerPayments/offerPaymentCancellationTrigger";
-export {
-  reconcileRazorpayOrders,
-} from "./payments/reconcileRazorpayOrders";
 export {createStripeCheckoutSession} from
   "./payments/createStripeCheckoutSession";
 export {
@@ -1115,8 +1112,7 @@ export {onHostEventSetupViewEventChanged,
   onHostEventSetupViewParticipationChanged,
   onHostEventSetupViewWaitlistOfferChanged,
   onHostEventSetupViewEventOfferChanged,
-  onHostEventSetupViewBookingPaymentChanged,
-  onHostEventSetupViewPendingOrderChanged,
+  onHostEventSetupViewGuestPaymentChanged,
   onHostEventSetupViewMomentChanged} from
   "./hostReadModels/eventSetupViewTriggers";
 export {onHostEventSetupDefaultViewDefaultsChanged,

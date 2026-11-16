@@ -65,7 +65,7 @@ test("organizer writes route to every setup event when a read field changes",
 test("commitment rows route on create and delete, never on update",
   async () => {
     for (const collection of commitmentCollections) {
-      if (collection === "payments") continue;
+      if (collection === "guestPayments") continue;
       assert.deepEqual(await resolveEventSetupViewEventIds(db(), collection,
         "row", undefined, {eventId: "e1"}), ["e1"], collection);
       assert.deepEqual(await resolveEventSetupViewEventIds(db(), collection,
@@ -80,12 +80,17 @@ test("commitment rows route on create and delete, never on update",
 
 test("payments reroute when their status or amount moves the gross",
   async () => {
-    assert.deepEqual(await resolveEventSetupViewEventIds(db(), "payments",
-      "row", {eventId: "e1", status: "pending", amount: 100},
+    assert.deepEqual(await resolveEventSetupViewEventIds(db(),
+      "guestPayments", "row", {eventId: "e1", status: "pending", amount: 100},
       {eventId: "e1", status: "completed", amount: 100}), ["e1"]);
-    assert.deepEqual(await resolveEventSetupViewEventIds(db(), "payments",
-      "row", {eventId: "e1", status: "completed", amount: 100},
+    assert.deepEqual(await resolveEventSetupViewEventIds(db(),
+      "guestPayments", "row",
+      {eventId: "e1", status: "completed", amount: 100},
       {eventId: "e1", status: "completed", amount: 100, note: "x"}), []);
+    assert.deepEqual(await resolveEventSetupViewEventIds(db(),
+      "guestPayments", "pp_1",
+      {eventId: "e1", status: "pending", amountMinor: 100},
+      {eventId: "e1", status: "pending", amountMinor: 200}), ["e1"]);
   });
 
 test("only an event's start reminder routes its arrival message", async () => {

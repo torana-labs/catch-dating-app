@@ -86,14 +86,14 @@ test("uncommitted private basics are editable before any transaction write",
       tx: h.tx, db: h.db, eventId, event: privateEvent(),
     });
     h.tx.update({} as FirebaseFirestore.DocumentReference, {});
-    assert.equal(h.trace.length, 8);
+    assert.equal(h.trace.length, 7);
     assert.equal(h.trace.at(-1), "write:event");
     assert.ok(h.trace.slice(0, -1).every((step) =>
       step.startsWith("read:")));
   });
 
 test("another event's commitments do not block this basics edit", async () => {
-  const h = harness({payments: [{eventId: "other-event"}]});
+  const h = harness({guestPayments: [{eventId: "other-event"}]});
   await assertPrivateEventBasicsEditable({
     tx: h.tx, db: h.db, eventId, event: privateEvent(),
   });
@@ -101,8 +101,7 @@ test("another event's commitments do not block this basics edit", async () => {
 
 for (const collection of [
   "eventAttendees", "eventAttendeeImports", "eventParticipations",
-  "eventWaitlistOffers", "organizerEventOffers", "payments",
-  "razorpayPendingOrders",
+  "eventWaitlistOffers", "organizerEventOffers", "guestPayments",
 ]) {
   test(`${collection} commitment blocks a basics move`, async () => {
     const h = harness({[collection]: [{eventId, status: "historical"}]});

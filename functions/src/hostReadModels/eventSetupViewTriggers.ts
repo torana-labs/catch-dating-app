@@ -1,4 +1,3 @@
-import {isBookingPaymentData} from "../payments/bookingPayments";
 import {GUEST_PAYMENTS} from "../payments/guestPayments";
 import * as admin from "firebase-admin";
 import {
@@ -73,9 +72,10 @@ export async function resolveEventSetupViewEventIds(
         after?.scopeKind === "event" ? after.scopeId : null]) : [];
   default:
     // A payment update can change the gross the view states.
-    if (before && after && source === "payments") {
+    if (before && after && source === GUEST_PAYMENTS) {
       return isSame(before.status, after.status) &&
-        isSame(before.amount, after.amount) ? [] :
+        isSame(before.amount, after.amount) &&
+        isSame(before.amountMinor, after.amountMinor) ? [] :
         distinctIds([before.eventId, after.eventId]);
     }
     // An update cannot change whether a commitment witness exists.
@@ -129,14 +129,9 @@ export const onHostEventSetupViewWaitlistOfferChanged = onDocumentWritten({
 export const onHostEventSetupViewEventOfferChanged = onDocumentWritten({
   ...options, document: "organizerEventOffers/{documentId}",
 }, (event) => reconcileForWrite("organizerEventOffers", event));
-export const onHostEventSetupViewBookingPaymentChanged = onDocumentWritten({
+export const onHostEventSetupViewGuestPaymentChanged = onDocumentWritten({
   ...options, document: `${GUEST_PAYMENTS}/{documentId}`,
-}, (event) => isBookingPaymentData(event.data?.after.data() ??
-  event.data?.before.data()) ? reconcileForWrite("payments", event) :
-  undefined);
-export const onHostEventSetupViewPendingOrderChanged = onDocumentWritten({
-  ...options, document: "razorpayPendingOrders/{documentId}",
-}, (event) => reconcileForWrite("razorpayPendingOrders", event));
+}, (event) => reconcileForWrite(GUEST_PAYMENTS, event));
 export const onHostEventSetupViewMomentChanged = onDocumentWritten({
   ...options, document: "organizerMoments/{documentId}",
 }, (event) => reconcileForWrite("organizerMoments", event));

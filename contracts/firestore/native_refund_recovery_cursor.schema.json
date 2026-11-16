@@ -18,8 +18,7 @@
       "type": "string",
       "enum": [
         "pendingRefunds",
-        "cancelledRazorpayPayments",
-        "pendingRazorpayOrders"
+        "cancelledRazorpayPayments"
       ],
       "x-catch-ownership": "server-only"
     },
@@ -42,7 +41,7 @@
       "x-catch-ownership": "server-only"
     },
     "cursor": {
-      "description": "Queue-specific exclusive discovery position. Refund queues use the next-attempt order key and payment document id. pendingRazorpayOrders uses integer epoch nanoseconds plus the complete pending-order document id.",
+      "description": "Queue-specific exclusive discovery position. Refund queues use the next-attempt order key and payment document id.",
       "oneOf": [
         {"type": "null"},
         {
@@ -77,7 +76,7 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 1500,
-              "description": "Exclusive secondary key. pendingRazorpayOrders and refund queues store the complete Firestore document id."
+              "description": "Exclusive secondary key. Refund queues store the complete Firestore document id."
             }
           }
         }

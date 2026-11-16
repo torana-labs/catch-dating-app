@@ -1,4 +1,5 @@
 import {HttpsError} from "firebase-functions/v2/https";
+import {GUEST_PAYMENTS} from "../../payments/guestPayments";
 import {validateEventDocument} from
   "../../shared/generated/validators/eventDocument";
 import {EVENT_MAX_DURATION_MINUTES} from "../../shared/businessRules";
@@ -12,8 +13,7 @@ export const commitmentCollections = [
   "eventParticipations",
   "eventWaitlistOffers",
   "organizerEventOffers",
-  "payments",
-  "razorpayPendingOrders",
+  GUEST_PAYMENTS,
 ] as const;
 
 /**
@@ -103,7 +103,7 @@ export function privateEventBasicsShapeEditable(eventId: string,
 
 /**
  * Whether any commitment witness exists, read through the caller's
- * transaction. The same seven queries as the mutation guard.
+ * transaction. The same six queries as the mutation guard.
  */
 export async function hasEventCommitment(tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore, eventId: string): Promise<boolean> {

@@ -887,7 +887,6 @@
   "PaymentDocument",
   "NativeRefundRecoveryCursorDocument",
   "HostPaymentAccountDocument",
-  "RazorpayPendingOrderDocument",
   "SwipeDocument",
   "MatchDocument",
   "ChatMessageDocument",

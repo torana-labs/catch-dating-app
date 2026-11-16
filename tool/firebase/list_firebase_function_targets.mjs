@@ -44,7 +44,6 @@ export const dormantFirebaseFunctionTargets = Object.freeze([
   "functions:expireCrossPathsPairHolds",
   "functions:expireEventRehearsals",
   "functions:expireEventWaitlistOffers",
-  "functions:reconcileRazorpayOrders",
 ]);
 
 export function listFirebaseFunctionExports(sourceRoot = defaultRepoRoot) {
