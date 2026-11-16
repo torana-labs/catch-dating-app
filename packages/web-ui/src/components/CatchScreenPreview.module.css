@@ -1,0 +1,327 @@
+/*
+ * An illustrative app screen (the playbook kit's mock). A card is a Website v2
+ * ground at radius xl with 24px inside and the card elevation, at most 460px
+ * wide and centred; a flat card fills its column under a ground-card outline.
+ * Rows sit between hairlines, the stats on paper tiles, the bars on a track.
+ * Drawn controls (choices, steppers, fields) take the control outline and
+ * never the pointer. Devices hold a phone at 320px and a tablet at the
+ * column's width; a photo is 4:3 at radius xl with its tag on paper.
+ */
+.preview {
+  --catch-preview-line: color-mix(in srgb, var(--catch-theme-ink)
+    calc(var(--catch-opacity-ground-card-outline) * 100%), transparent);
+  --catch-preview-share: 0%;
+  --catch-preview-bar: var(--catch-theme-ink);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--catch-space-s2);
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.visual {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.caption { text-align: center; }
+
+.card {
+  composes: ground from "./grounds.module.css";
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro6);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 460px;
+  padding: var(--catch-space-s5) var(--catch-space-s6);
+  overflow: hidden;
+  border-radius: var(--catch-radius-xl);
+  box-shadow: var(--catch-elevation-card);
+  text-align: start;
+}
+
+.card[data-tilt="left"] { transform: rotate(-2deg); }
+.card[data-tilt="right"] { transform: rotate(2deg); }
+
+.card[data-flat] {
+  max-width: none;
+  border: var(--catch-stroke-hairline) solid var(--catch-preview-line);
+  box-shadow: none;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro6);
+  box-sizing: border-box;
+  padding: var(--catch-space-s11) var(--catch-space-s4) var(--catch-space-s4);
+  overflow: hidden;
+  background: var(--catch-theme-ground);
+  color: var(--catch-theme-ink);
+  text-align: start;
+}
+
+.cover {
+  display: block;
+  width: calc(100% + 48px);
+  height: 140px;
+  margin: calc(var(--catch-space-s5) * -1) calc(var(--catch-space-s6) * -1) var(--catch-space-micro6);
+  object-fit: cover;
+}
+
+.screen .cover {
+  width: calc(100% + 32px);
+  margin: calc(var(--catch-space-s11) * -1) calc(var(--catch-space-s4) * -1) var(--catch-space-micro6);
+}
+
+.pill {
+  align-self: flex-start;
+  padding: var(--catch-space-s1) var(--catch-space-micro10);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-ground-yellow-fill);
+  color: var(--catch-ground-yellow-ink);
+}
+
+.title { display: block; }
+
+.stats {
+  display: flex;
+  gap: var(--catch-space-s2);
+  margin-top: var(--catch-space-s2);
+}
+
+.stat {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--catch-space-micro2);
+  padding: var(--catch-space-micro10) var(--catch-space-s3);
+  border-radius: var(--catch-radius-md);
+  background: var(--catch-ground-paper-fill);
+}
+
+.search,
+.box {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 40px;
+  padding: 0 var(--catch-space-s3);
+  border: var(--catch-stroke-control) solid var(--catch-theme-control-line);
+  border-radius: var(--catch-radius-sm);
+}
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s2);
+  margin: var(--catch-space-s2) 0;
+}
+
+.bar {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) 80px;
+  align-items: center;
+  gap: var(--catch-space-micro10);
+}
+
+.bar > :last-child { text-align: end; }
+
+.track {
+  display: block;
+  height: 12px;
+  overflow: hidden;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-preview-line);
+}
+
+.fill {
+  display: block;
+  width: var(--catch-preview-share);
+  height: 100%;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-preview-bar);
+}
+
+.fill[data-accent="coral"] { --catch-preview-bar: var(--catch-palette-coral); }
+.fill[data-accent="pink"] { --catch-preview-bar: var(--catch-palette-pink); }
+.fill[data-accent="yellow"] { --catch-preview-bar: var(--catch-palette-yellow); }
+.fill[data-accent="mint"] { --catch-preview-bar: var(--catch-palette-mint); }
+.fill[data-accent="indigo"] { --catch-preview-bar: var(--catch-palette-indigo); }
+.fill[data-accent="magenta"] { --catch-preview-bar: var(--catch-palette-magenta); }
+
+.rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.row,
+.counter {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-columns: auto;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: var(--catch-space-micro10);
+  padding: var(--catch-space-micro10) 0;
+  border-bottom: var(--catch-stroke-hairline) solid var(--catch-preview-line);
+}
+
+.row:last-child { border-bottom: 0; }
+
+.rowCopy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro2);
+  min-width: 0;
+}
+
+.qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--catch-space-micro10);
+  margin: var(--catch-space-s2) 0 var(--catch-space-micro14);
+}
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s2);
+  margin-top: var(--catch-space-micro14);
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--catch-space-s2);
+}
+
+.option {
+  padding: var(--catch-space-s2) var(--catch-space-micro14);
+  border: var(--catch-stroke-control) solid var(--catch-theme-control-line);
+  border-radius: var(--catch-radius-pill);
+}
+
+.option[data-selected] {
+  border-color: var(--catch-theme-ink);
+  background: var(--catch-theme-ink);
+  color: var(--catch-theme-ground);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--catch-space-micro10);
+}
+
+.step {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 36px;
+  height: 36px;
+  border: var(--catch-stroke-control) solid var(--catch-theme-control-line);
+  border-radius: var(--catch-radius-pill);
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s3);
+  margin-top: var(--catch-space-s2);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s1);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--catch-space-s2);
+  margin-top: var(--catch-space-micro14);
+}
+
+.chip {
+  margin-top: var(--catch-space-micro10);
+  padding: var(--catch-space-micro10) var(--catch-space-s3);
+  border-radius: var(--catch-radius-md);
+  background: var(--catch-ground-ink-fill);
+  color: var(--catch-ground-ink-ink);
+}
+
+.fine { margin-top: var(--catch-space-micro10); }
+
+.device {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+}
+
+.device[data-kind="tablet"] { max-width: none; }
+
+.blank {
+  display: block;
+  background: var(--catch-theme-tile);
+}
+
+.photo {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--catch-radius-xl);
+  background: var(--catch-ground-paper-fill);
+}
+
+.photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tag {
+  position: absolute;
+  inset: auto auto var(--catch-space-s4) var(--catch-space-s4);
+  padding: var(--catch-space-micro6) var(--catch-space-s3);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-ground-paper-fill);
+  color: var(--catch-ground-paper-ink);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--catch-space-s3);
+  width: 100%;
+}
+
+.tile {
+  composes: ground from "./grounds.module.css";
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro6);
+  padding: var(--catch-space-s5);
+  border-radius: var(--catch-radius-lg);
+  text-align: start;
+}
+
+@container catch-page (width < 840px) {
+  .bar { grid-template-columns: 84px minmax(0, 1fr) 64px; }
+  .tiles { grid-template-columns: minmax(0, 1fr); }
+}

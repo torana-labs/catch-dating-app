@@ -1,0 +1,82 @@
+/*
+ * A band of cards (the playbook kit's card grid): equal columns 16px apart,
+ * three or four on a wide page and one below 840px, each cell stretched to
+ * its row's height. City cards are ground tiles at radius xl, 20px inside and
+ * 8px between their parts; a live city is white under the ground card's
+ * outline. Person cards are paper with a square portrait.
+ */
+.filters,
+.cell { min-width: 0; }
+
+.filters[data-align="center"] {
+  display: flex;
+  justify-content: center;
+}
+
+.links,
+.grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--catch-space-s4);
+}
+
+.grid[data-columns="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.cell > * { height: 100%; }
+
+.city {
+  composes: ground from "./grounds.module.css";
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--catch-space-s2);
+  box-sizing: border-box;
+  padding: var(--catch-space-s5);
+  border-radius: var(--catch-radius-xl);
+}
+
+.city[data-ground="white"] {
+  border: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-ink)
+    calc(var(--catch-opacity-ground-card-outline) * 100%), transparent);
+}
+
+.action {
+  display: flex;
+  margin-top: auto;
+}
+
+.person {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: var(--catch-radius-xl);
+  background: var(--catch-ground-paper-fill);
+  color: var(--catch-ground-paper-ink);
+  --catch-theme-ink: var(--catch-ground-paper-ink);
+  --catch-theme-ink2: var(--catch-ground-paper-ink-secondary);
+}
+
+.portrait {
+  display: block;
+  aspect-ratio: 1;
+}
+
+.personCopy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro6);
+  padding: var(--catch-space-s5) var(--catch-space-micro18) var(--catch-space-s6);
+}
+
+@container catch-page (width < 840px) {
+  .grid,
+  .grid[data-columns="4"] { grid-template-columns: minmax(0, 1fr); }
+}
