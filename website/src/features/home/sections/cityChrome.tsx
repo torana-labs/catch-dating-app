@@ -2,7 +2,7 @@ import {CatchButton} from "@catch/web-ui";
 import {homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {countryName} from "@content/markets";
-import {publicSiteCopy, siteFooterCopy} from "@content/site";
+import {siteFooterCopy} from "@content/site";
 import type {ReactNode} from "react";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain, type SiteFooterCity} from "../../../shared/site";
 import {citiesHref, cityFooterNote, cityGroups} from "../homeModel";
@@ -53,7 +53,7 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
         <CityPicker cities={cities} onChoose={onChooseCity} selected={city} />
         <CatchButton href={appHref} label={copy.header.app} onPressed={follow} size="sm" />
       </>}
-      links={[{...publicSiteCopy.whatsOn, href: exploreHref}, publicSiteCopy.forHosts]}
+      whatsOnHref={exploreHref}
     />
     <WebsitePageMain id="top">{children}</WebsitePageMain>
     <PublicSiteFooter appHref={appHref} exploreHref={exploreHref}

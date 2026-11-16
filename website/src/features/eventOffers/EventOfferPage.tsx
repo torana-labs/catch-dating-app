@@ -55,7 +55,7 @@ export function EventOfferView(controller: ReturnType<typeof useOfferCheckoutCon
   const card = phase === "ready" && (grant || payment || admission) ? <PlaceCard controller={controller} /> : null;
   return (
     <CatchRoot theme="day">
-      <PublicSiteHeader />
+      <PublicSiteHeader variant="minimal" />
       <WebsitePageMain id="offer">
         <CatchPageBody gutter={false} pb="s0" pt="s4">
           <CatchPaneLayout

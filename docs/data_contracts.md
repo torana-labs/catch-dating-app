@@ -4001,7 +4001,9 @@ is merchant of record, and Catch bills its commission afterwards;
 organizer's share. A future Catch-as-merchant flow is a new route plus its
 adapter, not a terms change.
 
-Only `manageCommercialTerms` (Finance/Admin Owner) writes terms. A write names
+Only `manageCommercialTerms` (Finance/Admin Owner) writes terms, except that a
+founding-host place sets one organizer override's `trial.days` (see
+Founding-host offer below). A write names
 the reviewed revision and a reason; the same transaction bumps the revision,
 creates an immutable `commercialTermsRevisions/<termsId>_r<revision>` record
 and writes the admin audit log. Only the most recent exact command replays.
@@ -4024,6 +4026,101 @@ ticket or form payment still proceeds, because guest money does not depend on
 Catch's terms, and carries no snapshot. A commission statement treats such
 payments, and every payment recorded before terms existed, as needing operator
 review rather than inventing terms for them.
+
+### Founding-host offer
+
+The owner decided on 16 Nov 2026 to run the founding-host offer with a live
+counter: in each city the first 50 hosts get 90 free days instead of the
+standard trial, with no staff step, and the website shows "[N] of 50 places
+left" per city. Cities are canonical market ids from
+`contracts/catalogs/markets.json`, the same ids organizers carry in
+`locationMarketId` and growth facts carry in `marketId`.
+
+`foundingHostOffers/{marketId}` holds one city's offer: `cap`, an optional
+deadline `endsAtMillis` (null by default), `trialDays` (90), `takenCount`,
+`openedAtMillis` and the owner's `revision`, reason and actor. The Admin Owner
+opens a city and changes its cap and deadline through
+`adminManageFoundingHostOffers` against the reviewed revision; the cap cannot
+fall below `takenCount`. A city with no document has no offer. Taking a place
+does not bump `revision`, so an owner change never races a host signing up.
+
+A host takes a place at the moment its organizer gains an owner: created by
+its owner through `createOrganizer`, or a listing claim approved or verified.
+That is when a host starts on Catch, before it can run an event; the trial
+itself still starts at the first event (`functions/src/money/hostTrial.ts`).
+`onFoundingHostOrganizerWritten` runs on that transition, and
+`reconcileFoundingHostPlacesDaily` repeats it for organizers whose growth facts
+record `claimedAt` in the last three days, in case the trigger failed. Both
+call one transaction that reads the organizer, its growth facts, its
+`foundingHostPlaces/{organizerId}` record, its owner's
+`foundingHostOwnerPlaces` guard for the city, the city's offer and its
+commercial terms, and takes place `takenCount + 1` only when:
+
+- the organizer holds no place yet (retries are no-ops);
+- it still has an owner with a recorded owner id, is not a Demo Ops organizer
+  (`synthetic`), and its market is in the catalog;
+- its city's offer opened before the organizer gained its owner;
+- the deadline, if any, had not passed at that moment (so a late trigger never
+  turns away a host who signed up in time);
+- its owner holds no founding place in the city yet, through this or any other
+  organizer page (see below);
+- `takenCount` is below `cap` when the transaction runs; and
+- its trial has not started (no `firstEventAt` or `firstPaidBookingAt`), so a
+  claimed listing that already trades on Catch is not a new host.
+
+In the same commit it creates the place record (place number, cap, 90 days,
+the owner, when the organizer gained its owner, the source and the terms
+revision), creates the owner's guard, sets `takenCount` and rewrites the public
+projection. Firestore serializes the counter, so two hosts never take the same
+place and the cap is never exceeded.
+
+A person takes at most one founding place in each city, however many organizer
+pages they own there (owner decision 16 Nov 2026); `createOrganizer` lets one
+person make several pages. The person is the organizer's canonical owner as
+`organizerOwnerUserId` reads it for bills and payments: `ownerUserId`, falling
+back to the legacy `hostUserId`. An owned organizer with neither takes no
+place. `foundingHostOwnerPlaces/{sha256(JSON.stringify([ownerUserId,
+marketId]))}` records that owner's place in that city: `ownerUserId`,
+`marketId`, the `organizerId` holding it, `placeNumber` and `grantedAtMillis`.
+The grant transaction reads it and creates it with the place, so the owner's
+other pages in that city skip with `ownerHoldsPlace` and keep the standard
+trial. Two of the owner's pages granted at the same moment both read and write
+the guard and the offer, so Firestore retries one, which then finds the guard.
+The daily reconcile goes through the same transaction, oldest claim first, so
+the owner's earliest page in the city holds the place. The same owner in two
+cities takes one place in each.
+
+An ownership transfer revokes nothing. A place stays with the organizer that
+took it, its record keeps the owner at grant time, and the guard stays with
+that owner: their later pages in the city still take no place. The new owner
+keeps the transferred place, and their own first page in that city can still
+take one, since they never took a place there themselves.
+
+The 90 days go through the existing organizer override,
+`commercialTerms/org_<sha256(organizerId)>`: `trial.days` becomes 90, every
+other key stays, and the write is a new revision with an immutable revision
+record whose actor is `system:foundingHostOffer`. Bills, billing status and new
+payment snapshots read it like any staff override. An override whose effective
+trial is already 90 days or more is left alone, and the place records no terms
+revision. Before `commercialTerms/platform` exists the override still carries
+the trial.
+
+When places run out, or the deadline passes, new hosts in that city get the
+standard trial and nothing is written for them. Places already taken and the
+trials they wrote never change: lowering the cap, setting a deadline or editing
+terms later does not touch them (staff can still change an organizer's terms
+through `manageCommercialTerms`). Raising the cap or moving the deadline later
+reopens the city.
+
+`publicFoundingHostOffers/{marketId}` is the public read: `citySlug`, `status`
+(`open`, `soldOut` or `closed`), `cap`, `placesLeft`, `trialDays`,
+`endsAtMillis` and `updatedAtMillis`. Anyone may get or list it; it holds no
+organizer, owner or staff identity. Every owner change and every place taken
+rewrites it in the same transaction. `status` is computed when it is written,
+so a reader must also treat `endsAtMillis` at or before now as closed. A city
+without a document has no offer, and the website keeps its strip hidden.
+`foundingHostOffers`, `foundingHostPlaces` and `foundingHostOwnerPlaces` deny
+all client access.
 
 ### Form messaging decisions
 
@@ -5381,7 +5478,8 @@ organizer id order, each with its name and trial and plan status. No prices.
 The free trial is computed, never stored (`functions/src/money/hostTrial.ts`).
 It starts at the organizer's first event, the start of the first non-cancelled
 event with a booking in `organizerGrowthFacts`, or at the first paid booking
-when no event is recorded, and lasts the effective terms' `trial.days`. Bills
+when no event is recorded, and lasts the effective terms' `trial.days` (90
+for a founding host, through its override). Bills
 and status use the same computation. The owner reads it through
 `getOrganizerBillingStatus` (status only, no prices) and staff see it on one
 organizer's bills in `adminManageOrganizerBills`. Nothing gates features when

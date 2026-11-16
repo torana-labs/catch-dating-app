@@ -1,7 +1,8 @@
 import {createHash} from "crypto";
 import {assertReadySeatState, CanonicalSeatIdentity, CHECKOUT_HOLD_MILLIS,
-  checkoutHeldCount, heldSeatCount, SeatAuthorityError, SeatCommand, SeatLedger,
-  SeatReceipt, SeatReservation, SeatTransaction} from "./seatAuthority";
+  checkoutHeldCount, heldSeatCount, MAX_RESERVATION_PLACES, reservationPlaces,
+  SeatAuthorityError, SeatCommand, SeatLedger, SeatReceipt, SeatReservation,
+  SeatTransaction} from "./seatAuthority";
 
 export type CheckoutHoldOperation = "checkoutHold" |
   "confirmCheckoutHold" | "releaseCheckoutHold";
@@ -10,6 +11,9 @@ export interface CheckoutHoldCommand<Subject> extends
   operation: CheckoutHoldOperation;
   /** Server-created immutable payment attempt ID, never a provider order ID. */
   paymentId: string;
+  /** Places one payment attempt holds; missing means 1. Confirm and release
+   * always use the count the hold recorded; a different value conflicts. */
+  places?: number;
 }
 
 export type TemporaryHoldOperation = "temporaryHold" |
@@ -64,7 +68,12 @@ export async function prepareSeatHold<Subject>(params: {
     command.operation === "temporaryHold";
   const confirming = command.operation === "confirmCheckoutHold" ||
     command.operation === "confirmTemporaryHold";
+  const requestedPlaces = temporary ? undefined : command.places;
   if (!validId(command.eventId) || !validId(command.requestId) ||
+      temporary && "places" in command ||
+      requestedPlaces !== undefined &&
+        (!Number.isSafeInteger(requestedPlaces) || requestedPlaces < 1 ||
+          requestedPlaces > MAX_RESERVATION_PLACES) ||
       !validId(ownerId) ||
       temporary && (command.ownerKind !== "crossPathsPair" ||
         !safe(command.expiresAtMillis)) ||
@@ -96,6 +105,10 @@ export async function prepareSeatHold<Subject>(params: {
     command.expectedLedgerRevision, command.expectedCapacityRevision,
     command.expectedMigrationRevision, command.expectedReservationRevision,
     ...(temporary ? [command.ownerKind, command.expiresAtMillis] : []),
+    // Single-place requests keep their original hash, so receipts written
+    // before multi-place holds still replay.
+    ...(requestedPlaces !== undefined && requestedPlaces !== 1 ?
+      ["places", requestedPlaces] : []),
   ])).digest("hex");
   if (prior) {
     if (!safe(prior.appliedLedgerRevision) ||
@@ -123,6 +136,12 @@ export async function prepareSeatHold<Subject>(params: {
   }
   const held = temporary ? ledger.temporaryHeld ?? 0 :
     checkoutHeldCount(ledger);
+  const places = starting ? requestedPlaces ?? 1 :
+    reservationPlaces(reservation);
+  if (!starting && requestedPlaces !== undefined &&
+      requestedPlaces !== places) {
+    fail("conflict", "Checkout hold place count changed.");
+  }
   if (starting) {
     if (temporary && (command.expiresAtMillis <= command.nowMillis ||
         command.expiresAtMillis - command.nowMillis > 30 * 60 * 1000)) {
@@ -132,7 +151,7 @@ export async function prepareSeatHold<Subject>(params: {
         reservation?.temporaryHold) {
       fail("conflict", "This identity already has a seat or checkout hold.");
     }
-    if (ledger.occupied + heldSeatCount(ledger) >= ledger.capacity) {
+    if (ledger.occupied + heldSeatCount(ledger) + places > ledger.capacity) {
       fail("conflict", "This event is full.");
     }
   } else {
@@ -152,10 +171,13 @@ export async function prepareSeatHold<Subject>(params: {
       fail("conflict", "Checkout hold expired; reconcile the payment.");
     }
   }
+  if (!starting && held < places) {
+    fail("unavailable", "Held seat inventory needs reconciliation.");
+  }
   const nextLedger = {...ledger,
     [temporary ? "temporaryHeld" : "checkoutHeld"]:
-      held + (starting ? 1 : -1),
-    occupied: ledger.occupied + (confirming ? 1 : 0),
+      held + (starting ? places : -places),
+    occupied: ledger.occupied + (confirming ? places : 0),
     revision: ledger.revision + 1};
   const nextReservation: SeatReservation = {
     eventId: command.eventId, canonicalKey: identity.key,
@@ -164,6 +186,7 @@ export async function prepareSeatHold<Subject>(params: {
     reservedAtMillis: starting || confirming ? command.nowMillis :
       reservation!.reservedAtMillis,
     releasedAtMillis: starting || confirming ? null : command.nowMillis,
+    ...(places > 1 ? {places} : {}),
     ...(starting ? temporary ? {temporaryHold: {
       ownerKind: command.ownerKind, ownerId,
       expiresAtMillis: command.expiresAtMillis}} :
