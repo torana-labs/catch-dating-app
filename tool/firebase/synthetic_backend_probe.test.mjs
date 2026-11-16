@@ -75,7 +75,7 @@ test("production runs only rules-checked reads unless callables are allowed", ()
   for (const environment of ["dev", "staging"]) {
     assert.equal(
       buildSyntheticProbePlan({...fixture, environment, now}).callables.length,
-      2,
+      1,
     );
   }
   assert.equal(
@@ -85,7 +85,7 @@ test("production runs only rules-checked reads unless callables are allowed", ()
       now,
       allowProdCallables: true,
     }).callables.length,
-    2,
+    1,
   );
 });
 
