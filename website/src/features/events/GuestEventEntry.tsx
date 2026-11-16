@@ -19,7 +19,7 @@ const noop = () => undefined;
  * The card sticks beside the page, or opens in a sheet on a phone, so each
  * step takes the last one's place: the start, the guest's phone and code,
  * the existing free registration or paid checkout, then their place. The
- * server chooses admission; this only presents its answer.
+ * step follows the guest's live records; commands still decide admission.
  */
 export function GuestEventEntry({eventId, startLabel}: {eventId: string; startLabel?: string}) {
   return <GuestEventEntryView controller={useGuestEventController(eventId)} eventId={eventId} startLabel={startLabel} />;
@@ -35,7 +35,7 @@ export function GuestEventEntryView({eventId, controller: c, startLabel}: {
   const uid = c.user?.phoneNumber ? c.user.uid : null;
   const guest = c.error ? null : c.viewer?.guest ?? null;
   const mode = guest?.action === "registerFree" ? "free" : guest?.action === "bookPaid" ? "paid" : null;
-  // A status refresh can move a guest mid-checkout to recoverPayment, so the
+  // A status change can move a guest mid-checkout to recoverPayment, so the
   // transaction stays mounted until the guest changes identity. A guest who
   // started before signing in goes straight on once the server allows it.
   if (flow && flow.uid !== uid) setFlow(null);
@@ -59,7 +59,7 @@ export function GuestEventEntryView({eventId, controller: c, startLabel}: {
           <GuestStatus eventId={eventId} guest={guest} />}
       {notifications}
       <CatchGap direction="horizontal" size="inline" wrap>
-        <CatchButton label={copy.refresh} onPressed={() => void c.refresh()} size="sm" variant="quiet" />
+        <CatchButton label={copy.refresh} onPressed={() => c.refresh()} size="sm" variant="quiet" />
         <CatchButton label={copy.changeAccount} onPressed={() => void c.changeAccount()} size="sm" variant="quiet" />
       </CatchGap>
     </CatchGap>

@@ -15,10 +15,10 @@ const noop = () => undefined;
 const controller = {user: null, phone: "", setPhone: noop, code: "", setCode: noop,
   codeSent: false, submit: async () => undefined, message: "", pending: false,
   recaptchaId: "preview", viewer: null, loading: false, error: false,
-  refresh: async () => ({}), changePhone: noop, changeAccount: async () => undefined,
+  refresh: noop, changePhone: noop, changeAccount: async () => undefined,
 } as unknown as Controller;
 const signedIn = (action: string, extra = {}) => ({...controller, user: {uid: "preview", phoneNumber: "+919000000000"},
-  viewer: {guest: {action, expiresAtMillis: 9e12, ...extra}}}) as unknown as Controller;
+  viewer: {guest: {action, ...extra}}}) as unknown as Controller;
 
 const meta = {title: "Events/Booking steps", component: GuestEventEntryView,
   parameters: {a11y: {test: "error"}},

@@ -247,6 +247,40 @@ test("booking-payments copies in-app payments into the ledger once", async () =>
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("guest-event-read-models creates each entry and row once from its first record", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "guest-event-read-models");
+  const db = fakeDb({
+    "events/e1": {publicationState: "published"},
+    "events/e2": {publicationState: "private"},
+    "eventParticipations/e1_a": {eventId: "e1", uid: "a", status: "signedUp"},
+    "eventAttendees/r1": {eventId: "e1", linkedUid: "a"},
+    "eventAttendees/r2": {eventId: "e1", linkedUid: "b"},
+    "eventAttendees/r3": {eventId: "e1", linkedUid: "b"},
+    "eventAttendees/r4": {eventId: "e1", linkedUid: null},
+    "guestPayments/p1": {purpose: "publicEvent", eventId: "e2", recipientUid: "c"},
+    "guestPayments/p2": {purpose: "booking", eventId: "e2", userId: "d"},
+    "organizerApplications/a1": {targetKind: "event", targetId: "e2", linkedUid: "c"},
+    "organizerApplications/a2": {targetKind: "organizer", targetId: null, linkedUid: "e"},
+    "organizerEventOfferRecipients/g1": {eventId: "e3", recipientUid: "f"},
+  });
+  const targets = [];
+  for (const step of migration.steps) {
+    for (const [key, data] of Object.entries(db.data)) {
+      const [collection, id] = key.split("/");
+      if (collection !== step.source) continue;
+      const target = await step.targetId(id, data, db);
+      if (target) targets.push(`${step.target}/${target}`);
+    }
+  }
+  assert.deepEqual(targets.sort(), [
+    "eventGuestEntries/e1",
+    "guestEventStatuses/e1_a",
+    "guestEventStatuses/e1_b",
+    "guestEventStatuses/e2_c",
+    "guestEventStatuses/e3_f",
+  ]);
+});
+
 test("unknown migration names are rejected", () => {
   assert.throws(() => migrationsByName(["nope"]), /Unknown migration "nope"/);
   assert.equal(migrationsByName(["all"]).length, MIGRATIONS.length);

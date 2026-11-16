@@ -7,7 +7,6 @@ import type {WithdrawParticipantMessagingPermissionCallableResponse} from "../..
 import type {GetEventTicketCodeCallableResponse} from "../../functions/src/shared/generated/getEventTicketCodeCallableResponse";
 import type {ManageEventApprovalNotificationsCallablePayload} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallablePayload";
 import type {ManageEventApprovalNotificationsCallableResponse} from "../../functions/src/shared/generated/manageEventApprovalNotificationsCallableResponse";
-import type {GetEventViewerStateCallableResponse} from "../../functions/src/shared/generated/getEventViewerStateCallableResponse";
 export {beginClaimPhoneLink, signInOrLinkClaimGoogle} from "./firebaseClaimAccountLinking";
 import type {ReadPublicOrganizerTrackingSettingsCallablePayload} from "../../functions/src/shared/generated/readPublicOrganizerTrackingSettingsCallablePayload";
 import type {PublicOrganizerTrackingSettingsCallableResponse} from "../../functions/src/shared/generated/publicOrganizerTrackingSettingsCallableResponse";
@@ -1479,11 +1478,44 @@ export async function readPublicOrganizerTrackingSettings(
 
 export type {ReadPublicOrganizerTrackingSettingsCallablePayload, PublicOrganizerTrackingSettingsCallableResponse};
 
-/** Auth-owned guest status; browser hints never supply the subject UID. */
-export async function getGuestEventViewerState(eventId: string): Promise<GetEventViewerStateCallableResponse> {
-  return invokeWebsiteCallable("getEventViewerState", {eventId, surface: "guest"},
-    publicEventRegistrationFirebaseConfigured || publicFormsFirebaseConfigured,
-    "Event guest status");
+/** The raw documents behind a guest's step on an event page; the caller parses them. */
+export interface GuestEventDocuments {
+  entry: unknown;
+  status: unknown;
+  bookingFacts: unknown;
+}
+
+/**
+ * Listens to the event's guest entry, the signed-in guest's own row for it
+ * and their booking facts, and reports all three once each has arrived.
+ * The UID comes from the signed-in account; rules let a guest read only
+ * their own row and facts.
+ */
+export async function watchGuestEventDocuments(
+  eventId: string,
+  uid: string,
+  onValue: (documents: GuestEventDocuments) => void,
+  onError: (error: Error) => void
+): Promise<() => void> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime || !(publicEventRegistrationFirebaseConfigured || publicFormsFirebaseConfigured)) {
+    throw new Error("Event guest status are not configured for this build.");
+  }
+  const {doc, onSnapshot} = await import("firebase/firestore");
+  const documents: Partial<Record<keyof GuestEventDocuments, unknown>> = {};
+  const listen = (key: keyof GuestEventDocuments, path: string, id: string) =>
+    onSnapshot(doc(runtime.firestore, path, id), (snapshot) => {
+      documents[key] = snapshot.data() ?? null;
+      if ("entry" in documents && "status" in documents && "bookingFacts" in documents) {
+        onValue({entry: documents.entry, status: documents.status, bookingFacts: documents.bookingFacts});
+      }
+    }, (error) => onError(error));
+  const stops = [
+    listen("entry", "eventGuestEntries", eventId),
+    listen("status", "guestEventStatuses", `${eventId}_${uid}`),
+    listen("bookingFacts", "guestBookingFacts", uid),
+  ];
+  return () => stops.forEach((stop) => stop());
 }
 
 /** Explicit account switching is shared by public guest surfaces. */

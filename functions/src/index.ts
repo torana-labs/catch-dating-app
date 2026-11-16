@@ -1125,6 +1125,12 @@ export {onEventChatDirectoryMembershipWritten,
   onEventChatDirectoryAttendeeWritten, onEventChatDirectoryRoomWritten,
   onEventChatDirectoryEventWritten, onEventChatDirectoryUserWritten} from
   "./chats/eventChatDirectory";
+export {onGuestEventStatusParticipationWritten,
+  onGuestEventStatusAttendeeWritten, onGuestEventStatusPaymentWritten,
+  onGuestEventStatusApplicationWritten,
+  onGuestEventStatusOfferRecipientWritten, onEventGuestEntryEventWritten,
+  onEventGuestEntryOrganizerWritten, onEventGuestEntryFormWritten} from
+  "./guestEvents/triggers";
 export {onHostProviderConnectionViewConnectionChanged,
   onHostProviderConnectionViewOrganizerChanged} from
   "./hostReadModels/providerConnectionViewTriggers";
