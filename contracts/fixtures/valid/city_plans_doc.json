@@ -15,6 +15,103 @@
     "nightsOut": 1,
     "other": 0
   },
+  "monthWindowEnd": "2026-06-13T00:00:00.000Z",
+  "upcomingEvents30d": 8,
+  "hasUpcomingMonth": true,
+  "monthCountsComplete": true,
+  "formatPages": {
+    "runClubs": {
+      "slug": "run-clubs",
+      "organizerCount": 1,
+      "upcomingEventCount": 5,
+      "freeEventCount": 4,
+      "indexing": "index, follow"
+    },
+    "racketSports": {
+      "slug": "racket-sports",
+      "organizerCount": 0,
+      "upcomingEventCount": 0,
+      "freeEventCount": 0,
+      "indexing": "noindex, follow"
+    },
+    "pickleball": {
+      "slug": "pickleball",
+      "organizerCount": 0,
+      "upcomingEventCount": 0,
+      "freeEventCount": 0,
+      "indexing": "noindex, follow"
+    },
+    "padel": {
+      "slug": "padel",
+      "organizerCount": 0,
+      "upcomingEventCount": 0,
+      "freeEventCount": 0,
+      "indexing": "noindex, follow"
+    },
+    "tennis": {
+      "slug": "tennis",
+      "organizerCount": 0,
+      "upcomingEventCount": 0,
+      "freeEventCount": 1,
+      "indexing": "noindex, follow"
+    },
+    "badminton": {
+      "slug": "badminton",
+      "organizerCount": 0,
+      "upcomingEventCount": 0,
+      "freeEventCount": 0,
+      "indexing": "noindex, follow"
+    },
+    "supperClubs": {
+      "slug": "supper-clubs",
+      "organizerCount": 1,
+      "upcomingEventCount": 1,
+      "freeEventCount": 1,
+      "indexing": "noindex, follow"
+    },
+    "quizNights": {
+      "slug": "quiz-nights",
+      "organizerCount": 1,
+      "upcomingEventCount": 1,
+      "freeEventCount": 1,
+      "indexing": "noindex, follow"
+    },
+    "nightlife": {
+      "slug": "nightlife",
+      "organizerCount": 1,
+      "upcomingEventCount": 1,
+      "freeEventCount": 1,
+      "indexing": "noindex, follow"
+    },
+    "studios": {
+      "slug": "studios",
+      "organizerCount": 0,
+      "upcomingEventCount": 0,
+      "freeEventCount": 1,
+      "indexing": "noindex, follow"
+    },
+    "workshops": {
+      "slug": "workshops",
+      "organizerCount": 0,
+      "upcomingEventCount": 0,
+      "freeEventCount": 0,
+      "indexing": "noindex, follow"
+    },
+    "bookClubs": {
+      "slug": "book-clubs",
+      "organizerCount": 0,
+      "upcomingEventCount": 0,
+      "freeEventCount": 0,
+      "indexing": "noindex, follow"
+    },
+    "outdoors": {
+      "slug": "outdoors",
+      "organizerCount": 0,
+      "upcomingEventCount": 0,
+      "freeEventCount": 0,
+      "indexing": "noindex, follow"
+    }
+  },
   "plans": [
     {
       "source": "catch",
@@ -34,7 +131,10 @@
         "organizerId": "next-proof",
         "name": "Next proof organizer",
         "path": "/organizers/next-proof/"
-      }
+      },
+      "discoveryFormats": [
+        "runClubs"
+      ]
     },
     {
       "source": "catch",
@@ -54,7 +154,10 @@
         "organizerId": "next-proof",
         "name": "Next proof organizer",
         "path": "/organizers/next-proof/"
-      }
+      },
+      "discoveryFormats": [
+        "quizNights"
+      ]
     },
     {
       "source": "catch",
@@ -74,7 +177,10 @@
         "organizerId": "next-proof",
         "name": "Next proof organizer",
         "path": "/organizers/next-proof/"
-      }
+      },
+      "discoveryFormats": [
+        "supperClubs"
+      ]
     },
     {
       "source": "catch",
@@ -94,7 +200,10 @@
         "organizerId": "next-proof",
         "name": "Next proof organizer",
         "path": "/organizers/next-proof/"
-      }
+      },
+      "discoveryFormats": [
+        "nightlife"
+      ]
     }
   ],
   "organizers": [
@@ -123,7 +232,13 @@
         "title": "Race Course social run",
         "startTime": "2026-05-16T00:00:00.000Z",
         "date": "16 May 2026, 5:30 – 6:40 am"
-      }
+      },
+      "discoveryFormats": [
+        "runClubs",
+        "supperClubs",
+        "quizNights",
+        "nightlife"
+      ]
     }
   ],
   "builtAt": {
