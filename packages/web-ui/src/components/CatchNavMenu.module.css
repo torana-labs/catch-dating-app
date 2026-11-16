@@ -1,0 +1,96 @@
+/*
+ * The desktop site navigation menu (the playbook header's "For hosts ▾"):
+ * the trigger is a D20 small quiet button (CatchButton's own rules) with a
+ * 16px chevron that turns over while the panel is open, and a 2px underline
+ * when it is the current section. The panel is CatchMenu's floating surface,
+ * 8px under the trigger and lined up with its start or end edge, at least
+ * 240px wide; each link is a row of at least 48px with a row title and an
+ * optional small secondary line. Below 600px the menu is not drawn: the
+ * header's phone menu carries the links.
+ */
+.menu {
+  position: relative;
+  display: inline-flex;
+}
+
+.trigger {
+  composes: button from "./CatchButton.module.css";
+}
+
+.trigger[data-current] .label {
+  text-decoration-line: underline;
+  text-decoration-thickness: var(--catch-stroke-focus-ring);
+  text-underline-offset: var(--catch-space-s1);
+}
+
+.label { min-width: 0; }
+
+.chevron {
+  display: inline-flex;
+  flex: none;
+  margin-inline-start: var(--catch-space-micro6);
+  transition: transform var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+
+.chevron[data-open] { transform: rotate(180deg); }
+
+.panel {
+  composes: panel from "./CatchMenu.module.css";
+  position: absolute;
+  top: calc(100% + var(--catch-space-s2));
+  z-index: var(--catch-layer-overlay);
+  min-width: 240px;
+  max-width: calc(100vw - 32px);
+  padding: var(--catch-space-s2) 0;
+}
+
+.panel[hidden] { display: none; }
+
+.menu[data-align="start"] > .panel { inset-inline-start: 0; }
+.menu[data-align="end"] > .panel { inset-inline-end: 0; }
+
+.links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--catch-space-micro2);
+  box-sizing: border-box;
+  min-height: 48px;
+  padding: var(--catch-space-s2) var(--catch-space-s4);
+  color: var(--catch-theme-ink);
+  text-decoration: none;
+}
+
+.link::after {
+  position: absolute;
+  inset: 0;
+  background: var(--catch-theme-ink);
+  opacity: 0;
+  pointer-events: none;
+  content: "";
+}
+
+.link:hover::after,
+.link:focus-visible::after { opacity: var(--catch-opacity-control-overlay-hover); }
+
+.link:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: calc(-1 * var(--catch-stroke-focus-ring));
+}
+
+.link[aria-current="page"] { box-shadow: inset var(--catch-stroke-focus-ring) 0 0 var(--catch-theme-ink); }
+
+@media (max-width: 599px) {
+  .menu { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron { transition: none; }
+}
