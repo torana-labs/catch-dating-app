@@ -1,12 +1,15 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_summary_reads.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
+import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -23,7 +26,8 @@ HostAudiencePage _peoplePage(int count, String? cursor) => HostAudiencePage(
 );
 
 class _PeopleRefreshRepository extends HostContactsRepository {
-  _PeopleRefreshRepository() : super(_UnusedFunctions());
+  _PeopleRefreshRepository()
+    : super(_UnusedFunctions(), summaries: HostContactSummaryReads(_reader()));
   final pending = Completer<HostAudiencePage>();
   int loads = 0;
 
@@ -65,3 +69,6 @@ void main() {
     },
   );
 }
+
+HostSummaryReader _reader() =>
+    HostSummaryReader(FakeFirebaseFirestore(), actorId: () => 'host');

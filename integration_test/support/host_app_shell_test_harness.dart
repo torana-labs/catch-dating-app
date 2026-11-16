@@ -138,6 +138,40 @@ class HostShellBackend {
           'incompleteSource': null,
           'connections': const <Object?>[],
         });
+    // What onHostDirectoryOrganizerCreated leaves for a new organizer: the
+    // directory read models active and empty, so the Host lists read their
+    // summaries without a callable. The events marker stays unset: this fake
+    // runs no triggers, so a created event would have no summary row, and the
+    // event directory still falls back to listPrivateEventSetups.
+    await firestore.collection('hostDirectorySummaries').doc(organizer.id).set({
+      'organizerId': organizer.id,
+      'projectionVersion': 1,
+      'sourceCoverage': 'partial',
+      'segmentCounts': const <String, Object?>{},
+      'manualTagVocabulary': const <Object?>[],
+      'contactSummaryVersion': 1,
+      'responseSummaryVersion': 1,
+      'formSummaryVersion': 1,
+      'groupSummaryVersion': 1,
+      'summary': {
+        'organizerId': organizer.id,
+        'contactCount': 0,
+        'pastAttendeeCount': 0,
+        'repeatAttendeeCount': 0,
+        'advocateCount': 0,
+        'highImpactAdvocateCount': 0,
+        'linkedAccountCount': 0,
+        'importedContactCount': 0,
+        'whatsappOptInCount': 0,
+        'smsOptInCount': 0,
+        'truncated': false,
+        'readiness': const {
+          'inApp': 'currentEventOnly',
+          'whatsapp': 'providerSetupRequired',
+          'sms': 'providerAndDltSetupRequired',
+        },
+      },
+    });
   }
 
   /// Writes a published event as the backend's publication command leaves it

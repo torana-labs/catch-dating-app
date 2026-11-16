@@ -74,25 +74,36 @@ void main() {
     await expectLater(pending, throwsStateError);
   });
 
-  test('migration falls back only while the marker is absent', () async {
-    final reads = HostContactSummaryReads(
-      HostSummaryReader(FakeFirebaseFirestore(), actorId: () => 'host'),
-    );
-    expect(
-      await reads.list('org', query: const HostAudienceQuery(), limit: 30),
-      isNull,
-    );
-    await expectLater(
-      reads.list(
-        'org',
-        query: HostAudienceQuery(
-          cursor: HostSummaryCursor.encode('old', 1, 'a'),
+  test(
+    'a directory without its marker fails instead of reading a Function',
+    () async {
+      final db = FakeFirebaseFirestore();
+      final reads = HostContactSummaryReads(
+        HostSummaryReader(db, actorId: () => 'host'),
+      );
+      await expectLater(
+        reads.list('org', query: const HostAudienceQuery(), limit: 30),
+        throwsStateError,
+      );
+      await expectLater(reads.summary('org'), throwsStateError);
+      await db.collection('hostDirectorySummaries').doc('org').set({
+        'organizerId': 'org',
+        'contactSummaryVersion': 0,
+      });
+      await expectLater(
+        reads.count('org', const HostAudienceQuery()),
+        throwsStateError,
+      );
+      await expectLater(
+        reads.list(
+          'org',
+          query: const HostAudienceQuery(search: 'asha'),
+          limit: 30,
         ),
-        limit: 30,
-      ),
-      throwsStateError,
-    );
-  });
+        throwsArgumentError,
+      );
+    },
+  );
 
   test('unsupported intersecting filter groups retain server evaluation', () {
     expect(

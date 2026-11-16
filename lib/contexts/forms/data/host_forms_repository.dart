@@ -60,11 +60,17 @@ class HostFormValidationResult {
 class HostFormsRepository {
   const HostFormsRepository(this._functions, {this.summaries, this.responses});
 
+  /// The response inbox read model. Only an instance that lists responses
+  /// needs it; the export gateway's instance does not.
   final HostResponseSummaryReads? responses;
 
+  /// The form list read model. Only an instance that lists forms needs it.
   final HostFormSummaryReads? summaries;
 
   final FirebaseFunctions _functions;
+
+  static T _required<T>(T? reads, String name) =>
+      reads ?? (throw StateError('This repository has no $name read model.'));
 
   Future<HostFormPaymentSetup> managePaymentConnection({
     required String organizerId,
@@ -100,8 +106,9 @@ class HostFormsRepository {
   );
 
   Future<HostFormPage> listForms(HostFormListRequest request) async {
-    final page = await summaries?.list(request);
-    if (page != null) return page;
+    if (HostFormSummaryReads.supports(request)) {
+      return _required(summaries, 'form list').list(request);
+    }
     return _call(
       name: 'listOrganizerForms',
       payload: ListOrganizerFormsCallableRequest(
@@ -305,11 +312,12 @@ class HostFormsRepository {
   Future<HostFormResponsePage> listResponses(
     HostFormResponseListRequest request,
   ) async {
-    final page = await responses?.list(request);
-    if (page != null) return page;
+    if (HostResponseSummaryReads.supports(request)) {
+      return _required(responses, 'response inbox').list(request);
+    }
     if (request.offeredOnly) {
       // The callable inbox does not know offers; never show its list here.
-      throw StateError('Offers show once the response inbox is ready.');
+      throw StateError('Offers cannot be filtered this way.');
     }
     return _call(
       name: 'listOrganizerFormResponses',

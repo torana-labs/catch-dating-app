@@ -146,11 +146,11 @@ void main() {
           includeApplications: true,
         ),
       );
-      expect(page!.entries!.single.entryId, 'response:response');
+      expect(page.entries!.single.entryId, 'response:response');
       expect(page.items.single.identity.displayName, 'Asha');
       expect(page.items.single.highlights, isEmpty);
       expect(
-        await reads.list(
+        HostResponseSummaryReads.supports(
           const HostFormResponseListRequest(
             organizerId: 'org',
             answerFilters: {
@@ -158,7 +158,7 @@ void main() {
             },
           ),
         ),
-        isNull,
+        isFalse,
       );
     },
   );

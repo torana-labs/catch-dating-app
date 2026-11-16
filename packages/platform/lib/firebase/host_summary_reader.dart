@@ -45,8 +45,10 @@ class HostSummaryPage {
   final String? nextCursor;
 }
 
-/// Server reads reauthorize every request. Only concurrent migration-marker
-/// reads are shared, scoped to the current account; no repository PII cache.
+/// Reads the Host directory read models. Rules reauthorize every server
+/// read; offline, a read falls back to what this device last read, so the
+/// lists still open. Only concurrent directory reads are shared, scoped to
+/// the current account; no repository PII cache.
 class HostSummaryReader {
   HostSummaryReader(this._firestore, {required this.actorId});
   final FirebaseFirestore _firestore;
@@ -84,6 +86,20 @@ class HostSummaryReader {
     }
   }
 
+  /// The organizer's directory once the read model behind [marker] is
+  /// active. Every organizer starts active, so a missing marker is a server
+  /// fault to retry, not a reason to read through a Function.
+  Future<Map<String, dynamic>> activatedDirectory(
+    String organizerId,
+    String marker,
+  ) async {
+    final data = await directory(organizerId);
+    if (data == null || data[marker] != 1) {
+      throw StateError('This list is not ready yet. Try again shortly.');
+    }
+    return data;
+  }
+
   Future<Map<String, dynamic>?> _loadDirectory(
     String organizerId,
     String actor,
@@ -92,7 +108,7 @@ class HostSummaryReader {
       () => _firestore
           .collection('hostDirectorySummaries')
           .doc(organizerId)
-          .get(const GetOptions(source: Source.server)),
+          .get(),
       context: const BackendErrorContext(
         service: BackendService.firestore,
         action: 'load Host directory readiness',
@@ -114,10 +130,7 @@ class HostSummaryReader {
   }) async {
     final actor = _actor();
     final snapshot = await withBackendErrorContext(
-      () => _firestore
-          .collection(collection)
-          .doc(id)
-          .get(const GetOptions(source: Source.server)),
+      () => _firestore.collection(collection).doc(id).get(),
       context: BackendErrorContext(
         service: BackendService.firestore,
         action: 'load selected Host record',
@@ -186,9 +199,7 @@ class HostSummaryReader {
         .orderBy(FieldPath.documentId, descending: descending);
     if (position != null) query = query.startAfter(position);
     final snapshot = await withBackendErrorContext(
-      () => query
-          .limit(boundedLimit + 1)
-          .get(const GetOptions(source: Source.server)),
+      () => query.limit(boundedLimit + 1).get(),
       context: BackendErrorContext(
         service: BackendService.firestore,
         action: 'load Host list summaries',

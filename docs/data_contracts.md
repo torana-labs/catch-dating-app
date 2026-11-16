@@ -3120,9 +3120,13 @@ dry run and requires explicit `--project` and `--organizer`. `--apply` rebuilds
 views. `--activate` additionally verifies current source/view parity in one
 transaction before setting `contactSummaryVersion: 1`. Deploy rules, indexes
 and writers before a client using SDK reads, then backfill and activate each
-organizer. Missing/unverified markers retain callable reads; authorization
-failures never trigger a fallback. Activation has not been applied to a live
-environment by this source change.
+organizer. `onHostDirectoryOrganizerCreated` activates every model for a new
+organizer, which has no sources yet. The Host app reads the contact, form,
+group and response directories only through their markers: a missing marker is
+an error to retry, never a callable fallback. The event directory keeps its
+callable fallback until every organizer's events model is active. Online reads
+use the server under current rules; offline reads fall back to the device
+cache.
 
 The normal SDK contact page reads at most `limit + 1` small summaries and one
 counts document. Single segment and single filter-family queries use indexes;
@@ -3244,7 +3248,7 @@ source reconciliation. Monitor trigger retries/failures and compare parity
 before cutover. A callable mutation remains canonical and must never be
 re-authorized from a view's revision, count, grant status or eligibility field.
 
-SDK requests use fresh server reads, current organizer rules, stable indexed
+SDK requests use current organizer rules, stable indexed
 sort keys and document-ID tie breakers. Cursors bind account, organizer, model
 and filter scope. Account changes invalidate repository providers and reject
 in-flight results. There is no persistent PII cache in the repositories. Rules

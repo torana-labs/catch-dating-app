@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/audience/data/crm/host_communication_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_summary_reads.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
@@ -18,7 +19,9 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/host_crm_response_fixtures.dart';
@@ -54,6 +57,16 @@ class _TestHttpsCallableResult<T> extends Fake
   T get data => dataValue;
 }
 
+/// A repository whose contact directory reads an empty fake Firestore, so
+/// only queries the directory cannot serve reach [functions].
+HostContactsRepository _contacts(FirebaseFunctions functions) =>
+    HostContactsRepository(
+      functions,
+      summaries: HostContactSummaryReads(
+        HostSummaryReader(FakeFirebaseFirestore(), actorId: () => 'host'),
+      ),
+    );
+
 void main() {
   test('audience query identity and copies retain the server sort order', () {
     const query = HostAudienceQuery(
@@ -84,16 +97,19 @@ void main() {
   });
 
   test(
-    'default contact ordering omits sort for rolling deploy compatibility',
+    'a default-order name search omits sort for rolling deploy compatibility',
     () async {
       final functions = _TestFirebaseFunctions();
       final callable =
           functions.httpsCallable('listOrganizerContacts')
               as _TestHttpsCallable;
       callable.resultData = crmEmptyAudiencePageData();
-      final repository = HostContactsRepository(functions);
+      final repository = _contacts(functions);
 
-      await repository.listContacts('organizer-1');
+      await repository.listContacts(
+        'organizer-1',
+        query: const HostAudienceQuery(search: 'asha'),
+      );
 
       final payload = callable.calls.single as Map<Object?, Object?>;
       expect(payload['organizerId'], 'organizer-1');
@@ -121,7 +137,7 @@ void main() {
         'generatedAtMillis': 1700000000000,
         'sourceCoverage': 'exact',
       };
-      final repository = HostContactsRepository(functions);
+      final repository = _contacts(functions);
       final query = HostAudienceQuery(
         search: 'asha',
         segments: const {
@@ -294,7 +310,13 @@ void main() {
         functions.httpsCallable('upsertOrganizerSavedAudience')
             as _TestHttpsCallable;
     callable.resultData = crmSavedAudienceData();
-    final repository = HostSavedAudienceRepository(functions);
+    final repository = HostSavedAudienceRepository(
+      functions,
+      summaries: HostSummaryReader(
+        FakeFirebaseFirestore(),
+        actorId: () => 'host',
+      ),
+    );
 
     final audience = await repository.upsertSavedAudience(
       organizerId: 'organizer-1',
@@ -509,16 +531,19 @@ void main() {
     },
   );
 
-  test('non-default contact ordering remains explicit', () async {
+  test('a name search keeps non-default ordering explicit', () async {
     final functions = _TestFirebaseFunctions();
     final callable =
         functions.httpsCallable('listOrganizerContacts') as _TestHttpsCallable;
     callable.resultData = crmEmptyAudiencePageData();
-    final repository = HostContactsRepository(functions);
+    final repository = _contacts(functions);
 
     await repository.listContacts(
       'organizer-1',
-      query: const HostAudienceQuery(sort: HostAudienceSort.mostAttended),
+      query: const HostAudienceQuery(
+        search: 'asha',
+        sort: HostAudienceSort.mostAttended,
+      ),
     );
 
     final payload = callable.calls.single as Map<Object?, Object?>;
@@ -538,7 +563,7 @@ void main() {
         'displayName': 'Asha Rao',
         'revision': 1,
       };
-      final repository = HostContactsRepository(functions);
+      final repository = _contacts(functions);
 
       await repository.createContact(
         organizerId: 'organizer-1',
@@ -566,7 +591,7 @@ void main() {
           functions.httpsCallable('mutateOrganizerContact')
               as _TestHttpsCallable;
       callable.resultData = null;
-      final repository = HostContactsRepository(functions);
+      final repository = _contacts(functions);
 
       await repository.mutateContact(
         organizerId: 'organizer-1',
@@ -853,7 +878,7 @@ void main() {
           functions.httpsCallable('getOrganizerContactDetail')
               as _TestHttpsCallable;
       callable.resultData = {...crmContactDetailData(), 'historyLoaded': false};
-      final detail = await HostContactsRepository(
+      final detail = await _contacts(
         functions,
       ).getContactOverview('organizer-1', 'contact-1');
       expect(detail.historyLoaded, isFalse);
@@ -879,7 +904,7 @@ void main() {
           message: 'includeHistory: must NOT have additional properties',
         ),
       );
-      final detail = await HostContactsRepository(
+      final detail = await _contacts(
         functions,
       ).getContactOverview('organizer-1', 'contact-1');
       expect(detail.historyLoaded, isTrue);
@@ -918,9 +943,7 @@ void main() {
                 as _TestHttpsCallable;
         callable.failures.add(error);
         await expectLater(
-          HostContactsRepository(
-            functions,
-          ).getContactOverview('organizer-1', 'contact-1'),
+          _contacts(functions).getContactOverview('organizer-1', 'contact-1'),
           throwsA(isA<AppException>()),
         );
         expect(callable.calls, hasLength(1));

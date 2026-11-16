@@ -10,11 +10,11 @@ class HostResponseSummaryReads {
   const HostResponseSummaryReads(this.reader);
   final HostSummaryReader reader;
 
-  Future<HostFormResponsePage?> list(
-    HostFormResponseListRequest request,
-  ) async {
+  /// Whether the inbox read model can serve [request]: the plain inbox and
+  /// offered entries, without answer, identity, date or text filters.
+  static bool supports(HostFormResponseListRequest request) {
     final offered = request.offeredOnly;
-    if ((request.formId != null && !offered) ||
+    return !((request.formId != null && !offered) ||
         (offered && !request.includeApplications) ||
         request.contactId != null ||
         request.versionId != null ||
@@ -25,16 +25,19 @@ class HostResponseSummaryReads {
         request.answerFilters.isNotEmpty ||
         (request.query?.trim().isNotEmpty ?? false) ||
         request.from != null ||
-        request.to != null) {
-      return null;
+        request.to != null);
+  }
+
+  /// One page of a request [supports] accepts.
+  Future<HostFormResponsePage> list(HostFormResponseListRequest request) async {
+    if (!supports(request)) {
+      throw ArgumentError('The response inbox cannot serve these filters.');
     }
-    final directory = await reader.directory(request.organizerId);
-    if (directory?['responseSummaryVersion'] != 1) {
-      if (request.cursor?.startsWith(HostSummaryCursor.prefix) ?? false) {
-        throw StateError('The response inbox changed; refresh this list.');
-      }
-      return null;
-    }
+    final offered = request.offeredOnly;
+    await reader.activatedDirectory(
+      request.organizerId,
+      'responseSummaryVersion',
+    );
     final page = await reader.page(
       collection: 'hostResponseSummaries',
       organizerId: request.organizerId,

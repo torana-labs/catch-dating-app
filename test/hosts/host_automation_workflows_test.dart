@@ -6,12 +6,16 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign.dart
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_summary_reads.dart';
+import 'package:catch_dating_app/contexts/forms/data/read_models/host_response_summary_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -270,7 +274,12 @@ Future<void> _choose(WidgetTester tester, String field, String value) async {
 class _UnusedFunctions extends Fake implements FirebaseFunctions {}
 
 class _Forms extends HostFormsRepository {
-  _Forms() : super(_UnusedFunctions());
+  _Forms()
+    : super(
+        _UnusedFunctions(),
+        summaries: HostFormSummaryReads(_reader()),
+        responses: HostResponseSummaryReads(_reader()),
+      );
   final requests = <String>[];
   final cursors = <String?>[];
   bool failOnce = false;
@@ -434,3 +443,6 @@ Finder _namedInput(String title) => find.descendant(
   of: find.byWidgetPredicate((w) => w is CatchField && w.title == title),
   matching: find.byType(EditableText),
 );
+
+HostSummaryReader _reader() =>
+    HostSummaryReader(FakeFirebaseFirestore(), actorId: () => 'host');

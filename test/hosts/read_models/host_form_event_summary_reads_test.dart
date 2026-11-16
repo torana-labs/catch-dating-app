@@ -59,13 +59,13 @@ void main() {
     final page = await reads.list(
       const HostFormListRequest(organizerId: 'org'),
     );
-    expect(page!.items.map((item) => item.formId), ['form']);
+    expect(page.items.map((item) => item.formId), ['form']);
     expect(page.nextCursor, isNull);
     expect(
-      await reads.list(
+      HostFormSummaryReads.supports(
         const HostFormListRequest(organizerId: 'org', query: 'substring'),
       ),
-      isNull,
+      isFalse,
       reason: 'Substring search retains the existing server behavior.',
     );
   });

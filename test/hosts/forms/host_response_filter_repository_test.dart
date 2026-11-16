@@ -1,6 +1,10 @@
 import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_summary_reads.dart';
+import 'package:catch_dating_app/contexts/forms/data/read_models/host_response_summary_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
+import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -18,7 +22,15 @@ void main() {
     'multiple answers and combined questions survive pagination serialization',
     () async {
       final functions = _Functions();
-      final repository = HostFormsRepository(functions);
+      final reader = HostSummaryReader(
+        FakeFirebaseFirestore(),
+        actorId: () => 'host',
+      );
+      final repository = HostFormsRepository(
+        functions,
+        summaries: HostFormSummaryReads(reader),
+        responses: HostResponseSummaryReads(reader),
+      );
       const request = HostFormResponseListRequest(
         organizerId: 'org',
         formId: 'form',
