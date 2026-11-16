@@ -1,0 +1,275 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookRefer",
+  "title": "Playbook · Refer a host",
+  "height": 5000,
+  "phone": {
+    "title": "Refer a host",
+    "height": 8400
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Refer a host"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Refer a host",
+        "title": "Know someone who runs great nights? Earn when they grow.",
+        "lead": "Tell us about a host. If they join Catch and claim their page, you earn [N]% of what they pay Catch for their first [N] months of paid bills.",
+        "ink": "#4A3A0B",
+        "tone": "m-yellow",
+        "btns": [
+          {
+            "l": "Refer a host",
+            "href": "#nominate"
+          },
+          {
+            "l": "Refer on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Your referrals",
+          "sub": "Illustrative · payouts by [UPI, monthly]",
+          "rows": [
+            {
+              "t": "Lantern Lane Social",
+              "s": "Supper club · first paid bill Oct",
+              "tag": "Earning · month 2 of [N]",
+              "tone": "good"
+            },
+            {
+              "t": "Dink and Drink",
+              "s": "Pickleball · claimed their page",
+              "tag": "Free trial",
+              "tone": "warn"
+            },
+            {
+              "t": "Night Shift Socials",
+              "s": "Pub crawls · invited 3 days ago",
+              "tag": "Waiting to claim",
+              "tone": "warn"
+            },
+            {
+              "t": "Earned so far"
+            }
+          ]
+        },
+        "note": "Priority-2 page (/host/refer/). Decision: a share of fees, matching the nominator credit already in billing (nominatorCredits: the first nominator earns the credit rate on bills paid, before GST, for the credit months, if the host claims within the lapse window). Rate, months, lapse window and payout method are placeholders until set."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "How it works",
+        "kc": "#4C5BC4",
+        "title": "Three steps, and the first one takes a minute.",
+        "lead": "",
+        "panel": "open",
+        "items": [
+          {
+            "n": "1",
+            "t": "Tell us about them",
+            "d": "Their name, their Instagram or page, and how you know them. Or forward us their profile on WhatsApp."
+          },
+          {
+            "n": "2",
+            "t": "They claim their page",
+            "d": "We get in touch and help them set up. They need to claim their page within [N days] of your referral."
+          },
+          {
+            "n": "3",
+            "t": "You earn as they pay",
+            "d": "[N]% of each Catch bill they pay, before GST, for their first [N] months of paid bills."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Who refers hosts",
+        "kc": "#F5C451",
+        "title": "You probably already know one.",
+        "lead": "",
+        "panel": "ink",
+        "center": false,
+        "cols": 4,
+        "items": [
+          {
+            "t": "Regulars",
+            "d": "You go every week. Tell them about the tool that would save them hours."
+          },
+          {
+            "t": "Other hosts",
+            "d": "Run a club yourself? Refer the friend who runs a different night."
+          },
+          {
+            "t": "Venue teams",
+            "d": "Hosts run nights at your place every week."
+          },
+          {
+            "t": "Community builders",
+            "d": "You know every organiser in your city."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Refer a host",
+        "kc": "#B23A5A",
+        "title": "Who should we talk to?",
+        "lead": "We’ll reach out to them, say you sent us, and help them get set up. We never sign anyone up without their say-so.",
+        "panel": "open",
+        "top": true,
+        "ticks": [
+          "The first person to refer a host gets the credit",
+          "You’ll see their progress here, and on WhatsApp",
+          "Payouts [monthly, by UPI]"
+        ],
+        "id": "nominate",
+        "media": {
+          "kind": "card",
+          "title": "Your referral",
+          "fields": [
+            {
+              "id": "rf-host",
+              "label": "Host or club name",
+              "type": "text",
+              "ph": ""
+            },
+            {
+              "id": "rf-ig",
+              "label": "Their Instagram or website",
+              "type": "text",
+              "ph": "@lanternlanesocial"
+            },
+            {
+              "id": "rf-how",
+              "label": "How you know them",
+              "type": "text",
+              "ph": "I go to their supper club"
+            },
+            {
+              "id": "rf-name",
+              "label": "Your name",
+              "type": "text",
+              "ph": ""
+            },
+            {
+              "id": "rf-wa",
+              "label": "Your WhatsApp number",
+              "type": "tel",
+              "ph": ""
+            }
+          ],
+          "btns": [
+            {
+              "l": "Send referral"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "The fine print, up front",
+        "kc": "#1F7A57",
+        "title": "How credit is worked out.",
+        "lead": "",
+        "items": [
+          {
+            "t": "First referral counts",
+            "d": "If two people refer the same host, the first one gets the credit."
+          },
+          {
+            "t": "On bills they actually pay",
+            "d": "Before GST. Free trials and free events earn nothing."
+          },
+          {
+            "t": "For a set time",
+            "d": "Their first [N] months of paid bills."
+          },
+          {
+            "t": "Checked, then paid",
+            "d": "Each credit is approved before it’s paid out."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "About referrals.",
+        "items": [
+          [
+            "Do I need to be a Catch host to refer someone?",
+            "No. Anyone can refer a host."
+          ],
+          [
+            "When do I get paid?",
+            "Credit is earned when the host pays a Catch bill. Each credit is checked and approved, then paid [monthly, by UPI]."
+          ],
+          [
+            "How much could I earn?",
+            "[N]% of what the host pays Catch, before GST. Catch’s fee is 5% of their sales, capped at ₹10,000 a month, so the most one host can earn you is [N]% of ₹10,000 a month."
+          ],
+          [
+            "What if the host was already talking to Catch?",
+            "Credit goes to the first referral we record for that host. If they’d already contacted us, there’s no credit."
+          ],
+          [
+            "Will you tell the host I referred them?",
+            "Yes, we’ll say you sent us, unless you’d rather we didn’t. Tell us in the form."
+          ],
+          [
+            "What if they don’t claim their page in time?",
+            "The referral lapses after [N days], and no credit is earned for that host."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Run nights yourself?",
+        "title": "Start your own free trial too.",
+        "lead": "Free for 30 days from your first event, 90 for founding hosts.",
+        "tone": "m-yellow",
+        "ink": "#4A3A0B",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "How Catch works",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host on the day: tonight’s event, bookings and the door"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

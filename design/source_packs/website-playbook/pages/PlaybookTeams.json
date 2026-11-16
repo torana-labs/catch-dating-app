@@ -1,0 +1,377 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookTeams",
+  "title": "Playbook · Catch for teams",
+  "height": 8000,
+  "phone": {
+    "title": "Catch for teams",
+    "height": 12000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Teams and companies"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Catch for HR, people teams and team leads",
+        "title": "Team socials where people meet someone outside their team.",
+        "lead": "A private link only your colleagues have, RSVPs you can trust, groups that mix teams on purpose, and a report on who came and who met whom. Free for socials that don’t sell tickets.",
+        "ink": "#4A3A0B",
+        "tone": "m-yellow",
+        "proof": [
+          "[N] teams run socials on Catch",
+          "★ [4.8] from guests who booked1"
+        ],
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "door": "Planning a multi-day offsite with travel and rooms? Book a walkthrough →",
+        "chip": {
+          "title": "New-joiner mixer",
+          "rows": [
+            {
+              "l": "Invited",
+              "v": "60"
+            },
+            {
+              "l": "Said yes",
+              "v": "52"
+            },
+            {
+              "l": "Came",
+              "v": "48"
+            }
+          ]
+        },
+        "media": {
+          "kind": "phonecard",
+          "title": "Groups, round 2",
+          "sub": "New-joiner mixer · Thursday",
+          "stats": [
+            {
+              "v": "48",
+              "l": "here"
+            },
+            {
+              "v": "7",
+              "l": "teams"
+            },
+            {
+              "v": "14",
+              "l": "new joiners"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Group 1",
+              "s": "Design, Sales, Finance, Eng ×2, Ops",
+              "tag": "6 · 5 teams",
+              "tone": ""
+            },
+            {
+              "t": "Group 2",
+              "s": "Two new joiners, one from each floor",
+              "tag": "6 · 6 teams",
+              "tone": ""
+            },
+            {
+              "t": "Group 3",
+              "s": "Nobody who sits together",
+              "tag": "6 · 4 teams",
+              "tone": ""
+            }
+          ],
+          "chip": "Next round in 8 minutes · new groups"
+        },
+        "note": "Segment template, ninth use; priority-2 segment. Decision: for HR and team leads, free private socials, offsites sent to a walkthrough for programmes. No invoicing or GST promises; access is by private link, not by company email domain."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Sound familiar?",
+        "kc": "#B5451F",
+        "title": "Booking the venue is the easy part.",
+        "lead": "",
+        "panel": "open",
+        "items": [
+          {
+            "t": "Fifty thumbs up, twenty people",
+            "fix": "A real yes on a private link, a reminder the day before, and a count at the door.",
+            "d": "An emoji in the team channel isn’t an RSVP, and you’ve ordered food for fifty."
+          },
+          {
+            "t": "Everyone stands with their team",
+            "fix": "Small groups that mix teams on purpose and change a few times.",
+            "d": "Engineering by the window, Sales by the bar, the new joiners by the door."
+          },
+          {
+            "t": "No idea if it worked",
+            "fix": "Who came, who met someone new, and what they thought, in one report.",
+            "d": "Leadership asks if the offsite helped. You have photos."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Mixing on purpose",
+        "kc": "#4C5BC4",
+        "title": "Groups that put people next to someone new.",
+        "lead": "When people RSVP, ask their team and how long they’ve been here. Catch makes small groups that mix teams and seniority, and changes them a few times through the evening, with one thing to talk about each round.",
+        "panel": "open",
+        "ticks": [
+          "Groups mixed across teams, floors or offices",
+          "New joiners spread out, never left together in a corner",
+          "Rounds as long as you want them",
+          "Afterwards, people say who they met"
+        ],
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/671b39056e27735f8f9a00c7ca609a22",
+          "alt": "A colleague’s phone: their next group and something to talk about"
+        }
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "A team social on Catch",
+        "kc": "#F5C451",
+        "title": "A new-joiner mixer, start to finish.",
+        "lead": "",
+        "steps": [
+          {
+            "time": "Two weeks out",
+            "t": "One private link",
+            "d": "Post it in the team channel. It stays off public pages; only people with the link can RSVP."
+          },
+          {
+            "time": "As they RSVP",
+            "t": "Two quick questions",
+            "d": "Which team, and how long they’ve been here. That’s all Catch needs to mix the groups."
+          },
+          {
+            "time": "Day before",
+            "t": "A reminder that gets people there",
+            "d": "Where, when, and what to expect. Catch sends it for you."
+          },
+          {
+            "time": "On the evening",
+            "t": "Check in, then mix",
+            "d": "Colleagues scan in and see their first group. A few rounds later, everyone’s met people outside their team."
+          },
+          {
+            "time": "Next morning",
+            "t": "A report for leadership",
+            "d": "Who came, how many new people each person met, and what they thought, in a few lines."
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "Tonight’s groups and check-ins on an iPad"
+        }
+      }
+    },
+    {
+      "component": "KitStory",
+      "data": {
+        "kicker": "Team story · Powai",
+        "tone": "m-yellow",
+        "ink": "#4A3A0B",
+        "initials": "PT",
+        "name": "[Company name]",
+        "meta": "Monthly new-joiner mixers · [N] people",
+        "quote": "[The people lead, in their words, on RSVPs, mixing teams and what leadership saw.]",
+        "metrics": [
+          {
+            "l": "RSVPs who came",
+            "v": "[N%]",
+            "s": "from Catch records2"
+          },
+          {
+            "l": "New people met, on average",
+            "v": "[N%]",
+            "s": "from post-event feedback2"
+          },
+          {
+            "l": "Hours saved per event",
+            "v": "[N]",
+            "s": "self-reported3"
+          }
+        ],
+        "img": "/_blob/409d3ee3e6896b80188944189323718b",
+        "alt": "Colleagues at a team social",
+        "tag": "Replace with real photography from a design-partner team"
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Buyer’s checklist",
+        "kc": "#1F7A57",
+        "title": "What to look for in software for team socials.",
+        "lead": "Check these eight things, whichever tool you choose. Catch does all of them.",
+        "items": [
+          {
+            "t": "A private link",
+            "d": "Off public pages, for your team only."
+          },
+          {
+            "t": "A real RSVP",
+            "d": "Not an emoji in a channel."
+          },
+          {
+            "t": "Groups that mix teams",
+            "d": "And spread out new joiners."
+          },
+          {
+            "t": "Reminders sent for you",
+            "d": "So the yeses turn up."
+          },
+          {
+            "t": "Check-in at the door",
+            "d": "A count you can trust."
+          },
+          {
+            "t": "Feedback afterwards",
+            "d": "Ratings and who they met."
+          },
+          {
+            "t": "A short report",
+            "d": "For whoever asks if it worked."
+          },
+          {
+            "t": "Free when nobody pays",
+            "d": "No fee on free events."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Compare Catch with the alternatives",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for teams",
+        "price": "₹0",
+        "sub": "for socials your company pays for. Free events stay free.",
+        "lead": "If colleagues buy a ticket, say for an optional trip, it’s 5% of what they pay, never more than ₹10,000 a month.",
+        "examples": [
+          {
+            "t": "A new-joiner mixer for 60",
+            "v": "₹0",
+            "d": "Your company pays the venue; nobody buys a ticket."
+          },
+          {
+            "t": "A monthly team social",
+            "v": "₹0",
+            "d": "Every month, as long as it’s free to attend."
+          },
+          {
+            "t": "An optional weekend trip, 30 at ₹4,000",
+            "v": "₹6,000",
+            "d": "5% of ₹1,20,000 colleagues paid."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Start free trial",
+            "kind": "light"
+          },
+          {
+            "l": "See full pricing",
+            "kind": "lightsec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Team questions",
+        "title": "What hosts ask us.",
+        "items": [
+          [
+            "Is it really free?",
+            "Yes, if nobody pays to attend. Catch charges 5% only when people buy tickets, and free events stay free."
+          ],
+          [
+            "Can we keep it to our company?",
+            "Yes. Make the event invite-only: it stays off public pages and only people with your private link can RSVP."
+          ],
+          [
+            "Do colleagues need an app?",
+            "No. They RSVP, check in and see their group in their phone’s browser."
+          ],
+          [
+            "Can you run a multi-day offsite?",
+            "Yes, with programmes: arrivals, transport, rooms, forms and messages for everyone attending. Book a walkthrough and we’ll set it up with you."
+          ],
+          [
+            "Can we hire a host to run it?",
+            "Not through Catch yet. Many quiz, supper and run hosts on Catch run private events; message them from their page."
+          ],
+          [
+            "What does the report show?",
+            "Who RSVP’d and came, and, if you ask for feedback, ratings and how many new people they met. It never shows anyone’s private answers."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Your next team social",
+        "title": "Get people talking to someone new.",
+        "lead": "Set up a free social, or leave your number and we’ll send the team social guide on WhatsApp.",
+        "tone": "m-yellow",
+        "ink": "#4A3A0B",
+        "btns": [
+          {
+            "l": "Set up a free social"
+          }
+        ],
+        "form": {
+          "id": "tm-wa",
+          "label": "Your WhatsApp number",
+          "button": "Send the guide"
+        },
+        "img": "/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b",
+        "alt": "A dinner as guests see it on Catch"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "footnotes": [
+          "1. Average of reviews from guests who booked on Catch, [dates].",
+          "2. From Catch booking records, [dates].",
+          "3. Self-reported by the host. Individual results vary."
+        ]
+      }
+    }
+  ]
+}

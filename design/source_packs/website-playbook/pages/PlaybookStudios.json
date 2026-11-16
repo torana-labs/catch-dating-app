@@ -1,0 +1,406 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookStudios",
+  "title": "Playbook · Catch for studios",
+  "height": 8000,
+  "phone": {
+    "title": "Catch for studios",
+    "height": 12500
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "offer": {
+          "lead": "Founding hosts in Mumbai and Indore:",
+          "body": "90 days without Catch fees, until [date].",
+          "left": "[N] of 50 places left",
+          "cta": "Claim a place"
+        },
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Studios"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Catch for yoga, dance, fitness and craft studios",
+        "title": "Turn first-timers into members.",
+        "lead": "Open workshops and socials that bring new people through the door, then memberships that keep them: paid monthly by UPI Autopay, with classes included or cheaper and first pick of every session.",
+        "ink": "#4A1E3D",
+        "tone": "m-magenta",
+        "proof": [
+          "[N] studios host on Catch",
+          "★ [4.8] from guests who booked1"
+        ],
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "door": "Running wellness sessions for a company? Book a walkthrough →",
+        "chip": {
+          "title": "Sunday sound bath",
+          "rows": [
+            {
+              "l": "Booked",
+              "v": "22"
+            },
+            {
+              "l": "Members, included",
+              "v": "14"
+            },
+            {
+              "l": "First-timers",
+              "v": "8"
+            }
+          ]
+        },
+        "media": {
+          "kind": "phonecard",
+          "title": "Members",
+          "sub": "Still Water Yoga · Bandra",
+          "stats": [
+            {
+              "v": "64",
+              "l": "active"
+            },
+            {
+              "v": "9",
+              "l": "new this month"
+            },
+            {
+              "v": "3",
+              "l": "paused"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Studio member",
+              "s": "Weekly classes included · book 48 hours early",
+              "tag": "₹2,400 a month",
+              "tone": ""
+            },
+            {
+              "t": "Workshop member",
+              "s": "Half price on every workshop",
+              "tag": "₹800 a month",
+              "tone": ""
+            },
+            {
+              "t": "Not members yet",
+              "s": "Came 4 or more times in 60 days",
+              "tag": "11 people",
+              "tone": ""
+            }
+          ],
+          "chip": "Invite the 11 regulars to join"
+        },
+        "note": "Segment template, sixth use. Decision: memberships are live; pricing per host_memberships_spec (they count toward the 5% cap). No class packs, no repeating public timetable, no copy-event: the page doesn’t claim them. Priority 1."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Sound familiar?",
+        "kc": "#B5451F",
+        "title": "Teaching is the easy part.",
+        "lead": "",
+        "panel": "open",
+        "items": [
+          {
+            "t": "First-timers who never come back",
+            "fix": "After their first session they see what a member pays, and you see who came twice.",
+            "d": "A full workshop on Saturday, and none of them at a class the week after."
+          },
+          {
+            "t": "Chasing fees on WhatsApp",
+            "fix": "Memberships renew by UPI Autopay or card, and members pause or cancel themselves.",
+            "d": "A screenshot of a UPI payment, a spreadsheet, and three reminders a month."
+          },
+          {
+            "t": "Regulars who can’t get in",
+            "fix": "Members book before everyone else, and some sessions are for members only.",
+            "d": "Your most loyal people find the class full because a newcomer booked first."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Memberships",
+        "kc": "#4C5BC4",
+        "title": "Regulars pay monthly. You stop chasing.",
+        "lead": "Make one plan or a few. Each has a monthly or annual price, an optional cap on members, and benefits that checkout applies by itself.",
+        "panel": "open",
+        "ticks": [
+          "A member price, or the session included",
+          "Members book first, or only members can book",
+          "Renewals by UPI Autopay, card or eNACH, paid to your own Razorpay account",
+          "Members pause and cancel themselves; you can pause everyone for a break"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Plans · Still Water Yoga",
+          "rows": [
+            {
+              "t": "Studio member · ₹2,400 a month or ₹24,000 a year",
+              "s": "Weekly classes included · workshops at half price · book 48 hours early"
+            },
+            {
+              "t": "Workshop member · ₹800 a month",
+              "s": "Half price on every workshop · book 24 hours early"
+            },
+            {
+              "t": "Founding circle · ₹18,000 a year · 20 places",
+              "s": "Everything included · members-only full-moon sessions"
+            }
+          ],
+          "btns": [
+            {
+              "l": "Add a plan"
+            },
+            {
+              "l": "See members",
+              "kind": "sec"
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "A newcomer at your studio",
+        "kc": "#F5C451",
+        "title": "From a first workshop to a member.",
+        "lead": "",
+        "steps": [
+          {
+            "time": "Saturday",
+            "t": "They find your workshop",
+            "d": "An open workshop on your page and in What’s on. They book and pay in their browser, no app."
+          },
+          {
+            "time": "At the door",
+            "t": "Checked in, welcomed by name",
+            "d": "Your door list shows who’s new and who’s a member, so the first-timers get a proper hello."
+          },
+          {
+            "time": "That evening",
+            "t": "A thank-you, and what members pay",
+            "d": "Photos and a note go out. At their next booking, checkout shows how much a membership would save them."
+          },
+          {
+            "time": "Week three",
+            "t": "You see who keeps coming",
+            "d": "Catch lists everyone who’s been four or more times in 60 days and isn’t a member yet, ready for an invitation."
+          },
+          {
+            "time": "Every month",
+            "t": "They renew without a reminder",
+            "d": "UPI Autopay renews the membership. If they stop coming for 30 days, they show up in a list for you to check in with."
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "Tonight’s class list with members marked on an iPad"
+        }
+      }
+    },
+    {
+      "component": "KitStory",
+      "data": {
+        "kicker": "Studio story · Bandra",
+        "tone": "m-magenta",
+        "ink": "#4A1E3D",
+        "initials": "SW",
+        "name": "Still Water Yoga",
+        "meta": "Classes, workshops and sound baths · [N] members",
+        "quote": "[The studio owner, in their words, on first-timers, memberships and not chasing fees.]",
+        "metrics": [
+          {
+            "l": "First-timers who became members",
+            "v": "[N%]",
+            "s": "from Catch records2"
+          },
+          {
+            "l": "Members still active after 3 months",
+            "v": "[N%]",
+            "s": "from Catch records2"
+          },
+          {
+            "l": "Hours a month not chasing fees",
+            "v": "[N]",
+            "s": "self-reported3"
+          }
+        ],
+        "img": "/_blob/409d3ee3e6896b80188944189323718b",
+        "alt": "A workshop at a studio",
+        "tag": "Replace with real photography from a design-partner studio"
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Buyer’s checklist",
+        "kc": "#1F7A57",
+        "title": "What to look for in software for a studio.",
+        "lead": "Check these eight things, whichever tool you choose. Catch does all of them.",
+        "items": [
+          {
+            "t": "Monthly and annual memberships",
+            "d": "Renewed by UPI Autopay or card."
+          },
+          {
+            "t": "Benefits applied at checkout",
+            "d": "Member price or included."
+          },
+          {
+            "t": "Early booking for members",
+            "d": "Or sessions only members can book."
+          },
+          {
+            "t": "Pause and cancel without you",
+            "d": "Members manage it themselves."
+          },
+          {
+            "t": "Paid to your own account",
+            "d": "Your Razorpay, your invoices."
+          },
+          {
+            "t": "Members marked at the door",
+            "d": "And who’s new."
+          },
+          {
+            "t": "Lists that need a nudge",
+            "d": "Lapsed, quiet, or regular but not a member."
+          },
+          {
+            "t": "A cap on what you pay",
+            "d": "Never more than ₹10,000 a month."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Compare Catch with the alternatives",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for studios",
+        "price": "5%",
+        "sub": "of tickets and memberships, never more than ₹10,000 a month.",
+        "lead": "Free for 30 days from your first session, 90 for founding hosts. Payment gateway fees are separate.",
+        "examples": [
+          {
+            "t": "30 members at ₹2,400",
+            "v": "₹3,600 a month",
+            "d": "5% of ₹72,000 in renewals."
+          },
+          {
+            "t": "80 members and four workshops",
+            "v": "₹10,000 a month",
+            "d": "The cap. Anything above it is yours."
+          },
+          {
+            "t": "A free open class",
+            "v": "₹0",
+            "d": "Free events stay free."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Start free trial",
+            "kind": "light"
+          },
+          {
+            "l": "See full pricing",
+            "kind": "lightsec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Studio questions",
+        "title": "What hosts ask us.",
+        "items": [
+          [
+            "How do members pay?",
+            "By UPI Autopay, card e-mandate or eNACH, monthly or yearly. By default renewals go straight to your own Razorpay account, and Catch bills its 5% afterwards."
+          ],
+          [
+            "What can a membership include?",
+            "A member price on sessions, up to 100% off so they’re included; early booking; and sessions only members can book. You can add perks you give in person, like a free mat or a guest pass."
+          ],
+          [
+            "Can members pause?",
+            "Yes. Members pause or cancel at the end of their period themselves. You can also pause billing for everyone, for a month off or the monsoon."
+          ],
+          [
+            "Can Catch run my whole weekly timetable?",
+            "Each class is its own session on Catch, so a busy timetable is more work than in a class-booking tool. Many studios start with workshops, socials and the classes members come to most."
+          ],
+          [
+            "Do you sell class packs?",
+            "Not yet. Memberships with a member price or included sessions cover most of what packs are used for."
+          ],
+          [
+            "Do members need an app?",
+            "No. Members join, book and check in on your page in their phone’s browser."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Your next workshop",
+        "title": "Bring them in once. Keep them for years.",
+        "lead": "Start the free trial, or leave your number and we’ll send the studio setup guide on WhatsApp.",
+        "tone": "m-magenta",
+        "ink": "#4A1E3D",
+        "btns": [
+          {
+            "l": "Start free trial"
+          }
+        ],
+        "form": {
+          "id": "st-wa",
+          "label": "Your WhatsApp number",
+          "button": "Send the guide"
+        },
+        "img": "/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b",
+        "alt": "A dinner as guests see it on Catch"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "footnotes": [
+          "1. Average of reviews from guests who booked on Catch, [dates].",
+          "2. From Catch booking records, [dates].",
+          "3. Self-reported by the host. Individual results vary."
+        ]
+      }
+    }
+  ]
+}

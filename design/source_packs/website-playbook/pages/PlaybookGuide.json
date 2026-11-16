@@ -1,0 +1,125 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookGuide",
+  "title": "Playbook · How to start a run club in Mumbai",
+  "height": 4200,
+  "phone": {
+    "title": "Playbook article",
+    "height": 7400
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "resources",
+        "crumbs": [
+          "Resources",
+          "Playbooks",
+          "Run clubs"
+        ],
+        "here": "How to start a run club in Mumbai"
+      }
+    },
+    {
+      "component": "KitArticle",
+      "hint": 2400,
+      "data": {
+        "kicker": "Playbook · Run clubs · Mumbai",
+        "kc": "#B5451F",
+        "title": "How to start a run club in Mumbai",
+        "lead": "A route, a time, a café at the end and a plan for the people who come alone. Everything you need for your first five runs.",
+        "meta": "8 minute read · Updated [date]",
+        "sections": [
+          {
+            "h": "Pick a route people can find",
+            "paras": [
+              "Start and finish at the same place, ideally a café that opens early. Sea-face promenades work because they’re flat, lit and easy to describe."
+            ],
+            "list": [
+              "Under 5 km for the first few runs",
+              "One meeting point, the same every week",
+              "A loop, so nobody gets lost"
+            ],
+            "tip": "Walk the route at the same time of day before your first run. Note where people can regroup."
+          },
+          {
+            "h": "Choose a time and stick to it",
+            "paras": [
+              "Early weekend mornings beat the heat and the traffic. The same time every week matters more than the perfect time."
+            ]
+          },
+          {
+            "h": "Plan for the person who comes alone",
+            "paras": [
+              "Most newcomers come on their own. If they end up at the back by themselves, they don’t come back."
+            ],
+            "list": [
+              "Put people in pace groups of six to eight",
+              "Give each group a lead who says hello",
+              "Ask one easy question before you set off"
+            ],
+            "tip": "On Catch, runners book with a pace and groups are planned for you, with newcomers spread out."
+          },
+          {
+            "h": "Your first five runs",
+            "paras": [
+              "Run one: friends and friends of friends. Runs two and three: post the route and the café. Runs four and five: ask regulars to bring one person each, with their own link so you know who brought whom."
+            ]
+          },
+          {
+            "h": "Free or paid?",
+            "paras": [
+              "Keep social runs free. Charge for coached sessions, races and anything with coffee or a coach included. Paid runs have fewer no-shows; free runs grow faster."
+            ],
+            "tip": "Free runs stay free on Catch. Paid runs are 5% of ticket sales, never more than ₹10,000 a month."
+          }
+        ],
+        "aside": {
+          "tone": "m-coral",
+          "title": "Start your club on Catch",
+          "body": "Sign-ups, pace groups, a first hello and next week’s run, without the WhatsApp thread.",
+          "btns": [
+            {
+              "l": "Start free trial"
+            },
+            {
+              "l": "Run clubs on Catch",
+              "kind": "sec"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Keep reading",
+        "title": "More for run clubs.",
+        "items": [
+          {
+            "t": "Run clubs on Catch",
+            "d": "Pace pods, a first hello and the next run, on one page.",
+            "link": "See how →"
+          },
+          {
+            "t": "No-show calculator",
+            "d": "What empty spots cost you each month.",
+            "link": "Work it out →"
+          },
+          {
+            "t": "Your first event",
+            "d": "Seven steps from download to the morning after.",
+            "link": "Start →"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "Live404",
+  "title": "Live · Page not found",
+  "height": 1500,
+  "phone": {
+    "title": "Page not found",
+    "height": 2800
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "guest",
+        "city": "Mumbai"
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "h1": true,
+        "kicker": "Page not found",
+        "kc": "#B5451F",
+        "title": "This page never checked in.",
+        "lead": "The link may be old, or the page may have moved.",
+        "cols": 4,
+        "items": [
+          {
+            "tone": "m-coral",
+            "t": "What’s on",
+            "d": "Plans this week in Mumbai and Indore.",
+            "link": "Browse events →"
+          },
+          {
+            "tone": "m-yellow",
+            "t": "Organizer directory",
+            "d": "Look up public profiles by city, format, organizer name, or review signal.",
+            "link": "Search the directory →"
+          },
+          {
+            "tone": "m-mint",
+            "t": "Claim a listing",
+            "d": "If you own the page you expected, start from the host route or claim search.",
+            "link": "Claim a listing →"
+          },
+          {
+            "tone": "m-indigo",
+            "t": "Host on Catch",
+            "d": "Bookings, the door and the night itself, in one app.",
+            "link": "Open host tools →"
+          }
+        ],
+        "btns": [
+          {
+            "l": "Return to Catch"
+          },
+          {
+            "l": "Get help",
+            "kind": "sec"
+          }
+        ],
+        "note": "404, with the live notFound copy. The route-recovery state (a page that failed to load) uses the same layout: “We couldn’t open this page. Check your connection, then try opening this page again.”"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "guest",
+        "mbar": "Browse events"
+      }
+    }
+  ]
+}

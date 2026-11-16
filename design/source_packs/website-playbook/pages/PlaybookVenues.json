@@ -1,0 +1,495 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookVenues",
+  "title": "Playbook · Catch for venues",
+  "height": 8000,
+  "phone": {
+    "title": "Catch for venues",
+    "height": 13500
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "offer": {
+          "lead": "Founding hosts in Mumbai and Indore:",
+          "body": "90 days without Catch fees, until [date].",
+          "left": "[N] of 50 places left",
+          "cta": "Claim a place"
+        },
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Venues"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Catch for cafés, bars, breweries and courts",
+        "title": "Turn a quiet Tuesday into a night people come back for.",
+        "lead": "Run your own quiz, supper or court nights with tickets paid upfront, see which promoter or post filled the room, and get listed for hosts looking for a space like yours.",
+        "ink": "#1E2A6B",
+        "tone": "m-indigo",
+        "proof": [
+          "[N] venues host on Catch",
+          "★ [4.8] from guests who booked1"
+        ],
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "door": "Running nights at several outlets? Book a walkthrough →",
+        "chip": {
+          "title": "Tuesday pub quiz",
+          "rows": [
+            {
+              "l": "Booked",
+              "v": "48"
+            },
+            {
+              "l": "Back from last week",
+              "v": "19"
+            },
+            {
+              "l": "Waitlist",
+              "v": "6"
+            }
+          ]
+        },
+        "media": {
+          "kind": "phonecard",
+          "title": "This week",
+          "sub": "Hopline Brewing · Lower Parel",
+          "stats": [
+            {
+              "v": "3",
+              "l": "nights"
+            },
+            {
+              "v": "112",
+              "l": "booked"
+            },
+            {
+              "v": "₹46k",
+              "l": "paid"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Tue · Pub quiz",
+              "s": "Your night · 12 teams",
+              "tag": "48 of 60",
+              "tone": ""
+            },
+            {
+              "t": "Thu · Supper on the deck",
+              "s": "Hosted by Long Table Supper",
+              "tag": "24 of 24",
+              "tone": ""
+            },
+            {
+              "t": "Sun · Run and brunch",
+              "s": "Hosted by Sunday Striders",
+              "tag": "40 booked",
+              "tone": ""
+            }
+          ],
+          "chip": "Tuesday quiz: 31 bookings came from your Instagram link"
+        },
+        "note": "Segment template, fifth use. Decision: own nights plus host matching. Matching is interest-only until it is built, and the form says so. Priority 1."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Sound familiar?",
+        "kc": "#B5451F",
+        "title": "The space is the easy part.",
+        "lead": "",
+        "panel": "open",
+        "items": [
+          {
+            "t": "Tuesdays that don’t pay the rent",
+            "fix": "A regular night that sells tickets ahead, so you know who’s coming.",
+            "d": "The kitchen’s staffed and the bar is stocked, and twelve people come in."
+          },
+          {
+            "t": "Promoters you can’t measure",
+            "fix": "A link for each promoter and post, followed through to paid bookings.",
+            "d": "Three promoters each say they filled the room, and you pay all three."
+          },
+          {
+            "t": "One-off events, no regulars",
+            "fix": "Followers hear about your next night first, and you see who came back.",
+            "d": "A great night once, then a new crowd to find from scratch every time."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Run your own nights",
+        "kc": "#4C5BC4",
+        "title": "Pick a format that suits the room.",
+        "lead": "Each one comes with a run of show, from bookings to the follow-up.",
+        "panel": "open",
+        "cols": 4,
+        "items": [
+          {
+            "t": "Quiz and game nights",
+            "link": "For quiz nights →",
+            "d": "Teams formed at the door, scores on the screen.",
+            "tone": "m-yellow"
+          },
+          {
+            "t": "Supper clubs",
+            "link": "For supper clubs →",
+            "d": "Long tables, applications and seats planned for you.",
+            "tone": "m-pink"
+          },
+          {
+            "t": "Court socials",
+            "link": "For racket sports →",
+            "d": "Levels, rotations and fair court time.",
+            "tone": "m-mint"
+          },
+          {
+            "t": "Run and brunch",
+            "link": "For run clubs →",
+            "d": "A club starts and finishes at your door.",
+            "tone": "m-coral"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Links for every promoter",
+        "kc": "#B5451F",
+        "title": "Know who filled the room.",
+        "lead": "Give every promoter, partner and post its own link. Catch follows each one from the first visit to a paid booking, so you pay for what works.",
+        "panel": "open",
+        "ticks": [
+          "A link per promoter, poster or post",
+          "Visits, bookings and revenue for each",
+          "Followers and repeat guests by night"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Links · Tuesday pub quiz",
+          "rows": [
+            {
+              "t": "Instagram bio",
+              "s": "240 visits · 31 bookings · ₹12,400"
+            },
+            {
+              "t": "Promoter · Meera",
+              "s": "120 visits · 18 bookings · ₹7,200"
+            },
+            {
+              "t": "Table cards at the bar",
+              "s": "64 visits · 11 bookings · ₹4,400"
+            },
+            {
+              "t": "Partner · Long Table Supper list",
+              "s": "52 visits · 6 bookings · ₹2,400"
+            }
+          ],
+          "fine": "Illustrative figures"
+        }
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "A night at your venue on Catch",
+        "kc": "#F5C451",
+        "title": "A Tuesday quiz, start to finish.",
+        "lead": "",
+        "steps": [
+          {
+            "time": "Last week",
+            "t": "Tickets on sale, paid upfront",
+            "d": "Your night goes on your venue page and in What’s on. Followers hear first; promoters share their links."
+          },
+          {
+            "time": "Monday",
+            "t": "Plan the bar for the bookings",
+            "d": "Sixty booked, twelve teams, six on the waitlist. Staff the floor for the room you’ll actually have."
+          },
+          {
+            "time": "7:45 PM",
+            "t": "Check in at the door",
+            "d": "Guests scan in and find their team. Walk-ins fill the gaps you have."
+          },
+          {
+            "time": "8:00 PM",
+            "t": "The night runs itself",
+            "d": "Your quizmaster runs rounds and scores from a tablet. Your team runs the bar."
+          },
+          {
+            "time": "Next morning",
+            "t": "See who’ll come back",
+            "d": "Photos and results go out, guests follow your venue, and you see which link filled the room."
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "Tonight’s rounds, scores and the door on an iPad"
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Coming soon · Hosts looking for a space",
+        "kc": "#4A3A0B",
+        "title": "Put your empty nights in front of hosts.",
+        "lead": "Supper clubs, quiz hosts and run clubs on Catch often need a room. Tell us about your space and the nights you’d like to fill, and we’ll introduce you as we start matching hosts with venues.",
+        "panel": "m-yellow",
+        "top": true,
+        "ticks": [
+          "No fee to be listed",
+          "You approve every host and every night",
+          "The host sells the tickets on Catch; you sell the food and drink"
+        ],
+        "body": "Matching isn’t live yet. We’ll WhatsApp you when it is, and won’t share your details with hosts before you agree.",
+        "media": {
+          "kind": "card",
+          "title": "List your space",
+          "fields": [
+            {
+              "id": "v-name",
+              "label": "Venue name",
+              "type": "text",
+              "ph": ""
+            },
+            {
+              "id": "v-area",
+              "label": "Area and city",
+              "type": "text",
+              "ph": "Lower Parel, Mumbai"
+            },
+            {
+              "id": "v-cap",
+              "label": "How many people fit",
+              "type": "text",
+              "ph": "60 standing, 30 seated"
+            },
+            {
+              "id": "v-nights",
+              "label": "Nights you’d like to fill",
+              "type": "text",
+              "ph": "Tuesdays and Wednesdays"
+            },
+            {
+              "id": "v-wa",
+              "label": "Your WhatsApp number",
+              "type": "tel",
+              "ph": ""
+            }
+          ],
+          "btns": [
+            {
+              "l": "List my space"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitStory",
+      "data": {
+        "kicker": "Venue story · Lower Parel",
+        "tone": "m-indigo",
+        "ink": "#1E2A6B",
+        "initials": "HB",
+        "name": "Hopline Brewing",
+        "meta": "Weekly pub quiz and partner nights · [N] covers",
+        "quote": "[The venue owner, in their words, on quiet nights, promoters and regulars.]",
+        "metrics": [
+          {
+            "l": "More Tuesday covers",
+            "v": "[N%]",
+            "s": "from Catch records2"
+          },
+          {
+            "l": "Guests back within a month",
+            "v": "[N%]",
+            "s": "from Catch records2"
+          },
+          {
+            "l": "Extra revenue a quiet night",
+            "v": "[N]",
+            "s": "self-reported3"
+          }
+        ],
+        "img": "/_blob/409d3ee3e6896b80188944189323718b",
+        "alt": "A full room on a quiz night",
+        "tag": "Replace with real photography from a design-partner venue"
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Buyer’s checklist",
+        "kc": "#1F7A57",
+        "title": "What to look for in event software for a venue.",
+        "lead": "Check these eight things, whichever tool you choose. Catch does all of them.",
+        "items": [
+          {
+            "t": "Tickets paid upfront",
+            "d": "UPI or card, before the night."
+          },
+          {
+            "t": "A page for your venue",
+            "d": "Every night you run, and your reviews."
+          },
+          {
+            "t": "A link for each promoter",
+            "d": "Bookings and revenue for each."
+          },
+          {
+            "t": "Followers and repeat guests",
+            "d": "See who comes back."
+          },
+          {
+            "t": "Ready-made formats",
+            "d": "Quiz, supper, courts, run clubs."
+          },
+          {
+            "t": "A quick door",
+            "d": "Scan in, find your team or table."
+          },
+          {
+            "t": "Partner hosts welcome",
+            "d": "Nights by hosts you approve."
+          },
+          {
+            "t": "A cap on what you pay",
+            "d": "Never more than ₹10,000 a month."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Compare Catch with the alternatives",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for venues",
+        "price": "5%",
+        "sub": "of ticket sales, never more than ₹10,000 a month.",
+        "lead": "Free for 30 days from your first night, 90 for founding hosts. Payment gateway fees are separate.",
+        "examples": [
+          {
+            "t": "A 60-seat quiz at ₹400",
+            "v": "₹1,200 a night",
+            "d": "5% of ₹24,000. Food and drink aren’t counted."
+          },
+          {
+            "t": "A quiz every Tuesday",
+            "v": "₹4,800 a month",
+            "d": "Well under the ₹10,000 cap."
+          },
+          {
+            "t": "A night run by a partner host",
+            "v": "₹0 to you",
+            "d": "The host pays on their own tickets."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Start free trial",
+            "kind": "light"
+          },
+          {
+            "l": "See full pricing",
+            "kind": "lightsec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Venue questions",
+        "title": "What hosts ask us.",
+        "items": [
+          [
+            "Do you take a cut of food and drink?",
+            "No. Catch charges 5% of ticket sales only, never more than ₹10,000 a month. What guests spend at the bar is yours."
+          ],
+          [
+            "We have no one to run the night. Can a host do it?",
+            "Yes. List your space and we’ll introduce you to hosts as matching starts. Until then, you can invite a host you know to run a night at your venue on Catch."
+          ],
+          [
+            "Can we sell a ticket that includes food or a drink?",
+            "Yes. Set the price and say what’s included on the page. The kitchen sees the numbers before the night."
+          ],
+          [
+            "Can promoters be paid on what they bring?",
+            "Each promoter gets their own link, and Catch shows the bookings and revenue from it. How you pay them is up to you."
+          ],
+          [
+            "We have more than one outlet.",
+            "Each outlet can have its own page. Book a walkthrough and we’ll set up the team for you."
+          ],
+          [
+            "Do guests need an app?",
+            "No. Guests book, pay and check in on your page in their phone’s browser."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Your quiet night",
+        "title": "Pick the night. We’ll help you fill it.",
+        "lead": "Start the free trial, or leave your number and we’ll send the venue setup guide on WhatsApp.",
+        "tone": "m-indigo",
+        "ink": "#1E2A6B",
+        "btns": [
+          {
+            "l": "Start free trial"
+          }
+        ],
+        "form": {
+          "id": "vn-wa",
+          "label": "Your WhatsApp number",
+          "button": "Send the guide"
+        },
+        "img": "/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b",
+        "alt": "A dinner as guests see it on Catch"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "footnotes": [
+          "1. Average of reviews from guests who booked on Catch, [dates].",
+          "2. From Catch booking records, [dates].",
+          "3. Self-reported by the host. Individual results vary."
+        ]
+      }
+    }
+  ]
+}

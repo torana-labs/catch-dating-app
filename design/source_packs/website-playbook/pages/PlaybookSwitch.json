@@ -1,0 +1,350 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookSwitch",
+  "title": "Playbook · Switch to Catch",
+  "height": 7000,
+  "phone": {
+    "title": "Switch to Catch",
+    "height": 10500
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts",
+          "Get started"
+        ],
+        "here": "Switch to Catch"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Switching to Catch",
+        "title": "Leave the spreadsheet. Keep your people.",
+        "lead": "Moving off WhatsApp polls, Google Forms and UPI screenshots, or another ticketing site? Send us your sheet and we’ll move it for you, or import it yourself in Catch Host in a few minutes.",
+        "ink": "#4A1C0E",
+        "tone": "m-coral",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Send us your sheet on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "door": "Still deciding? See how Catch compares →",
+        "media": {
+          "kind": "card",
+          "title": "Sunday social run on Catch",
+          "sub": "Before: a WhatsApp poll with 34 “in”, 19 UPI screenshots, and 23 at the start?",
+          "stats": [
+            {
+              "v": "28",
+              "l": "booked and paid"
+            },
+            {
+              "v": "26",
+              "l": "checked in"
+            },
+            {
+              "v": "7",
+              "l": "new this week"
+            }
+          ],
+          "fine": "Illustrative"
+        },
+        "note": "New page, priority 1. Decision: we move it for you, and there is also self-serve import in Catch Host (CSV/XLSX attendees, Google Forms/Typeform applications). Contact export exists, so “your data, always” holds."
+      }
+    },
+    {
+      "component": "KitSwitcher",
+      "data": {
+        "kicker": "What you’re moving from",
+        "title": "What changes, and what doesn’t.",
+        "items": [
+          {
+            "label": "WhatsApp and UPI",
+            "cols": [
+              {
+                "h": "What you do today",
+                "list": [
+                  "A poll in the group for every event",
+                  "UPI screenshots matched by hand",
+                  "A headcount you only learn at the door"
+                ]
+              },
+              {
+                "h": "What moves to Catch",
+                "list": [
+                  "Bookings, paid at the time",
+                  "A waitlist and a cancellation policy",
+                  "Reminders sent for you"
+                ]
+              },
+              {
+                "h": "What your guests notice",
+                "list": [
+                  "One link instead of a poll",
+                  "Pay by UPI or card in two taps",
+                  "The group stays, for chat and photos"
+                ]
+              }
+            ]
+          },
+          {
+            "label": "Google Forms or Typeform",
+            "cols": [
+              {
+                "h": "What you do today",
+                "list": [
+                  "A form for sign-ups or applications",
+                  "Payment chased separately",
+                  "A sheet to work out who’s confirmed"
+                ]
+              },
+              {
+                "h": "What moves to Catch",
+                "list": [
+                  "Your questions, as applications",
+                  "Past answers, imported",
+                  "Approve, then they pay to confirm"
+                ]
+              },
+              {
+                "h": "What your guests notice",
+                "list": [
+                  "The same questions, on your page",
+                  "They pay when you approve them",
+                  "They know straight away if they’re in"
+                ]
+              }
+            ]
+          },
+          {
+            "label": "Another ticketing site",
+            "cols": [
+              {
+                "h": "What you do today",
+                "list": [
+                  "Tickets sold on someone else’s site",
+                  "Guests who belong to the marketplace",
+                  "A door list you download"
+                ]
+              },
+              {
+                "h": "What moves to Catch",
+                "list": [
+                  "Your past guest lists, imported",
+                  "Your page, followers and reviews",
+                  "The door, the night and the follow-up"
+                ]
+              },
+              {
+                "h": "What your guests notice",
+                "list": [
+                  "Booking on your page, no app",
+                  "Reminders and check-in from you",
+                  "Hearing about your next event first"
+                ]
+              }
+            ]
+          },
+          {
+            "label": "Instagram DMs",
+            "cols": [
+              {
+                "h": "What you do today",
+                "list": [
+                  "“DM to book” and a lot of replies",
+                  "Payment details sent one by one",
+                  "Names on a note on your phone"
+                ]
+              },
+              {
+                "h": "What moves to Catch",
+                "list": [
+                  "One link in your bio",
+                  "Bookings and payments together",
+                  "Followers who get your next event"
+                ]
+              },
+              {
+                "h": "What your guests notice",
+                "list": [
+                  "Book in a minute from your bio",
+                  "No waiting for a reply",
+                  "A ticket and a reminder"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Two ways to move",
+        "kc": "#B5451F",
+        "title": "We do it, or you do it in five minutes.",
+        "lead": "",
+        "panel": "open",
+        "cols": 2,
+        "items": [
+          {
+            "t": "We move it for you",
+            "link": "Send us your sheet",
+            "d": "1. Send us your sheet, form export or last guest list on WhatsApp. 2. We set up your page and import your guests and applications. 3. You check it, and put your next event on sale. Done for youFree for every new host. Replies [10 am to 8 pm, Mon–Sat].",
+            "tone": "m-coral"
+          },
+          {
+            "t": "Import it yourself",
+            "link": "Start free trial",
+            "d": "1. Export a CSV or Excel file from your sheet, Google Forms, Typeform or ticketing site. 2. In Catch Host, choose Import and pick the file. 3. Match your columns to Catch’s, check the preview, and import. Self-serveImporting the same file twice won’t make duplicates."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "What comes with you",
+        "kc": "#1F7A57",
+        "title": "Nothing gets left behind.",
+        "lead": "Your guests, their answers and your group all come along, and you can take your data out again whenever you want.",
+        "items": [
+          {
+            "t": "Past guest lists",
+            "d": "Import a CSV or Excel file into an event."
+          },
+          {
+            "t": "Form responses",
+            "d": "Google Forms or Typeform answers become applications."
+          },
+          {
+            "t": "Your followers",
+            "d": "Everyone who books can follow your page."
+          },
+          {
+            "t": "Your WhatsApp group",
+            "d": "Keep it for chat; bookings move to Catch."
+          },
+          {
+            "t": "Your prices and policy",
+            "d": "Set once, applied to every booking."
+          },
+          {
+            "t": "Your data, always",
+            "d": "Export your contacts whenever you like."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "Your first month on Catch",
+        "kc": "#F5C451",
+        "title": "How the switch usually goes.",
+        "lead": "",
+        "steps": [
+          {
+            "time": "Day 1",
+            "t": "Your page and next event, set up",
+            "d": "By us or by you. Past guests and form answers imported."
+          },
+          {
+            "time": "Day 2",
+            "t": "One message to the group",
+            "d": "“From now on, book here.” Pin the link. The group stays for chat and photos."
+          },
+          {
+            "time": "Week 1",
+            "t": "Bookings come in, paid",
+            "d": "No more chasing screenshots. You see who’s booked, who’s paid and who’s on the waitlist."
+          },
+          {
+            "time": "The event",
+            "t": "A door list that’s right",
+            "d": "Guests scan in. You see who came, who didn’t and who’s new."
+          },
+          {
+            "time": "Week 4",
+            "t": "The first report",
+            "d": "Who came back, which link filled the event and what you earned, without a spreadsheet."
+          }
+        ],
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+          "alt": "Catch Host on the day: tonight’s event, bookings and the door"
+        }
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Switching questions",
+        "title": "What switching hosts ask us.",
+        "items": [
+          [
+            "Do I have to close my WhatsApp group?",
+            "No. Most hosts keep it for chat and photos and pin the booking link. Bookings, payments and reminders move to Catch."
+          ],
+          [
+            "What can I import?",
+            "Guest lists into an event, from a CSV or Excel file, and form responses from Google Forms or Typeform as applications. Match your columns, check the preview and import."
+          ],
+          [
+            "Will my guests have to sign up?",
+            "They book on your page in their phone’s browser with their phone number. No app to download."
+          ],
+          [
+            "I still have events on sale elsewhere.",
+            "Leave them there and put your next event on Catch. You can import those guest lists afterwards."
+          ],
+          [
+            "Can I take my data out again?",
+            "Yes. Export your contacts from Catch Host whenever you like."
+          ],
+          [
+            "What does it cost?",
+            "Nothing for 30 days from your first event on Catch, or 90 for founding hosts. Then 5% of ticket sales, never more than ₹10,000 a month. Moving your data is free."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Your next event",
+        "title": "Make it the first one without the spreadsheet.",
+        "lead": "Free for 30 days from your first event on Catch, 90 for founding hosts.",
+        "tone": "m-coral",
+        "ink": "#4A1C0E",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Send us your sheet on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b",
+        "alt": "An event as guests see it on Catch"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

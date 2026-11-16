@@ -1,0 +1,305 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookForms",
+  "title": "Playbook · Forms",
+  "height": 5800,
+  "phone": {
+    "title": "Forms",
+    "height": 9800
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "How Catch works"
+        ],
+        "here": "Forms"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Product · forms",
+        "title": "Ask anything. Do something with the answer.",
+        "lead": "Applications, registrations, waivers, guest details and feedback, built from a template in minutes. People fill them in on their phone with no app. Every answer lands on the right person’s record, and an approved applicant can go straight onto your guest list.",
+        "ink": "#1E2550",
+        "tone": "m-indigo",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "See bookings and payments",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Application · Long Table Supper",
+          "sub": "Answered on the phone, no app",
+          "rows": [
+            {
+              "t": "New to Mumbai, want to meet people who like food.",
+              "s": "What brings you to a supper club?"
+            },
+            {
+              "t": "EverythingVegetarianVeganJain",
+              "s": "What do you eat?"
+            },
+            {
+              "t": "Anything else the kitchen should know?",
+              "s": "Shown because they chose Vegetarian"
+            },
+            {
+              "t": "₹200, refunded if you’re not chosen",
+              "s": "Application fee"
+            }
+          ],
+          "fine": "Illustrative screen"
+        },
+        "note": "Capability page 6 (priority 2). From docs/host_forms.md: six purposes, the template gallery, conditional questions, file upload, optional form fees, waivers with signature, response inbox, analytics, export, and reviewed conversion to event attendees. The automation builder is being migrated, so the page doesn’t feature it."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Six kinds of form",
+        "kc": "#4C5BC4",
+        "title": "Each one knows what happens next.",
+        "lead": "",
+        "panel": "open",
+        "items": [
+          {
+            "t": "Applications",
+            "then": "Then: approved people pay to confirm",
+            "ink": "#4A2330",
+            "d": "Ask who they are and why they want to come, then approve each one.",
+            "tone": "m-pink"
+          },
+          {
+            "t": "Registrations",
+            "then": "Then: add them to the event’s guest list",
+            "ink": "#123D2C",
+            "d": "A place request with the questions your event needs.",
+            "tone": "m-mint"
+          },
+          {
+            "t": "Guest details",
+            "then": "Then: it’s on their record for the night",
+            "ink": "#4A3A0B",
+            "d": "Dietary needs, pace, level, team name, accessibility.",
+            "tone": "m-yellow"
+          },
+          {
+            "t": "Waivers",
+            "then": "Then: a signed receipt for that event",
+            "ink": "#4A1C0E",
+            "d": "Terms they read and sign before a run, a climb or a session.",
+            "tone": "m-coral"
+          },
+          {
+            "t": "Feedback",
+            "then": "Then: it rolls into your event report",
+            "ink": "#1E2550",
+            "d": "Ratings and a private note after the event.",
+            "tone": "m-indigo"
+          },
+          {
+            "t": "Surveys",
+            "then": "Then: answers and charts, ready to export",
+            "ink": "#4A1E3D",
+            "d": "What time, what format, what next. Ask your community.",
+            "tone": "m-magenta"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Templates",
+        "kc": "#F5C451",
+        "title": "Start from one made for your night.",
+        "lead": "Pick a template, change any question, and publish. Updating a template later never changes a form you’ve already made.",
+        "panel": "ink",
+        "center": false,
+        "items": [
+          {
+            "t": "Event application",
+            "d": "Who, why, when they’re free"
+          },
+          {
+            "t": "Event registration",
+            "d": "Contact and ticket questions"
+          },
+          {
+            "t": "Dinner guest details",
+            "d": "Diet, seating, access"
+          },
+          {
+            "t": "Run or walk",
+            "d": "Pace, distance, route needs"
+          },
+          {
+            "t": "Racket session",
+            "d": "Level, side, pairing"
+          },
+          {
+            "t": "Quiz night",
+            "d": "Team name, table"
+          },
+          {
+            "t": "Event waiver",
+            "d": "Terms, acknowledgement, signature"
+          },
+          {
+            "t": "Post-event feedback",
+            "d": "Rating and a private note"
+          },
+          {
+            "t": "Blank form",
+            "d": "Start from nothing"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Responses",
+        "kc": "#B23A5A",
+        "title": "Review, decide, and add them to the event.",
+        "lead": "Every response in one inbox. Mark applications in review, waitlisted or declined, leave notes for your team, and when you approve someone, add them to the event’s guest list with a preview of exactly what changes.",
+        "panel": "open",
+        "ticks": [
+          "Answers attached to the person’s record",
+          "Charts of how everyone answered",
+          "Export responses as a file",
+          "Bring in past answers from Google Forms or Typeform"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Responses",
+          "rows": [
+            {
+              "t": "Ira Desai",
+              "s": "Application · 2 hours ago · “New to Mumbai…”",
+              "tag": "In review",
+              "tone": "warn"
+            },
+            {
+              "t": "Kabir Shah",
+              "s": "Application · yesterday",
+              "tag": "Approved · on guest list",
+              "tone": "good"
+            },
+            {
+              "t": "Tara Nair",
+              "s": "Application · yesterday",
+              "tag": "Waitlisted",
+              "tone": ""
+            },
+            {
+              "t": "Dev Malhotra",
+              "s": "Waiver · signed 9:12 AM",
+              "tag": "Signed",
+              "tone": "good"
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Form fees",
+        "kc": "#1F7A57",
+        "title": "Charge to apply, if you want to.",
+        "lead": "Add a fee to a form, separate from the ticket. Say what it’s for and when it’s refunded before you publish; it’s paid by UPI or card into your account.",
+        "items": [
+          {
+            "t": "Separate from the ticket",
+            "d": "A fee to apply, a ticket to attend."
+          },
+          {
+            "t": "Refund policy shown first",
+            "d": "Before anyone pays."
+          },
+          {
+            "t": "Paid to your account",
+            "d": "Counts toward the same 5%, capped."
+          },
+          {
+            "t": "One answer, one payment",
+            "d": "No double charges if they submit twice."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "About forms.",
+        "items": [
+          [
+            "Do people need an app to fill in a form?",
+            "No. Forms open in the phone’s browser. People confirm with their phone number, so answers land on the right record."
+          ],
+          [
+            "Can I use a form without a Catch event?",
+            "Yes. A survey or an application for a programme works on its own. You can add the people to an event later."
+          ],
+          [
+            "Can questions depend on earlier answers?",
+            "Yes. Show a question only when an earlier answer calls for it."
+          ],
+          [
+            "Can I collect a signature?",
+            "Yes, with a waiver form: the terms, the acknowledgement and a signature, kept as a receipt for that event."
+          ],
+          [
+            "Can I bring in my Google Forms responses?",
+            "Yes. Export them as a file and import them as applications, matching your columns to the form’s questions."
+          ],
+          [
+            "Does filling in a form sign people up for marketing?",
+            "No. Hearing from you later is a separate yes, which you can ask for on the form."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Free for 30 days · founding hosts get 90",
+        "title": "Put your next application on Catch.",
+        "lead": "Start from a template and publish it tonight.",
+        "tone": "m-indigo",
+        "ink": "#1E2550",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "How Catch works",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host on the day: tonight’s event, bookings and the door"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

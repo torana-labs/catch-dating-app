@@ -1,0 +1,394 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookQuizNights",
+  "title": "Playbook · Catch for quiz and game nights",
+  "height": 8400,
+  "phone": {
+    "title": "Catch for quiz and game nights",
+    "height": 12400
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "offer": {
+          "lead": "Founding quizmasters and venues in Mumbai and Indore:",
+          "body": "90 days without Catch fees, until [date].",
+          "left": "",
+          "cta": "Claim a place"
+        },
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Quiz and game nights"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Catch for quiz and game nights",
+        "title": "Fair teams before the first question.",
+        "lead": "Bookings, balanced teams, live scores and a reveal the whole room shares. Then the same faces back next Tuesday.",
+        "ink": "#4A3608",
+        "tone": "m-yellow",
+        "proof": [
+          "[N] quiz nights a month run on Catch",
+          "★ [4.8] from players who booked1"
+        ],
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "door": "A venue with a weekly quiz, or a quizmaster at several venues? Book a walkthrough →",
+        "chip": {
+          "title": "Tuesday Trivia Night",
+          "rows": [
+            {
+              "l": "Booked",
+              "v": "30"
+            },
+            {
+              "l": "Came alone",
+              "v": "7"
+            },
+            {
+              "l": "On a team",
+              "v": "30"
+            }
+          ]
+        },
+        "media": {
+          "kind": "phonecard",
+          "title": "Round 4 of 6",
+          "sub": "Tuesday Trivia Night · Harbour Room",
+          "stats": [
+            {
+              "v": "6",
+              "l": "teams"
+            },
+            {
+              "v": "30",
+              "l": "players"
+            },
+            {
+              "v": "4/6",
+              "l": "scored"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Quizzy Rascals",
+              "s": "Table 2 · 5 players · 2 came alone",
+              "tag": "41",
+              "tone": ""
+            },
+            {
+              "t": "Harbour Lights",
+              "s": "Table 5 · 5 players",
+              "tag": "38",
+              "tone": ""
+            },
+            {
+              "t": "Leaderboard",
+              "s": "Revealed after round 6",
+              "tag": "hidden",
+              "tone": ""
+            }
+          ],
+          "chip": "Half-time mix: one person per team moves on"
+        },
+        "note": "Segment template, second use: the quizmaster’s moment in the headline. Copy from the production host page’s quiz night."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Sound familiar?",
+        "kc": "#B5451F",
+        "title": "The questions are the easy part.",
+        "lead": "",
+        "panel": "open",
+        "items": [
+          {
+            "t": "The team of regulars who win every week",
+            "fix": "Balanced teams of five, with no team stacked with regulars.",
+            "d": "Same table, same names on the board. Newer teams stop coming back."
+          },
+          {
+            "t": "The person who came on their own",
+            "fix": "Solo players are spread across teams and introduced by name before round one.",
+            "d": "They hover by the bar while teams form, then leave after round two."
+          },
+          {
+            "t": "Scores on a whiteboard, arguments at the end",
+            "fix": "Scores entered live, standings hidden until a reveal on every phone and the screen.",
+            "d": "Everyone can see who’s winning by round three, and nobody trusts the maths."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "A quiz on Catch",
+        "kc": "#F5C451",
+        "title": "From doors to the reveal.",
+        "lead": "",
+        "steps": [
+          {
+            "time": "7:00 PM",
+            "t": "Fair teams before the first question",
+            "d": "Catch builds teams of five from who’s coming: people on their own spread across teams, friends kept together if they asked, and no team stacked with regulars."
+          },
+          {
+            "time": "7:30 PM",
+            "t": "A team for everyone at the door",
+            "d": "Guests check in and see their team and table. Anyone who came alone is introduced to their team by name before round one."
+          },
+          {
+            "time": "8:40 PM",
+            "t": "Mix once at half-time",
+            "d": "One person from each team moves on. Only the people moving get a buzz; everyone else stays in the game."
+          },
+          {
+            "time": "9:00 PM",
+            "t": "Scores in, standings hidden",
+            "d": "The quizmaster enters each round’s scores. Teams see their own; the leaderboard stays hidden, so the last round still matters."
+          },
+          {
+            "time": "9:40 PM",
+            "t": "The reveal",
+            "d": "A countdown on every phone and the big screen at once, then the final standings. The winners pick next week’s theme."
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "The quiz console on an iPad: round, scores and what needs you"
+        }
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Two kinds of quiz host",
+        "kc": "#4C5BC4",
+        "title": "For quizmasters, and for the venues they play.",
+        "lead": "",
+        "panel": "open",
+        "center": false,
+        "items": [
+          {
+            "t": "Quizmasters",
+            "list": [
+              "One page for all your quiz nights, across venues",
+              "One record per player, wherever they played",
+              "Paid in rupees by UPI when players book, not cash at the door",
+              "Teams, scores and the reveal on your phone or an iPad"
+            ],
+            "d": "You bring the questions to different bars each week.",
+            "tone": "m-yellow"
+          },
+          {
+            "t": "Venues",
+            "list": [
+              "A weekly quiz that fills itself from last week’s players",
+              "See exactly who came through your venue’s link",
+              "Run it yourself, or host a quizmaster who uses Catch"
+            ],
+            "d": "You want a full room on a quiet weeknight."
+          }
+        ],
+        "note": "Venues are a P1 segment of their own (/host/venues/); this page serves both and links across."
+      }
+    },
+    {
+      "component": "KitStory",
+      "data": {
+        "kicker": "Quiz night story · Khar",
+        "tone": "m-yellow",
+        "ink": "#4A3608",
+        "initials": "Q",
+        "name": "The Quizzicals",
+        "meta": "Weekly pub quiz · [N] players a night",
+        "quote": "[The quizmaster, in their words, on what changed: fair teams, solo players, the reveal.]",
+        "metrics": [
+          {
+            "l": "Players back within 30 days",
+            "v": "[N%]",
+            "s": "from Catch records2"
+          },
+          {
+            "l": "Came alone, joined a team",
+            "v": "[N]",
+            "s": "a month2"
+          },
+          {
+            "l": "Nights sold out",
+            "v": "[N of N]",
+            "s": "last quarter2"
+          }
+        ],
+        "note": "Rec 2: a story from the same segment; placeholders until a design partner signs."
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Buyer’s checklist",
+        "kc": "#1F7A57",
+        "title": "What to look for in quiz night software.",
+        "lead": "Whatever you choose, check these eight things. Catch does all of them.",
+        "items": [
+          {
+            "t": "Teams balanced for you",
+            "d": "From who’s coming, with no team stacked with regulars."
+          },
+          {
+            "t": "Solo players placed",
+            "d": "Spread across teams and introduced by name."
+          },
+          {
+            "t": "Friends kept together",
+            "d": "When they ask to be."
+          },
+          {
+            "t": "Live score entry",
+            "d": "Round by round, by the quizmaster."
+          },
+          {
+            "t": "A hidden leaderboard and a reveal",
+            "d": "On every phone and the big screen at once."
+          },
+          {
+            "t": "Paid tickets in rupees, by UPI",
+            "d": "No cash at the door, no screenshots."
+          },
+          {
+            "t": "One record per player",
+            "d": "Across every venue and every week."
+          },
+          {
+            "t": "A link for every venue and promoter",
+            "d": "See who filled the room."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Compare Catch with the alternatives",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for quiz nights",
+        "price": "5%",
+        "sub": "of ticket sales, never more than ₹10,000 a month. Free quizzes stay free.",
+        "lead": "Free for 30 days from your first quiz, 90 for founding hosts. Payment gateway fees are separate.",
+        "examples": [
+          {
+            "t": "A weekly pub quiz, 60 players at ₹499",
+            "v": "₹1,497 a night",
+            "d": "5% of ₹29,940, paid when players book."
+          },
+          {
+            "t": "A free quiz a venue runs to fill a Tuesday",
+            "v": "₹0",
+            "d": "Free events stay free, every week."
+          },
+          {
+            "t": "Three quizzes a week, 80 players at ₹500",
+            "v": "₹10,000 a month",
+            "d": "₹4,80,000 in sales hits the cap: about 2.1% of sales."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Start free trial",
+            "kind": "light"
+          },
+          {
+            "l": "See full pricing",
+            "kind": "lightsec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Quiz night questions",
+        "title": "What quizmasters and venues ask us.",
+        "items": [
+          [
+            "How are teams balanced?",
+            "Catch builds teams of five from who’s coming: people on their own spread across teams, friends kept together if they asked, and no team stacked with regulars. You can move anyone before round one."
+          ],
+          [
+            "Can friends play on the same team?",
+            "Yes. Players who ask to be together are kept together, and Catch balances the rest of the room around them."
+          ],
+          [
+            "Do players need to download an app?",
+            "No. Players book on your page and join live moments, like their team and the reveal, in their phone’s browser."
+          ],
+          [
+            "Can I show the reveal on a screen?",
+            "Yes. The countdown and final standings appear on every phone and the big screen at once."
+          ],
+          [
+            "Can a venue run a free quiz?",
+            "Yes. Free events stay free on Catch, every week. The 5% fee applies only to paid tickets."
+          ],
+          [
+            "Can I bring my player list from another tool?",
+            "Yes. Import your list from any tool. Nothing changes for players until the night."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Your next quiz, sorted",
+        "title": "Fill next Tuesday.",
+        "lead": "Start the free trial, or leave your number and we’ll send the quiz night setup guide on WhatsApp.",
+        "tone": "m-yellow",
+        "ink": "#4A3608",
+        "btns": [
+          {
+            "l": "Start free trial"
+          }
+        ],
+        "form": {
+          "id": "qz-wa",
+          "label": "Your WhatsApp number",
+          "button": "Send the guide"
+        },
+        "badges": true,
+        "img": "/_blob/c592fe71162b9b4591e1fb8beb460444",
+        "alt": "A quiz night as players see it in Explore"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "footnotes": [
+          "1. Average of reviews from players who booked on Catch, [dates].",
+          "2. From Catch booking and check-in records, [dates]."
+        ]
+      }
+    }
+  ]
+}

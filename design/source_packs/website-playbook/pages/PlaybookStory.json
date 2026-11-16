@@ -1,0 +1,194 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookStory",
+  "title": "Playbook · Host story",
+  "height": 5400,
+  "phone": {
+    "title": "Host story",
+    "height": 7600
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "resources",
+        "crumbs": [
+          "Host stories"
+        ],
+        "here": "Run clubs"
+      }
+    },
+    {
+      "component": "KitPhotoHero",
+      "data": {
+        "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+        "alt": "Carter Road Runners at the start of a Sunday run",
+        "tags": [
+          "Run club",
+          "Bandra, Mumbai",
+          "On Catch since [month year]"
+        ],
+        "title": "How Carter Road Runners [the outcome, in a few words].",
+        "lead": "[One sentence: who they are, what was hard, what changed.]",
+        "note": "Story template, now on the kit: every [bracket] is filled from a design partner’s real story, numbers and photos, with their consent."
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "top": true,
+        "kicker": "The club",
+        "kc": "#B23A5A",
+        "title": "Carter Road Runners",
+        "ticks": [
+          "City: Mumbai",
+          "Format: weekly social run, paid coached sessions",
+          "Runners a week: [N]",
+          "Before Catch: [e.g. WhatsApp, Google Forms and UPI]",
+          "On Catch since [month year]"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "The numbers",
+          "stats": [
+            {
+              "v": "[N%]",
+              "l": "Show-up rate, from [N%] before¹"
+            },
+            {
+              "v": "[N%]",
+              "l": "First-timers back in 30 days²"
+            },
+            {
+              "v": "[N]",
+              "l": "Hours saved a week¹"
+            }
+          ],
+          "fine": "1. Self-reported by the club. 2. From Catch booking and check-in records, [dates]. Individual results vary."
+        }
+      }
+    },
+    {
+      "component": "KitArticle",
+      "data": {
+        "kicker": "The story",
+        "kc": "#B23A5A",
+        "title": "From the WhatsApp thread to Sunday at the start line",
+        "lead": "[A one-line summary of the change.]",
+        "meta": "[Interview date]",
+        "sections": [
+          {
+            "h": "Before Catch",
+            "paras": [
+              "[What running the club looked like: the sign-up thread, payments, newcomers, the start line. Two or three sentences in the host’s own words where possible.]"
+            ]
+          },
+          {
+            "h": "What they changed",
+            "paras": [
+              "[Which parts moved to Catch first, and what stayed on WhatsApp. Name the features: pace pods, check-in, reminders, paid sessions.]"
+            ],
+            "tip": "[The strongest line from the interview.] — [Name], founder, Carter Road Runners",
+            "tipLabel": "In their words:"
+          },
+          {
+            "h": "A run now",
+            "paras": [
+              "[Walk through one Sunday from Thursday’s bookings to the photos afterwards.]"
+            ]
+          },
+          {
+            "h": "What’s next",
+            "paras": [
+              "[A second chapter, a new format, a brand partnership: what the club is building towards.]"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "panel": "tint",
+        "center": false,
+        "kicker": "Their setup",
+        "title": "What Carter Road Runners use on Catch.",
+        "items": [],
+        "chips": [
+          "Pace pods",
+          "QR check-in at the meeting point",
+          "A first hello",
+          "Reminders on the day",
+          "Paid coached sessions",
+          "Links for partner cafés",
+          "One record per runner"
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "tone": "m-coral",
+        "ink": "#3B1F14",
+        "kicker": "Run a club like this?",
+        "title": "Your Sunday, without the thread.",
+        "lead": "Free for 30 days from your first run. Free runs stay free after that.",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Catch for run clubs",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host on a run morning"
+      }
+    },
+    {
+      "component": "KitCards",
+      "data": {
+        "variant": "story",
+        "kicker": "More host stories",
+        "title": "Hosts like you.",
+        "items": [
+          {
+            "bg": "#F08AA0",
+            "ink": "#4A2330",
+            "meta": "Supper club · Andheri",
+            "t": "[Supper club story title]",
+            "s": "Lantern Lane Social",
+            "statLabel": "Guests back within 90 days",
+            "stat": "[N%]"
+          },
+          {
+            "bg": "#F5C451",
+            "ink": "#4A3608",
+            "meta": "Quiz night · Khar",
+            "t": "[Quiz night story title]",
+            "s": "The Quizzicals",
+            "statLabel": "Nights sold out",
+            "stat": "[N]"
+          },
+          {
+            "bg": "#5CCB9F",
+            "ink": "#123D2C",
+            "meta": "Racket sports · Indore",
+            "t": "[Padel social story title]",
+            "s": "Rally Social Club",
+            "statLabel": "Players back within a month",
+            "stat": "[N%]"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

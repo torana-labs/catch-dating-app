@@ -1,0 +1,389 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookFirstEvent",
+  "title": "Playbook · Your first event",
+  "height": 7600,
+  "phone": {
+    "title": "Your first event",
+    "height": 11000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts",
+          "Get started"
+        ],
+        "here": "Your first event"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Your first event on Catch",
+        "title": "From nothing to tickets on sale in one evening.",
+        "lead": "Seven steps, about forty minutes of setup, and a person on WhatsApp if you get stuck. Here’s everything between downloading Catch Host and the morning after your first event.",
+        "ink": "#4A3A0B",
+        "tone": "m-yellow",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Set it up with us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "door": "Moving an existing group from WhatsApp? Read the switching guide →",
+        "media": {
+          "kind": "card",
+          "title": "Your first event",
+          "sub": "4 of 7 done · tickets can go on sale now",
+          "bars": [
+            {
+              "l": "Progress",
+              "w": 57,
+              "c": "#1F7A57",
+              "v": "4 of 7"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Download Catch Host",
+              "tag": "2 min",
+              "tone": "good"
+            },
+            {
+              "t": "Make your page",
+              "tag": "5 min",
+              "tone": "good"
+            },
+            {
+              "t": "Create the event",
+              "tag": "10 min",
+              "tone": "good"
+            },
+            {
+              "t": "Connect payments",
+              "tag": "10 min",
+              "tone": "good"
+            },
+            {
+              "t": "Share your links",
+              "tag": "5 min"
+            },
+            {
+              "t": "Run the door",
+              "tag": "on the night"
+            },
+            {
+              "t": "Follow up",
+              "tag": "next morning"
+            }
+          ]
+        },
+        "note": "New page, priority 1. Decision: WhatsApp setup help within set hours; the hours and reply time are placeholders. Payment KYC time is a placeholder until confirmed."
+      }
+    },
+    {
+      "component": "KitSwitcher",
+      "data": {
+        "layout": "steps",
+        "kicker": "Seven steps",
+        "title": "What to do, and how long it takes.",
+        "start": 2,
+        "items": [
+          {
+            "label": "Download Catch Host",
+            "time": "2 minutes",
+            "body": "Catch Host is the app you run everything from. It’s free on iPhone and Android.",
+            "tips": [
+              "Sign in with your phone number",
+              "Add anyone who helps you run events later"
+            ]
+          },
+          {
+            "label": "Make your page",
+            "time": "5 minutes",
+            "body": "Your page is where people find you, follow you and book. Give it your name, a photo and a line about what you do.",
+            "tips": [
+              "Use the photo people already know you by",
+              "Add your Instagram so people can check you’re real",
+              "Already listed on Catch? Claim your page instead"
+            ]
+          },
+          {
+            "label": "Create your first event",
+            "time": "10 minutes",
+            "body": "Pick the format closest to your night. It fills in the door, the groups and the run of show; you add the date, place, price and capacity.",
+            "tips": [
+              "Set a cancellation policy now, not after the first request",
+              "Turn on applications if you want to approve each guest",
+              "Add a waitlist so drop-outs get filled"
+            ]
+          },
+          {
+            "label": "Connect payments",
+            "time": "10 minutes",
+            "body": "Connect a Razorpay account so guests can pay by UPI or card, and the money comes to you. KYC can take [1–2 working days], so do this early.",
+            "tips": [
+              "Have your PAN and bank details ready",
+              "Free events don’t need payments set up",
+              "Payment gateway fees are separate from Catch’s 5%"
+            ]
+          },
+          {
+            "label": "Share your links",
+            "time": "5 minutes",
+            "body": "Make a link for each place you’ll share the event: your Instagram bio, each WhatsApp group, each friend bringing people.",
+            "tips": [
+              "Catch shows visits and bookings for every link",
+              "Followers hear about the event without you posting"
+            ]
+          },
+          {
+            "label": "Run the door",
+            "time": "On the night",
+            "body": "Open the door in Catch Host. Guests scan in; you see who’s here, who’s late and who’s new.",
+            "tips": [
+              "Decide how many walk-ins you’ll take",
+              "A co-host can run the door on their own phone",
+              "Messages to everyone go out from the app"
+            ]
+          },
+          {
+            "label": "Follow up",
+            "time": "Next morning",
+            "body": "Send photos and a thank-you, ask for a review and put the next date up while people still want it.",
+            "tips": [
+              "Reviews appear on your page",
+              "Everyone who came can follow you",
+              "Your report shows who came, who didn’t and where bookings came from"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "The countdown",
+        "kc": "#F5C451",
+        "title": "When to do what.",
+        "lead": "",
+        "steps": [
+          {
+            "time": "2 weeks out",
+            "t": "Tickets on sale",
+            "d": "Most bookings for a first event come in the last week, but the people who book early bring friends. Turn on early-bird pricing if you want them to."
+          },
+          {
+            "time": "1 week out",
+            "t": "Share it everywhere you already are",
+            "d": "One link in your Instagram bio, one for each WhatsApp group, one for each friend who promised to bring people. Catch shows which one works."
+          },
+          {
+            "time": "Day before",
+            "t": "Catch sends the reminder",
+            "d": "Where to be, when, and what to bring goes out by itself. Check your door list and how many walk-ins you can take."
+          },
+          {
+            "time": "On the night",
+            "t": "Open the door on your phone",
+            "d": "Guests scan in. You see who’s here, who’s late and who’s new, then put the phone away and host."
+          },
+          {
+            "time": "Next morning",
+            "t": "Thank them and set the next date",
+            "d": "Photos and a thank-you go out. Everyone who came can follow you, and they hear about the next one first."
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "The live console on an iPad on the night"
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "A person, not a help centre",
+        "kc": "#123D2C",
+        "title": "Set up your first event with us on WhatsApp.",
+        "lead": "Send us a message and someone from Catch will help you set it up: the format, the price, the page and the payments.",
+        "panel": "m-mint",
+        "ticks": [
+          "Replies [10 am to 8 pm, Monday to Saturday]",
+          "Usually within [2 hours] in those hours",
+          "Free, for every new host"
+        ],
+        "btns": [
+          {
+            "l": "Chat on WhatsApp"
+          }
+        ],
+        "media": {
+          "kind": "chat",
+          "alt": "Example WhatsApp conversation",
+          "bubbles": [
+            {
+              "text": "Hi! I run a monthly book club in Indore, about 20 people. Want to start charging and move off Google Forms.",
+              "time": "7:12 PM",
+              "me": true
+            },
+            {
+              "text": "Hi! Happy to help. A book club fits the “mixer” format well. What do you charge, or want to?",
+              "time": "7:31 PM",
+              "me": false
+            },
+            {
+              "text": "₹300, includes coffee",
+              "time": "7:33 PM",
+              "me": true
+            },
+            {
+              "text": "Lovely. Download Catch Host and make your page; I’ll stay here while you do the event. Send me a screenshot if anything looks odd.",
+              "time": "7:34 PM",
+              "me": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Start from a format",
+        "kc": "#B23A5A",
+        "title": "Pick the night closest to yours.",
+        "lead": "Each format sets up the event, the door and the run of show for you. Change anything.",
+        "panel": "open",
+        "items": [
+          {
+            "t": "Run or walk",
+            "d": "Pace groups, a route and a café at the end.",
+            "tone": "m-coral"
+          },
+          {
+            "t": "Supper",
+            "d": "Applications, tables and a dessert swap.",
+            "tone": "m-pink"
+          },
+          {
+            "t": "Quiz or game night",
+            "d": "Teams at the door, scores on the screen.",
+            "tone": "m-yellow"
+          },
+          {
+            "t": "Courts",
+            "d": "Levels, rotations and fair court time.",
+            "tone": "m-mint"
+          },
+          {
+            "t": "Mixer",
+            "d": "Small groups that change a few times.",
+            "tone": "m-indigo"
+          },
+          {
+            "t": "Crawl",
+            "d": "Groups that move between venues.",
+            "tone": "m-magenta"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "From hosts who’ve done it",
+        "kc": "#1F7A57",
+        "title": "Four first-event mistakes.",
+        "lead": "",
+        "panel": "tint",
+        "cols": 4,
+        "items": [
+          {
+            "t": "Pricing too low",
+            "d": "Free events get no-shows. Even ₹200 tells people you expect them."
+          },
+          {
+            "t": "Opening too late",
+            "d": "Four days isn’t enough for people to plan. Give it two weeks."
+          },
+          {
+            "t": "No plan for walk-ins",
+            "d": "Decide how many you’ll take before the night, not at the door."
+          },
+          {
+            "t": "No next date",
+            "d": "The morning after is when people most want to book again. Have one ready."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "First-event questions",
+        "title": "What new hosts ask us.",
+        "items": [
+          [
+            "Do I need a registered business?",
+            "No. You can host as an individual. To take payments you’ll need a Razorpay account, which works for individuals with a PAN and a bank account."
+          ],
+          [
+            "How long until I can sell tickets?",
+            "Your page and event take about twenty minutes. Paid tickets go on sale once Razorpay finishes its checks, usually [1–2 working days]. Free events can go live straight away."
+          ],
+          [
+            "What does it cost?",
+            "Nothing for 30 days from your first event, or 90 for founding hosts. Then 5% of ticket sales, never more than ₹10,000 a month. Free events stay free."
+          ],
+          [
+            "Do my guests need the app?",
+            "No. Guests book, pay and check in on your page in their phone’s browser."
+          ],
+          [
+            "Can I do it from a laptop?",
+            "You set up in Catch Host on your phone. If you’re on a laptop, scan the code on the start page to open it there."
+          ],
+          [
+            "What if I’m not sure which format fits?",
+            "Message us on WhatsApp and tell us about your night. We’ll suggest one and help you set it up."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Tonight",
+        "title": "Your first event could be on sale by bedtime.",
+        "lead": "Free for 30 days from your first event, 90 for founding hosts. You pay nothing until people book.",
+        "tone": "m-yellow",
+        "ink": "#4A3A0B",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Chat on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host on the day: tonight’s event, bookings and the door"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

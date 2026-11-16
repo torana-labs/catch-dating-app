@@ -1,0 +1,303 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "LiveWeddingsApply",
+  "title": "Live · Weddings apply · /weddings/apply/",
+  "height": 1900,
+  "phone": {
+    "title": "Weddings apply",
+    "height": 3600
+  },
+  "state": {
+    "label": "Apply states:",
+    "options": [
+      {
+        "key": "s1",
+        "label": "Step 1"
+      },
+      {
+        "key": "s2",
+        "label": "Step 2"
+      },
+      {
+        "key": "sent",
+        "label": "Sent"
+      }
+    ],
+    "default": "s1"
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "lp",
+        "cta": "WhatsApp us"
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "s1",
+      "data": {
+        "kicker": "Step 1 of 2",
+        "title": "Apply for the pilot",
+        "steps": [
+          "About you and the wedding",
+          "About the weekend"
+        ],
+        "step": 0,
+        "blocks": [
+          {
+            "title": "",
+            "choices": [
+              {
+                "label": "You are",
+                "options": [
+                  "A wedding planner",
+                  "The couple or family"
+                ],
+                "on": 0
+              },
+              {
+                "label": "What you’re running",
+                "options": [
+                  "A wedding",
+                  "Another multi-day programme"
+                ],
+                "on": 0
+              }
+            ],
+            "fields": [
+              {
+                "id": "wa-name",
+                "label": "Your name",
+                "ph": "Meher Shah"
+              },
+              {
+                "id": "wa-co",
+                "label": "Planning company (optional)",
+                "ph": "Meher Shah Weddings"
+              },
+              {
+                "id": "wa-phone",
+                "label": "WhatsApp number",
+                "type": "tel",
+                "ph": "+91 00000 00000"
+              },
+              {
+                "id": "wa-date",
+                "label": "Starts on",
+                "type": "date"
+              },
+              {
+                "id": "wa-dest",
+                "label": "Destination",
+                "ph": "Udaipur"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "choices": [
+              {
+                "label": "Guests invited",
+                "options": [
+                  "Under 150",
+                  "150 to 400",
+                  "400 to 800",
+                  "800 and more"
+                ],
+                "on": 1
+              },
+              {
+                "label": "What you use today (optional)",
+                "options": [
+                  "Spreadsheets",
+                  "WhatsApp groups",
+                  "Another app",
+                  "A hospitality agency"
+                ],
+                "on": [
+                  0,
+                  1
+                ]
+              }
+            ],
+            "btns": [
+              {
+                "l": "Continue"
+              }
+            ],
+            "fine": "We read every application and reply on WhatsApp within two working days. If the wedding is a fit, we book a 30-minute walkthrough. Applying doesn’t commit you to anything."
+          }
+        ],
+        "note": "Weddings apply (/weddings/apply/), finished from the partly drawn step 1. Copy from weddingsApplyCopy: step 1, step 2 and sent."
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "s2",
+      "data": {
+        "kicker": "Apply for the pilot · step 2 of 2",
+        "title": "Tell us about the weekend.",
+        "steps": [
+          "About you and the wedding",
+          "About the weekend"
+        ],
+        "step": 1,
+        "blocks": [
+          {
+            "label": "Your wedding",
+            "title": "Udaipur · from 11 Dec · 150 to 400 guests",
+            "sub": "Meher Shah · Meher Shah Weddings · +91 00000 00000",
+            "btns": [
+              {
+                "l": "Change step 1",
+                "kind": "sec"
+              }
+            ]
+          },
+          {
+            "title": "About the weekend",
+            "counters": [
+              {
+                "t": "Functions",
+                "s": "Mehendi, sangeet and so on",
+                "v": "5"
+              },
+              {
+                "t": "Hotels guests stay at",
+                "s": "Where you’ve blocked rooms",
+                "v": "2"
+              },
+              {
+                "t": "Your team that weekend",
+                "s": "Greeters, desks, doors, coordinators",
+                "v": "24"
+              }
+            ],
+            "choices": [
+              {
+                "label": "Roughly how many are flying in?",
+                "options": [
+                  "Hardly anyone",
+                  "Under half",
+                  "More than half",
+                  "Almost everyone"
+                ],
+                "on": 2
+              },
+              {
+                "label": "What you’d want from Catch",
+                "options": [
+                  "Replies for every function",
+                  "Airport pickups and cars",
+                  "Rooms and hotel desks",
+                  "Guest IDs for the hotels",
+                  "Guests writing in on WhatsApp",
+                  "Door check-in",
+                  "The family’s numbers link",
+                  "Car vendor bills"
+                ],
+                "on": [
+                  0,
+                  1,
+                  2,
+                  5
+                ]
+              },
+              {
+                "label": "How you heard about us",
+                "options": [
+                  "Another planner",
+                  "A hotel",
+                  "Instagram",
+                  "A Catch event",
+                  "Search"
+                ],
+                "on": 0
+              }
+            ],
+            "fields": [
+              {
+                "id": "wa-last",
+                "label": "Anything that went wrong last time? (optional)",
+                "ph": "Two families waited an hour at the airport because a flight landed early and nobody knew."
+              }
+            ],
+            "btns": [
+              {
+                "l": "Send our application"
+              },
+              {
+                "l": "Back",
+                "kind": "sec"
+              }
+            ],
+            "fine": "We review applications and follow up on this number if the wedding is a fit. Sending doesn’t book a call or grant access."
+          },
+          {
+            "title": "What happens next",
+            "rows": [
+              {
+                "t": "A walkthrough",
+                "s": "We look at your spreadsheet and how the weekend runs."
+              },
+              {
+                "t": "A quote for this wedding",
+                "s": "By headcount, with your team included."
+              },
+              {
+                "t": "Setup with you",
+                "s": "Guest list, functions, hotels, pickups and cars."
+              },
+              {
+                "t": "Your team rehearses",
+                "s": "The week before."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "sent",
+      "data": {
+        "kicker": "Application sent",
+        "kc": "#1F7A57",
+        "title": "Thanks, Meher.",
+        "lead": "We’ll message you on WhatsApp within two working days. If the wedding is a fit, we book a 30-minute walkthrough: bring the spreadsheet you use today.",
+        "blocks": [
+          {
+            "title": "What you sent",
+            "sub": "5 functions · 2 hotels · a team of 24 · more than half flying in · wants: replies, pickups, rooms, door check-in",
+            "btns": [
+              {
+                "l": "Edit our answers",
+                "kind": "sec"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "btns": [
+              {
+                "l": "Back to Catch for weddings"
+              },
+              {
+                "l": "Follow one wedding",
+                "kind": "sec"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "lp",
+        "mbar": "WhatsApp us"
+      }
+    }
+  ]
+}

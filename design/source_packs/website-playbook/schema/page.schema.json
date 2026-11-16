@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Catch website playbook page",
+  "description": "One page board on the website design canvas, composed from kit components. The file name is <board>.json.",
+  "type": "object",
+  "required": ["board", "title", "height", "phone", "sections"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {"type": "string"},
+    "board": {
+      "description": "Board name; the generated files are <board>.dc.html and <board>390.dc.html.",
+      "type": "string",
+      "pattern": "^(Playbook|Live)[A-Z0-9][A-Za-z0-9]*$"
+    },
+    "title": {"description": "Document title of the 1440px board.", "type": "string", "minLength": 1},
+    "height": {"description": "Canvas preview height of the 1440px board, in px.", "type": "integer", "minimum": 1},
+    "phone": {
+      "description": "The 390px phone wrapper board.",
+      "type": "object",
+      "required": ["title", "height"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {"description": "Short name; the wrapper is titled 'Playbook · <title> · phone'.", "type": "string", "minLength": 1},
+        "height": {"description": "Preview height of the phone board, in px.", "type": "integer", "minimum": 1}
+      }
+    },
+    "state": {
+      "description": "Optional page-state switch shown above the page. Sections with a matching 'when' render only in that state.",
+      "type": "object",
+      "required": ["label", "options", "default"],
+      "additionalProperties": false,
+      "properties": {
+        "label": {"description": "Switch label (inserted as markup).", "type": "string", "minLength": 1},
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": ["key", "label"],
+            "additionalProperties": false,
+            "properties": {
+              "key": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+              "label": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "default": {"description": "Key of the state shown first.", "type": "string", "pattern": "^[a-z][a-z0-9_]*$"}
+      }
+    },
+    "sections": {
+      "description": "Page sections, top to bottom.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["component", "data"],
+        "additionalProperties": false,
+        "properties": {
+          "component": {"description": "Kit component in kit/<component>.dc.html.", "type": "string", "pattern": "^Kit[A-Z][A-Za-z0-9]*$"},
+          "when": {"description": "State key this section belongs to; omit to show it in every state.", "type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+          "hint": {"description": "Canvas placeholder height in px, when it differs from the component default.", "type": "integer", "minimum": 1},
+          "data": {"description": "The component's 'd' prop: this section's copy and options.", "type": "object"}
+        }
+      }
+    }
+  }
+}

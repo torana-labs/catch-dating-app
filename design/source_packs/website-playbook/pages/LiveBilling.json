@@ -1,0 +1,164 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "LiveBilling",
+  "title": "Live · Host billing · /host/billing/",
+  "height": 1500,
+  "phone": {
+    "title": "Host billing",
+    "height": 3000
+  },
+  "state": {
+    "label": "Billing states:",
+    "options": [
+      {
+        "key": "out",
+        "label": "Signed out"
+      },
+      {
+        "key": "trial",
+        "label": "In free trial"
+      },
+      {
+        "key": "bills",
+        "label": "Bills"
+      }
+    ],
+    "default": "bills"
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "here": "Billing",
+        "crumbs": [
+          "For hosts"
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "out",
+      "data": {
+        "kicker": "Billing",
+        "title": "Sign in to see your billing",
+        "lead": "Use the phone number of the organiser's owner.",
+        "blocks": [
+          {
+            "title": "",
+            "fields": [
+              {
+                "id": "hb-phone",
+                "label": "Mobile number",
+                "type": "tel"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Sign in"
+              }
+            ]
+          }
+        ],
+        "note": "Host billing (/host/billing/). Copy from hostBillingCopy. Paying and switching plan happen only here on the web; the Host app shows status only."
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "trial",
+      "data": {
+        "wide": true,
+        "kicker": "Organiser · Lantern Lane Social",
+        "title": "Billing",
+        "lead": "What Catch charges your organiser, and your bills.",
+        "blocks": [
+          {
+            "title": "Free trial",
+            "stats": [
+              {
+                "v": "12 days",
+                "l": "left · ends 3 Dec"
+              }
+            ],
+            "sub": "No Catch fee on anything you sell until then."
+          },
+          {
+            "title": "Your plan",
+            "label": "Current plan",
+            "sub": "Ticketing: 5% of your ticket sales after refunds, at most ₹10,000 per [30]-day billing cycle. Razorpay's fees are yours.",
+            "fine": "Catch is not GST registered, so no GST is added."
+          },
+          {
+            "title": "Bills",
+            "sub": "No bills yet. After your free trial, Catch bills you when each billing cycle ends."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "bills",
+      "data": {
+        "wide": true,
+        "kicker": "Organiser · Lantern Lane Social",
+        "title": "Billing",
+        "lead": "What Catch charges your organiser, and your bills.",
+        "blocks": [
+          {
+            "title": "Free trial",
+            "sub": "Ended on 3 Dec. Each billing cycle is now billed when it ends."
+          },
+          {
+            "title": "Your plan",
+            "label": "Current plan",
+            "sub": "Ticketing: 5% of your ticket sales after refunds, at most ₹10,000 per [30]-day billing cycle.",
+            "btns": [
+              {
+                "l": "Switch to tools only",
+                "kind": "sec"
+              }
+            ],
+            "fine": "Tools only: [fee] per [30]-day billing cycle, and no commission on ticket sales."
+          },
+          {
+            "title": "Bills",
+            "rows": [
+              {
+                "t": "Invoice 2026-27/031",
+                "s": "On ₹86,400 in ticket sales after refunds · Due 18 Jan",
+                "v": "₹4,320"
+              },
+              {
+                "t": "Invoice 2026-27/024",
+                "s": "On ₹2,40,000 · capped · Paid 18 Dec",
+                "v": "₹10,000"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Pay ₹4,320"
+              }
+            ]
+          },
+          {
+            "tone": "m-yellow",
+            "title": "Overdue since 2 Jan",
+            "sub": "Invoice 2026-27/019 · ₹1,980",
+            "btns": [
+              {
+                "l": "Pay ₹1,980"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "lp",
+        "mbar": "Help"
+      }
+    }
+  ]
+}

@@ -1,0 +1,405 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookSupperClubs",
+  "title": "Playbook · Catch for supper clubs",
+  "height": 8000,
+  "phone": {
+    "title": "Catch for supper clubs",
+    "height": 12000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "offer": {
+          "lead": "Founding hosts in Mumbai and Indore:",
+          "body": "90 days without Catch fees, until [date].",
+          "left": "[N] of 50 places left",
+          "cta": "Claim a place"
+        },
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Supper clubs"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Catch for supper clubs and long-table dinners",
+        "title": "Seat strangers well, then invite them back.",
+        "lead": "Applications that tell you who’s coming, payment before you buy the food, tables planned from what guests told you, and the people who’d come again hearing about the next date first.",
+        "ink": "#4A2330",
+        "tone": "m-pink",
+        "proof": [
+          "[N] supper clubs host on Catch",
+          "★ [4.8] from guests who booked1"
+        ],
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "door": "Hosting dinners in a restaurant or for a company? Book a walkthrough →",
+        "chip": {
+          "title": "Long Table Supper",
+          "rows": [
+            {
+              "l": "Applied",
+              "v": "41"
+            },
+            {
+              "l": "Approved and paid",
+              "v": "24"
+            },
+            {
+              "l": "Waitlist",
+              "v": "9"
+            }
+          ]
+        },
+        "media": {
+          "kind": "phonecard",
+          "title": "Seating",
+          "sub": "Long Table Supper · Khar West",
+          "stats": [
+            {
+              "v": "23",
+              "l": "seated"
+            },
+            {
+              "v": "4",
+              "l": "tables"
+            },
+            {
+              "v": "1",
+              "l": "late"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Table 1",
+              "s": "Aanya, Kabir, Meher, Dev, Tara, Rohan",
+              "tag": "6 seated",
+              "tone": ""
+            },
+            {
+              "t": "Table 2",
+              "s": "Zara, Ishaan, Vikram, Ira and 2 more",
+              "tag": "6 seated",
+              "tone": ""
+            },
+            {
+              "t": "Table 3",
+              "s": "One seat for a late arrival",
+              "tag": "5 of 6",
+              "tone": ""
+            }
+          ],
+          "chip": "Dessert swap in 10 minutes · 8 people move"
+        },
+        "note": "Segment template, third use. Night copy from the production host page’s dinner. Priority 1."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Sound familiar?",
+        "kc": "#B5451F",
+        "title": "The cooking is the easy part.",
+        "lead": "",
+        "panel": "open",
+        "items": [
+          {
+            "t": "A form that tells you nothing",
+            "fix": "Applications with your own questions, approved one by one.",
+            "d": "Forty names and phone numbers, and no idea who will get on with whom."
+          },
+          {
+            "t": "Seating at midnight before the dinner",
+            "fix": "Tables suggested from what guests told you; adjust with a drag.",
+            "d": "Moving names around a spreadsheet so the couples are split and the quiet ones aren’t stranded."
+          },
+          {
+            "t": "No-shows after you’ve bought the food",
+            "fix": "Paid at booking, refunds by your policy, and a waitlist for the gaps.",
+            "d": "Two empty chairs and two plates of something you cooked for four hours."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Applications",
+        "kc": "#4C5BC4",
+        "title": "Know who’s coming before you set the table.",
+        "lead": "Ask what you want to know. Approve with a tap; approved guests pay to confirm. Keep the table balanced and the evening yours.",
+        "panel": "open",
+        "ticks": [
+          "Your questions, on your page",
+          "Approve, decline or waitlist each person",
+          "Paid at booking, by UPI or card"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Application · Long Table Supper",
+          "rows": [
+            {
+              "t": "What brings you to a supper club?",
+              "s": "New to Mumbai, want to meet people who like food."
+            },
+            {
+              "t": "Anything we should know about what you eat?",
+              "s": "Vegetarian."
+            },
+            {
+              "t": "Who are you coming with?",
+              "s": "One friend, Zara."
+            }
+          ],
+          "btns": [
+            {
+              "l": "Approve"
+            },
+            {
+              "l": "Waitlist",
+              "kind": "sec"
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "A dinner on Catch",
+        "kc": "#F5C451",
+        "title": "From applications to the next date.",
+        "lead": "",
+        "steps": [
+          {
+            "time": "Tuesday",
+            "t": "Tables planned from what people told you",
+            "d": "Catch suggests tables of six with something in common and someone new, and you adjust with a drag."
+          },
+          {
+            "time": "8:00 PM",
+            "t": "One look at the phone, then dinner",
+            "d": "Guests check in and see their seat once. After that nothing at dinner needs a phone."
+          },
+          {
+            "time": "8:20 PM",
+            "t": "The whole room at a glance",
+            "d": "Seat a late arrival or move someone with a tap; table sizes and anyone you’ve kept apart still hold."
+          },
+          {
+            "time": "9:10 PM",
+            "t": "A new seat for dessert",
+            "d": "Catch suggests a dessert swap so everyone meets a few more people. A quiet table gets a conversation card."
+          },
+          {
+            "time": "Next morning",
+            "t": "Invite them back",
+            "d": "Guests say who they’d happily sit with again. The people who’d come back hear about the next date first."
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "The seating map and run of show on an iPad"
+        }
+      }
+    },
+    {
+      "component": "KitStory",
+      "data": {
+        "kicker": "Supper club story · Andheri",
+        "tone": "m-pink",
+        "ink": "#4A2330",
+        "initials": "LL",
+        "name": "Lantern Lane Social",
+        "meta": "Monthly long-table supper · [N] seats",
+        "quote": "[The host, in their words, on applications, seating and who comes back.]",
+        "metrics": [
+          {
+            "l": "Seats sold before the day",
+            "v": "[N%]",
+            "s": "from Catch records2"
+          },
+          {
+            "l": "Guests back for another date",
+            "v": "[N%]",
+            "s": "within 90 days2"
+          },
+          {
+            "l": "Hours saved on seating",
+            "v": "[N]",
+            "s": "self-reported3"
+          }
+        ],
+        "img": "/_blob/409d3ee3e6896b80188944189323718b",
+        "alt": "Guests at a long-table supper",
+        "tag": "Replace with real photography from a design-partner dinner"
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Buyer’s checklist",
+        "kc": "#1F7A57",
+        "title": "What to look for in supper club software.",
+        "lead": "Check these eight things, whichever tool you choose. Catch does all of them.",
+        "items": [
+          {
+            "t": "Applications with your questions",
+            "d": "Approve each guest yourself."
+          },
+          {
+            "t": "Payment before you buy the food",
+            "d": "UPI or card at booking."
+          },
+          {
+            "t": "A cancellation policy you set",
+            "d": "Refunds follow it."
+          },
+          {
+            "t": "A waitlist that fills gaps",
+            "d": "Offers go out when someone drops."
+          },
+          {
+            "t": "Seating suggested for you",
+            "d": "From what guests told you."
+          },
+          {
+            "t": "A seat swap at dessert",
+            "d": "Everyone meets a few more people."
+          },
+          {
+            "t": "Who’d come back",
+            "d": "The next invitation goes to them first."
+          },
+          {
+            "t": "Early-bird pricing",
+            "d": "The price can step up as seats fill."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Compare Catch with the alternatives",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for supper clubs",
+        "price": "5%",
+        "sub": "of ticket sales, never more than ₹10,000 a month.",
+        "lead": "Free for 30 days from your first dinner, 90 for founding hosts. Payment gateway fees are separate.",
+        "examples": [
+          {
+            "t": "A 24-seat supper at ₹1,800",
+            "v": "₹2,160 a dinner",
+            "d": "5% of ₹43,200, paid when guests book."
+          },
+          {
+            "t": "Two dinners a month",
+            "v": "₹4,320 a month",
+            "d": "Well under the ₹10,000 cap."
+          },
+          {
+            "t": "A free tasting for regulars",
+            "v": "₹0",
+            "d": "Free events stay free."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Start free trial",
+            "kind": "light"
+          },
+          {
+            "l": "See full pricing",
+            "kind": "lightsec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Supper club questions",
+        "title": "What hosts ask us.",
+        "items": [
+          [
+            "Can I choose who comes?",
+            "Yes. Turn on applications, ask your own questions, and approve, decline or waitlist each person. Approved guests pay to confirm."
+          ],
+          [
+            "How does the seating plan work?",
+            "Catch suggests tables of six with something in common and someone new, from what guests told you. Move anyone with a drag, and keep people apart if you need to."
+          ],
+          [
+            "What if someone cancels?",
+            "Refunds follow the cancellation policy you set. If there’s a waitlist, the next person gets an offer for the seat."
+          ],
+          [
+            "Do guests need an app?",
+            "No. Guests apply, pay and check in on your page in their phone’s browser."
+          ],
+          [
+            "Can early bookers pay less?",
+            "Yes, with dynamic pricing: the price steps up by an amount you set as seats fill, up to a maximum."
+          ],
+          [
+            "Can I bring my guest list from another tool?",
+            "Yes. Import it from any tool before your next dinner."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Your next dinner",
+        "title": "Fill the table with the right people.",
+        "lead": "Start the free trial, or leave your number and we’ll send the supper club setup guide on WhatsApp.",
+        "tone": "m-pink",
+        "ink": "#4A2330",
+        "btns": [
+          {
+            "l": "Start free trial"
+          }
+        ],
+        "form": {
+          "id": "sc-wa",
+          "label": "Your WhatsApp number",
+          "button": "Send the guide"
+        },
+        "img": "/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b",
+        "alt": "A dinner as guests see it on Catch"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "footnotes": [
+          "1. Average of reviews from guests who booked on Catch, [dates].",
+          "2. From Catch booking records, [dates].",
+          "3. Self-reported by the host. Individual results vary."
+        ]
+      }
+    }
+  ]
+}

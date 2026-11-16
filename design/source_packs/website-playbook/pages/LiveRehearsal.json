@@ -1,0 +1,175 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "LiveRehearsal",
+  "title": "Live · Guest rehearsal · /rehearse/:id",
+  "height": 1500,
+  "phone": {
+    "title": "Guest rehearsal",
+    "height": 2800
+  },
+  "state": {
+    "label": "Rehearsal states:",
+    "options": [
+      {
+        "key": "wait",
+        "label": "Waiting"
+      },
+      {
+        "key": "live",
+        "label": "Live"
+      },
+      {
+        "key": "done",
+        "label": "Complete"
+      },
+      {
+        "key": "gone",
+        "label": "Unavailable"
+      }
+    ],
+    "default": "live"
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "lp",
+        "cta": "Help"
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "wait",
+      "data": {
+        "banner": "Practice mode · This phone controls a synthetic guest only",
+        "kicker": "Live rehearsal",
+        "title": "Waiting for the Host",
+        "lead": "Keep this practice phone open. Guest controls appear when the Host starts the virtual event.",
+        "blocks": [
+          {
+            "label": "Now",
+            "title": "Welcome to the practice room",
+            "sub": "The Host is preparing the rehearsal. Nothing here reaches a real event.",
+            "rows": [
+              {
+                "t": "Aanya · Expected",
+                "s": "Harbour Room · Virtual time 6:55 PM"
+              }
+            ]
+          }
+        ],
+        "note": "Guest rehearsal (/rehearse/:id), finished from the partly drawn view. Copy from eventRehearsalCopy. Team members join as practice guests; nothing is real."
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "live",
+      "data": {
+        "banner": "Practice mode · This phone controls a synthetic guest only",
+        "kicker": "Live rehearsal",
+        "title": "Make the first hello easy",
+        "lead": "Follow the prompt and test how the guest guidance feels on a phone.",
+        "blocks": [
+          {
+            "label": "Now",
+            "title": "Aanya · Present",
+            "sub": "Harbour Room · Virtual time 7:18 PM"
+          },
+          {
+            "title": "Your practice prompt",
+            "sub": "Ask your team who’d win a quiz about this city.",
+            "btns": [
+              {
+                "l": "Mark prompt complete"
+              }
+            ]
+          },
+          {
+            "title": "Try the guest controls",
+            "sub": "Every action changes only this synthetic guest and appears on the Host practice screen.",
+            "btns": [
+              {
+                "l": "Confirm arrival"
+              },
+              {
+                "l": "Ask the Host for help",
+                "kind": "sec"
+              },
+              {
+                "l": "Opt out of social activities",
+                "kind": "sec"
+              }
+            ]
+          },
+          {
+            "title": "Practice run of show",
+            "rows": [
+              {
+                "t": "Arrive and check in",
+                "tag": "+0 min",
+                "tone": "good"
+              },
+              {
+                "t": "Make the first hello easy",
+                "tag": "+15 min",
+                "tone": "hot"
+              },
+              {
+                "t": "Find your practice group",
+                "tag": "+25 min"
+              },
+              {
+                "t": "The reveal is beginning",
+                "tag": "+90 min"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "done",
+      "data": {
+        "banner": "Practice mode · This phone controls a synthetic guest only",
+        "kicker": "Practice complete",
+        "kc": "#1F7A57",
+        "title": "The rehearsal has ended",
+        "lead": "You can leave this phone open while the Host reviews the deterministic recap.",
+        "blocks": [
+          {
+            "tone": "m-mint",
+            "title": "The Host practice screen has your update.",
+            "sub": "The Host can reset the same seed, fork the setup, or copy a reproduction."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "gone",
+      "data": {
+        "kicker": "Practice link",
+        "title": "This rehearsal is unavailable",
+        "lead": "The link may have expired, been replaced, or hit a simulated connection issue.",
+        "blocks": [
+          {
+            "title": "",
+            "btns": [
+              {
+                "l": "Try again"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "lp",
+        "mbar": "Help"
+      }
+    }
+  ]
+}

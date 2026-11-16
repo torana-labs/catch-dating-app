@@ -1,0 +1,314 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookHowItWorks",
+  "title": "Playbook · How Catch works",
+  "height": 5600,
+  "phone": {
+    "title": "How Catch works",
+    "height": 8200
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "How Catch works"
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "h1": true,
+        "kicker": "How Catch works",
+        "kc": "#B5451F",
+        "title": "One app, from the first booking to the next one.",
+        "lead": "Catch runs the whole life of an event: your page, bookings and payments, the door, the night itself and the follow-up. Use all of it, or start with one part.",
+        "cols": 6,
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Watch a night in 2 minutes",
+            "kind": "sec"
+          }
+        ],
+        "items": [
+          {
+            "tone": "m-coral",
+            "n": "1",
+            "t": "Your page",
+            "d": "A page that replaces the link in your bio."
+          },
+          {
+            "tone": "m-pink",
+            "n": "2",
+            "t": "Bookings and payments",
+            "d": "Applications, waitlists, and UPI or card."
+          },
+          {
+            "tone": "m-yellow",
+            "n": "3",
+            "t": "Messages",
+            "d": "Reminders and updates that go out on time."
+          },
+          {
+            "tone": "m-mint",
+            "n": "4",
+            "t": "The door",
+            "d": "QR or self check-in on a phone or iPad."
+          },
+          {
+            "tone": "m-indigo",
+            "n": "5",
+            "t": "The night",
+            "d": "Groups, teams, seating and rotations, by format."
+          },
+          {
+            "tone": "ink",
+            "n": "6",
+            "t": "After",
+            "d": "Reviews, reports, payouts and who to invite back."
+          }
+        ],
+        "note": "Rec 4 and 9: the product layer, now on the kit. Each step links to a capability page."
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "panel": "tint",
+        "id": "before",
+        "kicker": "Before the night",
+        "kc": "#B23A5A",
+        "title": "Get found, fill it, and tell people where to be.",
+        "groups": [
+          {
+            "n": "1",
+            "h": "Your page",
+            "list": [
+              "Your links, upcoming events and photos in one place, for your Instagram bio",
+              "Events you run elsewhere appear as tiles that link out",
+              "Reviews from people who booked, with your replies, and followers who hear about your next event first",
+              "It may already exist: claim it free"
+            ],
+            "link": "Your page →"
+          },
+          {
+            "n": "2",
+            "h": "Bookings and payments",
+            "list": [
+              "Applications with the questions you ask, approved with a tap",
+              "Waitlists that fill places when someone drops out",
+              "Private offers and invite-only events",
+              "Prices that can change as an event fills",
+              "UPI or card, every payment next to the right name, refunds by your rules"
+            ],
+            "link": "Bookings and payments →"
+          },
+          {
+            "n": "3",
+            "h": "Messages",
+            "list": [
+              "Where to meet and a reminder the day before, sent for you",
+              "Messages to everyone booked, or to an audience you choose"
+            ],
+            "link": "Messages and automations →"
+          }
+        ],
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b",
+          "alt": "An event as guests see it on Catch"
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "panel": "ink",
+        "id": "night",
+        "kicker": "On the night",
+        "kc": "#F5C451",
+        "title": "Open the door, then run the room.",
+        "groups": [
+          {
+            "n": "4",
+            "h": "The door",
+            "list": [
+              "QR or self check-in, on your phone or an iPad at the door",
+              "Arrivals, late-comers and walk-ins, live"
+            ],
+            "link": "The door →"
+          },
+          {
+            "n": "5",
+            "h": "The night",
+            "list": [
+              "Pace groups, tables, teams, court rotations or a route between venues, built for each format",
+              "A first hello, and Help me say hi for private introductions",
+              "Guests join live moments in their phone’s browser, no app needed",
+              "A dress rehearsal with your team before doors open"
+            ],
+            "link": "Running the night →"
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "The live console on an iPad: run of show, the room and what needs you"
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "id": "after",
+        "kicker": "After the night",
+        "kc": "#1F7A57",
+        "title": "Know what worked, and who to invite back.",
+        "groups": [
+          {
+            "n": "6",
+            "h": "After",
+            "list": [
+              "One record per guest across every event you run",
+              "Reviews and private feedback, with replies",
+              "A report after every event, and insights across them",
+              "Payouts, and roles for your team",
+              "The next invitation goes to the people most likely to come"
+            ],
+            "link": "Guest records → · Reports, payouts and team →"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Sunday Social Run · report",
+          "sub": "Carter Road Runners · Sun 8 Nov",
+          "stats": [
+            {
+              "v": "34",
+              "l": "Booked"
+            },
+            {
+              "v": "31",
+              "l": "Checked in"
+            },
+            {
+              "v": "9",
+              "l": "First-timers"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Asked for “same time next week?”",
+              "v": "22"
+            },
+            {
+              "t": "Wanted a steadier pace",
+              "v": "4"
+            },
+            {
+              "t": "New followers",
+              "v": "11"
+            },
+            {
+              "t": "Booked through the café’s link",
+              "v": "6"
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "panel": "tint",
+        "center": false,
+        "kicker": "Also in every plan",
+        "title": "The tools around the edges.",
+        "cols": 4,
+        "items": [
+          {
+            "tone": "white",
+            "t": "Forms",
+            "d": "Build a form, share the link, and see answers next to each guest.",
+            "link": "Forms"
+          },
+          {
+            "tone": "white",
+            "t": "Links for promoters",
+            "d": "A link for every promoter, venue and post, counted to the booking.",
+            "link": "Bookings and payments"
+          },
+          {
+            "tone": "white",
+            "t": "Bring your list",
+            "d": "Import guests from any tool. Nothing changes for them until the doors open.",
+            "link": "Switch to Catch"
+          },
+          {
+            "tone": "white",
+            "t": "Weddings and programmes",
+            "d": "Guests, travel, rooms and run sheets for multi-day events.",
+            "link": "Programmes"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Start where you are",
+        "kc": "#B5451F",
+        "title": "Hand Catch as much of the evening as you want.",
+        "items": [
+          {
+            "t": "1 · Keep your tools",
+            "d": "Import your guest list and use Catch for the door and the night. Nothing changes for guests until doors open."
+          },
+          {
+            "t": "2 · Take bookings on Catch",
+            "d": "Applications, payments and reminders, with one record for every guest."
+          },
+          {
+            "t": "3 · Get found on Catch",
+            "d": "Your events appear where people in your city look for something to do."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "tone": "m-coral",
+        "ink": "#3B1F14",
+        "kicker": "Free for 30 days",
+        "title": "See it on your next event.",
+        "lead": "Everything is included in the trial. Free events stay free after it.",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Book a 15-minute walkthrough",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host on a Saturday"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

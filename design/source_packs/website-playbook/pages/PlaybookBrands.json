@@ -1,0 +1,276 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookBrands",
+  "title": "Playbook · Catch for brands",
+  "height": 7000,
+  "phone": {
+    "title": "Catch for brands",
+    "height": 10000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "cta": "Book a walkthrough",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Brands"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "tone": "m-coral",
+        "ink": "#4A1C0E",
+        "kicker": "Catch for brands that run community events",
+        "title": "Know exactly who your events reached.",
+        "lead": "Run your own community nights or back hosts who already have the crowd. Every partner, creator and post gets its own link, and you see the bookings, attendance and repeat guests each one brought.",
+        "btns": [
+          {
+            "l": "Book a walkthrough"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "door": "A host looking for a sponsor? Tell us about your nights →",
+        "media": {
+          "kind": "card",
+          "title": "Run series · October",
+          "sub": "Four cities · 9 partner clubs",
+          "stats": [
+            {
+              "v": "1,820",
+              "l": "booked"
+            },
+            {
+              "v": "1,544",
+              "l": "came"
+            },
+            {
+              "v": "38%",
+              "l": "came again"
+            }
+          ],
+          "bars": [
+            {
+              "l": "Partner clubs",
+              "w": 100,
+              "c": "#F07A55",
+              "v": "1,102"
+            },
+            {
+              "l": "Creators",
+              "w": 41,
+              "c": "#F07A55",
+              "v": "452"
+            },
+            {
+              "l": "Your app",
+              "w": 24,
+              "c": "#F07A55",
+              "v": "266"
+            }
+          ],
+          "fine": "Illustrative figures"
+        },
+        "note": "Priority-3 page (/host/brands/). Built on organizer type ‘brand’, links per partner, guest records, private invite links and reports. Contact data is shared only with permission: opt-ins are per organiser and channel."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Two ways brands use Catch",
+        "kc": "#B5451F",
+        "title": "Run it yourself, or back the hosts who already do.",
+        "cols": 2,
+        "items": [
+          {
+            "tone": "m-coral",
+            "small": "Your own events",
+            "ink": "#4A1C0E",
+            "t": "Run community nights under your brand",
+            "d": "A page for your brand, events in each city, applications or paid booking, the door and the follow-up.",
+            "list": [
+              "Your brand page and events",
+              "Invite-only links for launches",
+              "Reports after every night"
+            ]
+          },
+          {
+            "tone": "white",
+            "small": "Partner hosts",
+            "t": "Back run clubs, supper clubs and quiz nights",
+            "d": "Hosts run the night on Catch; you give each one a link and see what your partnership brought.",
+            "list": [
+              "A link per partner host and creator",
+              "Bookings and attendance by partner",
+              "Repeat guests by partner"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Attribution",
+        "title": "Every partner, measured the same way.",
+        "lead": "Give every host, creator, store and post its own link. Catch follows each one from the first visit to a booking and to the door.",
+        "ticks": [
+          "Visits, bookings and attendance for every link",
+          "Repeat guests, not just first visits",
+          "One report across cities and partners"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Links · Run series",
+          "rows": [
+            {
+              "t": "Carter Road Runners",
+              "s": "Mumbai · 4 runs",
+              "v": "412"
+            },
+            {
+              "t": "Sea Face Striders",
+              "s": "Mumbai · 4 runs",
+              "v": "286"
+            },
+            {
+              "t": "Creator · @runwithrhea",
+              "s": "Reel and stories",
+              "v": "198"
+            },
+            {
+              "t": "Store QR codes",
+              "s": "12 stores",
+              "v": "131"
+            }
+          ],
+          "fine": "Bookings per link · illustrative"
+        }
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Guests and permission",
+        "title": "Reach without overreach.",
+        "lead": "You see counts and outcomes for every partner. Contact details come only from people who said yes to hearing from your brand.",
+        "items": [
+          {
+            "t": "Aggregate reports by default",
+            "d": "Bookings, attendance and repeats by partner."
+          },
+          {
+            "t": "Opt-in per brand and channel",
+            "d": "Asked clearly, recorded when given."
+          },
+          {
+            "t": "Hosts keep their guests",
+            "d": "A partnership never moves a host’s list to you."
+          },
+          {
+            "t": "Private links for launches",
+            "d": "Invite-only events stay off public pages."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for brands",
+        "price": "5%",
+        "sub": "of ticket sales, never more than ₹10,000 a month per organiser.",
+        "lead": "Free events stay free. Multi-city series and programmes: book a walkthrough for a plan.",
+        "btns": [
+          {
+            "l": "Book a walkthrough",
+            "kind": "light"
+          },
+          {
+            "l": "See full pricing",
+            "kind": "lightsec"
+          }
+        ],
+        "examples": [
+          {
+            "t": "Free community runs",
+            "v": "₹0",
+            "d": "Free events stay free."
+          },
+          {
+            "t": "A paid launch night, 200 at ₹500",
+            "v": "₹5,000",
+            "d": "5% of ₹1,00,000."
+          },
+          {
+            "t": "A multi-day offsite or retreat",
+            "v": "From ₹24,999",
+            "d": "Priced per programme."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Brand questions",
+        "title": "What brands ask us.",
+        "items": [
+          [
+            "Can we see the guests partner hosts bring?",
+            "You see counts: bookings, attendance and repeat guests by partner. Names and contact details only come from people who opted in to hear from your brand."
+          ],
+          [
+            "Can we run events in several cities?",
+            "Yes. Each city’s events sit on your brand page, and the report rolls them up."
+          ],
+          [
+            "Can we keep a launch invite-only?",
+            "Yes. Invite-only events stay off public pages; only people with your link can book."
+          ],
+          [
+            "How do we find hosts to partner with?",
+            "Book a walkthrough and tell us the cities and formats you want. We’ll introduce hosts who fit."
+          ],
+          [
+            "Do guests need an app?",
+            "No. Guests book and check in in their phone’s browser."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "tone": "m-coral",
+        "ink": "#4A1C0E",
+        "kicker": "Planning a series?",
+        "title": "Show us the cities. We’ll show you the reach.",
+        "lead": "A 15-minute walkthrough, then we set it up with you.",
+        "btns": [
+          {
+            "l": "Book a walkthrough"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "mbar": "Book a walkthrough"
+      }
+    }
+  ]
+}
