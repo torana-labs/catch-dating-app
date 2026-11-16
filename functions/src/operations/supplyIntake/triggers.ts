@@ -4,6 +4,8 @@ import {logger} from "firebase-functions";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {FirestoreShadowProjectionWriter} from "../projectionImporter";
+import {defaultListingApprovalDeps} from "../../admin/organizerListingApproval";
+import {materializeInstantDraft} from "../../instantDrafts/materialize";
 import {instagramDiscoveryConfig} from "./instagramDiscovery";
 import {
   processSupplyIntakeRequest,
@@ -38,6 +40,18 @@ function deps(): SupplyIntakeWorkerDeps {
 /** Thrown so the platform redelivers the event after a retryable outcome. */
 class SupplyIntakeRetry extends Error {}
 
+/**
+ * A website instant draft is saved as a private organizer draft as soon as
+ * its build finishes, so the submitter's page shows it within seconds. A
+ * redelivered event saves nothing twice; getInstantDraft does the same if
+ * this never runs.
+ */
+async function saveInstantDraft(requestId: string, outcome: string): Promise<void> {
+  if (outcome !== "completed" && outcome !== "skipped" && outcome !== "failed") return;
+  const draft = await materializeInstantDraft(defaultListingApprovalDeps, requestId);
+  if (draft.state !== "not_an_instant_draft") logger.info("Instant draft checked.", {requestId, state: draft.state});
+}
+
 /** A new intake request runs as soon as a front door writes it. */
 export const onSupplyIntakeRequestCreated = onDocumentCreated({
   document: `${supplyIntakeCollections.requests}/{requestId}`,
@@ -48,6 +62,7 @@ export const onSupplyIntakeRequestCreated = onDocumentCreated({
   if (outcome === "retry" || outcome === "busy") {
     throw new SupplyIntakeRetry(`Supply intake request ${outcome}.`);
   }
+  await saveInstantDraft(event.params.requestId, outcome);
 });
 
 /** Recovers requests whose event was lost or whose worker stopped mid-lease. */
@@ -65,5 +80,10 @@ export const recoverSupplyIntakeRequests = onSchedule({
   for (const doc of [...queued.docs, ...stale.docs]) {
     const outcome = await processSupplyIntakeRequest(worker, doc.id);
     logger.info("Supply intake recovery attempt.", {requestId: doc.id, outcome});
+    try {
+      await saveInstantDraft(doc.id, outcome);
+    } catch (error) {
+      logger.error("Instant draft could not be saved during recovery.", {requestId: doc.id, error: String(error)});
+    }
   }
 });
