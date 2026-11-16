@@ -27,6 +27,7 @@ import {assertOrganizerVisibilityDecisionAllowed} from "./supplyVisibilityPolicy
 import {newSalesAccount} from "./sales/account";
 import type {SalesActivity, SalesOpportunity, SalesTask} from "./sales/types";
 import {growthFactsCollection, listingChannel, newGrowthFacts} from "../growth/organizerGrowthFacts";
+import {DRAFT_TTL_DAYS} from "../instantDrafts/model";
 
 // Ops approve listings and events; claims stay the owner's (one of Admin's
 // three jobs: owner, sales associate, ops and support). Approving also opens
@@ -180,6 +181,9 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
     const stored = requestSnap.data() as StoredRequest | undefined;
     const draftForClaim = stored?.instantDraft !== undefined && stored.instantDraft !== null;
     publishStatus = draftForClaim ? "draft" : "published";
+    if (draftForClaim && recordValue(recordValue(stored?.instantDraft)?.outcome)?.state === "expired") {
+      throw new HttpsError("failed-precondition", "This instant draft expired unclaimed. Ask the organizer to send the link again.");
+    }
     if (receiptSnap.exists) {
       // The request's approval replays an identical approval and refuses a different one.
       const receipt = receiptSnap.data() ?? {};
@@ -248,8 +252,11 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
       projectionState: "pending_static_generation",
     };
     tx.create(db.collection(reviewDecisionCollection).doc(organizerId), decision);
+    // An instant draft nobody claims is removed 30 days after it was saved (expireInstantDrafts).
     tx.update(requestRef, {approval: {approvalId, organizerId, approvedByUid: adminContext.uid, approvedAt: now,
-      materialHash, salesOwnerUid}, updatedAt: now});
+      materialHash, salesOwnerUid}, ...(draftForClaim ? {instantDraft: {...recordValue(stored.instantDraft),
+      expiresAt: new Date(Date.parse(now) + DRAFT_TTL_DAYS * 24 * 60 * 60 * 1000).toISOString()}} : {}),
+    updatedAt: now});
     if (intentRef && intentSnap?.data()?.status === "needs_identity_review") {
       const intent = intentSnap.data() ?? {};
       tx.update(intentRef, {revision: Number(intent.revision) + 1, status: "linked", organizerId,

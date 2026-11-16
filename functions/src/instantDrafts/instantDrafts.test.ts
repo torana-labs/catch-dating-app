@@ -15,6 +15,7 @@ import {adminApproveOrganizerListingHandler} from "../admin/organizerListingAppr
 import {contractValidator} from "../shared/contractTestValidators";
 import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
 import {projectInboxSource} from "../admin/inbox/model";
+import {expireDueInstantDrafts, expireInstantDraft} from "./expiry";
 import {materializeInstantDraft} from "./materialize";
 import {instantDraftId, limiterKey} from "./model";
 import {requestInstantDraftHandler} from "./request";
@@ -320,6 +321,122 @@ test("a draft whose city cannot be told asks the submitter, and their choice con
   // The same choice again replays; a different one is refused now that it is saved.
   assert.equal((await h.status(draftId, TOKEN, {city: "in-mh-mumbai"})).status, "draft_ready");
   await assert.rejects(h.status(draftId, TOKEN, {city: "in-mp-indore"}), /not waiting for a city/);
+});
+
+/** A draft saved through the poll, with the route reservation the real approval writes. */
+async function savedDraft(h: ReturnType<typeof harness>, requestId: string) {
+  const {draftId} = await h.submit({requestId});
+  const built = await build(h, draftId);
+  const ready = await h.status(draftId);
+  assert.equal(ready.status, "draft_ready");
+  const organizerId = ready.draft!.organizerId;
+  const organizer = h.db.read(`organizers/${organizerId}`)!;
+  const canonicalPath = (organizer.publicPage as {canonicalPath: string}).canonicalPath;
+  const routeKey = canonicalPath.split("/").filter(Boolean).join("__");
+  h.db.write(`publicRouteReservations/${routeKey}`, {routeKey, routePath: canonicalPath, status: "active",
+    targetPath: `organizers/${organizerId}`, ownerId: organizerId, releasedAt: null, releasedByUid: null});
+  return {draftId, organizerId, routeKey, built};
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const expiryDeps = (h: ReturnType<typeof harness>, days: number) => ({firestore: () => h.firestore,
+  now: () => new Date(Date.parse(NOW) + days * DAY_MS), serverTimestamp: () => SERVER_TIME as unknown as FirebaseFirestore.FieldValue});
+
+test("an unclaimed draft is removed 30 days after it was saved, freeing its page address", async () => {
+  const h = harness();
+  const {draftId, organizerId, routeKey, built} = await savedDraft(h, "web-expire-0000000001");
+  const requestPath = `${supplyIntakeCollections.requests}/${draftId}`;
+  assert.equal((h.db.read(requestPath)!.instantDraft as {expiresAt: string}).expiresAt,
+    new Date(Date.parse(NOW) + 30 * DAY_MS).toISOString(), "saving sets the expiry");
+  for (const path of [`organizerIntakeReviewDecisions/${organizerId}`, `organizerGrowthFacts/${organizerId}`]) {
+    assert.ok(h.db.read(path), path);
+  }
+
+  // Not yet due: nothing is read or changed.
+  assert.deepEqual(await expireDueInstantDrafts(expiryDeps(h, 29)), {expired: 0, claimed: 0, published: 0,
+    claim_pending: 0, not_due: 0, skipped: 0});
+  assert.ok(h.db.read(`organizers/${organizerId}`));
+
+  const counts = await expireDueInstantDrafts(expiryDeps(h, 30.01));
+  assert.equal(counts.expired, 1);
+  assert.equal(h.db.read(`organizers/${organizerId}`), undefined, "the private draft organizer is gone");
+  assert.equal(h.db.read(`organizerIntakeReviewDecisions/${organizerId}`), undefined);
+  assert.equal(h.db.read(`organizerGrowthFacts/${organizerId}`), undefined);
+  const route = h.db.read(`publicRouteReservations/${routeKey}`)!;
+  assert.deepEqual([route.status, route.releasedByUid, route.replacementRoutePath], ["released", "supply-instant-draft-expiry", null]);
+  const receipt = h.db.entries().find(([key, value]) => key.startsWith("organizerIntakeCurationDecisions/") &&
+    value.entityId === organizerId)?.[1];
+  assert.equal(receipt?.operationStatus, "superseded");
+  const stored = h.db.read(requestPath)!;
+  valid(validators.stored, stored, "SupplyIntakeRequestsDocument");
+  const draft = stored.instantDraft as {expiresAt: unknown; outcome: {state: string; reasons: string[]}};
+  assert.deepEqual([draft.expiresAt, draft.outcome.state, draft.outcome.reasons], [null, "expired", ["unclaimed_after_30_days"]]);
+  assert.ok(h.db.entries().some(([key, value]) => key.startsWith("adminAuditLogs/") && value.action === "expireInstantDraft" &&
+    value.targetPath === `organizers/${organizerId}`));
+  // The Admin Inbox item closes, and the draft page says so.
+  const item = projectInboxSource("supplyIntakeRequest", draftId, stored)!;
+  assert.deepEqual([item.lifecycle, item.state.code], ["closed", "expired"]);
+  const page = await h.status(draftId);
+  valid(validators.statusResponse, page, "GetInstantDraftCallableResponse");
+  assert.deepEqual([page.status, page.draft, page.reasons], ["expired", null, ["unclaimed_after_30_days"]]);
+
+  // Idempotent: a later run finds nothing due, and the request itself is skipped.
+  assert.equal((await expireDueInstantDrafts(expiryDeps(h, 31))).expired, 0);
+  assert.equal(await expireInstantDraft(expiryDeps(h, 31), draftId), "skipped");
+  // Staff cannot bring the expired draft back by approving its old listing.
+  await assert.rejects(adminApproveOrganizerListingHandler({auth: {uid: "admin-1", token: {admin: true}},
+    rawRequest: {headers: {}}, data: {requestId: "approve-expired-1", listingWorkItemId: built.workItem.workItemId,
+      contentHash: built.listing.contentHash, name: "Afterfly", publicSlug: "afterfly", marketId: "in-mh-mumbai",
+      organizerType: "community", note: "Approving it late.", checklist: {identityReviewed: true, surfaceInventoryReviewed: true,
+        ownerSafeCopyReviewed: true, marketScopeReviewed: true, mediaRightsReviewed: true, crawlDisabledReviewed: true,
+        claimTargetReviewed: true, takedownPathReviewed: true, impersonationReviewed: true}}} as unknown as CallableRequest<unknown>,
+  h.deps as never), /expired unclaimed/);
+});
+
+test("the cleanup never touches a claimed or published draft, waits on a pending claim, and is bounded", async () => {
+  const h = harness();
+  const claimed = await savedDraft(h, "web-claimed-000000001");
+  const published = await savedDraft(h, "web-publish-000000001");
+  const pending = await savedDraft(h, "web-pending-000000001");
+  const edit = (organizerId: string, patch: (organizer: Record<string, any>) => void) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const organizer = h.db.read(`organizers/${organizerId}`)!;
+    patch(organizer);
+    h.db.write(`organizers/${organizerId}`, organizer);
+  };
+  edit(claimed.organizerId, (organizer) => {
+    organizer.claim.state = "claimed";
+    organizer.ownerUserId = "owner-1";
+    organizer.ownership = {...organizer.ownership, state: "claimed", ownerUserId: "owner-1"};
+  });
+  edit(published.organizerId, (organizer) => {
+    organizer.publicPage.publishStatus = "published";
+  });
+  edit(pending.organizerId, (organizer) => {
+    organizer.claim.state = "claimPending";
+  });
+
+  // One run decides at most the batch it asked for.
+  const first = await expireDueInstantDrafts(expiryDeps(h, 31), 1);
+  assert.equal(Object.values(first).reduce((sum, count) => sum + count, 0), 1);
+  const rest = await expireDueInstantDrafts(expiryDeps(h, 31));
+  const counts = Object.fromEntries(Object.entries(first).map(([key, value]) => [key, value + rest[key as keyof typeof rest]]));
+  assert.deepEqual(counts, {expired: 0, claimed: 1, published: 1, claim_pending: 1, not_due: 0, skipped: 0});
+  for (const draft of [claimed, published, pending]) {
+    assert.ok(h.db.read(`organizers/${draft.organizerId}`), "the organizer is kept");
+    assert.equal(h.db.read(`publicRouteReservations/${draft.routeKey}`)?.status, "active");
+  }
+  const expiresAt = (draftId: string) =>
+    (h.db.read(`${supplyIntakeCollections.requests}/${draftId}`)!.instantDraft as {expiresAt: string | null}).expiresAt;
+  assert.deepEqual([expiresAt(claimed.draftId), expiresAt(published.draftId)], [null, null], "an owned draft stops being tracked");
+  assert.equal(expiresAt(pending.draftId), new Date(Date.parse(NOW) + 38 * DAY_MS).toISOString(), "a pending claim is checked in a week");
+
+  // The claim is turned down; a week later the draft is removed after all.
+  edit(pending.organizerId, (organizer) => {
+    organizer.claim.state = "unclaimed";
+  });
+  assert.equal((await expireDueInstantDrafts(expiryDeps(h, 38))).expired, 1);
+  assert.equal(h.db.read(`organizers/${pending.organizerId}`), undefined);
+  assert.ok(h.db.read(`organizers/${claimed.organizerId}`) && h.db.read(`organizers/${published.organizerId}`));
 });
 
 test("staff approving an instant draft's listing also save it unpublished", async () => {
