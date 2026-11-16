@@ -95,7 +95,7 @@ const assetPattern = "^/assets/[A-Za-z0-9/_.-]+\\.(?:jpg|jpeg|png|webp|avif|svg)
 
 const ground = oneOfValues(playbookGrounds);
 
-/** Where an action goes: a route of this site (optionally an anchor on it), an anchor on this page, or a WhatsApp chat with Catch. */
+/** Where an action goes: a route of this site (optionally an anchor on it), an anchor on this page, or a WhatsApp chat with the support number. */
 const destinationSpec: OneOfSpec = {
   t: "oneOf",
   name: "destination",
@@ -580,7 +580,7 @@ export function playbookPageJsonSchema(): JsonSchema {
   const root = inline(pageSpec);
   return {
     $schema: "https://json-schema.org/draft/2020-12/schema",
-    title: "Catch website playbook page",
+    title: "Website playbook page",
     description: "Generated from website/src/content/playbook/playbookContract.ts; playbookContract.test.ts keeps it equal. The runtime validator also rejects the literal brand name and checks route ids, capture slots, anchors and footnotes.",
     ...root,
     $defs: {

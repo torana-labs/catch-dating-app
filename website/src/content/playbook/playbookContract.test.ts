@@ -1,5 +1,6 @@
 import Ajv2020 from "ajv/dist/2020.js";
 import {describe, expect, it} from "vitest";
+import {brand} from "../brand";
 import runClubs from "./pages/host/run-clubs.json";
 import schema from "./playbookPage.schema.json";
 import {
@@ -86,7 +87,7 @@ describe("playbook page contract", () => {
   });
 
   it("rejects the literal brand name and single-brace brand tokens at runtime", () => {
-    expect(validatePlaybookPage(fixture((page) => {page.sections[0].title = "Catch for run clubs.";})).join("\n"))
+    expect(validatePlaybookPage(fixture((page) => {page.sections[0].title = `${brand.name} for run clubs.`;})).join("\n"))
       .toMatch(/names the brand literally/u);
     expect(validatePlaybookPage(fixture((page) => {page.sections[0].title = "{brand.name} for run clubs.";})).join("\n"))
       .toMatch(/single braces/u);

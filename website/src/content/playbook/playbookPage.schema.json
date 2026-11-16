@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Catch website playbook page",
+  "title": "Website playbook page",
   "description": "Generated from website/src/content/playbook/playbookContract.ts; playbookContract.test.ts keeps it equal. The runtime validator also rejects the literal brand name and checks route ids, capture slots, anchors and footnotes.",
   "type": "object",
   "additionalProperties": false,
