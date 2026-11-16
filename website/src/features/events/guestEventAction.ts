@@ -1,6 +1,6 @@
-import type {GetEventViewerStateCallableResponse} from "../../shared/contracts/generated/getEventViewerStateCallableResponse";
 import {guestEventCopy as copy} from "../../content/events";
-export type GuestEventState = NonNullable<GetEventViewerStateCallableResponse["viewer"]["guest"]>;
+import type {GuestEventState} from "./guestEventState";
+export type {GuestEventState};
 
 /** Presentation only. The server chooses admission; destinations remain with their existing owners. */
 export function guestEventAction(guest: GuestEventState, eventId: string): {

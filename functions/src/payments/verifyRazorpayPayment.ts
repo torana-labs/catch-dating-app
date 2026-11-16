@@ -84,23 +84,17 @@ export async function verifyRazorpayPaymentHandler(
   }
 
   const razorpay = deps.createClient();
-  const paymentRef = bookingPaymentRef(db, paymentId);
-  const pendingRef = db.collection("razorpayPendingOrders").doc(orderId);
-  const [order, payment, localPayment, pendingOrder] = await Promise.all([
+  const [order, payment, localPayment] = await Promise.all([
     razorpay.orders.fetch(orderId),
     razorpay.payments.fetch(paymentId),
-    paymentRef.get(),
-    pendingRef.get(),
+    bookingPaymentRef(db, paymentId).get(),
   ]);
   const runtimeProjectId =
     (deps.runtimeProjectId ?? razorpayRuntimeProject)();
   const ownership = resolveRazorpayOrderOwnership({
     runtimeProjectId,
     order,
-    frozenContexts: [
-      localPayment.data()?.razorpayOwnership,
-      pendingOrder.data()?.razorpayOwnership,
-    ],
+    frozenContexts: [localPayment.data()?.razorpayOwnership],
   });
   if (ownership.kind !== "owned") {
     throw new HttpsError("failed-precondition",
@@ -125,9 +119,9 @@ export async function verifyRazorpayPaymentHandler(
     expectedUserId: userId,
   });
 
-  // Fulfillment (sign up -> completed payments doc, or refund-on-failure) is
-  // shared with the Razorpay webhook and the reconciliation sweep so all three
-  // paths stay idempotent and never double-fulfill or double-charge.
+  // Fulfillment (sign up -> completed payment, or refund-on-failure) is shared
+  // with the Razorpay webhook so both paths stay idempotent and never
+  // double-fulfill or double-charge.
   const outcome = await fulfillRazorpayPayment({
     db,
     orderId,

@@ -1,10 +1,20 @@
-import {useEffect, useId, useRef, useState, type FormEvent} from "react";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {beginPublicEventPhoneVerification, getGuestEventViewerState,
+import {useEffect, useId, useReducer, useRef, useState, type FormEvent} from "react";
+import {skipToken, useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {beginPublicEventPhoneVerification, watchGuestEventDocuments,
   watchPublicFormAuthState, signOutGuestUser, type User, type PublicEventPhoneVerification} from "../../firebase";
 import {guestEventCopy as copy} from "../../content/events";
+import {activeCommunityMemberships, guestEventState, nextGuestEventChangeMillis, parseEventGuestEntry,
+  parseGuestEventStatus, type GuestEventSources} from "./guestEventState";
 
-/** Identity changes clear private projections; status refresh never charges or admits. */
+type GuestEventFeed = {phase: "waiting"} | {phase: "ready"; sources: GuestEventSources} | {phase: "failed"};
+const waiting: GuestEventFeed = {phase: "waiting"};
+
+/**
+ * Identity changes clear private projections. The guest's step comes from
+ * listeners on the event's guest entry, their own row and their booking
+ * facts, so it follows every change without a refresh; reading never
+ * charges or admits.
+ */
 export function useGuestEventController(eventId: string) {
   const [user, setUser] = useState<User | null | undefined>();
   const [phone, setPhone] = useState("");
@@ -38,17 +48,42 @@ export function useGuestEventController(eventId: string) {
       cache.removeQueries({queryKey: ["guest-event", eventId]});
     };
   }, [cache, eventId, reset]);
-  const query = useQuery({
-    queryKey: ["guest-event", eventId, user?.phoneNumber ? user.uid : ""],
-    enabled: Boolean(user?.phoneNumber), retry: false, gcTime: 0,
-    refetchInterval: 15_000, refetchOnWindowFocus: "always",
-    queryFn: async () => {
-      const result = await getGuestEventViewerState(eventId);
-      if (result.viewer.eventId !== eventId || !result.viewer.guest ||
-          result.viewer.guest.expiresAtMillis <= Date.now()) throw new Error(copy.unavailable);
-      return result.viewer;
-    },
-  });
+  const uid = user?.phoneNumber ? user.uid : "";
+  const queryKey = ["guest-event", eventId, uid];
+  const [attempt, retry] = useReducer((value: number) => value + 1, 0);
+  const {data: feed = waiting} = useQuery<GuestEventFeed>({queryKey, queryFn: skipToken, gcTime: 0, initialData: waiting});
+  useEffect(() => {
+    if (!uid) return;
+    let active = true;
+    let stop: (() => void) | undefined;
+    const key = ["guest-event", eventId, uid];
+    cache.setQueryData(key, waiting);
+    const failed = () => { if (active) cache.setQueryData<GuestEventFeed>(key, {phase: "failed"}); };
+    watchGuestEventDocuments(eventId, uid, (documents) => {
+      if (!active) return;
+      const sources: GuestEventSources = {
+        entry: parseEventGuestEntry(documents.entry),
+        status: parseGuestEventStatus(documents.status, uid),
+        activeMemberOf: activeCommunityMemberships(documents.bookingFacts),
+      };
+      const ready: GuestEventFeed = {phase: "ready", sources};
+      cache.setQueryData(key, ready);
+    }, failed).then((next) => {
+      if (active) stop = next; else next();
+    }).catch(failed);
+    return () => { active = false; stop?.(); };
+  }, [attempt, cache, eventId, uid]);
+  // The step changes by itself when the event starts or an offer expires.
+  const [now, setNow] = useState(() => Date.now());
+  const sources = feed.phase === "ready" ? feed.sources : null;
+  useEffect(() => {
+    const next = sources ? nextGuestEventChangeMillis(sources, now) : null;
+    if (next === null) return;
+    const timer = setTimeout(() => setNow(Date.now()),
+      Math.min(Math.max(0, next - Date.now() + 50), 2_147_483_647));
+    return () => clearTimeout(timer);
+  }, [sources, now]);
+  const viewer = sources ? guestEventState(sources, eventId, now) : null;
   async function submit(event: FormEvent) {
     event.preventDefault();
     if (mutation.isPending) return;
@@ -77,8 +112,8 @@ export function useGuestEventController(eventId: string) {
   }
   return {user, phone, setPhone, code, setCode, codeSent, submit, message,
     pending: mutation.isPending, recaptchaId,
-    viewer: query.isError || !query.data?.guest || query.data.guest.expiresAtMillis <= Date.now() ? null : query.data,
-    loading: user === undefined || Boolean(user?.phoneNumber) && query.isPending,
+    viewer: viewer ? {guest: viewer} : null,
+    loading: user === undefined || Boolean(uid) && feed.phase === "waiting",
     changePhone: () => {
       if (mutation.isPending) return;
       scope.current.epoch++;
@@ -86,5 +121,5 @@ export function useGuestEventController(eventId: string) {
       setCode(""); setCodeSent(false); setMessage(""); reset();
     },
     changeAccount: () => signOutGuestUser().catch(() => setMessage(copy.verificationFailed)),
-    error: query.isError, refresh: () => query.refetch()};
+    error: feed.phase === "failed", refresh: retry};
 }

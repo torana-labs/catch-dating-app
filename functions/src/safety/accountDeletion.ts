@@ -380,7 +380,7 @@ async function queueParticipantPrivateStateCleanup(
     "eventApprovalNotificationReceipts", "hostMemberships",
     "hostMembershipCheckouts", "hostMembershipBenefitUses",
     "eventChatDirectoryEntries",
-    "guestBookingFacts"]) {
+    "guestBookingFacts", "guestEventStatuses"]) {
     const records = await db.collection(collection)
       .where("uid", "==", uid).get();
     records.forEach((doc) => writer.delete(doc.ref));

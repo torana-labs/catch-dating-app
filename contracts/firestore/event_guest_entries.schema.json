@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_guest_entries.schema.json",
+  "title": "EventGuestEntryDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "description": "How a phone-verified guest with no record of their own enters one published event from the website, at eventGuestEntries/{eventId}: free registration, paid booking, the event's application form, or not here, for an active community member and for anyone else. Triggers rebuild it from the event, its organizer and its application form whenever one of them changes; an unpublished event has no entry. It stores the start time rather than applying it, so the browser closes the entry when the event starts. Registration, checkout and application commands keep checking the authoritative documents.",
+  "x-firestore-collection": "eventGuestEntries",
+  "x-firestore-path": "eventGuestEntries/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-owner": "event guest entry triggers",
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "organizerId",
+    "open",
+    "startAtMillis",
+    "publicFormId",
+    "registration",
+    "updatedAtMillis"
+  ],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "trigger-owned"},
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "open": {
+      "type": "boolean",
+      "description": "The event is active; a cancelled or completed event is closed.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "startAtMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The event's start. A guest without a place cannot enter once it passes.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "publicFormId": {
+      "anyOf": [
+        {"type": "string", "minLength": 1, "maxLength": 180},
+        {"type": "null"}
+      ],
+      "description": "The event's one current published application form, when its immutable version targets this event with a phone or Catch identity policy.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["guest", "member"],
+      "description": "The step before the event starts, for a guest who is not and one who is an active member of the organizer's community. The public registration policy is judged as if just before the start.",
+      "properties": {
+        "guest": {"$ref": "#/definitions/registrationStep"},
+        "member": {"$ref": "#/definitions/registrationStep"}
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "updatedAtMillis": {"type": "integer", "minimum": 1, "x-catch-ownership": "trigger-owned"}
+  },
+  "definitions": {
+    "registrationStep": {
+      "type": "string",
+      "enum": ["registerFree", "bookPaid", "apply", "unsupported"]
+    }
+  }
+}

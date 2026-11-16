@@ -9,8 +9,8 @@ import {hasEventCommunityMembership} from
   "../../memberships/communityMembershipAuthority";
 import {deriveEventSeatPolicy} from "../seatAuthority/firestoreAdapter";
 import {eventPolicyFromEvent} from "../eventPolicy";
-import {readGuestEventViewerState} from "../guestEventViewerState";
-import {publicFixture, uid, org, now, phone, eventId} from "./testFixture";
+import {eventGuestEntry} from "../../guestEvents/eventGuestEntry";
+import {publicFixture, uid, org, now, eventId} from "./testFixture";
 import {publicCheckoutQuote} from "./policy";
 import {finalizePublicPayment} from "./admission";
 import {PUBLIC_PAYMENT_COLLECTION} from "./paymentLedger";
@@ -30,15 +30,17 @@ async function fixture() {
   };
   const quote = publicCheckoutQuote(eventId, event,
     h.organizer as unknown as OrganizerDocument, now, true);
-  const read = () => readGuestEventViewerState({db: h.store.db(), uid,
-    eventId, phoneE164: phone, nowMillis: now, loadCurrentAuthUser: h.auth});
+  // The website reads the member's step from the event's guest entry.
+  const read = () => h.store.db().runTransaction((tx) =>
+    eventGuestEntry(h.store.db(), tx, eventId, now));
   return {...h, event, member, read, reviewedQuote: quote};
 }
 
 test("member exemption needs current proof for both viewer and reservation",
   async () => {
     const h = await fixture();
-    assert.equal((await h.read())?.guest.action, "unsupported");
+    assert.deepEqual((await h.read())?.registration,
+      {guest: "unsupported", member: "bookPaid"});
     await assert.rejects(h.reserve({reviewedQuote: h.reviewedQuote}),
       /reviewed admission/);
     // Exemptions must read real membership even without a members-only gate.
@@ -47,7 +49,6 @@ test("member exemption needs current proof for both viewer and reservation",
         organizerId: org, uid, policy: eventPolicyFromEvent(h.event),
         nowMillis: now})), false);
     h.member("active");
-    assert.equal((await h.read())?.guest.action, "bookPaid");
     const reserved = await h.reserve({reviewedQuote: h.reviewedQuote});
     assert.ok("payment" in reserved);
     h.member("revoked");
@@ -76,7 +77,7 @@ test("member exemption cannot enable partitioned guest inventory", async () => {
   const h = await fixture();
   h.member("active");
   h.event.eventPolicy!.admission.cohortCapacityLimits = {men: 1};
-  assert.equal((await h.read())?.guest.action, "unsupported");
+  assert.equal((await h.read())?.registration.member, "unsupported");
   await assert.rejects(h.reserve({reviewedQuote: h.reviewedQuote}),
     /cohort, membership or Cross Paths/);
 });

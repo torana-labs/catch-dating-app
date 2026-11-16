@@ -5,10 +5,7 @@ import * as logger from "firebase-functions/logger";
 import Razorpay from "razorpay";
 import {signUpUserForEvent} from "../events/signUpUserForEvent";
 import {verifyPaidEventBooking} from "./paymentValidation";
-import {
-  fulfillRazorpayPayment,
-  markRazorpayPendingOrder,
-} from "./razorpayFulfillment";
+import {fulfillRazorpayPayment} from "./razorpayFulfillment";
 import {
   createRazorpayClient,
   razorpayKeySecret,
@@ -50,8 +47,8 @@ const defaultDeps: RazorpayWebhookDeps = {
  * Handles `payment.captured` by re-fetching and validating the order + payment
  * (so we trust Razorpay's server state, not the webhook body) and running the
  * shared fulfillment helper — idempotent if the client callback already
- * fulfilled the booking. Handles `payment.failed` by marking the matching
- * pending-order tracking doc failed.
+ * fulfilled the booking. Orders are no longer created, so only replays of
+ * existing native checkouts arrive here; `payment.failed` is not acted on.
  *
  * Throws on an invalid signature or a malformed event so the onRequest wrapper
  * can answer 400 and Razorpay retries.
@@ -76,11 +73,6 @@ export async function razorpayWebhookHandler(
 
   if (event.event === "payment.captured") {
     await handlePaymentCaptured({db, deps, payment: paymentEntity(event)});
-    return;
-  }
-
-  if (event.event === "payment.failed") {
-    await handlePaymentFailed({db, deps, payment: paymentEntity(event)});
     return;
   }
 
@@ -169,23 +161,17 @@ async function handlePaymentCaptured({
   // Re-fetch from Razorpay rather than trusting the webhook body, and discover
   // the booking owner from the order notes (the user id lives there, set at
   // order-creation time).
-  const paymentRef = bookingPaymentRef(db, paymentId);
-  const pendingRef = db.collection("razorpayPendingOrders").doc(orderId);
-  const [order, payment, localPayment, pendingOrder] = await Promise.all([
+  const [order, payment, localPayment] = await Promise.all([
     razorpay.orders.fetch(orderId),
     razorpay.payments.fetch(paymentId),
-    paymentRef.get(),
-    pendingRef.get(),
+    bookingPaymentRef(db, paymentId).get(),
   ]);
   const runtimeProjectId =
     (deps.runtimeProjectId ?? razorpayRuntimeProject)();
   const ownership = resolveRazorpayOrderOwnership({
     runtimeProjectId,
     order,
-    frozenContexts: [
-      localPayment.data()?.razorpayOwnership,
-      pendingOrder.data()?.razorpayOwnership,
-    ],
+    frozenContexts: [localPayment.data()?.razorpayOwnership],
   });
   // Validly signed shared-merchant traffic from another environment is
   // acknowledged without mutating local booking, payment or tracking state.
@@ -226,39 +212,6 @@ async function handlePaymentCaptured({
       signUpForEvent: deps.signUpForEvent,
       serverTimestamp: deps.serverTimestamp,
     },
-  });
-}
-
-async function handlePaymentFailed({
-  db,
-  deps,
-  payment,
-}: {
-  db: FirebaseFirestore.Firestore;
-  deps: RazorpayWebhookDeps;
-  payment: RazorpayWebhookPayment;
-}): Promise<void> {
-  const orderId = payment.order_id;
-  if (!orderId) return;
-  const razorpay = deps.createClient();
-  const [order, localPayment, pendingOrder] = await Promise.all([
-    razorpay.orders.fetch(orderId),
-    bookingPaymentRef(db, payment.id).get(),
-    db.collection("razorpayPendingOrders").doc(orderId).get(),
-  ]);
-  const runtimeProjectId =
-    (deps.runtimeProjectId ?? razorpayRuntimeProject)();
-  const ownership = resolveRazorpayOrderOwnership({runtimeProjectId, order,
-    frozenContexts: [localPayment.data()?.razorpayOwnership,
-      pendingOrder.data()?.razorpayOwnership]});
-  if (ownership.kind !== "owned") return;
-  assertRazorpayOrderOwnership({evidence: ownership.evidence, orderId,
-    runtimeProjectId});
-  await markRazorpayPendingOrder({
-    db,
-    orderId,
-    status: "failed",
-    serverTimestamp: deps.serverTimestamp,
   });
 }
 

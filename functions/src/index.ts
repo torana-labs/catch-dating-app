@@ -46,9 +46,6 @@ export {reconcileOrganizerEventOfferPayments} from
   "./payments/offerPayments/offerPaymentRecovery";
 export {onCancelledEventOfferPayments} from
   "./payments/offerPayments/offerPaymentCancellationTrigger";
-export {
-  reconcileRazorpayOrders,
-} from "./payments/reconcileRazorpayOrders";
 export {createStripeCheckoutSession} from
   "./payments/createStripeCheckoutSession";
 export {
@@ -1115,8 +1112,7 @@ export {onHostEventSetupViewEventChanged,
   onHostEventSetupViewParticipationChanged,
   onHostEventSetupViewWaitlistOfferChanged,
   onHostEventSetupViewEventOfferChanged,
-  onHostEventSetupViewBookingPaymentChanged,
-  onHostEventSetupViewPendingOrderChanged,
+  onHostEventSetupViewGuestPaymentChanged,
   onHostEventSetupViewMomentChanged} from
   "./hostReadModels/eventSetupViewTriggers";
 export {onHostEventSetupDefaultViewDefaultsChanged,
@@ -1129,6 +1125,12 @@ export {onEventChatDirectoryMembershipWritten,
   onEventChatDirectoryAttendeeWritten, onEventChatDirectoryRoomWritten,
   onEventChatDirectoryEventWritten, onEventChatDirectoryUserWritten} from
   "./chats/eventChatDirectory";
+export {onGuestEventStatusParticipationWritten,
+  onGuestEventStatusAttendeeWritten, onGuestEventStatusPaymentWritten,
+  onGuestEventStatusApplicationWritten,
+  onGuestEventStatusOfferRecipientWritten, onEventGuestEntryEventWritten,
+  onEventGuestEntryOrganizerWritten, onEventGuestEntryFormWritten} from
+  "./guestEvents/triggers";
 export {onHostProviderConnectionViewConnectionChanged,
   onHostProviderConnectionViewOrganizerChanged} from
   "./hostReadModels/providerConnectionViewTriggers";

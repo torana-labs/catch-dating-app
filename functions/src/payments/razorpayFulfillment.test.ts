@@ -51,7 +51,6 @@ test(
     assert.equal(fake.inviteLinkSetCalls[0].docId, "link-1");
     assert.ok("paidCount" in fake.inviteLinkSetCalls[0].data);
     // The tracking doc is cleaned up once fulfillment lands.
-    assert.deepEqual(fake.pendingDeletes, ["order-1"]);
   }
 );
 
@@ -130,7 +129,6 @@ test(
     assert.equal(fake.inviteLinkSetCalls.length, 0);
     assert.deepEqual(result, {fulfilled: true, alreadyFinalized: true});
     // Even the no-op path retires the tracking doc.
-    assert.deepEqual(fake.pendingDeletes, ["order-1"]);
   }
 );
 
@@ -159,7 +157,6 @@ test(
     assert.equal(signUpCalls, 0);
     assert.deepEqual(fake.paymentSetCalls, []);
     assert.deepEqual(fake.inviteLinkSetCalls, []);
-    assert.deepEqual(fake.pendingDeletes, []);
   }
 );
 
@@ -172,7 +169,6 @@ function createFulfillmentFirestore(options: {
     docId: string;
     data: Record<string, unknown>;
   }> = [];
-  const pendingDeletes: string[] = [];
   let paymentGetCount = 0;
 
   const paymentRef = {
@@ -211,13 +207,6 @@ function createFulfillmentFirestore(options: {
             },
           };
         }
-        if (path === "razorpayPendingOrders") {
-          return {
-            delete: async () => {
-              pendingDeletes.push(docId);
-            },
-          };
-        }
         // eventParticipations (host-approval lookup) and any other collection.
         return {
           get: async () => ({exists: false, data: () => undefined}),
@@ -243,5 +232,5 @@ function createFulfillmentFirestore(options: {
     },
   } as unknown as FirebaseFirestore.Firestore;
 
-  return {db, paymentSetCalls, inviteLinkSetCalls, pendingDeletes};
+  return {db, paymentSetCalls, inviteLinkSetCalls};
 }

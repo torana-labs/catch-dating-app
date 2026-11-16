@@ -126,7 +126,7 @@ export async function reconcileEventSetupView(
         .map((doc) => doc.data()),
       arrivalMoment: momentSnap.data()});
     // Published, cancelled or booked events can never edit basics, so their
-    // seven witness reads are skipped; the answer cannot depend on them.
+    // six witness reads are skipped; the answer cannot depend on them.
     const shapeEditable = privateEventBasicsShapeEditable(eventId, event);
     const committed = shapeEditable ?
       await hasEventCommitment(tx, db, eventId) : false;

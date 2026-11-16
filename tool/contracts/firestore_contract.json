@@ -1281,8 +1281,7 @@
         "onHostEventSetupViewParticipationChanged",
         "onHostEventSetupViewWaitlistOfferChanged",
         "onHostEventSetupViewEventOfferChanged",
-        "onHostEventSetupViewBookingPaymentChanged",
-        "onHostEventSetupViewPendingOrderChanged",
+        "onHostEventSetupViewGuestPaymentChanged",
         "onHostEventSetupViewMomentChanged"
       ],
       "migrationNotes": [
@@ -5031,6 +5030,54 @@
       "migrationNotes": [
         "One current active/revoked organizer/UID grant; follows, contact links, signup and application review alone are not membership.",
         "Subject account deletion removes grants; revocation does not cancel paid bookings or rewrite attendance."
+      ]
+    },
+    {
+      "id": "eventGuestEntries",
+      "path": "eventGuestEntries/{eventId}",
+      "rulesMatch": "/eventGuestEntries/{eventId}",
+      "typescriptInterface": "EventGuestEntryDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/events.rules.test.cjs",
+      "rulesTestNames": [
+        "lets a guest get an event's guest entry and only their own status"
+      ],
+      "owner": "event guest entry triggers",
+      "read": "any signed-in person gets one entry by id; nobody lists the collection",
+      "write": "server only; triggers on events, organizers and organizerForms rebuild an entry from the event, its organizer and its application form, and delete it when the event is unpublished",
+      "exportedFunctions": [
+        "onEventGuestEntryEventWritten",
+        "onEventGuestEntryOrganizerWritten",
+        "onEventGuestEntryFormWritten"
+      ],
+      "migrationNotes": [
+        "Replaces the getEventViewerState guest surface for the website event page (#1337). Backfilled by the guest-event-read-models migration."
+      ]
+    },
+    {
+      "id": "guestEventStatuses",
+      "path": "guestEventStatuses/{statusId}",
+      "rulesMatch": "/guestEventStatuses/{statusId}",
+      "typescriptInterface": "GuestEventStatusDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/events.rules.test.cjs",
+      "rulesTestNames": [
+        "lets a guest get an event's guest entry and only their own status"
+      ],
+      "owner": "guest event status triggers",
+      "read": "a signed-in, non-deleted guest gets only their own row by id, and a missing row reads as missing; nobody lists the collection",
+      "write": "server only; triggers on eventParticipations, eventAttendees, guestPayments, organizerApplications, organizerEventOfferRecipients and events rebuild a row from the guest's own records and delete it when none remain",
+      "exportedFunctions": [
+        "onGuestEventStatusParticipationWritten",
+        "onGuestEventStatusAttendeeWritten",
+        "onGuestEventStatusPaymentWritten",
+        "onGuestEventStatusApplicationWritten",
+        "onGuestEventStatusOfferRecipientWritten",
+        "onEventGuestEntryEventWritten",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Replaces the getEventViewerState guest surface for the website event page (#1337). Backfilled by the guest-event-read-models migration; account deletion removes it."
       ]
     },
     {

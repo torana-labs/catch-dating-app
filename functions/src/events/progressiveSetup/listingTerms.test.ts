@@ -70,10 +70,9 @@ test("fresh initialization fences markers and history", async () => {
     await assert.rejects(h.run(), unavailable);
   }
   for (const collection of ["eventAttendees", "eventParticipations",
-    "eventWaitlistOffers", "guestPayments", "payments",
-    "organizerContactOrigins",
+    "eventWaitlistOffers", "guestPayments", "organizerContactOrigins",
     "eventSeatReservations", "eventSeatIdentityAliases",
-    "eventAttendeeImports", "razorpayPendingOrders",
+    "eventAttendeeImports",
     "eventSeatMigrationRuns"]) {
     const h = setup();
     h.store.put(`${collection}/event1`, {eventId: "event1",

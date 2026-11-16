@@ -94,10 +94,9 @@ export async function preparePrivateListingTerms(params: {
       "Reconcile existing guests before changing admission terms.");
   }
   for (const collection of ["eventAttendees", "eventParticipations",
-    "eventWaitlistOffers", GUEST_PAYMENTS, "payments",
-    "organizerContactOrigins",
+    "eventWaitlistOffers", GUEST_PAYMENTS, "organizerContactOrigins",
     "eventSeatReservations", "eventSeatIdentityAliases",
-    "eventAttendeeImports", "razorpayPendingOrders"]) {
+    "eventAttendeeImports"]) {
     const witness = await tx.get(db.collection(collection)
       .where("eventId", "==", eventId).limit(1));
     if (!witness.empty) {

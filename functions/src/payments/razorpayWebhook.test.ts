@@ -16,10 +16,6 @@ test(
     const firestore = new FakeFirestore({
       "guestPayments/pay_123": {purpose: "booking", status: "pending",
         createdAt: Timestamp.fromMillis(1)},
-      "razorpayPendingOrders/order_123": {
-        status: "pending",
-        orderId: "order_123",
-      },
     });
     const signUps: Array<{eventId: string; userId: string}> = [];
     const payload = capturedEventPayload();
@@ -51,8 +47,6 @@ test(
     assert.equal(payment.amount, 25000);
     assert.deepEqual(payment.razorpayOwnership,
       {projectId: "catchdates-dev", schema: "1"});
-    // The pending-order tracking doc is removed once fulfillment succeeds.
-    assert.equal(firestore.data["razorpayPendingOrders/order_123"], undefined);
   }
 );
 
@@ -67,10 +61,6 @@ test(
       createdAt: Timestamp.fromMillis(1)};
     const firestore = new FakeFirestore({
       "guestPayments/pay_123": completed,
-      "razorpayPendingOrders/order_123": {
-        status: "pending",
-        orderId: "order_123",
-      },
     });
     let signUpCalled = false;
     const payload = capturedEventPayload();
@@ -91,35 +81,28 @@ test(
     assert.equal(signUpCalled, false);
     // The already-completed payment doc is left untouched.
     assert.deepEqual(firestore.data["guestPayments/pay_123"], completed);
-    // The leftover pending-order doc is cleaned up.
-    assert.equal(firestore.data["razorpayPendingOrders/order_123"], undefined);
   }
 );
 
-test("razorpayWebhookHandler marks the pending order failed on payment.failed",
+test("razorpayWebhookHandler acknowledges payment.failed without effects",
   async () => {
-    const firestore = new FakeFirestore({
-      "razorpayPendingOrders/order_123": {
-        status: "pending",
-        orderId: "order_123",
-      },
-    });
+    const initial = {"guestPayments/pay_123": {purpose: "booking",
+      status: "completed", orderId: "order_123"}};
+    const firestore = new FakeFirestore({...initial});
     const payload = failedEventPayload();
 
     await razorpayWebhookHandler(payload, sign(payload), WEBHOOK_SECRET, {
       firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
-      createClient: () => razorpayClient(),
+      createClient: () => {
+        throw new Error("Razorpay client should not be created.");
+      },
       serverTimestamp: () => "server-now",
       signUpForEvent: async () => {
         throw new Error("signUpForEvent should not be called.");
       },
     });
 
-    assert.deepEqual(firestore.data["razorpayPendingOrders/order_123"], {
-      status: "failed",
-      orderId: "order_123",
-      updatedAt: "server-now",
-    });
+    assert.deepEqual(firestore.data, initial);
   });
 
 test("razorpayWebhookHandler rejects invalid webhook signatures", async () => {
@@ -366,12 +349,9 @@ const foreignReviewNotes = {
   catchBookingProject: "catch-dating-app-64e51", catchBookingSchema: "1",
 };
 
-test("ownership: foreign capture cannot admit or delete cloned local pending",
+test("ownership: foreign capture cannot admit",
   async () => inReviewProject(async () => {
-    const pending = {status: "pending", orderId: "order_123",
-      eventId: "trusted-event", userId: "runner-1", provider: "razorpay",
-      amountInPaise: 25000, currency: "INR"};
-    const db = new FakeFirestore({"razorpayPendingOrders/order_123": pending});
+    const db = new FakeFirestore({});
     let signUps = 0;
     const body = capturedEventPayload();
     await razorpayWebhookHandler(body, sign(body), WEBHOOK_SECRET, {
@@ -383,7 +363,7 @@ test("ownership: foreign capture cannot admit or delete cloned local pending",
       },
     });
     assert.equal(signUps, 0, "foreign capture must not reach admission");
-    assert.deepEqual(db.data, {"razorpayPendingOrders/order_123": pending});
+    assert.deepEqual(db.data, {});
   }));
 
 test("ownership: unknown unmarked capture cannot stage booking-failed refund",
@@ -406,31 +386,13 @@ test("ownership: unknown unmarked capture cannot stage booking-failed refund",
     assert.equal(signUps, 0);
   }));
 
-test("ownership: foreign failed event leaves cloned pending untouched",
-  async () => inReviewProject(async () => {
-    const pending = {status: "pending", orderId: "order_123"};
-    const db = new FakeFirestore({"razorpayPendingOrders/order_123": pending});
-    const body = failedEventPayload();
-    await razorpayWebhookHandler(body, sign(body), WEBHOOK_SECRET, {
-      firestore: () => db as unknown as FirebaseFirestore.Firestore,
-      createClient: () => ownershipReviewClient(foreignReviewNotes),
-      serverTimestamp: () => "server-now",
-      signUpForEvent: async () => {
-        assert.fail("No admission on failed event");
-      },
-    });
-    assert.deepEqual(db.data, {"razorpayPendingOrders/order_123": pending});
-  }));
-
-test("ownership: terminal foreign clone cannot trigger pending cleanup",
+test("ownership: a terminal foreign clone stays untouched",
   async () => inReviewProject(async () => {
     const payment = {status: "completed", orderId: "order_123",
       paymentId: "pay_123", userId: "runner-1", eventId: "trusted-event",
       provider: "razorpay", amount: 25000, currency: "INR",
       createdAt: Timestamp.fromMillis(1)};
-    const pending = {status: "pending", orderId: "order_123"};
-    const initial = {"guestPayments/pay_123": payment,
-      "razorpayPendingOrders/order_123": pending};
+    const initial = {"guestPayments/pay_123": payment};
     const db = new FakeFirestore({...initial});
     const body = capturedEventPayload();
     await razorpayWebhookHandler(body, sign(body), WEBHOOK_SECRET, {
@@ -528,5 +490,4 @@ test("ownership compatibility: own new order recovers despite missing pending",
     const payment = db.data["guestPayments/pay_123"] as Record<string, unknown>;
     assert.equal(payment.status, "completed");
     assert.equal(payment.orderId, "order_123");
-    assert.equal(db.data["razorpayPendingOrders/order_123"], undefined);
   }));

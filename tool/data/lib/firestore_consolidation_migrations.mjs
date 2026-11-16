@@ -71,6 +71,71 @@ async function chatDirectoryRow(db, eventId, uid) {
     eventChatDirectoryEntry(db, tx, eventId, uid, chatDirectoryNowMillis));
 }
 
+let guestEventModules = null;
+function functionsGuestEvents() {
+  try {
+    const load = createFunctionsRequire();
+    guestEventModules ??= {
+      entry: load("./lib/guestEvents/eventGuestEntry.js"),
+      status: load("./lib/guestEvents/guestEventStatus.js"),
+    };
+  } catch (error) {
+    throw new Error(
+      "The guest-event-read-models migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return guestEventModules;
+}
+
+/** One clock per run, so a row reached from two sources is identical. */
+const guestEventNowMillis = Date.now();
+
+const validId = (value) => typeof value === "string" && value.length > 0 && !value.includes("/");
+
+/**
+ * The guest's records for one event, in the order the migration reads them:
+ * their booking, then roster rows, website and offer payments, applications
+ * and offer invitations. Only the first creates the row.
+ */
+async function guestEventSourcePaths(db, eventId, uid) {
+  const byId = (snap) => snap.docs.map((doc) => doc.ref.path).sort();
+  const [booking, roster, payments, applications, invitations] = await Promise.all([
+    db.collection("eventParticipations").doc(`${eventId}_${uid}`).get(),
+    db.collection("eventAttendees").where("eventId", "==", eventId).where("linkedUid", "==", uid).get(),
+    db.collection("guestPayments").where("eventId", "==", eventId).where("recipientUid", "==", uid).get(),
+    db.collection("organizerApplications").where("targetId", "==", eventId).where("linkedUid", "==", uid).get(),
+    db.collection("organizerEventOfferRecipients").where("eventId", "==", eventId).where("recipientUid", "==", uid).get(),
+  ]);
+  return [
+    ...(booking.exists ? [`eventParticipations/${eventId}_${uid}`] : []),
+    ...byId(roster),
+    ...byId({docs: payments.docs.filter((doc) => ["publicEvent", "offer"].includes(doc.data().purpose))}),
+    ...byId({docs: applications.docs.filter((doc) => doc.data().targetKind === "event")}),
+    ...byId(invitations),
+  ];
+}
+
+function guestEventStatusStep(source, eventField, personField, accept = () => true) {
+  return {
+    source,
+    target: "guestEventStatuses",
+    skipReason: "no event or guest, or another of the guest's records creates the row",
+    targetId: async (id, data, db) => {
+      const eventId = data[eventField];
+      const uid = data[personField];
+      if (!validId(eventId) || !validId(uid) || !accept(data)) return null;
+      const [first] = await guestEventSourcePaths(db, eventId, uid);
+      return first === `${source}/${id}` ? `${eventId}_${uid}` : null;
+    },
+    transform: (data, id, db) => {
+      const {guestEventStatus} = functionsGuestEvents().status;
+      return db.runTransaction((tx) => guestEventStatus({db, tx,
+        eventId: data[eventField], uid: data[personField], nowMillis: guestEventNowMillis}));
+    },
+  };
+}
+
 const profilePromptCatalog = JSON.parse(fs.readFileSync(
   new URL("../../../contracts/catalogs/profile_prompts.json", import.meta.url), "utf8"));
 const defaultPrompt = profilePromptCatalog.prompts.find(
@@ -347,6 +412,36 @@ export const MIGRATIONS = [
         targetId: (id) => id,
         transform: (data) => ({...data, purpose: "booking"}),
       },
+    ],
+  },
+  {
+    name: "guest-event-read-models",
+    description:
+      "Every published event gets the eventGuestEntries document and every " +
+      "guest with a record of their own on an event (a booking, roster row, " +
+      "website or offer payment, application or offer invitation) gets the " +
+      "guestEventStatuses row the guest event triggers now keep, computed " +
+      "from current records. A row reached from several records is created " +
+      "from the first; existing documents are never replaced. Build " +
+      "Functions first.",
+    steps: [
+      {
+        source: "events",
+        target: "eventGuestEntries",
+        skipReason: "not published",
+        targetId: (id, data) => data.publicationState === "published" ? id : null,
+        transform: (data, id, db) => {
+          const {eventGuestEntry} = functionsGuestEvents().entry;
+          return db.runTransaction((tx) => eventGuestEntry(db, tx, id, guestEventNowMillis));
+        },
+      },
+      guestEventStatusStep("eventParticipations", "eventId", "uid"),
+      guestEventStatusStep("eventAttendees", "eventId", "linkedUid"),
+      guestEventStatusStep("guestPayments", "eventId", "recipientUid",
+        (data) => ["publicEvent", "offer"].includes(data.purpose)),
+      guestEventStatusStep("organizerApplications", "targetId", "linkedUid",
+        (data) => data.targetKind === "event"),
+      guestEventStatusStep("organizerEventOfferRecipients", "eventId", "recipientUid"),
     ],
   },
 ];
