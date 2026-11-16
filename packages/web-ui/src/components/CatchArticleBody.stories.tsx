@@ -34,7 +34,7 @@ export const Contract: Story = {
   render: () => (
     <CatchRoot size="expanded" theme="day">
       <CatchArticleBody aside={aside} kicker="Sample kicker" lead="A sample lead about the guide." meta="A sample meta line" sections={sections} title="A sample guide" tocLabel="In this guide" />
-      <CatchArticleBody level={2} sections={sections.slice(0, 1)} title="The text alone" />
+      <CatchArticleBody level={2} sections={[{id: "solo-only", title: "The only section of the solo text", paragraphs: [paragraph]}]} title="The text alone" />
     </CatchRoot>
   ),
 };

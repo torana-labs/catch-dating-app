@@ -96,7 +96,7 @@ export const Compact: Story = {
   render: () => (
     <CatchRoot size="compact" theme="day">
       <CatchSplitSection {...sample} media={media} ticks={["A ticked line", "Another ticked line"]} />
-      <CatchSplitSection {...sample} checks={[{title: "First check"}, {title: "Second check"}]} ground="paper" />
+      <CatchSplitSection {...sample} checks={[{title: "First check"}, {title: "Second check"}]} ground="paper" title="A sample checklist headline" />
     </CatchRoot>
   ),
 };

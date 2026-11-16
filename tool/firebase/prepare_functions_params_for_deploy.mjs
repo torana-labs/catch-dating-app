@@ -53,7 +53,8 @@ export const materializedNonSecretParams = [
   "EVENT_ASSISTANCE_GUEST_KEY_VERSION",
   "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
   "PROGRAM_ASSISTANT_ENABLED",
-  "PROGRAM_ASSISTANT_KEY_VERSION",
+  "PROGRAM_ASSISTANT_FEDERATION_RULE_ID",
+  "ANTHROPIC_ORGANIZATION_ID",
 ];
 
 function option(name) {
@@ -261,17 +262,20 @@ function normalizedProviderParams(environment = process.env, projectId) {
       `${name} must pin its expected secret in this project`);
     assistanceReferences[name] = reference || " ";
   }
-  // The wedding assistant reads a pinned ANTHROPIC_API_KEY version; blank
-  // keeps it off, and turning it on requires the pinned key.
+  // The wedding assistant holds no key: it exchanges the runtime identity's
+  // Google ID token through an Anthropic federation rule. Blank params keep
+  // it off, and turning it on requires both.
   const programAssistantEnabled = normalizedBooleanParam(
     environment, "PROGRAM_ASSISTANT_ENABLED");
-  const programAssistantKey = environment.PROGRAM_ASSISTANT_KEY_VERSION?.trim() || "";
-  const programAssistantPrefix = `projects/${projectId}/secrets/ANTHROPIC_API_KEY/versions/`;
-  assert(!programAssistantKey || programAssistantKey.startsWith(programAssistantPrefix) &&
-    /^[1-9][0-9]*$/.test(programAssistantKey.slice(programAssistantPrefix.length)),
-  "PROGRAM_ASSISTANT_KEY_VERSION must pin ANTHROPIC_API_KEY in this project");
-  assert(programAssistantEnabled === "false" || programAssistantKey,
-    "PROGRAM_ASSISTANT_ENABLED requires PROGRAM_ASSISTANT_KEY_VERSION");
+  const federationRuleId = environment.PROGRAM_ASSISTANT_FEDERATION_RULE_ID?.trim() || "";
+  const anthropicOrganizationId = environment.ANTHROPIC_ORGANIZATION_ID?.trim() || "";
+  assert(!federationRuleId || /^fdrl_[A-Za-z0-9]{1,128}$/.test(federationRuleId),
+    "PROGRAM_ASSISTANT_FEDERATION_RULE_ID must be an Anthropic federation rule id (fdrl_...)");
+  assert(!anthropicOrganizationId ||
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(anthropicOrganizationId),
+  "ANTHROPIC_ORGANIZATION_ID must be an Anthropic organization UUID");
+  assert(programAssistantEnabled === "false" || federationRuleId && anthropicOrganizationId,
+    "PROGRAM_ASSISTANT_ENABLED requires PROGRAM_ASSISTANT_FEDERATION_RULE_ID and ANTHROPIC_ORGANIZATION_ID");
   assert(normalizedBooleanParam(environment, "CATCH_HOST_OPERATOR_ALERTS_ENABLED") === "false" &&
     !environment.CATCH_HOST_OPERATOR_ALERTS_SINCE?.trim(),
   "Host operator alerts require a separately reviewed runtime activation");
@@ -326,7 +330,8 @@ function normalizedProviderParams(environment = process.env, projectId) {
     FLIGHT_PROVIDER_POLICY: " ",
     ...assistanceReferences,
     PROGRAM_ASSISTANT_ENABLED: programAssistantEnabled,
-    PROGRAM_ASSISTANT_KEY_VERSION: programAssistantKey || " ",
+    PROGRAM_ASSISTANT_FEDERATION_RULE_ID: federationRuleId || " ",
+    ANTHROPIC_ORGANIZATION_ID: anthropicOrganizationId || " ",
   };
   assert(
     Object.keys(params).join(",") === materializedNonSecretParams.join(","),
@@ -338,11 +343,9 @@ const referenceNames = Object.freeze([
   "RAZORPAY_PLATFORM_PAYMENT_CONFIG_VERSION",
   "FLIGHT_PROVIDER_CONFIG_VERSION", "CATCH_WHATSAPP_REPLY_CREDENTIAL_VERSION",
   "EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION",
-  "PROGRAM_ASSISTANT_KEY_VERSION",
 ]);
 const activationNames = Object.freeze([
   "CATCH_WHATSAPP_REPLIES_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED", "FLIGHT_PROVIDER_POLICY",
-  "PROGRAM_ASSISTANT_ENABLED",
 ]);
 function paramsContents(params) {
   return Object.entries(params).map(([key, value]) => `${key}=${JSON.stringify(value)}`).join("\n") + "\n";
