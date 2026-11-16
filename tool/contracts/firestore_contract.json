@@ -595,25 +595,11 @@
       "rulesMatch": "/crossPathsShowcaseEligibility/{uid}",
       "typescriptInterface": "CrossPathsShowcaseEligibilityDocument",
       "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
-      "owner": "adminSetCrossPathsShowcaseEligibility callable",
-      "read": "server only; admin reviewers use a sanitized role-gated callable projection",
-      "write": "server only; audited admin review decision",
+      "owner": "retired adminSetCrossPathsShowcaseEligibility callable; records kept read-only, removed by account deletion",
+      "read": "server only",
+      "write": "server only; account deletion removes a user's record",
       "exportedFunctions": [],
-      "operations": [
-        {
-          "id": "admin_showcase_review",
-          "type": "callable",
-          "owner": "adminSetCrossPathsShowcaseEligibility",
-          "function": "adminSetCrossPathsShowcaseEligibility",
-          "payloadSchemaRef": "contracts/callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json",
-          "rulesMustContain": [
-            "allow read, write: if false"
-          ],
-          "rulesTestNames": [
-            "denies all client access to Cross Paths showcase eligibility"
-          ]
-        }
-      ],
+      "operations": [],
       "migrationNotes": [
         "Eligibility is activity-neutral and score-free. A reviewed approval is bound to the current public profile fingerprint and is revalidated by server suggestion logic."
       ]

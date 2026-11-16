@@ -4,8 +4,6 @@ import path from "node:path";
 import test from "node:test";
 import type {ActivityNotificationDocument} from
   "./generated/activityNotificationDocument";
-import type {ArchiveOrganizerCallablePayload} from
-  "./generated/archiveOrganizerCallablePayload";
 import type {BlockUserCallablePayload} from
   "./generated/blockUserCallablePayload";
 import type {CancelEventCallablePayload} from
@@ -19,8 +17,6 @@ import type {CreateEventReviewCallablePayload} from
   "./generated/createEventReviewCallablePayload";
 import type {DeleteEventCallablePayload} from
   "./generated/deleteEventCallablePayload";
-import type {DeleteOrganizerCallablePayload} from
-  "./generated/deleteOrganizerCallablePayload";
 import type {DeleteEventReviewCallablePayload} from
   "./generated/deleteEventReviewCallablePayload";
 import type {FetchSwipeCandidatesCallableResponse} from
@@ -73,10 +69,6 @@ const validateActivityNotificationDocument =
   contractValidator<ActivityNotificationDocument>(
     "ActivityNotificationDocument"
   );
-const validateArchiveOrganizerCallablePayload =
-  contractValidator<ArchiveOrganizerCallablePayload>(
-    "ArchiveOrganizerCallablePayload"
-  );
 const validateBlockUserCallablePayload =
   contractValidator<BlockUserCallablePayload>("BlockUserCallablePayload");
 const validateBlockDocument = contractValidator("BlockDocument");
@@ -105,10 +97,6 @@ const validateCreateSavedEventClientWrite =
   contractValidator("CreateSavedEventClientWrite");
 const validateDeleteEventCallablePayload =
   contractValidator<DeleteEventCallablePayload>("DeleteEventCallablePayload");
-const validateDeleteOrganizerCallablePayload =
-  contractValidator<DeleteOrganizerCallablePayload>(
-    "DeleteOrganizerCallablePayload"
-  );
 const validateDeleteEventReviewCallablePayload =
   contractValidator<DeleteEventReviewCallablePayload>(
     "DeleteEventReviewCallablePayload"
@@ -470,14 +458,6 @@ test("generated schema validators accept valid contract fixtures", () => {
   assertValid(
     validateUpdateOrganizerCallablePayload as Validator,
     readFixture("fixtures/valid/update_organizer_payload.json")
-  );
-  assertValid(
-    validateArchiveOrganizerCallablePayload as Validator,
-    readFixture("fixtures/valid/archive_organizer_payload.json")
-  );
-  assertValid(
-    validateDeleteOrganizerCallablePayload as Validator,
-    readFixture("fixtures/valid/delete_organizer_payload.json")
   );
   assertValid(
     validateSetOrganizerNotificationPreferenceCallablePayload as Validator,
