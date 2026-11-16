@@ -4,6 +4,7 @@ import type {HTMLAttributes} from "react";
 import {catchGroundIsNight} from "./catchCoreVocabulary";
 import {useCatch} from "./catchRootContext";
 import {CatchButton} from "./CatchButton";
+import {CatchGroundProvider} from "./CatchGroundProvider";
 import {CatchMarker} from "./CatchMarker";
 import {CatchText} from "./CatchText";
 import type {Ground} from "./palette";
@@ -54,31 +55,34 @@ export function CatchFeatureTile({title, body, figure, figureNote, list, fix, th
       data-catch-theme={resolved === "ink" ? "dark" : "light"}
       data-ground={resolved}
     >
-      {figure ? (
-        <span className={styles.figure}>
-          <CatchText numeric variant="display-title">{figure}</CatchText>
-          {figureNote ? <CatchText tone="secondary" variant="label-kicker">{figureNote}</CatchText> : null}
-        </span>
-      ) : null}
-      <CatchText as="h3" variant="title-bar">{title}</CatchText>
-      {body ? <CatchText as="p" tone="secondary" variant="body">{body}</CatchText> : null}
-      {lines.length > 0 ? (
-        <ul className={styles.list}>
-          {lines.map((line, index) => (
-            <li className={styles.line} key={`${index}:${line}`}>
-              <CatchMarker kind="check" />
-              <CatchText variant="body">{line}</CatchText>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-      {foot ? (
-        <div className={styles.foot}>
-          {fix ? <CatchText as="p" className={styles.rule} variant="label-action">{fix}</CatchText> : null}
-          {then ? <CatchText as="p" className={styles.rule} tone="secondary" variant="body-meta">{then}</CatchText> : null}
-          {link ? <span className={styles.link}><CatchButton href={link.href} label={link.label} size="sm" variant="secondary" /></span> : null}
-        </div>
-      ) : null}
+      {/* The tile is its children's ground: the night one on ink, the plain one otherwise, so a button keeps its outline on a white tile in a tile band. */}
+      <CatchGroundProvider ground={resolved === "ink" ? "night" : "ground"}>
+        {figure ? (
+          <span className={styles.figure}>
+            <CatchText numeric variant="display-title">{figure}</CatchText>
+            {figureNote ? <CatchText tone="secondary" variant="label-kicker">{figureNote}</CatchText> : null}
+          </span>
+        ) : null}
+        <CatchText as="h3" variant="title-bar">{title}</CatchText>
+        {body ? <CatchText as="p" tone="secondary" variant="body">{body}</CatchText> : null}
+        {lines.length > 0 ? (
+          <ul className={styles.list}>
+            {lines.map((line, index) => (
+              <li className={styles.line} key={`${index}:${line}`}>
+                <CatchMarker kind="check" />
+                <CatchText variant="body">{line}</CatchText>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        {foot ? (
+          <div className={styles.foot}>
+            {fix ? <CatchText as="p" className={styles.rule} variant="label-action">{fix}</CatchText> : null}
+            {then ? <CatchText as="p" className={styles.rule} tone="secondary" variant="body-meta">{then}</CatchText> : null}
+            {link ? <span className={styles.link}><CatchButton href={link.href} label={link.label} size="sm" variant="secondary" /></span> : null}
+          </div>
+        ) : null}
+      </CatchGroundProvider>
     </div>
   );
 }

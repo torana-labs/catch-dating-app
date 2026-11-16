@@ -12,7 +12,7 @@ describe("CatchFeatureTile", () => {
     const tile = screen.getByTestId("tile");
     expect(tile.dataset).toMatchObject({ground: "paper", catchTheme: "light"});
     expect(screen.getByRole("heading", {level: 3, name: "Sample feature"}).dataset.variant).toBe("title-bar");
-    expect(tile.children).toHaveLength(1);
+    expect(tile.querySelectorAll("[data-variant]")).toHaveLength(1);
     expect(screen.queryByRole("list")).toBeNull();
     expect(screen.queryByRole("link")).toBeNull();
   });
@@ -62,6 +62,17 @@ describe("CatchFeatureTile", () => {
       render(<CatchFeatureTile data-testid={ground} ground={ground} title={ground} />);
       expect(screen.getByTestId(ground).dataset).toMatchObject({ground, catchTheme: ground === "ink" ? "dark" : "light"});
     }
+  });
+
+  it("tells its children the tile is their ground, so a link keeps its outline on a tile band", () => {
+    render(
+      <CatchSurface block="band" color="tile">
+        <CatchFeatureTile ground="white" link={{label: "On white", href: "#white"}} title="White" />
+        <CatchFeatureTile ground="ink" link={{label: "On glass", href: "#glass"}} title="Glass" />
+      </CatchSurface>,
+    );
+    expect(screen.getByRole("link", {name: "On white"}).dataset.on).toBe("ground");
+    expect(screen.getByRole("link", {name: "On glass"}).dataset.on).toBe("night");
   });
 
   it("turns to glass on an ink band unless a ground is given", () => {
