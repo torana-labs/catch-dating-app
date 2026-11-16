@@ -29,14 +29,14 @@ export const cityAlertInterestByFormat: Readonly<Record<DiscoveryFormatKey, City
   nightlife: "nights_out",
   studios: "fitness",
   workshops: "workshops",
-  bookClubs: "book_clubs",
+  bookClubs: "books",
   outdoors: null,
 };
 
 /** The interests for a set of formats, each once, in the contract's order. */
 export function cityAlertInterests(formats: readonly DiscoveryFormatKey[]): CityAlertInterest[] {
   const chosen = new Set(formats.map((format) => cityAlertInterestByFormat[format]).filter((item): item is CityAlertInterest => item !== null));
-  const order: CityAlertInterest[] = ["runs", "courts", "dinners", "quizzes", "nights_out", "fitness", "workshops", "book_clubs"];
+  const order: CityAlertInterest[] = ["runs", "courts", "dinners", "quizzes", "nights_out", "fitness", "workshops", "books"];
   return order.filter((interest) => chosen.has(interest));
 }
 
