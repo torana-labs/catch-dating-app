@@ -1592,6 +1592,12 @@ How a run works:
   its targets, and a fallback run deploys plain `functions`, whose unchanged
   codebases are skipped. After the third attempt the run fails and names what
   still fails.
+- The run summary gives each Functions attempt's cost: CLI calls, HTTP 429
+  responses, updates, creates, exit code and seconds. For measuring pacing on
+  dev only, a manual run can set `batch` to deploy the first attempt as exact
+  Function names in sequential groups of that size (0, the default, is one
+  CLI call; the Firebase CLI's own concurrency is fixed at 40). Any other
+  environment refuses it.
 - The indexes and rules deploys (including the CLI's rules compile check,
   firebaserules `:test`) retry a temporary Google API error up to three times,
   30 then 60 seconds apart, with a warning per retry

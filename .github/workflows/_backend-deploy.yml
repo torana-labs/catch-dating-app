@@ -33,6 +33,13 @@ on:
         required: false
         type: string
         default: ''
+      # Measurement only, dev only: the first Functions attempt deploys its
+      # targets as exact Function names in sequential groups of this many (the
+      # Firebase CLI's own concurrency is fixed at 40). 0 is one CLI call.
+      batch:
+        required: false
+        type: number
+        default: 0
       # The commit to deploy; empty means the commit this run started on. The
       # scheduled run passes the newest main commit whose CI passed.
       ref:
@@ -396,18 +403,53 @@ jobs:
           NAMED: ${{ steps.choose.outputs.mode == 'named' }}
           PLANNED: ${{ steps.plan.outputs.mode == 'planned' }}
           RETRY_DELAY_SECONDS: "60"
+          BATCH: ${{ inputs.batch }}
         run: |
           set -euo pipefail
           mkdir -p build
           only="$DEPLOY_ONLY"
           force=()
           if [[ "$NAMED" == "true" ]]; then force=(--force); fi
+          batch="${BATCH:-0}"
+          if (( batch > 0 )) && [[ "$DEPLOY_ENVIRONMENT" != "dev" ]]; then
+            echo "::error::batch is a dev-only measurement input."
+            exit 1
+          fi
+          # Exact names for every target: a codebase (or all of `functions`)
+          # becomes the Functions the packaging manifest lists for it.
+          exact_targets() {
+            jq -r --arg only "$1" '.codebases as $c | ($only | split(","))[] as $t |
+              if $t == "functions" then ($c | to_entries[] | .key as $k | .value.functions[] | "functions:\($k):\(.)")
+              elif ($t | test("^functions:[^:]+$")) then
+                ($t | ltrimstr("functions:")) as $k | $c[$k].functions[] | "functions:\($k):\(.)"
+              else $t end' build/functions-codebases.json
+          }
+          deploy() {
+            ./tool/firebase_with_env.sh "$DEPLOY_ENVIRONMENT" deploy --only "$1" \
+              --config firebase.deploy.json --non-interactive "${force[@]}" 2>&1 | tee -a build/functions-deploy.log
+          }
           attempts=3
           for attempt in $(seq 1 "$attempts"); do
             status=0
-            ./tool/firebase_with_env.sh "$DEPLOY_ENVIRONMENT" deploy --only "$only" \
-              --config firebase.deploy.json --non-interactive "${force[@]}" 2>&1 |
-              tee build/functions-deploy.log || status=$?
+            calls=1
+            started=$SECONDS
+            : > build/functions-deploy.log
+            if (( attempt == 1 && batch > 0 )); then
+              mapfile -t targets < <(exact_targets "$only")
+              calls=$(( (${#targets[@]} + batch - 1) / batch ))
+              echo "::notice::Deploying ${#targets[@]} Functions in $calls groups of up to $batch."
+              for (( first = 0; first < ${#targets[@]}; first += batch )); do
+                group="$(IFS=,; echo "${targets[*]:first:batch}")"
+                deploy "$group" || status=$?
+              done
+            else
+              deploy "$only" || status=$?
+            fi
+            # What each attempt cost, for comparing pacing between runs.
+            count() { grep -c "$1" build/functions-deploy.log || true; }
+            echo "- Functions attempt $attempt: $calls CLI call(s), $(count 'HTTP Error: 429') HTTP 429 responses," \
+              "$(count 'Successful update operation') updated, $(count 'Successful create operation') created," \
+              "exit $status, $((SECONDS - started)) s" >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
             if [[ "$status" == "0" ]]; then exit 0; fi
             retrying="$(perl -ne 's/\e\[[0-9;]*m//g;
               print "$1\n" if /newly be retried in case of failure: (.*?)\. Retried/' build/functions-deploy.log |
