@@ -89,6 +89,12 @@ export type {
   CatchPricingSectionFootnote,
   CatchPricingSectionProps,
 } from "./components/CatchPricingSection";
+export {CatchStorySection} from "./components/CatchStorySection";
+export type {
+  CatchStorySectionAvatar,
+  CatchStorySectionMetric,
+  CatchStorySectionProps,
+} from "./components/CatchStorySection";
 export {CatchScreenPreview} from "./components/CatchScreenPreview";
 export type {
   CatchScreenPreviewBar,
