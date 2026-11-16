@@ -280,3 +280,20 @@ test("serialized timestamp maps cannot impersonate native Firestore Timestamp va
       .some((item) => item.code === "field-type" && item.message.startsWith(field)), `${collection}.${field}`);
   }
 });
+
+test("a profile in onboarding may omit date of birth and gender, a completed one may not", () => {
+  const base = fixture("user_profile_doc.json");
+  const onboarding = {...base, profileComplete: false};
+  delete onboarding.gender; delete onboarding.dateOfBirth;
+  const completed = {...base, profileComplete: true};
+  delete completed.gender; delete completed.dateOfBirth;
+  const mistyped = {...base, profileComplete: false, gender: 3};
+  const report = reportFor({users: [doc("users/onboarding", onboarding),
+    doc("users/completed", completed), doc("users/mistyped", mistyped)]});
+  const typeErrors = (path) => findings(report, path)
+    .filter((item) => item.code === "field-type").map((item) => item.message).sort();
+  assert.deepEqual(typeErrors("users/onboarding"), []);
+  assert.deepEqual(typeErrors("users/completed"),
+    ["dateOfBirth must be Firestore Timestamp.", "gender must be string."]);
+  assert.deepEqual(typeErrors("users/mistyped"), ["gender must be string."]);
+});
