@@ -257,8 +257,19 @@ export const Claim: Story = {
   ),
 };
 
+/** The not-found page at one of the Live404 board's widths: the band's container queries read the frame. */
+function NotFoundAt({width}: {width: 390 | 1280}) {
+  return (
+    <div style={{margin: "0 auto", width}}>
+      <PageShell pageClassName="not-found-page">
+        <NotFoundPage />
+      </PageShell>
+    </div>
+  );
+}
+
 export const NotFound: Story = {
-  name: "/404/",
+  name: "/404/ · 1280",
   parameters: {
     catchRoute: {
       id: "not_found",
@@ -275,11 +286,20 @@ export const NotFound: Story = {
       states: ["unknown-route"],
     },
   },
-  render: () => (
-    <PageShell pageClassName="not-found-page">
-      <NotFoundPage />
-    </PageShell>
-  ),
+  render: () => <NotFoundAt width={1280} />,
+};
+
+/** The phone board: the tiles and the two actions stack. */
+export const NotFound390: Story = {
+  name: "/404/ · 390",
+  parameters: {
+    catchComponent: {
+      id: "route_not_found",
+      routeIds: ["not_found"],
+      states: ["unknown-route"],
+    },
+  },
+  render: () => <NotFoundAt width={390} />,
 };
 
 export const Privacy: Story = {

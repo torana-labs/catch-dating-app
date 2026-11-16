@@ -36,7 +36,7 @@
   },
   "src/styles/flows.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 83
+      "count": 81
     },
     "declaration-property-value-allowed-list": {
       "count": 15

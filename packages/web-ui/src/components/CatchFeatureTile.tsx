@@ -11,8 +11,14 @@ import type {Ground} from "./palette";
 import styles from "./CatchFeatureTile.module.css";
 
 export interface CatchFeatureTileProps extends Omit<HTMLAttributes<HTMLDivElement>, "children" | "className" | "color" | "style" | "title"> {
-  /** The feature's name, an h3. Resolved copy; the caller localizes it. */
+  /** The feature's name. Resolved copy; the caller localizes it. */
   title: string;
+  /**
+   * The title's heading level. Defaults to 3, for a grid under a band's h2;
+   * use 2 when the band's headline is the page's h1, so headings never skip a
+   * level.
+   */
+  level?: 2 | 3;
   /** A sentence or two under the title. */
   body?: string;
   /** A big number or short figure above the title, such as "3" or "2×". */
@@ -43,7 +49,7 @@ export interface CatchFeatureTileProps extends Omit<HTMLAttributes<HTMLDivElemen
  * height line up their feet. Lay tiles out with CatchStack (a row with equal
  * set and collapseBelow) or CatchGrid.
  */
-export function CatchFeatureTile({title, body, figure, figureNote, list, fix, then, link, ground, ...rest}: CatchFeatureTileProps) {
+export function CatchFeatureTile({title, level = 3, body, figure, figureNote, list, fix, then, link, ground, ...rest}: CatchFeatureTileProps) {
   const context = useCatch();
   const resolved: Ground = ground ?? (catchGroundIsNight(context.ground) ? "ink" : "paper");
   const lines = list?.filter((line) => line.trim() !== "") ?? [];
@@ -63,7 +69,7 @@ export function CatchFeatureTile({title, body, figure, figureNote, list, fix, th
             {figureNote ? <CatchText tone="secondary" variant="label-kicker">{figureNote}</CatchText> : null}
           </span>
         ) : null}
-        <CatchText as="h3" variant="title-bar">{title}</CatchText>
+        <CatchText as={level === 2 ? "h2" : "h3"} variant="title-bar">{title}</CatchText>
         {body ? <CatchText as="p" tone="secondary" variant="body">{body}</CatchText> : null}
         {lines.length > 0 ? (
           <ul className={styles.list}>
