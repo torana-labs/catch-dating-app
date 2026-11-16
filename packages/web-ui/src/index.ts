@@ -83,6 +83,12 @@ export type {
 } from "./components/CatchSplitSection";
 export {CatchStoryCard} from "./components/CatchStoryCard";
 export type {CatchStoryCardProps, CatchStoryCardStat} from "./components/CatchStoryCard";
+export {CatchPricingSection} from "./components/CatchPricingSection";
+export type {
+  CatchPricingSectionExample,
+  CatchPricingSectionFootnote,
+  CatchPricingSectionProps,
+} from "./components/CatchPricingSection";
 export {CatchScreenPreview} from "./components/CatchScreenPreview";
 export type {
   CatchScreenPreviewBar,

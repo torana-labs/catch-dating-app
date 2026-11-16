@@ -24,6 +24,7 @@ const parts = [
   // The playbook section components.
   "CatchScreenPreview", "CatchHeroSection", "CatchSplitSection", "CatchCtaSection", "CatchFaqSection",
   "CatchStoryCard", "CatchCardGrid", "CatchFlowLayout", "CatchFormStepList",
+  "CatchPricingSection",
 ];
 const sheets: Record<string, string> = Object.fromEntries([
   ...parts.map((name) => [name, strip(read(`./${name}.module.css`))]),
