@@ -166,8 +166,7 @@ describe("EventDetailPage", () => {
     expect(primary.getAllByRole("link").map((link) => link.textContent)).toEqual(["What’s on", "For hosts"]);
     const footer = within(screen.getByRole("contentinfo"));
     expect(footer.getByRole("link", {name: "What’s on"}).getAttribute("href")).toBe("/explore/");
-    // Help appears twice on guest pages: in the help band and in the legal column.
-    expect(footer.getAllByRole("link", {name: "Help"}).map((link) => link.getAttribute("href"))).toEqual(["/help/", "/help/"]);
+    expect(footer.getByRole("link", {name: "Help"}).getAttribute("href")).toBe("/help/");
     expect(footer.getByRole("button", {name: "Privacy choices"})).toBeTruthy();
   });
 
