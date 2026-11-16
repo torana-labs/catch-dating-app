@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/http/join_waitlist_response.schema.json",
   "title": "Join Waitlist HTTP Response",
-  "description": "Version 1 JSON response returned by the member waitlist and Host operating-application endpoint.",
+  "description": "Version 1 JSON response returned by the member waitlist, Host operating-application and website lead endpoint.",
   "oneOf": [
     {
       "type": "object",
@@ -29,6 +29,38 @@
             "eventId": {
               "type": "string",
               "pattern": "^host_lead_[0-9]{13}_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
+            },
+            "isNew": {
+              "type": "boolean"
+            }
+          }
+        },
+        "lead": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "The receipt for a website lead (requestKind requests only). leadId is stable for the request id and number, so a retry returns the same one; isNew is false on a retry. Staff reply on WhatsApp; nothing is sent automatically.",
+          "required": [
+            "leadId",
+            "requestKind",
+            "isNew"
+          ],
+          "properties": {
+            "leadId": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "requestKind": {
+              "type": "string",
+              "enum": [
+                "guide",
+                "walkthrough",
+                "demo",
+                "venue",
+                "story",
+                "referral",
+                "org_contact",
+                "city_alerts"
+              ]
             },
             "isNew": {
               "type": "boolean"
