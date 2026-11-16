@@ -224,7 +224,7 @@ const sectionSpec = {
     ]>}, {
       ...bandOptional,
       pageTitle: bool(),
-      columns: int([2, 3, 4]),
+      columns: int([3, 4]),
       empty: obj({title: copy(), body: copy()}),
       actions: actions(),
     }),

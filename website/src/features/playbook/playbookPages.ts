@@ -9,7 +9,14 @@ import {
   type PlaybookPageEntry,
   type PlaybookPageIndex,
 } from "../../content/playbook/playbookContract.ts";
-import {matchPlaybookRoute, type PlaybookRouteGroup, type PlaybookRouteMatch} from "./playbookRoutes.ts";
+import {pendingPlaybookBindings} from "./playbookBindings.ts";
+import {
+  matchPlaybookRoute,
+  playbookFamilyRoutes,
+  playbookFixedRoutes,
+  type PlaybookRouteGroup,
+  type PlaybookRouteMatch,
+} from "./playbookRoutes.ts";
 
 /**
  * Every section's page index, by the section folder it lives in. Each index
@@ -46,15 +53,58 @@ export function resolvePlaybookPage(pathname: string): PlaybookPageRef | null {
 }
 
 /**
+ * Every registered page, from every section index, with the path it is
+ * served at. A key that names no route of its section, or a family page
+ * with the wrong number of parameters, is skipped here and fails
+ * playbookPages.test.ts.
+ */
+export function registeredPlaybookPages(): PlaybookPageRef[] {
+  const refs: PlaybookPageRef[] = [];
+  for (const index of Object.values(playbookPageIndexes)) {
+    for (const contentKey of Object.keys(index)) {
+      const path = playbookPathForContentKey(contentKey);
+      const match = path ? matchPlaybookRoute(path) : null;
+      if (match?.contentKey === contentKey) refs.push({match, entry: index[contentKey]});
+    }
+  }
+  return refs;
+}
+
+/** The path a content key is served at: a fixed route's path, or its family's pattern with the key's parameters. */
+export function playbookPathForContentKey(contentKey: string): string | null {
+  const [routeId, ...values] = contentKey.split("/");
+  const fixed = playbookFixedRoutes.find((route) => route.id === routeId);
+  if (fixed) return values.length === 0 ? fixed.path : null;
+  const family = playbookFamilyRoutes.find((route) => route.id === routeId);
+  if (!family) return null;
+  const names = [...family.pattern.matchAll(/:([a-zA-Z]+)/gu)];
+  if (names.length !== values.length) return null;
+  let index = 0;
+  return family.pattern.replace(/:([a-zA-Z]+)/gu, () => values[index++]);
+}
+
+/**
  * Loads a page, validates it (a malformed page fails loudly instead of
  * rendering half a page), checks it is the page its index says, and resolves
- * its brand tokens. Ad landing pages are always noindex.
+ * its brand tokens. Ad landing pages are always noindex. Null when the page
+ * uses a section or option no kit component draws yet (./playbookBindings):
+ * such a page 404s like an unwritten one.
  */
-export async function loadPlaybookPage(ref: PlaybookPageRef): Promise<PlaybookPageDocument> {
+export async function loadPlaybookPage(ref: PlaybookPageRef): Promise<PlaybookPageDocument | null> {
   const page = validatedPlaybookPage((await ref.entry.load()).default);
   if (page.id !== ref.match.contentKey || page.route !== ref.match.route.id) {
     throw new Error(`Playbook page ${ref.entry.file} is ${page.id} on ${page.route}, not ${ref.match.contentKey}.`);
   }
+  if (pendingPlaybookBindings(page).length > 0) return null;
   const branded = applyBrand(page);
   return alwaysNoindexPlaybookRoutes.has(page.route) ? {...branded, meta: {...branded.meta, noindex: true}} : branded;
+}
+
+/**
+ * The paths of every page the owner has approved for search: registered,
+ * renderable, and with meta.noindex false. Ad landing pages never are.
+ */
+export async function approvedPlaybookPaths(): Promise<string[]> {
+  const pages = await Promise.all(registeredPlaybookPages().map(async (ref) => ({ref, page: await loadPlaybookPage(ref)})));
+  return pages.filter(({page}) => page && !page.meta.noindex).map(({ref}) => ref.match.canonicalPath);
 }

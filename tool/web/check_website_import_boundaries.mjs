@@ -33,6 +33,8 @@ const allowedFeatureImports = new Map([
   ["hostBilling", new Set(["account"])],
   ["host", new Set(["marketing"])],
   ["organizers", new Set(["account", "claims", "events", "marketing", "reviews"])],
+  // A playbook page's closing band carries Catch Host's store badges.
+  ["playbook", new Set(["marketing"])],
   ["reviews", new Set(["organizers"])],
 ]);
 

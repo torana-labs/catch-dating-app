@@ -4,6 +4,7 @@ import {notFound, permanentRedirect} from "next/navigation";
 import {resolvePublicRoute} from "../../src/server/publicRoute";
 import {PublicProviders} from "../../src/app/next/PublicProviders";
 import {PublicPage} from "../../src/app/next/PublicPage";
+import {PlaybookPublicPage} from "../../src/app/next/PlaybookPublicPage";
 import {organizerDirectoryDestination} from "../../src/app/retiredMarketingRoutes";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -22,6 +23,12 @@ export default async function Page(props: Props) {
     (Array.isArray(value) ? value : value === undefined ? [] : [value]).map((item) => [key, item])));
   // The organiser directory is Explore's organisers view now; its query comes along (CAT-261).
   if (route.page === "organizers") permanentRedirect(organizerDirectoryDestination(query));
+  // A redesign page: authored content only, no catalog or city read.
+  if (route.page === "playbook" && route.playbook) {
+    return <PublicProviders pathname={route.pathname} initialSearch="" catalog={route.catalog} live={route.live}>
+      <PlaybookPublicPage page={route.playbook.page} canonicalPath={route.playbook.canonicalPath} />
+    </PublicProviders>;
+  }
   const requestedCity = typeof search.city === "string" ? search.city : undefined;
   // The homepage, Explore and the city pages read cityPlans documents instead of the catalog.
   const cityCatalog = route.page === "home" || route.page === "visitor_discovery" || route.page === "cities" ?
