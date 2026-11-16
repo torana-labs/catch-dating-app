@@ -39,6 +39,8 @@ export type {
   CatchBandSpacing,
   CatchBandWidth,
 } from "./components/CatchBand";
+export {CatchBandHeader} from "./components/CatchBandHeader";
+export type {CatchBandHeaderAlign, CatchBandHeaderDirection, CatchBandHeaderProps} from "./components/CatchBandHeader";
 export {catchFormatAccentOf, catchFormatOf} from "./components/palette";
 /** A Website v2 activity format: run, dinner, games, courts or nightsOut. */
 export type {Format as CatchFormat} from "./components/palette";
