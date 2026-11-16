@@ -5126,12 +5126,14 @@
       "rulesTestNames": [
         "keeps commercial terms and their history server-only"
       ],
-      "owner": "Catch operators (Finance, Admin Owner) through manageCommercialTerms",
+      "owner": "Catch operators (Finance, Admin Owner) through manageCommercialTerms; the founding-host offer writes one organizer's trial.days",
       "read": "server only; the payment resolver, manageCommercialTerms and the read-only adminListCommercialTerms",
-      "write": "manageCommercialTerms only: expected-revision replacement with a reason, an immutable revision record and an admin audit log in one transaction",
+      "write": "manageCommercialTerms: expected-revision replacement with a reason, an immutable revision record and an admin audit log in one transaction. The founding place grant (onFoundingHostOrganizerWritten, reconcileFoundingHostPlacesDaily) sets an organizer override's trial.days to the founding days, keeping its other keys, as a new revision with an immutable revision record in the transaction that takes the place",
       "exportedFunctions": [
         "manageCommercialTerms",
-        "adminListCommercialTerms"
+        "adminListCommercialTerms",
+        "onFoundingHostOrganizerWritten",
+        "reconcileFoundingHostPlacesDaily"
       ],
       "migrationNotes": [
         "New collection. Until commercialTerms/platform exists, platformSplit (Route) payments and memberships fail closed and hostCollected ticket and form payments carry no terms snapshot. Save it once in Admin (Finance, Commercial terms), which writes through manageCommercialTerms, before relying on either; no backfill rewrites recorded payments."
@@ -5147,15 +5149,82 @@
       "rulesTestNames": [
         "keeps commercial terms and their history server-only"
       ],
-      "owner": "manageCommercialTerms",
+      "owner": "manageCommercialTerms and the founding place grant",
       "read": "server only; operator audit through adminListCommercialTerms",
-      "write": "create-only in the same transaction as the commercialTerms write it records",
+      "write": "create-only in the same transaction as the commercialTerms write it records (manageCommercialTerms, or a founding place grant with actorUid system:foundingHostOffer)",
       "exportedFunctions": [
         "manageCommercialTerms",
-        "adminListCommercialTerms"
+        "adminListCommercialTerms",
+        "onFoundingHostOrganizerWritten",
+        "reconcileFoundingHostPlacesDaily"
       ],
       "migrationNotes": [
         "New append-only history keyed <termsId>_r<revision>; never updated or deleted."
+      ]
+    },
+    {
+      "id": "foundingHostOffers",
+      "path": "foundingHostOffers/{marketId}",
+      "rulesMatch": "/foundingHostOffers/{marketId}",
+      "typescriptInterface": "FoundingHostOfferDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/founding_host_offers.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps the founding-host offer config and organizer places server-only"
+      ],
+      "owner": "Admin Owner through adminManageFoundingHostOffers (cap, deadline); the founding place grant (takenCount)",
+      "read": "server only; adminManageFoundingHostOffers, the founding place grant and its daily reconcile",
+      "write": "adminManageFoundingHostOffers: expected-revision replacement of cap and deadline with a reason and an admin audit log, never below takenCount. The founding place grant increments takenCount in the transaction that creates the place, so the cap is never exceeded",
+      "exportedFunctions": [
+        "adminManageFoundingHostOffers",
+        "onFoundingHostOrganizerWritten",
+        "reconcileFoundingHostPlacesDaily"
+      ],
+      "migrationNotes": [
+        "New collection (owner decision 16 Nov 2026). Absent until the owner opens a city; no backfill. Organizers that gained an owner before a city opened are not founding hosts."
+      ]
+    },
+    {
+      "id": "foundingHostPlaces",
+      "path": "foundingHostPlaces/{organizerId}",
+      "rulesMatch": "/foundingHostPlaces/{organizerId}",
+      "typescriptInterface": "FoundingHostPlaceDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/founding_host_offers.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps the founding-host offer config and organizer places server-only"
+      ],
+      "owner": "the founding place grant (functions/src/foundingHosts)",
+      "read": "server only; the founding place grant and its daily reconcile",
+      "write": "create-only in the transaction that increments foundingHostOffers takenCount and writes the founding trial into the organizer's commercial terms override; its existence makes the grant idempotent",
+      "exportedFunctions": [
+        "onFoundingHostOrganizerWritten",
+        "reconcileFoundingHostPlacesDaily"
+      ],
+      "migrationNotes": [
+        "New collection keyed by organizer id; never updated or deleted by later cap, deadline or terms edits."
+      ]
+    },
+    {
+      "id": "publicFoundingHostOffers",
+      "path": "publicFoundingHostOffers/{marketId}",
+      "rulesMatch": "/publicFoundingHostOffers/{marketId}",
+      "typescriptInterface": "PublicFoundingHostOfferDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/founding_host_offers.rules.test.cjs",
+      "rulesTestNames": [
+        "lets anyone read the public founding-host counts and nobody write them"
+      ],
+      "owner": "adminManageFoundingHostOffers and the founding place grant",
+      "read": "public: anyone may get or list; counts only (cap, places left, status, deadline), no organizer, owner or staff identity",
+      "write": "server only; rewritten in the same transaction as every owner change and every place taken",
+      "exportedFunctions": [
+        "adminManageFoundingHostOffers",
+        "onFoundingHostOrganizerWritten",
+        "reconcileFoundingHostPlacesDaily"
+      ],
+      "migrationNotes": [
+        "New public projection for the website's founding-host strip; an absent document means the city has no offer and the strip stays hidden."
       ]
     },
     {
