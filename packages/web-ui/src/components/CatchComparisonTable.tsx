@@ -80,7 +80,7 @@ export function CatchComparisonTable({
         <table aria-labelledby={titleId} className={styles.table} role="table">
           <thead className={styles.head} role="rowgroup">
             <tr role="row">
-              <th role="columnheader" scope="col"><CatchText variant="label-action">{rowHeader}</CatchText></th>
+              {rowHeader ? <th role="columnheader" scope="col"><CatchText variant="label-action">{rowHeader}</CatchText></th> : <td aria-hidden="true" />}
               {columns.map((column, index) => (
                 <th data-highlight={index === highlightColumn ? "" : undefined} key={`${index}:${column}`} role="columnheader" scope="col">
                   <CatchText variant="label-action">{column}</CatchText>

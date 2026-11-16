@@ -254,6 +254,16 @@ test("provider failures and a spent budget pass the message on", async () => {
   assert.equal(result.status, "escalated");
   assert.equal(broke.calls.length, 0);
   assert.equal(runDoc(broke.db, "m1")!.reason, "budgetExhausted");
+
+  // A failed token exchange throws from provider(): passed on, nothing billed.
+  const noToken = setup();
+  noToken.deps.runtime = () => ({enabled: true, provider: async () => {
+    throw new Error("Assistant token exchange failed (status 401, authentication_error)");
+  }});
+  assert.equal((await noToken.run("m1", inbound("m1", "What time is the haldi?"))).status, "escalated");
+  assert.equal(runDoc(noToken.db, "m1")!.reason, "providerError");
+  assert.equal(runDoc(noToken.db, "m1")!.attempts, 0);
+  assert.equal(runDoc(noToken.db, "m1")!.inputTokens, 0);
 });
 
 test("outbound, staff and unknown-sender messages are ignored", async () => {

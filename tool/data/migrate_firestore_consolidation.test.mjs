@@ -304,6 +304,38 @@ test("guest-event-cards only fills what is missing and never replaces", async ()
     null);
 });
 
+test("host-form-version-filters creates each missing view once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-form-version-filters");
+  const definition = {sections: [{sectionId: "one", questions: [
+    {questionId: "pace", kind: "singleChoice", label: "Pace", required: false,
+      privacyClass: "ordinary", hostPresentation: "filterable",
+      options: [{value: "easy", label: "Easy"}]},
+    {questionId: "health", kind: "singleChoice", label: "Health", required: false,
+      privacyClass: "sensitive", hostPresentation: "filterable",
+      options: [{value: "yes", label: "Yes"}]},
+  ]}]};
+  const version = (formVersion) => ({organizerId: "o1", formId: "f1",
+    version: formVersion, sourceDraftRevision: 1, createdByUid: "host", definition});
+  const db = fakeDb({
+    "organizerFormVersions/f1_v1": version(1),
+    "organizerFormVersions/f1_v2": version(2),
+    "organizerFormVersions/broken": {organizerId: "o1", version: 1, definition},
+    "hostFormVersionFilters/f1_v2": {organizerId: "o1", formId: "f1",
+      versionId: "f1_v2", formVersion: 2, version: 1, answerFilterOptions: [
+        {questionId: "pace", label: "Pace", options: [{value: "easy", label: "Easy"}]}]},
+  });
+  const plan = await planMigration(db, migration);
+  assert.deepEqual(plan.totals, {scanned: 3, toCreate: 1, alreadyCopied: 1, conflicts: 0, skipped: 1});
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data["hostFormVersionFilters/f1_v1"], {organizerId: "o1",
+    formId: "f1", versionId: "f1_v1", formVersion: 1, version: 1,
+    answerFilterOptions: [{questionId: "pace", label: "Pace",
+      options: [{value: "easy", label: "Easy"}]}]});
+  // Versions are untouched and a second run is a no-op.
+  assert.deepEqual(db.data["organizerFormVersions/f1_v1"], version(1));
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
 test("unknown migration names are rejected", () => {
   assert.throws(() => migrationsByName(["nope"]), /Unknown migration "nope"/);
   assert.equal(migrationsByName(["all"]).length, MIGRATIONS.length);
