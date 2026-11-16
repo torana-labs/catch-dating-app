@@ -213,7 +213,7 @@ outcome, hashes, sizes and budget window.
 
 #### Front doors
 
-Five front doors create requests today, all through one in-transaction
+Six front doors create requests today, all through one in-transaction
 service (`functions/src/operations/supplyIntake/requests.ts`). Each door
 derives its request id deterministically, so a retried submission finds its
 own request, and the same id with different content is refused rather than
@@ -305,6 +305,39 @@ overwritten. Every request records its `origin`.
   claimed organizer manages its own events and cannot be refreshed. Events
   already published keep their id, so a refresh never publishes one twice.
 
+- **Website instant drafts.** The website's "event page from a link" tool
+  and the demo request call `requestInstantDraft` (App Check, no sign-in;
+  `functions/src/instantDrafts/`) with one event or form link, a WhatsApp
+  number and the ticked follow-up consent (`instant-draft-whatsapp-v1`). It
+  writes a `self_submission` with origin `web_instant_draft` and the draft's
+  private state in `supplyIntakeRequests.instantDraft`: the SHA-256 of a token
+  the website generated and keeps in the draft link's URL fragment, the
+  number and consent, and what the link is expected to give. The request id
+  is the draft id (`draft-…`), keyed on the website's request id, so an exact
+  retry finds the same draft. Limits: three an hour per number, ten per
+  network address, and 25 a day and 200 a month for the whole tool, since
+  every draft spends the shared page allowance. The page polls
+  `getInstantDraft` with the id and token (a wrong pair answers not-found):
+  `building`, then `draft_ready` with the private draft and up to ten of its
+  events, or `staff_follow_up` with reasons.
+
+  Links read by an adapter (Luma, District, Urbanaut) are `instant`; an
+  organizer's own site and an Instagram profile (Business Discovery) are
+  `best_effort`; Partiful, BookMyShow and Sort My Scene (no adapter),
+  signed-in sites, chat invites, short links and Instagram posts are
+  `staff_follow_up`. Every event link still runs through the worker under
+  the acquisition policy above, which alone decides what is read. A form
+  link waits for a person until form definitions can be imported.
+
+  When the build finishes, `materializeInstantDraft` (run by
+  `onSupplyIntakeRequestCreated`, and by the poll if that never ran) saves it
+  through the approval transaction as a private draft (below) when it found
+  the organizer's name, at least one upcoming event, no likely duplicate and
+  an open market; otherwise it records `needs_staff` with reasons. Follow-up
+  on WhatsApp is a staff reply until Catch-owned templates are approved: the
+  request's Admin Inbox item shows the number and stays open as "Reply on
+  WhatsApp" until a person dismisses it with a note saying what they sent.
+
 Free-text cities resolve to the market slug Supply Intake keys work by
 (`mumbai`, `bengaluru`). An unknown city becomes `unassigned` for staff to
 place.
@@ -369,6 +402,18 @@ An associate who nominated the organizer owns its Sales work; otherwise the
 approver does. Approval is idempotent per listing: an identical retry replays,
 and a different approval of the same listing is refused. Indexing and app
 discovery remain later decisions, after the organizer is verified.
+
+A website instant draft never goes live before claim (owner decision, 16 Nov
+2026). The transaction reads `instantDraft` from the request, so whoever
+approves it, staff or the instant draft worker (`supply-instant-draft`), gets
+the same organizer saved with `publicPage.publishStatus: draft`, a `hold` /
+`held` review decision (`not_projectable`), and the response's
+`publishStatus: draft`. It stays claimable: the website offers
+`requestOrganizerClaim` and the Instagram or Luma verification for it, and
+claim approval never publishes. Its imported events are blocked with
+`organizer_page_unpublished` until the claimed owner publishes the page. The
+worker records no Sales account, opportunity or tasks, because no person
+owns them; a staff approval does, saying it is a private draft.
 
 Supply Intake compares each new listing with the organizers Catch already lists
 (`organizer-matching/`). The Functions worker reads every organizer Catch keeps,
