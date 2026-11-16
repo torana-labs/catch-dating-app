@@ -286,11 +286,6 @@ class HostShellBackend {
         'discoverySummary': const <String, Object?>{},
         'dataQuality': const <Object?>[],
       },
-      'listOrganizerForms' => {
-        'organizerId': organizerId,
-        'items': const <Object?>[],
-        'nextCursor': null,
-      },
       'getOrganizerMessagingSetup' => {
         'organizerId': organizerId,
         'providerConfigured': false,

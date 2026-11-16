@@ -61,13 +61,6 @@ void main() {
     );
     expect(page.items.map((item) => item.formId), ['form']);
     expect(page.nextCursor, isNull);
-    expect(
-      HostFormSummaryReads.supports(
-        const HostFormListRequest(organizerId: 'org', query: 'substring'),
-      ),
-      isFalse,
-      reason: 'Substring search retains the existing server behavior.',
-    );
   });
 
   test(

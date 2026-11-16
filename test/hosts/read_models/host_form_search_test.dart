@@ -64,7 +64,7 @@ void main() {
       description: 'Tell us how you RUN the table',
       updatedAt: 2,
     );
-    await _seed(db, 'yoga', title: 'Yoga', updatedAt: 1);
+    await _seed(db, 'yoga', title: 'Yoga');
     await _seed(
       db,
       'old',
