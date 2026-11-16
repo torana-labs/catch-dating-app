@@ -306,20 +306,28 @@ overwritten. Every request records its `origin`.
   already published keep their id, so a refresh never publishes one twice.
 
 - **Website instant drafts.** The website's "event page from a link" tool
-  and the demo request call `requestInstantDraft` (App Check, no sign-in;
-  `functions/src/instantDrafts/`) with one event or form link, a WhatsApp
-  number and the ticked follow-up consent (`instant-draft-whatsapp-v1`). It
-  writes a `self_submission` with origin `web_instant_draft` and the draft's
-  private state in `supplyIntakeRequests.instantDraft`: the SHA-256 of a token
-  the website generated and keeps in the draft link's URL fragment, the
-  number and consent, and what the link is expected to give. The request id
-  is the draft id (`draft-…`), keyed on the website's request id, so an exact
-  retry finds the same draft. Limits: three an hour per number, ten per
-  network address, and 25 a day and 200 a month for the whole tool, since
-  every draft spends the shared page allowance. The page polls
-  `getInstantDraft` with the id and token (a wrong pair answers not-found):
-  `building`, then `draft_ready` with the private draft and up to ten of its
-  events, or `staff_follow_up` with reasons.
+  and the demo request call `requestInstantDraft`
+  (`functions/src/instantDrafts/`) with one event or form link and the
+  ticked WhatsApp follow-up consent (`instant-draft-whatsapp-v1`). App Check
+  is required, and so is a signed-in caller whose Firebase phone was verified
+  with a one-time code: the website's "Continue with phone" sheet, the same
+  verification checkout and following by phone use (owner decision, 16 Nov
+  2026). That verified phone (`request.auth.token.phone_number`) is the
+  WhatsApp number staff reply to; `whatsapp.phone` is optional and, when
+  sent, must equal it (`failed-precondition` otherwise). It writes a
+  `self_submission` with origin `web_instant_draft` and the draft's private
+  state in `supplyIntakeRequests.instantDraft`: the SHA-256 of a token the
+  website generated and keeps in the draft link's URL fragment, the verified
+  number, its uid and the consent, and what the link is expected to give.
+  The request id is the draft id (`draft-…`), keyed on the website's request
+  id, so an exact retry finds the same draft; a retry from another verified
+  number is refused. Limits: three an hour per verified number, ten per
+  network address, and 25 a day and 200 a month for the whole tool. Its
+  pages come from the tool's own monthly allowance (below), never the one
+  staff nominations share. The page polls `getInstantDraft` with the id and
+  token (a wrong pair answers not-found): `building`, then `draft_ready` with
+  the private draft and up to ten of its events, `needs_city` with the open
+  markets, `staff_follow_up` with reasons, or `expired`.
 
   Links read by an adapter (Luma, District, Urbanaut) are `instant`; an
   organizer's own site and an Instagram profile (Business Discovery) are
@@ -333,10 +341,33 @@ overwritten. Every request records its `origin`.
   `onSupplyIntakeRequestCreated`, and by the poll if that never ran) saves it
   through the approval transaction as a private draft (below) when it found
   the organizer's name, at least one upcoming event, no likely duplicate and
-  an open market; otherwise it records `needs_staff` with reasons. Follow-up
-  on WhatsApp is a staff reply until Catch-owned templates are approved: the
-  request's Admin Inbox item shows the number and stays open as "Reply on
-  WhatsApp" until a person dismisses it with a note saying what they sent.
+  an open market; otherwise it records `needs_staff` with reasons. The market
+  is the city the submitter gave when it maps to an open market; else the
+  one its imported events happen in, read from each event's locality,
+  address or venue against the market catalog, or its coordinates within 60
+  km of a market centre (`instantDrafts/market.ts`). Events in a known market
+  Catch has not opened wait for staff (`market_not_open`). Events that name
+  no market, or several, record `needs_city`: the page offers the open
+  markets, sends the chosen one back with `getInstantDraft` (`city`), and the
+  same draft continues in it (`instantDraft.market.source: chosen`), without
+  staff. Follow-up on WhatsApp is a staff reply until Catch-owned templates
+  are approved: the request's Admin Inbox item shows the number and stays
+  open as "Reply on WhatsApp" until a person dismisses it with a note saying
+  what they sent; while the draft waits for a city it is "Waiting for the
+  organizer to pick a city" and needs no one.
+
+  A saved draft nobody claims is removed 30 days after it was saved (owner
+  decision, 16 Nov 2026). Saving sets `instantDraft.expiresAt`, and the
+  daily `expireInstantDrafts` (`instantDrafts/expiry.ts`) reads at most 25
+  due drafts per run. A claimed or owned organizer, or a page that is no
+  longer a draft, is never touched and stops being tracked; a pending claim
+  is checked again a week later. A still unclaimed, unpublished draft is
+  deleted with its held review decision and growth facts, its route
+  reservation is released so the slug is free, its approval receipt is
+  marked superseded, an audit entry records it, and the request's outcome
+  becomes `expired`: the Admin Inbox item closes as "Draft removed, never
+  claimed", the draft page answers `expired`, and approving the old listing
+  again is refused.
 
 Free-text cities resolve to the market slug Supply Intake keys work by
 (`mumbai`, `bengaluru`). An unknown city becomes `unassigned` for staff to
@@ -411,7 +442,18 @@ the same organizer saved with `publicPage.publishStatus: draft`, a `hold` /
 `publishStatus: draft`. It stays claimable: the website offers
 `requestOrganizerClaim` and the Instagram or Luma verification for it, and
 claim approval never publishes. Its imported events are blocked with
-`organizer_page_unpublished` until the claimed owner publishes the page. The
+`organizer_page_unpublished` until the claimed owner publishes the page.
+Then `onInstantDraftOrganizerPublished` (`instantDrafts/publishOnClaim.ts`)
+sees the page turn published while the organizer is claimed and sends its
+events through `publishListingEvents`, the path `adminPublishListingEvents`
+uses, with the claimed owner as the actor (`owner`, the receipt's
+`actorUid` and the event's `review.reviewer`). The owner's publish replaces
+the staff checklist and the policy mode, not the checks: the organizer must
+name that owner, every automated check (dating framing, attribution, price)
+and the import plan, organizer, contract and waiver checks must pass, or
+the event waits for staff. Receipts are keyed on the request, so a
+redelivery replays. Nothing publishes before the claim, for an expired
+draft, or for an organizer no instant draft saved. The
 worker records no Sales account, opportunity or tasks, because no person
 owns them; a staff approval does, saying it is a private draft.
 
@@ -523,7 +565,12 @@ decision that is not accepted.
 
 Page fetching is on. The owner accepted `policy-on-demand-page-fetch-policy`
 on 28 October 2026 (CAT-266), and `acquisition_policy.json` cites it with at
-most 12 pages per nomination and 600 a month. Every environment's worker
+most 12 pages per nomination and 600 a month. The website instant draft
+tool reads from its own allowance of 300 a month
+(`pageFetch.maxInstantDraftRequestsPerMonth`, owner decision 16 Nov 2026,
+policy `supply-acquisition-v4`), counted at
+`supplyIntakeUsage/instant-draft-pages-{monthKey}`, so drafts can never
+starve the 600 staff nominations and the other front doors share. Every environment's worker
 reads its own copy of the decision, so dev and staging hold the same accepted
 record as production; without it a nomination fails closed with
 `ACQUISITION_POLICY_DECISION_REQUIRED`. The other four capabilities stay off.
