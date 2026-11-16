@@ -1,0 +1,95 @@
+/*
+ * A two-column website band (the playbook kit's split, timeline and
+ * checklist): the copy and its second column 64px apart, stacking below
+ * 840px. Ticks take the system check marker, as CatchFeatureTile's lines do.
+ * Checks are ground tiles at radius lg, two across in a column of their own.
+ * A flush band drops its vertical padding: the columns take the band rhythm
+ * at the top (64, 48 below 840px), the copy keeps it at the bottom and the
+ * media meets the band's bottom edge.
+ */
+.copy,
+.text,
+.end { min-width: 0; }
+
+.end {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ticks,
+.lines,
+.checks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ticks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro10);
+}
+
+.tick,
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--catch-space-micro10);
+  min-width: 0;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s2);
+}
+
+.groupTitle {
+  display: flex;
+  align-items: baseline;
+  gap: var(--catch-space-micro10);
+}
+
+.marker { color: var(--catch-theme-ink2); }
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s1);
+}
+
+.link { display: flex; }
+
+.checks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--catch-space-s3);
+}
+
+.check {
+  composes: ground from "./grounds.module.css";
+
+  gap: var(--catch-space-s3);
+  padding: var(--catch-space-s4) var(--catch-space-micro18);
+  border-radius: var(--catch-radius-lg);
+}
+
+.checkCopy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro2);
+  min-width: 0;
+}
+
+.flush { padding-top: var(--catch-space-s16); }
+
+.flush .text { padding-bottom: var(--catch-space-s16); }
+
+.flush .end { justify-content: flex-end; }
+
+@container catch-page (width < 840px) {
+  .checks { grid-template-columns: minmax(0, 1fr); }
+  .flush { padding-top: var(--catch-space-s12); }
+  .flush .text { padding-bottom: 0; }
+}

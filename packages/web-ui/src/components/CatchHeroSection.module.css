@@ -1,0 +1,86 @@
+/*
+ * The opening band (the playbook kit's hero). Split: the copy and the media
+ * 64px apart on an expanded page, the media on the band's bottom edge, so the
+ * band drops its own vertical padding and the copy takes the band rhythm (64
+ * above and below, 48 below 840px). The floating card sits over the media's
+ * start edge, turned slightly. Photo: a full-bleed photo at radius xl, at
+ * least 620px tall (520 below 840px), the copy at its foot in the dark theme,
+ * held to 860px.
+ */
+.copy { min-width: 0; }
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.proof { min-width: 0; }
+
+.link { display: flex; }
+
+.split { padding-top: var(--catch-space-s16); }
+
+.text { padding-bottom: var(--catch-space-s16); }
+
+.media {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 0;
+}
+
+.aside {
+  position: absolute;
+  inset: 30% auto auto 2%;
+  min-width: 210px;
+  transform: rotate(-2deg);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro3);
+  margin: var(--catch-space-micro6) 0 0;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--catch-space-micro14);
+}
+
+.row dt,
+.row dd { margin: 0; }
+
+.photo {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 620px;
+  overflow: hidden;
+  border-radius: var(--catch-radius-xl);
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+}
+
+.over {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 860px;
+  padding: var(--catch-space-s16);
+  color: var(--catch-theme-ink);
+}
+
+@container catch-page (width < 840px) {
+  .split { padding-top: var(--catch-space-s12); }
+  .text { padding-bottom: 0; }
+  .aside { position: static; transform: none; }
+  .photo { min-height: 520px; }
+  .over { padding: var(--catch-space-s7) var(--catch-space-s5); }
+}

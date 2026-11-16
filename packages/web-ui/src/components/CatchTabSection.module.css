@@ -1,0 +1,90 @@
+/*
+ * A band that switches between items (the playbook kit's switcher). Tabs:
+ * the tab bar 28px under the header, centred or at the start, a 10px accent
+ * dot before a label, then the chosen panel, its copy and media 40px apart.
+ * Steps: the numbered list and the chosen step's pane 40px apart, the pane on
+ * paper at radius xl, 32px inside, sticky 24px below the top; one column
+ * below 840px.
+ */
+.bar {
+  display: flex;
+  min-width: 0;
+}
+
+.bar[data-align="center"] { justify-content: center; }
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-inline-end: var(--catch-space-s2);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-ink);
+}
+
+.dot[data-accent="coral"] { background: var(--catch-palette-coral); }
+.dot[data-accent="pink"] { background: var(--catch-palette-pink); }
+.dot[data-accent="yellow"] { background: var(--catch-palette-yellow); }
+.dot[data-accent="mint"] { background: var(--catch-palette-mint); }
+.dot[data-accent="indigo"] { background: var(--catch-palette-indigo); }
+.dot[data-accent="magenta"] { background: var(--catch-palette-magenta); }
+
+.panel,
+.copy,
+.media { min-width: 0; }
+
+.media {
+  display: flex;
+  justify-content: center;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: var(--catch-space-s10);
+  align-items: start;
+}
+
+.list,
+.tips {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro6);
+}
+
+.pane {
+  position: sticky;
+  top: var(--catch-space-s6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro10);
+  padding: var(--catch-space-s8);
+  border-radius: var(--catch-radius-xl);
+  background: var(--catch-ground-paper-fill);
+  color: var(--catch-ground-paper-ink);
+  --catch-theme-ink: var(--catch-ground-paper-ink);
+  --catch-theme-ink2: var(--catch-ground-paper-ink-secondary);
+}
+
+.tips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro10);
+}
+
+.tip {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--catch-space-micro10);
+}
+
+@container catch-page (width < 840px) {
+  .steps { grid-template-columns: minmax(0, 1fr); }
+  .pane { position: static; }
+}
