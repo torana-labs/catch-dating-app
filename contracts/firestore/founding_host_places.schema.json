@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/founding_host_places.schema.json",
+  "title": "FoundingHostPlaceDocument",
+  "description": "One organizer's founding place, at foundingHostPlaces/{organizerId}. Created once, in the transaction that increments foundingHostOffers/{marketId}.takenCount and writes the 90-day trial into the organizer's commercial terms override; its existence makes the grant idempotent and an organizer holds at most one place in any city. Never changed by later cap, deadline or terms edits. Direct client access is denied.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "foundingHostPlaces",
+  "x-firestore-path": "foundingHostPlaces/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "the founding place grant (functions/src/foundingHosts)",
+  "required": ["schemaVersion", "organizerId", "marketId", "placeNumber", "cap", "trialDays", "ownedAtMillis", "grantedAtMillis", "source", "commercialTerms"],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "trigger-owned"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "trigger-owned"},
+    "marketId": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,49}$", "x-catch-ownership": "trigger-owned"},
+    "placeNumber": {"type": "integer", "minimum": 1, "maximum": 1000, "description": "1 for the city's first founding host; the cap in force when it was taken bounds it.", "x-catch-ownership": "trigger-owned"},
+    "cap": {"type": "integer", "minimum": 1, "maximum": 1000, "description": "The city's cap when the place was taken.", "x-catch-ownership": "trigger-owned"},
+    "trialDays": {"type": "integer", "minimum": 1, "maximum": 366, "x-catch-ownership": "trigger-owned"},
+    "ownedAtMillis": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "description": "When the organizer gained an owner (created by its owner, or a claim approved). The deadline is checked against this instant.", "x-catch-ownership": "trigger-owned"},
+    "grantedAtMillis": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "trigger-owned"},
+    "source": {"enum": ["ownershipTrigger", "dailyReconcile"], "x-catch-ownership": "trigger-owned"},
+    "commercialTerms": {
+      "description": "The commercial terms revision that wrote the founding trial, or null when the organizer's effective trial was already at least trialDays and nothing was written.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["termsId", "revision", "previousTrialDays"],
+          "properties": {
+            "termsId": {"type": "string", "pattern": "^org_[a-f0-9]{64}$"},
+            "revision": {"type": "integer", "minimum": 1},
+            "previousTrialDays": {"type": ["integer", "null"], "minimum": 0, "maximum": 366, "description": "The override's trial.days before the grant; null when the override did not set one."}
+          }
+        },
+        {"type": "null"}
+      ],
+      "x-catch-ownership": "trigger-owned"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "action": "replace",
+  "marketId": "in-mh-mumbai",
+  "expectedRevision": 0,
+  "cap": 50,
+  "endsAtMillis": null,
+  "reason": "Owner decision: founding-host offer with a live counter"
+}

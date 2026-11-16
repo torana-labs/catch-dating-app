@@ -191,6 +191,33 @@
       }
     },
     {
+      "actionId": "finance.manage-founding-host-offers",
+      "callable": "adminManageFoundingHostOffers",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/settings/payments",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "marketId",
+      "requestSchema": "contracts/callables/admin_manage_founding_host_offers_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_manage_founding_host_offers_response.schema.json",
+      "summary": "Read every city's founding-host offer, or open one city and set its cap and optional deadline against the reviewed revision, with a reason; places already taken and their 90-day trials never change.",
+      "example": {
+        "action": "replace",
+        "marketId": "in-mh-mumbai",
+        "expectedRevision": 0,
+        "cap": 50,
+        "endsAtMillis": null,
+        "reason": "Owner decision 2026-11-16: founding-host offer with a live counter"
+      },
+      "controlPlane": true
+    },
+    {
       "actionId": "finance.manage-money-settings",
       "callable": "adminManageMoneySettings",
       "workflowIds": [
