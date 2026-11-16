@@ -15,7 +15,10 @@ import {validateFoundingHostPlaceDocument} from
   "../shared/generated/validators/foundingHostPlaceDocument";
 import type {OrganizerGrowthFactsDocument} from
   "../shared/generated/firestoreAdminTypes";
+import {validateFoundingHostOwnerPlaceDocument} from
+  "../shared/generated/validators/foundingHostOwnerPlaceDocument";
 import {
+  foundingHostOwnerPlaceId,
   foundingHostTermsActor,
   type FoundingHostOffer,
 } from "./foundingHostOffer";
@@ -42,6 +45,7 @@ function setup(offerPatch: Partial<FoundingHostOffer> | null = {}) {
     now: () => clock++};
   const addOrganizer = (id: string, patch: Record<string, unknown> = {}) =>
     store.put(`organizers/${id}`, {ownership: {state: "userCreated"},
+      ownerUserId: `owner-${id}`, hostUserId: `owner-${id}`,
       locationMarketId: "in-mh-mumbai", ...patch});
   const take = (organizerId: string, ownedAtMillis = opened + 1) =>
     takeFoundingHostPlace(deps, {organizerId, ownedAtMillis,
@@ -58,6 +62,14 @@ test("a new owner takes place 1 and gets 90 days through its terms override",
 
     const place = store.get("foundingHostPlaces/org-1");
     assert.ok(validateFoundingHostPlaceDocument(place));
+    assert.equal(place.ownerUserId, "owner-org-1");
+    const ownerPlace = store.get("foundingHostOwnerPlaces/" +
+      foundingHostOwnerPlaceId("owner-org-1", "in-mh-mumbai"));
+    assert.ok(validateFoundingHostOwnerPlaceDocument(ownerPlace));
+    assert.deepEqual(ownerPlace, {schemaVersion: 1,
+      ownerUserId: "owner-org-1", marketId: "in-mh-mumbai",
+      organizerId: "org-1", placeNumber: 1,
+      grantedAtMillis: place.grantedAtMillis});
     const termsId = organizerCommercialTermsId("org-1");
     assert.deepEqual([place.placeNumber, place.cap, place.trialDays,
       place.source, place.commercialTerms],
@@ -212,4 +224,109 @@ test("before platform terms exist the override still carries the trial",
     assert.deepEqual(store.get(
       `commercialTerms/${organizerCommercialTermsId("org-1")}`)?.terms,
     {trial: {days: 90}});
+  });
+
+const ownerPlacePath = (ownerUserId: string, marketId = "in-mh-mumbai") =>
+  `foundingHostOwnerPlaces/${foundingHostOwnerPlaceId(ownerUserId, marketId)}`;
+
+test("one person's organizer pages in one city take one place", async () => {
+  const {store, addOrganizer, take} = setup();
+  addOrganizer("first", {ownerUserId: "priya", hostUserId: "priya"});
+  addOrganizer("second", {ownerUserId: "priya", hostUserId: "priya"});
+  // A legacy page with only hostUserId is the same person.
+  addOrganizer("legacy", {ownerUserId: null, hostUserId: "priya"});
+  addOrganizer("other", {ownerUserId: "arjun", hostUserId: "arjun"});
+  assert.deepEqual(await take("first"),
+    {kind: "grant", placeNumber: 1, marketId: "in-mh-mumbai"});
+  for (const id of ["second", "legacy"]) {
+    assert.deepEqual(await take(id), {kind: "skip",
+      reason: "ownerHoldsPlace", marketId: "in-mh-mumbai"});
+    // Their other pages keep the standard trial: no place, no override.
+    assert.equal(store.get(`foundingHostPlaces/${id}`), undefined);
+    assert.equal(store.get(
+      `commercialTerms/${organizerCommercialTermsId(id)}`), undefined);
+  }
+  assert.deepEqual(await take("other"),
+    {kind: "grant", placeNumber: 2, marketId: "in-mh-mumbai"});
+  assert.equal(store.get(offerPath)?.takenCount, 2);
+  assert.equal(store.get(publicPath)?.placesLeft, 48);
+  assert.equal(store.paths("foundingHostOwnerPlaces/").length, 2);
+  assert.equal(store.get(ownerPlacePath("priya"))?.organizerId, "first");
+});
+
+test("one person takes one place in each of two cities", async () => {
+  const {store, addOrganizer, take} = setup();
+  store.put("foundingHostOffers/in-mp-indore", {...offer({
+    marketId: "in-mp-indore"})});
+  addOrganizer("mumbai-page", {ownerUserId: "priya"});
+  addOrganizer("indore-page", {ownerUserId: "priya",
+    locationMarketId: "in-mp-indore"});
+  addOrganizer("indore-second", {ownerUserId: "priya",
+    locationMarketId: "in-mp-indore"});
+  assert.deepEqual(await take("mumbai-page"),
+    {kind: "grant", placeNumber: 1, marketId: "in-mh-mumbai"});
+  assert.deepEqual(await take("indore-page"),
+    {kind: "grant", placeNumber: 1, marketId: "in-mp-indore"});
+  assert.deepEqual(await take("indore-second"), {kind: "skip",
+    reason: "ownerHoldsPlace", marketId: "in-mp-indore"});
+  assert.equal(store.get(ownerPlacePath("priya"))?.organizerId,
+    "mumbai-page");
+  assert.equal(store.get(ownerPlacePath("priya", "in-mp-indore"))
+    ?.organizerId, "indore-page");
+  assert.equal(store.get(offerPath)?.takenCount, 1);
+  assert.equal(store.get("foundingHostOffers/in-mp-indore")?.takenCount, 1);
+});
+
+test("one person's pages granted at once take one place", async () => {
+  const {store, addOrganizer, take} = setup({cap: 50, takenCount: 10});
+  const ids = Array.from({length: 4}, (_, index) => `page-${index}`);
+  ids.forEach((id) => addOrganizer(id, {ownerUserId: "priya"}));
+  addOrganizer("arjun-page", {ownerUserId: "arjun"});
+  const results = await Promise.all([...ids, "arjun-page"].map((id) =>
+    take(id)));
+  const granted = results.filter((result) => result.kind === "grant");
+  assert.deepEqual(granted.map((result) =>
+    result.kind === "grant" ? result.placeNumber : 0).sort(), [11, 12]);
+  assert.equal(results.filter((result) => result.kind === "skip" &&
+    result.reason === "ownerHoldsPlace").length, 3);
+  const held = ids.filter((id) => store.get(`foundingHostPlaces/${id}`));
+  assert.equal(held.length, 1);
+  assert.equal(store.get(ownerPlacePath("priya"))?.organizerId, held[0]);
+  assert.equal(store.get(offerPath)?.takenCount, 12);
+  // A retry of every page changes nothing.
+  const before = store.paths();
+  await Promise.all(ids.map((id) => take(id)));
+  assert.deepEqual(store.paths(), before);
+});
+
+test("a place stays with its organizer when its owner changes",
+  async () => {
+    const {store, addOrganizer, take} = setup();
+    addOrganizer("club", {ownerUserId: "priya"});
+    await take("club");
+    // Ownership moves to Arjun: the place and Priya's guard stay put.
+    store.put("organizers/club", {ownership: {state: "transferred"},
+      ownerUserId: "arjun", hostUserId: "arjun",
+      locationMarketId: "in-mh-mumbai"});
+    assert.deepEqual(await take("club"), {kind: "skip",
+      reason: "alreadyHeld", marketId: "in-mh-mumbai"});
+    assert.equal(store.get("foundingHostPlaces/club")?.ownerUserId, "priya");
+    // Priya has used her Mumbai place; a new page of hers takes none.
+    addOrganizer("priya-new", {ownerUserId: "priya"});
+    assert.deepEqual(await take("priya-new"), {kind: "skip",
+      reason: "ownerHoldsPlace", marketId: "in-mh-mumbai"});
+    // Arjun's own new page is his first in the city and takes one.
+    addOrganizer("arjun-new", {ownerUserId: "arjun"});
+    assert.deepEqual(await take("arjun-new"),
+      {kind: "grant", placeNumber: 2, marketId: "in-mh-mumbai"});
+    assert.equal(store.get(offerPath)?.takenCount, 2);
+  });
+
+test("an owned organizer with no owner id recorded takes nothing",
+  async () => {
+    const {store, addOrganizer, take} = setup();
+    addOrganizer("anonymous", {ownerUserId: null, hostUserId: null});
+    assert.deepEqual(await take("anonymous"), {kind: "skip",
+      reason: "notOwned", marketId: "in-mh-mumbai"});
+    assert.equal(store.get(offerPath)?.takenCount, 0);
   });

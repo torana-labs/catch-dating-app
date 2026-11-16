@@ -4,7 +4,9 @@ import {validatePublicFoundingHostOfferDocument} from
   "../shared/generated/validators/publicFoundingHostOfferDocument";
 import {
   decideFoundingPlace,
+  foundingHostOwnerPlaceId,
   foundingOfferStatus,
+  foundingPlaceOwnerUserId,
   organizerHasOwner,
   publicFoundingOffer,
   type FoundingHostOffer,
@@ -18,7 +20,8 @@ const offer = (patch: Partial<FoundingHostOffer> = {}): FoundingHostOffer => ({
   updatedAtMillis: opened, ...patch});
 type DecisionInput = Parameters<typeof decideFoundingPlace>[0];
 const input = (patch: Partial<DecisionInput> = {}): DecisionInput => ({
-  placeExists: false, owned: true, synthetic: false, marketKnown: true,
+  placeExists: false, owned: true, ownerPlaceExists: false, synthetic: false,
+  marketKnown: true,
   offer: offer(),
   ownedAtMillis: opened + 1, trialStarted: false, ...patch});
 
@@ -36,6 +39,33 @@ test("place 51 is sold out; a held place replays as held", () => {
   // the city has sold out since.
   assert.deepEqual(decideFoundingPlace(input({placeExists: true,
     offer: offer({takenCount: 50})})), {kind: "skip", reason: "alreadyHeld"});
+});
+
+test("an owner who holds a place in the city takes no second one", () => {
+  assert.deepEqual(decideFoundingPlace(input({ownerPlaceExists: true})),
+    {kind: "skip", reason: "ownerHoldsPlace"});
+  // The organizer's own place replays as held, not as its owner's.
+  assert.deepEqual(decideFoundingPlace(input({placeExists: true,
+    ownerPlaceExists: true})), {kind: "skip", reason: "alreadyHeld"});
+});
+
+test("the owner is the canonical organizer owner, keyed per city", () => {
+  assert.equal(foundingPlaceOwnerUserId({ownerUserId: "owner-1",
+    hostUserId: "host-1"}), "owner-1");
+  // Legacy organizers without ownerUserId fall back to hostUserId, as bills
+  // and payments do.
+  assert.equal(foundingPlaceOwnerUserId({ownerUserId: null,
+    hostUserId: "host-1"}), "host-1");
+  assert.equal(foundingPlaceOwnerUserId({ownerUserId: null,
+    hostUserId: null}), null);
+  assert.equal(foundingPlaceOwnerUserId(undefined), null);
+  const mumbai = foundingHostOwnerPlaceId("owner-1", "in-mh-mumbai");
+  assert.match(mumbai, /^[a-f0-9]{64}$/u);
+  assert.equal(foundingHostOwnerPlaceId("owner-1", "in-mh-mumbai"), mumbai);
+  assert.notEqual(foundingHostOwnerPlaceId("owner-1", "in-mp-indore"),
+    mumbai);
+  assert.notEqual(foundingHostOwnerPlaceId("owner-2", "in-mh-mumbai"),
+    mumbai);
 });
 
 test("the deadline is judged when the organizer gained its owner", () => {

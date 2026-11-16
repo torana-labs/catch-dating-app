@@ -27,7 +27,7 @@ function fixture() {
     rateLimit: async () => undefined};
   const grant = async (organizerId: string) => {
     store.put(`organizers/${organizerId}`, {ownership: {state: "userCreated"},
-      locationMarketId: "in-mh-mumbai"});
+      ownerUserId: `owner-${organizerId}`, locationMarketId: "in-mh-mumbai"});
     return takeFoundingHostPlace({db, now: () => clock++},
       {organizerId, ownedAtMillis: clock++, source: "ownershipTrigger"});
   };

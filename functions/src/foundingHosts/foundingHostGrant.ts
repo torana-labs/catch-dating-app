@@ -17,12 +17,16 @@ import type {CommercialTermsDocument} from
   "../shared/generated/commercialTermsDocument";
 import type {CommercialTermsRevisionDocument} from
   "../shared/generated/commercialTermsRevisionDocument";
+import type {FoundingHostOwnerPlaceDocument} from
+  "../shared/generated/foundingHostOwnerPlaceDocument";
 import type {FoundingHostPlaceDocument} from
   "../shared/generated/foundingHostPlaceDocument";
 import {validateCommercialTermsDocument} from
   "../shared/generated/validators/commercialTermsDocument";
 import {validateFoundingHostOfferDocument} from
   "../shared/generated/validators/foundingHostOfferDocument";
+import {validateFoundingHostOwnerPlaceDocument} from
+  "../shared/generated/validators/foundingHostOwnerPlaceDocument";
 import {validateFoundingHostPlaceDocument} from
   "../shared/generated/validators/foundingHostPlaceDocument";
 import {validatePublicFoundingHostOfferDocument} from
@@ -30,8 +34,11 @@ import {validatePublicFoundingHostOfferDocument} from
 import {
   decideFoundingPlace,
   foundingHostOffersCollection,
+  foundingHostOwnerPlaceId,
+  foundingHostOwnerPlacesCollection,
   foundingHostPlacesCollection,
   foundingHostTermsActor,
+  foundingPlaceOwnerUserId,
   organizerHasOwner,
   organizerMarketValue,
   publicFoundingHostOffersCollection,
@@ -66,6 +73,15 @@ export type FoundingGrantResult = FoundingPlaceDecision & {
  * never exceeded; the place record, keyed by organizer, makes a retry a
  * no-op. The public counter is rewritten in the same commit.
  *
+ * A person takes at most one place per city. The organizer's canonical
+ * owner and its market name one `foundingHostOwnerPlaces` document, read
+ * and created in the same transaction: a second organizer page of the same
+ * owner in the same city finds it and skips (`ownerHoldsPlace`), and two
+ * pages granted at once conflict on it (and on the offer counter), so the
+ * loser retries, finds it and skips. The guard is never deleted, so a place
+ * stays with its organizer through an ownership transfer and the original
+ * owner's later pages in that city still take none.
+ *
  * The trial goes through the existing per-organizer override
  * (`commercialTerms/org_<sha256(organizerId)>`, `trial.days`), as a new
  * revision with an immutable revision record, so bills, billing status and
@@ -92,9 +108,15 @@ export async function takeFoundingHostPlace(deps: FoundingGrantDeps,
     const marketValue = organizer ? organizerMarketValue(organizer) : null;
     const market = marketForIdOrAlias(marketValue);
     const marketId = market?.marketId ?? null;
+    const ownerUserId = foundingPlaceOwnerUserId(organizer);
     const offerRef = marketId === null ? null :
       db.collection(foundingHostOffersCollection).doc(marketId);
-    const offerSnap = offerRef ? await tx.get(offerRef) : null;
+    const ownerPlaceRef = marketId === null || ownerUserId === null ? null :
+      db.collection(foundingHostOwnerPlacesCollection)
+        .doc(foundingHostOwnerPlaceId(ownerUserId, marketId));
+    const [offerSnap, ownerPlaceSnap] = await Promise.all([
+      offerRef ? tx.get(offerRef) : null,
+      ownerPlaceRef ? tx.get(ownerPlaceRef) : null]);
     let offer: FoundingHostOffer | null = null;
     if (offerSnap?.exists) {
       const data = offerSnap.data();
@@ -108,7 +130,9 @@ export async function takeFoundingHostPlace(deps: FoundingGrantDeps,
       Record<string, unknown> | undefined;
     const decision = decideFoundingPlace({
       placeExists: placeSnap.exists,
-      owned: organizerHasOwner(organizer),
+      // An owner that cannot be identified cannot be limited: fail closed.
+      owned: organizerHasOwner(organizer) && ownerUserId !== null,
+      ownerPlaceExists: ownerPlaceSnap?.exists === true,
       // Demo Ops worlds create owned organizers marked synthetic.
       synthetic: organizer?.synthetic === true,
       marketKnown: market !== null,
@@ -117,7 +141,8 @@ export async function takeFoundingHostPlace(deps: FoundingGrantDeps,
       trialStarted: Boolean(milestones?.firstEventAt ||
         milestones?.firstPaidBookingAt),
     });
-    if (decision.kind === "skip" || !offer || !market || !offerRef) {
+    if (decision.kind === "skip" || !offer || !market || !offerRef ||
+        !ownerPlaceRef || ownerUserId === null) {
       return {...decision, marketId};
     }
 
@@ -164,20 +189,26 @@ export async function takeFoundingHostPlace(deps: FoundingGrantDeps,
     }
 
     const place: FoundingHostPlaceDocument = {
-      schemaVersion: 1, organizerId, marketId: offer.marketId,
+      schemaVersion: 1, organizerId, ownerUserId, marketId: offer.marketId,
       placeNumber: decision.placeNumber, cap: offer.cap, trialDays,
       ownedAtMillis: input.ownedAtMillis, grantedAtMillis: nowMillis,
       source: input.source, commercialTerms: termsChange,
+    };
+    const ownerPlace: FoundingHostOwnerPlaceDocument = {
+      schemaVersion: 1, ownerUserId, marketId: offer.marketId, organizerId,
+      placeNumber: decision.placeNumber, grantedAtMillis: nowMillis,
     };
     const counted: FoundingHostOffer = {...offer,
       takenCount: decision.placeNumber, lastPlaceAtMillis: nowMillis};
     const projection = publicFoundingOffer(counted, market.slug, nowMillis);
     if (!validateFoundingHostPlaceDocument(place) ||
+        !validateFoundingHostOwnerPlaceDocument(ownerPlace) ||
         !validateFoundingHostOfferDocument(counted) ||
         !validatePublicFoundingHostOfferDocument(projection)) {
       throw new Error(`Invalid founding place for ${organizerId}.`);
     }
     tx.create(placeRef, place);
+    tx.create(ownerPlaceRef, ownerPlace);
     tx.update(offerRef, {takenCount: counted.takenCount,
       lastPlaceAtMillis: counted.lastPlaceAtMillis});
     tx.set(db.collection(publicFoundingHostOffersCollection)
@@ -201,7 +232,8 @@ export async function takeFoundingHostPlaceLogged(deps: FoundingGrantDeps,
       marketId: result.marketId, placeNumber: result.placeNumber,
       source: input.source});
   } else if (result.reason === "soldOut" || result.reason === "closed" ||
-      result.reason === "trialStarted") {
+      result.reason === "trialStarted" ||
+      result.reason === "ownerHoldsPlace") {
     logger.info("Founding host place not taken", {
       organizerId: input.organizerId, marketId: result.marketId,
       reason: result.reason, source: input.source});

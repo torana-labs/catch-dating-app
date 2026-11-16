@@ -532,7 +532,7 @@ enter previews.
 | `onSavedEventCardCreated` | `src/guestEvents/triggers.ts` | Writes a new saved-event edge's list card from its event |
 | `onEventGuestEntryFormWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest entry of the event an application form targets when the form is published, paused or retargeted |
 | `onEventGuestEntryOrganizerWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest entries of an organizer's published events when its visibility or public page changes |
-| `onFoundingHostOrganizerWritten` | `src/foundingHosts/foundingHostTriggers.ts` | When an organizer gains an owner, takes the next founding place in its city (capped in one transaction) and writes the 90-day trial into its commercial terms override. |
+| `onFoundingHostOrganizerWritten` | `src/foundingHosts/foundingHostTriggers.ts` | When an organizer gains an owner, takes the next founding place in its city (capped in one transaction, one per owner per city) and writes the 90-day trial into its commercial terms override. |
 | `onGuestEventStatusApplicationWritten` | `src/guestEvents/triggers.ts` | Rebuilds the applicant's `guestEventStatuses` row when an event application changes |
 | `onGuestEventStatusAttendeeWritten` | `src/guestEvents/triggers.ts` | Rebuilds the linked guest's `guestEventStatuses` row when a roster row's link, source or status changes |
 | `onGuestEventStatusOfferRecipientWritten` | `src/guestEvents/triggers.ts` | Rebuilds the recipient's `guestEventStatuses` row when an offer invitation changes |
@@ -543,7 +543,7 @@ enter previews.
 | `onProgramHouseholdWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a household's primary phone changes. |
 | `onProgramWhatsappInboundMessageCreated` | `src/programs/programWhatsapp/inboundTrigger.ts` | Runs the wedding assistant (handleProgramWhatsappInbound) for each stored inbound guest message; replies through sendProgramServiceReply or passes the thread to the planner. |
 | `previewProgramAssistantReply` | `src/programs/assistant/preview.ts` | The wedding assistant's Try it: the same policy, fact pack, model and budget as a guest message, nothing sent. |
-| `reconcileFoundingHostPlacesDaily` | `src/foundingHosts/foundingHostTriggers.ts` | Daily 04:25 India time: takes the founding places the trigger missed for organizers that gained an owner in the last three days. |
+| `reconcileFoundingHostPlacesDaily` | `src/foundingHosts/foundingHostTriggers.ts` | Daily 04:25 India time: takes the founding places the trigger missed for organizers that gained an owner in the last three days, still one per owner per city. |
 | `reconcileProgramVendorBill` | `src/programs/vendorBills.ts` | Reviews, checks, questions or approves a vendor bill against recorded trips. |
 | `resolveProgramAlert` | `src/programs/programLiveBoard.ts` | Not yet described. |
 | `rollupOrganizerInsightsDaily` | `src/organizerInsights/insightsRollup.ts` | Nightly organizerInsights roll-up per organiser-day from the host analytics marts and organizerFollows. |

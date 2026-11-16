@@ -59,7 +59,9 @@ export const onFoundingHostOrganizerWritten = onDocumentWritten({
  * Takes the places the trigger missed: organizers whose growth facts record
  * that they gained an owner in the last few days, in a city whose offer had
  * places left. The growth reconcile (03:40) records any `claimedAt` its
- * triggers missed first. Each grant is its own idempotent transaction.
+ * triggers missed first. Each grant is its own idempotent transaction,
+ * taken oldest claim first, so when one person owns several missed pages in
+ * a city the earliest takes their one place and the rest skip.
  * @param {FoundingGrantDeps} deps Firestore and clock.
  * @return {Promise<object>} Organizers checked and places taken.
  */

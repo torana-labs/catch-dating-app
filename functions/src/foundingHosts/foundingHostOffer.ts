@@ -1,7 +1,11 @@
+import {createHash} from "node:crypto";
 import type {FoundingHostOfferDocument} from
   "../shared/generated/foundingHostOfferDocument";
+import type {OrganizerDocument} from
+  "../shared/generated/firestoreAdminTypes";
 import type {PublicFoundingHostOfferDocument} from
   "../shared/generated/publicFoundingHostOfferDocument";
+import {organizerOwnerUserId} from "../shared/organizerHosts";
 
 /**
  * The founding-host offer (owner decision, 16 Nov 2026): in each city the
@@ -11,11 +15,19 @@ import type {PublicFoundingHostOfferDocument} from
  * deadline passes, new organizers get the standard trial; places already
  * taken never change.
  *
+ * A person takes at most one place in each city, however many organizer
+ * pages they own there (owner decision 16 Nov 2026): their other pages get
+ * the standard trial. "Person" is the organizer's canonical owner,
+ * `organizerOwnerUserId` (`ownerUserId`, falling back to the legacy
+ * `hostUserId`), recorded when the place is taken. A place stays with the
+ * organizer that took it if ownership later changes; nothing is revoked.
+ *
  * This module is pure: the grant transaction and the Admin callable read
  * the documents and write what it returns.
  */
 export const foundingHostOffersCollection = "foundingHostOffers";
 export const foundingHostPlacesCollection = "foundingHostPlaces";
+export const foundingHostOwnerPlacesCollection = "foundingHostOwnerPlaces";
 export const publicFoundingHostOffersCollection = "publicFoundingHostOffers";
 
 /** The cap the owner decided for every city. */
@@ -41,6 +53,36 @@ export function organizerHasOwner(
     (ownership as Record<string, unknown>).state : undefined;
   return state === "claimed" || state === "transferred" ||
     state === "userCreated";
+}
+
+/**
+ * The organizer's canonical owner, the identity a founding place is limited
+ * to once per city. The same helper decides organizer ownership for bills
+ * and payments.
+ * @param {Record<string, unknown>|undefined} organizer Organizer document.
+ * @return {string|null} Owner user id, or null when none is recorded.
+ */
+export function foundingPlaceOwnerUserId(
+  organizer: Record<string, unknown> | undefined): string | null {
+  if (!organizer) return null;
+  const owner = organizerOwnerUserId(organizer as unknown as
+    OrganizerDocument);
+  return typeof owner === "string" && owner.length > 0 ? owner : null;
+}
+
+/**
+ * The deterministic id of one owner's founding place in one city:
+ * `sha256(JSON.stringify([ownerUserId, marketId]))` in hex. Every grant for
+ * that owner and city reads and creates the same document, so the guard is
+ * race-safe inside the grant transaction and keeps the uid out of the path.
+ * @param {string} ownerUserId Canonical owner user id.
+ * @param {string} marketId Canonical market id.
+ * @return {string} Document id in foundingHostOwnerPlaces.
+ */
+export function foundingHostOwnerPlaceId(ownerUserId: string,
+  marketId: string): string {
+  return createHash("sha256")
+    .update(JSON.stringify([ownerUserId, marketId])).digest("hex");
 }
 
 /**
@@ -99,6 +141,11 @@ export type FoundingPlaceSkip =
   "alreadyHeld" |
   /** The organizer was deleted or has no owner now. */
   "notOwned" |
+  /**
+   * Its owner already holds a founding place in this city through another
+   * organizer page; this page keeps the standard trial.
+   */
+  "ownerHoldsPlace" |
   /** A demo or test organizer (`synthetic`), which never uses a place. */
   "synthetic" |
   /** Its market is not in the catalog. */
@@ -129,6 +176,8 @@ export type FoundingPlaceDecision =
 export function decideFoundingPlace(input: {
   placeExists: boolean;
   owned: boolean;
+  /** Whether its owner already holds a place in its city. */
+  ownerPlaceExists: boolean;
   synthetic: boolean;
   marketKnown: boolean;
   offer: FoundingHostOffer | null;
@@ -150,6 +199,7 @@ export function decideFoundingPlace(input: {
       input.ownedAtMillis >= offer.endsAtMillis) {
     return skip("closed");
   }
+  if (input.ownerPlaceExists) return skip("ownerHoldsPlace");
   if (offer.takenCount >= offer.cap) return skip("soldOut");
   if (input.trialStarted) return skip("trialStarted");
   return {kind: "grant", placeNumber: offer.takenCount + 1};
