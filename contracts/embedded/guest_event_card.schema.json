@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/guest_event_card.schema.json",
+  "title": "GuestEventCard",
+  "description": "The event fields a guest's own event lists show (dashboard, calendar, saved, payment and review history), copied from events/{eventId} by the guest event triggers onto the guest's savedEvents and guestEventStatuses rows. It carries no live booking counts, so a booking never rewrites other guests' cards. It grants nothing; booking and every command read the event itself.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "name",
+    "publicationState",
+    "status",
+    "startTimeMillis",
+    "endTimeMillis",
+    "eventTimezone",
+    "eventFormat",
+    "distanceKm",
+    "pace",
+    "meetingPoint",
+    "meetingLocation",
+    "startingPointLat",
+    "startingPointLng",
+    "locationDetails",
+    "description",
+    "capacityLimit",
+    "priceInPaise",
+    "currency",
+    "priceHiddenUntilBookingOpens",
+    "publicRegistrationEnabled",
+    "demandPricing",
+    "synthetic"
+  ],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "name": {"type": "string", "maxLength": 120},
+    "publicationState": {"type": "string", "enum": ["private", "published"]},
+    "status": {"$ref": "../shared/event_common.schema.json#/definitions/eventLifecycleStatus"},
+    "startTimeMillis": {"type": "integer", "minimum": 0},
+    "endTimeMillis": {"type": ["integer", "null"], "minimum": 0},
+    "eventTimezone": {"type": ["string", "null"], "minLength": 1, "maxLength": 100},
+    "eventFormat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "activityKind", "interactionModel"],
+      "description": "The part of the event's format the list labels come from. Values are copied as stored; readers map one they do not know to their default, as they do for the event itself.",
+      "properties": {
+        "version": {"type": "integer", "const": 1},
+        "activityKind": {"type": "string", "minLength": 1, "maxLength": 80},
+        "interactionModel": {"type": "string", "minLength": 1, "maxLength": 80},
+        "customActivityLabel": {"type": "string", "minLength": 1, "maxLength": 80}
+      }
+    },
+    "distanceKm": {"type": ["number", "null"], "minimum": 0},
+    "pace": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/paceLevel"},
+        {"type": "null"}
+      ]
+    },
+    "meetingPoint": {"type": ["string", "null"], "maxLength": 240},
+    "meetingLocation": {
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/eventMeetingLocation"},
+        {"type": "null"}
+      ]
+    },
+    "startingPointLat": {"type": ["number", "null"], "minimum": -90, "maximum": 90},
+    "startingPointLng": {"type": ["number", "null"], "minimum": -180, "maximum": 180},
+    "locationDetails": {"type": ["string", "null"], "maxLength": 1000},
+    "description": {"type": ["string", "null"], "maxLength": 2000},
+    "capacityLimit": {"type": ["integer", "null"], "minimum": 0},
+    "priceInPaise": {"type": ["integer", "null"], "minimum": 0},
+    "currency": {"type": ["string", "null"], "pattern": "^[A-Z]{3}$"},
+    "priceHiddenUntilBookingOpens": {"type": "boolean"},
+    "publicRegistrationEnabled": {"type": "boolean"},
+    "demandPricing": {
+      "type": "boolean",
+      "description": "The event's pricing has demand rules, so lists show the price as a starting price."
+    },
+    "synthetic": {"type": "boolean"}
+  }
+}
