@@ -153,6 +153,8 @@ export type {
   CatchBannerTone,
   CatchBannerVariant,
 } from "./components/CatchBanner";
+export {CatchBreadcrumbRow} from "./components/CatchBreadcrumbRow";
+export type {CatchBreadcrumbRowLink, CatchBreadcrumbRowProps} from "./components/CatchBreadcrumbRow";
 export {CatchEmptyState} from "./components/CatchEmptyState";
 export {EmptyStateControl} from "./components/EmptyStateControl";
 export type {EmptyStateAnnouncement, EmptyStateControlProps} from "./components/EmptyStateControl";

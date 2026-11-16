@@ -19,8 +19,8 @@ const parts = [
   "CatchVideoEmbed", "CatchNoteCard",
   // The playbook section parts.
   "CatchBandHeader", "CatchFeatureTile",
-  // The site chrome parts: the offer strip's banner.
-  "CatchBanner",
+  // The site chrome parts: the offer strip's banner and the breadcrumb.
+  "CatchBanner", "CatchBreadcrumbRow",
 ];
 const sheets: Record<string, string> = Object.fromEntries([
   ...parts.map((name) => [name, strip(read(`./${name}.module.css`))]),
