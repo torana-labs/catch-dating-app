@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/commercial_terms.schema.json",
   "title": "CommercialTermsDocument",
-  "description": "Operator-owned commercial terms. The platform document holds complete defaults; an organizer document (id org_<sha256(organizerId)>) holds a sparse override. Every write bumps revision and appends an immutable commercialTermsRevisions record and an admin audit log in the same transaction. Direct client access is denied.",
+  "description": "Operator-owned commercial terms. The platform document holds complete defaults; an organizer document (id org_<sha256(organizerId)>) holds a sparse override. Every write bumps revision and appends an immutable commercialTermsRevisions record in the same transaction; manageCommercialTerms also writes an admin audit log, and a founding-host place (functions/src/foundingHosts) sets only an organizer override's trial.days, with updatedByUid system:foundingHostOffer. Direct client access is denied.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schemaVersion", "scope", "organizerId", "revision", "terms", "reason", "updatedByUid", "updatedAtMillis", "lastMutationHash"],
@@ -25,5 +25,5 @@
   "x-firestore-collection": "commercialTerms",
   "x-firestore-path": "commercialTerms/{termsId}",
   "x-document-id-field": "termsId",
-  "x-owner": "manageCommercialTerms admin callable"
+  "x-owner": "manageCommercialTerms admin callable; the founding-host place grant (organizer trial.days only)"
 }

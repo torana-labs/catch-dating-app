@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/founding_host_owner_places.schema.json",
+  "title": "FoundingHostOwnerPlaceDocument",
+  "description": "One person's founding place in one city, at foundingHostOwnerPlaces/{sha256(JSON.stringify([ownerUserId, marketId]))}. Owner decision 16 Nov 2026: a person gets at most one founding place in each city, however many organizer pages they own there. Created once, in the same transaction that creates the foundingHostPlaces record it names and increments foundingHostOffers/{marketId}.takenCount; its existence turns away that owner's other organizer pages in the city, which keep the standard trial. Never changed or deleted: an ownership transfer leaves it, and the place, where they are. Direct client access is denied.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "foundingHostOwnerPlaces",
+  "x-firestore-path": "foundingHostOwnerPlaces/{ownerPlaceId}",
+  "x-owner": "the founding place grant (functions/src/foundingHosts)",
+  "required": ["schemaVersion", "ownerUserId", "marketId", "organizerId", "placeNumber", "grantedAtMillis"],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "trigger-owned"},
+    "ownerUserId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "description": "The organizer's canonical owner (organizers.ownerUserId, falling back to the legacy hostUserId) when the place was taken.", "x-catch-ownership": "trigger-owned"},
+    "marketId": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,49}$", "x-catch-ownership": "trigger-owned"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "description": "The organizer page that holds the place; foundingHostPlaces/{organizerId} records it.", "x-catch-ownership": "trigger-owned"},
+    "placeNumber": {"type": "integer", "minimum": 1, "maximum": 1000, "x-catch-ownership": "trigger-owned"},
+    "grantedAtMillis": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "trigger-owned"}
+  }
+}
