@@ -32799,12 +32799,6 @@ abstract class AppLocalizations {
   /// **'Ready to join'**
   String get eventChatsReady;
 
-  /// Consumer event conversation directory copy.
-  ///
-  /// In en, this message translates to:
-  /// **'Check more events'**
-  String get eventChatsLoadMore;
-
   /// Participant-controlled event profile sharing.
   ///
   /// In en, this message translates to:

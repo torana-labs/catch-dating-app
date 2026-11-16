@@ -27447,13 +27447,6 @@
     "x-owner": "product",
     "x-surface": "chats.presentation.event_chat"
   },
-  "eventChatsLoadMore": "Check more events",
-  "@eventChatsLoadMore": {
-    "description": "Consumer event conversation directory copy.",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "chats.presentation.event_chat"
-  },
   "eventProfileTitle": "Event profile",
   "@eventProfileTitle": {
     "description": "Participant-controlled event profile sharing.",
