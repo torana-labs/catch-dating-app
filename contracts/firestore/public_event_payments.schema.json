@@ -81,6 +81,18 @@
       "minimum": 100,
       "maximum": 100000000
     },
+    "placeCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Places this one booking buys. amountPaise is the whole order (unitAmountPaise times placeCount); refunds, provider fees and Catch billing follow amountPaise. Missing (single-place checkouts before multi-place booking) means 1."
+    },
+    "unitAmountPaise": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 100000000,
+      "description": "Price of one place at checkout. Missing means amountPaise."
+    },
     "currency": {
       "const": "INR"
     },

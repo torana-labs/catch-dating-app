@@ -16,6 +16,12 @@
         },
         "eventId": {
           "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "placeCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4,
+          "description": "Places to quote for one booking, at most 4. Absent means 1."
         }
       }
     },
@@ -81,6 +87,18 @@
               "type": "integer",
               "minimum": 100,
               "maximum": 100000000
+            },
+            "unitAmountPaise": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 100000000,
+              "description": "Present only with placeCount: the price of one place."
+            },
+            "placeCount": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 4,
+              "description": "Present only for a multi-place booking: the places this quote covers. amountPaise is unitAmountPaise times placeCount. Absent means one place."
             },
             "currency": {
               "const": "INR"

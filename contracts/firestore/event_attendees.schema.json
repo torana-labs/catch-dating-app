@@ -91,7 +91,7 @@
       "type": "integer",
       "minimum": 1,
       "maximum": 20,
-      "description": "Places this guest-list row holds at the door: the guest and anyone arriving on the same booking. Written only by Host roster import and walk-ins; Catch bookings hold one place. Missing values read as 1."
+      "description": "Places this guest-list row holds at the door: the guest and anyone arriving on the same booking. Written by Host roster import, walk-ins and multi-place public checkout (the paid booking's placeCount, one pass for the party); other Catch bookings hold one place. Missing values read as 1."
     },
     "revenueAmountMinor": {
       "type": ["integer", "null"],
