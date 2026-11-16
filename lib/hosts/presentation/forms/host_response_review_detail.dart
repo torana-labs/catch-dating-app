@@ -73,4 +73,16 @@ class HostResponseReviewDetail {
       application?.applicantDisplayName ??
       response?.response.identity.primaryLabel;
   String? get contactId => application?.contactId ?? response?.contactId;
+
+  /// The applicant's community membership, while the host can act on it.
+  HostCommunityMembership? get communityMembership =>
+      withdrawn || revoked ? null : application?.communityMembership;
+
+  /// A grant cites this application, so it must be approved and readable.
+  bool get canGrantMembership =>
+      communityMembership?.isMember == false &&
+      application?.reviewStatus == HostApplicationReviewStatus.approved &&
+      application?.dataAccessState == 'submittedFormResponse';
+
+  bool get canRevokeMembership => communityMembership?.isMember ?? false;
 }

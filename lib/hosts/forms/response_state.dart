@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
+import 'package:catch_dating_app/contexts/forms/domain/host_community_membership.dart';
 import 'package:flutter/foundation.dart';
 
 /// Where one answer is: reading it, or showing it.
@@ -35,6 +36,24 @@ class HostResponseAnswer {
   final List<HostFormAssetDownload> files;
 }
 
+/// The applicant's community membership, as one answer shows it.
+@immutable
+class HostResponseMembership {
+  const HostResponseMembership({
+    required this.state,
+    this.action,
+    this.needsApproval = false,
+  });
+
+  final HostCommunityMembershipState state;
+
+  /// The decision the host can take now; null with none.
+  final HostCommunityMembershipAction? action;
+
+  /// Not a member, and the application has to be approved first.
+  final bool needsApproval;
+}
+
 /// Everything one answer shows, as plain values.
 @immutable
 class HostResponseState {
@@ -46,6 +65,7 @@ class HostResponseState {
     this.facts = const <String>[],
     this.answers = const <HostResponseAnswer>[],
     this.payment,
+    this.membership,
     this.showNote = false,
     this.primary,
     this.canDecline = false,
@@ -70,6 +90,10 @@ class HostResponseState {
   /// The payment taken with the answer, as one line; null with none.
   final String? payment;
 
+  /// The applicant's community membership; null when the application
+  /// cannot carry one.
+  final HostResponseMembership? membership;
+
   /// The team note shows (an application has one).
   final bool showNote;
   final HostResponsePrimary? primary;
@@ -80,9 +104,9 @@ class HostResponseState {
   /// The person left a phone or email to message.
   final bool canMessage;
 
-  /// A review or conversion is running.
+  /// A review, conversion or membership decision is running.
   final bool busy;
 
-  /// The last review or conversion failed.
+  /// The last review, conversion or membership decision failed.
   final bool failed;
 }

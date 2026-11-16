@@ -38,9 +38,25 @@
       ],
       "minLength": 1,
       "maxLength": 180
+    },
+    "communityMembership": {
+      "description": "The applicant's community membership, which a manager decision must cite by uid and revision; null when the application cannot carry one.",
+      "anyOf": [
+        {"type": "null"},
+        {"$ref": "#/definitions/communityMembership"}
+      ]
     }
   },
   "definitions": {
+    "communityMembership": {
+      "type": "object", "additionalProperties": false,
+      "required": ["uid", "state", "revision"],
+      "properties": {
+        "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "state": {"type": "string", "enum": ["none", "active", "revoked"]},
+        "revision": {"type": "integer", "minimum": 0, "maximum": 9007199254740990}
+      }
+    },
     "outreach": {
       "type": "object", "additionalProperties": false,
       "required": ["phoneE164", "email", "instagramUrl", "linkedinUrl"],

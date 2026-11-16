@@ -150,4 +150,20 @@ class HostApplicationsController {
     reviewStatus: reviewStatus,
     reviewNote: reviewNote,
   );
+
+  Future<HostCommunityMembershipDecision> decideCommunityMembership({
+    required String organizerId,
+    required HostApplicationDetail application,
+    required HostCommunityMembership membership,
+    required HostCommunityMembershipAction action,
+    required String reason,
+    required String requestId,
+  }) => _repository.decideCommunityMembership(
+    organizerId: organizerId,
+    application: application,
+    membership: membership,
+    action: action,
+    reason: reason,
+    requestId: requestId,
+  );
 }

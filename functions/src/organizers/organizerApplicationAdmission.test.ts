@@ -78,6 +78,19 @@ async () => {
   assert.equal(result.sourceResponseId, "response-1");
 });
 
+test("detail shows where the applicant stands as a community member",
+  async () => {
+    const h = harness();
+    const result = await getOrganizerApplicationDetailHandler(h.request({}),
+      h.deps);
+    assert.deepEqual(result.communityMembership,
+      {uid: "user-1", state: "none", revision: 0});
+    h.store.docs[appPath].linkedUid = null;
+    const unlinked = await getOrganizerApplicationDetailHandler(
+      h.request({}), h.deps);
+    assert.equal(unlinked.communityMembership, null);
+  });
+
 test("approval atomically adds People, provenance and summary; retry is " +
   "idempotent",
 async () => {
