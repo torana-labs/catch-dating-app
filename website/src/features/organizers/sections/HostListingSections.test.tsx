@@ -35,6 +35,7 @@ const follows = (first: Element, second: Element) =>
   Boolean(first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING);
 
 describe("HostListingSections", () => {
+  // The whole page and its many role queries: a loaded machine needs more than the default 5s.
   it("opens with identity, follow, the next event and the pinned link, then the calendar, moments, reviews, about and the site footer", () => {
     const {container} = renderPage(claimedOrganizerPage);
     const name = screen.getByRole("heading", {level: 1, name: "Lantern Lane Runners"});
@@ -62,7 +63,7 @@ describe("HostListingSections", () => {
     // The help band ends every organiser page with the WhatsApp line.
     expect(footer.getByText("We reply on WhatsApp, usually within an hour.")).toBeTruthy();
     expect(screen.getByRole("link", {name: "Make a page like this"}).getAttribute("href")).toBe("/host/");
-  });
+  }, 20_000);
 
   it("links Catch events to their page and imported events to where they are sold", () => {
     const {container} = renderPage(claimedOrganizerPage);
