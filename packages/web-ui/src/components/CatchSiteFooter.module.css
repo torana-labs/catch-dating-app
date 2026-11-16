@@ -1,12 +1,31 @@
 /*
- * Website v2 site footer (CAT-260): four link columns over a hairline, then
- * the wordmark and tagline. Two columns below 840px, the expanded window size.
+ * Website v2 site footer (CAT-260): an optional header band over a hairline,
+ * four link columns (two to five by prop) and optional footnotes over a
+ * hairline, then the wordmark and tagline. Two columns below 840px, the
+ * expanded window size.
  */
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s4);
+  margin-bottom: var(--catch-space-s10);
+  padding-bottom: var(--catch-space-s9);
+  border-bottom: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-ink) 14%, transparent);
+}
+
+.header > :is(h2, h3, p) { margin: 0; }
+
 .groups {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--catch-space-s6);
 }
+
+.groups[data-columns="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.groups[data-columns="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.groups[data-columns="5"] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 
 .group {
   display: flex;
@@ -38,6 +57,16 @@
   outline-offset: var(--catch-space-micro2);
 }
 
+/* Footnotes carry their own numbers, so the list draws none. */
+.footnotes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s1);
+  margin: var(--catch-space-s6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
 /* The tagline sits on the wordmark's baseline; a note follows under it. */
 .base {
   display: flex;
@@ -48,6 +77,13 @@
   margin-top: var(--catch-space-s12);
   padding-top: var(--catch-space-s7);
   border-top: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-ink) 14%, transparent);
+}
+
+/* With no header, columns or footnotes before it, the base opens the footer. */
+.base:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
 }
 
 .lines {
@@ -61,7 +97,8 @@
 }
 
 @container catch-page (width < 840px) {
-  .groups {
+  .groups,
+  .groups[data-columns] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

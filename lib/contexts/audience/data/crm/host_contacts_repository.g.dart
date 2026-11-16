@@ -57,8 +57,99 @@ final class HostContactsRepositoryProvider
 String _$hostContactsRepositoryHash() =>
     r'8e2caba6ee48733cd6b923371b620dadc5a9f56c';
 
+/// The organizer's contact directory document, as a listener.
+
+@ProviderFor(hostContactDirectory)
+final hostContactDirectoryProvider = HostContactDirectoryFamily._();
+
+/// The organizer's contact directory document, as a listener.
+
+final class HostContactDirectoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostContactDirectory>,
+          HostContactDirectory,
+          Stream<HostContactDirectory>
+        >
+    with
+        $FutureModifier<HostContactDirectory>,
+        $StreamProvider<HostContactDirectory> {
+  /// The organizer's contact directory document, as a listener.
+  HostContactDirectoryProvider._({
+    required HostContactDirectoryFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostContactDirectoryProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostContactDirectoryHash();
+
+  @override
+  String toString() {
+    return r'hostContactDirectoryProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<HostContactDirectory> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<HostContactDirectory> create(Ref ref) {
+    final argument = this.argument as String;
+    return hostContactDirectory(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostContactDirectoryProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostContactDirectoryHash() =>
+    r'6a73de7a831d7ff8e7be21d9a4c6802b942169cf';
+
+/// The organizer's contact directory document, as a listener.
+
+final class HostContactDirectoryFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<HostContactDirectory>, String> {
+  HostContactDirectoryFamily._()
+    : super(
+        retry: null,
+        name: r'hostContactDirectoryProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The organizer's contact directory document, as a listener.
+
+  HostContactDirectoryProvider call(String organizerId) =>
+      HostContactDirectoryProvider._(argument: organizerId, from: this);
+
+  @override
+  String toString() => r'hostContactDirectoryProvider';
+}
+
+/// Everyone's summary, kept current by the directory listener.
+
 @ProviderFor(hostCrmSummary)
 final hostCrmSummaryProvider = HostCrmSummaryFamily._();
+
+/// Everyone's summary, kept current by the directory listener.
 
 final class HostCrmSummaryProvider
     extends
@@ -68,6 +159,7 @@ final class HostCrmSummaryProvider
           FutureOr<HostCrmSummary>
         >
     with $FutureModifier<HostCrmSummary>, $FutureProvider<HostCrmSummary> {
+  /// Everyone's summary, kept current by the directory listener.
   HostCrmSummaryProvider._({
     required HostCrmSummaryFamily super.from,
     required String super.argument,
@@ -112,7 +204,9 @@ final class HostCrmSummaryProvider
   }
 }
 
-String _$hostCrmSummaryHash() => r'4a697b9d2801950f7d53f093cfa3473f97a52101';
+String _$hostCrmSummaryHash() => r'c816b090d512c742234b7623a62eedec194291e5';
+
+/// Everyone's summary, kept current by the directory listener.
 
 final class HostCrmSummaryFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<HostCrmSummary>, String> {
@@ -124,6 +218,8 @@ final class HostCrmSummaryFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// Everyone's summary, kept current by the directory listener.
 
   HostCrmSummaryProvider call(String organizerId) =>
       HostCrmSummaryProvider._(argument: organizerId, from: this);

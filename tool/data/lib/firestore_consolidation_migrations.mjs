@@ -95,6 +95,7 @@ function functionsGuestEvents() {
     guestEventModules ??= {
       entry: load("./lib/guestEvents/eventGuestEntry.js"),
       status: load("./lib/guestEvents/guestEventStatus.js"),
+      card: load("./lib/guestEvents/guestEventCard.js"),
     };
   } catch (error) {
     throw new Error(
@@ -149,6 +150,25 @@ function guestEventStatusStep(source, eventField, personField, accept = () => tr
       const {guestEventStatus} = functionsGuestEvents().status;
       return db.runTransaction((tx) => guestEventStatus({db, tx,
         eventId: data[eventField], uid: data[personField], nowMillis: guestEventNowMillis}));
+    },
+  };
+}
+
+/**
+ * guestEventStatusStep for rows that do not exist yet: an existing row is
+ * skipped (the fill step adds its new fields) instead of compared, so a run
+ * after the triggers wrote rows never reports conflicts.
+ */
+function missingGuestEventStatusStep(source, eventField, personField) {
+  const step = guestEventStatusStep(source, eventField, personField);
+  return {
+    ...step,
+    skipReason: `${step.skipReason}, or the row exists`,
+    targetId: async (id, data, db) => {
+      const target = await step.targetId(id, data, db);
+      if (target === null) return null;
+      const row = await db.collection("guestEventStatuses").doc(target).get();
+      return row.exists ? null : target;
     },
   };
 }
@@ -476,6 +496,53 @@ export const MIGRATIONS = [
       guestEventStatusStep("organizerApplications", "targetId", "linkedUid",
         (data) => data.targetKind === "event"),
       guestEventStatusStep("organizerEventOfferRecipients", "eventId", "recipientUid"),
+    ],
+  },
+  {
+    name: "guest-event-cards",
+    description:
+      "Guest booking lists read event cards instead of joining events " +
+      "(#1340). Every Catch booking without a guestEventStatuses row " +
+      "(waitlisted and cancelled bookings had none) gets one; older rows " +
+      "get participationStatus and eventCard; every saved-event edge gets " +
+      "eventCard. All from current records, as the guest event triggers now " +
+      "write them. Only absent or null fields are added and no document is " +
+      "replaced or removed. Build Functions first.",
+    steps: [
+      missingGuestEventStatusStep("eventParticipations", "eventId", "uid"),
+      {
+        kind: "fill",
+        collection: "guestEventStatuses",
+        fill: async (data, id, db) => {
+          const wanted = ["participationStatus", "eventCard"]
+            .filter((field) => data[field] === undefined || data[field] === null);
+          if (wanted.length === 0 || !validId(data.eventId) || !validId(data.uid)) {
+            return null;
+          }
+          const {guestEventStatus} = functionsGuestEvents().status;
+          const row = await db.runTransaction((tx) => guestEventStatus({db, tx,
+            eventId: data.eventId, uid: data.uid, nowMillis: guestEventNowMillis}));
+          const fields = Object.fromEntries(wanted
+            .filter((field) => row && row[field] !== null && row[field] !== undefined)
+            .map((field) => [field, row[field]]));
+          return Object.keys(fields).length > 0 ? fields : null;
+        },
+      },
+      {
+        kind: "fill",
+        collection: "savedEvents",
+        fill: async (data, id, db) => {
+          if ((data.eventCard !== undefined && data.eventCard !== null) ||
+              !validId(data.eventId)) {
+            return null;
+          }
+          const event = await db.collection("events").doc(data.eventId).get();
+          if (!event.exists) return null;
+          const card = functionsGuestEvents().card.guestEventCard(data.eventId,
+            event.data());
+          return card ? {eventCard: card} : null;
+        },
+      },
     ],
   },
 ];

@@ -528,7 +528,8 @@ enter previews.
 | `onEventChatDirectoryUserWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds a person's chat directory rows when their profile claim or deletion changes |
 | `onEventChatSignalMembershipWritten` | `src/chatSignals/eventChatSignals.ts` | Not yet described. |
 | `onEventChatSignalRoomWritten` | `src/chatSignals/eventChatSignals.ts` | Not yet described. |
-| `onEventGuestEntryEventWritten` | `src/guestEvents/triggers.ts` | Rebuilds the event's `eventGuestEntries` document and its guests' `guestEventStatuses` rows when anything besides booking counters changes |
+| `onEventGuestEntryEventWritten` | `src/guestEvents/triggers.ts` | Rebuilds the event's `eventGuestEntries` document, its guests' `guestEventStatuses` rows and its `savedEvents` cards when anything besides booking counters changes |
+| `onSavedEventCardCreated` | `src/guestEvents/triggers.ts` | Writes a new saved-event edge's list card from its event |
 | `onEventGuestEntryFormWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest entry of the event an application form targets when the form is published, paused or retargeted |
 | `onEventGuestEntryOrganizerWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest entries of an organizer's published events when its visibility or public page changes |
 | `onFoundingHostOrganizerWritten` | `src/foundingHosts/foundingHostTriggers.ts` | When an organizer gains an owner, takes the next founding place in its city (capped in one transaction) and writes the 90-day trial into its commercial terms override. |

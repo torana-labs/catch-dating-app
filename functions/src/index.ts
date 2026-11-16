@@ -1092,8 +1092,8 @@ export {onGuestEventStatusParticipationWritten,
   onGuestEventStatusAttendeeWritten, onGuestEventStatusPaymentWritten,
   onGuestEventStatusApplicationWritten,
   onGuestEventStatusOfferRecipientWritten, onEventGuestEntryEventWritten,
-  onEventGuestEntryOrganizerWritten, onEventGuestEntryFormWritten} from
-  "./guestEvents/triggers";
+  onEventGuestEntryOrganizerWritten, onEventGuestEntryFormWritten,
+  onSavedEventCardCreated} from "./guestEvents/triggers";
 export {onHostDirectoryOrganizerCreated} from
   "./hostReadModels/directoryActivation";
 export {onHostProviderConnectionViewConnectionChanged,

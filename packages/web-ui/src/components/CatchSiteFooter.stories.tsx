@@ -1,7 +1,10 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {PageFrame, ReferenceComparison} from "../stories/referenceScreens";
+import {CatchButton} from "./CatchButton";
 import {CatchGap} from "./CatchGap";
 import {CatchSiteFooter, type CatchSiteFooterProps} from "./CatchSiteFooter";
+import {CatchStack} from "./CatchStack";
+import {CatchText} from "./CatchText";
 
 const meta = {
   title: "Web UI/CatchSiteFooter",
@@ -57,5 +60,55 @@ export const BoardReference: Story = {
       phone={{capture: "home/mumbai_live/390", height: 560, y: 8485}}
       render={() => <CatchSiteFooter {...footer} />}
     />
+  ),
+};
+
+const sampleGroups = Array.from({length: 5}, (_, group) => ({
+  title: `Sample group ${group + 1}`,
+  links: Array.from({length: 4}, (_, link) => ({href: `#group-${group + 1}-link-${link + 1}`, label: `Sample link ${link + 1}`})),
+}));
+
+const sample: CatchSiteFooterProps = {
+  brandHref: "#",
+  brandLabel: "Catch",
+  groups: sampleGroups.slice(0, 4),
+  navLabel: "Footer",
+  tagline: "A sample tagline across from the wordmark.",
+};
+
+const header = (
+  <>
+    <CatchText as="h2" variant="title-bar">A sample help line.</CatchText>
+    <CatchStack direction="row" gap={8}>
+      <CatchButton href="#first-action" label="First action" size="sm" variant="light" />
+      <CatchButton href="#second-action" label="Second action" size="sm" variant="ghost" />
+    </CatchStack>
+  </>
+);
+
+const footnotes = ["1. A sample footnote that names its source.", "2. A second sample footnote."];
+
+/**
+ * Every state with neutral copy: the default four columns; five columns with
+ * the header band and footnotes at 1280 and 390 (two columns); and a footer
+ * with no groups, as a landing page's, which leaves out the navigation.
+ */
+export const Contract: Story = {
+  render: () => (
+    // Each frame is a section, so its footer is not a second content info landmark.
+    <CatchGap size="section">
+      <section aria-label="Default four columns"><PageFrame width={1280}><CatchSiteFooter {...sample} /></PageFrame></section>
+      <section aria-label="Five columns with a header and footnotes">
+        <PageFrame width={1280}>
+          <CatchSiteFooter {...sample} columns={5} footnotes={footnotes} groups={sampleGroups} header={header} navLabel="Footer, five columns" />
+        </PageFrame>
+      </section>
+      <section aria-label="390px page with a header and footnotes">
+        <PageFrame width={390}>
+          <CatchSiteFooter {...sample} columns={5} footnotes={footnotes} groups={sampleGroups} header={header} navLabel="Footer, phone" />
+        </PageFrame>
+      </section>
+      <section aria-label="No groups"><PageFrame width={1280}><CatchSiteFooter {...sample} groups={[]} /></PageFrame></section>
+    </CatchGap>
   ),
 };

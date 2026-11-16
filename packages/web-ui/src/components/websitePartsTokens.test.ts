@@ -19,6 +19,8 @@ const parts = [
   "CatchVideoEmbed", "CatchNoteCard",
   // The playbook section parts.
   "CatchBandHeader", "CatchFeatureTile",
+  // The site chrome parts: the offer strip's banner, the breadcrumb and the nav menu.
+  "CatchBanner", "CatchBreadcrumbRow", "CatchNavMenu",
 ];
 const sheets: Record<string, string> = Object.fromEntries([
   ...parts.map((name) => [name, strip(read(`./${name}.module.css`))]),
@@ -29,7 +31,8 @@ const known = new Set([
   ...declared(tokens),
   ...Object.values(sheets).flatMap((css) => [...declared(css)]),
   // Set inline: CatchRatingSummary for each bar, CatchQrCode for its module count,
-  // CatchDeviceFrame for the geometry it computes from each kind's spec.
+  // CatchDeviceFrame for the geometry it computes from each kind's spec,
+  // CatchBanner for each status band's colour.
   "--catch-rating-share",
   "--catch-qr-modules",
   "--catch-device-aspect",
@@ -38,6 +41,7 @@ const known = new Set([
   "--catch-device-screen-radius",
   "--catch-device-camera-size",
   "--catch-device-camera-top",
+  "--catch-banner-status",
 ]);
 
 // CatchStoreButton draws as a D20 button, so its heights are the large and

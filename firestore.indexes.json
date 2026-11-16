@@ -7307,6 +7307,42 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "guestEventStatuses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "participationStatus",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "eventCard.startTimeMillis",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "guestEventStatuses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "participationStatus",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "eventCard.startTimeMillis",
+          "order": "DESCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

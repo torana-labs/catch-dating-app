@@ -19,6 +19,9 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+export 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_summary_reads.dart'
+    show HostContactDirectory, HostContactWindow;
+
 part 'host_contacts_repository.g.dart';
 
 // firestore-index: hostContactSummaries (organizerId:ASCENDING, lastSeenAtMillis:DESCENDING, __name__:DESCENDING)
@@ -47,8 +50,18 @@ class HostContactsRepository {
 
   final FirebaseFunctions _functions;
 
-  Future<HostCrmSummary> getSummary(String organizerId) =>
-      summaries.summary(organizerId);
+  /// The organizer's directory document (everyone's summary and segment
+  /// counts) while it is listened to.
+  Stream<HostContactDirectory> watchDirectory(String organizerId) =>
+      summaries.watchDirectory(organizerId);
+
+  /// The first [limit] contacts of [query] while it is listened to. Every
+  /// query the People list makes is one the directory serves.
+  Stream<HostContactWindow> watchContacts(
+    String organizerId, {
+    required HostAudienceQuery query,
+    required int limit,
+  }) => summaries.watchWindow(organizerId, query: query, limit: limit);
 
   /// The event's roster labels as the server last evaluated them, with the
   /// member label shown, updated while it is listened to.
@@ -408,9 +421,17 @@ HostContactsRepository hostContactsRepository(Ref ref) {
   );
 }
 
+/// The organizer's contact directory document, as a listener.
 @riverpod
-Future<HostCrmSummary> hostCrmSummary(Ref ref, String organizerId) =>
-    ref.watch(hostContactsRepositoryProvider).getSummary(organizerId);
+Stream<HostContactDirectory> hostContactDirectory(
+  Ref ref,
+  String organizerId,
+) => ref.watch(hostContactsRepositoryProvider).watchDirectory(organizerId);
+
+/// Everyone's summary, kept current by the directory listener.
+@riverpod
+Future<HostCrmSummary> hostCrmSummary(Ref ref, String organizerId) async =>
+    (await ref.watch(hostContactDirectoryProvider(organizerId).future)).summary;
 
 /// The door's roster label read owner. It is a Firestore listener: it
 /// declares no cache tags or lifetime, and writes never invalidate it; the
