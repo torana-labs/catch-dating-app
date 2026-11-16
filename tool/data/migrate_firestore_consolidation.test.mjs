@@ -281,6 +281,29 @@ test("guest-event-read-models creates each entry and row once from its first rec
   ]);
 });
 
+test("guest-event-cards only fills what is missing and never replaces", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "guest-event-cards");
+  const db = fakeDb({
+    "eventParticipations/e1_a": {eventId: "e1", uid: "a", status: "waitlisted"},
+    "guestEventStatuses/e2_b": {eventId: "e2", uid: "b",
+      participationStatus: "signedUp", eventCard: {eventId: "e2"}},
+    "savedEvents/c_e3": {uid: "c", eventId: "e3", eventCard: {eventId: "e3"}},
+    "savedEvents/c_e4": {uid: "c", eventId: "e4"},
+  });
+  const [create, statusFill, savedFill] = migration.steps;
+  // A waitlisted booking now creates its row, from the booking itself.
+  assert.equal(await create.targetId("e1_a",
+    db.data["eventParticipations/e1_a"], db), "e1_a");
+  // Complete rows and edges, and edges whose event is gone, are left alone
+  // without reading anything else.
+  assert.equal(await statusFill.fill(db.data["guestEventStatuses/e2_b"],
+    "e2_b", db), null);
+  assert.equal(await savedFill.fill(db.data["savedEvents/c_e3"], "c_e3", db),
+    null);
+  assert.equal(await savedFill.fill(db.data["savedEvents/c_e4"], "c_e4", db),
+    null);
+});
+
 test("unknown migration names are rejected", () => {
   assert.throws(() => migrationsByName(["nope"]), /Unknown migration "nope"/);
   assert.equal(migrationsByName(["all"]).length, MIGRATIONS.length);
