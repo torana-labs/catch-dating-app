@@ -240,7 +240,11 @@ function directoryHash(dir) {
 // __dirname loads an Operations workflow, which the file must name and whose
 // whole tree is in the closure (see workflowsNamed), so it stays bounded.
 const computedLoad = /\b(?:require|import)\(\s*(?!["'])/u;
-const declaredSecret = /\bdefineSecret\(\s*["'`]([A-Za-z0-9_-]+)["'`]/gu;
+// tsc compiles an imported call to `(0, params_1.defineSecret)("NAME")`, so
+// the call may close a parenthesis first. A secret named by anything but a
+// literal would leave the hash, so the build refuses it (computedSecret).
+const declaredSecret = /\bdefineSecret\)?\(\s*["'`]([A-Za-z0-9_-]+)["'`]/gu;
+const computedSecret = /\bdefineSecret\)?\((?!\s*["'`][A-Za-z0-9_-]+["'`])/u;
 
 /**
  * Each Function's own hash: what that one Function loads and reads, so a
@@ -341,6 +345,10 @@ async function buildFunctionCodebases({
     const texts = files.map((file) => fs.readFileSync(path.join(functionsDir, file), "utf8"));
     const named = new Set();
     files.forEach((file, index) => {
+      if (computedSecret.test(texts[index])) {
+        throw new Error(`${file} calls defineSecret without a literal name; per-Function hashes could not include ` +
+          "that secret's version. Name the secret with a string literal.");
+      }
       if (texts[index].includes("__dirname")) {
         for (const workflow of workflowsNamed(file, texts[index], workflows)) named.add(workflow);
       }
