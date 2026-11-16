@@ -15,6 +15,7 @@
     "nightsOut": 1,
     "other": 0
   },
+  "womenLedPlanCount": 1,
   "monthWindowEnd": "2026-06-13T00:00:00.000Z",
   "upcomingEvents30d": 8,
   "hasUpcomingMonth": true,
@@ -134,7 +135,8 @@
       },
       "discoveryFormats": [
         "runClubs"
-      ]
+      ],
+      "womenLed": true
     },
     {
       "source": "catch",
@@ -157,7 +159,8 @@
       },
       "discoveryFormats": [
         "quizNights"
-      ]
+      ],
+      "womenLed": false
     },
     {
       "source": "catch",
@@ -180,7 +183,8 @@
       },
       "discoveryFormats": [
         "supper"
-      ]
+      ],
+      "womenLed": false
     },
     {
       "source": "catch",
@@ -203,7 +207,8 @@
       },
       "discoveryFormats": [
         "nightlife"
-      ]
+      ],
+      "womenLed": false
     }
   ],
   "organizers": [
@@ -238,7 +243,8 @@
         "supper",
         "quizNights",
         "nightlife"
-      ]
+      ],
+      "womenLed": true
     }
   ],
   "builtAt": {

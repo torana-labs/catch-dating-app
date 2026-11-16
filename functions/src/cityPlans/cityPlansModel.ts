@@ -34,10 +34,20 @@ export type CityOrganizer = CityPlans["organizers"][number];
 export type CityFormat = CityPlan["format"];
 export type CityFormatPages = CityPlans["formatPages"];
 
-/** The fields of an organizer page a city reads. */
+/**
+ * The fields of an organizer page a city reads. womenLed is the resolved
+ * women-led label: pages built before it shipped omit it, and so may their
+ * events; absence reads as false.
+ */
 export type CityOrganizerPage = Pick<OrganizerPublicPageDocument,
-  "organizerId" | "path" | "identity" | "upcomingEvents" | "followerCount" |
-  "claim">;
+  "organizerId" | "path" | "identity" | "followerCount" | "claim"> & {
+    upcomingEvents: readonly (PageEvent & WomenLed)[];
+    womenLed?: boolean;
+  };
+
+interface WomenLed {
+  womenLed?: boolean;
+}
 
 export interface CityMarket {
   slug: string;
@@ -125,6 +135,7 @@ export function buildCityPlans(sources: CityPlanSources): CityPlans {
   const formatCounts = Object.fromEntries(cityFormats.map((format) =>
     [format, 0])) as CityPlans["formatCounts"];
   for (const plan of plans) formatCounts[plan.format]++;
+  const womenLedPlanCount = plans.filter((plan) => plan.womenLed).length;
 
   const month = monthCounts(pages, pageFormats, joining, now,
     monthWindowEnd, launched);
@@ -145,6 +156,7 @@ export function buildCityPlans(sources: CityPlanSources): CityPlans {
     windowEnd: new Date(windowEnd).toISOString(),
     planCount: plans.length,
     formatCounts,
+    womenLedPlanCount,
     monthWindowEnd: new Date(monthWindowEnd).toISOString(),
     upcomingEvents30d: month.eventCount,
     hasUpcomingMonth: month.eventCount > 0,
@@ -258,7 +270,7 @@ function listedFormats(page: CityOrganizerPage): string[] {
   return [page.identity.category, ...page.identity.formats];
 }
 
-function cityPlan(item: PageEvent, page: CityOrganizerPage,
+function cityPlan(item: PageEvent & WomenLed, page: CityOrganizerPage,
   organizerFormats: readonly DiscoveryFormat[]): CityPlan {
   const {event} = item;
   return {
@@ -282,6 +294,7 @@ function cityPlan(item: PageEvent, page: CityOrganizerPage,
     },
     discoveryFormats: discoveryFormatsForEvent(event.activityKind,
       organizerFormats),
+    womenLed: item.womenLed === true,
   };
 }
 
@@ -306,6 +319,7 @@ function pageOrganizer(
     nextPlan: next ? {eventId: next.eventId, path: next.path,
       title: next.title, startTime: next.startTime, date: next.date} : null,
     discoveryFormats: formats,
+    womenLed: page.womenLed === true,
   };
 }
 
@@ -323,6 +337,9 @@ function joiningOrganizer(listing: HostListing): CityOrganizer {
     nextPlan: null,
     discoveryFormats: discoveryFormatsForText(
       [listing.category, ...listing.formats]),
+    // A city that has not launched lists organisers without their page, so
+    // their women-led label is not shown until it launches.
+    womenLed: false,
   };
 }
 

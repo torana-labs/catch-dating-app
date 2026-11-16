@@ -154,6 +154,26 @@ test("format pages count organisers, plans and free plans in 30 days", () => {
     "night")?.discoveryFormats, ["nightlife", "studios"]);
 });
 
+test("women-led plans and organisers carry their label; absence is false",
+  () => {
+    const led = {...page("led", [{...event("led-1", day), womenLed: true},
+      {...event("led-2", 2 * day), womenLed: false},
+      event("led-3", 3 * day),
+      {...event("led-late", 20 * day), womenLed: true}]), womenLed: true};
+    const unlabelled = page("old", [event("old-1", day)]);
+    const city = buildCityPlans({market: mumbai, now, joiningOrganizers: [],
+      organizerPages: [led, unlabelled]});
+    assert.deepEqual(city.plans.map((plan) => [plan.eventId, plan.womenLed]),
+      [["led-1", true], ["old-1", false], ["led-2", false],
+        ["led-3", false]]);
+    // Counted like planCount: the plan at 20 days is outside the 14 days.
+    assert.equal(city.womenLedPlanCount, 1);
+    assert.deepEqual(city.organizers.map((org) =>
+      [org.organizerId, org.womenLed]), [["led", true], ["old", false]]);
+    assert.ok(validateCityPlansDocument(stored(city)),
+      JSON.stringify(validateCityPlansDocument.errors));
+  });
+
 test("format page counts are not capped by the listed plans and organisers",
   () => {
     const pages = Array.from({length: 30}, (_, index) => page(`org-${index}`,
@@ -313,7 +333,8 @@ test("a city that has not launched lists who is joining, with no pages", () => {
     name: "Koregaon Park Runners", path: null, category: "Run club",
     logo: {mode: "monogram", text: "KP", status: "not_verified"},
     formats: ["run"], followerCount: 3, claimState: "unclaimed",
-    upcomingPlanCount: 0, nextPlan: null, discoveryFormats: ["runClubs"]}]);
+    upcomingPlanCount: 0, nextPlan: null, discoveryFormats: ["runClubs"],
+    womenLed: false}]);
   // Joining organisers count toward their format; no page is indexed and
   // the header has nothing to show until the city launches.
   assert.equal(city.formatPages.runClubs.organizerCount, 1);

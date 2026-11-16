@@ -75,6 +75,10 @@ async () => {
     assert.deepEqual(stored.get("organizers").map(
       (item: Row) => item.organizerId), [`org-a-${h.run}`, `org-b-${h.run}`]);
     assert.equal(stored.get("upcomingEvents30d"), 4);
+    // Pages without the women-led label read as not women-led.
+    assert.equal(stored.get("womenLedPlanCount"), 0);
+    assert.deepEqual(stored.get("organizers").map(
+      (item: Row) => item.womenLed), [false, false]);
     assert.equal(stored.get("hasUpcomingMonth"), true);
     assert.deepEqual(stored.get("formatPages.runClubs"), {slug: "run-clubs",
       organizerCount: 2, upcomingEventCount: 4, freeEventCount: 4,

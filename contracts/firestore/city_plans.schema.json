@@ -21,6 +21,7 @@
     "windowEnd",
     "planCount",
     "formatCounts",
+    "womenLedPlanCount",
     "monthWindowEnd",
     "upcomingEvents30d",
     "hasUpcomingMonth",
@@ -84,6 +85,11 @@
         "nightsOut": {"type": "integer", "minimum": 0},
         "other": {"type": "integer", "minimum": 0}
       }
+    },
+    "womenLedPlanCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Plans in the 14-day window that are women-led, counted like planCount and not capped by plans."
     },
     "monthWindowEnd": {
       "type": "string",
@@ -269,6 +275,10 @@
           "$ref": "#/definitions/discoveryFormats",
           "description": "The city-by-format pages the plan counts toward."
         },
+        "womenLed": {
+          "type": "boolean",
+          "description": "The plan's resolved women-led label, copied from its organizer page event. A page event without one reads as false."
+        },
         "organizer": {
           "type": "object",
           "additionalProperties": false,
@@ -351,6 +361,10 @@
         "discoveryFormats": {
           "$ref": "#/definitions/discoveryFormats",
           "description": "The city-by-format pages the organiser counts toward, from its upcoming plans and its listed category and formats."
+        },
+        "womenLed": {
+          "type": "boolean",
+          "description": "The organiser's resolved women-led default, copied from its organizer page. A page without one, and an organiser joining a city that has not launched, reads as false."
         },
         "nextPlan": {
           "anyOf": [
