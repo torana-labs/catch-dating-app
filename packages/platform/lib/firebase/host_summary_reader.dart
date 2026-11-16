@@ -45,6 +45,13 @@ class HostSummaryPage {
   final String? nextCursor;
 }
 
+/// The first rows of one live directory query, and whether more follow.
+class HostSummaryWindow {
+  const HostSummaryWindow(this.documents, {required this.hasMore});
+  final List<Map<String, dynamic>> documents;
+  final bool hasMore;
+}
+
 /// Reads the Host directory read models. Rules reauthorize every server
 /// read; offline, a read falls back to what this device last read, so the
 /// lists still open. Only concurrent directory reads are shared, scoped to
@@ -98,6 +105,97 @@ class HostSummaryReader {
       throw StateError('This list is not ready yet. Try again shortly.');
     }
     return data;
+  }
+
+  /// The organizer's directory document while it is listened to, once the
+  /// read model behind [marker] is active. A missing marker is a server
+  /// fault to retry. A document the device has not cached yet stays loading
+  /// offline instead of reading as missing.
+  Stream<Map<String, dynamic>> watchActivatedDirectory(
+    String organizerId,
+    String marker,
+  ) {
+    _actor();
+    return withBackendErrorStream(
+      () => _firestore
+          .collection('hostDirectorySummaries')
+          .doc(organizerId)
+          .snapshots()
+          .where((doc) => doc.exists || !doc.metadata.isFromCache),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch Host directory readiness',
+        resource: 'hostDirectorySummaries',
+      ),
+    ).map((doc) {
+      final data = doc.data();
+      if (data != null && data['organizerId'] != organizerId) {
+        throw const FormatException('Directory owner does not match.');
+      }
+      if (data == null || data[marker] != 1) {
+        throw StateError('This list is not ready yet. Try again shortly.');
+      }
+      return data;
+    });
+  }
+
+  /// The first [limit] rows of one directory query while it is listened to:
+  /// the same filters and order as [page], as a listener that follows every
+  /// change. Showing more means listening to a larger window.
+  Stream<HostSummaryWindow> watchWindow({
+    required String collection,
+    required String organizerId,
+    required String orderField,
+    required bool descending,
+    required int limit,
+    Map<String, Object> equalities = const {},
+    Map<String, List<String>> inFilters = const {},
+    String? arrayField,
+    List<String> arrayValues = const [],
+    String? prefix,
+  }) {
+    _actor();
+    final boundedLimit = limit.clamp(1, 1000);
+    Query<Map<String, dynamic>> query = _firestore
+        .collection(collection)
+        .where('organizerId', isEqualTo: organizerId);
+    for (final entry in equalities.entries) {
+      query = query.where(entry.key, isEqualTo: entry.value);
+    }
+    for (final entry in inFilters.entries) {
+      query = query.where(entry.key, whereIn: entry.value);
+    }
+    if (arrayField != null) {
+      query = query.where(arrayField, arrayContainsAny: arrayValues);
+    }
+    if (prefix != null) {
+      query = query
+          .where(orderField, isGreaterThanOrEqualTo: prefix)
+          .where(orderField, isLessThan: '$prefix\uf8ff');
+    }
+    query = query
+        .orderBy(orderField, descending: descending)
+        .orderBy(FieldPath.documentId, descending: descending)
+        .limit(boundedLimit + 1);
+    return withBackendErrorStream(
+      () => query.snapshots().map((snapshot) {
+        final docs = snapshot.docs.take(boundedLimit);
+        return HostSummaryWindow([
+          for (final doc in docs)
+            if (doc.data() case final value
+                when value['organizerId'] == organizerId &&
+                    value['version'] == 1)
+              value
+            else
+              throw const FormatException('Unsupported directory summary.'),
+        ], hasMore: snapshot.docs.length > boundedLimit);
+      }),
+      context: BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch Host list summaries',
+        resource: collection,
+      ),
+    );
   }
 
   Future<Map<String, dynamic>?> _loadDirectory(
