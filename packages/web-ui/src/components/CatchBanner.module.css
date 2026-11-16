@@ -1,0 +1,125 @@
+/*
+ * Flutter CatchBanner (catch_banner.dart). Body feedback: 16px padding at
+ * radius md on the surface with 7% of the tone (neutral takes primary soft);
+ * the title row is the tone's 20px glyph 8px before a row title; the message
+ * is the small body in ink2, 8px under the title; actions wrap 16px under the
+ * copy, 8px apart. A status band runs full width: the background with 8% of
+ * the status colour and a hairline of 42% of it below, page-gutter sides and
+ * 8px ends, at least 48px tall; its 20px glyph sits 10px before a kicker and
+ * message in a readable mix of the status colour toward ink, and its actions
+ * sit at the end, dropping under the copy when the band is narrow.
+ */
+.banner {
+  --catch-banner-tone: var(--catch-theme-primary);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  padding: var(--catch-space-s4);
+  border-radius: var(--catch-radius-md);
+  background: color-mix(in srgb, var(--catch-theme-surface), var(--catch-banner-tone) 7%);
+  color: var(--catch-theme-ink);
+}
+
+.banner[data-tone="success"] { --catch-banner-tone: var(--catch-theme-success); }
+.banner[data-tone="warning"] { --catch-banner-tone: var(--catch-theme-warning); }
+.banner[data-tone="danger"] { --catch-banner-tone: var(--catch-theme-danger); }
+
+.banner[data-tone="neutral"] {
+  --catch-banner-tone: var(--catch-theme-ink2);
+  background: var(--catch-theme-primary-soft);
+}
+
+.heading {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--catch-space-s2);
+  margin-bottom: var(--catch-space-s2);
+}
+
+.glyph {
+  display: inline-flex;
+  flex: none;
+  color: var(--catch-banner-tone);
+}
+
+.glyph > svg {
+  width: 20px;
+  height: 20px;
+}
+
+.title,
+.message {
+  min-width: 0;
+  margin: 0;
+}
+
+.message { color: var(--catch-theme-ink2); }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--catch-space-s2);
+  margin-top: var(--catch-space-s4);
+}
+
+.statuses {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.status {
+  --catch-banner-status-ink: color-mix(in srgb, var(--catch-banner-status) 30%, var(--catch-theme-ink));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s2);
+  box-sizing: border-box;
+  min-height: 48px;
+  padding: var(--catch-space-s2) var(--catch-layout-page-gutter);
+  border-bottom: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-banner-status) 42%, transparent);
+  background: color-mix(in srgb, var(--catch-theme-bg), var(--catch-banner-status) 8%);
+  color: var(--catch-banner-status-ink);
+}
+
+.statusRow {
+  display: flex;
+  flex: 1 1 240px;
+  align-items: center;
+  gap: var(--catch-space-micro10);
+  min-width: 0;
+}
+
+.statusIcon {
+  display: inline-flex;
+  flex: none;
+  color: var(--catch-banner-status);
+}
+
+.statusIcon > svg {
+  width: 20px;
+  height: 20px;
+}
+
+.statusCopy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s1);
+  min-width: 0;
+}
+
+.statusLabel { text-transform: uppercase; }
+
+.statusMessage { margin: 0; }
+
+.statusActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--catch-space-s1);
+  margin-inline-start: auto;
+}

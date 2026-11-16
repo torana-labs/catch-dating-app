@@ -145,6 +145,14 @@ export type {
   CatchBadgeSize,
   CatchBadgeTone,
 } from "./components/CatchBadge";
+export {CatchBanner} from "./components/CatchBanner";
+export type {
+  CatchBannerAction,
+  CatchBannerProps,
+  CatchBannerStatus,
+  CatchBannerTone,
+  CatchBannerVariant,
+} from "./components/CatchBanner";
 export {CatchEmptyState} from "./components/CatchEmptyState";
 export {EmptyStateControl} from "./components/EmptyStateControl";
 export type {EmptyStateAnnouncement, EmptyStateControlProps} from "./components/EmptyStateControl";
