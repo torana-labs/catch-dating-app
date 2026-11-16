@@ -1371,7 +1371,13 @@
       "css": [
         "website/src/styles/site-shell.css",
         "website/src/styles/flows.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchBandHeader.module.css",
+        "packages/web-ui/src/components/CatchFeatureTile.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1381,7 +1387,7 @@
           "unknown-route"
         ]
       },
-      "notes": "Noindex not-found route story for fallback routes and static 404 output."
+      "notes": "The Live404 board on the white ground for fallback routes and the static 404 output: the site header, one CatchSurface band with a CatchBandHeader h1 (page not found), four CatchFeatureTiles on the coral, yellow, mint and indigo grounds (what's on, with the market catalog's live cities; the organizer directory; claim a listing; host), four across on a wide page, two by two on a medium one and stacked on a phone, the way home and to help, then the site footer. Copy lives in content/notFound.ts. The route story renders the page at 1280 and at 390."
     },
     {
       "id": "claim_hero_section",
@@ -5399,6 +5405,69 @@
         ]
       },
       "notes": "Website T4 under D18 (CAT-260). One activity format on its accent: a count line, the format's name and line, and a plan photo at its foot when there is one. It is a pressed toggle when it filters and a link when it navigates. Nearest concept: catch.chip.field (CatchChip choice), the compact filter it pairs with. Search aliases: FormatCard, CategoryTile, ActivityTile, FilterTile."
+    },
+    {
+      "id": "shared_band_header",
+      "kind": "supporting-component",
+      "routeIds": [
+        "not_found"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchBandHeader.tsx",
+      "exportName": "CatchBandHeader",
+      "comparedWith": [
+        "catch.stack",
+        "catch.text"
+      ],
+      "comparisonReason": "The opening of a website band: an optional kicker, a page-title headline as an h1 or h2 and an optional lead, stacked or with the lead across from the headline, in the inks of the band's ground. It lays its parts out with catch.stack and sets them with catch.text; it is neither a general stack nor a text style, and it draws no box.",
+      "css": [
+        "packages/web-ui/src/components/CatchBandHeader.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "column",
+          "centered",
+          "row",
+          "page-headline",
+          "compact"
+        ]
+      },
+      "notes": "Website T4 under D18. Headline at the page-title role (38, 48 and 64px by size class), inside the 72px cap of D19. Renders a plain div, never a banner landmark. First consumer: the not-found page. The library's stories (packages/web-ui/src/components/CatchBandHeader.stories.tsx) do not declare catchComponent yet, so coverage stays planned. Search aliases: SectionHeader, BandHeading, SectionIntro, Kicker, Eyebrow."
+    },
+    {
+      "id": "shared_feature_tile",
+      "kind": "supporting-component",
+      "routeIds": [
+        "not_found"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchFeatureTile.tsx",
+      "exportName": "CatchFeatureTile",
+      "comparedWith": [
+        "catch.button",
+        "catch.marker",
+        "catch.root",
+        "catch.text"
+      ],
+      "comparisonReason": "One feature in a grid of features: an optional figure and note, an h3 title, a body, ticked lines and a foot with a fix line, an afterwards line and a link, filled with a Website v2 ground. It sets its copy with catch.text, ticks with catch.marker, draws its link as a small catch.button and re-provides its ground to its children as catch.root's ground does; it is not a button, a marker or a root.",
+      "css": [
+        "packages/web-ui/src/components/CatchFeatureTile.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "paper",
+          "white",
+          "glass",
+          "accent-grounds",
+          "figure",
+          "checklist",
+          "link",
+          "compact"
+        ]
+      },
+      "notes": "Website T4 under D18. Feet line up across a row the stack stretches to one height. First consumer: the not-found page, as four tiles with links. The library's stories (packages/web-ui/src/components/CatchFeatureTile.stories.tsx) do not declare catchComponent yet, so coverage stays planned. Search aliases: FeatureCard, BenefitTile, ProblemFixTile, StatTile, LinkCard."
     },
     {
       "id": "shared_plan_card",
