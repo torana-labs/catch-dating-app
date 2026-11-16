@@ -171,17 +171,12 @@ export function buildSyntheticProbePlan({
   ];
   const callables = environment !== "prod" || allowProdCallables ? [
     {
-      id: "organizer-forms",
-      name: "listOrganizerForms",
-      payload: {
-        organizerId,
-        statuses: [],
-        purposes: [],
-        query: null,
-        cursor: null,
-        limit: 1,
-      },
-      responseValidator: "validateListOrganizerFormsCallableResponse",
+      // The Host app reads its form list from Firestore now; the template
+      // catalog is the forms surface it still reads through a Function.
+      id: "organizer-form-templates",
+      name: "listOrganizerFormTemplates",
+      payload: {organizerId},
+      responseValidator: "validateListOrganizerFormTemplatesCallableResponse",
     },
   ] : [];
   return {firestore, callables};

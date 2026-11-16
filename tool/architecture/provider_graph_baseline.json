@@ -107,12 +107,6 @@
     },
     {
       "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/forms/host_forms_controller.dart",
-      "symbol": "hostFormsAccountDirectoryProvider",
-      "detail": "refresh:hostFormsDirectoryControllerProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
       "path": "lib/hosts/presentation/forms/host_response_offer_screen.dart",
       "symbol": "_HostResponseOfferScreenState.build",
       "detail": "refresh:hostApplicationDetailProvider"
