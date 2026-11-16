@@ -6,8 +6,9 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.d
 import 'package:catch_platform/firebase/host_summary_reader.dart';
 
 /// The contact directory from `hostContactSummaries` and the organizer's
-/// directory document. Only a name search or an intersecting filter group
-/// still needs the server's evaluation.
+/// directory document. Only an intersecting filter group (segments with
+/// tags) still needs the server's evaluation. A name search is a prefix
+/// match on `searchName` and lists its matches by name, whatever the sort.
 class HostContactSummaryReads {
   const HostContactSummaryReads(this.reader);
   final HostSummaryReader reader;
@@ -20,7 +21,7 @@ class HostContactSummaryReads {
 
   /// The exact count, or null when the directory cannot count this query.
   Future<int?> count(String organizerId, HostAudienceQuery query) async {
-    if (!supports(query)) return null;
+    if (!supports(query) || searchPrefix(query) != null) return null;
     final segments = {...query.segments, ?query.segment};
     final tags = {...query.manualTagIds, ?query.manualTagId};
     if (tags.isNotEmpty || segments.length > 1) return null;
@@ -36,8 +37,13 @@ class HostContactSummaryReads {
     final tags = {...query.manualTagIds, ?query.manualTagId};
     return segments.length <= 12 &&
         tags.length <= 20 &&
-        (segments.isEmpty || tags.isEmpty) &&
-        (query.search?.trim().isEmpty ?? true);
+        (segments.isEmpty || tags.isEmpty);
+  }
+
+  /// The search as `searchName` stores names (trimmed, lower case), or null.
+  static String? searchPrefix(HostAudienceQuery query) {
+    final search = query.search?.trim().toLowerCase() ?? '';
+    return search.isEmpty ? null : search;
   }
 
   /// One page of a query [supports] accepts.
@@ -55,7 +61,9 @@ class HostContactSummaryReads {
       ?query.segment,
     }.map((item) => item.wireValue).toList()..sort();
     final tags = {...query.manualTagIds, ?query.manualTagId}.toList()..sort();
-    final orderField = switch (query.sort) {
+    final search = searchPrefix(query);
+    final sort = search == null ? query.sort : HostAudienceSort.name;
+    final orderField = switch (sort) {
       HostAudienceSort.lastSeen => 'lastSeenAtMillis',
       HostAudienceSort.mostAttended => 'row.attendedEventCount',
       HostAudienceSort.name => 'searchName',
@@ -64,8 +72,8 @@ class HostContactSummaryReads {
       collection: 'hostContactSummaries',
       organizerId: organizerId,
       orderField: orderField,
-      descending: query.sort != HostAudienceSort.name,
-      queryKey: jsonEncode([query.sort.name, segments, tags]),
+      descending: sort != HostAudienceSort.name,
+      queryKey: jsonEncode([sort.name, segments, tags, search]),
       limit: limit,
       arrayField: segments.isNotEmpty
           ? 'row.segmentIds'
@@ -73,14 +81,23 @@ class HostContactSummaryReads {
           ? 'manualTagIds'
           : null,
       arrayValues: segments.isNotEmpty ? segments : tags,
+      prefix: search,
       cursor: query.cursor,
     );
     final counts = directory['segmentCounts'] as Map;
-    final int? count = segments.length == 1
+    final int? directoryCount = search != null
+        ? null
+        : segments.length == 1
         ? (counts[segments.single] as int? ?? 0)
         : segments.isEmpty && tags.isEmpty
         ? (directory['summary'] as Map)['contactCount'] as int
         : null;
+    // One page with nothing after it is the whole match.
+    final count =
+        directoryCount ??
+        (query.cursor == null && page.nextCursor == null
+            ? page.documents.length
+            : null);
     return HostAudiencePage.fromCallableData({
       'organizerId': organizerId,
       'contacts': page.documents.map((doc) => doc['row']).toList(),

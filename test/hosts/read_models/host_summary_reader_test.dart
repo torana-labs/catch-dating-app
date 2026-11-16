@@ -94,13 +94,14 @@ void main() {
         reads.count('org', const HostAudienceQuery()),
         throwsStateError,
       );
+      // A name search reads the directory too, so it needs the marker.
       await expectLater(
         reads.list(
           'org',
           query: const HostAudienceQuery(search: 'asha'),
           limit: 30,
         ),
-        throwsArgumentError,
+        throwsStateError,
       );
     },
   );

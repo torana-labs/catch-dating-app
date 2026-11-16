@@ -3130,21 +3130,25 @@ transaction before setting `contactSummaryVersion: 1`. Deploy rules, indexes
 and writers before a client using SDK reads, then backfill and activate each
 organizer. `onHostDirectoryOrganizerCreated` activates every model for a new
 organizer, which has no sources yet. The Host app reads the contact, form,
-group and response directories only through their markers: a missing marker is
-an error to retry, never a callable fallback. The event directory keeps its
-callable fallback until every organizer's events model is active. Online reads
+group, response and event directories only through their markers: a missing
+marker is an error to retry, never a callable fallback. Online reads
 use the server under current rules; offline reads fall back to the device
 cache.
 
 The normal SDK contact page reads at most `limit + 1` small summaries and one
-counts document. Single segment and single filter-family queries use indexes;
-intersecting filter groups and text search retain server evaluation. Detail
+counts document. Single segment and single filter-family queries use indexes.
+A name search is a prefix match on `searchName`, alone or with one filter
+family, and lists its matches by name whatever the selected sort; only
+intersecting filter groups (segments with tags) retain server evaluation. A
+page that is the whole result reports an exact count. Detail
 history, permission evidence and financial facts remain callable reads until
 an independently verified detail read contract is available.
 
 The same read boundary applies to `hostFormSummaries/{formId}` and
 `hostEventSummaries/{eventId}`. Forms contain the existing list DTO, not the
-editable draft definition. Event summaries cover only unpublished inventory;
+editable draft definition. A form title search reads every summary that passes
+the status and purpose filters (at most 500) and matches title and description
+as a case-insensitive substring on the device, as `listOrganizerForms` did. Event summaries cover only unpublished inventory;
 published Events already use SDK reads. Unpublished Event rules additionally
 require a currently active, unarchived organizer (the shared
 `isActiveHostSummaryManager` rule helper).
@@ -3155,9 +3159,9 @@ and preview metadata. Predicates and up to 2500 selected contact IDs are kept in
 one selected group. After verified SDK cutover, the paginated Groups controller
 publishes the first 30-row page, applies name/recent-preview sorting and group-type filters in indexed
 queries, and loads further pages only on request. Contains-name search preserves
-the existing bounded exhaustive behavior. Before cutover, legacy Groups reads
-still exhaust callable pages. The Audience workspace switches to compact metadata through
-a coordinated UI patch; mutation and membership-preview authority stay callable.
+the existing bounded exhaustive behavior over the summaries, which the People
+groups list and the campaign group picker share. Mutation, membership preview
+and the saved-group filter options stay callable.
 
 The Today attention queue reads `organizerAttentionItems` and
 `organizerAttentionSchedules/{organizerId}` under the same manager authority;

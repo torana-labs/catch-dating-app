@@ -67,6 +67,16 @@ HostContactsRepository _contacts(FirebaseFunctions functions) =>
       ),
     );
 
+/// Segments with tags: the one query shape the directory cannot serve.
+HostAudienceQuery _intersecting({
+  HostAudienceSort sort = HostAudienceSort.lastSeen,
+}) => HostAudienceQuery(
+  search: 'asha',
+  segments: const {HostAudienceSegment.repeatAttendee},
+  manualTagIds: {'a' * 32},
+  sort: sort,
+);
+
 void main() {
   test('audience query identity and copies retain the server sort order', () {
     const query = HostAudienceQuery(
@@ -97,7 +107,7 @@ void main() {
   });
 
   test(
-    'a default-order name search omits sort for rolling deploy compatibility',
+    'a default-order intersecting filter omits sort for rolling deploys',
     () async {
       final functions = _TestFirebaseFunctions();
       final callable =
@@ -106,10 +116,7 @@ void main() {
       callable.resultData = crmEmptyAudiencePageData();
       final repository = _contacts(functions);
 
-      await repository.listContacts(
-        'organizer-1',
-        query: const HostAudienceQuery(search: 'asha'),
-      );
+      await repository.listContacts('organizer-1', query: _intersecting());
 
       final payload = callable.calls.single as Map<Object?, Object?>;
       expect(payload['organizerId'], 'organizer-1');
@@ -531,7 +538,7 @@ void main() {
     },
   );
 
-  test('a name search keeps non-default ordering explicit', () async {
+  test('an intersecting filter keeps non-default ordering explicit', () async {
     final functions = _TestFirebaseFunctions();
     final callable =
         functions.httpsCallable('listOrganizerContacts') as _TestHttpsCallable;
@@ -540,10 +547,7 @@ void main() {
 
     await repository.listContacts(
       'organizer-1',
-      query: const HostAudienceQuery(
-        search: 'asha',
-        sort: HostAudienceSort.mostAttended,
-      ),
+      query: _intersecting(sort: HostAudienceSort.mostAttended),
     );
 
     final payload = callable.calls.single as Map<Object?, Object?>;
