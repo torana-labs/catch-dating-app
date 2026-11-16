@@ -43,6 +43,13 @@ export {CatchBandHeader} from "./components/CatchBandHeader";
 export type {CatchBandHeaderAlign, CatchBandHeaderDirection, CatchBandHeaderProps} from "./components/CatchBandHeader";
 // The playbook section components (website-playbook kit), with the vocabulary they share.
 export type {CatchBandAction, CatchBandFootnote, CatchBandLink} from "./components/catchBandParts";
+export {CatchHeroSection} from "./components/CatchHeroSection";
+export type {
+  CatchHeroSectionAside,
+  CatchHeroSectionLayout,
+  CatchHeroSectionProofItem,
+  CatchHeroSectionProps,
+} from "./components/CatchHeroSection";
 export {CatchScreenPreview} from "./components/CatchScreenPreview";
 export type {
   CatchScreenPreviewBar,
