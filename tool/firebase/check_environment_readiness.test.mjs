@@ -959,7 +959,68 @@ test("Deploy backend deploys exactly the planned Functions, and retries those, n
   assert.match(secrets, />> "\$GITHUB_STEP_SUMMARY"/u);
   const deploy = step("Deploy Functions");
   assert.match(deploy, /DEPLOY_ONLY: \$\{\{ \(steps\.choose\.outputs\.mode == 'named' \|\| inputs\.full\) && steps\.choose\.outputs\.only \|\| steps\.plan\.outputs\.only \|\| steps\.choose\.outputs\.only \}\}/u);
-  assert.match(deploy, /if \[\[ "\$NAMED" != "true" && "\$PLANNED" != "true" \]\]; then only=functions; fi/u);
+  assert.match(deploy, /elif \[\[ "\$NAMED" != "true" && "\$PLANNED" != "true" \]\]; then only=functions; fi/u);
+});
+
+test("Deploy backend retries the Functions the CLI names as failed, by exact name, up to three attempts", (t) => {
+  const script = workflowStepShell(backendDeployWorkflow(), "Deploy Functions");
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-functions-"));
+  t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(cwd, "tool"));
+  const calls = path.join(cwd, "calls.txt");
+  // Each deploy call prints out<n>.txt and exits with the n-th code in EXITS.
+  fs.writeFileSync(path.join(cwd, "tool/firebase_with_env.sh"), `#!/usr/bin/env bash
+    echo "$*" >> "${calls}"
+    n="$(wc -l < "${calls}" | tr -d ' ')"
+    [[ -f "${cwd}/out$n.txt" ]] && cat "${cwd}/out$n.txt"
+    exit "$(cut -d, -f"$n" <<< "$EXITS")"
+  `, {mode: 0o755});
+  // As run 43785431457 printed it: three invoker sets failed on Cloud Run read-quota 429s.
+  const invokerFailure = [
+    "\u001b[33m⚠  functions:\u001b[39m Deploys failed. Skipping deletes.", "",
+    "Functions deploy had errors with the following functions:",
+    "\tsocial:expireAccountSafetyActions(asia-south1)", "\tsocial:purgeRetainedSafetyRecords(asia-south1)", "",
+    "Unable to set the invoker for the IAM policy on the following functions:",
+    "\tsocial:expireAccountSafetyActions(asia-south1)", "\tsocial:reconcileBannedIdentityScreens(asia-south1)", "",
+    "Some common causes of this:", "", "- You may not have the roles/functions.admin IAM role.",
+  ].join("\n");
+  const failed = "functions:social:expireAccountSafetyActions,functions:social:purgeRetainedSafetyRecords," +
+    "functions:social:reconcileBannedIdentityScreens";
+  const run = ({only = "functions", planned = "false", named = "false", outputs = [], exits}) => {
+    fs.writeFileSync(calls, "");
+    for (const file of fs.readdirSync(cwd).filter((name) => /^out\d+\.txt$/u.test(name))) fs.rmSync(path.join(cwd, file));
+    outputs.forEach((text, index) => fs.writeFileSync(path.join(cwd, `out${index + 1}.txt`), text));
+    const result = spawnSync("bash", ["-c", script], {cwd, encoding: "utf8", env: {...process.env, DEPLOY_ENVIRONMENT: "dev",
+      DEPLOY_ONLY: only, PLANNED: planned, NAMED: named, RETRY_DELAY_SECONDS: "0", EXITS: exits}});
+    const targets = fs.readFileSync(calls, "utf8").trim().split("\n").filter(Boolean)
+      .map((line) => `${line.match(/--only (\S+)/u)[1]}${line.includes("--force") ? " --force" : ""}`);
+    return {status: result.status, stdout: result.stdout, targets};
+  };
+  // The failed Functions, and only those, deploy again by exact name.
+  const invoker = run({outputs: [invokerFailure], exits: "2,0"});
+  assert.equal(invoker.status, 0, invoker.stdout);
+  assert.deepEqual(invoker.targets, ["functions", failed]);
+  assert.match(invoker.stdout, new RegExp(`::warning::Functions deploy attempt 1 failed; attempt 2 deploys ${failed}\\.`, "u"));
+  // A refusal before any change names no failed Function: the newly retrying
+  // ones deploy with --force, then a fallback run deploys plain functions.
+  const refused = run({only: "functions:admin,functions:events", exits: "1,0,0", outputs: [
+    "⚠  functions: The following functions will newly be retried in case of failure: payments:onRefund(asia-south1), " +
+    "social:onChat(asia-south1). Retried executions are billed as any other execution.\nError: Pass the --force option"]});
+  assert.equal(refused.status, 0, refused.stdout);
+  assert.deepEqual(refused.targets, ["functions:admin,functions:events",
+    "functions:payments:onRefund,functions:social:onChat --force", "functions"]);
+  // A planned run without a failure list repeats its exact targets.
+  const planned = run({only: "functions:admin:a,functions:events:b", planned: "true", exits: "1,0"});
+  assert.deepEqual(planned.targets, ["functions:admin:a,functions:events:b", "functions:admin:a,functions:events:b"]);
+  // After the third attempt it stops, names what still fails and says nothing about retrying.
+  const exhausted = run({outputs: [invokerFailure, invokerFailure, invokerFailure], exits: "2,2,2"});
+  assert.equal(exhausted.status, 2);
+  assert.deepEqual(exhausted.targets, ["functions", failed, failed]);
+  assert.match(exhausted.stdout, new RegExp(`::error::Functions deploy failed after 3 attempts; still failing: ${failed}\\.`, "u"));
+  assert.doesNotMatch(exhausted.stdout, /attempt 3 failed; attempt 4/u);
+  // A named run keeps --force on every attempt.
+  assert.deepEqual(run({only: "functions:social:a", named: "true", exits: "1,1,0"}).targets,
+    ["functions:social:a --force", "functions:social:a --force", "functions:social:a --force"]);
 });
 
 test("Deploy backend reads each declared secret's newest version and names any it cannot read", (t) => {
