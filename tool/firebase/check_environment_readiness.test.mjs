@@ -1075,60 +1075,33 @@ test("Deploy backend reads each declared secret's newest version and names any i
   assert.deepEqual(run([]).versions, {versions: {}, failures: []});
 });
 
-test("Deploy backend can deploy Functions in groups on dev, to measure pacing, and summarises each attempt", (t) => {
+test("Deploy backend deploys Functions in one CLI call and summarises each attempt's cost", (t) => {
   const script = workflowStepShell(backendDeployWorkflow(), "Deploy Functions");
-  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-batch-"));
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-cost-"));
   t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
   fs.mkdirSync(path.join(cwd, "tool"));
-  fs.mkdirSync(path.join(cwd, "build"));
-  fs.writeFileSync(path.join(cwd, "build/functions-codebases.json"), JSON.stringify({version: 2, codebases: {
-    admin: {functions: ["a", "b", "c"]}, events: {functions: ["d"]}, sales: {functions: ["e"]}}}));
   const calls = path.join(cwd, "calls.txt");
   fs.writeFileSync(path.join(cwd, "tool/firebase_with_env.sh"), `#!/usr/bin/env bash
     echo "$*" >> "${calls}"
     echo "✔  functions[admin:a(asia-south1)] Successful update operation."
+    echo "✔  functions[admin:b(asia-south1)] Successful create operation."
     echo "⚠  functions: Request had HTTP Error: 429, Quota exceeded"
   `, {mode: 0o755});
-  const run = (batch, environment = "dev", only = "functions:admin,functions:events") => {
-    fs.writeFileSync(calls, "");
-    const summary = path.join(cwd, "summary.md");
-    fs.writeFileSync(summary, "");
-    const result = spawnSync("bash", ["-c", script], {cwd, encoding: "utf8", env: {...process.env,
-      DEPLOY_ENVIRONMENT: environment, DEPLOY_ONLY: only, PLANNED: "false", NAMED: "false", BATCH: batch,
-      RETRY_DELAY_SECONDS: "0", GITHUB_STEP_SUMMARY: summary}});
-    return {status: result.status, stdout: result.stdout, summary: fs.readFileSync(summary, "utf8"),
-      targets: fs.readFileSync(calls, "utf8").trim().split("\n").filter(Boolean).map((line) => line.match(/--only (\S+)/u)[1])};
-  };
-  // One call by default, with the attempt's cost in the summary.
-  const single = run("0");
-  assert.equal(single.status, 0, single.stdout);
-  assert.deepEqual(single.targets, ["functions:admin,functions:events"]);
-  assert.match(single.summary, /- Functions attempt 1: 1 CLI call\(s\), 1 HTTP 429 responses, 1 updated, 0 created, exit 0, \d+ s/u);
-  // In groups: codebases become their exact Functions, in order.
-  const grouped = run("2");
-  assert.equal(grouped.status, 0, grouped.stdout);
-  assert.deepEqual(grouped.targets, ["functions:admin:a,functions:admin:b", "functions:admin:c,functions:events:d"]);
-  assert.match(grouped.summary, /attempt 1: 2 CLI call\(s\), 2 HTTP 429 responses, 2 updated/u);
-  assert.deepEqual(run("3", "dev", "functions").targets,
-    ["functions:admin:a,functions:admin:b,functions:admin:c", "functions:events:d,functions:sales:e"]);
-  // Exact names pass through unchanged.
-  assert.deepEqual(run("1", "dev", "functions:admin:b,functions:sales").targets, ["functions:admin:b", "functions:sales:e"]);
-  // Measurement only, on dev only.
-  const prod = run("2", "prod");
-  assert.equal(prod.status, 1);
-  assert.match(prod.stdout, /::error::batch is a dev-only measurement input/u);
-  assert.deepEqual(prod.targets, []);
-  // The dispatch passes it to the dev job only.
-  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/backend-deploy.yml"), "utf8");
-  const job = (name) => {
-    const start = workflow.indexOf(`\n  ${name}:\n`);
-    const next = workflow.slice(start + 3).search(/\n  [a-z][\w-]*:\n/u);
-    return workflow.slice(start, next < 0 ? undefined : start + 3 + next);
-  };
-  // Run 43812113622 never created its dev job: a dispatched number input is a
-  // string in the inputs context, and the called workflow's number input refuses it.
-  assert.match(job("dev"), /batch: \$\{\{ fromJSON\(inputs\.batch \|\| '0'\) \}\}/u);
-  for (const other of ["prod", "staging"]) assert.doesNotMatch(job(other), /batch:/u, other);
+  const summary = path.join(cwd, "summary.md");
+  fs.writeFileSync(summary, "");
+  const result = spawnSync("bash", ["-c", script], {cwd, encoding: "utf8", env: {...process.env,
+    DEPLOY_ENVIRONMENT: "dev", DEPLOY_ONLY: "functions:admin,functions:events", PLANNED: "false", NAMED: "false",
+    RETRY_DELAY_SECONDS: "0", GITHUB_STEP_SUMMARY: summary}});
+  assert.equal(result.status, 0, result.stdout);
+  assert.deepEqual(fs.readFileSync(calls, "utf8").trim().split("\n").map((line) => line.match(/--only (\S+)/u)[1]),
+    ["functions:admin,functions:events"]);
+  assert.match(fs.readFileSync(summary, "utf8"),
+    /^- Functions attempt 1: 1 HTTP 429 responses, 1 updated, 1 created, exit 0, \d+ s$/mu);
+  // Grouping was measured on dev on 16 Nov 2026 and rejected; the
+  // measurement-only input is gone from both workflows.
+  for (const file of ["backend-deploy.yml", "_backend-deploy.yml"]) {
+    assert.doesNotMatch(fs.readFileSync(path.join(repoRoot, ".github/workflows", file), "utf8"), /\bbatch\b/u, file);
+  }
 });
 
 test("Deploy backend reports the codebases it changes against the recorded hashes and refuses nothing", (t) => {

@@ -34,12 +34,6 @@ on:
           feature switch). Nothing else deploys and the deployed commit stays.
         type: string
         default: ''
-      batch:
-        description: >-
-          Dev only, for measuring pacing: deploy the Functions as exact names in
-          sequential groups of this many (0 = one CLI call).
-        type: number
-        default: 0
 
 permissions:
   actions: read
@@ -109,9 +103,6 @@ jobs:
       ref: ${{ needs.pick.outputs.ref || '' }}
       full: ${{ inputs.full == true }}
       functions: ${{ inputs.functions || '' }}
-      # A dispatched number input reaches the inputs context as a string, which
-      # the called workflow's number input refuses; a schedule has none.
-      batch: ${{ fromJSON(inputs.batch || '0') }}
 
   prod:
     needs: [pick, dev]
