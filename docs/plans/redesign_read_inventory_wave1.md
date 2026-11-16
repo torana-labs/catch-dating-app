@@ -238,7 +238,7 @@ The caching foundations must contain:
 Which reads stay on callables depends on how many read models are built:
 
 - **Move with client or rules work only** (5 callables):
-  `getEventOperatorAccess`, `getEventSuccessSpatialLayout`, `getEventRehearsalSummary`, `getOrganizerEventSetupDefaults`, `getEventOfferConfiguration`. P1.8 moved `getEventRehearsalSummary` (a direct read) and `getOrganizerEventSetupDefaults` (a read model, `hostEventSetupDefaultViews`); `getEventOfferConfiguration` moved to direct reads once events converged on the progressive-setup shape, decision Q (PR #1542).
+  `getEventOperatorAccess`, `getEventSuccessSpatialLayout`, `getEventRehearsalSummary`, `getOrganizerEventSetupDefaults`, `getEventOfferConfiguration`. P1.8 moved `getEventRehearsalSummary` (a direct read) and `getOrganizerEventSetupDefaults` (a read model, `hostEventSetupDefaultViews`); `getEventOfferConfiguration` moved to direct reads once events converged on the progressive-setup shape, decision Q (PR #1542). `getEventOperatorAccess` became three listeners (event, organizer, own grant) and the Host live workspace's `getEventSuccessSpatialLayout` a listener on the selected layout; guests keep the layout callable.
 - **Always stay**, because they could not move (8 callables):
   `previewEventOfferPreferences`, `createEventVenueSession`, `listOrganizerLumaEvents`, `manageHostRosterIntake`, `getEventInviteLinkToken`, `getEventAssistanceDepartureRoster`, `getEventAssistanceRuntimeConfig`, `getHostAnalytics`.
 - **Until their read model lands** (14 callables):

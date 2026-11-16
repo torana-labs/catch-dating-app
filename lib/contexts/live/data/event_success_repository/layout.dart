@@ -51,6 +51,28 @@ mixin _EventSuccessLayoutRepository on _EventSuccessRepositoryCore {
     ),
   );
 
+  /// The event's selected organizer layout, read directly. Rules let the
+  /// organizer team read its layouts; guests use [fetchSpatialLayout], which
+  /// projects only the selected layout to participants.
+  Stream<EventSuccessLayout?> watchSelectedOrganizerLayout({
+    required String organizerId,
+    required String layoutId,
+  }) => withBackendErrorStream(
+    () => _layoutsRef
+        .doc('${organizerId}_$layoutId')
+        .snapshots()
+        .where((doc) => doc.exists || !doc.metadata.isFromCache)
+        .map((doc) {
+          final layout = doc.data();
+          return layout?.layoutId == layoutId ? layout : null;
+        }),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'load event room layout',
+      resource: _layoutsPath,
+    ),
+  );
+
   Future<EventSuccessLayout?> fetchSpatialLayout(String eventId) =>
       withBackendErrorContext(
         () async {

@@ -2923,7 +2923,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Organizer WhatsApp Inbox and reply reservation | server-only TTL-bound `organizerWhatsappThreads/{threadId}`, `organizerWhatsappMessages/{messageId}`, and `organizerWhatsappReplyOperations/{operationId}` |
 | External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}` and `providerSyncRuns/{runId}`; manager-readable `externalEventMappings/{mappingId}` (get only) and `hostProviderConnectionViews/{organizerId}` |
 | Door roster labels and Catch spend | manager-readable `hostEventRosterInsightViews/{eventId}` and `hostOrganizerSpendProjections/{organizerId}`; server-only `organizerSpendTotals/{organizerId}` |
-| Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}` with direct reads denied |
+| Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}`; the grantee may get only their own grant, every other read and all writes are denied |
 | Door staff presence | `eventStaffPresence/{eventId}_{uid}`, readable by the event's managers and `viewRoster` staff, written only by `heartbeatEventStaffPresence` |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
@@ -4867,8 +4867,10 @@ while `expiresAt` is in the future.
 `setAttendance`, `reviewRuntimeClaims` and `publishLiveLocation` for one event.
 It records organizer,
 grantor, role, issue/expiry/revocation and revision; grants expire within 14
-days and are capped at 50 active rows per event. Firestore direct access is
-denied. Staff operate through callables and the restricted Host operator route,
+days and are capped at 50 active rows per event. A grantee may get only their
+own grant, which the Host operator route reads to resolve its permissions; every
+other direct read and all writes are denied. Staff operate through callables
+and the restricted Host operator route,
 which never grants CRM, campaign, import, provider, event-edit or organizer-wide
 authority. Organizer managers continue to work without a grant.
 
