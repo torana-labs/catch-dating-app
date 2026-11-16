@@ -91,7 +91,7 @@ function HomeHero({captures, home}: {captures: CaptureSlots; home: Home}) {
       <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={48}>
         <CatchStack gap={20}>
           <CatchText tone="danger" variant="label-kicker">{fill(home.live ? copy.hero.liveEyebrow : copy.hero.soonEyebrow, {city})}</CatchText>
-          <CatchText as="h1" id="home-title" variant="display-hero">{copy.hero.title}</CatchText>
+          <CatchText as="h1" id="home-title" variant="hero">{copy.hero.title}</CatchText>
           <CatchText tone="secondary" variant="body-lead">{copy.hero.body}</CatchText>
           <CatchStack direction="row" gap={8} wrap>
             <CatchButton href="#whats-on" label={fill(home.live ? copy.hero.liveAction : copy.hero.soonAction, {city})} />

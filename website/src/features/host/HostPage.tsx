@@ -85,7 +85,7 @@ function Hero({captures}: {captures: CaptureSlots}) {
     <CatchSurface aria-labelledby="host-hero-title" as="section" block="band" color="run">
       <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={32}>
         <CatchStack gap={28}>
-          <CatchText as="h1" id="host-hero-title" variant="display-hero">{copy.hero.title}</CatchText>
+          <CatchText as="h1" id="host-hero-title" variant="hero">{copy.hero.title}</CatchText>
           <CatchText variant="body-lead">{copy.hero.body}</CatchText>
           <CatchStack direction="row" gap={12} wrap>
             <CatchButton href="#start" label={copy.hero.start} />

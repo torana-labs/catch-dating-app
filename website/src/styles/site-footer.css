@@ -17,10 +17,17 @@
 
 /* Phones: a bottom sheet; the page pads by its measured height so nothing stays covered. */
 @media (width < 600px) {
+  /*
+   * Compact on phones (leak 5): tighter spacing and a lower ceiling so the
+   * hero's headline and first button stay in view under the sheet. The three
+   * choices keep equal weight and full-size targets.
+   */
   .consent-banner {
     inset: auto 0 0;
     width: auto;
-    padding-bottom: calc(var(--catch-space-s4) + env(safe-area-inset-bottom, 0));
+    max-height: 45dvh;
+    gap: var(--catch-space-s2);
+    padding: var(--catch-space-s3) var(--catch-space-s4) calc(var(--catch-space-s3) + env(safe-area-inset-bottom, 0));
     border-width: var(--catch-stroke-hairline) 0 0;
   }
 
