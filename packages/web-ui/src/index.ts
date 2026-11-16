@@ -95,6 +95,13 @@ export type {
   CatchStorySectionMetric,
   CatchStorySectionProps,
 } from "./components/CatchStorySection";
+export {CatchTabSection} from "./components/CatchTabSection";
+export type {
+  CatchTabSectionItem,
+  CatchTabSectionLayout,
+  CatchTabSectionMoment,
+  CatchTabSectionProps,
+} from "./components/CatchTabSection";
 export {CatchScreenPreview} from "./components/CatchScreenPreview";
 export type {
   CatchScreenPreviewBar,
