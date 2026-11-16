@@ -20396,9 +20396,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventChatsReady => 'Ready to join';
 
   @override
-  String get eventChatsLoadMore => 'Check more events';
-
-  @override
   String get eventProfileTitle => 'Event profile';
 
   @override
