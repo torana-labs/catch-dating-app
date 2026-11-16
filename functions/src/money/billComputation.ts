@@ -10,13 +10,14 @@ import type {MoneySettingsDocument, OrganizerBillDocument} from
 export type MoneySettings = MoneySettingsDocument["settings"];
 
 // The owner's decisions of 1 Nov 2026: not GST registered, 10% nominator
-// credit for 12 months from the first paid bill, lapsing after 90 days with
-// no claim, paid on the 10th over ₹500, never to sales associates.
+// credit from the first paid bill, lapsing after 90 days with no claim, paid
+// on the 10th over ₹500, never to sales associates. On 16 Nov 2026 the owner
+// cut the credit from 12 months to 6, because the offer is open to everyone.
 export const defaultMoneySettings: MoneySettings = {
   gstRegistered: false,
   gstRateBasisPoints: 1800,
   billDueDayOfMonth: 15,
-  nominatorCredit: {rateBasisPoints: 1000, months: 12, lapseDays: 90,
+  nominatorCredit: {rateBasisPoints: 1000, months: 6, lapseDays: 90,
     minimumPayoutMinor: 50_000, payoutDayOfMonth: 10,
     earningRoles: ["partner", "guest", "organizer"]},
 };

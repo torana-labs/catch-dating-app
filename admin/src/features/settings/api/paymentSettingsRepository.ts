@@ -67,10 +67,11 @@ export async function exportMoneyLedger(month: string): Promise<LedgerExport> {
   return response.data;
 }
 
-// Sample mode: the owner's 1 Nov decisions, not yet saved (revision 0).
+// Sample mode: the owner's 1 Nov decisions (credit months cut to 6 on 16 Nov),
+// not yet saved (revision 0).
 let sample: MoneySettingsState = {revision: 0, settings: {
   gstRegistered: false, gstRateBasisPoints: 1800, billDueDayOfMonth: 15,
-  nominatorCredit: {rateBasisPoints: 1000, months: 12, lapseDays: 90,
+  nominatorCredit: {rateBasisPoints: 1000, months: 6, lapseDays: 90,
     minimumPayoutMinor: 50_000, payoutDayOfMonth: 10,
     earningRoles: ["partner", "guest", "organizer"]}},
 updatedAtMillis: null, updatedByUid: null, nextInvoiceNumber: "2026-27/032"};
