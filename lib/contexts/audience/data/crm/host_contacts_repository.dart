@@ -37,8 +37,9 @@ class HostContactsRepository {
     this.rosterInsights,
   });
 
-  /// The directory read model. Only queries it cannot serve (a name search,
-  /// intersecting filter groups) and contact detail use callables.
+  /// The directory read model, name searches included. Only queries it
+  /// cannot serve (intersecting filter groups) and contact detail use
+  /// callables.
   final HostContactSummaryReads summaries;
 
   /// The door's roster label listeners; reads need them.
