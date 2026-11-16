@@ -85,7 +85,7 @@ void main() {
         reads.list('org', query: const HostAudienceQuery(), limit: 30),
         throwsStateError,
       );
-      await expectLater(reads.summary('org'), throwsStateError);
+      await expectLater(reads.watchDirectory('org'), emitsError(isStateError));
       await db.collection('hostDirectorySummaries').doc('org').set({
         'organizerId': 'org',
         'contactSummaryVersion': 0,

@@ -20,10 +20,36 @@ void _registerHostOperationsAnalyticsTeamTests() {
           watchEventsForOrganizerProvider(
             organizer.id,
           ).overrideWithValue(const AsyncData<List<Event>>([])),
-          hostCrmSummaryProvider(organizer.id).overrideWith((ref) async {
+          // The summary is read from the directory listener; a retry
+          // restarts that listener.
+          hostContactDirectoryProvider(organizer.id).overrideWith((ref) {
             attempts++;
-            if (attempts == 1) throw StateError('Temporarily unavailable');
-            return _emptyCrmSummary(organizer.id);
+            if (attempts == 1) {
+              return Stream.error(StateError('Temporarily unavailable'));
+            }
+            return Stream.value(
+              HostContactDirectory({
+                'summary': {
+                  'organizerId': organizer.id,
+                  'contactCount': 0,
+                  'pastAttendeeCount': 0,
+                  'repeatAttendeeCount': 0,
+                  'advocateCount': 0,
+                  'highImpactAdvocateCount': 0,
+                  'linkedAccountCount': 0,
+                  'importedContactCount': 0,
+                  'whatsappOptInCount': 0,
+                  'smsOptInCount': 0,
+                  'truncated': false,
+                  'readiness': const {
+                    'inApp': 'currentEventOnly',
+                    'whatsapp': 'providerSetupRequired',
+                    'sms': 'providerAndDltSetupRequired',
+                  },
+                },
+                'segmentCounts': const <String, Object?>{},
+              }),
+            );
           }),
         ],
       );
