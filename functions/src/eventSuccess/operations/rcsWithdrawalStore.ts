@@ -64,7 +64,8 @@ export class RcsWithdrawalStore {
       const next = parseRcsPermission({...permission, status: "revoked",
         currentReceiptId: receiptId, revision: permission.revision + 1,
         updatedAt: now});
-      const receipt = parseRcsConsentReceipt({schemaVersion: 1, channel: "rcs", receiptId,
+      const receipt = parseRcsConsentReceipt({schemaVersion: 1,
+        channel: "rcs", receiptId,
         requestHash, source: "messageLink", linkId: authority.linkId,
         context: permission.context, attendeeId: permission.attendeeId,
         attendeeGeneration: permission.attendeeGeneration,

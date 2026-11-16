@@ -59,7 +59,8 @@ export async function rcsHarness(real?: Firestore, id = "rcs",
     const budgetId = smsBudgetId(sender.senderId, scope);
     const path = smsCollections.budgets + "/" + budgetId;
     smsBudgets.push(path);
-    await h.write(path, {schemaVersion: 1, channel: "sms", budgetId, revision: 1,
+    await h.write(path, {schemaVersion: 1,
+      channel: "sms", budgetId, revision: 1,
       senderId: sender.senderId, scope, status: "active",
       approvalId: "fixture", currency: "INR", limitMicros: 10_000_000,
       chargedMicros: 0, startsAt: begins, endsAt: scope.kind === "senderDay" ?
@@ -92,7 +93,8 @@ export async function rcsHarness(real?: Firestore, id = "rcs",
   for (const scope of rcsBudgetScopes(h.context, start)) {
     const startsAt = scope.kind === "senderDay" ?
       Date.parse(scope.day + "T00:00:00Z") : start - 1000;
-    const budget = parseRcsBudget({schemaVersion: 1, channel: "rcs", revision: 1,
+    const budget = parseRcsBudget({schemaVersion: 1,
+      channel: "rcs", revision: 1,
       budgetId: rcsBudgetId(rcsConfig.senderId, scope),
       senderId: rcsConfig.senderId, agentId: rcsConfig.agentId,
       scope, status: "active", approvalId: "rcs-spending",

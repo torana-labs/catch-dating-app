@@ -31,7 +31,8 @@ export function newWhatsappWithdrawalGrant(permission: Permission,
         operationContentHash(grant.context)) {
     throw new Error("Cannot issue WhatsApp withdrawal authority");
   }
-  return parseWhatsappWithdrawalGrant({schemaVersion: 1, channel: "whatsapp", linkId: grant.linkId,
+  return parseWhatsappWithdrawalGrant({schemaVersion: 1,
+    channel: "whatsapp", linkId: grant.linkId,
     permissionId: permission.permissionId, context: permission.context,
     attendeeId: permission.attendeeId,
     attendeeGeneration: permission.attendeeGeneration,

@@ -67,7 +67,8 @@ export class SmsWithdrawalStore {
       const next = parseSmsPermission({...permission, status: "revoked",
         currentReceiptId: receiptId, revision: permission.revision + 1,
         updatedAt: now});
-      const receipt = parseSmsConsentReceipt({schemaVersion: 1, channel: "sms", receiptId,
+      const receipt = parseSmsConsentReceipt({schemaVersion: 1,
+        channel: "sms", receiptId,
         requestHash, source: "messageLink", linkId: authority.linkId,
         context: permission.context, attendeeId: permission.attendeeId,
         attendeeGeneration: permission.attendeeGeneration,

@@ -68,7 +68,8 @@ export class WhatsappWithdrawalStore {
       const next = parseWhatsappPermission({...permission, status: "revoked",
         currentReceiptId: receiptId, revision: permission.revision + 1,
         updatedAt: now});
-      const receipt = parseWhatsappConsentReceipt({schemaVersion: 1, channel: "whatsapp", receiptId,
+      const receipt = parseWhatsappConsentReceipt({schemaVersion: 1,
+        channel: "whatsapp", receiptId,
         requestHash, source: "messageLink", linkId: authority.linkId,
         context: permission.context, attendeeId: permission.attendeeId,
         attendeeGeneration: permission.attendeeGeneration,

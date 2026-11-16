@@ -32,7 +32,8 @@ export function newSmsWithdrawalGrant(permission: Permission,
         operationContentHash(grant.context)) {
     throw new Error("Cannot issue SMS withdrawal authority");
   }
-  return parseSmsWithdrawalGrant({schemaVersion: 1, channel: "sms", linkId: grant.linkId,
+  return parseSmsWithdrawalGrant({schemaVersion: 1,
+    channel: "sms", linkId: grant.linkId,
     permissionId: permission.permissionId, context: permission.context,
     attendeeId: permission.attendeeId,
     attendeeGeneration: permission.attendeeGeneration,

@@ -133,7 +133,8 @@ export class RcsPreferenceStore {
         evidence, expiresAt: granting ? expiry(facts.source) :
           previous?.expiresAt ?? Math.max(now, expiry(facts.source)),
         updatedAt: now});
-      const receipt = parseRcsConsentReceipt({schemaVersion: 1, channel: "rcs", receiptId,
+      const receipt = parseRcsConsentReceipt({schemaVersion: 1,
+        channel: "rcs", receiptId,
         requestHash, source: "verifiedParticipant", context: facts.context,
         attendeeId: input.attendeeId,
         attendeeGeneration: permission.attendeeGeneration,

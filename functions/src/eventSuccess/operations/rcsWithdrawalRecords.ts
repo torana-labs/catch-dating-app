@@ -8,9 +8,8 @@ import {Grant, guestCollections, parseGrant} from "./guestRecords";
 import {Permission, parseRcsPermission, rcsPermissionId, rcsConsentCollections,
   parseRcsConsentReceipt, rcsPermissionHasReceipt} from "./rcsConsent";
 import {rcsSubscriptionId} from "./rcsSubscriptions";
-import {EVENT_ASSISTANCE_WITHDRAWAL_GRANTS} from
+import {EVENT_ASSISTANCE_WITHDRAWAL_GRANTS, withdrawalGrantId} from
   "./messageConsentCollections";
-import {withdrawalGrantId} from "./messageConsentCollections";
 
 export type {WithdrawalGrant};
 export const RCS_WITHDRAWAL_GRANTS = EVENT_ASSISTANCE_WITHDRAWAL_GRANTS;
@@ -41,7 +40,8 @@ export function newRcsWithdrawalGrant(permission: Permission,
         operationContentHash(grant.context)) {
     throw new Error("Cannot issue RCS withdrawal authority");
   }
-  return parseRcsWithdrawalGrant({schemaVersion: 1, channel: "rcs", linkId: grant.linkId,
+  return parseRcsWithdrawalGrant({schemaVersion: 1,
+    channel: "rcs", linkId: grant.linkId,
     permissionId: permission.permissionId, context: permission.context,
     attendeeId: permission.attendeeId,
     attendeeGeneration: permission.attendeeGeneration,

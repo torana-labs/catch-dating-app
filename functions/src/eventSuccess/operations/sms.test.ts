@@ -657,7 +657,7 @@ test("failed claims and failed withdrawals leave no partial changes",
       h.store.prepare(h.link.linkId, h.sender)), /interruption/);
     assert.equal(await h.read(SMS_WITHDRAWAL_GRANTS + "/" +
       withdrawalGrantId("sms", h.link.linkId)),
-      undefined);
+    undefined);
     await outbox.claimLiveDispatch(h.messageId,
       reserved.record.attempts[0].attemptId,
       h.store.prepare(h.link.linkId, h.sender));
@@ -733,7 +733,7 @@ test("SMS withholds a withdrawal binding stored under the wrong link",
     const authority = newSmsWithdrawalGrant(h.permission, grant, h.clock.now);
     await h.write(SMS_WITHDRAWAL_GRANTS + "/" +
       withdrawalGrantId("sms", h.link.linkId),
-      {...authority, linkId: "c".repeat(32)});
+    {...authority, linkId: "c".repeat(32)});
     const result = await h.worker.dispatch(h.messageId, h.link.linkId);
     assert.equal(result.kind, "withheld");
     assert.equal(h.requests.length, 0);
