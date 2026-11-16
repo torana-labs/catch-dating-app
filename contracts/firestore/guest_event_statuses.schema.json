@@ -4,7 +4,7 @@
   "title": "GuestEventStatusDocument",
   "type": "object",
   "additionalProperties": false,
-  "description": "What one guest's own records say about one event, at guestEventStatuses/{eventId}_{uid}: their Catch booking, roster place, website or offer payment, application and offer invitation. Triggers rebuild it from those records whenever one of them changes; a guest with no such record has no row. Only the guest reads it, and it never holds CRM notes, answers, phone numbers or invitation tokens. The website's event page reads it with the event's eventGuestEntries document and decides the guest's next step in the browser. It grants nothing: booking, checkout, application and offer commands keep reading the authoritative documents.",
+  "description": "What one guest's own records say about one event, at guestEventStatuses/{eventId}_{uid}: their Catch booking, roster place, website or offer payment, application and offer invitation, plus the event card their lists show. Triggers rebuild it from those records whenever one of them changes; a guest with no such record has no row. Only the guest reads it, and it never holds CRM notes, answers, phone numbers or invitation tokens. The website's event page reads it with the event's eventGuestEntries document and decides the guest's next step in the browser. It grants nothing: booking, checkout, application and offer commands keep reading the authoritative documents.",
   "x-firestore-collection": "guestEventStatuses",
   "x-firestore-path": "guestEventStatuses/{statusId}",
   "x-document-id-field": "id",
@@ -99,6 +99,22 @@
         {"type": "null"}
       ],
       "description": "The guest's latest application to the event; withdrawn when its participant grant was revoked.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "participationStatus": {
+      "anyOf": [
+        {"type": "string", "enum": ["signedUp", "waitlisted", "attended", "cancelled"]},
+        {"type": "null"}
+      ],
+      "description": "The guest's Catch booking status (eventParticipations), or null without one. Any of these keeps the row, so the guest's booking lists read only their own rows. Absent on rows written before it existed; read as null.",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "eventCard": {
+      "anyOf": [
+        {"$ref": "../embedded/guest_event_card.schema.json"},
+        {"type": "null"}
+      ],
+      "description": "The event as the guest's lists show it, refreshed when the event's terms change; null when the event cannot be shown in a list. Absent on rows written before it existed.",
       "x-catch-ownership": "trigger-owned"
     },
     "updatedAtMillis": {"type": "integer", "minimum": 1, "x-catch-ownership": "trigger-owned"}

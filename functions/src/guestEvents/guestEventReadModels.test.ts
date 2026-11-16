@@ -124,6 +124,41 @@ test("a Catch booking registers the guest and shows the runtime",
     assert.equal(row?.paymentRecoverable, false);
   });
 
+function putBooking(h: Awaited<ReturnType<typeof publicFixture>>,
+  status: string) {
+  h.store.put(`eventParticipations/${eventParticipationId(eventId, uid)}`, {
+    eventId, organizerId: h.event.organizerId, uid, status,
+    createdAt: Timestamp.fromMillis(now - 2000),
+    updatedAt: Timestamp.fromMillis(now - 1000),
+    signedUpAt: Timestamp.fromMillis(now - 2000), waitlistedAt: null,
+    attendedAt: null, cancelledAt: null, deletedAt: null,
+    genderAtSignup: "man", paymentId: null, attendeeId: "row_native"});
+}
+
+test("a booking row carries its status and the event's list card",
+  async () => {
+    const h = await publicFixture();
+    putBooking(h, "signedUp");
+    const row = await readStatus(h.store, h.auth);
+    assert.equal(row?.participationStatus, "signedUp");
+    assert.equal(row?.eventCard?.eventId, eventId);
+    assert.equal(row?.eventCard?.startTimeMillis,
+      (h.event.startTime as Timestamp).toMillis());
+  });
+
+test("waitlisted and cancelled Catch bookings keep a row for their lists",
+  async () => {
+    const h = await publicFixture();
+    for (const status of ["waitlisted", "cancelled"]) {
+      putBooking(h, status);
+      const row = await readStatus(h.store, h.auth);
+      assert.equal(row?.participationStatus, status);
+      assert.equal(row?.booking, "none");
+    }
+    putBooking(h, "deleted");
+    assert.equal(await readStatus(h.store, h.auth), null);
+  });
+
 test("a captured website payment admits; another account sees nothing",
   async () => {
     const h = await publicCapturedFixture();
