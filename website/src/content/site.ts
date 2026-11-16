@@ -96,11 +96,14 @@ export const siteHeaderCopy = {
     nav: [forHostsLink] as readonly (SiteLinkCopy | SiteNavGroupCopy)[],
     action: {href: "/#app", label: guestAppActionLabel},
   },
-  /** Host pages: What's on, the For hosts pages, Pricing and Resources, then WhatsApp and the free trial. */
+  /**
+   * Host pages: What's on, the For hosts pages and Resources, then WhatsApp
+   * and the free trial. The bar opens pages, never a section of one, so
+   * Pricing (a band of /host/) stays in the footer until it has a page.
+   */
   host: {
     nav: [
       {label: "For hosts", links: [hostLandingLink, weddingsLink, claimLink]},
-      hostPricingLink,
       {label: "Resources", links: [helpLink]},
     ] as readonly (SiteLinkCopy | SiteNavGroupCopy)[],
     action: hostStartLink,

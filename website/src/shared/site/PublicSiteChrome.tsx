@@ -66,7 +66,7 @@ function wordmarkParts(title: string): {brand: string; subBrand?: string} {
 /**
  * Which header a page carries (the playbook kit's KitHeader). guest: What's
  * on and For hosts, then the guest app. host: What's on, the For hosts
- * dropdown, Pricing and Resources, then WhatsApp and the free trial.
+ * dropdown and Resources, then WhatsApp and the free trial.
  * minimal: the wordmark alone, for one-job flows such as a booking.
  */
 export type SiteHeaderVariant = "guest" | "host" | "minimal";

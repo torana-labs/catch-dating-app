@@ -83,7 +83,7 @@ describe("canonical public chrome", () => {
     expect(within(screen.getByRole("navigation", {name: "Primary"})).getAllByRole("link").map((link) => link.textContent)).toEqual(["For hosts"]);
   });
 
-  it("gives host pages What's on, Pricing, Help, the For hosts dropdown, WhatsApp and the free trial", () => {
+  it("gives host pages What's on, Help, the For hosts dropdown, WhatsApp and the free trial", () => {
     render(
       <SiteAccountActionProvider value={{bar: <button type="button">Sign in</button>, menu: {label: "Sign in"}}}>
         <PublicSiteHeader variant="host" />
@@ -92,7 +92,7 @@ describe("canonical public chrome", () => {
     const banner = within(screen.getByRole("banner"));
     // Resources holds one page today, so it is a plain link to Help, not a dropdown.
     expect(within(banner.getByRole("navigation", {name: "Primary"})).getAllByRole("link").map((link) => [link.textContent, link.getAttribute("href")]))
-      .toEqual([["What’s on", "/explore/"], ["Pricing", "/host/#pricing"], ["Help", "/help/"]]);
+      .toEqual([["What’s on", "/explore/"], ["Help", "/help/"]]);
     expect(banner.queryByRole("button", {name: "Resources"})).toBeNull();
     const forHosts = banner.getByRole("button", {name: "For hosts"});
     expect(forHosts.getAttribute("aria-expanded")).toBe("false");
@@ -114,7 +114,7 @@ describe("canonical public chrome", () => {
     );
     fireEvent.click(screen.getByRole("button", {name: publicSiteCopy.menu.openLabel}));
     expect(screen.getAllByRole("menuitem").map((item) => item.textContent))
-      .toEqual(["What’s on", "Pricing", "Help", "Catch for hosts", "Weddings", "Claim your page", "Sign in"]);
+      .toEqual(["What’s on", "Help", "Catch for hosts", "Weddings", "Claim your page", "Sign in"]);
   });
 
   it("keeps a one-job flow's header to the wordmark: no links, menu, account or primary action", () => {
