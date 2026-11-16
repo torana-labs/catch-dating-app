@@ -9,7 +9,8 @@
 // calendar.
 import {brand} from "./brand.ts";
 import {interpolateContent as fill} from "./interpolate.ts";
-import {activeMarket} from "./markets/index.ts";
+// The active market pack, by its file: Node smoke scripts import the host copy, and this module, directly.
+import {inMarket as activeMarket} from "./markets/in.ts";
 
 export const hostPricing = {
   /** The fee on ticket sales, in basis points: 500 is 5%. */

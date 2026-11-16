@@ -6,7 +6,8 @@
 import type {CatchFormat} from "@catch/web-ui";
 import {brand} from "./brand.ts";
 import {interpolateContent as fill} from "./interpolate.ts";
-import {activeEventLiveCities, activeMarket} from "./markets/index.ts";
+// The active market pack, by its file: Node smoke scripts import this module directly.
+import {inMarket as activeMarket} from "./markets/in.ts";
 import {hostFeeExample, hostLandingFeeExamples, hostPricingFacts, hostPricingLines} from "./pricing.ts";
 import {whatsappChatCopy} from "./site.ts";
 
@@ -44,7 +45,7 @@ export interface HostNightFormat {
 
 const startTrial = "Start free trial";
 const facts = hostPricingFacts;
-const liveCities = new Intl.ListFormat(activeMarket.locale, {style: "long", type: "conjunction"}).format(activeEventLiveCities.map((city) => city.label));
+const liveCities = new Intl.ListFormat(activeMarket.locale, {style: "long", type: "conjunction"}).format(activeMarket.cities.filter((city) => city.status === "live").map((city) => city.label));
 
 /** A comparison cell: its text, and whether it is a plain yes, a plain no or not published. */
 export interface HostCompareCell {
