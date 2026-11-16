@@ -3202,9 +3202,13 @@ response or standalone application. The key hashes the source kind and ID. A
 converted native response includes its application summary in that same entry;
 it never appears twice. Raw answers, list answer highlights, participant UIDs,
 review notes, grants and asset URLs are excluded. Ordinary all-form inbox pages
-read these summaries through the SDK. Form-scoped/filter-choice queries, answer
-filters, contact joins, review filters and text search keep the existing callable
-behavior until their own equivalent indexed read contracts are implemented.
+read these summaries through the SDK, as do an application review-status filter
+(applications included, as the callable requires) and a submission date range
+inclusive at both ends. Form-scoped/filter-choice queries, answer filters,
+response status, identity and source filters, contact joins and text search keep
+the existing callable behavior until their own equivalent indexed read contracts
+are implemented; form-scoped pages also need the version's answer filter
+options, which only the callable reads.
 Each summary may also carry two optional query fields, absent on older views and
 read as none: `reviewStatus` (a copy of the application's review status) and
 `offer {status, eventId, offeredAtMillis}`, the latest non-draft event offer made
