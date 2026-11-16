@@ -158,6 +158,8 @@ export {CatchErrorState} from "./components/CatchErrorState";
 export type {CatchErrorStateMode, CatchErrorStateProps} from "./components/CatchErrorState";
 export {CatchFactTile} from "./components/CatchFactTile";
 export type {CatchFactTileEmphasis, CatchFactTileNoteTone, CatchFactTileProps} from "./components/CatchFactTile";
+export {CatchFeatureTile} from "./components/CatchFeatureTile";
+export type {CatchFeatureTileProps} from "./components/CatchFeatureTile";
 export {CatchField} from "./components/CatchField";
 export type {
   CatchFieldInputProps,
