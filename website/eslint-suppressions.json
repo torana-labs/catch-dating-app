@@ -19,11 +19,6 @@
       "count": 17
     }
   },
-  "src/features/eventAssistance/EventAssistancePage.tsx": {
-    "react/forbid-elements": {
-      "count": 2
-    }
-  },
   "src/features/eventMessaging/EventMessageWithdrawalPanel.tsx": {
     "react/forbid-elements": {
       "count": 3
@@ -64,14 +59,9 @@
       "count": 3
     }
   },
-  "src/features/legal/LegalPage.tsx": {
-    "react/forbid-elements": {
-      "count": 9
-    }
-  },
   "src/features/salesDemo/SalesDemoPage.tsx": {
     "react/forbid-elements": {
-      "count": 32
+      "count": 1
     }
   },
   "src/server/generatedPreviewCardImage.tsx": {
@@ -194,14 +184,6 @@
     },
     "react/forbid-elements": {
       "count": 2
-    }
-  },
-  "src/shared/ui/primitives/legal.tsx": {
-    "react/forbid-dom-props": {
-      "count": 7
-    },
-    "react/forbid-elements": {
-      "count": 7
     }
   },
   "src/shared/ui/primitives/media.tsx": {

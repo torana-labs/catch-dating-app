@@ -15,5 +15,6 @@ export type {CaptureRecord} from "./media";
 export {OrganizerEventHighlights, OrganizerResultCardBody, OrganizerResultCardShell, OrganizerResultCardTopline} from "./organizer2";
 export {ClaimFlowMain, OrganizerResultCardFooter} from "./organizer3";
 export type {PublicReviewCardModel} from "./organizer3";
-export {LegalDocument, LegalDocumentContact, LegalDocumentEffective, LegalDocumentEyebrow, LegalDocumentHeader, LegalDocumentSections, LegalDocumentSummary} from "./legal";
+export {LegalDocument} from "./legal";
+export type {LegalDocumentSection} from "./legal";
 export {EventRuntimeFrame, EventRuntimeKicker, EventRuntimeLive, EventRuntimeLiveHeader, EventRuntimeLoading, EventRuntimeModule, EventRuntimeNoticeStack, EventRuntimePanel, EventRuntimePracticeBanner, EventRuntimeRoomMap, EventRuntimeRouteMap, EventRuntimeStageMarquee} from "./eventRuntime";
