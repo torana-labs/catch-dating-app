@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "organizerId": "org-1",
+  "ownerUserId": "owner-1",
+  "marketId": "in-mh-mumbai",
+  "placeNumber": 12,
+  "cap": 50,
+  "trialDays": 90,
+  "ownedAtMillis": 1763300000000,
+  "grantedAtMillis": 1763300004000,
+  "source": "ownershipTrigger",
+  "commercialTerms": {
+    "termsId": "org_0000000000000000000000000000000000000000000000000000000000000000",
+    "revision": 1,
+    "previousTrialDays": null
+  }
+}

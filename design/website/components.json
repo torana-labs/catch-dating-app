@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
   "version": 115,
-  "updated": "2026-11-11",
+  "updated": "2026-11-16",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -89,7 +89,13 @@
         "organizer_search",
         "organizer_listing_canonical",
         "organizer_listing_legacy",
-        "event_detail_canonical"
+        "event_detail_canonical",
+        "account",
+        "host_billing",
+        "weddings",
+        "weddings_apply",
+        "event_booking",
+        "event_invite"
       ],
       "owner": "shared/site",
       "source": "website/src/shared/site/PublicSiteChrome.tsx",
@@ -106,7 +112,7 @@
           "global-links"
         ]
       },
-      "notes": "The one site footer on every public marketing page (CatchSiteFooter on the ink band): Explore, Hosts with Weddings and Help and legal ending in Privacy choices, each link flush with its title; the homepage and city pages add Cities; product pages name themselves. Replaces the legacy SiteFooter and SiteFooterBand."
+      "notes": "The one site footer on every public marketing page (CatchSiteFooter on the ink band). Guest pages: Explore, Hosts (with Weddings) and Help and legal ending in Privacy choices; the homepage and city pages add Cities. Host pages: Product, Get started, the brand's column and Legal ending in Privacy choices. The help band (a person answers on WhatsApp; host pages add the walkthrough) leads it unless the page turns it off for a one-job flow. Product pages name themselves. Replaces the legacy SiteFooter and SiteFooterBand."
     },
     {
       "id": "shared_public_site_header",
@@ -124,7 +130,14 @@
         "organizer_search",
         "organizer_listing_canonical",
         "organizer_listing_legacy",
-        "event_detail_canonical"
+        "event_detail_canonical",
+        "account",
+        "host_billing",
+        "weddings",
+        "event_offer",
+        "public_form",
+        "event_booking",
+        "event_invite"
       ],
       "owner": "shared/site",
       "source": "website/src/shared/site/PublicSiteChrome.tsx",
@@ -142,13 +155,14 @@
           "global-navigation"
         ]
       },
-      "notes": "Canonical public chrome: the one header and footer every public route renders. Route-specific links live in the page (for example the Host section navigation row); transactional/private route shells do not use this owner.",
+      "notes": "Canonical public chrome: the one header every public route renders, in three variants (the playbook kit's KitHeader). guest: What's on and For hosts, then the guest app. host: What's on and Help, the For hosts dropdown (CatchNavMenu), a WhatsApp link and Start free trial. minimal: the wordmark alone, for one-job flows (booking, invitation, offer, public form). An optional offer strip (CatchBanner) above the bar shows only when a page passes one, and an optional breadcrumb row (CatchBreadcrumbRow) sits below it. Route-specific links live in the page (for example the Host section navigation row); transactional/private route shells (event runtime, rehearsal, assistance, RSVP, programmes, sales demo) do not use this owner.",
       "comparedWith": [
         "catch.step_header",
+        "catch.surface",
         "catch.top_bar",
         "catch.workspace_header"
       ],
-      "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3. Not a workspace pane header: it heads the public site, not one pane of a queue or directory. The redesign folds it into TopBar variant site when its first redesigned consumer lands; it does not implement that contract today. It lines up the account control and actions with CatchStack (catch.stack) rather than being a stack: the header owns the brand, navigation and menu around that row."
+      "comparisonReason": "Site navigation chrome (brand, nav, menu, actions); Flutter's equivalent is the native top bar, which is T3. Not a workspace pane header: it heads the public site, not one pane of a queue or directory. The redesign folds it into TopBar variant site when its first redesigned consumer lands; it does not implement that contract today. It lines up the account control and actions with CatchStack (catch.stack) rather than being a stack: the header owns the brand, navigation and menu around that row. It sets the breadcrumb row on a plain catch.surface band so the row takes the page gutter; it is not a surface."
     },
     {
       "id": "shared_section_top_bar",
@@ -210,7 +224,7 @@
           "site-and-legal-links"
         ]
       },
-      "notes": "The boards' short footer for transactional pages: the form, offer, account and billing pages pass the site and legal links and the operator line. Organiser pages served on their own domain will use it with its default links (Privacy, Terms, For organisers, Help) once custom domains ship; on the site's own domain organiser and event pages use PublicSiteFooter (owner decision, 14 Nov 2026)."
+      "notes": "The boards' short footer for transactional pages: the form and offer pages pass the site and legal links and the operator line. Organiser pages served on their own domain will use it with its default links (Privacy, Terms, For organisers, Help) once custom domains ship; on the site's own domain organiser and event pages use PublicSiteFooter (owner decision, 14 Nov 2026)."
     },
     {
       "id": "route_home",
@@ -5175,7 +5189,7 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). The Website v2 site footer on the ink ground: four titled link columns (two below 840px), each link with an optional quiet note such as 'soon', then the wordmark and tagline over a hairline. Nearest concept: shared_public_site_footer (PublicSiteChrome), the legacy chrome it replaces. Search aliases: SiteFooter, Footer, FooterLinks, Colophon.",
+      "notes": "Website T4 under D18 (CAT-260). The Website v2 site footer on the ink ground: an optional header band over a hairline (such as a help line with its actions), two to five titled link columns (four by default, two below 840px), each link with an optional quiet note such as 'soon', optional numbered footnotes, then the wordmark and tagline over a hairline. Nearest concept: shared_public_site_footer (PublicSiteChrome), the legacy chrome it replaces. Search aliases: SiteFooter, Footer, FooterLinks, Colophon.",
       "comparedWith": [
         "catch.text"
       ],
@@ -5434,6 +5448,72 @@
         ]
       },
       "notes": "Website T4 under D18. Headline at the page-title role (38, 48 and 64px by size class), inside the 72px cap of D19. Renders a plain div, never a banner landmark. First consumer: the not-found page. The library's stories (packages/web-ui/src/components/CatchBandHeader.stories.tsx) do not declare catchComponent yet, so coverage stays planned. Search aliases: SectionHeader, BandHeading, SectionIntro, Kicker, Eyebrow."
+    },
+    {
+      "id": "shared_breadcrumb_row",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical",
+        "host_billing"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchBreadcrumbRow.tsx",
+      "exportName": "CatchBreadcrumbRow",
+      "comparedWith": [
+        "catch.button",
+        "catch.index_row",
+        "catch.meta_row",
+        "catch.text"
+      ],
+      "comparisonReason": "Where the current page sits in the site: a navigation landmark with an ordered list of the pages above it as neutral text links (catch.button's text recipe with an href), quiet slashes and the current page set with catch.text and marked aria-current. It is not a list row: it has no leading, trailing or meta slots and draws no box, unlike catch.index_row and catch.meta_row.",
+      "css": [
+        "packages/web-ui/src/components/CatchBreadcrumbRow.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "trail",
+          "current-only",
+          "on-ink",
+          "on-ground",
+          "phone-wrap"
+        ]
+      },
+      "notes": "Website T4 under D18. The playbook kit's breadcrumb row under the header, drawn by PublicSiteHeader's breadcrumbs prop. First consumers: the event page (What's on, the organiser's open city, the event; the same trail is BreadcrumbList structured data) and host billing (For hosts, Billing). The library's stories (packages/web-ui/src/components/CatchBreadcrumbRow.stories.tsx) do not declare catchComponent yet, so coverage stays planned; the website's PublicSiteChrome stories show it in the header at 1280 and 390. Search aliases: Breadcrumb, Breadcrumbs, Crumbs, Trail, PathNav."
+    },
+    {
+      "id": "shared_nav_menu",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host",
+        "host_billing",
+        "weddings",
+        "claim",
+        "claim_lookup"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchNavMenu.tsx",
+      "exportName": "CatchNavMenu",
+      "comparedWith": [
+        "catch.icon",
+        "catch.menu",
+        "catch.text"
+      ],
+      "comparisonReason": "A desktop site-navigation disclosure: a trigger with a catch.icon chevron that shows a panel of plain links set with catch.text, each keeping its link semantics, and that renders nothing below 600px where the header's phone menu carries the links. catch.menu is a menu of commands with menuitem roles chosen by value; this is navigation, not a menu.",
+      "css": [
+        "packages/web-ui/src/components/CatchNavMenu.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "closed",
+          "open",
+          "current-section",
+          "end-aligned",
+          "on-ink"
+        ]
+      },
+      "notes": "Website T4 under D18. The playbook kit's header dropdowns, drawn by PublicSiteHeader's host variant: For hosts (Catch for hosts, Weddings, Claim your page). A group with one page draws a plain link instead (Resources is Help alone today), and an empty group is left out. It sits with the bar's actions until CatchTopBar's site variant takes a navigation slot. The library's stories (packages/web-ui/src/components/CatchNavMenu.stories.tsx) do not declare catchComponent yet, so coverage stays planned; the website's PublicSiteChrome stories show it at 1280. Search aliases: NavDropdown, MegaMenu, Disclosure, DropdownNav, HeaderMenu."
     },
     {
       "id": "shared_feature_tile",

@@ -160,9 +160,9 @@ export async function processorFixture() {
       reservePublicPayment({...input, loadCurrentAuthUser: h.auth}),
     project: (input) =>
       projectPublicPayment({...input, loadCurrentAuthUser: h.auth}),
-    prepareRouting: async () => {
+    prepareRouting: async (input) => {
       calls.routes++;
-      return h.routing;
+      return h.routingFor(input.amountMinor);
     },
     collectionReady: async () => true,
     invite: async () => null,

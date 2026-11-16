@@ -1070,12 +1070,36 @@
       "exportedFunctions": [
         "registerPublicEvent",
         "getOrganizerCrmSummary",
-        "requestAccountDeletion"
+        "requestAccountDeletion",
+        "onGuestMessagingPermissionOrganizerPreferenceChanged"
       ],
       "migrationNotes": [
         "A roster phone number never grants marketing permission. Only an explicit participant-controlled per-channel receipt creates or advances this projection.",
         "Managed delivery requires evidenceStatus=complete and a currentReceiptId; legacy non-unknown rows without complete evidence fail closed.",
         "Catch platform marketing consent remains a separate purpose and is not represented here."
+      ]
+    },
+    {
+      "id": "guestMessagingPermissions",
+      "path": "guestMessagingPermissions/{permissionId}",
+      "rulesMatch": "/guestMessagingPermissions/{permissionId}",
+      "typescriptInterface": "GuestMessagingPermissionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "rulesTestNames": [
+        "lets guests read only their own messaging permission rows"
+      ],
+      "owner": "Guest messaging permission projector: messaging guest messaging permission triggers",
+      "read": "the guest gets and lists only rows whose uid is theirs, while their account is not deleted; a row not written yet reads as missing",
+      "write": "server only; written from the preference and the receipts it names, deleted when the preference is",
+      "exportedFunctions": [
+        "onGuestMessagingPermissionCatchPreferenceChanged",
+        "onGuestMessagingPermissionOrganizerPreferenceChanged",
+        "onGuestMessagingPermissionCatchReceiptChanged",
+        "onGuestMessagingPermissionOrganizerReceiptChanged"
+      ],
+      "migrationNotes": [
+        "preference equals what listParticipantMessagingPreferences returns for that sender. The guest-messaging-permissions copy-forward migration creates rows for preferences recorded before the triggers."
       ]
     },
     {
@@ -1090,7 +1114,8 @@
       "write": "server only and append-only by operation design",
       "exportedFunctions": [
         "registerPublicEvent",
-        "onOrganizerMessagingWebhookEventCreated"
+        "onOrganizerMessagingWebhookEventCreated",
+        "onGuestMessagingPermissionOrganizerReceiptChanged"
       ],
       "migrationNotes": [
         "Grant receipts bind the organizer, participant, channel, reviewed terms version, consent-copy hash, source identity, and identity strength.",
@@ -1288,6 +1313,26 @@
       ],
       "migrationNotes": [
         "The view carries the basics, preferences and reviewed-defaults hashes the defaults update command and the first-save basics are fenced by; the client never recomputes them."
+      ]
+    },
+    {
+      "id": "hostFormVersionFilters",
+      "path": "hostFormVersionFilters/{versionId}",
+      "rulesMatch": "/hostFormVersionFilters/{versionId}",
+      "typescriptInterface": "HostFormVersionFilterDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers get form version answer filters and nothing else"
+      ],
+      "owner": "Host read model projector: hostReadModels form version filter trigger",
+      "read": "current organizer managers get a version's document by id; a view not written yet reads as missing; nobody lists the collection",
+      "write": "server only; written from the immutable organizerFormVersions document and deleted if the version is",
+      "exportedFunctions": [
+        "onHostFormVersionFilterSourceChanged"
+      ],
+      "migrationNotes": [
+        "answerFilterOptions equals what listOrganizerFormResponses returns for the version. The host-form-version-filters copy-forward migration creates views for versions published before the trigger."
       ]
     },
     {
@@ -1764,7 +1809,8 @@
       "write": "immutable server-created version only",
       "exportedFunctions": [
         "publishOrganizerForm",
-        "listParticipantActivity"
+        "listParticipantActivity",
+        "onHostFormVersionFilterSourceChanged"
       ],
       "migrationNotes": [
         "sourceDraftRevision makes publish retries idempotent and every historical definition immutable.",
@@ -4273,7 +4319,8 @@
       "exportedFunctions": [
         "submitOrganizerFormResponse",
         "getOrganizerFormPayment",
-        "requestAccountDeletion"
+        "requestAccountDeletion",
+        "onGuestMessagingPermissionCatchPreferenceChanged"
       ],
       "migrationNotes": [
         "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",
@@ -4293,7 +4340,8 @@
       "exportedFunctions": [
         "submitOrganizerFormResponse",
         "getOrganizerFormPayment",
-        "requestAccountDeletion"
+        "requestAccountDeletion",
+        "onGuestMessagingPermissionCatchReceiptChanged"
       ],
       "migrationNotes": [
         "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",
@@ -5131,12 +5179,14 @@
       "rulesTestNames": [
         "keeps commercial terms and their history server-only"
       ],
-      "owner": "Catch operators (Finance, Admin Owner) through manageCommercialTerms",
+      "owner": "Catch operators (Finance, Admin Owner) through manageCommercialTerms; the founding-host offer writes one organizer's trial.days",
       "read": "server only; the payment resolver, manageCommercialTerms and the read-only adminListCommercialTerms",
-      "write": "manageCommercialTerms only: expected-revision replacement with a reason, an immutable revision record and an admin audit log in one transaction",
+      "write": "manageCommercialTerms: expected-revision replacement with a reason, an immutable revision record and an admin audit log in one transaction. The founding place grant (onFoundingHostOrganizerWritten, reconcileFoundingHostPlacesDaily) sets an organizer override's trial.days to the founding days, keeping its other keys, as a new revision with an immutable revision record in the transaction that takes the place",
       "exportedFunctions": [
         "manageCommercialTerms",
-        "adminListCommercialTerms"
+        "adminListCommercialTerms",
+        "onFoundingHostOrganizerWritten",
+        "reconcileFoundingHostPlacesDaily"
       ],
       "migrationNotes": [
         "New collection. Until commercialTerms/platform exists, platformSplit (Route) payments and memberships fail closed and hostCollected ticket and form payments carry no terms snapshot. Save it once in Admin (Finance, Commercial terms), which writes through manageCommercialTerms, before relying on either; no backfill rewrites recorded payments."
@@ -5152,15 +5202,103 @@
       "rulesTestNames": [
         "keeps commercial terms and their history server-only"
       ],
-      "owner": "manageCommercialTerms",
+      "owner": "manageCommercialTerms and the founding place grant",
       "read": "server only; operator audit through adminListCommercialTerms",
-      "write": "create-only in the same transaction as the commercialTerms write it records",
+      "write": "create-only in the same transaction as the commercialTerms write it records (manageCommercialTerms, or a founding place grant with actorUid system:foundingHostOffer)",
       "exportedFunctions": [
         "manageCommercialTerms",
-        "adminListCommercialTerms"
+        "adminListCommercialTerms",
+        "onFoundingHostOrganizerWritten",
+        "reconcileFoundingHostPlacesDaily"
       ],
       "migrationNotes": [
         "New append-only history keyed <termsId>_r<revision>; never updated or deleted."
+      ]
+    },
+    {
+      "id": "foundingHostOffers",
+      "path": "foundingHostOffers/{marketId}",
+      "rulesMatch": "/foundingHostOffers/{marketId}",
+      "typescriptInterface": "FoundingHostOfferDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/founding_host_offers.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps the founding-host offer config, organizer places and owner guards server-only"
+      ],
+      "owner": "Admin Owner through adminManageFoundingHostOffers (cap, deadline); the founding place grant (takenCount)",
+      "read": "server only; adminManageFoundingHostOffers, the founding place grant and its daily reconcile",
+      "write": "adminManageFoundingHostOffers: expected-revision replacement of cap and deadline with a reason and an admin audit log, never below takenCount. The founding place grant increments takenCount in the transaction that creates the place, so the cap is never exceeded",
+      "exportedFunctions": [
+        "adminManageFoundingHostOffers",
+        "onFoundingHostOrganizerWritten",
+        "reconcileFoundingHostPlacesDaily"
+      ],
+      "migrationNotes": [
+        "New collection (owner decision 16 Nov 2026). Absent until the owner opens a city; no backfill. Organizers that gained an owner before a city opened are not founding hosts."
+      ]
+    },
+    {
+      "id": "foundingHostPlaces",
+      "path": "foundingHostPlaces/{organizerId}",
+      "rulesMatch": "/foundingHostPlaces/{organizerId}",
+      "typescriptInterface": "FoundingHostPlaceDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/founding_host_offers.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps the founding-host offer config, organizer places and owner guards server-only"
+      ],
+      "owner": "the founding place grant (functions/src/foundingHosts)",
+      "read": "server only; the founding place grant and its daily reconcile",
+      "write": "create-only in the transaction that increments foundingHostOffers takenCount, creates the owner's foundingHostOwnerPlaces guard and writes the founding trial into the organizer's commercial terms override; its existence makes the grant idempotent. Records the organizer's canonical owner when the place was taken",
+      "exportedFunctions": [
+        "onFoundingHostOrganizerWritten",
+        "reconcileFoundingHostPlacesDaily"
+      ],
+      "migrationNotes": [
+        "New collection keyed by organizer id; never updated or deleted by later cap, deadline, terms or ownership changes."
+      ]
+    },
+    {
+      "id": "foundingHostOwnerPlaces",
+      "path": "foundingHostOwnerPlaces/{ownerPlaceId}",
+      "rulesMatch": "/foundingHostOwnerPlaces/{ownerPlaceId}",
+      "typescriptInterface": "FoundingHostOwnerPlaceDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/founding_host_offers.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps the founding-host offer config, organizer places and owner guards server-only"
+      ],
+      "owner": "the founding place grant (functions/src/foundingHosts)",
+      "read": "server only; the founding place grant reads it in the transaction that would take a place",
+      "write": "create-only in the same transaction as the foundingHostPlaces record it names; keyed by sha256(JSON.stringify([ownerUserId, marketId])) of the organizer's canonical owner, so one person takes at most one founding place per city across all their organizer pages and concurrent grants for the same owner and city conflict on it",
+      "exportedFunctions": [
+        "onFoundingHostOrganizerWritten",
+        "reconcileFoundingHostPlacesDaily"
+      ],
+      "migrationNotes": [
+        "New collection (owner decision 16 Nov 2026), written with every place; no backfill because no place exists before this branch ships. Never updated or deleted: an ownership transfer leaves the place with its organizer and the guard with the owner who took it."
+      ]
+    },
+    {
+      "id": "publicFoundingHostOffers",
+      "path": "publicFoundingHostOffers/{marketId}",
+      "rulesMatch": "/publicFoundingHostOffers/{marketId}",
+      "typescriptInterface": "PublicFoundingHostOfferDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/founding_host_offers.rules.test.cjs",
+      "rulesTestNames": [
+        "lets anyone read the public founding-host counts and nobody write them"
+      ],
+      "owner": "adminManageFoundingHostOffers and the founding place grant",
+      "read": "public: anyone may get or list; counts only (cap, places left, status, deadline), no organizer, owner or staff identity",
+      "write": "server only; rewritten in the same transaction as every owner change and every place taken",
+      "exportedFunctions": [
+        "adminManageFoundingHostOffers",
+        "onFoundingHostOrganizerWritten",
+        "reconcileFoundingHostPlacesDaily"
+      ],
+      "migrationNotes": [
+        "New public projection for the website's founding-host strip; an absent document means the city has no offer and the strip stays hidden."
       ]
     },
     {

@@ -1,0 +1,8 @@
+{
+  "action": "replace",
+  "marketId": "in-mh-mumbai",
+  "expectedRevision": 0,
+  "cap": 5000,
+  "endsAtMillis": null,
+  "reason": "A cap beyond the contract limit"
+}
