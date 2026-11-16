@@ -2,7 +2,7 @@
 import * as admin from "firebase-admin";
 import {logger} from "firebase-functions";
 import {CallableRequest, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import type {WalkthroughBookingDocument} from "../shared/generated/firestoreAdminTypes";
 import {
@@ -102,7 +102,7 @@ export async function getWalkthroughSlotsHandler(request: CallableRequest<unknow
   };
 }
 
-export const getWalkthroughSlots = onCall({...appCheckCallableOptions, maxInstances: 10},
+export const getWalkthroughSlots = onCall(appCheckCallableOptionsWithLimits({maxInstances: 10}),
   (request) => getWalkthroughSlotsHandler(request));
 
 /**
@@ -184,7 +184,7 @@ export async function bookWalkthroughHandler(request: CallableRequest<unknown>,
   return bookingResponse(outcome.created, false);
 }
 
-export const bookWalkthrough = onCall({...appCheckCallableOptions, maxInstances: 5},
+export const bookWalkthrough = onCall(appCheckCallableOptionsWithLimits({maxInstances: 5}),
   (request) => bookWalkthroughHandler(request));
 
 /** A retry of the same request finds its booking; the same request id with other answers is refused. */
@@ -271,5 +271,5 @@ export async function manageWalkthroughBookingHandler(request: CallableRequest<u
   });
 }
 
-export const manageWalkthroughBooking = onCall({...appCheckCallableOptions, maxInstances: 5},
+export const manageWalkthroughBooking = onCall(appCheckCallableOptionsWithLimits({maxInstances: 5}),
   (request) => manageWalkthroughBookingHandler(request));

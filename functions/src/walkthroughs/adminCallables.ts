@@ -4,7 +4,7 @@ import {isDeepStrictEqual} from "node:util";
 import {CallableRequest, onCall} from "firebase-functions/v2/https";
 import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
 import {requireAdminRole} from "../admin/adminAuth";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import type {WalkthroughAvailabilityDocument, WalkthroughBookingDocument} from "../shared/generated/firestoreAdminTypes";
 import {
@@ -100,7 +100,7 @@ export async function adminSetWalkthroughAvailabilityHandler(request: CallableRe
   return {availability: availabilityView(saved.doc)!, nextSlots, changed: saved.changed};
 }
 
-export const adminSetWalkthroughAvailability = onCall({...appCheckCallableOptions, maxInstances: 2},
+export const adminSetWalkthroughAvailability = onCall(appCheckCallableOptionsWithLimits({maxInstances: 2}),
   (request) => adminSetWalkthroughAvailabilityHandler(request));
 
 /** The calendar, the open slot count and the bookings whose slots fall in a range of India-time days. */
@@ -138,7 +138,7 @@ export async function adminListWalkthroughBookingsHandler(request: CallableReque
   };
 }
 
-export const adminListWalkthroughBookings = onCall({...appCheckCallableOptions, maxInstances: 2},
+export const adminListWalkthroughBookings = onCall(appCheckCallableOptionsWithLimits({maxInstances: 2}),
   (request) => adminListWalkthroughBookingsHandler(request));
 
 /**
@@ -185,5 +185,5 @@ export async function adminUpdateWalkthroughBookingHandler(request: CallableRequ
   });
 }
 
-export const adminUpdateWalkthroughBooking = onCall({...appCheckCallableOptions, maxInstances: 2},
+export const adminUpdateWalkthroughBooking = onCall(appCheckCallableOptionsWithLimits({maxInstances: 2}),
   (request) => adminUpdateWalkthroughBookingHandler(request));
