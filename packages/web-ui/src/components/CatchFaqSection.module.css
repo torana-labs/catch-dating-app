@@ -1,0 +1,28 @@
+/*
+ * The questions band (the playbook kit's FAQ): the header and its footer line
+ * in five parts, the accordion in seven, 64px apart; one column below 840px,
+ * 28px apart.
+ */
+.faq {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--catch-space-s16);
+  align-items: start;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s5);
+  min-width: 0;
+}
+
+.footer,
+.questions { min-width: 0; }
+
+@container catch-page (width < 840px) {
+  .faq {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--catch-space-s7);
+  }
+}
