@@ -53,7 +53,7 @@ export type {CatchPipelineBoardGuest, CatchPipelineBoardProps, CatchPipelineBoar
 export {CatchSiteHeader} from "./components/CatchSiteHeader";
 export type {CatchSiteHeaderLink, CatchSiteHeaderProps} from "./components/CatchSiteHeader";
 export {CatchSiteFooter} from "./components/CatchSiteFooter";
-export type {CatchSiteFooterGroup, CatchSiteFooterLink, CatchSiteFooterProps} from "./components/CatchSiteFooter";
+export type {CatchSiteFooterColumns, CatchSiteFooterGroup, CatchSiteFooterLink, CatchSiteFooterProps} from "./components/CatchSiteFooter";
 export {CatchDeviceFrame} from "./components/CatchDeviceFrame";
 export type {CatchDeviceFrameKind, CatchDeviceFrameOrientation, CatchDeviceFrameProps, CatchDeviceFrameTilt, CatchDeviceFrameWindowKind} from "./components/CatchDeviceFrame";
 export {CatchHeroShowcase} from "./components/CatchHeroShowcase";
@@ -145,6 +145,16 @@ export type {
   CatchBadgeSize,
   CatchBadgeTone,
 } from "./components/CatchBadge";
+export {CatchBanner} from "./components/CatchBanner";
+export type {
+  CatchBannerAction,
+  CatchBannerProps,
+  CatchBannerStatus,
+  CatchBannerTone,
+  CatchBannerVariant,
+} from "./components/CatchBanner";
+export {CatchBreadcrumbRow} from "./components/CatchBreadcrumbRow";
+export type {CatchBreadcrumbRowLink, CatchBreadcrumbRowProps} from "./components/CatchBreadcrumbRow";
 export {CatchEmptyState} from "./components/CatchEmptyState";
 export {EmptyStateControl} from "./components/EmptyStateControl";
 export type {EmptyStateAnnouncement, EmptyStateControlProps} from "./components/EmptyStateControl";
@@ -228,6 +238,8 @@ export {CatchMetaRow} from "./components/CatchMetaRow";
 export type {CatchMetaEntry, CatchMetaRowProps} from "./components/CatchMetaRow";
 export {CatchMetricSection} from "./components/CatchMetricSection";
 export type {CatchMetricData, CatchMetricSectionProps} from "./components/CatchMetricSection";
+export {CatchNavMenu} from "./components/CatchNavMenu";
+export type {CatchNavMenuLink, CatchNavMenuProps} from "./components/CatchNavMenu";
 export {CatchNotice} from "./components/CatchNotice";
 export type {CatchNoticeData, CatchNoticeProps, CatchNoticeTone} from "./components/CatchNotice";
 export {CatchNoticeRegion} from "./components/CatchNoticeRegion";

@@ -1,0 +1,55 @@
+/*
+ * The site breadcrumb (the playbook kit's .crumb row under the header): each
+ * page above the current one is a neutral text link, a quiet slash after it,
+ * then the current page in ink. The first link's text lines up with the
+ * row's edge; the links keep their 44px touch target. The row wraps on a
+ * narrow page and draws no box: on a given Website v2 ground it takes only
+ * that ground's inks.
+ */
+.row {
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  color: var(--catch-theme-ink);
+}
+
+/* A given ground remaps the theme inks (grounds.module.css) but never fills. */
+.onGround {
+  composes: ground from "./grounds.module.css";
+}
+
+.row[data-ground] { background: transparent; }
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.item:first-child > :first-child:not(:only-child) {
+  margin-inline-start: calc(-1 * var(--catch-space-s2));
+}
+
+.separator {
+  color: color-mix(in srgb, var(--catch-theme-ink2) 60%, transparent);
+  font-family: var(--catch-typography-role-label-action-family), var(--catch-font-stack-sans);
+  font-size: var(--catch-typography-role-label-action-size);
+  line-height: var(--catch-typography-role-label-action-line-height);
+}
+
+.current {
+  min-width: 0;
+  padding-inline-start: var(--catch-space-s2);
+  color: var(--catch-theme-ink);
+}
+
+.item:only-child > .current { padding-inline-start: 0; }
