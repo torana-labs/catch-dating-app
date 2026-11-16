@@ -1,8 +1,8 @@
 // Copy for the homepage, from the conversion playbook's homepage board
 // (design/source_packs/website-playbook/oneoff/PlaybookHome.dc.html). Copy is
 // the owner's: change it on the board first. The brand is named from the
-// brand pack. Catch is for meeting people in real life: no dating, singles,
-// mixer or match wording, and no figure the page cannot read.
+// brand pack. The product is for meeting people in real life: no dating,
+// singles, mixer or match wording, and no figure the page cannot read.
 import type {CatchFormat} from "@catch/web-ui";
 import {brand} from "./brand.ts";
 import {guestAppActionLabel} from "./site.ts";
