@@ -36,19 +36,44 @@ export const siteFooterLegalLinks = [
   {href: "/contact/", label: "Contact"},
 ] as const;
 
+/** A page link: where it goes and what it says. */
+export interface SiteLinkCopy {
+  readonly href: string;
+  readonly label: string;
+}
+
+/**
+ * A header group: a dropdown of pages on a wide page (CatchNavMenu). A group
+ * with one page draws that page as a plain link, and an empty group is left
+ * out, so a group never opens onto nothing.
+ */
+export interface SiteNavGroupCopy {
+  readonly label: string;
+  readonly links: readonly SiteLinkCopy[];
+}
+
+const whatsOnLink = {href: "/explore/", label: "What’s on"} as const;
+const forHostsLink = {href: "/host/", label: "For hosts"} as const;
+const hostLandingLink = {href: "/host/", label: `${brand.name} for hosts`} as const;
+const hostPricingLink = {href: "/host/#pricing", label: "Pricing"} as const;
+const hostStartLink = {href: "/host/#start", label: "Start free trial"} as const;
+const weddingsLink = {href: "/weddings/", label: "Weddings"} as const;
+const claimLink = {href: "/claim/", label: "Claim your page"} as const;
+const helpLink = {href: "/help/", label: "Help"} as const;
+
 // One authored owner for the public header and footer on every route.
 export const publicSiteCopy = {
   wordmark: brand.name,
   menu: {openLabel: "Menu", navLabel: "Primary"},
   /**
-   * The main bar's links, the same on every page: each opens a page, never a
-   * section of the current one (navigation proposal, 15 Nov). Explore holds
-   * plans and organisers as tabs, so it is one link. A city's pages point
-   * What's on at that city's Explore.
+   * The main bar's links: each opens a page, never a section of the current
+   * one (navigation proposal, 15 Nov). Explore holds plans and organisers as
+   * tabs, so it is one link. A city's pages point What's on at that city's
+   * Explore.
    */
-  whatsOn: {href: "/explore/", label: "What’s on"},
-  forHosts: {href: "/host/", label: "For hosts"},
-  nav: [{href: "/explore/", label: "What’s on"}, {href: "/host/", label: "For hosts"}],
+  whatsOn: whatsOnLink,
+  forHosts: forHostsLink,
+  nav: [whatsOnLink, forHostsLink],
   /** The general pages' one primary action, the homepage's own. */
   getApp: {label: guestAppActionLabel, href: "/#app"},
   footerOperator: publishedLegalContent.ui.footerBody,
@@ -57,27 +82,85 @@ export const publicSiteCopy = {
 } as const;
 
 /**
- * The one site footer on every public page (shared/site PublicSiteFooter):
- * Explore, Hosts and Help and legal on every page, with the city pages and
- * the homepage adding their Cities column. Help and legal ends with Privacy
- * choices, which reopens the consent banner.
+ * The header variants (the playbook kit's KitHeader). Every variant starts
+ * with the wordmark; What's on leads guest and host pages unless the page
+ * hides it. Link only pages that exist in design/website/routes.json:
+ * Resources gains host stories, the no-show calculator and refer a host, and
+ * For hosts the demo night, nightlife and colleges, once those pages ship.
+ */
+export const siteHeaderCopy = {
+  /** The breadcrumb row's accessible name. */
+  breadcrumbLabel: "Breadcrumb",
+  /** Guest pages: What's on and For hosts, then the guest app. */
+  guest: {
+    nav: [forHostsLink] as readonly (SiteLinkCopy | SiteNavGroupCopy)[],
+    action: {href: "/#app", label: guestAppActionLabel},
+  },
+  /** Host pages: What's on, the For hosts pages, Pricing and Resources, then WhatsApp and the free trial. */
+  host: {
+    nav: [
+      {label: "For hosts", links: [hostLandingLink, weddingsLink, claimLink]},
+      hostPricingLink,
+      {label: "Resources", links: [helpLink]},
+    ] as readonly (SiteLinkCopy | SiteNavGroupCopy)[],
+    action: hostStartLink,
+    whatsapp: {label: "Talk to us on WhatsApp", message: whatsappChatCopy.hostQuestionMessage},
+  },
+} as const;
+
+/**
+ * The one site footer on every public page (shared/site PublicSiteFooter).
+ * Guest pages: Explore, Hosts and Help and legal, with the city pages and
+ * the homepage adding their Cities column. Host pages: Product, Get started,
+ * the brand's column and Legal (the playbook kit's KitFooter). Help and
+ * legal, and Legal, end with Privacy choices, which reopens the consent
+ * banner.
  */
 export const siteFooterCopy = {
   nav: "Footer",
   tagline: "Meet people in real life, through hosts who bring them together.",
-  groups: {explore: "Explore", cities: "Cities", hosts: "Hosts", help: "Help and legal"},
+  groups: {
+    explore: "Explore",
+    cities: "Cities",
+    hosts: "Hosts",
+    help: "Help and legal",
+    product: "Product",
+    getStarted: "Get started",
+    brand: brand.name,
+    legal: "Legal",
+  },
   explore: [
-    {href: "/explore/", label: "What’s on"},
+    whatsOnLink,
     {href: "/#app", label: guestAppActionLabel},
   ],
-  hosts: [
-    {href: "/host/", label: `${brand.name} for hosts`},
-    {href: "/host/#pricing", label: "Pricing"},
-    {href: "/weddings/", label: "Weddings"},
-    {href: "/claim/", label: "Claim your page"},
-  ],
+  hosts: [hostLandingLink, hostPricingLink, hostStartLink, weddingsLink, claimLink],
   /** The legal links in reading order: help first, then the policies, then contact. */
   helpOrder: ["/help/", "/privacy/", "/terms/", "/refunds/", "/contact/"],
+  /** The host footer's columns. */
+  host: {
+    product: [
+      hostLandingLink,
+      {href: "/host/#night", label: `How ${brand.name} works`},
+      {href: "/host/#ways", label: `Ways to use ${brand.name}`},
+      weddingsLink,
+    ],
+    getStarted: [hostStartLink, hostPricingLink, claimLink],
+    brandOrder: ["/explore/", "/help/", "/contact/"],
+    legalOrder: ["/privacy/", "/terms/", "/refunds/"],
+  },
+  /**
+   * The help band across the top of the footer on guest and host pages, not
+   * on ad landing pages or one-job flows. It states no hours. Host pages add
+   * the walkthrough, which goes to the free-trial start until a walkthrough
+   * page exists.
+   */
+  helpBand: {
+    title: "We reply on WhatsApp, usually within an hour.",
+    whatsapp: whatsappChatCopy.chat,
+    guestMessage: whatsappChatCopy.generalMessage,
+    hostMessage: whatsappChatCopy.hostQuestionMessage,
+    walkthrough: {href: hostStartLink.href, label: "Book a walkthrough"},
+  },
   /** A city not yet open: "Pune · soon". */
   soon: "soon",
   /** An open city's note: "Mumbai · 2 plans this week", or "New" before its first plan. */
