@@ -32,7 +32,7 @@ interface PackagedPolicies {
   loadSupplyAcquisitionPolicy: () => Promise<{
     provider: {enabled: boolean; policyGapId: string; decisionId: string | null};
     pageFetch: {enabled: boolean; policyGapId: string; decisionId: string | null;
-      maxRequestsPerIntake: number; maxRequestsPerMonth: number};
+      maxRequestsPerIntake: number; maxRequestsPerMonth: number; maxInstantDraftRequestsPerMonth: number};
     webSearch: {enabled: boolean; policyGapId: string; decisionId: string | null;
       maxQueriesPerRun: number; maxQueriesPerMonth: number};
   }>;
@@ -143,7 +143,8 @@ async function loadConfigs(): Promise<PolicyConfig[]> {
   return [
     {...switchOf(acquisitionPolicy.pageFetch), limits: [
       {label: "Pages per nomination", value: acquisitionPolicy.pageFetch.maxRequestsPerIntake},
-      {label: "Pages per month", value: acquisitionPolicy.pageFetch.maxRequestsPerMonth}]},
+      {label: "Pages per month", value: acquisitionPolicy.pageFetch.maxRequestsPerMonth},
+      {label: "Pages per month for website drafts", value: acquisitionPolicy.pageFetch.maxInstantDraftRequestsPerMonth}]},
     {...switchOf(acquisitionPolicy.provider), limits: []},
     {...switchOf(acquisitionPolicy.webSearch), limits: [
       {label: "Searches per run", value: acquisitionPolicy.webSearch.maxQueriesPerRun},
