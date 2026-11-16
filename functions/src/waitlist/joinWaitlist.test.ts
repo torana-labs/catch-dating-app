@@ -13,6 +13,7 @@ import {
   waitlistSubmissionId,
   resolveWaitlistCorsOrigin,
   waitlistAllowedOrigins,
+  whatsappAppNoticeId,
   whatsappLaunchNoticeId,
 } from "./joinWaitlist";
 import {hostConsentKey, newHostConsentAuthority} from
@@ -50,6 +51,7 @@ test(
       "fixtures/valid/join_waitlist_request_host_phone_only.json",
       "fixtures/valid/join_waitlist_request_whatsapp_city_id.json",
       "fixtures/valid/join_waitlist_request_whatsapp_city_other.json",
+      "fixtures/valid/join_waitlist_request_whatsapp_app_launch.json",
     ]) {
       assert.equal(validateJoinWaitlistHTTPRequest(readFixture(fixture)), true);
     }
@@ -62,6 +64,7 @@ test(
       "fixtures/invalid/join_waitlist_request_host_missing_contact.json",
       "fixtures/invalid/join_waitlist_request_city_id_not_catalog_shape.json",
       "fixtures/invalid/join_waitlist_request_unknown_city_source.json",
+      "fixtures/invalid/join_waitlist_request_whatsapp_new_plans_city.json",
     ]) {
       assert.equal(
         validateJoinWaitlistHTTPRequest(readFixture(fixture)), false, fixture);
@@ -163,8 +166,29 @@ test("WhatsApp launch notices store the consented phone per city",
     assert.equal([...records.keys()].filter(
       (key) => key.startsWith("launchWaitlist/")).length, 2);
 
+    // The guest app's notice is its own row, purpose and source, with the
+    // new-plans choice recorded separately and off unless ticked.
+    assert.deepEqual(await submit({...body, whatsapp: {...whatsapp,
+      notice: "appLaunch", newPlans: true,
+      consentVersion: "app-launch-whatsapp-v1"}}),
+    {status: 200, result: {ok: true, alreadyJoined: false}});
+    const app = records.get(
+      `launchWaitlist/${whatsappAppNoticeId("+919812345678", "Pune")}`)!;
+    assert.equal(app.notice, "appLaunch");
+    const appConsents = app.consents as typeof consents;
+    assert.equal(appConsents.launchNotice.purpose, "appLaunchNotice");
+    assert.equal(appConsents.launchNotice.source, "website_app_notify");
+    assert.equal(appConsents.newPlans.purpose, "cityNewPlans");
+    assert.equal(appConsents.newPlans.granted, true);
+    assert.equal(appConsents.marketing.granted, false);
+    // The city-opening notice for the same number and city is untouched.
+    assert.equal((records.get(`launchWaitlist/${id}`)!
+      .consents as typeof consents).launchNotice.purpose, "cityLaunchNotice");
+    assert.equal(records.get(`launchWaitlist/${id}`)!.notice, "cityLaunch");
+
     const before = records.size;
     for (const rejected of [
+      {...body, whatsapp: {...whatsapp, newPlans: true}},
       {...body, whatsapp: {...whatsapp, phone: "98123"}},
       {...body, role: "host"},
       {...body, city: ""},

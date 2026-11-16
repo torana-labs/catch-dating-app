@@ -65,10 +65,11 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(main.getByRole("link", {name: "See what’s on in Mumbai"}).getAttribute("href")).toBe("/?city=mumbai");
     expect(main.getAllByText("Coming to Pune").length).toBe(5);
     // "Tell me when it opens": a WhatsApp number, and news only if ticked.
-    expect(main.getByRole("heading", {name: "Tell me when it opens"})).toBeTruthy();
-    expect(main.getByRole("textbox", {name: /WhatsApp number/})).toBeTruthy();
-    expect((main.getByRole("checkbox", {name: "Also send me news about new hosts and plans in Pune"}) as HTMLInputElement).checked).toBe(false);
-    expect(main.getByRole("button", {name: "Notify me"}).getAttribute("type")).toBe("submit");
+    const soon = within(main.getByRole("region", {name: "Catch is coming to Pune."}));
+    expect(soon.getByRole("heading", {name: "Tell me when it opens"})).toBeTruthy();
+    expect(soon.getByRole("textbox", {name: /WhatsApp number/})).toBeTruthy();
+    expect((soon.getByRole("checkbox", {name: "Also send me news about new hosts and plans in Pune"}) as HTMLInputElement).checked).toBe(false);
+    expect(soon.getByRole("button", {name: "Notify me"}).getAttribute("type")).toBe("submit");
   });
 
   it("keeps a quiet launched city open instead of calling it launching soon", () => {
@@ -112,22 +113,21 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(container.textContent).not.toMatch(/dating|singles|mixer|\bmatch/i);
   });
 
-  it("shows each Catch app store as brand.json has it: a badge link, or a coming-soon chip that records the press", () => {
+  it("shows each Catch app store as brand.json has it: badge links once live, a WhatsApp notice before", () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const {ios, android} = brand.stores.consumer;
-    if (ios) {
-      expect(screen.getAllByRole("link", {name: "Download on the App Store"})[0].getAttribute("href")).toBe(ios);
-    } else {
-      const [chip] = screen.getAllByRole("button", {name: "Coming soon on the App Store"});
-      fireEvent.click(chip);
-      expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_pending", expect.objectContaining({platform: "ios", placement: "home_hero"}));
-      expect(screen.queryByRole("img", {name: "Download on the App Store"})).toBeNull();
+    if (ios || android) {
+      if (ios) expect(screen.getAllByRole("link", {name: "Download on the App Store"})[0].getAttribute("href")).toBe(ios);
+      if (android) expect(screen.getAllByRole("link", {name: "Get it on Google Play"})[0].getAttribute("href")).toBe(android);
+      return;
     }
-    if (android) {
-      expect(screen.getAllByRole("link", {name: "Get it on Google Play"})[0].getAttribute("href")).toBe(android);
-    } else {
-      expect(screen.getAllByRole("button", {name: "Coming soon on Google Play"}).length).toBeGreaterThan(0);
-    }
+    // Before launch: no "Coming soon" chips that capture nothing (leak 2).
+    expect(screen.queryByRole("button", {name: /Coming soon/})).toBeNull();
+    expect(screen.getAllByRole("link", {name: "The app is coming · Get notified"})[0].getAttribute("href")).toBe("#app");
+    const app = within(screen.getByRole("region", {name: "Be first in the Catch app."}));
+    expect(app.getByRole("textbox", {name: /WhatsApp number/})).toBeTruthy();
+    expect((app.getByRole("checkbox", {name: "Also send me new plans in Mumbai on WhatsApp, about once a week"}) as HTMLInputElement).checked).toBe(false);
+    expect(app.getByRole("button", {name: "Notify me"}).getAttribute("type")).toBe("submit");
     expect(screen.queryByRole("img", {name: /QR code/})).toBeNull();
   });
 

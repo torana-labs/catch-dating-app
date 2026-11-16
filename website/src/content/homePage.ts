@@ -148,6 +148,26 @@ export const homePageCopy = {
     body: "Book in a couple of taps, get reminders and directions, and keep your group chat after the night.",
     qr: "Scan to get the app",
     qrLabel: "QR code for the Catch app download link",
+    /** Until the app is on a store (guestAppLive), the band becomes a WhatsApp notice for the launch. */
+    soonEyebrow: "The Catch app · coming soon",
+    soonTitle: "Be first in the Catch app.",
+    soonBody: "Browse and book on the web today. Leave your WhatsApp number and we’ll message you the day the app is on the App Store and Google Play.",
+    /** Where store badges would stand before launch: a quiet link down to the notice. */
+    heroLink: "The app is coming · Get notified",
+    notify: {
+      phone: "WhatsApp number",
+      phoneHint: "98765 43210",
+      newPlans: "Also send me new plans in {city} on WhatsApp, about once a week",
+      action: "Notify me",
+      consent: "Tapping Notify me means we’ll send one WhatsApp message when the app launches. We only send new plans if you tick the box above.",
+      /** Names this wording on every stored consent; change it whenever the wording changes. */
+      consentVersion: "app-launch-whatsapp-v1",
+      privacy: "Privacy policy",
+      invalidPhone: "Enter your 10-digit mobile number.",
+      failed: "That didn’t go through. Please try again in a moment.",
+      joined: "Done. We’ll message you on WhatsApp the day the Catch app launches.",
+      alreadyJoined: "You’re already on the list. We’ve kept your latest choice.",
+    },
   },
   faq: {
     eyebrow: "Questions",

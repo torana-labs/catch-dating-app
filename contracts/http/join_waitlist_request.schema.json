@@ -509,7 +509,7 @@
     "whatsappLaunchNotice": {
       "type": "object",
       "additionalProperties": false,
-      "description": "A member's request for one WhatsApp message on the day Catch opens in their city. The launch notice is the explicit purpose of the form; marketing permission is a separate choice that is off unless the person chose it (CAT-72). consentVersion names the wording they saw.",
+      "description": "A member's request for one WhatsApp message: on the day Catch opens in their city (notice cityLaunch, the default), or on the day the Catch app is on the stores (notice appLaunch). The notice is the explicit purpose of the form; marketing permission is a separate choice that is off unless the person chose it (CAT-72). An app-launch request may also opt in to new plans in their city on WhatsApp (newPlans), a separate choice that is off unless ticked. consentVersion names the wording they saw.",
       "required": [
         "phone",
         "launchNotice",
@@ -525,12 +525,44 @@
         "launchNotice": {
           "const": true
         },
+        "notice": {
+          "type": "string",
+          "enum": [
+            "cityLaunch",
+            "appLaunch"
+          ],
+          "description": "What the one message announces: Catch opening in the person's city (cityLaunch, the default when absent) or the Catch app arriving on the stores (appLaunch)."
+        },
         "marketing": {
           "type": "boolean"
         },
         "consentVersion": {
           "type": "string",
           "pattern": "^[a-z0-9-]{1,40}$"
+        },
+        "newPlans": {
+          "type": "boolean",
+          "description": "App-launch requests only: also send new plans in the person's city on WhatsApp. Off unless the person ticked it."
+        }
+      },
+      "if": {
+        "properties": {
+          "newPlans": {
+            "const": true
+          }
+        },
+        "required": [
+          "newPlans"
+        ]
+      },
+      "then": {
+        "required": [
+          "notice"
+        ],
+        "properties": {
+          "notice": {
+            "const": "appLaunch"
+          }
         }
       }
     }

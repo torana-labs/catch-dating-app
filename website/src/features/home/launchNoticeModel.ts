@@ -44,6 +44,17 @@ export function launchNoticeRequest(city: string, phone: string, marketing: bool
   };
 }
 
+/**
+ * The guest app's "Get notified" request: one WhatsApp message when the app
+ * is on the stores, and new plans in the city only when ticked. It is its own
+ * consent purpose (appLaunchNotice), never the city-opening notice.
+ */
+export function appNoticeRequest(city: string, phone: string, newPlans: boolean, place?: LaunchNoticePlace): JoinWaitlistHTTPRequest {
+  const base = launchNoticeRequest(city, phone, false, place);
+  return {...base, whatsapp: {phone, launchNotice: true, notice: "appLaunch", newPlans, marketing: false,
+    consentVersion: copy.app.notify.consentVersion}};
+}
+
 /** Posts the request to the site's waitlist route and returns the accepted receipt. */
 export async function postLaunchNotice(body: JoinWaitlistHTTPRequest): Promise<LaunchNoticeReceipt> {
   const response = await fetch("/api/join-waitlist", {
