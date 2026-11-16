@@ -1,0 +1,348 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookBookings",
+  "title": "Playbook · Bookings and payments",
+  "height": 5400,
+  "phone": {
+    "title": "Bookings and payments",
+    "height": 8400
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "How Catch works"
+        ],
+        "here": "Bookings and payments"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Product · bookings and payments",
+        "title": "From interested to paid, without the chasing.",
+        "lead": "Applications with your questions, approvals with a tap, waitlists that fill themselves, and every payment next to the right name. In rupees, by UPI or card.",
+        "ink": "#1E2550",
+        "tone": "m-indigo",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "See pricing",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Tuesday Trivia Social · this week",
+          "bars": [
+            {
+              "l": "They apply",
+              "w": 100,
+              "c": "#8C9BF2",
+              "v": "10 applications"
+            },
+            {
+              "l": "You approve",
+              "w": 90,
+              "c": "#5CCB9F",
+              "v": "9 approved"
+            },
+            {
+              "l": "They pay",
+              "w": 70,
+              "c": "#F5C451",
+              "v": "7 paid · ₹4,200"
+            },
+            {
+              "l": "They show up",
+              "w": 70,
+              "c": "#F07A55",
+              "v": "7 booked"
+            }
+          ],
+          "rows": [
+            {
+              "t": "10 applications",
+              "tag": "They apply",
+              "tone": ""
+            },
+            {
+              "t": "9 approved",
+              "tag": "You approve",
+              "tone": ""
+            },
+            {
+              "t": "7 paid · ₹4,200",
+              "tag": "They pay",
+              "tone": ""
+            },
+            {
+              "t": "7 booked",
+              "tag": "They show up",
+              "tone": ""
+            }
+          ],
+          "fine": "Illustrative screen. Booked guests get where to meet and a reminder the day before."
+        },
+        "note": "Capability page 2 (priority 1). Every claim here is in the product code: applications, waitlist offers, private offers, invite-only links, dynamic pricing, refunds by policy, UPI through Razorpay."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Four ways in",
+        "kc": "#4C5BC4",
+        "title": "Decide who gets a place, event by event.",
+        "lead": "",
+        "panel": "open",
+        "cols": 4,
+        "items": [
+          {
+            "small": "Open",
+            "t": "Anyone can book",
+            "d": "A page with spots left. Book and pay in a couple of taps.",
+            "tone": "m-coral"
+          },
+          {
+            "small": "Applications",
+            "t": "They apply, you choose",
+            "d": "Ask the questions you want answered: who they are, who they’re bringing, what they’re hoping for. Approve with a tap.",
+            "tone": "m-yellow"
+          },
+          {
+            "small": "Invite-only",
+            "t": "A private link",
+            "d": "The event stays off public pages. Only people with your link can book.",
+            "tone": "m-mint"
+          },
+          {
+            "small": "Private offer",
+            "ink": "#F5C451",
+            "t": "A place for one person",
+            "d": "Send someone their own checkout link, checked against their phone number.",
+            "tone": "ink"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Waitlists",
+        "kc": "#F5C451",
+        "title": "A full event fills itself.",
+        "lead": "When the event is full, new bookings join the waitlist. When someone drops out, the next person gets an offer that stays open for as long as you choose. If they don’t take it, it moves on.",
+        "panel": "ink",
+        "ticks": [
+          "Offers go out in order, one place at a time",
+          "You set how long each offer stays open",
+          "Approve waitlisted applicants yourself if you prefer"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "",
+          "rows": [
+            {
+              "t": "32 of 32 places",
+              "tag": "Booked",
+              "tone": ""
+            },
+            {
+              "t": "Aanya · 1 place · 2 hours left",
+              "tag": "Offer open",
+              "tone": "hot"
+            },
+            {
+              "t": "Kabir",
+              "tag": "Next",
+              "tone": ""
+            },
+            {
+              "t": "Meher and Dev (together)",
+              "tag": "Next",
+              "tone": ""
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Pricing that moves",
+        "kc": "#B23A5A",
+        "title": "Reward the early bookers.",
+        "lead": "Turn on dynamic pricing and the price steps up by an amount you set as places fill, up to a maximum you choose. Early bookers pay less; the last places pay most.",
+        "panel": "open",
+        "ticks": [
+          "Set the step and the maximum per event",
+          "Free events stay free",
+          "Guests always see the price they’ll pay before they book"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Price as places fill",
+          "bars": [
+            {
+              "l": "First 10",
+              "w": 40,
+              "c": "#8C9BF2",
+              "v": "₹400"
+            },
+            {
+              "l": "Places 11 to 20",
+              "w": 60,
+              "c": "#8C9BF2",
+              "v": "₹450"
+            },
+            {
+              "l": "Places 21 to 30",
+              "w": 80,
+              "c": "#8C9BF2",
+              "v": "₹500"
+            },
+            {
+              "l": "Last places",
+              "w": 100,
+              "c": "#8C9BF2",
+              "v": "₹550"
+            }
+          ],
+          "fine": "Illustrative: a ₹50 step with a ₹550 maximum."
+        }
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Payments",
+        "kc": "#1F7A57",
+        "title": "Paid in rupees, no screenshots.",
+        "lead": "",
+        "panel": "tint",
+        "center": false,
+        "items": [
+          {
+            "t": "UPI or card",
+            "d": "Guests pay at booking through Razorpay. Every payment lands next to the right name."
+          },
+          {
+            "t": "Refunds by your rules",
+            "d": "Set a cancellation policy per event. Refunds follow it, and the fee is on sales net of refunds."
+          },
+          {
+            "t": "Payouts",
+            "d": "Guests pay into your own Razorpay account, and it reaches your bank on Razorpay’s usual schedule. Catch bills its fee afterwards. Payment gateway fees are separate."
+          }
+        ],
+        "chips": [
+          "5% of ticket sales, never more than ₹10,000 a month",
+          "Free events stay free",
+          "30 days free from your first event"
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Links",
+        "kc": "#1F7A57",
+        "title": "Know which post sold the tickets.",
+        "lead": "Give every promoter, venue and post its own link. Every visit and booking counts against the link it came from.",
+        "panel": "open",
+        "btns": [
+          {
+            "l": "Guest records and audiences",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Newsletter link · last 30 days",
+          "stats": [
+            {
+              "v": "13%",
+              "l": "Visitors who booked"
+            },
+            {
+              "v": "₹14,400",
+              "l": "Ticket sales"
+            },
+            {
+              "v": "₹80",
+              "l": "Per visit"
+            }
+          ],
+          "fine": "Illustrative data"
+        }
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "About bookings and payments.",
+        "items": [
+          [
+            "Can I approve each guest myself?",
+            "Yes. Turn on applications, ask your questions, and approve or decline each person. Approved guests pay to confirm their place."
+          ],
+          [
+            "Can guests pay by UPI?",
+            "Yes. Guests pay by UPI or card at booking, through Razorpay. Every payment is matched to the right name."
+          ],
+          [
+            "What happens when someone cancels?",
+            "Refunds follow the cancellation policy you set for the event. If there is a waitlist, the next person gets an offer for the place."
+          ],
+          [
+            "Can an event stay off public pages?",
+            "Yes. Make it invite-only and share a private link, or send one person a private offer with their own checkout."
+          ],
+          [
+            "Can the price change as the event fills?",
+            "Yes, if you turn on dynamic pricing: the price steps up by an amount you set as places fill, up to a maximum you choose."
+          ],
+          [
+            "Can I bring bookings from another tool?",
+            "Yes. Import your guest list from any tool and take new bookings on Catch whenever you’re ready."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Free for 30 days · founding hosts get 90",
+        "title": "Take your next bookings on Catch.",
+        "lead": "Bring your guest list from any tool. Nothing changes for guests until the doors open.",
+        "tone": "m-coral",
+        "ink": "#3B1F14",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "How Catch works",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b",
+        "alt": "An event as guests see it, ready to book"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

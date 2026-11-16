@@ -1,0 +1,228 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookAbout",
+  "title": "Playbook · About",
+  "height": 5000,
+  "phone": {
+    "title": "About",
+    "height": 8200
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "crumbs": [
+          "Catch"
+        ],
+        "here": "About"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "About Catch",
+        "title": "We help the people who bring strangers together.",
+        "lead": "Run clubs, supper clubs, quiz nights and courts are where a lot of people make friends in a new city. Catch gives the hosts behind them better tools, so more nights happen and more people come back.",
+        "ink": "#4A1C0E",
+        "tone": "m-coral",
+        "btns": [
+          {
+            "l": "For hosts"
+          },
+          {
+            "l": "What’s on",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/088ae8bbfb5016fdc0bb1db7828d8264",
+          "alt": "A guest’s phone after checking in: their group and who to look for"
+        },
+        "note": "Priority-2 page (/about/). Decision: founders with names. Names, photos, roles and the story are placeholders for you to fill in. No personal contact details: the page sends people to WhatsApp and the contact page."
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Why we built it",
+        "kc": "#B23A5A",
+        "title": "The best nights run on a host’s spare evenings.",
+        "lead": "",
+        "panel": "open",
+        "top": true,
+        "media": {
+          "kind": "card",
+          "title": "Catch is built and operated by Torana",
+          "rows": [
+            {
+              "t": "Based in",
+              "v": "[city]"
+            },
+            {
+              "t": "Live in",
+              "v": "Mumbai, Indore"
+            },
+            {
+              "t": "Hosts on Catch",
+              "v": "[N]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitCards",
+      "data": {
+        "variant": "person",
+        "kicker": "The people behind it",
+        "kc": "#4C5BC4",
+        "title": "Who you’re trusting with your nights.",
+        "items": [
+          {
+            "t": "[Name]",
+            "s": "[Role] · [City]",
+            "line": "[One line: what they did before, and why they care about this.]"
+          },
+          {
+            "t": "[Name]",
+            "s": "[Role] · [City]",
+            "line": "[One line: what they did before, and why they care about this.]"
+          },
+          {
+            "t": "[Name]",
+            "s": "[Role] · [City]",
+            "line": "[One line: what they did before, and why they care about this.]"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "What we believe",
+        "kc": "#F5C451",
+        "title": "The rules we build by.",
+        "lead": "",
+        "panel": "ink",
+        "center": false,
+        "cols": 2,
+        "items": [
+          {
+            "t": "Free events stay free",
+            "d": "If nobody pays to come, nobody pays us. We earn 5% when you sell tickets, never more than ₹10,000 a month."
+          },
+          {
+            "t": "Your guests are yours",
+            "d": "Your list, your page, your followers. Export them whenever you want."
+          },
+          {
+            "t": "Honest about what we don’t do",
+            "d": "Every page says when another tool is the better choice, and what isn’t built yet."
+          },
+          {
+            "t": "People before phones",
+            "d": "The phone comes out at the door and between rounds. The rest of the night is for the people in the room."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "panel": "tint",
+        "center": false,
+        "kicker": "Where we are",
+        "kc": "#1F7A57",
+        "title": "Starting in Mumbai and Indore.",
+        "cols": 4,
+        "items": [
+          {
+            "tone": "white",
+            "t": "Mumbai",
+            "d": "Live: hosts and plans"
+          },
+          {
+            "tone": "white",
+            "t": "Indore",
+            "d": "Live: hosts and plans"
+          },
+          {
+            "tone": "white",
+            "n": "[N]",
+            "t": "hosts on Catch",
+            "d": ""
+          },
+          {
+            "tone": "white",
+            "t": "[Next city]",
+            "d": "Coming next"
+          }
+        ],
+        "foot": "Want Catch in your city? Tell us."
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "About Catch.",
+        "items": [
+          [
+            "Who runs Catch?",
+            "Catch is built and operated by Torana. The founders are listed above."
+          ],
+          [
+            "How does Catch make money?",
+            "Hosts pay 5% of ticket sales, never more than ₹10,000 a month. Free events are free. Programmes such as offsites and weddings are priced per programme."
+          ],
+          [
+            "Do guests need an app?",
+            "No. Guests book, pay and check in on the website in their phone’s browser."
+          ],
+          [
+            "Can I talk to someone?",
+            "Yes. Message us on WhatsApp and a person replies."
+          ],
+          [
+            "Are you hiring?",
+            "[Hiring line, or remove this question.]"
+          ],
+          [
+            "How do I report a problem with a host or a plan?",
+            "Message us on WhatsApp. Our Safety page explains how we handle reports."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Host something?",
+        "title": "Bring people together with Catch.",
+        "lead": "Free for 30 days from your first event. Free events stay free.",
+        "tone": "m-coral",
+        "ink": "#4A1C0E",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "How Catch works",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host on the day: tonight’s event, bookings and the door"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

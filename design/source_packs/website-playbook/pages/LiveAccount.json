@@ -1,0 +1,477 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "LiveAccount",
+  "title": "Live · Your account · /account",
+  "height": 1500,
+  "phone": {
+    "title": "Your account",
+    "height": 2800
+  },
+  "state": {
+    "label": "Account states:",
+    "options": [
+      {
+        "key": "out",
+        "label": "Signed out"
+      },
+      {
+        "key": "plans",
+        "label": "Plans"
+      },
+      {
+        "key": "pass",
+        "label": "Pass"
+      },
+      {
+        "key": "following",
+        "label": "Following"
+      },
+      {
+        "key": "reviews",
+        "label": "Reviews"
+      },
+      {
+        "key": "details",
+        "label": "Details"
+      },
+      {
+        "key": "messages",
+        "label": "Messages"
+      },
+      {
+        "key": "privacy",
+        "label": "Privacy"
+      }
+    ],
+    "default": "plans"
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "guest",
+        "city": "Mumbai",
+        "cta": "Account"
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "out",
+      "data": {
+        "kicker": "Account",
+        "title": "Sign in to see your account",
+        "lead": "Your plans, the organisers you follow and your reviews, in one place.",
+        "blocks": [
+          {
+            "title": "Sign in",
+            "sub": "One Catch account for your plans, follows and reviews.",
+            "fields": [
+              {
+                "id": "ac-phone",
+                "label": "Phone number with country code",
+                "type": "tel",
+                "ph": "+91 00000 00000"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Text me a code"
+              }
+            ],
+            "fine": "No passwords. We text you a code. Signing in does not subscribe you to marketing messages."
+          }
+        ],
+        "note": "Account (/account). Copy from accountPageCopy and signInCopy: six tabs, each with its own empty state, and the pass."
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "plans",
+      "data": {
+        "wide": true,
+        "tabs": [
+          "Plans",
+          "Following",
+          "Reviews",
+          "Details",
+          "Messages",
+          "Privacy and data"
+        ],
+        "tab": 0,
+        "tabsLabel": "Account sections",
+        "kicker": "Ira Desai",
+        "kc": "#5A5450",
+        "title": "Your account",
+        "blocks": [
+          {
+            "cover": "/_blob/409d3ee3e6896b80188944189323718b",
+            "label": "Upcoming",
+            "title": "Long Table Supper",
+            "sub": "Fri 21 Nov, 8:00 PM · Khar West",
+            "rows": [
+              {
+                "t": "Status",
+                "tag": "Booked",
+                "tone": "good"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Pass"
+              },
+              {
+                "l": "Open booking",
+                "kind": "sec"
+              }
+            ]
+          },
+          {
+            "cover": "/_blob/8294b5d46800331739b8ee58199a7d53",
+            "label": "Upcoming",
+            "title": "Carter Road Social Run",
+            "sub": "Sun 23 Nov, 6:30 AM · Bandra",
+            "rows": [
+              {
+                "t": "Status",
+                "tag": "Waitlist",
+                "tone": "warn"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Open booking",
+                "kind": "sec"
+              }
+            ]
+          },
+          {
+            "title": "Past",
+            "rows": [
+              {
+                "t": "Tuesday Trivia Night",
+                "s": "Tue 4 Nov · Harbour Room",
+                "tag": "Attended",
+                "tone": "good"
+              },
+              {
+                "t": "Garden Supper",
+                "s": "Sat 25 Oct",
+                "tag": "Cancelled"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "pass",
+      "data": {
+        "wide": true,
+        "tabs": [
+          "Plans",
+          "Following",
+          "Reviews",
+          "Details",
+          "Messages",
+          "Privacy and data"
+        ],
+        "tab": 0,
+        "tabsLabel": "Account sections",
+        "kicker": "Ira Desai",
+        "kc": "#5A5450",
+        "title": "Your account",
+        "blocks": [
+          {
+            "title": "Your pass",
+            "sub": "Long Table Supper · Fri 21 Nov, 8:00 PM",
+            "qr": "K7Q-2XM",
+            "rows": [
+              {
+                "t": "When",
+                "s": "Fri 21 Nov, 8:00 PM"
+              },
+              {
+                "t": "Where",
+                "s": "Khar Table · Khar West"
+              }
+            ],
+            "fine": "Show this at the door",
+            "btns": [
+              {
+                "l": "Close",
+                "kind": "sec"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "sub": "Your pass is not ready yet. Try again closer to the event, or open it in the app.",
+            "tone": "m-yellow"
+          }
+        ],
+        "fine": "Pass sheet, and its not-ready state."
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "following",
+      "data": {
+        "wide": true,
+        "tabs": [
+          "Plans",
+          "Following",
+          "Reviews",
+          "Details",
+          "Messages",
+          "Privacy and data"
+        ],
+        "tab": 1,
+        "tabsLabel": "Account sections",
+        "kicker": "Ira Desai",
+        "kc": "#5A5450",
+        "title": "Your account",
+        "blocks": [
+          {
+            "title": "Organisers you follow",
+            "rows": [
+              {
+                "t": "Lantern Lane Social",
+                "s": "Followed 12 Oct",
+                "tag": "Unfollow"
+              },
+              {
+                "t": "Carter Road Runners",
+                "s": "Followed 3 Sep",
+                "tag": "Unfollow"
+              },
+              {
+                "t": "The Quizzicals",
+                "s": "Followed 18 Aug",
+                "tag": "Unfollow"
+              }
+            ]
+          },
+          {
+            "title": "You are not following anyone yet",
+            "sub": "Follow an organiser to hear about their next event first.",
+            "btns": [
+              {
+                "l": "Explore events",
+                "kind": "sec"
+              }
+            ],
+            "label": "Empty state"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "reviews",
+      "data": {
+        "wide": true,
+        "tabs": [
+          "Plans",
+          "Following",
+          "Reviews",
+          "Details",
+          "Messages",
+          "Privacy and data"
+        ],
+        "tab": 2,
+        "tabsLabel": "Account sections",
+        "kicker": "Ira Desai",
+        "kc": "#5A5450",
+        "title": "Your account",
+        "blocks": [
+          {
+            "title": "Long Table Supper",
+            "sub": "4 out of 5 · “Came alone, left with four people to swap recipes with.”",
+            "rows": [
+              {
+                "t": "Verified",
+                "s": "Verified reviews come from events you attended through Catch.",
+                "tag": "Verified",
+                "tone": "good"
+              },
+              {
+                "t": "Reply from the organiser",
+                "s": "“So glad you came. See you in December!”"
+              }
+            ]
+          },
+          {
+            "title": "Tuesday Trivia Night",
+            "sub": "5 out of 5",
+            "rows": [
+              {
+                "t": "Waiting for review",
+                "tag": "Pending",
+                "tone": "warn"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "details",
+      "data": {
+        "wide": true,
+        "tabs": [
+          "Plans",
+          "Following",
+          "Reviews",
+          "Details",
+          "Messages",
+          "Privacy and data"
+        ],
+        "tab": 3,
+        "tabsLabel": "Account sections",
+        "kicker": "Ira Desai",
+        "kc": "#5A5450",
+        "title": "Your account",
+        "blocks": [
+          {
+            "title": "Your details",
+            "fields": [
+              {
+                "id": "ad-name",
+                "label": "Name",
+                "ph": "Ira Desai"
+              },
+              {
+                "id": "ad-birth",
+                "label": "Date of birth (optional)",
+                "type": "date"
+              }
+            ],
+            "rows": [
+              {
+                "t": "Phone",
+                "s": "+91 98••• ••210",
+                "tag": "Verified",
+                "tone": "good"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Save details"
+              },
+              {
+                "l": "Sign out",
+                "kind": "sec"
+              }
+            ],
+            "fine": "Some events have an age rule. Only you and the organisers of events you book can see it."
+          },
+          {
+            "tone": "m-mint",
+            "title": "This is your account, not a dating profile.",
+            "sub": "Nobody can browse it."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "messages",
+      "data": {
+        "wide": true,
+        "tabs": [
+          "Plans",
+          "Following",
+          "Reviews",
+          "Details",
+          "Messages",
+          "Privacy and data"
+        ],
+        "tab": 4,
+        "tabsLabel": "Account sections",
+        "kicker": "Ira Desai",
+        "kc": "#5A5450",
+        "title": "Your account",
+        "blocks": [
+          {
+            "title": "Messages from organisers",
+            "rows": [
+              {
+                "t": "Lantern Lane Social",
+                "s": "WhatsApp",
+                "tag": "On",
+                "tone": "good"
+              },
+              {
+                "t": "Carter Road Runners",
+                "s": "WhatsApp",
+                "tag": "Off"
+              },
+              {
+                "t": "The Quizzicals",
+                "s": "Text messages",
+                "tag": "Not asked"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Stop WhatsApp",
+                "kind": "sec"
+              }
+            ],
+            "fine": "To stop text messages, reply STOP to any text from that organiser."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "privacy",
+      "data": {
+        "wide": true,
+        "tabs": [
+          "Plans",
+          "Following",
+          "Reviews",
+          "Details",
+          "Messages",
+          "Privacy and data"
+        ],
+        "tab": 5,
+        "tabsLabel": "Account sections",
+        "kicker": "Ira Desai",
+        "kc": "#5A5450",
+        "title": "Your account",
+        "blocks": [
+          {
+            "title": "Download your data",
+            "sub": "A file with everything this page shows: your details, plans, follows, reviews and message settings.",
+            "btns": [
+              {
+                "l": "Download my data"
+              }
+            ]
+          },
+          {
+            "title": "Delete your account",
+            "sub": "Deleting removes your Catch account everywhere, including in the apps. See how deletion works and request it.",
+            "btns": [
+              {
+                "l": "How to delete your account",
+                "kind": "sec"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "guest",
+        "mbar": "Explore events"
+      }
+    }
+  ]
+}

@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Playbook · sitemap</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+.sm{box-sizing:border-box;width:1640px;padding:64px 100px 80px;background:#fff;color:#141114;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;gap:48px}
+.sm *{box-sizing:border-box}
+.k{margin:0;font:600 13px/18px Inter,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#b2381c}
+.h{margin:0;font-family:Archivo,'Arial Narrow',sans-serif;font-weight:760;font-stretch:78%;font-variation-settings:"wdth" 78;font-size:60px;line-height:1;letter-spacing:-.03em}
+.h3{margin:0;font-family:Archivo,'Arial Narrow',sans-serif;font-weight:760;font-stretch:78%;font-variation-settings:"wdth" 78;font-size:34px;line-height:1.05;letter-spacing:-.02em}
+.p{margin:0;font-size:17px;line-height:1.55;color:#4d4549;max-width:1150px}
+.counts{display:flex;gap:12px;flex-wrap:wrap}
+.cnt{padding:14px 18px;border-radius:18px;background:#F6F0E8;min-width:150px}
+.cnt b{display:block;font:800 40px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78}
+.cnt span{font-size:13px;font-weight:600;color:#5A5450}
+.grp{display:flex;flex-direction:column;gap:10px}
+.grp h3{margin:0;font:700 15px/1.3 Inter,system-ui;letter-spacing:.04em;text-transform:uppercase;color:#5A5450;padding-bottom:6px;border-bottom:2px solid #141114}
+.row{display:grid;grid-template-columns:300px 200px minmax(0,1fr) 100px 90px 70px 70px 190px;gap:16px;padding:12px 0;border-bottom:1px solid #ece6e1;font-size:14px;line-height:1.45;align-items:start}
+.row.hd{padding-top:0;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#8a8079;border-bottom:1px solid #ddd6d0}
+.rt{font:500 13px/1.45 ui-monospace,Menlo,monospace;color:#141114;word-break:break-word}
+.pgn{font-weight:700}
+.job{color:#4d4549}
+.tag{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:700;font-size:12px;white-space:nowrap}
+.pr{font-weight:800}
+.nav{background:#F6F4F2;border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:0}
+.bar{display:flex;align-items:center;gap:24px;height:64px;padding:0 24px;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 1px 0 #ece6e1}
+.wm{font-family:Archivo,'Arial Narrow',sans-serif;font-weight:800;font-stretch:78%;font-variation-settings:"wdth" 78;font-size:26px;letter-spacing:-.03em}
+.bar span{font-size:15px;font-weight:500;color:#2b2427}
+.bar .on{font-weight:700;color:#141114;border-bottom:2px solid #F07A55;padding-bottom:4px}
+.bar .sp{flex:1}
+.pill{display:inline-flex;align-items:center;height:38px;padding:0 16px;border-radius:999px;background:#141114;color:#fff!important;font-size:14px!important;font-weight:600!important}
+.wa{color:#1F7A57!important;font-weight:600!important}
+.mega{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1.25fr;gap:28px;padding:28px 24px;background:#fff;border-radius:0 0 18px 18px}
+.mega h4{margin:0 0 10px;font-size:13px;font-weight:700;color:#8a8079;letter-spacing:.04em;text-transform:uppercase}
+.mega a{display:block;font-size:15px;line-height:2;color:#141114;text-decoration:none}
+.feat{display:flex;flex-direction:column;gap:10px}
+.fc{border-radius:16px;padding:14px 16px;font-size:14px;line-height:1.4}
+.fc b{display:block;font-size:15px;margin-bottom:2px}
+.navnotes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+.nn{background:#fff;border-radius:18px;padding:18px;font-size:14px;line-height:1.5;color:#2b2427}
+.nn b{display:block;margin-bottom:6px;color:#141114}
+.cov{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.cv{border-radius:22px;background:#F6F0E8;padding:20px;display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.5;color:#2b2427}
+.cv .n{font:800 30px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78;color:#F07A55}
+.cv h4{margin:0;font-size:17px;color:#141114}
+.cv small{display:block;font-size:12px;font-weight:700;color:#8a8079;letter-spacing:.04em;text-transform:uppercase;margin-top:4px}
+.priv{background:#F6F4F2;border-radius:20px;padding:20px 24px;font-size:14px;line-height:1.6;color:#4d4549}
+.priv code{font:500 13px ui-monospace,Menlo,monospace;color:#141114}
+</style>
+</helmet>
+<div class="sm">
+
+<div style="display:flex;flex-direction:column;gap:12px">
+<p class="k">Sitemap · from “Learning from Toast: a conversion playbook” · design status updated 16 Nov</p>
+<h2 class="h">Every page the playbook needs, and when it ships.</h2>
+<p class="p">Public, indexable pages only; private links (offers, forms, live nights, programmes) are listed at the end and stay as they are. Phase numbers follow the playbook’s roadmap: 1 stop the leaks, 2 proof and paths, 3 pages for P1 segments, 4 widen and compound.</p>
+<div class="counts"><div class="cnt"><b>{{total}}</b><span>public pages and families</span></div><div class="cnt"><b>{{nNew}}</b><span>new</span></div><div class="cnt"><b>{{nRebuild}}</b><span>rebuilt or changed</span></div><div class="cnt"><b>{{nKeep}}</b><span>kept as they are</span></div><div class="cnt"><b>{{nP1}}</b><span>priority 1</span></div><div class="cnt"><b>{{nDesigned}}</b><span>designed on this page</span></div></div>
+</div>
+
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+<div class="grp"><h3>{{g.title}}</h3>
+<div class="row hd"><span>Route</span><span>Page</span><span>Its job, and what changes</span><span>Recs</span><span>Status</span><span>Priority</span><span>Phase</span><span>Design</span></div>
+<sc-for list="{{g.rows}}" as="r" hint-placeholder-count="8">
+<div class="row"><span class="rt">{{r.route}}</span><span class="pgn">{{r.page}}</span><span class="job">{{r.job}}</span><span>{{r.recs}}</span><span><span class="tag" style="{{r.tagStyle}}">{{r.status}}</span></span><span class="pr">{{r.pri}}</span><span>{{r.phase}}</span><span><span class="tag" style="{{r.dStyle}}">{{r.dKind}}</span><br><small style="color:#5A5450">{{r.dBoard}}</small></span></div>
+</sc-for></div>
+</sc-for>
+
+<div style="display:flex;flex-direction:column;gap:16px">
+<h3 class="h3">Navigation: the “For hosts” menu open</h3>
+<p class="p">Rec 9. Menus by product, by format, by organisation and by programme, with featured cards that are really sales prompts. One context-aware button on the right: Start free trial on host pages, Get notified on guest pages. Conversion pages (<code>/host/start/</code>, <code>/host/walkthrough/</code>) drop the menu entirely.</p>
+<div class="nav">
+<div class="bar"><span class="wm">Catch</span><span>What’s on</span><span class="on">For hosts ▾</span><span>Pricing</span><span>Resources ▾</span><span class="sp"></span><span class="wa">WhatsApp · Talk to us</span><span>Sign in</span><span class="pill">Start free trial</span></div>
+<div class="mega">
+<div><h4>Product</h4><a>How Catch works</a><a>Bookings and payments</a><a>The door</a><a>Running the night</a><a>Messages and automations</a><a>Guest records</a><a>Your page</a><a>Forms</a><a>Reports, payouts and team</a></div>
+<div><h4>By format</h4><a>Run and walk clubs</a><a>Racket sports</a><a>Supper clubs</a><a>Quiz and game nights</a><a>Nightlife</a><a>Studios and fitness</a><a>Workshops and classes</a><a>Communities</a><a>Outdoors and trips</a></div>
+<div><h4>By organisation</h4><a>Cafés, bars and breweries</a><a>Courts and clubhouses</a><a>Companies and shared spaces</a><a>Creators</a><a>Brands</a></div>
+<div><h4>Programmes</h4><a>Weddings</a><a>Offsites, retreats and birthdays</a><h4 style="margin-top:22px">Where you are</h4><a>Plan your first event</a><a>Switch from WhatsApp</a><a>Several chapters? Book a walkthrough</a></div>
+<div class="feat"><div class="fc" style="background:#F07A55"><b>Start your free trial</b>30 days free. Founding hosts get 90.</div><div class="fc" style="background:#5CCB9F"><b>Leave the WhatsApp group behind</b>Catch vs WhatsApp, Forms and UPI.</div><div class="fc" style="background:#F6F0E8"><b>Pricing</b>5% of ticket sales, never more than ₹10,000 a month.</div></div>
+</div></div>
+<div class="navnotes">
+<div class="nn"><b>Resources menu</b>Host stories · Host playbooks · Compare · No-show calculator · Event page from a link · Help.</div>
+<div class="nn"><b>Guest pages</b>What’s on · New to the city · Safety · the city picker · For hosts as a quiet link · Get notified as the button (Get the app once the stores are live).</div>
+<div class="nn"><b>Footer</b>Hosts by format, by organisation, Get started, Resources, and Catch. A WhatsApp line and walkthrough booking above the columns. Footnotes for every number on the page.</div>
+</div></div>
+
+<div style="display:flex;flex-direction:column;gap:16px">
+<h3 class="h3">Where each recommendation lands</h3>
+<p class="p">All twelve recommendations from the playbook, and the place each one shows up on the two new pages, the sitemap above, or in operations.</p>
+<div class="cov"><sc-for list="{{cov}}" as="c" hint-placeholder-count="12"><div class="cv"><span class="n">{{c.n}}</span><h4>{{c.t}}</h4><small>Hosts page</small><span>{{c.hosts}}</span><small>Homepage</small><span>{{c.home}}</span><small>Elsewhere</small><span>{{c.other}}</span></div></sc-for></div>
+</div>
+
+<div class="priv"><b style="color:#141114">Private and noindex routes, unchanged:</b> event booking, <code>/offer/</code>, <code>/f/…</code> forms, <code>/join/…</code> live nights, <code>/invite/…</code>, <code>/event-update/…</code>, <code>/rehearse/…</code>, programme links (<code>/rsvp</code>, <code>/itinerary</code>, <code>/ids</code>, <code>/hotel</code>, <code>/trip</code>, <code>/runsheet</code>, <code>/hampers</code>, <code>/family</code>), <code>/demo/:invitationId/</code>, <code>/account/</code>, <code>/host/billing/</code>, claim lookups and <code>/404</code>. <code>/organizers/</code> keeps redirecting to Explore’s organisers view.</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1640,"height":4600}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = { New: 'background:#E6EEFC;color:#1D4EA8', Rebuild: 'background:#FDF0D8;color:#7A4A00', Keep: 'background:#E3F3EC;color:#0F5A43' };
+    const K = 'Kit', B = 'One-off', E = 'Other canvas page';
+    const DS = { Kit: 'background:#E3F3EC;color:#0F5A43', 'One-off': 'background:#E6EEFC;color:#1D4EA8', 'Other canvas page': 'background:#F1ECE7;color:#5A5450' };
+    const D = {
+      '/': [B, 'PlaybookHome'], '/explore/ and /[city]/': [K, 'PlaybookExplore'], '/app/': [K, 'PlaybookStart · /app/ state'], '/safety/': [K, 'PlaybookSafety'],
+      '/[city]/[format]/': [K, 'PlaybookCityFormat'], '/new-to-[city]/': [K, 'PlaybookNewToCity'], '/cities/': [K, 'LiveCities'], '/events/:id/': [B, 'PlaybookEvent · iterated from the rebuilt event page'],
+      '/organizers/:slug/': [E, 'Event and organiser pages · rebuilt'], '/claim/': [E, 'Website · rebuilt (claim)'],
+      '/host/': [B, 'PlaybookHosts'], '/host/start/': [K, 'PlaybookStart'], '/host/walkthrough/': [K, 'PlaybookStart · walkthrough state'], '/pricing/': [B, 'PlaybookPricing'],
+      '/host/run-clubs/': [K, 'PlaybookRunClubs'], '/host/racket-sports/': [K, 'PlaybookRacketSports'], '/host/supper-clubs/': [K, 'PlaybookSupperClubs'], '/host/quiz-nights/': [K, 'PlaybookQuizNights'],
+      '/host/venues/': [K, 'PlaybookVenues'], '/host/studios/': [K, 'PlaybookStudios'], '/host/first-event/ and /host/first-event/[format]-[city]/': [K, 'PlaybookFirstEvent'], '/host/switch/': [K, 'PlaybookSwitch'],
+      '/refer/': [K, 'PlaybookRefer'], '/host/nightlife/, /workshops/, /communities/, /creators/, /teams/, /outdoors/, /facilities/': [K, 'Communities, Mixers, Teams, Colleges, Workshops, Outdoors, Creators, Facilities'],
+      '/host/brands/': [K, 'PlaybookBrands'], '/programmes/': [K, 'PlaybookProgrammes'], '/demo/': [K, 'PlaybookDemo · private demo: LiveSalesDemo'], '/weddings/ and /weddings/apply/': [E, 'Website · rebuilt; apply flow: LiveWeddingsApply'],
+      '/how-it-works/': [K, 'PlaybookHowItWorks'], '/product/night/': [K, 'PlaybookNight'], '/product/bookings/': [K, 'PlaybookBookings'], '/product/your-page/': [K, 'PlaybookYourPage'], '/product/door/': [K, 'PlaybookDoor'],
+      '/product/messages/': [K, 'PlaybookMessages'], '/product/guests/': [K, 'PlaybookRecords'], '/product/forms/': [K, 'PlaybookForms'], '/product/reports/': [K, 'PlaybookReports'],
+      '/stories/ and /stories/:slug/': [K, 'PlaybookStories, PlaybookStory'], '/compare/ and /compare/whatsapp-forms-upi/': [B, 'PlaybookCompare, PlaybookCompareVs'], '/compare/luma/, /compare/ticketing-apps/': [B, 'PlaybookCompareVs (six competitors)'],
+      '/tools/no-show-calculator/': [B, 'PlaybookNoShow'], '/tools/event-page-from-link/': [K, 'PlaybookLinkTool'], '/playbooks/': [K, 'PlaybookPlaybooks, PlaybookGuide'], '/lp/:campaign/': [K, 'PlaybookLpSupper'],
+      '/contact/': [K, 'LiveLegal · /contact/'], '/help/': [K, 'LiveLegal · /help/'], '/about/': [K, 'PlaybookAbout'], '/privacy/, /terms/, /refunds/, /delete-account/': [K, 'LiveLegal']
+    };
+    const r = (route, page, job, recs, status, pri, phase) => { const d = D[route] || ['Not designed', '']; return { route, page, job, recs, status, pri, phase, tagStyle: st[status], dKind: d[0], dBoard: d[1], dStyle: DS[d[0]] || 'background:#FDE7E3;color:#8A2A12' }; };
+    const groups = [
+      { title: 'Guests', rows: [
+        r('/', 'Homepage', 'Lead audience set by city state: live, thin or launching. Never an empty week; a WhatsApp notify field replaces the dead store chips; guest entry tiles and a safety section.', '1, 2, 4, 5, 11', 'Rebuild', 'P1', '1–2'),
+        r('/explore/ and /[city]/', 'What’s on', 'Widens an empty week to 30 days, then organisers, then notify. Guest entry tiles land on filtered views here (solo-friendly, by level, with friends, weekdays), not new pages.', '1, 5', 'Rebuild', 'P1', '1'),
+        r('/app/', 'Get notified', 'Where the header button goes until the guest app ships: number, city and interests. Becomes Get the app when the stores are live.', '1, 5', 'New', 'P1', '1'),
+        r('/safety/', 'Safety and trust', 'Host verification, Booked on Catch reviews, the code of conduct, reporting and Help me say hi. For guests who go alone, women first.', '2, 4', 'New', 'P1', '3'),
+        r('/[city]/[format]/', 'City by format', 'Indexable pages such as /mumbai/run-clubs/ and /mumbai/padel/: plans, hosts and FAQs that rank, unlike filters.', '4', 'New', 'P2', '4'),
+        r('/new-to-[city]/', 'New to the city', 'First-timer plans, how a first night works, and organisers who welcome newcomers.', '4', 'New', 'P2', '4'),
+        r('/cities/', 'All cities', 'Each city with its state; launching cities collect demand by format.', '5', 'Keep', '–', '–'),
+        r('/events/:id/', 'Event page', 'Adds solo-friendly and level labels and Booked on Catch reviews.', '2', 'Keep', '–', '–'),
+        r('/organizers/:slug/', 'Organiser page', '“Made with Catch · make a page like this” keeps recruiting hosts.', '7', 'Keep', '–', '–'),
+        r('/claim/', 'Claim your page', 'Promoted harder: “your page may already be here”. Fed by the event-page-from-a-link tool.', '5, 7', 'Keep', '–', '–')
+      ] },
+      { title: 'Hosts', rows: [
+        r('/host/', 'Catch for hosts', 'The hub: proof, every segment and life stage in one click, the comparison, the free tool, pricing with worked examples, five ways to start, referral.', '2, 3, 4, 6, 7, 8, 10, 11', 'Rebuild', 'P1', '1–3'),
+        r('/host/start/', 'Start free trial', 'No menu. Store badges, a QR code on desktop, “WhatsApp me the link”, proof and the founding-host offer.', '3, 9, 11', 'New', 'P1', '2'),
+        r('/host/walkthrough/', 'Book a walkthrough', 'No menu. A 15-minute booking for venues, studios, companies and programmes.', '3, 9', 'New', 'P1', '2'),
+        r('/pricing/', 'Pricing', 'Moves off the /host/#pricing anchor so it can rank and take ads: slider, worked examples, what is included, organisation route.', '10', 'New', 'P1', '3'),
+        r('/host/run-clubs/', 'Run and walk clubs', 'Segment template: hero, pains, a night, a story, buyer’s checklist, pricing at their size, FAQs, capture.', '4', 'New', 'P1', '3'),
+        r('/host/racket-sports/', 'Racket sports', 'Padel, pickleball, tennis and badminton sections.', '4', 'New', 'P1', '3'),
+        r('/host/supper-clubs/', 'Supper clubs', 'Applications, seating and prepayment.', '4', 'New', 'P1', '3'),
+        r('/host/quiz-nights/', 'Quiz and game nights', 'Teams, rounds, live scores, repeat bookings.', '4', 'New', 'P1', '3'),
+        r('/host/venues/', 'Venues', 'Cafés, bars and breweries running their own nights.', '4', 'New', 'P1', '3'),
+        r('/host/studios/', 'Studios', 'Yoga, spin, strength and dance studios and instructors.', '4', 'New', 'P1', '3'),
+        r('/host/first-event/ and /host/first-event/[format]-[city]/', 'Plan your first event', 'For aspiring hosts, such as “start a run club in Mumbai”: a plan, a run sheet, what to charge.', '4', 'New', 'P1', '3'),
+        r('/host/switch/', 'Leave the WhatsApp group behind', 'For established hosts: import, what changes, and nothing changes for guests until the doors open.', '4, 6', 'New', 'P1', '3'),
+        r('/refer/', 'Refer a host', 'Host-to-host and guest-to-host referral, rewarded after a first paid event.', '8', 'New', 'P2', '3'),
+        r('/host/nightlife/, /workshops/, /communities/, /creators/, /teams/, /outdoors/, /facilities/', 'P2 segment pages', 'Same template, one page each.', '4', 'New', 'P2', '4'),
+        r('/host/brands/', 'Brands', 'Attribution links and reporting for brand-run events.', '4', 'New', 'P3', '4'),
+        r('/programmes/', 'Offsites, retreats, birthdays', 'Multi-day programmes that are not weddings, with their own pilot form.', '4', 'New', 'P2', '4'),
+        r('/demo/', 'Try a demo night', 'A public, self-serve version of the private synthetic demo, with sample guests.', '3', 'New', 'P2', '4'),
+        r('/weddings/ and /weddings/apply/', 'Catch for weddings', 'Unchanged; linked from the Programmes menu.', '–', 'Keep', '–', '–')
+      ] },
+      { title: 'Product: what Catch does', rows: [
+        r('/how-it-works/', 'How Catch works', 'The whole product on one page, from setting up an event to the follow-up. Every step links to its capability page.', '4, 9', 'New', 'P1', '3'),
+        r('/product/night/', 'Running the night', 'Every format’s live tools: pace pods, seating, teams and scores, court rotations and crawl routes; the live console, the iPad host stand and dress rehearsals.', '4', 'New', 'P1', '3'),
+        r('/product/bookings/', 'Bookings and payments', 'Applications, approvals, waitlists, private offers, invite-only events, dynamic pricing, UPI payments and refunds.', '4, 10', 'New', 'P1', '3'),
+        r('/product/your-page/', 'Your page', 'The organiser page as link-in-bio: links, upcoming events including ones elsewhere, reviews with replies, followers, claim and import.', '4, 5', 'New', 'P1', '3'),
+        r('/product/door/', 'The door', 'QR and self check-in, arrivals, and the door on a tablet.', '4', 'New', 'P2', '4'),
+        r('/product/messages/', 'Messages and automations', 'Reminders, audiences and automated messages before and after each event.', '4', 'New', 'P2', '4'),
+        r('/product/guests/', 'Guest records', 'One record per guest across events, audiences, reviews and who to invite back.', '4', 'New', 'P2', '4'),
+        r('/product/forms/', 'Forms', 'Build a form, share its link, and see responses next to guest records.', '4', 'New', 'P2', '4'),
+        r('/product/reports/', 'Reports, payouts and team', 'Reports after every event, insights, payouts and team roles.', '4, 12', 'New', 'P2', '4')
+      ] },
+      { title: 'Resources', rows: [
+        r('/stories/ and /stories/:slug/', 'Host stories', 'Case studies by format and city from design partners: numbers from Catch data plus a self-reported baseline, footnoted.', '2', 'New', 'P1', '3'),
+        r('/compare/ and /compare/whatsapp-forms-upi/', 'Compare', 'The status quo first, honest limits, AI comparison links.', '6', 'New', 'P1', '3'),
+        r('/compare/luma/, /compare/ticketing-apps/', 'Competitor comparisons', 'Dated, fact-checked from each competitor’s own pages.', '6', 'New', 'P2', '4'),
+        r('/tools/no-show-calculator/', 'No-show calculator', 'Lead capture by WhatsApp; days to build.', '7', 'New', 'P1', '2'),
+        r('/tools/event-page-from-link/', 'Event page from a link', 'Paste an Instagram post, Luma page or Google Form; get a draft page to claim.', '7', 'New', 'P2', '4'),
+        r('/playbooks/', 'Host playbooks', 'Guides by format and city that rank in search and feed /host/first-event/.', '4, 7', 'New', 'P2', '4'),
+        r('/lp/:campaign/', 'Ad landing pages', 'Stripped variants of segment pages for paid ads; noindex; A/B tested.', '4, 12', 'New', 'P2', '4')
+      ] },
+      { title: 'Company and help', rows: [
+        r('/contact/', 'Contact', 'A WhatsApp button, a branded email and reply hours, not only the legal block.', '1', 'Rebuild', 'P1', '1'),
+        r('/help/', 'Help', 'Links to Safety and to WhatsApp for hosts.', '1', 'Keep', '–', '–'),
+        r('/about/', 'About Catch', 'Who runs Catch and why, for hosts and companies doing diligence.', '2', 'New', 'P3', '4'),
+        r('/privacy/, /terms/, /refunds/, /delete-account/', 'Legal', 'Unchanged.', '–', 'Keep', '–', '–')
+      ] }
+    ];
+    const all = groups.flatMap((g) => g.rows);
+    const cov = [
+      { n: '1', t: 'Fix the seven live leaks', hosts: 'Header button is Start free trial; desktop QR and “send me the link”; WhatsApp in the header.', home: 'Notify field replaces the Coming soon chips; a thin week widens to 30 days; header button is Get notified.', other: '/app/ and a rebuilt /contact/.' },
+      { n: '2', t: 'Build a proof engine', hosts: 'Proof line in the hero, partner logos, counters, a case study with footnoted metrics, a value quote by pricing.', home: 'Verified hosts and a rating in the hero; Booked on Catch reviews in Safety.', other: '/stories/; the design-partner programme; footnotes everywhere.' },
+      { n: '3', t: 'A path for every level of readiness', hosts: 'Hero primary, WhatsApp and side door; five paths: trial, watch or demo, WhatsApp, walkthrough, playbook.', home: 'Host band carries trial and WhatsApp.', other: '/host/start/, /host/walkthrough/, /demo/.' },
+      { n: '4', t: 'A page for every customer type', hosts: 'Formats rail, organisation chips and three life-stage tiles, each linking to its page.', home: 'Six guest entry tiles; formats link to city-by-format pages.', other: 'Every page in the sitemap above.' },
+      { n: '5', t: 'The homepage follows the city', hosts: '–', home: 'Live, thin and launching states (press Play and switch); the host band moves up when a city is thin; demand counts in a launching city.', other: '/cities/ collects demand by format.' },
+      { n: '6', t: 'Honest comparison pages', hosts: 'Catch vs WhatsApp, Forms and UPI table, links to competitor pages and limits, AI comparison links.', home: '–', other: '/compare/ family; /host/switch/.' },
+      { n: '7', t: 'A free tool that captures leads', hosts: 'Working no-show calculator with WhatsApp capture; the event-page-from-a-link tool beside it.', home: '–', other: '/tools/ and /playbooks/.' },
+      { n: '8', t: 'Offers and referrals', hosts: 'Founding-host offer strip and start band; host-to-host referral panel.', home: 'Founding-host offer in the host band; guest-to-host referral panel.', other: '/refer/.' },
+      { n: '9', t: 'Navigation by who you are', hosts: 'For hosts, Pricing and Resources menus; WhatsApp; one primary button; expanded footer.', home: 'New to the city, Safety and the city picker; Get notified as the button.', other: 'The menu above; menu-free conversion pages.' },
+      { n: '10', t: 'Pricing that sells', hosts: 'Working slider, three worked examples, what is included, a value quote, an organisation route.', home: 'Price stated in the host band.', other: '/pricing/ gets its own URL.' },
+      { n: '11', t: 'Mobile as the main site', hosts: 'Button and proof in the first phone screen; store badges on phones; sticky bottom bar with WhatsApp.', home: 'Notify field in the first phone screen; sticky Get notified bar.', other: 'See the 390 boards.' },
+      { n: '12', t: 'Measure the funnel', hosts: 'Every path and form is a tagged entry point (trial, WhatsApp, walkthrough, tool, referral).', home: 'Notify captures record city and interests by source.', other: '/lp/ variants for A/B tests; the weekly funnel review.' }
+    ];
+    return {
+      groups, cov,
+      total: all.length,
+      nNew: all.filter((x) => x.status === 'New').length,
+      nRebuild: all.filter((x) => x.status === 'Rebuild').length,
+      nKeep: all.filter((x) => x.status === 'Keep').length,
+      nP1: all.filter((x) => x.pri === 'P1').length,
+      nDesigned: all.filter((x) => x.dKind === K || x.dKind === B).length
+    };
+  }
+}
+</script>
+</body>
+</html>

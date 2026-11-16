@@ -1,0 +1,299 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookDoor",
+  "title": "Playbook · The door",
+  "height": 5600,
+  "phone": {
+    "title": "The door",
+    "height": 9000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "How Catch works"
+        ],
+        "here": "The door"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Product · the door",
+        "title": "Know who’s here in the first five minutes.",
+        "lead": "Guests scan in on their own phones, with no app to download. You see who’s in, who’s late and who’s new, let in the walk-ins you choose, and hand the door to a helper whose access ends with the night.",
+        "ink": "#123D2C",
+        "tone": "m-mint",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "See running the night",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Door · Friday Bandra Pub Crawl",
+          "sub": "Stop 1 · The Bombay Tap · 7:42 PM",
+          "stats": [
+            {
+              "v": "31",
+              "l": "checked in"
+            },
+            {
+              "v": "9",
+              "l": "still to come"
+            },
+            {
+              "v": "2",
+              "l": "walk-ins"
+            }
+          ],
+          "search": "Search 40 names",
+          "rows": [
+            {
+              "t": "Aanya Mehta",
+              "s": "Group 2 · first time",
+              "tag": "New · checked in",
+              "tone": "warn"
+            },
+            {
+              "t": "Kabir Shah",
+              "s": "Group 1",
+              "tag": "Checked in 7:31",
+              "tone": "good"
+            },
+            {
+              "t": "Ira Desai, +1",
+              "s": "Group 3",
+              "tag": "Not here yet",
+              "tone": ""
+            },
+            {
+              "t": "Rohan Kapoor",
+              "s": "Added at the door",
+              "tag": "Walk-in",
+              "tone": "info"
+            }
+          ],
+          "fine": "Illustrative screen"
+        },
+        "note": "Capability page 3 (priority 2). From docs/host_product.md: QR self check-in with no download, roster search and manual check-in, event-scoped expiring staff access, host-approved walk-ins, Luma roster sync. Decision: offline is described as “check-ins sync later”, not “works offline”."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Four ways through the door",
+        "kc": "#4C5BC4",
+        "title": "However they arrive, they’re on the list.",
+        "lead": "",
+        "panel": "open",
+        "cols": 4,
+        "items": [
+          {
+            "small": "Most guests",
+            "ink": "#123D2C",
+            "t": "They scan in",
+            "d": "A code at the door opens your event in their phone’s browser. They confirm with their number and they’re in.",
+            "tone": "m-mint"
+          },
+          {
+            "small": "No phone, no signal",
+            "ink": "#4A3A0B",
+            "t": "You tick them off",
+            "d": "Search the list by name and check them in yourself, plus-ones included.",
+            "tone": "m-yellow"
+          },
+          {
+            "small": "Turned up unbooked",
+            "ink": "#1E2550",
+            "t": "You let them in",
+            "d": "Add a walk-in in a few seconds, if you have room. They’re on the list for the follow-up too.",
+            "tone": "m-indigo"
+          },
+          {
+            "small": "Booked somewhere else",
+            "ink": "#4A2330",
+            "t": "They’re already here",
+            "d": "Import a guest list from any tool, or connect Luma and Catch keeps the list in step.",
+            "tone": "m-pink"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "What guests see",
+        "kc": "#B23A5A",
+        "title": "Checked in, and pointed to the right person.",
+        "lead": "After they scan, guests see their group, table or team, and who to look for. Then the phone goes back in the pocket.",
+        "panel": "open",
+        "ticks": [
+          "Their group, seat, team or pace, depending on your format",
+          "Who to look for, so nobody stands at the door alone",
+          "First-timers flagged for you, so they get a proper hello"
+        ],
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/088ae8bbfb5016fdc0bb1db7828d8264",
+          "alt": "A guest’s phone after checking in: their group and who to look for"
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Door staff",
+        "kc": "#F5C451",
+        "title": "Hand over the door, not your business.",
+        "lead": "Give a friend or a venue’s staff the door for one event. They can search the list and check people in, and that’s all. Their access ends when you say, or with the event.",
+        "panel": "ink",
+        "ticks": [
+          "No Catch profile needed to run the door",
+          "No access to your other events, your contacts or your money",
+          "Take access back at any time"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Door staff",
+          "rows": [
+            {
+              "t": "Meera · door, Stop 1",
+              "tag": "Until 11 PM tonight",
+              "tone": ""
+            },
+            {
+              "t": "Arjun · door, Stop 2",
+              "tag": "Until 11 PM tonight",
+              "tone": ""
+            },
+            {
+              "t": "Venue staff · The Bombay Tap",
+              "tag": "Removed 9:10 PM",
+              "tone": ""
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Weak signal",
+        "kc": "#1F7A57",
+        "title": "Basement bar? Check-ins still count.",
+        "lead": "If the signal drops while you’re checking people in, the check-ins are saved on your phone and sync when you’re back online. If two people checked in the same guest, Catch shows you so you can sort it out.",
+        "panel": "open",
+        "body": "Open the door list before you lose signal, so it’s on your phone.",
+        "media": {
+          "kind": "card",
+          "title": "Sync status",
+          "rows": [
+            {
+              "t": "4 check-ins waiting to sync",
+              "s": "They’ll send when you’re back online.",
+              "tag": "Waiting",
+              "tone": "warn"
+            },
+            {
+              "t": "All check-ins synced",
+              "s": "7:58 PM",
+              "tag": "Synced",
+              "tone": "good"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "After the door closes",
+        "kc": "#1F7A57",
+        "title": "The list keeps working.",
+        "lead": "Who came and who didn’t goes into your guest records. Who showed up is who gets the photos, the review request and the invitation to the next one.",
+        "panel": "tint",
+        "btns": [
+          {
+            "l": "See guest records",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/e94b48eb4631e16fe22f3f43993b5ad8",
+          "alt": "The door list once everyone is in"
+        }
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "About the door.",
+        "items": [
+          [
+            "Do guests need to download anything?",
+            "No. The code at the door opens your event in their phone’s browser. They confirm with their phone number."
+          ],
+          [
+            "What if someone’s phone is dead?",
+            "Search their name and check them in yourself. Plus-ones can be checked in with them."
+          ],
+          [
+            "Can I take walk-ins?",
+            "Yes, if you choose to. Add them at the door and they’re on the list like everyone else."
+          ],
+          [
+            "Can more than one person run the door?",
+            "Yes. Give each helper door access for the event, on their own phone. If two of you check in the same guest, Catch shows you so you can sort it out."
+          ],
+          [
+            "What happens with no signal?",
+            "Check-ins made without signal are saved on the phone and sync when it reconnects. Open the door list before you lose signal."
+          ],
+          [
+            "I sell tickets on Luma. Can I still use the door?",
+            "Yes. Connect your Luma account and Catch keeps the guest list and check-ins in step, or import a guest list from any other tool."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Free for 30 days · founding hosts get 90",
+        "title": "Open your next door on Catch.",
+        "lead": "Bring your guest list from any tool. The door works the first night.",
+        "tone": "m-mint",
+        "ink": "#123D2C",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "How Catch works",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host on the day: tonight’s event, bookings and the door"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

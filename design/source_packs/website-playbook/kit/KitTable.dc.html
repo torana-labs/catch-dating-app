@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · table</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><section class="{{secCls}}"><div style="max-width:820px"><p class="k" style="color:{{kc}}">{{d.kicker}}</p><h2 class="d d-sec"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h2>
+<sc-if value="{{hasLead}}" hint-placeholder-val="{{ true }}"><p class="lead"><sc-for list="{{lead}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if></div>
+<div class="cmpwrap"><table class="cmp {{wide}}"><thead><tr><sc-for list="{{head}}" as="h" hint-placeholder-count="4"><th scope="col" class="{{h.cls}}">{{h.t}}</th></sc-for></tr></thead><tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="5"><tr><sc-for list="{{r.cells}}" as="c" hint-placeholder-count="4"><td class="{{c.cls}}"><sc-for list="{{c.parts}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></td></sc-for></tr></sc-for></tbody></table></div>
+<sc-if value="{{hasSource}}" hint-placeholder-val="{{ false }}"><p class="cmpsrc"><sc-for list="{{source}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if></section></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 700}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"kicker": "Side by side", "title": "How Catch reads each one.", "head": ["", "Run clubs", "Dinners"], "rows": [["Grouped", "Pace groups", "Tables of 6"], ["Phones", "Before and after", "Rarely"]]};
+    const panel = d.panel || 'tint';
+    const us = d.usCol === undefined ? -1 : d.usCol;
+    return { d, secCls: panel === 'open' ? 'open' : 'panel ' + panel, kc: d.kc || '#4C5BC4', title: P(d.title), hasLead: has(d.lead), lead: P(d.lead), wide: d.wide ? 'wide' : '',
+      head: (d.head || []).map((t, i) => ({ t, cls: i === us ? 'us' : '' })),
+      rows: (d.rows || []).map((r) => ({ cells: r.map((c, i) => ({ parts: P(c), cls: i === us ? 'us' : (/^(No|Not offered)\b/.test(c) ? 'no' : /^Not (published|checked|documented)/.test(c) ? 'na' : '') })) })),
+      hasSource: has(d.source), source: P(d.source) };
+  }
+}
+</script>
+</body>
+</html>

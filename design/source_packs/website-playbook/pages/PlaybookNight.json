@@ -1,0 +1,615 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookNight",
+  "title": "Playbook · Running the night",
+  "height": 6400,
+  "phone": {
+    "title": "Running the night",
+    "height": 9800
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "How Catch works"
+        ],
+        "here": "Running the night"
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "panel": "ink",
+        "kicker": "Product · running the night",
+        "kc": "#F5C451",
+        "title": "Run the night, not just the RSVP.",
+        "lead": "A pace group, a seating plan and a group walking to the next bar are different jobs. Catch knows which one you’re running, does its work in the gaps, and leaves people to enjoy the room.",
+        "btns": [
+          {
+            "l": "Start free trial",
+            "kind": "light"
+          },
+          {
+            "l": "Watch a night in 2 minutes",
+            "kind": "lightsec"
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "The live console on an iPad: run of show, the room and what needs you"
+        },
+        "note": "Capability page, now on the kit. The format switcher, side-by-side table and rehearsal mock are kit sections (Switcher, Table, Split)."
+      }
+    },
+    {
+      "component": "KitSwitcher",
+      "data": {
+        "kicker": "Pick a format",
+        "kc": "#1F7A57",
+        "title": "Follow one evening, start to finish.",
+        "center": false,
+        "items": [
+          {
+            "label": "Run clubs",
+            "dot": "#F07A55",
+            "title": "Sunday Social Run",
+            "sub": "Carter Road Runners · Carter Road, Bandra",
+            "body": "People are moving, so phones stay in pockets. Catch does its work before the start and after the finish.",
+            "list": [
+              {
+                "t": "Thursday",
+                "h": "Pace groups, set before Sunday",
+                "b": "Every booking brings a pace. Catch builds groups of six to eight at a similar pace, and spreads newcomers so no group is all strangers."
+              },
+              {
+                "t": "6:20 AM",
+                "h": "Check in, then pocket the phone",
+                "b": "Runners tap in at the fountain and see their group and its lead once. After the start, Catch goes quiet: no prompts while anyone is running."
+              },
+              {
+                "t": "6:30 AM",
+                "h": "A first hello at the start line",
+                "b": "Each group gets one question to answer together before they set off, so the first kilometre already has a conversation in it."
+              },
+              {
+                "t": "7:15 AM",
+                "h": "Nobody left on the road",
+                "b": "Group leads mark runners back at the finish. Anyone not back ten minutes after their group shows up on your screen, with their group and last check-in."
+              },
+              {
+                "t": "Sunday evening",
+                "h": "The next run, already easier",
+                "b": "Finishers get the photos and a one-tap “same time next week?”. Anyone who asked for a steadier pace starts in a steadier group next time."
+              }
+            ],
+            "media": {
+              "kind": "phonecard",
+              "title": "Pace pods",
+              "sub": "Sunday Social Run · Carter Road",
+              "stats": [
+                {
+                  "v": "12",
+                  "l": "runners"
+                },
+                {
+                  "v": "3",
+                  "l": "pods"
+                },
+                {
+                  "v": "2",
+                  "l": "no pod yet"
+                }
+              ],
+              "rows": [
+                {
+                  "t": "Chatty",
+                  "s": "Around 7:30 a km · Dev, Ira and 2 more",
+                  "tag": "4 runners"
+                },
+                {
+                  "t": "Steady",
+                  "s": "Around 6:30 a km · Meher, Tara and 1 more",
+                  "tag": "3 runners"
+                },
+                {
+                  "t": "Quick",
+                  "s": "Around 5:30 a km · Rhea, Arjun and 1 more",
+                  "tag": "3 runners"
+                }
+              ],
+              "chip": "First hello: ask your pod where they ran their first 5K."
+            },
+            "mat": "m-coral"
+          },
+          {
+            "label": "Dinners",
+            "dot": "#F08AA0",
+            "title": "Long Table Supper",
+            "sub": "Khar Table · Khar West",
+            "body": "Phones are within reach all evening, and the point is to leave them there. Catch sets the table, then gets out of the way.",
+            "list": [
+              {
+                "t": "Tuesday",
+                "h": "Tables planned from what people told you",
+                "b": "Applications bring who’s coming and why. Catch suggests tables of six with something in common and someone new, and you adjust with a drag."
+              },
+              {
+                "t": "8:00 PM",
+                "h": "One look at the phone, then dinner",
+                "b": "Guests check in and see their seat once. After that, nothing at dinner needs a phone, and Catch won’t ask for one."
+              },
+              {
+                "t": "8:20 PM",
+                "h": "The whole room at a glance",
+                "b": "The seating map shows who’s where. Seat a late arrival or move someone with a tap, and table sizes and anyone you’ve kept apart still hold."
+              },
+              {
+                "t": "9:10 PM",
+                "h": "A new seat for dessert",
+                "b": "Between courses, Catch suggests a dessert swap so everyone meets a few more people. One table gone quiet? Send it a conversation card."
+              },
+              {
+                "t": "Next morning",
+                "h": "Invite them back",
+                "b": "Guests say who they’d happily sit with again. The people who’d come back hear about the next date first."
+              }
+            ],
+            "media": {
+              "kind": "phonecard",
+              "title": "Seating",
+              "sub": "Long Table Supper · Khar West",
+              "stats": [
+                {
+                  "v": "23",
+                  "l": "seated"
+                },
+                {
+                  "v": "4",
+                  "l": "tables"
+                },
+                {
+                  "v": "1",
+                  "l": "late"
+                }
+              ],
+              "rows": [
+                {
+                  "t": "Table 1",
+                  "s": "Aanya, Kabir, Meher, Dev, Tara, Rohan",
+                  "tag": "6 seated"
+                },
+                {
+                  "t": "Table 2",
+                  "s": "Zara, Ishaan, Vikram, Ira and 2 more",
+                  "tag": "6 seated"
+                },
+                {
+                  "t": "Table 3",
+                  "s": "One seat for a late arrival",
+                  "tag": "5 of 6"
+                }
+              ],
+              "chip": "Dessert swap in 10 minutes · 8 people move"
+            },
+            "mat": "m-pink"
+          },
+          {
+            "label": "Games and quizzes",
+            "dot": "#F5C451",
+            "title": "Tuesday Trivia Night",
+            "sub": "Lantern Lane Social · Harbour Room, Bandra West",
+            "body": "Heads are down during rounds and up between them. Catch only speaks in the gaps, and keeps the scores honest.",
+            "list": [
+              {
+                "t": "7:00 PM",
+                "h": "Fair teams before the first question",
+                "b": "Catch builds teams of five from who’s coming: people on their own spread across teams, friends kept together if they asked, and no team stacked with regulars."
+              },
+              {
+                "t": "7:30 PM",
+                "h": "A team for everyone at the door",
+                "b": "Guests check in and see their team and table. Anyone who came alone is introduced to their team by name before round one."
+              },
+              {
+                "t": "8:40 PM",
+                "h": "Mix once at half-time",
+                "b": "Between rounds, one person from each team moves on. Only the people moving get a buzz; everyone else stays in the game."
+              },
+              {
+                "t": "9:00 PM",
+                "h": "Scores in, standings hidden",
+                "b": "The quizmaster enters each round’s scores. Teams see their own; the leaderboard stays hidden until the end, so the last round still matters."
+              },
+              {
+                "t": "9:40 PM",
+                "h": "The reveal",
+                "b": "A countdown on every phone and the big screen at once, then the final standings. The winners pick next week’s theme."
+              }
+            ],
+            "media": {
+              "kind": "phonecard",
+              "title": "Round 4 of 6",
+              "sub": "Tuesday Trivia Night · Harbour Room",
+              "stats": [
+                {
+                  "v": "6",
+                  "l": "teams"
+                },
+                {
+                  "v": "30",
+                  "l": "players"
+                },
+                {
+                  "v": "4/6",
+                  "l": "scored"
+                }
+              ],
+              "rows": [
+                {
+                  "t": "Quizzy Rascals",
+                  "s": "Table 2 · 5 players",
+                  "tag": "41"
+                },
+                {
+                  "t": "Harbour Lights",
+                  "s": "Table 5 · 5 players",
+                  "tag": "38"
+                },
+                {
+                  "t": "Leaderboard",
+                  "s": "Revealed after round 6",
+                  "tag": "hidden"
+                }
+              ],
+              "chip": "Half-time mix: one person per team moves on"
+            },
+            "mat": "m-yellow"
+          },
+          {
+            "label": "Pickleball",
+            "dot": "#5CCB9F",
+            "title": "Pickleball Social",
+            "sub": "Dink and Drink · Andheri West · 40 players, 3 courts",
+            "body": "Forty players, three courts. Phones come out between games, and Catch makes sure everyone gets their share of court time.",
+            "list": [
+              {
+                "t": "Friday",
+                "h": "Levels in, courts balanced",
+                "b": "Each booking brings a skill level. Catch plans the rounds so every match is close and all forty players get about the same time on court."
+              },
+              {
+                "t": "4:45 PM",
+                "h": "Check in, level confirmed",
+                "b": "Players confirm their level at the door. Walk-ins join the next round, not a queue."
+              },
+              {
+                "t": "5:00 PM",
+                "h": "A new partner every round",
+                "b": "Between games, phones buzz with the next court and partner. Nobody plays with the same partner twice until they’ve played with everyone at their level."
+              },
+              {
+                "t": "5:40 PM",
+                "h": "Fair court time, counted",
+                "b": "Catch counts every player’s minutes on court. Anyone falling behind goes on next; anyone sitting out is pointed to the lounge, and to someone there to meet."
+              },
+              {
+                "t": "That evening",
+                "h": "Standings, then the next session",
+                "b": "Final standings go out with the photos. Players who want an easier or tougher session get that invitation next."
+              }
+            ],
+            "media": {
+              "kind": "phonecard",
+              "title": "Round 3 of 8",
+              "sub": "Pickleball Social · Andheri West",
+              "stats": [
+                {
+                  "v": "40",
+                  "l": "players"
+                },
+                {
+                  "v": "3",
+                  "l": "courts"
+                },
+                {
+                  "v": "28",
+                  "l": "sitting out"
+                }
+              ],
+              "rows": [
+                {
+                  "t": "Court 1",
+                  "s": "Meher and Dev v Ira and Kabir",
+                  "tag": "Level 3"
+                },
+                {
+                  "t": "Court 2",
+                  "s": "Tara and Rohan v Zara and Arjun",
+                  "tag": "Level 2"
+                },
+                {
+                  "t": "Court 3",
+                  "s": "Aanya and Vikram v Rhea and Ishaan",
+                  "tag": "Level 2"
+                }
+              ],
+              "chip": "Next on: 4 players behind on court time"
+            },
+            "mat": "m-mint"
+          },
+          {
+            "label": "Pub crawls",
+            "dot": "#E58AC8",
+            "title": "Friday Bandra Pub Crawl",
+            "sub": "Night Shift Socials · four stops in Bandra",
+            "body": "The night moves, so the plan has to travel with it. Phones come out between stops, and Catch keeps count of everyone along the way.",
+            "list": [
+              {
+                "t": "Thursday",
+                "h": "Plan the route",
+                "b": "Four stops, two groups of ten and a lead for each, shared with your team and the venues before the night."
+              },
+              {
+                "t": "7:30 PM",
+                "h": "A first hello at the first bar",
+                "b": "Guests check in and get one icebreaker to do with someone in their group, so the group is mixing before the first move."
+              },
+              {
+                "t": "8:42 PM",
+                "h": "Move groups between venues",
+                "b": "Phones come out on the move: where you’re heading and who’s with you. Each lead confirms who left and who arrived."
+              },
+              {
+                "t": "10:30 PM",
+                "h": "Late arrivals find the group",
+                "b": "Someone arriving late gets the stop you’re at now, not the first one, and their lead sees them coming."
+              },
+              {
+                "t": "11:15 PM",
+                "h": "The return sweep",
+                "b": "At the last stop, leads mark everyone as home or still out. Anyone not accounted for shows up on your screen."
+              }
+            ],
+            "media": {
+              "kind": "phonecard",
+              "title": "Stop 2 of 4",
+              "sub": "Friday Bandra Pub Crawl",
+              "stats": [
+                {
+                  "v": "20",
+                  "l": "guests"
+                },
+                {
+                  "v": "2",
+                  "l": "groups"
+                },
+                {
+                  "v": "18",
+                  "l": "arrived"
+                }
+              ],
+              "rows": [
+                {
+                  "t": "Group A · lead Meher",
+                  "s": "At stop 2 · leaving 9:40",
+                  "tag": "10 of 10"
+                },
+                {
+                  "t": "Group B · lead Dev",
+                  "s": "2 on the way · 4 min",
+                  "tag": "8 of 10"
+                },
+                {
+                  "t": "Late arrival",
+                  "s": "Sent to stop 2, not stop 1",
+                  "tag": "Ira"
+                }
+              ],
+              "chip": "Return sweep at the last stop"
+            },
+            "mat": "m-magenta"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTable",
+      "data": {
+        "kicker": "Side by side",
+        "title": "How Catch reads each one.",
+        "lead": "Same app, five different nights. Running something else? Pick an open format and choose the tools you want.",
+        "head": [
+          "",
+          "Run clubs",
+          "Dinners",
+          "Games and quizzes",
+          "Pickleball",
+          "Pub crawls"
+        ],
+        "rows": [
+          [
+            "When phones come out",
+            "Before and after only",
+            "Nearby, rarely needed",
+            "Between rounds",
+            "Between rounds",
+            "Between stops"
+          ],
+          [
+            "How people are grouped",
+            "Pace groups of 6 to 8",
+            "Tables of 6",
+            "Balanced teams of 5",
+            "Doubles on 3 courts",
+            "Groups of 10, each with a lead"
+          ],
+          [
+            "The rhythm of the night",
+            "One route, start to finish",
+            "Three courses",
+            "Six rounds",
+            "15-minute rounds",
+            "Four stops"
+          ],
+          [
+            "What Catch keeps count of",
+            "Who’s back at the finish",
+            "Who sits where",
+            "Scores, hidden till the end",
+            "Court time and partners",
+            "Who’s at each stop"
+          ],
+          [
+            "How it ends",
+            "Next week’s run",
+            "Who’d sit together again",
+            "The reveal",
+            "Standings",
+            "Everyone accounted for"
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "panel": "ink",
+        "center": false,
+        "kicker": "In every format",
+        "kc": "#F5C451",
+        "title": "The tools under every night.",
+        "cols": 4,
+        "items": [
+          {
+            "t": "The live console",
+            "d": "Run of show, the room and what needs you, on your phone or an iPad at the host stand."
+          },
+          {
+            "t": "Change anything live",
+            "d": "Move a guest, adjust a group or override an assignment, and the rest of the plan still holds."
+          },
+          {
+            "t": "A first hello",
+            "d": "A group, a team or a prompt so nobody stands alone. Introductions and prompts are optional."
+          },
+          {
+            "t": "Help me say hi",
+            "d": "A guest asks you for an introduction, privately, and you decide who follows up."
+          },
+          {
+            "t": "Guest requests",
+            "d": "Practical asks from guests during the night arrive on your screen, not in your DMs."
+          },
+          {
+            "t": "Message the room",
+            "d": "One message to everyone checked in: the next round, the next stop, last orders."
+          },
+          {
+            "t": "No app for guests",
+            "d": "Guests join live moments in their phone’s browser after a quick phone check, and can always skip."
+          },
+          {
+            "t": "Reports after",
+            "d": "Who came, who’s new and who wants to come back, ready the next morning."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Dress rehearsal",
+        "kc": "#B5451F",
+        "title": "Practise the night before doors open.",
+        "lead": "Invite your team to a rehearsal. They join as practice guests, follow a practice run of show and try every guest screen. Nothing counts as a real check-in, and nobody real gets a message.",
+        "ticks": [
+          "A practice run of show, step by step",
+          "Your team tries the guest controls on their own phones",
+          "Fix the plan before the night, not during it"
+        ],
+        "media": {
+          "kind": "phonecard",
+          "title": "Practice run of show",
+          "sub": "Dress rehearsal · Saturday Trivia Social",
+          "rows": [
+            {
+              "t": "7:00 Doors",
+              "s": "Practice check-in, not counted",
+              "tag": "done",
+              "tone": "good"
+            },
+            {
+              "t": "7:15 Teams",
+              "s": "3 practice guests placed",
+              "tag": "now",
+              "tone": "hot"
+            },
+            {
+              "t": "7:30 Round 1",
+              "s": "Scores entered by the quizmaster",
+              "tag": "next"
+            }
+          ],
+          "chip": "Your practice prompt: say hello to your team"
+        }
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "About running the night.",
+        "items": [
+          [
+            "Can I choose which activities guests see?",
+            "Yes. Pick the format and tools when you set up an event, and adjust groups or override assignments from the live console. Introductions, prompts and group activities are optional."
+          ],
+          [
+            "Do my guests need to download an app?",
+            "No. Guests join live moments in their phone’s browser after a quick phone check, with no app or profile needed."
+          ],
+          [
+            "What if my format isn’t one of these five?",
+            "Pick an open format and choose the tools you want: check-in, groups, prompts and messages work for any kind of night."
+          ],
+          [
+            "What can my team see on the night?",
+            "Your team uses the booking and application information guests provide for the event, with access suited to each role."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "tone": "m-coral",
+        "ink": "#3B1F14",
+        "kicker": "Free for 30 days",
+        "title": "Run your next night on Catch.",
+        "lead": "Every live tool is in the trial. Free events stay free after it.",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "How Catch works",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host on a Saturday"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

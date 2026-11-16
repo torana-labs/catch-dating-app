@@ -1,0 +1,357 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookCityFormat",
+  "title": "Playbook · Run clubs in Mumbai",
+  "height": 6000,
+  "phone": {
+    "title": "City by format",
+    "height": 9800
+  },
+  "state": {
+    "label": "Prototype · page state:",
+    "options": [
+      {
+        "key": "full",
+        "label": "Mumbai run clubs · indexed"
+      },
+      {
+        "key": "thin",
+        "label": "Indore pickleball · below the bar, noindex"
+      }
+    ],
+    "default": "full"
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "guest",
+        "city": "Mumbai"
+      }
+    },
+    {
+      "component": "KitTiles",
+      "when": "full",
+      "data": {
+        "h1": true,
+        "panel": "m-coral",
+        "center": false,
+        "kicker": "Mumbai / Run clubs",
+        "kc": "#4A1C0E",
+        "title": "Run clubs in Mumbai",
+        "lead": "Social runs for every pace, from Marine Drive at sunrise to trail runs in Aarey. Book a place, run with a group, stay for coffee.",
+        "cols": 4,
+        "items": [
+          {
+            "tone": "white",
+            "n": "14",
+            "t": "clubs",
+            "d": ""
+          },
+          {
+            "tone": "white",
+            "n": "23",
+            "t": "runs this week",
+            "d": ""
+          },
+          {
+            "tone": "white",
+            "n": "9",
+            "t": "free to join",
+            "d": ""
+          }
+        ],
+        "note": "City-by-format template on the kit. Decision: index only with 3 or more organisers or 5 or more upcoming events in the format."
+      }
+    },
+    {
+      "component": "KitCards",
+      "when": "full",
+      "data": {
+        "variant": "plan",
+        "kicker": "This week and next",
+        "title": "Upcoming runs",
+        "filters": [
+          {
+            "key": "all",
+            "label": "All"
+          },
+          {
+            "key": "free",
+            "label": "Free"
+          },
+          {
+            "key": "weekend",
+            "label": "Weekends"
+          },
+          {
+            "key": "paid",
+            "label": "Coached"
+          }
+        ],
+        "items": [
+          {
+            "key": "free",
+            "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+            "badge": "All paces",
+            "day": "Sun",
+            "num": "23",
+            "t": "Carter Road Social Run",
+            "s": "Carter Road Runners · Bandra",
+            "price": "Free",
+            "left": "18 going"
+          },
+          {
+            "key": "weekend",
+            "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+            "badge": "Beginners welcome",
+            "day": "Sat",
+            "num": "22",
+            "t": "Marine Drive 5K",
+            "s": "Sea Face Striders · Churchgate",
+            "price": "₹199",
+            "left": "9 left"
+          },
+          {
+            "key": "paid",
+            "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+            "badge": "Coached",
+            "day": "Wed",
+            "num": "26",
+            "t": "Midweek Tempo",
+            "s": "Powai Pacers · Powai",
+            "price": "₹299",
+            "left": "12 left"
+          },
+          {
+            "key": "weekend",
+            "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+            "badge": "Solo-friendly",
+            "day": "Sun",
+            "num": "30",
+            "t": "Run and Brunch",
+            "s": "Sunday Striders · Worli",
+            "price": "₹499",
+            "left": "6 left"
+          },
+          {
+            "key": "weekend",
+            "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+            "badge": "10K",
+            "day": "Sat",
+            "num": "29",
+            "t": "Aarey Trail Run",
+            "s": "Trail Tribe · Goregaon",
+            "price": "₹349",
+            "left": "15 left"
+          },
+          {
+            "key": "free",
+            "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+            "badge": "Women only",
+            "day": "Tue",
+            "num": "25",
+            "t": "Women’s Evening Run",
+            "s": "Her Pace · Bandra",
+            "price": "Free",
+            "left": "22 going"
+          }
+        ],
+        "btns": [
+          {
+            "l": "See all 23 runs",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitCards",
+      "when": "full",
+      "data": {
+        "variant": "org",
+        "panel": "tint",
+        "kicker": "The clubs",
+        "kc": "#1F7A57",
+        "title": "Who runs them",
+        "lead": "Follow a club and you’ll hear about their next run first.",
+        "cols": 4,
+        "items": [
+          {
+            "initials": "CR",
+            "tone": "m-coral",
+            "ink": "#3B1F14",
+            "t": "Carter Road Runners",
+            "s": "Bandra · Sundays · ★ [4.9]",
+            "next": "Next: Sun 23 · Social run"
+          },
+          {
+            "initials": "SS",
+            "tone": "m-yellow",
+            "ink": "#4A3608",
+            "t": "Sea Face Striders",
+            "s": "Churchgate · Saturdays · ★ [4.8]",
+            "next": "Next: Sat 22 · Marine Drive 5K"
+          },
+          {
+            "initials": "PP",
+            "tone": "m-indigo",
+            "ink": "#1E2550",
+            "t": "Powai Pacers",
+            "s": "Powai · Wednesdays · ★ [4.7]",
+            "next": "Next: Wed 26 · Midweek tempo"
+          },
+          {
+            "claim": true,
+            "t": "Run a club in Mumbai?",
+            "s": "List it free and take bookings on Catch.",
+            "cta": "List your club"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "when": "full",
+      "data": {
+        "top": true,
+        "kicker": "First time?",
+        "title": "Joining a run club in Mumbai.",
+        "ticks": [
+          "Pick your pace. Most clubs have groups from walk-run to 5 minutes a kilometre. The listing says which.",
+          "Book, even if it’s free. The club knows to expect you, and you’ll get the start point and time the day before.",
+          "Come alone. Most people do. Clubs put you in a pace group with a lead who’ll introduce you.",
+          "Stay for coffee. That’s where the club happens."
+        ],
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/088ae8bbfb5016fdc0bb1db7828d8264",
+          "alt": "A runner’s phone after checking in: their group and who to look for"
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "when": "thin",
+      "data": {
+        "panel": "tint",
+        "kicker": "Indore / Padel and pickleball",
+        "kc": "#1F7A57",
+        "title": "Padel and pickleball in Indore",
+        "lead": "Catch is just getting started with racket socials in Indore. Here’s what’s on so far, and what else is happening this week.",
+        "ticks": [
+          "1 club so far: Rally Social Club · Vijay Nagar · next session Sat 22",
+          "We’ll make this a full page once there are more clubs and sessions to show"
+        ],
+        "btns": [
+          {
+            "l": "See Rally Social Club"
+          },
+          {
+            "l": "Know a club? Tell us",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Popular in Indore this week",
+          "rows": [
+            {
+              "t": "Run clubs",
+              "v": "6"
+            },
+            {
+              "t": "Quiz nights",
+              "v": "4"
+            },
+            {
+              "t": "Book clubs",
+              "v": "3"
+            },
+            {
+              "t": "Supper clubs",
+              "v": "2"
+            }
+          ],
+          "fine": "Page metadata: noindex, follow. Not in the sitemap."
+        },
+        "note": "Below the bar: under 3 organisers and under 5 upcoming events. The page works for links, but is not indexed."
+      }
+    },
+    {
+      "component": "KitCards",
+      "data": {
+        "variant": "plan",
+        "kicker": "More in the city",
+        "kc": "#B5451F",
+        "title": "Other things to do",
+        "items": [],
+        "links": [
+          "Supper clubs",
+          "Quiz nights",
+          "Padel and pickleball",
+          "Book clubs",
+          "Nights out",
+          "Yoga and fitness",
+          "New to the city"
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Run clubs in Mumbai",
+        "title": "Run clubs in Mumbai: common questions",
+        "items": [
+          [
+            "Are run clubs in Mumbai free?",
+            "Many are. Of the runs this week, 9 are free; paid runs are usually ₹199 to ₹499 and often include coffee or coaching."
+          ],
+          [
+            "Do I need to be fast?",
+            "No. Most clubs run in pace groups, including walk-run groups. Each listing says which paces it caters for."
+          ],
+          [
+            "Can I come on my own?",
+            "Yes. Most people do. Clubs put you in a group with a lead who introduces you."
+          ],
+          [
+            "Why book a free run?",
+            "So the club knows to expect you, and you get the start point and any change of plan before the day."
+          ],
+          [
+            "When are most runs?",
+            "Early weekend mornings, with a few weekday evening runs. Filter by weekends above."
+          ],
+          [
+            "How do I start a run club?",
+            "List it free on Catch. Take bookings, check runners in and see who keeps coming back."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "tone": "m-coral",
+        "ink": "#4A1C0E",
+        "kicker": "Hear about new runs first",
+        "title": "Get new plans on WhatsApp.",
+        "lead": "About once a week. Stop any time.",
+        "form": {
+          "id": "cf-wa",
+          "label": "Your WhatsApp number",
+          "button": "Notify me"
+        }
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "guest",
+        "mbar": "See all runs"
+      }
+    }
+  ]
+}

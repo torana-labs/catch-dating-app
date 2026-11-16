@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · flow</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><sc-if value="{{hasBanner}}" hint-placeholder-val="{{ false }}"><div class="kbanner">{{d.banner}}</div></sc-if><section class="kflow {{widthCls}}">
+<sc-if value="{{hasTabs}}" hint-placeholder-val="{{ false }}"><nav class="ktabsnav" aria-label="{{d.tabsLabel}}"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><a href="#" class="{{t.cls}}" aria-current="{{t.cur}}">{{t.label}}</a></sc-for></nav></sc-if>
+<sc-if value="{{hasSteps}}" hint-placeholder-val="{{ true }}"><ol class="kfsteps" aria-label="Steps"><sc-for list="{{steps}}" as="s" hint-placeholder-count="4"><li class="{{s.cls}}"><span>{{s.n}}</span>{{s.label}}</li></sc-for></ol></sc-if>
+<div class="kfhead"><sc-if value="{{hasKicker}}" hint-placeholder-val="{{ true }}"><p class="k" style="color:{{kc}}">{{d.kicker}}</p></sc-if><h1 class="d d-sec"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h1>
+<sc-if value="{{hasLead}}" hint-placeholder-val="{{ true }}"><p class="lead"><sc-for list="{{lead}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if></div>
+<div class="kfblocks"><sc-for list="{{blocks}}" as="b" hint-placeholder-count="2"><dc-import name="KitMock" d="{{b}}" hint-size="100%,260px"></dc-import></sc-for></div>
+<sc-if value="{{hasFine}}" hint-placeholder-val="{{ false }}"><p class="kffine"><sc-for list="{{fine}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if>
+<sc-if value="{{hasNote}}" hint-placeholder-val="{{ false }}"><span class="note">{{d.note}}</span></sc-if></section></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 760}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"kicker": "Long Table Supper · Fri 21 Nov", "title": "Review your booking", "lead": "Check the price and cancellation policy before reserving your seat.", "steps": ["Your phone", "Review", "Pay", "Confirmed"], "step": 1, "blocks": [{"title": "1 seat · ₹1,200", "rows": [{"t": "Cancellation", "s": "Standard: full refund until 24 hours before", "tag": "Standard"}], "btns": [{"l": "Reserve a seat and pay ₹1,200"}]}]};
+    const at = d.step === undefined ? -1 : d.step;
+    return { d, hasBanner: has(d.banner), hasTabs: has(d.tabs), tabs: (d.tabs || []).map((l, i) => ({ label: l, cls: i === d.tab ? 'on' : '', cur: i === d.tab ? 'page' : 'false' })), widthCls: d.wide ? 'wide' : '', hasSteps: has(d.steps), steps: (d.steps || []).map((l, i) => ({ n: i < at ? '✓' : String(i + 1), label: l, cls: i === at ? 'now' : i < at ? 'done' : '' })),
+      hasKicker: has(d.kicker), kc: d.kc || '#B5451F', title: P(d.title), hasLead: has(d.lead), lead: P(d.lead), blocks: (d.blocks || []).map((b) => Object.assign({ kind: 'card', flat: true }, b)),
+      hasFine: has(d.fine), fine: P(d.fine), hasNote: has(d.note) };
+  }
+}
+</script>
+</body>
+</html>

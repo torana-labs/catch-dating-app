@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · split</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><section class="{{secCls}}" style="{{secStyle}}" id="{{sid}}"><div class="{{splitCls}}"><div class="{{textCls}}">
+<sc-if value="{{hasKicker}}" hint-placeholder-val="{{ true }}"><p class="k" style="color:{{kc}}">{{d.kicker}}</p></sc-if>
+<h2 class="d d-sec"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h2>
+<sc-if value="{{hasLead}}" hint-placeholder-val="{{ true }}"><p class="lead"><sc-for list="{{lead}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if>
+<sc-if value="{{hasTicks}}" hint-placeholder-val="{{ true }}"><ul class="ticks"><sc-for list="{{ticks}}" as="x" hint-placeholder-count="3"><li><sc-for list="{{x.parts}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></li></sc-for></ul></sc-if>
+<sc-if value="{{hasGroups}}" hint-placeholder-val="{{ false }}"><div class="kgroups"><sc-for list="{{groups}}" as="g" hint-placeholder-count="2"><div class="kgroup"><h3><i>{{g.n}}</i>{{g.h}}</h3><ul><sc-for list="{{g.list}}" as="x" hint-placeholder-count="3"><li><sc-for list="{{x.parts}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></li></sc-for></ul><sc-if value="{{g.hasLink}}" hint-placeholder-val="{{ true }}"><a class="kmore" href="#">{{g.link}}</a></sc-if></div></sc-for></div></sc-if>
+<sc-if value="{{hasSos}}" hint-placeholder-val="{{ false }}"><div class="ksos"><b>{{d.sos.big}}</b><p>{{d.sos.text}}</p></div></sc-if>
+<sc-if value="{{hasBody}}" hint-placeholder-val="{{ false }}"><p class="body" style="margin-top:16px"><sc-for list="{{body}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if>
+<sc-if value="{{hasBtns}}" hint-placeholder-val="{{ false }}"><div class="btns"><sc-for list="{{btns}}" as="b" hint-placeholder-count="2"><a class="b {{b.cls}}" href="{{b.href}}">{{b.l}}</a></sc-for></div></sc-if></div>
+<div class="{{mediaCls}}"><sc-if value="{{hasSteps}}" hint-placeholder-val="{{ false }}"><ol class="steps" style="margin-top:0"><sc-for list="{{steps}}" as="x" hint-placeholder-count="3"><li class="on"><span class="n" style="color:#F07A55">{{x.n}}</span><div><h3>{{x.h}}</h3><p class="body"><sc-for list="{{x.d}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></div></li></sc-for></ol></sc-if>
+<sc-if value="{{hasMedia}}" hint-placeholder-val="{{ true }}"><dc-import name="KitMock" d="{{d.media}}" hint-size="100%,520px"></dc-import></sc-if></div></div>
+<sc-if value="{{hasNote}}" hint-placeholder-val="{{ false }}"><span class="note">{{d.note}}</span></sc-if></section></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 760}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"kicker": "Applications", "title": "Know who’s coming before you set the table.", "lead": "Ask what you want to know. Approve with a tap.", "ticks": ["Your questions, on your page", "Approve, decline or waitlist", "Paid at booking"], "media": {"kind": "card", "title": "Application · Long Table Supper", "rows": [{"t": "What brings you here?", "s": "New to Mumbai."}], "btns": [{"l": "Approve"}, {"l": "Waitlist", "kind": "sec"}]}};
+    const panel = d.panel || 'open';
+    return {
+      d, secCls: (panel === 'open' ? 'open' : 'panel ' + panel + (d.flush ? ' flush' : '')), secStyle: d.tight ? 'padding-top:24px' : '',
+      sid: d.id || "",
+      splitCls: 'split' + (d.top ? ' top' : ''), textCls: d.flush ? 'htext' : '', mediaCls: d.flush ? 'fmedia' : '',
+      hasKicker: has(d.kicker), kc: d.kc || '#4C5BC4', title: P(d.title), hasLead: has(d.lead), lead: P(d.lead),
+      hasTicks: has(d.ticks), ticks: (d.ticks || []).map((x) => ({ parts: P(x) })), hasBody: has(d.body), body: P(d.body),
+      hasGroups: has(d.groups), groups: (d.groups || []).map((g) => ({ n: g.n || '', h: g.h, list: (g.list || []).map((x) => ({ parts: P(x) })), link: g.link, hasLink: has(g.link) })),
+      hasSos: !!d.sos, hasSteps: has(d.steps), steps: (d.steps || []).map((x) => ({ n: x.n, h: x.h, d: P(x.d) })), hasMedia: !!d.media && !has(d.steps),
+      hasBtns: has(d.btns), btns: B(d.btns), hasNote: has(d.note)
+    };
+  }
+}
+</script>
+</body>
+</html>

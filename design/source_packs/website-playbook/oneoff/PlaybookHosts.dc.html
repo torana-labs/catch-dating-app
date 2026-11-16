@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Playbook · Catch for hosts</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;background:#fff}
+.pg{container-type:inline-size;container-name:pg;box-sizing:border-box;width:100%;background:#fff;color:#141114;font-family:Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:16px}
+.pg *{box-sizing:border-box}
+.pg img{display:block}
+.pg a{color:inherit}
+.d{margin:0;font-family:Archivo,'Arial Narrow',sans-serif;font-weight:760;font-stretch:78%;font-variation-settings:"wdth" 78;letter-spacing:-.03em;line-height:.98}
+.d-hero{font-size:80px}.d-sec{font-size:56px}.d-sm{font-size:30px;line-height:1.05}.d-xs{font-size:22px;line-height:1.1;letter-spacing:-.02em}
+.k{margin:0 0 14px;font:600 13px/18px Inter,system-ui,sans-serif;letter-spacing:.04em}
+.lead{margin:16px 0 0;font-size:19px;line-height:1.5;color:#5A5450;max-width:580px}
+.body{margin:8px 0 0;font-size:15px;line-height:1.5;color:#5A5450}
+.ink .lead,.ink .body{color:#BDB3A7}
+.c{text-align:center}.c .lead{margin-inline:auto}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}.c .btns{justify-content:center}
+.b{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 22px;border-radius:999px;font:600 15px/1 Inter,system-ui,sans-serif;white-space:nowrap;border:1.5px solid #141114;background:#141114;color:#fff!important;text-decoration:none;cursor:pointer}
+.b.o{background:transparent;color:#141114!important}.b.w{background:#fff;color:#141114!important;border-color:#fff}.b.ow{background:transparent;color:#fff!important;border-color:rgba(255,255,255,.7)}
+.b.sm{height:38px;padding:0 16px;font-size:14px}
+.b svg{width:18px;height:18px}
+.badges{display:flex;gap:10px;margin-top:20px}.badges img{height:40px;width:auto}
+.ph{display:inline-block;border:1.5px dashed currentColor;border-radius:6px;padding:0 5px;font-weight:700;line-height:1.3}
+sup{font-size:.6em;line-height:0}
+/* offer strip and top bar */
+.offer{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px;background:#1B171B;color:#F6EFE6;font-size:14px;text-align:center}
+.offer b{color:#F5C451}.offer a{color:#fff;font-weight:600}
+.bar{display:flex;align-items:center;gap:26px;height:68px;padding:0 max(24px,calc((100% - 1200px)/2))}
+.wm{font-family:Archivo,'Arial Narrow',sans-serif;font-weight:800;font-stretch:78%;font-variation-settings:"wdth" 78;font-size:26px;letter-spacing:-.03em;text-decoration:none}
+.bar nav{display:flex;gap:22px;font-size:15px;font-weight:500;color:#2b2427;align-items:center}
+.bar nav a{text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.bar nav a.on{font-weight:700;color:#141114}
+.bar nav svg{width:14px;height:14px}
+.bar .sp{flex:1}
+.wa{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;text-decoration:none;color:#1F7A57!important}
+.wa svg{width:20px;height:20px}
+.bar .signin{font-size:14px;font-weight:600;text-decoration:none}
+.bar .menu{display:none;width:40px;height:40px;border-radius:999px;border:1.5px solid #141114;align-items:center;justify-content:center;background:#fff}
+.bar .menu i{display:block;width:16px;height:2px;background:#141114;box-shadow:0 5px 0 #141114,0 -5px 0 #141114}
+/* sections */
+.panel{margin:16px 24px 0;border-radius:36px;padding:88px max(72px,calc((100% - 1200px)/2 - 24px));overflow:hidden;position:relative}
+.open{padding:112px max(24px,calc((100% - 1200px)/2)) 24px;position:relative}
+.tint{background:#F6F0E8}
+.ink{background:#1B171B;color:#F6EFE6}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:center}
+.mat{border-radius:28px;position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+.m-coral{background:#F07A55}.m-pink{background:#F08AA0}.m-yellow{background:#F5C451}.m-mint{background:#5CCB9F}.m-indigo{background:#8C9BF2}.m-magenta{background:#E58AC8}
+.phone{position:relative;width:260px;aspect-ratio:402/874;border-radius:44px;background:#121013;padding:8px;box-shadow:0 30px 60px -20px rgba(20,17,20,.45),0 0 0 1px rgba(0,0,0,.5)}
+.phone>img,.phone>.scr{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:36px;background:#fff}
+.note{position:absolute;right:20px;top:20px;z-index:9;font:600 11px/1.35 Inter,system-ui;background:#141114;color:#fff;border-radius:8px;padding:6px 9px;max-width:280px;text-align:left}
+.ink .note{background:#F6EFE6;color:#141114}
+/* hero */
+.heroc{background:#F07A55;padding-bottom:0!important}
+.heroc .split{align-items:end}.heroc .htext{padding-bottom:72px}
+.heroc .lead,.heroc .body{color:rgba(20,17,20,.8)}
+.proofline{display:flex;align-items:center;gap:10px;margin:22px 0 0;font-size:15px;font-weight:600;color:#3B1F14}
+.stars{color:#141114;letter-spacing:2px}
+.door{display:inline-block;margin-top:18px;font-size:15px;font-weight:600;color:#141114}
+.qr{display:flex;gap:16px;align-items:center;margin-top:24px;background:#fff;border-radius:22px;padding:12px 18px 12px 12px;max-width:520px}
+.qr svg{width:84px;height:84px;flex:0 0 auto}
+.qr h3{margin:0;font-size:15px}.qr p{margin:2px 0 8px;font-size:13px;color:#5A5450}
+.qr form{display:flex;gap:8px}
+.in{height:44px;border-radius:12px;border:1.5px solid #d6cec7;padding:0 12px;font:500 15px Inter,system-ui,sans-serif;background:#fff;color:#141114;width:100%;min-width:0}
+.in.dark{background:rgba(255,255,255,.06);border-color:rgba(246,239,230,.25);color:#F6EFE6}
+.hmedia{display:flex;justify-content:center;align-self:stretch;align-items:flex-end;padding-top:24px;position:relative}
+.hphone{width:360px;margin-bottom:-250px;transform:rotate(-4deg)}
+.hchip{position:absolute;left:2%;top:30%;z-index:3;background:#fff;color:#141114;border-radius:20px;padding:14px 16px;box-shadow:0 18px 40px -16px rgba(0,0,0,.45);transform:rotate(-2deg);font-size:13px;min-width:210px}
+.hchip strong{display:block;font-size:15px;margin-bottom:6px}
+.hchip div{display:flex;justify-content:space-between;gap:14px;padding:3px 0;color:#5A5450}.hchip div b{color:#141114}
+.mobbadges{display:none}
+/* proof */
+.logos{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:14px 44px;margin-top:28px}
+.logo{display:inline-flex;align-items:center;gap:10px;font-family:Archivo,'Arial Narrow',sans-serif;font-weight:800;font-stretch:78%;font-variation-settings:"wdth" 78;font-size:24px;letter-spacing:-.02em;color:#4d4549}
+.logo i{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:14px;color:#141114}
+.proofrow{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:28px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:#F6F0E8;font-size:14px;font-weight:600}
+/* segments */
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 4*16px)/5);gap:16px;margin-top:40px}
+.card{text-decoration:none;display:block}
+.card .mat{aspect-ratio:1/1;align-items:stretch;padding:10px}
+.card .mat>div{width:100%;height:100%;border-radius:20px;overflow:hidden}
+.card .mat img{width:100%;height:100%;object-fit:cover}
+.card h3{margin:14px 0 0;font-size:18px;line-height:1.25}
+.card .body{font-size:14px;margin-top:4px}
+.card .more{display:inline-flex;margin-top:10px;font-size:13px;font-weight:700;text-decoration:underline}
+.art{position:relative;width:100%;height:100%}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.chip2{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;background:#fff;box-shadow:0 0 0 1px rgba(20,17,20,.1);font-weight:600;font-size:15px;text-decoration:none}
+.chip2 i{width:8px;height:8px;border-radius:50%}
+.subk{margin:40px 0 0;font-size:14px;font-weight:700;color:#5A5450}
+.stages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:20px}
+.stg{border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:10px;min-height:230px;text-decoration:none}
+.stg h3{margin:0;font-size:20px;line-height:1.25}
+.stg p{margin:0;font-size:15px;line-height:1.5}
+.stg .go{margin-top:auto;font-weight:700;font-size:14px;text-decoration:underline}
+/* night */
+.flush{padding-bottom:0!important}.flush .split{align-items:end}.flush .htext{padding-bottom:88px}
+.tl{list-style:none;margin:32px 0 0;padding:0;border-left:2px solid rgba(246,239,230,.16)}
+.tl li{position:relative;padding:12px 0 12px 24px;display:grid;grid-template-columns:84px 1fr;gap:12px;color:#BDB3A7;font-size:14px}
+.tl li b{color:#F6EFE6;font-weight:600}
+.tl li.on{background:rgba(255,255,255,.06);border-radius:0 16px 16px 0}
+.tl li.on:before{content:"";position:absolute;left:-2px;top:0;bottom:0;width:2px;background:#F07A55}
+.tl li.on b{font-size:18px}
+.fmedia{display:flex;justify-content:center;align-items:flex-end;align-self:stretch;padding-top:24px;min-height:420px}
+.fphone{width:320px;margin-bottom:-220px}
+.pods{width:100%;height:100%;border-radius:36px;background:#fff;padding:44px 16px 16px;color:#141114;font-size:12px}
+.pods h5{margin:0;font-size:16px}.pods .sub{color:#5A5450;font-size:11px;margin-top:2px}
+.pods .stats{display:flex;justify-content:space-between;margin:16px 4px}.pods .stats b{display:block;font:800 26px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78}
+.pod{background:#F6F0E8;border-radius:16px;padding:12px;margin-top:8px}
+.pod div{display:flex;justify-content:space-between;font-weight:700;font-size:14px}.pod small{color:#5A5450}
+.pod span{font-size:10px;font-weight:600;border:1px solid #d6cec7;border-radius:999px;padding:2px 8px}
+/* results */
+.casehd{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.av{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 20px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78}
+.casehd b{display:block;font-size:17px}.casehd span{font-size:14px;color:#5A5450}
+.qt{margin:0;font:600 26px/1.35 Inter,system-ui,sans-serif;letter-spacing:-.01em}
+.mx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:28px}
+.mm{background:#F6F0E8;border-radius:20px;padding:18px}
+.mm small{display:block;font-size:13px;font-weight:600;color:#5A5450}
+.mm b{display:block;margin:10px 0 4px;font:800 34px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78}
+.mm span{font-size:12px;color:#5A5450}
+.storyimg{border-radius:28px;overflow:hidden;height:520px;position:relative}
+.storyimg img{width:100%;height:100%;object-fit:cover}
+.storyimg .tag{position:absolute;left:20px;bottom:20px;background:#fff;border-radius:16px;padding:12px 14px;font-size:13px;font-weight:600;box-shadow:0 12px 30px -12px rgba(0,0,0,.4)}
+.more2{display:flex;gap:16px;flex-wrap:wrap;margin-top:24px;font-weight:700;font-size:15px}
+/* compare */
+.cmpwrap{margin-top:40px;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 0 0 1px rgba(20,17,20,.06)}
+.cmp{width:100%;border-collapse:collapse;font-size:15px;line-height:1.45}
+.cmp th{text-align:left;font-size:13px;font-weight:700;color:#5A5450;padding:18px 22px;border-bottom:1px solid #eee7e1}
+.cmp td{padding:16px 22px;border-bottom:1px solid #f1ebe5;vertical-align:top;color:#4d4549}
+.cmp tr:last-child td{border-bottom:0}
+.cmp td:first-child{font-weight:700;color:#141114;width:22%}
+.cmp td.us,.cmp th.us{background:#EAF7F1;color:#0f3d2b}
+.cmp7{overflow-x:auto}
+.cmp7 .cmp{font-size:14px;min-width:1100px}
+.cmp7 .cmp th,.cmp7 .cmp td{padding:14px 14px}
+.cmp7 .cmp td:first-child{width:17%}
+.cmp7 .cmp td.us{width:15%;font-weight:600}
+.cmp td.no{color:#8a8079}
+.cmp td.na{color:#a39a93;font-style:italic}
+.cmpsrc{margin:14px 0 0;font-size:13px;line-height:1.5;color:#6b6266}
+.fits{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.fits>div{background:#fff;border-radius:20px;padding:16px 18px;font-size:14px;line-height:1.5;color:#4d4549}
+.fits b{color:#141114}
+.cmpfoot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-top:24px;align-items:center}
+.ai{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:14px;font-weight:600}
+.ai a{display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:999px;background:#fff;box-shadow:0 0 0 1px rgba(20,17,20,.12);text-decoration:none}
+/* tool */
+.tool{background:#fff;border-radius:24px;padding:28px;box-shadow:0 24px 50px -30px rgba(20,17,20,.45)}
+.flds{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fld label{display:block;font-size:13px;font-weight:600;color:#5A5450;margin-bottom:6px}
+.res{margin-top:22px;padding:20px;border-radius:18px;background:#1B171B;color:#F6EFE6}
+.res small{font-size:13px;color:#BDB3A7;font-weight:600}
+.res b{display:block;margin:6px 0 4px;font:800 52px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78;color:#F07A55}
+.res span{font-size:13px;color:#BDB3A7}
+.frm{display:flex;gap:10px;margin-top:16px}
+.tool2{margin-top:16px;display:flex;gap:16px;align-items:center;padding:20px;border-radius:24px;background:rgba(255,255,255,.55)}
+.tool2 h3{margin:0;font-size:16px}.tool2 p{margin:2px 0 0;font-size:14px;color:#2b2427}
+/* pricing */
+.price{font-family:Archivo,'Arial Narrow',sans-serif;font-weight:800;font-stretch:78%;font-variation-settings:"wdth" 78;font-size:200px;line-height:.8;letter-spacing:-.05em;color:#F07A55;margin:0}
+.calc2 small{display:block;font-size:13px;font-weight:600;color:#BDB3A7}
+.calc2 .sv{margin:6px 0 14px;font:800 52px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78;letter-spacing:-.02em}
+.rng{width:100%;accent-color:#F07A55;height:28px;margin:0}
+.rmm{display:flex;justify-content:space-between;margin:4px 0 16px;font-size:12px;color:#8a8079}
+.tiles2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tiles2>div{background:rgba(255,255,255,.06);border-radius:18px;padding:16px}
+.tiles2 small{font-size:13px;color:#BDB3A7;font-weight:600}
+.tiles2 b{display:block;margin:6px 0 2px;font:800 34px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78}
+.tiles2 span{font-size:12px;color:#BDB3A7}
+.capped{margin:14px 0 0;font-size:14px;font-weight:600;color:#5CCB9F}
+.fine{margin:8px 0 0;font-size:12px;line-height:1.5;color:#8a8079}
+.ex{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:48px}
+.ex>div{background:rgba(255,255,255,.06);border-radius:20px;padding:18px;font-size:13px;line-height:1.45;color:#BDB3A7}
+.ex b{display:block;color:#F6EFE6;font:800 30px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78;margin:8px 0 6px}
+.ex strong{color:#F6EFE6;font-size:14px}
+.incl{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.incl span{font-size:13px;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.08);color:#F6EFE6}
+.pq{margin-top:28px;padding:20px 22px;border-radius:20px;background:rgba(255,255,255,.06);font-size:15px;line-height:1.5;color:#F6EFE6}
+.pq small{display:block;margin-top:8px;color:#BDB3A7;font-size:13px}
+.orgline{margin-top:28px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding-top:24px;border-top:1px solid rgba(246,239,230,.14);font-size:15px}
+/* paths */
+.paths{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:44px;text-align:left}
+.path{border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:10px;min-height:300px;background:#F6F0E8}
+.path .n{font:800 15px/1 Inter,system-ui;letter-spacing:.04em;color:#5A5450}
+.path h3{margin:0;font-size:21px;line-height:1.2}
+.path p{margin:0;font-size:14px;line-height:1.5;color:#4d4549}
+.path .b{margin-top:auto;align-self:flex-start}
+.vid{position:relative;border-radius:16px;overflow:hidden;height:110px;margin-top:4px}
+.vid img{width:100%;height:100%;object-fit:cover}
+.vid i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
+.notready{margin:28px auto 0;max-width:760px;display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap;font-size:15px}
+.notready .in{width:220px}
+/* referral */
+.ref{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:center}
+.ref .frm{margin-top:0}
+.m-mint .lead,.m-mint .body{color:#123D2C}
+/* faq */
+.faq{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px}
+.q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 0;border:0;border-bottom:1px solid #e6dfd9;background:none;font:600 17px/1.4 Inter,system-ui,sans-serif;color:#141114;text-align:left;cursor:pointer}
+.q i{font-style:normal;font-weight:400;font-size:22px;line-height:1}
+.ans{margin:0;padding:4px 0 20px;border-bottom:1px solid #e6dfd9;color:#5A5450;font-size:15px;line-height:1.55}
+/* start */
+.m-yellow .lead,.m-yellow .body{color:rgba(20,17,20,.8)}
+.steps{list-style:none;margin:28px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.steps li{display:grid;grid-template-columns:40px 1fr;gap:14px;padding:14px 18px;border-radius:20px}
+.steps li.on{background:rgba(255,255,255,.5)}
+.steps .n{font:800 30px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78}
+.steps h3{margin:0;font-size:17px}.steps .body{margin-top:4px;font-size:14px}
+/* footer */
+.foot{margin:16px 24px 0;border-radius:36px;background:#1B171B;color:#F6EFE6;padding:64px max(72px,calc((100% - 1200px)/2 - 24px)) 40px;overflow:hidden}
+.foot .top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding-bottom:36px;margin-bottom:40px;border-bottom:1px solid rgba(246,239,230,.12)}
+.foot .top h3{margin:0;font-size:22px}
+.foot .cols{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:24px}
+.foot h4{margin:0 0 14px;font-size:15px}
+.foot a{display:block;color:#BDB3A7;font-size:14px;line-height:2;text-decoration:none}
+.bigwm{margin:56px 0 0;font-family:Archivo,'Arial Narrow',sans-serif;font-weight:800;font-stretch:78%;font-variation-settings:"wdth" 78;letter-spacing:-.05em;line-height:.8;font-size:clamp(120px,24cqi,330px);color:#F07A55}
+.legal{margin-top:28px;font-size:12px;color:#8a8079;display:flex;justify-content:space-between;gap:16px}
+.fn{margin:24px 0 0;padding:0;list-style:none;font-size:12px;line-height:1.6;color:#8a8079}
+.mbar{display:none}
+.dots{display:none}
+/* ---------- phone arrangement ---------- */
+@container pg (max-width: 600px){
+  .offer{font-size:13px;padding:9px 12px;gap:6px}
+  .bar{gap:10px;padding:0 16px;height:60px}.bar nav,.bar .signin,.bar .walabel{display:none}.bar .menu{display:flex}
+  .bar .b.sm{height:36px;padding:0 14px;font-size:13px}
+  .d-hero{font-size:44px}.d-sec{font-size:36px}.d-sm{font-size:26px}
+  .lead{font-size:17px;margin-top:12px}
+  .panel{margin:8px 8px 0;border-radius:28px;padding:40px 20px}
+  .open{padding:60px 16px 8px}
+  .split{grid-template-columns:1fr;gap:28px}
+  .heroc .htext{padding-bottom:8px}.hmedia{padding-top:8px;max-height:360px;overflow:visible}.hphone{width:240px;margin-bottom:-300px;transform:rotate(-3deg)}
+  .hchip{left:0;top:auto;bottom:24px;min-width:180px;padding:10px 12px}
+  .btns{flex-direction:column;align-items:stretch;margin-top:22px}.btns .b{width:100%}
+  .qr{display:none}.mobbadges{display:flex}
+  .proofline{font-size:14px;flex-wrap:wrap;margin-top:16px}
+  .door{font-size:14px}
+  .logos{gap:12px 22px}.logo{font-size:18px}.logo i{width:28px;height:28px}
+  .rail{grid-auto-columns:72%;gap:12px;margin-right:-16px;overflow:hidden;margin-top:28px}
+  .panel .rail{margin-right:-20px}
+  .dots{display:flex;justify-content:center;gap:6px;margin-top:18px}.dots i{width:6px;height:6px;border-radius:999px;background:#d6cec7}.dots i:first-child{width:22px;background:#141114}
+  .chip2{font-size:14px;min-height:40px;padding:0 14px}
+  .stages,.paths,.mx,.ex,.tiles2{grid-template-columns:1fr}
+  .stg{min-height:0}.path{min-height:0}
+  .flush .htext{padding-bottom:8px}.fmedia{min-height:0;padding-top:12px}.fphone{width:230px;margin-bottom:-240px}
+  .tl li{grid-template-columns:64px 1fr}
+  .storyimg{height:300px}
+  .qt{font-size:20px}
+  .cmpwrap{overflow-x:auto;margin-right:-20px;border-radius:20px 0 0 20px}.cmp7 .cmp{font-size:13px;min-width:980px}.cmp7 .cmp th,.cmp7 .cmp td{padding:12px 10px}
+  .fits{grid-template-columns:1fr}
+  .flds{grid-template-columns:1fr 1fr;gap:10px}.tool{padding:18px}
+  .res b{font-size:40px}
+  .frm{flex-direction:column}
+  .price{font-size:130px}.calc2 .sv{font-size:40px}
+  .notready{flex-direction:column;align-items:stretch;text-align:center}.notready .in{width:100%}
+  .ref{grid-template-columns:1fr;gap:20px}
+  .faq{grid-template-columns:1fr;gap:12px}
+  .foot{margin:8px 8px 0;border-radius:28px;padding:36px 20px 26px}.foot .cols{grid-template-columns:1fr 1fr;row-gap:28px}
+  .bigwm{font-size:31cqi;margin-top:40px}.legal{flex-direction:column}
+  .note{display:none}
+  .mbar{display:flex;position:sticky;bottom:8px;z-index:20;margin:8px;gap:8px;padding:8px;border-radius:999px;background:#141114;box-shadow:0 16px 40px -12px rgba(0,0,0,.5)}
+  .mbar .b{flex:1;height:44px;border-color:#F07A55;background:#F07A55;color:#141114!important}
+  .mbar .b.wab{flex:0 0 auto;width:44px;padding:0;background:#25D366;border-color:#25D366}
+}
+</style>
+</helmet>
+<div class="pg">
+
+<div class="offer"><span><b>Founding hosts in Mumbai and Indore:</b> 90 days without Catch fees instead of 30, until <span class="ph">[date]</span>.</span><span><span class="ph">[N]</span> of 50 places left</span><a href="#start">Claim a place</a></div>
+
+<header class="bar"><a class="wm" href="#">Catch</a>
+<nav aria-label="Main"><a href="#">What’s on</a><a class="on" href="#">For hosts <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></a><a href="#pricing">Pricing</a><a href="#">Resources <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></a></nav>
+<span class="sp"></span>
+<a class="wa" href="#talk" aria-label="Talk to us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-1.8-1.8l.8-1-1-2z"/></svg><span class="walabel">Talk to us</span></a>
+<a class="signin" href="#">Sign in</a>
+<a class="b sm" href="#start">Start free trial</a>
+<button class="menu" type="button" aria-label="Menu"><i></i></button></header>
+
+<section class="panel heroc" style="margin-top:0"><div class="split"><div class="htext">
+<p class="k" style="color:#3B1F14">Catch for hosts · Free for 30 days · Free events stay free</p>
+<h1 class="d d-hero">Run great events. Build a business around them.</h1>
+<p class="lead">Guests pay upfront, the door checks itself in, newcomers get a group, and regulars come back. One app, no spreadsheets, no chasing.</p>
+<p class="proofline"><span>Trusted by <span class="ph">[N]</span> hosts in Mumbai and Indore</span><span class="stars" aria-hidden="true">★★★★★</span><span><span class="ph">[4.8]</span> from <span class="ph">[N]</span> event reviews<sup>1</sup></span></p>
+<div class="btns"><a class="b" href="#start">Start free trial</a><a class="b o" href="#talk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/></svg>Talk to us on WhatsApp</a></div>
+<a class="door" href="#talk">Running a venue, studio or company? Book a 15-minute walkthrough →</a>
+<div class="qr"><svg viewBox="0 0 21 21" role="img" aria-label="QR code to download Catch Host (placeholder)"><rect width="21" height="21" fill="#fff"/><path fill="#141114" d="M0 0h7v7H0zM14 0h7v7h-7zM0 14h7v7H0z"/><path fill="#fff" d="M1 1h5v5H1zM15 1h5v5h-5zM1 15h5v5H1z"/><path fill="#141114" d="M2 2h3v3H2zM16 2h3v3h-3zM2 16h3v3H2zM8 1h1v2H8zM10 2h2v1h-2zM9 4h2v2H9zM12 5h1v3h-1zM8 8h3v1H8zM14 8h2v2h-2zM17 9h3v1h-3zM9 10h1v3H9zM11 11h3v1h-3zM15 12h1v2h-1zM18 12h2v3h-2zM8 14h2v2H8zM11 14h2v1h-2zM13 16h2v2h-2zM9 17h3v1H9zM16 16h2v1h-2zM19 17h1v3h-1zM10 19h2v2h-2zM14 19h4v1h-4zM1 9h2v2H1zM4 10h2v1H4zM2 12h3v1H2z"/></svg><div><h3>On a laptop? Scan to get Catch Host</h3><p>Or we’ll send the link to your WhatsApp.</p><form onsubmit="return false"><label for="h-wa" style="position:absolute;left:-9999px">Your WhatsApp number</label><input id="h-wa" class="in" type="tel" placeholder="Your WhatsApp number"><button class="b sm" type="submit">Send link</button></form></div></div>
+<div class="badges mobbadges"><img src="/_blob/b9d404c93226266a9f3d8d84d6626f14" alt="Download on the App Store"><img src="/_blob/5431322c4be24007ddd2bd3a6e412fe3" alt="Get it on Google Play"></div>
+</div>
+<div class="hmedia"><div class="phone hphone"><img src="/_blob/d1f6c7bb9c9b9f60ca970341f0144003" alt="Catch Host on a Saturday: tonight’s event, bookings and the door"></div>
+<div class="hchip"><strong>Saturday Trivia Social</strong><div>Booked and paid<b>24</b></div><div>Waitlist<b>6</b></div><div>Payments to chase<b>0</b></div></div></div></div>
+<span class="note">Rec 3 + 11: primary, WhatsApp and a side door; desktop gets a QR and “send me the link”, phones get store badges. Rec 2: proof line is a placeholder until real.</span></section>
+
+<section class="open c"><p class="k" style="color:#5A5450">Hosts already running their nights on Catch</p>
+<div class="logos"><span class="logo"><i class="m-coral">CR</i>Carter Road Runners</span><span class="logo"><i class="m-yellow">Q</i>The Quizzicals</span><span class="logo"><i class="m-pink">LL</i>Lantern Lane Social</span><span class="logo"><i class="m-mint">P4</i><span class="ph">[Partner logo]</span></span><span class="logo"><i class="m-indigo">P5</i><span class="ph">[Partner logo]</span></span></div>
+<div class="proofrow"><span class="pill"><span class="ph">[N]</span> people checked in at Catch events last month<sup>2</sup></span><span class="pill">Show-up rate <span class="ph">[N%]</span> on paid events<sup>2</sup></span><span class="pill">Every host verified</span></div>
+<span class="note">Rec 2 · proof ladder: design-partner logos with permission, then live counters with footnotes. Sample names until partners sign.</span></section>
+
+<section class="panel tint" id="ways"><div style="max-width:760px"><p class="k" style="color:#1F7A57">Find your page</p><h2 class="d d-sec">Built for whatever you bring people together for.</h2>
+<p class="lead">Every kind of host gets a page written for their nights, with stories, pricing and questions from people like them.</p></div>
+<p class="subk">By format</p>
+<div class="rail">
+<a class="card" href="#"><div class="mat m-coral"><div><img src="/_blob/8294b5d46800331739b8ee58199a7d53" alt=""></div></div><h3>Run and walk clubs</h3><p class="body">Pace pods, a first hello, free runs stay free.</p><span class="more">For run clubs</span></a>
+<a class="card" href="#"><div class="mat m-mint"><div><img src="/_blob/9cac328026e387b37fc5fab2457553c6" alt=""></div></div><h3>Racket sports</h3><p class="body">Pickleball, padel, tennis and badminton, rotated by level.</p><span class="more">For racket sports</span></a>
+<a class="card" href="#"><div class="mat m-pink"><div><img src="/_blob/409d3ee3e6896b80188944189323718b" alt=""></div></div><h3>Supper clubs</h3><p class="body">Applications, seating and payment before the table is set.</p><span class="more">For supper clubs</span></a>
+<a class="card" href="#"><div class="mat m-yellow"><div><div class="art" style="background:#F5C451"><div style="position:absolute;inset:14% 12% 14% 12%;background:#4C5BC4;border-radius:18px"></div><i style="position:absolute;left:18%;top:56%;width:12%;aspect-ratio:1;border:3px solid #F5C451;border-radius:6px"></i><i style="position:absolute;left:35%;top:56%;width:12%;aspect-ratio:1;border:3px solid #F5C451;border-radius:6px"></i><i style="position:absolute;left:52%;top:56%;width:12%;aspect-ratio:1;border:3px solid #F5C451;border-radius:6px"></i><i style="position:absolute;left:69%;top:56%;width:12%;aspect-ratio:1;border:3px solid #F5C451;border-radius:6px"></i><div style="position:absolute;left:22%;top:26%;font:800 34px/1 Archivo,sans-serif;font-stretch:78%;color:#F5C451">Q4</div></div></div></div><h3>Quiz and game nights</h3><p class="body">Teams, rounds and live scores that fill Tuesday.</p><span class="more">For quiz nights</span></a>
+<a class="card" href="#"><div class="mat m-magenta"><div><img src="/_blob/b766451d5b4e5bf9ae506afe33116fa6" alt=""></div></div><h3>Nights out</h3><p class="body">Crawls and socials, with a link for every promoter.</p><span class="more">For nightlife</span></a>
+</div><div class="dots"><i></i><i></i><i></i><i></i><i></i></div>
+<div class="chips"><a class="chip2" href="#"><i style="background:#8C9BF2"></i>Yoga, spin and fitness studios</a><a class="chip2" href="#"><i style="background:#F5C451"></i>Workshops and classes</a><a class="chip2" href="#"><i style="background:#F08AA0"></i>Book clubs, language exchanges, open mics</a><a class="chip2" href="#"><i style="background:#5CCB9F"></i>Cycling, treks and weekend trips</a></div>
+<p class="subk">By organisation</p>
+<div class="chips"><a class="chip2" href="#">Cafés, bars and breweries</a><a class="chip2" href="#">Courts, turfs and clubhouses</a><a class="chip2" href="#">Companies, co-living and co-working</a><a class="chip2" href="#">Creators with an audience</a><a class="chip2" href="#">Brands</a><a class="chip2" href="#">Weddings</a><a class="chip2" href="#">Offsites, retreats and birthdays</a></div>
+<p class="subk">Where you are today</p>
+<div class="stages">
+<a class="stg m-coral" href="#"><h3>Starting something?</h3><p>Pick a format and a city. Get a first-event plan, a run sheet and what to charge.</p><span class="go">Plan your first event</span></a>
+<a class="stg m-mint" href="#"><h3>Running it on WhatsApp, Forms and UPI?</h3><p>Bring your guest list across in an afternoon. Nothing changes for guests until the doors open.</p><span class="go">Leave the WhatsApp group behind</span></a>
+<a class="stg ink" href="#talk" style="color:#F6EFE6"><h3>Several nights a week, or several chapters?</h3><p style="color:#BDB3A7">Team roles, one record for every guest and reporting across chapters. A person helps you set up.</p><span class="go">Book a 15-minute walkthrough</span></a>
+</div>
+<span class="note">Rec 4: every segment and life stage recognises itself in one click. Each chip opens its own page (see the sitemap).</span></section>
+
+<section class="panel ink flush" id="night"><div class="split"><div class="htext"><p class="k" style="color:#F5C451">On the night</p><h2 class="d d-sec">Run the whole night from one screen.</h2><p class="lead">Follow a Sunday run, from the first booking to the morning after.</p>
+<ul class="tl"><li class="on"><span>Thursday</span><div><b>Pace groups, set before Sunday</b><p class="body">Every booking brings a pace. Catch builds groups of six to eight, so no group is all strangers.</p></div></li>
+<li><span>6:20 AM</span><b>Check in, then pocket the phone</b></li><li><span>6:30 AM</span><b>A first hello at the start line</b></li><li><span>7:15 AM</span><b>Nobody left on the road</b></li><li><span>Sunday</span><b>The next run, already easier</b></li></ul>
+<div class="btns"><a class="b w" href="#talk"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Watch a night in 2 minutes</a></div></div>
+<div class="fmedia"><div class="phone fphone"><div class="pods"><div class="sub">Carter Road Social Run · Sun 8 Nov</div><h5>Pace pods</h5><div class="stats"><div><small>runners</small><b>12</b></div><div><small>pods</small><b>3</b></div><div><small>no pod yet</small><b>2</b></div></div>
+<div class="pod"><div>Chatty <span>4 runners</span></div><small>Around 7:30 a km · Dev, Ira and 2 more</small></div>
+<div class="pod"><div>Steady <span>3 runners</span></div><small>Around 6:30 a km · Meher, Tara and 1 more</small></div>
+<div class="pod"><div>Quick <span>3 runners</span></div><small>Around 5:30 a km · Rhea, Arjun and 1 more</small></div></div></div></div></div></section>
+
+<section class="open" id="stories"><div class="split"><div>
+<p class="k" style="color:#B23A5A">Host story · run club · Bandra</p>
+<div class="casehd"><span class="av m-coral" style="color:#3B1F14">CR</span><div><b>Carter Road Runners</b><span>Weekly social run · <span class="ph">[N]</span> runners</span></div></div>
+<p class="qt">“<span class="ph">[A named quote from the host, in their words, about what changed: the WhatsApp thread, newcomers, no-shows.]</span>”</p>
+<div class="mx"><div class="mm"><small>Show-up rate</small><b><span class="ph">[N%]</span></b><span>from <span class="ph">[N%]</span> before Catch<sup>3</sup></span></div><div class="mm"><small>Back within 30 days</small><b><span class="ph">[N%]</span></b><span>of first-time runners<sup>2</sup></span></div><div class="mm"><small>Hours saved a week</small><b><span class="ph">[N]</span></b><span>on sign-ups and chasing<sup>3</sup></span></div></div>
+<div class="more2"><a href="#">Read the story →</a><a href="#">All host stories →</a></div></div>
+<div class="storyimg"><img src="/_blob/8294b5d46800331739b8ee58199a7d53" alt="Runners at the start of a Sunday social run"><span class="tag">Real event photography from a design-partner night</span></div></div>
+<span class="note">Rec 2: case study per format, numbers from Catch data plus a self-reported baseline, each footnoted.</span></section>
+
+<section class="panel tint" id="compare"><div style="max-width:820px"><p class="k" style="color:#1F7A57">Compare</p><h2 class="d d-sec">How Catch compares with what hosts use today.</h2><p class="lead">Most hosts start on WhatsApp, Google Forms and UPI screenshots. Others use Luma, District, Playo, Meetup or Endorfin. Here’s what each one does, taken from their own pages.</p></div>
+<div class="cmpwrap cmp7"><table class="cmp"><thead><tr><th scope="col">What you need</th><th scope="col" class="us">Catch</th><th scope="col">WhatsApp, Forms and UPI</th><th scope="col">Luma</th><th scope="col">District</th><th scope="col">Playo</th><th scope="col">Meetup</th><th scope="col">Endorfin</th></tr></thead><tbody>
+<tr><td>Free events stay free</td><td class="us">Yes</td><td>Yes</td><td>Yes</td><td class="na">Not published</td><td>Yes; court cost is split</td><td class="no">Organiser subscription</td><td>Yes</td></tr>
+<tr><td>Fee on paid tickets</td><td class="us">5%, never more than ₹10,000 a month</td><td>None, but you chase every payment</td><td>5% (0% on a US$59-a-month plan), plus card fees</td><td>Negotiated per event; no public rate</td><td class="na">Not applicable</td><td>A service fee for attendees, plus your subscription</td><td>No host fee</td></tr>
+<tr><td>Paid in rupees, by UPI</td><td class="us">Yes</td><td>Screenshots to match</td><td class="no">No: can’t pay hosts based in India</td><td>Yes</td><td>Players split costs in the app</td><td class="na">Not documented for India</td><td class="na">Not published</td></tr>
+<tr><td>Applications and waitlists</td><td class="us">Yes, with waitlist backfill</td><td class="no">By hand</td><td>Yes</td><td class="na">Not published</td><td>Manage RSVPs</td><td>Waitlists on free events only</td><td>Member approvals</td></tr>
+<tr><td>Check-in at the door</td><td class="us">QR or self check-in, phone or iPad</td><td class="no">A printed list</td><td>QR in the Luma app</td><td class="na">Not published</td><td class="na">Not applicable</td><td>QR tickets</td><td>QR check-in</td></tr>
+<tr><td>Runs the night: pace groups, teams, seating, court rotations</td><td class="us">Yes, for each format</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td>Matching by skill level only</td><td class="no">No</td><td class="no">No</td></tr>
+<tr><td>A first hello for every newcomer</td><td class="us">Yes</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="no">No</td></tr>
+<tr><td>Every guest remembered across events</td><td class="us">Yes</td><td class="no">In your head</td><td>Partly: calendar subscribers</td><td class="no">The platform keeps them</td><td>Player profiles</td><td>Group members</td><td>Member directory</td></tr>
+<tr><td>Helps people find you</td><td class="us">Growing: Mumbai and Indore</td><td class="no">No</td><td>Small audience in India</td><td>A large going-out marketplace</td><td>A large player community</td><td>Interest groups</td><td>Run-club directory and free ads for paid events</td></tr>
+</tbody></table></div>
+<p class="cmpsrc">Checked on each company’s own pages on 15 Nov 2026. Meetup cells and District’s payout cell come from search and will be confirmed before launch. “Not published” means we found no public statement, not that the feature is missing.</p>
+<div class="fits"><div><b>Booking courts on Playo?</b> Keep doing that. Run the social on Catch: balanced rotations, a first hello, and regulars who come back.</div><div><b>Selling a one-off concert to thousands?</b> A ticketing app like District or BookMyShow will reach more people. Catch is built for nights that repeat.</div></div>
+<div class="cmpfoot"><div style="display:flex;gap:18px;flex-wrap:wrap;font-weight:700;font-size:15px"><a href="#">Catch vs WhatsApp →</a><a href="#">Catch vs Luma →</a><a href="#">Catch vs District →</a><a href="#">Catch vs Endorfin →</a><a href="#">Catch with Playo →</a></div>
+<div class="ai"><span>Ask an assistant about Catch:</span><a href="#">ChatGPT</a><a href="#">Perplexity</a><a href="#">Gemini</a><a href="#">Claude</a></div></div>
+<span class="note">Rec 6, from the playbook’s “Competitors in India” table: dated, sourced, honest about limits, and Playo positioned as a partner.</span></section>
+
+<section class="open" id="tool"><div class="split"><div>
+<p class="k" style="color:#B5451F">Free tool</p><h2 class="d d-sec">What are no-shows costing you?</h2>
+<p class="lead">Put in a typical month. We’ll show what empty places cost in a year, and send a fuller report with ways to cut them.</p>
+<div class="tool2 m-yellow" style="margin-top:28px"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#141114" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><div><h3>Have an Instagram post or a Google Form?</h3><p>Paste the link and get a draft Catch event page on WhatsApp, ready to claim.</p></div></div>
+</div>
+<div class="tool"><div class="flds">
+<div class="fld"><label for="t-ev">Events a month</label><input id="t-ev" class="in" type="number" min="0" value="{{events}}" onInput="{{setEvents}}"></div>
+<div class="fld"><label for="t-cap">Places per event</label><input id="t-cap" class="in" type="number" min="0" value="{{cap}}" onInput="{{setCap}}"></div>
+<div class="fld"><label for="t-ns">No-shows (%)</label><input id="t-ns" class="in" type="number" min="0" max="100" value="{{noshow}}" onInput="{{setNoshow}}"></div>
+<div class="fld"><label for="t-pr">Ticket price (₹)</label><input id="t-pr" class="in" type="number" min="0" value="{{price}}" onInput="{{setPrice}}"></div></div>
+<div class="res"><small>Empty places cost you about</small><b>{{lostYear}}</b><span>a year · {{lostSeats}} empty places a month</span></div>
+<div class="frm"><label for="t-wa" style="position:absolute;left:-9999px">Your WhatsApp number</label><input id="t-wa" class="in" type="tel" placeholder="Your WhatsApp number"><a class="b" href="#">Send me the report</a></div>
+<p class="body" style="font-size:12px">We use your number to send this report and, if you agree, tips for hosts. Reply STOP any time.</p></div></div>
+<span class="note">Rec 7: the calculator ships first (days); the link-to-event-page tool is the flagship.</span></section>
+
+<section class="panel ink" id="pricing"><div class="split" style="align-items:start"><div>
+<p class="k" style="color:#F5C451">Pricing</p><p class="price">5%</p><h2 class="d d-sm" style="margin-top:18px">of ticket sales. Never more than ₹10,000 a month. Free events stay free.</h2>
+<p class="lead">Free for 30 days from your first event. After that, Catch keeps 5% of what you sell, net of refunds, and stops at ₹10,000 in a month.</p>
+<div class="incl"><span>Your page</span><span>Bookings and waitlists</span><span>Payments</span><span>Check-in</span><span>Live tools for the night</span><span>Guest records</span><span>Messages</span><span>Reports</span></div>
+<div class="pq">“<span class="ph">[A host quote about value: what the fee pays for in their evenings.]</span>”<small><span class="ph">[Name]</span> · <span class="ph">[Club]</span></small></div>
+<div class="btns"><a class="b w" href="#start">Start free trial</a><a class="b ow" href="#">See full pricing</a></div></div>
+<div class="calc2"><small>Your ticket sales this month</small><p class="sv">{{salesLabel}}</p>
+<label for="p-rng" style="position:absolute;left:-9999px">Ticket sales this month</label><input id="p-rng" class="rng" type="range" min="0" max="500000" step="10000" value="{{sales}}" onInput="{{setSales}}"><div class="rmm"><span>₹0</span><span>₹5,00,000</span></div>
+<div class="tiles2"><div><small>Catch fee</small><b>{{feeLabel}}</b><span>after your trial</span></div><div><small>Your effective rate</small><b>{{rateLabel}}</b><span>of this month’s ticket sales</span></div></div>
+<sc-if value="{{capped}}" hint-placeholder-val="{{ false }}"><p class="capped">Capped. You pay ₹10,000 however much more you sell this month.</p></sc-if>
+<p class="fine">In your first 30 days from your first event: ₹0, whatever you sell. Payment gateway fees are separate.</p></div></div>
+<div class="ex"><div><strong>A 40-person weekly run at ₹250</strong><b>₹500 a run</b>Free runs cost nothing.</div><div><strong>A 24-seat supper club at ₹1,800</strong><b>₹2,160 a dinner</b>Paid when guests book, not at the door.</div><div><strong>A free book club</strong><b>₹0</b>Free events stay free, every month.</div></div>
+<div class="orgline"><span>Running several nights a week, or buying for a company or venue?</span><a class="b ow sm" href="#talk">Talk to us about your setup</a></div>
+<span class="note">Rec 10: same price and slider, now with worked examples, what’s included, a value quote and an organisation route.</span></section>
+
+<section class="open c" id="talk"><p class="k" style="color:#4C5BC4">However you like to start</p><h2 class="d d-sec">Start now, look first, or talk to a person.</h2>
+<p class="lead">No call needed to begin. If you’d rather see it or ask first, every route ends in the same free trial.</p>
+<div class="paths">
+<div class="path m-coral"><span class="n">Ready now</span><h3>Start your free trial</h3><p>Download Catch Host and publish your first event tonight. No call, no application.</p><a class="b" href="#start">Start free trial</a></div>
+<div class="path"><span class="n">Want to see it</span><h3>Watch a night in 2 minutes</h3><div class="vid"><img src="/_blob/090b0c010c221ed314d5ff27ce2a21cb" alt="The live console on an iPad"><i><svg viewBox="0 0 24 24" width="20" height="20" fill="#141114" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></i></div><p>Or try a demo night with sample guests, in your browser.</p><a class="b o" href="#">Try a demo night</a></div>
+<div class="path m-mint"><span class="n">Want a person</span><h3>Talk to us on WhatsApp</h3><p>A real person who knows hosting. We reply within 2 hours, 10am to 8pm.</p><a class="b" href="#">Open WhatsApp</a></div>
+<div class="path ink" style="color:#F6EFE6"><span class="n" style="color:#BDB3A7">Want a meeting</span><h3>Book a 15-minute walkthrough</h3><p style="color:#BDB3A7">For venues, studios, companies and multi-day programmes. We’ll set it up with you.</p><a class="b w" href="#">Pick a time</a></div>
+</div>
+<div class="notready"><span><b>Not ready yet?</b> Get the first-event playbook for your format on WhatsApp.</span><label for="nr-wa" style="position:absolute;left:-9999px">Your WhatsApp number</label><input id="nr-wa" class="in" type="tel" placeholder="Your WhatsApp number"><a class="b sm o" href="#">Send it</a></div>
+<span class="note">Rec 3: five paths by readiness. Rec 12: each path is tagged so leads are judged by source.</span></section>
+
+<section class="panel m-mint"><div class="ref"><div><p class="k" style="color:#123D2C">Refer a host</p><h2 class="d d-sec">Know a host? You both get a month without fees.</h2><p class="lead">The run club lead knows the quiz master. When a host you refer runs their first paid event, you each get a month on us.</p></div>
+<div><div class="frm"><label for="r-name" style="position:absolute;left:-9999px">Their name</label><input id="r-name" class="in" type="text" placeholder="Their name"><label for="r-wa" style="position:absolute;left:-9999px">Their WhatsApp number</label><input id="r-wa" class="in" type="tel" placeholder="Their WhatsApp number"></div><div class="btns" style="margin-top:12px"><a class="b" href="#">Send the invite</a></div><p class="body" style="font-size:13px;margin-top:12px">We message them once, from Catch, saying you suggested it.</p></div></div>
+<span class="note">Rec 8: host-to-host referral. Terms to be set; rewards only after a first paid event.</span></section>
+
+<section class="open"><div class="faq"><div><p class="k" style="color:#1F7A57">Questions</p><h2 class="d d-sec">A few things you might be wondering.</h2><p class="body" style="margin-top:20px">Something else? <a href="#talk" style="font-weight:700">Ask us on WhatsApp</a>.</p></div><div>
+<sc-for list="{{faqs}}" as="f" hint-placeholder-count="6"><div><button class="q" type="button" onClick="{{f.toggle}}" aria-expanded="{{f.open}}">{{f.q}}<i>{{f.sign}}</i></button><sc-if value="{{f.open}}" hint-placeholder-val="{{ false }}"><p class="ans">{{f.a}}</p></sc-if></div></sc-for>
+</div></div></section>
+
+<section class="panel flush m-yellow" id="start"><div class="split"><div class="htext"><p class="k" style="color:#4A3608">Free for 30 days · founding hosts get 90</p><h2 class="d d-sec">Your next event. A stronger foundation.</h2>
+<p class="lead">Download Catch Host, set up your first event, and run it tonight if you like.</p>
+<ol class="steps"><li class="on"><span class="n">1</span><div><h3>Download Catch Host</h3><p class="body">On iPhone, Android or iPad. On a laptop, scan the code or get the link on WhatsApp.</p></div></li><li><span class="n">2</span><div><h3>Set up your page and your first event</h3></div></li><li><span class="n">3</span><div><h3>Your free days start when doors open</h3></div></li></ol>
+<div class="badges"><img src="/_blob/b9d404c93226266a9f3d8d84d6626f14" alt="Download on the App Store"><img src="/_blob/5431322c4be24007ddd2bd3a6e412fe3" alt="Get it on Google Play"></div>
+<p class="body" style="margin-top:16px;font-weight:600;color:#141114">Prefer a person? <a href="#talk">WhatsApp us</a> or <a href="#talk">book 15 minutes</a>.</p></div>
+<div class="fmedia"><div class="phone fphone"><img src="/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b" alt="Your event as guests see it in Explore"></div></div></div></section>
+
+<footer class="foot"><div class="top"><h3>Questions about hosting? A person answers.</h3><div class="btns" style="margin-top:0"><a class="b w sm" href="#talk">WhatsApp us</a><a class="b ow sm" href="#talk">Book a walkthrough</a></div></div>
+<div class="cols">
+<div><h4>Hosts by format</h4><a>Run and walk clubs</a><a>Racket sports</a><a>Supper clubs</a><a>Quiz and game nights</a><a>Nightlife</a><a>Studios</a><a>Workshops</a><a>Communities</a><a>Outdoors</a></div>
+<div><h4>By organisation</h4><a>Venues</a><a>Courts and clubhouses</a><a>Companies and shared spaces</a><a>Creators</a><a>Brands</a><a>Weddings</a><a>Offsites and retreats</a></div>
+<div><h4>Get started</h4><a>Start free trial</a><a>Pricing</a><a>Plan your first event</a><a>Switch from WhatsApp</a><a>Claim your page</a><a>Refer a host</a></div>
+<div><h4>Resources</h4><a>Host stories</a><a>Host playbooks</a><a>Compare</a><a>No-show calculator</a><a>Event page from a link</a><a>Help</a></div>
+<div><h4>Catch</h4><a>What’s on</a><a>Cities</a><a>Safety</a><a>Contact</a><a>Privacy</a><a>Terms</a><a>Refunds</a><a>Privacy choices</a></div>
+</div>
+<ol class="fn"><li>1. Average rating of reviews from guests who booked on Catch, <span class="ph">[dates]</span>.</li><li>2. From Catch booking and check-in records, <span class="ph">[dates]</span>.</li><li>3. Self-reported by the host. Individual results vary.</li></ol>
+<p class="bigwm">Catch</p><div class="legal"><span>Meet people in real life, through hosts who bring them together.</span><span>Catch is operated by Torana.</span></div></footer>
+
+<div class="mbar"><a class="b" href="#start">Start free trial</a><a class="b wab" href="#talk" aria-label="Talk to us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/></svg></a></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":11200}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sales: 120000, events: 4, cap: 40, noshow: 20, price: 300, open: 0 };
+  }
+  renderVals() {
+    const s = this.state;
+    const inr = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
+    const num = (v) => { const n = parseFloat(v); return isNaN(n) || n < 0 ? 0 : n; };
+    const fee = Math.min(s.sales * 0.05, 10000);
+    const rate = s.sales > 0 ? (fee / s.sales * 100) : 0;
+    const seats = s.events * s.cap * Math.min(s.noshow, 100) / 100;
+    const faqData = [
+      ['Is Catch only for one kind of event?', 'No. Runs, racket sports, dinners, quizzes, nights out, classes, workshops and clubs all run on Catch, and each format gets its own tools for the night.'],
+      ['What does the free trial include?', 'Everything, for 30 days from your first event: bookings, payments, check-in, the live night and follow-up. No Catch fee on what you sell in that time. Founding hosts get 90 days.'],
+      ['What happens when the trial ends?', 'Catch keeps 5% of ticket sales, net of refunds, and never more than ₹10,000 in a month. Free events stay free. Payment gateway fees are separate.'],
+      ['Do I need to talk to anyone to start?', 'No. Download Catch Host, set up your page and publish when you are ready. If you would like a person, WhatsApp us or book a 15-minute walkthrough.'],
+      ['Do my guests need to download an app?', 'No. Guests book on your page and join live moments in their phone’s browser.'],
+      ['Can I bring my guest list from another tool?', 'Yes. Import it from any tool. Nothing changes for your guests until the doors open.']
+    ];
+    return {
+      sales: s.sales,
+      salesLabel: inr(s.sales),
+      feeLabel: inr(fee),
+      rateLabel: rate.toFixed(1) + '%',
+      capped: s.sales * 0.05 >= 10000,
+      setSales: (e) => this.setState({ sales: num(e.target.value) }),
+      events: s.events, cap: s.cap, noshow: s.noshow, price: s.price,
+      setEvents: (e) => this.setState({ events: num(e.target.value) }),
+      setCap: (e) => this.setState({ cap: num(e.target.value) }),
+      setNoshow: (e) => this.setState({ noshow: num(e.target.value) }),
+      setPrice: (e) => this.setState({ price: num(e.target.value) }),
+      lostSeats: Math.round(seats).toLocaleString('en-IN'),
+      lostYear: inr(seats * s.price * 12),
+      faqs: faqData.map((f, i) => ({ q: f[0], a: f[1], open: s.open === i, sign: s.open === i ? '−' : '+', toggle: () => this.setState({ open: s.open === i ? -1 : i }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

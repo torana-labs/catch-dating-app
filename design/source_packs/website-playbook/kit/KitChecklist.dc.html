@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · checklist</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><section class="panel tint"><div class="split top"><div><p class="k" style="color:#1F7A57">{{d.kicker}}</p><h2 class="d d-sec"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h2>
+<sc-if value="{{hasLead}}" hint-placeholder-val="{{ true }}"><p class="lead"><sc-for list="{{lead}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if>
+<sc-if value="{{hasBtns}}" hint-placeholder-val="{{ false }}"><div class="btns"><sc-for list="{{btns}}" as="b" hint-placeholder-count="2"><a class="b {{b.cls}}" href="{{b.href}}">{{b.l}}</a></sc-for></div></sc-if></div>
+<ul class="checks" style="margin-top:0"><sc-for list="{{items}}" as="x" hint-placeholder-count="6"><li><span class="ok"><svg viewBox="0 0 16 16" fill="none" stroke="#123D2C" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 8.5l2.5 2.5L12 5.5"/></svg></span><div><b>{{x.t}}</b><span><sc-for list="{{x.d}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></span></div></li></sc-for></ul></div></section></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 700}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"kicker": "Buyer’s checklist", "title": "What to look for.", "lead": "Check these, whichever tool you choose.", "items": [{"t": "Applications", "d": "Approve each guest."}, {"t": "Payment first", "d": "UPI or card."}]};
+    return { d, title: P(d.title), hasLead: has(d.lead), lead: P(d.lead), hasBtns: has(d.btns), btns: B(d.btns), items: (d.items || []).map((x) => ({ t: x.t, d: P(x.d) })) };
+  }
+}
+</script>
+</body>
+</html>

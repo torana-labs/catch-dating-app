@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · switcher</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><section class="{{secCls}}" id="{{sid}}"><div class="{{headCls}}"><p class="k" style="color:{{kc}}">{{d.kicker}}</p><h2 class="d d-sec"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h2>
+<sc-if value="{{hasLead}}" hint-placeholder-val="{{ false }}"><p class="lead" style="{{leadStyle}}"><sc-for list="{{lead}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if></div>
+<sc-if value="{{isTabs}}" hint-placeholder-val="{{ true }}"><div class="ktabs {{tabsAlign}}" role="tablist" aria-label="{{d.kicker}}"><sc-for list="{{items}}" as="it" hint-placeholder-count="4"><button type="button" role="tab" aria-selected="{{it.on}}" onClick="{{it.pick}}"><sc-if value="{{it.hasDot}}" hint-placeholder-val="{{ false }}"><i style="background:{{it.dot}}"></i></sc-if>{{it.label}}</button></sc-for></div>
+<sc-if value="{{cur.hasCols}}" hint-placeholder-val="{{ false }}"><div class="grid3" role="tabpanel"><sc-for list="{{cur.cols}}" as="c" hint-placeholder-count="3"><div class="tile paper"><h3 style="font-size:15px;color:#5A5450">{{c.h}}</h3><ul class="ticks" style="margin:4px 0 0"><sc-for list="{{c.list}}" as="x" hint-placeholder-count="3"><li><sc-for list="{{x.parts}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></li></sc-for></ul></div></sc-for></div></sc-if>
+<sc-if value="{{cur.hasSplit}}" hint-placeholder-val="{{ true }}"><div class="split top" style="margin-top:28px" role="tabpanel"><div>
+<h3 class="kswh">{{cur.title}}</h3><sc-if value="{{cur.hasSub}}" hint-placeholder-val="{{ true }}"><p class="body">{{cur.sub}}</p></sc-if><sc-if value="{{cur.hasBody}}" hint-placeholder-val="{{ true }}"><p class="body" style="font-size:16px;color:#2b2427"><sc-for list="{{cur.body}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if>
+<ul class="kmo"><sc-for list="{{cur.list}}" as="m" hint-placeholder-count="5"><li><span>{{m.t}}</span><div><b>{{m.h}}</b><sc-for list="{{m.b}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></div></li></sc-for></ul></div>
+<div class="kswmedia {{cur.mat}}"><dc-import name="KitMock" d="{{cur.media}}" hint-size="100%,600px"></dc-import></div></div></sc-if></sc-if>
+<sc-if value="{{isSteps}}" hint-placeholder-val="{{ false }}"><div class="kstp"><ol><sc-for list="{{items}}" as="it" hint-placeholder-count="7"><li><button type="button" onClick="{{it.pick}}" aria-expanded="{{it.on}}"><span class="n">{{it.n}}</span><b>{{it.label}}</b><em>{{it.time}}</em></button></li></sc-for></ol>
+<div class="kpane" aria-live="polite"><p class="k" style="color:#B5451F">Step {{cur.n}} · {{cur.time}}</p><h3>{{cur.label}}</h3><p class="body"><sc-for list="{{cur.body}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p><ul class="ticks"><sc-for list="{{cur.tips}}" as="x" hint-placeholder-count="3"><li><sc-for list="{{x.parts}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></li></sc-for></ul></div></div></sc-if>
+<sc-if value="{{hasNote}}" hint-placeholder-val="{{ false }}"><span class="note">{{d.note}}</span></sc-if></section></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 900}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"kicker": "Pick a format", "title": "Follow one evening.", "items": [{"label": "Run clubs", "dot": "#F07A55", "title": "Sunday Social Run", "sub": "Carter Road Runners", "body": "Phones stay in pockets.", "list": [{"t": "Thursday", "h": "Pace groups", "b": "Set before Sunday."}], "media": {"kind": "phone", "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003", "alt": "Catch Host"}, "mat": "m-coral"}, {"label": "Dinners", "dot": "#F08AA0", "title": "Long Table Supper", "body": "Tables planned.", "list": [{"t": "Tuesday", "h": "Tables", "b": "From applications."}], "media": {"kind": "card", "title": "Seating"}}]};
+    const pick = this.state && this.state.pick !== undefined ? this.state.pick : (d.start || 0);
+    const panel = d.panel || 'open';
+    const center = d.center !== false;
+    const items = (d.items || []).map((it, i) => ({ n: String(i + 1), label: it.label, time: it.time || '', dot: it.dot || '', hasDot: has(it.dot), on: i === pick, pick: () => this.setState({ pick: i }),
+      title: it.title || '', sub: it.sub || '', hasSub: has(it.sub), body: P(it.body), hasBody: has(it.body), list: (it.list || []).map((m) => ({ t: m.t, h: m.h, b: P(m.b) })),
+      tips: (it.tips || []).map((x) => ({ parts: P(x) })), cols: (it.cols || []).map((c) => ({ h: c.h, list: (c.list || []).map((x) => ({ parts: P(x) })) })), hasCols: has(it.cols), hasSplit: !has(it.cols),
+      media: it.media || { kind: 'card', title: '' }, mat: it.mat || '' }));
+    return { d, secCls: panel === 'open' ? 'open' : 'panel ' + panel, sid: d.id || '', headCls: center ? 'c' : '', leadStyle: center ? 'margin:16px auto 0' : '', kc: d.kc || '#4C5BC4',
+      title: P(d.title), hasLead: has(d.lead), lead: P(d.lead), isTabs: (d.layout || 'tabs') === 'tabs', isSteps: d.layout === 'steps', tabsAlign: center ? 'center' : '',
+      items, cur: items[pick] || items[0] || {}, hasNote: has(d.note) };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookLinkTool",
+  "title": "Playbook · Event page from a link",
+  "height": 5600,
+  "phone": {
+    "title": "Event page from a link",
+    "height": 8400
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "resources",
+        "crumbs": [
+          "Resources",
+          "Tools"
+        ],
+        "here": "Event page from a link"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "tone": "m-yellow",
+        "ink": "#4A3A0B",
+        "kicker": "Free tool · event page from a link",
+        "title": "Send us your link. Get your page back.",
+        "lead": "Paste the Instagram post, Luma page or Google Form for your next event. We’ll build a draft Catch page from it and send it to you on WhatsApp, usually within [a working day]. Claim it, check it, put it on sale.",
+        "btns": [
+          {
+            "l": "Send my link",
+            "href": "#send"
+          },
+          {
+            "l": "Start free trial",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "label": "Free · done by a person",
+          "title": "Your link",
+          "fields": [
+            {
+              "id": "lt-link",
+              "label": "Event link",
+              "type": "url",
+              "ph": "instagram.com/p/… or lu.ma/…"
+            },
+            {
+              "id": "lt-wa",
+              "label": "Your WhatsApp number",
+              "type": "tel",
+              "ph": ""
+            }
+          ],
+          "btns": [
+            {
+              "l": "Send my link"
+            }
+          ],
+          "fine": "We’ll send your draft on WhatsApp. Nothing goes live until you claim it."
+        },
+        "note": "Priority-3 tool (/tools/event-page-from-link/). Decision: done by a person on WhatsApp. No automatic parsing exists; the draft is built by the team and claimed through the existing claim flow."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "What you can send",
+        "title": "Whatever you use to announce it.",
+        "cols": 4,
+        "items": [
+          {
+            "tone": "m-pink",
+            "t": "An Instagram post",
+            "d": "The post or reel with the date, place and price in the caption."
+          },
+          {
+            "tone": "m-mint",
+            "t": "A Luma page",
+            "d": "We’ll copy the details across; your guest list can come too."
+          },
+          {
+            "tone": "m-indigo",
+            "t": "A Google Form",
+            "d": "Your questions become the event’s booking questions."
+          },
+          {
+            "tone": "m-coral",
+            "t": "A poster or screenshot",
+            "d": "A photo of the poster works. So does a WhatsApp forward."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "How it works",
+        "kc": "#B5451F",
+        "title": "Three steps, one of them yours.",
+        "items": [
+          {
+            "n": "1",
+            "t": "Send the link",
+            "d": "Here or on WhatsApp, with your number."
+          },
+          {
+            "n": "2",
+            "t": "We build the draft",
+            "d": "Date, place, price, description, questions and photos, in a Catch page. Usually within [a working day]."
+          },
+          {
+            "n": "3",
+            "t": "You claim it",
+            "d": "Sign in with your phone, check everything in Catch Host, connect payments and put it on sale."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "panel": "tint",
+        "id": "send",
+        "kicker": "What you get back",
+        "title": "A page ready to check, not to build.",
+        "lead": "Everything from your link, laid out on a Catch page with booking, a waitlist and a cancellation policy you can change.",
+        "ticks": [
+          "Your details and photos, copied across",
+          "Booking questions from your form",
+          "A draft only you can see until you claim it"
+        ],
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b",
+          "alt": "A drafted event page, ready to claim"
+        }
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "About the link tool.",
+        "items": [
+          [
+            "Is it free?",
+            "Yes. Building the draft is free. Catch takes 5% only when you sell tickets, never more than ₹10,000 a month."
+          ],
+          [
+            "Is it automatic?",
+            "Not yet. A person on our team builds each draft, which is why it takes up to [a working day]."
+          ],
+          [
+            "Will it go live without me?",
+            "No. The draft is only visible to you until you claim it and publish it."
+          ],
+          [
+            "Can my guest list come too?",
+            "Yes. Send a CSV or Excel export and we’ll import it, or import it yourself in Catch Host."
+          ],
+          [
+            "What if my event is next week?",
+            "Send it now. Most drafts come back the same day."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "tone": "m-yellow",
+        "ink": "#4A3A0B",
+        "kicker": "Rather do it yourself?",
+        "title": "Make your page in Catch Host.",
+        "lead": "It takes about twenty minutes from a template.",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Your first event",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

@@ -1,0 +1,195 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookStart",
+  "title": "Playbook · Start, walkthrough and notify pages",
+  "height": 1500,
+  "phone": {
+    "title": "Start pages",
+    "height": 2700
+  },
+  "state": {
+    "label": "One design, three one-job pages:",
+    "options": [
+      {
+        "key": "start",
+        "label": "/host/start/"
+      },
+      {
+        "key": "walk",
+        "label": "/host/walkthrough/"
+      },
+      {
+        "key": "app",
+        "label": "/app/"
+      }
+    ],
+    "default": "start"
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "lp",
+        "cta": "WhatsApp us"
+      }
+    },
+    {
+      "component": "KitSplit",
+      "when": "start",
+      "data": {
+        "panel": "m-coral",
+        "top": true,
+        "kicker": "Free for 30 days · founding hosts get 90",
+        "kc": "#3B1F14",
+        "title": "Start your free trial.",
+        "lead": "Download Catch Host, set up your first event, and run it tonight if you like. No call, no application.",
+        "ticks": [
+          "Download Catch Host, on iPhone, Android or iPad",
+          "Set up your page and your first event: pick a format, set the price, publish when you’re ready",
+          "Your free days start when doors open: no Catch fee until then"
+        ],
+        "body": "On a laptop? Scan the code on this page with your phone, or get the link on WhatsApp.",
+        "media": {
+          "kind": "card",
+          "label": "Founding hosts in Mumbai and Indore",
+          "title": "90 days without Catch fees, until [date].",
+          "sub": "[N] of 50 places left in your city.",
+          "rows": [
+            {
+              "t": "Free for 30 days from your first event, 90 for founding hosts"
+            },
+            {
+              "t": "Then 5% of ticket sales, never more than ₹10,000 a month"
+            },
+            {
+              "t": "Free events stay free"
+            },
+            {
+              "t": "Guests book on your page, with no app to install"
+            }
+          ],
+          "fields": [
+            {
+              "id": "s-wa",
+              "label": "Get the download link on WhatsApp",
+              "type": "tel"
+            }
+          ],
+          "btns": [
+            {
+              "l": "Send link"
+            },
+            {
+              "l": "Open Catch Host",
+              "kind": "sec"
+            }
+          ],
+          "fine": "Prefer a person? WhatsApp us or book 15 minutes."
+        },
+        "note": "No menu: one job. Every host “Start free trial” button lands here. Now on the kit."
+      }
+    },
+    {
+      "component": "KitSplit",
+      "when": "walk",
+      "data": {
+        "panel": "m-indigo",
+        "top": true,
+        "kicker": "For venues, studios, companies and programmes",
+        "kc": "#1E2550",
+        "title": "Book a 15-minute walkthrough.",
+        "lead": "We’ll look at how you run your nights today and set Catch up with you, guest list and all.",
+        "ticks": [
+          "Your formats, and how one night runs on Catch",
+          "Moving your guest list and bookings across",
+          "Pricing for several nights a week or several venues",
+          "Team roles, and reports across chapters or venues"
+        ],
+        "body": "[Name], who looks after hosts in Mumbai. On WhatsApp 10am to 8pm, Monday to Saturday.",
+        "media": {
+          "kind": "card",
+          "title": "Book your walkthrough",
+          "fields": [
+            {
+              "id": "w-name",
+              "label": "Your name"
+            },
+            {
+              "id": "w-wa",
+              "label": "WhatsApp number",
+              "type": "tel"
+            },
+            {
+              "id": "w-org",
+              "label": "Organisation"
+            },
+            {
+              "id": "w-what",
+              "label": "What you run",
+              "ph": "A café, studio, courts, company events…"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Pick a time",
+              "s": "Mon 17 · 11:00 · Mon 17 · 16:00 · Tue 18 · 11:00 · Tue 18 · 16:00 · Wed 19 · 11:00 · Wed 19 · 16:00"
+            }
+          ],
+          "btns": [
+            {
+              "l": "Book my walkthrough"
+            }
+          ],
+          "fine": "We’ll confirm the time on WhatsApp. Times are in India Standard Time."
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "when": "app",
+      "data": {
+        "panel": "m-pink",
+        "top": true,
+        "kicker": "The Catch app · coming soon",
+        "kc": "#4A2330",
+        "title": "Be first in the Catch app.",
+        "lead": "Leave your number and what you’d go to. You’ll hear the day the app launches, and about new plans you picked until then.",
+        "media": {
+          "kind": "card",
+          "title": "Notify me",
+          "fields": [
+            {
+              "id": "a-wa",
+              "label": "WhatsApp number",
+              "type": "tel"
+            },
+            {
+              "id": "a-city",
+              "label": "City",
+              "ph": "Mumbai"
+            }
+          ],
+          "rows": [
+            {
+              "t": "What would you go to?",
+              "s": "Runs · Courts · Dinners · Quizzes · Nights out · Fitness · Workshops · Book clubs"
+            }
+          ],
+          "btns": [
+            {
+              "l": "Notify me"
+            }
+          ],
+          "fine": "One message when the app launches, and new plans you picked, about once a week. Reply STOP any time."
+        }
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "lp",
+        "mbar": "Start free trial"
+      }
+    }
+  ]
+}

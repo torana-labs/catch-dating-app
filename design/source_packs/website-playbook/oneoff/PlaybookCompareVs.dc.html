@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Playbook · Compare detail</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;background:#fff}
+.vt{margin-top:40px;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 0 0 1px rgba(20,17,20,.06)}
+.vr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1.3fr);border-bottom:1px solid #f1ebe5}
+.vr:last-child{border-bottom:0}
+.vr>div{padding:16px 20px;font-size:15px;line-height:1.45;color:#4d4549}
+.vr .f{font-weight:700;color:#141114}
+.vr .us{background:#EAF7F1;color:#0f3d2b;font-weight:600}
+.vr.h>div{font-size:13px;font-weight:700;color:#5A5450}
+.short{display:flex;flex-direction:column;gap:12px}
+.short div{background:#fff;border-radius:20px;padding:16px 18px;font-size:15px;line-height:1.5;color:#4d4549}
+.short b{display:block;color:#141114;font-size:15px;margin-bottom:2px}
+@container pg (max-width: 600px){
+  .vr{grid-template-columns:1fr 1fr}.vr .f{grid-column:1/-1;padding-bottom:0}.vr.h .f{display:none}
+  .vr>div{padding:12px 14px;font-size:14px}
+}
+</style>
+</helmet>
+<div class="pg">
+
+<div class="proto" role="group" aria-label="Prototype competitor"><span>One detail-page design for every competitor:</span>
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="6"><button type="button" class="{{t.cls}}" onClick="{{t.go}}">{{t.label}}</button></sc-for></div>
+
+<header class="bar"><a class="wm" href="#">Catch</a>
+<nav aria-label="Main"><a href="#">What’s on</a><a href="#">For hosts <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></a><a href="#">Pricing</a><a class="on" href="#">Resources <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></a></nav>
+<span class="sp"></span>
+<a class="wa" href="#" aria-label="Talk to us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-1.8-1.8l.8-1-1-2z"/></svg><span class="walabel">Talk to us</span></a>
+<a class="signin" href="#">Sign in</a><a class="b sm" href="#">Start free trial</a><button class="menu" type="button" aria-label="Menu"><i></i></button></header>
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">Compare</a><span>/</span>{{title}}</nav>
+
+<section class="panel tint" style="margin-top:0"><div class="split top"><div>
+<p class="k" style="color:#1F7A57">Compare · {{checked}}</p>
+<h1 class="d d-hero">{{title}}</h1>
+<p class="lead">{{verdict}}</p>
+<div class="btns"><a class="b" href="#">Start free trial</a><a class="b o" href="#">Talk to us on WhatsApp</a></div></div>
+<div class="short"><p class="k" style="color:#5A5450;margin:0">The short answer</p>
+<div><b>Choose {{them}} if</b>{{chooseThem}}</div>
+<div><b>Choose Catch if</b>{{chooseUs}}</div>
+<div><b>Or both</b>{{both}}</div></div></div>
+<span class="note">Rec 6: the verdict and when to pick the other tool come first. Now covers all six competitors from the Learning from Toast doc; Playo is framed as a partner. Facts come from that doc’s table.</span></section>
+
+<section class="open"><p class="k" style="color:#B5451F">Credit where it’s due</p><h2 class="d d-sec">What {{them}} does well.</h2>
+<div class="grid3"><sc-for list="{{good}}" as="g" hint-placeholder-count="3"><div class="tile paper"><h3>{{g.t}}</h3><p>{{g.d}}</p></div></sc-for></div></section>
+
+<section class="open" style="padding-top:72px"><p class="k" style="color:#1F7A57">Side by side</p><h2 class="d d-sec">Where they differ.</h2>
+<div class="vt"><div class="vr h"><div class="f">What you need</div><div class="us">Catch</div><div>{{them}}</div></div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="7"><div class="vr"><div class="f">{{r.f}}</div><div class="us">{{r.us}}</div><div>{{r.them}}</div></div></sc-for></div>
+<p class="cmpsrc">{{source}}</p></section>
+
+<section class="panel ink"><div class="split top"><div><p class="k" style="color:#F5C451">Switching</p><h2 class="d d-sec">{{switchTitle}}</h2><p class="lead">Nothing changes for your guests until your next event goes live.</p>
+<div class="btns"><a class="b w" href="#">Start free trial</a></div></div>
+<ol class="steps" style="margin-top:0"><sc-for list="{{steps}}" as="s" hint-placeholder-count="4"><li class="on"><span class="n" style="color:#F07A55">{{s.n}}</span><div><h3>{{s.t}}</h3><p class="body">{{s.d}}</p></div></li></sc-for></ol></div></section>
+
+<section class="open"><div class="faq"><div><p class="k" style="color:#1F7A57">Questions</p><h2 class="d d-sec">Hosts switching from {{them}} ask.</h2></div><div>
+<sc-for list="{{faqs}}" as="f" hint-placeholder-count="4"><div><button class="q" type="button" onClick="{{f.toggle}}" aria-expanded="{{f.open}}">{{f.q}}<i>{{f.sign}}</i></button><sc-if value="{{f.open}}" hint-placeholder-val="{{ false }}"><p class="ans">{{f.a}}</p></sc-if></div></sc-for>
+</div></div></section>
+
+<section class="panel flush m-coral"><div class="split"><div class="htext"><p class="k" style="color:#3B1F14">See for yourself</p><h2 class="d d-sec">Run your next event on Catch, free.</h2><p class="lead">Free for 30 days from your first event. Free events stay free after that.</p>
+<div class="btns"><a class="b" href="#">Start free trial</a><a class="b o" href="#">All comparisons</a></div></div>
+<div class="fmedia"><div class="phone fphone"><img src="/_blob/d1f6c7bb9c9b9f60ca970341f0144003" alt="Catch Host on a Saturday"></div></div></div></section>
+
+<footer class="foot"><div class="cols">
+<div><h4>Compare</h4><a>Catch vs WhatsApp</a><a>Catch vs Luma</a><a>Catch vs District</a><a>Catch with Playo</a><a>Catch vs Meetup</a><a>Catch vs Endorfin</a></div>
+<div><h4>Hosts by format</h4><a>Run and walk clubs</a><a>Racket sports</a><a>Supper clubs</a><a>Quiz and game nights</a></div>
+<div><h4>Get started</h4><a>Start free trial</a><a>Pricing</a><a>Switch from WhatsApp</a></div>
+<div><h4>Resources</h4><a>Host stories</a><a>No-show calculator</a><a>Help</a></div>
+<div><h4>Catch</h4><a>What’s on</a><a>Safety</a><a>Contact</a><a>Privacy</a><a>Terms</a></div></div>
+<p class="bigwm">Catch</p><div class="legal"><span>Meet people in real life, through hosts who bring them together.</span><span>Catch is operated by Torana.</span></div></footer>
+<div class="mbar"><a class="b" href="#">Start free trial</a><a class="b wab" href="#" aria-label="Talk to us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/></svg></a></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"competitor":{"editor":"enum","options":["whatsapp","luma","district","playo","meetup","endorfin"],"default":"luma","section":"State"},"$preview":{"width":1440,"height":5000}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { who: null, open: 0 }; }
+  renderVals() {
+    const who = this.state.who || this.props.competitor || 'luma';
+    const s = this.state;
+    const r = (f, us, them) => ({ f, us, them });
+    const D = {
+      whatsapp: {
+        title: 'Catch vs WhatsApp, Forms and UPI', them: 'WhatsApp', checked: 'how most hosts use them together today',
+        verdict: 'Keep WhatsApp for the chat. Move the jobs it was never built for: sign-ups, payments, the door, and remembering who came.',
+        chooseThem: 'your group is small and free, and newcomers already stick.',
+        chooseUs: 'you chase payments, lose newcomers, or meet no-shows at the door.',
+        both: 'most hosts keep the group for chat and post their Catch link in it.',
+        good: [{ t: 'Everyone already has it', d: 'No app to explain and no account to make.' }, { t: 'It costs nothing', d: 'Chat is free, however big the group gets.' }, { t: 'It’s where your community talks', d: 'The jokes, the photos and the plans for brunch afterwards.' }],
+        rows: [r('Sign-ups', 'One page with spots left and a waitlist', 'A form link, then “is there space?” in the group'), r('Payment', 'Paid at booking by UPI, refunds by your rules', 'Screenshots to match against a list'), r('No-shows', 'Reminders, upfront payment and waitlist backfill', 'Found at the door'), r('Newcomers', 'A group, a team or a first hello, planned before they arrive', 'Left to find their own way in'), r('The door', 'QR or self check-in on your phone or iPad', 'A printed list and a pen'), r('Regulars', 'One record per guest across every event', 'In your head'), r('Cost', 'Free events free; 5% of paid tickets, never more than ₹10,000 a month', 'Free, plus your evenings')],
+        source: 'Catch features from the product. WhatsApp, Google Forms and UPI as most hosts use them together today.',
+        switchTitle: 'Keep the group. Add the page.',
+        steps: [{ n: '1', t: 'Keep your WhatsApp group', d: 'It stays the place people chat.' }, { n: '2', t: 'Import your list', d: 'Bring your Google Form responses or any list across.' }, { n: '3', t: 'Post your Catch link', d: 'Sign-ups, payments and reminders move to your page.' }, { n: '4', t: 'Check people in on the night', d: 'QR or self check-in, then run the night from one screen.' }],
+        faqs: [['Do we have to leave our WhatsApp group?', 'No. Keep chatting there. Catch handles sign-ups, payments, the door and follow-up, and you post your link in the group.'], ['Will my guests need another app?', 'No. Guests book on your page in their browser and join live moments there too.'], ['Can I bring my Google Form responses?', 'Yes. Import your guest list from any tool before your next event.'], ['What does it cost if all my events are free?', 'Nothing. Free events stay free on Catch.']]
+      },
+      luma: {
+        title: 'Catch vs Luma', them: 'Luma', checked: 'checked on Luma’s own pages, 15 Nov 2026',
+        verdict: 'Luma is a good free RSVP tool. Catch is built for hosts in India who sell tickets and want help running the night, and it pays you in rupees by UPI, which Luma can’t do for hosts based in India.',
+        chooseThem: 'your events are free, or you’re paid through a Stripe account outside India, and you need RSVPs and check-in.',
+        chooseUs: 'you charge in rupees and want payouts in India, groups or teams on the night, and a first hello for newcomers.',
+        both: 'moving over is easy: export your guests from Luma as a CSV file and import them into Catch.',
+        good: [{ t: 'Polished free event pages', d: 'Clean pages and calendars that people can subscribe to.' }, { t: 'A generous free plan', d: 'Approvals, waitlists, QR check-in and reminders by email, SMS, push and WhatsApp, at no cost.' }, { t: 'Guests from anywhere', d: 'Used by communities around the world.' }],
+        rows: [r('Getting paid in India', 'Rupee payouts with UPI, through Razorpay', 'Not for hosts based in India: Luma says it can’t support Indian Stripe accounts and doesn’t use Razorpay'), r('Fee on paid tickets', '5%, never more than ₹10,000 a month', '5% on the free plan, or 0% on Luma Plus at US$59 a month billed annually; card fees on top'), r('Free events', 'Free', 'Free'), r('Applications and waitlists', 'Yes, with waitlist backfill', 'Yes; UPI isn’t offered on tickets that need approval'), r('Check-in', 'QR or self check-in on your phone or iPad', 'QR with the Luma app; a check-in-only staff role needs Luma Plus'), r('Running the night', 'Pace groups, teams, seating and court rotations, by format', 'Not offered'), r('Newcomers', 'A first hello and private introductions', 'Not offered'), r('Reminders', 'Yes', 'Email, SMS, push and WhatsApp'), r('Guest records', 'One record per guest across every event', 'Calendar subscribers, and CSV import and export')],
+        source: 'Luma details from luma.com/pricing and help.luma.com (payment countries, payment methods, waitlist, check-in), checked 15 Nov 2026.',
+        switchTitle: 'Move from Luma in an afternoon.',
+        steps: [{ n: '1', t: 'Export your guests from Luma', d: 'Luma exports guest lists as a CSV file.' }, { n: '2', t: 'Import them into Catch', d: 'One record per guest from day one.' }, { n: '3', t: 'Set up your next event', d: 'Format, price, questions and capacity.' }, { n: '4', t: 'Share your new link', d: 'Paid in rupees, by UPI, from the first booking.' }],
+        faqs: [['Can Catch pay me if I’m based in India?', 'Yes. Catch pays hosts in rupees, with guests paying by UPI, through Razorpay.'], ['Is Luma cheaper?', 'For free events, both cost nothing. On paid tickets, Luma’s free plan takes 5% with card fees on top, or 0% on Luma Plus for US$59 a month. Catch takes 5% and stops at ₹10,000 in a month.'], ['Can I bring my Luma guest list?', 'Yes. Export it from Luma as a CSV file and import it into Catch.'], ['Do my guests need an app?', 'No. Guests book on your page in their browser.']]
+      },
+      district: {
+        title: 'Catch vs District', them: 'District', checked: 'checked on District’s own pages, 15 Nov 2026',
+        verdict: 'District puts big one-off events in front of a huge going-out audience. Catch is for nights that repeat: you keep your guests, see who comes back, and pay a published fee.',
+        chooseThem: 'you’re selling a one-off concert, comedy show or festival to thousands, and reach matters more than knowing your guests.',
+        chooseUs: 'your nights repeat, you want every guest on your own list, and you want help running the night itself.',
+        both: 'some hosts list a big night on District for reach and run their regular nights on Catch.',
+        good: [{ t: 'A huge audience', d: 'A large consumer marketplace for dining, movies and events.' }, { t: 'Paid in India', d: 'Ticket money is settled to the organiser under District’s merchant terms.' }, { t: 'Paid promotion', d: 'Sponsored listings, paid per click or visit, to reach more people.' }],
+        rows: [r('Fee on paid tickets', '5%, never more than ₹10,000 a month', 'A percentage negotiated per event; no public rate card'), r('Free events', 'Free', 'Not published'), r('Paid in rupees', 'Yes, into your own Razorpay account', 'Yes, settled under District’s merchant terms'), r('Your guests', 'One record per guest across every event, yours to export', 'Not offered to organisers'), r('Applications and waitlists', 'Yes, with waitlist backfill', 'Not published'), r('Running the night', 'Pace groups, teams, seating and court rotations, by format', 'Not offered'), r('Newcomers', 'A first hello and private introductions', 'Not offered'), r('Finding an audience', 'Growing: Mumbai and Indore; guest app coming soon', 'A large going-out marketplace, with sponsored listings')],
+        source: 'District details from district.in, the District partner pages and Zomato’s event terms. Settlement and sponsored-listing details came from search limited to those companies’ domains, and are confirmed before launch.',
+        switchTitle: 'Keep your audience next time.',
+        steps: [{ n: '1', t: 'Bring your guest list', d: 'Import any list you have as a CSV or Excel file.' }, { n: '2', t: 'Set up your next night', d: 'Format, price, questions and capacity.' }, { n: '3', t: 'Share your link', d: 'Followers hear about it first.' }, { n: '4', t: 'See who comes back', d: 'Every guest on your records, event after event.' }],
+        faqs: [['Is Catch cheaper than District?', 'District’s fee is negotiated per event and not published. Catch is 5% of ticket sales, never more than ₹10,000 a month, and free events stay free.'], ['Will Catch bring me as many people?', 'Not yet. District has a much larger audience. Catch helps you keep and grow your own: followers, regulars and a page people find.'], ['Can I use both?', 'Yes. List a one-off on District for reach, and run your regular nights on Catch.'], ['Do my guests need an app?', 'No. Guests book on your page in their browser.']]
+      },
+      playo: {
+        title: 'Catch with Playo', them: 'Playo', checked: 'checked on Playo’s own pages, 15 Nov 2026',
+        verdict: 'Playo is where players book courts and find games. Catch is where you run the social on those courts. Most racket hosts will want both.',
+        chooseThem: 'you just need a court and a few players at your level.',
+        chooseUs: 'you run a session for a group: levels, rotations, fair court time, and players who come back next week.',
+        both: 'book the court on Playo; sell the session and run it on Catch.',
+        good: [{ t: 'Court booking', d: 'Find and book courts across cities.' }, { t: 'A big player community', d: 'Over 5 million users, by Playo’s own figure.' }, { t: 'Matching by level', d: 'Skill ratings and level filters to find fair games.' }],
+        rows: [r('Booking courts', 'Not offered: bring your own courts', 'Yes'), r('Selling a session to a group', 'Paid booking by UPI or card, with a waitlist', 'Hosting a game is free; players split the court cost'), r('Levels', 'Set at booking, confirmed at the door', 'Skill ratings and level filters'), r('Rotations on the night', 'A new partner every round, close matches', 'Not offered'), r('Fair court time', 'Minutes counted for every player', 'Not offered'), r('Walk-ins', 'Join the next round', 'Not applicable'), r('Regulars', 'One record per player across sessions', 'Player profiles'), r('Fee', '5% of ticket sales, never more than ₹10,000 a month', 'Not applicable to hosts')],
+        source: 'Playo details from Playo’s guide, ratings and karma pages on blog.playo.co, checked 15 Nov 2026.',
+        switchTitle: 'Keep Playo for courts. Add Catch for the social.',
+        steps: [{ n: '1', t: 'Book your courts', d: 'On Playo or directly with the venue.' }, { n: '2', t: 'Set up the session on Catch', d: 'Courts, round length, levels and price.' }, { n: '3', t: 'Share your link', d: 'Players book and pay with their level.' }, { n: '4', t: 'Run the rotations', d: 'Catch plans every round and counts court time.' }],
+        faqs: [['Does Catch book courts?', 'No. Book courts on Playo or with the venue. Catch runs the session on them.'], ['Why not just use Playo?', 'For a game with friends, Playo is enough. For a social with 20 to 40 players you don’t all know, Catch plans the rotations, keeps court time fair and brings players back.'], ['Which sports work?', 'Pickleball, padel, badminton and tennis doubles: anything played in pairs on courts.'], ['Do players need an app?', 'No. Players book and see their next court in their phone’s browser.']]
+      },
+      meetup: {
+        title: 'Catch vs Meetup', them: 'Meetup', checked: 'from search limited to meetup.com, 15 Nov 2026; confirmed before launch',
+        verdict: 'Meetup has a big interest-group audience, but organisers pay a subscription even for free events. Catch is free for free events and pays you in rupees when you charge.',
+        chooseThem: 'your group lives on Meetup already and its audience brings you new members.',
+        chooseUs: 'you’d rather not pay to host free events, want UPI payments in rupees, and want tools for the night itself.',
+        both: 'keep your Meetup group for discovery and link your Catch page for bookings.',
+        good: [{ t: 'An interest-group audience', d: 'People browse groups by topic and join.' }, { t: 'Group member lists', d: 'Members, event chat and email to the group.' }, { t: 'QR check-in', d: 'QR tickets and an attendance list.' }],
+        rows: [r('Hosting free events', 'Free', 'Organiser subscription required'), r('Fee on paid tickets', '5%, never more than ₹10,000 a month', 'A service fee added for attendees, plus the organiser subscription'), r('Paid in rupees, by UPI', 'Yes, through Razorpay', 'Not documented for India'), r('Waitlists', 'Yes, free and paid, with backfill', 'Free events only'), r('Applications', 'Yes, approve each guest', 'A question at RSVP; approval not documented'), r('Running the night', 'Pace groups, teams, seating and court rotations, by format', 'Not offered'), r('Newcomers', 'A first hello and private introductions', 'Not offered'), r('Guest records', 'One record per guest across every event', 'Group member lists')],
+        source: 'Meetup’s help centre refused direct access, so these details come from search results limited to meetup.com (subscription rates, ticketed-event fees, waitlist, QR check-in), 15 Nov 2026. Confirmed before launch.',
+        switchTitle: 'Stop paying to host free events.',
+        steps: [{ n: '1', t: 'Export your members', d: 'Bring your list across as a CSV file.' }, { n: '2', t: 'Make your Catch page', d: 'Your events, reviews and a follow button.' }, { n: '3', t: 'Post your link in the group', d: 'Bookings and payments move to Catch.' }, { n: '4', t: 'Run the night', d: 'Check-in, groups and a first hello for newcomers.' }],
+        faqs: [['Is Catch free for free events?', 'Yes, always. You pay 5% only on tickets sold.'], ['Will I lose Meetup’s audience?', 'Keep your group on Meetup if it brings you members, and link your Catch page for bookings.'], ['Can guests pay by UPI?', 'Yes, by UPI or card, through Razorpay, into your own account.'], ['Do guests need an app?', 'No. Guests book on your page in their browser.']]
+      },
+      endorfin: {
+        title: 'Catch vs Endorfin', them: 'Endorfin', checked: 'checked on endorfin.run, 15 Nov 2026',
+        verdict: 'Endorfin is a free home for run clubs, with challenges and free ads for paid events. Catch handles the run itself, and the dinners, quizzes and socials your club does too.',
+        chooseThem: 'you run a club that only runs, want a free platform and value challenges, streaks and free ads.',
+        chooseUs: 'you want pace groups and a first hello on the run, rupee payments into your own account, and other kinds of nights alongside.',
+        both: 'it’s simple to move: export your members and import them into Catch.',
+        good: [{ t: 'Free for clubs', d: '“No fee to host events.” It earns from ticketing and brand partners.' }, { t: 'Free ads for paid events', d: 'Instagram and Google ads to fill your paid events.' }, { t: 'Built for runners', d: 'Weekly challenges, streaks, leaderboards and a club feed.' }],
+        rows: [r('Fee to host', '5% of ticket sales, capped; free events free', 'No host fee'), r('Paid in rupees', 'Yes, into your own Razorpay account', 'Paid events supported; payout method not published'), r('Approvals', 'Yes, with your questions', 'Member requests and approvals'), r('Check-in', 'QR or self check-in on phone or iPad', 'Free QR check-in'), r('On the run', 'Pace groups with a lead, nobody left on the road', 'Not offered; challenges and streaks between runs'), r('Newcomers', 'A first hello and private introductions', 'Not offered'), r('Other kinds of nights', 'Supper, quiz, courts, mixers', 'Run clubs only'), r('Promotion', 'Followers and What’s on; no paid ads yet', 'Free Instagram and Google ads for paid events')],
+        source: 'Endorfin details from endorfin.run/for-clubs, checked 15 Nov 2026.',
+        switchTitle: 'Bring the club across.',
+        steps: [{ n: '1', t: 'Export your members', d: 'Bring your list across as a CSV file.' }, { n: '2', t: 'Set up your run', d: 'Route, pace groups and leads.' }, { n: '3', t: 'Share your link', d: 'Runners book in their browser.' }, { n: '4', t: 'Add your other nights', d: 'Brunch, quizzes and dinners on the same page.' }],
+        faqs: [['Endorfin is free. Why pay for Catch?', 'Free runs are free on Catch too. You pay 5% only when you sell tickets, never more than ₹10,000 a month.'], ['Does Catch run ads for my events?', 'Not yet. Endorfin does, which is a real advantage. Catch’s founding-host offer includes featured placement.'], ['Can I run dinners and quizzes too?', 'Yes. Every format runs on the same page, with the same followers.'], ['Do runners need an app?', 'No. They book and check in in their browser.']]
+      }
+    };
+    const d = D[who];
+    return {
+      tabs: [['whatsapp', 'vs WhatsApp'], ['luma', 'vs Luma'], ['district', 'vs District'], ['playo', 'with Playo'], ['meetup', 'vs Meetup'], ['endorfin', 'vs Endorfin']].map((t) => ({ label: 'Catch ' + t[1], cls: who === t[0] ? 'on' : '', go: () => this.setState({ who: t[0], open: 0 }) })),
+      checked: d.checked,
+      title: d.title, them: d.them, verdict: d.verdict, chooseThem: d.chooseThem, chooseUs: d.chooseUs, both: d.both,
+      good: d.good, rows: d.rows, source: d.source, switchTitle: d.switchTitle, steps: d.steps,
+      faqs: d.faqs.map((f, i) => ({ q: f[0], a: f[1], open: s.open === i, sign: s.open === i ? '−' : '+', toggle: () => this.setState({ open: s.open === i ? -1 : i }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookDemo",
+  "title": "Playbook · Try a demo night",
+  "height": 4800,
+  "phone": {
+    "title": "Try a demo night",
+    "height": 8000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Try a demo night"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Try a demo night",
+        "title": "Run a night on Catch before you run one for real.",
+        "lead": "Tell us about your event and we’ll send you a private demo built around it: your application questions, sample guests, and the door on the night. Nothing is published, messaged or charged.",
+        "ink": "#1E2550",
+        "tone": "m-indigo",
+        "btns": [
+          {
+            "l": "Get your demo link",
+            "href": "#get"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Your demo · Long Table Supper",
+          "sub": "Sample guests, your questions",
+          "label": "Practice · nothing real is sent",
+          "rows": [
+            {
+              "t": "Review 6 applicants",
+              "s": "4 approved, 1 waitlisted, 1 declined"
+            },
+            {
+              "t": "Write the replies",
+              "s": "Approved and waitlist messages"
+            },
+            {
+              "t": "Let guests in",
+              "s": "8 of 12 here"
+            },
+            {
+              "t": "Handle a request",
+              "s": "Someone can’t find the venue"
+            }
+          ],
+          "fine": "Illustrative screen"
+        },
+        "note": "Priority-2 page (/demo/). Decision: request a private demo. Uses the built private sales demo: a reviewed blueprint, an invitation bound to the person’s verified phone or email, synthetic application review, reply preparation, guest admission and an assistance request, at most three sessions, and a form draft prepared from the reviewed setup afterwards. No self-serve sandbox."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "What you’ll do",
+        "kc": "#4C5BC4",
+        "title": "Four things, in about ten minutes.",
+        "lead": "",
+        "panel": "open",
+        "cols": 4,
+        "items": [
+          {
+            "n": "1",
+            "t": "Review applicants",
+            "d": "Sample applicants answer your own questions. Approve, waitlist or decline them.",
+            "tone": "m-pink"
+          },
+          {
+            "n": "2",
+            "t": "Write the replies",
+            "d": "See the message each person would get, and change it.",
+            "tone": "m-yellow"
+          },
+          {
+            "n": "3",
+            "t": "Let guests in",
+            "d": "Run the door for a sample night: who’s here, who’s late, who’s new.",
+            "tone": "m-mint"
+          },
+          {
+            "n": "4",
+            "t": "Handle a request",
+            "d": "A guest asks for help on the night. See how it reaches you.",
+            "tone": "m-indigo"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Built around your night",
+        "kc": "#F5C451",
+        "title": "Not a generic tour. Your questions, your format.",
+        "lead": "Send us your current form or tell us what you ask guests. We set up the demo with your questions, and after you’ve tried it, we can turn it into a draft form in your own account, ready to publish.",
+        "panel": "ink",
+        "ticks": [
+          "Your questions, set up for you",
+          "Sample guests only; no real names, numbers or payments",
+          "Afterwards, a draft of your form in Catch Host"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "How the link works",
+          "rows": [
+            {
+              "t": "It’s private to you and opens with your phone number or email. You can open it up to three times before it expires on [N days]."
+            },
+            {
+              "t": "Nothing you do in the demo is published, sent to anyone or charged."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Get your demo link",
+        "kc": "#B23A5A",
+        "title": "Tell us about your night.",
+        "lead": "We’ll set up your demo and send the link on WhatsApp, usually within [one working day].",
+        "panel": "open",
+        "top": true,
+        "body": "Rather see it with a person? Book a 15-minute walkthrough.",
+        "id": "get",
+        "media": {
+          "kind": "card",
+          "title": "Your demo",
+          "fields": [
+            {
+              "id": "dm-name",
+              "label": "Your name",
+              "type": "text",
+              "ph": ""
+            },
+            {
+              "id": "dm-what",
+              "label": "What you host",
+              "type": "text",
+              "ph": "A monthly supper club for 24"
+            },
+            {
+              "id": "dm-ask",
+              "label": "What you ask guests now (optional)",
+              "type": "text",
+              "ph": "Paste your questions or a link to your form"
+            },
+            {
+              "id": "dm-wa",
+              "label": "Your WhatsApp number",
+              "type": "tel",
+              "ph": ""
+            }
+          ],
+          "btns": [
+            {
+              "l": "Get my demo link"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "About the demo.",
+        "items": [
+          [
+            "Is the demo free?",
+            "Yes. It’s a practice run with sample guests. Nothing is charged, published or sent."
+          ],
+          [
+            "Why can’t I open a demo straight away?",
+            "Each demo is set up around your own event and questions, so we prepare it for you. It usually takes [one working day]."
+          ],
+          [
+            "Who can open my link?",
+            "Only you. It opens with the phone number or email you gave us."
+          ],
+          [
+            "Can I use what I set up?",
+            "Yes. Afterwards we can turn your demo into a draft form in your own Catch account, ready for you to publish."
+          ],
+          [
+            "Can I just start instead?",
+            "Of course. Start the free trial and make your first event; the demo is there if you’d like to practise first."
+          ],
+          [
+            "How long does the link last?",
+            "You can open it up to three times before it expires."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Ready without the demo?",
+        "title": "Start the free trial.",
+        "lead": "Free for 30 days from your first event, 90 for founding hosts.",
+        "tone": "m-indigo",
+        "ink": "#1E2550",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "How Catch works",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host on the day: tonight’s event, bookings and the door"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

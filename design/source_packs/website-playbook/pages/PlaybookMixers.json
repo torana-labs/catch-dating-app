@@ -1,0 +1,348 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookMixers",
+  "title": "Playbook · Catch for mixers and pub crawls",
+  "height": 8000,
+  "phone": {
+    "title": "Catch for mixers and pub crawls",
+    "height": 12000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "offer": {
+          "lead": "Founding hosts in Mumbai and Indore:",
+          "body": "90 days without Catch fees, until [date].",
+          "left": "[N] of 50 places left",
+          "cta": "Claim a place"
+        },
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Mixers and pub crawls"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Catch for mixers, socials and pub crawls",
+        "title": "A room full of strangers, mixing by the second drink.",
+        "lead": "Promoter links that show who sold what, groups that keep changing so everyone meets someone, leads who move each group between venues, and a count of everyone at every stop.",
+        "ink": "#4A1E3D",
+        "tone": "m-magenta",
+        "proof": [
+          "[N] social nights run on Catch",
+          "★ [4.8] from guests who booked1"
+        ],
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "door": "Running nights in several cities or for a brand? Book a walkthrough →",
+        "chip": {
+          "title": "Friday Bandra Pub Crawl",
+          "rows": [
+            {
+              "l": "Booked",
+              "v": "40"
+            },
+            {
+              "l": "At stop 3",
+              "v": "37"
+            },
+            {
+              "l": "Groups",
+              "v": "4 of 10"
+            }
+          ]
+        },
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/1915617c5c7bfc93624beb55fc2f5e38",
+          "alt": "A guest’s phone between stops: where the group is heading and who’s with them"
+        },
+        "note": "Segment template, eighth use; priority-2 segment for event producers. Crawl copy follows the production host page’s pub crawl format; the mixer uses the production mix format."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Sound familiar?",
+        "kc": "#B5451F",
+        "title": "Selling the tickets is the easy part.",
+        "lead": "",
+        "panel": "open",
+        "items": [
+          {
+            "t": "Everyone stands with their friends",
+            "fix": "Small groups that change through the night, with one icebreaker at a time.",
+            "d": "Fifty people, eleven circles, and the people who came alone by the bar."
+          },
+          {
+            "t": "Promoters say they sold it out",
+            "fix": "A link for each promoter, with bookings and revenue against it.",
+            "d": "Five promoters, one total, and a payout based on screenshots."
+          },
+          {
+            "t": "Losing people between bars",
+            "fix": "Each group lead confirms who left and who arrived, at every stop.",
+            "d": "Forty leave stop two; thirty-one arrive at stop three, and you don’t know who."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Mixers",
+        "kc": "#4C5BC4",
+        "title": "Groups that change, so nobody stays in a corner.",
+        "lead": "Catch puts guests into small groups and changes them a few times through the night. Between rounds, phones buzz with the next group and one thing to talk about. Then the phones go away.",
+        "panel": "open",
+        "ticks": [
+          "Groups mixed by what guests told you, and who came alone",
+          "Rounds as long as you want them",
+          "One icebreaker per round, never a questionnaire",
+          "Guests say afterwards who they’d like to see again"
+        ],
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/671b39056e27735f8f9a00c7ca609a22",
+          "alt": "The mixer screen: the next group and something to talk about"
+        }
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "A pub crawl on Catch",
+        "kc": "#F5C451",
+        "title": "Four stops, nobody lost.",
+        "lead": "",
+        "steps": [
+          {
+            "time": "Thursday",
+            "t": "Plan the route",
+            "d": "Four stops, groups of ten and a lead for each, shared with your team and the venues before the night."
+          },
+          {
+            "time": "7:30 PM",
+            "t": "A first hello at the first bar",
+            "d": "Guests check in and get one icebreaker to do with someone in their group, so the group is mixing before the first move."
+          },
+          {
+            "time": "8:42 PM",
+            "t": "Move groups between venues",
+            "d": "Phones come out on the move: where you’re heading and who’s with you. Each lead confirms who left and who arrived."
+          },
+          {
+            "time": "10:30 PM",
+            "t": "Late arrivals find the group",
+            "d": "Someone arriving late gets the stop you’re at now, not the first one, and their lead sees them coming."
+          },
+          {
+            "time": "11:15 PM",
+            "t": "The return sweep",
+            "d": "At the last stop, leads mark everyone as home or still out. Anyone not accounted for shows up on your screen."
+          }
+        ],
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/596d1b6f22ec8ee87958b77b904840ef",
+          "alt": "The crawl route: four stops, groups and their leads"
+        }
+      }
+    },
+    {
+      "component": "KitStory",
+      "data": {
+        "kicker": "Social night story · Bandra",
+        "tone": "m-magenta",
+        "ink": "#4A1E3D",
+        "initials": "NS",
+        "name": "Night Shift Socials",
+        "meta": "Weekly pub crawls and mixers · [N] guests a night",
+        "quote": "[The organiser, in their words, on promoters, groups and getting everyone home.]",
+        "metrics": [
+          {
+            "l": "Tickets sold through promoter links",
+            "v": "[N%]",
+            "s": "from Catch records2"
+          },
+          {
+            "l": "Guests back within a month",
+            "v": "[N%]",
+            "s": "from Catch records2"
+          },
+          {
+            "l": "Hours saved on promoter payouts",
+            "v": "[N]",
+            "s": "self-reported3"
+          }
+        ],
+        "img": "/_blob/409d3ee3e6896b80188944189323718b",
+        "alt": "A group at a pub crawl",
+        "tag": "Replace with real photography from a design-partner night"
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Buyer’s checklist",
+        "kc": "#1F7A57",
+        "title": "What to look for in software for social nights.",
+        "lead": "Check these eight things, whichever tool you choose. Catch does all of them.",
+        "items": [
+          {
+            "t": "A link for every promoter",
+            "d": "Bookings and revenue for each."
+          },
+          {
+            "t": "Groups that change",
+            "d": "Everyone meets someone new."
+          },
+          {
+            "t": "Group leads",
+            "d": "Each confirms who’s with them."
+          },
+          {
+            "t": "A count at every stop",
+            "d": "Who left, who arrived."
+          },
+          {
+            "t": "Late arrivals routed",
+            "d": "To the stop you’re at now."
+          },
+          {
+            "t": "Paid booking and a waitlist",
+            "d": "No guest list on a napkin."
+          },
+          {
+            "t": "Early-bird pricing",
+            "d": "The price steps up as it fills."
+          },
+          {
+            "t": "A sweep at the end",
+            "d": "Everyone home, or flagged."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Compare Catch with the alternatives",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for social nights",
+        "price": "5%",
+        "sub": "of ticket sales, never more than ₹10,000 a month.",
+        "lead": "Free for 30 days from your first night, 90 for founding hosts. Payment gateway fees are separate.",
+        "examples": [
+          {
+            "t": "A 40-person crawl at ₹1,499",
+            "v": "₹2,998 a night",
+            "d": "5% of ₹59,960."
+          },
+          {
+            "t": "Four crawls a month",
+            "v": "₹10,000 a month",
+            "d": "The cap. Everything above it is yours."
+          },
+          {
+            "t": "A fifth night that month",
+            "v": "₹0 more",
+            "d": "You’ve already hit the cap."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Start free trial",
+            "kind": "light"
+          },
+          {
+            "l": "See full pricing",
+            "kind": "lightsec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Social night questions",
+        "title": "What hosts ask us.",
+        "items": [
+          [
+            "Can I pay promoters on what they sell?",
+            "Each promoter gets their own link, and Catch shows the visits, bookings and revenue from it. How you pay them is up to you."
+          ],
+          [
+            "How do the groups work at a mixer?",
+            "Catch puts guests into small groups from what they told you when they booked, and changes them a few times through the night. You set how many rounds and how long."
+          ],
+          [
+            "Who runs each group on a crawl?",
+            "A group lead from your team, on their own phone. They see their group, confirm who left and who arrived, and get late arrivals sent their way."
+          ],
+          [
+            "What if someone leaves early?",
+            "Their lead marks them as gone home. At the end, anyone not accounted for shows up on your screen."
+          ],
+          [
+            "Do guests need an app?",
+            "No. They book, check in and see their group in their phone’s browser."
+          ],
+          [
+            "Can the venues see the plan?",
+            "Share the route and timings with your team and venues before the night."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Your next night",
+        "title": "Everyone mixing. Everyone home.",
+        "lead": "Start the free trial, or leave your number and we’ll send the social night setup guide on WhatsApp.",
+        "tone": "m-magenta",
+        "ink": "#4A1E3D",
+        "btns": [
+          {
+            "l": "Start free trial"
+          }
+        ],
+        "form": {
+          "id": "mx-wa",
+          "label": "Your WhatsApp number",
+          "button": "Send the guide"
+        },
+        "img": "/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b",
+        "alt": "A dinner as guests see it on Catch"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "footnotes": [
+          "1. Average of reviews from guests who booked on Catch, [dates].",
+          "2. From Catch booking records, [dates].",
+          "3. Self-reported by the host. Individual results vary."
+        ]
+      }
+    }
+  ]
+}

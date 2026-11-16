@@ -1,0 +1,279 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookMessages",
+  "title": "Playbook · Messages and automations",
+  "height": 6000,
+  "phone": {
+    "title": "Messages and automations",
+    "height": 9600
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "How Catch works"
+        ],
+        "here": "Messages and automations"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Product · messages and automations",
+        "title": "The right message, to the right people, without you typing it.",
+        "lead": "Confirmations, reminders and changes go out by themselves. Announcements reach everyone booked. Followers hear about your next event. And when you want to send a WhatsApp campaign to the people who said yes, it goes from your own number.",
+        "ink": "#4A3A0B",
+        "tone": "m-yellow",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "See guest records",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Automatic messages · Sunday social run",
+          "rows": [
+            {
+              "t": "Confirmation and ticket",
+              "s": "Where to be and what to bring",
+              "tag": "On",
+              "tone": ""
+            },
+            {
+              "t": "Reminder",
+              "s": "Start point, time, your group’s lead",
+              "tag": "On",
+              "tone": ""
+            },
+            {
+              "t": "Change notice",
+              "s": "New time or place, to everyone booked",
+              "tag": "On",
+              "tone": ""
+            },
+            {
+              "t": "Cancellation and refund",
+              "s": "Refunded by your policy",
+              "tag": "On",
+              "tone": ""
+            },
+            {
+              "t": "Thank-you and review request",
+              "s": "To everyone who came",
+              "tag": "On",
+              "tone": ""
+            }
+          ],
+          "fine": "Illustrative screen"
+        },
+        "note": "Capability page 4 (priority 2). From docs/host_product.md delivery snapshot: event-service messages, event announcements (to up to 500 booked or interested, by push and Activity), follower posts, personal WhatsApp handoff, WhatsApp Business campaigns and Inbox (host connects their own number via Meta). Decision: feature campaigns with the setup said plainly. No email or SMS claims."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Four ways to reach people",
+        "kc": "#4C5BC4",
+        "title": "Each one for a different job.",
+        "lead": "",
+        "panel": "open",
+        "cols": 4,
+        "items": [
+          {
+            "small": "Automatic",
+            "ink": "#4A3A0B",
+            "t": "Event messages",
+            "then": "To: the people booked",
+            "d": "Confirmations, reminders, changes, cancellations and thank-yous, sent for every booking.",
+            "tone": "m-yellow"
+          },
+          {
+            "small": "When you need to",
+            "ink": "#4A1C0E",
+            "t": "Announcements",
+            "then": "To: one event’s guests",
+            "d": "“Meet at the north gate, it’s raining.” One message to everyone booked, or everyone interested, as a notification.",
+            "tone": "m-coral"
+          },
+          {
+            "small": "Every new event",
+            "ink": "#1E2550",
+            "t": "Follower updates",
+            "then": "To: your followers",
+            "d": "Post your next event and it shows up for everyone who follows you, without you sharing a link.",
+            "tone": "m-indigo"
+          },
+          {
+            "small": "Your own number",
+            "ink": "#123D2C",
+            "t": "WhatsApp campaigns",
+            "then": "To: people who opted in",
+            "d": "Approved templates, scheduled and sent from your WhatsApp Business number, with delivery reports.",
+            "tone": "m-mint"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "WhatsApp campaigns",
+        "kc": "#F5C451",
+        "title": "Your number. Your people. Proof it arrived.",
+        "lead": "Send your next event to the people who asked to hear from you on WhatsApp. Pick who gets it from your guest records, preview it, schedule it, and see how many it reached.",
+        "panel": "ink",
+        "ticks": [
+          "Sent from your own WhatsApp Business number",
+          "Only to people who opted in to hear from you; STOP is honoured",
+          "Delivered and read counts for every send",
+          "Replies land in one inbox, and you can answer them there"
+        ],
+        "body": "Setting it up: you connect a WhatsApp Business number through Meta, once. It takes about [20 minutes], and we’ll do it with you on a call or on WhatsApp.",
+        "media": {
+          "kind": "card",
+          "title": "Campaign · New date: Long Table Supper",
+          "stats": [
+            {
+              "v": "212",
+              "l": "sent"
+            },
+            {
+              "v": "204",
+              "l": "delivered"
+            },
+            {
+              "v": "161",
+              "l": "read"
+            },
+            {
+              "v": "19",
+              "l": "booked"
+            }
+          ],
+          "fine": "Illustrative screen and figures"
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Personal messages",
+        "kc": "#B23A5A",
+        "title": "One person, your words, one tap.",
+        "lead": "From anyone’s record, open WhatsApp on your phone with a message already written. Change it, press send. It comes from you, like any message you’d send yourself.",
+        "panel": "open",
+        "ticks": [
+          "“We missed you on Sunday” to someone who hasn’t been in a while",
+          "A thank-you to a regular",
+          "A seat offered to someone who asked last time"
+        ],
+        "media": {
+          "kind": "chat",
+          "alt": "Example WhatsApp conversation",
+          "bubbles": [
+            {
+              "text": "Hey Kabir! Haven’t seen you at a Sunday run since September. We’ve got a new 5K route along the sea face this week, if you fancy it.",
+              "time": "",
+              "me": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Who hears from you",
+        "kc": "#1F7A57",
+        "title": "Permission, kept per channel.",
+        "lead": "Booking an event lets you send that event’s messages. Hearing about future events on WhatsApp is a separate yes, recorded with when and where it was given.",
+        "items": [
+          {
+            "t": "Event messages go to people booked",
+            "d": "Only what’s needed for that event."
+          },
+          {
+            "t": "Campaigns go to people who opted in",
+            "d": "A clear yes, to you, on WhatsApp."
+          },
+          {
+            "t": "STOP means stop",
+            "d": "They’re taken off straight away."
+          },
+          {
+            "t": "Imported lists don’t count as a yes",
+            "d": "Ask them first, then message them."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "About messages.",
+        "items": [
+          [
+            "Do I need a WhatsApp Business number?",
+            "Only for campaigns. Automatic messages, announcements, follower updates and personal messages work without one. For campaigns, you connect a WhatsApp Business number through Meta once, and we’ll help."
+          ],
+          [
+            "Who pays for WhatsApp messages?",
+            "Meta charges for business-started WhatsApp conversations, billed to your WhatsApp Business account at its rates."
+          ],
+          [
+            "Can I message people I imported from a spreadsheet?",
+            "Event messages, yes, for an event they’re booked on. Campaigns only go to people who opted in to hear from you on WhatsApp, so ask them first."
+          ],
+          [
+            "Can guests reply?",
+            "To campaigns, yes: replies land in your Catch inbox and you can answer while WhatsApp’s reply window is open. Announcements are one-way notifications."
+          ],
+          [
+            "Can I send email or SMS?",
+            "Not yet. Messages go by WhatsApp, in-app notification and the personal WhatsApp button."
+          ],
+          [
+            "Does Catch send messages for me?",
+            "Yes: confirmations, reminders, changes, cancellations and the thank-you go out for every booking, so guests always know where to be."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Free for 30 days · founding hosts get 90",
+        "title": "Let the reminders send themselves.",
+        "lead": "Every event comes with confirmations, reminders and a thank-you, ready to go.",
+        "tone": "m-yellow",
+        "ink": "#4A3A0B",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "How Catch works",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host on the day: tonight’s event, bookings and the door"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

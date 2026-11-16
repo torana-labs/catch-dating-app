@@ -1,0 +1,373 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookWorkshops",
+  "title": "Playbook · Catch for workshops",
+  "height": 9000,
+  "phone": {
+    "title": "Catch for workshops",
+    "height": 12000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "offer": {
+          "lead": "Founding hosts in Mumbai and Indore:",
+          "body": "90 days without Catch fees, until [date].",
+          "left": "[N] of 50 places left",
+          "cta": "Claim a place"
+        },
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Workshops"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "tone": "m-yellow",
+        "ink": "#4A3A0B",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "kicker": "Catch for pottery, cooking, art and craft workshops",
+        "title": "Small rooms, full every time.",
+        "lead": "Paid booking for twelve seats, a waitlist for the thirteenth, the questions you need answered before people arrive, and the regulars told first when you open the next date.",
+        "proof": [
+          "[N] workshops a month run on Catch",
+          "★ [4.9] from guests who booked¹"
+        ],
+        "door": "Teaching for a company team? Book a walkthrough →",
+        "media": {
+          "kind": "phonecard",
+          "title": "Saturday wheel-throwing",
+          "sub": "Clay Corner · Bandra",
+          "stats": [
+            {
+              "v": "12",
+              "l": "booked"
+            },
+            {
+              "v": "4",
+              "l": "waitlist"
+            },
+            {
+              "v": "3",
+              "l": "first time"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Ira Desai",
+              "s": "First time · left-handed",
+              "tag": "Paid",
+              "tone": "good"
+            },
+            {
+              "t": "Kabir Shah",
+              "s": "Came in October",
+              "tag": "Paid",
+              "tone": "good"
+            },
+            {
+              "t": "Seat 12",
+              "s": "Offered to Tara, 2 hours left",
+              "tag": "Offer open",
+              "tone": "hot"
+            }
+          ],
+          "chip": "Materials list sent with the reminder"
+        },
+        "chip": {
+          "title": "Saturday wheel-throwing",
+          "rows": [
+            {
+              "l": "Booked",
+              "v": "12 of 12"
+            },
+            {
+              "l": "Waitlist",
+              "v": "4"
+            },
+            {
+              "l": "Back again",
+              "v": "5"
+            }
+          ]
+        },
+        "note": "Priority-3 organiser type, built from the kit. Built features only: paid booking, waitlist offers, forms for guest details, memberships, reviews, followers."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Sound familiar?",
+        "kc": "#B5451F",
+        "title": "Teaching is the easy part.",
+        "items": [
+          {
+            "t": "Twelve seats, twenty DMs",
+            "d": "“Is there space?” “Can I pay later?” “What should I bring?” for every date.",
+            "fix": "One page with seats left, paid at booking, and what to bring in the reminder."
+          },
+          {
+            "t": "Two drop-outs the night before",
+            "d": "Materials bought for twelve, ten people at the wheel.",
+            "fix": "Refunds by your policy, and the waitlist offered the seat straight away."
+          },
+          {
+            "t": "No idea who’s coming back",
+            "d": "People loved it, and you never hear from them again.",
+            "fix": "Followers hear about the next date first; regulars can become members."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Before they arrive",
+        "title": "Know who’s at the table.",
+        "lead": "Ask what you need when people book: experience, allergies, left- or right-handed, what they want to make. It’s on each guest’s record when you prepare.",
+        "ticks": [
+          "Your questions, answered at booking",
+          "A waitlist that offers seats in order",
+          "What to bring, in the reminder",
+          "Reviews from people who came"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Guest details · Saturday wheel-throwing",
+          "rows": [
+            {
+              "t": "Have you thrown on a wheel before?",
+              "s": "Once, years ago."
+            },
+            {
+              "t": "Anything we should know?",
+              "s": "Left-handed."
+            },
+            {
+              "t": "What would you like to make?",
+              "s": "A pair of mugs."
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "A workshop on Catch",
+        "title": "From opening the date to the next one.",
+        "steps": [
+          {
+            "time": "Two weeks out",
+            "d": "Post the date. Followers and members hear first; members can book before everyone else.",
+            "t": "Seats on sale"
+          },
+          {
+            "time": "As they book",
+            "d": "Each guest answers your questions. When it’s full, new bookings join the waitlist.",
+            "t": "Details and a waitlist"
+          },
+          {
+            "time": "Day before",
+            "d": "Where, when and what to bring go out for you. A drop-out’s seat goes to the waitlist.",
+            "t": "The reminder"
+          },
+          {
+            "time": "On the day",
+            "d": "Guests check in at the door; first-timers are marked so you can say hello.",
+            "t": "Check in"
+          },
+          {
+            "time": "Next morning",
+            "d": "Photos, a thank-you and a review request. Regulars hear about the next date first.",
+            "t": "Bring them back"
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "Tonight’s check-ins and what needs you, on an iPad"
+        }
+      }
+    },
+    {
+      "component": "KitStory",
+      "data": {
+        "kicker": "Workshop story · Bandra",
+        "tone": "m-yellow",
+        "ink": "#4A3A0B",
+        "initials": "CC",
+        "name": "Clay Corner",
+        "meta": "Weekend wheel-throwing · [N] seats",
+        "quote": "[The teacher, in their words, on full rooms, waitlists and regulars.]",
+        "metrics": [
+          {
+            "l": "Workshops sold out",
+            "v": "[N%]",
+            "s": "from Catch records²"
+          },
+          {
+            "l": "Guests back within 3 months",
+            "v": "[N%]",
+            "s": "from Catch records²"
+          },
+          {
+            "l": "Hours saved on DMs",
+            "v": "[N]",
+            "s": "self-reported³"
+          }
+        ],
+        "tag": "Replace with real photography from a design-partner workshop"
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Buyer’s checklist",
+        "title": "What to look for in workshop booking software.",
+        "lead": "Check these eight things, whichever tool you choose. Catch does all of them.",
+        "btns": [
+          {
+            "l": "Compare Catch with the alternatives",
+            "kind": "sec"
+          }
+        ],
+        "items": [
+          {
+            "t": "Paid booking",
+            "d": "UPI or card, before you buy materials."
+          },
+          {
+            "t": "A waitlist that offers seats",
+            "d": "In order, with a time limit."
+          },
+          {
+            "t": "Your own questions",
+            "d": "Answered at booking."
+          },
+          {
+            "t": "A cancellation policy you set",
+            "d": "Refunds follow it."
+          },
+          {
+            "t": "What to bring, sent for you",
+            "d": "In the reminder."
+          },
+          {
+            "t": "Reviews from guests",
+            "d": "With your replies."
+          },
+          {
+            "t": "Followers and members",
+            "d": "Regulars hear first."
+          },
+          {
+            "t": "Early-bird pricing",
+            "d": "The price can step up as seats fill."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for workshops",
+        "examples": [
+          {
+            "t": "12 seats at ₹2,500",
+            "v": "₹1,500 a workshop",
+            "d": "5% of ₹30,000, paid when guests book."
+          },
+          {
+            "t": "Eight workshops a month",
+            "v": "₹10,000 a month",
+            "d": "5% would be ₹12,000; the cap stops it at ₹10,000."
+          },
+          {
+            "t": "A free open studio",
+            "v": "₹0",
+            "d": "Free events stay free."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Workshop questions",
+        "title": "What hosts ask us.",
+        "items": [
+          [
+            "Can I ask guests questions before they come?",
+            "Yes. Add your questions to the event, and the answers are on each guest’s record."
+          ],
+          [
+            "What happens when someone drops out?",
+            "Refunds follow your cancellation policy, and the seat is offered to the next person on the waitlist."
+          ],
+          [
+            "Can regulars book before everyone else?",
+            "Yes, with a membership: members can book early, pay a member price or have workshops included."
+          ],
+          [
+            "Can I sell a ticket that includes materials?",
+            "Yes. Set the price and say what’s included on the page."
+          ],
+          [
+            "Do guests need an app?",
+            "No. They book, pay and check in in their phone’s browser."
+          ],
+          [
+            "Can I bring my list from Instagram DMs or a sheet?",
+            "Yes. Import a CSV or Excel file, or send it to us on WhatsApp and we’ll do it."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "tone": "m-yellow",
+        "ink": "#4A3A0B",
+        "btns": [
+          {
+            "l": "Start free trial"
+          }
+        ],
+        "kicker": "Your next workshop",
+        "title": "Fill the room. Then fill the next one.",
+        "lead": "Start the free trial, or leave your number and we’ll send the workshop setup guide on WhatsApp.",
+        "form": {
+          "id": "ws-wa",
+          "label": "Your WhatsApp number",
+          "button": "Send the guide"
+        }
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "footnotes": [
+          "1. Average of reviews from guests who booked on Catch, [dates].",
+          "2. From Catch booking records, [dates].",
+          "3. Self-reported by the host. Individual results vary."
+        ]
+      }
+    }
+  ]
+}

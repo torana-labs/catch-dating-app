@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · tiles</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><section class="{{secCls}}" style="{{secStyle}}" id="{{sid}}"><div class="{{headCls}}"><sc-if value="{{hasKicker}}" hint-placeholder-val="{{ true }}"><p class="k" style="color:{{kc}}">{{d.kicker}}</p></sc-if><sc-if value="{{isH1}}" hint-placeholder-val="{{ false }}"><h1 class="d d-hero"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h1></sc-if><sc-if value="{{notH1}}" hint-placeholder-val="{{ true }}"><h2 class="d d-sec"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h2></sc-if>
+<sc-if value="{{hasLead}}" hint-placeholder-val="{{ false }}"><p class="lead" style="{{leadStyle}}"><sc-for list="{{lead}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if></div>
+<div class="grid3 {{colsCls}}" style="text-align:left"><sc-for list="{{items}}" as="it" hint-placeholder-count="3"><div class="tile {{it.cls}}">
+<sc-if value="{{it.hasN}}" hint-placeholder-val="{{ false }}"><span class="n">{{it.n}}</span></sc-if>
+<sc-if value="{{it.hasSmall}}" hint-placeholder-val="{{ false }}"><small style="color:{{it.ink}}">{{it.small}}</small></sc-if>
+<h3>{{it.t}}</h3><p><sc-for list="{{it.d}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p>
+<sc-if value="{{it.hasFix}}" hint-placeholder-val="{{ false }}"><p class="fix"><sc-for list="{{it.fix}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if>
+<sc-if value="{{it.hasList}}" hint-placeholder-val="{{ false }}"><ul class="ticks" style="margin:6px 0 0"><sc-for list="{{it.list}}" as="x" hint-placeholder-count="3"><li><sc-for list="{{x.parts}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></li></sc-for></ul></sc-if>
+<sc-if value="{{it.hasThen}}" hint-placeholder-val="{{ false }}"><span class="then" style="color:{{it.ink}}">{{it.then}}</span></sc-if>
+<sc-if value="{{it.hasLink}}" hint-placeholder-val="{{ false }}"><a class="lnk" href="#">{{it.link}}</a></sc-if>
+</div></sc-for></div>
+<sc-if value="{{hasChips}}" hint-placeholder-val="{{ false }}"><div class="incl" style="margin-top:28px"><sc-for list="{{chips}}" as="c" hint-placeholder-count="3"><span>{{c}}</span></sc-for></div></sc-if>
+<sc-if value="{{hasBtns}}" hint-placeholder-val="{{ false }}"><div class="btns"><sc-for list="{{btns}}" as="b" hint-placeholder-count="2"><a class="b {{b.cls}}" href="{{b.href}}">{{b.l}}</a></sc-for></div></sc-if>
+<sc-if value="{{hasFoot}}" hint-placeholder-val="{{ false }}"><p class="body" style="margin-top:18px"><sc-for list="{{foot}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if>
+<sc-if value="{{hasNote}}" hint-placeholder-val="{{ false }}"><span class="note">{{d.note}}</span></sc-if></section></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 700}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"kicker": "Sound familiar?", "kc": "#B5451F", "title": "The cooking is the easy part.", "items": [{"t": "A form that tells you nothing", "d": "Forty names and phone numbers.", "fix": "Applications with your own questions."}, {"t": "Seating at midnight", "d": "Moving names around a spreadsheet.", "fix": "Tables suggested from what guests told you."}, {"t": "No-shows", "d": "Two empty chairs.", "fix": "Paid at booking, and a waitlist."}]};
+    const panel = d.panel || 'open';
+    const center = d.center !== false;
+    const glass = panel === 'ink';
+    return {
+      d, secCls: (panel === 'open' ? 'open' : 'panel ' + panel), secStyle: d.h1 ? 'padding-top:48px;margin-top:0' : d.tight ? 'padding-top:24px' : '', sid: d.id || '', isH1: !!d.h1, notH1: !d.h1,
+      headCls: center ? 'c' : '', hasKicker: has(d.kicker), kc: d.kc || '#4C5BC4', title: P(d.title), hasLead: has(d.lead), lead: P(d.lead),
+      leadStyle: center ? 'margin:16px auto 0' : '', colsCls: d.cols === 6 ? 'c6' : d.cols === 4 ? 'c4' : d.cols === 2 ? 'c2' : '',
+      items: (d.items || []).map((it) => ({ cls: it.tone ? it.tone : (glass ? 'glass' : 'paper'), ink: it.ink || 'inherit', n: it.n, hasN: has(it.n),
+        small: it.small, hasSmall: has(it.small), t: it.t, d: P(it.d), fix: P(it.fix), hasFix: has(it.fix), then: it.then, hasThen: has(it.then), link: it.link, hasLink: has(it.link), list: (it.list || []).map((x) => ({ parts: P(x) })), hasList: has(it.list) })),
+      hasChips: has(d.chips), chips: d.chips || [], hasFoot: has(d.foot), foot: P(d.foot),
+      hasBtns: has(d.btns), btns: B(d.btns), hasNote: has(d.note)
+    };
+  }
+}
+</script>
+</body>
+</html>

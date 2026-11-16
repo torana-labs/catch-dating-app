@@ -1,0 +1,283 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookNewToCity",
+  "title": "Playbook · New to Mumbai",
+  "height": 6200,
+  "phone": {
+    "title": "New to the city",
+    "height": 10000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "guest",
+        "city": "Mumbai"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "New to Mumbai",
+        "title": "Just moved? Your first friends here are at a table this week.",
+        "lead": "Runs, quizzes, suppers and socials where most people come on their own. The host puts you in a group, someone says hello, and by next month you’re a regular.",
+        "ink": "#4A2330",
+        "tone": "m-pink",
+        "btns": [
+          {
+            "l": "See this week’s plans",
+            "href": "#solo"
+          },
+          {
+            "l": "Get new plans on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "tilt": true,
+          "cover": "/_blob/409d3ee3e6896b80188944189323718b",
+          "label": "New to Mumbai",
+          "title": "Long Table Supper",
+          "sub": "Lantern Lane Social · Andheri · Fri 21",
+          "rows": [
+            {
+              "t": "₹1,200",
+              "tag": "14 of 24 came alone",
+              "tone": "warn"
+            }
+          ]
+        },
+        "note": "Priority-2 page (/{city}/new/). Decision: friends and community only; the guest app’s matching is not mentioned. “Came alone” counts would come from booking party size; until that’s confirmed, treat them as illustrative."
+      }
+    },
+    {
+      "component": "KitCards",
+      "data": {
+        "variant": "plan",
+        "id": "solo",
+        "kicker": "Good for coming alone",
+        "title": "This week, for newcomers",
+        "lead": "Plans where the host makes the groups, so you’re never standing by the door.",
+        "items": [
+          {
+            "art": "m-yellow",
+            "badge": "Teams made at the door",
+            "tone": "m-yellow",
+            "ink": "#4A3608",
+            "day": "Thu",
+            "num": "20",
+            "t": "Thursday Evening Pub Quiz",
+            "s": "The Quizzicals · Khar",
+            "price": "₹499",
+            "left": "6 left"
+          },
+          {
+            "img": "/_blob/409d3ee3e6896b80188944189323718b",
+            "badge": "Tables of six",
+            "tone": "m-pink",
+            "ink": "#4A2330",
+            "day": "Fri",
+            "num": "21",
+            "t": "Long Table Supper",
+            "s": "Lantern Lane Social · Andheri",
+            "price": "₹1,200",
+            "left": "4 left"
+          },
+          {
+            "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+            "badge": "Pace groups with a lead",
+            "day": "Sun",
+            "num": "23",
+            "t": "Carter Road Social Run",
+            "s": "Carter Road Runners · Bandra",
+            "price": "Free",
+            "left": "18 going"
+          }
+        ],
+        "btns": [
+          {
+            "l": "See everything in Mumbai",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Coming on your own",
+        "kc": "#F5C451",
+        "title": "What happens when you walk in alone.",
+        "lead": "",
+        "panel": "ink",
+        "center": false,
+        "items": [
+          {
+            "t": "You know who to look for",
+            "d": "When you check in, your phone shows your group, team or table, and who’s leading it."
+          },
+          {
+            "t": "The host knows you’re new",
+            "d": "First-timers are marked on the host’s door list, so you get a proper hello."
+          },
+          {
+            "t": "Groups change through the night",
+            "d": "At quizzes, suppers and socials, you’ll meet a few groups, not just the people next to you."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "A first month in Mumbai",
+        "kc": "#4C5BC4",
+        "title": "Four plans, then you’re a regular.",
+        "lead": "",
+        "panel": "open",
+        "cols": 4,
+        "items": [
+          {
+            "small": "Week 1",
+            "ink": "#4A1C0E",
+            "t": "A Sunday run",
+            "d": "Free, early, easy. Coffee after is where people talk.",
+            "tone": "m-coral"
+          },
+          {
+            "small": "Week 2",
+            "ink": "#4A3608",
+            "t": "A pub quiz",
+            "d": "Teams are made at the door. You’ll know five names by round three.",
+            "tone": "m-yellow"
+          },
+          {
+            "small": "Week 3",
+            "ink": "#4A2330",
+            "t": "A long-table supper",
+            "d": "Six to a table, a seat swap at dessert.",
+            "tone": "m-pink"
+          },
+          {
+            "small": "Week 4",
+            "ink": "#123D2C",
+            "t": "Back to your favourite",
+            "d": "Follow the host and you’ll hear about the next one first.",
+            "tone": "m-mint"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Hosts you can trust",
+        "kc": "#1F7A57",
+        "title": "Real hosts, real reviews.",
+        "lead": "Every plan is run by a host with a page, past events and reviews from people who booked. Payments go through Catch, and you can see the cancellation policy before you book.",
+        "items": [
+          {
+            "t": "Reviews from people who went",
+            "d": "Only people who booked can review."
+          },
+          {
+            "t": "Busy, public places",
+            "d": "Cafés, bars, parks and courts."
+          },
+          {
+            "t": "You choose what you hear",
+            "d": "Updates from a host only if you say yes."
+          },
+          {
+            "t": "Help on the night",
+            "d": "Ask the host from your phone."
+          }
+        ],
+        "btns": [
+          {
+            "l": "How we keep plans safe",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitCards",
+      "data": {
+        "variant": "plan",
+        "kicker": "By neighbourhood",
+        "kc": "#B5451F",
+        "title": "Near where you’ve moved",
+        "items": [],
+        "links": [
+          "Bandra",
+          "Khar",
+          "Andheri",
+          "Powai",
+          "Lower Parel",
+          "Worli",
+          "Colaba"
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "New to Mumbai: common questions",
+        "items": [
+          [
+            "Is it weird to go on my own?",
+            "Not at these. Hosts plan for people coming alone: groups, teams and tables are made for you, and first-timers get a hello."
+          ],
+          [
+            "What’s the easiest first plan?",
+            "A free Sunday run or a pub quiz. Both put you in a group straight away and last about two hours."
+          ],
+          [
+            "Do I need the app?",
+            "No. Book, pay and check in on the website in your phone’s browser."
+          ],
+          [
+            "How do I keep meeting the same people?",
+            "Go back to the plans you liked and follow the host. Regulars are how friendships start."
+          ],
+          [
+            "Will hosts message me?",
+            "About the plan you booked, yes: where to be and any changes. Anything else, like news of their next event, only if you say yes."
+          ],
+          [
+            "What if I can’t make it?",
+            "Cancel from your booking. Refunds follow the host’s cancellation policy, shown before you book."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Hear about new plans first",
+        "title": "Get newcomer-friendly plans on WhatsApp.",
+        "lead": "About once a week. Stop any time.",
+        "tone": "m-pink",
+        "ink": "#4A2330",
+        "form": {
+          "id": "nc-wa",
+          "label": "Your WhatsApp number",
+          "button": "Notify me"
+        },
+        "img": "/_blob/088ae8bbfb5016fdc0bb1db7828d8264",
+        "alt": "A guest’s phone after checking in: their group and who to look for"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "guest",
+        "mbar": "This week’s plans"
+      }
+    }
+  ]
+}

@@ -1,0 +1,406 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookCommunities",
+  "title": "Playbook · Catch for communities",
+  "height": 8000,
+  "phone": {
+    "title": "Catch for communities",
+    "height": 12000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "offer": {
+          "lead": "Founding hosts in Mumbai and Indore:",
+          "body": "90 days without Catch fees, until [date].",
+          "left": "[N] of 50 places left",
+          "cta": "Claim a place"
+        },
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Communities and book clubs"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Catch for book clubs, hobby groups and creator communities",
+        "title": "Your community is bigger than its group chat.",
+        "lead": "A page people can find and follow, meetups they book and pay for in a minute, applications when you want to choose, and memberships for the regulars who come every month.",
+        "ink": "#1E2A6B",
+        "tone": "m-indigo",
+        "proof": [
+          "[N] communities host on Catch",
+          "★ [4.8] from guests who booked1"
+        ],
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "door": "Running chapters in several cities? Book a walkthrough →",
+        "chip": {
+          "title": "Monthly meetup",
+          "rows": [
+            {
+              "l": "Booked",
+              "v": "22"
+            },
+            {
+              "l": "Members",
+              "v": "14"
+            },
+            {
+              "l": "First-timers",
+              "v": "5"
+            }
+          ]
+        },
+        "media": {
+          "kind": "phonecard",
+          "title": "Your community",
+          "sub": "Chapter and Chai · Indore",
+          "stats": [
+            {
+              "v": "840",
+              "l": "followers"
+            },
+            {
+              "v": "52",
+              "l": "members"
+            },
+            {
+              "v": "3",
+              "l": "this month"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Sat · Monthly meetup",
+              "s": "This month: a novel set in Indore",
+              "tag": "22 of 25",
+              "tone": ""
+            },
+            {
+              "t": "Sun · Silent reading hour",
+              "s": "Members book 48 hours early",
+              "tag": "Free · 31",
+              "tone": ""
+            },
+            {
+              "t": "Thu · Author evening",
+              "s": "12 applied for 20 seats",
+              "tag": "Applications",
+              "tone": ""
+            }
+          ],
+          "chip": "9 followers came to their first meetup this month"
+        },
+        "note": "Segment template, seventh use; first priority-2 segment (your pick). Uses only built features: follower updates, applications and forms, memberships, guest records, personal WhatsApp and campaigns."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Sound familiar?",
+        "kc": "#B5451F",
+        "title": "The conversation is the easy part.",
+        "lead": "",
+        "panel": "open",
+        "items": [
+          {
+            "t": "A group of 900 where nobody reads",
+            "fix": "Followers get each new meetup on Catch, and a reminder before it.",
+            "d": "The meetup post is buried under forty good-morning messages by lunchtime."
+          },
+          {
+            "t": "₹300 at a time, chased by hand",
+            "fix": "They pay when they book, by UPI or card, next to their name.",
+            "d": "“Paid!” in the group, a screenshot in your DMs, and three people you’re not sure about."
+          },
+          {
+            "t": "No idea who your regulars are",
+            "fix": "Guest records sort regulars, first-timers and people you haven’t seen lately.",
+            "d": "Twenty-five said yes. Who came? Who came last month too? Who stopped coming?"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "A home for the community",
+        "kc": "#4C5BC4",
+        "title": "A page that grows while you sleep.",
+        "lead": "Your page shows every meetup, your reviews, and a follow button. People who find you on Instagram or in What’s on can follow you, and they hear about each new meetup without you posting in five places.",
+        "panel": "open",
+        "ticks": [
+          "Followers hear about every new meetup",
+          "Reviews from people who came, with your replies",
+          "Free and paid meetups side by side",
+          "Applications for the evenings you want to keep small"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Chapter and Chai · on Catch",
+          "rows": [
+            {
+              "t": "Next up",
+              "s": "Sat 14 Dec · Monthly meetup · ₹300 with chai"
+            },
+            {
+              "t": "Then",
+              "s": "Sun 15 Dec · Silent reading hour · free"
+            },
+            {
+              "t": "Recent review",
+              "s": "“Came alone, left with four people to swap books with.”"
+            }
+          ],
+          "btns": [
+            {
+              "l": "Follow"
+            },
+            {
+              "l": "Become a member",
+              "kind": "sec"
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "A book club on Catch",
+        "kc": "#F5C451",
+        "title": "A month in your community.",
+        "lead": "",
+        "steps": [
+          {
+            "time": "1st of the month",
+            "t": "Post the meetup once",
+            "d": "It goes to your followers and on your page. Members get 48 hours to book before everyone else."
+          },
+          {
+            "time": "Week 2",
+            "t": "Bookings come in, paid",
+            "d": "No chasing. Share one link in the group chat and see who booked through it."
+          },
+          {
+            "time": "Day before",
+            "t": "The reminder goes out",
+            "d": "Where, when, and this month’s book. First-timers get a note on who to look for."
+          },
+          {
+            "time": "The meetup",
+            "t": "Everyone checked in",
+            "d": "They scan in at the door. You see who’s new and say hello properly."
+          },
+          {
+            "time": "Next morning",
+            "t": "Thank them, and set the next one",
+            "d": "Photos and a thank-you go out, reviews come in, and regulars who aren’t members yet get an invitation."
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "Tonight’s check-ins and first-timers on an iPad"
+        }
+      }
+    },
+    {
+      "component": "KitStory",
+      "data": {
+        "kicker": "Community story · Indore",
+        "tone": "m-indigo",
+        "ink": "#1E2A6B",
+        "initials": "CC",
+        "name": "Chapter and Chai",
+        "meta": "Monthly book club and reading hours · [N] members",
+        "quote": "[The organiser, in their words, on leaving the group chat behind and who comes back.]",
+        "metrics": [
+          {
+            "l": "Followers who came to a meetup",
+            "v": "[N%]",
+            "s": "from Catch records2"
+          },
+          {
+            "l": "Regulars who became members",
+            "v": "[N%]",
+            "s": "from Catch records2"
+          },
+          {
+            "l": "Hours a month not chasing payments",
+            "v": "[N]",
+            "s": "self-reported3"
+          }
+        ],
+        "img": "/_blob/409d3ee3e6896b80188944189323718b",
+        "alt": "A book club meetup",
+        "tag": "Replace with real photography from a design-partner community"
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Buyer’s checklist",
+        "kc": "#1F7A57",
+        "title": "What to look for when your community outgrows the group chat.",
+        "lead": "Check these eight things, whichever tool you choose. Catch does all of them.",
+        "items": [
+          {
+            "t": "A page people can follow",
+            "d": "Each new meetup reaches them."
+          },
+          {
+            "t": "Paid booking, by UPI or card",
+            "d": "No screenshots to match."
+          },
+          {
+            "t": "Free meetups stay free",
+            "d": "No fee on free events."
+          },
+          {
+            "t": "Applications when you want them",
+            "d": "For the small evenings."
+          },
+          {
+            "t": "Memberships for regulars",
+            "d": "Monthly, with early booking."
+          },
+          {
+            "t": "Know your regulars",
+            "d": "And who’s stopped coming."
+          },
+          {
+            "t": "Reviews with replies",
+            "d": "Proof for people deciding."
+          },
+          {
+            "t": "Your list is yours",
+            "d": "Export it any time."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Compare Catch with the alternatives",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for communities",
+        "price": "5%",
+        "sub": "of tickets and memberships, never more than ₹10,000 a month.",
+        "lead": "Free for 30 days from your first meetup, 90 for founding hosts. Payment gateway fees are separate.",
+        "examples": [
+          {
+            "t": "A meetup of 25 at ₹300",
+            "v": "₹375 a meetup",
+            "d": "5% of ₹7,500."
+          },
+          {
+            "t": "50 members at ₹499 a month",
+            "v": "₹1,248 a month",
+            "d": "5% of ₹24,950 in renewals."
+          },
+          {
+            "t": "A free reading hour",
+            "v": "₹0",
+            "d": "Free events stay free."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Start free trial",
+            "kind": "light"
+          },
+          {
+            "l": "See full pricing",
+            "kind": "lightsec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Community questions",
+        "title": "What hosts ask us.",
+        "items": [
+          [
+            "Do I have to leave our WhatsApp group?",
+            "No. Keep it for chat. Put the meetups on Catch and share one link in the group; bookings, payments and reminders happen there."
+          ],
+          [
+            "Most of our meetups are free. Is that OK?",
+            "Yes. Free events stay free, forever. You only pay 5% when you sell tickets or memberships."
+          ],
+          [
+            "Can I keep some evenings small?",
+            "Yes. Turn on applications, ask your own questions and approve each person."
+          ],
+          [
+            "How do memberships work?",
+            "Make a plan with a monthly or yearly price. Members renew by UPI Autopay or card, and get the benefits you choose: a member price, free entry, or booking first."
+          ],
+          [
+            "Do members need an app?",
+            "No. People follow, book, pay and check in on your page in their phone’s browser."
+          ],
+          [
+            "We run chapters in a few cities.",
+            "Each chapter can have its own events on your page. Book a walkthrough and we’ll help you set it up."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Your next meetup",
+        "title": "Give your community a home.",
+        "lead": "Start the free trial, or leave your number and we’ll send the community setup guide on WhatsApp.",
+        "tone": "m-indigo",
+        "ink": "#1E2A6B",
+        "btns": [
+          {
+            "l": "Start free trial"
+          }
+        ],
+        "form": {
+          "id": "cm-wa",
+          "label": "Your WhatsApp number",
+          "button": "Send the guide"
+        },
+        "img": "/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b",
+        "alt": "A dinner as guests see it on Catch"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "footnotes": [
+          "1. Average of reviews from guests who booked on Catch, [dates].",
+          "2. From Catch booking records, [dates].",
+          "3. Self-reported by the host. Individual results vary."
+        ]
+      }
+    }
+  ]
+}

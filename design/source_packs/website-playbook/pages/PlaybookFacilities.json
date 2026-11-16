@@ -1,0 +1,325 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookFacilities",
+  "title": "Playbook · Catch for sports facilities",
+  "height": 9000,
+  "phone": {
+    "title": "Catch for facilities",
+    "height": 12000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "offer": {
+          "lead": "Founding hosts in Mumbai and Indore:",
+          "body": "90 days without Catch fees, until [date].",
+          "left": "[N] of 50 places left",
+          "cta": "Claim a place"
+        },
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Sports facilities"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "tone": "m-indigo",
+        "ink": "#1E2A6B",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "kicker": "Catch for courts, turfs, pools and clubhouses",
+        "title": "Socials that fill your off-peak hours.",
+        "lead": "Run mixers on your own courts with levels, rotations and fair court time. Sell memberships to the regulars. And see which coach, partner or post brought people in.",
+        "proof": [
+          "[N] facilities run socials on Catch",
+          "★ [4.8] from players who booked¹"
+        ],
+        "door": "Several locations? Book a walkthrough →",
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/cc6e6c9cbc3dd2d8e5d4a0aad9301215",
+          "alt": "A player’s next court and partner between rounds"
+        },
+        "chip": {
+          "title": "Tuesday pickleball mixer",
+          "rows": [
+            {
+              "l": "Booked",
+              "v": "32"
+            },
+            {
+              "l": "Courts",
+              "v": "4"
+            },
+            {
+              "l": "Members",
+              "v": "18"
+            }
+          ]
+        },
+        "note": "Priority-3 organiser type, built from the kit. Courts you already own; Catch runs the social. No court-booking system is claimed."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Sound familiar?",
+        "kc": "#B5451F",
+        "title": "The courts are the easy part.",
+        "items": [
+          {
+            "t": "Empty courts at 3 PM on a Tuesday",
+            "d": "Peak hours sell themselves; the rest of the week doesn’t.",
+            "fix": "A weekly social with paid booking and a waitlist, at the hours you need filled."
+          },
+          {
+            "t": "Members who only book peak slots",
+            "d": "And never meet anyone outside their usual four.",
+            "fix": "Mixers that rotate partners, with a member price or entry included."
+          },
+          {
+            "t": "Coaches and partners you can’t measure",
+            "d": "Who actually brought new players in?",
+            "fix": "A link per coach, partner and post, followed through to bookings."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Levels and rotations",
+        "title": "Partners rotate. Matches stay close.",
+        "lead": "Players book with a level. Catch plans each round across your courts so nobody plays with the same partner twice until they’ve played with everyone at their level.",
+        "ticks": [
+          "As many courts as you have",
+          "Rounds as long as you want them",
+          "Court time counted for every player",
+          "Walk-ins join the next round"
+        ],
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/9b12f0e04e4097f50fdfbfa0a0a9c300",
+          "alt": "Levels in and courts balanced before the session"
+        }
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "A mixer on Catch",
+        "title": "From empty courts to a waitlist.",
+        "steps": [
+          {
+            "time": "Friday",
+            "t": "Levels in, courts balanced",
+            "d": "Each booking brings a level. Rounds are planned so every match is close."
+          },
+          {
+            "time": "3:00 PM",
+            "t": "Check in, level confirmed",
+            "d": "Players confirm their level at the desk. Walk-ins join the next round."
+          },
+          {
+            "time": "3:15 PM",
+            "t": "A new partner every round",
+            "d": "Phones buzz with the next court and partner between games."
+          },
+          {
+            "time": "4:00 PM",
+            "t": "Fair court time",
+            "d": "Anyone falling behind goes on next; anyone sitting out is pointed to the café."
+          },
+          {
+            "time": "That evening",
+            "t": "Standings, and the next session",
+            "d": "Standings go out with the photos; non-members who keep coming get a membership invitation."
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "Tonight’s check-ins and what needs you, on an iPad"
+        }
+      }
+    },
+    {
+      "component": "KitStory",
+      "data": {
+        "kicker": "Facility story · Andheri",
+        "tone": "m-indigo",
+        "ink": "#1E2A6B",
+        "initials": "SP",
+        "name": "[Facility name]",
+        "meta": "Weekday mixers on [N] courts",
+        "quote": "[The facility manager, in their words, on off-peak hours, members and coaches.]",
+        "metrics": [
+          {
+            "l": "Off-peak hours filled",
+            "v": "[N]",
+            "s": "a week, from Catch records²"
+          },
+          {
+            "l": "Mixer players who joined",
+            "v": "[N]",
+            "s": "as members²"
+          },
+          {
+            "l": "Extra revenue a week",
+            "v": "₹[N]",
+            "s": "self-reported³"
+          }
+        ],
+        "tag": "Replace with real photography from a design-partner facility"
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Buyer’s checklist",
+        "title": "What to look for in software for facility socials.",
+        "lead": "Check these eight things, whichever tool you choose. Catch does all of them.",
+        "btns": [
+          {
+            "l": "Compare Catch with the alternatives",
+            "kind": "sec"
+          }
+        ],
+        "items": [
+          {
+            "t": "Levels and rotations",
+            "d": "Close matches, new partners."
+          },
+          {
+            "t": "Fair court time",
+            "d": "Counted for every player."
+          },
+          {
+            "t": "Paid booking and a waitlist",
+            "d": "For the sessions that fill."
+          },
+          {
+            "t": "Memberships",
+            "d": "Member prices or entry included."
+          },
+          {
+            "t": "A link per coach and partner",
+            "d": "See who brings players."
+          },
+          {
+            "t": "Walk-ins handled",
+            "d": "They join the next round."
+          },
+          {
+            "t": "Guest records",
+            "d": "Who’s regular, who’s lapsed."
+          },
+          {
+            "t": "A cap on fees",
+            "d": "Never more than ₹10,000 a month."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for facilities",
+        "sub": "of tickets and memberships, never more than ₹10,000 a month.",
+        "examples": [
+          {
+            "t": "A 32-player mixer at ₹500",
+            "v": "₹800 a session",
+            "d": "5% of ₹16,000."
+          },
+          {
+            "t": "120 members at ₹1,500 a month",
+            "v": "₹9,000 a month",
+            "d": "5% of ₹1,80,000 in renewals."
+          },
+          {
+            "t": "Mixers and members together",
+            "v": "₹10,000 a month",
+            "d": "The cap. Everything above it is yours."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Facility questions",
+        "title": "What hosts ask us.",
+        "items": [
+          [
+            "Does Catch replace our court booking system?",
+            "No. Keep your booking system for court hire. Catch runs the socials and memberships on top."
+          ],
+          [
+            "Which sports work?",
+            "Pickleball, padel, badminton, tennis and anything played in pairs on courts. You set the courts and round length."
+          ],
+          [
+            "Can members play free?",
+            "Yes. A membership can include sessions at 100% off, or a member price."
+          ],
+          [
+            "Can coaches run sessions on Catch?",
+            "Yes. Add them to your team, and give each coach a link to see who they bring in."
+          ],
+          [
+            "Do players need an app?",
+            "No. They book and see their next court in their phone’s browser."
+          ],
+          [
+            "We have several locations.",
+            "Each location can have its own page. Book a walkthrough and we’ll set it up."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "tone": "m-indigo",
+        "ink": "#1E2A6B",
+        "btns": [
+          {
+            "l": "Start free trial"
+          }
+        ],
+        "kicker": "Your quiet hours",
+        "title": "Turn off-peak into the best night of the week.",
+        "lead": "Start the free trial, or leave your number and we’ll send the facility setup guide on WhatsApp.",
+        "form": {
+          "id": "fc-wa",
+          "label": "Your WhatsApp number",
+          "button": "Send the guide"
+        }
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "footnotes": [
+          "1. Average of reviews from guests who booked on Catch, [dates].",
+          "2. From Catch booking records, [dates].",
+          "3. Self-reported by the host. Individual results vary."
+        ]
+      }
+    }
+  ]
+}

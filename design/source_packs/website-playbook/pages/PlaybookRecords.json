@@ -1,0 +1,283 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookRecords",
+  "title": "Playbook · Guest records",
+  "height": 5800,
+  "phone": {
+    "title": "Guest records",
+    "height": 9400
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "How Catch works"
+        ],
+        "here": "Guest records"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Product · guest records",
+        "title": "Know your regulars by name, not by spreadsheet.",
+        "lead": "Everyone who’s booked, checked in or been imported, in one list, with every event they came to. Catch sorts them into groups you can act on: first-timers to bring back, regulars to thank, lapsed regulars to miss.",
+        "ink": "#4A2330",
+        "tone": "m-pink",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "See messages",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Guests · Long Table Supper",
+          "sub": "412 people · from Catch bookings and 2 imports",
+          "rows": [
+            {
+              "t": "Regulars",
+              "s": "3+ dinners in 180 days"
+            },
+            {
+              "t": "First-timers",
+              "s": "Came once"
+            },
+            {
+              "t": "Lapsed regulars",
+              "s": "No dinner in 90 days"
+            },
+            {
+              "t": "Advocates",
+              "s": "Brought someone with their link"
+            },
+            {
+              "t": "Reachable on WhatsApp",
+              "s": "Opted in to hear from you"
+            }
+          ],
+          "fine": "Illustrative screen and figures"
+        },
+        "note": "Capability page 5 (priority 2). Groups are the implemented version-1 segment rules in docs/host_product.md. No “customer value” score and no spend groups: those are deliberately not shipped. Rules are shown on the page because the product shows them too."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Groups that sort themselves",
+        "kc": "#4C5BC4",
+        "title": "Every group says how it was worked out.",
+        "lead": "No scores, no guesses. Each group has a plain rule, and it updates as people book and check in.",
+        "panel": "open",
+        "cols": 4,
+        "items": [
+          {
+            "t": "First-timers",
+            "then": "Checked in at exactly one event",
+            "d": "Came once. The best moment to invite them back is the week after."
+          },
+          {
+            "t": "Regulars",
+            "then": "3 or more events in the last 180 days",
+            "d": "The people your nights are built on."
+          },
+          {
+            "t": "Lapsed regulars",
+            "then": "Was a regular, no check-in for 90 days",
+            "d": "Used to come, haven’t lately. Worth a personal message."
+          },
+          {
+            "t": "Advocates",
+            "then": "At least one person through their link",
+            "d": "They bring people. Their link brought someone who booked or came."
+          },
+          {
+            "t": "Reliable",
+            "then": "80% or more of bookings checked in",
+            "d": "Book and show up. First in line when you have one seat."
+          },
+          {
+            "t": "Needs a nudge",
+            "then": "2 or more no-shows without cancelling",
+            "d": "Booked and didn’t come twice. A reminder helps; it’s never shown to them."
+          },
+          {
+            "t": "Reachable on WhatsApp",
+            "then": "Active opt-in, not unsubscribed",
+            "d": "Said yes to hearing from you on WhatsApp."
+          },
+          {
+            "t": "New to you",
+            "then": "No earlier check-ins with you",
+            "d": "Booked your next event and has never been before."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "One person, every event",
+        "kc": "#F5C451",
+        "title": "Their whole history with you, on one page.",
+        "lead": "Open anyone to see every event they booked and came to, who they brought, whether they’ve said yes to WhatsApp, and your notes. Then message them, tag them, or offer them a seat.",
+        "panel": "ink",
+        "ticks": [
+          "Every booking, check-in and no-show, by event",
+          "Your private notes, for you and your team",
+          "A personal WhatsApp message in one tap"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Aanya Mehta",
+          "rows": [
+            {
+              "t": "Aanya MehtaFirst came 12 Jul · 5 events",
+              "tag": "AM",
+              "tone": ""
+            },
+            {
+              "t": "Advocate · 3 friendsWhatsApp: yes",
+              "tag": "Regular",
+              "tone": ""
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "From every source",
+        "kc": "#B23A5A",
+        "title": "One list, wherever they booked.",
+        "lead": "Catch bookings, imported spreadsheets, form responses and Luma guest lists all land in the same records. When the same person turns up twice, Catch shows you the match and the evidence, and you decide.",
+        "panel": "open",
+        "ticks": [
+          "Merges you review, with the reason shown",
+          "Undo any merge",
+          "Where each record came from, always visible"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Possible match",
+          "rows": [
+            {
+              "t": "Aanya M.",
+              "s": "Imported · Oct guest list · +91 98••• ••210"
+            },
+            {
+              "t": "Aanya Mehta",
+              "s": "Catch booking · Nov · +91 98••• ••210"
+            }
+          ],
+          "btns": [
+            {
+              "l": "Merge"
+            },
+            {
+              "l": "Keep separate",
+              "kind": "sec"
+            }
+          ],
+          "fine": "Same phone number."
+        }
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Yours, and theirs",
+        "kc": "#1F7A57",
+        "title": "Your list belongs to you. Their data belongs to them.",
+        "lead": "Export your records whenever you want. When a guest asks to be forgotten or to stop hearing from you, Catch handles it and keeps a record.",
+        "items": [
+          {
+            "t": "Export any time",
+            "d": "Your contacts, as a file."
+          },
+          {
+            "t": "Privacy requests handled",
+            "d": "Access, correction and deletion."
+          },
+          {
+            "t": "“Don’t contact me” sticks",
+            "d": "Suppressed across every send."
+          },
+          {
+            "t": "No labels guests would mind",
+            "d": "“Needs a nudge” is never shown to them."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "About guest records.",
+        "items": [
+          [
+            "Does it work if guests didn’t book on Catch?",
+            "Yes. Import guest lists or connect Luma, and check-ins at your door count the same. Groups are worked out from who actually came."
+          ],
+          [
+            "How are regulars worked out?",
+            "Three or more events checked in over the last 180 days. Every group shows its rule, so you know why someone is in it."
+          ],
+          [
+            "Can my team see the records?",
+            "People you add to your team can, with the access you give them. Door staff only see the list for their event."
+          ],
+          [
+            "Can I add notes about a guest?",
+            "Yes. Notes are private to you and your team, and never shown to the guest."
+          ],
+          [
+            "Can I see who spends the most?",
+            "Not yet. Catch doesn’t rank guests by spend; it shows attendance, who brings friends and who’s reachable."
+          ],
+          [
+            "Can I export my list?",
+            "Yes, whenever you like, as a file."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Free for 30 days · founding hosts get 90",
+        "title": "Bring your list. Meet your regulars.",
+        "lead": "Import your guest lists and see your groups on day one.",
+        "tone": "m-pink",
+        "ink": "#4A2330",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Switch from a spreadsheet",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host on the day: tonight’s event, bookings and the door"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}
