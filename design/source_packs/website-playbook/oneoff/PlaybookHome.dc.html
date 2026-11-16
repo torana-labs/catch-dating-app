@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Playbook · Homepage</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;background:#fff}
+.pg{container-type:inline-size;container-name:pg;box-sizing:border-box;width:100%;background:#fff;color:#141114;font-family:Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:16px}
+.pg *{box-sizing:border-box}
+.pg img{display:block}
+.pg a{color:inherit}
+.d{margin:0;font-family:Archivo,'Arial Narrow',sans-serif;font-weight:760;font-stretch:78%;font-variation-settings:"wdth" 78;letter-spacing:-.03em;line-height:.98}
+.d-hero{font-size:80px}.d-sec{font-size:56px}.d-sm{font-size:30px;line-height:1.05}
+.k{margin:0 0 14px;font:600 13px/18px Inter,system-ui,sans-serif;letter-spacing:.04em}
+.lead{margin:16px 0 0;font-size:19px;line-height:1.5;color:#5A5450;max-width:580px}
+.body{margin:8px 0 0;font-size:15px;line-height:1.5;color:#5A5450}
+.ink .lead,.ink .body{color:#BDB3A7}
+.c{text-align:center}.c .lead{margin-inline:auto}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.b{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 22px;border-radius:999px;font:600 15px/1 Inter,system-ui,sans-serif;white-space:nowrap;border:1.5px solid #141114;background:#141114;color:#fff!important;text-decoration:none;cursor:pointer}
+.b.o{background:transparent;color:#141114!important}.b.w{background:#fff;color:#141114!important;border-color:#fff}
+.b.sm{height:38px;padding:0 16px;font-size:14px}
+.ph{display:inline-block;border:1.5px dashed currentColor;border-radius:6px;padding:0 5px;font-weight:700;line-height:1.3}
+sup{font-size:.6em;line-height:0}
+.in{height:48px;border-radius:14px;border:1.5px solid #d6cec7;padding:0 14px;font:500 15px Inter,system-ui,sans-serif;background:#fff;color:#141114;width:100%;min-width:0}
+.sr{position:absolute;left:-9999px}
+/* prototype switch */
+.proto{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:10px 16px;background:repeating-linear-gradient(45deg,#f3eee9 0 10px,#fbf8f5 10px 20px);border-bottom:1px dashed #cfc6be;font-size:13px;font-weight:600;color:#5A5450}
+.proto button{height:32px;padding:0 14px;border-radius:999px;border:1.5px solid #141114;background:#fff;font:600 13px Inter,system-ui,sans-serif;color:#141114;cursor:pointer}
+.proto button.on{background:#141114;color:#fff}
+/* top bar */
+.bar{display:flex;align-items:center;gap:24px;height:68px;padding:0 max(24px,calc((100% - 1200px)/2))}
+.wm{font-family:Archivo,'Arial Narrow',sans-serif;font-weight:800;font-stretch:78%;font-variation-settings:"wdth" 78;font-size:26px;letter-spacing:-.03em;text-decoration:none}
+.bar nav{display:flex;gap:22px;font-size:15px;font-weight:500;color:#2b2427;align-items:center}
+.bar nav a{text-decoration:none}
+.city{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px;border-radius:999px;border:1.5px solid #d6cec7;background:#fff;font:600 14px Inter,system-ui,sans-serif;color:#141114}
+.city svg{width:14px;height:14px}
+.bar .sp{flex:1}
+.bar .signin{font-size:14px;font-weight:600;text-decoration:none}
+.bar .menu{display:none;width:40px;height:40px;border-radius:999px;border:1.5px solid #141114;align-items:center;justify-content:center;background:#fff}
+.bar .menu i{display:block;width:16px;height:2px;background:#141114;box-shadow:0 5px 0 #141114,0 -5px 0 #141114}
+/* sections */
+.panel{margin:16px 24px 0;border-radius:36px;padding:88px max(72px,calc((100% - 1200px)/2 - 24px));overflow:hidden;position:relative}
+.open{padding:112px max(24px,calc((100% - 1200px)/2)) 24px;position:relative}
+.tint{background:#F6F0E8}
+.ink{background:#1B171B;color:#F6EFE6}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:center}
+.mat{border-radius:28px;position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+.m-coral{background:#F07A55}.m-pink{background:#F08AA0}.m-yellow{background:#F5C451}.m-mint{background:#5CCB9F}.m-indigo{background:#8C9BF2}.m-magenta{background:#E58AC8}
+.phone{position:relative;width:260px;aspect-ratio:402/874;border-radius:44px;background:#121013;padding:8px;box-shadow:0 30px 60px -20px rgba(20,17,20,.45),0 0 0 1px rgba(0,0,0,.5)}
+.phone>img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:36px;background:#fff}
+.tablet{width:100%;aspect-ratio:1194/834;border-radius:28px;background:#121013;padding:14px;box-shadow:0 30px 60px -24px rgba(20,17,20,.5)}
+.tablet img{width:100%;height:100%;object-fit:cover;border-radius:14px}
+.note{position:absolute;right:20px;top:20px;z-index:9;font:600 11px/1.35 Inter,system-ui;background:#141114;color:#fff;border-radius:8px;padding:6px 9px;max-width:280px;text-align:left}
+.ink .note{background:#F6EFE6;color:#141114}
+/* hero */
+.heroc{padding-bottom:0!important}
+.heroc .split{align-items:end}.heroc .htext{padding-bottom:72px}
+.heroc .lead,.heroc .body{color:rgba(20,17,20,.8)}
+.herop{background:#F08AA0}.herol{background:#8C9BF2}
+.proofline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:22px 0 0;font-size:15px;font-weight:600;color:#3a1a26}
+.notify{margin-top:22px;background:#fff;border-radius:22px;padding:16px;max-width:540px}
+.notify h3{margin:0;font-size:15px}.notify p{margin:2px 0 10px;font-size:13px;color:#5A5450}
+.notify .row{display:flex;gap:8px}
+.notify .in{height:44px}
+.ints{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.ints span{font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;background:#F6F0E8}
+.ints span.on{background:#141114;color:#fff}
+.consent{margin:8px 0 0;font-size:12px;color:#6b6266}
+.hmedia{display:flex;justify-content:center;align-self:stretch;align-items:flex-end;padding-top:24px;position:relative}
+.hphone{width:360px;margin-bottom:-250px;transform:rotate(-4deg)}
+.hchip{position:absolute;left:4%;top:32%;z-index:3;display:flex;gap:12px;align-items:center;background:#fff;color:#141114;border-radius:20px;padding:12px 16px 12px 12px;box-shadow:0 18px 40px -16px rgba(0,0,0,.45);transform:rotate(-2deg)}
+.hchip p{margin:0;font-size:13px;color:#5A5450}.hchip strong{display:block;font-size:15px}
+.date{width:48px;height:52px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font:700 11px/1.1 Inter,system-ui;letter-spacing:.04em;text-transform:uppercase}
+.date b{font:800 22px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78}
+/* guest entry tiles */
+.entries{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-top:40px;text-align:left}
+.ent{border-radius:24px;padding:20px;min-height:200px;display:flex;flex-direction:column;gap:8px;text-decoration:none}
+.ent svg{width:28px;height:28px}
+.ent h3{margin:auto 0 0;font-size:18px;line-height:1.2}
+.ent p{margin:0;font-size:13px;line-height:1.45;color:rgba(20,17,20,.78)}
+.ent.ink p{color:#BDB3A7}
+/* plans */
+.hd{display:flex;align-items:flex-end;justify-content:space-between;gap:32px}
+.rail{display:grid;grid-auto-flow:column;gap:16px;margin-top:40px}
+.r3{grid-auto-columns:calc((100% - 2*20px)/3);gap:20px}.r4{grid-auto-columns:calc((100% - 3*16px)/4)}.r5{grid-auto-columns:calc((100% - 4*16px)/5)}
+.plan{background:#fff;border-radius:24px;padding:14px;box-shadow:0 0 0 1px rgba(20,17,20,.06);text-decoration:none;display:block}
+.plan .phx{height:150px;border-radius:16px;overflow:hidden;position:relative}
+.plan .phx img{width:100%;height:100%;object-fit:cover}
+.plan .row{display:flex;gap:12px;margin-top:14px;align-items:flex-start}
+.plan h3{margin:0;font-size:17px;line-height:1.25}.plan p{margin:4px 0 0;font-size:13px;color:#5A5450}
+.plan .meta{display:flex;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid #eee7e1;font-size:13px;font-weight:600}
+.plan .badge{position:absolute;left:10px;top:10px;background:#fff;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:700}
+.art{position:relative;width:100%;height:100%}
+.inline{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:28px;padding:16px 18px;border-radius:20px;background:#fff;font-size:15px}
+.inline .in{width:240px;height:44px}
+.demand{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:40px}
+.dm{border-radius:24px;padding:22px;min-height:200px;display:flex;flex-direction:column;gap:8px}
+.dm b{font:800 48px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78}
+.dm h3{margin:0;font-size:18px}.dm p{margin:auto 0 0;font-size:14px;font-weight:700;text-decoration:underline}
+/* formats */
+.card{text-decoration:none;display:block}
+.card .mat{aspect-ratio:1/1;align-items:stretch;padding:10px}
+.card .mat>div{width:100%;height:100%;border-radius:20px;overflow:hidden}
+.card .mat img{width:100%;height:100%;object-fit:cover}
+.card h3{margin:14px 0 0;font-size:18px;line-height:1.25}
+.card .body{font-size:14px;margin-top:4px}
+.card .more{display:inline-flex;margin-top:10px;font-size:13px;font-weight:700;text-decoration:underline}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.chip2{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;background:#fff;box-shadow:0 0 0 1px rgba(20,17,20,.1);font-weight:600;font-size:15px;text-decoration:none}
+.chip2 i{width:8px;height:8px;border-radius:50%}
+/* steps */
+.flush{padding-bottom:0!important}.flush .split{align-items:end}.flush .htext{padding-bottom:88px}
+.steps{list-style:none;margin:32px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.steps li{display:grid;grid-template-columns:40px 1fr;gap:14px;padding:16px 18px;border-radius:20px}
+.steps li.on{background:rgba(255,255,255,.07)}
+.steps .n{font:800 30px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78;color:#F07A55}
+.steps h3{margin:0;font-size:17px}.steps .body{margin-top:4px;font-size:14px}
+.fmedia{display:flex;justify-content:center;align-items:flex-end;align-self:stretch;padding-top:24px;min-height:420px}
+.fphone{width:320px;margin-bottom:-220px}
+.ftablet{width:112%;max-width:none;margin-bottom:-110px;transform:rotate(-3deg)}
+/* safety */
+.pts{list-style:none;margin:28px 0 0;padding:0;display:flex;flex-direction:column;gap:18px}
+.pts li{display:grid;grid-template-columns:44px 1fr;gap:14px}
+.pts .ic{width:44px;height:44px;border-radius:50%;background:#F6F0E8;display:flex;align-items:center;justify-content:center}
+.pts .ic svg{width:22px;height:22px}
+.pts h3{margin:0;font-size:16px}.pts .body{margin-top:2px;font-size:14px}
+.rev{background:#fff;border-radius:24px;padding:22px;width:min(380px,88%);box-shadow:0 24px 50px -20px rgba(0,0,0,.4);margin:0 auto 40px;position:relative}
+.rev .st{letter-spacing:2px;font-size:16px}
+.rev p{margin:10px 0 12px;font-size:16px;line-height:1.45;font-weight:600}
+.rev small{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#5A5450}
+.rev small b{color:#1F7A57}
+/* host band */
+.offer{display:inline-flex;margin-top:20px;padding:12px 16px;border-radius:16px;background:rgba(255,255,255,.55);font-size:14px;font-weight:600;color:#141114}
+/* organisers */
+.org{background:#fff;border-radius:24px;padding:20px;box-shadow:0 0 0 1px rgba(20,17,20,.08);display:flex;flex-direction:column;gap:14px}
+.av{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 20px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;font-variation-settings:"wdth" 78}
+.org h3{margin:0;font-size:17px}.org p{margin:2px 0 0;font-size:13px;color:#5A5450}
+.org .nx{font-size:13px;padding:10px 12px;border-radius:12px;background:#F6F0E8;color:#2b2427}
+.org.claim{background:#5CCB9F;box-shadow:none;justify-content:space-between}
+.org.claim p{color:#123D2C}
+/* app + notify */
+.bento{display:grid;grid-template-columns:1fr 1fr 1.8fr 1fr 1fr;gap:16px;align-items:stretch}
+.bento .mid{grid-column:3;grid-row:1/3;display:flex;flex-direction:column;justify-content:center;padding:24px;border-radius:28px;background:#F6F0E8}
+.bento .mid h2{font-size:42px}
+.tile{border-radius:24px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;min-height:200px;gap:16px}
+.tile .tag{align-self:flex-start;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.55)}
+.tile p{margin:0;font-size:15px;line-height:1.4;font-weight:600}
+.tile.ink{background:#1B171B;color:#F6EFE6}
+.tile .mini{background:#fff;border-radius:14px;padding:10px 12px;font-size:12px;color:#2b2427;box-shadow:0 8px 20px -10px rgba(0,0,0,.3)}
+.bento .wide-l{grid-column:1/3}.bento .wide-r{grid-column:4/6}
+.frm{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.frm .row{display:flex;gap:8px}
+select.in{appearance:none}
+/* referral */
+.ref{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:center}
+.m-mint .lead{color:#123D2C}
+/* faq */
+.faq{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px}
+.q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 0;border:0;border-bottom:1px solid #e6dfd9;background:none;font:600 17px/1.4 Inter,system-ui,sans-serif;color:#141114;text-align:left;cursor:pointer}
+.q i{font-style:normal;font-weight:400;font-size:22px;line-height:1}
+.ans{margin:0;padding:4px 0 20px;border-bottom:1px solid #e6dfd9;color:#5A5450;font-size:15px;line-height:1.55}
+/* footer */
+.foot{margin:16px 24px 0;border-radius:36px;background:#1B171B;color:#F6EFE6;padding:64px max(72px,calc((100% - 1200px)/2 - 24px)) 40px;overflow:hidden}
+.foot .cols{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:24px}
+.foot h4{margin:0 0 14px;font-size:15px}
+.foot a{display:block;color:#BDB3A7;font-size:14px;line-height:2;text-decoration:none}
+.bigwm{margin:56px 0 0;font-family:Archivo,'Arial Narrow',sans-serif;font-weight:800;font-stretch:78%;font-variation-settings:"wdth" 78;letter-spacing:-.05em;line-height:.8;font-size:clamp(120px,24cqi,330px);color:#F07A55}
+.legal{margin-top:28px;font-size:12px;color:#8a8079;display:flex;justify-content:space-between;gap:16px}
+.fn{margin:24px 0 0;padding:0;list-style:none;font-size:12px;line-height:1.6;color:#8a8079}
+.mbar{display:none}.dots{display:none}
+@container pg (max-width: 600px){
+  .proto{font-size:12px}
+  .bar{gap:10px;padding:0 16px;height:60px}.bar nav,.bar .signin{display:none}.bar .menu{display:flex}
+  .city{height:36px;padding:0 10px;font-size:13px}
+  .bar .b.sm{height:36px;padding:0 12px;font-size:13px}
+  .d-hero{font-size:44px}.d-sec{font-size:36px}.d-sm{font-size:26px}
+  .lead{font-size:17px;margin-top:12px}
+  .panel{margin:8px 8px 0;border-radius:28px;padding:40px 20px}
+  .open{padding:60px 16px 8px}
+  .split{grid-template-columns:1fr;gap:28px}
+  .heroc .htext{padding-bottom:8px}.hmedia{padding-top:8px;max-height:340px;overflow:visible}.hphone{width:230px;margin-bottom:-300px;transform:rotate(-3deg)}
+  .hchip{left:0;top:auto;bottom:24px;padding:8px 12px 8px 8px}.hchip .date{width:40px;height:44px}.hchip strong{font-size:13px}
+  .btns{flex-direction:column;align-items:stretch;margin-top:20px}.btns .b{width:100%}
+  .notify .row,.frm .row{flex-direction:column}
+  .entries{grid-template-columns:1fr 1fr;gap:10px}.ent{min-height:160px;padding:16px}
+  .hd{flex-direction:column;align-items:flex-start;gap:16px}
+  .rail,.r3,.r4,.r5{grid-auto-columns:78%;gap:12px;margin-right:-16px;overflow:hidden;margin-top:28px}
+  .panel .rail{margin-right:-20px}
+  .dots{display:flex;justify-content:center;gap:6px;margin-top:18px}.dots i{width:6px;height:6px;border-radius:999px;background:#d6cec7}.dots i:first-child{width:22px;background:#141114}
+  .inline{flex-direction:column;align-items:stretch}.inline .in{width:100%}
+  .demand{grid-template-columns:1fr 1fr;gap:10px}.dm{min-height:160px;padding:16px}.dm b{font-size:36px}
+  .chip2{font-size:14px;min-height:40px;padding:0 14px}
+  .flush .htext{padding-bottom:8px}.fmedia{min-height:0;padding-top:12px}.fphone{width:230px;margin-bottom:-240px}.ftablet{width:104%;margin-bottom:-50px}
+  .bento{grid-template-columns:1fr 1fr}.bento .mid{grid-column:1/3;grid-row:1;padding:20px}.bento .mid h2{font-size:32px}.bento .wide-l,.bento .wide-r{grid-column:1/3}
+  .tile{min-height:150px;padding:16px}
+  .ref{grid-template-columns:1fr;gap:20px}
+  .faq{grid-template-columns:1fr;gap:12px}
+  .foot{margin:8px 8px 0;border-radius:28px;padding:36px 20px 26px}.foot .cols{grid-template-columns:1fr 1fr;row-gap:28px}
+  .bigwm{font-size:31cqi;margin-top:40px}.legal{flex-direction:column}
+  .note{display:none}
+  .mbar{display:flex;position:sticky;bottom:8px;z-index:20;margin:8px;gap:8px;padding:8px;border-radius:999px;background:#141114;box-shadow:0 16px 40px -12px rgba(0,0,0,.5)}
+  .mbar .b{flex:1;height:44px}
+  .mbar .b.pri{background:#F08AA0;border-color:#F08AA0;color:#141114!important}
+  .mbar .b.sec{background:transparent;border-color:rgba(255,255,255,.6)}
+}
+</style>
+</helmet>
+<div class="pg">
+
+<div class="proto" role="group" aria-label="Prototype city state"><span>Prototype · the homepage follows the city’s state (rec 5):</span>
+<button type="button" class="{{liveCls}}" onClick="{{toLive}}">Live and busy · Mumbai</button><button type="button" class="{{thinCls}}" onClick="{{toThin}}">Live but thin · Mumbai</button><button type="button" class="{{soonCls}}" onClick="{{toSoon}}">Launching · Pune</button></div>
+
+<header class="bar"><a class="wm" href="#">Catch</a>
+<nav aria-label="Main"><a href="#">What’s on</a><a href="#">New to {{city}}</a><a href="#">Safety</a></nav>
+<button type="button" class="city">{{city}}<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button>
+<span class="sp"></span>
+<a class="signin" href="#">For hosts</a>
+<a class="signin" href="#">Sign in</a>
+<a class="b sm" href="#notify">Get notified</a>
+<button class="menu" type="button" aria-label="Menu"><i></i></button></header>
+
+<sc-if value="{{isSoon}}" hint-placeholder-val="{{ false }}">
+<section class="panel heroc herol" style="margin-top:0"><div class="split"><div class="htext">
+<p class="k" style="color:#1E2550">Launching soon in Pune</p>
+<h1 class="d d-hero">Bring people together in Pune? Be one of the first hosts.</h1>
+<p class="lead">The first hosts in a city shape what Catch becomes there. Founding hosts get 90 days without Catch fees, and people in Pune are already asking for plans.</p>
+<div class="btns"><a class="b" href="#">Start hosting free</a><a class="b o" href="#">See Catch for hosts</a></div>
+<div class="notify"><h3>Here for the plans?</h3><p>Tell us what you’d go to. We’ll message you when the first ones go up.</p>
+<div class="ints"><span class="on">Run clubs</span><span>Padel</span><span class="on">Quiz nights</span><span>Supper clubs</span><span>Yoga</span><span>Workshops</span></div>
+<div class="row"><label class="sr" for="s-wa">Your WhatsApp number</label><input id="s-wa" class="in" type="tel" placeholder="Your WhatsApp number"><a class="b sm" href="#">Notify me</a></div>
+<p class="consent">Only for Catch plans in Pune. Reply STOP any time.</p></div></div>
+<div class="hmedia"><div class="phone hphone"><img src="/_blob/d1f6c7bb9c9b9f60ca970341f0144003" alt="Catch Host: an event ready to publish"></div></div></div>
+<span class="note">Rec 5: a launching city leads with hosts, and captures guests by format to build the host pitch.</span></section>
+</sc-if>
+<sc-if value="{{notSoon}}" hint-placeholder-val="{{ true }}">
+<section class="panel heroc herop" style="margin-top:0"><div class="split"><div class="htext">
+<sc-if value="{{isLive}}" hint-placeholder-val="{{ false }}"><p class="k" style="color:#4A2330">In Mumbai this week · <span class="ph">[N]</span> plans</p></sc-if>
+<sc-if value="{{isThin}}" hint-placeholder-val="{{ true }}"><p class="k" style="color:#4A2330">New in Mumbai · plans for the next 30 days</p></sc-if>
+<h1 class="d d-hero">Find something worth showing up for.</h1>
+<p class="lead">Runs, games, dinners, classes and nights out, run by hosts who bring people together. Come on your own and leave knowing a few more people.</p>
+<p class="proofline"><span>Every host verified</span><span aria-hidden="true">·</span><span>★ <span class="ph">[4.7]</span> from <span class="ph">[N]</span> guests who booked<sup>1</sup></span></p>
+<div class="btns"><a class="b" href="#plans">{{heroCta}}</a><a class="b o" href="#">Host an event</a></div>
+<div class="notify"><h3>The Catch app is on its way</h3><p>Get new Mumbai plans on WhatsApp, and the app the day it launches.</p>
+<div class="row"><label class="sr" for="h-wa">Your WhatsApp number</label><input id="h-wa" class="in" type="tel" placeholder="Your WhatsApp number"><a class="b sm" href="#">Notify me</a></div></div></div>
+<div class="hmedia"><div class="phone hphone"><img src="/_blob/c592fe71162b9b4591e1fb8beb460444" alt="Explore in the Catch app: plans in Mumbai"></div>
+<div class="hchip"><div class="date m-yellow" style="color:#4A3608">Thu<b>20</b></div><div><strong>Thursday Evening Pub Quiz</strong><p>Khar Social · 6 places left</p></div></div></div></div>
+<span class="note">Rec 1 + 11: the dead “Coming soon” badges become a WhatsApp notify field; the button and proof sit in the first phone screen.</span></section>
+</sc-if>
+
+<section class="open c"><p class="k" style="color:#B23A5A">Start from where you are</p><h2 class="d d-sec">Whoever you are, there’s an easy first plan.</h2>
+<div class="entries">
+<a class="ent m-coral" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><h3>New to {{city}}</h3><p>Plans that welcome first-timers, and a group on day one.</p></a>
+<a class="ent m-pink" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/></svg><h3>Coming on your own</h3><p>Hosts plan the first ten minutes, so nobody stands alone.</p></a>
+<a class="ent m-mint" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 18l5-6 4 3 7-9"/><path d="M15 6h5v5"/></svg><h3>Find your level</h3><p>Runs by pace, courts by level, quizzes by team.</p></a>
+<a class="ent m-yellow" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M2 20c.8-3 3-5 6-5s5.2 2 6 5M14 15c3 0 5.2 2 6 5"/></svg><h3>Bring your friends</h3><p>Book together and stay on the same team.</p></a>
+<a class="ent m-indigo" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/></svg><h3>Weekdays and daytime</h3><p>For remote workers, freelancers and early birds.</p></a>
+<a class="ent ink" href="#safety" style="color:#F6EFE6"><svg viewBox="0 0 24 24" fill="none" stroke="#F6EFE6" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><h3>Safety first</h3><p>Verified hosts, real reviews and women-led plans.</p></a>
+</div><span class="note">Rec 4, guest side: new to the city, solo, players, friends, weekday and safety each get a page.</span></section>
+
+<sc-if value="{{isLive}}" hint-placeholder-val="{{ false }}">
+<section class="panel tint" id="plans"><div class="hd"><div><p class="k" style="color:#B23A5A"><span class="ph">[N]</span> plans this week</p><h2 class="d d-sec">This week in Mumbai</h2><p class="lead">Hosted plans across Bandra, Khar, Andheri and Worli.</p></div><a class="b" href="#">See everything in Mumbai</a></div>
+<div class="rail r3">
+<a class="plan" href="#"><div class="phx"><div class="art" style="background:#F5C451"><div style="position:absolute;inset:14% 12% 14% 12%;background:#4C5BC4;border-radius:18px"></div><div style="position:absolute;left:22%;top:26%;font:800 34px/1 Archivo,sans-serif;font-stretch:78%;color:#F5C451">Q4</div></div><span class="badge">Solo-friendly</span></div><div class="row"><div class="date m-yellow" style="color:#4A3608">Thu<b>20</b></div><div><h3>Thursday Evening Pub Quiz</h3><p>The Quizzicals · Khar Social</p></div></div><div class="meta"><span>₹499</span><span style="color:#B23A5A">6 left</span></div></a>
+<a class="plan" href="#"><div class="phx"><img src="/_blob/409d3ee3e6896b80188944189323718b" alt=""><span class="badge">New to Mumbai</span></div><div class="row"><div class="date m-pink" style="color:#4A2330">Fri<b>21</b></div><div><h3>Long Table Supper</h3><p>Lantern Lane Social · Andheri</p></div></div><div class="meta"><span>₹1,200</span><span style="color:#B23A5A">4 left</span></div></a>
+<a class="plan" href="#"><div class="phx"><img src="/_blob/8294b5d46800331739b8ee58199a7d53" alt=""><span class="badge">All paces</span></div><div class="row"><div class="date m-coral" style="color:#3B1F14">Sun<b>23</b></div><div><h3>Carter Road Social Run</h3><p>Carter Road Runners · Bandra</p></div></div><div class="meta"><span>Free</span><span style="color:#B23A5A">18 going</span></div></a>
+</div><div class="dots"><i></i><i></i><i></i></div></section>
+</sc-if>
+<sc-if value="{{isThin}}" hint-placeholder-val="{{ true }}">
+<section class="panel tint" id="plans"><div class="hd"><div><p class="k" style="color:#B23A5A">Next 30 days</p><h2 class="d d-sec">Coming up in Mumbai</h2><p class="lead">Mumbai is new on Catch, so plans are spread out for now. Here’s everything ahead, nearest first.</p></div><a class="b" href="#">See all upcoming plans</a></div>
+<div class="rail r3">
+<a class="plan" href="#"><div class="phx"><img src="/_blob/8294b5d46800331739b8ee58199a7d53" alt=""><span class="badge">All paces</span></div><div class="row"><div class="date m-coral" style="color:#3B1F14">Sun<b>23</b></div><div><h3>Carter Road Social Run</h3><p>Carter Road Runners · Bandra</p></div></div><div class="meta"><span>Free</span><span style="color:#B23A5A">18 going</span></div></a>
+<a class="plan" href="#"><div class="phx"><div class="art" style="background:#F5C451"><div style="position:absolute;inset:14% 12% 14% 12%;background:#4C5BC4;border-radius:18px"></div><div style="position:absolute;left:22%;top:26%;font:800 34px/1 Archivo,sans-serif;font-stretch:78%;color:#F5C451">Q4</div></div><span class="badge">Solo-friendly</span></div><div class="row"><div class="date m-yellow" style="color:#4A3608">Thu<b>4</b></div><div><h3>Thursday Evening Pub Quiz</h3><p>The Quizzicals · Khar Social · December</p></div></div><div class="meta"><span>₹499</span><span style="color:#B23A5A">Booking open</span></div></a>
+<a class="plan" href="#"><div class="phx"><img src="/_blob/409d3ee3e6896b80188944189323718b" alt=""><span class="badge">New to Mumbai</span></div><div class="row"><div class="date m-pink" style="color:#4A2330">Fri<b>12</b></div><div><h3>Long Table Supper</h3><p>Lantern Lane Social · Andheri · December</p></div></div><div class="meta"><span>₹1,200</span><span style="color:#B23A5A">Applications open</span></div></a>
+</div><div class="dots"><i></i><i></i><i></i></div>
+<div class="inline"><span><b>Want to hear first?</b> New Mumbai plans on WhatsApp, about once a week.</span><label class="sr" for="t-wa">Your WhatsApp number</label><input id="t-wa" class="in" type="tel" placeholder="Your WhatsApp number"><a class="b sm" href="#">Notify me</a></div>
+<span class="note">Rec 1 + 5: a thin week never shows an empty sentence; it widens to 30 days and offers a notify field.</span></section>
+</sc-if>
+<sc-if value="{{isSoon}}" hint-placeholder-val="{{ false }}">
+<section class="panel tint" id="plans"><div class="hd"><div><p class="k" style="color:#B23A5A">What Pune is asking for</p><h2 class="d d-sec">People are waiting. Hosts go first.</h2><p class="lead">Counts of people in Pune who asked to hear about each kind of plan. Run one and they hear about it first.</p></div><a class="b" href="#">Host one of these</a></div>
+<div class="demand"><div class="dm m-coral"><b><span class="ph">[N]</span></b><h3>Run clubs</h3><p>Start a run club in Pune</p></div><div class="dm m-yellow"><b><span class="ph">[N]</span></b><h3>Quiz nights</h3><p>Host a quiz in Pune</p></div><div class="dm m-mint"><b><span class="ph">[N]</span></b><h3>Padel and pickleball</h3><p>Run a social on court</p></div><div class="dm m-pink"><b><span class="ph">[N]</span></b><h3>Supper clubs</h3><p>Host a long table</p></div></div>
+<span class="note">Rec 5: guest demand by format becomes the host pitch. Counts come from the notify field, never estimated.</span></section>
+</sc-if>
+
+<sc-if value="{{hostEarly}}" hint-placeholder-val="{{ true }}">
+<section class="panel flush m-indigo"><div class="split"><div class="htext"><p class="k" style="color:#1E2550">For hosts</p><h2 class="d d-sec">Bring people together? Run the whole night from one screen.</h2>
+<p class="lead" style="color:rgba(20,17,20,.8)">Bookings paid upfront, the door, groups, the first hello and the follow-up. Free for 30 days, then 5% of ticket sales, capped at ₹10,000 a month. Free events stay free.</p>
+<span class="offer">Founding hosts in {{city}}: 90 days without fees, until <span class="ph">[date]</span></span>
+<div class="btns"><a class="b" href="#">Start your free trial</a><a class="b o" href="#">Talk to us on WhatsApp</a></div></div>
+<div class="fmedia"><div class="tablet ftablet"><img src="/_blob/090b0c010c221ed314d5ff27ce2a21cb" alt="Catch Host on an iPad"></div></div></div>
+<span class="note">Rec 5: in a thin or launching city the host band moves up to third place, with the founding-host offer (rec 8).</span></section>
+</sc-if>
+
+<section class="open"><div class="hd"><div><p class="k" style="color:#1F7A57">Something for every kind of evening</p><h2 class="d d-sec">Start with what you feel like doing.</h2><p class="lead">Every plan has a host who’s there on the night.</p></div></div>
+<div class="rail r5">
+<a class="card" href="#"><div class="mat m-coral"><div><img src="/_blob/8294b5d46800331739b8ee58199a7d53" alt=""></div></div><h3>Runs and walks</h3><p class="body">Pace groups and a first hello.</p><span class="more">Run clubs in {{city}}</span></a>
+<a class="card" href="#"><div class="mat m-mint"><div><img src="/_blob/9cac328026e387b37fc5fab2457553c6" alt=""></div></div><h3>Racket sports</h3><p class="body">Pickleball, padel, tennis, badminton.</p><span class="more">Courts in {{city}}</span></a>
+<a class="card" href="#"><div class="mat m-pink"><div><img src="/_blob/409d3ee3e6896b80188944189323718b" alt=""></div></div><h3>Dinners</h3><p class="body">Long tables and new people.</p><span class="more">Supper clubs in {{city}}</span></a>
+<a class="card" href="#"><div class="mat m-yellow"><div><div class="art" style="background:#F5C451"><div style="position:absolute;inset:14% 12% 14% 12%;background:#4C5BC4;border-radius:18px"></div><div style="position:absolute;left:22%;top:26%;font:800 34px/1 Archivo,sans-serif;font-stretch:78%;color:#F5C451">Q4</div></div></div></div><h3>Games and quizzes</h3><p class="body">Teams, rounds and a final.</p><span class="more">Quiz nights in {{city}}</span></a>
+<a class="card" href="#"><div class="mat m-magenta"><div><img src="/_blob/b766451d5b4e5bf9ae506afe33116fa6" alt=""></div></div><h3>Nights out</h3><p class="body">Crawls and socials.</p><span class="more">Nights out in {{city}}</span></a>
+</div><div class="dots"><i></i><i></i><i></i><i></i><i></i></div>
+<div class="chips"><a class="chip2" href="#"><i style="background:#8C9BF2"></i>Yoga, spin and fitness</a><a class="chip2" href="#"><i style="background:#F5C451"></i>Workshops and classes</a><a class="chip2" href="#"><i style="background:#F08AA0"></i>Book clubs and open mics</a><a class="chip2" href="#"><i style="background:#5CCB9F"></i>Cycling and treks</a></div>
+<span class="note">Rec 4: every format links to an indexable city page such as /mumbai/run-clubs/.</span></section>
+
+<section class="panel ink flush"><div class="split"><div class="htext"><p class="k" style="color:#F07A55">How a night works</p><h2 class="d d-sec">Come on your own. Leave knowing a few more people.</h2>
+<p class="lead">Hosts plan the first ten minutes so you don’t have to. Here’s a Tuesday quiz with Lantern Lane Social.</p>
+<ol class="steps"><li class="on"><span class="n">1</span><div><h3>Find a plan</h3><p class="body">Every plan shows who’s hosting, where you meet and who it suits.</p></div></li>
+<li><span class="n">2</span><div><h3>Show up</h3><p class="body">Your host has a team, a group or a game ready, and a first hello.</p></div></li>
+<li><span class="n">3</span><div><h3>Stay in touch</h3><p class="body">Your group chat stays open for a week.</p></div></li></ol></div>
+<div class="fmedia"><div class="phone fphone"><img src="/_blob/a0873001d2078ae3ec432b87a14a9579" alt="Checked in: your table, who’s new, and a first hello"></div></div></div></section>
+
+<section class="open" id="safety"><div class="split"><div><p class="k" style="color:#B23A5A">Safety and trust</p><h2 class="d d-sec">Feel good about going on your own.</h2>
+<p class="lead">Most people who book come alone. Here’s what’s in place before, during and after every plan.</p>
+<ul class="pts">
+<li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span><div><h3>Every host is verified</h3><p class="body">Hosts confirm who they are before their first plan goes live.</p></div></li>
+<li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg></span><div><h3>Reviews from people who went</h3><p class="body">Reviews carry “Booked on Catch” when the writer was really there.</p></div></li>
+<li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 4h10v16H7z"/><path d="M10 8h4M10 12h4M10 16h2"/></svg></span><div><h3>A code of conduct for every plan</h3><p class="body">Hosts agree to it, and you can report anything in two taps.</p></div></li>
+<li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 18V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H8z"/></svg></span><div><h3>A quieter way to ask</h3><p class="body">With Help me say hi, you ask the host for an introduction, privately.</p></div></li></ul>
+<div class="btns"><a class="b o" href="#">How we keep plans safe</a></div></div>
+<div class="mat m-pink" style="height:560px;flex-direction:column;justify-content:flex-end;align-items:stretch"><img src="/_blob/409d3ee3e6896b80188944189323718b" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9">
+<div class="rev"><span class="st" aria-label="5 out of 5">★★★★★</span><p>“<span class="ph">[A real guest review, quoted with permission]</span>”</p><small><span><span class="ph">[First name]</span> · Long Table Supper</span><b>Booked on Catch</b></small></div></div></div>
+<span class="note">Segment: women and solo guests who put safety first. Rec 2: real reviews, labelled, never invented.</span></section>
+
+<sc-if value="{{hostLate}}" hint-placeholder-val="{{ false }}">
+<section class="panel flush m-indigo"><div class="split"><div class="htext"><p class="k" style="color:#1E2550">For hosts</p><h2 class="d d-sec">Bring people together? Run the whole night from one screen.</h2>
+<p class="lead" style="color:rgba(20,17,20,.8)">Bookings paid upfront, the door, groups, the first hello and the follow-up. Free for 30 days, then 5% of ticket sales, capped at ₹10,000 a month. Free events stay free.</p>
+<div class="btns"><a class="b" href="#">Start your free trial</a><a class="b o" href="#">See Catch for hosts</a></div></div>
+<div class="fmedia"><div class="tablet ftablet"><img src="/_blob/090b0c010c221ed314d5ff27ce2a21cb" alt="Catch Host on an iPad"></div></div></div></section>
+</sc-if>
+
+<section class="open"><div class="hd"><div><p class="k" style="color:#B23A5A">Organisers in {{city}}</p><h2 class="d d-sec">The people behind the plans.</h2><p class="lead">Follow the hosts you like and hear about their next plan first.</p></div></div>
+<div class="rail r4"><div class="org"><div class="av m-yellow" style="color:#4A3608">Q</div><div><h3>The Quizzicals</h3><p>Quiz nights · Khar</p></div><div class="nx">Next: Thu 20 Nov · Pub Quiz</div><a class="b sm o" href="#" style="align-self:flex-start">Follow</a></div><div class="org"><div class="av m-coral" style="color:#3B1F14">CR</div><div><h3>Carter Road Runners</h3><p>Run club · Bandra</p></div><div class="nx">Next: Sun 23 Nov · Social Run</div><a class="b sm o" href="#" style="align-self:flex-start">Follow</a></div><div class="org"><div class="av m-pink" style="color:#4A2330">LL</div><div><h3>Lantern Lane Social</h3><p>Supper club · Andheri</p></div><div class="nx">Next: Fri 21 Nov · Long Table</div><a class="b sm o" href="#" style="align-self:flex-start">Follow</a></div><div class="org claim"><div><h3 style="color:#123D2C;font-size:22px;font-family:Archivo,sans-serif;font-stretch:78%;font-weight:800">Run something in {{city}}?</h3><p style="margin-top:8px">Your page may already be here. Claim it free, or list your first plan.</p></div><a class="b sm" href="#" style="align-self:flex-start">Claim your page</a></div></div><div class="dots"><i></i><i></i><i></i><i></i></div></section>
+
+<section class="open" id="notify"><div class="bento">
+<div class="tile m-coral"><span class="tag">Book</span><div class="mini"><b>Carter Road Social Run</b><br>Sun 23 Nov · 6:30 AM · Free</div><p>Book in a couple of taps.</p></div>
+<div class="tile m-yellow"><span class="tag">Reminders</span><p>Where to meet, and a nudge the day before.</p></div>
+<div class="mid"><p class="k" style="color:#4C5BC4">The Catch app · coming soon</p><h2 class="d d-sec">Be first in the app, and first to new plans.</h2>
+<div class="frm"><div class="row"><label class="sr" for="n-wa">Your WhatsApp number</label><input id="n-wa" class="in" type="tel" placeholder="Your WhatsApp number"><label class="sr" for="n-city">Your city</label><select id="n-city" class="in"><option>{{city}}</option><option>Indore</option><option>Delhi NCR</option><option>Bengaluru</option><option>Hyderabad</option><option>Pune</option></select></div>
+<div class="ints"><span class="on">Runs</span><span>Courts</span><span class="on">Dinners</span><span>Quizzes</span><span>Nights out</span><span>Fitness</span><span>Workshops</span></div>
+<a class="b" href="#" style="align-self:flex-start">Notify me</a><p class="consent">One message when the app launches, and new plans you picked. Reply STOP any time.</p></div></div>
+<div class="tile ink"><span class="tag" style="background:rgba(255,255,255,.14);color:#fff">Group chat</span><div class="mini">Host: “Great quiz tonight! Same time next week?”</div><p>Your group chat stays open after the night.</p></div>
+<div class="tile m-mint"><span class="tag">Follow</span><p>The hosts you like, and their next plan first.</p></div>
+<div class="tile m-pink wide-l" style="min-height:140px"><span class="tag">On your own?</span><p>Hosts plan a group, a game or a first hello.</p></div>
+<div class="tile m-magenta wide-r" style="min-height:140px"><span class="tag">Free to use</span><p>Browsing is free. Hosts set the price of each plan.</p></div>
+</div><span class="note">Rec 1: badges return when the stores are live; until then this captures city and interests, which feed rec 5.</span></section>
+
+<section class="panel m-mint"><div class="ref"><div><p class="k" style="color:#123D2C">Bring a host to Catch</p><h2 class="d d-sec">Know a host who’d be great here?</h2><p class="lead">Introduce them. When they run their first paid plan, your next ticket with them is on us.</p></div>
+<div><div class="frm"><div class="row"><label class="sr" for="g-name">Host or club name</label><input id="g-name" class="in" type="text" placeholder="Host or club name"><label class="sr" for="g-ig">Their Instagram or WhatsApp</label><input id="g-ig" class="in" type="text" placeholder="Their Instagram or WhatsApp"></div><a class="b" href="#" style="align-self:flex-start">Introduce them</a></div></div></div>
+<span class="note">Rec 8: guest-to-host referral. Terms to be set.</span></section>
+
+<section class="open"><div class="faq"><div><p class="k" style="color:#1F7A57">Questions</p><h2 class="d d-sec">Good to know before your first plan.</h2></div><div>
+<sc-for list="{{faqs}}" as="f" hint-placeholder-count="6"><div><button class="q" type="button" onClick="{{f.toggle}}" aria-expanded="{{f.open}}">{{f.q}}<i>{{f.sign}}</i></button><sc-if value="{{f.open}}" hint-placeholder-val="{{ false }}"><p class="ans">{{f.a}}</p></sc-if></div></sc-for>
+</div></div></section>
+
+<footer class="foot"><div class="cols">
+<div><h4>Explore</h4><a>What’s on</a><a>New to {{city}}</a><a>Coming on your own</a><a>Safety</a><a>Get notified</a></div>
+<div><h4>{{city}}</h4><a>Run clubs in {{city}}</a><a>Padel and pickleball</a><a>Supper clubs</a><a>Quiz nights</a><a>Nights out</a><a>Yoga and fitness</a></div>
+<div><h4>Cities</h4><a>Mumbai</a><a>Indore</a><a>Pune · soon</a><a>All cities →</a></div>
+<div><h4>Hosts</h4><a>Catch for hosts</a><a>Pricing</a><a>Start free trial</a><a>Claim your page</a><a>Weddings</a></div>
+<div><h4>Help and legal</h4><a>Help</a><a>Contact</a><a>Privacy</a><a>Terms</a><a>Refunds</a><a>Privacy choices</a></div>
+</div>
+<ol class="fn"><li>1. Average of reviews from guests who booked on Catch, <span class="ph">[dates]</span>.</li></ol>
+<p class="bigwm">Catch</p><div class="legal"><span>Meet people in real life, through hosts who bring them together.</span><span>Catch is operated by Torana.</span></div></footer>
+
+<div class="mbar"><a class="b pri" href="#notify">Get notified</a><a class="b sec" href="#plans">See plans</a></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"cityState":{"editor":"enum","options":["live","thin","launching"],"default":"thin","section":"State"},"$preview":{"width":1440,"height":7800}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { mode: null, open: 0 };
+  }
+  renderVals() {
+    const mode = this.state.mode || this.props.cityState || 'thin';
+    const live = mode === 'live', thin = mode === 'thin', soon = mode === 'launching';
+    const faqData = [
+      ['Can I come on my own?', 'Yes, and most people do. Hosts plan a group, a team or a first hello so nobody stands on their own.'],
+      ['Is it safe?', 'Every host is verified, reviews come from people who booked, and every plan follows a code of conduct. You can report anything in two taps.'],
+      ['Do I need the app?', 'Not yet. You can browse and book on the website. The app is coming soon; leave your number to hear the day it launches.'],
+      ['Is Catch free?', 'Browsing is free. Hosts set the price of each plan, and many plans are free.'],
+      ['Who runs these plans?', 'Independent hosts, clubs and venues in your city. Each plan shows who is hosting and what to expect.'],
+      ['What if Catch isn’t in my city yet?', 'Leave your number and what you would go to. When enough people ask, we bring hosts to your city, and you hear first.']
+    ];
+    const s = this.state;
+    return {
+      isLive: live, isThin: thin, isSoon: soon, notSoon: !soon,
+      hostEarly: !live, hostLate: live,
+      city: soon ? 'Pune' : 'Mumbai',
+      heroCta: live ? 'See what’s on in Mumbai' : 'See what’s coming up',
+      liveCls: live ? 'on' : '', thinCls: thin ? 'on' : '', soonCls: soon ? 'on' : '',
+      toLive: () => this.setState({ mode: 'live' }),
+      toThin: () => this.setState({ mode: 'thin' }),
+      toSoon: () => this.setState({ mode: 'launching' }),
+      faqs: faqData.map((f, i) => ({ q: f[0], a: f[1], open: s.open === i, sign: s.open === i ? '−' : '+', toggle: () => this.setState({ open: s.open === i ? -1 : i }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

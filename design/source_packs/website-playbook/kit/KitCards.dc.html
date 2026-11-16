@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · cards</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><section class="{{secCls}}" style="{{secStyle}}" id="{{sid}}"><sc-if value="{{hasHead}}" hint-placeholder-val="{{ true }}"><div class="{{headCls}}"><sc-if value="{{hasKicker}}" hint-placeholder-val="{{ true }}"><p class="k" style="color:{{kc}}">{{d.kicker}}</p></sc-if><sc-if value="{{isH1}}" hint-placeholder-val="{{ false }}"><h1 class="d d-hero" style="max-width:15ch"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h1></sc-if><sc-if value="{{notH1}}" hint-placeholder-val="{{ true }}"><h2 class="d d-sec"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h2></sc-if>
+<sc-if value="{{hasLead}}" hint-placeholder-val="{{ false }}"><p class="lead"><sc-for list="{{lead}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if></div></sc-if>
+<sc-if value="{{hasFilters}}" hint-placeholder-val="{{ false }}"><div class="kchips" role="group" aria-label="Filter"><sc-for list="{{filters}}" as="f" hint-placeholder-count="5"><button type="button" aria-pressed="{{f.on}}" onClick="{{f.pick}}">{{f.label}}</button></sc-for></div></sc-if>
+<sc-if value="{{hasLinks}}" hint-placeholder-val="{{ false }}"><div class="klinks"><sc-for list="{{links}}" as="l" hint-placeholder-count="5"><a href="#">{{l}}</a></sc-for></div></sc-if>
+<div class="kcards {{colsCls}}"><sc-for list="{{shown}}" as="c" hint-placeholder-count="3">
+<sc-if value="{{c.isPlan}}" hint-placeholder-val="{{ true }}"><a class="kplan" href="#"><div class="phx"><sc-if value="{{c.hasImg}}" hint-placeholder-val="{{ true }}"><img src="{{c.img}}" alt=""></sc-if><sc-if value="{{c.noImg}}" hint-placeholder-val="{{ false }}"><div class="art {{c.artTone}}"></div></sc-if><sc-if value="{{c.hasBadge}}" hint-placeholder-val="{{ true }}"><span class="badge">{{c.badge}}</span></sc-if></div><div class="row"><div class="date {{c.tone}}" style="color:{{c.ink}}">{{c.day}}<b>{{c.num}}</b></div><div><h3>{{c.t}}</h3><p>{{c.s}}</p></div></div><div class="meta"><span>{{c.price}}</span><span style="color:#B23A5A">{{c.left}}</span></div></a></sc-if>
+<sc-if value="{{c.isOrg}}" hint-placeholder-val="{{ false }}"><div class="korg {{c.claimCls}}"><div class="top"><sc-if value="{{c.hasInitials}}" hint-placeholder-val="{{ true }}"><span class="av {{c.tone}}" style="color:{{c.ink}}">{{c.initials}}</span></sc-if><div><h3>{{c.t}}</h3><p><sc-for list="{{c.s}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></div></div><sc-if value="{{c.hasNext}}" hint-placeholder-val="{{ true }}"><div class="nx">{{c.next}}</div></sc-if><a class="b sm {{c.ctaCls}}" href="#">{{c.cta}}</a></div></sc-if>
+<sc-if value="{{c.isStory}}" hint-placeholder-val="{{ false }}"><a class="kstory" href="#"><div class="ph2" style="background:{{c.bg}};color:{{c.ink}}">{{c.photo}}</div><div class="bd"><span class="meta">{{c.meta}}</span><h3>{{c.t}}</h3><p class="body" style="margin:0">{{c.s}}</p><div class="stat"><span>{{c.statLabel}}</span><b><sc-for list="{{c.stat}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></b></div></div></a></sc-if>
+<sc-if value="{{c.isCity}}" hint-placeholder-val="{{ false }}"><div class="kcity {{c.cityCls}}"><span class="ktag {{c.tagTone}}">{{c.status}}</span><h3>{{c.t}}</h3><p>{{c.s}}</p><a class="b sm {{c.ctaCls}}" href="#">{{c.cta}}</a></div></sc-if>
+<sc-if value="{{c.isReview}}" hint-placeholder-val="{{ false }}"><div class="krev"><div class="krevtop"><span aria-label="{{c.stars}} out of 5">{{c.starText}}</span><sc-if value="{{c.hasBadge}}" hint-placeholder-val="{{ true }}"><span class="ktag {{c.badgeTone}}">{{c.badge}}</span></sc-if></div><p class="krq">“<sc-for list="{{c.quote}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for>”</p><small><sc-for list="{{c.who}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></small><sc-if value="{{c.hasReply}}" hint-placeholder-val="{{ false }}"><div class="krr"><b>{{c.replyFrom}}</b> <sc-for list="{{c.reply}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></div></sc-if></div></sc-if>
+<sc-if value="{{c.isPerson}}" hint-placeholder-val="{{ false }}"><div class="kperson"><div class="ph2">Photo</div><div class="bd"><h3><sc-for list="{{c.t}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h3><p><sc-for list="{{c.s}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p><p><sc-for list="{{c.line}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></div></div></sc-if>
+</sc-for></div>
+<sc-if value="{{none}}" hint-placeholder-val="{{ false }}"><div class="kempty"><h3>{{emptyTitle}}</h3><p class="body" style="margin:0">{{d.empty.body}}</p></div></sc-if>
+<sc-if value="{{hasBtns}}" hint-placeholder-val="{{ false }}"><div class="btns"><sc-for list="{{btns}}" as="b" hint-placeholder-count="2"><a class="b {{b.cls}}" href="{{b.href}}">{{b.l}}</a></sc-for></div></sc-if>
+<sc-if value="{{hasNote}}" hint-placeholder-val="{{ false }}"><span class="note">{{d.note}}</span></sc-if></section></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 760}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"kicker": "This week", "title": "Upcoming runs", "variant": "plan", "filters": [{"key": "all", "label": "All"}, {"key": "free", "label": "Free"}], "items": [{"key": "free", "img": "/_blob/8294b5d46800331739b8ee58199a7d53", "badge": "All paces", "day": "Sun", "num": "23", "t": "Carter Road Social Run", "s": "Carter Road Runners · Bandra", "price": "Free", "left": "18 going"}, {"key": "paid", "art": "m-yellow", "badge": "Solo-friendly", "tone": "m-yellow", "ink": "#4A3608", "day": "Thu", "num": "20", "t": "Pub Quiz", "s": "The Quizzicals · Khar", "price": "₹499", "left": "6 left"}], "empty": {"title": "No {filter} plans yet.", "body": "Try another filter."}};
+    const f = this.state && this.state.f ? this.state.f : 'all';
+    const panel = d.panel || 'open';
+    const kind = d.variant || 'plan';
+    const all = (d.items || []).map((c) => ({ ...c, isPlan: kind === 'plan', isOrg: kind === 'org', isStory: kind === 'story', isPerson: kind === 'person', isReview: kind === 'review', starText: '★★★★★'.slice(0, c.stars || 5) + '☆☆☆☆☆'.slice(0, 5 - (c.stars || 5)), quote: P(c.quote), who: P(c.who), reply: P(c.reply), hasReply: has(c.reply), replyFrom: c.replyFrom || 'Reply from the host:', badgeTone: c.badge === 'Booked on Catch' ? 'good' : '', isCity: kind === 'city', cityCls: c.live ? 'live' : '', tagTone: c.live ? 'good' : 'warn', status: c.status || (c.live ? 'Open' : 'Launching soon'),
+      hasImg: has(c.img), noImg: !has(c.img), artTone: c.art || 'm-yellow', hasBadge: has(c.badge), tone: c.tone || 'm-coral', ink: c.ink || '#141114',
+      s: kind === 'plan' || kind === 'story' || kind === 'city' ? (c.s || '') : P(c.s), t: kind === 'person' ? P(c.t) : c.t, line: P(c.line), stat: P(c.stat),
+      hasInitials: has(c.initials), hasNext: has(c.next), cta: c.cta || (kind === 'city' ? (c.live ? 'See what’s on' : 'Get notified') : 'Follow'), ctaCls: c.claim || (kind === 'city' && c.live) ? '' : 'o', claimCls: c.claim ? 'claim' : '', photo: c.photo || 'Photo from a design-partner event' }));
+    const shown = all.filter((c) => f === 'all' || c.key === f);
+    const flt = d.filters || [];
+    const cur = flt.find((x) => x.key === f);
+    return { d, secCls: panel === 'open' ? 'open' : 'panel ' + panel, secStyle: d.h1 ? 'padding-top:56px' : d.tight ? 'padding-top:24px' : '', sid: d.id || '',
+      hasHead: has(d.title), headCls: d.center ? 'c' : '', hasKicker: has(d.kicker), kc: d.kc || '#B23A5A', isH1: !!d.h1, notH1: !d.h1, title: P(d.title), hasLead: has(d.lead), lead: P(d.lead),
+      hasFilters: has(flt), filters: flt.map((x) => ({ label: x.label, on: x.key === f, pick: () => this.setState({ f: x.key }) })),
+      hasLinks: has(d.links), links: d.links || [], colsCls: d.cols === 4 ? 'c4' : '', shown, none: shown.length === 0 && !!d.empty,
+      emptyTitle: d.empty ? d.empty.title.replace('{filter}', cur ? cur.label.toLowerCase() : '') : '', hasBtns: has(d.btns), btns: B(d.btns), hasNote: has(d.note) };
+  }
+}
+</script>
+</body>
+</html>

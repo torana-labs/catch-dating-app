@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · mock card</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg kmock">
+<sc-if value="{{isPhone}}" hint-placeholder-val="{{ false }}"><div class="phone kphone"><img src="{{d.img}}" alt="{{d.alt}}"></div></sc-if>
+<sc-if value="{{isTablet}}" hint-placeholder-val="{{ false }}"><div class="tablet ktablet"><img src="{{d.img}}" alt="{{d.alt}}"></div></sc-if>
+<sc-if value="{{isPhoto}}" hint-placeholder-val="{{ false }}"><div class="photo"><img src="{{d.img}}" alt="{{d.alt}}"><sc-if value="{{hasTag}}" hint-placeholder-val="{{ true }}"><span class="tag">{{d.tag}}</span></sc-if></div></sc-if>
+<sc-if value="{{isChat}}" hint-placeholder-val="{{ false }}"><div class="kchat" role="img" aria-label="{{d.alt}}"><sc-for list="{{bubbles}}" as="m" hint-placeholder-count="3"><p class="{{m.cls}}">{{m.text}}<small>{{m.time}}</small></p></sc-for></div></sc-if>
+<sc-if value="{{isTiles}}" hint-placeholder-val="{{ false }}"><div class="grid3 c2" style="margin-top:0"><sc-for list="{{tiles}}" as="x" hint-placeholder-count="4"><div class="tile {{x.tone}}"><h3>{{x.t}}</h3><p><sc-for list="{{x.d}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></div></sc-for></div></sc-if>
+<sc-if value="{{isCard}}" hint-placeholder-val="{{ true }}"><div class="{{frameCls}}"><div class="{{scrCls}}"><div class="{{cardCls}}">
+<sc-if value="{{hasLabel}}" hint-placeholder-val="{{ false }}"><span class="klabel">{{d.label}}</span></sc-if>
+<sc-if value="{{hasCover}}" hint-placeholder-val="{{ false }}"><img class="kcover" src="{{d.cover}}" alt=""></sc-if>
+<sc-if value="{{hasTitle}}" hint-placeholder-val="{{ true }}"><h4>{{d.title}}</h4></sc-if>
+<sc-if value="{{hasSub}}" hint-placeholder-val="{{ true }}"><p class="ksub"><sc-for list="{{sub}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if>
+<sc-if value="{{hasStats}}" hint-placeholder-val="{{ false }}"><div class="kstats"><sc-for list="{{stats}}" as="x" hint-placeholder-count="3"><div><b>{{x.v}}</b>{{x.l}}</div></sc-for></div></sc-if>
+<sc-if value="{{hasSearch}}" hint-placeholder-val="{{ false }}"><div class="ksearch">{{d.search}}</div></sc-if>
+<sc-if value="{{hasBars}}" hint-placeholder-val="{{ false }}"><div class="kbars"><sc-for list="{{bars}}" as="x" hint-placeholder-count="3"><div class="kbar"><span>{{x.l}}</span><i style="width:{{x.w}}%;background:{{x.c}}"></i><b>{{x.v}}</b></div></sc-for></div></sc-if>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="4"><div class="krow"><div><sc-for list="{{r.t}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for><sc-if value="{{r.hasS}}" hint-placeholder-val="{{ true }}"><small><sc-for list="{{r.s}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></small></sc-if></div><sc-if value="{{r.hasTag}}" hint-placeholder-val="{{ true }}"><span class="ktag {{r.tone}}"><sc-for list="{{r.tag}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></span></sc-if><sc-if value="{{r.hasV}}" hint-placeholder-val="{{ false }}"><b class="kv"><sc-for list="{{r.v}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></b></sc-if></div></sc-for>
+<sc-if value="{{hasQr}}" hint-placeholder-val="{{ false }}"><div class="kqr"><svg viewBox="0 0 21 21" role="img" aria-label="Pass code (placeholder)"><rect width="21" height="21" fill="#fff"/><path fill="#141114" d="M0 0h7v7H0zM14 0h7v7h-7zM0 14h7v7H0z"/><path fill="#fff" d="M1 1h5v5H1zM15 1h5v5h-5zM1 15h5v5H1z"/><path fill="#141114" d="M2 2h3v3H2zM16 2h3v3h-3zM2 16h3v3H2zM8 1h1v2H8zM10 2h2v1h-2zM9 4h2v2H9zM12 5h1v3h-1zM8 8h3v1H8zM14 8h2v2h-2zM17 9h3v1h-3zM9 10h1v3H9zM11 11h3v1h-3zM15 12h1v2h-1zM18 12h2v3h-2zM8 14h2v2H8zM11 14h2v1h-2zM13 16h2v2h-2zM9 17h3v1H9zM16 16h2v1h-2zM19 17h1v3h-1zM10 19h2v2h-2zM14 19h4v1h-4zM1 9h2v2H1zM4 10h2v1H4zM2 12h3v1H2z"/></svg><span>{{d.qr}}</span></div></sc-if>
+<sc-if value="{{hasChoices}}" hint-placeholder-val="{{ false }}"><sc-for list="{{choices}}" as="ch" hint-placeholder-count="2"><div class="kchoice"><span class="kclabel">{{ch.label}}</span><div class="kcopts"><sc-for list="{{ch.opts}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}">{{o.t}}</button></sc-for></div></div></sc-for></sc-if>
+<sc-if value="{{hasCounters}}" hint-placeholder-val="{{ false }}"><sc-for list="{{counters}}" as="ct" hint-placeholder-count="2"><div class="kcount"><div>{{ct.t}}<small>{{ct.s}}</small></div><span class="kstep"><button type="button" aria-label="One fewer">−</button><b>{{ct.v}}</b><button type="button" aria-label="One more">+</button></span></div></sc-for></sc-if>
+<sc-if value="{{hasFields}}" hint-placeholder-val="{{ false }}"><div class="kfields"><sc-for list="{{fields}}" as="f" hint-placeholder-count="3"><div class="fld"><label for="{{f.id}}">{{f.label}}</label><input id="{{f.id}}" class="in" type="{{f.type}}" placeholder="{{f.ph}}"></div></sc-for></div></sc-if>
+<sc-if value="{{hasButtons}}" hint-placeholder-val="{{ false }}"><div class="kbtns"><sc-for list="{{btns}}" as="b" hint-placeholder-count="2"><a class="b sm {{b.cls}}" href="{{b.href}}">{{b.l}}</a></sc-for></div></sc-if>
+<sc-if value="{{hasChip}}" hint-placeholder-val="{{ false }}"><div class="kchip">{{d.chip}}</div></sc-if>
+<sc-if value="{{hasFine}}" hint-placeholder-val="{{ true }}"><p class="kfine"><sc-for list="{{fine}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-if>
+</div></div></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 520, "height": 560}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"kind": "card", "label": "Kit sample", "title": "Door · Friday social", "sub": "Stop 1 · 7:42 PM", "stats": [{"v": "31", "l": "checked in"}, {"v": "9", "l": "to come"}, {"v": "2", "l": "walk-ins"}], "rows": [{"t": "Aanya Mehta", "s": "First time", "tag": "New", "tone": "warn"}, {"t": "Kabir Shah", "s": "Group 1", "tag": "Checked in", "tone": "good"}, {"t": "Regulars", "s": "3+ in 180 days", "v": "[38]"}], "fine": "Illustrative screen"};
+    const k = d.kind || 'card';
+    return {
+      d, isPhone: k === 'phone', isTablet: k === 'tablet', isPhoto: k === 'photo', isChat: k === 'chat', isTiles: k === 'tiles', tiles: (d.tiles || []).map((x) => ({ t: x.t, d: P(x.d), tone: x.tone || 'paper' })), isCard: k === 'card' || k === 'phonecard',
+      frameCls: k === 'phonecard' ? 'phone kphone' : '', scrCls: k === 'phonecard' ? 'kscr' : '', cardCls: 'kcard' + (d.tilt ? ' tilt' : '') + (d.flat ? ' flat' : '') + (d.tone ? ' ' + d.tone : ''),
+      hasTag: has(d.tag), hasLabel: has(d.label), hasTitle: has(d.title), hasCover: has(d.cover), hasSub: has(d.sub), sub: P(d.sub), hasStats: has(d.stats), stats: d.stats || [],
+      hasSearch: has(d.search), hasBars: has(d.bars), bars: d.bars || [],
+      rows: (d.rows || []).map((r) => ({ t: P(r.t), s: P(r.s), hasS: has(r.s), tag: P(r.tag), hasTag: has(r.tag), v: P(r.v), hasV: has(r.v), tone: r.tone || '' })),
+      hasQr: has(d.qr), hasChoices: has(d.choices), choices: (d.choices || []).map((c) => ({ label: c.label, opts: (c.options || []).map((t, i) => { const on = Array.isArray(c.on) ? c.on.indexOf(i) >= 0 : c.on === i; return { t, on, cls: on ? 'on' : '' }; }) })), hasCounters: has(d.counters), counters: d.counters || [],
+      hasFields: has(d.fields), fields: (d.fields || []).map((f) => ({ id: f.id, label: f.label, type: f.type || 'text', ph: f.ph || '' })),
+      hasButtons: has(d.btns), btns: B(d.btns), hasChip: has(d.chip), hasFine: has(d.fine), fine: P(d.fine),
+      bubbles: (d.bubbles || []).map((m) => ({ text: m.text, time: m.time || '', cls: m.me ? 'me' : '' }))
+    };
+  }
+}
+</script>
+</body>
+</html>

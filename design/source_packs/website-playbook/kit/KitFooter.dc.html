@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · footer</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><footer class="foot"><sc-if value="{{hasTop}}" hint-placeholder-val="{{ true }}"><div class="top"><h3>{{topTitle}}</h3><div class="btns" style="margin-top:0"><a class="b w sm" href="#">WhatsApp us</a><a class="b ow sm" href="#">{{topSecond}}</a></div></div></sc-if><sc-if value="{{showCols}}" hint-placeholder-val="{{ true }}"><div class="cols"><sc-for list="{{cols}}" as="c" hint-placeholder-count="5"><div><h4>{{c.h}}</h4><sc-for list="{{c.links}}" as="l" hint-placeholder-count="4"><a>{{l}}</a></sc-for></div></sc-for></div></sc-if>
+<sc-if value="{{hasFn}}" hint-placeholder-val="{{ false }}"><ol class="fn"><sc-for list="{{fn}}" as="f" hint-placeholder-count="2"><li><sc-for list="{{f.parts}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></li></sc-for></ol></sc-if>
+<p class="bigwm">Catch</p><div class="legal"><span>Meet people in real life, through hosts who bring them together.</span><span>Catch is operated by Torana.</span></div></footer>
+<sc-if value="{{hasMbar}}" hint-placeholder-val="{{ true }}"><div class="mbar"><a class="b" href="#">{{mbar}}</a><a class="b wab" href="#" aria-label="Talk to us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/></svg></a></div></sc-if></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 640}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"variant": "host", "footnotes": ["1. Average of reviews from guests who booked on Catch, [dates]."]};
+    const host = [
+      { h: 'Product', links: ['How Catch works', 'Bookings and payments', 'The door', 'Running the night', 'Messages and automations', 'Guest records', 'Forms', 'Your page'] },
+      { h: 'Hosts by format', links: ['Run and walk clubs', 'Racket sports', 'Supper clubs', 'Quiz and game nights', 'Studios', 'Venues', 'Communities', 'Mixers and pub crawls', 'Teams', 'Colleges and alumni'] },
+      { h: 'Get started', links: ['Start free trial', 'Pricing', 'Your first event', 'Switch to Catch', 'Try a demo night', 'Programmes'] },
+      { h: 'Resources', links: ['Host stories', 'Compare', 'No-show calculator', 'Refer a host', 'Help'] },
+      { h: 'Catch', links: ['What’s on', 'About', 'Safety', 'Contact', 'Terms'] }];
+    const guest = [
+      { h: 'Explore', links: ['What’s on', 'New to the city', 'Coming on your own', 'Safety', 'Get notified'] },
+      { h: 'Things to do', links: ['Run clubs', 'Padel and pickleball', 'Supper clubs', 'Quiz nights', 'Nights out', 'Yoga and fitness'] },
+      { h: 'Cities', links: ['Mumbai', 'Indore', 'All cities'] },
+      { h: 'Hosts', links: ['Catch for hosts', 'Pricing', 'Start free trial', 'Claim your page'] },
+      { h: 'Help and legal', links: ['Help', 'Contact', 'Privacy', 'Terms', 'Refunds'] }];
+    return { d, cols: d.variant === 'guest' ? guest : host, hasFn: has(d.footnotes), fn: (d.footnotes || []).map((f) => ({ parts: P(f) })), mbar: d.mbar || 'Start free trial', hasMbar: d.mbar !== false, showCols: d.variant !== 'lp',
+      hasTop: d.top !== false && d.variant !== 'lp', topTitle: (d.top && d.top.title) || (d.variant === 'guest' ? 'Questions about a plan? A person answers.' : 'Questions about your nights? A person answers.'), topSecond: d.variant === 'guest' ? 'Help and safety' : 'Book a walkthrough' };
+  }
+}
+</script>
+</body>
+</html>

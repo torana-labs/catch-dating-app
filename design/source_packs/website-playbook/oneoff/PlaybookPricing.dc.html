@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Playbook · Pricing</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;background:#fff}
+.capbar{display:flex;height:56px;border-radius:16px;overflow:hidden;margin-top:28px;font-size:13px;font-weight:700}
+.capbar span{display:flex;align-items:center;padding:0 14px}
+</style>
+</helmet>
+<div class="pg">
+
+<div class="offer"><span><b>Founding hosts in Mumbai and Indore:</b> 90 days without Catch fees instead of 30, until <span class="ph">[date]</span>.</span><a href="#">Claim a place</a></div>
+<header class="bar"><a class="wm" href="#">Catch</a>
+<nav aria-label="Main"><a href="#">What’s on</a><a href="#">For hosts <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></a><a class="on" href="#">Pricing</a><a href="#">Resources <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></a></nav>
+<span class="sp"></span>
+<a class="wa" href="#" aria-label="Talk to us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-1.8-1.8l.8-1-1-2z"/></svg><span class="walabel">Talk to us</span></a>
+<a class="signin" href="#">Sign in</a><a class="b sm" href="#">Start free trial</a><button class="menu" type="button" aria-label="Menu"><i></i></button></header>
+
+<section class="panel ink" style="margin-top:0"><div class="split" style="align-items:start"><div>
+<p class="k" style="color:#F5C451">Pricing · one plan for every host</p><h1 class="d d-hero" style="color:#F6EFE6">Free events stay free.</h1>
+<p class="price" style="margin-top:28px">5%</p><h2 class="d d-sm" style="margin-top:14px">of ticket sales, never more than ₹10,000 a month.</h2>
+<p class="lead">Free for 30 days from your first event. After that, Catch keeps 5% of what you sell, net of refunds, and stops at ₹10,000 in a month.</p>
+<div class="btns"><a class="b w" href="#">Start free trial</a><a class="b ow" href="#">Talk to us on WhatsApp</a></div></div>
+<div class="calc2"><small>Your ticket sales this month</small><p class="sv">{{salesLabel}}</p>
+<label for="p-rng" class="sr">Ticket sales this month</label><input id="p-rng" class="rng" type="range" min="0" max="500000" step="10000" value="{{sales}}" onInput="{{setSales}}"><div class="rmm"><span>₹0</span><span>₹5,00,000</span></div>
+<div class="tiles2"><div><small>Catch fee</small><b>{{feeLabel}}</b><span>after your trial</span></div><div><small>Your effective rate</small><b>{{rateLabel}}</b><span>of this month’s ticket sales</span></div></div>
+<sc-if value="{{capped}}" hint-placeholder-val="{{ false }}"><p class="capped">Capped. You pay ₹10,000 however much more you sell this month.</p></sc-if>
+<p class="fine">In your first 30 days from your first event: ₹0, whatever you sell. Payment gateway fees are separate; your payment provider charges them at its own rate.</p></div></div>
+<span class="note">Rec 10: its own URL, so it can rank and take ads. The working slider stays.</span></section>
+
+<section class="open"><p class="k" style="color:#B5451F">What hosts like you pay</p><h2 class="d d-sec">Worked out for your kind of night.</h2>
+<div class="ex">
+<div><strong>Free Sunday social run, 40 runners</strong><b>₹0</b>Every week, as long as it’s free.</div>
+<div><strong>Coached run, 20 runners at ₹300</strong><b>₹300 a session</b>5% of ₹6,000.</div>
+<div><strong>Supper club, 24 seats at ₹1,800</strong><b>₹2,160 a dinner</b>5% of ₹43,200, paid when guests book.</div>
+<div><strong>Quiz night, 60 players at ₹499</strong><b>₹1,497 a night</b>5% of ₹29,940.</div>
+<div><strong>Padel social, 16 players at ₹800</strong><b>₹640 a session</b>5% of ₹12,800.</div>
+<div><strong>Pottery workshop, 12 seats at ₹2,500</strong><b>₹1,500 a class</b>5% of ₹30,000.</div>
+</div><p class="body" style="margin-top:16px">Payment gateway fees are added by your payment provider and aren’t included above.</p></section>
+
+<section class="panel tint"><div class="split"><div><p class="k" style="color:#1F7A57">The cap</p><h2 class="d d-sec">Sell more, pay a smaller share.</h2>
+<p class="lead">The fee grows with your sales until it reaches ₹10,000 in a month, which happens at ₹2,00,000 of ticket sales. Everything you sell after that in the same month carries no Catch fee.</p></div>
+<div><div class="capbar"><span style="flex:2;background:#F07A55;color:#141114">5% on the first ₹2,00,000</span><span style="flex:3;background:#5CCB9F;color:#123D2C">No Catch fee on the rest of the month</span></div>
+<div class="ex" style="grid-template-columns:1fr 1fr;margin-top:16px"><div><strong>₹1,00,000 in a month</strong><b>₹5,000</b>5% of sales.</div><div><strong>₹5,00,000 in a month</strong><b>₹10,000</b>An effective rate of 2%.</div></div></div></div></section>
+
+<section class="open"><div class="split top"><div><p class="k" style="color:#4C5BC4">Included</p><h2 class="d d-sec">One plan, everything in it.</h2><p class="lead">No tiers to compare and no features held back for a bigger plan.</p></div>
+<div><div class="incl" style="margin-top:0"><span>Your page</span><span>Bookings and waitlists</span><span>Applications</span><span>Payments by UPI</span><span>QR and self check-in</span><span>Live tools for each format</span><span>A first hello for newcomers</span><span>One record per guest</span><span>Messages and reminders</span><span>Links for promoters and posts</span><span>Reports after each event</span><span>iPhone, Android and iPad apps</span></div>
+<div class="tile paper" style="margin-top:20px"><p style="font-size:16px">“<span class="ph">[A host quote about what the fee is worth to them.]</span>”</p><p style="font-size:13px;color:#5A5450"><span class="ph">[Name]</span> · <span class="ph">[Club]</span></p></div></div></div></section>
+
+<section class="panel m-coral"><div class="split"><div><p class="k" style="color:#3B1F14">Free trial · founding hosts</p><h2 class="d d-sec">30 days free. 90 if you’re early.</h2>
+<p class="lead">Your free days start at your first event, not when you sign up. The first 50 hosts in each city get 90 days, until <span class="ph">[date]</span>.</p>
+<div class="btns"><a class="b" href="#">Start free trial</a></div></div>
+<div class="card"><h3 style="margin:0;font-size:20px">What do no-shows cost you now?</h3><p class="body">Paying upfront and reminders are where the fee usually pays for itself. Work out your own number.</p><div class="btns" style="margin-top:18px"><a class="b o" href="#">Open the no-show calculator</a></div></div></div></section>
+
+<section class="open"><div class="split"><div><p class="k" style="color:#B23A5A">Venues, companies and programmes</p><h2 class="d d-sec">Running several nights a week, or buying for a team?</h2><p class="lead">For venues with a weekly calendar, companies and shared spaces, and multi-day programmes, we’ll set Catch up with you and talk through the right setup.</p></div>
+<div class="btns" style="justify-content:flex-start"><a class="b" href="#">Book a 15-minute walkthrough</a><a class="b o" href="#">Weddings are priced by headcount</a></div></div></section>
+
+<section class="open" style="padding-top:72px"><div class="faq"><div><p class="k" style="color:#1F7A57">Questions about cost</p><h2 class="d d-sec">The small print, in plain words.</h2></div><div>
+<sc-for list="{{faqs}}" as="f" hint-placeholder-count="6"><div><button class="q" type="button" onClick="{{f.toggle}}" aria-expanded="{{f.open}}">{{f.q}}<i>{{f.sign}}</i></button><sc-if value="{{f.open}}" hint-placeholder-val="{{ false }}"><p class="ans">{{f.a}}</p></sc-if></div></sc-for>
+</div></div></section>
+
+<footer class="foot"><div class="top"><h3>Questions about pricing? A person answers.</h3><div class="btns" style="margin-top:0"><a class="b w sm" href="#">WhatsApp us</a><a class="b ow sm" href="#">Book a walkthrough</a></div></div>
+<div class="cols">
+<div><h4>Hosts by format</h4><a>Run and walk clubs</a><a>Racket sports</a><a>Supper clubs</a><a>Quiz and game nights</a></div>
+<div><h4>By organisation</h4><a>Venues</a><a>Companies</a><a>Weddings</a></div>
+<div><h4>Get started</h4><a>Start free trial</a><a>Pricing</a><a>Switch from WhatsApp</a></div>
+<div><h4>Resources</h4><a>Compare</a><a>No-show calculator</a><a>Help</a></div>
+<div><h4>Catch</h4><a>What’s on</a><a>Safety</a><a>Contact</a><a>Terms</a><a>Refunds</a></div></div>
+<p class="bigwm">Catch</p><div class="legal"><span>Meet people in real life, through hosts who bring them together.</span><span>Catch is operated by Torana.</span></div></footer>
+<div class="mbar"><a class="b" href="#">Start free trial</a><a class="b wab" href="#" aria-label="Talk to us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/></svg></a></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5000}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { sales: 120000, open: 0 }; }
+  renderVals() {
+    const s = this.state;
+    const inr = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
+    const fee = Math.min(s.sales * 0.05, 10000);
+    const rate = s.sales > 0 ? fee / s.sales * 100 : 0;
+    const data = [
+      ['When does the free trial start?', 'At your first event, not when you sign up. For 30 days from then (90 for founding hosts), Catch charges nothing on what you sell.'],
+      ['What counts toward the 5%?', 'Ticket sales through Catch, net of refunds. Free events count for nothing.'],
+      ['How does the ₹10,000 cap work?', 'The fee stops growing once it reaches ₹10,000 in a month. That happens at ₹2,00,000 of ticket sales; anything you sell after that in the same month carries no Catch fee.'],
+      ['Who pays payment gateway fees?', 'They’re separate from the Catch fee. Your payment provider charges them at its own rate.'],
+      ['Are there setup fees or a contract?', '[To confirm before launch.]'],
+      ['How are weddings priced?', 'Weddings and multi-day programmes are priced per wedding, by headcount, as a guided pilot.']
+    ];
+    return {
+      sales: s.sales, salesLabel: inr(s.sales), feeLabel: inr(fee), rateLabel: rate.toFixed(1) + '%', capped: s.sales * 0.05 >= 10000,
+      setSales: (e) => { const n = parseFloat(e.target.value); this.setState({ sales: isNaN(n) ? 0 : n }); },
+      faqs: data.map((f, i) => ({ q: f[0], a: f[1], open: s.open === i, sign: s.open === i ? '−' : '+', toggle: () => this.setState({ open: s.open === i ? -1 : i }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>
