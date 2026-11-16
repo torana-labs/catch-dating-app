@@ -105,26 +105,8 @@ class HostFormsRepository {
     parse: HostFormPaymentPage.fromCallableData,
   );
 
-  Future<HostFormPage> listForms(HostFormListRequest request) async {
-    if (HostFormSummaryReads.supports(request)) {
-      return _required(summaries, 'form list').list(request);
-    }
-    return _call(
-      name: 'listOrganizerForms',
-      payload: ListOrganizerFormsCallableRequest(
-        organizerId: request.organizerId,
-        statuses: request.statuses.map((value) => value.name).toList(),
-        purposes: request.purposes.map((value) => value.name).toList(),
-        query: request.query?.trim().isEmpty ?? true
-            ? null
-            : request.query?.trim(),
-        cursor: request.cursor,
-        limit: request.limit.clamp(1, ReadLimitPolicy.historyPage).toInt(),
-      ).toJson(),
-      action: 'load organizer forms',
-      parse: HostFormPage.fromCallableData,
-    );
-  }
+  Future<HostFormPage> listForms(HostFormListRequest request) =>
+      _required(summaries, 'form list').list(request);
 
   Future<List<HostFormTemplateSummary>> listTemplates(String organizerId) =>
       _call(
