@@ -183,12 +183,6 @@ export function buildSyntheticProbePlan({
       },
       responseValidator: "validateListOrganizerFormsCallableResponse",
     },
-    {
-      id: "organizer-crm-summary",
-      name: "getOrganizerCrmSummary",
-      payload: {organizerId},
-      responseValidator: "validateGetOrganizerCrmSummaryCallableResponse",
-    },
   ] : [];
   return {firestore, callables};
 }
