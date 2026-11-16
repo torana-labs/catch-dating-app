@@ -3,19 +3,20 @@ import {useEffect, useMemo, useRef, useState, type ReactNode} from "react";
 import {eventPageCopy as copy, guestEventCopy} from "../../content/events";
 import {recordEventInviteLinkOpen} from "../../firebase";
 import {eventInviteSessionId, eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
-import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain, type SiteBreadcrumbs} from "../../shared/site";
 import {observeOrganizerPageView, trackOrganizerAnalytics} from "../organizers/analytics";
 import {observeOrganizerProviders, trackOrganizerProviderOutboundClick} from "../organizers/observeOrganizerProviders";
 import type {HostListing} from "../organizers/types";
 import {EventBooking} from "./EventBooking";
+import {eventBreadcrumbs} from "./eventBreadcrumbs";
 import {GuestEventEntry} from "./GuestEventEntry";
 import {buildEventPageView, type EventPageData, type EventPageView} from "./eventPageModel";
 import {EventPageMain} from "./sections/EventPageSections";
 
 /**
  * The public event page on the white ground, as the RbWebEventV2 board: the
- * site top bar, then a reading lane (the event and the short footer) beside
- * the booking card. It renders from its eventPublicPage read model.
+ * site top bar with the breadcrumb row, then a reading lane beside the
+ * booking card, then the site footer. It renders from its eventPublicPage read model.
  * `listing` is the organizer listing the analytics observers still read;
  * `mapImageUrl` is the server's map of the meeting point while maps are on.
  */
@@ -62,6 +63,7 @@ export function EventDetailPage({page, listing, mapImageUrl}: {
 
   return (
     <EventPageFrame
+      breadcrumbs={eventBreadcrumbs({city: page.organizer.city, title: view.title})}
       booking={(
         <EventBooking
           catchEntry={<GuestEventEntry eventId={eventId} key={eventId}
@@ -84,12 +86,14 @@ export function EventDetailPage({page, listing, mapImageUrl}: {
 }
 
 /**
- * The page around the event: the site top bar, the event beside the booking
- * rail, then the site footer (owner decision, 14 Nov 2026). Stories render it with a
+ * The page around the event: the site top bar and its breadcrumb (What's on,
+ * the organiser's open city, the event), the event beside the booking rail,
+ * then the site footer (owner decision, 14 Nov 2026). Stories render it with a
  * stand-in for the booking steps.
  */
-export function EventPageFrame({booking, children, mapImageUrl, onShare, view}: {
+export function EventPageFrame({booking, breadcrumbs, children, mapImageUrl, onShare, view}: {
   booking: ReactNode;
+  breadcrumbs?: SiteBreadcrumbs;
   children?: ReactNode;
   mapImageUrl?: string;
   onShare?: () => void;
@@ -97,7 +101,7 @@ export function EventPageFrame({booking, children, mapImageUrl, onShare, view}: 
 }) {
   return (
     <CatchRoot theme="day">
-      <PublicSiteHeader />
+      <PublicSiteHeader breadcrumbs={breadcrumbs} />
       <WebsitePageMain id="event-detail">
         {/*
           * The band is the page container the booking aside measures to dock on a phone,

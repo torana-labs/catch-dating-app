@@ -75,6 +75,127 @@ test("checkout holds the final seat without admitting it", async () => {
     resolveIdentity}), /full/u);
 });
 
+test("a multi-place hold takes, confirms and releases every place at once",
+  async () => {
+    const store = new Store();
+    store.value.capacity = 4;
+    const hold = store.command({places: 3});
+    await store.execute(hold);
+    assert.equal(store.value.checkoutHeld, 3);
+    assert.equal(store.value.occupied, 0);
+    assert.equal(store.reservations.get("person-one")?.places, 3);
+    // Replay neither doubles the hold nor renews it.
+    await store.execute({...hold, nowMillis: 5000});
+    assert.equal(store.value.checkoutHeld, 3);
+    // One place is left: a second party of two cannot fit, one guest can.
+    await assert.rejects(store.execute(store.command({requestId: "hold-two",
+      paymentId: "payment-two", places: 2,
+      subject: {key: "person-two", revision: 1}})), /full/u);
+    await store.execute(store.command({requestId: "hold-three",
+      paymentId: "payment-three", subject: {key: "person-three",
+        revision: 1}}));
+    assert.equal(store.value.checkoutHeld, 4);
+    // Confirm and release use the recorded count; another count conflicts.
+    await assert.rejects(store.execute(store.command({
+      operation: "confirmCheckoutHold", requestId: "confirm-wrong",
+      places: 2, nowMillis: 2000})), /place count/u);
+    await store.execute(store.command({operation: "confirmCheckoutHold",
+      requestId: "confirm-one", nowMillis: 2000}));
+    assert.equal(store.value.occupied, 3);
+    assert.equal(store.value.checkoutHeld, 1);
+    assert.equal(store.reservations.get("person-one")?.active, true);
+    assert.equal(store.reservations.get("person-one")?.places, 3);
+    // Releasing the confirmed booking returns all three places.
+    await applySeatCommand({tx: store, command: {...store.command({
+      requestId: "cancel-one"}), operation: "release"}, resolveIdentity});
+    assert.equal(store.value.occupied, 0);
+    assert.equal(store.reservations.get("person-one")?.active, false);
+    // A later ordinary booking by the same person is one place again.
+    await applySeatCommand({tx: store, command: {...store.command({
+      requestId: "rebook-one"}), operation: "reserve"}, resolveIdentity});
+    assert.equal(store.value.occupied, 1);
+    assert.equal(store.reservations.get("person-one")?.places, undefined);
+  });
+
+test("an expired multi-place hold releases every held place", async () => {
+  const store = new Store();
+  store.value.capacity = 4;
+  await store.execute(store.command({places: 4}));
+  assert.equal(store.value.checkoutHeld, 4);
+  await store.execute(store.command({operation: "releaseCheckoutHold",
+    requestId: "release-one", nowMillis: 1000 + CHECKOUT_HOLD_MILLIS}));
+  assert.equal(store.value.checkoutHeld, 0);
+  assert.equal(store.value.occupied, 0);
+});
+
+test("place counts are validated and single-place hashes are unchanged",
+  async () => {
+    const store = new Store();
+    store.value.capacity = 30;
+    for (const places of [0, -1, 1.5, 21, NaN, "2"]) {
+      await assert.rejects(store.execute(store.command({
+        places: places as number})), /Invalid checkout/u);
+    }
+    assert.equal(store.writes, 0);
+    const implicit = await prepareCheckoutHold({tx: store,
+      command: store.command(), resolveIdentity});
+    const explicit = await prepareCheckoutHold({tx: store,
+      command: store.command({places: 1}), resolveIdentity});
+    assert.equal(implicit.receipt.requestHash, explicit.receipt.requestHash);
+    assert.equal(implicit.reservation?.places, undefined);
+    // A ledger that holds fewer places than the reservation fails closed.
+    applyCheckoutHold(store, await prepareCheckoutHold({tx: store,
+      command: store.command({places: 3, requestId: "hold-three"}),
+      resolveIdentity}));
+    store.value = {...store.value, checkoutHeld: 2};
+    await assert.rejects(store.execute(store.command({
+      operation: "releaseCheckoutHold", requestId: "release-short",
+      nowMillis: 1000 + CHECKOUT_HOLD_MILLIS})), /malformed/u);
+  });
+
+test("concurrent multi-place holds cannot oversell the last places",
+  async () => {
+    const store = new Store();
+    store.value.capacity = 4;
+    await store.execute(store.command({places: 2, requestId: "first",
+      paymentId: "payment-first", subject: {key: "first", revision: 1}}));
+    // Both parties prepare from the same snapshot; only the first applies.
+    const plans = await Promise.all(["left", "right"].map((key) =>
+      prepareCheckoutHold({tx: store, command: store.command({places: 2,
+        requestId: `hold-${key}`, paymentId: `payment-${key}`,
+        subject: {key, revision: 1}}), resolveIdentity})));
+    applyCheckoutHold(store, plans[0]);
+    assert.equal(store.value.checkoutHeld, 4);
+    // The losing transaction retries against the new ledger revision.
+    await assert.rejects(store.execute(store.command({places: 2,
+      requestId: "hold-right", paymentId: "payment-right",
+      subject: {key: "right", revision: 1},
+      expectedLedgerRevision: plans[1].ledger!.revision - 1})), /changed/u);
+    await assert.rejects(store.execute(store.command({places: 2,
+      requestId: "hold-right-retry", paymentId: "payment-right",
+      subject: {key: "right", revision: 1}})), /full/u);
+    assert.equal(store.value.occupied + store.value.checkoutHeld!, 4);
+  });
+
+test("batch release returns every place of a multi-place booking",
+  async () => {
+    const store = new Store();
+    store.value.capacity = 5;
+    await store.execute(store.command({places: 3}));
+    await store.execute(store.command({operation: "confirmCheckoutHold",
+      requestId: "confirm-one", nowMillis: 2000}));
+    const plan = await prepareSeatBatch({tx: store, command: {
+      ...store.command(), batchId: "batch-release", operations: [
+        {subject: {key: "person-one", revision: 1}, operation: "release",
+          requestId: "release-one", expectedReservationRevision: 2},
+        {subject: {key: "person-two", revision: 1}, operation: "reserve",
+          requestId: "reserve-two", expectedReservationRevision: 0}]},
+    resolveIdentity});
+    assert.equal(plan.result.occupied, 1);
+    assert.equal(plan.reservations[0].places, 3);
+    assert.equal(plan.reservations[1].places, undefined);
+  });
+
 test("confirm converts only the owning hold once and never extends expiry",
   async () => {
     const store = new Store();

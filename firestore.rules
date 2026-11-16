@@ -1251,6 +1251,25 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Founding-host offer (owner decision 16 Nov 2026). Each city's public
+    // projection holds counts only (cap, places left, status, deadline), so
+    // anyone may read it for the website's "places left" strip. The offer
+    // config, the places organizers hold and the one-place-per-owner-per-city
+    // guards stay server-only; Functions write them in one transaction.
+    match /publicFoundingHostOffers/{marketId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /foundingHostOffers/{marketId} {
+      allow read, write: if false;
+    }
+    match /foundingHostPlaces/{organizerId} {
+      allow read, write: if false;
+    }
+    match /foundingHostOwnerPlaces/{ownerPlaceId} {
+      allow read, write: if false;
+    }
+
     match /organizers/{organizerId}/posts/{postId} {
       allow read: if isAuthed();
       allow write: if false;
@@ -1385,6 +1404,13 @@ service cloud.firestore {
     }
     match /hostGroupDetails/{audienceId} {
       allow get: if isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
+    // One published form version's answer filters, read by version id. A view
+    // not written yet reads as missing rather than denied.
+    match /hostFormVersionFilters/{versionId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
       allow list, write: if false;
     }
     match /hostResponseSummaries/{summaryId} {

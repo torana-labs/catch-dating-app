@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_form_version_filters.schema.json",
+  "title": "HostFormVersionFilterDocument",
+  "description": "Server-maintained manager read view of one published native form version's answer filters: the questions the response inbox can filter by, exactly as listOrganizerFormResponses returns them as answerFilterOptions for that version. Written by a trigger on organizerFormVersions, which are immutable. Never answers, never the version definition, and never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostFormVersionFilters",
+  "x-firestore-path": "hostFormVersionFilters/{versionId}",
+  "x-document-id-field": "versionId",
+  "x-owner": "Host read model projector (hostReadModels form version filter trigger)",
+  "required": [
+    "organizerId",
+    "formId",
+    "versionId",
+    "formVersion",
+    "answerFilterOptions",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "formId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "versionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "formVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000,
+      "description": "The published version number N of versionId (formId_vN).",
+      "x-catch-ownership": "server-only"
+    },
+    "answerFilterOptions": {
+      "$ref": "../callable_responses/list_organizer_form_responses_response.schema.json#/properties/answerFilterOptions",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
