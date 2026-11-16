@@ -32,7 +32,7 @@ describe("not-found page", () => {
 
   it("offers four ways on, each a tile with its link, then the way home and to help", () => {
     render(<NotFoundPage />);
-    expect(band().getAllByRole("heading", {level: 3}).map((heading) => heading.textContent))
+    expect(band().getAllByRole("heading", {level: 2}).map((heading) => heading.textContent))
       .toEqual(["What’s on", "Organizer directory", "Claim a listing", `Host on ${brand.name}`]);
     expect(band().getByText(copy.tiles.directory.body)).toBeTruthy();
     expect(band().getByText(copy.tiles.claim.body)).toBeTruthy();

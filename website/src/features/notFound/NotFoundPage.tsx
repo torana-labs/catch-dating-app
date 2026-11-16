@@ -24,7 +24,7 @@ const tiles = [
 function Tile({id, ground}: (typeof tiles)[number]) {
   const tile = copy.tiles[id];
   const body = id === "whatsOn" ? whatsOnBody() : tile.body;
-  return <CatchFeatureTile body={body} ground={ground} link={tile.link} title={tile.title} />;
+  return <CatchFeatureTile body={body} ground={ground} level={2} link={tile.link} title={tile.title} />;
 }
 
 /**
@@ -57,7 +57,7 @@ export function NotFoundPage() {
       <PublicSiteHeader />
       <WebsitePageMain id="top">
         <CatchSurface aria-labelledby="not-found-title" as="section" block="band">
-          <CatchBandHeader align="center" kicker={copy.kicker} kickerTone="danger" lead={copy.lead} level={1} title={copy.title} titleId="not-found-title" />
+          <CatchBandHeader align="center" kicker={copy.kicker} kickerTone="primary" lead={copy.lead} level={1} title={copy.title} titleId="not-found-title" />
           <Tiles />
           <CatchStack collapseBelow="medium" direction="row" gap={12} wrap>
             <CatchButton href={copy.home.href} label={copy.home.label} />
