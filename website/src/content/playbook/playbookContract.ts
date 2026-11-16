@@ -243,6 +243,8 @@ const sectionSpec = {
       cap: copy(),
       trial: copy(),
       actions: actions(),
+      /** A calculator under the columns, from the custom registry (the /pricing/ fee calculator). */
+      calculator: oneOfValues(["pricingCalculator"] as const),
     }),
     faq: obj({...base("faq"), ...band, items: list(obj({question: copy(), answer: copy()}), 1, 12)}, {kicker: copy(), action}),
     cta: obj({...base("cta"), ...band}, {
