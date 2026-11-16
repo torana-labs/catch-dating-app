@@ -50,6 +50,14 @@ export type {
   CatchHeroSectionProofItem,
   CatchHeroSectionProps,
 } from "./components/CatchHeroSection";
+export {CatchSplitSection} from "./components/CatchSplitSection";
+export type {
+  CatchSplitSectionAlign,
+  CatchSplitSectionCheck,
+  CatchSplitSectionGroup,
+  CatchSplitSectionMetric,
+  CatchSplitSectionProps,
+} from "./components/CatchSplitSection";
 export {CatchScreenPreview} from "./components/CatchScreenPreview";
 export type {
   CatchScreenPreviewBar,
