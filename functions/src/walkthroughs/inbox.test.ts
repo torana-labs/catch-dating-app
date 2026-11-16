@@ -44,10 +44,11 @@ test("a new booking opens an Admin Inbox task to confirm on WhatsApp, with the n
   const item = h.db.get(`adminInboxItems/${ITEM_ID}`)!;
   assert.deepEqual([item.status, item.type, item.title, item.assigneeUid], ["waiting", "enquiry", "Asha", null]);
   assert.deepEqual(h.db.get(`adminInboxJourney/${ITEM_ID}~booked`)!.title, "Booked a walkthrough for Mon 16 Nov, 11:00 IST");
-  // The stored item meets the inbox contract except for the new kind, which the hand-off's schema edit adds.
+  // The stored item meets the inbox contract; until the hand-off's schema edit
+  // lists the walkthroughBooking kind, the kind is its only difference.
   const validate = contractValidator("AdminInboxItemDocument");
-  assert.equal(validate(item), false);
-  assert.deepEqual((validate.errors ?? []).map((error) => error.instancePath), ["/sourceKind"]);
+  const errors = validate(item) ? [] : validate.errors ?? [];
+  assert.deepEqual(errors.filter((error) => error.instancePath !== "/sourceKind"), []);
   assert.equal(validate({...item, sourceKind: "salesInboundIntent"}), true);
 });
 
