@@ -269,6 +269,11 @@ void main() {
     await tester.tap(find.text('Drafts'));
     await pumpAppShellFrames(tester, frames: 20);
     expect(find.text('Rooftop supper club'), findsWidgets);
+    // Drafts come from the hostEventSummaries read model, never a callable.
+    expect(
+      backend.functions.calls.map((call) => call.name),
+      isNot(contains('listPrivateEventSetups')),
+    );
     final reopenFrom = backend.functions.calls.length;
     await tester.tap(find.byKey(ValueKey('host-events-draft-$eventId')));
     await pumpAppShellFrames(tester, frames: 30);

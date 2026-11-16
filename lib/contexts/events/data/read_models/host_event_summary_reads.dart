@@ -3,24 +3,21 @@ import 'dart:convert';
 import 'package:catch_dating_app/contexts/events/domain/private_event_setup_inventory.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
 
+/// The unpublished event inventory from `hostEventSummaries`. Published
+/// events are read from `events` directly.
 class HostEventSummaryReads {
   const HostEventSummaryReads(this.reader);
   final HostSummaryReader reader;
   static const cursorPrefix = 'hes1_';
+  static const marker = 'eventSummaryVersion';
 
-  Future<PrivateEventSetupInventoryPage?> list({
+  Future<PrivateEventSetupInventoryPage> list({
     required String organizerId,
     required PrivateEventSetupScope scope,
     required int limit,
     String? cursor,
   }) async {
-    final directory = await reader.directory(organizerId);
-    if (directory?['eventSummaryVersion'] != 1) {
-      if (cursor?.startsWith(cursorPrefix) ?? false) {
-        throw StateError('The event directory changed; refresh this list.');
-      }
-      return null;
-    }
+    await reader.activatedDirectory(organizerId, marker);
     final now = DateTime.now().millisecondsSinceEpoch;
     var asOf = now;
     String? innerCursor;
