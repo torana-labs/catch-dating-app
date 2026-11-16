@@ -529,6 +529,17 @@ function validateStaticOutput(route) {
       }
     }
   }
+  if (route.staticOutput === "content-postbuild") {
+    if (!postbuildSource.includes("for (const ref of registeredPlaybookPages())")) {
+      errors.push(`${route.id}: postbuild.mjs must emit every registered playbook page.`);
+    }
+    if (!appRoutingSource.includes("resolvePlaybookPage(location.pathname)")) {
+      errors.push(`${route.id}: App.tsx must resolve playbook pages before its router.`);
+    }
+    if (!pageMetaSource.includes("if (resolvePlaybookPage(pathname)) return \"playbook\";")) {
+      errors.push(`${route.id}: getPageKey must return playbook for a registered playbook page.`);
+    }
+  }
   if (route.staticOutput === "spa-rewrite") {
     if (route.sitemap !== "excluded") {
       errors.push(`${route.id}: SPA rewrite routes must be excluded from sitemap until static output exists.`);

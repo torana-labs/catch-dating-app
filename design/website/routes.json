@@ -1348,7 +1348,7 @@
       "kind": "contentFamily",
       "path": "/host/run-clubs/",
       "pageKey": "playbook",
-      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "source": "website/src/features/playbook/PlaybookPage.tsx",
       "content": {
         "group": "host",
         "board": "PlaybookRunClubs"
@@ -1356,10 +1356,10 @@
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "Run and walk clubs: the organiser-type template (hero, pains, a run morning, buyer's checklist, pricing at their size, FAQs, capture).",
+      "notes": "Run and walk clubs: the organiser-type template (hero, pains, a run morning, buyer's checklist, pricing at their size, FAQs, capture). The first page wired end to end: website/src/content/playbook/pages/host/run-clubs.json, noindex until the owner approves it.",
       "review": {
         "priority": "p1",
-        "status": "planned",
+        "status": "ready",
         "viewports": [
           "desktop",
           "mobile"
@@ -1368,10 +1368,10 @@
           "page"
         ],
         "stateCoverage": {
-          "storybook": [],
-          "manual": [
+          "storybook": [
             "page"
-          ]
+          ],
+          "manual": []
         }
       }
     },

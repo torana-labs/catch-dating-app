@@ -13,7 +13,7 @@ import {
 
 const validateSchema = new Ajv2020({allErrors: true}).compile(schema);
 const context: PlaybookValidationContext = {
-  routeIds: new Set(["host", "host_run_clubs"]),
+  routeIds: new Set(["host", "host_run_clubs", "host_start", "pricing"]),
   captureSlots: new Set(["host-formats-pods", "guest-explore"]),
 };
 
@@ -32,7 +32,7 @@ describe("playbook page contract", () => {
 
   it("names the section types after the kit concepts", () => {
     expect([...playbookSectionTypes].sort()).toEqual([
-      "article", "cards", "checklist", "cta", "faq", "flow", "hero", "pricing",
+      "article", "cards", "checklist", "cta", "custom", "faq", "flow", "hero", "pricing",
       "screen", "split", "story", "table", "tabs", "tiles", "timeline",
     ]);
   });
@@ -75,6 +75,22 @@ describe("playbook page contract", () => {
       page.sections.push({type: "cards", id: "plans", ground: "white", title: "Plans", items: []});
     })],
     ["section id with spaces", fixture((page) => {page.sections[1].id = "sound familiar";})],
+    ["lead form without a request kind", fixture((page) => {
+      delete (section(page, "cta").leadForm as Mutable).requestKind;
+    })],
+    ["unknown lead field", fixture((page) => {
+      (section(page, "cta").leadForm as Mutable).fields = [{name: "email", label: "Email"}];
+    })],
+    ["custom section outside the registry", fixture((page) => {
+      page.sections.push({type: "custom", id: "calculator", ground: "white", component: "roiCalculator"});
+    })],
+    ["store badges as true", fixture((page) => {section(page, "cta").storeBadges = true;})],
+    ["qr code of a URL", fixture((page) => {
+      section(page, "timeline").media = {kind: "qr", url: "https://example.com", label: "Open on your phone"};
+    })],
+    ["table rows as bare lists", fixture((page) => {
+      page.sections.push({type: "table", id: "compare", ground: "white", title: "Compare", columns: ["Us", "Them"], rows: [["Price", "Free", "Paid"]]});
+    })],
     ["unknown header variant", fixture((page) => {(page.header as Mutable).variant = "lp";})],
     ["too many hero actions", fixture((page) => {
       const actions = section(page, "hero").actions as Mutable[];
@@ -109,6 +125,20 @@ describe("playbook page contract", () => {
     const lp = fixture((page) => {page.route = "lp_campaign"; (page.meta as Mutable).noindex = false;});
     const lpContext = {...context, routeIds: new Set([...context.routeIds, "lp_campaign"]), alwaysNoindexRoutes: new Set(["lp_campaign"])};
     expect(validatePlaybookPage(lp, lpContext).join("\n")).toMatch(/meta.noindex must stay true/u);
+  });
+
+  it("checks family page links and cross-page anchors against the registered pages", () => {
+    const familyLink = fixture((page) => {
+      (section(page, "hero").actions as Mutable[])[0].to = {page: "story_detail/carter-road", anchor: "quote"};
+    });
+    expect(validatePlaybookPage(familyLink, {...context, pageAnchors: new Map()}).join("\n")).toMatch(/not a registered page/u);
+    expect(validatePlaybookPage(familyLink, {...context, pageAnchors: new Map([["story_detail/carter-road", new Set(["top"])]])}).join("\n"))
+      .toMatch(/#quote, which is not a section of story_detail\/carter-road/u);
+    const crossAnchor = fixture((page) => {
+      (section(page, "hero").actions as Mutable[])[0].to = {route: "host_run_clubs", anchor: "nowhere"};
+    });
+    expect(validatePlaybookPage(crossAnchor, {...context, routeAnchors: new Map([["host_run_clubs", new Set(["top", "pricing"])]])}).join("\n"))
+      .toMatch(/not a section of host_run_clubs/u);
   });
 
   it("requires a source for numeric proof and a section for every anchor", () => {

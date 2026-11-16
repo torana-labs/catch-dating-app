@@ -25,7 +25,7 @@
       "title": "Every runner in a pace group before Sunday.",
       "lead": "Sign-ups, pace pods, a first hello at the start line and next week’s run already booked. Without the 200-message WhatsApp thread.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host", "anchor": "start"}, "emphasis": "primary"},
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
         {
           "label": "Talk to us on WhatsApp",
           "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run a run club and have a question about hosting on {{brand.name}}."},
@@ -126,16 +126,17 @@
       "ground": "ink",
       "kicker": "Pricing for run clubs",
       "price": "₹0",
-      "priceNote": "for free runs, every week. 5% on paid runs, never more than ₹10,000 in a 30-day billing cycle.",
-      "lead": "Free for 30 days from your first event. Payment gateway fees are separate.",
+      "title": "for free runs, every week.",
+      "cap": "5% on paid runs, never more than ₹10,000 per 30-day billing cycle.",
+      "trial": "Free for 30 days from your first event, and 90 days free for founding hosts. Payment gateway fees are separate.",
       "examples": [
         {"title": "A free Sunday social run, 40 runners", "value": "₹0", "body": "Every week, for as long as it’s free."},
         {"title": "A coached interval session, 20 runners at ₹300", "value": "₹300 a session", "body": "5% of ₹6,000, paid when runners book."},
-        {"title": "A monthly brand-partner 10K, 150 runners at ₹500", "value": "₹3,750 a race", "body": "5% of ₹75,000. The fee never passes ₹10,000 in a billing cycle."}
+        {"title": "A monthly brand-partner 10K, 150 runners at ₹500", "value": "₹3,750 a race", "body": "5% of ₹75,000. The fee never passes ₹10,000 per billing cycle."}
       ],
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host", "anchor": "start"}, "emphasis": "primary"},
-        {"label": "See full pricing", "to": {"route": "host", "anchor": "pricing"}, "emphasis": "secondary"}
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
       ]
     },
     {
@@ -145,7 +146,7 @@
       "kicker": "Run club questions",
       "title": "What run club leads ask us.",
       "items": [
-        {"question": "Can my free runs stay free?", "answer": "Yes. {{brand.name}} charges nothing on runs you don’t charge for, every week. The 5% fee applies only to paid tickets, and never passes ₹10,000 in a 30-day billing cycle."},
+        {"question": "Can my free runs stay free?", "answer": "Yes. {{brand.name}} charges nothing on runs you don’t charge for, every week. The 5% fee applies only to paid tickets, and never passes ₹10,000 per 30-day billing cycle."},
         {"question": "Do runners need to download an app?", "answer": "No. Runners book on your page and check in at the meeting point. Live moments open in their phone’s browser."},
         {"question": "Can we keep our WhatsApp group?", "answer": "Yes, and most clubs do. Keep chatting there and post your {{brand.name}} link for sign-ups, payments and pods."},
         {"question": "How are pace groups made?", "answer": "Every booking brings a pace. {{brand.name}} builds pods of six to eight at a similar pace and spreads newcomers so no pod is all strangers. You can move anyone before the run."},
@@ -161,15 +162,22 @@
       "title": "Your next run, without the thread.",
       "lead": "Start the free trial, or message us on WhatsApp and we’ll send you the run club setup guide.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host", "anchor": "start"}, "emphasis": "primary"},
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
         {
           "label": "Get the setup guide on WhatsApp",
           "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, please send me the run club setup guide."},
           "emphasis": "secondary"
         }
       ],
-      "leadForm": {"id": "run_club_setup_guide", "label": "Your WhatsApp number", "submitLabel": "Send the guide"},
-      "storeBadges": true,
+      "leadForm": {
+        "id": "run_club_setup_guide",
+        "requestKind": "guide",
+        "format": "run-clubs",
+        "label": "Your WhatsApp number",
+        "submitLabel": "Send the guide",
+        "note": "We’ll message you on WhatsApp with the guide."
+      },
+      "storeBadges": "host",
       "media": {"kind": "capture", "slot": "guest-explore"}
     }
   ]

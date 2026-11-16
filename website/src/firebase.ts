@@ -665,6 +665,29 @@ export async function withdrawEventRuntimeWingmanRequest(
   );
 }
 
+/**
+ * A market's public founding-host counter (publicFoundingHostOffers, public
+ * read), or null when the build has no Firebase config or the market has
+ * none. The callback gets the raw document; the caller decides what it shows.
+ */
+export async function watchPublicFoundingHostOffer(
+  marketId: string,
+  onValue: (value: unknown) => void,
+  onError: (error: Error) => void,
+): Promise<() => void> {
+  const runtime = await getFirebaseRuntime();
+  if (!runtime) {
+    onValue(null);
+    return () => undefined;
+  }
+  const {doc, onSnapshot} = await import("firebase/firestore");
+  return onSnapshot(
+    doc(runtime.firestore, "publicFoundingHostOffers", marketId),
+    (snapshot) => onValue(snapshot.exists() ? snapshot.data() : null),
+    onError,
+  );
+}
+
 export async function watchEventRuntimeLiveState(
   context: EventRuntimeContext,
   onValue: (state: EventRuntimeLiveState) => void,
