@@ -126,13 +126,20 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(growth.getByText("5%")).toBeTruthy();
   });
 
-  it("closes with three steps, Catch Host's badges and no QR code, and a link to Catch for weddings", () => {
+  it("closes with three steps, Catch Host's badges (no QR code at phone width) and a link to Catch for weddings", () => {
     renderPage();
     const start = within(screen.getByRole("region", {name: copy.start.title}));
     expect(start.getAllByRole("listitem")).toHaveLength(3);
     expect(start.getByRole("link", {name: "Download on the App Store"}).getAttribute("href")).toBe(brand.stores.host.ios);
     expect(start.queryByRole("img", {name: /QR/i})).toBeNull();
     expect(start.getByRole("link", {name: copy.start.weddings}).getAttribute("href")).toBe("/weddings/");
+  });
+
+  it("offers a person on WhatsApp, with the question already typed", () => {
+    renderPage();
+    const talk = screen.getByRole("link", {name: copy.hero.talk}).getAttribute("href")!;
+    expect(talk.startsWith(`https://wa.me/${brand.support.whatsapp.replace(/\D/gu, "")}?text=`)).toBe(true);
+    expect(decodeURIComponent(talk.split("?text=")[1])).toContain("question about hosting");
   });
 
   it("answers the FAQ in place, one item open at a time, trial questions included", () => {

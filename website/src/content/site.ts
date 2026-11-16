@@ -11,6 +11,19 @@ import type {StoreCtaCopy} from "./types";
 export const guestAppLive = Boolean(brand.stores.consumer.ios || brand.stores.consumer.android);
 export const guestAppActionLabel = guestAppLive ? "Get the app" : "Get notified";
 
+/** A WhatsApp chat with Catch on its support number (brand.json), with the message already typed. */
+export function whatsappChatHref(message: string) {
+  return `https://wa.me/${brand.support.whatsapp.replace(/\D/gu, "")}?text=${encodeURIComponent(message)}`;
+}
+
+/** The messages each WhatsApp button types for the person, and the buttons' words. */
+export const whatsappChatCopy = {
+  hostLinkMessage: `Hi ${brand.name}, please send me the ${brand.stores.hostAppName} link.`,
+  hostQuestionMessage: `Hi ${brand.name}, I have a question about hosting on ${brand.name}.`,
+  generalMessage: `Hi ${brand.name}, I have a question.`,
+  chat: "Chat on WhatsApp",
+} as const;
+
 export const ownerGatedSiteDestinations = {
   contactHref: `mailto:${brand.support.email}`,
 } as const;

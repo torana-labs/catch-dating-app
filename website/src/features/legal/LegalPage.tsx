@@ -1,6 +1,7 @@
 import type {PublishedLegalPage} from "../../content/types";
 import {publishedLegalContent} from "../../content/legal";
 import {fallbackPublicContact, renderContactText, type PublicContact} from "../../content/publicContact";
+import {whatsappChatCopy, whatsappChatHref} from "../../content/site";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {
   LegalDocument,
@@ -55,6 +56,8 @@ export function LegalPage({page, effectiveDate, contact = fallbackPublicContact}
           <LegalDocumentContact>
             <p>{ui.contactPrompt}</p>
             <PlainLink href={`mailto:${contact.supportEmail}`}>{contact.supportEmail}</PlainLink>
+            {/* A person on WhatsApp, not only an email (leak 7). */}
+            <PlainLink href={whatsappChatHref(whatsappChatCopy.generalMessage)}>{whatsappChatCopy.chat}</PlainLink>
           </LegalDocumentContact>
         </LegalDocument>
       </WebsitePageMain>

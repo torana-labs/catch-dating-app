@@ -12,6 +12,7 @@ import {
   CatchNightScene,
   CatchPageTabBar,
   CatchPipelineBoard,
+  CatchQrCode,
   CatchRangeInput,
   CatchRoot,
   CatchScroller,
@@ -22,10 +23,13 @@ import {
   CatchStoreButton,
   CatchSurface,
   CatchText,
+  useCatch,
   type CatchAppCaptureImageProps,
 } from "@catch/web-ui";
 import {hostLandingCopy as copy, hostNightCaptureScreen, hostNightFocus, hostNightFormats} from "@content/hostLanding";
 import {interpolateContent as fill} from "@content/interpolate";
+import {brand} from "@content/brand";
+import {whatsappChatCopy, whatsappChatHref} from "@content/site";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {captureSlot} from "../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
@@ -93,6 +97,8 @@ function Hero({captures}: {captures: CaptureSlots}) {
           </CatchStack>
           <HostStoreBadges placement="host_hero" />
           <CatchText variant="label-action">{copy.hero.terms}</CatchText>
+          {/* A person, one tap away (leak 7). */}
+          <CatchStack align="start"><CatchButton href={whatsappChatHref(whatsappChatCopy.hostQuestionMessage)} label={copy.hero.talk} size="sm" variant="quiet" /></CatchStack>
         </CatchStack>
         {today ? <CatchAppCaptureImage {...today} bleed size="md" tilt="right" /> : null}
       </CatchStack>
@@ -331,6 +337,29 @@ function Faq() {
   );
 }
 
+/**
+ * On a wide screen the store badges open store pages on the desktop, so the
+ * start band adds a QR code that opens this band on the phone, and a WhatsApp
+ * chat that asks Catch for the link (leak 6). Phones get the badges alone.
+ */
+function LaptopHandoff() {
+  const {sizeClass} = useCatch();
+  const start = copy.start;
+  if (sizeClass === "compact") return null;
+  return (
+    <CatchSurface block="floating" padding="md">
+      <CatchStack align="center" direction="row" gap={16}>
+        <CatchQrCode label={start.qrLabel} value={`${brand.web.origin}/host/#start`} />
+        <CatchStack gap={8}>
+          <CatchText variant="title-row">{start.qrTitle}</CatchText>
+          <CatchText tone="secondary" variant="body-small">{start.qrBody}</CatchText>
+          <CatchStack align="start"><CatchButton href={whatsappChatHref(whatsappChatCopy.hostLinkMessage)} label={start.whatsappLink} size="sm" variant="secondary" /></CatchStack>
+        </CatchStack>
+      </CatchStack>
+    </CatchSurface>
+  );
+}
+
 function Start() {
   const start = copy.start;
   return (
@@ -344,6 +373,7 @@ function Start() {
         <CatchStack gap={24}>
           <CatchStepList steps={start.steps} />
           <HostStoreBadges placement="host_start" />
+          <LaptopHandoff />
           <CatchStack align="center" direction="row" gap={8} wrap>
             <CatchText variant="body-small">{start.weddingsLead}</CatchText>
             <CatchButton href={start.weddingsHref} label={start.weddings} size="sm" trailingIcon="forward" variant="quiet" />
