@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · pricing</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><section class="panel ink"><div class="split"><div><p class="k" style="color:#F5C451">{{d.kicker}}</p><p class="price">{{price}}</p><h2 class="d d-sm" style="margin-top:18px"><sc-for list="{{sub}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h2>
+<p class="lead"><sc-for list="{{lead}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p><div class="btns"><sc-for list="{{btns}}" as="b" hint-placeholder-count="2"><a class="b {{b.cls}}" href="{{b.href}}">{{b.l}}</a></sc-for></div></div>
+<div class="ex" style="grid-template-columns:1fr;margin-top:0"><sc-for list="{{examples}}" as="x" hint-placeholder-count="3"><div><strong>{{x.t}}</strong><b>{{x.v}}</b><sc-for list="{{x.d}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></div></sc-for></div></div></section></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 720}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"kicker": "Pricing for supper clubs", "examples": [{"t": "A 24-seat supper at ₹1,800", "v": "₹2,160 a dinner", "d": "5% of ₹43,200."}]};
+    return { d, price: d.price || '5%', sub: P(d.sub || 'of ticket sales, never more than ₹10,000 a month.'), lead: P(d.lead || 'Free for 30 days from your first event, 90 for founding hosts. Payment gateway fees are separate.'),
+      btns: B(d.btns || [{ l: 'Start free trial', kind: 'light' }, { l: 'See full pricing', kind: 'lightsec' }]), examples: (d.examples || []).map((x) => ({ t: x.t, v: x.v, d: P(x.d) })) };
+  }
+}
+</script>
+</body>
+</html>

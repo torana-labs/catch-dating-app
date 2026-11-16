@@ -1,0 +1,327 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookProgrammes",
+  "title": "Playbook · Programmes",
+  "height": 6400,
+  "phone": {
+    "title": "Programmes",
+    "height": 10400
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "cta": "Book a walkthrough",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Programmes"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Programmes · offsites, retreats and milestone birthdays",
+        "title": "A weekend away for eighty people, without eighty WhatsApp threads.",
+        "lead": "Every household gets its own itinerary. The hotel gets the rooming list and IDs. Drivers get their trips, vendors get the run sheet. Everyone gets a link, nobody needs an app, and you see it all come together in one place.",
+        "ink": "#123D2C",
+        "tone": "m-mint",
+        "btns": [
+          {
+            "l": "Book a walkthrough"
+          },
+          {
+            "l": "See the plans",
+            "kind": "sec"
+          }
+        ],
+        "door": "Planning a wedding? See Catch for weddings →",
+        "media": {
+          "kind": "card",
+          "title": "See you there, Mehra family",
+          "sub": "Your weekend · Leadership offsite, Alibaug",
+          "rows": [
+            {
+              "t": "Fri 17 Jan · Ferry from Gateway 8:30 AM",
+              "s": "Pick-up from the jetty at 9:40 · 2 travellers"
+            },
+            {
+              "t": "Staying at Sea Breeze Resort",
+              "s": "Room 214 · IDs: 2 of 2 checked"
+            },
+            {
+              "t": "Lunch on the lawn"
+            },
+            {
+              "t": "Strategy session · Conference hall"
+            },
+            {
+              "t": "Beach dinner · Smart casual"
+            }
+          ],
+          "fine": "Illustrative screen"
+        },
+        "note": "Priority-2 page (/programmes/). Built on organizer programmes: household RSVP and itinerary, ID collection, hotel handover, driver trips, vendor run sheet, hampers, family numbers view. Decision: the same three plans as weddings, from contracts/catalogs/organizer_entitlement_skus.json. Weddings keep their own page."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "What it’s for",
+        "kc": "#4C5BC4",
+        "title": "When the event is a whole weekend.",
+        "lead": "",
+        "panel": "open",
+        "cols": 4,
+        "items": [
+          {
+            "t": "Company offsites",
+            "d": "Leadership retreats and team weekends, with flights, rooms and a run sheet.",
+            "tone": "m-coral"
+          },
+          {
+            "t": "Retreats",
+            "d": "Yoga, writing or wellness weekends where guests travel in and stay together.",
+            "tone": "m-mint"
+          },
+          {
+            "t": "Milestone birthdays",
+            "d": "A 50th in Goa: three functions, two hotels, a hundred guests from four cities.",
+            "tone": "m-yellow"
+          },
+          {
+            "t": "Group trips",
+            "d": "A club’s weekend away or a reunion, with everyone’s travel in one place.",
+            "tone": "m-pink"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "A link for everyone",
+        "kc": "#F5C451",
+        "title": "Everyone sees their part. Nobody downloads anything.",
+        "lead": "Each link opens in a browser, shows only what that person needs, and stops working when you say.",
+        "panel": "ink",
+        "center": false,
+        "items": [
+          {
+            "small": "Guests",
+            "t": "Their own itinerary",
+            "d": "RSVP for each function, flights and pickups, where they’re staying, what to wear. One link per household."
+          },
+          {
+            "small": "Hotel front desk",
+            "t": "The rooming list",
+            "d": "Rooms, guests, arrival times and ID status, for the desk only, until the last checkout."
+          },
+          {
+            "small": "Drivers",
+            "t": "Their trips",
+            "d": "Pick-up, drop, passengers and bags, with directions. They mark when they’ve left and arrived."
+          },
+          {
+            "small": "Vendors",
+            "t": "A run sheet",
+            "d": "What’s now, what’s next, and their trips, for the caterer, decorator or photographer."
+          },
+          {
+            "small": "Porters",
+            "t": "Welcome hampers",
+            "d": "Room by room, tap Placed and take a photo. You see progress as it happens."
+          },
+          {
+            "small": "Sponsor or family",
+            "t": "Numbers only",
+            "d": "Who’s coming to what and who hasn’t replied, without names, numbers or rooms."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Arrivals and transport",
+        "kc": "#B23A5A",
+        "title": "Every flight met, every car full.",
+        "lead": "Guests add their flights and trains when they reply. You see who lands when, group them into pickups, and send each driver their trip. When plans change, the guest’s itinerary and the driver’s trip change with them.",
+        "panel": "open",
+        "ticks": [
+          "Arrivals grouped into pickups",
+          "Drivers mark left and arrived",
+          "Departures planned the same way"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "",
+          "rows": [
+            {
+              "t": "AI 610 · Mehra family",
+              "s": "2 travellers · 3 bags",
+              "tag": "Car 2 · arrived",
+              "tone": "good"
+            },
+            {
+              "t": "6E 2131 · Shah, Rao",
+              "s": "4 travellers",
+              "tag": "Car 4 · on the way",
+              "tone": "warn"
+            },
+            {
+              "t": "Ferry · 11 guests",
+              "s": "From Gateway of India",
+              "tag": "Coach · waiting",
+              "tone": "warn"
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Rooms and IDs",
+        "kc": "#1F7A57",
+        "title": "Check-in in a minute, not twenty.",
+        "lead": "Hotels in India record an ID for every adult. Guests add theirs from their itinerary; the front desk gets a rooming list with ID status, and nobody hands round a folder of photocopies.",
+        "items": [
+          {
+            "t": "Only the desk and your team",
+            "d": "See guests’ IDs."
+          },
+          {
+            "t": "Every view logged",
+            "d": "And shared with you."
+          },
+          {
+            "t": "Deleted after checkout",
+            "d": "Three days after the last guest leaves."
+          },
+          {
+            "t": "Masked Aadhaar is fine",
+            "d": "Only the last four digits show."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Plans",
+        "kc": "#F5C451",
+        "title": "One price per programme.",
+        "lead": "The same plans whether it’s an offsite, a retreat or a birthday weekend. Pay once for the programme; no fee per guest.",
+        "panel": "ink",
+        "center": false,
+        "items": [
+          {
+            "small": "Essentials",
+            "t": "₹24,999",
+            "d": "per programme · Add arrivals and transport for ₹14,999",
+            "list": [
+              "Up to 150 guests",
+              "Up to 5 functions",
+              "RSVPs, itineraries, forms and messages",
+              "2 people from your side to share it with"
+            ],
+            "tone": "white"
+          },
+          {
+            "small": "Pro",
+            "t": "₹59,999",
+            "d": "per programme",
+            "list": [
+              "Up to 400 guests",
+              "Up to 10 functions",
+              "Arrivals, transport and drivers",
+              "Rooms, IDs and the hotel desk link",
+              "6 people from your side"
+            ],
+            "tone": "white"
+          },
+          {
+            "small": "Signature",
+            "t": "₹1,49,999",
+            "d": "per programme",
+            "list": [
+              "Up to 1,000 guests",
+              "Unlimited functions",
+              "Everything in Pro",
+              "300 flight-tracking days and 3,000 WhatsApp conversations included",
+              "Everyone from your side"
+            ],
+            "tone": "white"
+          }
+        ],
+        "note2": "Planning several programmes a year? Ask about an annual plan for planners."
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "About programmes.",
+        "items": [
+          [
+            "Do guests need an app?",
+            "No. Every guest, driver, vendor and the hotel desk gets a link that opens in their browser."
+          ],
+          [
+            "How is this different from an event on Catch?",
+            "An event is one evening with tickets. A programme is several functions over days, with households, travel, rooms and the people who look after them."
+          ],
+          [
+            "Do guests pay through Catch?",
+            "No. You pay once for the programme. Guests reply, add their travel and IDs; nobody buys a ticket."
+          ],
+          [
+            "What happens to guests’ IDs?",
+            "Only the hotel front desk and your team can see them, every view is logged, and they’re deleted three days after the last checkout."
+          ],
+          [
+            "Can family or a sponsor see how it’s going?",
+            "Yes, with a numbers-only link: who’s coming to what and who hasn’t replied, without names, phone numbers or rooms."
+          ],
+          [
+            "How do we start?",
+            "Book a 15-minute walkthrough. We’ll set up the programme with you and import your guest list."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Planning a weekend?",
+        "title": "Show us the guest list. We’ll show you the weekend.",
+        "lead": "A 15-minute walkthrough, then we set it up with you.",
+        "tone": "m-mint",
+        "ink": "#123D2C",
+        "btns": [
+          {
+            "l": "Book a walkthrough"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "mbar": "Book a walkthrough"
+      }
+    }
+  ]
+}

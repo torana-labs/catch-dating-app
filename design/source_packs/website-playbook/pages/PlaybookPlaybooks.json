@@ -1,0 +1,184 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookPlaybooks",
+  "title": "Playbook · Host playbooks",
+  "height": 4600,
+  "phone": {
+    "title": "Host playbooks",
+    "height": 7200
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "resources",
+        "crumbs": [
+          "Resources"
+        ],
+        "here": "Host playbooks"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "tone": "m-mint",
+        "ink": "#123D2C",
+        "kicker": "Host playbooks",
+        "title": "How good hosts run their nights.",
+        "lead": "Practical guides for each kind of night, with the checklists, timings and numbers hosts ask us about. Free, no sign-up.",
+        "btns": [
+          {
+            "l": "Browse the guides",
+            "href": "#guides"
+          },
+          {
+            "l": "Plan your first event",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Most read this month",
+          "rows": [
+            {
+              "t": "How to start a run club",
+              "s": "Run clubs · 8 minutes",
+              "tag": "Guide"
+            },
+            {
+              "t": "How to host a supper club",
+              "s": "Supper clubs · 10 minutes",
+              "tag": "Guide"
+            },
+            {
+              "t": "How to run a pub quiz",
+              "s": "Quiz nights · 9 minutes",
+              "tag": "Guide"
+            },
+            {
+              "t": "First event checklist",
+              "s": "Everyone · 3 minutes",
+              "tag": "Checklist",
+              "tone": "good"
+            }
+          ]
+        },
+        "note": "Priority-3 index (/playbooks/). Guides are kit articles; city versions (‘in Mumbai’) reuse the guide with local venues and rules added. No invented statistics: guides use the host’s own numbers and placeholders."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "By format",
+        "title": "Pick your kind of night.",
+        "items": [
+          {
+            "tone": "m-coral",
+            "small": "Run clubs",
+            "ink": "#4A1C0E",
+            "t": "How to start a run club",
+            "d": "Route, pace groups, the first five runs, and keeping newcomers.",
+            "link": "Read the guide →"
+          },
+          {
+            "tone": "m-pink",
+            "small": "Supper clubs",
+            "ink": "#4A2330",
+            "t": "How to host a supper club",
+            "d": "Pricing a seat, applications, seating strangers well.",
+            "link": "Read the guide →"
+          },
+          {
+            "tone": "m-yellow",
+            "small": "Quiz nights",
+            "ink": "#4A3A0B",
+            "t": "How to run a pub quiz",
+            "d": "Venues, rounds, fair teams and a reveal people talk about.",
+            "link": "Read the guide →"
+          },
+          {
+            "tone": "m-mint",
+            "small": "Racket sports",
+            "ink": "#123D2C",
+            "t": "How to run a pickleball social",
+            "d": "Levels, rotations and fair court time.",
+            "link": "Read the guide →"
+          },
+          {
+            "tone": "m-indigo",
+            "small": "Communities",
+            "ink": "#1E2550",
+            "t": "Moving your group off WhatsApp",
+            "d": "Without losing the chat or the people.",
+            "link": "Read the guide →"
+          },
+          {
+            "tone": "m-magenta",
+            "small": "Studios",
+            "ink": "#4A1E3D",
+            "t": "From workshop to membership",
+            "d": "Turning first-timers into regulars.",
+            "link": "Read the guide →"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "By city",
+        "kc": "#B5451F",
+        "title": "Local versions, with local details.",
+        "cols": 4,
+        "items": [
+          {
+            "t": "Mumbai",
+            "d": "Run routes, quiz venues, licences for pop-up dinners.",
+            "link": "Mumbai guides →"
+          },
+          {
+            "t": "Indore",
+            "d": "Where clubs meet, and what newcomers look for.",
+            "link": "Indore guides →"
+          },
+          {
+            "t": "Pune",
+            "d": "Coming soon.",
+            "link": "Tell me when →"
+          },
+          {
+            "t": "Bengaluru",
+            "d": "Coming soon.",
+            "link": "Tell me when →"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "tone": "m-mint",
+        "ink": "#123D2C",
+        "kicker": "Ready to try it?",
+        "title": "Turn the guide into your first event.",
+        "lead": "Free for 30 days from your first event, 90 for founding hosts.",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Plan your first event",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

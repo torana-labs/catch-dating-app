@@ -1,0 +1,225 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookStories",
+  "title": "Playbook · Host stories",
+  "height": 4600,
+  "phone": {
+    "title": "Host stories",
+    "height": 7600
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "resources",
+        "crumbs": [
+          "Resources"
+        ],
+        "here": "Host stories"
+      }
+    },
+    {
+      "component": "KitCards",
+      "data": {
+        "h1": true,
+        "variant": "story",
+        "kicker": "Host stories",
+        "title": "How hosts fill the room, and fill it again.",
+        "lead": "Run clubs, supper clubs, quiz nights, courts and studios, in their own words, with the numbers from their Catch records.",
+        "filters": [
+          {
+            "key": "all",
+            "label": "All"
+          },
+          {
+            "key": "run",
+            "label": "Run clubs"
+          },
+          {
+            "key": "supper",
+            "label": "Supper clubs"
+          },
+          {
+            "key": "quiz",
+            "label": "Quiz nights"
+          },
+          {
+            "key": "courts",
+            "label": "Racket sports"
+          },
+          {
+            "key": "studio",
+            "label": "Studios"
+          },
+          {
+            "key": "venue",
+            "label": "Venues"
+          }
+        ],
+        "items": [
+          {
+            "key": "supper",
+            "bg": "#F08AA0",
+            "ink": "#4A2330",
+            "meta": "Supper club · Andheri",
+            "t": "Lantern Lane Social: tables of strangers who book the next date",
+            "s": "Monthly long-table supper",
+            "statLabel": "Guests back within 90 days",
+            "stat": "[N%]"
+          },
+          {
+            "key": "quiz",
+            "bg": "#F5C451",
+            "ink": "#4A3608",
+            "meta": "Quiz night · Khar",
+            "t": "The Quizzicals: sixty players, and teams that mix",
+            "s": "Weekly pub quiz",
+            "statLabel": "Nights sold out",
+            "stat": "[N]"
+          },
+          {
+            "key": "courts",
+            "bg": "#5CCB9F",
+            "ink": "#123D2C",
+            "meta": "Racket club · Andheri West",
+            "t": "Dink and Drink: forty players, three courts, close games",
+            "s": "Weekly pickleball social",
+            "statLabel": "Players back within a month",
+            "stat": "[N%]"
+          },
+          {
+            "key": "venue",
+            "bg": "#8C9BF2",
+            "ink": "#1E2A6B",
+            "meta": "Venue · Lower Parel",
+            "t": "Hopline Brewing: a quiet Tuesday that now sells out",
+            "s": "Weekly quiz and partner nights",
+            "statLabel": "More Tuesday covers",
+            "stat": "[N%]"
+          },
+          {
+            "key": "studio",
+            "bg": "#E58AC8",
+            "ink": "#4A1E3D",
+            "meta": "Studio · Bandra",
+            "t": "Still Water Yoga: first-timers who became members",
+            "s": "Classes, workshops and sound baths",
+            "statLabel": "Active members",
+            "stat": "[N]"
+          },
+          {
+            "key": "run",
+            "bg": "#F07A55",
+            "ink": "#4A1C0E",
+            "meta": "Run club · Indore",
+            "t": "Sunday Striders: from forty runners to a waitlist",
+            "s": "Weekly run and brunch",
+            "statLabel": "Runners each Sunday",
+            "stat": "[N]"
+          }
+        ],
+        "empty": {
+          "title": "No {filter} stories yet.",
+          "body": "Host one of these? Be the first story."
+        },
+        "note": "Index on the kit: filter chips and cards are one Cards section. All names and numbers are placeholders until design partners agree."
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "panel": "ink",
+        "kicker": "Featured · Run club · Bandra",
+        "kc": "#F5C451",
+        "title": "How Carter Road Runners went from a WhatsApp poll to a waitlist.",
+        "lead": "“[One line from the host about the change.]”",
+        "ticks": [
+          "Runners back within a month: [N%]",
+          "No-shows, before and after: [N → N]"
+        ],
+        "btns": [
+          {
+            "l": "Read the story",
+            "kind": "light"
+          }
+        ],
+        "media": {
+          "kind": "photo",
+          "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+          "alt": "Runners at the start of a Sunday social run",
+          "tag": "Real photography from the club"
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "panel": "m-yellow",
+        "top": true,
+        "kicker": "Founding stories",
+        "kc": "#4A3A0B",
+        "title": "Be one of the first hosts we feature.",
+        "lead": "We’re looking for founding hosts in Mumbai and Indore to tell the story of how they run their nights. Here’s what you get.",
+        "ticks": [
+          "A written story about your community, which you approve before it goes up",
+          "A photographer at one of your events, and the photos to keep",
+          "A link from the page for your format, and from What’s on in your city"
+        ],
+        "body": "We only publish numbers from your Catch records or ones you give us, and we mark which is which.",
+        "media": {
+          "kind": "card",
+          "title": "Tell us about your nights",
+          "fields": [
+            {
+              "id": "fs-name",
+              "label": "Your community’s name"
+            },
+            {
+              "id": "fs-what",
+              "label": "What you host, and how often",
+              "ph": "A monthly supper club for 24"
+            },
+            {
+              "id": "fs-wa",
+              "label": "Your WhatsApp number",
+              "type": "tel"
+            }
+          ],
+          "btns": [
+            {
+              "l": "Put me forward"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "tone": "m-coral",
+        "ink": "#4A1C0E",
+        "kicker": "Your story starts with one event",
+        "title": "Run your next night on Catch.",
+        "lead": "Free for 30 days from your first event, 90 for founding hosts.",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host on the day"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

@@ -1,0 +1,368 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookCreators",
+  "title": "Playbook · Catch for creators",
+  "height": 9000,
+  "phone": {
+    "title": "Catch for creators",
+    "height": 12000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "offer": {
+          "lead": "Founding hosts in Mumbai and Indore:",
+          "body": "90 days without Catch fees, until [date].",
+          "left": "[N] of 50 places left",
+          "cta": "Claim a place"
+        },
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Creators"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "tone": "m-magenta",
+        "ink": "#4A1E3D",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "kicker": "Catch for creators who host meetups",
+        "title": "Your followers, in one room.",
+        "lead": "A page for your bio link, meetups your audience books and pays for in a minute, applications when you want to keep it small, and memberships for the people who come to everything.",
+        "proof": [
+          "[N] creators host on Catch",
+          "★ [4.9] from guests who booked¹"
+        ],
+        "door": "Hosting for a brand? See Catch for brands →",
+        "media": {
+          "kind": "phonecard",
+          "cover": "/_blob/409d3ee3e6896b80188944189323718b",
+          "title": "Mumbai Food Diaries ✓",
+          "sub": "Creator · 48k on Instagram · 1,240 followers on Catch",
+          "btns": [
+            {
+              "l": "Follow"
+            },
+            {
+              "l": "Share",
+              "kind": "sec"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Street food walk · Mohammed Ali Road",
+              "s": "Sat 30 Nov · 25 seats",
+              "tag": "6 left",
+              "tone": "hot"
+            },
+            {
+              "t": "Members’ supper",
+              "s": "Members only · Thu 12 Dec",
+              "tag": "Members",
+              "tone": "info"
+            }
+          ]
+        },
+        "chip": {
+          "title": "Street food walk",
+          "rows": [
+            {
+              "l": "From your bio link",
+              "v": "61%"
+            },
+            {
+              "l": "Booked",
+              "v": "19 of 25"
+            },
+            {
+              "l": "Members",
+              "v": "8"
+            }
+          ]
+        },
+        "note": "Priority-3 organiser type, built from the kit. Uses your page, followers, links per post, applications, memberships and reviews. Bio-link share is illustrative."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Sound familiar?",
+        "kc": "#B5451F",
+        "title": "The audience is the easy part.",
+        "items": [
+          {
+            "t": "“DM me for details”",
+            "d": "Two hundred DMs for twenty-five seats, and payments by screenshot.",
+            "fix": "One link in your bio: seats left, paid at booking."
+          },
+          {
+            "t": "Followers aren’t guests",
+            "d": "48k followers, and no idea who actually came last time.",
+            "fix": "Every guest on your records, with who came back."
+          },
+          {
+            "t": "The same superfans miss out",
+            "d": "Your regulars find it full because a stranger booked first.",
+            "fix": "Members book first, or get members-only meetups."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Links for every post",
+        "title": "Know which post filled it.",
+        "lead": "Make a link for each reel, story and collab. Catch shows visits, bookings and revenue for each, so you know what works.",
+        "ticks": [
+          "A link per post, story or collab",
+          "Bookings and revenue for each",
+          "Followers who hear about the next meetup without you posting"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Links · Street food walk",
+          "bars": [
+            {
+              "l": "Bio link",
+              "w": 100,
+              "c": "#E58AC8",
+              "v": "11"
+            },
+            {
+              "l": "Reel, 18 Nov",
+              "w": 55,
+              "c": "#E58AC8",
+              "v": "6"
+            },
+            {
+              "l": "Collab story",
+              "w": 18,
+              "c": "#E58AC8",
+              "v": "2"
+            }
+          ],
+          "fine": "Illustrative figures"
+        }
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "A meetup on Catch",
+        "title": "From one post to a room of regulars.",
+        "steps": [
+          {
+            "time": "Monday",
+            "t": "Post the link",
+            "d": "One link in your bio and stories. Followers on Catch hear about it without you posting."
+          },
+          {
+            "time": "As they book",
+            "d": "Paid at booking. For small meetups, they apply and you choose.",
+            "t": "Bookings, or applications"
+          },
+          {
+            "time": "Day before",
+            "t": "The reminder",
+            "d": "Where to meet and what to expect. First-timers get a note on who to look for."
+          },
+          {
+            "time": "On the day",
+            "t": "A door that’s quick",
+            "d": "Everyone scans in. You see who’s new and who’s been to everything."
+          },
+          {
+            "time": "Next morning",
+            "t": "Turn guests into regulars",
+            "d": "Photos, reviews and the next date. Regulars who aren’t members get an invitation."
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "Tonight’s check-ins and what needs you, on an iPad"
+        }
+      }
+    },
+    {
+      "component": "KitStory",
+      "data": {
+        "kicker": "Creator story · Mumbai",
+        "tone": "m-magenta",
+        "ink": "#4A1E3D",
+        "initials": "MF",
+        "name": "Mumbai Food Diaries",
+        "meta": "Monthly food walks · [N] guests",
+        "quote": "[The creator, in their words, on DMs, sell-outs and superfans.]",
+        "metrics": [
+          {
+            "l": "Meetups sold out",
+            "v": "[N%]",
+            "s": "from Catch records²"
+          },
+          {
+            "l": "Guests who came twice",
+            "v": "[N%]",
+            "s": "from Catch records²"
+          },
+          {
+            "l": "Hours saved on DMs",
+            "v": "[N]",
+            "s": "self-reported³"
+          }
+        ],
+        "tag": "Replace with real photography from a design-partner meetup"
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Buyer’s checklist",
+        "title": "What to look for when you host your audience.",
+        "lead": "Check these eight things, whichever tool you choose. Catch does all of them.",
+        "btns": [
+          {
+            "l": "Compare Catch with the alternatives",
+            "kind": "sec"
+          }
+        ],
+        "items": [
+          {
+            "t": "A page for your bio",
+            "d": "Events, links and reviews."
+          },
+          {
+            "t": "Paid booking",
+            "d": "UPI or card, no DMs."
+          },
+          {
+            "t": "Applications",
+            "d": "For meetups you keep small."
+          },
+          {
+            "t": "Links per post",
+            "d": "See what filled it."
+          },
+          {
+            "t": "Memberships",
+            "d": "Superfans book first."
+          },
+          {
+            "t": "Followers",
+            "d": "Hear about every meetup."
+          },
+          {
+            "t": "Guest records",
+            "d": "Who came, who came back."
+          },
+          {
+            "t": "A cap on fees",
+            "d": "Never more than ₹10,000 a month."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for creators",
+        "sub": "of tickets and memberships, never more than ₹10,000 a month.",
+        "examples": [
+          {
+            "t": "A 25-seat food walk at ₹1,200",
+            "v": "₹1,500 a walk",
+            "d": "5% of ₹30,000."
+          },
+          {
+            "t": "60 members at ₹299 a month",
+            "v": "₹897 a month",
+            "d": "5% of ₹17,940 in renewals."
+          },
+          {
+            "t": "A free meet-and-greet",
+            "v": "₹0",
+            "d": "Free events stay free."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Creator questions",
+        "title": "What hosts ask us.",
+        "items": [
+          [
+            "Can I keep meetups small and choose who comes?",
+            "Yes. Turn on applications, ask your questions and approve each person."
+          ],
+          [
+            "Can my followers become paying members?",
+            "Yes. Make a plan with a monthly or yearly price; members renew by UPI Autopay or card."
+          ],
+          [
+            "Will I know which post worked?",
+            "Yes. Make a link for each post or collab and see the visits, bookings and revenue from each."
+          ],
+          [
+            "Do guests need an app?",
+            "No. They book and pay in their phone’s browser."
+          ],
+          [
+            "Can a brand sponsor my meetup?",
+            "Yes. Give the brand its own link to share, and show them the bookings it brought. See Catch for brands."
+          ],
+          [
+            "Can I import my list?",
+            "Yes. Import a CSV or Excel file of past guests."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "tone": "m-magenta",
+        "ink": "#4A1E3D",
+        "btns": [
+          {
+            "l": "Start free trial"
+          }
+        ],
+        "kicker": "Your next meetup",
+        "title": "Turn followers into regulars.",
+        "lead": "Start the free trial, or leave your number and we’ll send the creator setup guide on WhatsApp.",
+        "form": {
+          "id": "cr-wa",
+          "label": "Your WhatsApp number",
+          "button": "Send the guide"
+        }
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "footnotes": [
+          "1. Average of reviews from guests who booked on Catch, [dates].",
+          "2. From Catch booking records, [dates].",
+          "3. Self-reported by the host. Individual results vary."
+        ]
+      }
+    }
+  ]
+}

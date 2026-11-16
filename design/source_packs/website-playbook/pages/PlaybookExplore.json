@@ -1,0 +1,512 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookExplore",
+  "title": "Playbook · What’s on · /explore/",
+  "height": 3600,
+  "phone": {
+    "title": "What’s on",
+    "height": 6400
+  },
+  "state": {
+    "label": "What’s on states:",
+    "options": [
+      {
+        "key": "full",
+        "label": "Plans this week"
+      },
+      {
+        "key": "quiet",
+        "label": "Empty week"
+      },
+      {
+        "key": "empty",
+        "label": "Nothing in two weeks"
+      },
+      {
+        "key": "soon",
+        "label": "City launching"
+      }
+    ],
+    "default": "quiet"
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "guest",
+        "city": "Mumbai"
+      }
+    },
+    {
+      "component": "KitCards",
+      "when": "full",
+      "data": {
+        "h1": true,
+        "variant": "plan",
+        "kicker": "Explore Mumbai",
+        "title": "What’s on in Mumbai",
+        "lead": "Plans for the next two weeks, and the hosts who run them.",
+        "filters": [
+          {
+            "key": "all",
+            "label": "Everything"
+          },
+          {
+            "key": "run",
+            "label": "Runs"
+          },
+          {
+            "key": "dinner",
+            "label": "Dinners"
+          },
+          {
+            "key": "games",
+            "label": "Games"
+          },
+          {
+            "key": "courts",
+            "label": "Courts"
+          },
+          {
+            "key": "out",
+            "label": "Nights out"
+          }
+        ],
+        "items": [
+          {
+            "key": "games",
+            "art": "m-yellow",
+            "badge": "Solo-friendly",
+            "tone": "m-yellow",
+            "ink": "#4A3608",
+            "day": "Thu",
+            "num": "20",
+            "t": "Thursday Evening Pub Quiz",
+            "s": "The Quizzicals · Khar",
+            "price": "₹499",
+            "left": "6 left"
+          },
+          {
+            "key": "dinner",
+            "img": "/_blob/409d3ee3e6896b80188944189323718b",
+            "badge": "Tables of six",
+            "tone": "m-pink",
+            "ink": "#4A2330",
+            "day": "Fri",
+            "num": "21",
+            "t": "Long Table Supper",
+            "s": "Lantern Lane Social · Andheri",
+            "price": "₹1,200",
+            "left": "4 left"
+          },
+          {
+            "key": "run",
+            "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+            "badge": "All paces",
+            "day": "Sun",
+            "num": "23",
+            "t": "Carter Road Social Run",
+            "s": "Carter Road Runners · Bandra",
+            "price": "Free",
+            "left": "18 going"
+          },
+          {
+            "key": "courts",
+            "art": "m-mint",
+            "badge": "All levels",
+            "tone": "m-mint",
+            "ink": "#123D2C",
+            "day": "Sat",
+            "num": "22",
+            "t": "Pickleball Social",
+            "s": "Dink and Drink · Andheri West",
+            "price": "₹600",
+            "left": "9 left"
+          },
+          {
+            "key": "out",
+            "art": "m-magenta",
+            "badge": "Groups of ten",
+            "tone": "m-magenta",
+            "ink": "#4A1E3D",
+            "day": "Fri",
+            "num": "21",
+            "t": "Friday Bandra Pub Crawl",
+            "s": "Night Shift Socials · Bandra",
+            "price": "₹1,499",
+            "left": "12 left"
+          },
+          {
+            "key": "run",
+            "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+            "badge": "Women only",
+            "day": "Tue",
+            "num": "25",
+            "t": "Women’s Evening Run",
+            "s": "Her Pace · Bandra",
+            "price": "Free",
+            "left": "22 going"
+          }
+        ],
+        "empty": {
+          "title": "No plans match these filters.",
+          "body": "Try another date or format, or clear the search."
+        },
+        "note": "What’s on (/explore/, /[city]/) with its empty states designed. Copy from explorePageCopy and the homepage week copy."
+      }
+    },
+    {
+      "component": "KitCards",
+      "when": "full",
+      "data": {
+        "variant": "org",
+        "panel": "tint",
+        "kicker": "The hosts",
+        "kc": "#1F7A57",
+        "title": "Who runs them",
+        "cols": 4,
+        "items": [
+          {
+            "initials": "LL",
+            "tone": "m-pink",
+            "ink": "#4A2330",
+            "t": "Lantern Lane Social",
+            "s": "Supper clubs · Khar · ★ [4.9]",
+            "next": "Next: Fri 21 · Long Table Supper"
+          },
+          {
+            "initials": "CR",
+            "tone": "m-coral",
+            "ink": "#3B1F14",
+            "t": "Carter Road Runners",
+            "s": "Run club · Bandra · ★ [4.9]",
+            "next": "Next: Sun 23 · Social run"
+          },
+          {
+            "initials": "Q",
+            "tone": "m-yellow",
+            "ink": "#4A3608",
+            "t": "The Quizzicals",
+            "s": "Pub quiz · Khar · ★ [4.8]",
+            "next": "Next: Thu 20 · Pub quiz"
+          },
+          {
+            "initials": "DD",
+            "tone": "m-mint",
+            "ink": "#123D2C",
+            "t": "Dink and Drink",
+            "s": "Pickleball · Andheri West",
+            "next": "Next: Sat 22 · Social"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitCards",
+      "when": "quiet",
+      "data": {
+        "h1": true,
+        "variant": "plan",
+        "kicker": "Next two weeks",
+        "kc": "#B23A5A",
+        "title": "Coming up in Mumbai",
+        "lead": "Nothing is on this week yet, so here’s what’s next. New plans go up as hosts add them.",
+        "items": [
+          {
+            "key": "dinner",
+            "img": "/_blob/409d3ee3e6896b80188944189323718b",
+            "badge": "Tables of six",
+            "tone": "m-pink",
+            "ink": "#4A2330",
+            "day": "Fri",
+            "num": "21",
+            "t": "Long Table Supper",
+            "s": "Lantern Lane Social · Andheri",
+            "price": "₹1,200",
+            "left": "4 left"
+          },
+          {
+            "key": "run",
+            "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+            "badge": "All paces",
+            "day": "Sun",
+            "num": "23",
+            "t": "Carter Road Social Run",
+            "s": "Carter Road Runners · Bandra",
+            "price": "Free",
+            "left": "18 going"
+          },
+          {
+            "key": "courts",
+            "art": "m-mint",
+            "badge": "All levels",
+            "tone": "m-mint",
+            "ink": "#123D2C",
+            "day": "Sat",
+            "num": "22",
+            "t": "Pickleball Social",
+            "s": "Dink and Drink · Andheri West",
+            "price": "₹600",
+            "left": "9 left"
+          }
+        ],
+        "note": "Empty week: the page never shows “0 plans”. It moves to the next two weeks (the leak 1 fix now in the code)."
+      }
+    },
+    {
+      "component": "KitCards",
+      "when": "quiet",
+      "data": {
+        "variant": "org",
+        "panel": "tint",
+        "kicker": "Follow a host",
+        "kc": "#1F7A57",
+        "title": "Hear about their next plan first.",
+        "cols": 4,
+        "items": [
+          {
+            "initials": "LL",
+            "tone": "m-pink",
+            "ink": "#4A2330",
+            "t": "Lantern Lane Social",
+            "s": "Supper clubs · Khar · ★ [4.9]",
+            "next": "Next: Fri 21 · Long Table Supper"
+          },
+          {
+            "initials": "CR",
+            "tone": "m-coral",
+            "ink": "#3B1F14",
+            "t": "Carter Road Runners",
+            "s": "Run club · Bandra · ★ [4.9]",
+            "next": "Next: Sun 23 · Social run"
+          },
+          {
+            "initials": "Q",
+            "tone": "m-yellow",
+            "ink": "#4A3608",
+            "t": "The Quizzicals",
+            "s": "Pub quiz · Khar · ★ [4.8]",
+            "next": "Next: Thu 20 · Pub quiz"
+          },
+          {
+            "initials": "DD",
+            "tone": "m-mint",
+            "ink": "#123D2C",
+            "t": "Dink and Drink",
+            "s": "Pickleball · Andheri West",
+            "next": "Next: Sat 22 · Social"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "when": "quiet",
+      "data": {
+        "tone": "m-coral",
+        "ink": "#4A1C0E",
+        "kicker": "Hear about new plans first",
+        "title": "Get new plans in Mumbai on WhatsApp.",
+        "lead": "About once a week. Stop any time.",
+        "form": {
+          "id": "ex-wa",
+          "label": "Your WhatsApp number",
+          "button": "Notify me"
+        }
+      }
+    },
+    {
+      "component": "KitTiles",
+      "when": "empty",
+      "data": {
+        "h1": true,
+        "center": false,
+        "kicker": "Explore Mumbai",
+        "kc": "#B5451F",
+        "title": "Nothing on in Mumbai in the next two weeks.",
+        "lead": "New plans go up as hosts add them. See who hosts here, or check back soon.",
+        "items": [],
+        "btns": [
+          {
+            "l": "See who hosts here"
+          },
+          {
+            "l": "Get notified",
+            "kind": "sec"
+          }
+        ],
+        "note": "Empty window: no plans in two weeks. The page leads with hosts to follow and the WhatsApp notify, not an empty grid."
+      }
+    },
+    {
+      "component": "KitCards",
+      "when": "empty",
+      "data": {
+        "variant": "org",
+        "panel": "tint",
+        "kicker": "Hosts in Mumbai",
+        "kc": "#1F7A57",
+        "title": "Follow them for their next plan.",
+        "cols": 4,
+        "items": [
+          {
+            "initials": "LL",
+            "tone": "m-pink",
+            "ink": "#4A2330",
+            "t": "Lantern Lane Social",
+            "s": "Supper clubs · Khar · ★ [4.9]",
+            "next": "Next: Fri 21 · Long Table Supper"
+          },
+          {
+            "initials": "CR",
+            "tone": "m-coral",
+            "ink": "#3B1F14",
+            "t": "Carter Road Runners",
+            "s": "Run club · Bandra · ★ [4.9]",
+            "next": "Next: Sun 23 · Social run"
+          },
+          {
+            "initials": "Q",
+            "tone": "m-yellow",
+            "ink": "#4A3608",
+            "t": "The Quizzicals",
+            "s": "Pub quiz · Khar · ★ [4.8]",
+            "next": "Next: Thu 20 · Pub quiz"
+          },
+          {
+            "initials": "DD",
+            "tone": "m-mint",
+            "ink": "#123D2C",
+            "t": "Dink and Drink",
+            "s": "Pickleball · Andheri West",
+            "next": "Next: Sat 22 · Social"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "when": "empty",
+      "data": {
+        "tone": "m-coral",
+        "ink": "#4A1C0E",
+        "kicker": "Hear about new plans first",
+        "title": "Get new plans in Mumbai on WhatsApp.",
+        "lead": "About once a week. Stop any time.",
+        "form": {
+          "id": "ex-wa",
+          "label": "Your WhatsApp number",
+          "button": "Notify me"
+        }
+      }
+    },
+    {
+      "component": "KitCards",
+      "when": "soon",
+      "data": {
+        "h1": true,
+        "variant": "org",
+        "kicker": "Launching soon",
+        "kc": "#B5451F",
+        "title": "Catch is coming to Pune",
+        "lead": "Hosts here are setting up their first plans. Here’s who’s joining, and what’s on in Mumbai meanwhile.",
+        "cols": 4,
+        "items": [
+          {
+            "initials": "PR",
+            "tone": "m-coral",
+            "ink": "#3B1F14",
+            "t": "[Pune run club]",
+            "s": "Joining · first plan soon",
+            "cta": "Follow"
+          },
+          {
+            "initials": "KS",
+            "tone": "m-pink",
+            "ink": "#4A2330",
+            "t": "[Pune supper club]",
+            "s": "Joining · first plan soon",
+            "cta": "Follow"
+          },
+          {
+            "claim": true,
+            "t": "Host in Pune?",
+            "s": "Be one of the first hosts here.",
+            "cta": "Start free trial"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitCards",
+      "when": "soon",
+      "data": {
+        "variant": "plan",
+        "kicker": "Meanwhile in Mumbai",
+        "title": "See what’s on in Mumbai",
+        "items": [
+          {
+            "key": "games",
+            "art": "m-yellow",
+            "badge": "Solo-friendly",
+            "tone": "m-yellow",
+            "ink": "#4A3608",
+            "day": "Thu",
+            "num": "20",
+            "t": "Thursday Evening Pub Quiz",
+            "s": "The Quizzicals · Khar",
+            "price": "₹499",
+            "left": "6 left"
+          },
+          {
+            "key": "dinner",
+            "img": "/_blob/409d3ee3e6896b80188944189323718b",
+            "badge": "Tables of six",
+            "tone": "m-pink",
+            "ink": "#4A2330",
+            "day": "Fri",
+            "num": "21",
+            "t": "Long Table Supper",
+            "s": "Lantern Lane Social · Andheri",
+            "price": "₹1,200",
+            "left": "4 left"
+          },
+          {
+            "key": "run",
+            "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+            "badge": "All paces",
+            "day": "Sun",
+            "num": "23",
+            "t": "Carter Road Social Run",
+            "s": "Carter Road Runners · Bandra",
+            "price": "Free",
+            "left": "18 going"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "when": "soon",
+      "data": {
+        "tone": "m-coral",
+        "ink": "#4A1C0E",
+        "kicker": "Hear about new plans first",
+        "title": "Get new plans in Pune on WhatsApp.",
+        "lead": "About once a week. Stop any time.",
+        "form": {
+          "id": "ex-wa",
+          "label": "Your WhatsApp number",
+          "button": "Notify me"
+        }
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "guest",
+        "mbar": "See plans"
+      }
+    }
+  ]
+}

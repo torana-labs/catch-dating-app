@@ -1,0 +1,260 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookYourPage",
+  "title": "Playbook · Your page",
+  "height": 5200,
+  "phone": {
+    "title": "Your page",
+    "height": 8200
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "How Catch works"
+        ],
+        "here": "Your page"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Product · your page",
+        "title": "A page that replaces the link in your bio.",
+        "lead": "Your next event, your links, everything coming up (including events you run elsewhere), reviews with your replies, and people who follow you for the next one.",
+        "ink": "#3B1F14",
+        "tone": "m-coral",
+        "btns": [
+          {
+            "l": "Make your page in Catch Host"
+          },
+          {
+            "l": "Claim your page",
+            "kind": "sec",
+            "href": "#claim"
+          }
+        ],
+        "body": "Free to set up. Your page is made and edited in the Catch Host app.",
+        "media": {
+          "kind": "phonecard",
+          "cover": "/_blob/8294b5d46800331739b8ee58199a7d53",
+          "title": "Carter Road Runners ✓",
+          "sub": "Run club · Bandra · 212 followers",
+          "btns": [
+            {
+              "l": "Follow"
+            },
+            {
+              "l": "Share",
+              "kind": "sec"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Carter Road Social Run",
+              "s": "Next up · Sun 23 Nov · 6:30 AM",
+              "tag": "Book",
+              "tone": "hot"
+            },
+            {
+              "t": "WhatsApp community",
+              "tag": "→",
+              "tone": ""
+            },
+            {
+              "t": "Strava club",
+              "tag": "→",
+              "tone": ""
+            },
+            {
+              "t": "Bandra 10K",
+              "s": "On another site",
+              "tag": "↗",
+              "tone": ""
+            }
+          ]
+        },
+        "note": "Capability page (priority 1). Decision 16 Nov: pages are made in the app only; the website claims and links to Catch Host."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "What’s on your page",
+        "kc": "#B23A5A",
+        "title": "Everything someone from Instagram is looking for.",
+        "lead": "",
+        "panel": "open",
+        "items": [
+          {
+            "t": "Next up",
+            "d": "Your next event straight under your name, with a Book button."
+          },
+          {
+            "t": "Your links",
+            "d": "WhatsApp community, Strava, merch, perks: the links your bio used to hold."
+          },
+          {
+            "t": "Everything coming up",
+            "d": "Events on Catch, and events you run on other sites as tiles that link out."
+          },
+          {
+            "t": "Reviews, with replies",
+            "d": "From people who booked, marked “Booked on Catch”. Reply in public to show you care."
+          },
+          {
+            "t": "Followers",
+            "d": "People who follow you hear about your next event first."
+          },
+          {
+            "t": "About and team",
+            "d": "Who runs it, when and where, and who it suits, with a verified mark."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Reviews",
+        "kc": "#1F7A57",
+        "title": "Let people who came do the selling.",
+        "lead": "Reviews from booked guests carry a badge. Your replies sit under them, on your page and on each event.",
+        "panel": "tint",
+        "media": {
+          "kind": "card",
+          "title": "★★★★★",
+          "sub": "“[A real review from a guest who booked]”",
+          "rows": [
+            {
+              "t": "[First name] · Sunday Social Run",
+              "tag": "Booked on Catch",
+              "tone": "good"
+            },
+            {
+              "t": "Reply from Carter Road Runners",
+              "s": "[The host’s reply]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Claim your page",
+        "kc": "#1F7A57",
+        "title": "Your page may already be here.",
+        "lead": "Catch lists organisers from public sources so guests can find them. If yours is listed, claim it and it’s yours to edit.",
+        "panel": "open",
+        "center": false,
+        "cols": 4,
+        "items": [
+          {
+            "n": "1",
+            "t": "Find your page and tap Claim."
+          },
+          {
+            "n": "2",
+            "t": "Sign in with your phone number."
+          },
+          {
+            "n": "3",
+            "t": "Confirm with a code from your page’s Instagram."
+          },
+          {
+            "n": "4",
+            "t": "Finish in Catch Host: add events and links."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Find your page"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "For owners",
+        "kc": "#F5C451",
+        "title": "See what your page is doing.",
+        "lead": "Signed in as the owner, your page shows the last 30 days: who visited, who followed and who booked.",
+        "panel": "ink",
+        "body": "Every page carries “Made with Catch”, so the next organiser can make one too.",
+        "media": {
+          "kind": "card",
+          "title": "Your page · last 30 days",
+          "stats": [
+            {
+              "v": "1,840",
+              "l": "Visits"
+            },
+            {
+              "v": "64",
+              "l": "New followers"
+            },
+            {
+              "v": "212",
+              "l": "Bookings"
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "About your page.",
+        "items": [
+          [
+            "How much does a page cost?",
+            "Nothing. Pages are free; Catch only takes a fee on paid tickets sold through it."
+          ],
+          [
+            "Why is my club already listed?",
+            "Catch lists organisers from public sources so guests can find them. Claim the page and it’s yours to edit, or ask us to remove it."
+          ],
+          [
+            "Can I show events I run on other sites?",
+            "Yes. They appear on your page as tiles that link out to where people book them."
+          ],
+          [
+            "Can I reply to reviews?",
+            "Yes. Your reply shows under the review on your page and on the event."
+          ],
+          [
+            "Where do I edit my page?",
+            "In the Catch Host app, on iPhone, Android or iPad."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Free to set up",
+        "title": "Make your page tonight.",
+        "lead": "Download Catch Host, set up your page and first event, and put the link in your bio.",
+        "tone": "m-yellow",
+        "ink": "#4A3608",
+        "badges": true,
+        "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+        "alt": "Catch Host"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

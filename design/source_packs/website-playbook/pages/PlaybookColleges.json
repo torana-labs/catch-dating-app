@@ -1,0 +1,406 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookColleges",
+  "title": "Playbook · Catch for college societies",
+  "height": 8000,
+  "phone": {
+    "title": "Catch for colleges",
+    "height": 12000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "offer": {
+          "lead": "Founding hosts in Mumbai and Indore:",
+          "body": "90 days without Catch fees, until [date].",
+          "left": "[N] of 50 places left",
+          "cta": "Claim a place"
+        },
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Colleges and alumni"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Catch for college societies, fests and alumni chapters",
+        "title": "Run the society like it’ll outlast your batch.",
+        "lead": "Recruitment forms that sort themselves, event tickets at student prices paid by UPI, a door that moves a queue of three hundred, and a list of members you can hand to next year’s committee.",
+        "ink": "#4A1C0E",
+        "tone": "m-coral",
+        "proof": [
+          "[N] societies and alumni groups host on Catch",
+          "★ [4.8] from guests who booked1"
+        ],
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "door": "Running an alumni network across cities? Book a walkthrough →",
+        "chip": {
+          "title": "Screening night",
+          "rows": [
+            {
+              "l": "Booked",
+              "v": "212"
+            },
+            {
+              "l": "Checked in",
+              "v": "198"
+            },
+            {
+              "l": "First years",
+              "v": "81"
+            }
+          ]
+        },
+        "media": {
+          "kind": "phonecard",
+          "title": "Your community",
+          "sub": "Film Society · IIT Indore",
+          "stats": [
+            {
+              "v": "1,240",
+              "l": "followers"
+            },
+            {
+              "v": "186",
+              "l": "applied"
+            },
+            {
+              "v": "3",
+              "l": "this month"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Fri · Screening night",
+              "s": "₹49 for students · ₹99 for guests",
+              "tag": "212 of 250",
+              "tone": ""
+            },
+            {
+              "t": "Recruitment · core team",
+              "s": "186 applied · 24 accepted",
+              "tag": "Applications",
+              "tone": ""
+            },
+            {
+              "t": "Alumni meetup · Bengaluru",
+              "s": "Batches of 2015 to 2024",
+              "tag": "Free · 64",
+              "tone": ""
+            }
+          ],
+          "chip": "Hand over to the 2026 committee in one tap"
+        },
+        "note": "Segment template, tenth use; priority-2 segment. Built features only: applications and forms, low-price tickets, the door, guest records, team access. ‘Hand over to next year’s committee’ is team access changing hands, not a separate feature."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Sound familiar?",
+        "kc": "#B5451F",
+        "title": "Picking the film is the easy part.",
+        "lead": "",
+        "panel": "open",
+        "items": [
+          {
+            "t": "Recruitment in a Google Sheet",
+            "fix": "Applications with a review status for each person, and notes your whole core team can see.",
+            "d": "Two hundred form responses, five reviewers, and a colour-coding system only one of them understands."
+          },
+          {
+            "t": "A queue to the auditorium",
+            "fix": "Everyone scans in. Volunteers get the door for the night, and only the door.",
+            "d": "Three hundred people, one printed list and a volunteer with a highlighter."
+          },
+          {
+            "t": "Everything leaves with the seniors",
+            "fix": "Your page, followers and records stay; hand access to the new team.",
+            "d": "Next year’s committee starts with no list, no history and no idea who came."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Recruitment",
+        "kc": "#4C5BC4",
+        "title": "Two hundred applications, sorted by Friday.",
+        "lead": "Publish an application form with your own questions. Responses land in one inbox; mark each one in review, waitlisted or declined, or accept them, and leave notes your core team can see.",
+        "panel": "open",
+        "ticks": [
+          "Your questions, conditional ones included",
+          "A review status and notes for each applicant",
+          "Charts of how everyone answered, and an export",
+          "Bring in last year’s Google Forms responses"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Core team recruitment · 186 applied",
+          "rows": [
+            {
+              "t": "Why the Film Society?",
+              "s": "I’ve run a screening club at school for two years…"
+            },
+            {
+              "t": "Which team?",
+              "s": "Events · Design"
+            },
+            {
+              "t": "Note from Kavya",
+              "s": "Strong. Interview on Tuesday, then accept."
+            }
+          ],
+          "btns": [
+            {
+              "l": "Accept"
+            },
+            {
+              "l": "Decline",
+              "kind": "sec"
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "A screening night on Catch",
+        "kc": "#F5C451",
+        "title": "From poster to packed auditorium.",
+        "lead": "",
+        "steps": [
+          {
+            "time": "A week out",
+            "t": "One link on every poster",
+            "d": "A QR on the posters, a link in the batch groups. Student and guest prices, paid by UPI."
+          },
+          {
+            "time": "As they book",
+            "t": "See which posters worked",
+            "d": "A link per hostel, department group or poster shows where bookings came from."
+          },
+          {
+            "time": "Day before",
+            "t": "The reminder goes out",
+            "d": "Hall, time, and what to bring. Catch sends it for you."
+          },
+          {
+            "time": "7:00 PM",
+            "t": "Three hundred in, no queue",
+            "d": "Everyone scans in on their own phone. Volunteers check off anyone without one."
+          },
+          {
+            "time": "Next morning",
+            "t": "Who came, for next time",
+            "d": "First years, regulars and followers, in your records for the next event and the next committee."
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "Tonight’s check-ins and first-timers on an iPad"
+        }
+      }
+    },
+    {
+      "component": "KitStory",
+      "data": {
+        "kicker": "Society story · Indore",
+        "tone": "m-coral",
+        "ink": "#4A1C0E",
+        "initials": "FS",
+        "name": "[Society name]",
+        "meta": "Weekly screenings and an annual festival · [N] followers",
+        "quote": "[The society secretary, in their words, on recruitment, the door and handing over.]",
+        "metrics": [
+          {
+            "l": "Applications reviewed",
+            "v": "[N%]",
+            "s": "from Catch records2"
+          },
+          {
+            "l": "Booked who came",
+            "v": "[N%]",
+            "s": "from Catch records2"
+          },
+          {
+            "l": "Minutes to get 300 people in",
+            "v": "[N]",
+            "s": "self-reported3"
+          }
+        ],
+        "img": "/_blob/409d3ee3e6896b80188944189323718b",
+        "alt": "Students at a screening night",
+        "tag": "Replace with real photography from a design-partner society"
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Buyer’s checklist",
+        "kc": "#1F7A57",
+        "title": "What to look for in software for a college society.",
+        "lead": "Check these eight things, whichever tool you choose. Catch does all of them.",
+        "items": [
+          {
+            "t": "Application forms",
+            "d": "With review status and notes."
+          },
+          {
+            "t": "Student and guest prices",
+            "d": "Paid by UPI, at booking."
+          },
+          {
+            "t": "Free events stay free",
+            "d": "No fee when nobody pays."
+          },
+          {
+            "t": "A door for big crowds",
+            "d": "Everyone scans in."
+          },
+          {
+            "t": "Volunteer door access",
+            "d": "For one event, then it ends."
+          },
+          {
+            "t": "A link per poster or group",
+            "d": "See what filled the hall."
+          },
+          {
+            "t": "Records that stay",
+            "d": "Followers and history, year to year."
+          },
+          {
+            "t": "Hand over access",
+            "d": "To next year’s committee."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Compare Catch with the alternatives",
+            "kind": "sec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for societies",
+        "price": "5%",
+        "sub": "of ticket sales, never more than ₹10,000 a month.",
+        "lead": "Free for 30 days from your first event, 90 for founding hosts. Payment gateway fees are separate.",
+        "examples": [
+          {
+            "t": "A screening for 250 at ₹49",
+            "v": "₹613 a night",
+            "d": "5% of ₹12,250."
+          },
+          {
+            "t": "A festival weekend, 1,200 passes at ₹299",
+            "v": "₹10,000",
+            "d": "Capped. 5% would be ₹17,940."
+          },
+          {
+            "t": "An alumni meetup, free",
+            "v": "₹0",
+            "d": "Free events stay free."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Start free trial",
+            "kind": "light"
+          },
+          {
+            "l": "See full pricing",
+            "kind": "lightsec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Society questions",
+        "title": "What hosts ask us.",
+        "items": [
+          [
+            "Can students pay a different price from guests?",
+            "Set up separate events or ask applicants who they are; the price they see is the price they pay, by UPI or card."
+          ],
+          [
+            "Can our volunteers run the door?",
+            "Yes. Give each volunteer door access for one event, on their own phone. It ends with the event."
+          ],
+          [
+            "What happens when the committee changes?",
+            "Your page, followers, events and records stay. Add next year’s team and take the old team’s access away."
+          ],
+          [
+            "Our events are mostly free. Is that OK?",
+            "Yes. Free events stay free. You pay 5% only on tickets sold, and never more than ₹10,000 a month."
+          ],
+          [
+            "Do students need an app?",
+            "No. They book, pay and check in on your page in their phone’s browser."
+          ],
+          [
+            "Can alumni chapters in different cities use it?",
+            "Yes. Each meetup is its own event on your page. Book a walkthrough and we’ll help you set up the chapters."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Your next event",
+        "title": "Pack the hall. Keep the list.",
+        "lead": "Start the free trial, or leave your number and we’ll send the society setup guide on WhatsApp.",
+        "tone": "m-coral",
+        "ink": "#4A1C0E",
+        "btns": [
+          {
+            "l": "Start free trial"
+          }
+        ],
+        "form": {
+          "id": "cm-wa",
+          "label": "Your WhatsApp number",
+          "button": "Send the guide"
+        },
+        "img": "/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b",
+        "alt": "A dinner as guests see it on Catch"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "footnotes": [
+          "1. Average of reviews from guests who booked on Catch, [dates].",
+          "2. From Catch booking records, [dates].",
+          "3. Self-reported by the host. Individual results vary."
+        ]
+      }
+    }
+  ]
+}

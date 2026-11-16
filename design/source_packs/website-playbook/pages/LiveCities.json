@@ -1,0 +1,141 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "LiveCities",
+  "title": "Live · Cities · /cities/",
+  "height": 2600,
+  "phone": {
+    "title": "Cities",
+    "height": 5200
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "guest",
+        "city": "Mumbai"
+      }
+    },
+    {
+      "component": "KitCards",
+      "data": {
+        "h1": true,
+        "variant": "city",
+        "kicker": "Cities",
+        "title": "Where Catch is on",
+        "lead": "Open cities show what’s on this week. In the rest, tell us you’re interested and we’ll let you know when your city opens.",
+        "cols": 4,
+        "items": [
+          {
+            "t": "Mumbai",
+            "s": "14 run clubs, 9 supper clubs and more",
+            "live": true
+          },
+          {
+            "t": "Indore",
+            "s": "Run clubs, quiz nights and book clubs",
+            "live": true
+          },
+          {
+            "t": "Delhi NCR",
+            "s": "India",
+            "status": "Launching soon"
+          },
+          {
+            "t": "Bengaluru",
+            "s": "India",
+            "status": "Launching soon"
+          },
+          {
+            "t": "Hyderabad",
+            "s": "India",
+            "status": "Launching soon"
+          },
+          {
+            "t": "Chennai",
+            "s": "India",
+            "status": "Launching soon"
+          },
+          {
+            "t": "Kolkata",
+            "s": "India",
+            "status": "Launching soon"
+          },
+          {
+            "t": "Pune",
+            "s": "India",
+            "status": "Launching soon"
+          },
+          {
+            "t": "Ahmedabad",
+            "s": "India",
+            "status": "Launching soon"
+          },
+          {
+            "t": "Goa",
+            "s": "India",
+            "status": "Launching soon"
+          }
+        ],
+        "note": "Cities (/cities/). Copy from citiesPageCopy. Cities and statuses come from the markets catalog."
+      }
+    },
+    {
+      "component": "KitCards",
+      "data": {
+        "variant": "city",
+        "kicker": "Launching soon in Nepal, Australia and the United States",
+        "title": "Further afield",
+        "cols": 4,
+        "items": [
+          {
+            "t": "Kathmandu",
+            "s": "Nepal",
+            "status": "Launching soon"
+          },
+          {
+            "t": "Pokhara",
+            "s": "Nepal",
+            "status": "Launching soon"
+          },
+          {
+            "t": "Sydney",
+            "s": "Australia",
+            "status": "Launching soon"
+          },
+          {
+            "t": "Melbourne",
+            "s": "Australia",
+            "status": "Launching soon"
+          },
+          {
+            "t": "Brisbane",
+            "s": "Australia",
+            "status": "Launching soon"
+          },
+          {
+            "t": "New York",
+            "s": "United States",
+            "status": "Launching soon"
+          },
+          {
+            "t": "San Francisco",
+            "s": "United States",
+            "status": "Launching soon"
+          },
+          {
+            "t": "Los Angeles",
+            "s": "United States",
+            "status": "Launching soon"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "guest",
+        "mbar": "See what’s on"
+      }
+    }
+  ]
+}

@@ -165,6 +165,11 @@ test("a paid bill credits its first nominator 10% before GST", () => {
   const gst = paidBill({...bill([payment({amountMinor: 200_000})],
     {gstRegistered: true}), paidMinor: 11_800});
   assert.equal(billPaidBeforeGst(gst), 10_000);
+  // The sixth month still earns; month 7 does not.
+  assert.equal(creditForPaidBill({bill: paidBill(), facts: facts("partner",
+    10), firstPaidMonth: "2026-05", rule, nowMillis: 9})?.monthIndex, 6);
+  assert.equal(creditForPaidBill({bill: paidBill(), facts: facts("partner",
+    10), firstPaidMonth: "2026-04", rule, nowMillis: 9}), null);
   // Sales associates, late claims and month 13 earn nothing.
   assert.equal(creditForPaidBill({bill: paidBill(), facts: facts("associate",
     10), firstPaidMonth: "2026-10", rule, nowMillis: 9}), null);

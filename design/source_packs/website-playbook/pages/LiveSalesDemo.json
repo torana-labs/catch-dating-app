@@ -1,0 +1,236 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "LiveSalesDemo",
+  "title": "Live · Private demo · /demo/:invitationId",
+  "height": 1500,
+  "phone": {
+    "title": "Private demo",
+    "height": 2800
+  },
+  "state": {
+    "label": "Demo states:",
+    "options": [
+      {
+        "key": "preview",
+        "label": "Preview"
+      },
+      {
+        "key": "verify",
+        "label": "Verify"
+      },
+      {
+        "key": "sample",
+        "label": "Sample"
+      },
+      {
+        "key": "done",
+        "label": "Next steps"
+      }
+    ],
+    "default": "preview"
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "lp",
+        "cta": "Help"
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "preview",
+      "data": {
+        "kicker": "Private workflow preview",
+        "title": "Your private demo: Long Table Supper",
+        "lead": "No real messages, charges, guest admission, organizer ownership, or publication occur here.",
+        "blocks": [
+          {
+            "title": "What you can explore",
+            "rows": [
+              {
+                "t": "Review a sample application"
+              },
+              {
+                "t": "Prepare a reply"
+              },
+              {
+                "t": "Admit a sample guest"
+              },
+              {
+                "t": "Ask for help on the night"
+              }
+            ]
+          },
+          {
+            "title": "What stays with your current tools",
+            "rows": [
+              {
+                "t": "Your real guest list and payments"
+              }
+            ]
+          },
+          {
+            "title": "Known limits of this example",
+            "rows": [
+              {
+                "t": "Sample guests only; no imported forms"
+              }
+            ]
+          },
+          {
+            "title": "Available until 30 Nov",
+            "btns": [
+              {
+                "l": "Try the sample workflow"
+              }
+            ]
+          }
+        ],
+        "note": "Private sales demo (/demo/:invitationId). Copy from salesDemoCopy: preview, verify the invited contact, the sample workflow, and the real-setup handoff."
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "verify",
+      "data": {
+        "kicker": "Private workflow preview",
+        "title": "Verify the invited contact",
+        "lead": "Use the invited email or verify the invited phone. If you are signed in with another account, you can change it below.",
+        "steps": [
+          "Verify",
+          "Review applicant",
+          "Reply",
+          "Admit guest",
+          "Next steps"
+        ],
+        "step": 0,
+        "blocks": [
+          {
+            "title": "",
+            "btns": [
+              {
+                "l": "Continue with Google"
+              }
+            ]
+          },
+          {
+            "title": "Or verify phone (international format)",
+            "fields": [
+              {
+                "id": "sd-phone",
+                "label": "Phone",
+                "type": "tel",
+                "ph": "+91…"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Send verification code"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "sample",
+      "data": {
+        "kicker": "Your isolated sample",
+        "title": "Review a sample application",
+        "lead": "Only synthetic records are changed.",
+        "steps": [
+          "Verify",
+          "Review applicant",
+          "Reply",
+          "Admit guest",
+          "Next steps"
+        ],
+        "step": 1,
+        "blocks": [
+          {
+            "label": "Sample applicant",
+            "title": "Aarav, applying for Long Table Supper",
+            "rows": [
+              {
+                "t": "What brings you to a supper club?",
+                "s": "Moved to Mumbai in August; I cook and want to meet people who do."
+              },
+              {
+                "t": "Anything we should know?",
+                "s": "Vegetarian."
+              }
+            ],
+            "btns": [
+              {
+                "l": "Approve sample application"
+              },
+              {
+                "l": "Ask sample applicant for more information",
+                "kind": "sec"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "btns": [
+              {
+                "l": "Request help with this demo",
+                "kind": "sec"
+              }
+            ],
+            "fine": "Assistance requests are recorded in the product; no message is sent here."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "done",
+      "data": {
+        "kicker": "Sample complete",
+        "kc": "#1F7A57",
+        "title": "Set up your real workflow",
+        "lead": "This sample used fictitious data. Review the next steps separately; nothing here sends messages, admits guests, or publishes a form.",
+        "steps": [
+          "Verify",
+          "Review applicant",
+          "Reply",
+          "Admit guest",
+          "Next steps"
+        ],
+        "step": 4,
+        "blocks": [
+          {
+            "label": "Reviewed template",
+            "title": "Supper club application",
+            "sub": "Preparing creates a private draft from this reviewed template. You must finish and review it in Forms; it will not be published.",
+            "btns": [
+              {
+                "l": "Prepare template draft"
+              }
+            ]
+          },
+          {
+            "title": "Claim your organizer first",
+            "sub": "Claim your organizer and confirm management access before a draft can be prepared.",
+            "btns": [
+              {
+                "l": "Open organizer claim",
+                "kind": "sec"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "lp",
+        "mbar": "Help"
+      }
+    }
+  ]
+}

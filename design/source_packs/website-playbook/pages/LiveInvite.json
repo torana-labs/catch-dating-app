@@ -1,0 +1,165 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "LiveInvite",
+  "title": "Live · Invitation · /invite/:inviteToken",
+  "height": 1200,
+  "phone": {
+    "title": "Invitation",
+    "height": 2000
+  },
+  "state": {
+    "label": "Invitation states:",
+    "options": [
+      {
+        "key": "catch",
+        "label": "Book on Catch"
+      },
+      {
+        "key": "external",
+        "label": "Book elsewhere"
+      },
+      {
+        "key": "runtime",
+        "label": "Event mode"
+      },
+      {
+        "key": "gone",
+        "label": "Unavailable"
+      }
+    ],
+    "default": "catch"
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "lp",
+        "cta": "Help"
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "catch",
+      "data": {
+        "kicker": "Private event invitation",
+        "title": "You are invited",
+        "lead": "Register here with your verified phone number. You do not need the Catch app or a dating profile.",
+        "blocks": [
+          {
+            "kind": "card",
+            "flat": true,
+            "cover": "/_blob/409d3ee3e6896b80188944189323718b",
+            "title": "Long Table Supper",
+            "sub": "Lantern Lane Social · Fri 21 Nov, 8:00 PM · Khar West",
+            "rows": [
+              {
+                "t": "Invited by",
+                "v": "Lantern Lane Social"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "btns": [
+              {
+                "l": "Continue to registration"
+              }
+            ]
+          }
+        ],
+        "note": "Invitation (/invite/:inviteToken). Copy from eventInviteCopy: Catch registration, an external ticket page, event mode, and unavailable."
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "external",
+      "data": {
+        "kicker": "Private event invitation",
+        "title": "You are invited",
+        "lead": "Catch will take you to Luma to finish registration. Catch records this invitation open; the booking remains with Luma.",
+        "blocks": [
+          {
+            "kind": "card",
+            "flat": true,
+            "cover": "/_blob/409d3ee3e6896b80188944189323718b",
+            "title": "Long Table Supper",
+            "sub": "Lantern Lane Social · Fri 21 Nov, 8:00 PM · Khar West",
+            "rows": [
+              {
+                "t": "Tickets on",
+                "v": "Luma"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "btns": [
+              {
+                "l": "Continue to Luma"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "runtime",
+      "data": {
+        "kicker": "Private event invitation",
+        "title": "You are invited",
+        "lead": "Continue to the no-download event page to verify your number and open the live event tools.",
+        "blocks": [
+          {
+            "kind": "card",
+            "flat": true,
+            "cover": "/_blob/409d3ee3e6896b80188944189323718b",
+            "title": "Long Table Supper",
+            "sub": "Lantern Lane Social · Fri 21 Nov, 8:00 PM · Khar West",
+            "rows": [
+              {
+                "t": "1 seat",
+                "v": "₹1,200"
+              }
+            ]
+          },
+          {
+            "title": "",
+            "btns": [
+              {
+                "l": "Open event mode"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "gone",
+      "data": {
+        "kicker": "Catch invitation",
+        "title": "This invitation is unavailable",
+        "lead": "The event may have ended, the link may have expired, or the host may have disabled it. Ask the host for a fresh invitation.",
+        "blocks": [
+          {
+            "title": "",
+            "btns": [
+              {
+                "l": "Open help",
+                "kind": "sec"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "lp",
+        "mbar": "Help"
+      }
+    }
+  ]
+}

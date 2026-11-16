@@ -1,0 +1,237 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookSafety",
+  "title": "Playbook · Safety and trust",
+  "height": 4800,
+  "phone": {
+    "title": "Safety and trust",
+    "height": 7000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "guest",
+        "city": "Mumbai"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "tone": "m-pink",
+        "ink": "#4A2330",
+        "kicker": "Safety and trust",
+        "title": "Feel good about going on your own.",
+        "lead": "Most people who book a plan on Catch come alone. Here’s what’s in place before, during and after every plan, and what to do if something isn’t right.",
+        "btns": [
+          {
+            "l": "See solo-friendly plans"
+          },
+          {
+            "l": "Read the code of conduct",
+            "kind": "sec",
+            "href": "#conduct"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "tilt": true,
+          "cover": "/_blob/409d3ee3e6896b80188944189323718b",
+          "title": "★★★★★",
+          "sub": "“[A real review from a guest who came alone, quoted with permission]”",
+          "rows": [
+            {
+              "t": "[First name] · Long Table Supper",
+              "tag": "Booked on Catch",
+              "tone": "good"
+            }
+          ]
+        },
+        "note": "Segment: women and solo guests (P1). Reviews only from people who booked, labelled. Now on the kit."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "center": false,
+        "kicker": "Every plan",
+        "kc": "#B23A5A",
+        "title": "Before, during and after.",
+        "items": [
+          {
+            "t": "Before",
+            "d": "",
+            "list": [
+              "Hosts carry a verified mark. [How verification works, in one line]",
+              "Honest plan pages: who’s hosting, where you meet, who it suits and what’s included",
+              "Reviews from people who went, marked “Booked on Catch”; others are labelled"
+            ]
+          },
+          {
+            "t": "During",
+            "d": "",
+            "list": [
+              "A host who is there: every plan has a host on the night",
+              "A group, not a crowd: a team, a table or a pace group, and a first hello",
+              "A quieter way to ask: with Help me say hi, you ask the host for an introduction, privately"
+            ]
+          },
+          {
+            "t": "After",
+            "d": "",
+            "list": [
+              "Your name stays off public pages: they show how many are going, not who",
+              "The group chat closes after a week",
+              "Review and report: rate the plan, and tell us privately if anything wasn’t right"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "panel": "tint",
+        "id": "conduct",
+        "top": true,
+        "kicker": "Code of conduct",
+        "kc": "#1F7A57",
+        "title": "What everyone agrees to.",
+        "lead": "Hosts agree to it before their first plan goes live. Guests agree to it when they book.",
+        "btns": [
+          {
+            "l": "Read the full code",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "tiles",
+          "tiles": [
+            {
+              "tone": "white",
+              "t": "Hosts",
+              "d": "[The host commitments from the published code of conduct, in three or four short lines.]"
+            },
+            {
+              "tone": "white",
+              "t": "Guests",
+              "d": "[The guest commitments from the published code: respect, consent, no harassment, following the host’s lead.]"
+            }
+          ]
+        },
+        "note": "Placeholders: quote the real code of conduct here; do not paraphrase a policy that isn’t published."
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "panel": "ink",
+        "top": true,
+        "kicker": "If something isn’t right",
+        "kc": "#F07A55",
+        "title": "Tell someone. We act on every report.",
+        "sos": {
+          "big": "112",
+          "text": "In an emergency, call India’s emergency number first."
+        },
+        "steps": [
+          {
+            "n": "1",
+            "h": "On the night, tell your host",
+            "d": "They’re there to help, and can move groups or step in."
+          },
+          {
+            "n": "2",
+            "h": "Report it to Catch",
+            "d": "From your booking, or on WhatsApp. Only our team sees your report."
+          },
+          {
+            "n": "3",
+            "h": "We review and follow up",
+            "d": "We reply within [response time] and tell you what we did."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Choosing a plan",
+        "kc": "#B23A5A",
+        "title": "Find plans that feel right.",
+        "lead": "Every plan page says who it suits. On What’s on you can look for plans that welcome first-timers and people coming on their own.",
+        "btns": [
+          {
+            "l": "Solo-friendly plans in Mumbai"
+          },
+          {
+            "l": "New to Mumbai",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "tiles",
+          "tiles": [
+            {
+              "tone": "m-coral",
+              "t": "Solo-friendly",
+              "d": "Hosts plan the first ten minutes."
+            },
+            {
+              "tone": "m-mint",
+              "t": "First-timers welcome",
+              "d": "No experience or level needed."
+            },
+            {
+              "tone": "m-yellow",
+              "t": "Women-led plans",
+              "d": "[If and when offered]"
+            },
+            {
+              "tone": "m-indigo",
+              "t": "Small groups",
+              "d": "Tables of six, pods of eight."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "Good to know.",
+        "items": [
+          [
+            "Who can see that I’m going?",
+            "Public plan pages show how many people are going, not who. Your host sees the guest list for their plan."
+          ],
+          [
+            "Are hosts checked?",
+            "Hosts carry a verified mark. [How verification works, to confirm before launch.]"
+          ],
+          [
+            "Can I really come on my own?",
+            "Yes, and most people do. Hosts plan a group, a team or a first hello so nobody stands on their own."
+          ],
+          [
+            "How do I report something?",
+            "Tell your host on the night, then report it from your booking or on WhatsApp. Only our team sees your report. In an emergency, call 112."
+          ],
+          [
+            "What happens to a review I leave?",
+            "It appears on the host’s page, marked “Booked on Catch” because you booked. Hosts can reply."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "guest",
+        "mbar": "See plans"
+      }
+    }
+  ]
+}

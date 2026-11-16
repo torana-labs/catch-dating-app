@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · header</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg">
+<sc-if value="{{hasOffer}}" hint-placeholder-val="{{ false }}"><div class="offer"><span><b>{{d.offer.lead}}</b> <sc-for list="{{offerBody}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></span><span><sc-for list="{{offerLeft}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></span><a href="#">{{d.offer.cta}}</a></div></sc-if>
+<sc-if value="{{isHost}}" hint-placeholder-val="{{ true }}"><header class="bar"><a class="wm" href="#">Catch</a>
+<nav aria-label="Main"><a href="#">What’s on</a><a class="{{hostsCls}}" href="#">For hosts <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></a><a class="{{pricingCls}}" href="#">Pricing</a><a class="{{resCls}}" href="#">Resources <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></a></nav>
+<span class="sp"></span>
+<a class="wa" href="#" aria-label="Talk to us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-1.8-1.8l.8-1-1-2z"/></svg><span class="walabel">Talk to us</span></a>
+<a class="signin" href="#">Sign in</a><a class="b sm" href="#">{{cta}}</a><button class="menu" type="button" aria-label="Menu"><i></i></button></header></sc-if>
+<sc-if value="{{isGuest}}" hint-placeholder-val="{{ false }}"><header class="bar"><a class="wm" href="#">Catch</a>
+<nav aria-label="Main"><a href="#">What’s on</a><a href="#">New to {{city}}</a><a href="#">Safety</a></nav>
+<span class="sp"></span><a class="signin" href="#">For hosts</a><a class="signin" href="#">Sign in</a><a class="b sm" href="#">{{cta}}</a><button class="menu" type="button" aria-label="Menu"><i></i></button></header></sc-if>
+<sc-if value="{{isLp}}" hint-placeholder-val="{{ false }}"><header class="bar"><a class="wm" href="#">Catch</a><span class="sp"></span><a class="wa" href="#" aria-label="Talk to us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/></svg><span class="walabel">Talk to us</span></a><a class="b sm" href="#">{{cta}}</a></header></sc-if>
+<sc-if value="{{hasCrumb}}" hint-placeholder-val="{{ true }}"><nav class="crumb" aria-label="Breadcrumb"><sc-for list="{{crumbs}}" as="c" hint-placeholder-count="2"><a href="#">{{c}}</a><span>/</span></sc-for>{{d.here}}</nav></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 140}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"variant": "host", "nav": "hosts", "offer": {"lead": "Founding hosts in Mumbai and Indore:", "body": "90 days without Catch fees, until [date].", "left": "[N] of 50 places left", "cta": "Claim a place"}, "crumbs": ["For hosts"], "here": "Supper clubs"};
+    const o = d.offer || {};
+    return {
+      d, hasOffer: !!d.offer, offerBody: P(o.body), offerLeft: P(o.left), isHost: (d.variant || 'host') === 'host', isGuest: d.variant === 'guest', isLp: d.variant === 'lp',
+      hostsCls: d.nav === 'hosts' ? 'on' : '', pricingCls: d.nav === 'pricing' ? 'on' : '', resCls: d.nav === 'resources' ? 'on' : '',
+      cta: d.cta || (d.variant === 'guest' ? 'Get notified' : 'Start free trial'), city: d.city || 'the city',
+      hasCrumb: has(d.here), crumbs: d.crumbs || []
+    };
+  }
+}
+</script>
+</body>
+</html>

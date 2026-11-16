@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Playbook · No-show calculator</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;background:#fff}
+.scr{width:100%;height:100%;border-radius:36px;background:#fff;padding:44px 16px 16px;color:#141114;font-size:12px;overflow:hidden}
+.scr h5{margin:0;font-size:16px}.scr .sub{color:#5A5450;font-size:11px;margin-top:2px}
+.scr .stats{display:flex;justify-content:space-between;margin:14px 4px}.scr .stats b{display:block;font:800 24px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%}
+.blk{background:#F6F0E8;border-radius:16px;padding:11px 12px;margin-top:8px}
+.blk div{display:flex;justify-content:space-between;font-weight:700;font-size:13px}.blk small{color:#5A5450;display:block;margin-top:3px}
+.blk span{font-size:10px;font-weight:600;border:1px solid #d6cec7;border-radius:999px;padding:2px 8px}
+.chipx{margin-top:10px;background:#141114;color:#fff;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:600}
+.app{background:#fff;border-radius:24px;padding:22px;box-shadow:0 24px 50px -30px rgba(20,17,20,.45)}
+.app h4{margin:0 0 4px;font-size:15px}.app .q{display:block;padding:10px 0;border-bottom:1px solid #eee7e1;font-size:14px;color:#2b2427;width:auto;cursor:default}
+.app .q b{display:block;font-size:12px;color:#5A5450;font-weight:600;margin-bottom:2px}
+.app .acts{display:flex;gap:8px;margin-top:14px}
+.calc2{background:#221D21;border-radius:28px;padding:28px}
+.ctl{margin-bottom:6px}.ctl .lab{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:#BDB3A7;font-weight:600}
+.ctl .lab b{color:#F6EFE6;font:800 26px/1 Archivo,'Arial Narrow',sans-serif;font-stretch:78%}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.res>div{background:#F6EFE6;color:#141114;border-radius:20px;padding:18px}.res small{display:block;font-size:12px;font-weight:600;color:#5A5450}
+.res b{display:block;font:800 40px/1.05 Archivo,'Arial Narrow',sans-serif;font-stretch:78%;margin-top:6px}.res span{font-size:12px;color:#5A5450}
+.res .wide{grid-column:1/-1;background:#5CCB9F}
+.bars{display:grid;gap:10px;margin-top:16px}.bars div{display:grid;grid-template-columns:120px 1fr 56px;gap:10px;align-items:center;font-size:13px;color:#BDB3A7}
+.bars i{display:block;height:14px;border-radius:99px;background:#F07A55}.bars i.n{background:#5CCB9F}
+</style>
+</helmet>
+<div class="pg">
+
+<div class="offer"><span><b>Founding hosts in Mumbai and Indore:</b> 90 days without Catch fees, until <span class="ph">[date]</span>.</span><span><span class="ph">[N]</span> of 50 places left</span><a href="#">Claim a place</a></div>
+<header class="bar"><a class="wm" href="#">Catch</a>
+<nav aria-label="Main"><a href="#">What’s on</a><a class="on" href="#">For hosts <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></a><a href="#">Pricing</a><a href="#">Resources <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></a></nav>
+<span class="sp"></span>
+<a class="wa" href="#" aria-label="Talk to us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-1.8-1.8l.8-1-1-2z"/></svg><span class="walabel">Talk to us</span></a>
+<a class="signin" href="#">Sign in</a><a class="b sm" href="#">Start free trial</a><button class="menu" type="button" aria-label="Menu"><i></i></button></header>
+<nav class="crumb" aria-label="Breadcrumb"><a href="#">For hosts</a><span>/</span><a href="#">Resources</a><span>/</span>No-show calculator</nav>
+
+<section class="panel ink" style="margin-top:0"><div class="split" style="align-items:start"><div>
+<p class="k" style="color:#F5C451">No-show calculator</p><h1 class="d d-hero" style="color:#F6EFE6">What do empty spots cost you?</h1>
+<p class="lead">Put in your numbers. See how many spots go empty each month, and what you don’t collect when people say yes and don’t turn up.</p>
+<div class="bars" aria-hidden="true"><div><span>Empty today</span><i style="width:{{barToday}}%"></i><b style="color:#F6EFE6">{{emptyToday}}</b></div><div><span>With paid booking</span><i class="n" style="width:{{barPaid}}%"></i><b style="color:#F6EFE6">{{emptyPaid}}</b></div></div>
+<p class="fine" style="color:#8a8079;margin-top:20px">Your estimate, not a promise: you set both rates. Catch doesn’t yet publish a measured no-show rate for its hosts.</p></div>
+<div class="calc2"><div class="ctl"><label class="lab" for="ns-spots"><span>Spots at each event</span><b>{{spotsLabel}}</b></label><input id="ns-spots" class="rng" type="range" min="10" max="200" step="5" value="{{spots}}" onInput="{{setSpots}}"></div><div class="ctl"><label class="lab" for="ns-price"><span>Ticket price</span><b>{{priceLabel}}</b></label><input id="ns-price" class="rng" type="range" min="0" max="3000" step="50" value="{{price}}" onInput="{{setPrice}}"></div><div class="ctl"><label class="lab" for="ns-events"><span>Events a month</span><b>{{eventsLabel}}</b></label><input id="ns-events" class="rng" type="range" min="1" max="12" step="1" value="{{events}}" onInput="{{setEvents}}"></div><div class="ctl"><label class="lab" for="ns-today"><span>People who say yes and don’t come, today</span><b>{{todayLabel}}</b></label><input id="ns-today" class="rng" type="range" min="0" max="50" step="1" value="{{today}}" onInput="{{setToday}}"></div><div class="ctl"><label class="lab" for="ns-paid"><span>With paid booking, you expect</span><b>{{paidLabel}}</b></label><input id="ns-paid" class="rng" type="range" min="0" max="50" step="1" value="{{paid}}" onInput="{{setPaid}}"></div>
+<div class="res"><div><small>Empty spots a month, today</small><b>{{emptyToday}}</b><span>of {{totalSpots}} you hold</span></div><div><small>With paid booking</small><b>{{emptyPaid}}</b><span>{{fewer}} fewer empty spots</span></div>
+<div class="wide"><small>What you don’t collect today, each month</small><b>{{lostLabel}}</b><span>{{lostNote}}</span></div></div></div></div>
+<span class="note">New page, priority 1. Decision: the host sets both rates (default: half). The page makes no claim about Catch results. Paid no-shows keep their payment under the host’s policy, so lost revenue with Catch is shown as ₹0 by policy, not as a result.</span></section>
+
+<section class="open"><div class="split top"><div><p class="k" style="color:#4C5BC4">How it works it out</p><h2 class="d d-sec">The sums, in plain words.</h2></div>
+<div><ul class="ticks" style="margin-top:0">
+<li><b>Empty spots</b>: spots × events × the share who don’t come.</li>
+<li><b>What you don’t collect</b>: if people pay at the door or later, every no-show is a held spot nobody paid for. That’s empty spots × ticket price.</li>
+<li><b>With paid booking</b>: people pay when they book. If they don’t come, your cancellation policy decides what’s refunded, so a no-show no longer costs you the ticket.</li>
+<li><b>Free events</b>: nothing to collect, but the empty spots still cost you food, space and atmosphere.</li></ul></div></div></section>
+
+<section class="panel tint"><div class="c"><p class="k" style="color:#1F7A57">What cuts no-shows</p><h2 class="d d-sec">Four things that work, on Catch or anywhere.</h2></div>
+<div class="grid3" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+<div class="tile paper"><h3>Pay to book</h3><p>Even a small price changes a maybe into a yes.</p><p class="fix">Catch takes UPI or card at booking.</p></div>
+<div class="tile paper"><h3>A clear policy</h3><p>Say what’s refunded and until when, before anyone books.</p><p class="fix">Your policy is on the page and applied to every refund.</p></div>
+<div class="tile paper"><h3>A reminder that helps</h3><p>Where to be, when, and who to look for, the day before.</p><p class="fix">Catch sends it for you.</p></div>
+<div class="tile paper"><h3>A waitlist</h3><p>People who cancel ahead free a spot for someone who wants it.</p><p class="fix">The next person gets an offer straight away.</p></div>
+</div></section>
+
+<section class="panel flush m-coral"><div class="split"><div class="htext"><p class="k" style="color:#4A1C0E">Your next event</p><h2 class="d d-sec">Get paid when people book.</h2>
+<p class="lead">Free for 30 days from your first event, 90 for founding hosts. Then 5% of ticket sales, never more than ₹10,000 a month.</p>
+<div class="btns"><a class="b" href="#">Start free trial</a><a class="b o" href="#">See bookings and payments</a></div></div>
+<div class="fmedia"><div class="phone fphone"><img src="/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b" alt="An event as guests see it on Catch"></div></div></div></section>
+
+<footer class="foot"><div class="cols">
+<div><h4>Product</h4><a>How Catch works</a><a>Running the night</a><a>Bookings and payments</a><a>Your page</a></div>
+<div><h4>Hosts by format</h4><a>Run and walk clubs</a><a>Racket sports</a><a>Supper clubs</a><a>Quiz and game nights</a><a>Studios</a></div>
+<div><h4>Get started</h4><a>Start free trial</a><a>Pricing</a><a>Switch from WhatsApp</a></div>
+<div><h4>Resources</h4><a>Host stories</a><a>Compare</a><a>Host a supper club in Mumbai</a></div>
+<div><h4>Catch</h4><a>What’s on</a><a>Safety</a><a>Contact</a><a>Terms</a></div></div>
+<ol class="fn"><li>1. Average of reviews from guests who booked on Catch, <span class="ph">[dates]</span>.</li><li>2. From Catch booking records, <span class="ph">[dates]</span>.</li><li>3. Self-reported by the host. Individual results vary.</li></ol>
+<p class="bigwm">Catch</p><div class="legal"><span>Meet people in real life, through hosts who bring them together.</span><span>Catch is operated by Torana.</span></div></footer>
+<div class="mbar"><a class="b" href="#">Start free trial</a><a class="b wab" href="#" aria-label="Talk to us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/></svg></a></div>
+<div class="mbar"><a class="b" href="#">Start free trial</a><a class="b wab" href="#" aria-label="Talk to us on WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="#141114" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8z"/></svg></a></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4600}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { spots: 40, price: 500, events: 4, today: 20, paid: 10 }; }
+  num(e, lo) { const n = parseFloat(e.target.value); return isNaN(n) ? lo : n; }
+  renderVals() {
+    const s = this.state;
+    const inr = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
+    const total = s.spots * s.events;
+    const et = Math.round(total * s.today / 100);
+    const ep = Math.round(total * s.paid / 100);
+    const lost = et * s.price;
+    const max = Math.max(et, 1);
+    return {
+      spots: s.spots, price: s.price, events: s.events, today: s.today, paid: s.paid,
+      spotsLabel: String(s.spots), priceLabel: s.price === 0 ? 'Free' : inr(s.price), eventsLabel: String(s.events),
+      todayLabel: s.today + '%', paidLabel: s.paid + '%',
+      totalSpots: total.toLocaleString('en-IN'), emptyToday: et.toLocaleString('en-IN'), emptyPaid: ep.toLocaleString('en-IN'),
+      fewer: Math.max(et - ep, 0).toLocaleString('en-IN'),
+      barToday: et ? 100 : 0, barPaid: Math.round(ep / max * 100),
+      lostLabel: s.price === 0 ? '₹0' : inr(lost),
+      lostNote: s.price === 0 ? 'A free event: the cost is the empty spots, not the tickets.' : 'With paid booking, no-shows have already paid; your policy decides refunds.',
+      setSpots: (e) => this.setState({ spots: this.num(e, 10) }),
+      setPrice: (e) => this.setState({ price: this.num(e, 0) }),
+      setEvents: (e) => this.setState({ events: this.num(e, 1) }),
+      setToday: (e) => { const v = this.num(e, 0); this.setState({ today: v, paid: Math.min(this.state.paid, v) }); },
+      setPaid: (e) => this.setState({ paid: Math.min(this.num(e, 0), this.state.today) })
+    };
+  }
+}
+</script>
+</body>
+</html>

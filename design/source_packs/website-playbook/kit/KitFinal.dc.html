@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · final call</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><section class="panel flush {{d.tone}}"><div class="split"><div class="htext"><p class="k" style="color:{{ink}}">{{d.kicker}}</p><h2 class="d d-sec"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h2>
+<p class="lead"><sc-for list="{{lead}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p>
+<sc-if value="{{hasBtns}}" hint-placeholder-val="{{ true }}"><div class="btns"><sc-for list="{{btns}}" as="b" hint-placeholder-count="2"><a class="b {{b.cls}}" href="{{b.href}}">{{b.l}}</a></sc-for></div></sc-if>
+<sc-if value="{{hasForm}}" hint-placeholder-val="{{ false }}"><form class="row2" style="margin-top:14px;max-width:520px" onsubmit="return false"><label class="sr" for="{{formId}}">{{d.form.label}}</label><input id="{{formId}}" class="in" type="tel" placeholder="{{d.form.label}}"><button class="b {{formBtnCls}}" type="submit">{{d.form.button}}</button></form></sc-if>
+<sc-if value="{{hasBadges}}" hint-placeholder-val="{{ false }}"><div class="badges"><img src="/_blob/b9d404c93226266a9f3d8d84d6626f14" alt="Download on the App Store"><img src="/_blob/5431322c4be24007ddd2bd3a6e412fe3" alt="Get it on Google Play"></div></sc-if></div>
+<div class="fmedia"><div class="phone fphone"><img src="{{img}}" alt="{{alt}}"></div></div></div></section></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 720}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"tone": "m-pink", "ink": "#4A2330", "kicker": "Your next dinner", "title": "Fill the table with the right people.", "lead": "Start the free trial.", "btns": [{"l": "Start free trial"}], "form": {"label": "Your WhatsApp number", "button": "Send the guide"}};
+    return { d, ink: d.ink || '#141114', title: P(d.title), lead: P(d.lead), hasBtns: has(d.btns), btns: B(d.btns), hasForm: !!d.form, hasBadges: !!d.badges,
+      formId: (d.form && d.form.id) || 'final-wa', formBtnCls: has(d.btns) ? 'o' : '',
+      img: d.img || '/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b', alt: d.alt || 'An event as guests see it on Catch' };
+  }
+}
+</script>
+</body>
+</html>

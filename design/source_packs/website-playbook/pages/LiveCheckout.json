@@ -1,0 +1,379 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "LiveCheckout",
+  "title": "Live · Checkout · /booking/:eventId",
+  "height": 1500,
+  "phone": {
+    "title": "Checkout",
+    "height": 2600
+  },
+  "state": {
+    "label": "Checkout states:",
+    "options": [
+      {
+        "key": "phone",
+        "label": "Phone"
+      },
+      {
+        "key": "code",
+        "label": "Code"
+      },
+      {
+        "key": "review",
+        "label": "Review"
+      },
+      {
+        "key": "pay",
+        "label": "Pay"
+      },
+      {
+        "key": "done",
+        "label": "Confirmed"
+      },
+      {
+        "key": "manage",
+        "label": "Booking page"
+      },
+      {
+        "key": "closed",
+        "label": "Closed"
+      }
+    ],
+    "default": "review"
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "lp",
+        "cta": "Help"
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "phone",
+      "data": {
+        "kicker": "Long Table Supper · Fri 21 Nov",
+        "title": "Continue with your phone",
+        "lead": "Continue with your phone to check your application, booking, or next step. No app download is needed.",
+        "steps": [
+          "Your phone",
+          "Review",
+          "Pay",
+          "Confirmed"
+        ],
+        "step": 0,
+        "blocks": [
+          {
+            "kind": "card",
+            "flat": true,
+            "cover": "/_blob/409d3ee3e6896b80188944189323718b",
+            "title": "Long Table Supper",
+            "sub": "Lantern Lane Social · Fri 21 Nov, 8:00 PM · Khar West",
+            "rows": [
+              {
+                "t": "1 seat",
+                "v": "₹1,200"
+              }
+            ]
+          },
+          {
+            "title": "Mobile number",
+            "fields": [
+              {
+                "id": "co-phone",
+                "label": "Mobile number",
+                "type": "tel",
+                "ph": "+91 00000 00000"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Continue with phone"
+              }
+            ],
+            "fine": "Your verified number identifies your bookings and applications. No app download or dating profile is required. Marketing preferences are optional."
+          }
+        ],
+        "note": "Checkout (/booking/:eventId), first designed here. Copy is the live publicCheckoutCopy and guestEventCopy. States on the switch above."
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "code",
+      "data": {
+        "kicker": "Long Table Supper · Fri 21 Nov",
+        "title": "Enter your code",
+        "lead": "We sent a 6-digit code to +91 98••• ••210.",
+        "steps": [
+          "Your phone",
+          "Review",
+          "Pay",
+          "Confirmed"
+        ],
+        "step": 0,
+        "blocks": [
+          {
+            "title": "6-digit OTP",
+            "fields": [
+              {
+                "id": "co-otp",
+                "label": "6-digit OTP",
+                "type": "text",
+                "ph": "• • • • • •"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Verify phone"
+              },
+              {
+                "l": "Change phone number",
+                "kind": "sec"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "review",
+      "data": {
+        "kicker": "Phone verified: +91 98••• ••210",
+        "kc": "#1F7A57",
+        "title": "Review your booking",
+        "lead": "Check the price and cancellation policy before reserving your seat. Your place is confirmed after Catch verifies payment.",
+        "steps": [
+          "Your phone",
+          "Review",
+          "Pay",
+          "Confirmed"
+        ],
+        "step": 1,
+        "blocks": [
+          {
+            "kind": "card",
+            "flat": true,
+            "cover": "/_blob/409d3ee3e6896b80188944189323718b",
+            "title": "Long Table Supper",
+            "sub": "Lantern Lane Social · Fri 21 Nov, 8:00 PM · Khar West",
+            "rows": [
+              {
+                "t": "1 seat",
+                "v": "₹1,200"
+              }
+            ]
+          },
+          {
+            "title": "Your booking",
+            "fields": [
+              {
+                "id": "co-name",
+                "label": "Name on the guest list",
+                "ph": "Ira Desai"
+              }
+            ],
+            "rows": [
+              {
+                "t": "Price",
+                "v": "₹1,200"
+              },
+              {
+                "t": "Cancellation policy",
+                "s": "Full refund if you cancel by Thu 20 Nov, 8:00 PM",
+                "tag": "Standard"
+              },
+              {
+                "t": "Pay by",
+                "s": "UPI or card, through Razorpay"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Reserve a seat and pay ₹1,200"
+              }
+            ],
+            "fine": "Paid to the organiser. Refunds follow the policy above."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "pay",
+      "data": {
+        "kicker": "Paying Lantern Lane Social",
+        "title": "Finish paying in Razorpay",
+        "lead": "Choose UPI or card in the Razorpay window. Keep this page open; your place is confirmed when Catch verifies the payment.",
+        "steps": [
+          "Your phone",
+          "Review",
+          "Pay",
+          "Confirmed"
+        ],
+        "step": 2,
+        "blocks": [
+          {
+            "title": "Razorpay · ₹1,200",
+            "label": "Payment window",
+            "rows": [
+              {
+                "t": "UPI",
+                "s": "Pay with any UPI app",
+                "tag": "Recommended",
+                "tone": "good"
+              },
+              {
+                "t": "Card",
+                "s": "Debit or credit card"
+              }
+            ],
+            "fine": "Illustrative: Razorpay’s own window opens here."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "done",
+      "data": {
+        "kicker": "You’re in",
+        "kc": "#1F7A57",
+        "title": "Your place is confirmed.",
+        "lead": "Your place is confirmed. Venue check-in is a separate step when you arrive.",
+        "steps": [
+          "Your phone",
+          "Review",
+          "Pay",
+          "Confirmed"
+        ],
+        "step": 4,
+        "blocks": [
+          {
+            "kind": "card",
+            "flat": true,
+            "cover": "/_blob/409d3ee3e6896b80188944189323718b",
+            "title": "Long Table Supper",
+            "sub": "Lantern Lane Social · Fri 21 Nov, 8:00 PM · Khar West",
+            "rows": [
+              {
+                "t": "1 seat",
+                "v": "₹1,200"
+              }
+            ]
+          },
+          {
+            "title": "Before Friday",
+            "rows": [
+              {
+                "t": "A reminder the day before",
+                "s": "Where to be, and who to look for"
+              },
+              {
+                "t": "Check in at the door",
+                "s": "Scan in on your phone when you arrive"
+              },
+              {
+                "t": "Can’t make it?",
+                "s": "Cancel from your booking page; refunds follow the policy"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Open your booking page"
+              },
+              {
+                "l": "Add to calendar",
+                "kind": "sec"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "manage",
+      "data": {
+        "kicker": "Your event booking",
+        "title": "Your booking",
+        "lead": "Check your place, payment or refund using your verified phone number.",
+        "blocks": [
+          {
+            "kind": "card",
+            "flat": true,
+            "cover": "/_blob/409d3ee3e6896b80188944189323718b",
+            "title": "Long Table Supper",
+            "sub": "Lantern Lane Social · Fri 21 Nov, 8:00 PM · Khar West",
+            "rows": [
+              {
+                "t": "1 seat",
+                "v": "₹1,200"
+              }
+            ]
+          },
+          {
+            "title": "Status",
+            "rows": [
+              {
+                "t": "Place",
+                "tag": "Confirmed",
+                "tone": "good"
+              },
+              {
+                "t": "Paid",
+                "s": "UPI · 14 Nov, 9:12 PM",
+                "v": "₹1,200"
+              },
+              {
+                "t": "Refund if you cancel now",
+                "s": "Full refund until Thu 20 Nov, 8:00 PM",
+                "v": "₹1,200"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Cancel my booking",
+                "kind": "sec"
+              }
+            ],
+            "fine": "Cancelling releases your place and cannot be undone. Online cancellation closes when the event starts."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "closed",
+      "data": {
+        "kicker": "Long Table Supper",
+        "title": "Registration closed",
+        "lead": "New registration is closed. Verify your phone to manage an existing paid booking.",
+        "blocks": [
+          {
+            "tone": "m-yellow",
+            "title": "Paid booking is unavailable",
+            "sub": "Until the organiser connects their Razorpay account, you can’t pay here. You have not been charged."
+          },
+          {
+            "title": "Already booked?",
+            "btns": [
+              {
+                "l": "Open your booking page"
+              }
+            ]
+          }
+        ],
+        "fine": "Two closed states shown together: registration closed, and organiser payments not connected."
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "lp",
+        "mbar": "Help"
+      }
+    }
+  ]
+}

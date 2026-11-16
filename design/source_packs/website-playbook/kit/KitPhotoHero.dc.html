@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · photo hero</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><section class="kshero"><img src="{{d.img}}" alt="{{d.alt}}"><div>
+<sc-if value="{{hasTags}}" hint-placeholder-val="{{ true }}"><div class="ktags"><sc-for list="{{tags}}" as="t" hint-placeholder-count="3"><span><sc-for list="{{t.parts}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></span></sc-for></div></sc-if>
+<h1 class="d d-hero"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h1><p class="lead" style="color:rgba(255,255,255,.86)"><sc-for list="{{lead}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></div></section>
+<sc-if value="{{hasNote}}" hint-placeholder-val="{{ false }}"><span class="note" style="position:relative;display:inline-block;margin:12px 24px 0">{{d.note}}</span></sc-if></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 700}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"img": "/_blob/8294b5d46800331739b8ee58199a7d53", "alt": "", "tags": ["Run club", "Bandra"], "title": "How Carter Road Runners [the outcome].", "lead": "[One sentence.]"};
+    return { d, hasTags: has(d.tags), tags: (d.tags || []).map((x) => ({ parts: P(x) })), title: P(d.title), lead: P(d.lead), hasNote: has(d.note) };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,376 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookOutdoors",
+  "title": "Playbook · Catch for treks, rides and outdoor groups",
+  "height": 9000,
+  "phone": {
+    "title": "Catch for outdoor groups",
+    "height": 12000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "offer": {
+          "lead": "Founding hosts in Mumbai and Indore:",
+          "body": "90 days without Catch fees, until [date].",
+          "left": "[N] of 50 places left",
+          "cta": "Claim a place"
+        },
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Treks, rides and outdoors"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "tone": "m-mint",
+        "ink": "#123D2C",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "kicker": "Catch for trekking, cycling and outdoor groups",
+        "title": "Everyone out, everyone back.",
+        "lead": "Bookings with fitness level and waiver signed, groups with a lead each, a count at every regroup point, and the people who loved it told first about the next trail.",
+        "proof": [
+          "[N] outdoor groups run on Catch",
+          "★ [4.8] from people who booked¹"
+        ],
+        "door": "Running treks for a company? Book a walkthrough →",
+        "media": {
+          "kind": "phonecard",
+          "title": "Groups · Kalsubai sunrise",
+          "sub": "Sahyadri Saturdays · 42 booked",
+          "stats": [
+            {
+              "v": "42",
+              "l": "checked in"
+            },
+            {
+              "v": "4",
+              "l": "groups"
+            },
+            {
+              "v": "0",
+              "l": "missing"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Group 1 · steady",
+              "s": "Lead: Meera · 11 people",
+              "tag": "All back",
+              "tone": "good"
+            },
+            {
+              "t": "Group 2 · easy",
+              "s": "Lead: Arjun · 10 people",
+              "tag": "All back",
+              "tone": "good"
+            },
+            {
+              "t": "Group 3 · easy",
+              "s": "Lead: Dev · 11 people",
+              "tag": "2 still out",
+              "tone": "warn"
+            }
+          ],
+          "chip": "Regroup at the summit marker in 20 minutes"
+        },
+        "chip": {
+          "title": "Kalsubai sunrise",
+          "rows": [
+            {
+              "l": "Waivers signed",
+              "v": "42 of 42"
+            },
+            {
+              "l": "First trek",
+              "v": "14"
+            },
+            {
+              "l": "Back home",
+              "v": "40"
+            }
+          ]
+        },
+        "note": "Priority-3 organiser type, built from the kit. Uses the run-club pace groups and leads, waiver forms, paid booking and check-in. No transport booking or live GPS is claimed."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Sound familiar?",
+        "kc": "#B5451F",
+        "title": "The trail is the easy part.",
+        "items": [
+          {
+            "t": "A spreadsheet of waivers",
+            "d": "Forms in one place, payments in another, and three people who never signed.",
+            "fix": "Waiver signed and paid at booking, on one record per person."
+          },
+          {
+            "t": "Counting heads on a hillside",
+            "d": "Forty people, four groups, and a headcount shouted at every stop.",
+            "fix": "Each lead marks who’s with them; anyone missing shows on your screen."
+          },
+          {
+            "t": "Beginners who struggle and never return",
+            "d": "A first-timer stuck at the back of the fast group.",
+            "fix": "Groups by fitness level, each with a lead who knows who’s new."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Before the trail",
+        "title": "Fitness level and waiver, before anyone pays.",
+        "lead": "Ask about fitness, experience and medical needs at booking, and collect a signed waiver with it. Groups are planned from the answers.",
+        "ticks": [
+          "A waiver signed with every booking",
+          "Fitness level and experience at booking",
+          "Emergency details only you and your leads see",
+          "Paid by UPI or card"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Booking · Kalsubai sunrise",
+          "rows": [
+            {
+              "t": "How often do you trek?",
+              "s": "A few times a year"
+            },
+            {
+              "t": "Fitness level",
+              "s": "Steady: I can climb for 3 hours"
+            },
+            {
+              "t": "Waiver",
+              "s": "Read and signed, 9:12 AM",
+              "tag": "Signed",
+              "tone": "good"
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "A trek on Catch",
+        "title": "From sign-ups to the drive home.",
+        "steps": [
+          {
+            "time": "Monday",
+            "t": "Bookings, waivers and levels",
+            "d": "Everyone books with a fitness level and a signed waiver. Groups are planned so beginners get an easy group and a lead."
+          },
+          {
+            "time": "4:30 AM",
+            "t": "Check in at the pick-up",
+            "d": "People scan in at the meeting point. Leads see their group on their own phone."
+          },
+          {
+            "time": "Trailhead",
+            "t": "A first hello in each group",
+            "d": "Each group gets one question to break the ice before they set off."
+          },
+          {
+            "time": "Summit",
+            "t": "Count at every regroup",
+            "d": "Leads mark who’s with them. Anyone not marked shows on your screen."
+          },
+          {
+            "time": "Evening",
+            "t": "Everyone home, then the next trail",
+            "d": "Leads mark people as home. Photos go out, and people who loved it hear about the next trek first."
+          }
+        ],
+        "media": {
+          "kind": "tablet",
+          "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb",
+          "alt": "Tonight’s check-ins and what needs you, on an iPad"
+        }
+      }
+    },
+    {
+      "component": "KitStory",
+      "data": {
+        "kicker": "Outdoor story · Pune",
+        "tone": "m-mint",
+        "ink": "#123D2C",
+        "initials": "SS",
+        "name": "Sahyadri Saturdays",
+        "meta": "Weekend treks · [N] trekkers",
+        "quote": "[The organiser, in their words, on waivers, headcounts and beginners who came back.]",
+        "metrics": [
+          {
+            "l": "Waivers collected before the day",
+            "v": "[N%]",
+            "s": "from Catch records²"
+          },
+          {
+            "l": "First-timers back within 2 months",
+            "v": "[N%]",
+            "s": "from Catch records²"
+          },
+          {
+            "l": "Hours saved a trek",
+            "v": "[N]",
+            "s": "self-reported³"
+          }
+        ],
+        "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+        "tag": "Replace with real photography from a design-partner trek"
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Buyer’s checklist",
+        "title": "What to look for in software for outdoor groups.",
+        "lead": "Check these eight things, whichever tool you choose. Catch does all of them.",
+        "btns": [
+          {
+            "l": "Compare Catch with the alternatives",
+            "kind": "sec"
+          }
+        ],
+        "items": [
+          {
+            "t": "Waivers with every booking",
+            "d": "Signed, kept as a receipt."
+          },
+          {
+            "t": "Fitness level at booking",
+            "d": "Groups planned from it."
+          },
+          {
+            "t": "A lead for every group",
+            "d": "On their own phone."
+          },
+          {
+            "t": "Counts at regroup points",
+            "d": "Anyone missing, flagged."
+          },
+          {
+            "t": "Paid booking",
+            "d": "UPI or card, refunds by your policy."
+          },
+          {
+            "t": "A waitlist",
+            "d": "For the treks that sell out."
+          },
+          {
+            "t": "Help for beginners",
+            "d": "An easy group and a first hello."
+          },
+          {
+            "t": "One record per person",
+            "d": "Every trek they’ve done with you."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for outdoor groups",
+        "examples": [
+          {
+            "t": "A 40-person trek at ₹1,800",
+            "v": "₹3,600 a trek",
+            "d": "5% of ₹72,000."
+          },
+          {
+            "t": "Three treks a month",
+            "v": "₹10,000 a month",
+            "d": "5% would be ₹10,800; the cap stops it at ₹10,000."
+          },
+          {
+            "t": "A free Sunday ride",
+            "v": "₹0",
+            "d": "Free events stay free."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Outdoor questions",
+        "title": "What hosts ask us.",
+        "items": [
+          [
+            "Can people sign a waiver when they book?",
+            "Yes. Add a waiver form to the event: the terms, an acknowledgement and a signature, kept as a receipt."
+          ],
+          [
+            "Who can see emergency details?",
+            "You and the leads you give access to for that event. Nobody else."
+          ],
+          [
+            "Does Catch track people on the trail?",
+            "No. Leads mark who’s with them at each regroup and at the end. Catch shows you anyone not marked."
+          ],
+          [
+            "Can leads use their own phones?",
+            "Yes. Give each lead access for the event; it ends when the event does."
+          ],
+          [
+            "Does Catch book transport?",
+            "No. Add pick-up points and times to the event, and they go out in the reminder."
+          ],
+          [
+            "Do people need an app?",
+            "No. They book, sign and check in in their phone’s browser."
+          ]
+        ]
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "tone": "m-mint",
+        "ink": "#123D2C",
+        "btns": [
+          {
+            "l": "Start free trial"
+          }
+        ],
+        "kicker": "Your next trail",
+        "title": "Everyone out. Everyone back.",
+        "lead": "Start the free trial, or leave your number and we’ll send the outdoor group setup guide on WhatsApp.",
+        "form": {
+          "id": "od-wa",
+          "label": "Your WhatsApp number",
+          "button": "Send the guide"
+        }
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "footnotes": [
+          "1. Average of reviews from guests who booked on Catch, [dates].",
+          "2. From Catch booking records, [dates].",
+          "3. Self-reported by the host. Individual results vary."
+        ]
+      }
+    }
+  ]
+}

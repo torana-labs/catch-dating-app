@@ -1,0 +1,628 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "LiveLegal",
+  "title": "Live · Help, contact and legal template",
+  "height": 3400,
+  "phone": {
+    "title": "Help and legal",
+    "height": 6400
+  },
+  "state": {
+    "label": "One template, six pages:",
+    "options": [
+      {
+        "key": "help",
+        "label": "/help/"
+      },
+      {
+        "key": "contact",
+        "label": "/contact/"
+      },
+      {
+        "key": "privacy",
+        "label": "/privacy/"
+      },
+      {
+        "key": "terms",
+        "label": "/terms/"
+      },
+      {
+        "key": "refunds",
+        "label": "/refunds/"
+      },
+      {
+        "key": "account_deletion",
+        "label": "/delete-account/"
+      }
+    ],
+    "default": "help"
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "guest",
+        "city": "Mumbai"
+      }
+    },
+    {
+      "component": "KitArticle",
+      "when": "help",
+      "data": {
+        "kicker": "Support",
+        "kc": "#1F7A57",
+        "title": "Help and safety",
+        "lead": "Request Catch or Catch Host account deletion, or get privacy, listing, event, safety, and website help.",
+        "meta": "Effective 26 October 2026",
+        "sections": [
+          {
+            "h": "Delete your Catch or Catch Host account",
+            "paras": [
+              "You can delete your Catch or Catch Host account in either app, or request deletion of your account and associated data by email without installing or signing in to an app. The account deletion page lists each step and what is deleted or kept. Deleting an app from your device does not delete your account."
+            ],
+            "list": []
+          },
+          {
+            "h": "Contact support",
+            "paras": [
+              "Email [support email]. Include the relevant page URL, your account email or phone number if needed, what happened, and the outcome you need. Do not send passwords, one-time codes, payment credentials, government identifiers, or unnecessary sensitive details.",
+              "We aim to acknowledge and route requests promptly. Privacy grievances are targeted within 90 days and consumer-service complaints within one month where applicable."
+            ],
+            "list": []
+          },
+          {
+            "h": "Immediate safety",
+            "paras": [
+              "If someone is in immediate danger, contact local emergency services first. Catch support is not an emergency service. Preserve relevant messages, event details, receipts, and screenshots; use block and report controls where available; and tell us the event, organizer, account, and approximate time."
+            ],
+            "list": []
+          },
+          {
+            "h": "Claim, correct, or remove a listing",
+            "paras": [
+              "Use the claim action on the organizer page or email support with its URL. For an ownership claim, provide your role and a reasonable authority signal such as an organization email, website update, or message from a public social account.",
+              "For a correction or takedown, identify the inaccurate, outdated, private, infringing, unsafe, or unlawful content and the change requested. We may verify the request, preserve a decision receipt, and display a claim or freshness state during review."
+            ],
+            "list": []
+          },
+          {
+            "h": "Account and privacy requests",
+            "paras": [
+              "Use account settings where available or email support to access, correct, or delete data, withdraw consent, or raise a grievance. Include the account identifier needed to locate the record. We may verify identity before disclosure or deletion. Limited safety, fraud, legal, dispute, and backup records may remain for their necessary retention period."
+            ],
+            "list": []
+          },
+          {
+            "h": "Event and registration problems",
+            "paras": [
+              "Check whether the page labels the event as a Catch event or an external event. For an external event, contact its organizer or ticket provider about entry, schedule, cancellation, payment, or refunds. Send Catch the page URL if a date, venue, registration link, price, or organizer fact appears wrong. For a paid ticket bought through Catch checkout, the Refund and cancellation policy explains when you can cancel and how refunds are paid."
+            ],
+            "list": []
+          },
+          {
+            "h": "Website troubleshooting",
+            "paras": [
+              "Refresh the page, check your connection, and retry in a current browser. If a form fails, include the route, approximate time, browser or device, and visible error without sending secrets. Non-essential analytics are optional; declining them should not prevent essential site or support access."
+            ],
+            "list": []
+          },
+          {
+            "h": "Operator and grievance contact",
+            "paras": [
+              "Operator: Torana. Grievance officer: [grievance officer]. Email: [support email]. Address: [postal address]."
+            ],
+            "list": []
+          }
+        ],
+        "aside": {
+          "tone": "m-mint",
+          "title": "Questions, corrections, or privacy requests?",
+          "body": "Message us on WhatsApp or email [support email]. In an emergency, call 112 first.",
+          "btns": [
+            {
+              "l": "Chat on WhatsApp"
+            },
+            {
+              "l": "Contact us",
+              "kind": "sec"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitArticle",
+      "when": "contact",
+      "data": {
+        "kicker": "Support",
+        "kc": "#1F7A57",
+        "title": "Contact us",
+        "lead": "How to reach Torana, the operator of Catch, by email, phone, WhatsApp, or post.",
+        "meta": "Effective 26 October 2026",
+        "sections": [
+          {
+            "h": "Who operates Catch",
+            "paras": [
+              "Catch is operated by Torana, a sole proprietorship based in Indore, Madhya Pradesh, India."
+            ],
+            "list": []
+          },
+          {
+            "h": "Email",
+            "paras": [
+              "Email us at [support email]. It is the best way to reach us about bookings, refunds, accounts, privacy, listings, and legal notices."
+            ],
+            "list": []
+          },
+          {
+            "h": "Phone and WhatsApp",
+            "paras": [
+              "Call or WhatsApp [support phone]. If we miss your call, send a message and we will get back to you."
+            ],
+            "list": []
+          },
+          {
+            "h": "Postal address",
+            "paras": [
+              "Torana, [postal address]."
+            ],
+            "list": []
+          },
+          {
+            "h": "What to include",
+            "paras": [
+              "Tell us the page link or event name, the phone number or email on your account or booking, what happened, and what you need. Do not send passwords, one-time codes, card details, or government ID numbers.",
+              "We aim to acknowledge and route requests promptly. Privacy grievances are targeted within 90 days and consumer-service complaints within one month where applicable."
+            ],
+            "list": []
+          },
+          {
+            "h": "Payments and refunds",
+            "paras": [
+              "For a paid ticket bought through Catch checkout, the Refund and cancellation policy explains when you can cancel and how refunds are paid. For an event booked on another website, contact its organiser or ticket provider."
+            ],
+            "list": []
+          },
+          {
+            "h": "Grievance officer",
+            "paras": [
+              "[grievance officer]. Email: [support email]. Address: [postal address]."
+            ],
+            "list": []
+          }
+        ],
+        "aside": {
+          "tone": "m-mint",
+          "title": "Questions, corrections, or privacy requests?",
+          "body": "Message us on WhatsApp or email [support email]. In an emergency, call 112 first.",
+          "btns": [
+            {
+              "l": "Chat on WhatsApp"
+            },
+            {
+              "l": "Contact us",
+              "kind": "sec"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitArticle",
+      "when": "privacy",
+      "data": {
+        "kicker": "Legal",
+        "kc": "#1F7A57",
+        "title": "Privacy policy",
+        "lead": "How Catch collects, uses, shares, protects, and responds to requests about personal data.",
+        "meta": "Effective 12 November 2026",
+        "sections": [
+          {
+            "h": "Who operates Catch",
+            "paras": [
+              "Catch is operated by Torana (\"Catch\", \"we\", \"us\", or \"our\"). This policy applies when you use {{brand.web.domain}}, a Catch application, an organizer or event page, a host tool, or our support channels."
+            ],
+            "list": []
+          },
+          {
+            "h": "Data we collect",
+            "paras": [
+              "We collect information you provide, information created through your use of Catch, technical information needed to operate and secure the service, and factual organizer or event information from public sources."
+            ],
+            "list": [
+              "Account and profile information, including name, contact details, age confirmation, city, photos, prompts, preferences, reviews, messages, support requests, reports, and claim requests.",
+              "Event and interaction information, including registrations, waitlists, attendance, check-in, the people you pick to stay in touch with after an event and the people you have picked each other with, blocks, reports, host actions, saved organizers, and aggregate event outcomes. If you used the earlier profile deck, we also hold the likes and passes you made there until your account is deleted; we no longer collect them.",
+              "Payment information for paid bookings, including the amount, currency, payment and refund status, and the order, payment, and refund references from Razorpay. Card, UPI, and bank details are entered in Razorpay's checkout; Catch does not see or store them.",
+              "Organiser payment connections. When an organiser connects Razorpay, we store their Razorpay account ID and keep their access credentials encrypted in a separate secrets store. They are used only to run that organiser's checkouts, refunds, and payment updates.",
+              "Cross Paths information, including your private global and per-event visibility choices, the event connected to a suggestion or invitation, invitation responses, and safety or eligibility state needed to prevent an unsafe or ineligible introduction.",
+              "Website and host-lead information, including name, email, city, role, organization, public website or social link, application answers, consent choice, and campaign attribution attached to a submission.",
+              "Device and reliability information, including app version, operating system, browser, diagnostic events, crash information, security signals, and approximate location. Precise location is used only where a feature needs it and device permission allows it.",
+              "Your city on the website. The website infers your approximate city from your network location to show plans near you; it uses only the city and does not store it or your network location. If you tap “Use my location”, your browser asks your permission and your device works out the nearest city from it; the location itself is never sent to or stored by Catch. A city you choose is remembered in your browser so the site opens on it next time.",
+              "Public-source listing information, such as organizer names, descriptions, public links, event dates and locations, source provenance, and freshness details. An unclaimed listing is not an endorsement or proof of a commercial relationship."
+            ]
+          },
+          {
+            "h": "How we use data",
+            "paras": [
+              "We use data to provide and secure Catch; operate accounts, discovery, attendance, staying in touch after events, messaging, host, claim, review, and safety features; respond to support, privacy, correction, and takedown requests; prevent fraud and abuse; moderate content; measure reliability and consented usage; communicate about the service; comply with law; and establish, exercise, or defend legal claims.",
+              "Where consent is required, you may withdraw it through the relevant setting or by contacting us. Withdrawal does not invalidate earlier lawful processing, but it may prevent us from providing a feature that needs the data."
+            ],
+            "list": []
+          },
+          {
+            "h": "Public and private information",
+            "paras": [
+              "Organizer and event pages, reviews, organizer responses, and content labelled public may be visible to anyone and indexed by search engines. The people you pick are not told unless they pick you too; if you pick each other, you can message each other. Hosts receive operational and aggregate information, such as how many pairs picked each other; they should not receive your individual picks unless a feature clearly says so.",
+              "Cross Paths is not a public attendee list. If you separately enable Cross Paths for your account and for a selected event you are attending, Catch may show your public profile and your intention to attend that event to a limited number of other members attending or able to book that event who have also opted in, and whose stated gender and age preferences match yours both ways, and may let them send a limited event invitation. You can withdraw future visibility through the relevant controls; accepted plans, safety records, and earlier processing may remain where needed to operate the feature, protect members, or comply with law."
+            ],
+            "list": []
+          },
+          {
+            "h": "Sharing, cookies, and external services",
+            "paras": [
+              "We may share data with service providers supporting hosting, databases, authentication, storage, analytics, crash reporting, communications, moderation, maps, search, and security; with an organizer when you request an organizer-operated service; when required by law or needed to protect people; during a business reorganization; or at your direction. We do not sell personal data for money.",
+              "Razorpay processes payments for paid bookings. For a paid booking, we send Razorpay the order amount and a booking reference, and the organiser who sells the ticket receives your booking, the amount you paid, and the details they need to run the event and handle refunds. The payment details you enter in Razorpay's checkout go to Razorpay under its own privacy policy.",
+              "External event and ticket links lead to third parties whose policies apply. Non-essential website analytics and marketing tags load only after you accept them. Essential storage may support security, consent, saved organizers, the city you chose, forms, and site operation."
+            ],
+            "list": []
+          },
+          {
+            "h": "Retention and security",
+            "paras": [
+              "We retain data only as long as reasonably needed for the purposes above, legal requirements, safety, dispute handling, fraud prevention, and backup recovery. Public-source listings may remain while accurate and relevant, subject to correction and takedown requests. Account deletion starts the product deletion workflow, but limited records may remain where law, safety, fraud prevention, or dispute resolution requires it.",
+              "Payment records are kept as long as needed for refunds, disputes, and legal, tax, and accounting obligations. An organiser's Razorpay connection is kept while it is connected and, after they disconnect, for as long as it is needed to finish refunds and disputes for existing bookings.",
+              "We use access controls, encryption in transit, environment separation, service authentication, audit records, and monitoring intended to protect data. No system is perfectly secure; contact us promptly if you believe your account or data has been compromised."
+            ],
+            "list": []
+          },
+          {
+            "h": "Your choices and rights",
+            "paras": [
+              "Subject to applicable law, you may request information about our processing, access or a summary of your data, correction, erasure, consent withdrawal, nomination where provided by law, or grievance redressal. You may also request that we correct, claim, or remove an organizer or event listing. We may verify identity and ask for information needed to locate the record.",
+              "Send requests to [support email]. We aim to answer privacy grievances within 90 days and consumer-service complaints within one month where those timelines apply."
+            ],
+            "list": []
+          },
+          {
+            "h": "Age, transfers, and changes",
+            "paras": [
+              "Catch is for adults aged 18 or older. We do not knowingly offer Catch to children. Contact us if you believe someone under 18 has provided data.",
+              "Providers may process data outside your state or country subject to their contracts and applicable restrictions. We may update this policy as the service or law changes and will post the updated effective date, with additional notice where required."
+            ],
+            "list": []
+          },
+          {
+            "h": "Contact and grievance officer",
+            "paras": [
+              "Operator: Torana. Grievance officer: [grievance officer]. Email: [support email]. Address: [postal address]."
+            ],
+            "list": []
+          }
+        ],
+        "aside": {
+          "tone": "m-mint",
+          "title": "Questions, corrections, or privacy requests?",
+          "body": "Message us on WhatsApp or email [support email]. In an emergency, call 112 first.",
+          "btns": [
+            {
+              "l": "Chat on WhatsApp"
+            },
+            {
+              "l": "Contact us",
+              "kind": "sec"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitArticle",
+      "when": "terms",
+      "data": {
+        "kicker": "Legal",
+        "kc": "#1F7A57",
+        "title": "Terms of use",
+        "lead": "The rules for using Catch, its organizer directory, event pages, accounts, and related services.",
+        "meta": "Effective 12 November 2026",
+        "sections": [
+          {
+            "h": "Agreement and eligibility",
+            "paras": [
+              "These terms are an agreement between you and Torana, operating Catch. By accessing Catch, creating an account, submitting a lead or claim, or using an organizer or event page, you agree to these terms and the Privacy Policy.",
+              "You must be at least 18 years old and legally able to enter this agreement. You must provide accurate information, keep your account secure, and tell us about unauthorized access. We may request age, identity, organizer-authority, or event information where needed for safety, claims, or legal compliance."
+            ],
+            "list": []
+          },
+          {
+            "h": "What Catch does",
+            "paras": [
+              "Catch helps adults discover organizers and events, connect around real-world attendance, pick people they met to stay in touch with, message each other when they pick each other, and use related host and safety tools.",
+              "Some event actions lead to an organizer's site or another ticketing provider. Catch is not the organizer, venue, ticket seller, employer, agent, or insurer for an external event unless a page expressly says otherwise."
+            ],
+            "list": []
+          },
+          {
+            "h": "Public-source and unclaimed listings",
+            "paras": [
+              "Some organizer and event pages are compiled from public sources. \"Unclaimed\" means the organizer has not verified control of that Catch page; it does not mean the organizer supplied, approved, or endorsed it. Source and freshness information is shown where available. Organizers and affected people may request a claim, correction, or takedown through Help."
+            ],
+            "list": []
+          },
+          {
+            "h": "Your conduct and content",
+            "paras": [
+              "You must treat other people lawfully and respectfully. You may not impersonate someone; misrepresent age, identity, authority, or event facts; harass, threaten, stalk, discriminate against, exploit, or endanger anyone; expose private information; manipulate reviews or engagement; bypass security; interfere with the service; use unauthorized automation; or use Catch unlawfully.",
+              "You retain ownership of content you submit. You give Catch a worldwide, non-exclusive, royalty-free licence to host, reproduce, format, moderate, and display that content as needed to operate, protect, improve, and promote the relevant service, subject to the Privacy Policy and visibility controls. You confirm that you have the rights needed to submit it."
+            ],
+            "list": []
+          },
+          {
+            "h": "Automated access",
+            "paras": [
+              "You may not use any robot, spider, scraper, crawler or other automated means to access, copy, index or collect content or data from Catch (including organizer and event listings, reviews and profiles), or to get around any measure we use to limit such access, except search engines and link-preview services that follow our robots.txt, or with our prior written permission.",
+              "You may not use content from Catch to train or improve any machine-learning or AI model. We may block, rate-limit or suspend access that we believe breaches this section."
+            ],
+            "list": []
+          },
+          {
+            "h": "Events and safety",
+            "paras": [
+              "Meeting people and attending events involve real-world risks. Review organizer, venue, transport, accessibility, and emergency information; use your judgment; and contact local emergency services if anyone is in immediate danger. Catch's verification, review, moderation, and safety features do not guarantee identity, conduct, compatibility, event quality, or safety.",
+              "Report concerns through Catch's report tools or Help. We may investigate, preserve relevant records, restrict accounts or listings, and cooperate with lawful authorities. Catch is not required to mediate private disputes between users or with an external organizer."
+            ],
+            "list": []
+          },
+          {
+            "h": "Payments and external services",
+            "paras": [
+              "Paid tickets for events on Catch are sold by the event's organiser. Your payment goes directly to the organiser's own Razorpay account through a checkout powered by Razorpay. Catch provides the booking software and does not hold your payment. Before you pay, the checkout shows the seller, the price, any fees, and the event's cancellation and refund policy.",
+              "Razorpay's terms and privacy policy apply to the payment itself. Cancellations and refunds follow the Refund and cancellation policy.",
+              "External services are controlled by third parties, and their terms, privacy, payment, refund, and availability rules apply."
+            ],
+            "list": []
+          },
+          {
+            "h": "For organisers",
+            "paras": [
+              "If you sell paid tickets through Catch, you are the seller and merchant of record. You are responsible for running the event as described, honouring the cancellation policy you choose, taxes and any GST invoices owed to guests, and chargebacks and payment disputes.",
+              "To take payments, you connect your own Razorpay account to Catch through Razorpay's OAuth. This authorises Catch to create orders for your events, read payment and refund status, set up payment webhooks on your account, and issue refunds under the event's cancellation policy and when an event is cancelled. Your agreement with Razorpay governs your Razorpay account.",
+              "You can disconnect Razorpay at any time. Disconnecting stops new checkouts. Catch may still use the connection to finish refunds and disputes for bookings already paid.",
+              "Any fee for Catch's organiser tools is agreed with you separately and billed separately. It is never deducted from guest payments."
+            ],
+            "list": []
+          },
+          {
+            "h": "Service changes and intellectual property",
+            "paras": [
+              "We may change, test, pause, or discontinue features, markets, listings, or the service. We may suspend or terminate access where reasonably necessary for a breach, safety, fraud, legal compliance, or operational risk. You may stop using Catch and request account deletion at any time.",
+              "Catch's software, brand, designs, and original content are owned by Torana or its licensors. Except for rights expressly granted here, no rights are transferred to you."
+            ],
+            "list": []
+          },
+          {
+            "h": "Disclaimers and liability",
+            "paras": [
+              "Catch is provided on an \"as available\" basis to the extent permitted by law. We do not guarantee uninterrupted operation, an event, attendance, that someone you pick will pick you, any particular outcome of meeting people, an organizer outcome, or the accuracy of third-party content.",
+              "Nothing here excludes rights or liabilities that cannot lawfully be excluded, including applicable consumer rights. Subject to that rule, Catch is not responsible for indirect, incidental, special, or consequential loss, or for conduct, events, content, transactions, or services controlled by another user, organizer, venue, or third party."
+            ],
+            "list": []
+          },
+          {
+            "h": "Law, changes, and contact",
+            "paras": [
+              "Indian law governs these terms. Subject to mandatory consumer jurisdiction, the courts at Indore, Madhya Pradesh have exclusive jurisdiction. We may update these terms prospectively by posting a new effective date and giving additional notice where required.",
+              "Legal notices and questions: Torana, [postal address]; [support email]."
+            ],
+            "list": []
+          }
+        ],
+        "aside": {
+          "tone": "m-mint",
+          "title": "Questions, corrections, or privacy requests?",
+          "body": "Message us on WhatsApp or email [support email]. In an emergency, call 112 first.",
+          "btns": [
+            {
+              "l": "Chat on WhatsApp"
+            },
+            {
+              "l": "Contact us",
+              "kind": "sec"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitArticle",
+      "when": "refunds",
+      "data": {
+        "kicker": "Legal",
+        "kc": "#1F7A57",
+        "title": "Refund and cancellation policy",
+        "lead": "When you can cancel a paid ticket for an event on Catch, how much is refunded, and how refunds reach you.",
+        "meta": "Effective 26 October 2026",
+        "sections": [
+          {
+            "h": "Who sells your ticket",
+            "paras": [
+              "When you buy a ticket for a paid event on Catch, the event's organiser is the seller. Your payment goes directly to the organiser's Razorpay account. Catch, operated by Torana, provides the booking page and checkout software and does not hold your payment. Before you pay, the checkout shows the seller, the price, any fees, and the cancellation policy for that event.",
+              "This policy covers tickets bought through Catch checkout. If an event page sends you to an organiser's own website or another ticketing service, that seller's refund terms apply instead."
+            ],
+            "list": []
+          },
+          {
+            "h": "Cancellation policies",
+            "paras": [
+              "Every paid event uses one of three policies. The event page and checkout name the policy and show your exact refund deadline as a date and time."
+            ],
+            "list": [
+              "Flexible: full refund if you cancel at least 6 hours before the event starts.",
+              "Standard: full refund if you cancel at least 24 hours before the event starts. Events use Standard unless the organiser chooses another policy.",
+              "Strict: full refund if you cancel at least 72 hours before the event starts."
+            ]
+          },
+          {
+            "h": "Full refund or no refund",
+            "paras": [
+              "A full refund is the whole amount you paid. If you cancel after your refund deadline, no refund is due, but you can still cancel to release your place until the event starts."
+            ],
+            "list": []
+          },
+          {
+            "h": "How to cancel",
+            "paras": [
+              "Cancel from your booking page. Before you confirm, it shows whether you will get a refund and how much. Cancelling releases your place and cannot be undone. Online cancellation closes when the event starts.",
+              "If something goes wrong while you are cancelling, contact us straight away at [support email] with the event name and the phone number or email you booked with."
+            ],
+            "list": []
+          },
+          {
+            "h": "If the organiser cancels",
+            "paras": [
+              "If the organiser cancels the event, everyone who paid gets a full refund. This includes guests who had already cancelled after their refund deadline."
+            ],
+            "list": []
+          },
+          {
+            "h": "Waitlists",
+            "paras": [
+              "Joining a waitlist is free. You pay only if a place opens and you choose to book it. That booking then follows the event's cancellation policy."
+            ],
+            "list": []
+          },
+          {
+            "h": "How refunds are paid",
+            "paras": [
+              "Refunds are paid from the organiser's Razorpay account, issued through Catch, back to the payment method you used. We cannot send a refund to a different account or pay it in cash.",
+              "A refund normally reaches your account within 5 to 7 business days. Some banks and card issuers take longer to show it."
+            ],
+            "list": []
+          },
+          {
+            "h": "Questions and disputes",
+            "paras": [
+              "If your refund has not arrived after 7 business days, or you think the wrong amount was refunded, email [support email] with the event name, the phone number or email you booked with, and the date you paid. You can also contact the event's organiser."
+            ],
+            "list": []
+          }
+        ],
+        "aside": {
+          "tone": "m-mint",
+          "title": "Questions, corrections, or privacy requests?",
+          "body": "Message us on WhatsApp or email [support email]. In an emergency, call 112 first.",
+          "btns": [
+            {
+              "l": "Chat on WhatsApp"
+            },
+            {
+              "l": "Contact us",
+              "kind": "sec"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitArticle",
+      "when": "account_deletion",
+      "data": {
+        "kicker": "Account",
+        "kc": "#1F7A57",
+        "title": "Delete your account",
+        "lead": "Delete your Catch or Catch Host account and associated data in the app, or request deletion by email without installing the app.",
+        "meta": "Effective 12 November 2026",
+        "sections": [
+          {
+            "h": "One account for Catch and Catch Host",
+            "paras": [
+              "Catch and Catch Host are operated by Torana and use the same Catch account, including accounts created on {{brand.web.domain}} when you verify your phone number to register for an event or follow an organizer. Deleting the account in either app or by email deletes it everywhere. Uninstalling an app does not delete your account."
+            ],
+            "list": []
+          },
+          {
+            "h": "Delete your account in the app",
+            "paras": [
+              "In the Catch app, open Settings and choose Delete account, then confirm.",
+              "In the Catch Host app, open the Account menu in the top bar and choose Delete account, then confirm.",
+              "Deletion starts when you confirm in either app, and you are signed out when it completes."
+            ],
+            "list": []
+          },
+          {
+            "h": "Request deletion without the app",
+            "paras": [
+              "You can request deletion of your account and associated data without installing, reinstalling, or signing in to either app. Email [support email] with the subject Account deletion and the phone number or email address associated with your account. Use this route too if you created your account on {{brand.web.domain}}, which has no Delete account control.",
+              "We will verify that the account belongs to you before deleting it. Never send your password, a one-time sign-in code, payment details, or government identifiers."
+            ],
+            "list": []
+          },
+          {
+            "h": "Before you delete",
+            "paras": [
+              "If you own or host an organizer in Catch Host, transfer organizer ownership first if another person needs to keep managing it. Deletion removes you from every organizer team.",
+              "If you are in the middle of a booking or payment, deletion cannot finish until that checkout is settled. Try again later or email us."
+            ],
+            "list": []
+          },
+          {
+            "h": "What is deleted",
+            "paras": [
+              "Deletion removes the personal data that identifies you, or replaces it with Deleted user, including:"
+            ],
+            "list": [
+              "Your sign-in account and the phone number or email address linked to it.",
+              "Your profile: name, date of birth, photos, prompts, personal details, preferences, and city.",
+              "Your Catch Host profile and photo, and your access to organizer teams.",
+              "Event registrations and waitlist places, saved events, and notifications; organizer follows are ended.",
+              "Your picks, blocks, any likes and passes from the earlier profile deck, and your Cross Paths settings, consents, and invitations.",
+              "Messages you posted in event chats, private event form and room choices, and your communication preferences and consents.",
+              "Broadcasts you sent as a host, and your device notification token."
+            ]
+          },
+          {
+            "h": "What may be kept, and why",
+            "paras": [
+              "Some records remain after deletion because other people rely on them, or because they are needed for safety, payments, fraud prevention, legal obligations, or disputes. They are kept only as long as reasonably needed for those purposes, as described in the Privacy Policy, and are no longer shown with a profile:"
+            ],
+            "list": [
+              "Reviews you wrote stay published under the name Deleted user.",
+              "Your connections with the people you have picked each other with end, and those chats are hidden from both people; the message records are retained and may be used for safety and abuse review.",
+              "Payment and refund records, for accounting, refunds, disputes, and legal requirements.",
+              "Safety reports you made or that involve you, for review.",
+              "Organizer pages, events, guest lists, and business records that belong to an organizer stay with that organizer and its remaining hosts, without a link to your account.",
+              "A minimal deletion record with your account identifier, so the deletion is respected across Catch."
+            ]
+          },
+          {
+            "h": "Questions and grievances",
+            "paras": [
+              "Email [support email] about deletion, the records and retention that apply to your account, or a request we have not resolved. Operator: Torana. Grievance officer: [grievance officer]. Address: [postal address]."
+            ],
+            "list": []
+          }
+        ],
+        "aside": {
+          "tone": "m-mint",
+          "title": "Questions, corrections, or privacy requests?",
+          "body": "Message us on WhatsApp or email [support email]. In an emergency, call 112 first.",
+          "btns": [
+            {
+              "l": "Chat on WhatsApp"
+            },
+            {
+              "l": "Contact us",
+              "kind": "sec"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "guest",
+        "mbar": "Chat on WhatsApp"
+      }
+    }
+  ]
+}

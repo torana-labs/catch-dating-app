@@ -1,0 +1,136 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "LiveEventUpdate",
+  "title": "Live · Event update · /event-update/:linkId",
+  "height": 1300,
+  "phone": {
+    "title": "Event update",
+    "height": 2200
+  },
+  "state": {
+    "label": "Update states:",
+    "options": [
+      {
+        "key": "ready",
+        "label": "New instructions"
+      },
+      {
+        "key": "replied",
+        "label": "Replied"
+      },
+      {
+        "key": "closed",
+        "label": "Closed"
+      }
+    ],
+    "default": "ready"
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "lp",
+        "cta": "Help"
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "ready",
+      "data": {
+        "kicker": "Your event · Friday neighbourhood crawl",
+        "title": "Where to join",
+        "blocks": [
+          {
+            "title": "Where to join",
+            "label": "Latest instructions",
+            "sub": "We’ve left the starting point. Join us at The Courtyard, 12 Market Road. We’ll be here until 8:40 pm. Look for Maya by the entrance."
+          },
+          {
+            "title": "Let us know",
+            "btns": [
+              {
+                "l": "I’m on my way"
+              },
+              {
+                "l": "I can’t make it",
+                "kind": "sec"
+              },
+              {
+                "l": "I need help finding you",
+                "kind": "sec"
+              }
+            ]
+          },
+          {
+            "title": "Event WhatsApp updates",
+            "sub": "Get joining instructions and event changes from this organizer on WhatsApp. This is separate from marketing, SMS and RCS preferences.",
+            "rows": [
+              {
+                "t": "For your verified number ending in 210",
+                "tag": "On",
+                "tone": "good"
+              }
+            ],
+            "btns": [
+              {
+                "l": "Turn off WhatsApp updates",
+                "kind": "sec"
+              }
+            ]
+          }
+        ],
+        "note": "Event update (/event-update/:linkId). Copy from eventAssistanceCopy and the event messaging preferences."
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "replied",
+      "data": {
+        "kicker": "Your event · Friday neighbourhood crawl",
+        "title": "Response recorded",
+        "blocks": [
+          {
+            "title": "Where to join",
+            "label": "Latest instructions",
+            "sub": "We’ve left the starting point. Join us at The Courtyard, 12 Market Road. We’ll be here until 8:40 pm. Look for Maya by the entrance."
+          },
+          {
+            "tone": "m-mint",
+            "title": "You said: I’m on my way",
+            "sub": "Refresh to check for newer instructions.",
+            "btns": [
+              {
+                "l": "Refresh update",
+                "kind": "sec"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFlow",
+      "when": "closed",
+      "data": {
+        "kicker": "Your event",
+        "title": "This update has expired",
+        "lead": "This update has expired. Open the latest message for current instructions.",
+        "blocks": [
+          {
+            "tone": "m-yellow",
+            "title": "You’re checked in",
+            "sub": "You don’t need to reply to these joining instructions."
+          }
+        ],
+        "fine": "Other closed states use the same layout: event closed, no longer available for your booking, no current instructions."
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "lp",
+        "mbar": "Help"
+      }
+    }
+  ]
+}

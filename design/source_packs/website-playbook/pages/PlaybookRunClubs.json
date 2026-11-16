@@ -1,0 +1,367 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookRunClubs",
+  "title": "Playbook · Catch for run clubs",
+  "height": 8200,
+  "phone": {
+    "title": "Catch for run clubs",
+    "height": 12000
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "offer": {
+          "lead": "Founding run clubs in Mumbai and Indore:",
+          "body": "90 days without Catch fees, until [date].",
+          "left": "",
+          "cta": "Claim a place"
+        },
+        "nav": "hosts",
+        "crumbs": [
+          "For hosts"
+        ],
+        "here": "Run and walk clubs"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Catch for run clubs · Free runs stay free",
+        "title": "Every runner in a pace group before Sunday.",
+        "lead": "Sign-ups, pace pods, a first hello at the start line and next week’s run already booked. Without the 200-message WhatsApp thread.",
+        "ink": "#3B1F14",
+        "tone": "m-coral",
+        "proof": [
+          "[N] run clubs in Mumbai and Indore run on Catch",
+          "★ [4.8] from runners who booked1"
+        ],
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "Talk to us on WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "door": "Running several chapters or a brand-partner series? Book a walkthrough →",
+        "chip": {
+          "title": "Sunday Social Run",
+          "rows": [
+            {
+              "l": "Booked",
+              "v": "34"
+            },
+            {
+              "l": "New this week",
+              "v": "9"
+            },
+            {
+              "l": "In a pod",
+              "v": "32"
+            }
+          ]
+        },
+        "media": {
+          "kind": "phonecard",
+          "title": "Pace pods",
+          "sub": "Carter Road Social Run · Sun 8 Nov",
+          "stats": [
+            {
+              "v": "12",
+              "l": "runners"
+            },
+            {
+              "v": "3",
+              "l": "pods"
+            },
+            {
+              "v": "2",
+              "l": "no pod yet"
+            }
+          ],
+          "rows": [
+            {
+              "t": "Chatty",
+              "s": "Around 7:30 a km · Dev, Ira and 2 more",
+              "tag": "4 runners",
+              "tone": ""
+            },
+            {
+              "t": "Steady",
+              "s": "Around 6:30 a km · Meher, Tara and 1 more",
+              "tag": "3 runners",
+              "tone": ""
+            },
+            {
+              "t": "Quick",
+              "s": "Around 5:30 a km · Rhea, Arjun and 1 more",
+              "tag": "3 runners",
+              "tone": ""
+            }
+          ]
+        },
+        "note": "Template band 1: the segment’s own moment in the headline, its proof, the same three ways in as the hosts hub."
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Sound familiar?",
+        "kc": "#B5451F",
+        "title": "Running is the easy part.",
+        "lead": "",
+        "panel": "open",
+        "items": [
+          {
+            "t": "The Saturday-night sign-up thread",
+            "fix": "One page with spots left, pace on booking, and a waitlist that fills itself.",
+            "d": "“Is there space?” “Can I bring a friend?” “What pace is the group?” Two hundred messages for one run."
+          },
+          {
+            "t": "Newcomers who run alone and never come back",
+            "fix": "Pace pods of six to eight, and a first hello at the start line.",
+            "d": "The regulars run off together. The first-timer ends up at the back, on their own."
+          },
+          {
+            "t": "No-shows you find at the start line",
+            "fix": "Reminders on the day, upfront payment for paid runs, and a clear count.",
+            "d": "Forty said yes, twenty-two turned up, and the café is holding forty coffees."
+          }
+        ],
+        "note": "Template band 2: three pains in the segment’s words, each with Catch’s answer underneath."
+      }
+    },
+    {
+      "component": "KitTimeline",
+      "data": {
+        "kicker": "A run on Catch",
+        "kc": "#F5C451",
+        "title": "From Thursday’s sign-ups to next Sunday.",
+        "lead": "",
+        "steps": [
+          {
+            "time": "Thursday",
+            "t": "Pace pods, set before Sunday",
+            "d": "Every booking brings a pace. Catch builds pods of six to eight so no pod is all strangers."
+          },
+          {
+            "time": "6:20 AM",
+            "t": "Check in, then pocket the phone",
+            "d": "QR or self check-in at the meeting point."
+          },
+          {
+            "time": "6:30 AM",
+            "t": "A first hello at the start line",
+            "d": "Each pod gets one question to answer before they set off."
+          },
+          {
+            "time": "7:15 AM",
+            "t": "Nobody left on the road",
+            "d": "You see who is back at the finish."
+          },
+          {
+            "time": "Sunday",
+            "t": "The next run, already easier",
+            "d": "Photos and a one-tap “same time next week?”. Anyone who asked for a steadier pace starts in a steadier pod."
+          }
+        ],
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+          "alt": "Catch Host on a run morning"
+        }
+      }
+    },
+    {
+      "component": "KitStory",
+      "data": {
+        "kicker": "Run club story · Bandra",
+        "tone": "m-coral",
+        "ink": "#3B1F14",
+        "initials": "CR",
+        "name": "Carter Road Runners",
+        "meta": "Weekly social run · [N] runners",
+        "quote": "[The club lead, in their words, on what changed: the thread, the newcomers, the no-shows.]",
+        "metrics": [
+          {
+            "l": "Show-up rate",
+            "v": "[N%]",
+            "s": "from [N%]2"
+          },
+          {
+            "l": "First-timers back in 30 days",
+            "v": "[N%]",
+            "s": "from Catch records3"
+          },
+          {
+            "l": "Hours saved a week",
+            "v": "[N]",
+            "s": "self-reported2"
+          }
+        ],
+        "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
+        "alt": "Runners at the start of a Sunday run",
+        "tag": "Real photography from a design-partner run",
+        "note": "Template band 4: a story from the same segment (rec 2). Placeholders until a design partner signs."
+      }
+    },
+    {
+      "component": "KitChecklist",
+      "data": {
+        "kicker": "Buyer’s checklist",
+        "kc": "#1F7A57",
+        "title": "What to look for in a run club app.",
+        "lead": "Whatever you choose, check these eight things. Catch does all of them.",
+        "items": [
+          {
+            "t": "Free runs stay free",
+            "d": "No fee on runs you don’t charge for."
+          },
+          {
+            "t": "Pace groups built for you",
+            "d": "From the pace each runner books with."
+          },
+          {
+            "t": "Check-in at the meeting point",
+            "d": "QR or self check-in, then phones away."
+          },
+          {
+            "t": "Paid runs in rupees, by UPI",
+            "d": "For coached sessions, races and partner runs."
+          },
+          {
+            "t": "Help for newcomers",
+            "d": "A pod and a first hello, not the back of the pack."
+          },
+          {
+            "t": "One record per runner",
+            "d": "Every run they’ve done with you, in one place."
+          },
+          {
+            "t": "Links for partners and posts",
+            "d": "See which café, brand or post brought runners in."
+          },
+          {
+            "t": "More than runs",
+            "d": "Post-run brunches, socials and quizzes on the same page."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Compare Catch with Endorfin, Luma and WhatsApp",
+            "kind": "sec"
+          }
+        ],
+        "note": "Template band 5: the checklist ranks in search and sets the criteria Catch wins on (rec 4, rec 6)."
+      }
+    },
+    {
+      "component": "KitPricing",
+      "data": {
+        "kicker": "Pricing for run clubs",
+        "price": "₹0",
+        "sub": "for free runs, every week. 5% on paid runs, never more than ₹10,000 a month.",
+        "lead": "Free for 30 days from your first event, 90 for founding clubs. Payment gateway fees are separate.",
+        "examples": [
+          {
+            "t": "A free Sunday social run, 40 runners",
+            "v": "₹0",
+            "d": "Every week, for as long as it’s free."
+          },
+          {
+            "t": "A coached interval session, 20 runners at ₹300",
+            "v": "₹300 a session",
+            "d": "5% of ₹6,000, paid when runners book."
+          },
+          {
+            "t": "A monthly brand-partner 10K, 150 runners at ₹500",
+            "v": "₹3,750 a race",
+            "d": "5% of ₹75,000. The fee never passes ₹10,000 in a month."
+          }
+        ],
+        "btns": [
+          {
+            "l": "Start free trial",
+            "kind": "light"
+          },
+          {
+            "l": "See full pricing",
+            "kind": "lightsec"
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Run club questions",
+        "title": "What run club leads ask us.",
+        "items": [
+          [
+            "Can my free runs stay free?",
+            "Yes. Catch charges nothing on runs you don’t charge for, every week. The 5% fee applies only to paid tickets, and never passes ₹10,000 in a month."
+          ],
+          [
+            "Do runners need to download an app?",
+            "No. Runners book on your page and check in at the meeting point. Live moments open in their phone’s browser."
+          ],
+          [
+            "Can we keep our WhatsApp group?",
+            "Yes, and most clubs do. Keep chatting there and post your Catch link for sign-ups, payments and pods."
+          ],
+          [
+            "How are pace groups made?",
+            "Every booking brings a pace. Catch builds pods of six to eight at a similar pace and spreads newcomers so no pod is all strangers. You can move anyone before the run."
+          ],
+          [
+            "Can I charge for some runs and not others?",
+            "Yes. Each event has its own price, so a free social run and a paid coached session can sit side by side."
+          ],
+          [
+            "Can I bring my runners across from another tool?",
+            "Yes. Import your list from any tool. Nothing changes for runners until the morning of the run."
+          ]
+        ],
+        "note": "Template band 7: five to eight questions written for search."
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Bring your club across in an afternoon",
+        "title": "Your next run, without the thread.",
+        "lead": "Start the free trial, or leave your number and we’ll send the run club setup guide on WhatsApp.",
+        "tone": "m-yellow",
+        "ink": "#4A3608",
+        "btns": [
+          {
+            "l": "Start free trial"
+          }
+        ],
+        "form": {
+          "id": "rc-wa",
+          "label": "Your WhatsApp number",
+          "button": "Send the guide"
+        },
+        "badges": true,
+        "img": "/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b",
+        "alt": "A run as runners see it in Explore",
+        "note": "Template band 8: trial plus a capture for the not-ready, tagged by segment (rec 12)."
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host",
+        "footnotes": [
+          "1. Average of reviews from runners who booked on Catch, [dates].",
+          "2. Self-reported by the club. Individual results vary.",
+          "3. From Catch booking and check-in records, [dates]."
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · article</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><section class="open" style="padding-top:48px"><div class="{{artCls}}"><div class="kmain">
+<p class="k" style="color:{{kc}}">{{d.kicker}}</p><h1 class="d d-hero" style="font-size:64px"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h1>
+<p class="lead"><sc-for list="{{lead}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p><p class="body">{{d.meta}}</p>
+<sc-for list="{{secs}}" as="x" hint-placeholder-count="4"><div class="ksec" id="{{x.id}}"><h2 class="d d-sm">{{x.h}}</h2>
+<sc-for list="{{x.paras}}" as="pp" hint-placeholder-count="2"><p class="kp"><sc-for list="{{pp.parts}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></sc-for>
+<sc-if value="{{x.hasList}}" hint-placeholder-val="{{ false }}"><ul class="ticks"><sc-for list="{{x.list}}" as="li" hint-placeholder-count="3"><li><sc-for list="{{li.parts}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></li></sc-for></ul></sc-if>
+<sc-if value="{{x.hasTip}}" hint-placeholder-val="{{ false }}"><div class="ktip"><b>{{x.tipLabel}}</b> <sc-for list="{{x.tip}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></div></sc-if></div></sc-for></div>
+<sc-if value="{{hasAside}}" hint-placeholder-val="{{ true }}"><aside class="kaside"><div class="ktoc"><p class="k" style="color:#5A5450;margin:0 0 8px">In this guide</p><sc-for list="{{secs}}" as="x" hint-placeholder-count="4"><a href="#{{x.id}}">{{x.h}}</a></sc-for></div>
+<div class="kcta {{ctaTone}}"><h3>{{d.aside.title}}</h3><p><sc-for list="{{asideBody}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p><div class="btns"><sc-for list="{{btns}}" as="b" hint-placeholder-count="2"><a class="b {{b.cls}}" href="{{b.href}}">{{b.l}}</a></sc-for></div></div></aside></sc-if></div></section></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 1400}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"kicker": "Playbook · Run clubs", "title": "How to start a run club", "lead": "A sample.", "meta": "8 minute read", "sections": [{"h": "Pick a route", "paras": ["Start and finish at a café."], "list": ["Under 5 km", "Lit and busy"], "tip": "Walk it at the same time first."}], "aside": {"title": "Start your club on Catch", "body": "Free runs stay free.", "btns": [{"l": "Start free trial"}]}};
+    const a = d.aside || {};
+    return { d, artCls: d.aside ? 'kart' : 'kart solo', hasAside: !!d.aside, kc: d.kc || '#1F7A57', title: P(d.title), lead: P(d.lead), asideBody: P(a.body), btns: B(a.btns), ctaTone: a.tone || 'm-yellow',
+      secs: (d.sections || []).map((x, i) => ({ id: 's' + (i + 1), h: x.h, paras: (x.paras || []).map((pp) => ({ parts: P(pp) })), hasList: has(x.list), list: (x.list || []).map((li) => ({ parts: P(li) })),
+        hasTip: has(x.tip), tip: P(x.tip), tipLabel: x.tipLabel || 'Tip:' })) };
+  }
+}
+</script>
+</body>
+</html>

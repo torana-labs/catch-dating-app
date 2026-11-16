@@ -1,0 +1,287 @@
+{
+  "$schema": "../schema/page.schema.json",
+  "board": "PlaybookReports",
+  "title": "Playbook · Reports, payouts and team",
+  "height": 5600,
+  "phone": {
+    "title": "Reports, payouts and team",
+    "height": 9200
+  },
+  "sections": [
+    {
+      "component": "KitHeader",
+      "data": {
+        "variant": "host",
+        "nav": "hosts",
+        "crumbs": [
+          "How Catch works"
+        ],
+        "here": "Reports, payouts and team"
+      }
+    },
+    {
+      "component": "KitHero",
+      "data": {
+        "kicker": "Product · reports, payouts and team",
+        "title": "Know what worked, get paid, share the work.",
+        "lead": "A report after every event: who came, who came back and which link filled it. Money goes straight into your own Razorpay account. And the people who help you run things get the access they need, and no more.",
+        "ink": "#4A1C0E",
+        "tone": "m-coral",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "See pricing",
+            "kind": "sec"
+          }
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Report · Sunday social run, 24 Nov",
+          "sub": "Sent to you the next morning",
+          "stats": [
+            {
+              "v": "46",
+              "l": "checked in of 52"
+            },
+            {
+              "v": "19",
+              "l": "came back"
+            },
+            {
+              "v": "11",
+              "l": "first-timers"
+            }
+          ],
+          "bars": [
+            {
+              "l": "Followers",
+              "w": 100,
+              "c": "#8C9BF2",
+              "v": "21"
+            },
+            {
+              "l": "Instagram bio",
+              "w": 62,
+              "c": "#8C9BF2",
+              "v": "13"
+            },
+            {
+              "l": "Aanya’s link",
+              "w": 24,
+              "c": "#8C9BF2",
+              "v": "5"
+            },
+            {
+              "l": "Run club group",
+              "w": 62,
+              "c": "#8C9BF2",
+              "v": "13"
+            }
+          ],
+          "fine": "Illustrative screen and figures"
+        },
+        "note": "Capability page 7 (priority 2). Decision: hosts are paid into their own Razorpay account by default (hostCollected); Catch bills in arrears each commission cycle (organizerBills). Route, where Catch collects and releases after the event, is not promised on the site."
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "After every event",
+        "kc": "#4C5BC4",
+        "title": "A report you’ll actually read.",
+        "lead": "The morning after, Catch puts the night in one place: attendance, no-shows, first-timers and regulars, feedback, and which links and people brought your guests.",
+        "panel": "open",
+        "ticks": [
+          "Checked in, no-shows and walk-ins",
+          "First-timers, people who came back, and who’s lapsed",
+          "Bookings and revenue by link, promoter and friend",
+          "Ratings and private feedback, summed up"
+        ],
+        "media": {
+          "kind": "phone",
+          "img": "/_blob/ca78d0b3a9b1ff24ce10cc713a1202b3",
+          "alt": "The post-event report in Catch Host"
+        }
+      }
+    },
+    {
+      "component": "KitTiles",
+      "data": {
+        "kicker": "Payouts",
+        "kc": "#F5C451",
+        "title": "Your money goes to you, not through us.",
+        "lead": "Connect your Razorpay account once. Guests pay into it directly, and Razorpay sends it to your bank on its usual schedule. Catch never holds your ticket money.",
+        "panel": "ink",
+        "center": false,
+        "cols": 4,
+        "items": [
+          {
+            "small": "1 · Booking",
+            "t": "Guest pays by UPI or card",
+            "d": "Straight into your Razorpay account."
+          },
+          {
+            "small": "2 · Settlement",
+            "t": "Razorpay pays your bank",
+            "d": "On Razorpay’s usual schedule for your account."
+          },
+          {
+            "small": "3 · Refunds",
+            "t": "By your policy",
+            "d": "Refunds follow the cancellation policy you set."
+          },
+          {
+            "small": "4 · Catch’s fee",
+            "t": "Billed afterwards",
+            "d": "5% of net sales, capped at ₹10,000, in one bill per billing period."
+          }
+        ]
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "One bill, in arrears",
+        "kc": "#B23A5A",
+        "title": "No surprises from us.",
+        "lead": "Your first bill comes after your free trial ends. Each one shows every event, what you sold, what was refunded, and the 5%, never more than ₹10,000.",
+        "panel": "open",
+        "ticks": [
+          "Nothing to pay during your trial",
+          "Free events never appear on a bill",
+          "Memberships and form fees count toward the same cap"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Catch bill · November",
+          "rows": [
+            {
+              "t": "Sunday social runs × 4",
+              "v": "₹0"
+            },
+            {
+              "t": "Coached 10K × 2 · ₹48,000",
+              "v": "₹2,400"
+            },
+            {
+              "t": "Memberships · ₹36,000",
+              "v": "₹1,800"
+            },
+            {
+              "t": "Refunds · −₹3,000",
+              "v": "−₹150"
+            },
+            {
+              "t": "Catch fee this period",
+              "v": "₹4,050"
+            }
+          ],
+          "fine": "Illustrative bill"
+        }
+      }
+    },
+    {
+      "component": "KitSplit",
+      "data": {
+        "kicker": "Your team",
+        "kc": "#1F7A57",
+        "title": "Bring in help without handing over everything.",
+        "lead": "Add co-hosts to run your events with you. Give someone the door for one night. Door staff see only the door.",
+        "panel": "tint",
+        "ticks": [
+          "Co-hosts run events alongside you",
+          "Door staff see only one event’s list, until it ends",
+          "Take anyone’s access back in a tap"
+        ],
+        "media": {
+          "kind": "card",
+          "title": "Your team",
+          "rows": [
+            {
+              "t": "You",
+              "s": "Owner · your page, events and payments setup",
+              "tag": "Owner",
+              "tone": ""
+            },
+            {
+              "t": "Meera Iyer",
+              "s": "Co-host · runs events with you",
+              "tag": "Host",
+              "tone": ""
+            },
+            {
+              "t": "Arjun Rao",
+              "s": "Door · Sunday social run only",
+              "tag": "Until 9 AM Sun",
+              "tone": ""
+            }
+          ],
+          "fine": "Illustrative screen"
+        }
+      }
+    },
+    {
+      "component": "KitFaq",
+      "data": {
+        "kicker": "Questions",
+        "title": "About reports and payouts.",
+        "items": [
+          [
+            "Do I need a Razorpay account?",
+            "To sell tickets, yes. It works for individuals with a PAN and a bank account, and we’ll help you set it up. Free events don’t need one."
+          ],
+          [
+            "When do I get my money?",
+            "Guests pay into your Razorpay account, and Razorpay sends it to your bank on its usual schedule for your account. Catch doesn’t hold it."
+          ],
+          [
+            "How does Catch charge me?",
+            "One bill after each billing period: 5% of ticket sales, memberships and form fees, net of refunds, never more than ₹10,000. Nothing during your trial."
+          ],
+          [
+            "Can more than one person run my events?",
+            "Yes. Add co-hosts to your team, and give helpers door access for a single event that ends when it does."
+          ],
+          [
+            "Can I export my numbers?",
+            "Yes. Export your guest records, and your report shows bookings and revenue by link."
+          ],
+          [
+            "What about GST?",
+            "Your Razorpay account and invoices are yours, so GST on your tickets follows your own registration. Catch’s bill to you is separate."
+          ]
+        ],
+        "whatsapp": false
+      }
+    },
+    {
+      "component": "KitFinal",
+      "data": {
+        "kicker": "Free for 30 days · founding hosts get 90",
+        "title": "Run it, then see what worked.",
+        "lead": "Your first report arrives the morning after your first event.",
+        "tone": "m-coral",
+        "ink": "#4A1C0E",
+        "btns": [
+          {
+            "l": "Start free trial"
+          },
+          {
+            "l": "How Catch works",
+            "kind": "sec"
+          }
+        ],
+        "img": "/_blob/4185db020bbe915ac52e67494d4d315e",
+        "alt": "Catch Host today: your next event and what needs you"
+      }
+    },
+    {
+      "component": "KitFooter",
+      "data": {
+        "variant": "host"
+      }
+    }
+  ]
+}

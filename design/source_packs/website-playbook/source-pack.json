@@ -1,0 +1,434 @@
+{
+  "$schema": "catch.design-source-pack/v1",
+  "id": "website-playbook",
+  "importedAt": "2026-11-16",
+  "upstream": {
+    "label": "Catch directions design canvas, Website · conversion playbook page",
+    "kind": "design-canvas",
+    "url": "https://claude.ai/artifact/S6RC4qZwMpNhyUrtxQ2xKf"
+  },
+  "scope": {
+    "product": "website",
+    "description": "Website redesign boards: 52 kit-composed page specs with their kit components and schema, plus the one-off boards (homepage, hosts, pricing, no-show calculator, compare, sitemap, event page)."
+  },
+  "entrypoints": [
+    "oneoff/PlaybookCompare.dc.html",
+    "oneoff/PlaybookCompareVs.dc.html",
+    "oneoff/PlaybookEvent.dc.html",
+    "oneoff/PlaybookHome.dc.html",
+    "oneoff/PlaybookHosts.dc.html",
+    "oneoff/PlaybookNoShow.dc.html",
+    "oneoff/PlaybookPricing.dc.html",
+    "oneoff/PlaybookSitemap.dc.html",
+    "pages/Live404.json",
+    "pages/LiveAccount.json",
+    "pages/LiveBilling.json",
+    "pages/LiveCheckout.json",
+    "pages/LiveCities.json",
+    "pages/LiveEventUpdate.json",
+    "pages/LiveInvite.json",
+    "pages/LiveLegal.json",
+    "pages/LiveRehearsal.json",
+    "pages/LiveSalesDemo.json",
+    "pages/LiveWeddingsApply.json",
+    "pages/PlaybookAbout.json",
+    "pages/PlaybookBookings.json",
+    "pages/PlaybookBrands.json",
+    "pages/PlaybookCityFormat.json",
+    "pages/PlaybookColleges.json",
+    "pages/PlaybookCommunities.json",
+    "pages/PlaybookCreators.json",
+    "pages/PlaybookDemo.json",
+    "pages/PlaybookDoor.json",
+    "pages/PlaybookExplore.json",
+    "pages/PlaybookFacilities.json",
+    "pages/PlaybookFirstEvent.json",
+    "pages/PlaybookForms.json",
+    "pages/PlaybookGuide.json",
+    "pages/PlaybookHowItWorks.json",
+    "pages/PlaybookLinkTool.json",
+    "pages/PlaybookLpSupper.json",
+    "pages/PlaybookMessages.json",
+    "pages/PlaybookMixers.json",
+    "pages/PlaybookNewToCity.json",
+    "pages/PlaybookNight.json",
+    "pages/PlaybookOutdoors.json",
+    "pages/PlaybookPlaybooks.json",
+    "pages/PlaybookProgrammes.json",
+    "pages/PlaybookQuizNights.json",
+    "pages/PlaybookRacketSports.json",
+    "pages/PlaybookRecords.json",
+    "pages/PlaybookRefer.json",
+    "pages/PlaybookReports.json",
+    "pages/PlaybookRunClubs.json",
+    "pages/PlaybookSafety.json",
+    "pages/PlaybookStart.json",
+    "pages/PlaybookStories.json",
+    "pages/PlaybookStory.json",
+    "pages/PlaybookStudios.json",
+    "pages/PlaybookSupperClubs.json",
+    "pages/PlaybookSwitch.json",
+    "pages/PlaybookTeams.json",
+    "pages/PlaybookVenues.json",
+    "pages/PlaybookWorkshops.json",
+    "pages/PlaybookYourPage.json"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "937cb0825a41bdeb3bd3a891460a2ce7dc8dc9282fa133ead4868b39a11e9ad5"
+    },
+    {
+      "path": "kit/KitArticle.dc.html",
+      "sha256": "0df2b2aaa1e4a0077a65492bef041292c8c492f4ea7ae20aa5aeb803a772f92f"
+    },
+    {
+      "path": "kit/KitCards.dc.html",
+      "sha256": "65f0079d65cc2a75f92dfd071d9b46a3c8e498d6ab2669232e952dc089ea9c6d"
+    },
+    {
+      "path": "kit/KitChecklist.dc.html",
+      "sha256": "77d7c8c45123c4580715fcc1f331c0311d27ac96d0b4d338f0477ee283114765"
+    },
+    {
+      "path": "kit/KitFaq.dc.html",
+      "sha256": "aa99a2e6c4ddc89b3d380b7e0c5dd7666c9f56704360b92d33d9097fe3cafd55"
+    },
+    {
+      "path": "kit/KitFinal.dc.html",
+      "sha256": "bb47c3644696c407b250bae71a7b38b44bbd6d81f6dc6800f402965dc9469391"
+    },
+    {
+      "path": "kit/KitFlow.dc.html",
+      "sha256": "5bda172874721b696d2713a8307ec857ae38688b802b444ce7ee5f18d489f3fb"
+    },
+    {
+      "path": "kit/KitFooter.dc.html",
+      "sha256": "1a0ec7b62e0a3b2ea70fea7e3d9766ef365ea98ef4af52a283b14c891cfed2d4"
+    },
+    {
+      "path": "kit/KitHeader.dc.html",
+      "sha256": "4b296eae3495b4bc177f324634f42cf7ac3da1f35953652faa7173621174a3f4"
+    },
+    {
+      "path": "kit/KitHero.dc.html",
+      "sha256": "c4afe3df19ea03a7a40bda0dcf81712d5f4d815a5a5a65292fb9aff850bb7281"
+    },
+    {
+      "path": "kit/KitMock.dc.html",
+      "sha256": "ab1d17d09d7b0f09a58e1864282a98fa97f03bc4ae145a617d0080fa393ca8d0"
+    },
+    {
+      "path": "kit/KitPhotoHero.dc.html",
+      "sha256": "883c1c7c897e370e1e8a1f5829268db70d656c95b3ada775799c6da9dc523083"
+    },
+    {
+      "path": "kit/KitPricing.dc.html",
+      "sha256": "e7dc4226933d7843e5dd70f3a170cc7c6c7a95e25b375e560a6a5cb8e5014b81"
+    },
+    {
+      "path": "kit/KitSplit.dc.html",
+      "sha256": "16400c3cdef698393c2c3a5fd144ab480b092adc3e9c6070f158525034be9736"
+    },
+    {
+      "path": "kit/KitStory.dc.html",
+      "sha256": "919214f59bdabb9804bafc7143834235306f6d6f8bf3eaaf7300f29601714257"
+    },
+    {
+      "path": "kit/KitSwitcher.dc.html",
+      "sha256": "9d4e66bf102bc6c5ee78128cc3047305c281c65fd732432c53e857e4d921ffb6"
+    },
+    {
+      "path": "kit/KitTable.dc.html",
+      "sha256": "f62b9e3f9e9032420f7a70eaf8170b17488c701651c244a7be97c32f9d68679e"
+    },
+    {
+      "path": "kit/KitTiles.dc.html",
+      "sha256": "f56ff0d0cca6d05c2d0582b45a982ad7da9ff513ca816e310b9d41f570fe6695"
+    },
+    {
+      "path": "kit/KitTimeline.dc.html",
+      "sha256": "ea0599f183b7a49067340dbdfe180067926dc5a44e113f6589d7458fe2107163"
+    },
+    {
+      "path": "kit/playbook-kit.css",
+      "sha256": "6ef47bbb90ee3dc2df5bb95044c73c836b41d9cce39bfb4e3d2a3f84c1858d45"
+    },
+    {
+      "path": "kit/playbook-panels.css",
+      "sha256": "4ed99ecba916419813eda0d942ced1d037940c439befa525f19f35490d4f3a01"
+    },
+    {
+      "path": "oneoff/PlaybookCompare.dc.html",
+      "sha256": "c59f11ebc81403817e98a48e60a4213b8d0e1a4d96404e15da8a08f6d4539def"
+    },
+    {
+      "path": "oneoff/PlaybookCompare390.dc.html",
+      "sha256": "281c17dee5661c8461c5ebf446dddf1f3ea878e4ad5586bf27633826bf21eeae"
+    },
+    {
+      "path": "oneoff/PlaybookCompareVs.dc.html",
+      "sha256": "1511dffc47c4bbbd4d9adbbc94bcd95e70094de5675c7c92db53eb585c9423f0"
+    },
+    {
+      "path": "oneoff/PlaybookCompareVs390.dc.html",
+      "sha256": "5bd79442c69cc3ae5da2247e524ad720b5a87e0fad7c1c06a607201df645623d"
+    },
+    {
+      "path": "oneoff/PlaybookEvent.dc.html",
+      "sha256": "1fb4d610a3ea0c42ad6af3d8d01ea8511eb39148a60beb283d14274e689a7608"
+    },
+    {
+      "path": "oneoff/PlaybookEvent390.dc.html",
+      "sha256": "fd16d2e50ab8d4448030143579f52b0c3d0eedf9aaac97f75f81fa777390d4c0"
+    },
+    {
+      "path": "oneoff/PlaybookHome.dc.html",
+      "sha256": "b1fa7d01d94eeb63b79d56f097f55a35095cc2c6fe63553a54d9a41e8cb27847"
+    },
+    {
+      "path": "oneoff/PlaybookHome390.dc.html",
+      "sha256": "08824b878889f7257fab732f922f6923174571cabb6473f87cf896ade119bc20"
+    },
+    {
+      "path": "oneoff/PlaybookHosts.dc.html",
+      "sha256": "3a4eac5431282a8808560dc68b7bed5f1e465954baaa6ea44a6c2dcf118477cc"
+    },
+    {
+      "path": "oneoff/PlaybookHosts390.dc.html",
+      "sha256": "00ad50f22595b8bdd465ccb2d173e6757828a1485129c54f61fa05fae55bbfbc"
+    },
+    {
+      "path": "oneoff/PlaybookNoShow.dc.html",
+      "sha256": "0b2ad6d339485bba53ff129d5c2d17bf5d1244308eb314a7ec13f48a18a69e76"
+    },
+    {
+      "path": "oneoff/PlaybookNoShow390.dc.html",
+      "sha256": "2e8811a0c60733d749c53a730c60d6a16ad4c73de1da6f9ff1f2d58886a417a7"
+    },
+    {
+      "path": "oneoff/PlaybookPricing.dc.html",
+      "sha256": "ea970829ea954f60319f54de0f44cf5bcb3d466d9ac7071ed6cb9e0544f41090"
+    },
+    {
+      "path": "oneoff/PlaybookPricing390.dc.html",
+      "sha256": "eff8dbc2d46e692b343d6b2499a7b3326b7f662c6d5d805d3990bdb5667a14c8"
+    },
+    {
+      "path": "oneoff/PlaybookSitemap.dc.html",
+      "sha256": "e3fdc0bf87212aea661e7c5a5778a77e45dad6c4b0aa204ee8007d0567e09ce8"
+    },
+    {
+      "path": "pages/Live404.json",
+      "sha256": "5637eacd841e7794a86f6daa0cfade809a12bcec40eb5e4bac27b58cadad4ef1"
+    },
+    {
+      "path": "pages/LiveAccount.json",
+      "sha256": "5d2bd8d4383e4bfe44eade79481b7439ccad10cc83d8b6e98d239e2082d75ba5"
+    },
+    {
+      "path": "pages/LiveBilling.json",
+      "sha256": "b1834b782faa210aa5f8b5549b4248f191b6169744ba8e17118b879d8e09157c"
+    },
+    {
+      "path": "pages/LiveCheckout.json",
+      "sha256": "2dd3cd7acf643ea50b6694b5ed189f1e45e45f24fd347926e3a87b6cba686111"
+    },
+    {
+      "path": "pages/LiveCities.json",
+      "sha256": "0ae9a04bdf3720bc885c517ed871ee66b634814165c91121c91290da3f776029"
+    },
+    {
+      "path": "pages/LiveEventUpdate.json",
+      "sha256": "54cf2382771e284c6b1c72a904350a911808064f8f4746dbad22f4166a10691e"
+    },
+    {
+      "path": "pages/LiveInvite.json",
+      "sha256": "76514895ef4ec698a5cd22f78f86374e2df93bd48bc31d4eecacbf079af5dd84"
+    },
+    {
+      "path": "pages/LiveLegal.json",
+      "sha256": "731dd39009d0c0bd500411e7a28d8f04c1a8ae79df67c2ac5be91dfc6252e1aa"
+    },
+    {
+      "path": "pages/LiveRehearsal.json",
+      "sha256": "5d785cd5518ba358925e7a1543ffe3c75aeaf437ede805039bd13895d658e357"
+    },
+    {
+      "path": "pages/LiveSalesDemo.json",
+      "sha256": "c3e6ab7062b9f0b9bb7c0afd2e8f68c49b8c53fe15c0395d55710107dedc704b"
+    },
+    {
+      "path": "pages/LiveWeddingsApply.json",
+      "sha256": "1d423eff9cbd14d454f944575f8e037aca3c272049b1e63a0b368f723e4a1ca5"
+    },
+    {
+      "path": "pages/PlaybookAbout.json",
+      "sha256": "1d853c54c8d56dadc3c2740296f72b4dd637d8f7f57a4807445e91413f9ae352"
+    },
+    {
+      "path": "pages/PlaybookBookings.json",
+      "sha256": "e9ccd57eaa09a073a859450403fb6aad3031303a767d0b151904286ff6254d5f"
+    },
+    {
+      "path": "pages/PlaybookBrands.json",
+      "sha256": "1d0eb068a4cd7d213fc60c16aab6684606773d004e39d1128866632f9e977158"
+    },
+    {
+      "path": "pages/PlaybookCityFormat.json",
+      "sha256": "7a1b1769aa79375521dc2fa0794eaeba28cb4548a2c1d33238c0efec809e4d43"
+    },
+    {
+      "path": "pages/PlaybookColleges.json",
+      "sha256": "0960ea16b96722739815a13ae5b0830e122b79e9ad924921414d449c8cd75b5c"
+    },
+    {
+      "path": "pages/PlaybookCommunities.json",
+      "sha256": "8a7af2b53dc12c7922b40616715b1dfb8e1d3e528eb200f638dcc605ec8a1494"
+    },
+    {
+      "path": "pages/PlaybookCreators.json",
+      "sha256": "0fb2d42d32459903e418be48b6ef2f33434837dd9285944b0699e2cd3b164926"
+    },
+    {
+      "path": "pages/PlaybookDemo.json",
+      "sha256": "247cea5e5ba763124759dcb7b67cec65cba32ab6e00c1e4921806fd3ea6172fe"
+    },
+    {
+      "path": "pages/PlaybookDoor.json",
+      "sha256": "7032864803b2007ae6f87c3d8205173f8a9f1330369630f58ec7faac7b2193b0"
+    },
+    {
+      "path": "pages/PlaybookExplore.json",
+      "sha256": "273bbc2fe8030e586876c39a745044006b21c8740f008028293c944a704c11fd"
+    },
+    {
+      "path": "pages/PlaybookFacilities.json",
+      "sha256": "466e1387feca2b5a78dcc1cd0868aa86b0961fea2319da08dd1715a2e2926477"
+    },
+    {
+      "path": "pages/PlaybookFirstEvent.json",
+      "sha256": "7983b89978d3feb7b81164e35ce5a00ad85348f90305b9c7ccb05c8cd14f260d"
+    },
+    {
+      "path": "pages/PlaybookForms.json",
+      "sha256": "829ef5b4e6cf5bec1b69502c6e3cb99b0ce9865ed816d908e46df9f91533524e"
+    },
+    {
+      "path": "pages/PlaybookGuide.json",
+      "sha256": "f423c0612d1622ddaf38c5669cfec775767c839a38284e9ec7ae93ded8576968"
+    },
+    {
+      "path": "pages/PlaybookHowItWorks.json",
+      "sha256": "749bad00bdbc948507010c6797f13deea58a435c18469d10fcd100d67dab1be5"
+    },
+    {
+      "path": "pages/PlaybookLinkTool.json",
+      "sha256": "dd066d68739580976c3c82dcd1f9b8b2449a17ca487d81c1819842dd53f10e1e"
+    },
+    {
+      "path": "pages/PlaybookLpSupper.json",
+      "sha256": "a1165181c7731689077b2611f8b0c834b51b8a9d0dc2b7411d853ea38f6d8cee"
+    },
+    {
+      "path": "pages/PlaybookMessages.json",
+      "sha256": "57269eb1fd983ca3960861f82a9862634180d2240bb6ad3562b38f22d4396eb5"
+    },
+    {
+      "path": "pages/PlaybookMixers.json",
+      "sha256": "46924ed3a418a9c11857815cd2f66606fe36d82042a35b1c01f354d02582f18d"
+    },
+    {
+      "path": "pages/PlaybookNewToCity.json",
+      "sha256": "7e3dc2fc812e2d957a8cad2fd28d43239495fd177509f7a8b853774bbc4c8599"
+    },
+    {
+      "path": "pages/PlaybookNight.json",
+      "sha256": "c801fb2a7d6d1d31ad10085060dca01bc23f196ead3fee4b6655f89859e3071a"
+    },
+    {
+      "path": "pages/PlaybookOutdoors.json",
+      "sha256": "ba91730d80412c1228bed2d933205d8b2392c3767b48c20a2345138ea2086de2"
+    },
+    {
+      "path": "pages/PlaybookPlaybooks.json",
+      "sha256": "2411a5c114bc838cc5ec2fd72601ff3f00f59e9709cb0854badd6287ed647bab"
+    },
+    {
+      "path": "pages/PlaybookProgrammes.json",
+      "sha256": "1a16a9a8b720fd00f6d0dc10ebcee24028109b03153fad464db52067b2b74824"
+    },
+    {
+      "path": "pages/PlaybookQuizNights.json",
+      "sha256": "fd7a3796dd76b2a3c2fa3cfb87638d24348a6db11b824276372e6fa98a2741de"
+    },
+    {
+      "path": "pages/PlaybookRacketSports.json",
+      "sha256": "e0fbf7eb17fef5dfc7f6ca634e61b7b4a159ec198737e6f9ac62a2ce581be0aa"
+    },
+    {
+      "path": "pages/PlaybookRecords.json",
+      "sha256": "299dea79aec3cac7373c00c7405b9b36eac63f1911e590c4af134898a56fa4ee"
+    },
+    {
+      "path": "pages/PlaybookRefer.json",
+      "sha256": "4db1ce6394ceaf0b5586220fabdfa6071fad28ae13f94dcc78b22cfeef9a6e2a"
+    },
+    {
+      "path": "pages/PlaybookReports.json",
+      "sha256": "14780d92de91cc02bda0b16cb121a395c6ac9890149db6a7605ca7a9e3e433cb"
+    },
+    {
+      "path": "pages/PlaybookRunClubs.json",
+      "sha256": "cb24dfe74c0ce81d4fdc5725868860568a82af54cf141c108889f04190cfdc1c"
+    },
+    {
+      "path": "pages/PlaybookSafety.json",
+      "sha256": "8de85fd554af2c734728a3530429c262c0157843cac3d99eec1e27912744544b"
+    },
+    {
+      "path": "pages/PlaybookStart.json",
+      "sha256": "19f17eb186d9983d15cf270e04ed7df1850936466e433f8b19f49b723d44379f"
+    },
+    {
+      "path": "pages/PlaybookStories.json",
+      "sha256": "fa882c681a06c12865c63683e85f756dc8b4b39e34523d27e2a1697c1594d352"
+    },
+    {
+      "path": "pages/PlaybookStory.json",
+      "sha256": "b3475e30ff07bb8aef041afe50b8ffd5f73f2afc626a2c679f2b619cfa31763e"
+    },
+    {
+      "path": "pages/PlaybookStudios.json",
+      "sha256": "61f06f548bbf0390030f0742884761e161c27675aaca172cc5a794721fbcecd7"
+    },
+    {
+      "path": "pages/PlaybookSupperClubs.json",
+      "sha256": "a2dd42b0fa48b8549b6c785bddd8cfc6070ca9ca18531b7b3ba297795f8f4061"
+    },
+    {
+      "path": "pages/PlaybookSwitch.json",
+      "sha256": "aaf45d6867075fa54c8837f0645a43a5a0bc954a9001969029d7e5bca91483fa"
+    },
+    {
+      "path": "pages/PlaybookTeams.json",
+      "sha256": "a8188e7e48755cd4603dc709f9454035854bb20d486b0e1d31bcf1c2932790c4"
+    },
+    {
+      "path": "pages/PlaybookVenues.json",
+      "sha256": "f772d9d21af06a85bb1f1874dc7aaf01eccff61aa5e5cfee1106d99c2138eff1"
+    },
+    {
+      "path": "pages/PlaybookWorkshops.json",
+      "sha256": "44ac715a770213cf50762c13909bfe02549d983460553b45d5036bc981be986b"
+    },
+    {
+      "path": "pages/PlaybookYourPage.json",
+      "sha256": "db82b8077ba0b53b666ed8c7071bc1eeba54e5ba2a277d8ce6dbef0b926053b6"
+    },
+    {
+      "path": "schema/page.schema.json",
+      "sha256": "fab9463a14a25ffd1409e3a227321ce76570fb32e64f4b15ff5eb5658fa71d6e"
+    }
+  ]
+}

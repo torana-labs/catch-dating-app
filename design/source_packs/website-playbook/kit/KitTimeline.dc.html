@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · timeline</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><section class="panel ink flush"><div class="split"><div class="htext"><p class="k" style="color:#F5C451">{{d.kicker}}</p><h2 class="d d-sec"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h2>
+<ul class="tl"><sc-for list="{{steps}}" as="s" hint-placeholder-count="5"><li><span>{{s.time}}</span><div><b>{{s.t}}</b><p class="body"><sc-for list="{{s.d}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p></div></li></sc-for></ul></div>
+<div class="fmedia"><dc-import name="KitMock" d="{{d.media}}" hint-size="100%,520px"></dc-import></div></div></section></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 900}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"kicker": "A dinner on Catch", "title": "From applications to the next date.", "steps": [{"time": "Tuesday", "t": "Tables planned", "d": "Catch suggests tables of six."}, {"time": "8:00 PM", "t": "One look at the phone", "d": "Guests see their seat once."}], "media": {"kind": "tablet", "img": "/_blob/090b0c010c221ed314d5ff27ce2a21cb", "alt": "The live console on an iPad"}};
+    return { d, title: P(d.title), steps: (d.steps || []).map((s) => ({ time: s.time, t: s.t, d: P(s.d) })) };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kit · story</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="playbook-panels.css">
+<link rel="stylesheet" href="playbook-kit.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div class="pg"><section class="open"><div class="split"><div>
+<p class="k" style="color:#B23A5A">{{d.kicker}}</p>
+<div class="casehd"><span class="av {{d.tone}}" style="color:{{d.ink}}">{{d.initials}}</span><div><b><sc-for list="{{name}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></b><span><sc-for list="{{meta}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></span></div></div>
+<p class="qt">“<sc-for list="{{quote}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for>”</p>
+<div class="mx"><sc-for list="{{metrics}}" as="m" hint-placeholder-count="3"><div class="mm"><small>{{m.l}}</small><b><sc-for list="{{m.v}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></b><span>{{m.s}}</span></div></sc-for></div>
+<div class="btns"><a class="b o" href="#">Read the story</a></div></div>
+<dc-import name="KitMock" d="{{photo}}" hint-size="100%,520px"></dc-import></div></section></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"d": {"editor": null}, "$preview": {"width": 1440, "height": 760}}'>
+class Component extends DCLogic {
+  renderVals() {
+const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean).map((x) => ({ t: x, cls: /^\[.*\]$/.test(x) ? 'ph2' : '' }));
+const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
+const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
+
+    const d = this.props.d || {"kicker": "Supper club story · Andheri", "tone": "m-pink", "ink": "#4A2330", "initials": "LL", "name": "Lantern Lane Social", "meta": "Monthly supper · [N] seats", "quote": "[The host, in their words.]", "metrics": [{"l": "Seats sold before the day", "v": "[N%]", "s": "from Catch records"}]};
+    return { d, name: P(d.name), meta: P(d.meta), quote: P(d.quote), metrics: (d.metrics || []).map((m) => ({ l: m.l, v: P(m.v), s: m.s })),
+      photo: { kind: 'photo', img: d.img || '/_blob/409d3ee3e6896b80188944189323718b', alt: d.alt || '', tag: d.tag || 'Replace with real photography from a design partner' } };
+  }
+}
+</script>
+</body>
+</html>
