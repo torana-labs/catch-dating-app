@@ -70,7 +70,8 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'EVENT_ASSISTANCE_GUEST_KEY_VERSION=" "',
     'EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION=" "',
     'PROGRAM_ASSISTANT_ENABLED="false"',
-    'PROGRAM_ASSISTANT_KEY_VERSION=" "',
+    'PROGRAM_ASSISTANT_FEDERATION_RULE_ID=" "',
+    'ANTHROPIC_ORGANIZATION_ID=" "',
     "",
   ].join("\n"));
   assert.equal(fs.statSync(result.outputPath).mode & 0o777, 0o600);
@@ -130,7 +131,8 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'EVENT_ASSISTANCE_GUEST_KEY_VERSION=" "',
     'EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION=" "',
     'PROGRAM_ASSISTANT_ENABLED="false"',
-    'PROGRAM_ASSISTANT_KEY_VERSION=" "',
+    'PROGRAM_ASSISTANT_FEDERATION_RULE_ID=" "',
+    'ANTHROPIC_ORGANIZATION_ID=" "',
     "",
   ].join("\n"));
 });
@@ -732,23 +734,45 @@ test("ordinary deployment cannot activate Host operator alerts", () => {
   }
 });
 
-test("the wedding assistant switches on only with a pinned project-local ANTHROPIC_API_KEY", () => {
-  const options = {projectId: "catchdates-dev", sourceSha: "a".repeat(40), environment: publicIds};
-  const blank = functionsParamsProvenance(options);
-  assert.equal(blank.references.PROGRAM_ASSISTANT_KEY_VERSION, null);
-  assert.equal(blank.activation.PROGRAM_ASSISTANT_ENABLED, false);
-  const reference = "projects/catchdates-dev/secrets/ANTHROPIC_API_KEY/versions/2";
-  const on = functionsParamsProvenance({...options, environment: {...publicIds,
-    PROGRAM_ASSISTANT_KEY_VERSION: reference, PROGRAM_ASSISTANT_ENABLED: "true"}});
-  assert.equal(on.references.PROGRAM_ASSISTANT_KEY_VERSION, reference);
-  assert.equal(on.activation.PROGRAM_ASSISTANT_ENABLED, true);
-  assert.throws(() => functionsParamsProvenance({...options, environment: {...publicIds,
-    PROGRAM_ASSISTANT_ENABLED: "true"}}), /requires PROGRAM_ASSISTANT_KEY_VERSION/);
-  for (const bad of [reference.replace("/2", "/latest"), reference.replace("catchdates-dev", "foreign-project"),
-    reference.replace("ANTHROPIC_API_KEY", "OTHER_SECRET")]) {
-    assert.throws(() => functionsParamsProvenance({...options, environment: {...publicIds,
-      PROGRAM_ASSISTANT_KEY_VERSION: bad}}), /must pin ANTHROPIC_API_KEY/);
+test("the wedding assistant switches on only with an Anthropic federation rule and organization", () => {
+  const rule = "fdrl_01AbCdEfGhJkMnPq";
+  const organization = "0e1d2c3b-4a59-4687-9a1b-2c3d4e5f6a7b";
+  const materialize = (config) => {
+    const functionsDir = fixture();
+    prepareFunctionsParamsForDeploy({functionsDir, projectId: "catchdates-dev",
+      environment: {...publicIds, ...config}});
+    return fs.readFileSync(path.join(functionsDir, ".env.catchdates-dev"), "utf8");
+  };
+  const blank = materialize({});
+  assert.match(blank, /^PROGRAM_ASSISTANT_ENABLED="false"$/m);
+  assert.match(blank, /^PROGRAM_ASSISTANT_FEDERATION_RULE_ID=" "$/m);
+  assert.match(blank, /^ANTHROPIC_ORGANIZATION_ID=" "$/m);
+  // The params are not secret references and carry no provenance activation.
+  const provenance = functionsParamsProvenance({projectId: "catchdates-dev",
+    sourceSha: "a".repeat(40), environment: publicIds});
+  assert.equal("PROGRAM_ASSISTANT_KEY_VERSION" in provenance.references, false);
+  assert.equal("PROGRAM_ASSISTANT_ENABLED" in provenance.activation, false);
+  const on = materialize({PROGRAM_ASSISTANT_FEDERATION_RULE_ID: ` ${rule} `,
+    ANTHROPIC_ORGANIZATION_ID: organization, PROGRAM_ASSISTANT_ENABLED: "true"});
+  assert.match(on, /^PROGRAM_ASSISTANT_ENABLED="true"$/m);
+  assert.match(on, new RegExp(`^PROGRAM_ASSISTANT_FEDERATION_RULE_ID="${rule}"$`, "m"));
+  assert.match(on, new RegExp(`^ANTHROPIC_ORGANIZATION_ID="${organization}"$`, "m"));
+  // Configured but off is allowed: the kill switch stays the only gate.
+  assert.match(materialize({PROGRAM_ASSISTANT_FEDERATION_RULE_ID: rule,
+    ANTHROPIC_ORGANIZATION_ID: organization}), /^PROGRAM_ASSISTANT_ENABLED="false"$/m);
+  for (const config of [{}, {PROGRAM_ASSISTANT_FEDERATION_RULE_ID: rule},
+    {ANTHROPIC_ORGANIZATION_ID: organization}]) {
+    assert.throws(() => materialize({...config, PROGRAM_ASSISTANT_ENABLED: "true"}),
+      /PROGRAM_ASSISTANT_ENABLED requires PROGRAM_ASSISTANT_FEDERATION_RULE_ID and ANTHROPIC_ORGANIZATION_ID/);
   }
-  assert.throws(() => functionsParamsProvenance({...options, environment: {...publicIds,
-    PROGRAM_ASSISTANT_ENABLED: "yes"}}), /must be true or false/);
+  for (const bad of ["fdrl_", "fdis_01AbCdEf", "fdrl_01-AbCd", "01AbCdEf",
+    "projects/catchdates-dev/secrets/ANTHROPIC_API_KEY/versions/2"]) {
+    assert.throws(() => materialize({PROGRAM_ASSISTANT_FEDERATION_RULE_ID: bad}),
+      /must be an Anthropic federation rule id/);
+  }
+  for (const bad of ["org-123", organization.slice(1), `${organization}0`]) {
+    assert.throws(() => materialize({ANTHROPIC_ORGANIZATION_ID: bad}),
+      /must be an Anthropic organization UUID/);
+  }
+  assert.throws(() => materialize({PROGRAM_ASSISTANT_ENABLED: "yes"}), /must be true or false/);
 });
