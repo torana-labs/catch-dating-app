@@ -4,7 +4,6 @@
   "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-7--cross-framework-conformance-react",
   "gates": {
     "library.t1_web": [
-      "catch.banner",
       "catch.chip",
       "catch.chip.field",
       "catch.control_shell",
@@ -28,7 +27,6 @@
     ],
     "library.cross_framework_parity": [
       "catch.badge",
-      "catch.banner",
       "catch.button",
       "catch.chip",
       "catch.chip.field",

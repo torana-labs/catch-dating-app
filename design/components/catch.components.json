@@ -2600,6 +2600,33 @@
       "naming": {
         "useCase": ""
       },
+      "react": {
+        "symbol": "CatchBanner",
+        "file": "packages/web-ui/src/components/CatchBanner.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchBanner.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "primary",
+            "success",
+            "warning",
+            "danger",
+            "neutral",
+            "with-title",
+            "with-action",
+            "inline",
+            "from-error",
+            "with-retry",
+            "offline",
+            "rehearsal",
+            "stacked",
+            "empty"
+          ]
+        },
+        "notes": "One component for Flutter's four constructors: variant selects message, error (always danger, a polite live region), status (the first of statuses) or statuses; the error recipes take message, retryLabel and onRetry. The actions slot is a node under the copy and the retry text action follows it. icon is a node beside the title, as in Flutter, which draws no glyph without one. CatchBannerStatus is a plain object with icon as a node and color as a CSS colour (a theme token); its actions are a text CatchButton, or a ghost CatchIconAction when they carry an icon role. A status band's copy is the status colour mixed 30% into ink rather than Flutter's measured 4.5:1 search, and its actions wrap under the copy on a narrow band. There is no dismiss and no auto-dismiss: dismissible, transient delivery is CatchNotice. No web localized-error adapter exists, so from-error is the error variant with copy the caller mapped."
+      },
       "enforcement": {
         "code": "catch_status_strip_is_layout_owned",
         "vehicle": "plugin"
