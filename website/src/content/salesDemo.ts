@@ -80,3 +80,13 @@ export const salesDemoCopy = {
   "hostAppLinkUnavailable": "The Host app link is unavailable here. Open Forms in the Host app to finish setup.",
   "refreshSetup": "Check latest setup status",
 } as const;
+
+/** The demo on the LiveSalesDemo board: the sample's step rail and the words the page composes. */
+export const salesDemoFlowCopy = {
+  stepsLabel: "Sample steps",
+  steps: ["Verify", "Review applicant", "Reply", "Admit guest", "Next steps"],
+  stepStatus: {complete: "done", needsInformation: "to do", optional: "optional"},
+  completed: " Completed",
+  inProgress: " In progress",
+  verifiedAccount: "verified account",
+} as const;
