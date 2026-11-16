@@ -58,186 +58,6 @@ final class HostSavedAudienceRepositoryProvider
 String _$hostSavedAudienceRepositoryHash() =>
     r'd69b37678b73001ef421171624f0db53088607e4';
 
-@ProviderFor(hostSavedAudiences)
-final hostSavedAudiencesProvider = HostSavedAudiencesFamily._();
-
-final class HostSavedAudiencesProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<HostSavedAudiencePage>,
-          HostSavedAudiencePage,
-          FutureOr<HostSavedAudiencePage>
-        >
-    with
-        $FutureModifier<HostSavedAudiencePage>,
-        $FutureProvider<HostSavedAudiencePage> {
-  HostSavedAudiencesProvider._({
-    required HostSavedAudiencesFamily super.from,
-    required String super.argument,
-  }) : super(
-         retry: null,
-         name: r'hostSavedAudiencesProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$hostSavedAudiencesHash();
-
-  @override
-  String toString() {
-    return r'hostSavedAudiencesProvider'
-        ''
-        '($argument)';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<HostSavedAudiencePage> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<HostSavedAudiencePage> create(Ref ref) {
-    final argument = this.argument as String;
-    return hostSavedAudiences(ref, argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is HostSavedAudiencesProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$hostSavedAudiencesHash() =>
-    r'07898bedde319208db12e469d94be35f43da0a6a';
-
-final class HostSavedAudiencesFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<HostSavedAudiencePage>, String> {
-  HostSavedAudiencesFamily._()
-    : super(
-        retry: null,
-        name: r'hostSavedAudiencesProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  HostSavedAudiencesProvider call(String organizerId) =>
-      HostSavedAudiencesProvider._(argument: organizerId, from: this);
-
-  @override
-  String toString() => r'hostSavedAudiencesProvider';
-}
-
-/// Exhaustive saved-audience directory used by the Customers-owned workspace.
-///
-/// The callable remains cursor-paginated; this bounded provider follows those
-/// cursors so client-side name search never silently searches only page one.
-
-@ProviderFor(hostAllSavedAudiences)
-final hostAllSavedAudiencesProvider = HostAllSavedAudiencesFamily._();
-
-/// Exhaustive saved-audience directory used by the Customers-owned workspace.
-///
-/// The callable remains cursor-paginated; this bounded provider follows those
-/// cursors so client-side name search never silently searches only page one.
-
-final class HostAllSavedAudiencesProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<HostSavedAudiencePage>,
-          HostSavedAudiencePage,
-          FutureOr<HostSavedAudiencePage>
-        >
-    with
-        $FutureModifier<HostSavedAudiencePage>,
-        $FutureProvider<HostSavedAudiencePage> {
-  /// Exhaustive saved-audience directory used by the Customers-owned workspace.
-  ///
-  /// The callable remains cursor-paginated; this bounded provider follows those
-  /// cursors so client-side name search never silently searches only page one.
-  HostAllSavedAudiencesProvider._({
-    required HostAllSavedAudiencesFamily super.from,
-    required String super.argument,
-  }) : super(
-         retry: null,
-         name: r'hostAllSavedAudiencesProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$hostAllSavedAudiencesHash();
-
-  @override
-  String toString() {
-    return r'hostAllSavedAudiencesProvider'
-        ''
-        '($argument)';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<HostSavedAudiencePage> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<HostSavedAudiencePage> create(Ref ref) {
-    final argument = this.argument as String;
-    return hostAllSavedAudiences(ref, argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is HostAllSavedAudiencesProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$hostAllSavedAudiencesHash() =>
-    r'1e7fff9b1be05094cd989635ca9d822d6ced233f';
-
-/// Exhaustive saved-audience directory used by the Customers-owned workspace.
-///
-/// The callable remains cursor-paginated; this bounded provider follows those
-/// cursors so client-side name search never silently searches only page one.
-
-final class HostAllSavedAudiencesFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<HostSavedAudiencePage>, String> {
-  HostAllSavedAudiencesFamily._()
-    : super(
-        retry: null,
-        name: r'hostAllSavedAudiencesProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// Exhaustive saved-audience directory used by the Customers-owned workspace.
-  ///
-  /// The callable remains cursor-paginated; this bounded provider follows those
-  /// cursors so client-side name search never silently searches only page one.
-
-  HostAllSavedAudiencesProvider call(String organizerId) =>
-      HostAllSavedAudiencesProvider._(argument: organizerId, from: this);
-
-  @override
-  String toString() => r'hostAllSavedAudiencesProvider';
-}
-
 @ProviderFor(hostStaticAudienceMembers)
 final hostStaticAudienceMembersProvider = HostStaticAudienceMembersFamily._();
 
@@ -513,15 +333,17 @@ final class HostSavedAudienceDetailFamily extends $Family
   String toString() => r'hostSavedAudienceDetailProvider';
 }
 
-/// Preserves the workspace's exhaustive local name search using small metadata
-/// documents; full selected-member lists are loaded only when a group opens.
+/// Every active group's metadata from `hostGroupSummaries`: the Audience
+/// workspace's exhaustive local name search and the campaign editor's group
+/// picker. Full selected-member lists load only when a group opens.
 
 @ProviderFor(hostAllSavedAudienceSummaries)
 final hostAllSavedAudienceSummariesProvider =
     HostAllSavedAudienceSummariesFamily._();
 
-/// Preserves the workspace's exhaustive local name search using small metadata
-/// documents; full selected-member lists are loaded only when a group opens.
+/// Every active group's metadata from `hostGroupSummaries`: the Audience
+/// workspace's exhaustive local name search and the campaign editor's group
+/// picker. Full selected-member lists load only when a group opens.
 
 final class HostAllSavedAudienceSummariesProvider
     extends
@@ -533,8 +355,9 @@ final class HostAllSavedAudienceSummariesProvider
     with
         $FutureModifier<HostSavedAudienceSummaryPage>,
         $FutureProvider<HostSavedAudienceSummaryPage> {
-  /// Preserves the workspace's exhaustive local name search using small metadata
-  /// documents; full selected-member lists are loaded only when a group opens.
+  /// Every active group's metadata from `hostGroupSummaries`: the Audience
+  /// workspace's exhaustive local name search and the campaign editor's group
+  /// picker. Full selected-member lists load only when a group opens.
   HostAllSavedAudienceSummariesProvider._({
     required HostAllSavedAudienceSummariesFamily super.from,
     required String super.argument,
@@ -583,8 +406,9 @@ final class HostAllSavedAudienceSummariesProvider
 String _$hostAllSavedAudienceSummariesHash() =>
     r'e6264ad0f0413534bacff53319ec65bcebf4f0cb';
 
-/// Preserves the workspace's exhaustive local name search using small metadata
-/// documents; full selected-member lists are loaded only when a group opens.
+/// Every active group's metadata from `hostGroupSummaries`: the Audience
+/// workspace's exhaustive local name search and the campaign editor's group
+/// picker. Full selected-member lists load only when a group opens.
 
 final class HostAllSavedAudienceSummariesFamily extends $Family
     with
@@ -601,8 +425,9 @@ final class HostAllSavedAudienceSummariesFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Preserves the workspace's exhaustive local name search using small metadata
-  /// documents; full selected-member lists are loaded only when a group opens.
+  /// Every active group's metadata from `hostGroupSummaries`: the Audience
+  /// workspace's exhaustive local name search and the campaign editor's group
+  /// picker. Full selected-member lists load only when a group opens.
 
   HostAllSavedAudienceSummariesProvider call(String organizerId) =>
       HostAllSavedAudienceSummariesProvider._(

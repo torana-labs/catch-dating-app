@@ -61,24 +61,6 @@ class HostSavedAudienceRepository {
     parse: HostSavedAudienceFilterOptions.fromCallableData,
   );
 
-  Future<HostSavedAudiencePage> listSavedAudiences(
-    String organizerId, {
-    String status = 'active',
-    String? cursor,
-    int limit = ReadLimitPolicy.directoryPage,
-  }) => callHostCrm(
-    _functions,
-    name: 'listOrganizerSavedAudiences',
-    payload: ListOrganizerSavedAudiencesCallableRequest(
-      organizerId: organizerId,
-      status: status,
-      limit: limit > 50 ? 50 : limit,
-      cursor: cursor,
-    ).toJson(),
-    action: 'load organizer saved audiences',
-    parse: HostSavedAudiencePage.fromCallableData,
-  );
-
   Future<HostSavedAudienceSummaryPage> listGroupSummaries(
     String organizerId, {
     String? cursor,
@@ -215,47 +197,6 @@ HostSavedAudienceRepository hostSavedAudienceRepository(Ref ref) {
 }
 
 @riverpod
-Future<HostSavedAudiencePage> hostSavedAudiences(Ref ref, String organizerId) =>
-    ref
-        .watch(hostSavedAudienceRepositoryProvider)
-        .listSavedAudiences(organizerId);
-
-/// Exhaustive saved-audience directory used by the Customers-owned workspace.
-///
-/// The callable remains cursor-paginated; this bounded provider follows those
-/// cursors so client-side name search never silently searches only page one.
-@riverpod
-Future<HostSavedAudiencePage> hostAllSavedAudiences(
-  Ref ref,
-  String organizerId,
-) async {
-  const maximumDefinitions = 2500;
-  final repository = ref.watch(hostSavedAudienceRepositoryProvider);
-  final audiences = <HostSavedAudience>[];
-  String? cursor;
-  do {
-    final page = await repository.listSavedAudiences(
-      organizerId,
-      cursor: cursor,
-      limit: 50,
-    );
-    // Firebase callables do not expose transport cancellation. Stop the
-    // cursor chain when its owner leaves, rather than starting unused reads.
-    if (!ref.mounted) {
-      throw StateError('The saved audience directory was disposed.');
-    }
-    audiences.addAll(page.audiences);
-    cursor = page.nextCursor;
-    if (audiences.length >= maximumDefinitions && cursor != null) {
-      throw StateError(
-        'Saved audience directory exceeds $maximumDefinitions definitions.',
-      );
-    }
-  } while (cursor != null);
-  return HostSavedAudiencePage(audiences: audiences, nextCursor: null);
-}
-
-@riverpod
 Future<List<HostStaticAudienceMember>> hostStaticAudienceMembers(
   Ref ref,
   String organizerId,
@@ -296,8 +237,9 @@ Future<HostSavedAudience> hostSavedAudienceDetail(
   }
 }
 
-/// Preserves the workspace's exhaustive local name search using small metadata
-/// documents; full selected-member lists are loaded only when a group opens.
+/// Every active group's metadata from `hostGroupSummaries`: the Audience
+/// workspace's exhaustive local name search and the campaign editor's group
+/// picker. Full selected-member lists load only when a group opens.
 @riverpod
 Future<HostSavedAudienceSummaryPage> hostAllSavedAudienceSummaries(
   Ref ref,
