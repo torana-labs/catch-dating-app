@@ -1,0 +1,66 @@
+/*
+ * catch.form_step_list. The column is a divided list: each CatchIndexRow
+ * under a hairline in the theme's line colour (the system Section draws the
+ * lines, so the rows draw none). The row is a wrapping rail of pills 6px
+ * apart: paper with the secondary ink, a 24px white marker; the current step
+ * fills with ink and its marker with coral; a complete step's marker is mint.
+ */
+.list,
+.rail {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item + .item { border-top: var(--catch-stroke-hairline) solid var(--catch-theme-line); }
+
+.rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--catch-space-micro6);
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: var(--catch-space-s2);
+  padding: var(--catch-space-micro6) var(--catch-space-s3) var(--catch-space-micro6) var(--catch-space-micro6);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-ground-paper-fill);
+  color: var(--catch-ground-paper-ink-secondary);
+}
+
+.marker {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-ground-white-fill);
+  color: var(--catch-ground-white-ink);
+}
+
+.pill[data-status="complete"] .marker {
+  background: var(--catch-ground-mint-fill);
+  color: var(--catch-ground-mint-ink);
+}
+
+.pill[data-now] {
+  background: var(--catch-ground-ink-fill);
+  color: var(--catch-ground-ink-ink);
+}
+
+.pill[data-now] .marker {
+  background: var(--catch-ground-coral-fill);
+  color: var(--catch-ground-coral-ink);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
