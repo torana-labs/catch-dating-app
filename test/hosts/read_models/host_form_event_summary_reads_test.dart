@@ -115,8 +115,31 @@ void main() {
         scope: PrivateEventSetupScope.past,
         limit: 20,
       );
-      expect(upcoming!.events.map((item) => item.eventId), ['future']);
-      expect(past!.events.map((item) => item.eventId), ['past']);
+      expect(upcoming.events.map((item) => item.eventId), ['future']);
+      expect(past.events.map((item) => item.eventId), ['past']);
+    },
+  );
+
+  test(
+    'A missing events marker is an error to retry, not a fallback',
+    () async {
+      final db = FakeFirebaseFirestore();
+      await db.collection('hostDirectorySummaries').doc('org').set({
+        'organizerId': 'org',
+        'formSummaryVersion': 1,
+      });
+      final reads = HostEventSummaryReads(
+        HostSummaryReader(db, actorId: () => 'host'),
+      );
+
+      await expectLater(
+        reads.list(
+          organizerId: 'org',
+          scope: PrivateEventSetupScope.upcoming,
+          limit: 20,
+        ),
+        throwsStateError,
+      );
     },
   );
 }

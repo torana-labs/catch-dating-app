@@ -140,9 +140,8 @@ class HostShellBackend {
         });
     // What onHostDirectoryOrganizerCreated leaves for a new organizer: the
     // directory read models active and empty, so the Host lists read their
-    // summaries without a callable. The events marker stays unset: this fake
-    // runs no triggers, so a created event would have no summary row, and the
-    // event directory still falls back to listPrivateEventSetups.
+    // summaries without a callable. Created private events get their
+    // hostEventSummaries row from _writeEventSummary, as the trigger does.
     await firestore.collection('hostDirectorySummaries').doc(organizer.id).set({
       'organizerId': organizer.id,
       'projectionVersion': 1,
@@ -153,6 +152,7 @@ class HostShellBackend {
       'responseSummaryVersion': 1,
       'formSummaryVersion': 1,
       'groupSummaryVersion': 1,
+      'eventSummaryVersion': 1,
       'summary': {
         'organizerId': organizer.id,
         'contactCount': 0,
@@ -261,14 +261,6 @@ class HostShellBackend {
       'createPrivateEventSetup' => _createPrivateEvent(request),
       'createPrivateEventSeries' => _createPrivateEventSeries(request),
       'updatePrivateEventDetails' => _updatePrivateEventDetails(request),
-      'listPrivateEventSetups' => {
-        'events': [
-          if (request['scope'] != 'past')
-            for (final eventId in privateEvents.keys)
-              _privateEventInventoryItem(eventId),
-        ],
-        'nextCursor': null,
-      },
       'listOrganizerPrograms' => {'programs': const <Object?>[]},
       // Today's Last 30 days: an organizer with no bookings yet.
       'getHostAnalytics' => {
@@ -485,7 +477,22 @@ class HostShellBackend {
         'publicationReadiness': null,
       },
     });
+    await _writeEventSummary(eventId);
     return {'eventId': eventId, 'setupRevision': 1, 'replayed': false};
+  }
+
+  /// Writes the event's `hostEventSummaries` row, as the events summary
+  /// trigger does for a private event.
+  Future<void> _writeEventSummary(String eventId) async {
+    final row = _privateEventInventoryItem(eventId);
+    await firestore.collection('hostEventSummaries').doc(eventId).set({
+      'organizerId': privateEvents[eventId]!['organizerId'],
+      'eventId': eventId,
+      'startTimeMillis': row['startTimeMillis'],
+      'status': row['status'],
+      'row': row,
+      'version': 1,
+    });
   }
 
   /// Takes a details command and, as the setup view trigger does, writes
@@ -504,6 +511,7 @@ class HostShellBackend {
       'summary.setupRevision': revision,
       'summary.detailsConfigured': true,
     });
+    await _writeEventSummary(eventId);
     return {'eventId': eventId, 'setupRevision': revision, 'replayed': false};
   }
 
