@@ -27,8 +27,8 @@ import {validateListParticipantMessagingPreferencesCallablePayload} from
 import {validateWithdrawParticipantMessagingPermissionCallablePayload} from
   "../shared/generated/validators/withdrawParticipantMessagingPermissionInput";
 
-type Preference = CatchPreference | OrganizerPreference;
-type Scope = "catch" | "organizer";
+export type Preference = CatchPreference | OrganizerPreference;
+export type Scope = "catch" | "organizer";
 interface Deps {
   db: () => FirebaseFirestore.Firestore;
   now: () => Timestamp;
@@ -37,7 +37,8 @@ interface Deps {
 const defaults: Deps = {db: () => admin.firestore(), now: () => Timestamp.now(),
   rateLimit: checkRateLimit};
 
-function readPreference(snap: FirebaseFirestore.DocumentSnapshot, uid: string,
+export function readPreference(
+  snap: FirebaseFirestore.DocumentSnapshot, uid: string,
   scope: Scope, organizerId: string | null): Preference | null {
   if (!snap.exists) return null;
   const value = scope === "catch" ?
@@ -52,7 +53,11 @@ function readPreference(snap: FirebaseFirestore.DocumentSnapshot, uid: string,
   return value;
 }
 
-async function summarize(db: FirebaseFirestore.Firestore,
+/**
+ * The participant's WhatsApp permission summary for one sender, as the
+ * settings page shows it; also kept on guestMessagingPermissions.
+ */
+export async function summarize(db: FirebaseFirestore.Firestore,
   tx: FirebaseFirestore.Transaction, value: Preference | null, scope: Scope):
   Promise<Page["catchPreference"]> {
   const channel = value?.whatsapp;

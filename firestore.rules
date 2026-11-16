@@ -1353,6 +1353,18 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // The guest's own messaging settings rows, projected from the preference
+    // and receipt ledgers. A row not written yet reads as missing. Withdrawals
+    // still go through the participant callable.
+    match /guestMessagingPermissions/{permissionId} {
+      allow get: if (resource == null && isAuthed())
+        || (isAuthed() && !isDeletedUser(request.auth.uid)
+          && resource.data.uid == request.auth.uid);
+      allow list: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
     // Host list views contain only the explicitly allowlisted presentation DTO.
     // Authority always comes from the current organizer, never from the view.
     function isHostSummaryManager(organizerId) {
