@@ -117,27 +117,61 @@ and `PublicPageFooter` for marketing, discovery, directory/listing, public event
 detail, claim, Host product/application, legal/help and 404 pages.
 `PublicSiteHeader` is the system's site top bar (`CatchTopBar variant="site"`)
 and the one header on every public route, Explore and the city pages included.
-Left: the wordmark (`CatchWordmark`, the display voice at 78% width), the page
-links and the visitor's account entry ("Sign in" or "Account"). Right: only the
-page's actions, a setting such as the city picker, then the one primary action.
-Under 600px the links and the account entry move into the phone menu, and a
-sub-brand steps under the wordmark. General pages carry the main site's links
-from `content/site.ts` (Explore, Organisers, For hosts) and Get the app; a
-product page passes its own name, section links and action, as the host landing
-("Catch for hosts", its sections and Start free trial) and weddings do. The
-account entry comes from `SiteAccountProvider` (`features/account`) through
+Left: the wordmark (`CatchWordmark`, the display voice at 78% width) and the
+page links. Right: the page's actions, a setting such as the city picker, the
+one primary action, and last the visitor's account entry ("Sign in" or
+"Account"). Under 600px the links and the account entry move into the phone
+menu, and a sub-brand steps under the wordmark. The account entry comes from
+`SiteAccountProvider` (`features/account`) through
 `SiteAccountActionProvider`.
 
-`PublicSiteFooter` is the one site footer, `CatchSiteFooter` on the ink band:
-Explore, Hosts (with Weddings) and Help and legal, each link flush with its
-column title on one row rhythm, Help and legal ending with Privacy choices,
-then the wordmark with the tagline on its baseline and the operator line. The
-homepage and the city pages add their Cities column; a product page (host,
-weddings) may name itself in the wordmark and give its own line, with the same
-columns. Home, Explore and the city pages, the host landing and application,
-weddings, legal, help, 404, the claim page, organiser pages and event pages all
-end with it; its links come from
-`siteFooterCopy` in `content/site.ts`.
+The header has three variants (the playbook kit's `KitHeader`), and every page
+picks one explicitly:
+
+| Variant | Bar | Routes |
+|---|---|---|
+| `guest` (default) | What's on and For hosts; Get the app (or Get notified) | home, Explore, city pages, `/cities/`, organiser pages, event pages, account, legal and help pages, 404 |
+| `host` | What's on and Help; the For hosts dropdown (`CatchNavMenu`: Catch for hosts, Weddings, Claim your page); a WhatsApp link; Start free trial | `/host/`, `/host/billing/`, `/weddings/`, `/claim/` and `/claim/:listing/`, the demo continuation |
+| `minimal` | the wordmark alone | one-job flows on the site chrome: `/booking/…`, `/invite/…`, `/offer/`, `/f/…` |
+
+The bar opens pages, never a section of the current one (navigation proposal,
+15 Nov), so Pricing, a band of `/host/`, stays in the footer. A header group
+with a single page draws a plain link (Resources is Help alone today), and an
+empty group is left out. `CatchNavMenu` renders nothing under 600px, so the
+phone menu lists its pages after the links. It sits with the bar's actions
+until `CatchTopBar`'s site variant takes a navigation slot. What's on is
+conditional on `showWhatsOn` (default shown); a city with no events in the
+coming month will hide it once a 30-day read exists. A city's pages point it
+at their own Explore with `whatsOnHref`. Links name only routes in
+`design/website/routes.json`; the agreed future paths (`/refer/`,
+`/stories/`, `/tools/no-show-calculator/`, `/new-to-<city>/`, `/host/demo/`,
+`/host/nightlife/`, `/host/colleges/`) join their groups when the pages ship.
+An optional offer strip (`CatchBanner`, persistent, no dismiss) sits above the
+bar when a page passes `offer`; no page does yet, because the founding-host
+offer waits for its live counter. An optional breadcrumb row
+(`CatchBreadcrumbRow`) sits below the bar when a page passes `breadcrumbs`:
+the event page (What's on, the organiser's city when its page is open, the
+event; the Next render states the same trail as BreadcrumbList JSON-LD) and
+host billing (For hosts, Billing). A product page may still pass its own name,
+sections and action, as the host landing ("Catch for hosts", its sections and
+Start free trial) and weddings do.
+
+`PublicSiteFooter` is the one site footer, `CatchSiteFooter` on the ink band,
+in `guest` or `host` columns (`KitFooter`), each link flush with its column
+title on one row rhythm, then the wordmark with the tagline on its baseline and
+the operator line. Guest: Explore, Hosts (with Weddings) and Help and legal;
+the homepage and the city pages add their Cities column. Host: Product, Get
+started, the brand's column (What's on, Help, Contact) and Legal. The last
+column ends with Privacy choices. The help band leads the footer on every
+guest and host page ("We reply on WhatsApp, usually within an hour.", with
+the WhatsApp link and, on host pages, Book a walkthrough to the free-trial
+start); one-job flows (booking, invitation, the demo continuation) turn it
+off, and ad landing pages will too. It states no hours. A product page (host,
+weddings) may name itself in the wordmark and give its own line. Home, Explore
+and the city pages, the host landing, billing and application, weddings, the
+account page, legal, help, 404, the claim page, organiser pages and event
+pages all end with it; its copy comes from `siteFooterCopy` in
+`content/site.ts`.
 
 The organiser page (`/organizers/<slug>/`, claimed or generated) and the event
 page (`/events/<id>/`) carry `PublicSiteHeader` and end with `PublicSiteFooter`
@@ -145,9 +179,9 @@ below their main (owner decision, 14 Nov 2026: visitors arrive from shares and
 search and get somewhere to go next). An organiser page served on the
 organiser's own domain will keep the boards' short footer, `PublicPageFooter`
 with its default links (Privacy, Terms, For organisers and Help), so it reads
-as the club's page; custom domains are not served yet. The public form, offer,
-account and billing pages render `PublicPageFooter` below their reading layout
-with the site and legal links and the operator line. Import them from
+as the club's page; custom domains are not served yet. The public form and
+offer pages render `PublicPageFooter` below their reading layout with the site
+and legal links and the operator line. Import them from
 `shared/site`.
 The import scanner permits only `PublicSiteChrome.tsx` and its focused test to
 read resolved `content/site.ts`; arbitrary shared UI and every route-specific
