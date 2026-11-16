@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_set_walkthrough_availability_response.schema.json",
+  "title": "AdminSetWalkthroughAvailabilityCallableResponse",
+  "description": "The saved calendar and the first open slots it now offers, so staff see the effect of a change at once.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "adminSetWalkthroughAvailability",
+  "required": ["availability", "nextSlots", "changed"],
+  "properties": {
+    "availability": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/availabilityView"},
+    "nextSlots": {"type": "array", "maxItems": 10, "items": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slot"}},
+    "changed": {"type": "boolean", "description": "False when the settings saved equal the ones already saved; the revision then stays."}
+  }
+}

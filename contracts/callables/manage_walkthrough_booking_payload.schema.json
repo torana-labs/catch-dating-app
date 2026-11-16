@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_walkthrough_booking_payload.schema.json",
+  "title": "ManageWalkthroughBookingCallablePayload",
+  "description": "The booker reads, cancels or moves a walkthrough booking, proving it is theirs with the manage link's token or by signing in with the booking's verified phone. App Check protected and rate limited. Repeating a cancel, or a move to the slot already held, changes nothing.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Website walkthrough manage page",
+  "required": ["bookingId", "action"],
+  "properties": {
+    "bookingId": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/bookingId"},
+    "action": {"type": "string", "enum": ["read", "cancel", "reschedule"]},
+    "manageToken": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/manageToken"},
+    "slotStartAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slotStart", "description": "The open slot to move to; reschedule only."},
+    "reason": {"type": "string", "minLength": 1, "maxLength": 300, "description": "Optional, cancel only."}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"action": {"const": "reschedule"}}},
+      "then": {"required": ["slotStartAt"], "not": {"required": ["reason"]}},
+      "else": {"not": {"required": ["slotStartAt"]}}
+    },
+    {
+      "if": {"properties": {"action": {"const": "read"}}},
+      "then": {"not": {"required": ["reason"]}}
+    }
+  ]
+}

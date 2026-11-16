@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/book_walkthrough_response.schema.json",
+  "title": "BookWalkthroughCallableResponse",
+  "description": "The booking as it stands. managePath opens it again; the website adds the manage token as #t=<token> for a link that needs no sign-in, and without the token the page asks for the verified phone.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "bookWalkthrough",
+  "required": ["bookingId", "status", "slot", "timeZone", "followUp", "managePath", "idempotentReplay"],
+  "properties": {
+    "bookingId": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/bookingId"},
+    "status": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/bookingStatus"},
+    "slot": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slot"},
+    "timeZone": {"const": "Asia/Kolkata"},
+    "followUp": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/followUp"},
+    "managePath": {"type": "string", "pattern": "^/start/walkthrough/manage\\?booking=wt-[a-f0-9]{40}$"},
+    "idempotentReplay": {"type": "boolean", "description": "True when this answered a retry of a booking already made."}
+  }
+}
