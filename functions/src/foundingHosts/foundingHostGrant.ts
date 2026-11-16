@@ -109,6 +109,8 @@ export async function takeFoundingHostPlace(deps: FoundingGrantDeps,
     const decision = decideFoundingPlace({
       placeExists: placeSnap.exists,
       owned: organizerHasOwner(organizer),
+      // Demo Ops worlds create owned organizers marked synthetic.
+      synthetic: organizer?.synthetic === true,
       marketKnown: market !== null,
       offer,
       ownedAtMillis: input.ownedAtMillis,

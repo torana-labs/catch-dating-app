@@ -99,6 +99,8 @@ export type FoundingPlaceSkip =
   "alreadyHeld" |
   /** The organizer was deleted or has no owner now. */
   "notOwned" |
+  /** A demo or test organizer (`synthetic`), which never uses a place. */
+  "synthetic" |
   /** Its market is not in the catalog. */
   "unknownMarket" |
   /** Its city has no founding offer. */
@@ -127,6 +129,7 @@ export type FoundingPlaceDecision =
 export function decideFoundingPlace(input: {
   placeExists: boolean;
   owned: boolean;
+  synthetic: boolean;
   marketKnown: boolean;
   offer: FoundingHostOffer | null;
   ownedAtMillis: number;
@@ -136,6 +139,7 @@ export function decideFoundingPlace(input: {
     ({kind: "skip", reason});
   if (input.placeExists) return skip("alreadyHeld");
   if (!input.owned) return skip("notOwned");
+  if (input.synthetic) return skip("synthetic");
   if (!input.marketKnown) return skip("unknownMarket");
   const offer = input.offer;
   if (!offer) return skip("noOffer");

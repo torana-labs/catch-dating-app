@@ -178,15 +178,16 @@ test("organizers that are not new hosts, or outside an offer, take nothing",
     addOrganizer("indore", {locationMarketId: "in-mp-indore"});
     addOrganizer("nowhere", {locationMarketId: "atlantis"});
     addOrganizer("early");
+    addOrganizer("demo", {synthetic: true});
     assert.equal((await take("trading")).kind, "skip");
     const reasons = await Promise.all([
       take("trading"), take("unowned"), take("indore"), take("nowhere"),
-      take("missing"), take("early", opened - 1),
+      take("missing"), take("early", opened - 1), take("demo"),
     ]);
     assert.deepEqual(reasons.map((result) =>
       result.kind === "skip" ? result.reason : result.kind),
     ["trialStarted", "notOwned", "noOffer", "unknownMarket", "notOwned",
-      "ownedBeforeOffer"]);
+      "ownedBeforeOffer", "synthetic"]);
     assert.deepEqual(store.paths("foundingHostPlaces/"), []);
     assert.equal(store.get(offerPath)?.takenCount, 0);
     assert.equal(store.get(publicPath), undefined);

@@ -18,7 +18,8 @@ const offer = (patch: Partial<FoundingHostOffer> = {}): FoundingHostOffer => ({
   updatedAtMillis: opened, ...patch});
 type DecisionInput = Parameters<typeof decideFoundingPlace>[0];
 const input = (patch: Partial<DecisionInput> = {}): DecisionInput => ({
-  placeExists: false, owned: true, marketKnown: true, offer: offer(),
+  placeExists: false, owned: true, synthetic: false, marketKnown: true,
+  offer: offer(),
   ownedAtMillis: opened + 1, trialStarted: false, ...patch});
 
 test("an owned organizer takes the next place while places are left", () => {
@@ -57,6 +58,8 @@ test("organizers owned before the offer, outside it or already trading " +
     {kind: "skip", reason: "unknownMarket"});
   assert.deepEqual(decideFoundingPlace(input({owned: false})),
     {kind: "skip", reason: "notOwned"});
+  assert.deepEqual(decideFoundingPlace(input({synthetic: true})),
+    {kind: "skip", reason: "synthetic"});
   assert.deepEqual(decideFoundingPlace(input({trialStarted: true})),
     {kind: "skip", reason: "trialStarted"});
 });
