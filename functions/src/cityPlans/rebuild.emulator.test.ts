@@ -74,6 +74,22 @@ async () => {
     assert.equal(stored.get("planCount"), 4);
     assert.deepEqual(stored.get("organizers").map(
       (item: Row) => item.organizerId), [`org-a-${h.run}`, `org-b-${h.run}`]);
+    assert.equal(stored.get("upcomingEvents30d"), 4);
+    assert.equal(stored.get("hasUpcomingMonth"), true);
+    assert.deepEqual(stored.get("formatPages.runClubs"), {slug: "run-clubs",
+      organizerCount: 2, upcomingEventCount: 4, freeEventCount: 4,
+      indexing: "noindex, follow"});
+
+    // Rebuilding unchanged sources stores the same city with a later build.
+    assert.equal(await rebuildCityPlans(h.db, market, () => now + 1000),
+      "written");
+    const again = await stored.ref.get();
+    const {builtAt: firstBuild, ...first} = stored.data() as Row;
+    const {builtAt: secondBuild, ...second} = again.data() as Row;
+    assert.notDeepEqual(secondBuild, firstBuild);
+    assert.deepEqual({...second, windowStart: first.windowStart,
+      windowEnd: first.windowEnd, monthWindowEnd: first.monthWindowEnd},
+    first);
 
     // A rebuild that read its sources earlier changes nothing.
     assert.equal(await rebuildCityPlans(h.db, {...market, label: "Stale"},
