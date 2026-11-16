@@ -264,6 +264,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `dispatchOrganizerCampaign` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatch one approved organizer campaign snapshot |
 | `createAttendeeInviteLink` / `getEventInviteLinkToken` / `recordEventShareIntent` / `resolveEventInviteLanding` | `src/events/inviteLinks.ts` | Issue opaque attributable attendee links, record Catch share intent, and resolve verified invite landings |
 | `connectOrganizerLumaProvider` / `listOrganizerLumaEvents` / `syncOrganizerProviderEvent` / `disconnectOrganizerProvider` | `src/organizers/organizerProviderSetup.ts` | Configure, synchronize, and disconnect supported external booking providers |
+| `onHostFormVersionFilterSourceChanged` | `src/hostReadModels/formVersionFilterTriggers.ts` | Write each published form version's answer filter options (`hostFormVersionFilters`) for form-scoped response inboxes |
 | `onHostProviderConnectionViewConnectionChanged` / `onHostProviderConnectionViewOrganizerChanged` | `src/hostReadModels/providerConnectionViewTriggers.ts` | Write each organizer's manager-safe provider connection rows (`hostProviderConnectionViews`) ahead of time |
 | `getEventOperatorAccess` / `listEventStaff` / `grantEventStaff` / `revokeEventStaff` | `src/events/eventStaff.ts` | Grant and inspect time-bounded event staff access |
 | `heartbeatEventStaffPresence` | `src/events/eventStaffPresence.ts` | Record that a manager or viewRoster staff member is on the door; rows lapse at `expiresAt` (TTL) and door phones list them |

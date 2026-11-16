@@ -21,8 +21,8 @@ the assistant reads those, and still accepts a timestamp. In order:
 
 1. **The planner has taken the thread** (`handledBy: planner`): nothing
    happens. The run is recorded as skipped.
-2. **The assistant is off**: the kill switch, the pinned key or the
-   programme's `enabled` setting. The thread turns `needsYou`. No alert is
+2. **The assistant is off**: the kill switch, a blank federation param or
+   the programme's `enabled` setting. The thread turns `needsYou`. No alert is
    raised and nothing is sent, because the planner owns every message.
 3. **The 24-hour window is closed**: no free text is allowed, so the
    message is passed on without a reply.
@@ -118,20 +118,64 @@ with `anthropic-version: 2023-06-01` and a 20-second timeout. On 429 or
 up and the message is passed on. A timeout is never retried. A refusal or a
 truncated reply is passed on too.
 
+Catch holds no Anthropic API key. The provider authenticates with Anthropic Workload
+Identity Federation:
+
+1. It asks the metadata server for a Google ID token for the function's
+   runtime service account, with audience `https://api.anthropic.com` and
+   `format=full`.
+2. It exchanges that token at `https://api.anthropic.com/v1/oauth/token`
+   with the federation rule id and the organization id. A fresh ID token is
+   minted for every exchange.
+3. It sends the short-lived access token as `Authorization: Bearer` on the
+   Messages call, with `anthropic-beta: oauth-2025-04-20`.
+
+The access token is kept in memory until a minute before it expires. A
+failed exchange is a provider error: the message is passed on and nothing is
+billed. Errors name the step and the HTTP status, never the ID token or the
+access token.
+
 ## Kill switch and operator steps
 
 - `PROGRAM_ASSISTANT_ENABLED` (boolean, default false) is the kill switch
   for every programme.
-- `PROGRAM_ASSISTANT_KEY_VERSION` names a pinned version,
-  `projects/<project>/secrets/ANTHROPIC_API_KEY/versions/<n>`. When it is
-  blank the assistant stays off. No deploy needs the secret to exist.
-- To turn it on, the owner:
-  1. creates `ANTHROPIC_API_KEY` in Secret Manager;
-  2. grants the Functions runtime service account `secretAccessor` on it;
-  3. sets the key version param, then the enabled param.
+- `PROGRAM_ASSISTANT_FEDERATION_RULE_ID` (string) is this project's
+  Anthropic federation rule, `fdrl_` followed by letters and digits. It
+  differs per environment.
+- `ANTHROPIC_ORGANIZATION_ID` (string) is the Anthropic organization UUID.
+  It is the same in every environment.
+- When either is blank the assistant stays off, and no deploy needs anything
+  to exist. The materialiser rejects a malformed value, and it rejects
+  `PROGRAM_ASSISTANT_ENABLED=true` unless both are set.
+- Two identities call Anthropic. `onProgramWhatsappInboundMessageCreated`
+  (live replies) runs as `catch-whatsapp-reader@<project>`, and
+  `previewProgramAssistantReply` (Try it) runs as the default Functions
+  runtime service account. The rule must accept both, or Try it fails while
+  live replies work (or the other way round).
+- To turn it on, the owner, in the Claude Console:
+  1. creates a service account for the assistant (for example
+     `catch-programme-assistant-dev`) and adds it to the workspace that
+     should carry the usage;
+  2. registers one Google issuer for the organization: issuer URL
+     `https://accounts.google.com`, JWKS mode discovery;
+  3. creates one federation rule per Firebase project. It targets that
+     service account and is bound to that single workspace (a rule enabled
+     for more than one workspace needs a `workspace_id` the provider does not
+     send). It matches audience `https://api.anthropic.com` and the subject
+     and `email` claims of the runtime identities. Find each identity's
+     numeric unique id with `gcloud iam service-accounts describe <email>
+     --format='value(uniqueId)'`. Because two identities call, use a CEL
+     condition such as `claims.sub in ["<reader id>", "<runtime id>"] &&
+     claims.email in ["<reader email>", "<runtime email>"]`; never a
+     `subject_prefix` wildcard. Scope `workspace:inference`, token lifetime
+     3600 seconds;
+  4. sets the GitHub environment variables
+     `PROGRAM_ASSISTANT_FEDERATION_RULE_ID` (per environment) and `ANTHROPIC_ORGANIZATION_ID`, deploys, then sets
+     `PROGRAM_ASSISTANT_ENABLED=true`.
 
-  The materialiser rejects `PROGRAM_ASSISTANT_ENABLED=true` without a key
-  version.
+  The authentication history on the Console's Workload identity page shows
+  why an exchange was refused; the API itself always answers an opaque
+  `401 Authentication failed`.
 - Each programme also needs `enabled: true` in its assistant settings and a
   connected WhatsApp number.
 
