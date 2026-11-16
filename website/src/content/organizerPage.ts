@@ -54,7 +54,7 @@ export const organizerPageCopy = {
   pinnedUntil: (date: string) => `Pinned until ${date}`,
   eventsTitle: "Coming up",
   eventsNote: {
-    /** Where a claimed page's events are sold: Catch, other sites, or both in one list. */
+    /** Where a claimed page's events are sold: on the brand, on other sites, or both in one list. */
     claimed: (names: readonly string[], onCatch: boolean) => (!names.length ? `On ${brand.name}` :
       onCatch ? `From ${brand.name} and ${names.join(" and ")}, in one list` : `From ${names.join(" and ")}`),
     generated: (names: readonly string[]) => `Found on their public ${names.length ? `${names.join(" and ")} pages` : "pages"}`,
@@ -97,7 +97,7 @@ export const organizerPageCopy = {
   /** Reviews with none from a booking yet, so no rating. */
   unrated: (count: number) => `${count} ${count === 1 ? "review" : "reviews"}, none from a ${brand.name} booking yet, so no rating.`,
   reviewPolicy: {
-    /** The explanation line under the Booked on Catch and Unverified labels (playbook event page). */
+    /** The explanation line under the verified and Unverified review labels (playbook event page). */
     claimed: `Booked on ${brand.name} means the reviewer booked through ${brand.name}. Unverified reviews are shown, and labelled.`,
     generated: `Anyone can review this page. Reviews stay unverified until guests book through ${brand.name}.`,
   },
