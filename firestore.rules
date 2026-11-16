@@ -1254,8 +1254,8 @@ service cloud.firestore {
     // Founding-host offer (owner decision 16 Nov 2026). Each city's public
     // projection holds counts only (cap, places left, status, deadline), so
     // anyone may read it for the website's "places left" strip. The offer
-    // config and the places organizers hold stay server-only; Functions
-    // write all three in one transaction.
+    // config, the places organizers hold and the one-place-per-owner-per-city
+    // guards stay server-only; Functions write them in one transaction.
     match /publicFoundingHostOffers/{marketId} {
       allow read: if true;
       allow write: if false;
@@ -1264,6 +1264,9 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /foundingHostPlaces/{organizerId} {
+      allow read, write: if false;
+    }
+    match /foundingHostOwnerPlaces/{ownerPlaceId} {
       allow read, write: if false;
     }
 
