@@ -32,7 +32,10 @@ export const playbookHeaderVariants = ["guest", "host", "minimal"] as const;
 export const playbookFooterVariants = ["guest", "host", "minimal"] as const;
 
 /** The read models a data-bound card section can list. */
-export const playbookCardSources = ["cityPlans", "organisers", "cities", "stories", "playbooks"] as const;
+export const playbookCardSources = ["cityPlans", "organisers", "cities", "stories", "playbooks", "people"] as const;
+
+/** The site components a `custom` section may name. */
+export const playbookCustomComponents = ["noShowCalculator", "eventPageFromLink", "walkthroughSlots", "pricingCalculator"] as const;
 
 // ---------------------------------------------------------------------------
 // The spec language: a small, closed subset of JSON Schema.
@@ -95,18 +98,24 @@ const assetPattern = "^/assets/[A-Za-z0-9/_.-]+\\.(?:jpg|jpeg|png|webp|avif|svg)
 
 const ground = oneOfValues(playbookGrounds);
 
-/** Where an action goes: a route of this site (optionally an anchor on it), an anchor on this page, or a WhatsApp chat with the support number. */
+/**
+ * Where an action goes: a route of this site (optionally an anchor on it),
+ * one page of a family by its content key (`{"page": "story_detail/carter-road"}`),
+ * an anchor on this page, or a WhatsApp chat with the support number.
+ */
 const destinationSpec: OneOfSpec = {
   t: "oneOf",
   name: "destination",
   options: [
     obj({route: str(routeIdPattern)}, {anchor: str(sectionIdPattern)}),
+    obj({page: str(pageIdPattern)}, {anchor: str(sectionIdPattern)}),
     obj({anchor: str(sectionIdPattern)}),
     obj({kind: constant("whatsapp"), message: copy()}),
   ],
 };
 const destination = destinationSpec as OneOfSpec<readonly [
   ObjectSpec<{route: StringSpec}, {anchor: StringSpec}>,
+  ObjectSpec<{page: StringSpec}, {anchor: StringSpec}>,
   ObjectSpec<{anchor: StringSpec}>,
   ObjectSpec<{kind: ConstSpec<"whatsapp">; message: CopySpec}>,
 ]>;
@@ -126,23 +135,50 @@ const excerptCard = obj({title: copy()}, {
   tiles: list(obj({title: copy(), body: copy()}, {ground}), 1, 6),
   actions: list(copy(), 1, 3),
   note: copy(),
+  /** A cover photo across the card's top. */
+  cover: str(assetPattern),
 }, "excerptCard");
 
 const photo = obj({kind: constant("photo"), asset: str(assetPattern), alt: copy()}, {note: copy()}, "photo");
+/** A QR code of a destination of this site, such as the start page, for a reader on a laptop to open on their phone. */
+const qr = obj({kind: constant("qr"), to: destination, label: copy()});
 const mediaSpec: OneOfSpec = {
   t: "oneOf",
   name: "media",
   options: [
-    obj({kind: constant("capture"), slot: str(slotPattern)}),
+    obj({kind: constant("capture"), slot: str(slotPattern)}, {alt: copy()}),
     obj({kind: constant("excerpt"), card: excerptCard}),
     photo,
+    qr,
   ],
 };
 const media = mediaSpec as OneOfSpec<readonly [
-  ObjectSpec<{kind: ConstSpec<"capture">; slot: StringSpec}>,
+  ObjectSpec<{kind: ConstSpec<"capture">; slot: StringSpec}, {alt: CopySpec}>,
   ObjectSpec<{kind: ConstSpec<"excerpt">; card: typeof excerptCard}>,
   typeof photo,
+  typeof qr,
 ]>;
+
+/** What a lead form asks for: its request kind and extra fields, as the website enquiry intake takes them. */
+export const playbookLeadRequestKinds = ["guide", "walkthrough", "demo", "venue", "story", "referral", "org_contact", "city_alerts"] as const;
+export const playbookLeadFieldNames = ["name", "preferredTime", "whatYouHost", "area", "capacity", "nights", "orgType", "orgName"] as const;
+
+/**
+ * A phone-number capture: the request it files, an optional format tag, any
+ * extra fields, and its words. It renders only once its slot is filled
+ * (features/playbook/playbookLeadForms.ts), so no form submits to nowhere.
+ */
+const leadForm = obj({
+  id: str(leadFormIdPattern),
+  requestKind: oneOfValues(playbookLeadRequestKinds),
+  label: copy(),
+  submitLabel: copy(),
+}, {
+  format: str(formatPattern),
+  fields: list(obj({name: oneOfValues(playbookLeadFieldNames), label: copy()}, {placeholder: copy()}), 1, 6),
+  /** A line under the field, such as "We’ll message you on WhatsApp." */
+  note: copy(),
+}, "leadForm");
 
 const proofLine = obj({text: copy()}, {footnote: str(footnoteIdPattern)});
 
@@ -161,6 +197,8 @@ const sectionSpec = {
       aside: action,
       chip: obj({title: copy(), rows: list(obj({label: copy(), value: copy()}), 1, 4)}),
       tags: list(copy(), 1, 4),
+      /** A short line under the actions. */
+      note: copy(),
       media,
     }),
     tiles: obj({...base("tiles"), ...band, items: list(obj({title: copy()}, {
@@ -170,17 +208,22 @@ const sectionSpec = {
       list: list(copy(), 1, 6),
       fix: copy(),
       then: copy(),
+      /** A small label above the title. */
+      kicker: copy(),
       ground,
       link: action,
-    }), 1, 12)}, {...bandOptional, pageTitle: bool(), columns: int([2, 3, 4]), align: oneOfValues(["start", "center"] as const), actions: actions(), foot: copy()}),
-    split: obj({...base("split"), ...band, media}, {
+    }), 1, 12)}, {...bandOptional, pageTitle: bool(), columns: int([2, 3, 4, 6]), align: oneOfValues(["start", "center"] as const), actions: actions(), foot: copy()}),
+    split: obj({...base("split"), ...band}, {
       ...bandOptional,
+      /** The second column: media, or a lead form in its place (never both). */
+      media,
+      leadForm,
       pageTitle: bool(),
       body: copy(),
       ticks: list(copy(), 1, 8),
       mediaFirst: bool(),
       actions: actions(),
-      groups: list(obj({title: copy(), list: list(copy(), 1, 8)}, {label: copy(), link: action}), 1, 4),
+      groups: list(obj({title: copy(), list: list(copy(), 1, 8)}, {label: copy(), links: list(action, 1, 3)}), 1, 4),
       steps: list(obj({label: copy(), title: copy(), body: copy()}), 1, 6),
       callout: obj({figure: copy(), text: copy()}),
     }),
@@ -189,21 +232,25 @@ const sectionSpec = {
     story: obj({...base("story"), name: copy(), initials: copy(), quote: copy()}, {
       kicker: copy(),
       meta: copy(),
-      metrics: list(obj({label: copy(), value: copy(), footnote: str(footnoteIdPattern)}), 1, 4),
+      avatarGround: ground,
+      metrics: list(obj({label: copy(), value: copy(), footnote: str(footnoteIdPattern)}, {source: copy()}), 1, 4),
       media: photo,
+      link: action,
     }),
-    pricing: obj({...base("pricing"), price: copy(), examples: list(obj({title: copy(), value: copy(), body: copy()}), 1, 4)}, {
+    /** The rate as one figure, the headline that completes it, the cap and trial lines, and worked examples. */
+    pricing: obj({...base("pricing"), price: copy(), title: copy(), examples: list(obj({title: copy(), value: copy()}, {body: copy()}), 1, 4)}, {
       kicker: copy(),
-      priceNote: copy(),
-      lead: copy(),
+      cap: copy(),
+      trial: copy(),
       actions: actions(),
     }),
     faq: obj({...base("faq"), ...band, items: list(obj({question: copy(), answer: copy()}), 1, 12)}, {kicker: copy(), action}),
     cta: obj({...base("cta"), ...band}, {
       ...bandOptional,
       actions: actions(),
-      leadForm: obj({id: str(leadFormIdPattern), label: copy(), submitLabel: copy()}),
-      storeBadges: bool(),
+      leadForm,
+      /** The store badges of the guest app or of the host app. */
+      storeBadges: oneOfValues(["guest", "host"] as const),
       media,
     }),
     cards: obj({...base("cards"), ...band, source: {
@@ -212,16 +259,20 @@ const sectionSpec = {
         obj({kind: constant("cityPlans")}, {format: str(formatPattern)}),
         obj({kind: constant("organisers")}, {format: str(formatPattern)}),
         obj({kind: constant("cities")}),
-        obj({kind: constant("stories")}),
-        obj({kind: constant("playbooks")}),
+        obj({kind: constant("stories")}, {format: str(formatPattern), city: str(formatPattern)}),
+        obj({kind: constant("playbooks")}, {format: str(formatPattern), city: str(formatPattern)}),
+        obj({kind: constant("people"), group: str(formatPattern)}),
       ],
     } as OneOfSpec<readonly [
       ObjectSpec<{kind: ConstSpec<"cityPlans">}, {format: StringSpec}>,
       ObjectSpec<{kind: ConstSpec<"organisers">}, {format: StringSpec}>,
       ObjectSpec<{kind: ConstSpec<"cities">}>,
-      ObjectSpec<{kind: ConstSpec<"stories">}>,
-      ObjectSpec<{kind: ConstSpec<"playbooks">}>,
+      ObjectSpec<{kind: ConstSpec<"stories">}, {format: StringSpec; city: StringSpec}>,
+      ObjectSpec<{kind: ConstSpec<"playbooks">}, {format: StringSpec; city: StringSpec}>,
+      ObjectSpec<{kind: ConstSpec<"people">; group: StringSpec}>,
     ]>}, {
+      /** Filter chips over the cards, each narrowing the source by its key. */
+      filters: list(obj({key: str(formatPattern), label: copy()}), 2, 8),
       ...bandOptional,
       pageTitle: bool(),
       columns: int([3, 4]),
@@ -233,20 +284,39 @@ const sectionSpec = {
       subtitle: copy(),
       time: copy(),
       body: copy(),
+      accent: oneOfValues(["coral", "pink", "yellow", "mint", "indigo", "magenta"] as const),
       tips: list(copy(), 1, 6),
-      list: list(obj({title: copy(), body: copy()}, {label: copy()}), 1, 8),
-      columns: list(obj({title: copy(), list: list(copy(), 1, 8)}), 1, 4),
+      list: list(obj({time: copy(), title: copy()}, {body: copy()}), 1, 8),
       media,
-    }), 2, 8)}, {...bandOptional, layout: oneOfValues(["steps", "panels"] as const)}),
-    table: obj({...base("table"), ...band, columns: list(copy(), 2, 6), rows: list(list(copy(), 2, 6), 1, 20)}, {...bandOptional, note: copy()}),
+    }), 2, 8)}, {...bandOptional, layout: oneOfValues(["tabs", "steps"] as const), align: oneOfValues(["start", "center"] as const), defaultItem: range(0, 7)}),
+    /**
+     * A comparison: the compared columns, an optional corner label over the
+     * row labels, and per row one cell per column, each with text, a yes/no
+     * mark or both. `checked` dates the comparison ("Checked 16 Nov 2026").
+     */
+    table: obj({...base("table"), ...band, columns: list(copy(), 1, 6), rows: list(obj({label: copy(), cells: list(obj({}, {
+      text: copy(),
+      status: oneOfValues(["yes", "no", "unknown"] as const),
+    }), 1, 6)}), 1, 30)}, {...bandOptional, rowHeader: copy(), highlightColumn: range(0, 5), source: copy(), checked: copy()}),
     article: obj({...base("article"), ...band, sections: list(obj({heading: copy(), paragraphs: list(copy(), 1, 12)}, {list: list(copy(), 1, 12), tip: copy()}), 1, 20)}, {
       ...bandOptional,
       pageTitle: bool(),
       meta: copy(),
-      aside: obj({ground, title: copy(), body: copy()}, {actions: actions(2)}),
+      aside: obj({ground, title: copy(), body: copy()}, {action}),
     }),
     /** One illustrative screen or capture on its own, with an optional heading. */
     screen: obj({...base("screen"), media}, {...bandOptional, title: copy(), caption: copy()}),
+    /**
+     * A section drawn by a component the site provides, such as a calculator
+     * or a form with its own backend: `component` names it in the closed
+     * registry (features/playbook/playbookCustomSections.ts), and `labels`
+     * carries its words by key, so its copy stays in the page.
+     */
+    custom: obj({...base("custom"), component: oneOfValues(playbookCustomComponents)}, {
+      ...bandOptional,
+      title: copy(),
+      labels: list(obj({key: str("^[a-z][A-Za-z0-9]*$"), text: copy()}), 1, 40),
+    }),
     /** A one-job flow: its step rail or tabs, then the screens of the current step. */
     flow: obj({...base("flow"), ...band, blocks: list(excerptCard, 1, 6)}, {
       ...bandOptional,
@@ -260,7 +330,7 @@ const sectionSpec = {
   },
 } as const satisfies UnionSpec;
 
-const breadcrumbs = obj({links: list(obj({label: copy(), to: obj({route: str(routeIdPattern)})}), 1, 4), current: copy()});
+const breadcrumbs = obj({links: list(obj({label: copy(), to: destination}), 1, 4), current: copy()});
 /**
  * The page's own metadata: its title and descriptions for search and link
  * previews, an optional preview image, and `noindex`, the one flag that keeps
@@ -275,8 +345,21 @@ const pageSpec = obj({
   id: str(pageIdPattern),
   route: str(routeIdPattern),
   meta: pageMeta,
-  header: obj({variant: oneOfValues(playbookHeaderVariants)}, {breadcrumbs}),
-  footer: obj({variant: oneOfValues(playbookFooterVariants)}, {footnotes: list(obj({id: str(footnoteIdPattern), text: copy()}), 1, 12)}),
+  header: obj({variant: oneOfValues(playbookHeaderVariants)}, {
+    breadcrumbs,
+    /** The page's own primary action in place of the variant's, such as "Book a walkthrough". */
+    action,
+    /**
+     * The founding-host offer strip. It shows only while the market's public
+     * counter is open, and says nothing otherwise.
+     */
+    offer: obj({market: str("^[a-z][a-z0-9-]{1,49}$"), lead: copy(), body: copy()}, {action}),
+  }),
+  footer: obj({variant: oneOfValues(playbookFooterVariants)}, {
+    footnotes: list(obj({id: str(footnoteIdPattern), text: copy()}), 1, 12),
+    /** A bar fixed to the foot of a phone screen with the page's one action. */
+    phoneBar: obj({action}, {note: copy()}),
+  }),
   sections: list(sectionSpec, 1, 24),
 });
 
@@ -424,6 +507,10 @@ export interface PlaybookValidationContext {
   readonly captureSlots: ReadonlySet<string>;
   /** Routes whose pages never enter search, such as ad landing pages. */
   readonly alwaysNoindexRoutes?: ReadonlySet<string>;
+  /** The section ids of pages a `{route, anchor}` may link into; a route listed here must have the anchor. */
+  readonly routeAnchors?: ReadonlyMap<string, ReadonlySet<string>>;
+  /** The content keys of registered family pages a `{page}` may name, with their section ids. */
+  readonly pageAnchors?: ReadonlyMap<string, ReadonlySet<string>>;
 }
 
 function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationContext | undefined): string[] {
@@ -451,11 +538,18 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
   const destinationErrors = (label: string, to: PlaybookDestination) => {
     if ("route" in to) {
       if (context && !context.routeIds.has(to.route)) errors.push(`${label} links unknown route ${to.route}`);
+      const anchors = context?.routeAnchors?.get(to.route);
+      if (to.anchor && anchors && !anchors.has(to.anchor)) errors.push(`${label} links #${to.anchor}, which is not a section of ${to.route}`);
+    } else if ("page" in to) {
+      const anchors = context?.pageAnchors?.get(to.page);
+      if (context?.pageAnchors && !anchors) errors.push(`${label} links page ${to.page}, which is not a registered page`);
+      if (to.anchor && anchors && !anchors.has(to.anchor)) errors.push(`${label} links #${to.anchor}, which is not a section of ${to.page}`);
     } else if ("anchor" in to && !sectionIds.has(to.anchor)) {
       errors.push(`${label} links #${to.anchor}, which is not a section on this page`);
     }
   };
   const mediaErrors = (label: string, item: PlaybookMedia | undefined) => {
+    if (item?.kind === "qr") destinationErrors(`${label}.to`, item.to);
     if (item?.kind === "capture" && context && !context.captureSlots.has(item.slot)) {
       errors.push(`${label} names unknown capture slot ${item.slot}`);
     }
@@ -474,22 +568,37 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
     }
     if (section.type === "table") {
       section.rows.forEach((row, rowIndex) => {
-        if (row.length !== section.columns.length) errors.push(`${label}.rows[${rowIndex}] needs ${section.columns.length} cells, one per column`);
+        if (row.cells.length !== section.columns.length) errors.push(`${label}.rows[${rowIndex}] needs ${section.columns.length} cells, one per column`);
+        row.cells.forEach((cell, cellIndex) => {
+          if (cell.text === undefined && cell.status === undefined) errors.push(`${label}.rows[${rowIndex}].cells[${cellIndex}] needs text or a status`);
+        });
       });
+      if (section.highlightColumn !== undefined && section.highlightColumn >= section.columns.length) errors.push(`${label}.highlightColumn names no column`);
+    }
+    if (section.type === "split" && section.media && section.leadForm) {
+      errors.push(`${label} holds media or a lead form in its second column, not both`);
+    }
+    if (section.type === "tabs" && section.defaultItem !== undefined && section.defaultItem >= section.items.length) {
+      errors.push(`${label}.defaultItem names no item`);
     }
     if (section.type === "story") {
       section.metrics?.forEach((metric, metricIndex) => footnote(`${label}.metrics[${metricIndex}]`, metric.footnote, true));
     }
   });
+  page.header.breadcrumbs?.links.forEach((link, index) => destinationErrors(`header.breadcrumbs.links[${index}]`, link.to));
+  const chromeActions = [
+    ["header.action", page.header.action],
+    ["header.offer.action", page.header.offer?.action],
+    ["footer.phoneBar.action", page.footer.phoneBar?.action],
+  ] as const;
+  for (const [label, item] of chromeActions) if (item) destinationErrors(label, item.to);
   for (const id of footnoteIds) {
     if (!referenced.has(id)) errors.push(`footer.footnotes: ${id} is not cited by any section`);
   }
   if (context) {
     if (!context.routeIds.has(page.route)) errors.push(`route ${page.route} is not a registered route`);
     if (context.alwaysNoindexRoutes?.has(page.route) && !page.meta.noindex) errors.push(`meta.noindex must stay true on ${page.route} pages`);
-    page.header.breadcrumbs?.links.forEach((link, index) => {
-      if (!context.routeIds.has(link.to.route)) errors.push(`header.breadcrumbs.links[${index}] links unknown route ${link.to.route}`);
-    });
+
   }
   return errors;
 }
@@ -501,8 +610,9 @@ export function forEachAction(section: PlaybookSection, visit: (item: PlaybookAc
   if (section.type === "hero" && section.aside) visit(section.aside, "aside");
   if (section.type === "faq" && section.action) visit(section.action, "action");
   if (section.type === "tiles") section.items.forEach((item, index) => item.link && visit(item.link, `items[${index}].link`));
-  if (section.type === "split") section.groups?.forEach((group, index) => group.link && visit(group.link, `groups[${index}].link`));
-  if (section.type === "article") each(section.aside?.actions, "aside.actions");
+  if (section.type === "split") section.groups?.forEach((group, index) => each(group.links, `groups[${index}].links`));
+  if (section.type === "story" && section.link) visit(section.link, "link");
+  if (section.type === "article" && section.aside?.action) visit(section.aside.action, "aside.action");
 }
 
 function forEachMedia(section: PlaybookSection, visit: (item: PlaybookMedia | undefined, path: string) => void) {

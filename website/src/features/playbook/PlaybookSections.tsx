@@ -1,7 +1,9 @@
 import {
+  CatchArticleBody,
   CatchBand,
   CatchBandHeader,
   CatchButton,
+  CatchComparisonTable,
   CatchCtaSection,
   CatchFaqSection,
   CatchFeatureTile,
@@ -10,9 +12,12 @@ import {
   CatchGrid,
   CatchHeroSection,
   CatchPageTabBar,
+  CatchPricingSection,
   CatchScreenPreview,
   CatchSplitSection,
   CatchStack,
+  CatchStorySection,
+  CatchTabSection,
   CatchText,
   type CatchBandAction,
   type CatchBandGround,
@@ -22,6 +27,7 @@ import type {ComponentType, ReactNode} from "react";
 import {playbookCopy} from "../../content/playbook/playbookCopy";
 import {
   playbookGrounds,
+  type PlaybookAction,
   type PlaybookGround,
   type PlaybookMedia,
   type PlaybookPageDocument,
@@ -30,6 +36,9 @@ import {
 import {captureSlot, type CaptureSlots} from "../../shared/media/captureSlot";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
 import type {BoundPlaybookSectionType} from "./playbookBindings";
+import {playbookCustomSections, type PlaybookCustomSectionProps} from "./custom/customSections";
+import {brand} from "../../content/brand";
+import {playbookHref} from "./playbookHrefs";
 import type {PlaybookPageController} from "./usePlaybookPageController";
 
 // The contract's grounds are exactly the kit's: a ground added to either
@@ -52,7 +61,7 @@ type Binding<T extends BoundPlaybookSectionType> = ComponentType<{section: Playb
 function footnoteMark(page: PlaybookPageDocument, id: string | undefined) {
   if (!id) return undefined;
   const index = (page.footer.footnotes ?? []).findIndex((footnote) => footnote.id === id);
-  return {label: String(index + 1), href: `#footnote-${id}`};
+  return {label: String(index + 1)};
 }
 
 /**
@@ -64,7 +73,15 @@ function PlaybookMediaView({media, captures, card = "card"}: {media: PlaybookMed
     const capture = captureSlot(captures, media.slot);
     if (!capture) return null;
     const tablet = (capture.width ?? 0) > (capture.height ?? 0);
-    return <CatchScreenPreview caption={typeof capture.caption === "string" ? capture.caption : undefined} image={capture.src} kind={tablet ? "tablet" : "phone"} semanticsLabel={capture.alt} />;
+    return (
+      <CatchScreenPreview caption={typeof capture.caption === "string" ? capture.caption : undefined} image={capture.src}
+        kind={tablet ? "tablet" : "phone"} semanticsLabel={media.alt ?? capture.alt} />
+    );
+  }
+  if (media.kind === "qr") {
+    const href = playbookHref(media.to);
+    const url = href.startsWith("/") ? `${brand.web.origin}${href}` : href;
+    return <CatchScreenPreview flat kind="card" qr={url} semanticsLabel={media.label} title={media.label} />;
   }
   if (media.kind === "photo") {
     return <CatchScreenPreview image={media.asset} kind="photo" semanticsLabel={media.alt} tag={media.note} />;
@@ -84,6 +101,7 @@ function PlaybookMediaView({media, captures, card = "card"}: {media: PlaybookMed
     buttons: screen.actions?.map((label) => ({label})),
     tiles: screen.tiles,
     fine: screen.note,
+    cover: screen.cover,
   };
   return <CatchScreenPreview {...props} />;
 }
@@ -92,19 +110,41 @@ function media(section: {media?: PlaybookMedia}, captures: CaptureSlots, card?: 
   return section.media ? <PlaybookMediaView captures={captures} card={card} media={section.media} /> : undefined;
 }
 
-/** The contract allows 2, 3 or 4 columns, the grid's own choices. */
-function gridColumns(columns: number | undefined): 2 | 3 | 4 {
-  return columns === 2 || columns === 4 ? columns : 3;
+/**
+ * Tiles in 2, 3 or 4 grid columns, or six across (a row of equal tiles that
+ * stacks below the expanded width), as the How it works step grid is.
+ */
+function TileGrid({columns, children}: {columns: number | undefined; children: ReactNode}) {
+  if (columns === 6) return <CatchStack collapseBelow="expanded" direction="row" equal gap={16}>{children}</CatchStack>;
+  return <CatchGrid columns={columns === 2 || columns === 4 ? columns : 3}>{children}</CatchGrid>;
 }
 
-function ActionRow({actions}: {actions: readonly CatchBandAction[] | undefined}) {
+/** True when any of the actions opens a WhatsApp chat: the reply line goes beside it. */
+function opensWhatsApp(items: readonly (PlaybookAction | undefined)[] | undefined): boolean {
+  return Boolean(items?.some((item) => item && "kind" in item.to));
+}
+
+/** "We reply on WhatsApp, usually within an hour." beside WhatsApp actions; the line is the renderer's, never page copy. */
+function WhatsAppReply() {
+  return <CatchText tone="secondary" variant="body-meta">{playbookCopy.whatsappReply}</CatchText>;
+}
+
+function withWhatsAppReply(line: string | undefined, items: readonly (PlaybookAction | undefined)[] | undefined): string | undefined {
+  if (!opensWhatsApp(items)) return line;
+  return line ? `${line} ${playbookCopy.whatsappReply}` : playbookCopy.whatsappReply;
+}
+
+function ActionRow({actions, whatsapp = false}: {actions: readonly CatchBandAction[] | undefined; whatsapp?: boolean}) {
   if (!actions?.length) return null;
   return (
-    <CatchStack direction="row" gap={12} wrap>
-      {actions.map((action, index) => (
-        <CatchButton href={action.href} key={`${action.label}-${index}`} label={action.label} onPressed={action.onPressed}
-          variant={action.variant ?? (index === 0 ? "primary" : "secondary")} />
-      ))}
+    <CatchStack gap={8}>
+      <CatchStack direction="row" gap={12} wrap>
+        {actions.map((action, index) => (
+          <CatchButton href={action.href} key={`${action.label}-${index}`} label={action.label} newTab={action.newTab} onPressed={action.onPressed}
+            variant={action.variant ?? (index === 0 ? "primary" : "secondary")} />
+        ))}
+      </CatchStack>
+      {whatsapp ? <WhatsAppReply /> : null}
     </CatchStack>
   );
 }
@@ -124,6 +164,7 @@ const HeroBinding: Binding<"hero"> = ({section, context}) => {
       lead={section.lead}
       link={section.aside ? controller.link(section.aside) : undefined}
       media={photo ? undefined : media(section, captures, "phonecard")}
+      note={withWhatsAppReply(section.note, [...section.actions, section.aside])}
       proof={section.proof?.map((line) => ({text: line.text, footnote: footnoteMark(page, line.footnote)}))}
       title={section.title}
       {...(photo ? {image: photo.asset, imageAlt: photo.alt} : {})}
@@ -138,14 +179,14 @@ const TilesBinding: Binding<"tiles"> = ({section, context}) => {
       <CatchStack gap={24}>
         <CatchBandHeader align={section.align} ground={section.ground} kicker={section.kicker} lead={section.lead}
           level={section.pageTitle ? 1 : 2} title={section.title} titleId={titleId} />
-        <CatchGrid columns={gridColumns(section.columns)}>
+        <TileGrid columns={section.columns}>
           {section.items.map((item) => (
             <CatchFeatureTile body={item.body} figure={item.figure} figureNote={item.figureNote} fix={item.fix} ground={item.ground}
               key={item.title} level={section.pageTitle ? 2 : 3} link={item.link ? context.controller.link(item.link) : undefined}
               list={item.list} then={item.then} title={item.title} />
           ))}
-        </CatchGrid>
-        <ActionRow actions={context.controller.actions(section.actions, section.id)} />
+        </TileGrid>
+        <ActionRow actions={context.controller.actions(section.actions, section.id)} whatsapp={opensWhatsApp(section.actions)} />
         {section.foot ? <CatchText tone="secondary" variant="body-meta">{section.foot}</CatchText> : null}
       </CatchStack>
     </CatchBand>
@@ -155,19 +196,20 @@ const TilesBinding: Binding<"tiles"> = ({section, context}) => {
 const SplitBinding: Binding<"split"> = ({section, context}) => (
   <CatchSplitSection
     actions={context.controller.actions(section.actions, section.id)}
-    body={section.body}
+    body={withWhatsAppReply(section.body, section.actions)}
     ground={section.ground}
     groups={section.groups?.map((group) => ({
       title: group.title,
       marker: group.label,
       list: group.list,
-      link: group.link ? context.controller.link(group.link) : undefined,
+      // One link per group until CatchSplitSectionGroup takes more (playbookBindings: splitGroupLinks).
+      link: group.links?.[0] ? context.controller.link(group.links[0]) : undefined,
     }))}
     id={section.id}
     kicker={section.kicker}
     lead={section.lead}
     level={section.pageTitle ? 1 : 2}
-    media={media(section, context.captures)}
+    media={section.leadForm ? context.controller.leadForm(section.leadForm, section.id) ?? undefined : media(section, context.captures)}
     metric={section.callout ? {value: section.callout.figure, label: section.callout.text} : undefined}
     steps={section.steps?.map((step) => ({marker: step.label, title: step.title, body: step.body}))}
     ticks={section.ticks}
@@ -201,7 +243,7 @@ const ChecklistBinding: Binding<"checklist"> = ({section, context}) => (
 
 const FaqBinding: Binding<"faq"> = ({section, context}) => (
   <CatchFaqSection
-    footer={section.action ? <ActionRow actions={[context.controller.action(section.action, section.id)]} /> : undefined}
+    footer={section.action ? <ActionRow actions={[context.controller.action(section.action, section.id)]} whatsapp={opensWhatsApp([section.action])} /> : undefined}
     ground={section.ground}
     id={section.id}
     items={section.items.map((item, index) => ({id: `${section.id}-${index + 1}`, question: item.question, answer: item.answer}))}
@@ -210,10 +252,10 @@ const FaqBinding: Binding<"faq"> = ({section, context}) => (
   />
 );
 
-/** The kit's store badges are Catch Host's: the closing band of a host page downloads the host app. */
-function useHostStoreBadges(placement: string, show: boolean) {
-  const stores = useAppDownloadCtas({placement, app: "host"});
-  return show ? stores.map((store) => ({
+/** The closing band's store badges: the guest app's or Catch Host's, as the page names. */
+function useStoreBadges(placement: string, app: "guest" | "host" | undefined) {
+  const stores = useAppDownloadCtas({placement, app: app ?? "guest"});
+  return app ? stores.map((store) => ({
     badgeSrc: store.badgeSrc,
     comingSoon: store.comingSoon,
     href: store.href || undefined,
@@ -223,12 +265,18 @@ function useHostStoreBadges(placement: string, show: boolean) {
   })) : undefined;
 }
 
+/** The closing band's capture: the lead form while its slot is filled, and the WhatsApp reply line beside a WhatsApp action. */
+function CtaCapture({form, whatsapp}: {form: ReactNode; whatsapp: boolean}) {
+  if (!form && !whatsapp) return null;
+  return <CatchStack gap={8}>{form}{whatsapp ? <WhatsAppReply /> : null}</CatchStack>;
+}
+
 const CtaBinding: Binding<"cta"> = ({section, context}) => {
-  const stores = useHostStoreBadges(`playbook_${context.page.id}_${section.id}`, section.storeBadges === true);
+  const stores = useStoreBadges(`playbook_${context.page.id}_${section.id}`, section.storeBadges);
   return (
     <CatchCtaSection
       actions={context.controller.actions(section.actions, section.id)}
-      capture={context.controller.leadForm(section.leadForm, section.id) ?? undefined}
+      capture={<CtaCapture form={context.controller.leadForm(section.leadForm, section.id)} whatsapp={opensWhatsApp(section.actions)} />}
       ground={section.ground}
       id={section.id}
       kicker={section.kicker}
@@ -253,6 +301,118 @@ const ScreenBinding: Binding<"screen"> = ({section, context}) => {
       </CatchStack>
     </CatchBand>
   );
+};
+
+const PricingBinding: Binding<"pricing"> = ({section, context}) => (
+  <CatchPricingSection
+    actions={context.controller.actions(section.actions, section.id)}
+    cap={section.cap}
+    examples={section.examples}
+    ground={section.ground}
+    id={section.id}
+    kicker={section.kicker}
+    rate={section.price}
+    title={section.title}
+    trial={section.trial}
+  />
+);
+
+const StoryBinding: Binding<"story"> = ({section, context}) => (
+  <CatchStorySection
+    avatar={{initials: section.initials, ground: section.avatarGround}}
+    ground={section.ground}
+    id={section.id}
+    kicker={section.kicker}
+    link={section.link ? context.controller.link(section.link) : undefined}
+    media={section.media ? <PlaybookMediaView captures={context.captures} media={section.media} /> : undefined}
+    meta={section.meta}
+    metrics={section.metrics?.map((metric) => ({
+      label: metric.label,
+      value: metric.value,
+      source: metric.source,
+      footnote: footnoteMark(context.page, metric.footnote),
+    }))}
+    quote={section.quote}
+    title={section.name}
+  />
+);
+
+const TabsBinding: Binding<"tabs"> = ({section, context}) => (
+  <CatchTabSection
+    align={section.align}
+    ground={section.ground}
+    id={section.id}
+    items={section.items.map((item, index) => ({
+      id: `${section.id}-${index + 1}`,
+      label: item.label,
+      accent: item.accent,
+      time: item.time,
+      title: item.title,
+      subtitle: item.subtitle,
+      body: item.body,
+      list: item.list,
+      tips: item.tips,
+      media: item.media ? <PlaybookMediaView captures={context.captures} media={item.media} /> : undefined,
+    }))}
+    kicker={section.kicker}
+    layout={section.layout}
+    lead={section.lead}
+    defaultSelected={section.defaultItem === undefined ? undefined : `${section.id}-${section.defaultItem + 1}`}
+    tabsLabel={playbookCopy.tabsLabel}
+    title={section.title}
+  />
+);
+
+const TableBinding: Binding<"table"> = ({section}) => (
+  <CatchComparisonTable
+    checked={section.checked}
+    columns={section.columns}
+    ground={section.ground}
+    highlightColumn={section.highlightColumn}
+    id={section.id}
+    kicker={section.kicker}
+    lead={section.lead}
+    rowHeader={section.rowHeader}
+    rows={section.rows.map((row) => ({
+      label: row.label,
+      cells: row.cells.map((cell) => cell.status ? {text: cell.text ?? "", status: cell.status} : cell.text ?? ""),
+    }))}
+    source={section.source}
+    title={section.title}
+  />
+);
+
+const ArticleBinding: Binding<"article"> = ({section, context}) => (
+  <CatchBand as="div" ground={section.ground}>
+    <CatchArticleBody
+      aside={section.aside ? (
+        <CatchFeatureTile body={section.aside.body} ground={section.aside.ground}
+          link={section.aside.action ? context.controller.link(section.aside.action) : undefined} title={section.aside.title} />
+      ) : undefined}
+      id={section.id}
+      kicker={section.kicker}
+      lead={section.lead}
+      level={section.pageTitle ? 1 : 2}
+      meta={section.meta}
+      sections={section.sections.map((part, index) => ({
+        id: `${section.id}-${index + 1}`,
+        title: part.heading,
+        paragraphs: part.paragraphs,
+        list: part.list,
+        tip: part.tip ? {text: part.tip} : undefined,
+      }))}
+      title={section.title}
+      tocLabel={playbookCopy.articleTocLabel}
+    />
+  </CatchBand>
+);
+
+/** A custom section through the closed registry; the page is checked for a missing component before it renders. */
+const CustomBinding: Binding<"custom"> = ({section, context}) => {
+  const Component = (playbookCustomSections as Partial<Record<string, ComponentType<PlaybookCustomSectionProps>>>)[section.component];
+  if (!Component) throw new Error(`Playbook custom section ${section.component} has no component yet.`);
+  const labels = Object.fromEntries((section.labels ?? []).map((label) => [label.key, label.text]));
+  return <Component captures={context.captures} controller={context.controller} labels={labels} section={section} />;
 };
 
 /** One step of a one-job flow: its progress rail or its tabs, then its screens, actions and fine print. */
@@ -307,6 +467,12 @@ export const playbookSectionBindings: {readonly [T in BoundPlaybookSectionType]:
   cta: CtaBinding,
   screen: ScreenBinding,
   flow: FlowBinding,
+  pricing: PricingBinding,
+  story: StoryBinding,
+  tabs: TabsBinding,
+  table: TableBinding,
+  article: ArticleBinding,
+  custom: CustomBinding,
 };
 
 /** One section through its binding. The page is checked for pending bindings before it renders. */
