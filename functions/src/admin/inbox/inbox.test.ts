@@ -175,6 +175,34 @@ test("a dismissal holds across source writes until someone reopens it, and only 
   await assert.rejects(update({action: "dismiss", note: "Not for us."}, "supply-req-1"), /Decide this item/);
 });
 
+test("a website instant draft waits for a WhatsApp reply from a person, who dismisses it once sent", async () => {
+  const h = harness();
+  const draft = (overrides: Record<string, unknown> = {}) => nomination("draft-1", {
+    request: {...nomination("draft-1").request, kind: "self_submission", seed: {name: null,
+      urls: ["https://lu.ma/afterfly"], notes: null, categories: []},
+    submittedBy: {role: "organizer", uid: null, partnerId: null}, origin: {kind: "web_instant_draft", id: "web-1"}},
+    instantDraft: {schemaVersion: 1, draftId: "draft-1", accessTokenHash: "c".repeat(64), requestKind: "event_link",
+      entry: "event_page_tool", link: {url: "https://lu.ma/afterfly", provider: "luma", support: "instant", reason: null},
+      whatsapp: {phone: "+919000000001", consentVersion: "instant-draft-whatsapp-v1", consentedAt: "2026-10-28T16:11:00.000Z",
+        purpose: "instant_draft_follow_up"}, followUp: {channel: "whatsapp", mode: "staff_reply"}, outcome: null},
+    ...overrides});
+  const waiting = projectInboxSource("supplyIntakeRequest", "draft-1", draft())!;
+  assert.deepEqual([waiting.cameFrom, waiting.lifecycle, waiting.state.code, waiting.state.label],
+    ["Website draft tool", "open", "reply_on_whatsapp", "Reply on WhatsApp"]);
+  assert.deepEqual(waiting.journey.find((step) => step.stepId === "whatsapp-consent")?.detail, "+919000000001");
+  const saved = projectInboxSource("supplyIntakeRequest", "draft-1", draft({approval: {approvalId: "ap", organizerId: "org",
+    approvedByUid: "supply-instant-draft", approvedAt: "2026-10-28T16:14:00.000Z", materialHash: "d".repeat(64),
+    salesOwnerUid: "supply-instant-draft"}}))!;
+  assert.deepEqual([saved.lifecycle, saved.state.label], ["open", "Draft ready, reply on WhatsApp"]);
+  assert.ok(saved.journey.some((step) => step.title === "Saved as a private draft"));
+  assert.equal(saved.journey.some((step) => step.stepId === "published"), false, "a draft is never shown as published");
+
+  await h.sync("supplyIntakeRequest", "draft-1", draft());
+  const dismissed = await adminUpdateInboxItemHandler(h.request({itemId: "supply-draft-1", action: "dismiss",
+    assigneeUid: null, snoozedUntil: null, note: "Sent the draft link on WhatsApp."}), h.deps);
+  assert.deepEqual([dismissed.item.status, dismissed.item.state.code], ["done", "dismissed"]);
+});
+
 test("the inbox lists oldest first with real totals, a page at a time", async () => {
   const h = harness();
   for (const [index, day] of ["30", "28", "29"].entries()) {
