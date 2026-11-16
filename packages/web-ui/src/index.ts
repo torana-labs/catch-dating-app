@@ -53,6 +53,13 @@ export type {
   CatchCardGridPerson,
   CatchCardGridProps,
 } from "./components/CatchCardGrid";
+export {CatchComparisonTable} from "./components/CatchComparisonTable";
+export type {
+  CatchComparisonTableCell,
+  CatchComparisonTableCellStatus,
+  CatchComparisonTableProps,
+  CatchComparisonTableRow,
+} from "./components/CatchComparisonTable";
 export {CatchCtaSection} from "./components/CatchCtaSection";
 export type {CatchCtaSectionProps} from "./components/CatchCtaSection";
 export {CatchFaqSection} from "./components/CatchFaqSection";

@@ -25,6 +25,7 @@ const parts = [
   "CatchScreenPreview", "CatchHeroSection", "CatchSplitSection", "CatchCtaSection", "CatchFaqSection",
   "CatchStoryCard", "CatchCardGrid", "CatchFlowLayout", "CatchFormStepList",
   "CatchPricingSection", "CatchStorySection", "CatchTabSection",
+  "CatchComparisonTable",
 ];
 const sheets: Record<string, string> = Object.fromEntries([
   ...parts.map((name) => [name, strip(read(`./${name}.module.css`))]),
