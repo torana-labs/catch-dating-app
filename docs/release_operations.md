@@ -349,7 +349,11 @@ lane with no narrowing: `ci.yml` and its `Required CI` job, `tool/harness.mjs`
 and `tool/harness/**`, `component_graph.json`, the `tool/nx/**` selection code,
 `tool/ci/main_push_base.mjs`, `tool/ci/required_ci_floor.mjs`, `nx.json`,
 `tool/ci/toolchain.env` and every file the planner entry points import or
-load; tests in those directories are not selectors.
+load; tests in those directories are not selectors. The shared check runner
+`tool/run.mjs` and every module it imports are selectors too. Lane jobs in
+almost every lane run `node tool/run.mjs check`, and main reuses the queue's
+result, so a broken runner must fail in the queue (#1831). This is a stopgap
+until the caller graph selects the lanes whose jobs execute a script.
 `tool/tools_manifest.json` selects by semantic diff (`tool/nx/manifest_diff.mjs`)
 in `pr` and `merge_group`, in both the planner and Nx: an edit runs Tools and
 policy, which run the changed checks and validate the manifest, plus every lane

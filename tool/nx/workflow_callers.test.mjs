@@ -139,6 +139,38 @@ test("every selector file selects every lane in the real repository", () => {
   assert.match(fs.readFileSync(path.join(repoRoot, ".github/workflows/ci.yml"), "utf8"), /^ {2}required:\n {4}name: Required CI$/mu);
 });
 
+// #1831 (16 Nov 2026) changed tool/run.mjs and tool/lib/tool_manifest_rules.mjs.
+// Lane jobs in almost every lane run `node tool/run.mjs check <ids>`, but Nx
+// ran Tools only, so a broken runner would have reached main unnoticed. The
+// runner and every module it statically imports select every lane. The closure
+// is computed here from the source, so a new import cannot slip out.
+test("the shared check runner and its whole static-import closure select every lane", () => {
+  const importPattern = /(?:^|\n)\s*(?:import|export)\s[^;]*?from\s+["'](\.{1,2}\/[^"']+)["']|import\(\s*["'](\.{1,2}\/[^"']+)["']\s*\)/gu;
+  const closure = new Set();
+  const visit = (file) => {
+    if (closure.has(file)) return;
+    closure.add(file);
+    const text = fs.readFileSync(path.join(repoRoot, file), "utf8");
+    for (const match of text.matchAll(importPattern)) {
+      visit(path.posix.normalize(path.posix.join(path.posix.dirname(file), match[1] ?? match[2])));
+    }
+  };
+  visit("tool/run.mjs");
+  assert.ok(closure.has("tool/lib/tool_manifest_rules.mjs") && closure.has("tool/lib/tool_impact.mjs"),
+    "the closure reaches the manifest rules and the impact planner");
+  for (const file of closure) {
+    assert.ok(realGraph.selectors.has(file), `${file} is imported by tool/run.mjs`);
+    assert.deepEqual([...workflowLanes([file], realGraph)].sort(), [...comparedLanes].sort(), file);
+  }
+  // #1831's own change, as Nx now selects it.
+  const lanes = workflowLanes(["tool/lib/sort_tools_manifest.mjs", "tool/lib/tool_manifest_rules.mjs",
+    "tool/lib/tool_manifest_rules.test.mjs", "tool/run.mjs", "tool/run.test.mjs"], realGraph);
+  assert.deepEqual([...lanes].sort(), [...comparedLanes].sort());
+  // A tool test or a script the runner does not import is not a selector.
+  assert.equal(isSelector("tool/run.test.mjs", realGraph), false);
+  assert.equal(isSelector("tool/lib/sort_tools_manifest.mjs", realGraph), closure.has("tool/lib/sort_tools_manifest.mjs"));
+});
+
 test("every unresolvable command in PR CI is declared", () => {
   assert.deepEqual(realGraph.unresolved, [], "declare the files a variable command runs in declaredTargets");
   for (const entry of declaredTargets) {
