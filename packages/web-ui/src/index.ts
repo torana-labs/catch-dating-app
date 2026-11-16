@@ -43,6 +43,8 @@ export {CatchBandHeader} from "./components/CatchBandHeader";
 export type {CatchBandHeaderAlign, CatchBandHeaderDirection, CatchBandHeaderProps} from "./components/CatchBandHeader";
 // The playbook section components (website-playbook kit), with the vocabulary they share.
 export type {CatchBandAction, CatchBandFootnote, CatchBandLink} from "./components/catchBandParts";
+export {CatchArticleBody} from "./components/CatchArticleBody";
+export type {CatchArticleBodyProps, CatchArticleBodySection, CatchArticleBodyTip} from "./components/CatchArticleBody";
 export {CatchCardGrid} from "./components/CatchCardGrid";
 export type {
   CatchCardGridCity,
@@ -53,6 +55,13 @@ export type {
   CatchCardGridPerson,
   CatchCardGridProps,
 } from "./components/CatchCardGrid";
+export {CatchComparisonTable} from "./components/CatchComparisonTable";
+export type {
+  CatchComparisonTableCell,
+  CatchComparisonTableCellStatus,
+  CatchComparisonTableProps,
+  CatchComparisonTableRow,
+} from "./components/CatchComparisonTable";
 export {CatchCtaSection} from "./components/CatchCtaSection";
 export type {CatchCtaSectionProps} from "./components/CatchCtaSection";
 export {CatchFaqSection} from "./components/CatchFaqSection";
@@ -83,6 +92,25 @@ export type {
 } from "./components/CatchSplitSection";
 export {CatchStoryCard} from "./components/CatchStoryCard";
 export type {CatchStoryCardProps, CatchStoryCardStat} from "./components/CatchStoryCard";
+export {CatchPricingSection} from "./components/CatchPricingSection";
+export type {
+  CatchPricingSectionExample,
+  CatchPricingSectionFootnote,
+  CatchPricingSectionProps,
+} from "./components/CatchPricingSection";
+export {CatchStorySection} from "./components/CatchStorySection";
+export type {
+  CatchStorySectionAvatar,
+  CatchStorySectionMetric,
+  CatchStorySectionProps,
+} from "./components/CatchStorySection";
+export {CatchTabSection} from "./components/CatchTabSection";
+export type {
+  CatchTabSectionItem,
+  CatchTabSectionLayout,
+  CatchTabSectionMoment,
+  CatchTabSectionProps,
+} from "./components/CatchTabSection";
 export {CatchScreenPreview} from "./components/CatchScreenPreview";
 export type {
   CatchScreenPreviewBar,

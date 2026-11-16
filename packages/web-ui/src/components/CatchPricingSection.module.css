@@ -1,0 +1,31 @@
+/*
+ * The pricing band (the playbook kit's pricing): the copy and the worked
+ * examples 64px apart, stacking below 840px. The rate is CatchText's
+ * display-giant figure (220px, 150 on a phone-width band), tight to its own
+ * line. Examples are metric tiles 12px apart; footnotes a numbered list in
+ * the meta size, 16px from the left edge.
+ */
+.copy { min-width: 0; }
+
+.rate { margin: 0; }
+
+.examples {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.calculator { min-width: 0; }
+
+.footnotes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s1);
+  margin: 0;
+  padding-left: var(--catch-space-s4);
+  color: var(--catch-theme-ink2);
+}
