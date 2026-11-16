@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import {createFunctionsRequire} from "../../lib/repo_paths.mjs";
+import {eventSchemaFill} from "./event_schema_fill.mjs";
 
 // Event policy derivation is shared with Functions so the migration stores
 // exactly what an event gets when it first receives terms. Build Functions
@@ -45,6 +46,22 @@ function functionsEventPolicy() {
     );
   }
   return eventPolicyModule;
+}
+
+let marketModule = null;
+/** {id, timeZone} for a market id or alias, from the Functions market config. */
+function functionsMarket(value) {
+  try {
+    marketModule ??= createFunctionsRequire()("./lib/locations/marketConfig.js");
+  } catch (error) {
+    throw new Error(
+      "The event-schema-fill migration needs the compiled market config; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  const market = marketModule.marketForIdOrAlias(value);
+  return market ? {id: market.marketId, cityId: market.cityId,
+    timeZone: market.timeZone} : null;
 }
 
 let chatDirectoryModule = null;
@@ -155,6 +172,23 @@ function collapseStackedPromptBlankLines(value) {
  */
 
 export const MIGRATIONS = [
+  {
+    name: "event-schema-fill",
+    description:
+      "Events created before today's Event contract get the fields it requires, " +
+      "worked out from what each event already stores: the title the apps " +
+      "already show, city and market from its discovery market, that market's " +
+      "timezone, local date and start time, setup revision 1, event-set setup " +
+      "defaults, publication state published, and a meeting location from its " +
+      "meeting point and coordinates when it has them. Nothing present changes.",
+    steps: [
+      {
+        kind: "fill",
+        collection: "events",
+        fill: (data) => eventSchemaFill(data, functionsMarket),
+      },
+    ],
+  },
   {
     name: "schedule-locks",
     description:
