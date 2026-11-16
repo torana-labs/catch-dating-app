@@ -45,7 +45,7 @@ symbol outside `catch_ui`.
 | Stat | `catch.metric_strip` | T2 | `CatchMetricSection` | `CatchMetricSection` | align |
 | MetaRow | `catch.meta_row` | T2 | `CatchMetaRow` | `CatchMetaRow` | align |
 | Notice | `catch.notice` | T1 | `CatchNotice` | `CatchNotice` | align; absorbs: `CatchBanner` |
-| Notice | `catch.banner` | T1 | `CatchBanner` | — | port react |
+| Notice | `catch.banner` | T1 | `CatchBanner` | `CatchBanner` | align |
 | EmptyState | `catch.empty_state` | T1 | `CatchEmptyState` | `CatchEmptyState` | align; absorbs: `CatchErrorState`, `CatchFrameworkErrorState` |
 | EmptyState | `catch.error_state` | T1 | `CatchErrorState` | `CatchErrorState` | align |
 | ListRow + DateTile | `catch.index_row` | T2 | `CatchIndexRow` | `CatchIndexRow` | align; absorbs: `CatchPersonAvatarItem`, `CatchReviewItem`, `CatchRecordLayout`, `CatchPersonLayout`, `CatchConversationLayout`, `CatchStatusRow`, `CatchAttributionRow` |

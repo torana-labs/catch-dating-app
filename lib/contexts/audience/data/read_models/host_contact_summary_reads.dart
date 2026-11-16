@@ -5,6 +5,44 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_quer
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
 
+/// The organizer's contact directory document: everyone's summary and the
+/// per-segment counts the triggers keep.
+class HostContactDirectory {
+  const HostContactDirectory(this.data);
+
+  final Map<String, dynamic> data;
+
+  HostCrmSummary get summary =>
+      HostCrmSummary.fromCallableData(data['summary']);
+
+  /// Whether the directory counts [query]: everyone or one segment, with no
+  /// search or tags.
+  static bool countable(HostAudienceQuery query) =>
+      HostContactSummaryReads.supports(query) &&
+      HostContactSummaryReads.searchPrefix(query) == null &&
+      query.manualTagIds.isEmpty &&
+      query.manualTagId == null &&
+      {...query.segments, ?query.segment}.length <= 1;
+
+  /// The exact count of [query], or null when the directory cannot count it.
+  int? count(HostAudienceQuery query) {
+    if (!countable(query)) return null;
+    final segments = {...query.segments, ?query.segment};
+    return segments.isEmpty
+        ? (data['summary'] as Map)['contactCount'] as int
+        : ((data['segmentCounts'] as Map)[segments.single.wireValue] as int? ??
+              0);
+  }
+}
+
+/// The first rows of one live contact query.
+class HostContactWindow {
+  const HostContactWindow({required this.contacts, required this.hasMore});
+
+  final List<HostAudienceContact> contacts;
+  final bool hasMore;
+}
+
 /// The contact directory from `hostContactSummaries` and the organizer's
 /// directory document. Only an intersecting filter group (segments with
 /// tags) still needs the server's evaluation. A name search is a prefix
@@ -14,22 +52,46 @@ class HostContactSummaryReads {
   final HostSummaryReader reader;
   static const marker = 'contactSummaryVersion';
 
-  Future<HostCrmSummary> summary(String organizerId) async {
-    final data = await reader.activatedDirectory(organizerId, marker);
-    return HostCrmSummary.fromCallableData(data['summary']);
-  }
+  /// The directory document while it is listened to.
+  Stream<HostContactDirectory> watchDirectory(String organizerId) => reader
+      .watchActivatedDirectory(organizerId, marker)
+      .map(HostContactDirectory.new);
 
   /// The exact count, or null when the directory cannot count this query.
   Future<int?> count(String organizerId, HostAudienceQuery query) async {
-    if (!supports(query) || searchPrefix(query) != null) return null;
-    final segments = {...query.segments, ?query.segment};
-    final tags = {...query.manualTagIds, ?query.manualTagId};
-    if (tags.isNotEmpty || segments.length > 1) return null;
+    if (!HostContactDirectory.countable(query)) return null;
     final data = await reader.activatedDirectory(organizerId, marker);
-    return segments.isEmpty
-        ? (data['summary'] as Map)['contactCount'] as int
-        : ((data['segmentCounts'] as Map)[segments.single.wireValue] as int? ??
-              0);
+    return HostContactDirectory(data).count(query);
+  }
+
+  /// The first [limit] contacts of a query [supports] accepts, while it is
+  /// listened to: the same filters and order as [list].
+  Stream<HostContactWindow> watchWindow(
+    String organizerId, {
+    required HostAudienceQuery query,
+    required int limit,
+  }) {
+    final spec = _ContactQuerySpec(query);
+    return reader
+        .watchWindow(
+          collection: 'hostContactSummaries',
+          organizerId: organizerId,
+          orderField: spec.orderField,
+          descending: spec.descending,
+          limit: limit,
+          arrayField: spec.arrayField,
+          arrayValues: spec.arrayValues,
+          prefix: spec.search,
+        )
+        .map(
+          (window) => HostContactWindow(
+            contacts: [
+              for (final doc in window.documents)
+                HostAudienceContact.fromMap(doc['row'] as Map),
+            ],
+            hasMore: window.hasMore,
+          ),
+        );
   }
 
   static bool supports(HostAudienceQuery query) {
@@ -52,46 +114,21 @@ class HostContactSummaryReads {
     required HostAudienceQuery query,
     required int limit,
   }) async {
-    if (!supports(query)) {
-      throw ArgumentError('The contact directory cannot serve this query.');
-    }
+    final spec = _ContactQuerySpec(query);
     final directory = await reader.activatedDirectory(organizerId, marker);
-    final segments = {
-      ...query.segments,
-      ?query.segment,
-    }.map((item) => item.wireValue).toList()..sort();
-    final tags = {...query.manualTagIds, ?query.manualTagId}.toList()..sort();
-    final search = searchPrefix(query);
-    final sort = search == null ? query.sort : HostAudienceSort.name;
-    final orderField = switch (sort) {
-      HostAudienceSort.lastSeen => 'lastSeenAtMillis',
-      HostAudienceSort.mostAttended => 'row.attendedEventCount',
-      HostAudienceSort.name => 'searchName',
-    };
     final page = await reader.page(
       collection: 'hostContactSummaries',
       organizerId: organizerId,
-      orderField: orderField,
-      descending: sort != HostAudienceSort.name,
-      queryKey: jsonEncode([sort.name, segments, tags, search]),
+      orderField: spec.orderField,
+      descending: spec.descending,
+      queryKey: spec.queryKey,
       limit: limit,
-      arrayField: segments.isNotEmpty
-          ? 'row.segmentIds'
-          : tags.isNotEmpty
-          ? 'manualTagIds'
-          : null,
-      arrayValues: segments.isNotEmpty ? segments : tags,
-      prefix: search,
+      arrayField: spec.arrayField,
+      arrayValues: spec.arrayValues,
+      prefix: spec.search,
       cursor: query.cursor,
     );
-    final counts = directory['segmentCounts'] as Map;
-    final int? directoryCount = search != null
-        ? null
-        : segments.length == 1
-        ? (counts[segments.single] as int? ?? 0)
-        : segments.isEmpty && tags.isEmpty
-        ? (directory['summary'] as Map)['contactCount'] as int
-        : null;
+    final directoryCount = HostContactDirectory(directory).count(query);
     // One page with nothing after it is the whole match.
     final count =
         directoryCount ??
@@ -109,4 +146,52 @@ class HostContactSummaryReads {
       'projectionVersion': directory['projectionVersion'],
     });
   }
+}
+
+/// How one supported contact query reads `hostContactSummaries`.
+class _ContactQuerySpec {
+  factory _ContactQuerySpec(HostAudienceQuery query) {
+    if (!HostContactSummaryReads.supports(query)) {
+      throw ArgumentError('The contact directory cannot serve this query.');
+    }
+    final segments = {
+      ...query.segments,
+      ?query.segment,
+    }.map((item) => item.wireValue).toList()..sort();
+    final tags = {...query.manualTagIds, ?query.manualTagId}.toList()..sort();
+    final search = HostContactSummaryReads.searchPrefix(query);
+    final sort = search == null ? query.sort : HostAudienceSort.name;
+    return _ContactQuerySpec._(
+      orderField: switch (sort) {
+        HostAudienceSort.lastSeen => 'lastSeenAtMillis',
+        HostAudienceSort.mostAttended => 'row.attendedEventCount',
+        HostAudienceSort.name => 'searchName',
+      },
+      descending: sort != HostAudienceSort.name,
+      queryKey: jsonEncode([sort.name, segments, tags, search]),
+      arrayField: segments.isNotEmpty
+          ? 'row.segmentIds'
+          : tags.isNotEmpty
+          ? 'manualTagIds'
+          : null,
+      arrayValues: segments.isNotEmpty ? segments : tags,
+      search: search,
+    );
+  }
+
+  const _ContactQuerySpec._({
+    required this.orderField,
+    required this.descending,
+    required this.queryKey,
+    required this.arrayField,
+    required this.arrayValues,
+    required this.search,
+  });
+
+  final String orderField;
+  final bool descending;
+  final String queryKey;
+  final String? arrayField;
+  final List<String> arrayValues;
+  final String? search;
 }

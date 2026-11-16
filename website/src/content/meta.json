@@ -93,9 +93,9 @@
     },
     "not_found": {
       "title": "Page not found | Catch",
-      "description": "This Catch page does not exist. Search organizer profiles, browse the member site, or explore host tools.",
+      "description": "This Catch page does not exist. Browse events, search organizer profiles, or explore host tools.",
       "canonicalPath": "/404/",
-      "twitterDescription": "Search organizer profiles, browse the member site, or explore Catch host tools.",
+      "twitterDescription": "Browse events, search organizer profiles, or explore Catch host tools.",
       "robots": "noindex, follow"
     },
     "event_assistance": {

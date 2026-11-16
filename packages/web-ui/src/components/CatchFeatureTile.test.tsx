@@ -17,6 +17,12 @@ describe("CatchFeatureTile", () => {
     expect(screen.queryByRole("link")).toBeNull();
   });
 
+  it("titles at level 2 under a page's h1, so headings never skip a level", () => {
+    render(<CatchFeatureTile level={2} title="Sample feature" />);
+    expect(screen.getByRole("heading", {level: 2, name: "Sample feature"}).dataset.variant).toBe("title-bar");
+    expect(screen.queryByRole("heading", {level: 3})).toBeNull();
+  });
+
   it("shows the figure and its note above the title, then the body", () => {
     render(<CatchFeatureTile body="A sample body sentence." data-testid="tile" figure="00" figureNote="Sample figure" title="Sample feature" />);
     const figure = screen.getByText("00");

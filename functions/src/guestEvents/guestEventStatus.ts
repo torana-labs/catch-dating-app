@@ -18,6 +18,7 @@ import {readVerifiedOfferRecipient, type LoadRecipientAuth} from
   "../organizerEventOfferRecipients/recipientGrant";
 import {projectPublicPayment} from "../events/publicRegistration/projection";
 import {sameExceptClock} from "./eventGuestEntry";
+import {guestEventCard} from "./guestEventCard";
 
 /**
  * guestEventStatuses/{eventId}_{uid}: what one guest's own records say about
@@ -95,14 +96,19 @@ export async function guestEventStatus(params: {
     offerPaymentId: offerPayments.docs[0]?.id ?? null,
     offerGrantId: null, offerExpiresAtMillis: null, offerAdmissible: false,
     offerAmbiguous: false, applicationStatus: null,
+    participationStatus: null, eventCard: null,
     updatedAtMillis: nowMillis};
   const participation = native.data() as EventParticipationDocument |
     undefined;
   if (participation && validateEventParticipationDocument(participation) &&
       participation.eventId === eventId && participation.uid === uid &&
-      participation.organizerId === organizerId &&
-      ["signedUp", "attended"].includes(participation.status)) {
-    row.booking = "registered";
+      participation.organizerId === organizerId) {
+    if (participation.status !== "deleted") {
+      row.participationStatus = participation.status;
+    }
+    if (["signedUp", "attended"].includes(participation.status)) {
+      row.booking = "registered";
+    }
   }
   if (attendees.size > 1 || grants.size > 20) {
     // Only the Catch booking and an offer payment are certain; the website
@@ -185,14 +191,17 @@ export async function guestEventStatus(params: {
 }
 
 /**
- * Adds the event-derived parts of the row, and drops a row that records
- * nothing of the guest's own.
+ * Adds the event-derived parts of the row (its runtime, offer admission and
+ * list card), and drops a row that records nothing of the guest's own. A
+ * Catch booking in any status keeps the row, so the guest's booking lists
+ * read only their own rows.
  * @param {GuestEventStatus} row The guest's facts.
  * @param {EventDocument} event The event.
  * @return {GuestEventStatus | null} The row, if any.
  */
 function finish(row: GuestEventStatus, event: EventDocument):
     GuestEventStatus | null {
+  row.eventCard = guestEventCard(row.eventId, event);
   if (row.booking === "registered" && event.runtimeAccess?.enabled === true) {
     row.runtimeId = event.runtimeAccess.publicRuntimeId ?? null;
   }
@@ -205,7 +214,7 @@ function finish(row: GuestEventStatus, event: EventDocument):
   const empty = row.booking === "none" && !row.ambiguous &&
     row.publicPaymentId === null && row.offerPaymentId === null &&
     row.offerGrantId === null && !row.offerAmbiguous &&
-    row.applicationStatus === null;
+    row.applicationStatus === null && row.participationStatus === null;
   return empty ? null : row;
 }
 

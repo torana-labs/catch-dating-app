@@ -1050,6 +1050,19 @@ describe("firestore.rules", () => {
           },
         ),
       );
+      // The list card is trigger-owned: a client can neither create nor
+      // edit it.
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-2"), "savedEvents", "runner-2_event-1"),
+          {
+            uid: "runner-2",
+            eventId: "event-1",
+            savedAt: serverTimestamp(),
+            eventCard: {eventId: "event-1"},
+          },
+        ),
+      );
       await assertFails(
         setDoc(
           doc(authedDb("runner-1"), "savedEvents", "runner-2_event-1"),
@@ -1076,6 +1089,11 @@ describe("firestore.rules", () => {
       await assertFails(
         updateDoc(doc(authedDb("runner-1"), "savedEvents", "runner-1_event-3"), {
           savedAt: serverTimestamp(),
+        }),
+      );
+      await assertFails(
+        updateDoc(doc(authedDb("runner-1"), "savedEvents", "runner-1_event-3"), {
+          eventCard: {eventId: "event-3"},
         }),
       );
     });
