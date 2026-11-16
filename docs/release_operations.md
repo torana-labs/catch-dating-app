@@ -1585,7 +1585,10 @@ How a run works:
   the invoker), the next attempt deploys exactly those, by name. The CLI never
   skips a Function named in `--only`, so a failed invoker is set again. On
   16 Nov 2026 Cloud Run read-quota 429s failed three invoker sets that the CLI
-  itself does not retry. Without such a list, a planned or named run repeats
+  itself does not retry. The retry narrows only when every Function named in
+  the CLI's final error is on its list; any other failure keeps it broad,
+  because the parity check confirms only that each Function exists, not
+  which code it runs. Without such a list, a planned or named run repeats
   its targets, and a fallback run deploys plain `functions`, whose unchanged
   codebases are skipped. After the third attempt the run fails and names what
   still fails.

@@ -983,6 +983,10 @@ test("Deploy backend retries the Functions the CLI names as failed, by exact nam
     "Unable to set the invoker for the IAM policy on the following functions:",
     "\tsocial:expireAccountSafetyActions(asia-south1)", "\tsocial:reconcileBannedIdentityScreens(asia-south1)", "",
     "Some common causes of this:", "", "- You may not have the roles/functions.admin IAM role.",
+    "\u001b[1m\u001b[31mError:\u001b[39m\u001b[22m \u001b[4mThere was an error deploying functions\u001b[24m:",
+    "- \u001b[1mError\u001b[22m Failed to set invoker function expireAccountSafetyActions in region asia-south1",
+    "- \u001b[1mError\u001b[22m Failed to update function purgeRetainedSafetyRecords in region asia-south1",
+    "- \u001b[1mError\u001b[22m Failed to set invoker function reconcileBannedIdentityScreens in region asia-south1",
   ].join("\n");
   const failed = "functions:social:expireAccountSafetyActions,functions:social:purgeRetainedSafetyRecords," +
     "functions:social:reconcileBannedIdentityScreens";
@@ -1001,6 +1005,17 @@ test("Deploy backend retries the Functions the CLI names as failed, by exact nam
   assert.equal(invoker.status, 0, invoker.stdout);
   assert.deepEqual(invoker.targets, ["functions", failed]);
   assert.match(invoker.stdout, new RegExp(`::warning::Functions deploy attempt 1 failed; attempt 2 deploys ${failed}\\.`, "u"));
+  // A failure the lists do not account for keeps the retry broad: a Function
+  // the final error names outside the lists, or another error.
+  const unlisted = invokerFailure.replace("purgeRetainedSafetyRecords in region", "onlyInFinalError in region");
+  const partial = run({outputs: [unlisted], exits: "2,0"});
+  assert.equal(partial.status, 0, partial.stdout);
+  assert.deepEqual(partial.targets, ["functions", "functions"]);
+  assert.match(partial.stdout, /::warning::The CLI reported a failure outside its list of failed Functions/u);
+  const otherError = `${invokerFailure.split("\n").slice(0, 7).join("\n")}\nError: Failed to upload the codebase archive.`;
+  assert.deepEqual(run({outputs: [otherError], exits: "1,0"}).targets, ["functions", "functions"]);
+  const plannedPartial = run({only: "functions:social:a,functions:social:b", planned: "true", outputs: [unlisted], exits: "2,0"});
+  assert.deepEqual(plannedPartial.targets, ["functions:social:a,functions:social:b", "functions:social:a,functions:social:b"]);
   // A refusal before any change names no failed Function: the newly retrying
   // ones deploy with --force, then a fallback run deploys plain functions.
   const refused = run({only: "functions:admin,functions:events", exits: "1,0,0", outputs: [
