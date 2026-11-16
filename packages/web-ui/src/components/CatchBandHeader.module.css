@@ -1,0 +1,27 @@
+/*
+ * The opening of a website band (the playbook kit's section head): kicker,
+ * headline and lead 16px apart; a row sets the lead 48px across from the
+ * headline and stacks below medium. A column lead is held to the reading lane
+ * (layout.paneLane, 600px), centred when the header is. The header draws no
+ * box: on a given Website v2 ground it takes only that ground's inks.
+ */
+.header {
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  color: var(--catch-theme-ink);
+}
+
+/* A given ground remaps the theme inks (grounds.module.css) but never fills. */
+.onGround {
+  composes: ground from "./grounds.module.css";
+}
+
+.header[data-ground] { background: transparent; }
+
+.title { text-wrap: balance; }
+
+.header[data-direction="column"] .lead { max-width: var(--catch-layout-pane-lane); }
+
+/* A collapsed row keeps its parts full width, so the copy starts at the edge. */
+.part { width: 100%; }

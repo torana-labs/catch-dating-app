@@ -17,6 +17,8 @@ const parts = [
   "CatchSiteFooter", "CatchSiteHeader",
   // The event and organiser page parts (proposals WebEventVideo, WebOrgNote).
   "CatchVideoEmbed", "CatchNoteCard",
+  // The playbook section parts.
+  "CatchBandHeader", "CatchFeatureTile",
 ];
 const sheets: Record<string, string> = Object.fromEntries([
   ...parts.map((name) => [name, strip(read(`./${name}.module.css`))]),

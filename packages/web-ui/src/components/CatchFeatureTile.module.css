@@ -1,0 +1,76 @@
+/*
+ * One feature in a grid (the playbook kit's .tile): a Website v2 ground tile at
+ * radius lg with 24px inside (20px below 840px) and 10px between its parts. A
+ * white tile keeps the ground card's outline so it reads on a white band. On
+ * the ink ground the tile is glass: the ground's light ink at 8% over the band,
+ * the faint night fill CatchButton and CatchChip use. Ticked lines take the
+ * system check marker, inked in the tile's fill. The foot (fix, afterwards
+ * line, link) sits at the bottom, each line under a rule in the ground's ink
+ * at the ground card's outline opacity.
+ */
+.tile {
+  composes: ground from "./grounds.module.css";
+  --catch-surface-fill: var(--catch-on-ground-fill);
+  --catch-feature-rule: color-mix(in srgb, var(--catch-theme-ink)
+    calc(var(--catch-opacity-ground-card-outline) * 100%), transparent);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro10);
+  box-sizing: border-box;
+  height: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: var(--catch-space-s6);
+  border-radius: var(--catch-radius-lg);
+  text-align: start;
+}
+
+.tile[data-ground="white"] {
+  border: var(--catch-stroke-hairline) solid var(--catch-feature-rule);
+}
+
+.tile[data-ground="ink"] {
+  --catch-surface-fill: var(--catch-ground-ink-fill);
+  background: color-mix(in srgb, var(--catch-theme-ink) 8%, transparent);
+}
+
+.figure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro2);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro10);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.line {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--catch-space-micro10);
+  min-width: 0;
+}
+
+.foot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s3);
+  margin-top: auto;
+}
+
+.rule {
+  padding-top: var(--catch-space-s3);
+  border-top: var(--catch-stroke-hairline) solid var(--catch-feature-rule);
+}
+
+.link { display: flex; }
+
+@container catch-page (width < 840px) {
+  .tile { padding: var(--catch-space-s5); }
+}
