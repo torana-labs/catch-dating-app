@@ -169,3 +169,16 @@ export function playbookTopSegment(route: PlaybookFixedRoute | PlaybookFamilyRou
   const pattern = "path" in route ? route.path : route.pattern;
   return pattern.split("/")[1].split(":")[0];
 }
+
+/** The path a content key is served at: a fixed route's path, or its family's pattern with the key's parameters. */
+export function playbookPathForContentKey(contentKey: string): string | null {
+  const [routeId, ...values] = contentKey.split("/");
+  const fixed = playbookFixedRoutes.find((route) => route.id === routeId);
+  if (fixed) return values.length === 0 ? fixed.path : null;
+  const family = playbookFamilyRoutes.find((route) => route.id === routeId);
+  if (!family) return null;
+  const names = [...family.pattern.matchAll(/:([a-zA-Z]+)/gu)];
+  if (names.length !== values.length) return null;
+  let index = 0;
+  return family.pattern.replace(/:([a-zA-Z]+)/gu, () => values[index++]);
+}
