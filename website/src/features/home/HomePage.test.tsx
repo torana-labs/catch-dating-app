@@ -136,7 +136,7 @@ describe("homepage", {timeout: 20_000}, () => {
     render(<HomePage captures={captures} catalog={quiet} />);
     const week = within(screen.getByRole("region", {name: "This week in Mumbai"}));
     expect(week.getByText("New in Mumbai")).toBeTruthy();
-    expect(week.getByText("Nothing on in Mumbai this week yet. New plans go up as hosts add them.")).toBeTruthy();
+    expect(week.getByText("No plans in Mumbai in the next two weeks yet. Follow the organisers below to hear about their next one first.")).toBeTruthy();
     expect(screen.queryByText(/^0 /)).toBeNull();
   });
 

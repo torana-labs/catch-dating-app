@@ -54,6 +54,14 @@ export const homePageCopy = {
     note: "{shown} of {total} plans shown. Hosts set their own prices.",
     /** An open city with nothing this week: not "0 of 0 plans shown". */
     emptyWeek: "Nothing on in {city} this week yet. New plans go up as hosts add them.",
+    /** An open city with nothing this week shows the next two weeks instead, under these lines. */
+    upcomingTitle: "Coming up in {city}",
+    upcomingEyebrow: "Next two weeks",
+    upcomingNote: "Nothing on this week, so here’s everything in {city} over the next two weeks: {shown} of {total} shown.",
+    upcomingFilteredNote: "Showing {shown} of {total} in the next two weeks · {format}",
+    upcomingEmptyFormat: "No {format} in the next two weeks. Try another format.",
+    /** Nothing in the whole window: point to the organisers below, never a dead end. */
+    emptyWindow: "No plans in {city} in the next two weeks yet. Follow the organisers below to hear about their next one first.",
     filteredNote: "Showing {shown} of {total} this week · {format}",
     emptyFormat: "No {format} this week. Try another format.",
     unavailable: "We couldn’t load this week’s plans. Please try again in a moment.",

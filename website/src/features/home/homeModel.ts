@@ -16,6 +16,18 @@ export function weekPlans(plans: readonly HomePlan[], readAt: number): HomePlan[
 }
 
 /**
+ * Every plan in the read model's window that has not ended, soonest first:
+ * what the homepage shows when this week is empty, so a quiet city never
+ * reads as an empty one.
+ */
+export function upcomingPlans(plans: readonly HomePlan[], readAt: number): HomePlan[] {
+  return plans.filter((plan) => {
+    const end = Date.parse(plan.endTime ?? plan.startTime);
+    return !(Number.isFinite(end) && end < readAt);
+  }).sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime));
+}
+
+/**
  * The picker's line under a city. A live city is open however quiet it is:
  * it shows its honest count, or "New" before its first plan this week.
  */
@@ -45,6 +57,13 @@ export function shortWhen(startTime: string, timezone: string) {
   return `${part("weekday")} ${part("hour")}:${part("minute")} ${part("dayPeriod")}`;
 }
 
+/** "Thu 27 Nov, 7:30 PM" in the city's time zone, for plans beyond this week. */
+export function datedWhen(startTime: string, timezone: string) {
+  const day = new Intl.DateTimeFormat("en-GB", {weekday: "short", day: "numeric", month: "short", timeZone: timezone}).format(new Date(startTime));
+  const time = new Intl.DateTimeFormat("en-US", {hour: "numeric", minute: "2-digit", timeZone: timezone}).format(new Date(startTime));
+  return `${day.replace(",", "")}, ${time}`;
+}
+
 export interface PlanCardView {
   key: string;
   href: string;
@@ -62,9 +81,9 @@ export interface PlanCardView {
   posterLabel: string;
 }
 
-export function planCard(plan: HomePlan, timezone: string): PlanCardView {
+export function planCard(plan: HomePlan, timezone: string, withDate = false): PlanCardView {
   const name = formatName(plan.format);
-  const when = shortWhen(plan.startTime, timezone);
+  const when = withDate ? datedWhen(plan.startTime, timezone) : shortWhen(plan.startTime, timezone);
   return {
     key: plan.eventId,
     href: plan.path,

@@ -137,9 +137,9 @@ function HomeThisWeek({home}: {home: Home}) {
     <CatchSurface aria-labelledby="home-week-title" as="section" block="band" color="tile" id="whats-on">
       <HeadingRow aside={<CatchButton href={home.exploreHref} label={fill(copy.week.action, {city})} />}>
         <CatchStack gap={8}>
-          <CatchText tone="danger" variant="label-kicker">{home.weekCount > 1 ? fill(copy.week.eyebrow, {count: home.weekCount}) :
+          <CatchText tone="danger" variant="label-kicker">{home.upcoming ? copy.week.upcomingEyebrow : home.weekCount > 1 ? fill(copy.week.eyebrow, {count: home.weekCount}) :
             home.weekCount ? copy.week.eyebrowOne : fill(copy.week.eyebrowNew, {city})}</CatchText>
-          <CatchText as="h2" id="home-week-title" variant="display-xl">{fill(copy.week.title, {city})}</CatchText>
+          <CatchText as="h2" id="home-week-title" variant="display-xl">{fill(home.upcoming ? copy.week.upcomingTitle : copy.week.title, {city})}</CatchText>
           <CatchText tone="secondary" variant="body">{areas ? fill(copy.week.lead, {areas}) : fill(copy.week.leadNoAreas, {city})}</CatchText>
         </CatchStack>
       </HeadingRow>
@@ -151,7 +151,7 @@ function HomeThisWeek({home}: {home: Home}) {
           ))}
         </CatchStack>
       {home.plans.length ? (
-        <CatchRail itemWidth={240} label={fill(copy.week.title, {city})} wrap="auto">
+        <CatchRail itemWidth={240} label={fill(home.upcoming ? copy.week.upcomingTitle : copy.week.title, {city})} wrap="auto">
           {home.plans.map((plan) => (
             <CatchEventCard format={plan.format ?? "games"} formatLabel={plan.formatLabel || undefined} href={plan.href} imageUrl={plan.photoUrl ?? undefined} key={plan.key}
               place={plan.detail} price={plan.availability ? `${plan.price} · ${plan.availability}` : plan.price} title={plan.title} variant="compact" when={plan.when} />
