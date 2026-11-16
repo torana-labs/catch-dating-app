@@ -41,6 +41,22 @@ export type {
 } from "./components/CatchBand";
 export {CatchBandHeader} from "./components/CatchBandHeader";
 export type {CatchBandHeaderAlign, CatchBandHeaderDirection, CatchBandHeaderProps} from "./components/CatchBandHeader";
+// The playbook section components (website-playbook kit), with the vocabulary they share.
+export type {CatchBandAction, CatchBandFootnote, CatchBandLink} from "./components/catchBandParts";
+export {CatchScreenPreview} from "./components/CatchScreenPreview";
+export type {
+  CatchScreenPreviewBar,
+  CatchScreenPreviewButton,
+  CatchScreenPreviewChoice,
+  CatchScreenPreviewCounter,
+  CatchScreenPreviewField,
+  CatchScreenPreviewKind,
+  CatchScreenPreviewProps,
+  CatchScreenPreviewRow,
+  CatchScreenPreviewStat,
+  CatchScreenPreviewTile,
+  CatchScreenPreviewTilt,
+} from "./components/CatchScreenPreview";
 export {catchFormatAccentOf, catchFormatOf} from "./components/palette";
 /** A Website v2 activity format: run, dinner, games, courts or nightsOut. */
 export type {Format as CatchFormat} from "./components/palette";
