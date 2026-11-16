@@ -228,6 +228,8 @@ extension _EventSuccessHostActions on _EventSuccessHostSectionState {
 
   void _retryEventSuccessHostSection({
     required String eventId,
+    required String organizerId,
+    required String? selectedLayoutId,
     required EventSuccessHostRetryIntent retryIntent,
     required String assignmentParticipantUidsKey,
     required String rotationParticipantUidsKey,
@@ -267,7 +269,14 @@ extension _EventSuccessHostActions on _EventSuccessHostSectionState {
       case EventSuccessHostRetryIntent.scorecard:
         ref.invalidate(watchEventSuccessScorecardProvider(eventId));
       case EventSuccessHostRetryIntent.spatialLayout:
-        ref.invalidate(eventSuccessSpatialLayoutProvider(eventId));
+        if (selectedLayoutId != null) {
+          ref.invalidate(
+            watchEventSuccessSelectedLayoutProvider(
+              organizerId: organizerId,
+              layoutId: selectedLayoutId,
+            ),
+          );
+        }
     }
   }
 }

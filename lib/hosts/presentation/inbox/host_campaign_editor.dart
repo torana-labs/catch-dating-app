@@ -3,7 +3,6 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_reposi
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign_policy.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -62,7 +61,7 @@ class HostCampaignEditor extends ConsumerStatefulWidget {
 class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
   final _campaignNameController = TextEditingController();
   final Map<String, TextEditingController> _variableControllers = {};
-  HostSavedAudience? _selectedAudience;
+  HostSavedAudienceSummary? _selectedAudience;
   _HostCampaignMessageClass _messageClass =
       _HostCampaignMessageClass.organizerPromotion;
   HostWhatsappTemplate? _selectedTemplate;
@@ -100,7 +99,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
       hostMessagingSetupProvider(widget.organizer.id),
     );
     final savedAudiences = catchAsyncStateFromAsyncValue(
-      ref.watch(hostSavedAudiencesProvider(widget.organizer.id)),
+      ref.watch(hostAllSavedAudienceSummariesProvider(widget.organizer.id)),
     );
     return CatchSection.divided(
       title: context.l10n.hostsHostAudienceCampaign,
@@ -149,7 +148,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
               context: AppErrorContext.customers,
               mode: CatchErrorStateMode.compact,
               onRetry: () => ref.invalidate(
-                hostSavedAudiencesProvider(widget.organizer.id),
+                hostAllSavedAudienceSummariesProvider(widget.organizer.id),
               ),
             );
           }
@@ -263,7 +262,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
                   color: CatchTokens.of(context).ink,
                 ),
                 gapH8,
-                CatchField<HostSavedAudience>.select(
+                CatchField<HostSavedAudienceSummary>.select(
                   copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostSavedAudienceFieldLabel,
                   contract: CatchContractConstraints
@@ -409,7 +408,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
   Future<void> _saveAndPreview(
     HostWhatsappConnection connection,
     HostWhatsappTemplate template,
-    HostSavedAudience? selectedAudience,
+    HostSavedAudienceSummary? selectedAudience,
   ) => _run(() async {
     final variables = {
       for (final entry in _variableControllers.entries)
@@ -704,9 +703,9 @@ class HostCampaignReportSection extends StatelessWidget {
   }
 }
 
-HostSavedAudience? _audienceIn(
-  List<HostSavedAudience> audiences,
-  HostSavedAudience? selected,
+HostSavedAudienceSummary? _audienceIn(
+  List<HostSavedAudienceSummary> audiences,
+  HostSavedAudienceSummary? selected,
   String? initialAudienceId,
 ) {
   final requestedId = selected?.audienceId ?? initialAudienceId;
@@ -718,8 +717,10 @@ HostSavedAudience? _audienceIn(
   return audiences.isEmpty ? null : audiences.first;
 }
 
-String _savedAudienceLabel(BuildContext context, HostSavedAudience audience) =>
-    audience.lastPreviewMatchCount == null
+String _savedAudienceLabel(
+  BuildContext context,
+  HostSavedAudienceSummary audience,
+) => audience.lastPreviewMatchCount == null
     ? audience.name
     : context.l10n.hostSavedAudienceOption(
         name: audience.name,

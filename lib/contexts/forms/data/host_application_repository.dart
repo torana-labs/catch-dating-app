@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/forms/domain/host_application_import.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
+import 'package:catch_dating_app/contexts/forms/domain/host_community_membership.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
+export 'package:catch_dating_app/contexts/forms/domain/host_community_membership.dart';
 
 part 'host_application_repository.g.dart';
 
@@ -217,6 +219,7 @@ class HostApplicationDetail {
     this.contactId,
     this.sourceResponseId,
     this.dataAccessState,
+    this.communityMembership,
   });
 
   factory HostApplicationDetail.fromCallableData(Object? data) {
@@ -249,6 +252,9 @@ class HostApplicationDetail {
       contactId: _nullableString(map['contactId']),
       sourceResponseId: _nullableString(map['sourceResponseId']),
       dataAccessState: _nullableString(map['dataAccessState']),
+      communityMembership: HostCommunityMembership.fromNullableMap(
+        map['communityMembership'],
+      ),
     );
   }
 
@@ -270,6 +276,10 @@ class HostApplicationDetail {
   final String? contactId;
   final String? sourceResponseId;
   final String? dataAccessState;
+
+  /// The applicant's community membership; null when this application
+  /// cannot carry one.
+  final HostCommunityMembership? communityMembership;
 }
 
 class HostApplicationReviewResult {
@@ -509,6 +519,34 @@ class HostApplicationRepository {
     action: 'review organizer application',
     parse: HostApplicationReviewResult.fromCallableData,
   );
+
+  /// Grants or revokes the applicant's community membership. A grant cites
+  /// this approved application; a revoke cites none.
+  Future<HostCommunityMembershipDecision> decideCommunityMembership({
+    required String organizerId,
+    required HostApplicationDetail application,
+    required HostCommunityMembership membership,
+    required HostCommunityMembershipAction action,
+    required String reason,
+    required String requestId,
+  }) {
+    final grant = action == HostCommunityMembershipAction.grant;
+    return _call(
+      name: 'decideOrganizerCommunityMembership',
+      payload: DecideOrganizerCommunityMembershipCallableRequest(
+        organizerId: organizerId,
+        uid: membership.uid,
+        requestId: requestId,
+        action: action.name,
+        expectedRevision: membership.revision,
+        applicationId: grant ? application.applicationId : null,
+        expectedApplicationRevision: grant ? application.revision : null,
+        reason: reason.trim(),
+      ).toJson(),
+      action: 'decide organizer community membership',
+      parse: HostCommunityMembershipDecision.fromCallableData,
+    );
+  }
 
   Future<T> _call<T>({
     required String name,

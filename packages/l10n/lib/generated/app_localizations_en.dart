@@ -13510,6 +13510,59 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostFormsResponseAdded => 'Added to People.';
 
   @override
+  String get hostFormsMembershipTitle => 'Community membership';
+
+  @override
+  String get hostFormsMembershipNone => 'Not a community member';
+
+  @override
+  String get hostFormsMembershipActive => 'Community member';
+
+  @override
+  String get hostFormsMembershipRevoked => 'Membership removed';
+
+  @override
+  String get hostFormsMembershipActiveBody =>
+      'Can book members-only events, and skips review where you allow it.';
+
+  @override
+  String get hostFormsMembershipGrantBody =>
+      'Make them a member so they can book members-only events.';
+
+  @override
+  String get hostFormsMembershipNeedsApproval =>
+      'Approve their application first to make them a member.';
+
+  @override
+  String get hostFormsMembershipGrant => 'Make a member';
+
+  @override
+  String get hostFormsMembershipRevoke => 'Remove';
+
+  @override
+  String get hostFormsMembershipRevokeSave => 'Remove membership';
+
+  @override
+  String get hostFormsMembershipGrantTitle => 'Make a community member';
+
+  @override
+  String get hostFormsMembershipRevokeTitle => 'Remove community membership';
+
+  @override
+  String get hostFormsMembershipReason => 'Reason';
+
+  @override
+  String get hostFormsMembershipReasonPlaceholder =>
+      'Kept with the decision for your team';
+
+  @override
+  String get hostFormsMembershipGranted => 'Now a community member.';
+
+  @override
+  String get hostFormsMembershipRevokedNotice =>
+      'Membership removed. Existing bookings stay.';
+
+  @override
   String get hostFormsResponseAddBlocked =>
       'This answer cannot be added to People.';
 

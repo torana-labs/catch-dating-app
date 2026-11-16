@@ -78,6 +78,17 @@ Stream<List<EventSuccessLayout>> watchOrganizerEventSuccessLayouts(
     .watch(eventSuccessRepositoryProvider)
     .watchOrganizerLayouts(organizerId);
 
+/// The selected room layout for the Host live workspace, as a listener.
+@riverpod
+Stream<EventSuccessLayout?> watchEventSuccessSelectedLayout(
+  Ref ref, {
+  required String organizerId,
+  required String layoutId,
+}) => ref
+    .watch(eventSuccessRepositoryProvider)
+    .watchSelectedOrganizerLayout(organizerId: organizerId, layoutId: layoutId);
+
+/// The selected room layout for a guest, through the participant projection.
 @riverpod
 Future<EventSuccessLayout?> eventSuccessSpatialLayout(
   Ref ref,

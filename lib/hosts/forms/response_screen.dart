@@ -5,6 +5,7 @@ import 'package:catch_dating_app/contexts/forms/parts/host_form_response_row.dar
 import 'package:catch_dating_app/hosts/forms/forms_controller.dart';
 import 'package:catch_dating_app/hosts/forms/response_body.dart';
 import 'package:catch_dating_app/hosts/forms/response_state.dart';
+import 'package:catch_dating_app/hosts/people/widgets/people_text_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_copy.dart';
@@ -84,8 +85,13 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
     final conversion = ref.watch(
       hostFormConversionMutation(_conversionKey(detail)),
     );
-    final busy = review.isPending || conversion.isPending;
-    final failed = review.hasError || conversion.hasError;
+    final membership = ref.watch(
+      hostFormMembershipMutation(_reviewKey(detail)),
+    );
+    final busy =
+        review.isPending || conversion.isPending || membership.isPending;
+    final failed =
+        review.hasError || conversion.hasError || membership.hasError;
     if (application != null && _noteRevision != application.revision) {
       _noteRevision = application.revision;
       _note.text = application.reviewNote ?? '';
@@ -99,7 +105,14 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
             context: AppErrorContext.formResponses,
             onRetry: _reload,
           )
-        : HostResponseBody(state: state, note: _note, onOpenFile: _openFile);
+        : HostResponseBody(
+            state: state,
+            note: _note,
+            onOpenFile: _openFile,
+            onMembership: detail == null
+                ? null
+                : (action) => _decideMembership(detail, action),
+          );
     final response = detail?.response?.response;
     final primary = state.primary;
     return CatchRoot(
@@ -133,7 +146,7 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
                     HostResponsePrimary.continueOffer =>
                       l10n.hostFormsResponseContinueOffer,
                   },
-                  loading: busy,
+                  loading: review.isPending || conversion.isPending,
                   onPressed: busy ? null : () => _primary(primary, detail),
                 ),
                 secondary: state.canDecline
@@ -227,6 +240,20 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
               amount: hostFormPaymentAmount(payment.amountPaise),
               status: hostFormPaymentStatusLabel(l10n, payment.status),
             ),
+      membership: switch (detail.communityMembership) {
+        null => null,
+        final membership => HostResponseMembership(
+          state: membership.state,
+          action: detail.canRevokeMembership
+              ? HostCommunityMembershipAction.revoke
+              : detail.canGrantMembership
+              ? HostCommunityMembershipAction.grant
+              : null,
+          needsApproval:
+              !membership.isMember &&
+              application?.reviewStatus != HostApplicationReviewStatus.approved,
+        ),
+      },
       showNote: detail.canReview,
       primary: primary,
       canDecline:
@@ -329,6 +356,66 @@ class _HostResponseScreenState extends ConsumerState<HostResponseScreen> {
         );
       }
       return false;
+    }
+  }
+
+  /// Asks why, then grants or revokes the applicant's community membership.
+  Future<void> _decideMembership(
+    HostResponseReviewDetail detail,
+    HostCommunityMembershipAction action,
+  ) async {
+    final application = detail.application;
+    final membership = detail.communityMembership;
+    if (application == null || membership == null) return;
+    final l10n = context.l10n;
+    final grant = action == HostCommunityMembershipAction.grant;
+    final reason = await showCatchBottomSheet<String>(
+      context: context,
+      builder: (_) => HostPeopleTextSheet(
+        title: grant
+            ? l10n.hostFormsMembershipGrantTitle
+            : l10n.hostFormsMembershipRevokeTitle,
+        fieldTitle: l10n.hostFormsMembershipReason,
+        placeholder: l10n.hostFormsMembershipReasonPlaceholder,
+        saveLabel: grant
+            ? l10n.hostFormsMembershipGrant
+            : l10n.hostFormsMembershipRevokeSave,
+        maxLength: 2000,
+        lines: 3,
+      ),
+    );
+    if (reason == null || !mounted) return;
+    try {
+      await hostFormMembershipMutation(application.applicationId).run(
+        ref,
+        (tx) => tx
+            .get(hostApplicationsControllerProvider)
+            .decideCommunityMembership(
+              organizerId: widget.organizerId,
+              application: application,
+              membership: membership,
+              action: action,
+              reason: reason,
+              requestId: 'membership_${DateTime.now().microsecondsSinceEpoch}',
+            ),
+      );
+      _reload();
+      if (mounted) {
+        showCatchNotice(
+          context,
+          grant
+              ? l10n.hostFormsMembershipGranted
+              : l10n.hostFormsMembershipRevokedNotice,
+        );
+      }
+    } on Object catch (error) {
+      if (mounted) {
+        showCatchNoticeError(
+          context,
+          error,
+          errorContext: AppErrorContext.applications,
+        );
+      }
     }
   }
 

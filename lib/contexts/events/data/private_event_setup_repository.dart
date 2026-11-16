@@ -21,6 +21,7 @@ class PrivateEventSetupRepository {
     this.views,
   });
 
+  /// The unpublished inventory read model; listing needs it.
   final HostEventSummaryReads? summaries;
 
   /// The manager listener on `hostEventSetupViews`; reads need it.
@@ -156,7 +157,9 @@ class PrivateEventSetupRepository {
   );
 
   /// Manager inventory for basics-only private events that cannot be decoded
-  /// through the public rich Event model or a device-local draft list.
+  /// through the public rich Event model or a device-local draft list, from
+  /// the `hostEventSummaries` read model. A missing directory marker is an
+  /// error to retry, never a callable read.
   Future<PrivateEventSetupInventoryPage> list({
     required String organizerId,
     PrivateEventSetupScope? scope,
@@ -170,29 +173,21 @@ class PrivateEventSetupRepository {
     )) {
       throw ArgumentError('Invalid private event inventory request');
     }
+    final reads = summaries;
+    if (reads == null) {
+      throw StateError('Private event inventory reads need the summaries.');
+    }
     return withBackendErrorContext(
-      () async {
-        final page = await summaries?.list(
-          organizerId: organizerId,
-          scope: scope ?? PrivateEventSetupScope.upcoming,
-          limit: limit,
-          cursor: cursor,
-        );
-        if (page != null) return page;
-        final response = await _functions
-            .httpsCallable('listPrivateEventSetups')
-            .call<Object?>({
-              'scope': (scope ?? PrivateEventSetupScope.upcoming).name,
-              'organizerId': organizerId,
-              'limit': limit,
-              'cursor': ?cursor,
-            });
-        return PrivateEventSetupInventoryPage.fromResponse(response.data);
-      },
+      () => reads.list(
+        organizerId: organizerId,
+        scope: scope ?? PrivateEventSetupScope.upcoming,
+        limit: limit,
+        cursor: cursor,
+      ),
       context: const BackendErrorContext(
-        service: BackendService.functions,
+        service: BackendService.firestore,
         action: 'list private event setups',
-        resource: 'listPrivateEventSetups',
+        resource: 'hostEventSummaries',
       ),
     );
   }

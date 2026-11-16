@@ -89,27 +89,6 @@ class HostSavedAudience {
   final DateTime updatedAt;
 }
 
-class HostSavedAudiencePage {
-  const HostSavedAudiencePage({
-    required this.audiences,
-    required this.nextCursor,
-  });
-
-  factory HostSavedAudiencePage.fromCallableData(Object? data) {
-    final map = crmRequiredMap(data, 'saved audience page');
-    return HostSavedAudiencePage(
-      audiences: crmMapList(
-        map['audiences'],
-        'saved audiences',
-      ).map(HostSavedAudience.fromMap).toList(growable: false),
-      nextCursor: crmNullableString(map['nextCursor']),
-    );
-  }
-
-  final List<HostSavedAudience> audiences;
-  final String? nextCursor;
-}
-
 class HostSavedAudiencePreviewContact {
   const HostSavedAudiencePreviewContact({
     required this.contactId,

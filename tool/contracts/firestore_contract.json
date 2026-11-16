@@ -2979,7 +2979,7 @@
       "rulesMatch": "/eventStaffGrants/{grantId}",
       "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
       "owner": "event staff access callables",
-      "read": "server only",
+      "read": "grantee gets their own grant by id; nobody lists the collection",
       "write": "server only",
       "exportedFunctions": [
         "getEventOperatorAccess",

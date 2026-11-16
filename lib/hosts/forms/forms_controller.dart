@@ -19,6 +19,10 @@ final hostFormReviewMutation = Mutation<void>();
 /// Adding a response's person to People, keyed by response id.
 final hostFormConversionMutation = Mutation<void>();
 
+/// Granting or revoking an applicant's community membership, keyed by
+/// application id.
+final hostFormMembershipMutation = Mutation<void>();
+
 /// The callable gateways an offer reads and commits through.
 typedef HostOfferGateways = ({
   CallableHostEventOfferGateway offers,

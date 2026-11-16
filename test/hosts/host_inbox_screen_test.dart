@@ -744,10 +744,14 @@ Widget _app({
           coverage: HostCustomerMatchCountCoverage.exact,
         ),
       ),
-      hostSavedAudiencesProvider(organizer.id).overrideWithValue(
+      hostAllSavedAudienceSummariesProvider(organizer.id).overrideWithValue(
         AsyncData(
-          HostSavedAudiencePage(
-            audiences: [_savedAudience(organizer.id)],
+          HostSavedAudienceSummaryPage(
+            audiences: [
+              HostSavedAudienceSummary.fromAudience(
+                _savedAudience(organizer.id),
+              ),
+            ],
             nextCursor: null,
           ),
         ),

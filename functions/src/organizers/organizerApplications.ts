@@ -2,6 +2,8 @@ import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
+import {readApplicantCommunityMembership} from
+  "../memberships/communityMembershipSummary";
 import type {GetOrganizerApplicationDetailCallablePayload} from
   "../shared/generated/getOrganizerApplicationDetailCallablePayload";
 import type {GetOrganizerApplicationDetailCallableResponse} from
@@ -717,6 +719,12 @@ export async function getOrganizerApplicationDetailHandler(
     submittedAtMillis: application.submittedAt.toMillis(),
     reviewedAtMillis: application.reviewedAt?.toMillis() ?? null,
     revision: application.revision,
+    communityMembership:
+      visible.accessState === "revokedParticipantGrant" ?
+        null :
+        await readApplicantCommunityMembership({
+          db, organizerId: data.organizerId, application,
+        }),
   };
 }
 

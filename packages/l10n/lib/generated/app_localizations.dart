@@ -21089,6 +21089,102 @@ abstract class AppLocalizations {
   /// **'Added to People.'**
   String get hostFormsResponseAdded;
 
+  /// Section title on one application: the applicant's community membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Community membership'**
+  String get hostFormsMembershipTitle;
+
+  /// Membership row title when the applicant has never been a member.
+  ///
+  /// In en, this message translates to:
+  /// **'Not a community member'**
+  String get hostFormsMembershipNone;
+
+  /// Membership row title when the applicant is a member.
+  ///
+  /// In en, this message translates to:
+  /// **'Community member'**
+  String get hostFormsMembershipActive;
+
+  /// Membership row title when the applicant's membership was removed.
+  ///
+  /// In en, this message translates to:
+  /// **'Membership removed'**
+  String get hostFormsMembershipRevoked;
+
+  /// Membership row body for a member.
+  ///
+  /// In en, this message translates to:
+  /// **'Can book members-only events, and skips review where you allow it.'**
+  String get hostFormsMembershipActiveBody;
+
+  /// Membership row body when the host can grant membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Make them a member so they can book members-only events.'**
+  String get hostFormsMembershipGrantBody;
+
+  /// Membership row body when the application is not approved yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve their application first to make them a member.'**
+  String get hostFormsMembershipNeedsApproval;
+
+  /// Action: grant community membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a member'**
+  String get hostFormsMembershipGrant;
+
+  /// Row action: start removing community membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get hostFormsMembershipRevoke;
+
+  /// Sheet action: remove community membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove membership'**
+  String get hostFormsMembershipRevokeSave;
+
+  /// Sheet title when granting community membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a community member'**
+  String get hostFormsMembershipGrantTitle;
+
+  /// Sheet title when removing community membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove community membership'**
+  String get hostFormsMembershipRevokeTitle;
+
+  /// Field title: why the host is making this membership decision.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get hostFormsMembershipReason;
+
+  /// Placeholder for the membership decision reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept with the decision for your team'**
+  String get hostFormsMembershipReasonPlaceholder;
+
+  /// Notice after granting community membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Now a community member.'**
+  String get hostFormsMembershipGranted;
+
+  /// Notice after removing community membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Membership removed. Existing bookings stay.'**
+  String get hostFormsMembershipRevokedNotice;
+
   /// Add to People is not allowed.
   ///
   /// In en, this message translates to:

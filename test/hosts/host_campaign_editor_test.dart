@@ -26,9 +26,12 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          hostSavedAudiencesProvider(organizerId).overrideWithValue(
+          hostAllSavedAudienceSummariesProvider(organizerId).overrideWithValue(
             AsyncData(
-              HostSavedAudiencePage(audiences: [audience], nextCursor: null),
+              HostSavedAudienceSummaryPage(
+                audiences: [HostSavedAudienceSummary.fromAudience(audience)],
+                nextCursor: null,
+              ),
             ),
           ),
           hostMessagingSetupProvider(organizerId).overrideWithValue(

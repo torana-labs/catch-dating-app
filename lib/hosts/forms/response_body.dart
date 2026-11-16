@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
+import 'package:catch_dating_app/contexts/forms/domain/host_community_membership.dart';
 import 'package:catch_dating_app/contexts/forms/parts/host_form_labels.dart';
 import 'package:catch_dating_app/hosts/forms/response_state.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -15,6 +16,7 @@ class HostResponseBody extends StatelessWidget {
     required this.state,
     required this.note,
     required this.onOpenFile,
+    this.onMembership,
   });
 
   final HostResponseState state;
@@ -22,6 +24,9 @@ class HostResponseBody extends StatelessWidget {
   /// The team note; the screen owns it and sends it with a review.
   final TextEditingController note;
   final ValueChanged<HostFormAssetDownload> onOpenFile;
+
+  /// Runs the membership decision the state offers.
+  final ValueChanged<HostCommunityMembershipAction>? onMembership;
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +132,43 @@ class HostResponseBody extends StatelessWidget {
                 title: payment,
                 onTap: null,
                 density: CatchIndexRowSize.compact,
+              ),
+            ],
+          ),
+        if (state.membership case final membership?)
+          CatchSection(
+            title: l10n.hostFormsMembershipTitle,
+            children: [
+              CatchIndexRow(
+                key: const ValueKey<String>('host-response-membership'),
+                title: switch (membership.state) {
+                  HostCommunityMembershipState.active =>
+                    l10n.hostFormsMembershipActive,
+                  HostCommunityMembershipState.revoked =>
+                    l10n.hostFormsMembershipRevoked,
+                  HostCommunityMembershipState.none =>
+                    l10n.hostFormsMembershipNone,
+                },
+                body: switch (membership.state) {
+                  HostCommunityMembershipState.active =>
+                    l10n.hostFormsMembershipActiveBody,
+                  _ when membership.needsApproval =>
+                    l10n.hostFormsMembershipNeedsApproval,
+                  _ => l10n.hostFormsMembershipGrantBody,
+                },
+                onTap: null,
+                density: CatchIndexRowSize.compact,
+                action: switch (membership.action) {
+                  null => null,
+                  final action => CatchIndexRowAction(
+                    label: action == HostCommunityMembershipAction.grant
+                        ? l10n.hostFormsMembershipGrant
+                        : l10n.hostFormsMembershipRevoke,
+                    onPressed: state.busy || onMembership == null
+                        ? null
+                        : () => onMembership!(action),
+                  ),
+                },
               ),
             ],
           ),
