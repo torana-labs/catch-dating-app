@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_agenda_tile.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
@@ -22,7 +23,7 @@ Widget eventAgendaSliverListState(BuildContext context) {
     child: CustomScrollView(
       slivers: [
         EventAgendaSliverList(
-          events: widgetbookEventsAgendaEvents(),
+          events: guestEventCardsOf(widgetbookEventsAgendaEvents()),
           today: DateUtils.dateOnly(widgetbookEventsNow),
           showOrganizerName: true,
           organizerNameBuilder: (_) => widgetbookEventsOrganizer.name,
@@ -47,19 +48,23 @@ Widget eventAgendaDayGroupState(BuildContext context) {
       today: DateUtils.dateOnly(widgetbookEventsNow),
       rows: [
         EventAgendaRow(
-          event: widgetbookEvent,
+          event: GuestEventCard.fromEvent(widgetbookEvent),
           badgeLabel: 'OPEN',
           organizerName: widgetbookEventsOrganizer.name,
           status: EventTileStatus.saved,
         ),
         EventAgendaRow(
-          event: widgetbookEventDetailFixture(
-            id: 'widgetbook-event-agenda-day-dinner',
-            activityKind: ActivityKind.dinner,
-            startTime: widgetbookEvent.startTime.add(const Duration(hours: 2)),
-            capacityLimit: 10,
-            bookedCount: 8,
-            priceInPaise: 180000,
+          event: GuestEventCard.fromEvent(
+            widgetbookEventDetailFixture(
+              id: 'widgetbook-event-agenda-day-dinner',
+              activityKind: ActivityKind.dinner,
+              startTime: widgetbookEvent.startTime.add(
+                const Duration(hours: 2),
+              ),
+              capacityLimit: 10,
+              bookedCount: 8,
+              priceInPaise: 180000,
+            ),
           ),
           badgeLabel: 'OPEN',
           organizerName: widgetbookEventsOrganizer.name,
@@ -111,12 +116,12 @@ Widget eventAgendaTileState(BuildContext context) {
   );
 }
 
-EventTileData _eventTileData(
+GuestEventTileData _eventTileData(
   Event event, {
   EventTileStatus status = EventTileStatus.open,
 }) {
-  return EventTileData.fromEvent(
-    event: event,
+  return GuestEventTileData(
+    card: GuestEventCard.fromEvent(event),
     status: status,
     organizerName: widgetbookEventsOrganizer.name,
   );

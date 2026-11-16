@@ -229,3 +229,8 @@ class GuestEventCard {
     published,
   );
 }
+
+/// The cards the guest event triggers write for [events], in order.
+List<GuestEventCard> guestEventCardsOf(Iterable<Event> events) => [
+  for (final event in events) GuestEventCard.fromEvent(event),
+];

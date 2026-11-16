@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/events/shared/event_price_copy.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_atoms.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
@@ -15,7 +14,7 @@ class EventAgendaTile extends StatelessWidget {
     this.stripPosition = EventDateRailCardStripPosition.single,
   });
 
-  final EventTileData data;
+  final GuestEventTileData data;
   final VoidCallback? onTap;
   final bool showOrganizerName;
   final String? badgeLabel;
@@ -23,14 +22,13 @@ class EventAgendaTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return EventDateRailCard(
-      event: data.event,
+    return EventDateRailCard.card(
+      card: data.card,
       kicker: eventTileKickerLabel(data, showOrganizerName: showOrganizerName),
       supportingLabel: eventTileSupportingLabel(
         data,
         showOrganizerName: showOrganizerName,
       ),
-      priceLabel: eventPriceLabel(context.l10n, data.event),
       statusLabel: eventTileCardStatusLabel(
         data.status,
         context.l10n,

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
@@ -57,16 +57,14 @@ class SavedEventsScreen extends ConsumerWidget {
 
               final userId = uidState.value;
               final savedEvents = userId == null
-                  ? const AsyncData(<Event>[])
-                  : ref.watch(watchSavedEventDetailsForUserProvider(userId));
-              return CatchAsyncBoundary<List<Event>>.sliver(
+                  ? const AsyncData(<GuestEventCard>[])
+                  : ref.watch(watchSavedEventCardsProvider(userId));
+              return CatchAsyncBoundary<List<GuestEventCard>>.sliver(
                 value: savedEvents,
                 onRetry: () {
                   ref.invalidate(uidProvider);
                   if (userId != null) {
-                    ref.invalidate(
-                      watchSavedEventDetailsForUserProvider(userId),
-                    );
+                    ref.invalidate(watchSavedEventCardsProvider(userId));
                   }
                 },
                 initialLoadTimeout: null,
@@ -134,11 +132,14 @@ class SavedEventsScreen extends ConsumerWidget {
     );
   }
 
-  void _openEventDetail(BuildContext context, Event event) {
+  void _openEventDetail(BuildContext context, GuestEventCard card) {
+    // Event detail reads the event itself; the card carries no live terms.
     context.pushNamed(
       Routes.savedEventDetailScreen.name,
-      pathParameters: {'organizerId': event.organizerId, 'eventId': event.id},
-      extra: event,
+      pathParameters: {
+        'organizerId': card.organizerId,
+        'eventId': card.eventId,
+      },
     );
   }
 }
@@ -154,7 +155,7 @@ class SavedEventsAgendaList extends StatelessWidget {
 
   final SavedEventsListState state;
   final Map<String, String> organizerNames;
-  final ValueChanged<Event> onEventSelected;
+  final ValueChanged<GuestEventCard> onEventSelected;
   final EdgeInsetsGeometry? padding;
 
   @override

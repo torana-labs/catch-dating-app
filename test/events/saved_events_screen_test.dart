@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart'
+    show watchSavedEventCardsProvider;
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
@@ -21,21 +23,29 @@ void main() {
   group('SavedEventsListState', () {
     test('orders upcoming saved events before past saved events', () {
       final now = DateTime(2026, 7, 1, 12);
-      final laterUpcoming = buildEvent(
-        id: 'later-upcoming',
-        startTime: now.add(const Duration(days: 3)),
+      final laterUpcoming = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'later-upcoming',
+          startTime: now.add(const Duration(days: 3)),
+        ),
       );
-      final nextUpcoming = buildEvent(
-        id: 'next-upcoming',
-        startTime: now.add(const Duration(hours: 6)),
+      final nextUpcoming = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'next-upcoming',
+          startTime: now.add(const Duration(hours: 6)),
+        ),
       );
-      final recentPast = buildEvent(
-        id: 'recent-past',
-        startTime: now.subtract(const Duration(hours: 4)),
+      final recentPast = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'recent-past',
+          startTime: now.subtract(const Duration(hours: 4)),
+        ),
       );
-      final olderPast = buildEvent(
-        id: 'older-past',
-        startTime: now.subtract(const Duration(days: 4)),
+      final olderPast = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'older-past',
+          startTime: now.subtract(const Duration(days: 4)),
+        ),
       );
 
       final state = SavedEventsListState.from([
@@ -45,7 +55,7 @@ void main() {
         nextUpcoming,
       ], now: now);
 
-      expect(state.orderedEvents.map((event) => event.id), [
+      expect(state.orderedEvents.map((event) => event.eventId), [
         'next-upcoming',
         'later-upcoming',
         'recent-past',
@@ -203,9 +213,9 @@ Future<void> _pumpSavedEvents(
               organizer_test.FakeOrganizersRepository()
                 ..organizersById['club-1'] = buildOrganizer(),
         ),
-        watchSavedEventDetailsForUserProvider(
+        watchSavedEventCardsProvider(
           'runner-1',
-        ).overrideWithValue(AsyncData<List<Event>>(savedEvents)),
+        ).overrideWithValue(AsyncData(guestEventCardsOf(savedEvents))),
         organizerNameLookupProvider(
           OrganizerNameLookupQuery(
             savedEvents.map((event) => event.organizerId),

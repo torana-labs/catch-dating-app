@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart'
+    show watchSavedEventCardsProvider, watchSignedUpEventCardsProvider;
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
@@ -70,9 +72,9 @@ void main() {
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpEventsProvider(
-            'runner-1',
-          ).overrideWith((ref) => eventsController.stream),
+          watchSignedUpEventCardsProvider('runner-1').overrideWith(
+            (ref) => eventsController.stream.map(guestEventCardsOf),
+          ),
         ],
       );
 
@@ -95,9 +97,9 @@ void main() {
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpEventsProvider(
+          watchSignedUpEventCardsProvider(
             'runner-1',
-          ).overrideWithValue(AsyncData<List<Event>>([event])),
+          ).overrideWithValue(AsyncData(guestEventCardsOf([event]))),
           organizerNameLookupProvider(
             OrganizerNameLookupQuery([event.organizerId]),
           ).overrideWith((ref) => organizerNames.future),
@@ -137,12 +139,12 @@ void main() {
         ProviderScope(
           overrides: [
             uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               'runner-1',
-            ).overrideWithValue(AsyncData<List<Event>>([event])),
-            watchSavedEventDetailsForUserProvider(
+            ).overrideWithValue(AsyncData(guestEventCardsOf([event]))),
+            watchSavedEventCardsProvider(
               'runner-1',
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
             organizerNameLookupProvider(
               OrganizerNameLookupQuery([event.organizerId]),
             ).overrideWithValue(
@@ -175,9 +177,9 @@ void main() {
         await _pumpCalendar(
           tester,
           overrides: [
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               'runner-1',
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
           ],
         );
 
@@ -199,8 +201,11 @@ void main() {
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpEventsProvider('runner-1').overrideWithValue(
-            AsyncError<List<Event>>(Exception('boom'), StackTrace.empty),
+          watchSignedUpEventCardsProvider('runner-1').overrideWithValue(
+            AsyncError<List<GuestEventCard>>(
+              Exception('boom'),
+              StackTrace.empty,
+            ),
           ),
         ],
       );
@@ -248,9 +253,9 @@ void main() {
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpEventsProvider(
+          watchSignedUpEventCardsProvider(
             'runner-1',
-          ).overrideWithValue(AsyncData<List<Event>>(events)),
+          ).overrideWithValue(AsyncData(guestEventCardsOf(events))),
         ],
       );
 
@@ -279,12 +284,15 @@ void main() {
       expect(_eventCard(events[1]), findsOneWidget);
       expect(_eventCard(events[0]), findsOneWidget);
       expect(find.text('STRIDE SOCIAL'), findsAtLeastNWidgets(1));
+      // Booked and saved tickets come from guest event cards, which carry
+      // capacity terms but no live counts.
       expect(
-        find.textContaining('1 GOING · 19 LEFT', findRichText: true),
+        find.textContaining('20 SPOTS', findRichText: true),
         findsOneWidget,
       );
+      expect(find.textContaining('GOING', findRichText: true), findsNothing);
       expect(
-        find.textContaining('2 GOING · 10 LEFT', findRichText: true),
+        find.textContaining('12 SPOTS', findRichText: true),
         findsOneWidget,
       );
     });
@@ -317,9 +325,9 @@ void main() {
         tester,
         savedEvents: [savedFutureEvent, savedPastEvent],
         overrides: [
-          watchSignedUpEventsProvider(
+          watchSignedUpEventCardsProvider(
             'runner-1',
-          ).overrideWithValue(AsyncData<List<Event>>([signedUpEvent])),
+          ).overrideWithValue(AsyncData(guestEventCardsOf([signedUpEvent]))),
         ],
       );
 
@@ -369,9 +377,9 @@ void main() {
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpEventsProvider(
-            'runner-1',
-          ).overrideWithValue(AsyncData<List<Event>>([pastEvent, futureEvent])),
+          watchSignedUpEventCardsProvider('runner-1').overrideWithValue(
+            AsyncData(guestEventCardsOf([pastEvent, futureEvent])),
+          ),
         ],
       );
 
@@ -402,9 +410,9 @@ void main() {
         await _pumpCalendar(
           tester,
           overrides: [
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               'runner-1',
-            ).overrideWithValue(AsyncData<List<Event>>([oldEvent])),
+            ).overrideWithValue(AsyncData(guestEventCardsOf([oldEvent]))),
           ],
         );
 
@@ -438,9 +446,9 @@ void main() {
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpEventsProvider(
+          watchSignedUpEventCardsProvider(
             'runner-1',
-          ).overrideWithValue(AsyncData<List<Event>>(events)),
+          ).overrideWithValue(AsyncData(guestEventCardsOf(events))),
         ],
       );
 
@@ -484,9 +492,9 @@ void main() {
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpEventsProvider(
+          watchSignedUpEventCardsProvider(
             'runner-1',
-          ).overrideWithValue(AsyncData<List<Event>>(events)),
+          ).overrideWithValue(AsyncData(guestEventCardsOf(events))),
         ],
       );
 
@@ -520,9 +528,9 @@ void main() {
         await _pumpCalendar(
           tester,
           overrides: [
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               'runner-1',
-            ).overrideWithValue(AsyncData<List<Event>>([event])),
+            ).overrideWithValue(AsyncData(guestEventCardsOf([event]))),
           ],
         );
 
@@ -569,9 +577,9 @@ void main() {
         await _pumpCalendar(
           tester,
           overrides: [
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               'runner-1',
-            ).overrideWithValue(AsyncData<List<Event>>([event])),
+            ).overrideWithValue(AsyncData(guestEventCardsOf([event]))),
           ],
         );
 
@@ -612,9 +620,9 @@ void main() {
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpEventsProvider(
+          watchSignedUpEventCardsProvider(
             'runner-1',
-          ).overrideWithValue(AsyncData<List<Event>>([event])),
+          ).overrideWithValue(AsyncData(guestEventCardsOf([event]))),
         ],
       );
 
@@ -661,9 +669,9 @@ void main() {
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpEventsProvider(
+          watchSignedUpEventCardsProvider(
             'runner-1',
-          ).overrideWithValue(AsyncData<List<Event>>(events)),
+          ).overrideWithValue(AsyncData(guestEventCardsOf(events))),
         ],
       );
 
@@ -726,12 +734,12 @@ void main() {
                 const AsyncData<String?>('runner-1'),
               ),
               watchUserProfileProvider.overrideWithValue(AsyncData(user)),
-              watchSignedUpEventsProvider(
+              watchSignedUpEventCardsProvider(
                 user.uid,
-              ).overrideWithValue(AsyncData<List<Event>>([event])),
-              watchSavedEventDetailsForUserProvider(
+              ).overrideWithValue(AsyncData(guestEventCardsOf([event]))),
+              watchSavedEventCardsProvider(
                 user.uid,
-              ).overrideWithValue(const AsyncData<List<Event>>([])),
+              ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
               watchEventProvider(event.id).overrideWithValue(AsyncData(event)),
               watchSavedEventProvider(
                 user.uid,
@@ -814,9 +822,9 @@ Future<void> _pumpCalendar(
               organizer_test.FakeOrganizersRepository()
                 ..organizersById['club-1'] = buildOrganizer(),
         ),
-        watchSavedEventDetailsForUserProvider(
+        watchSavedEventCardsProvider(
           'runner-1',
-        ).overrideWithValue(AsyncData<List<Event>>(savedEvents)),
+        ).overrideWithValue(AsyncData(guestEventCardsOf(savedEvents))),
         ...overrides,
       ],
       child: MaterialApp(theme: AppTheme.light, home: const CalendarScreen()),
@@ -826,7 +834,7 @@ Future<void> _pumpCalendar(
 }
 
 Finder _eventCard(Event event) => find.byWidgetPredicate(
-  (widget) => widget is EventDateRailCard && widget.event.id == event.id,
+  (widget) => widget is EventDateRailCard && widget.data.eventId == event.id,
 );
 
 Future<void> _pumpRouterFrame(WidgetTester tester) async {

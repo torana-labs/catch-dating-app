@@ -68,6 +68,10 @@ extension GuestEventCardFormattingX on GuestEventCard {
   };
 
   String get longDateLabel => EventFormatters.longDate(localStartTime);
+  String get activitySummaryLabel => eventFormat.isDistanceBased
+      ? '${EventFormatters.distanceKm(distanceKm ?? 0)} · '
+            '${pace?.label ?? ''}'
+      : eventFormat.label;
   String get timeRangeLabel => switch (localEndTime) {
     final end? => EventFormatters.timeRange(localStartTime, end),
     null => EventFormatters.time(localStartTime),

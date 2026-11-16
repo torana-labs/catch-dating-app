@@ -5,6 +5,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
@@ -639,11 +640,11 @@ void main() {
                 child: CustomScrollView(
                   slivers: [
                     EventAgendaSliverList(
-                      events: [event],
+                      events: guestEventCardsOf([event]),
                       badgeLabel: 'VIEW',
                       today: now,
                       onEventSelected: (selected) =>
-                          selectedEventId = selected.id,
+                          selectedEventId = selected.eventId,
                     ),
                   ],
                 ),
@@ -706,9 +707,10 @@ void main() {
             child: CustomScrollView(
               slivers: [
                 EventAgendaSliverList(
-                  events: [laterRun, soonerRun],
+                  events: guestEventCardsOf([laterRun, soonerRun]),
                   today: now,
-                  onEventSelected: (selected) => tappedEventId = selected.id,
+                  onEventSelected: (selected) =>
+                      tappedEventId = selected.eventId,
                 ),
               ],
             ),
@@ -753,7 +755,7 @@ void main() {
             child: CustomScrollView(
               slivers: [
                 EventAgendaSliverList(
-                  events: [event],
+                  events: guestEventCardsOf([event]),
                   today: now,
                   showOrganizerName: true,
                   organizerNameBuilder: (_) => 'Stride Social',

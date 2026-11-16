@@ -43,7 +43,6 @@ import 'package:catch_dating_app/contexts/connections/domain/cross_paths_suggest
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
 import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations_repository.dart';
-import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_host_photos_repository.dart';
@@ -1885,12 +1884,12 @@ List<Object> _calendarProviderOverrides({
 
   return <Object>[
     uidProvider.overrideWithValue(uid),
-    watchSignedUpEventsProvider(
+    watchSignedUpEventCardsProvider(
       captureViewerUid,
-    ).overrideWithValue(effectiveSignedUpEvents),
-    watchSavedEventDetailsForUserProvider(
+    ).overrideWithValue(_captureCardsAsync(effectiveSignedUpEvents)),
+    watchSavedEventCardsProvider(
       captureViewerUid,
-    ).overrideWithValue(effectiveSavedEvents),
+    ).overrideWithValue(_captureCardsAsync(effectiveSavedEvents)),
     organizersRepositoryProvider.overrideWith(
       (ref) => _captureOrganizersRepository,
     ),
@@ -1922,9 +1921,9 @@ List<Object> _savedEventsProviderOverrides({
 
   return <Object>[
     uidProvider.overrideWithValue(uid),
-    watchSavedEventDetailsForUserProvider(
+    watchSavedEventCardsProvider(
       captureViewerUid,
-    ).overrideWithValue(effectiveSavedEvents),
+    ).overrideWithValue(_captureCardsAsync(effectiveSavedEvents)),
     organizersRepositoryProvider.overrideWith(
       (ref) => _captureOrganizersRepository,
     ),
@@ -15427,6 +15426,15 @@ AsyncValue<Map<String, GuestEventCard>> _captureCardsById(
   AsyncData(:final value) => AsyncData({
     for (final event in value) event.id: GuestEventCard.fromEvent(event),
   }),
+  AsyncError(:final error, :final stackTrace) => AsyncError(error, stackTrace),
+  _ => const AsyncLoading(),
+};
+
+/// The guest event cards capture events would carry.
+AsyncValue<List<GuestEventCard>> _captureCardsAsync(
+  AsyncValue<List<Event>> events,
+) => switch (events) {
+  AsyncData(:final value) => AsyncData(guestEventCardsOf(value)),
   AsyncError(:final error, :final stackTrace) => AsyncError(error, stackTrace),
   _ => const AsyncLoading(),
 };
