@@ -18,7 +18,7 @@ export function weddingsPhone(phone: string) {
  */
 export function weddingsApplicationRequest(
   application: WeddingsApplication,
-): Omit<JoinWaitlistHTTPRequest, "analytics" | "attribution" | "hostMeasurement"> {
+): Omit<JoinWaitlistHTTPRequest, "analytics" | "attribution" | "hostMeasurement"> & {city: string; role: "host"} {
   const destination = application.destination.trim();
   const lastTime = application.lastTime.trim();
   return {

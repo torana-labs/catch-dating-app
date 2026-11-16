@@ -864,6 +864,59 @@
       }
     }
   },
+  "anyOf": [
+    {
+      "description": "Waitlist, Host, programme and launch-notice submissions name a city and a role, and carry no lead block.",
+      "type": "object",
+      "required": [
+        "city",
+        "role"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "hostMeasurement": {},
+        "fullName": {},
+        "email": {},
+        "phone": {},
+        "city": {},
+        "cityId": {},
+        "countryIsoCode": {},
+        "citySource": {},
+        "cityOther": {},
+        "role": {},
+        "instagram": {},
+        "website": {},
+        "hostApplication": {},
+        "programme": {},
+        "programmeApplication": {},
+        "attribution": {},
+        "analytics": {},
+        "whatsapp": {}
+      }
+    },
+    {
+      "description": "A website lead names its kind and carries its lead block instead, with no role, email, Host or programme application or launch notice.",
+      "type": "object",
+      "required": [
+        "requestKind",
+        "lead"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "fullName": {},
+        "city": {},
+        "cityId": {},
+        "countryIsoCode": {},
+        "citySource": {},
+        "cityOther": {},
+        "website": {},
+        "attribution": {},
+        "analytics": {},
+        "requestKind": {},
+        "lead": {}
+      }
+    }
+  ],
   "if": {
     "required": [
       "requestKind"
