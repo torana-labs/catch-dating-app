@@ -1592,12 +1592,22 @@ How a run works:
   its targets, and a fallback run deploys plain `functions`, whose unchanged
   codebases are skipped. After the third attempt the run fails and names what
   still fails.
-- The run summary gives each Functions attempt's cost: CLI calls, HTTP 429
-  responses, updates, creates, exit code and seconds. For measuring pacing on
-  dev only, a manual run can set `batch` to deploy the first attempt as exact
-  Function names in sequential groups of that size (0, the default, is one
-  CLI call; the Firebase CLI's own concurrency is fixed at 40). Any other
-  environment refuses it.
+- The run summary gives each Functions attempt's cost: HTTP 429 responses,
+  updates, creates, exit code and seconds.
+- Functions deploy in one CLI call. The Firebase CLI's own concurrency is fixed
+  at 40, and it waits out the Cloud Run read-quota 429s that a full-size deploy
+  draws. Splitting the deploy into sequential groups was measured on dev on
+  16 Nov 2026 (full deploy, 832 Functions, same commit) and rejected:
+
+  | Pacing | CLI calls | 429s | Deploy Functions | Codebase builds |
+  |---|---:|---:|---:|---:|
+  | One call | 1 | 223 | 19 min | 12 |
+  | Groups of 80 | 11 | 25 | 30 min | 22 |
+  | Groups of 40 | 21 | 1 | 37 min | 32 |
+
+  Each call uploads and builds every codebase it touches again. The only 429
+  that failed a deploy was the invoker IAM read, which the CLI does not retry;
+  the exact-name retry above covers it.
 - The indexes and rules deploys (including the CLI's rules compile check,
   firebaserules `:test`) retry a temporary Google API error up to three times,
   30 then 60 seconds apart, with a warning per retry
