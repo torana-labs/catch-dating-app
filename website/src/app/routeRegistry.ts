@@ -1,3 +1,5 @@
+import {playbookFamilyRoutes, playbookFixedRoutes, type PlaybookRouteId} from "../features/playbook/playbookRoutes";
+
 export type MarketingRouteId =
   | "sales_demo"
   | "home"
@@ -88,6 +90,19 @@ export const marketingRoutePaths = marketingRouteDefinitions.reduce(
   }),
   {} as Record<MarketingRouteId, string>
 );
+
+/**
+ * The redesign's content pages (design/website/routes.json `contentFamily`
+ * routes), each path registered before its content exists. The shell
+ * resolves them with resolvePlaybookPage before these router paths: a path
+ * whose page is in its section's index renders the playbook page, and any
+ * other path falls through to not_found.
+ */
+export type {PlaybookRouteId};
+export const playbookRouteDefinitions: readonly {id: PlaybookRouteId; path: string}[] = [
+  ...playbookFixedRoutes.map(({id, path}) => ({id, path})),
+  ...playbookFamilyRoutes.map(({id, pattern}) => ({id, path: pattern})),
+];
 
 export function isOrganizerSearchPath(pathname: string) {
   return pathname === "/organizers" || pathname === "/organizers/";

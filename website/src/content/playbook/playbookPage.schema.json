@@ -1,0 +1,2253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Website playbook page",
+  "description": "Generated from website/src/content/playbook/playbookContract.ts; playbookContract.test.ts keeps it equal. The runtime validator also rejects the literal brand name and checks route ids, capture slots, anchors and footnotes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "id",
+    "route",
+    "meta",
+    "header",
+    "footer",
+    "sections"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../../playbookPage.schema.json"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(?:/[a-z0-9][a-z0-9-]*)*$"
+    },
+    "route": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "description",
+        "noindex"
+      ],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/copy"
+        },
+        "description": {
+          "$ref": "#/$defs/copy"
+        },
+        "noindex": {
+          "type": "boolean"
+        },
+        "socialDescription": {
+          "$ref": "#/$defs/copy"
+        },
+        "ogImage": {
+          "type": "string",
+          "pattern": "^/assets/[A-Za-z0-9/_.-]+\\.(?:jpg|jpeg|png|webp|avif|svg)$"
+        }
+      }
+    },
+    "header": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "variant"
+      ],
+      "properties": {
+        "variant": {
+          "enum": [
+            "guest",
+            "host",
+            "minimal"
+          ]
+        },
+        "breadcrumbs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "links",
+            "current"
+          ],
+          "properties": {
+            "links": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "label",
+                  "to"
+                ],
+                "properties": {
+                  "label": {
+                    "$ref": "#/$defs/copy"
+                  },
+                  "to": {
+                    "$ref": "#/$defs/destination"
+                  }
+                }
+              },
+              "minItems": 1,
+              "maxItems": 4
+            },
+            "current": {
+              "$ref": "#/$defs/copy"
+            }
+          }
+        },
+        "action": {
+          "$ref": "#/$defs/action"
+        },
+        "offer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "market",
+            "lead",
+            "body"
+          ],
+          "properties": {
+            "market": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{1,49}$"
+            },
+            "lead": {
+              "$ref": "#/$defs/copy"
+            },
+            "body": {
+              "$ref": "#/$defs/copy"
+            },
+            "action": {
+              "$ref": "#/$defs/action"
+            }
+          }
+        }
+      }
+    },
+    "footer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "variant"
+      ],
+      "properties": {
+        "variant": {
+          "enum": [
+            "guest",
+            "host",
+            "minimal"
+          ]
+        },
+        "footnotes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "text"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "text": {
+                "$ref": "#/$defs/copy"
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 12
+        },
+        "phoneBar": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action"
+          ],
+          "properties": {
+            "action": {
+              "$ref": "#/$defs/action"
+            },
+            "note": {
+              "$ref": "#/$defs/copy"
+            }
+          }
+        }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "title",
+              "lead",
+              "actions"
+            ],
+            "properties": {
+              "type": {
+                "const": "hero"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "actions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/action"
+                },
+                "minItems": 1,
+                "maxItems": 3
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "proof": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "text"
+                  ],
+                  "properties": {
+                    "text": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "footnote": {
+                      "type": "string",
+                      "pattern": "^[a-z][a-z0-9-]*$"
+                    }
+                  }
+                },
+                "minItems": 1,
+                "maxItems": 3
+              },
+              "aside": {
+                "$ref": "#/$defs/action"
+              },
+              "chip": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "title",
+                  "rows"
+                ],
+                "properties": {
+                  "title": {
+                    "$ref": "#/$defs/copy"
+                  },
+                  "rows": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "label",
+                        "value"
+                      ],
+                      "properties": {
+                        "label": {
+                          "$ref": "#/$defs/copy"
+                        },
+                        "value": {
+                          "$ref": "#/$defs/copy"
+                        }
+                      }
+                    },
+                    "minItems": 1,
+                    "maxItems": 4
+                  }
+                }
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/copy"
+                },
+                "minItems": 1,
+                "maxItems": 4
+              },
+              "note": {
+                "$ref": "#/$defs/copy"
+              },
+              "media": {
+                "$ref": "#/$defs/media"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "title",
+              "items"
+            ],
+            "properties": {
+              "type": {
+                "const": "tiles"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "title"
+                  ],
+                  "properties": {
+                    "title": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "body": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "figure": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "figureNote": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "list": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/copy"
+                      },
+                      "minItems": 1,
+                      "maxItems": 6
+                    },
+                    "fix": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "then": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "kicker": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "ground": {
+                      "enum": [
+                        "white",
+                        "paper",
+                        "ink",
+                        "coral",
+                        "pink",
+                        "yellow",
+                        "mint",
+                        "indigo",
+                        "magenta"
+                      ]
+                    },
+                    "link": {
+                      "$ref": "#/$defs/action"
+                    }
+                  }
+                },
+                "minItems": 1,
+                "maxItems": 12
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "pageTitle": {
+                "type": "boolean"
+              },
+              "columns": {
+                "enum": [
+                  2,
+                  3,
+                  4,
+                  6
+                ]
+              },
+              "align": {
+                "enum": [
+                  "start",
+                  "center"
+                ]
+              },
+              "actions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/action"
+                },
+                "minItems": 1,
+                "maxItems": 3
+              },
+              "foot": {
+                "$ref": "#/$defs/copy"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "title"
+            ],
+            "properties": {
+              "type": {
+                "const": "split"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "media": {
+                "$ref": "#/$defs/media"
+              },
+              "leadForm": {
+                "$ref": "#/$defs/leadForm"
+              },
+              "pageTitle": {
+                "type": "boolean"
+              },
+              "body": {
+                "$ref": "#/$defs/copy"
+              },
+              "ticks": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/copy"
+                },
+                "minItems": 1,
+                "maxItems": 8
+              },
+              "mediaFirst": {
+                "type": "boolean"
+              },
+              "actions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/action"
+                },
+                "minItems": 1,
+                "maxItems": 3
+              },
+              "groups": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "title",
+                    "list"
+                  ],
+                  "properties": {
+                    "title": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "list": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/copy"
+                      },
+                      "minItems": 1,
+                      "maxItems": 8
+                    },
+                    "label": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "links": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/action"
+                      },
+                      "minItems": 1,
+                      "maxItems": 3
+                    }
+                  }
+                },
+                "minItems": 1,
+                "maxItems": 4
+              },
+              "steps": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "title",
+                    "body"
+                  ],
+                  "properties": {
+                    "label": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "title": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "body": {
+                      "$ref": "#/$defs/copy"
+                    }
+                  }
+                },
+                "minItems": 1,
+                "maxItems": 6
+              },
+              "callout": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "figure",
+                  "text"
+                ],
+                "properties": {
+                  "figure": {
+                    "$ref": "#/$defs/copy"
+                  },
+                  "text": {
+                    "$ref": "#/$defs/copy"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "title",
+              "steps"
+            ],
+            "properties": {
+              "type": {
+                "const": "timeline"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "steps": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "time",
+                    "title",
+                    "body"
+                  ],
+                  "properties": {
+                    "time": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "title": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "body": {
+                      "$ref": "#/$defs/copy"
+                    }
+                  }
+                },
+                "minItems": 2,
+                "maxItems": 8
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "media": {
+                "$ref": "#/$defs/media"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "title",
+              "items"
+            ],
+            "properties": {
+              "type": {
+                "const": "checklist"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "title",
+                    "body"
+                  ],
+                  "properties": {
+                    "title": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "body": {
+                      "$ref": "#/$defs/copy"
+                    }
+                  }
+                },
+                "minItems": 2,
+                "maxItems": 12
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "actions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/action"
+                },
+                "minItems": 1,
+                "maxItems": 3
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "name",
+              "initials",
+              "quote"
+            ],
+            "properties": {
+              "type": {
+                "const": "story"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "name": {
+                "$ref": "#/$defs/copy"
+              },
+              "initials": {
+                "$ref": "#/$defs/copy"
+              },
+              "quote": {
+                "$ref": "#/$defs/copy"
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "meta": {
+                "$ref": "#/$defs/copy"
+              },
+              "avatarGround": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "metrics": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "value",
+                    "footnote"
+                  ],
+                  "properties": {
+                    "label": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "value": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "footnote": {
+                      "type": "string",
+                      "pattern": "^[a-z][a-z0-9-]*$"
+                    },
+                    "source": {
+                      "$ref": "#/$defs/copy"
+                    }
+                  }
+                },
+                "minItems": 1,
+                "maxItems": 4
+              },
+              "media": {
+                "$ref": "#/$defs/photo"
+              },
+              "link": {
+                "$ref": "#/$defs/action"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "price",
+              "title",
+              "examples"
+            ],
+            "properties": {
+              "type": {
+                "const": "pricing"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "price": {
+                "$ref": "#/$defs/copy"
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "examples": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "title",
+                    "value"
+                  ],
+                  "properties": {
+                    "title": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "value": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "body": {
+                      "$ref": "#/$defs/copy"
+                    }
+                  }
+                },
+                "minItems": 1,
+                "maxItems": 4
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "cap": {
+                "$ref": "#/$defs/copy"
+              },
+              "trial": {
+                "$ref": "#/$defs/copy"
+              },
+              "actions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/action"
+                },
+                "minItems": 1,
+                "maxItems": 3
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "title",
+              "items"
+            ],
+            "properties": {
+              "type": {
+                "const": "faq"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "question",
+                    "answer"
+                  ],
+                  "properties": {
+                    "question": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "answer": {
+                      "$ref": "#/$defs/copy"
+                    }
+                  }
+                },
+                "minItems": 1,
+                "maxItems": 12
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "action": {
+                "$ref": "#/$defs/action"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "title"
+            ],
+            "properties": {
+              "type": {
+                "const": "cta"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "actions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/action"
+                },
+                "minItems": 1,
+                "maxItems": 3
+              },
+              "leadForm": {
+                "$ref": "#/$defs/leadForm"
+              },
+              "storeBadges": {
+                "enum": [
+                  "guest",
+                  "host"
+                ]
+              },
+              "media": {
+                "$ref": "#/$defs/media"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "title",
+              "source"
+            ],
+            "properties": {
+              "type": {
+                "const": "cards"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "source": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "cityPlans"
+                      },
+                      "format": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "organisers"
+                      },
+                      "format": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "cities"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "stories"
+                      },
+                      "format": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9-]*$"
+                      },
+                      "city": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "playbooks"
+                      },
+                      "format": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9-]*$"
+                      },
+                      "city": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "group"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "people"
+                      },
+                      "group": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9-]*$"
+                      }
+                    }
+                  }
+                ]
+              },
+              "filters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "key",
+                    "label"
+                  ],
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "pattern": "^[a-z][a-z0-9-]*$"
+                    },
+                    "label": {
+                      "$ref": "#/$defs/copy"
+                    }
+                  }
+                },
+                "minItems": 2,
+                "maxItems": 8
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "pageTitle": {
+                "type": "boolean"
+              },
+              "columns": {
+                "enum": [
+                  3,
+                  4
+                ]
+              },
+              "empty": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "title",
+                  "body"
+                ],
+                "properties": {
+                  "title": {
+                    "$ref": "#/$defs/copy"
+                  },
+                  "body": {
+                    "$ref": "#/$defs/copy"
+                  }
+                }
+              },
+              "actions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/action"
+                },
+                "minItems": 1,
+                "maxItems": 3
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "title",
+              "items"
+            ],
+            "properties": {
+              "type": {
+                "const": "tabs"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "label"
+                  ],
+                  "properties": {
+                    "label": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "title": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "subtitle": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "time": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "body": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "accent": {
+                      "enum": [
+                        "coral",
+                        "pink",
+                        "yellow",
+                        "mint",
+                        "indigo",
+                        "magenta"
+                      ]
+                    },
+                    "tips": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/copy"
+                      },
+                      "minItems": 1,
+                      "maxItems": 6
+                    },
+                    "list": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "time",
+                          "title"
+                        ],
+                        "properties": {
+                          "time": {
+                            "$ref": "#/$defs/copy"
+                          },
+                          "title": {
+                            "$ref": "#/$defs/copy"
+                          },
+                          "body": {
+                            "$ref": "#/$defs/copy"
+                          }
+                        }
+                      },
+                      "minItems": 1,
+                      "maxItems": 8
+                    },
+                    "media": {
+                      "$ref": "#/$defs/media"
+                    }
+                  }
+                },
+                "minItems": 2,
+                "maxItems": 8
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "layout": {
+                "enum": [
+                  "tabs",
+                  "steps"
+                ]
+              },
+              "align": {
+                "enum": [
+                  "start",
+                  "center"
+                ]
+              },
+              "defaultItem": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 7
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "title",
+              "columns",
+              "rows"
+            ],
+            "properties": {
+              "type": {
+                "const": "table"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "columns": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/copy"
+                },
+                "minItems": 1,
+                "maxItems": 6
+              },
+              "rows": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "label",
+                    "cells"
+                  ],
+                  "properties": {
+                    "label": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "cells": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [],
+                        "properties": {
+                          "text": {
+                            "$ref": "#/$defs/copy"
+                          },
+                          "status": {
+                            "enum": [
+                              "yes",
+                              "no",
+                              "unknown"
+                            ]
+                          }
+                        }
+                      },
+                      "minItems": 1,
+                      "maxItems": 6
+                    }
+                  }
+                },
+                "minItems": 1,
+                "maxItems": 30
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "rowHeader": {
+                "$ref": "#/$defs/copy"
+              },
+              "highlightColumn": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "source": {
+                "$ref": "#/$defs/copy"
+              },
+              "checked": {
+                "$ref": "#/$defs/copy"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "title",
+              "sections"
+            ],
+            "properties": {
+              "type": {
+                "const": "article"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "sections": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "heading",
+                    "paragraphs"
+                  ],
+                  "properties": {
+                    "heading": {
+                      "$ref": "#/$defs/copy"
+                    },
+                    "paragraphs": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/copy"
+                      },
+                      "minItems": 1,
+                      "maxItems": 12
+                    },
+                    "list": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/copy"
+                      },
+                      "minItems": 1,
+                      "maxItems": 12
+                    },
+                    "tip": {
+                      "$ref": "#/$defs/copy"
+                    }
+                  }
+                },
+                "minItems": 1,
+                "maxItems": 20
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "pageTitle": {
+                "type": "boolean"
+              },
+              "meta": {
+                "$ref": "#/$defs/copy"
+              },
+              "aside": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "ground",
+                  "title",
+                  "body"
+                ],
+                "properties": {
+                  "ground": {
+                    "enum": [
+                      "white",
+                      "paper",
+                      "ink",
+                      "coral",
+                      "pink",
+                      "yellow",
+                      "mint",
+                      "indigo",
+                      "magenta"
+                    ]
+                  },
+                  "title": {
+                    "$ref": "#/$defs/copy"
+                  },
+                  "body": {
+                    "$ref": "#/$defs/copy"
+                  },
+                  "action": {
+                    "$ref": "#/$defs/action"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "media"
+            ],
+            "properties": {
+              "type": {
+                "const": "screen"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "media": {
+                "$ref": "#/$defs/media"
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "caption": {
+                "$ref": "#/$defs/copy"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "component"
+            ],
+            "properties": {
+              "type": {
+                "const": "custom"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "component": {
+                "enum": [
+                  "noShowCalculator",
+                  "eventPageFromLink",
+                  "walkthroughSlots",
+                  "pricingCalculator"
+                ]
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "labels": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "key",
+                    "text"
+                  ],
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "pattern": "^[a-z][A-Za-z0-9]*$"
+                    },
+                    "text": {
+                      "$ref": "#/$defs/copy"
+                    }
+                  }
+                },
+                "minItems": 1,
+                "maxItems": 40
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "id",
+              "ground",
+              "title",
+              "blocks"
+            ],
+            "properties": {
+              "type": {
+                "const": "flow"
+              },
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              },
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "blocks": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/excerptCard"
+                },
+                "minItems": 1,
+                "maxItems": 6
+              },
+              "kicker": {
+                "$ref": "#/$defs/copy"
+              },
+              "lead": {
+                "$ref": "#/$defs/copy"
+              },
+              "steps": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/copy"
+                },
+                "minItems": 2,
+                "maxItems": 6
+              },
+              "currentStep": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "tabs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/copy"
+                },
+                "minItems": 2,
+                "maxItems": 8
+              },
+              "currentTab": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 7
+              },
+              "actions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/action"
+                },
+                "minItems": 1,
+                "maxItems": 3
+              },
+              "note": {
+                "$ref": "#/$defs/copy"
+              }
+            }
+          }
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 24
+    }
+  },
+  "$defs": {
+    "copy": {
+      "type": "string",
+      "pattern": "\\S",
+      "not": {
+        "anyOf": [
+          {
+            "pattern": "\\[[^\\]\\n]*\\]"
+          },
+          {
+            "pattern": "#(?:[0-9A-Fa-f]{8}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{3,4})\\b"
+          }
+        ]
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "to"
+      ],
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/copy"
+        },
+        "to": {
+          "$ref": "#/$defs/destination"
+        },
+        "emphasis": {
+          "enum": [
+            "primary",
+            "secondary"
+          ]
+        }
+      }
+    },
+    "destination": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "route"
+          ],
+          "properties": {
+            "route": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$"
+            },
+            "anchor": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]*$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "page"
+          ],
+          "properties": {
+            "page": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*(?:/[a-z0-9][a-z0-9-]*)*$"
+            },
+            "anchor": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]*$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "anchor"
+          ],
+          "properties": {
+            "anchor": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]*$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "message"
+          ],
+          "properties": {
+            "kind": {
+              "const": "whatsapp"
+            },
+            "message": {
+              "$ref": "#/$defs/copy"
+            }
+          }
+        }
+      ]
+    },
+    "excerptCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title"
+      ],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/copy"
+        },
+        "subtitle": {
+          "$ref": "#/$defs/copy"
+        },
+        "label": {
+          "$ref": "#/$defs/copy"
+        },
+        "stats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "label"
+            ],
+            "properties": {
+              "value": {
+                "$ref": "#/$defs/copy"
+              },
+              "label": {
+                "$ref": "#/$defs/copy"
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 4
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "title"
+            ],
+            "properties": {
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "detail": {
+                "$ref": "#/$defs/copy"
+              },
+              "value": {
+                "$ref": "#/$defs/copy"
+              },
+              "tag": {
+                "$ref": "#/$defs/copy"
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 8
+        },
+        "bars": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "value",
+              "share"
+            ],
+            "properties": {
+              "label": {
+                "$ref": "#/$defs/copy"
+              },
+              "value": {
+                "$ref": "#/$defs/copy"
+              },
+              "share": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 6
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label"
+            ],
+            "properties": {
+              "label": {
+                "$ref": "#/$defs/copy"
+              },
+              "placeholder": {
+                "$ref": "#/$defs/copy"
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 6
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "text": {
+                "$ref": "#/$defs/copy"
+              },
+              "time": {
+                "$ref": "#/$defs/copy"
+              },
+              "own": {
+                "type": "boolean"
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 8
+        },
+        "tiles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "title",
+              "body"
+            ],
+            "properties": {
+              "title": {
+                "$ref": "#/$defs/copy"
+              },
+              "body": {
+                "$ref": "#/$defs/copy"
+              },
+              "ground": {
+                "enum": [
+                  "white",
+                  "paper",
+                  "ink",
+                  "coral",
+                  "pink",
+                  "yellow",
+                  "mint",
+                  "indigo",
+                  "magenta"
+                ]
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 6
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/copy"
+          },
+          "minItems": 1,
+          "maxItems": 3
+        },
+        "note": {
+          "$ref": "#/$defs/copy"
+        },
+        "cover": {
+          "type": "string",
+          "pattern": "^/assets/[A-Za-z0-9/_.-]+\\.(?:jpg|jpeg|png|webp|avif|svg)$"
+        }
+      }
+    },
+    "leadForm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "requestKind",
+        "label",
+        "submitLabel"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "requestKind": {
+          "enum": [
+            "guide",
+            "walkthrough",
+            "demo",
+            "venue",
+            "story",
+            "referral",
+            "org_contact",
+            "city_alerts"
+          ]
+        },
+        "label": {
+          "$ref": "#/$defs/copy"
+        },
+        "submitLabel": {
+          "$ref": "#/$defs/copy"
+        },
+        "format": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "label"
+            ],
+            "properties": {
+              "name": {
+                "enum": [
+                  "name",
+                  "preferredTime",
+                  "whatYouHost",
+                  "area",
+                  "capacity",
+                  "nights",
+                  "orgType",
+                  "orgName"
+                ]
+              },
+              "label": {
+                "$ref": "#/$defs/copy"
+              },
+              "placeholder": {
+                "$ref": "#/$defs/copy"
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 6
+        },
+        "note": {
+          "$ref": "#/$defs/copy"
+        }
+      }
+    },
+    "media": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "slot"
+          ],
+          "properties": {
+            "kind": {
+              "const": "capture"
+            },
+            "slot": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "alt": {
+              "$ref": "#/$defs/copy"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "card"
+          ],
+          "properties": {
+            "kind": {
+              "const": "excerpt"
+            },
+            "card": {
+              "$ref": "#/$defs/excerptCard"
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/photo"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "to",
+            "label"
+          ],
+          "properties": {
+            "kind": {
+              "const": "qr"
+            },
+            "to": {
+              "$ref": "#/$defs/destination"
+            },
+            "label": {
+              "$ref": "#/$defs/copy"
+            }
+          }
+        }
+      ]
+    },
+    "photo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "asset",
+        "alt"
+      ],
+      "properties": {
+        "kind": {
+          "const": "photo"
+        },
+        "asset": {
+          "type": "string",
+          "pattern": "^/assets/[A-Za-z0-9/_.-]+\\.(?:jpg|jpeg|png|webp|avif|svg)$"
+        },
+        "alt": {
+          "$ref": "#/$defs/copy"
+        },
+        "note": {
+          "$ref": "#/$defs/copy"
+        }
+      }
+    }
+  }
+}
