@@ -1,0 +1,40 @@
+/*
+ * The frame of a website flow step (the playbook kit's flow): a 640px
+ * column centred in the band, or 1040px when wide. The banner and the
+ * navigation sit 28px above the head; the content column is 24px under it,
+ * its blocks 14px apart, two across in a wide frame on a page at least
+ * 840px wide; fine print 18px under the content.
+ */
+.frame {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.frame[data-wide] { max-width: 1040px; }
+
+.banner,
+.navigation { margin-bottom: var(--catch-space-s7); }
+
+.navigation {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--catch-space-micro14);
+  margin-top: var(--catch-space-s6);
+}
+
+.frame[data-wide] .content { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.footer { margin-top: var(--catch-space-micro18); }
+
+@container catch-page (width < 840px) {
+  .frame[data-wide] .content { grid-template-columns: minmax(0, 1fr); }
+}

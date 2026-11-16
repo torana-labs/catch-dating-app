@@ -173,6 +173,40 @@ function missingGuestEventStatusStep(source, eventField, personField) {
   };
 }
 
+let formVersionFilterModule = null;
+function functionsFormVersionFilters() {
+  try {
+    formVersionFilterModule ??= createFunctionsRequire()(
+      "./lib/hostReadModels/formVersionFilterStore.js");
+  } catch (error) {
+    throw new Error(
+      "The host-form-version-filters migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return formVersionFilterModule;
+}
+
+let guestMessagingPermissionModule = null;
+function functionsGuestMessagingPermissions() {
+  try {
+    guestMessagingPermissionModule ??= createFunctionsRequire()(
+      "./lib/messaging/guestMessagingPermissionStore.js");
+  } catch (error) {
+    throw new Error(
+      "The guest-messaging-permissions migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return guestMessagingPermissionModule;
+}
+
+/** A guest messaging permission row from current sources, read only. */
+function guestMessagingPermissionRow(db, row) {
+  const {guestMessagingPermission} = functionsGuestMessagingPermissions();
+  return db.runTransaction((tx) => guestMessagingPermission(db, tx, row));
+}
+
 const profilePromptCatalog = JSON.parse(fs.readFileSync(
   new URL("../../../contracts/catalogs/profile_prompts.json", import.meta.url), "utf8"));
 const defaultPrompt = profilePromptCatalog.prompts.find(
@@ -542,6 +576,57 @@ export const MIGRATIONS = [
             event.data());
           return card ? {eventCard: card} : null;
         },
+      },
+    ],
+  },
+  {
+    name: "host-form-version-filters",
+    description:
+      "Form-scoped response inboxes read a published form version's answer " +
+      "filters from hostFormVersionFilters (#1339) instead of the " +
+      "listOrganizerFormResponses callable. Every organizerFormVersions " +
+      "document without a view gets one, computed from the version exactly " +
+      "as the new trigger writes it. Existing views are never replaced and " +
+      "versions are never changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerFormVersions",
+        target: "hostFormVersionFilters",
+        skipReason: "no owner, form, version number or definition",
+        targetId: (id) => id,
+        transform: (data, id) =>
+          functionsFormVersionFilters().hostFormVersionFilter(id, data),
+      },
+    ],
+  },
+  {
+    name: "guest-messaging-permissions",
+    description:
+      "The guest's messaging settings page reads guestMessagingPermissions " +
+      "instead of the listParticipantMessagingPreferences callable. Every " +
+      "Catch and organizer communication preference without a row gets one, " +
+      "with the summary the callable computes from the preference and the " +
+      "receipts it names, as the new triggers write it. Existing rows are " +
+      "never replaced; preferences and receipts are never changed. Build " +
+      "Functions first.",
+    steps: [
+      {
+        source: "catchCommunicationPreferences",
+        target: "guestMessagingPermissions",
+        skipReason: "no guest",
+        targetId: (id, data) => validId(data.uid) && data.uid === id ?
+          `catchpref_${id}` : null,
+        transform: (data, id, db) => guestMessagingPermissionRow(db,
+          {scope: "catch", uid: id}),
+      },
+      {
+        source: "organizerCommunicationPreferences",
+        target: "guestMessagingPermissions",
+        skipReason: "no guest or organizer",
+        targetId: (id, data) => validId(data.uid) && validId(data.organizerId) ?
+          id : null,
+        transform: (data, id, db) => guestMessagingPermissionRow(db,
+          {scope: "organizer", preferenceId: id}),
       },
     ],
   },

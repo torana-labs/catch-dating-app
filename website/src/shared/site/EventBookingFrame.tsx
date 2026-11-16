@@ -8,6 +8,7 @@ import {PublicSiteFooter, PublicSiteHeader} from "./PublicSiteChrome";
  * is gone. The booking card sits where the event page puts it, beside a
  * heading that says what the booking is for. It shows no event detail beyond
  * what its steps show, and the pages that use it stay private and unstored.
+ * A booking is a one-job flow: the minimal header and no help band.
  */
 export function EventBookingFrame({title, body, children}: {
   title: string;
@@ -16,7 +17,7 @@ export function EventBookingFrame({title, body, children}: {
 }) {
   return (
     <>
-      <PublicSiteHeader />
+      <PublicSiteHeader variant="minimal" />
       <CatchBand as="main" pt="compact">
         <CatchSplit
           end={<CatchGroundCard ground="white" outlined>{children}</CatchGroundCard>}
@@ -31,7 +32,7 @@ export function EventBookingFrame({title, body, children}: {
           )}
         />
       </CatchBand>
-      <PublicSiteFooter />
+      <PublicSiteFooter helpBand={false} />
     </>
   );
 }

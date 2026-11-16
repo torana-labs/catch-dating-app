@@ -22,6 +22,20 @@ const schemaPath = path.join(
 export const MANUAL_FILE_ACQUISITION_ADAPTER_ID = "manual_file";
 export const PAGE_FETCH_ADAPTER_ID = "page_fetch";
 export const PAGE_FETCH_POLICY_GAP_ID = "on_demand_page_fetch_policy";
+// The monthly page allowances. Requests from the website's instant draft tool
+// read from their own (pageFetch.maxInstantDraftRequestsPerMonth), so drafts
+// can never starve the allowance staff nominations share.
+export const SHARED_PAGE_ALLOWANCE = "shared";
+export const INSTANT_DRAFT_PAGE_ALLOWANCE = "web_instant_draft";
+
+/** The monthly page cap of one allowance under the policy. */
+export function monthlyPageFetchLimit(policy, allowance = SHARED_PAGE_ALLOWANCE) {
+  invariant(allowance === SHARED_PAGE_ALLOWANCE || allowance === INSTANT_DRAFT_PAGE_ALLOWANCE,
+    "INVALID_ACQUISITION_BUDGET", "Unknown page fetch allowance.", {allowance});
+  return allowance === INSTANT_DRAFT_PAGE_ALLOWANCE ?
+    policy.pageFetch.maxInstantDraftRequestsPerMonth :
+    policy.pageFetch.maxRequestsPerMonth;
+}
 // Batch web search (sources/search/): planned discovery queries sent to a
 // search API. Off until the owner accepts batch_web_search_policy.
 export const WEB_SEARCH_ADAPTER_ID = "serp_api";
@@ -387,6 +401,8 @@ export function assertPolicy(policy) {
       policy.pageFetch.maxRequestsPerIntake >= 0 &&
       Number.isSafeInteger(policy.pageFetch.maxRequestsPerMonth) &&
       policy.pageFetch.maxRequestsPerMonth >= 0 &&
+      Number.isSafeInteger(policy.pageFetch.maxInstantDraftRequestsPerMonth) &&
+      policy.pageFetch.maxInstantDraftRequestsPerMonth >= 0 &&
       typeof policy.webSearch?.enabled === "boolean" &&
       policy.webSearch.policyGapId === WEB_SEARCH_POLICY_GAP_ID &&
       Number.isSafeInteger(policy.webSearch.maxResultsPerQuery) &&

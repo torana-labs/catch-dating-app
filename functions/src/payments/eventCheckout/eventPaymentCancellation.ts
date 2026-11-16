@@ -14,8 +14,8 @@ import {FirestoreSeatIdentityAuthority, SeatIdentityAuthorityError} from
 import {readSeatMigrationWriterFence} from "../../events/seatMigrationPaged";
 import {FirestoreSeatTransaction, assertCurrentReadySeatSnapshot} from
   "../../events/seatAuthority/firestoreAdapter";
-import {prepareSeatCommand, applySeatPlan, SeatAuthorityError} from
-  "../../events/seatAuthority/seatAuthority";
+import {prepareSeatCommand, applySeatPlan, reservationPlaces,
+  SeatAuthorityError} from "../../events/seatAuthority/seatAuthority";
 import {catchBookingCancellation, isPublicPaymentBooking} from
   "../../events/publicRegistration/catchBookingBridge";
 function unavailable(): never {
@@ -172,8 +172,9 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
         eventId, uid: recipientUid}) : {};
     if (release) {
       applySeatPlan(seatTx, release);
-      tx.update(eventRef, {bookedCount: ledger.occupied - 1,
-        ...bridgedCounts});
+      // A multi-place booking returns every place it held at once.
+      const bookedCount = ledger.occupied - reservationPlaces(reservation);
+      tx.update(eventRef, {bookedCount, ...bridgedCounts});
     }
     tx.update(attendeeRef, {status: "cancelled", cancelledAt: now,
       preCheckInStatus: null, updatedAt: now});

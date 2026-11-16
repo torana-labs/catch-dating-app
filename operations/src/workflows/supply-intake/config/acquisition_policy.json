@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "policyVersion": "supply-acquisition-v3",
+  "policyVersion": "supply-acquisition-v4",
   "manualFileCaptureEnabled": true,
   "provider": {
     "enabled": false,
@@ -19,7 +19,8 @@
     "maxResponseBytes": 4194304,
     "maxRedirects": 3,
     "maxRequestsPerIntake": 12,
-    "maxRequestsPerMonth": 600
+    "maxRequestsPerMonth": 600,
+    "maxInstantDraftRequestsPerMonth": 300
   },
   "webSearch": {
     "enabled": true,

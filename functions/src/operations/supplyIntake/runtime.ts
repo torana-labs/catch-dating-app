@@ -81,6 +81,8 @@ export interface AcquisitionPolicy {
     decisionId: string | null;
     maxRequestsPerIntake: number;
     maxRequestsPerMonth: number;
+    /** The website instant draft tool's own monthly page allowance. */
+    maxInstantDraftRequestsPerMonth: number;
   };
   webSearch: WebSearchPolicy;
 }
@@ -95,6 +97,8 @@ export interface SupplyIntakeRequest {
   seed: {name: string | null; urls: string[]; notes: string | null; categories: string[]};
   submittedBy: {role: "associate" | "partner" | "organizer" | "system"; uid: string | null; partnerId: string | null};
   submittedAt: string;
+  /** What created the request; a website instant draft reads from its own page allowance. */
+  origin?: {kind: string; id: string} | null;
 }
 
 interface GatheredEvidence {
