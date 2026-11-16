@@ -12,6 +12,10 @@
       "$ref": "../shared/event_common.schema.json#/definitions/marketId",
       "description": "Canonical launch market id. The field name is retained for callable compatibility."
     },
-    "limit": {"type": "integer", "minimum": 1, "maximum": 50}
+    "limit": {"type": "integer", "minimum": 1, "maximum": 50},
+    "womenLedOnly": {
+      "type": "boolean",
+      "description": "When true, returns only women-led organizers and women-led upcoming events (the resolved label, after event overrides and admin locks)."
+    }
   }
 }
