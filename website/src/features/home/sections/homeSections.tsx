@@ -26,7 +26,6 @@ import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot"
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {Form} from "../../../shared/ui/primitives";
 import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
-import {useFoundingHostOffer} from "../../playbook/useFoundingHostOffer";
 import {CityPicker} from "./CityPicker";
 import type {HomeFilter, HomePageController} from "../useHomePageController";
 import {useAppNoticeController} from "../useAppNoticeController";
@@ -41,7 +40,7 @@ const filterValues: HomeFilter[] = ["all", ...homeFormats.map((item) => item.for
  * its plans and the host link in the phone's first screen, with the soonest
  * plan floating over the app. A city that has not opened leads with hosts.
  */
-function HomeHero({captures, home, offerOpen}: {captures: CaptureSlots; home: Home; offerOpen: boolean}) {
+function HomeHero({captures, home}: {captures: CaptureSlots; home: Home}) {
   const city = home.city.label;
   if (home.state === "launching") {
     const tablet = captureSlot(captures, "host-live-tablet", "eager");
@@ -51,7 +50,7 @@ function HomeHero({captures, home, offerOpen}: {captures: CaptureSlots; home: Ho
         ground="indigo"
         id="home-hero"
         kicker={home.heroEyebrow}
-        lead={offerOpen ? copy.launchHero.foundingBody : copy.launchHero.body}
+        lead={copy.launchHero.body}
         link={home.liveCity ? {label: fill(copy.soon.liveCityAction, {city: home.liveCity.label}), href: home.cityHref(home.liveCity.slug)} : undefined}
         media={tablet ? <CatchDeviceFrame kind="tablet" tilt="left"><CatchAppCaptureImage {...tablet} caption={undefined} /></CatchDeviceFrame> : undefined}
         title={fill(copy.launchHero.title, {city})}
@@ -168,11 +167,12 @@ function HomeLaunchingSoon({home}: {home: Home}) {
 
 /**
  * The host band: in a busy city it follows the proof; in a thin or launching
- * city it moves up to third place, with the founding-host offer while the
- * city's counter reads open. A launching city's hero already shows the
- * tablet, so the band keeps to its words there.
+ * city it moves up to third place with a person on WhatsApp. The board's
+ * founding-host offer waits until the page can read the city's live counter.
+ * A launching city's hero already shows the tablet, so the band keeps to its
+ * words there.
  */
-function HomeHosts({captures, home, offerOpen}: {captures: CaptureSlots; home: Home; offerOpen: boolean}) {
+function HomeHosts({captures, home}: {captures: CaptureSlots; home: Home}) {
   const early = home.state !== "busy";
   const tablet = captureSlot(captures, "host-live-tablet");
   const media = home.state !== "launching" && tablet ?
@@ -183,7 +183,7 @@ function HomeHosts({captures, home, offerOpen}: {captures: CaptureSlots; home: H
   return (
     <CatchSplitSection
       actions={actions}
-      body={early && offerOpen ? fill(copy.host.foundingBody, {city: home.city.label}) : copy.host.fees}
+      body={copy.host.fees}
       flush={media != null}
       ground="indigo"
       id="hosts"
@@ -329,8 +329,6 @@ function HomeFaq() {
  */
 export function HomePageSections({captures, downloadUrl, home}: {captures: CaptureSlots; home: Home; downloadUrl?: string}) {
   const early = home.state !== "busy";
-  // The founding offer shows only while the city's public counter reads open, never a place that is gone.
-  const offerOpen = useFoundingHostOffer(early ? home.marketId : undefined);
   return (
     <>
       <PublicSiteHeader
@@ -338,12 +336,12 @@ export function HomePageSections({captures, downloadUrl, home}: {captures: Captu
         whatsOnHref={home.exploreHref}
       />
       <WebsitePageMain id="top">
-        <HomeHero captures={captures} home={home} offerOpen={offerOpen} />
+        <HomeHero captures={captures} home={home} />
         {home.live ? <HomePlans home={home} /> : <HomeLaunchingSoon home={home} />}
-        {early ? <HomeHosts captures={captures} home={home} offerOpen={offerOpen} /> : null}
+        {early ? <HomeHosts captures={captures} home={home} /> : null}
         <HomeNight captures={captures} />
         <HomeProof home={home} />
-        {early ? null : <HomeHosts captures={captures} home={home} offerOpen={offerOpen} />}
+        {early ? null : <HomeHosts captures={captures} home={home} />}
         <HomeOrganisers home={home} />
         <HomeApp captures={captures} downloadUrl={downloadUrl} home={home} />
         <HomeFaq />

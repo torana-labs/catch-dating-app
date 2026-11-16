@@ -43,9 +43,8 @@ export const homePageCopy = {
   launchHero: {
     eyebrow: "Launching soon in {city}",
     title: "Bring people together in {city}? Be one of the first hosts.",
+    // The board's founding-offer sentence waits until the page can read the city's live counter.
     body: `The first hosts in a city shape what ${brand.name} becomes there.`,
-    /** While the city's founding-host counter reads open. */
-    foundingBody: `The first hosts in a city shape what ${brand.name} becomes there. Founding hosts get 90 days without ${brand.name} fees.`,
     startAction: "Start hosting free",
     hostsAction: `See ${brand.name} for hosts`,
   },
@@ -150,8 +149,6 @@ export const homePageCopy = {
     eyebrow: "For hosts",
     title: "Bring people together? Run the whole night from one screen.",
     body: "Bookings paid upfront, the door, groups, the first hello and the follow-up. Free for 30 days, then 5% of ticket sales, capped at ₹10,000 per billing cycle. Free events stay free.",
-    /** A thin or launching city while its founding-host counter reads open: the offer, without a places count. */
-    foundingBody: "Founding hosts in {city}: 90 days without fees. Payment gateway fees are charged separately by the payment provider.",
     fees: "Payment gateway fees are charged separately by the payment provider.",
     trial: "Start your free trial",
     action: `See ${brand.name} for hosts`,
