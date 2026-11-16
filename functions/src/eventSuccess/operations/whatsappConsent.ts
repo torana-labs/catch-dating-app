@@ -4,10 +4,10 @@ import {validateEventWhatsappConsentReceiptDocument} from
   "../../shared/generated/validators/eventWhatsappConsentReceiptDocument";
 import {operationContentHash} from "../../operations/durableActions";
 import {Permission, whatsappSenderHash} from "./whatsappPermissionRecords";
+import {EVENT_ASSISTANCE_CONSENT_RECEIPTS} from "./messageConsentCollections";
 
 export type {ConsentReceipt};
-export const WHATSAPP_CONSENT_RECEIPTS =
-  "eventAssistanceWhatsappConsentReceipts";
+export const WHATSAPP_CONSENT_RECEIPTS = EVENT_ASSISTANCE_CONSENT_RECEIPTS;
 export const WHATSAPP_CONSENT_VERSION = "catch-event-service-whatsapp-v1";
 export const WHATSAPP_CONSENT_TEXT =
   "Receive WhatsApp messages from the organizer shown here about joining, " +

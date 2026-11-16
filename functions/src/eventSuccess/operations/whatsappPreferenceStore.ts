@@ -127,7 +127,7 @@ export class WhatsappPreferenceStore {
         previous?.evidence ?? null;
       const recipientBinding = granting || !previous ?
         facts.recipientBinding : previous.recipientBinding;
-      const permission = parseWhatsappPermission({schemaVersion: 1,
+      const permission = parseWhatsappPermission({schemaVersion: 1, channel: "whatsapp",
         permissionId, currentReceiptId: receiptId,
         revision: (previous?.revision ?? 0) + 1,
         context: facts.context, attendeeId: input.attendeeId,
@@ -142,7 +142,7 @@ export class WhatsappPreferenceStore {
           previous?.expiresAt ??
           Math.max(now, Math.floor(facts.source.eventEnd)),
         updatedAt: now});
-      const receipt = parseWhatsappConsentReceipt({schemaVersion: 1, receiptId,
+      const receipt = parseWhatsappConsentReceipt({schemaVersion: 1, channel: "whatsapp", receiptId,
         requestHash, source: "verifiedParticipant", linkId: null,
         context: facts.context, attendeeId: input.attendeeId,
         attendeeGeneration: permission.attendeeGeneration,

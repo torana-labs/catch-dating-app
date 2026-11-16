@@ -155,32 +155,25 @@ export const onAssistanceMembershipChanged = sourceTrigger(
   "eventAssistanceMemberships");
 export const onAssistanceMessageChanged = sourceTrigger(
   "eventAssistanceMessages");
-export const onAssistanceSmsPermissionChanged = sourceTrigger(
-  "eventAssistanceSmsPermissions");
-export const onAssistanceWhatsappPermissionChanged = sourceTrigger(
-  "eventAssistanceWhatsappPermissions");
+// Every channel's permissions and budgets: one trigger per collection.
+export const onAssistancePermissionChanged = sourceTrigger(
+  "eventAssistancePermissions");
+export const onAssistanceBudgetChanged = sourceTrigger(
+  "eventAssistanceBudgets");
 
-export const onAssistanceRcsPermissionChanged = sourceTrigger(
-  "eventAssistanceRcsPermissions");
 export const onAssistanceRcsSenderChanged = sourceTrigger(
   "eventAssistanceRcsSenders");
-export const onAssistanceRcsBudgetChanged = sourceTrigger(
-  "eventAssistanceRcsBudgets");
 export const onAssistanceRcsSubscriptionChanged = sourceTrigger(
   "eventAssistanceRcsSubscriptions");
 
 export const onAssistanceSmsSenderChanged = sourceTrigger(
   "eventAssistanceSmsSenders");
-export const onAssistanceSmsBudgetChanged = sourceTrigger(
-  "eventAssistanceSmsBudgets");
 export const onAssistanceWhatsappSenderChanged = sourceTrigger(
   "organizerSenderConnections");
 export const onAssistanceWhatsappPolicyChanged = sourceTrigger(
   "eventAssistanceWhatsappPolicies");
 export const onAssistanceWhatsappTemplateChanged = sourceTrigger(
   "organizerMessageTemplates");
-export const onAssistanceWhatsappBudgetChanged = sourceTrigger(
-  "eventAssistanceWhatsappBudgets");
 export const onAssistanceWhatsappStopChanged = sourceTrigger(
   "organizerWhatsappEndpointStops");
 export const onAssistanceWhatsappSuppressionChanged = sourceTrigger(

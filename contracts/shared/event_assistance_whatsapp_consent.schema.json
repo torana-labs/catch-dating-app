@@ -40,6 +40,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "channel",
             "schemaVersion",
             "permissionId",
             "revision",
@@ -59,6 +60,10 @@
             "sender"
           ],
           "properties": {
+            "channel": {
+              "const": "whatsapp",
+              "description": "Which channel this record belongs to; one collection holds every channel."
+            },
             "schemaVersion": {
               "type": "integer",
               "const": 1
@@ -211,6 +216,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "channel",
             "schemaVersion",
             "permissionId",
             "revision",
@@ -230,6 +236,10 @@
             "sender"
           ],
           "properties": {
+            "channel": {
+              "const": "whatsapp",
+              "description": "Which channel this record belongs to; one collection holds every channel."
+            },
             "schemaVersion": {
               "type": "integer",
               "const": 1
@@ -393,6 +403,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "channel",
             "schemaVersion",
             "receiptId",
             "requestHash",
@@ -414,6 +425,10 @@
             "senderHash"
           ],
           "properties": {
+            "channel": {
+              "const": "whatsapp",
+              "description": "Which channel this record belongs to; one collection holds every channel."
+            },
             "schemaVersion": {
               "type": "integer",
               "const": 1
@@ -547,6 +562,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "channel",
             "schemaVersion",
             "receiptId",
             "requestHash",
@@ -568,6 +584,10 @@
             "senderHash"
           ],
           "properties": {
+            "channel": {
+              "const": "whatsapp",
+              "description": "Which channel this record belongs to; one collection holds every channel."
+            },
             "schemaVersion": {
               "type": "integer",
               "const": 1
@@ -850,6 +870,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "channel",
         "schemaVersion",
         "linkId",
         "permissionId",
@@ -867,6 +888,10 @@
         "providerPhoneNumberId"
       ],
       "properties": {
+        "channel": {
+          "const": "whatsapp",
+          "description": "Which channel this record belongs to; one collection holds every channel."
+        },
         "schemaVersion": {
           "const": 1
         },

@@ -6,6 +6,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
+    "channel",
     "schemaVersion",
     "budgetId",
     "revision",
@@ -21,6 +22,10 @@
     "updatedAt"
   ],
   "properties": {
+    "channel": {
+      "const": "whatsapp",
+      "description": "Which channel this record belongs to; one collection holds every channel."
+    },
     "schemaVersion": {
       "type": "integer",
       "const": 1

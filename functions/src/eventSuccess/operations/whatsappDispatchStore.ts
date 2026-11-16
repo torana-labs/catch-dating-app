@@ -29,6 +29,7 @@ import {parseWhatsappBudget, WhatsappBudget, WHATSAPP_BUDGETS,
 import {parseWhatsappPolicy, renderEventWhatsapp, RenderedWhatsapp,
   WhatsappPolicy, WHATSAPP_POLICIES, whatsappReplyPayloads} from
   "./whatsappTemplate";
+import {withdrawalGrantId} from "./messageConsentCollections";
 
 type Intent = MessageRecord["intent"];
 type BlockReason = Extract<RouteReadiness["state"], {kind: "blocked"}>[
@@ -165,7 +166,7 @@ export class WhatsappDispatchStore {
       if (native?.kind === "withheld") return {kind: "withheld"};
       const {connection, policy, permission, rendered, budgets} = material;
       const withdrawalRef = this.db.collection(WHATSAPP_WITHDRAWAL_GRANTS)
-        .doc(linkId);
+        .doc(withdrawalGrantId("whatsapp", linkId));
       const withdrawalSnap = await tx.get(withdrawalRef);
       const withdrawal = withdrawalSnap.exists ?
         parseWhatsappWithdrawalGrant(withdrawalSnap.data()) :

@@ -5,13 +5,15 @@ import {validateEventAssistanceSmsPermissionDocument} from
 import {operationContentHash} from "../../operations/durableActions";
 import {guestIdentity, requireDocumentId} from "./guestRecords";
 import {smsEndpointId} from "./smsProtocol";
+import {EVENT_ASSISTANCE_BUDGETS, EVENT_ASSISTANCE_PERMISSIONS} from
+  "./messageConsentCollections";
 export type {Permission};
 export {smsEndpointId} from "./smsProtocol";
 
 export const smsCollections = {
   senders: "eventAssistanceSmsSenders",
-  permissions: "eventAssistanceSmsPermissions",
-  budgets: "eventAssistanceSmsBudgets",
+  permissions: EVENT_ASSISTANCE_PERMISSIONS,
+  budgets: EVENT_ASSISTANCE_BUDGETS,
   dispatches: "eventAssistanceSmsDispatches",
 } as const;
 

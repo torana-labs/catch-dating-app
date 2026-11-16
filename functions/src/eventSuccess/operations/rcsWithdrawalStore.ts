@@ -15,6 +15,7 @@ import {Permission, parseRcsPermission, parseRcsConsentReceipt,
 import {runAssistanceTransaction} from "./transactionCallback";
 import {WithdrawalGrant, parseRcsWithdrawalGrant, RCS_WITHDRAWAL_GRANTS,
   rcsWithdrawalMatchesPermission} from "./rcsWithdrawalRecords";
+import {withdrawalGrantId} from "./messageConsentCollections";
 
 interface Facts {authority: WithdrawalGrant; permission: Permission}
 
@@ -63,7 +64,7 @@ export class RcsWithdrawalStore {
       const next = parseRcsPermission({...permission, status: "revoked",
         currentReceiptId: receiptId, revision: permission.revision + 1,
         updatedAt: now});
-      const receipt = parseRcsConsentReceipt({schemaVersion: 1, receiptId,
+      const receipt = parseRcsConsentReceipt({schemaVersion: 1, channel: "rcs", receiptId,
         requestHash, source: "messageLink", linkId: authority.linkId,
         context: permission.context, attendeeId: permission.attendeeId,
         attendeeGeneration: permission.attendeeGeneration,
@@ -88,7 +89,8 @@ export class RcsWithdrawalStore {
     if (!/^[a-f0-9]{32}$/.test(input.linkId) ||
         !/^[A-Za-z0-9_-]{43}$/.test(input.secret)) throw unavailable();
     const [authoritySnap, guestSnap] = await tx.getAll(
-      this.db.collection(RCS_WITHDRAWAL_GRANTS).doc(input.linkId),
+      this.db.collection(RCS_WITHDRAWAL_GRANTS)
+        .doc(withdrawalGrantId("rcs", input.linkId)),
       this.db.collection(guestCollections.grants).doc(input.linkId),
     );
     if (!authoritySnap.exists || !guestSnap.exists) throw unavailable();

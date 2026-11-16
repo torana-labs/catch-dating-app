@@ -17,9 +17,11 @@ import {rbmTime, rbmUuid} from "./googleRbmProtocol";
 import {rcsMessageId} from "./rcsProtocol";
 import {rcsPermissionId} from "./rcsConsent";
 import {rcsSubscriptionId} from "./rcsSubscriptions";
+import {EVENT_ASSISTANCE_BUDGETS} from
+  "./messageConsentCollections";
 
 export type {RcsBudget, RcsDispatch, RcsCapability};
-export const RCS_BUDGETS = "eventAssistanceRcsBudgets";
+export const RCS_BUDGETS = EVENT_ASSISTANCE_BUDGETS;
 export const RCS_DISPATCHES = "eventAssistanceRcsDispatches";
 export const RCS_CAPABILITY_MAX_AGE = 60_000;
 

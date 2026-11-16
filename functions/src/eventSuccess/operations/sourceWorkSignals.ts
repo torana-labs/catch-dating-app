@@ -99,9 +99,7 @@ function scopeFor(collection: Collection, documentId: string,
   let context: unknown = value.context;
   let attendeeId: unknown = value.attendeeId ?? null;
   switch (collection) {
-  case "eventAssistanceRcsBudgets":
-  case "eventAssistanceSmsBudgets":
-  case "eventAssistanceWhatsappBudgets": {
+  case "eventAssistanceBudgets": {
     const budgetScope = object(value.scope);
     if (budgetScope.kind === "senderDay") {
       return readinessScope(collection, documentId, value);
@@ -139,9 +137,7 @@ function scopeFor(collection: Collection, documentId: string,
     break;
   case "eventAssistanceGroupProgress": attendeeId = null; break;
   case "eventAssistanceGuests":
-  case "eventAssistanceRcsPermissions":
-  case "eventAssistanceSmsPermissions":
-  case "eventAssistanceWhatsappPermissions":
+  case "eventAssistancePermissions":
   case "eventAssistanceMemberships": break;
   case "eventAssistanceMessages": {
     const intent = object(value.intent);
@@ -177,9 +173,7 @@ function projection(collection: Collection, snapshot: Snapshot) {
   case "organizerMessageTemplates":
   case "organizerWhatsappEndpointStops":
   case "eventAssistanceWhatsappPolicies": fields = Object.keys(value); break;
-  case "eventAssistanceRcsBudgets":
-  case "eventAssistanceSmsBudgets":
-  case "eventAssistanceWhatsappBudgets":
+  case "eventAssistanceBudgets":
   case "eventAssistanceRcsSubscriptions":
   case "organizerContactChannelStates": fields = readinessFields(collection)!;
     break;
@@ -197,9 +191,7 @@ function projection(collection: Collection, snapshot: Snapshot) {
   case "eventStaffGrants": fields = ["eventId", "organizerId", "uid",
     "status", "expiresAt", "groupDuties"]; break;
   case "eventAssistanceGuests":
-  case "eventAssistanceRcsPermissions":
-  case "eventAssistanceSmsPermissions":
-  case "eventAssistanceWhatsappPermissions":
+  case "eventAssistancePermissions":
   case "eventAssistanceSettings":
   case "eventAssistanceGroupProgress":
   case "eventAssistanceMemberships":

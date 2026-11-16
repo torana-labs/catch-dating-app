@@ -115,7 +115,7 @@ export class RcsPreferenceStore {
         previous?.evidence ?? null;
       const recipientBinding = granting || !previous ?
         facts.recipientBinding : previous.recipientBinding;
-      const permission = parseRcsPermission({schemaVersion: 1,
+      const permission = parseRcsPermission({schemaVersion: 1, channel: "rcs",
         permissionId: rcsPermissionId(facts.context, input.attendeeId,
           input.senderId), currentReceiptId: receiptId,
         revision: (previous?.revision ?? 0) + 1,
@@ -133,7 +133,7 @@ export class RcsPreferenceStore {
         evidence, expiresAt: granting ? expiry(facts.source) :
           previous?.expiresAt ?? Math.max(now, expiry(facts.source)),
         updatedAt: now});
-      const receipt = parseRcsConsentReceipt({schemaVersion: 1, receiptId,
+      const receipt = parseRcsConsentReceipt({schemaVersion: 1, channel: "rcs", receiptId,
         requestHash, source: "verifiedParticipant", context: facts.context,
         attendeeId: input.attendeeId,
         attendeeGeneration: permission.attendeeGeneration,

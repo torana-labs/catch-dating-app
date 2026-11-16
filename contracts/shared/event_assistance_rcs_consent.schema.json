@@ -107,6 +107,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "channel",
             "schemaVersion",
             "permissionId",
             "revision",
@@ -129,6 +130,10 @@
             "subscriptionId"
           ],
           "properties": {
+            "channel": {
+              "const": "rcs",
+              "description": "Which channel this record belongs to; one collection holds every channel."
+            },
             "schemaVersion": {
               "type": "integer",
               "const": 1
@@ -231,6 +236,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "channel",
             "schemaVersion",
             "permissionId",
             "revision",
@@ -253,6 +259,10 @@
             "subscriptionId"
           ],
           "properties": {
+            "channel": {
+              "const": "rcs",
+              "description": "Which channel this record belongs to; one collection holds every channel."
+            },
             "schemaVersion": {
               "type": "integer",
               "const": 1
@@ -366,6 +376,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "channel",
             "schemaVersion",
             "receiptId",
             "requestHash",
@@ -389,6 +400,10 @@
             "reviewedStopHash"
           ],
           "properties": {
+            "channel": {
+              "const": "rcs",
+              "description": "Which channel this record belongs to; one collection holds every channel."
+            },
             "schemaVersion": {
               "type": "integer",
               "const": 1
@@ -497,6 +512,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "channel",
             "schemaVersion",
             "receiptId",
             "requestHash",
@@ -520,6 +536,10 @@
             "reviewedStopHash"
           ],
           "properties": {
+            "channel": {
+              "const": "rcs",
+              "description": "Which channel this record belongs to; one collection holds every channel."
+            },
             "schemaVersion": {
               "type": "integer",
               "const": 1
@@ -617,6 +637,7 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "channel",
             "schemaVersion",
             "receiptId",
             "requestHash",
@@ -641,6 +662,10 @@
             "linkId"
           ],
           "properties": {
+            "channel": {
+              "const": "rcs",
+              "description": "Which channel this record belongs to; one collection holds every channel."
+            },
             "schemaVersion": {
               "type": "integer",
               "const": 1
@@ -962,6 +987,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "channel",
         "schemaVersion",
         "linkId",
         "permissionId",
@@ -979,6 +1005,10 @@
         "agentId"
       ],
       "properties": {
+        "channel": {
+          "const": "rcs",
+          "description": "Which channel this record belongs to; one collection holds every channel."
+        },
         "schemaVersion": {
           "type": "integer",
           "const": 1

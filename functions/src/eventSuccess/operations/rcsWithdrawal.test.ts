@@ -25,6 +25,7 @@ import {RCS_WITHDRAWAL_GRANTS, newRcsWithdrawalGrant, parseRcsWithdrawalGrant,
 import {RcsWithdrawalStore} from "./rcsWithdrawalStore";
 import {getEventRcsWithdrawalHandler, withdrawEventRcsHandler} from
   "./rcsWithdrawalHandlers";
+import {withdrawalGrantId} from "./messageConsentCollections";
 
 async function harness(real?: Firestore) {
   const fake = new ProgressFirestore();
@@ -47,7 +48,8 @@ async function harness(real?: Firestore) {
   const permissionPath = rcsConsentCollections.permissions + "/" +
     rcsPermissionId(context, scope.attendeeId, config.senderId);
   const guestPath = guestCollections.grants + "/" + grant.linkId;
-  const authorityPath = RCS_WITHDRAWAL_GRANTS + "/" + grant.linkId;
+  const authorityPath = RCS_WITHDRAWAL_GRANTS + "/" +
+  withdrawalGrantId("rcs", grant.linkId);
   await write(eventPath, {organizerId: context.organizerId, status: "active",
     name: "Friday social", endTime: {seconds: (at + 3_600_000) / 1000,
       nanoseconds: 0}});

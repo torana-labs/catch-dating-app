@@ -119,7 +119,7 @@ export class SmsPreferenceStore {
         previous?.evidence ?? null;
       const recipientBinding = granting || !previous ?
         facts.recipientBinding : previous.recipientBinding;
-      const permission = parseSmsPermission({schemaVersion: 1, permissionId,
+      const permission = parseSmsPermission({schemaVersion: 1, channel: "sms", permissionId,
         currentReceiptId: receiptId, revision: (previous?.revision ?? 0) + 1,
         context: facts.context, attendeeId: input.attendeeId,
         attendeeGeneration: granting ? facts.source.attendeeGeneration :
@@ -134,7 +134,7 @@ export class SmsPreferenceStore {
         expiresAt: granting ? facts.source.eventEnd + 86_400_000 :
           previous?.expiresAt ?? Math.max(now, facts.source.eventEnd),
         updatedAt: now});
-      const receipt = parseSmsConsentReceipt({schemaVersion: 1, receiptId,
+      const receipt = parseSmsConsentReceipt({schemaVersion: 1, channel: "sms", receiptId,
         requestHash, source: "verifiedParticipant", linkId: null,
         context: facts.context, attendeeId: input.attendeeId,
         attendeeGeneration: permission.attendeeGeneration,

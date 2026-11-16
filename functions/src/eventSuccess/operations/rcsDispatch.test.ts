@@ -21,6 +21,7 @@ import {RcsCallbackStore} from "./rcsCallbackStore";
 import {newMessageRecord} from "./messageOutbox";
 import {operationContentHash} from "../../operations/durableActions";
 import {BRAND} from "../../shared/generated/brand";
+import {withdrawalGrantId} from "./messageConsentCollections";
 
 const onlyRcs = ["catchEventRcs"] as const;
 const posts = (h: Awaited<ReturnType<typeof rcsHarness>>) =>
@@ -51,7 +52,8 @@ test("RCS submission commits payload, two debits and opt-out before I/O",
       assert.equal(evidence.providerMessageId, rcsMessageId(attempt.attemptId));
       assert.equal(evidence.currency, "INR");
       assert.equal(evidence.capability.supportsOpenUrl, true);
-      assert.ok(await h.read(RCS_WITHDRAWAL_GRANTS + "/" + h.link.linkId));
+      assert.ok(await h.read(RCS_WITHDRAWAL_GRANTS + "/" +
+      withdrawalGrantId("rcs", h.link.linkId)));
       for (const path of h.rcsBudgetPaths) {
         assert.equal((await h.read(path))?.chargedMicros, 500_000);
         assert.equal((await h.read(path))?.revision, 2);
@@ -364,7 +366,8 @@ test("Firestore concurrent RCS workers send once and debit both budgets once", {
     for (const path of h.rcsBudgetPaths) {
       assert.equal((await h.read(path))?.chargedMicros, 500_000);
     }
-    const grant = await h.read(RCS_WITHDRAWAL_GRANTS + "/" + h.link.linkId);
+    const grant = await h.read(RCS_WITHDRAWAL_GRANTS + "/" +
+      withdrawalGrantId("rcs", h.link.linkId));
     assert.ok(grant);
     const receipt = parseRcsDispatch(await h.read(RCS_DISPATCHES + "/" +
       (await h.record()).attempts[0].attemptId));
