@@ -17,6 +17,7 @@ import {setAdminAuditLogInTransaction} from "../adminAudit";
 import {requireAdminRole} from "../adminAuth";
 import {
   INBOX_ITEMS_COLLECTION,
+  INSTANT_DRAFT_REPLY_STATE,
   INBOX_ITEM_TYPES,
   INBOX_JOURNEY_COLLECTION,
   InboxItemDocument,
@@ -174,7 +175,9 @@ export async function adminUpdateInboxItemHandler(request: CallableRequest<unkno
       throw new HttpsError("failed-precondition", before.status === "done" ?
         "This item is already done." : "Catch is still working on this item.");
     }
-    if (data.action === "dismiss" && !dismissableTypes.includes(before.type)) {
+    // An instant draft is done once someone has replied on WhatsApp; the note says what they sent.
+    if (data.action === "dismiss" && !dismissableTypes.includes(before.type) &&
+        before.state?.code !== INSTANT_DRAFT_REPLY_STATE) {
       throw new HttpsError("failed-precondition", "Decide this item instead of dismissing it.");
     }
     if (assigneeSnap) {

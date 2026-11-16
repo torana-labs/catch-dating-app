@@ -48,10 +48,13 @@ test("acquisition policy keeps provider fetches and Firestore payloads off",
       [policy.pageFetch.enabled, policy.pageFetch.adapterId,
         policy.pageFetch.decisionId, policy.pageFetch.policyGapId,
         policy.pageFetch.maxRequestsPerIntake,
-        policy.pageFetch.maxRequestsPerMonth],
+        policy.pageFetch.maxRequestsPerMonth,
+        policy.pageFetch.maxInstantDraftRequestsPerMonth],
       // The owner accepted on-demand page fetching (CAT-266); it stays capped.
+      // The website instant draft tool reads from its own 300 a month (owner,
+      // 16 Nov), so drafts never spend the 600 staff nominations share.
       [true, "page_fetch", "policy-on-demand-page-fetch-policy",
-        "on_demand_page_fetch_policy", 12, 600]
+        "on_demand_page_fetch_policy", 12, 600, 300]
     );
     // Web search runs on SerpApi's free tier (owner, 30 Oct): one query per
     // intake, 240 a month, and only once the owner's decision is accepted.
@@ -432,6 +435,14 @@ test("page fetching can be enabled only with its adapter, decision and positive 
       maxRequestsPerIntake: 5, maxRequestsPerMonth: 0}),
       {code: "INVALID_ACQUISITION_POLICY"},
       "a disabled channel carries no allowance");
+    await assert.rejects(load({enabled: false, adapterId: null, decisionId: null,
+      maxRequestsPerIntake: 0, maxRequestsPerMonth: 0, maxInstantDraftRequestsPerMonth: 300}),
+      {code: "INVALID_ACQUISITION_POLICY"},
+      "nor does a disabled channel keep a draft allowance");
+    assert.equal((await load({enabled: false, adapterId: null, decisionId: null,
+      maxRequestsPerIntake: 0, maxRequestsPerMonth: 0, maxInstantDraftRequestsPerMonth: 0})).pageFetch.enabled, false);
+    await assert.rejects(load({...enabled, maxInstantDraftRequestsPerMonth: -1}),
+      {code: "INVALID_ACQUISITION_POLICY"}, "the draft allowance is a count");
   });
 
 test("web search can be enabled only with its adapter, decision and positive caps",

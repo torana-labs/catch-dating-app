@@ -82,7 +82,9 @@ async function reviewRow(db: FirebaseFirestore.Firestore, requestId: string,
     kind: intakeRequest.kind as Row["kind"],
     submittedByRole: submittedBy.role as Row["submittedByRole"],
     submittedAt: String(intakeRequest.submittedAt),
-    origin: (typeof origin?.kind === "string" ? origin.kind : "none") as Row["origin"],
+    // The review contract lists the staff-facing front doors; a website
+    // instant draft (which approval saves as a private draft) reads as none.
+    origin: (typeof origin?.kind === "string" && origin.kind !== "web_instant_draft" ? origin.kind : "none") as Row["origin"],
     market: {slug, marketId: market?.marketId ?? null, label: market?.label ?? null,
       open: market?.hostCreatable === true},
     suggestedSlug: publicSlugFor(name ?? text(seed?.name, 500) ?? listing.listingId as string),

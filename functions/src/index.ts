@@ -981,6 +981,10 @@ export {
   adminListSupplyNominators,
   adminSetSupplyNominator,
 } from "./operations/supplyIntake/nominators";
+export {requestInstantDraft} from "./instantDrafts/request";
+export {getInstantDraft} from "./instantDrafts/status";
+export {expireInstantDrafts} from "./instantDrafts/expiry";
+export {onInstantDraftOrganizerPublished} from "./instantDrafts/publishOnClaim";
 
 export {
   getSalesDemoSetup, prepareSalesDemoFormDraft, getSalesDemoPreview,

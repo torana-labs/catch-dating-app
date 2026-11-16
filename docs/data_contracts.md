@@ -4855,6 +4855,22 @@ The bounded native reader includes all program guests without requiring travel
 legs and rejects truncated source. No guest records are copied into the fence. Real emulator
 rules, transaction integration and combined feature acceptance remain gates.
 
+### Website Instant Drafts
+
+`requestInstantDraft` writes an ordinary Supply Intake request with origin
+`web_instant_draft` (always `self_submission`). Its private state sits on the
+server-only request as `supplyIntakeRequests.instantDraft`: the SHA-256 of the
+website's access token (never the token), the verified WhatsApp number with
+its consent and `whatsapp.verifiedByUid`, the link classification, the market
+(`market {marketId, source: chosen|given|inferred, at}`), `expiresAt` (30 days
+after the draft is saved) and the outcome (`building`, `draft_ready`,
+`needs_city`, `staff_follow_up` or `expired`). Page reads for these requests
+count against `supplyIntakeUsage/instant-draft-pages-{monthKey}`, a separate
+300-page monthly allowance. `getInstantDraft` returns `markets` (empty unless
+`needs_city`) and accepts an optional `city` that continues a `needs_city`
+draft. A claimed owner publishing the page is another way listing events
+publish (`onInstantDraftOrganizerPublished`).
+
 ### Organizer Application Intake
 
 Organizer applications are a provider-neutral intake domain. A Google Form,

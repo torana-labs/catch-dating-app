@@ -33,7 +33,7 @@
       "type": "boolean",
       "description": "False when this exact approval had already been applied."
     },
-    "publishStatus": {"const": "published"},
+    "publishStatus": {"enum": ["published", "draft"], "description": "draft when the listing came from the website's instant draft tool: it becomes a private, unpublished, claimable organizer draft that goes live only after its organizer claims and publishes it."},
     "indexStatus": {"const": "noindex"},
     "appVisibility": {"const": "hidden"},
     "claimState": {"const": "unclaimed"},
