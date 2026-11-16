@@ -107,7 +107,7 @@
       "type": "object",
       "additionalProperties": false,
       "description": "One entry per city-by-format page, keyed by format. Counts only: no plan or organiser is named here.",
-      "required": ["runClubs", "racketSports", "pickleball", "padel", "tennis", "badminton", "supperClubs", "quizNights", "nightlife", "studios", "workshops", "bookClubs", "outdoors"],
+      "required": ["runClubs", "racketSports", "pickleball", "padel", "tennis", "badminton", "supper", "quizNights", "nightlife", "studios", "workshops", "books", "outdoors"],
       "properties": {
         "runClubs": {"$ref": "#/definitions/formatPage"},
         "racketSports": {"$ref": "#/definitions/formatPage"},
@@ -115,12 +115,12 @@
         "padel": {"$ref": "#/definitions/formatPage"},
         "tennis": {"$ref": "#/definitions/formatPage"},
         "badminton": {"$ref": "#/definitions/formatPage"},
-        "supperClubs": {"$ref": "#/definitions/formatPage"},
+        "supper": {"$ref": "#/definitions/formatPage"},
         "quizNights": {"$ref": "#/definitions/formatPage"},
         "nightlife": {"$ref": "#/definitions/formatPage"},
         "studios": {"$ref": "#/definitions/formatPage"},
         "workshops": {"$ref": "#/definitions/formatPage"},
-        "bookClubs": {"$ref": "#/definitions/formatPage"},
+        "books": {"$ref": "#/definitions/formatPage"},
         "outdoors": {"$ref": "#/definitions/formatPage"}
       }
     },
@@ -150,7 +150,7 @@
     "discoveryFormat": {
       "type": "string",
       "description": "A city-by-format page's format, from discoveryFormats in functions/src/cityPlans/discoveryFormats.ts. A plan counts toward the formats of its activity kind or, for an open activity, the formats its organiser lists; a racket sport counts toward racketSports and its own sport.",
-      "enum": ["runClubs", "racketSports", "pickleball", "padel", "tennis", "badminton", "supperClubs", "quizNights", "nightlife", "studios", "workshops", "bookClubs", "outdoors"]
+      "enum": ["runClubs", "racketSports", "pickleball", "padel", "tennis", "badminton", "supper", "quizNights", "nightlife", "studios", "workshops", "books", "outdoors"]
     },
     "discoveryFormats": {
       "type": "array",

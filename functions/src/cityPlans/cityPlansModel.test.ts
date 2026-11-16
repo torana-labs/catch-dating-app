@@ -140,9 +140,9 @@ test("format pages count organisers, plans and free plans in 30 days", () => {
   assert.deepEqual(counts.quizNights, [1, 2, 2]);
   assert.deepEqual(counts.nightlife, [1, 1, 1]);
   assert.deepEqual(counts.studios, [1, 1, 1]);
-  assert.deepEqual(counts.supperClubs, [0, 0, 0]);
+  assert.deepEqual(counts.supper, [0, 0, 0]);
   assert.equal(city.formatPages.runClubs.slug, "run-clubs");
-  assert.equal(city.formatPages.bookClubs.slug, "book-clubs");
+  assert.equal(city.formatPages.books.slug, "book-clubs");
   assert.equal(city.upcomingEvents30d, 6);
   assert.equal(city.hasUpcomingMonth, true);
   assert.equal(city.monthCountsComplete, true);
@@ -244,7 +244,7 @@ test("open activities count toward the formats their organiser lists", () => {
   const city = buildCityPlans({market: mumbai, now, joiningOrganizers: [],
     organizerPages: [books, pottery, unnamed, courts]});
   const counts = formatPagesOf(city);
-  assert.deepEqual(counts.bookClubs, [1, 2, 2]);
+  assert.deepEqual(counts.books, [1, 2, 2]);
   assert.deepEqual(counts.workshops, [1, 1, 1]);
   assert.deepEqual(counts.racketSports, [1, 1, 1]);
   assert.deepEqual(counts.padel, [1, 1, 1]);
@@ -397,7 +397,7 @@ test("format pages hold counts only, keyed by known formats", () => {
     (unknown.formatPages as Record<string, Row>).runClubs;
   assert.equal(validateCityPlansDocument(unknown), false);
   const missing = copy();
-  delete (missing.formatPages as Record<string, Row>).bookClubs;
+  delete (missing.formatPages as Record<string, Row>).books;
   assert.equal(validateCityPlansDocument(missing), false);
   const wrongSlug = copy();
   (wrongSlug.formatPages as Record<string, Row>).runClubs.slug = "running";

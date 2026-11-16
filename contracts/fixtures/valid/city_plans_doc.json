@@ -62,7 +62,7 @@
       "freeEventCount": 0,
       "indexing": "noindex, follow"
     },
-    "supperClubs": {
+    "supper": {
       "slug": "supper-clubs",
       "organizerCount": 1,
       "upcomingEventCount": 1,
@@ -97,7 +97,7 @@
       "freeEventCount": 0,
       "indexing": "noindex, follow"
     },
-    "bookClubs": {
+    "books": {
       "slug": "book-clubs",
       "organizerCount": 0,
       "upcomingEventCount": 0,
@@ -179,7 +179,7 @@
         "path": "/organizers/next-proof/"
       },
       "discoveryFormats": [
-        "supperClubs"
+        "supper"
       ]
     },
     {
@@ -235,7 +235,7 @@
       },
       "discoveryFormats": [
         "runClubs",
-        "supperClubs",
+        "supper",
         "quizNights",
         "nightlife"
       ]

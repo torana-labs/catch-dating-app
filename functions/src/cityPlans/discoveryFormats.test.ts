@@ -36,7 +36,7 @@ test("every event activity kind has an explicit format mapping", () => {
     strengthTraining: ["studios"],
     pubQuiz: ["quizNights"],
     barCrawl: ["nightlife"],
-    dinner: ["supperClubs"],
+    dinner: ["supper"],
     singlesMixer: [],
     openActivity: [],
   });
@@ -60,18 +60,18 @@ test("the formats and their page slugs match the city plans contract", () => {
 
 test("each activity kind counts toward its own formats", () => {
   assert.deepEqual(discoveryFormatsForEvent("walking", []), ["runClubs"]);
-  assert.deepEqual(discoveryFormatsForEvent("padel", ["bookClubs"]),
+  assert.deepEqual(discoveryFormatsForEvent("padel", ["books"]),
     ["racketSports", "padel"]);
   assert.deepEqual(discoveryFormatsForEvent("yoga", []), ["studios"]);
   assert.deepEqual(discoveryFormatsForEvent("cycling", []), ["outdoors"]);
-  assert.deepEqual(discoveryFormatsForEvent("dinner", []), ["supperClubs"]);
+  assert.deepEqual(discoveryFormatsForEvent("dinner", []), ["supper"]);
   assert.deepEqual(discoveryFormatsForEvent("pubQuiz", []), ["quizNights"]);
   assert.deepEqual(discoveryFormatsForEvent("barCrawl", []), ["nightlife"]);
 });
 
 test("an open activity takes its organiser's listed formats", () => {
   assert.deepEqual(discoveryFormatsForEvent("openActivity",
-    ["workshops", "bookClubs"]), ["workshops", "bookClubs"]);
+    ["workshops", "books"]), ["workshops", "books"]);
   assert.deepEqual(discoveryFormatsForEvent("openActivity", []), []);
   assert.deepEqual(discoveryFormatsForEvent("singlesMixer", ["nightlife"]),
     ["nightlife"]);
@@ -90,8 +90,8 @@ test("listed categories and formats name the formats they mean", () => {
     ["Padel and tennis", ["racketSports", "padel", "tennis"]],
     ["Table tennis league", ["racketSports"]],
     ["table-tennis", ["racketSports"]],
-    ["Supper club", ["supperClubs"]],
-    ["Long-table dinners", ["supperClubs"]],
+    ["Supper club", ["supper"]],
+    ["Long-table dinners", ["supper"]],
     ["Pub quiz nights", ["quizNights"]],
     ["Pub quizzes and pub crawls", ["quizNights", "nightlife"]],
     ["Board-game cafe", ["quizNights"]],
@@ -102,8 +102,8 @@ test("listed categories and formats name the formats they mean", () => {
     ["HIIT and pilates", ["studios"]],
     ["Pottery workshops", ["workshops"]],
     ["Candle-making", ["workshops"]],
-    ["Book club", ["bookClubs"]],
-    ["Bookclub", ["bookClubs"]],
+    ["Book club", ["books"]],
+    ["Bookclub", ["books"]],
     ["Trekking and camping", ["outdoors"]],
     ["Event producer", []],
     ["beginner-friendly", []],
@@ -115,7 +115,7 @@ test("listed categories and formats name the formats they mean", () => {
     assert.deepEqual(discoveryFormatsForText([text]), formats, text);
   }
   assert.deepEqual(discoveryFormatsForText(["Book club", "Supper"]),
-    ["supperClubs", "bookClubs"]);
+    ["supper", "books"]);
 });
 
 test("a format page is indexed at 3 organisers or 5 upcoming plans", () => {
