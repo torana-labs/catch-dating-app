@@ -9,6 +9,7 @@ import {projectSummary} from "../organizers/organizerForms";
 import {projectPrivateEventSetupSummary} from
   "../events/progressiveSetup/listPrivateEventSetups";
 import {FieldPath} from "firebase-admin/firestore";
+import * as logger from "firebase-functions/logger";
 import {emptyDirectory} from "./contactStore";
 
 export type SimpleModel = "forms" | "events" | "groups";
@@ -23,7 +24,31 @@ const models = {
     marker: "eventSummaryVersion"},
 } as const;
 
+/**
+ * One source's summary row, or null when it has none. A source that fails its
+ * read contract (a stored shape the current schema rejects, such as a legacy
+ * field) is left out and logged: projection is pure, so the throw is about the
+ * data, and one such source must never block its organizer's whole directory
+ * or a trigger retry loop. The nightly data validation reports the document.
+ * @param {SimpleModel} model The directory model.
+ * @param {FirebaseFirestore.DocumentSnapshot} source The source document.
+ * @return {View|null} The summary row, or null.
+ */
 function project(model: SimpleModel,
+  source: FirebaseFirestore.DocumentSnapshot): View | null {
+  try {
+    return projectStrict(model, source);
+  } catch (error) {
+    logger.warn("Host directory left out a source that fails its contract.", {
+      model, sourceId: source.id,
+      organizerId: source.data()?.organizerId ?? null,
+      reason: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  }
+}
+
+function projectStrict(model: SimpleModel,
   source: FirebaseFirestore.DocumentSnapshot): View | null {
   if (!source.exists) return null;
   const data = source.data()!;
@@ -32,6 +57,11 @@ function project(model: SimpleModel,
     const group = data as OrganizerSavedAudienceDocument;
     if (group.audienceId !== source.id || group.scope !== "organizerCrm") {
       throw new Error("Group summary owner or identity is inconsistent.");
+    }
+    // A group whose definition cannot be shown safely gets neither row.
+    if (!validateHostGroupDetailDocument({organizerId: group.organizerId,
+      audienceId: source.id, version: 1, row: savedAudienceResponse(group)})) {
+      throw new Error("Group definition violates its safe read contract.");
     }
     const isStatic = group.definition.predicates.length === 1 &&
       group.definition.predicates[0].kind === "staticMembers";
