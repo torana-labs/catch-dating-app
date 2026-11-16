@@ -4052,7 +4052,8 @@ call one transaction that reads the organizer, its growth facts, its
 terms, and takes place `takenCount + 1` only when:
 
 - the organizer holds no place yet (retries are no-ops);
-- it still has an owner and its market is in the catalog;
+- it still has an owner, is not a Demo Ops organizer (`synthetic`), and its
+  market is in the catalog;
 - its city's offer opened before the organizer gained its owner;
 - the deadline, if any, had not passed at that moment (so a late trigger never
   turns away a host who signed up in time);
