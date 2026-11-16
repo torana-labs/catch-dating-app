@@ -1,16 +1,23 @@
 import {brand} from "./brand.ts";
 
-/** Copy for the organiser page (/organizers/<slug>/), a link-in-bio page. */
+/**
+ * Copy for the organiser page (/organizers/<slug>/), a link-in-bio page. It
+ * follows the owner-approved WebOrgV2 board and the playbook's event page;
+ * where they speak about one sample club (its runs), the copy stays general.
+ */
 export const organizerPageCopy = {
   generatedTag: "Built from public pages · not claimed yet",
   verifiedLabel: "Verified organiser",
   stats: {
     followers: (count: number) => (count === 1 ? "follower" : "followers"),
     waiting: "waiting for the next event",
-    reviews: (count: number) => `★ from ${count} ${count === 1 ? "review" : "reviews"}`,
-    hosted: (count: number) => (count === 1 ? "night" : "nights"),
+    /** Beside the average, which counts verified reviews only. */
+    reviews: (verified: number) => `★ · ${verified} verified ${verified === 1 ? "review" : "reviews"}`,
+    hosted: (count: number) => (count === 1 ? "night hosted" : "nights hosted"),
   },
   summarisedFrom: (names: readonly string[]) => `summarised from ${names.length ? names.join(" and ") : "public pages"}`,
+  /** Owner-set labels under the name. */
+  labels: {womenLed: "Women-led"},
   follow: "Follow",
   following: "Following",
   share: "Share",
@@ -44,11 +51,12 @@ export const organizerPageCopy = {
   countdown: (days: number) =>
     days <= 0 ? "today" : days === 1 ? "tomorrow" : days < 14 ? `in ${days} days` : `in ${Math.round(days / 7)} weeks`,
   linksLabel: "Links",
-  pinned: "Pinned",
   pinnedUntil: (date: string) => `Pinned until ${date}`,
   eventsTitle: "Coming up",
   eventsNote: {
-    claimed: (names: readonly string[]) => (names.length ? `On ${brand.name} and elsewhere` : `On ${brand.name}`),
+    /** Where a claimed page's events are sold: Catch, other sites, or both in one list. */
+    claimed: (names: readonly string[], onCatch: boolean) => (!names.length ? `On ${brand.name}` :
+      onCatch ? `From ${brand.name} and ${names.join(" and ")}, in one list` : `From ${names.join(" and ")}`),
     generated: (names: readonly string[]) => `Found on their public ${names.length ? `${names.join(" and ")} pages` : "pages"}`,
   },
   eventsEmptyTitle: "Nothing on the calendar yet",
@@ -82,12 +90,15 @@ export const organizerPageCopy = {
   },
   reviewsTitle: "Reviews",
   writeReview: "Write a review",
-  reviewCount: (count: number) => `${count} ${count === 1 ? "review" : "reviews"}`,
-  starsShort: (stars: number) => `${stars}★`,
   starsRow: (stars: number, count: number) => `${stars} ${stars === 1 ? "star" : "stars"}: ${count} ${count === 1 ? "review" : "reviews"}`,
   ratingLabel: (stars: number) => `${stars} out of 5`,
+  /** The rating's count: the average covers verified reviews only. */
+  verifiedCount: (count: number) => `from ${count} verified ${count === 1 ? "review" : "reviews"}`,
+  /** Reviews with none from a booking yet, so no rating. */
+  unrated: (count: number) => `${count} ${count === 1 ? "review" : "reviews"}, none from a ${brand.name} booking yet, so no rating.`,
   reviewPolicy: {
-    claimed: `Anyone can review. People who booked on ${brand.name} are marked.`,
+    /** The explanation line under the Booked on Catch and Unverified labels (playbook event page). */
+    claimed: `Booked on ${brand.name} means the reviewer booked through ${brand.name}. Unverified reviews are shown, and labelled.`,
     generated: `Anyone can review this page. Reviews stay unverified until guests book through ${brand.name}.`,
   },
   verifiedReview: `Booked on ${brand.name}`,

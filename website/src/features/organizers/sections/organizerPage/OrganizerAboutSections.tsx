@@ -1,37 +1,49 @@
-import {CatchAvatar, CatchButton, CatchIndexRow, CatchMetricTile, CatchSection, CatchStack, CatchSurface, CatchText} from "@catch/web-ui";
+import {
+  CatchAvatar,
+  CatchBand,
+  CatchBandHeader,
+  CatchButton,
+  CatchFactTile,
+  CatchGrid,
+  CatchIndexRow,
+  CatchSplitSection,
+  CatchStack,
+  CatchText,
+} from "@catch/web-ui";
+import {useId} from "react";
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
 
-/** About: in the organiser's words, the formats, the facts as Stats, and who runs it. */
+/** About: in the organiser's words, the formats, the facts as paper tiles, and who runs it. */
 export function OrganizerAboutSection({controller}: {controller: OrganizerPageController}) {
   const {about} = controller.view;
+  const titleId = `${useId()}-title`;
   if (!about.text && !about.facts.length && !about.host) return null;
   return (
-    <CatchStack gap={0} id="about">
-      <CatchSection dividers="none" title={copy.aboutTitle}>
-        <CatchStack gap={16}>
-          {about.text ? <CatchText as="p" variant="body">{about.text}</CatchText> : null}
-          {about.formats ? <CatchText as="p" tone="secondary" variant="label-action">{about.formats}</CatchText> : null}
-          {about.facts.length ? (
-            <CatchStack gap={8}>
-              {about.facts.map((fact) => <CatchMetricTile key={`${fact.label}-${fact.value}`} label={fact.label} layout="fact" value={fact.value} />)}
-            </CatchStack>
-          ) : null}
-          {about.host ? (
-            <CatchSection>
-              <CatchIndexRow density="compact" leading={<CatchAvatar initials={about.host.initials} name={about.host.name} size={36} />}
-                subtitle={about.host.role} title={about.host.name} />
-            </CatchSection>
-          ) : null}
-        </CatchStack>
-      </CatchSection>
-    </CatchStack>
+    <CatchBand aria-labelledby={titleId} as="section" id="about" width="content">
+      <CatchStack gap={24}>
+        <CatchBandHeader lead={about.text || undefined} title={copy.aboutTitle} titleId={titleId} />
+        {about.formats ? <CatchText as="p" tone="secondary" variant="label-action">{about.formats}</CatchText> : null}
+        {about.facts.length ? (
+          <CatchGrid columns={3} compactColumns={1}>
+            {about.facts.map((fact) => <CatchFactTile ground="paper" key={`${fact.label}-${fact.value}`} label={fact.label} value={fact.value} />)}
+          </CatchGrid>
+        ) : null}
+        {about.host ? (
+          <CatchStack align="start">
+            <CatchIndexRow density="compact" leading={<CatchAvatar initials={about.host.initials} name={about.host.name} size={40} />}
+              subtitle={about.host.role} title={about.host.name} />
+          </CatchStack>
+        ) : null}
+      </CatchStack>
+    </CatchBand>
   );
 }
 
 /**
- * Generated pages only: what claiming the page gives the organiser, with the
- * people already waiting, on a spotlight above the calendar.
+ * Generated pages only: the board's claim panel on the indigo ground, with
+ * the people already waiting, what claiming gives the organiser, and the way
+ * into the claim flow on /claim/ (or that a claim is being reviewed).
  */
 export function OrganizerClaimSection({controller}: {controller: OrganizerPageController}) {
   const {claim} = controller.view;
@@ -42,18 +54,16 @@ export function OrganizerClaimSection({controller}: {controller: OrganizerPageCo
     claim.reviewers ? `${claim.reviewers} ${claim.reviewVerb}` : null,
   ].filter(Boolean).join(pitch.and);
   return (
-    <CatchSurface aria-labelledby="organizer-claim-title" as="section" block="spotlight" color="courts" id="claim">
-      <CatchText variant="label-kicker">{pitch.label}</CatchText>
-      <CatchText as="h2" id="organizer-claim-title" variant="display-sm">{pitch.title}</CatchText>
-      <CatchText as="p" variant="body">{waiting ? `${waiting}. ${claim.built}` : claim.built}</CatchText>
-      <CatchSection container="tile">
-        {pitch.points.map((point) => <CatchIndexRow density="compact" key={point.title} subtitle={point.body} title={point.title} wrap />)}
-      </CatchSection>
-      <CatchStack align="start" gap={8}>
-        {claim.href ? <CatchButton href={claim.href} label={pitch.action} onPressed={controller.openClaim} /> : null}
-        {claim.pending ? <CatchText as="p" variant="label-action">{pitch.pending}</CatchText> : null}
-      </CatchStack>
-    </CatchSurface>
+    <CatchSplitSection
+      actions={claim.href ? [{href: claim.href, label: pitch.action, onPressed: controller.openClaim}] : undefined}
+      body={claim.pending ? pitch.pending : undefined}
+      checks={pitch.points.map((point) => ({title: point.title, body: point.body}))}
+      ground="indigo"
+      id="claim"
+      kicker={pitch.label}
+      lead={waiting ? `${waiting}. ${claim.built}` : claim.built}
+      title={pitch.title}
+    />
   );
 }
 

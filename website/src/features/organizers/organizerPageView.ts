@@ -20,6 +20,16 @@ export interface OrganizerEventView {
   format?: CatchFormat;
   /** "6:30 AM · Carter Road jetty" */
   detail: string;
+  /** The card's coloured line: "Sun 2 Nov · 6:30 AM". */
+  cardLabel: string;
+  /** The card's poster, in display type, when the event has no photo: "Sun 2 Nov". */
+  posterLabel: string;
+  /** Where it meets, as the card's detail line. */
+  place: string;
+  /** A Catch event's photo; imported events have none. */
+  photoUrl: string | null;
+  /** The card's foot after the price: places left and where it is sold. */
+  availability: string;
   sourceLabel: string;
   sourceAccent: Accent;
   price: string;
@@ -87,6 +97,8 @@ export interface OrganizerPageView {
     monogramGround: CatchBandGround;
     verified: boolean;
     tag?: string;
+    /** Labels under the name, such as women-led. */
+    labels: string[];
     headline: string;
     meta: string;
     stats: {label: string; value: string}[];
@@ -97,8 +109,12 @@ export interface OrganizerPageView {
   moments: {title: string; tiles: OrganizerMomentView[]};
   reviews: {
     readable: boolean;
-    average: string;
+    /** The average of verified reviews only; null until one is verified. */
+    average: string | null;
+    /** The verified count the average is paired with. */
     countLabel: string;
+    /** Said instead of a rating when there are reviews but none verified. */
+    unrated: string | null;
     distribution: {stars: 1 | 2 | 3 | 4 | 5; count: number; label: string}[];
     policy: string;
     items: OrganizerReviewView[];
@@ -136,8 +152,17 @@ export function organizerPageKind(record: OrganizerPageRecord): OrganizerPageKin
   return owned ? "claimed" : "generated";
 }
 
+/**
+ * What the page is told beyond its record. `womenLed` is the label slot for
+ * women-led plans: the read model has no public field for it yet (the
+ * backend is in progress), so the page passes it as a prop until it does.
+ */
+export interface OrganizerPageViewOptions {
+  womenLed?: boolean;
+}
+
 /** Everything the organiser page shows, worked out once from its record at the read time. */
-export function organizerPageView(record: OrganizerPageRecord, readAt: number): OrganizerPageView {
+export function organizerPageView(record: OrganizerPageRecord, readAt: number, options: OrganizerPageViewOptions = {}): OrganizerPageView {
   const kind = organizerPageKind(record);
   const generated = kind === "generated";
   const allEvents = [...record.upcomingEvents, ...record.pastMoments];
@@ -147,6 +172,7 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
   const rows = record.upcomingEvents.map((item, index) => eventView(item, index, kind, accent));
   const average = averageOf(record);
   const reviewCount = record.reviewSummary.count;
+  const verifiedCount = record.reviewSummary.verifiedCount;
   const coverEvent = allEvents.find((item) => item.source === "catch" && item.event.photoUrl?.trim());
   const pastCount = record.pastMoments.length;
   const titles = new Map(allEvents.map((item) => [item.eventId, item.event.title]));
@@ -156,8 +182,9 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
       value: record.followerCount.toLocaleString("en-IN"),
       label: generated ? copy.stats.waiting : copy.stats.followers(record.followerCount),
     }] : []),
-    ...(record.reviewSummary.readState === "enabled" && reviewCount > 0 && average ?
-      [{value: average, label: copy.stats.reviews(reviewCount)}] : []),
+    // The rating averages verified reviews only, so it is paired with their count.
+    ...(record.reviewSummary.readState === "enabled" && verifiedCount > 0 && average ?
+      [{value: average, label: copy.stats.reviews(verifiedCount)}] : []),
     ...(!generated && pastCount > 0 ? [{value: pastCount >= 24 ? "24+" : String(pastCount), label: copy.stats.hosted(pastCount)}] : []),
   ];
 
@@ -175,6 +202,7 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
       monogramGround: generated ? "white" : accent,
       verified: record.identity.verified,
       ...(generated ? {tag: copy.generatedTag} : {}),
+      labels: options.womenLed ? [copy.labels.womenLed] : [],
       headline: record.identity.headline,
       meta: [placeOf(record), generated ? copy.summarisedFrom(sourceNames) : null].filter(Boolean).join(" · "),
       stats,
@@ -182,14 +210,16 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
     nextUp: rows[0] ? nextUpView(rows[0], record.upcomingEvents[0], readAt) : null,
     links: linksOf(record, readAt),
     events: {
-      note: generated ? copy.eventsNote.generated(eventSourceNames(record)) : copy.eventsNote.claimed(eventSourceNames(record)),
+      note: generated ? copy.eventsNote.generated(eventSourceNames(record)) :
+        copy.eventsNote.claimed(upcomingSourceNames(record), record.upcomingEvents.some((item) => item.source === "catch")),
       rows,
     },
     moments: {title: generated ? copy.momentsTitle.generated : copy.momentsTitle.claimed, tiles: momentsOf(record, kind)},
     reviews: {
       readable: record.reviewSummary.readState === "enabled",
-      average: average ?? "–",
-      countLabel: copy.reviewCount(reviewCount),
+      average: verifiedCount > 0 ? average : null,
+      countLabel: copy.verifiedCount(verifiedCount),
+      unrated: reviewCount > 0 && !(verifiedCount > 0 && average) ? copy.unrated(reviewCount) : null,
       distribution: ([5, 4, 3, 2, 1] as const).map((stars) => {
         const count = record.reviewSummary.distribution[String(stars) as "1"];
         return {stars, count, label: copy.starsRow(stars, count)};
@@ -243,15 +273,17 @@ function eventView(item: OrganizerPageEvent, index: number, kind: OrganizerPageK
     month: format(start, zone, {month: "short"}),
     weekday: format(start, zone, {weekday: "short"}),
   };
-  const detail = [format(start, zone, {hour: "numeric", minute: "2-digit", hour12: true}), item.event.location]
-    .filter(Boolean).join(" · ");
+  const time = format(start, zone, {hour: "numeric", minute: "2-digit", hour12: true});
+  const detail = [time, item.event.location].filter(Boolean).join(" · ");
+  const day = `${date.weekday} ${date.day} ${date.month}`;
   const shared = {key: `${item.source}-${item.eventId}`, eventId: item.eventId, source: item.source, title: item.event.title,
-    date, detail, price: item.event.priceLabel, ...formatOf(item.event.activityKind)};
+    date, detail, cardLabel: `${day} · ${time}`, posterLabel: day, place: item.event.location,
+    price: item.event.priceLabel, ...formatOf(item.event.activityKind)};
   if (item.source === "external") {
     const free = /^(free|₹\s*0)$/iu.test(item.event.priceLabel.trim());
+    const note = free ? copy.registerOn(item.booking.label) : copy.ticketsOn(item.booking.label);
     return {...shared, href: item.booking.url, ground: kind === "generated" ? "paper" : "indigo",
-      sourceLabel: item.booking.label, sourceAccent: "indigo",
-      note: free ? copy.registerOn(item.booking.label) : copy.ticketsOn(item.booking.label),
+      sourceLabel: item.booking.label, sourceAccent: "indigo", photoUrl: null, note, availability: note,
       action: copy.tickets, actionPrimary: false};
   }
   const {event, booking} = item;
@@ -261,7 +293,8 @@ function eventView(item: OrganizerPageEvent, index: number, kind: OrganizerPageK
     event.waitlistAvailable ? copy.waitlist : copy.full;
   return {...shared, href: booking.path,
     ground: kind === "generated" ? "paper" : index === 0 ? catchFormatAccentOf(event.activityKind) ?? accent : "paper",
-    sourceLabel: copy.onCatch, sourceAccent: "coral", note,
+    sourceLabel: copy.onCatch, sourceAccent: "coral", note, photoUrl: event.photoUrl?.trim() || null,
+    availability: [note, copy.onCatch].filter(Boolean).join(" · "),
     action: bookable ? copy.book : copy.details, actionPrimary: bookable};
 }
 
@@ -390,13 +423,10 @@ function reviewView(review: OrganizerPageReview, index: number, titles: Readonly
   };
 }
 
-/** The verified average when there is one; otherwise every review's, which the policy line labels unverified. */
+/** The canonical score: the read model averages verified reviews only, and never the unverified ones. */
 function averageOf(record: OrganizerPageRecord): string | null {
-  const {rating, distribution, count} = record.reviewSummary;
-  if (rating !== null) return rating.toFixed(1);
-  if (!count) return null;
-  const total = ([1, 2, 3, 4, 5] as const).reduce((sum, stars) => sum + stars * distribution[String(stars) as "1"], 0);
-  return (total / count).toFixed(1);
+  const {rating} = record.reviewSummary;
+  return rating !== null && Number.isFinite(rating) ? rating.toFixed(1) : null;
 }
 
 function organizerAccent(events: readonly OrganizerPageEvent[]): Accent {
@@ -427,6 +457,11 @@ function publicSourceNames(record: OrganizerPageRecord): string[] {
   ].join(" ").toLowerCase();
   return [["Luma", /\bluma\b|lu\.ma/u], ["Instagram", /instagram/u]].flatMap(([name, pattern]) =>
     (pattern as RegExp).test(hosts) ? [name as string] : []);
+}
+
+/** The other sites where the coming events are sold, for the calendar's note. */
+function upcomingSourceNames(record: OrganizerPageRecord): string[] {
+  return [...new Set(record.upcomingEvents.flatMap((item) => item.source === "external" ? [item.booking.label] : []))];
 }
 
 function eventSourceNames(record: OrganizerPageRecord): string[] {

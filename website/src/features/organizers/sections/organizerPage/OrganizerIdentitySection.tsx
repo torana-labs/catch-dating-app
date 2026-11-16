@@ -1,11 +1,11 @@
 import {
-  CatchAvatar,
+  CatchBadge,
   CatchButton,
   CatchCheckboxInput,
   CatchCodeInput,
   CatchField,
   CatchHeroImage,
-  CatchIcon,
+  CatchProfileHeader,
   CatchQrCode,
   CatchStack,
   CatchSurface,
@@ -16,8 +16,10 @@ import {renderAccountForm} from "../../../account/accountForm";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
 
 /**
- * The board's hero: a photo from a past event, or the organiser's format
- * colour where there is none yet.
+ * The cover on its own: a photo from a past event, or the organiser's
+ * colour where there is none yet. The page no longer draws it apart from the
+ * identity (CatchProfileHeader holds the cover now); it stays exported only
+ * until design/website/components.json drops its organizer_cover entry.
  */
 export function OrganizerCover({controller}: {controller: OrganizerPageController}) {
   const {header, name} = controller.view;
@@ -28,39 +30,52 @@ export function OrganizerCover({controller}: {controller: OrganizerPageControlle
 
 /**
  * Who the organiser is, then follow and share: the top of the first phone
- * screen. The logo, the name with its verified mark, the headline, the place,
- * one line of numbers, and the two buttons.
+ * screen, as the board's rail opens. The cover and the logo, the name with
+ * its verified seal, the generated page's tag, the headline, the place, one
+ * line of numbers that each have data behind them, any labels the organiser
+ * set, and the two buttons. The follow sheet and the share card open under
+ * them.
  */
 export function OrganizerIdentitySection({controller}: {controller: OrganizerPageController}) {
   const {follow, share, view} = controller;
   const {header} = view;
-  const stats = header.stats.map((stat) => `${stat.value} ${stat.label}`).join(" · ");
+  const actions = (
+    <CatchStack gap={12}>
+      {header.labels.length ? (
+        <CatchStack direction="row" gap={8} wrap>
+          {header.labels.map((label) => <CatchBadge key={label} label={label} size="md" tone="brand" />)}
+        </CatchStack>
+      ) : null}
+      <CatchStack direction="row" equal gap={8}>
+        <CatchButton
+          fill
+          label={follow.following ? copy.following : copy.follow}
+          leadingIcon={follow.following ? "check" : undefined}
+          onPressed={follow.press}
+          status={follow.pending ? "loading" : "idle"}
+          variant={follow.following ? "secondary" : "primary"}
+        />
+        <CatchButton fill label={copy.share} leadingIcon="share" onPressed={share.toggle} variant="secondary" />
+      </CatchStack>
+      {follow.byPhone ? <CatchText as="p" tone="secondary" variant="body-small">{copy.followNote}</CatchText> : null}
+    </CatchStack>
+  );
   return (
     <CatchStack gap={20}>
-      <CatchStack gap={12}>
-        <CatchAvatar initials={header.monogram} name={view.name} size={72} />
-        <CatchStack align="center" direction="row" gap={8}>
-          <CatchText as="h1" variant="page-title">{view.name}</CatchText>
-          {header.verified ? <CatchIcon label={copy.verifiedLabel} name="protected" size={24} /> : null}
-        </CatchStack>
-        {header.tag ? <CatchText tone="secondary" variant="label-kicker">{header.tag}</CatchText> : null}
-        {header.headline ? <CatchText as="p" variant="body-lead">{header.headline}</CatchText> : null}
-        {header.meta ? <CatchText as="p" tone="secondary" variant="body-small">{header.meta}</CatchText> : null}
-        {stats ? <CatchText as="p" variant="label-action">{stats}</CatchText> : null}
-      </CatchStack>
-      <CatchStack gap={8}>
-        <CatchStack direction="row" equal gap={8}>
-          <CatchButton
-            fill
-            label={follow.following ? copy.following : copy.follow}
-            onPressed={follow.press}
-            status={follow.pending ? "loading" : "idle"}
-            variant={follow.following ? "secondary" : "primary"}
-          />
-          <CatchButton fill label={copy.share} leadingIcon="share" onPressed={share.toggle} variant="secondary" />
-        </CatchStack>
-        {follow.byPhone ? <CatchText as="p" tone="secondary" variant="body-small">{copy.followNote}</CatchText> : null}
-      </CatchStack>
+      <CatchProfileHeader
+        actions={actions}
+        coverAlt={header.coverUrl ? header.coverAlt ?? copy.coverAlt(view.name) : undefined}
+        coverGround={header.accent}
+        coverUrl={header.coverUrl}
+        headline={header.headline || undefined}
+        meta={header.meta || undefined}
+        monogram={header.monogram}
+        monogramGround={header.monogramGround}
+        name={view.name}
+        stats={header.stats}
+        tag={header.tag}
+        verifiedLabel={header.verified ? copy.verifiedLabel : undefined}
+      />
       {follow.phone ? <OrganizerFollowSheet error={follow.error} name={view.name} phone={follow.phone} /> : null}
       {follow.account ? <CatchSurface>{renderAccountForm(follow.account)}</CatchSurface> : null}
       {!follow.phone && follow.error ? <CatchText as="p" role="alert" tone="danger" variant="body-small">{follow.error}</CatchText> : null}

@@ -1,97 +1,62 @@
-import {CatchButton, CatchHeroImage, CatchIndexRow, CatchSection, CatchStack, CatchSurface, CatchText} from "@catch/web-ui";
+import {CatchBand, CatchBandHeader, CatchCardGrid, CatchGrid, CatchPhotoTile, CatchStack} from "@catch/web-ui";
+import {useId} from "react";
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
-import type {OrganizerMomentView} from "../../organizerPageView";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
 
 /**
- * Coming up: Catch events and imported events in one list, soonest first.
- * Each row has its date tile, where and when, the price, where it is sold
- * and its action; the row opens the event page or the page that sells it.
+ * Coming up: Catch events and imported events in one card grid, soonest
+ * first. Each card has the date and time, the place, the price, the places
+ * left and where it is sold; a Catch card opens its event page and an
+ * imported one the page that sells it. Without a photo the card's poster
+ * shows the date, as the board's date tile does.
  */
 export function OrganizerEventsSection({controller}: {controller: OrganizerPageController}) {
   const {events, name} = controller.view;
   return (
-    <CatchStack gap={0} id="events">
-      <CatchSection
-        empty={(
-          <CatchSurface>
-            <CatchText as="p" variant="title-row">{copy.eventsEmptyTitle}</CatchText>
-            <CatchText as="p" tone="secondary" variant="body-small">{copy.eventsEmptyBody(name)}</CatchText>
-          </CatchSurface>
-        )}
-        note={events.rows.length ? events.note : undefined}
-        title={copy.eventsTitle}
-      >
-        {events.rows.map((row) => (
-          <CatchIndexRow
-            date={{day: row.date.weekday, date: row.date.day, ...(row.format ? {format: row.format} : {})}}
-            density="regular"
-            href={row.href}
-            key={row.key}
-            meta={[row.price, row.note].filter(Boolean).join(" · ")}
-            onTap={() => controller.openEvent(row)}
-            status={row.sourceLabel}
-            statusTone={row.source === "catch" ? "success" : "secondary"}
-            subtitle={row.detail}
-            title={row.title}
-            trailing={(
-              <CatchButton isInteractive={false} label={row.action} onPressed={null} size="sm"
-                trailingIcon={row.source === "external" ? "openExternal" : undefined} variant={row.actionPrimary ? "primary" : "secondary"} />
-            )}
-            wrap
-          />
-        ))}
-      </CatchSection>
-    </CatchStack>
+    <CatchCardGrid
+      empty={{title: copy.eventsEmptyTitle, message: copy.eventsEmptyBody(name)}}
+      id="events"
+      items={events.rows.map((row) => ({
+        id: row.key,
+        availability: row.availability,
+        detail: row.place,
+        format: row.format ?? null,
+        href: row.href,
+        label: row.cardLabel,
+        onClick: () => controller.openEvent(row),
+        photoUrl: row.photoUrl,
+        posterLabel: row.posterLabel,
+        price: row.price,
+        title: row.title,
+      }))}
+      kind="plan"
+      lead={events.rows.length ? events.note : undefined}
+      title={copy.eventsTitle}
+    />
   );
 }
 
-/** One square of "What it's like": a past photo, a figure on a colour, or the space a claim fills. */
-function MomentTile({tile, format}: {tile: OrganizerMomentView; format: OrganizerPageController["view"]["header"]["format"]}) {
-  if (tile.imageUrl) {
-    return (
-      <CatchStack gap={8}>
-        <CatchHeroImage framed imageUrl={tile.imageUrl} semanticLabel={tile.imageAlt} showScrim={false} />
-        <CatchStack gap={2}>
-          <CatchText variant="title-row">{tile.title}</CatchText>
-          {tile.caption ? <CatchText tone="secondary" variant="body-meta">{tile.caption}</CatchText> : null}
-        </CatchStack>
-      </CatchStack>
-    );
-  }
-  if (tile.placeholder) {
-    return (
-      <CatchSurface aspect={1}>
-        <CatchText variant="title-row">{tile.title}</CatchText>
-        {tile.caption ? <CatchText tone="secondary" variant="body-small">{tile.caption}</CatchText> : null}
-      </CatchSurface>
-    );
-  }
-  // The first figure takes the organiser's colour and the second ink, as the board alternates them.
-  return (
-    <CatchSurface aspect={1} block="spotlight" color={tile.key === "count" ? format : "ink"}>
-      {tile.figure ? <CatchText numeric variant="display-xl">{tile.figure}</CatchText> : null}
-      <CatchText variant="label-action">{tile.title}</CatchText>
-      {tile.caption ? <CatchText variant="body-small">{tile.caption}</CatchText> : null}
-    </CatchSurface>
-  );
-}
-
-/** What it's like: past photos and what the numbers say, two to a row, or what a generated page found. */
+/**
+ * What it's like: past photos alternating with what the numbers say, or what
+ * a generated page found with the slot its photos will fill. Four across on a
+ * wide page, two on a phone. A figure shows only when the page has the data
+ * behind it.
+ */
 export function OrganizerMomentsSection({controller}: {controller: OrganizerPageController}) {
-  const {moments, header} = controller.view;
+  const {moments} = controller.view;
+  const titleId = `${useId()}-title`;
   if (!moments.tiles.length) return null;
-  const rows: OrganizerMomentView[][] = [];
-  for (let index = 0; index < moments.tiles.length; index += 2) rows.push(moments.tiles.slice(index, index + 2));
   return (
-    <CatchSection dividers="none" title={moments.title}>
-      <CatchStack gap={8}>
-        {rows.map((row) => (
-          <CatchStack direction="row" equal gap={8} key={row.map((tile) => tile.key).join("-")}>
-            {row.map((tile) => <MomentTile format={header.format} key={tile.key} tile={tile} />)}
-          </CatchStack>
-        ))}
+    <CatchBand aria-labelledby={titleId} as="section" pt="compact" width="content">
+      <CatchStack gap={24}>
+        <CatchBandHeader title={moments.title} titleId={titleId} />
+        <CatchGrid columns={4} compactColumns={2}>
+          {moments.tiles.map((tile) => (
+            <CatchPhotoTile caption={tile.caption} figure={tile.figure} ground={tile.ground} imageAlt={tile.imageAlt}
+              imageUrl={tile.imageUrl} key={tile.key} placeholder={tile.placeholder} title={tile.title} />
+          ))}
+        </CatchGrid>
       </CatchStack>
-    </CatchSection>
+    </CatchBand>
   );
 }

@@ -1,4 +1,4 @@
-import {CatchBadge, CatchButton, CatchIndexRow, CatchSection, CatchStack, CatchSurface, CatchText} from "@catch/web-ui";
+import {CatchBadge, CatchButton, CatchIcon, CatchLinkTile, CatchStack, CatchSurface, CatchText} from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
 
@@ -27,31 +27,27 @@ export function OrganizerNextUpSection({controller}: {controller: OrganizerPageC
 }
 
 /**
- * The organiser's links in one tile, pinned first; until owners add links,
- * the public pages the listing came from.
+ * The organiser's links as the board's link tiles, pinned first on the
+ * organiser's colour; until owners add links, the public pages the listing
+ * came from.
  */
 export function OrganizerLinksSection({controller}: {controller: OrganizerPageController}) {
   const {links, header} = controller.view;
   if (!links.length) return null;
   return (
-    <CatchStack aria-label={copy.linksLabel} as="nav" gap={0}>
-      <CatchSection container="tile">
-        {links.map((link) => (
-          <CatchIndexRow
-            chevron={false}
-            density="regular"
-            href={link.href}
-            icon={link.icon}
-            iconTone={link.pinned ? header.format : "neutral"}
-            key={link.key}
-            onTap={() => controller.openLink(link)}
-            status={link.pinned ? copy.pinned : undefined}
-            subtitle={link.subtitle}
-            title={link.title}
-            wrap
-          />
-        ))}
-      </CatchSection>
+    <CatchStack aria-label={copy.linksLabel} as="nav" gap={8}>
+      {links.map((link) => (
+        <CatchLinkTile
+          accent={header.accent}
+          href={link.href}
+          icon={<CatchIcon name={link.icon} size={20} />}
+          key={link.key}
+          onClick={() => controller.openLink(link)}
+          pinned={link.pinned}
+          subtitle={link.subtitle}
+          title={link.title}
+        />
+      ))}
     </CatchStack>
   );
 }

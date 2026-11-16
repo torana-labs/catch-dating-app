@@ -22,10 +22,11 @@ vi.mock("../observeOrganizerProviders", () => ({observeOrganizerProviders: vi.fn
 
 afterEach(cleanup);
 
-function renderPage(page: OrganizerPageRecord | null, listing: HostListing = organizerStoryListing(page ?? claimedOrganizerPage)) {
+function renderPage(page: OrganizerPageRecord | null, listing: HostListing = organizerStoryListing(page ?? claimedOrganizerPage),
+  props: Partial<Parameters<typeof HostListingPage>[0]> = {}) {
   return render(
     <QueryClientProvider client={new QueryClient({defaultOptions: {queries: {retry: false}}})}>
-      <HostListingPage listing={listing} page={page} readAt={organizerPageReadAt} />
+      <HostListingPage listing={listing} page={page} readAt={organizerPageReadAt} {...props} />
     </QueryClientProvider>,
   );
 }
@@ -55,7 +56,11 @@ describe("HostListingSections", () => {
     expect(footer.getByRole("link", {name: "What’s on"}).getAttribute("href")).toBe("/explore/");
     expect(footer.getByRole("link", {name: "Weddings"})).toBeTruthy();
     expect(footer.getByRole("button", {name: "Privacy choices"})).toBeTruthy();
-    expect(screen.getByText("2,140 followers · 4.8 ★ from 186 reviews · 12 nights", {exact: false})).toBeTruthy();
+    // Each proof line has data behind it; the rating counts verified reviews only and says how many.
+    const profile = container.querySelector("aside[aria-label='Lantern Lane Runners']")!;
+    for (const stat of ["2,140 followers", "4.8 ★ · 120 verified reviews", "12 nights hosted"]) expect(profile.textContent).toContain(stat);
+    // The help band ends every organiser page with the WhatsApp line.
+    expect(footer.getByText("We reply on WhatsApp, usually within an hour.")).toBeTruthy();
     expect(screen.getByRole("link", {name: "Make a page like this"}).getAttribute("href")).toBe("/host/");
   });
 
@@ -66,8 +71,20 @@ describe("HostListingSections", () => {
       "/events/lantern-sun-1/", "/events/lantern-wed-4/", "https://luma.com/lantern-lantern-night-14",
       "/events/lantern-15k-22/", "/events/lantern-sun-29/",
     ]);
-    expect(events.getAllByText("On Catch")).toHaveLength(4);
-    expect(events.getByText("Luma")).toBeTruthy();
+    expect(events.getByRole("heading", {name: "Coming up"})).toBeTruthy();
+    expect(events.getByText("From Catch and Luma, in one list")).toBeTruthy();
+    expect(events.getAllByText(/On Catch$/u)).toHaveLength(4);
+    expect(events.getByText("Tickets on Luma")).toBeTruthy();
+  });
+
+  it("labels each review Booked on Catch or Unverified and explains the labels", () => {
+    const {container} = renderPage(claimedOrganizerPage);
+    const reviews = within(container.querySelector("#reviews") as HTMLElement);
+    expect(reviews.getAllByText("Booked on Catch")).toHaveLength(2);
+    expect(reviews.getAllByText("Unverified")).toHaveLength(1);
+    expect(reviews.getByText("Booked on Catch means the reviewer booked through Catch. Unverified reviews are shown, and labelled.")).toBeTruthy();
+    expect(reviews.getByText("from 120 verified reviews")).toBeTruthy();
+    expect(reviews.getByText("Kabir")).toBeTruthy();
   });
 
   it("keeps the Catch header and the claim pitch on a generated page, and never shows intake notes", () => {
@@ -83,6 +100,24 @@ describe("HostListingSections", () => {
     expect(screen.queryByRole("img", {name: "Verified organiser"})).toBeNull();
     expect(screen.getAllByText("Harbour Line Run Club hasn’t claimed this page, so they can’t reply yet.")).toHaveLength(2);
     expect(screen.getByRole("link", {name: "Something wrong? Tell us"}).getAttribute("href")).toBe("/help/");
+    // No verified review yet, so no rating anywhere on the page.
+    expect(screen.queryByText(/★ ·/u)).toBeNull();
+    expect(screen.getByText("2 reviews, none from a Catch booking yet, so no rating.")).toBeTruthy();
+  });
+
+  it("keeps the short footer and no site header on the organiser's own domain", () => {
+    renderPage(claimedOrganizerPage, undefined, {servedOn: "ownDomain"});
+    expect(screen.queryByRole("navigation", {name: "Primary"})).toBeNull();
+    expect(screen.getByRole("heading", {level: 1, name: "Lantern Lane Runners"})).toBeTruthy();
+    expect(within(screen.getByRole("contentinfo")).getByRole("link", {name: "Privacy"})).toBeTruthy();
+  });
+
+  it("shows the women-led label when the page is told it", () => {
+    renderPage(claimedOrganizerPage, undefined, {womenLed: true});
+    expect(screen.getByText("Women-led")).toBeTruthy();
+    cleanup();
+    renderPage(claimedOrganizerPage);
+    expect(screen.queryByText("Women-led")).toBeNull();
   });
 
   it("hides the follow-by-phone sheet and the review form until their backends land", () => {
