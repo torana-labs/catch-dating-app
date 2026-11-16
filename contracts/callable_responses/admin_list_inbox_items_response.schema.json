@@ -38,6 +38,7 @@
             "event",
             "claim",
             "enquiry",
+            "lead",
             "access",
             "stuck"
           ]
@@ -99,6 +100,7 @@
               "event",
               "claim",
               "enquiry",
+              "lead",
               "access",
               "stuck"
             ]
@@ -395,6 +397,11 @@
             "enquiry": {
               "type": "integer",
               "minimum": 0
+            },
+            "lead": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Website leads (requestKind on joinWaitlist). Optional so a server that predates them still matches."
             },
             "access": {
               "type": "integer",

@@ -28,6 +28,10 @@ export const sampleInboxItems: InboxItem[] = [
   sampleItem({itemId: "enquiry-harbor", type: "enquiry", sourceKind: "salesInboundIntent", sourceId: "harbor",
     sourcePath: "salesInboundIntents/harbor", title: "Harbor Social Club", subtitle: "Wants to run events on Catch",
     cameFrom: "Host website", state: {code: "new", label: "New", tone: "neutral"}}, 24),
+  sampleItem({itemId: "enquiry-lead-loft", type: "lead", sourceKind: "salesInboundIntent", sourceId: "lead-loft",
+    sourcePath: "salesInboundIntents/lead-loft", title: "List a space: The Loft",
+    subtitle: "WhatsApp +91 98123 45678 · 60 standing, 30 seated · Tuesdays and Wednesdays",
+    cameFrom: "Website /venues/", state: {code: "reply_on_whatsapp", label: "Reply on WhatsApp", tone: "warning"}}, 1),
   sampleItem({itemId: "supply-pune-run", type: "listing", title: "Pune Run Club", subtitle: "https://instagram.com/punerunclub",
     cameFrom: "Partner on WhatsApp", city: "pune", state: {code: "outside_launch_cities", label: "Outside launch cities", tone: "warning"}}, 6),
   sampleItem({itemId: "supply-sunday-table", type: "stuck", title: "Sunday Table",
@@ -48,6 +52,9 @@ export const sampleInboxJourneys: Record<string, JourneyStep[]> = {
   ],
   "enquiry-harbor": [
     {stepId: "received", occurredAt: hoursAgo(24), title: "Enquiry from the host website", detail: "Kavya Rao", actorUid: null, tone: "ink"},
+  ],
+  "enquiry-lead-loft": [
+    {stepId: "received", occurredAt: hoursAgo(1), title: "List a space from the website", detail: "/venues/", actorUid: null, tone: "ink"},
   ],
   "supply-sunday-table": [
     {stepId: "submitted", occurredAt: hoursAgo(4), title: "Sales associate sent a link on WhatsApp", detail: "https://instagram.com/sundaytable", actorUid: "sample-riya", tone: "ink"},
