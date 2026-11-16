@@ -38,15 +38,10 @@ export const selectorPrefixes = ["tool/harness/", "tool/nx/"];
 // tool/tools_manifest.json is data the planner loads, but it selects by
 // semantic diff (manifest_diff.mjs), not every lane.
 export const manifestFile = "tool/tools_manifest.json";
-// The scripts the plan job selects with, and the shared check runner. Lane
-// jobs across almost every lane run `node tool/run.mjs check <ids>` (the app
-// builds' fail-fast gate, functions-ci, flutter-ci, tools), so a change to the
-// runner or a module it imports can break any of them. Main reuses the queue's
-// result, so only the nightly would notice. Stopgap until the caller graph
-// selects the lanes whose jobs execute a script (#1831, 16 Nov 2026).
+// The scripts the plan job selects with.
 export const selectorEntries = ["tool/harness.mjs", "tool/harness/compare_selectors.mjs",
   "tool/harness/verify_local.mjs", "tool/nx/select_lanes.mjs", "tool/ci/main_push_base.mjs",
-  "tool/ci/required_ci_floor.mjs", "tool/run.mjs"];
+  "tool/ci/required_ci_floor.mjs"];
 
 // CI configuration ci.yml never executes or reads, each with the reason. Every
 // tracked .github/** and tool/ci/** file must be a selector, be reached by a
@@ -184,6 +179,8 @@ function createScanner(root, files) {
       const ids = args.trim().split(/\s+/u).slice(1);
       const any = !/^check\b/u.test(args.trim()) || ids.some((id) => id.includes("$") || id === "--all");
       // Which manifest entries this command runs: named ones, or any.
+      // The runner itself, and so its imports, run in this job.
+      if (exists("tool/run.mjs")) out.refs.add("tool/run.mjs");
       if (any) out.anyIds = true;
       else for (const id of ids.filter((value) => value.includes(":"))) (out.ids ??= new Set()).add(id);
       for (const tool of manifestTools()) {
@@ -390,6 +387,9 @@ export function jobLanesOf(job, laneNames) {
 // CI configuration: the files whose selection this module decides. Other
 // files keep the selection their Nx inputs give them.
 export const isCiConfiguration = (file) => file.startsWith(".github/") || file.startsWith("tool/ci/");
+/** Tool code a job can execute (a script or a module one imports); tests are run, not executed by lane jobs. */
+export const isExecutedCode = (file) => /^tool\/.+\.(?:mjs|cjs|js|ts|sh|dart|py)$/u.test(file) &&
+  !/\.test\.[cm]?[jt]s$|_test\.dart$/u.test(file);
 // Tests under the selector directories check selection; they do not decide it.
 export const isSelector = (file, graph) => graph.selectors.has(file) ||
   (selectorPrefixes.some((prefix) => file.startsWith(prefix)) && !/\.test\.mjs$/u.test(file));
@@ -405,7 +405,16 @@ export function callerLanes(changedFiles, {graph, allLanes, manifestChange}) {
       for (const lane of lanes) selected.add(lane);
       continue;
     }
-    if (!isCiConfiguration(file)) continue;
+    if (!isCiConfiguration(file)) {
+      // A script or module a lane job executes selects that job's lanes; a
+      // data file a script merely names keeps its Nx inputs.
+      if (!isExecutedCode(file)) continue;
+      for (const lane of graph.lanes.get(file) ?? []) {
+        if (lane === ALL) return new Set(allLanes);
+        selected.add(lane);
+      }
+      continue;
+    }
     // Unclassified CI configuration (new, renamed or deleted) selects every
     // lane until it is reached by ci.yml or listed in notCalledByCi.
     if (!isClassified(file, graph)) return new Set(allLanes);

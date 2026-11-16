@@ -6,7 +6,7 @@ import path from "node:path";
 import test from "node:test";
 import {planAffected} from "../harness/lib/component_graph.mjs";
 import {compare, comparedLanes, workflowLanes} from "./shadow_plan.mjs";
-import {ALL, callerLanes, declaredTargets, isCiConfiguration, isSelector, notCalledByCi, selectorEntries,
+import {ALL, callerLanes, declaredTargets, isCiConfiguration, isExecutedCode, isSelector, notCalledByCi, selectorEntries,
   selectorFiles, trackedFiles, unclassifiedCiFiles, workflowCallers} from "./workflow_callers.mjs";
 import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
 
@@ -141,10 +141,12 @@ test("every selector file selects every lane in the real repository", () => {
 
 // #1831 (16 Nov 2026) changed tool/run.mjs and tool/lib/tool_manifest_rules.mjs.
 // Lane jobs in almost every lane run `node tool/run.mjs check <ids>`, but Nx
-// ran Tools only, so a broken runner would have reached main unnoticed. The
-// runner and every module it statically imports select every lane. The closure
-// is computed here from the source, so a new import cannot slip out.
-test("the shared check runner and its whole static-import closure select every lane", () => {
+// ran Tools only: the caller graph never counted the runner as reached, and
+// only CI configuration selected its callers' lanes. Now a lane job reaches
+// the runner, and any tool script or module a job executes selects its lanes.
+// The runner's import closure is computed here from the source, so a new
+// import cannot slip out.
+test("the shared check runner and every module it imports select every lane whose jobs run it", () => {
   const importPattern = /(?:^|\n)\s*(?:import|export)\s[^;]*?from\s+["'](\.{1,2}\/[^"']+)["']|import\(\s*["'](\.{1,2}\/[^"']+)["']\s*\)/gu;
   const closure = new Set();
   const visit = (file) => {
@@ -158,17 +160,55 @@ test("the shared check runner and its whole static-import closure select every l
   visit("tool/run.mjs");
   assert.ok(closure.has("tool/lib/tool_manifest_rules.mjs") && closure.has("tool/lib/tool_impact.mjs"),
     "the closure reaches the manifest rules and the impact planner");
+  // Every lane whose jobs run `node tool/run.mjs`.
+  const runnerLanes = new Set([...realGraph.jobsOf.get("tool/run.mjs") ?? []]
+    .flatMap((job) => [...realGraph.jobLanes.get(job) ?? []]));
+  assert.ok(runnerLanes.has("flutter_build_web") && runnerLanes.has("functions") && runnerLanes.has("tools"),
+    "the app builds, Functions and Tools run the runner");
   for (const file of closure) {
-    assert.ok(realGraph.selectors.has(file), `${file} is imported by tool/run.mjs`);
-    assert.deepEqual([...workflowLanes([file], realGraph)].sort(), [...comparedLanes].sort(), file);
+    const lanes = workflowLanes([file], realGraph);
+    for (const lane of runnerLanes) {
+      if (lane !== ALL) assert.ok(lanes.has(lane), `${file} (imported by tool/run.mjs) selects ${lane}`);
+    }
   }
-  // #1831's own change, as Nx now selects it.
+  // #1831's own change selects every lane that runs the runner.
   const lanes = workflowLanes(["tool/lib/sort_tools_manifest.mjs", "tool/lib/tool_manifest_rules.mjs",
     "tool/lib/tool_manifest_rules.test.mjs", "tool/run.mjs", "tool/run.test.mjs"], realGraph);
-  assert.deepEqual([...lanes].sort(), [...comparedLanes].sort());
-  // A tool test or a script the runner does not import is not a selector.
-  assert.equal(isSelector("tool/run.test.mjs", realGraph), false);
-  assert.equal(isSelector("tool/lib/sort_tools_manifest.mjs", realGraph), closure.has("tool/lib/sort_tools_manifest.mjs"));
+  for (const lane of runnerLanes) if (lane !== ALL) assert.ok(lanes.has(lane), `#1831 selects ${lane}`);
+});
+
+test("a tool script selects the lanes whose jobs execute it; tests, fixtures and data keep their Nx inputs", () => {
+  const graph = workflowCallers({root: fixtureRepo({
+    ".github/workflows/ci.yml": `
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps: [{run: echo plan}]
+  web:
+    if: \${{ needs.plan.outputs.web == 'true' }}
+    needs: plan
+    runs-on: ubuntu-latest
+    steps:
+      - run: node tool/check_web.mjs lib/main.dart
+`,
+    "tool/check_web.mjs": "import './lib/helper.mjs';\nconst config = 'tool/web_rules.json';\n",
+    "tool/lib/helper.mjs": "export const x = 1;\n",
+    "tool/web_rules.json": "{}\n",
+    "tool/check_web.test.mjs": "import './check_web.mjs';\n",
+    "tool/unused.mjs": "\n",
+    "lib/main.dart": "void main() {}\n",
+  }), lanes: ["web", "tools"]});
+  const lanesOf = (file) => [...callerLanes([file], {graph, allLanes: ["web", "tools"]})];
+  assert.deepEqual(lanesOf("tool/check_web.mjs"), ["web"]);
+  assert.deepEqual(lanesOf("tool/lib/helper.mjs"), ["web"], "a module the script imports");
+  // Negative controls: a data file the script names, an app source it names,
+  // its test and a script no job runs select no caller lane.
+  for (const file of ["tool/web_rules.json", "lib/main.dart", "tool/check_web.test.mjs", "tool/unused.mjs"]) {
+    assert.deepEqual(lanesOf(file), [], file);
+  }
+  assert.equal(isExecutedCode("tool/check_web.mjs"), true);
+  assert.equal(isExecutedCode("tool/check_web.test.mjs"), false);
+  assert.equal(isExecutedCode("tool/web_rules.json"), false);
 });
 
 test("every unresolvable command in PR CI is declared", () => {
