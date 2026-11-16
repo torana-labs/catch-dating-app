@@ -1291,6 +1291,26 @@
       ]
     },
     {
+      "id": "hostFormVersionFilters",
+      "path": "hostFormVersionFilters/{versionId}",
+      "rulesMatch": "/hostFormVersionFilters/{versionId}",
+      "typescriptInterface": "HostFormVersionFilterDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers get form version answer filters and nothing else"
+      ],
+      "owner": "Host read model projector: hostReadModels form version filter trigger",
+      "read": "current organizer managers get a version's document by id; a view not written yet reads as missing; nobody lists the collection",
+      "write": "server only; written from the immutable organizerFormVersions document and deleted if the version is",
+      "exportedFunctions": [
+        "onHostFormVersionFilterSourceChanged"
+      ],
+      "migrationNotes": [
+        "answerFilterOptions equals what listOrganizerFormResponses returns for the version. The host-form-version-filters copy-forward migration creates views for versions published before the trigger."
+      ]
+    },
+    {
       "id": "hostProviderConnectionViews",
       "path": "hostProviderConnectionViews/{organizerId}",
       "rulesMatch": "/hostProviderConnectionViews/{organizerId}",
@@ -1764,7 +1784,8 @@
       "write": "immutable server-created version only",
       "exportedFunctions": [
         "publishOrganizerForm",
-        "listParticipantActivity"
+        "listParticipantActivity",
+        "onHostFormVersionFilterSourceChanged"
       ],
       "migrationNotes": [
         "sourceDraftRevision makes publish retries idempotent and every historical definition immutable.",

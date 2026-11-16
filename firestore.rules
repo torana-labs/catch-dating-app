@@ -1387,6 +1387,13 @@ service cloud.firestore {
       allow get: if isHostSummaryManager(resource.data.organizerId);
       allow list, write: if false;
     }
+    // One published form version's answer filters, read by version id. A view
+    // not written yet reads as missing rather than denied.
+    match /hostFormVersionFilters/{versionId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list, write: if false;
+    }
     match /hostResponseSummaries/{summaryId} {
       allow get, list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
