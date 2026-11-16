@@ -2,6 +2,7 @@ import {expect, fireEvent, userEvent, within} from "storybook/test";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {ReactNode} from "react";
 import {hostLandingCopy as copy} from "@content/hostLanding";
+import {hostFeeCalculatorCopy} from "@content/pricing";
 import {marketingCaptures} from "../app/marketingCaptures";
 import {HostPage} from "../features/host/HostPage";
 
@@ -87,7 +88,7 @@ function Width({children, width}: {children: ReactNode; width: 390 | 1280}) {
   return <div style={{margin: "0 auto", width}}>{children}</div>;
 }
 
-/** The whole landing at 1280, as the RbWebHostV2 board. */
+/** The whole landing at 1280, as the PlaybookHosts board. */
 export const HostLanding1280: Story = {
   name: "Host landing · 1280",
   parameters: {layout: "fullscreen"},
@@ -101,7 +102,7 @@ export const HostLanding390: Story = {
   render: () => <Width width={390}><HostPage captures={marketingCaptures} /></Width>,
 };
 
-/** Another format picked in the matrix: the night scene follows the pickleball social. */
+/** Another format picked in the night scene: it follows the pickleball social. */
 export const NightFormat: Story = {
   name: "Host landing · night format",
   parameters: {layout: "fullscreen"},
@@ -113,20 +114,19 @@ export const NightFormat: Story = {
   },
 };
 
-/** Pricing at the cap, and the second layer, where bookings move to Catch. */
-export const PricingCapAndLayerTwo: Story = {
-  name: "Host landing · pricing cap and layer two",
+/** Pricing at the cap: the shared fee calculator stops the fee at the cap for the billing cycle. */
+export const PricingCap: Story = {
+  name: "Host landing · pricing cap",
   parameters: {layout: "fullscreen"},
   render: () => <Width width={1280}><HostPage captures={marketingCaptures} /></Width>,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole("tab", {name: copy.layers.options[1].label}));
-    fireEvent.change(canvas.getByRole("slider", {name: copy.pricing.sales}), {target: {value: "500000"}});
-    await expect(canvas.getByText(copy.pricing.capped)).toBeInTheDocument();
+    fireEvent.change(canvas.getByRole("slider", {name: hostFeeCalculatorCopy.sales}), {target: {value: "500000"}});
+    await expect(canvas.getByText(hostFeeCalculatorCopy.capped)).toBeInTheDocument();
   },
 };
 
-/** The closing band: three steps, Catch Host's badges and the link to Catch for weddings. */
+/** The closing band: three steps, Catch Host's badges, a person and the link to Catch for weddings. */
 export const StartBand: Story = {
   name: "Host landing · start band",
   parameters: {layout: "fullscreen"},
