@@ -38,10 +38,15 @@ export const selectorPrefixes = ["tool/harness/", "tool/nx/"];
 // tool/tools_manifest.json is data the planner loads, but it selects by
 // semantic diff (manifest_diff.mjs), not every lane.
 export const manifestFile = "tool/tools_manifest.json";
-// The scripts the plan job selects with.
+// The scripts the plan job selects with, and the shared check runner. Lane
+// jobs across almost every lane run `node tool/run.mjs check <ids>` (the app
+// builds' fail-fast gate, functions-ci, flutter-ci, tools), so a change to the
+// runner or a module it imports can break any of them. Main reuses the queue's
+// result, so only the nightly would notice. Stopgap until the caller graph
+// selects the lanes whose jobs execute a script (#1831, 16 Nov 2026).
 export const selectorEntries = ["tool/harness.mjs", "tool/harness/compare_selectors.mjs",
   "tool/harness/verify_local.mjs", "tool/nx/select_lanes.mjs", "tool/ci/main_push_base.mjs",
-  "tool/ci/required_ci_floor.mjs"];
+  "tool/ci/required_ci_floor.mjs", "tool/run.mjs"];
 
 // CI configuration ci.yml never executes or reads, each with the reason. Every
 // tracked .github/** and tool/ci/** file must be a selector, be reached by a
