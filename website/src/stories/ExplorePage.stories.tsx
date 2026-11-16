@@ -4,7 +4,7 @@ import {MemoryRouter} from "react-router";
 import {expect, userEvent, within} from "storybook/test";
 import {ExplorePage} from "../features/home/ExplorePage";
 import type {HomeCatalog} from "../features/home/homeTypes";
-import {mumbaiEmptyMonthCatalog, mumbaiQuietCatalog} from "../features/discovery/discoveryCatalogs.fixture";
+import {mumbaiEmptyMonthCatalog, mumbaiQuietCatalog} from "../features/discovery/discoveryCatalogFixtures";
 import {homeCatalogFixture, mumbaiLiveCatalog, puneLaunchingSoonCatalog} from "./fixtures/homeCatalogs";
 
 const meta = {

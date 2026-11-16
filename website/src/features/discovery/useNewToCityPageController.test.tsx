@@ -1,6 +1,6 @@
 import {renderHook} from "@testing-library/react";
 import {describe, expect, it, vi} from "vitest";
-import {mumbaiDiscoveryCatalog, mumbaiQuietCatalog} from "./discoveryCatalogs.fixture";
+import {mumbaiDiscoveryCatalog, mumbaiQuietCatalog} from "./discoveryCatalogFixtures";
 import {newToCityPageMeta, useNewToCityPageController} from "./useNewToCityPageController";
 
 describe("useNewToCityPageController", () => {

@@ -3,7 +3,7 @@ import type {ReactNode} from "react";
 import {MemoryRouter} from "react-router";
 import {expect, within} from "storybook/test";
 import {CityFormatPage} from "../features/discovery/CityFormatPage";
-import {mumbaiDiscoveryCatalog, mumbaiQuietCatalog} from "../features/discovery/discoveryCatalogs.fixture";
+import {mumbaiDiscoveryCatalog, mumbaiQuietCatalog} from "../features/discovery/discoveryCatalogFixtures";
 import type {DiscoveryFormatKey} from "../features/discovery/discoveryTypes";
 import {NewToCityPage} from "../features/discovery/NewToCityPage";
 import type {HomeCatalog} from "../features/home/homeTypes";

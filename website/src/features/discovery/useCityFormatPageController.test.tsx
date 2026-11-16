@@ -1,7 +1,7 @@
 import {act, renderHook} from "@testing-library/react";
 import {brand} from "@content/brand";
 import {describe, expect, it, vi} from "vitest";
-import {mumbaiDiscoveryCatalog, mumbaiEmptyMonthCatalog, puneDiscoveryCatalog} from "./discoveryCatalogs.fixture";
+import {mumbaiDiscoveryCatalog, mumbaiEmptyMonthCatalog, puneDiscoveryCatalog} from "./discoveryCatalogFixtures";
 import {cityFormatPageMeta, useCityFormatPageController} from "./useCityFormatPageController";
 
 describe("useCityFormatPageController", () => {

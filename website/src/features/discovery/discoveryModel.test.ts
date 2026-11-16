@@ -2,7 +2,7 @@ import {readFileSync} from "node:fs";
 import {resolve} from "node:path";
 import {describe, expect, it} from "vitest";
 import {mumbaiLiveCatalog} from "../../stories/fixtures/homeCatalogs";
-import {mumbaiDiscoveryCatalog, mumbaiEmptyMonthCatalog, mumbaiQuietCatalog, puneDiscoveryCatalog} from "./discoveryCatalogs.fixture";
+import {mumbaiDiscoveryCatalog, mumbaiEmptyMonthCatalog, mumbaiQuietCatalog, puneDiscoveryCatalog} from "./discoveryCatalogFixtures";
 import {
   cityFormatModel,
   cityFormatPageStatus,

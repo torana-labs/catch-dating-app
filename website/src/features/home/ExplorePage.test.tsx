@@ -3,7 +3,7 @@ import {MemoryRouter, useLocation} from "react-router";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {brand} from "@content/brand";
 import {homeCatalogFixture, mumbaiLiveCatalog, puneLaunchingSoonCatalog} from "../../stories/fixtures/homeCatalogs";
-import {mumbaiDiscoveryCatalog, mumbaiEmptyMonthCatalog, mumbaiQuietCatalog} from "../discovery/discoveryCatalogs.fixture";
+import {mumbaiDiscoveryCatalog, mumbaiEmptyMonthCatalog, mumbaiQuietCatalog} from "../discovery/discoveryCatalogFixtures";
 import type {HomeCatalog} from "./homeTypes";
 import {ExplorePage} from "./ExplorePage";
 import {exploreFiltersFromSearch, exploreSearchFor, filterPlans} from "./exploreModel";

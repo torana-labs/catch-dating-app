@@ -1,7 +1,7 @@
 import {renderHook} from "@testing-library/react";
 import {describe, expect, it, vi} from "vitest";
 import {mumbaiLiveCatalog, puneLaunchingSoonCatalog} from "../../stories/fixtures/homeCatalogs";
-import {mumbaiQuietCatalog} from "../discovery/discoveryCatalogs.fixture";
+import {mumbaiQuietCatalog} from "../discovery/discoveryCatalogFixtures";
 import {useExplorePageController} from "./useExplorePageController";
 
 describe("useExplorePageController", () => {

@@ -4,7 +4,7 @@ import {afterEach, describe, expect, it, vi} from "vitest";
 import {mumbaiLiveCatalog} from "../../stories/fixtures/homeCatalogs";
 import type {HomeCatalog} from "../home/homeTypes";
 import {CityFormatPage} from "./CityFormatPage";
-import {mumbaiDiscoveryCatalog, mumbaiEmptyMonthCatalog} from "./discoveryCatalogs.fixture";
+import {mumbaiDiscoveryCatalog, mumbaiEmptyMonthCatalog} from "./discoveryCatalogFixtures";
 import type {DiscoveryFormatKey} from "./discoveryTypes";
 
 vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent: vi.fn()}));

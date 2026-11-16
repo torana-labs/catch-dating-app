@@ -1,7 +1,7 @@
 import {cleanup, render, screen, within} from "@testing-library/react";
 import {MemoryRouter} from "react-router";
 import {afterEach, describe, expect, it, vi} from "vitest";
-import {mumbaiDiscoveryCatalog} from "./discoveryCatalogs.fixture";
+import {mumbaiDiscoveryCatalog} from "./discoveryCatalogFixtures";
 import {NewToCityPage} from "./NewToCityPage";
 
 vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent: vi.fn()}));

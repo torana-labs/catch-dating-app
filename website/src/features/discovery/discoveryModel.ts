@@ -136,8 +136,6 @@ export function cityFormatModel(catalog: HomeCatalog, format: DiscoveryFormatKey
   };
 }
 
-export type CityFormatModel = ReturnType<typeof cityFormatModel>;
-
 /**
  * Whether a city-by-format path renders: "unavailable" when the city could
  * not be read or has no format pages yet, "notFound" when the format has no
