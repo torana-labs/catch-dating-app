@@ -48,7 +48,7 @@ describe("public route navigation targets", () => {
   it("gives the claim page the host header and footer", () => {
     renderPage(<ClaimPage routeState={emptyClaimRouteState} />);
     const nav = screen.getByRole("navigation", {name: "Primary"});
-    expect(within(nav).getAllByRole("link").map(link => link.getAttribute("href"))).toEqual(["/explore/", "/help/"]);
+    expect(within(nav).getAllByRole("link").map(link => link.getAttribute("href"))).toEqual(["/explore/", "/host/#pricing", "/help/"]);
     expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
     const footer = screen.getByRole("navigation", {name: "Footer"});
     expect(within(footer).getByRole("link", {name: "Help"}).getAttribute("href")).toBe("/help/");
