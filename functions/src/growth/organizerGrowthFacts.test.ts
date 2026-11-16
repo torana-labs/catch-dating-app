@@ -61,6 +61,32 @@ test("a website enquiry after a paid campaign is ads, else came to us", () => {
     "cpc");
 });
 
+test("a website referral names its signed-in referrer, else nobody", () => {
+  const referral = (referralCredit: Record<string, unknown>) =>
+    listing({kind: "self_submission", originKind: "sales_inbound_intent",
+      submittedBy: {role: "organizer", uid: null}, intent: {source: "website",
+        leadKind: "referral", lead: {referralCredit}}});
+  const guest = referral({status: "referrer_account", referrerUid: "neha",
+    referrerRole: "guest"});
+  assert.equal(guest.channel, "guest");
+  assert.deepEqual(guest.nominator,
+    {uid: "neha", role: "guest", nominatedAt: submittedAt});
+  const partner = referral({status: "referrer_account", referrerUid: "tara",
+    referrerRole: "partner"});
+  assert.equal(partner.channel, "partner");
+  assert.equal(partner.nominator?.uid, "tara");
+  const signedOut = referral({status: "missing_referrer_account",
+    referrerUid: null, referrerRole: null});
+  assert.equal(signedOut.channel, "guest");
+  assert.equal(signedOut.nominator, null);
+  // Any other lead is a website enquiry like before.
+  assert.equal(listing({kind: "self_submission",
+    originKind: "sales_inbound_intent",
+    submittedBy: {role: "organizer", uid: null},
+    intent: {source: "website", leadKind: "venue", lead: {}}}).channel,
+  "came_to_us");
+});
+
 test("an organizer made outside a listing takes its channel from provenance",
   () => {
     assert.equal(provenanceChannel({provenance: {origin: "userCreated"}})
