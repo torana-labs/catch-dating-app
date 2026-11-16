@@ -12038,6 +12038,24 @@
           "catch.journey_steps"
         ],
         "reason": "Resumes a form section through a caller callback or sheet result and shows each section completion status using canonical navigation fields and badges. FormList edits values and coordinates patch saves; StepList presents passive numbered instructions without navigation or completion status."
+      },
+      "react": {
+        "symbol": "CatchFormStepList",
+        "file": "packages/web-ui/src/components/CatchFormStepList.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchFormStepList.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "complete",
+            "needs-information",
+            "optional",
+            "mixed-progress",
+            "long-title"
+          ]
+        },
+        "notes": "items, statusLabelBuilder and onStepSelected as in Flutter; CatchFormStepReviewItem is a plain object and CatchFormStepListStatus a string union (needsInformation). The column direction is Flutter's list: a CatchIndexRow per step with a functional CatchBadge for its status, a button that reports the index when onStepSelected is given, and passive otherwise (there is no sheet route on the web, so no index is returned). fieldCopy is not taken: CatchIndexRow needs no field copy. Web additions: label, the list's accessible name; current, the step in progress (aria-current); and direction row, the website flow's progress rail (the playbook kit's flow steps), passive numbered pills with a check on complete steps and each status read after its title. Website StepRail remains the componentId adapter until its callers move to this component."
       }
     },
     {

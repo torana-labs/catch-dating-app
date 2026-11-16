@@ -1,0 +1,102 @@
+/*
+ * The body of a guide or article (the playbook kit's article): the text
+ * column at most 720px beside a 320px column 64px away, the side column
+ * sticky 24px below the top; one 760px centred column without contents or
+ * an aside, and one column below 840px with the side column after the text.
+ * Sections are 44px apart; paragraphs 12px. A tip and the contents sit on
+ * paper, at radius md and lg.
+ */
+.article {
+  display: grid;
+  grid-template-columns: minmax(0, 760px);
+  justify-content: center;
+  gap: var(--catch-space-s16);
+  align-items: start;
+}
+
+.article[data-side] {
+  grid-template-columns: minmax(0, 1fr) 320px;
+  justify-content: stretch;
+}
+
+.main {
+  max-width: 720px;
+  min-width: 0;
+}
+
+.meta { margin: var(--catch-space-s3) 0 0; }
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s3);
+  margin-top: var(--catch-space-s11);
+  scroll-margin-top: var(--catch-space-s6);
+}
+
+.paragraph { margin: 0; }
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro10);
+  margin: var(--catch-space-s1) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.line {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--catch-space-micro10);
+}
+
+.tip {
+  margin: var(--catch-space-s1) 0 0;
+  padding: var(--catch-space-micro14) var(--catch-space-s4);
+  border-radius: var(--catch-radius-md);
+  background: var(--catch-ground-paper-fill);
+  color: var(--catch-ground-paper-ink);
+}
+
+.side {
+  position: sticky;
+  top: var(--catch-space-s6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s4);
+  min-width: 0;
+}
+
+.toc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s2);
+  padding: var(--catch-space-micro18);
+  border-radius: var(--catch-radius-lg);
+  background: var(--catch-ground-paper-fill);
+  color: var(--catch-ground-paper-ink);
+  --catch-theme-ink: var(--catch-ground-paper-ink);
+  --catch-theme-ink2: var(--catch-ground-paper-ink-secondary);
+}
+
+.links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  display: flex;
+  padding: var(--catch-space-micro6) 0;
+  border-bottom: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-ink)
+    calc(var(--catch-opacity-ground-card-outline) * 100%), transparent);
+}
+
+.link:last-child { border-bottom: 0; }
+
+@container catch-page (width < 840px) {
+  .article,
+  .article[data-side] { grid-template-columns: minmax(0, 1fr); }
+  .side { position: static; }
+}
