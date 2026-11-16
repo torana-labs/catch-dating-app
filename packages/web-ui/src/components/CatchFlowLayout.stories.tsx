@@ -81,4 +81,4 @@ export const Compact: Story = {
 };
 
 export const WithSteps: Story = {args: {navigation: steps, children: block("A block")}};
-export const Wide: Story = {args: {wide: true, children: [block("First"), block("Second")]}};
+export const Wide: Story = {args: {wide: true, children: <>{block("First")}{block("Second")}</>}};

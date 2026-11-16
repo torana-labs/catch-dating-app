@@ -3207,8 +3207,20 @@ read these summaries through the SDK, as do an application review-status filter
 inclusive at both ends. Form-scoped/filter-choice queries, answer filters,
 response status, identity and source filters, contact joins and text search keep
 the existing callable behavior until their own equivalent indexed read contracts
-are implemented; form-scoped pages also need the version's answer filter
-options, which only the callable reads.
+are implemented.
+`hostFormVersionFilters/{versionId}` gives form-scoped pages a published native
+form version's answer filter options without the callable: `organizerId`,
+`formId`, `versionId`, `formVersion` (N in `formId_vN`), `version` and
+`answerFilterOptions`, exactly what `listOrganizerFormResponses` returns for
+that version (promoted, non-sensitive single- and multi-choice questions and
+their option labels; never answers or the rest of the definition).
+`onHostFormVersionFilterSourceChanged` writes it from the immutable
+`organizerFormVersions` document. Current organizer managers get it by version
+id; a view not written yet reads as missing, and nobody lists the collection.
+The `host-form-version-filters` copy-forward migration in
+`tool/data/migrate_firestore_consolidation.mjs` creates views for versions
+published before the trigger. The version scope (active version and published
+version count) is already on the form's `hostFormSummaries` row.
 Each summary may also carry two optional query fields, absent on older views and
 read as none: `reviewStatus` (a copy of the application's review status) and
 `offer {status, eventId, offeredAtMillis}`, the latest non-draft event offer made
@@ -4842,6 +4854,22 @@ canonical publication must advance its published fence in the same transaction.
 The bounded native reader includes all program guests without requiring travel
 legs and rejects truncated source. No guest records are copied into the fence. Real emulator
 rules, transaction integration and combined feature acceptance remain gates.
+
+### Website Instant Drafts
+
+`requestInstantDraft` writes an ordinary Supply Intake request with origin
+`web_instant_draft` (always `self_submission`). Its private state sits on the
+server-only request as `supplyIntakeRequests.instantDraft`: the SHA-256 of the
+website's access token (never the token), the verified WhatsApp number with
+its consent and `whatsapp.verifiedByUid`, the link classification, the market
+(`market {marketId, source: chosen|given|inferred, at}`), `expiresAt` (30 days
+after the draft is saved) and the outcome (`building`, `draft_ready`,
+`needs_city`, `staff_follow_up` or `expired`). Page reads for these requests
+count against `supplyIntakeUsage/instant-draft-pages-{monthKey}`, a separate
+300-page monthly allowance. `getInstantDraft` returns `markets` (empty unless
+`needs_city`) and accepts an optional `city` that continues a `needs_city`
+draft. A claimed owner publishing the page is another way listing events
+publish (`onInstantDraftOrganizerPublished`).
 
 ### Organizer Application Intake
 

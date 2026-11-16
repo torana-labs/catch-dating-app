@@ -290,6 +290,23 @@ test("live page fetching stays off until policy, an accepted decision and ledger
     {code: "BUDGET_EXCEEDED"});
   assert.equal(budgets.month.snapshot().consumed.networkRequests, 3);
 
+  // The website instant draft tool reads from its own monthly allowance: its
+  // ledger carries that cap, and a port refuses a ledger whose cap is neither.
+  const drafts = pageFetchBudgetLedgers({policy: {...enabled, pageFetch: {...enabled.pageFetch,
+    maxInstantDraftRequestsPerMonth: 4}}, monthKey: "2026-10", allowance: "web_instant_draft", monthlyConsumed: 2});
+  assert.deepEqual([drafts.allowance, drafts.month.snapshot().limits.networkRequests], ["web_instant_draft", 4]);
+  const draftPolicy = {...enabled, pageFetch: {...enabled.pageFetch, maxInstantDraftRequestsPerMonth: 4}};
+  const draftPort = new GuardedPageFetchPort({policy: draftPolicy, policyDecision: decision, budgets: drafts, transport, clock});
+  const draftPage = await draftPort.capture({runKey: "draft-1|page-1", url: "https://luma.com/1dfd73wq"});
+  assert.equal(draftPage.receipt.outcome, "fetched");
+  assert.deepEqual([draftPage.receipt.budgetWindow.monthConsumed, draftPage.receipt.budgetWindow.monthLimit], [4, 4]);
+  await assert.rejects(draftPort.capture({runKey: "draft-1|page-2", url: "https://luma.com/blrdroid"}),
+    {code: "BUDGET_EXCEEDED"}, "the draft allowance is spent while the shared one is not");
+  assert.throws(() => new GuardedPageFetchPort({policy: draftPolicy, policyDecision: decision,
+    budgets: {...drafts, allowance: "shared"}}), {code: "ACQUISITION_BUDGET_MISMATCH"});
+  assert.throws(() => pageFetchBudgetLedgers({policy: enabled, monthKey: "2026-10", allowance: "unknown"}),
+    {code: "INVALID_ACQUISITION_BUDGET"});
+
   // Gathering turns the refusal into a recorded gap and keeps what it read.
   const gathered = await gatherIntakeEvidence({
     request: request({requestId: "nom-budget", seed: {name: "BlrDroid", notes: null, categories: [],

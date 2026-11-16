@@ -705,6 +705,11 @@ export {getEventRcsWithdrawal, withdrawEventRcs} from
 export {listParticipantMessagingPreferences,
   withdrawParticipantMessagingPermission}
   from "./messaging/participantMessagingPreferences";
+export {onGuestMessagingPermissionCatchPreferenceChanged,
+  onGuestMessagingPermissionOrganizerPreferenceChanged,
+  onGuestMessagingPermissionCatchReceiptChanged,
+  onGuestMessagingPermissionOrganizerReceiptChanged}
+  from "./messaging/guestMessagingPermissionTriggers";
 export {promoteFormCommunicationIntent} from
   "./organizers/organizerFormConsentPromotion";
 
@@ -976,6 +981,10 @@ export {
   adminListSupplyNominators,
   adminSetSupplyNominator,
 } from "./operations/supplyIntake/nominators";
+export {requestInstantDraft} from "./instantDrafts/request";
+export {getInstantDraft} from "./instantDrafts/status";
+export {expireInstantDrafts} from "./instantDrafts/expiry";
+export {onInstantDraftOrganizerPublished} from "./instantDrafts/publishOnClaim";
 
 export {
   getSalesDemoSetup, prepareSalesDemoFormDraft, getSalesDemoPreview,
@@ -1099,6 +1108,8 @@ export {onHostDirectoryOrganizerCreated} from
 export {onHostProviderConnectionViewConnectionChanged,
   onHostProviderConnectionViewOrganizerChanged} from
   "./hostReadModels/providerConnectionViewTriggers";
+export {onHostFormVersionFilterSourceChanged} from
+  "./hostReadModels/formVersionFilterTriggers";
 export {onHostRosterInsightEventChanged, onHostRosterInsightAttendeeChanged,
   onHostRosterInsightEdgeChanged, onHostRosterInsightContactChanged,
   onHostRosterInsightTraitsChanged,

@@ -1070,12 +1070,36 @@
       "exportedFunctions": [
         "registerPublicEvent",
         "getOrganizerCrmSummary",
-        "requestAccountDeletion"
+        "requestAccountDeletion",
+        "onGuestMessagingPermissionOrganizerPreferenceChanged"
       ],
       "migrationNotes": [
         "A roster phone number never grants marketing permission. Only an explicit participant-controlled per-channel receipt creates or advances this projection.",
         "Managed delivery requires evidenceStatus=complete and a currentReceiptId; legacy non-unknown rows without complete evidence fail closed.",
         "Catch platform marketing consent remains a separate purpose and is not represented here."
+      ]
+    },
+    {
+      "id": "guestMessagingPermissions",
+      "path": "guestMessagingPermissions/{permissionId}",
+      "rulesMatch": "/guestMessagingPermissions/{permissionId}",
+      "typescriptInterface": "GuestMessagingPermissionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "rulesTestNames": [
+        "lets guests read only their own messaging permission rows"
+      ],
+      "owner": "Guest messaging permission projector: messaging guest messaging permission triggers",
+      "read": "the guest gets and lists only rows whose uid is theirs, while their account is not deleted; a row not written yet reads as missing",
+      "write": "server only; written from the preference and the receipts it names, deleted when the preference is",
+      "exportedFunctions": [
+        "onGuestMessagingPermissionCatchPreferenceChanged",
+        "onGuestMessagingPermissionOrganizerPreferenceChanged",
+        "onGuestMessagingPermissionCatchReceiptChanged",
+        "onGuestMessagingPermissionOrganizerReceiptChanged"
+      ],
+      "migrationNotes": [
+        "preference equals what listParticipantMessagingPreferences returns for that sender. The guest-messaging-permissions copy-forward migration creates rows for preferences recorded before the triggers."
       ]
     },
     {
@@ -1090,7 +1114,8 @@
       "write": "server only and append-only by operation design",
       "exportedFunctions": [
         "registerPublicEvent",
-        "onOrganizerMessagingWebhookEventCreated"
+        "onOrganizerMessagingWebhookEventCreated",
+        "onGuestMessagingPermissionOrganizerReceiptChanged"
       ],
       "migrationNotes": [
         "Grant receipts bind the organizer, participant, channel, reviewed terms version, consent-copy hash, source identity, and identity strength.",
@@ -1288,6 +1313,26 @@
       ],
       "migrationNotes": [
         "The view carries the basics, preferences and reviewed-defaults hashes the defaults update command and the first-save basics are fenced by; the client never recomputes them."
+      ]
+    },
+    {
+      "id": "hostFormVersionFilters",
+      "path": "hostFormVersionFilters/{versionId}",
+      "rulesMatch": "/hostFormVersionFilters/{versionId}",
+      "typescriptInterface": "HostFormVersionFilterDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers get form version answer filters and nothing else"
+      ],
+      "owner": "Host read model projector: hostReadModels form version filter trigger",
+      "read": "current organizer managers get a version's document by id; a view not written yet reads as missing; nobody lists the collection",
+      "write": "server only; written from the immutable organizerFormVersions document and deleted if the version is",
+      "exportedFunctions": [
+        "onHostFormVersionFilterSourceChanged"
+      ],
+      "migrationNotes": [
+        "answerFilterOptions equals what listOrganizerFormResponses returns for the version. The host-form-version-filters copy-forward migration creates views for versions published before the trigger."
       ]
     },
     {
@@ -1764,7 +1809,8 @@
       "write": "immutable server-created version only",
       "exportedFunctions": [
         "publishOrganizerForm",
-        "listParticipantActivity"
+        "listParticipantActivity",
+        "onHostFormVersionFilterSourceChanged"
       ],
       "migrationNotes": [
         "sourceDraftRevision makes publish retries idempotent and every historical definition immutable.",
@@ -4273,7 +4319,8 @@
       "exportedFunctions": [
         "submitOrganizerFormResponse",
         "getOrganizerFormPayment",
-        "requestAccountDeletion"
+        "requestAccountDeletion",
+        "onGuestMessagingPermissionCatchPreferenceChanged"
       ],
       "migrationNotes": [
         "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",
@@ -4293,7 +4340,8 @@
       "exportedFunctions": [
         "submitOrganizerFormResponse",
         "getOrganizerFormPayment",
-        "requestAccountDeletion"
+        "requestAccountDeletion",
+        "onGuestMessagingPermissionCatchReceiptChanged"
       ],
       "migrationNotes": [
         "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",

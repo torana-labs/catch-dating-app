@@ -45,8 +45,8 @@ export const Contract: Story = {
   render: () => (
     <CatchRoot size="expanded" theme="day">
       <CatchCtaSection {...sample} flush ground="pink" media={media} />
-      <CatchCtaSection {...sample} actions={[{label: "Light action", href: "#", variant: "light"}]} capture={capture} ground="ink" media={media} stores={stores} />
-      <CatchCtaSection {...sample} actions={[{label: "Primary action", href: "#"}, {label: "Second action", href: "#"}]} />
+      <CatchCtaSection {...sample} actions={[{label: "Light action", href: "#", variant: "light"}]} capture={capture} ground="ink" media={media} stores={stores} title="A sample headline with the capture slot" />
+      <CatchCtaSection {...sample} actions={[{label: "Primary action", href: "#"}, {label: "Second action", href: "#"}]} title="A sample headline with the copy alone" />
     </CatchRoot>
   ),
 };
