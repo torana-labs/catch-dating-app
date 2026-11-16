@@ -184,7 +184,7 @@ const routingPreviewController: PaymentRoutingController = {
 
 const moneyController: PaymentSettingsController = {
   state: {revision: 1, settings: {gstRegistered: false, gstRateBasisPoints: 1800,
-    billDueDayOfMonth: 15, nominatorCredit: {rateBasisPoints: 1000, months: 12,
+    billDueDayOfMonth: 15, nominatorCredit: {rateBasisPoints: 1000, months: 6,
       lapseDays: 90, minimumPayoutMinor: 50_000, payoutDayOfMonth: 10,
       earningRoles: ["partner", "guest", "organizer"]}},
   updatedAtMillis: savedAt, updatedByUid: "admin-owner", nextInvoiceNumber: "2026-27/032"},
