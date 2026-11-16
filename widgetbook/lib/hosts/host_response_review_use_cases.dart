@@ -31,6 +31,12 @@ final responseReviewPreview = HostResponseReviewDetail(
     reviewedAt: null,
     revision: 1,
     sourceResponseId: 'response_1',
+    dataAccessState: 'submittedFormResponse',
+    communityMembership: const HostCommunityMembership(
+      uid: 'guest_1',
+      state: HostCommunityMembershipState.none,
+      revision: 0,
+    ),
   ),
 );
 

@@ -26,6 +26,7 @@
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     },
     "action": {
+      "type": "string",
       "enum": [
         "grant",
         "revoke"
