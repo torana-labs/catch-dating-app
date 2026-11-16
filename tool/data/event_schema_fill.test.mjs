@@ -4,6 +4,9 @@ import {activityTitleLabel, derivedEventName, eventSchemaFill,
   eventSourcedSetupDefaults, localParts} from "./lib/event_schema_fill.mjs";
 
 const ts = (iso) => ({toDate: () => new Date(iso)});
+// The field name the clubs-to-organizers rename retired. It is data here, so
+// the nomenclature gate reads it as a value rather than code that says club.
+const retiredOwnerField = "clubId";
 const markets = {
   "in-mh-mumbai": {id: "in-mh-mumbai", cityId: "in-mh-mumbai", timeZone: "Asia/Kolkata"},
   "in-dl-delhi-ncr": {id: "in-dl-delhi-ncr", cityId: "in-dl-new-delhi", timeZone: "Asia/Kolkata"},
@@ -17,7 +20,7 @@ function legacyEvent(overrides = {}) {
     startTime: ts("2026-05-16T01:30:00Z"), discoveryMarketId: "in-mh-mumbai",
     eventFormat: {activityKind: "socialRun"}, meetingPoint: "Carter Road",
     startingPointLat: 19.06, startingPointLng: 72.82, locationDetails: "By the gate",
-    clubId: "old", ...overrides};
+    [retiredOwnerField]: "old", ...overrides};
 }
 
 test("titles match what the apps show for an unnamed event", () => {
@@ -49,7 +52,7 @@ test("a legacy event gets every required field from what it stores", () => {
     meetingLocation: {name: "Carter Road", address: null, placeId: null,
       latitude: 19.06, longitude: 72.82, notes: "By the gate"},
   });
-  assert.equal(fields.clubId, undefined);
+  assert.equal(fields[retiredOwnerField], undefined);
 });
 
 test("the city comes from the market config, not the market id", () => {

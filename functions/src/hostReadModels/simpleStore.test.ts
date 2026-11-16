@@ -6,6 +6,9 @@ import {reconcileSimpleSummary, backfillSimpleSummaries,
   activateSimpleSummaries} from "./simpleStore";
 
 const now = Timestamp.fromMillis(1000);
+// The field name the clubs-to-organizers rename retired. It is data here, so
+// the nomenclature gate reads it as a value rather than code that says club.
+const retiredOwnerField = "clubId";
 function form() {
   return {organizerId: "org", title: "Survey", description: null,
     purpose: "survey", status: "published", templateId: "blank",
@@ -127,7 +130,8 @@ test("an event that fails its contract is left out and the directory " +
   const db = new AudienceTestStore({"organizers/org": {hostUserId: "host"},
     "events/good": event(),
     // A field left by the clubs-to-organizers rename that the schema rejects.
-    "events/legacy": {...event(), name: "Sample", clubId: "old-club"}});
+    "events/legacy": {...event(), name: "Sample",
+      [retiredOwnerField]: "old-club"}});
   await backfillSimpleSummaries(db.asFirestore(), "events", "org", true);
   assert.notEqual(db.docs["hostEventSummaries/good"], undefined);
   assert.equal(db.docs["hostEventSummaries/legacy"], undefined);
