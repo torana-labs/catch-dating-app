@@ -1,8 +1,9 @@
 import {brand} from "./brand.ts";
+import {guestAppActionLabel} from "./site.ts";
 
 export const eventRuntimeCopy = {
   // The RbWebLiveJoin, RbWebLive and RbWebLiveReveal boards (P4.6).
-  getApp: "Get the app",
+  getApp: guestAppActionLabel,
   getAppHref: "/#app",
   joinBadge: (venue: string) => `Tonight · ${venue} · doors open`,
   joinBadgeUpcoming: (venue: string, time: string) => `Tonight · ${venue} · from ${time}`,

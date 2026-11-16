@@ -3,6 +3,14 @@ import {publishedLegalContent} from "./legal.ts";
 import {marketingConsentPreferencesCopy} from "./marketingConsent.ts";
 import type {StoreCtaCopy} from "./types";
 
+/**
+ * True once the guest app is on either store (packages/brand/brand.json).
+ * Until then every "Get the app" button reads "Get notified" and leads to
+ * the homepage's app band, so no primary button ends at "Coming soon".
+ */
+export const guestAppLive = Boolean(brand.stores.consumer.ios || brand.stores.consumer.android);
+export const guestAppActionLabel = guestAppLive ? "Get the app" : "Get notified";
+
 export const ownerGatedSiteDestinations = {
   contactHref: `mailto:${brand.support.email}`,
 } as const;
@@ -29,7 +37,7 @@ export const publicSiteCopy = {
   forHosts: {href: "/host/", label: "For hosts"},
   nav: [{href: "/explore/", label: "What’s on"}, {href: "/host/", label: "For hosts"}],
   /** The general pages' one primary action, the homepage's own. */
-  getApp: {label: "Get the app", href: "/#app"},
+  getApp: {label: guestAppActionLabel, href: "/#app"},
   footerOperator: publishedLegalContent.ui.footerBody,
   /** The footer control that reopens the consent banner. */
   privacyChoices: marketingConsentPreferencesCopy.preferences,
@@ -47,7 +55,7 @@ export const siteFooterCopy = {
   groups: {explore: "Explore", cities: "Cities", hosts: "Hosts", help: "Help and legal"},
   explore: [
     {href: "/explore/", label: "What’s on"},
-    {href: "/#app", label: "Get the app"},
+    {href: "/#app", label: guestAppActionLabel},
   ],
   hosts: [
     {href: "/host/", label: `${brand.name} for hosts`},
@@ -72,7 +80,7 @@ export const siteFooterCopy = {
  * as the RbWebOrgV2 and RbWebEventV2 boards draw them (shared/site/PublicSiteChrome.tsx).
  */
 export const publicPageChromeCopy = {
-  getApp: "Get the app",
+  getApp: guestAppActionLabel,
   getAppHref: "/#app",
   wordmark: brand.name,
   footerLabel: "Site links",

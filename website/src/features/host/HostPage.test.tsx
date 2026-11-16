@@ -23,6 +23,9 @@ describe("host landing", {timeout: 20_000}, () => {
     const {container} = renderPage();
     const banner = within(screen.getByRole("banner"));
     expect(banner.getByRole("link", {name: "Catch"}).getAttribute("href")).toBe("/");
+    // A host page's primary action is the trial, never the guest app.
+    expect(banner.getByRole("link", {name: copy.sections.start}).getAttribute("href")).toBe("#start");
+    expect(banner.queryByRole("link", {name: /Get the app|Get notified/u})).toBeNull();
     // The site top bar only opens pages; the page's sections live in their own bar.
     const nav = within(screen.getByRole("navigation", {name: "Primary"}));
     expect(nav.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/explore/", "/host/"]);

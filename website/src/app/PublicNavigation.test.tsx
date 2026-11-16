@@ -8,6 +8,7 @@ import {MemoryRouter} from "react-router";
 import {ClaimPage} from "../features/claims/ClaimPage";
 import {mumbaiLiveCatalog} from "../stories/fixtures/homeCatalogs";
 import {emptyClaimRouteState} from "../features/claims/claimRouting";
+import {guestAppActionLabel} from "../content/site";
 
 vi.mock("../analytics", () => ({trackMarketingEvent: vi.fn(), openMarketingConsentPreferences: vi.fn()}));
 vi.mock("../firebaseConfig", () => ({claimFirebaseConfigured: false,
@@ -29,7 +30,7 @@ describe("public route navigation targets", () => {
     const nav = screen.getByRole("navigation", {name: "Primary"});
     expect(within(nav).getAllByRole("link").map((link) => link.getAttribute("href")))
       .toEqual(["/mumbai/", "/host/"]);
-    expect(within(screen.getByRole("banner")).getByRole("link", {name: "Get the app"}).getAttribute("href")).toBe("#app");
+    expect(within(screen.getByRole("banner")).getByRole("link", {name: guestAppActionLabel}).getAttribute("href")).toBe("#app");
     expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
   });
 
@@ -39,7 +40,7 @@ describe("public route navigation targets", () => {
     const nav = screen.getByRole("navigation", {name: "Primary"});
     expect(within(nav).getAllByRole("link").map(link => link.getAttribute("href")))
       .toEqual(["/mumbai/", "/host/"]);
-    expect(within(screen.getByRole("banner")).getByRole("link", {name: "Get the app"}).getAttribute("href")).toBe("/#app");
+    expect(within(screen.getByRole("banner")).getByRole("link", {name: guestAppActionLabel}).getAttribute("href")).toBe("/#app");
     expect(within(screen.getByRole("banner")).getByRole("button", {name: "Mumbai"})).toBeTruthy();
     expect(screen.getByRole("heading", {level: 1, name: "What’s on in Mumbai"})).toBeTruthy();
   });

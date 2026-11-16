@@ -390,7 +390,8 @@ export function HostPage({captures}: {captures: CaptureSlots}) {
   const host = useHostLandingController();
   return (
     <CatchRoot theme="day">
-      <PublicSiteHeader />
+      {/* A host page's primary action is the trial, never the guest app (leak 3). */}
+      <PublicSiteHeader actions={<CatchButton href="#start" label={copy.sections.start} size="sm" />} />
       <CatchSectionTopBar action={<CatchButton href="#start" label={copy.sections.start} size="sm" />} label={copy.sections.label} sections={copy.sections.items} />
       <WebsitePageMain id="top">
         <HostLandingBands captures={captures} host={host} />

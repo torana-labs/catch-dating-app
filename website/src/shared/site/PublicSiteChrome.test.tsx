@@ -3,6 +3,7 @@ import {afterEach, describe, expect, it, vi} from "vitest";
 import {publicSiteCopy} from "../../content/site";
 import {PublicSiteFooter, PublicSiteHeader, SiteAccountActionProvider} from "./PublicSiteChrome";
 import {trackSiteCtaClick} from "./siteTracking";
+import {guestAppActionLabel} from "../../content/site";
 
 vi.mock("./siteTracking", () => ({slugForTracking: (value: string) => value, trackSiteCtaClick: vi.fn()}));
 afterEach(() => {cleanup(); vi.mocked(trackSiteCtaClick).mockReset();});
@@ -18,7 +19,7 @@ describe("canonical public chrome", () => {
     expect(primary.getAllByRole("link").map((link) => link.textContent)).toEqual(globalLabels);
     expect(primary.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(destinations);
     expect(banner.getByRole("link", {name: publicSiteCopy.wordmark}).getAttribute("href")).toBe("/");
-    expect(banner.getByRole("link", {name: "Get the app"}).getAttribute("href")).toBe("/#app");
+    expect(banner.getByRole("link", {name: guestAppActionLabel}).getAttribute("href")).toBe("/#app");
     expect(banner.queryByRole("link", {name: "Claim your page"})).toBeNull();
   });
 
@@ -81,7 +82,7 @@ describe("canonical public chrome", () => {
     const nav = within(footer.getByRole("navigation", {name: "Footer"}));
     expect(nav.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent)).toEqual(["Explore", "Hosts", "Help and legal"]);
     expect(nav.getAllByRole("link").map((link) => link.textContent)).toEqual([
-      "What’s on", "Get the app",
+      "What’s on", guestAppActionLabel,
       "Catch for hosts", "Pricing", "Weddings", "Claim your page",
       "Help", "Privacy", "Terms", "Refunds", "Contact",
     ]);
@@ -99,7 +100,7 @@ describe("canonical public chrome", () => {
     expect(nav.getByRole("link", {name: "Mumbai"}).getAttribute("href")).toBe("/mumbai/");
     expect(nav.getByRole("link", {name: "Pune · soon"}).getAttribute("href")).toBe("/pune/");
     expect(nav.getByRole("link", {name: "What’s on"}).getAttribute("href")).toBe("/mumbai/");
-    expect(nav.getByRole("link", {name: "Get the app"}).getAttribute("href")).toBe("#app");
+    expect(nav.getByRole("link", {name: guestAppActionLabel}).getAttribute("href")).toBe("#app");
     const terms = nav.getByRole("link", {name: "Terms"});
     terms.addEventListener("click", (event) => event.preventDefault(), {once: true});
     fireEvent.click(terms);

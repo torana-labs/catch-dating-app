@@ -3,9 +3,10 @@
 // Catch is for meeting people in real life: no dating, singles, mixer or match
 // wording.
 import type {CatchFormat} from "@catch/web-ui";
+import {guestAppActionLabel} from "./site";
 
 export const homePageCopy = {
-  header: {nav: "Main", app: "Get the app",
+  header: {nav: "Main", app: guestAppActionLabel,
     cityMenu: "Choose your city", allCities: "All cities", liveStatus: "{count} plans this week", liveStatusOne: "1 plan this week",
     /** A live city with no plans this week yet. */
     newStatus: "New", soonStatus: "Launching soon",
