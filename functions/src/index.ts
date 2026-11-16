@@ -705,6 +705,11 @@ export {getEventRcsWithdrawal, withdrawEventRcs} from
 export {listParticipantMessagingPreferences,
   withdrawParticipantMessagingPermission}
   from "./messaging/participantMessagingPreferences";
+export {onGuestMessagingPermissionCatchPreferenceChanged,
+  onGuestMessagingPermissionOrganizerPreferenceChanged,
+  onGuestMessagingPermissionCatchReceiptChanged,
+  onGuestMessagingPermissionOrganizerReceiptChanged}
+  from "./messaging/guestMessagingPermissionTriggers";
 export {promoteFormCommunicationIntent} from
   "./organizers/organizerFormConsentPromotion";
 
@@ -1103,6 +1108,8 @@ export {onHostDirectoryOrganizerCreated} from
 export {onHostProviderConnectionViewConnectionChanged,
   onHostProviderConnectionViewOrganizerChanged} from
   "./hostReadModels/providerConnectionViewTriggers";
+export {onHostFormVersionFilterSourceChanged} from
+  "./hostReadModels/formVersionFilterTriggers";
 export {onHostRosterInsightEventChanged, onHostRosterInsightAttendeeChanged,
   onHostRosterInsightEdgeChanged, onHostRosterInsightContactChanged,
   onHostRosterInsightTraitsChanged,

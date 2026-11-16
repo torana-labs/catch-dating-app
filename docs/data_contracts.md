@@ -3207,8 +3207,20 @@ read these summaries through the SDK, as do an application review-status filter
 inclusive at both ends. Form-scoped/filter-choice queries, answer filters,
 response status, identity and source filters, contact joins and text search keep
 the existing callable behavior until their own equivalent indexed read contracts
-are implemented; form-scoped pages also need the version's answer filter
-options, which only the callable reads.
+are implemented.
+`hostFormVersionFilters/{versionId}` gives form-scoped pages a published native
+form version's answer filter options without the callable: `organizerId`,
+`formId`, `versionId`, `formVersion` (N in `formId_vN`), `version` and
+`answerFilterOptions`, exactly what `listOrganizerFormResponses` returns for
+that version (promoted, non-sensitive single- and multi-choice questions and
+their option labels; never answers or the rest of the definition).
+`onHostFormVersionFilterSourceChanged` writes it from the immutable
+`organizerFormVersions` document. Current organizer managers get it by version
+id; a view not written yet reads as missing, and nobody lists the collection.
+The `host-form-version-filters` copy-forward migration in
+`tool/data/migrate_firestore_consolidation.mjs` creates views for versions
+published before the trigger. The version scope (active version and published
+version count) is already on the form's `hostFormSummaries` row.
 Each summary may also carry two optional query fields, absent on older views and
 read as none: `reviewStatus` (a copy of the application's review status) and
 `offer {status, eventId, offeredAtMillis}`, the latest non-draft event offer made
