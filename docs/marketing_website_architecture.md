@@ -189,6 +189,72 @@ read resolved `content/site.ts`; arbitrary shared UI and every route-specific
 content import remain rejected by scanner self-tests. Transactional/private
 shells keep their existing composition and authority.
 
+## Playbook pages (the redesign)
+
+The redesign's pages (`design/source_packs/website-playbook`) are content,
+not code. Every path from the sitemap board is registered now as a
+`contentFamily` route in `design/website/routes.json`, matching
+`website/src/features/playbook/playbookRoutes.ts`: 40 single pages and 7
+families (`/host/first-event/:plan/`, `/stories/:slug/`, `/compare/:slug/`,
+`/playbooks/:slug/`, `/lp/:campaign/`, `/new-to-:city/` and
+`/:city/:format/`). A route renders only once its page is in its section's
+index; until then it is a clean 404, as is a page that uses a section or
+option no kit component draws yet (`features/playbook/playbookBindings.ts`).
+
+- **Contract.** `content/playbook/playbookContract.ts` is the one spec for the
+  page types, the browser-safe validator and `playbookPage.schema.json`
+  (generated from it and held equal by its test, with Ajv parity fixtures).
+  A page has a `meta` block, a header and footer variant, and sections of the
+  kit's types: hero, tiles, split, timeline, checklist, story, pricing, faq,
+  cta, cards, tabs, table, article, screen, flow and custom. Grounds are
+  `Ground` names; actions go to a route id, a family page's content key, an
+  anchor or a WhatsApp message; media is a capture slot, an illustrative
+  screen card, a photo asset or a QR code; card grids name a read model.
+  Copy never holds `[placeholders]`, hex colours or the brand name (write
+  `{{brand.name}}`), and every numeric proof cites a footnote.
+- **Indexing.** `meta.noindex` is the page's one approval flag. Every page
+  starts `true`, so it is `noindex, follow` and out of both sitemaps; the
+  owner's approval is the PR that sets it `false`. Ad landing pages stay
+  noindex whatever it says. routes.json marks these routes
+  `owner-approval` for indexing and the sitemap.
+- **Rendering.** `features/playbook/PlaybookPage.tsx` draws the site header in
+  the page's variant (with its breadcrumbs, its own action and the
+  founding-host offer strip while that market's public counter is open), each
+  section through its `@catch/web-ui` component (`PlaybookSections.tsx`), and
+  the site footer with the page's footnotes. Next renders the copy on the
+  server with the page's metadata and FAQPage and BreadcrumbList JSON-LD
+  (`app/next/PlaybookPublicPage.tsx`); the Vite shell resolves the same pages
+  before its router; postbuild writes their static heads.
+- **Links and forms.** `usePlaybookPageController.ts` turns destinations into
+  links and tags every action for analytics. Links to `/host/start/` and
+  `/pricing/` land on the host landing's bands through `playbookRouteAliases`
+  until those pages ship. A lead form renders only once its slot in
+  `playbookLeadForms.ts` is filled; a custom section only once its component
+  is in `custom/`.
+
+### How to add a playbook page
+
+1. Find the page's route in `features/playbook/playbookRoutes.ts` and its
+   section (`host`, `product`, `resources` or `discovery`). Routes are
+   registered already; do not edit routes.json, meta.json, the route checker
+   or the shell.
+2. Write the page as JSON in `website/src/content/playbook/pages/<section>/`,
+   from its board in `design/source_packs/website-playbook/pages/`, with
+   `"$schema": "../../playbookPage.schema.json"`. `id` is the content key: the
+   route id, or for a family page the route id and its parameters joined with
+   `/` (`story_detail/carter-road-runners`). Resolve or remove every
+   bracketed placeholder, map kit tones to grounds, name capture slots, and
+   start with `"noindex": true`.
+3. Add one entry to that section's `index.ts`:
+   `key: {file: "page.json", load: () => import("./page.json")}`.
+4. Run `npx vitest run --project=unit src/content/playbook src/features/playbook`
+   from `website/`: every registered page is validated against the route,
+   capture and anchor registries, its links must reach pages that exist, and
+   a city family page must name a market city. Add a Storybook route story
+   as `stories/PlaybookPages.stories.tsx` does, then run the marketing gates.
+5. When a page needs something the contract or the kit lacks, ask the
+   contract's owner; never draw it with raw elements or new CSS.
+
 ## Public content ownership
 
 The consumer root previews upcoming events by city, explains optional Catch

@@ -1404,6 +1404,472 @@
       "notes": "The Live404 board on the white ground for fallback routes and the static 404 output: the site header, one CatchSurface band with a CatchBandHeader h1 (page not found), four CatchFeatureTiles on the coral, yellow, mint and indigo grounds (what's on, with the market catalog's live cities; the organizer directory; claim a listing; host), four across on a wide page, two by two on a medium one and stacked on a phone, the way home and to help, then the site footer. Copy lives in content/notFound.ts. The route story renders the page at 1280 and at 390."
     },
     {
+      "id": "route_playbook_page",
+      "kind": "route",
+      "routeIds": [
+        "host_run_clubs",
+        "host_racket_sports",
+        "host_supper_clubs",
+        "host_quiz_nights",
+        "host_venues",
+        "host_studios",
+        "host_nightlife",
+        "host_workshops",
+        "host_communities",
+        "host_creators",
+        "host_teams",
+        "host_outdoors",
+        "host_facilities",
+        "host_colleges",
+        "host_brands",
+        "how_it_works",
+        "product_night",
+        "product_bookings",
+        "product_your_page",
+        "product_door",
+        "product_messages",
+        "product_guests",
+        "product_forms",
+        "product_reports",
+        "pricing",
+        "safety",
+        "about",
+        "app_notify",
+        "host_start",
+        "host_walkthrough",
+        "host_demo",
+        "host_first_event",
+        "host_switch",
+        "programmes",
+        "refer",
+        "stories",
+        "compare",
+        "tools_no_show_calculator",
+        "tools_event_page_from_link",
+        "playbooks",
+        "host_first_event_plan",
+        "story_detail",
+        "compare_detail",
+        "playbook_guide",
+        "lp_campaign",
+        "new_to_city",
+        "city_format"
+      ],
+      "owner": "features/playbook",
+      "source": "website/src/features/playbook/PlaybookPage.tsx",
+      "exportName": "PlaybookPage",
+      "css": [
+        "website/src/styles/site-shell.css",
+        "packages/web-ui/src/components/CatchHeroSection.module.css",
+        "packages/web-ui/src/components/CatchSplitSection.module.css",
+        "packages/web-ui/src/components/CatchCtaSection.module.css",
+        "packages/web-ui/src/components/CatchFaqSection.module.css",
+        "packages/web-ui/src/components/CatchScreenPreview.module.css",
+        "packages/web-ui/src/components/CatchPricingSection.module.css",
+        "packages/web-ui/src/components/CatchFeatureTile.module.css",
+        "packages/web-ui/src/components/CatchBandHeader.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PlaybookPages.stories.tsx",
+        "exportName": "RunClubs",
+        "states": [
+          "run-clubs"
+        ]
+      },
+      "notes": "Every redesign page (design/website/routes.json contentFamily routes), drawn from its content file under website/src/content/playbook/pages/ by the playbook renderer: the site header in the page's variant, each section through its kit component (features/playbook/PlaybookSections.tsx) and the site footer. A route without a page, or whose page uses a section no kit component draws yet, is a 404. The route story renders /host/run-clubs/ at 1280 and at 390."
+    },
+    {
+      "id": "shared_hero_section",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host_run_clubs"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchHeroSection.tsx",
+      "exportName": "CatchHeroSection",
+      "comparedWith": [
+        "catch.button",
+        "catch.chip",
+        "catch.detail_media",
+        "catch.root",
+        "catch.stack",
+        "catch.surface",
+        "catch.text"
+      ],
+      "comparisonReason": "The opening band of a website page (the playbook kit's hero and photo hero): kicker, h1, lead, tag chips, footnoted proof lines, band actions, a side link, and a screen beside it with a floating stat card, or a full-bleed photo. It composes catch.button, catch.chip, catch.detail_media, catch.stack, catch.surface and catch.text inside its own ground (catch.root's ground provider); it is a page band, not any of those parts, and implements none of their contracts.",
+      "css": [
+        "packages/web-ui/src/components/CatchHeroSection.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "split",
+          "photo",
+          "proof",
+          "phone"
+        ]
+      },
+      "notes": "Website T4 under D18: the kit's KitHero and KitPhotoHero. First consumer: the playbook renderer (features/playbook/PlaybookSections.tsx), the run-clubs page. Search aliases: Hero, HeroBand, PageHero, Masthead."
+    },
+    {
+      "id": "shared_split_section",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host_run_clubs"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchSplitSection.tsx",
+      "exportName": "CatchSplitSection",
+      "comparedWith": [
+        "catch.button",
+        "catch.journey_steps",
+        "catch.marker",
+        "catch.metric_strip",
+        "catch.stack",
+        "catch.surface",
+        "catch.text"
+      ],
+      "comparisonReason": "A two-column website band (the kit's split, timeline and checklist): a heading with ticks, groups, numbered or timed steps, ticked checks, a metric and actions, beside an optional media column. It lays out catch.journey_steps, catch.marker, catch.metric_strip, catch.button and catch.text on catch.stack inside a catch.surface band; it is a band layout, not a step list, metric strip or surface.",
+      "css": [
+        "packages/web-ui/src/components/CatchSplitSection.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "media",
+          "timeline",
+          "checklist",
+          "groups"
+        ]
+      },
+      "notes": "Website T4 under D18: KitSplit, KitTimeline and KitChecklist. First consumer: the playbook renderer, the run-clubs timeline and checklist. Search aliases: Split, MediaSplit, Timeline, Checklist, FeatureRow."
+    },
+    {
+      "id": "shared_cta_section",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host_run_clubs"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchCtaSection.tsx",
+      "exportName": "CatchCtaSection",
+      "comparedWith": [
+        "catch.stack",
+        "catch.surface"
+      ],
+      "comparisonReason": "The closing call to action of a website page (the kit's final band): heading, actions, store badges, a capture slot for the page's own phone form, and a media column. It stacks its parts with catch.stack in a catch.surface band; it is a page band, not a stack or a surface.",
+      "css": [
+        "packages/web-ui/src/components/CatchCtaSection.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "actions",
+          "stores",
+          "capture"
+        ]
+      },
+      "notes": "Website T4 under D18: KitFinal. First consumer: the playbook renderer, the run-clubs closing band. Search aliases: FinalCta, ClosingBand, CallToAction, StartBand."
+    },
+    {
+      "id": "shared_faq_section",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host_run_clubs"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchFaqSection.tsx",
+      "exportName": "CatchFaqSection",
+      "comparedWith": [
+        "catch.accordion",
+        "catch.surface"
+      ],
+      "comparisonReason": "A website questions band (the kit's FAQ): a heading and a footer line beside a catch.accordion of questions, in a catch.surface band. It frames the accordion as a page band and does not reimplement it.",
+      "css": [
+        "packages/web-ui/src/components/CatchFaqSection.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default",
+          "footer"
+        ]
+      },
+      "notes": "Website T4 under D18: KitFaq. First consumer: the playbook renderer, the run-clubs questions. Search aliases: Faq, Questions, QuestionsBand."
+    },
+    {
+      "id": "shared_screen_preview",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host_run_clubs"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchScreenPreview.tsx",
+      "exportName": "CatchScreenPreview",
+      "comparedWith": [
+        "catch.root",
+        "catch.text"
+      ],
+      "comparisonReason": "An illustrative app screen drawn as one image (the kit's screen cards, phone, tablet, photo and tiles): sample stats, rows, bars, fields, a QR code or a capture in a device frame, captioned as illustrative. It sets its sample copy with catch.text on its own ground (catch.root's ground provider); it is a picture of a screen, not a working control.",
+      "css": [
+        "packages/web-ui/src/components/CatchScreenPreview.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "card",
+          "phonecard",
+          "phone",
+          "tablet",
+          "photo",
+          "qr"
+        ]
+      },
+      "notes": "Website T4 under D18: the kit's media cards. First consumer: the playbook renderer's media slots. Search aliases: ScreenCard, MockScreen, PhoneCard, Illustration."
+    },
+    {
+      "id": "shared_pricing_section",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host_run_clubs"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchPricingSection.tsx",
+      "exportName": "CatchPricingSection",
+      "comparedWith": [
+        "catch.metric_strip",
+        "catch.stack",
+        "catch.surface",
+        "catch.text"
+      ],
+      "comparisonReason": "A website pricing band (the kit's pricing): the rate as one giant figure, the headline that completes it, cap and trial lines and actions, beside worked examples as metric tiles, with a calculator slot and footnotes. It uses catch.metric_strip tiles, catch.text and catch.stack in a catch.surface band; it is a pricing band, not a metric strip.",
+      "css": [
+        "packages/web-ui/src/components/CatchPricingSection.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default",
+          "examples"
+        ]
+      },
+      "notes": "Website T4 under D18: KitPricing. First consumer: the playbook renderer, the run-clubs pricing. Search aliases: Pricing, PriceBand, FeeBand."
+    },
+    {
+      "id": "shared_story_section",
+      "kind": "supporting-component",
+      "routeIds": [
+        "story_detail",
+        "host_run_clubs"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchStorySection.tsx",
+      "exportName": "CatchStorySection",
+      "comparedWith": [
+        "catch.button",
+        "catch.metric_strip",
+        "catch.person_avatar",
+        "catch.stack",
+        "catch.surface",
+        "catch.text"
+      ],
+      "comparisonReason": "One customer story as a website band (the kit's story): the teller's avatar, name and line, their quote, measured results as metric tiles with sources and footnote marks, a photo and a link. It composes catch.person_avatar, catch.metric_strip, catch.button and catch.text on catch.stack in a catch.surface band; it is a story band, not any of those parts.",
+      "css": [
+        "packages/web-ui/src/components/CatchStorySection.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default",
+          "metrics"
+        ]
+      },
+      "notes": "Website T4 under D18: KitStory. Bound by the playbook renderer for organiser-type and story pages. Search aliases: Story, CaseStudy, Testimonial."
+    },
+    {
+      "id": "shared_tab_section",
+      "kind": "supporting-component",
+      "routeIds": [
+        "product_night",
+        "host_first_event"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchTabSection.tsx",
+      "exportName": "CatchTabSection",
+      "comparedWith": [
+        "catch.index_row",
+        "catch.journey_steps",
+        "catch.marker",
+        "catch.stack",
+        "catch.surface",
+        "catch.tab_rail",
+        "catch.text"
+      ],
+      "comparisonReason": "A website switcher band (the kit's switcher): a catch.tab_rail or numbered steps choosing one panel of time, title, body, timed moments, tips and media. It composes catch.tab_rail, catch.index_row, catch.journey_steps, catch.marker and catch.text on catch.stack in a catch.surface band; it is a band that switches panels, not a tab rail.",
+      "css": [
+        "packages/web-ui/src/components/CatchTabSection.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "tabs",
+          "steps"
+        ]
+      },
+      "notes": "Website T4 under D18: KitSwitcher. Bound by the playbook renderer for the product and first-event pages. Search aliases: Switcher, Tabs, TabBand, Formats."
+    },
+    {
+      "id": "shared_comparison_table",
+      "kind": "supporting-component",
+      "routeIds": [
+        "product_night",
+        "compare_detail"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchComparisonTable.tsx",
+      "exportName": "CatchComparisonTable",
+      "comparedWith": [
+        "catch.surface",
+        "catch.text"
+      ],
+      "comparisonReason": "A website comparison band (the kit's table): compared columns, a corner label, rows of text or yes/no marks, a highlighted column and its source and checked date, set with catch.text in a catch.surface band. It is a read-only comparison, not a data table.",
+      "css": [
+        "packages/web-ui/src/components/CatchComparisonTable.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default",
+          "marks"
+        ]
+      },
+      "notes": "Website T4 under D18: KitTable. Bound by the playbook renderer for the product and comparison pages. Search aliases: ComparisonTable, Compare, VsTable."
+    },
+    {
+      "id": "shared_article_body",
+      "kind": "supporting-component",
+      "routeIds": [
+        "playbook_guide",
+        "story_detail"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchArticleBody.tsx",
+      "exportName": "CatchArticleBody",
+      "comparedWith": [
+        "catch.button",
+        "catch.marker",
+        "catch.surface",
+        "catch.text"
+      ],
+      "comparisonReason": "A website guide or article body (the kit's article): headline, meta, a contents list of its sections, paragraphs, lists and tips, with an aside. It sets text with catch.text, list marks with catch.marker and contents links with catch.button in a catch.surface; it is a long-form reading layout, not any of those parts.",
+      "css": [
+        "packages/web-ui/src/components/CatchArticleBody.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default",
+          "toc"
+        ]
+      },
+      "notes": "Website T4 under D18: KitArticle. Bound by the playbook renderer for guides and stories. Search aliases: Article, Guide, LongRead, Prose."
+    },
+    {
+      "id": "shared_flow_layout",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host_walkthrough",
+        "host_start"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchFlowLayout.tsx",
+      "exportName": "CatchFlowLayout",
+      "comparedWith": [
+        "catch.surface"
+      ],
+      "comparisonReason": "The frame of one step of a website flow: navigation (a step rail or tabs), a banner, the step's headline, its content column and fine print, in a catch.surface. It is a page frame, not a surface.",
+      "css": [
+        "packages/web-ui/src/components/CatchFlowLayout.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "column",
+          "wide"
+        ]
+      },
+      "notes": "Website T4 under D18: KitFlow. Bound by the playbook renderer's flow section. Search aliases: FlowStep, StepFrame, Wizard."
+    },
+    {
+      "id": "shared_form_step_list",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host_walkthrough",
+        "host_start"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchFormStepList.tsx",
+      "exportName": "CatchFormStepList",
+      "css": [
+        "packages/web-ui/src/components/CatchFormStepList.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "column",
+          "row"
+        ]
+      },
+      "notes": "Flutter catch.form_step_list on the web: ordered steps with a status each, as a column or a row rail. Bound by the playbook renderer's flow section. Search aliases: StepList, Progress, Stepper."
+    },
+    {
+      "id": "shared_card_grid",
+      "kind": "supporting-component",
+      "routeIds": [
+        "stories",
+        "new_to_city",
+        "city_format"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchCardGrid.tsx",
+      "exportName": "CatchCardGrid",
+      "css": [
+        "packages/web-ui/src/components/CatchCardGrid.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "plan",
+          "org",
+          "city",
+          "story",
+          "person"
+        ]
+      },
+      "notes": "Website T4 under D18: KitCards. The playbook contract's data-bound cards section will bind to it once each source has its read-model adapter; until then pages with cards 404. Search aliases: CardGrid, Cards, Directory."
+    },
+    {
+      "id": "shared_story_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "stories"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchStoryCard.tsx",
+      "exportName": "CatchStoryCard",
+      "css": [
+        "packages/web-ui/src/components/CatchStoryCard.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "Website T4 under D18: one story in a grid of stories (KitCards story). Drawn by CatchCardGrid. Search aliases: StoryCard, CaseStudyCard."
+    },
+    {
       "id": "claim_hero_section",
       "kind": "section",
       "routeIds": [
@@ -5424,16 +5890,19 @@
       "id": "shared_band_header",
       "kind": "supporting-component",
       "routeIds": [
-        "not_found"
+        "not_found",
+        "host_run_clubs"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchBandHeader.tsx",
       "exportName": "CatchBandHeader",
       "comparedWith": [
         "catch.stack",
-        "catch.text"
+        "catch.text",
+        "catch.step_header",
+        "catch.workspace_header"
       ],
-      "comparisonReason": "The opening of a website band: an optional kicker, a page-title headline as an h1 or h2 and an optional lead, stacked or with the lead across from the headline, in the inks of the band's ground. It lays its parts out with catch.stack and sets them with catch.text; it is neither a general stack nor a text style, and it draws no box.",
+      "comparisonReason": "The opening of a website band: an optional kicker, a page-title headline as an h1 or h2 and an optional lead, stacked or with the lead across from the headline, in the inks of the band's ground. It lays its parts out with catch.stack and sets them with catch.text; it is neither a general stack nor a text style, and it draws no box. Its name shares the header role noun with catch.step_header and catch.workspace_header, but it heads a marketing band: no step position, back action, filters or workspace views.",
       "css": [
         "packages/web-ui/src/components/CatchBandHeader.module.css"
       ],
@@ -5519,7 +5988,8 @@
       "id": "shared_feature_tile",
       "kind": "supporting-component",
       "routeIds": [
-        "not_found"
+        "not_found",
+        "host_run_clubs"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchFeatureTile.tsx",
@@ -5528,9 +5998,12 @@
         "catch.button",
         "catch.marker",
         "catch.root",
-        "catch.text"
+        "catch.text",
+        "catch.analytics_metric",
+        "catch.icon_tile",
+        "catch.option_card"
       ],
-      "comparisonReason": "One feature in a grid of features: an optional figure and note, an h3 title, a body, ticked lines and a foot with a fix line, an afterwards line and a link, filled with a Website v2 ground. It sets its copy with catch.text, ticks with catch.marker, draws its link as a small catch.button and re-provides its ground to its children as catch.root's ground does; it is not a button, a marker or a root.",
+      "comparisonReason": "One feature in a grid of features: an optional figure and note, an h3 title, a body, ticked lines and a foot with a fix line, an afterwards line and a link, filled with a Website v2 ground. It sets its copy with catch.text, ticks with catch.marker, draws its link as a small catch.button and re-provides its ground to its children as catch.root's ground does; it is not a button, a marker or a root. Its name shares the tile role noun with catch.analytics_metric, catch.icon_tile and catch.option_card, but it is an authored feature in a marketing grid: no measured value, no icon-only tile and no selectable option.",
       "css": [
         "packages/web-ui/src/components/CatchFeatureTile.module.css"
       ],
