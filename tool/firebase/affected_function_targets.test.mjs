@@ -504,7 +504,7 @@ test("mixed and inline type imports retain runtime evaluation dependencies", (t)
 
 function modularSchemaFixture(t) {
   const f = fixture(t);
-  for (const module of ["getOrganizerContactDetailInput", "createRazorpayOrderInput"]) {
+  for (const module of ["getOrganizerContactDetailInput", "createStripeCheckoutSessionInput"]) {
     for (const folder of ["schemas", "validators"]) {
       const name = `functions/src/shared/generated/${folder}/${module}.ts`;
       f.write(name, fs.readFileSync(new URL(`../../${name}`, import.meta.url), "utf8"));
@@ -513,7 +513,7 @@ function modularSchemaFixture(t) {
   const runtime = "functions/src/shared/generated/schemaValidationRuntime.ts";
   f.write(runtime, fs.readFileSync(new URL(`../../${runtime}`, import.meta.url), "utf8"));
   f.write("functions/src/alpha.ts", 'import {validateGetOrganizerContactDetailCallablePayload} from "./shared/generated/validators/getOrganizerContactDetailInput"; export const alpha = validateGetOrganizerContactDetailCallablePayload;');
-  f.write("functions/src/beta.ts", 'import {validateCreateRazorpayOrderCallablePayload} from "./shared/generated/validators/createRazorpayOrderInput"; export const beta = validateCreateRazorpayOrderCallablePayload;');
+  f.write("functions/src/beta.ts", 'import {validateCreateStripeCheckoutSessionCallablePayload} from "./shared/generated/validators/createStripeCheckoutSessionInput"; export const beta = validateCreateStripeCheckoutSessionCallablePayload;');
   const base = f.commit();
   return {...f, base, runtime};
 }
@@ -531,7 +531,7 @@ test("real generated customer schema selects its consumers and excludes payment 
 function untrackedSchemaFixture(t) {
   const f = fixture(t);
   const modules = {};
-  for (const module of ["getOrganizerContactDetailInput", "createRazorpayOrderInput"]) {
+  for (const module of ["getOrganizerContactDetailInput", "createStripeCheckoutSessionInput"]) {
     for (const folder of ["schemas", "validators"]) {
       const name = `functions/src/shared/generated/${folder}/${module}.ts`;
       modules[name] = fs.readFileSync(new URL(`../../${name}`, import.meta.url), "utf8");
@@ -551,7 +551,7 @@ for (const [name, text] of Object.entries(modules)) {
 }
 `);
   f.write("functions/src/alpha.ts", 'import {validateGetOrganizerContactDetailCallablePayload} from "./shared/generated/validators/getOrganizerContactDetailInput"; export const alpha = validateGetOrganizerContactDetailCallablePayload;');
-  f.write("functions/src/beta.ts", 'import {validateCreateRazorpayOrderCallablePayload} from "./shared/generated/validators/createRazorpayOrderInput"; export const beta = validateCreateRazorpayOrderCallablePayload;');
+  f.write("functions/src/beta.ts", 'import {validateCreateStripeCheckoutSessionCallablePayload} from "./shared/generated/validators/createStripeCheckoutSessionInput"; export const beta = validateCreateStripeCheckoutSessionCallablePayload;');
   return {...f, base: f.commit(), modules};
 }
 

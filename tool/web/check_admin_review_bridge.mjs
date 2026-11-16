@@ -35,8 +35,6 @@ const sharedFiles = {
     "admin/src/features/intake/organizer/controllers/useSupplyIntakePolicyController.ts",
   adminTypes: "admin/src/shared/types/adminTypes.ts",
   functionsIndex: "functions/src/index.ts",
-  intakeOperationsHandler: "functions/src/admin/intakeOperations.ts",
-  intakeOperationsTest: "functions/src/admin/intakeOperations.test.ts",
 };
 
 const retiredOperationalSnapshots = [
@@ -59,7 +57,6 @@ export function checkAdminReviewBridge({
     rejectFile({root, file, errors});
   }
 
-  checkFirestoreIntakeReadPath({root, errors, fileCache});
   for (const channel of channels) {
     checkChannel({root, channel, errors, fileCache});
   }
@@ -84,37 +81,6 @@ export function checkAdminReviewBridge({
       firestoreCollection: channel.firestoreCollection,
     })),
   };
-}
-
-function checkFirestoreIntakeReadPath({root, errors, fileCache}) {
-  const expectations = [
-    [sharedFiles.functionsIndex, "adminListIntakeOperations", "function export"],
-    [
-      sharedFiles.intakeOperationsHandler,
-      "repository.listRuns",
-      "run collection repository",
-    ],
-    [
-      sharedFiles.intakeOperationsHandler,
-      "repository.listWorkItems",
-      "work-item collection repository",
-    ],
-    [
-      sharedFiles.intakeOperationsHandler,
-      '"adminListIntakeOperations"',
-      "read rate limit",
-    ],
-  ];
-  for (const [file, token, label] of expectations) {
-    mustContain({
-      root,
-      file,
-      token,
-      label: `organizer-intake-read:${label}`,
-      errors,
-      fileCache,
-    });
-  }
 }
 
 function checkChannel({root, channel, errors, fileCache}) {
@@ -276,7 +242,7 @@ function main(argv = process.argv.slice(2)) {
       "Organizer Firestore review path ok: " +
         `${result.summary.channels} write channel(s), ` +
         `${result.summary.firestoreCollections.length} decision collection(s), ` +
-        "operationRuns + operationWorkItems read source, no Admin JSON snapshots."
+        "no Admin JSON snapshots."
     );
   }
 }
@@ -294,8 +260,7 @@ function parseArgs(argv) {
 function printHelp() {
   console.log(`Usage: node tool/web/check_admin_review_bridge.mjs [options]
 
-Validates that Organizer Intake reads operationRuns and operationWorkItems
-through adminListIntakeOperations, writes decisions through audited Admin
+Validates that Organizer Intake writes decisions through audited Admin
 callables, and does not retain the retired Admin operational JSON snapshots.
 
 Options:

@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  normalizeArchiveOrganizerPayload,
   normalizeCreateOrganizerPayload,
   normalizeOrganizerIdPayload,
   normalizeUpdateOrganizerPayload,
@@ -55,15 +54,8 @@ test("update organizer normalization trims patch fields and tag values", () => {
   );
 });
 
-test("organizer id and archive normalization preserve non-object inputs",
+test("organizer id normalization preserves non-object inputs",
   () => {
-    assert.deepEqual(
-      normalizeArchiveOrganizerPayload({
-        organizerId: " organizer-1 ",
-        reason: " no longer active ",
-      }),
-      {organizerId: "organizer-1", reason: "no longer active"}
-    );
     assert.deepEqual(
       normalizeOrganizerIdPayload({organizerId: " organizer-1 "}),
       {organizerId: "organizer-1"}

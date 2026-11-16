@@ -6,21 +6,14 @@ import {createFormPaymentFixture} from
   "../payments/formPayments/formPaymentTestStore";
 import {submitOrganizerFormResponseHandler} from
   "../organizers/organizerFormResponses";
-import {getParticipantActivityHandler as detail,
-  listParticipantActivityHandler as list} from "./participantActivity";
+import {listParticipantActivityHandler as list} from "./participantActivity";
 import type {ListParticipantActivityCallableResponse} from
   "../shared/generated/listParticipantActivityCallableResponse";
-import type {GetParticipantActivityCallableResponse} from
-  "../shared/generated/getParticipantActivityCallableResponse";
 import {contractValidator} from "../shared/contractTestValidators";
 
 const validateListParticipantActivityCallableResponse =
   contractValidator<ListParticipantActivityCallableResponse>(
     "ListParticipantActivityCallableResponse"
-  );
-const validateGetParticipantActivityCallableResponse =
-  contractValidator<GetParticipantActivityCallableResponse>(
-    "GetParticipantActivityCallableResponse"
   );
 
 const request = (data: unknown, uid = "person") => ({data,
@@ -67,17 +60,13 @@ test("account-only sources need no profile or phone", async () => {
   const h = await fixture();
   const before = JSON.stringify([...h.store.records]);
   const result = await list(request(page), h.deps);
-  const item = await detail(request({sourceKind: "formResponse",
-    sourceId: h.sourceId}), h.deps);
   assert.ok(validateListParticipantActivityCallableResponse(result));
-  assert.ok(validateGetParticipantActivityCallableResponse(item));
-  assert.deepEqual(result.items, [item.item]);
-  assert.equal(item.item.sourceId, h.sourceId);
-  assert.equal(item.item.eventId, null);
+  assert.equal(result.items.length, 1);
+  assert.equal(result.items[0].sourceId, h.sourceId);
+  assert.equal(result.items[0].eventId, null);
   assert.equal(h.store.records.has("users/person"), false);
   assert.equal(JSON.stringify([...h.store.records]), before);
-  assert.deepEqual(h.rates, [["person", "listParticipantActivity"],
-    ["person", "getParticipantActivity"]]);
+  assert.deepEqual(h.rates, [["person", "listParticipantActivity"]]);
 });
 
 test("Auth and caller-supplied ownership are enforced", async () => {
@@ -93,12 +82,9 @@ test("Auth and caller-supplied ownership are enforced", async () => {
 
 test("foreign, withdrawn and deleted sources reject", async () => {
   const h = await fixture();
-  const data = {sourceKind: "formResponse", sourceId: h.sourceId};
-  await assert.rejects(detail(request(data, "other"), h.deps),
-    code("not-found"));
+  assert.deepEqual((await list(request(page, "other"), h.deps)).items, []);
   h.store.records.set(`organizerFormResponses/${h.sourceId}`, {...h.response,
     status: "withdrawn", withdrawnAt: Timestamp.fromMillis(1500)});
-  await assert.rejects(detail(request(data), h.deps), code("not-found"));
   assert.deepEqual((await list(request(page), h.deps)).items, []);
   h.store.records.set("deletedUsers/person", {status: "processing"});
   await assert.rejects(list(request(page), h.deps), code("not-found"));
@@ -119,10 +105,9 @@ test("only DTO timestamps are integer-normalized", async () => {
   const h = await fixture();
   h.store.records.set(`organizerFormResponses/${h.sourceId}`, {...h.response,
     submittedAt: new Timestamp(1, 123456789)});
-  const result = await detail(request({sourceKind: "formResponse",
-    sourceId: h.sourceId}), h.deps);
-  assert.equal(result.item.submittedAtMillis, 1123);
-  assert.ok(validateGetParticipantActivityCallableResponse(result));
+  const result = await list(request(page), h.deps);
+  assert.equal(result.items[0].submittedAtMillis, 1123);
+  assert.ok(validateListParticipantActivityCallableResponse(result));
   assert.equal((h.store.records.get(`organizerFormResponses/${h.sourceId}`)!
     .submittedAt as Timestamp).nanoseconds, 123456789);
 });

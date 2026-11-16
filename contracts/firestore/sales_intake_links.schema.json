@@ -8,7 +8,7 @@
   "x-firestore-collection": "salesIntakeLinks",
   "x-firestore-path": "salesIntakeLinks/{linkId}",
   "x-document-id-field": "linkId",
-  "x-owner": "adminLinkOrganizerIntakeToSales",
+  "x-owner": "retired adminLinkOrganizerIntakeToSales callable; existing records are kept read-only",
   "required": [
     "schemaVersion",
     "classification",

@@ -361,8 +361,6 @@
         "getOrganizerFormPayment",
         "findOrganizerFormPayment",
         "reconcileOrganizerFormPayments",
-        "createRazorpayOrder",
-        "verifyRazorpayPayment",
         "createStripeCheckoutSession",
         "onHostRosterInsightBookingPaymentChanged"
       ],
@@ -600,10 +598,7 @@
       "owner": "adminSetCrossPathsShowcaseEligibility callable",
       "read": "server only; admin reviewers use a sanitized role-gated callable projection",
       "write": "server only; audited admin review decision",
-      "exportedFunctions": [
-        "adminListCrossPathsShowcaseCandidates",
-        "adminSetCrossPathsShowcaseEligibility"
-      ],
+      "exportedFunctions": [],
       "operations": [
         {
           "id": "admin_showcase_review",
@@ -678,8 +673,7 @@
         "joinEventWaitlist",
         "leaveEventWaitlist",
         "markEventAttendance",
-        "selfCheckInAttendance",
-        "verifyRazorpayPayment"
+        "selfCheckInAttendance"
       ],
       "operations": [
         {
@@ -1743,7 +1737,6 @@
       "read": "server only; manager sees bounded callable status",
       "write": "server only",
       "exportedFunctions": [
-        "manageOrganizerFormDomain",
         "resolvePublicFormDomain"
       ]
     },
@@ -1785,8 +1778,7 @@
       "write": "immutable server-created version only",
       "exportedFunctions": [
         "publishOrganizerForm",
-        "listParticipantActivity",
-        "getParticipantActivity"
+        "listParticipantActivity"
       ],
       "migrationNotes": [
         "sourceDraftRevision makes publish retries idempotent and every historical definition immutable.",
@@ -2353,7 +2345,6 @@
       "write": "server only",
       "exportedFunctions": [
         "signUpForFreeEvent",
-        "verifyRazorpayPayment",
         "cancelEventSignUp",
         "joinEventWaitlist",
         "leaveEventWaitlist",
@@ -2830,7 +2821,6 @@
         "updateEvent",
         "cancelEvent",
         "signUpForFreeEvent",
-        "verifyRazorpayPayment",
         "cancelEventSignUp"
       ],
       "migrationNotes": [
@@ -3697,9 +3687,7 @@
       "owner": "trusted operations workers",
       "read": "server/admin callable only",
       "write": "server only",
-      "exportedFunctions": [
-        "adminListIntakeOperations"
-      ],
+      "exportedFunctions": [],
       "migrationNotes": [
         "Portable record shape is contracts/operations/run.schema.json; browser reads use a role-gated projection."
       ]
@@ -3712,9 +3700,7 @@
       "owner": "trusted operations workers",
       "read": "server/admin callable only",
       "write": "server only",
-      "exportedFunctions": [
-        "adminListIntakeOperations"
-      ],
+      "exportedFunctions": [],
       "migrationNotes": [
         "Portable record shape is contracts/operations/work_item.schema.json; primaryStage is exclusive and lifecycle outcomes are separate."
       ]
@@ -3804,7 +3790,6 @@
         "adminListInboxItems",
         "adminGetInboxItem",
         "adminUpdateInboxItem",
-        "adminRebuildInbox",
         "onSupplyIntakeRequestWrittenSyncInbox",
         "onOrganizerClaimRequestWrittenSyncInbox",
         "onSalesInboundIntentWrittenSyncInbox",
@@ -3853,7 +3838,6 @@
       "exportedFunctions": [
         "adminSearchPeople",
         "onUserWrittenIndexPeople",
-        "adminRebuildInbox",
         "reconcileAdminInboxNightly"
       ],
       "migrationNotes": [

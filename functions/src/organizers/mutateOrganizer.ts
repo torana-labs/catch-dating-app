@@ -1,22 +1,11 @@
-import {bookingPayments} from "../payments/bookingPayments";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
-import type {ArchiveOrganizerCallablePayload} from
-  "../shared/generated/archiveOrganizerCallablePayload";
-import type {DeleteOrganizerCallablePayload} from
-  "../shared/generated/deleteOrganizerCallablePayload";
 import type {UpdateOrganizerCallablePayload} from
   "../shared/generated/updateOrganizerCallablePayload";
-import {
-  validateArchiveOrganizerCallablePayload,
-} from "../shared/generated/validators/archiveOrganizerInput";
-import {
-  validateDeleteOrganizerCallablePayload,
-} from "../shared/generated/validators/deleteOrganizerInput";
 import {
   validateUpdateOrganizerCallablePayload,
 } from "../shared/generated/validators/updateOrganizerInput";
@@ -32,11 +21,8 @@ import {marketForIdOrAlias} from "../locations/marketConfig";
 import {reserveOrganizerCanonicalRoute} from
   "../admin/organizerPublishingGuards";
 import {defaultOrganizerPublicSlug} from "./organizerIdentity";
-import {
-  normalizeArchiveOrganizerPayload,
-  normalizeOrganizerIdPayload,
-  normalizeUpdateOrganizerPayload,
-} from "./organizerPayloadNormalization";
+import {normalizeUpdateOrganizerPayload} from
+  "./organizerPayloadNormalization";
 import {
   deleteMediaStoragePaths,
   removedMediaStoragePaths,
@@ -134,116 +120,6 @@ export async function updateOrganizerHandler(
   return {updated: true};
 }
 
-export async function archiveOrganizerHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerLifecycleDeps = defaultDeps
-): Promise<{archived: boolean}> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<ArchiveOrganizerCallablePayload>(
-    request,
-    validateArchiveOrganizerCallablePayload,
-    normalizeArchiveOrganizerPayload
-  );
-  const db = deps.firestore();
-  await deps.checkRateLimit?.(db, actorUid, "archiveOrganizer", {
-    maxRequests: 10, windowMs: 60 * 1000,
-  });
-  const organizerRef = db.collection("organizers").doc(data.organizerId);
-  const deletedUserRef = db.collection("deletedUsers").doc(actorUid);
-
-  await db.runTransaction(async (tx) => {
-    const [organizerSnap, deletedUserSnap] = await Promise.all([
-      tx.get(organizerRef),
-      tx.get(deletedUserRef),
-    ]);
-    assertCanMutateOrganizer(organizerSnap, deletedUserSnap, actorUid);
-    const existing = organizerSnap.data();
-    if (existing?.status === "archived" || existing?.archived === true) return;
-    const patch = {
-      status: "archived",
-      archived: true,
-      archivedAt: deps.serverTimestamp?.() ??
-        admin.firestore.FieldValue.serverTimestamp(),
-      archiveReason: data.reason ?? null,
-    };
-    tx.update(organizerRef, patch);
-  });
-  return {archived: true};
-}
-
-export async function deleteOrganizerHandler(
-  request: CallableRequest<unknown>,
-  deps: OrganizerLifecycleDeps = defaultDeps
-): Promise<{deleted: boolean}> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<DeleteOrganizerCallablePayload>(
-    request,
-    validateDeleteOrganizerCallablePayload,
-    normalizeOrganizerIdPayload
-  );
-  const db = deps.firestore();
-  await deps.checkRateLimit?.(db, actorUid, "deleteOrganizer", {
-    maxRequests: 10, windowMs: 60 * 1000,
-  });
-  const organizerRef = db.collection("organizers").doc(data.organizerId);
-  const deletedUserRef = db.collection("deletedUsers").doc(actorUid);
-  let removedStoragePaths: string[] = [];
-
-  await db.runTransaction(async (tx) => {
-    const [
-      organizerSnap,
-      deletedUserSnap,
-      organizerEventsSnap,
-      organizerReviewsSnap,
-      organizerPaymentsSnap,
-      teamSnap,
-      followsSnap,
-    ] = await Promise.all([
-      tx.get(organizerRef),
-      tx.get(deletedUserRef),
-      tx.get(db.collection("events")
-        .where("organizerId", "==", data.organizerId).limit(1)),
-      tx.get(db.collection("reviews")
-        .where("organizerId", "==", data.organizerId).limit(1)),
-      tx.get(bookingPayments(db)
-        .where("organizerId", "==", data.organizerId).limit(1)),
-      tx.get(db.collection("organizerTeamMemberships")
-        .where("organizerId", "==", data.organizerId).limit(2)),
-      tx.get(db.collection("organizerFollows")
-        .where("organizerId", "==", data.organizerId).limit(1)),
-    ]);
-    assertCanMutateOrganizer(organizerSnap, deletedUserSnap, actorUid);
-    removedStoragePaths = removedMediaStoragePaths({
-      before: organizerSnap.data(),
-      after: {},
-      owner: {kind: "organizer", id: data.organizerId},
-    });
-    const team = teamSnap.docs.map((doc) => doc.data());
-    const onlyOwner = team.length <= 1 && team.every((membership) =>
-      membership.uid === actorUid && membership.role === "owner"
-    );
-    if (
-      !organizerEventsSnap.empty || !organizerReviewsSnap.empty ||
-      !organizerPaymentsSnap.empty ||
-      !followsSnap.empty || !onlyOwner
-    ) {
-      throw new HttpsError(
-        "failed-precondition",
-        "Organizers with events, payments, reviews, followers, or managers " +
-          "must be archived."
-      );
-    }
-    teamSnap.docs.forEach((doc) => tx.delete(doc.ref));
-    tx.delete(organizerRef);
-  });
-  await cleanupRemovedOrganizerMedia(
-    deps,
-    data.organizerId,
-    removedStoragePaths
-  );
-  return {deleted: true};
-}
-
 async function cleanupRemovedOrganizerMedia(
   deps: OrganizerLifecycleDeps,
   organizerId: string,
@@ -258,32 +134,6 @@ async function cleanupRemovedOrganizerMedia(
       paths,
       error,
     });
-  }
-}
-
-function assertCanMutateOrganizer(
-  organizerSnap: FirebaseFirestore.DocumentSnapshot,
-  deletedUserSnap: FirebaseFirestore.DocumentSnapshot,
-  actorUid: string
-) {
-  if (deletedUserSnap.exists) {
-    throw new HttpsError(
-      "failed-precondition",
-      "This account cannot manage organizers."
-    );
-  }
-  if (!organizerSnap.exists) {
-    throw new HttpsError("not-found", "Organizer not found.");
-  }
-  const organizer = requireDoc<OrganizerDocument>(
-    organizerSnap,
-    "OrganizerDocument"
-  );
-  if (!isOrganizerOwner(organizer, actorUid)) {
-    throw new HttpsError(
-      "permission-denied",
-      "Only the organizer owner can manage this organizer."
-    );
   }
 }
 
@@ -475,12 +325,4 @@ function thumbnailOrUrl(photo: unknown): string | null {
 export const updateOrganizer = onCall(
   appCheckCallableOptions,
   (request) => updateOrganizerHandler(request)
-);
-export const archiveOrganizer = onCall(
-  appCheckCallableOptions,
-  (request) => archiveOrganizerHandler(request)
-);
-export const deleteOrganizer = onCall(
-  appCheckCallableOptions,
-  (request) => deleteOrganizerHandler(request)
 );

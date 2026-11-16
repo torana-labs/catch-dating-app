@@ -4,8 +4,6 @@ import path from "node:path";
 import test from "node:test";
 import Ajv, {AnySchema} from "ajv";
 import addFormats from "ajv-formats";
-import {listIntakeOperationsRateLimit} from "../admin/intakeOperations";
-import {MAX_OPERATION_WORK_ITEMS_PER_RUN} from "./models";
 
 const schemaNames = [
   "common",
@@ -102,33 +100,6 @@ test("draft-07 operation schemas reject unsafe lifecycle fixtures", () => {
     assert.ok(validate, `validator should exist for ${schemaName}`);
     assert.equal(validate(fixture.document), false, fixtureName);
   }
-});
-
-test("two maximum exception inventories fit inside one admin rate " +
-  "window", () => {
-  const directory = contractsDirectory();
-  const runSchema = readJson(path.join(directory, "run.schema.json")) as {
-    properties: {budgets: {properties: {maxWorkItems: {maximum: number}}}};
-  };
-  const callableSchema = readJson(path.join(
-    directory,
-    "..",
-    "callables",
-    "admin_list_intake_operations_payload.schema.json"
-  )) as {properties: {workItemLimit: {maximum: number}}};
-  const runLimit = runSchema.properties.budgets.properties.maxWorkItems.maximum;
-  const pageLimit = callableSchema.properties.workItemLimit.maximum;
-  const requestLimit = listIntakeOperationsRateLimit.maxRequests;
-
-  assert.equal(runLimit, MAX_OPERATION_WORK_ITEMS_PER_RUN);
-  assert.ok(
-    (1 + Math.ceil(runLimit / pageLimit)) * 2 <= requestLimit,
-    JSON.stringify({runLimit, pageLimit, requestLimit})
-  );
-  assert.ok(
-    2 * Math.ceil(runLimit / pageLimit) - 1 <= requestLimit,
-    JSON.stringify({runLimit, pageLimit, requestLimit})
-  );
 });
 
 test("Firestore declares the canonical human-review queue index", () => {

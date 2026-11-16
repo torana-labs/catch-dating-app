@@ -16,8 +16,6 @@ const sharedFiles = [
   "admin/src/features/intake/organizer/controllers/useSupplyIntakePolicyController.ts",
   "admin/src/shared/types/adminTypes.ts",
   "functions/src/index.ts",
-  "functions/src/admin/intakeOperations.ts",
-  "functions/src/admin/intakeOperations.test.ts",
 ];
 
 test("the Intake policy decision is Firestore-backed", () => {
@@ -47,21 +45,6 @@ test("rejects a reintroduced Admin operational snapshot", () => {
 
   assert.equal(result.ok, false);
   assert.match(result.errors.join("\n"), /legacy-snapshot/);
-});
-
-test("rejects removal of the Supply Intake Firestore read", () => {
-  const root = mirrorRequiredFiles();
-  replaceIn(
-    root,
-    "functions/src/admin/intakeOperations.ts",
-    "repository.listRuns",
-    "removedListRuns"
-  );
-
-  const result = checkAdminReviewBridge({root});
-
-  assert.equal(result.ok, false);
-  assert.match(result.errors.join("\n"), /run collection repository/);
 });
 
 test("rejects a removed React Query decision mutation", () => {

@@ -66,8 +66,6 @@ import type {UpdateEventReviewCallablePayload} from
 import type {UnblockUserCallablePayload} from
   "./generated/unblockUserCallablePayload";
 import type {UserProfileDocument} from "./generated/userProfileDocument";
-import type {VerifyRazorpayPaymentCallablePayload} from
-  "./generated/verifyRazorpayPaymentCallablePayload";
 import {schemaErrorMessages} from "./generated/schemaValidationRuntime";
 import {contractValidator} from "./contractTestValidators";
 
@@ -230,12 +228,6 @@ const validateUnblockUserCallablePayload =
   contractValidator<UnblockUserCallablePayload>("UnblockUserCallablePayload");
 const validateUserProfileDocument =
   contractValidator<UserProfileDocument>("UserProfileDocument");
-const validateVerifyRazorpayPaymentCallablePayload =
-  contractValidator<VerifyRazorpayPaymentCallablePayload>(
-    "VerifyRazorpayPaymentCallablePayload"
-  );
-const validateRazorpayOrderCallableResponse =
-  contractValidator("RazorpayOrderCallableResponse");
 
 type Validator = Parameters<typeof schemaErrorMessages>[0];
 const contractRoot = fs.existsSync(path.resolve(process.cwd(), "contracts")) ?
@@ -560,14 +552,6 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/report_user_payload.json")
   );
   assertValid(
-    validateVerifyRazorpayPaymentCallablePayload as Validator,
-    readFixture("fixtures/valid/verify_razorpay_payment_payload.json")
-  );
-  assertValid(
-    validateRazorpayOrderCallableResponse as Validator,
-    readFixture("fixtures/valid/razorpay_order_response.json")
-  );
-  assertValid(
     validatePlacesAutocompleteCallablePayload as Validator,
     readFixture("fixtures/valid/places_autocomplete_payload.json")
   );
@@ -667,10 +651,6 @@ test("generated schema validators reject invalid contract fixtures", () => {
   assertInvalid(
     validatePlacesAutocompleteCallablePayload as Validator,
     readFixture("fixtures/invalid/places_autocomplete_short_input.json")
-  );
-  assertInvalid(
-    validateRazorpayOrderCallableResponse as Validator,
-    readFixture("fixtures/invalid/razorpay_order_response_missing_amount.json")
   );
   assertInvalid(
     validateCreateChatMessageClientWrite as Validator,

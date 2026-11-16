@@ -2994,14 +2994,13 @@ ${ungenerableRows}
 //
 // Callable schemas where the generator's projection would shadow a
 // hand-written class that adds behavior the generator can't reproduce:
-//   - EventBookingCallablePayload / CreateRazorpayOrderCallablePayload:
-//     hand-written DTOs apply `inviteCode?.trim()` at serialization time.
+//   - EventBookingCallablePayload: the hand-written DTO applies
+//     `inviteCode?.trim()` at serialization time.
 //     The schemas exist for validation and as the contract source of truth;
-//     the Dart classes stay hand-written so the trim normalization remains
+//     the Dart class stays hand-written so the trim normalization remains
 //     attached to the boundary.
 const DART_CALLABLE_REQUEST_SKIP = new Set([
   "EventBookingCallablePayload",
-  "CreateRazorpayOrderCallablePayload",
 ]);
 
 const DART_CALLABLE_REQUEST_OUTPUT_DIR =

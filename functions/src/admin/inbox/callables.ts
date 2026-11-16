@@ -1,24 +1,20 @@
 /* eslint-disable max-len */
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptions, appCheckCallableOptionsWithLimits} from "../../shared/callableOptions";
+import {appCheckCallableOptions} from "../../shared/callableOptions";
 import type {AdminListInboxItemsCallablePayload} from "../../shared/generated/adminListInboxItemsCallablePayload";
 import type {AdminListInboxItemsCallableResponse} from "../../shared/generated/adminListInboxItemsCallableResponse";
 import type {AdminGetInboxItemCallablePayload} from "../../shared/generated/adminGetInboxItemCallablePayload";
 import type {AdminGetInboxItemCallableResponse} from "../../shared/generated/adminGetInboxItemCallableResponse";
 import type {AdminUpdateInboxItemCallablePayload} from "../../shared/generated/adminUpdateInboxItemCallablePayload";
 import type {AdminUpdateInboxItemCallableResponse} from "../../shared/generated/adminUpdateInboxItemCallableResponse";
-import type {AdminRebuildInboxCallablePayload} from "../../shared/generated/adminRebuildInboxCallablePayload";
-import type {AdminRebuildInboxCallableResponse} from "../../shared/generated/adminRebuildInboxCallableResponse";
 import {validateAdminListInboxItemsCallablePayload} from "../../shared/generated/validators/adminListInboxItemsInput";
 import {validateAdminGetInboxItemCallablePayload} from "../../shared/generated/validators/adminGetInboxItemInput";
 import {validateAdminUpdateInboxItemCallablePayload} from "../../shared/generated/validators/adminUpdateInboxItemInput";
-import {validateAdminRebuildInboxCallablePayload} from "../../shared/generated/validators/adminRebuildInboxInput";
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
 import {validateCallableWithAjv} from "../../shared/validation";
 import {setAdminAuditLogInTransaction} from "../adminAudit";
 import {requireAdminRole} from "../adminAuth";
-import {syncPeopleIndex} from "../peopleSearch";
 import {
   INBOX_ITEMS_COLLECTION,
   INBOX_ITEM_TYPES,
@@ -26,19 +22,15 @@ import {
   InboxItemDocument,
   InboxItemType,
   InboxJourneyStepDocument,
-  InboxSourceKind,
   dismissedInboxItem,
   journeyStepDocId,
   reopenedInboxItem,
-  sourceCollections,
 } from "./model";
-import {syncInboxDocument} from "./listingEvents";
 import {journeyStepDocument} from "./store";
 
 /** Ops and the owner work the inbox; a sales associate may open their own nominations. */
 export const inboxRoles = ["admin", "adminOwner", "support"] as const;
 const inboxReadRoles = [...inboxRoles, "salesStaff"] as const;
-const rebuildRoles = ["admin", "adminOwner"] as const;
 const maxSnoozeMs = 30 * 24 * 60 * 60 * 1000;
 
 interface InboxDeps {
@@ -242,39 +234,6 @@ export async function adminUpdateInboxItemHandler(request: CallableRequest<unkno
   return {item: itemRow(item)};
 }
 
-/**
- * Re-projects one page of a source collection into the inbox, or of users
- * into the people index. Triggers keep both current; this fills them for
- * documents written before the triggers existed.
- */
-export async function adminRebuildInboxHandler(request: CallableRequest<unknown>,
-  deps: InboxDeps = defaultDeps): Promise<AdminRebuildInboxCallableResponse> {
-  const adminContext = requireAdminRole(request, rebuildRoles);
-  const data = validateCallableWithAjv<AdminRebuildInboxCallablePayload>(request,
-    validateAdminRebuildInboxCallablePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminRebuildInbox", {maxRequests: 30, windowMs: 60 * 1000});
-  const collection = data.source === "people" ? "users" : sourceCollections[data.source as InboxSourceKind];
-  let query = db.collection(collection).orderBy(admin.firestore.FieldPath.documentId()).limit(data.limit);
-  if (data.cursor) query = query.startAfter(data.cursor);
-  const snapshot = await query.get();
-  let written = 0;
-  for (const doc of snapshot.docs) {
-    if (data.source === "people") {
-      if (await syncPeopleIndex(db, doc.id, doc.data(), deps.now())) written += 1;
-    } else {
-      const results = await syncInboxDocument(db, data.source as InboxSourceKind, doc.id, doc.data(), deps.now());
-      written += results.filter((result) => result.outcome === "written").length;
-    }
-  }
-  return {
-    source: data.source,
-    scanned: snapshot.docs.length,
-    written,
-    nextCursor: snapshot.docs.length === data.limit ? snapshot.docs.at(-1)?.id ?? null : null,
-  };
-}
-
 function itemRow(item: InboxItemDocument): ListResponse["items"][number] {
   return {
     itemId: item.itemId, type: item.type, sourceKind: item.sourceKind, sourceId: item.sourceId,
@@ -307,5 +266,3 @@ export const adminGetInboxItem = onCall(appCheckCallableOptions,
   (request) => adminGetInboxItemHandler(request));
 export const adminUpdateInboxItem = onCall(appCheckCallableOptions,
   (request) => adminUpdateInboxItemHandler(request));
-export const adminRebuildInbox = onCall(appCheckCallableOptionsWithLimits({timeoutSeconds: 300}),
-  (request) => adminRebuildInboxHandler(request));

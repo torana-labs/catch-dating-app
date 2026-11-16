@@ -8,7 +8,7 @@
   "x-firestore-collection": "crossPathsShowcaseEligibility",
   "x-firestore-path": "crossPathsShowcaseEligibility/{uid}",
   "x-document-id-field": "uid",
-  "x-owner": "adminSetCrossPathsShowcaseEligibility callable",
+  "x-owner": "retired adminSetCrossPathsShowcaseEligibility callable; existing records are kept read-only",
   "required": [
     "status",
     "reasonCodes",

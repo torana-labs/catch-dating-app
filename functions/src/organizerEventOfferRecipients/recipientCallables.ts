@@ -14,14 +14,10 @@ import type {ManageEventOfferCheckoutCallablePayload as Input} from
   "../shared/generated/manageEventOfferCheckoutCallablePayload";
 import type {ManageEventOfferCheckoutCallableResponse as Response} from
   "../shared/generated/manageEventOfferCheckoutCallableResponse";
-import type {PrepareEventOfferInvitationCallablePayload as InvitationInput} from
-  "../shared/generated/prepareEventOfferInvitationCallablePayload";
 import {validateManageEventOfferCheckoutCallablePayload as validateInput} from
   "../shared/generated/validators/manageEventOfferCheckoutInput";
 import {validateManageEventOfferCheckoutCallableResponse as validateResponse}
   from "../shared/generated/validators/manageEventOfferCheckoutOutput";
-import {validatePrepareEventOfferInvitationCallablePayload} from
-  "../shared/generated/validators/prepareEventOfferInvitationInput";
 import {prepareRazorpayCollectionRouting} from
   "../payments/razorpayCollectionRouting";
 import {offerPaymentId, OFFER_PAYMENT_COLLECTION, parseOfferPayment,
@@ -30,19 +26,18 @@ import {offerPaymentExecutionFor} from
   "../payments/offerPayments/offerPaymentRuntime";
 import {projectOfferPayment} from
   "../payments/offerPayments/offerPaymentProjection";
-import {issueOfferRecipientInvitation, claimOfferRecipientInvitation,
+import {claimOfferRecipientInvitation,
   readVerifiedOfferRecipient, offerRecipientGrantId} from "./recipientGrant";
 
 import {offerCancellationPolicy} from
   "../payments/offerPayments/offerCancellationPolicy";
 import {cancelPaidOfferForCancelledEvent} from
   "../payments/offerPayments/offerPaymentCancellation";
-import {BRAND} from "../shared/generated/brand";
 
 export const recipientCallableDefaults = {
   db: () => admin.firestore(), rateLimit: checkRateLimit,
   now: Date.now,
-  issue: issueOfferRecipientInvitation, claim: claimOfferRecipientInvitation,
+  claim: claimOfferRecipientInvitation,
   readRecipient: readVerifiedOfferRecipient,
   prepareRouting: prepareRazorpayCollectionRouting,
   reserve: reserveOfferPayment, execution: offerPaymentExecutionFor,
@@ -51,25 +46,6 @@ export const recipientCallableDefaults = {
   commitAdmission: commitOrganizerFormAdmission,
 };
 type Deps = typeof recipientCallableDefaults;
-
-export async function prepareEventOfferInvitationHandler(
-  request: CallableRequest<unknown>, deps: Deps = recipientCallableDefaults) {
-  const uid = requireAuth(request);
-  const data = validateCallableWithAjv<InvitationInput>(request,
-    validatePrepareEventOfferInvitationCallablePayload);
-  const db = deps.db();
-  await deps.rateLimit(db, uid, "prepareEventOfferInvitation", {
-    maxRequests: 10, windowMs: 60 * 1000,
-  });
-  const invitation = await deps.issue({db, actorUid: uid,
-    scope: {organizerId: data.organizerId, eventId: data.eventId,
-      offerId: data.offerId, responseId: data.responseId},
-    expectedOfferGeneration: data.expectedOfferGeneration,
-    expectedOfferRevision: data.expectedOfferRevision, nowMillis: deps.now});
-  // Link preparation is not delivery. The token never enters a URL query/path.
-  return {url: `${BRAND.web.origin}/offer#${invitation.token}`,
-    expiresAtMillis: invitation.expiresAtMillis};
-}
 
 export async function manageEventOfferCheckoutHandler(
   request: CallableRequest<unknown>, deps: Deps = recipientCallableDefaults):
@@ -239,10 +215,6 @@ function unavailable(): never {
   throw new HttpsError("failed-precondition",
     "This invitation is unavailable.");
 }
-export const prepareEventOfferInvitation = onCall(
-  appCheckCallableOptionsWithLimits({timeoutSeconds: 120,
-    maxInstances: 10, concurrency: 10}),
-  (request) => prepareEventOfferInvitationHandler(request));
 export const manageEventOfferCheckout = onCall(
   appCheckCallableOptionsWithLimits({timeoutSeconds: 120,
     maxInstances: 10, concurrency: 10}),
