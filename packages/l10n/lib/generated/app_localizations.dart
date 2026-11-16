@@ -27731,6 +27731,30 @@ abstract class AppLocalizations {
   /// **'Recording departure…'**
   String get eventAssistanceDepartureSaving;
 
+  /// Host route change control shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Change route'**
+  String get eventAssistanceRouteChangeTitle;
+
+  /// Host route change control shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Send the group a different way without recording a new departure.'**
+  String get eventAssistanceRouteChangeBody;
+
+  /// Host route change control shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Change route'**
+  String get eventAssistanceRouteChangeConfirm;
+
+  /// Host route change control shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Route changed.'**
+  String get eventAssistanceRouteChangeSaved;
+
   /// Host departure and checkpoint controls shared by live events and rehearsal.
   ///
   /// In en, this message translates to:
