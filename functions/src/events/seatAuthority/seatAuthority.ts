@@ -25,6 +25,9 @@ export interface SeatReservation {
   revision: number;
   reservedAtMillis: number;
   releasedAtMillis: number | null;
+  /** Places this one booking holds (multi-place checkout). Missing means 1.
+   * Ledger counts are places, so release returns every place at once. */
+  places?: number;
   checkoutHold?: {paymentId: string; expiresAtMillis: number};
   temporaryHold?: {ownerKind: "crossPathsPair"; ownerId: string;
     expiresAtMillis: number};
@@ -111,6 +114,20 @@ function hash(value: unknown): string {
 }
 
 export const CHECKOUT_HOLD_MILLIS = 15 * 60 * 1000;
+/** Matches the attendee row's partySize ceiling; callers set tighter limits. */
+export const MAX_RESERVATION_PLACES = 20;
+
+/** Places a reservation holds; a reservation without `places` holds one. */
+export function reservationPlaces(
+  reservation: Pick<SeatReservation, "places"> | null | undefined): number {
+  const places = reservation?.places;
+  if (places === undefined) return 1;
+  if (!Number.isSafeInteger(places) || places < 1 ||
+      places > MAX_RESERVATION_PLACES) {
+    fail("unavailable", "Seat reservation place count is malformed.");
+  }
+  return places;
+}
 
 /** Expired holds still consume capacity until atomically released. */
 export function heldSeatCount(ledger: SeatLedger): number {
@@ -160,11 +177,12 @@ export function assertReadySeatState(eventId: string,
   const held = checkoutHeldCount(ledger);
   const hold = reservation?.checkoutHold;
   const temporary = reservation?.temporaryHold;
+  const places = reservationPlaces(reservation);
   if (hold !== undefined && (!hold || typeof hold !== "object" ||
       !validId(hold.paymentId) || !nonnegative(hold.expiresAtMillis) ||
       hold.expiresAtMillis !== reservation!.reservedAtMillis +
         CHECKOUT_HOLD_MILLIS || reservation!.active ||
-      reservation!.releasedAtMillis !== null || held < 1)) {
+      reservation!.releasedAtMillis !== null || held < places)) {
     fail("unavailable", "Checkout seat hold is malformed.");
   }
   if (temporary !== undefined && (!temporary ||
@@ -175,7 +193,7 @@ export function assertReadySeatState(eventId: string,
       temporary.expiresAtMillis <= reservation!.reservedAtMillis ||
       temporary.expiresAtMillis - reservation!.reservedAtMillis >
         30 * 60 * 1000 || reservation!.active ||
-      reservation!.releasedAtMillis !== null ||
+      reservation!.releasedAtMillis !== null || places !== 1 ||
       (ledger.temporaryHeld ?? 0) < 1)) {
     fail("unavailable", "Temporary seat hold is malformed.");
   }
@@ -194,7 +212,7 @@ export function assertReadySeatState(eventId: string,
       typeof reservation.active !== "boolean")) {
     fail("unavailable", "Seat reservation is malformed.");
   }
-  if (reservation?.active && ledger.occupied === 0) {
+  if (reservation?.active && ledger.occupied < places) {
     fail("unavailable", "Active seat conflicts with zero occupancy.");
   }
 }
@@ -278,6 +296,9 @@ export async function prepareSeatCommand<Subject>(params: {
     fail("conflict", "This event is full.");
   }
   const active = command.operation === "reserve";
+  // An ordinary reserve is one place. A release returns every place the
+  // booking held and keeps the count on the inactive record as history.
+  const released = active ? 1 : reservationPlaces(reservation);
   const nextReservation: SeatReservation = {
     eventId: command.eventId, canonicalKey: identity.key,
     identityRevision: identity.revision, active,
@@ -285,9 +306,10 @@ export async function prepareSeatCommand<Subject>(params: {
     reservedAtMillis: active ? command.nowMillis :
       reservation!.reservedAtMillis,
     releasedAtMillis: active ? null : command.nowMillis,
+    ...(released > 1 ? {places: released} : {}),
   };
   const nextLedger: SeatLedger = {...ledger,
-    occupied: ledger.occupied + (active ? 1 : -1),
+    occupied: ledger.occupied + (active ? 1 : -released),
     revision: ledger.revision + 1};
   const receipt: SeatReceipt = {eventId: command.eventId,
     requestId: command.requestId, requestHash,
