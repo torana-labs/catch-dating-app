@@ -24,7 +24,7 @@
       "data": {
         "kicker": "Refer a host",
         "title": "Know someone who runs great nights? Earn when they grow.",
-        "lead": "Tell us about a host. If they join Catch and claim their page, you earn [N]% of what they pay Catch for their first [N] months of paid bills.",
+        "lead": "Tell us about a host. If they join Catch and claim their page, you earn 10% of what they pay Catch for their first 6 months of paid bills.",
         "ink": "#4A3A0B",
         "tone": "m-yellow",
         "btns": [
@@ -45,7 +45,7 @@
             {
               "t": "Lantern Lane Social",
               "s": "Supper club · first paid bill Oct",
-              "tag": "Earning · month 2 of [N]",
+              "tag": "Earning · month 2 of 6",
               "tone": "good"
             },
             {
@@ -65,7 +65,7 @@
             }
           ]
         },
-        "note": "Priority-2 page (/host/refer/). Decision: a share of fees, matching the nominator credit already in billing (nominatorCredits: the first nominator earns the credit rate on bills paid, before GST, for the credit months, if the host claims within the lapse window). Rate, months, lapse window and payout method are placeholders until set."
+        "note": "Priority-2 page (/host/refer/). Decision: a share of fees, matching the nominator credit already in billing (nominatorCredits: the first nominator earns the credit rate on bills paid, before GST, for the credit months, if the host claims within the lapse window). Decided 16 Nov: 10% for 6 months, 90-day lapse. The payout method is still a placeholder."
       }
     },
     {
@@ -85,12 +85,12 @@
           {
             "n": "2",
             "t": "They claim their page",
-            "d": "We get in touch and help them set up. They need to claim their page within [N days] of your referral."
+            "d": "We get in touch and help them set up. They need to claim their page within 90 days of your referral."
           },
           {
             "n": "3",
             "t": "You earn as they pay",
-            "d": "[N]% of each Catch bill they pay, before GST, for their first [N] months of paid bills."
+            "d": "10% of each Catch bill they pay, before GST, for their first 6 months of paid bills."
           }
         ]
       }
@@ -201,7 +201,7 @@
           },
           {
             "t": "For a set time",
-            "d": "Their first [N] months of paid bills."
+            "d": "Their first 6 months of paid bills."
           },
           {
             "t": "Checked, then paid",
@@ -226,7 +226,7 @@
           ],
           [
             "How much could I earn?",
-            "[N]% of what the host pays Catch, before GST. Catch’s fee is 5% of their sales, capped at ₹10,000 a month, so the most one host can earn you is [N]% of ₹10,000 a month."
+            "10% of what the host pays Catch, before GST. Catch’s fee is 5% of their sales, capped at ₹10,000 a month, so the most one host can earn you is ₹1,000 a month."
           ],
           [
             "What if the host was already talking to Catch?",
@@ -238,7 +238,7 @@
           ],
           [
             "What if they don’t claim their page in time?",
-            "The referral lapses after [N days], and no credit is earned for that host."
+            "The referral lapses after 90 days, and no credit is earned for that host."
           ]
         ],
         "whatsapp": false
