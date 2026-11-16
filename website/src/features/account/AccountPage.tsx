@@ -18,8 +18,7 @@ import {
 import type {ReactNode} from "react";
 import {interpolateContent as fill} from "@content/interpolate";
 import {accountPageCopy as copy} from "../../content/account";
-import {publicSiteCopy, siteFooterLegalLinks} from "../../content/site";
-import {PublicPageFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {Form} from "../../shared/ui/primitives";
 import {renderAccountForm} from "./accountForm";
 import {
@@ -58,7 +57,7 @@ export function AccountPageView(props: AccountPageViewProps) {
     <CatchRoot theme="day">
       <PublicSiteHeader />
       <WebsitePageMain aria-labelledby={titleId} id="account">
-        <CatchPageBody gutter={false} pb="s0" pt="s4">
+        <CatchPageBody gutter={false} pb="s8" pt="s4">
           <CatchPaneLayout
             main={
               <CatchStack gap={24}>
@@ -91,9 +90,7 @@ export function AccountPageView(props: AccountPageViewProps) {
           />
         </CatchPageBody>
       </WebsitePageMain>
-      <CatchPageBody constrainToContentWidth pb="s8" pt="s6">
-        <PublicPageFooter links={[...publicSiteCopy.nav, ...siteFooterLegalLinks]} note={publicSiteCopy.footerOperator} />
-      </CatchPageBody>
+      <PublicSiteFooter />
       <PassSheet {...props} />
     </CatchRoot>
   );

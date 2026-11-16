@@ -28,7 +28,12 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(banner.queryByRole("link", {name: /Get the app|Get notified/u})).toBeNull();
     // The site top bar only opens pages; the page's sections live in their own bar.
     const nav = within(screen.getByRole("navigation", {name: "Primary"}));
-    expect(nav.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/explore/", "/host/"]);
+    expect(nav.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/explore/", "/help/"]);
+    // The host header: the For hosts dropdown and WhatsApp before the free trial; the host footer.
+    expect(banner.getByRole("button", {name: "For hosts"}).getAttribute("aria-expanded")).toBe("false");
+    expect(banner.getByRole("link", {name: /WhatsApp/u}).getAttribute("href")).toMatch(/^https:\/\/wa\.me\//u);
+    expect(within(screen.getByRole("navigation", {name: "Footer"})).getAllByRole("heading", {level: 2}).map((heading) => heading.textContent))
+      .toEqual(["Product", "Get started", "Catch", "Legal"]);
     const sections = within(screen.getByRole("navigation", {name: copy.sections.label, hidden: true}));
     const sectionLinks = sections.getAllByRole("link", {hidden: true}).map((link) => link.getAttribute("href"));
     expect(sectionLinks).toEqual(["#night", "#ways", "#pricing", "#faq", "#start"]);
