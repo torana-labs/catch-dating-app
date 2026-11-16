@@ -35,7 +35,12 @@ import {
   publicGuestMembership,
   readRegistrationManager,
 } from "./authority";
-import {publicCheckoutQuote, registrationUnavailable} from "./policy";
+import {
+  publicBookingPlaces,
+  publicCheckoutQuote,
+  publicGuestNames,
+  registrationUnavailable,
+} from "./policy";
 import {publicHostMembershipQuoteTerms} from
   "../../hostMemberships/publicCheckout";
 import {
@@ -140,6 +145,7 @@ export async function managePublicEventCheckoutHandler(
           nowMillis: deps.now()}),
         await publicHostMembershipQuoteTerms({db, tx, eventId: data.eventId,
           event, uid, nowMillis: deps.now()}),
+        data.placeCount ?? 1,
       )};
     });
     // Say so before the guest reviews a price nobody can collect.
@@ -182,6 +188,10 @@ export async function managePublicEventCheckoutHandler(
       throw new HttpsError("permission-denied", "Payment unavailable.");
     }
     if (data.action === "prepare") {
+      // A wrong guest-name count is the caller's mistake: say so before any
+      // provider routing work. The reservation checks it again.
+      publicGuestNames(data.guestNames,
+        publicBookingPlaces(data.reviewedQuote.placeCount));
       let routing = payment?.routing;
       let inviteLinkId = payment?.inviteLinkId ?? null;
       if (!payment) {
@@ -204,6 +214,7 @@ export async function managePublicEventCheckoutHandler(
             await publicHostMembershipQuoteTerms({db, tx,
               eventId: data.eventId, event: source.event, uid,
               nowMillis: deps.now()}),
+            data.reviewedQuote.placeCount ?? 1,
           );
           return {organizerId: source.event.organizerId!, quote};
         });
@@ -229,6 +240,7 @@ export async function managePublicEventCheckoutHandler(
         uid,
         phoneE164: phone,
         displayName: data.displayName,
+        guestNames: data.guestNames,
         requestId: data.requestId,
         reviewedQuote: data.reviewedQuote,
         routing: routing!,

@@ -87,7 +87,7 @@ export function PublicFormView({controller}: {controller: Controller}) {
   return (
     <div data-public-form="" ref={frameRef}>
       <CatchRoot format={catchFormatOf(controller.form?.definition.appearance?.activityKind ?? "") ?? undefined} theme="day">
-        {controller.embed ? null : <PublicSiteHeader />}
+        {controller.embed ? null : <PublicSiteHeader variant="minimal" />}
         <WebsitePageMain id="public-form">
           <CatchPageBody gutter={false} pb="s0" pt={controller.embed ? "s0" : "s4"}>
             <CatchPaneLayout

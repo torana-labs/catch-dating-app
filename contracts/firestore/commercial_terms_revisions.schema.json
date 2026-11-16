@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/commercial_terms_revisions.schema.json",
   "title": "CommercialTermsRevisionDocument",
-  "description": "Immutable history of every commercial terms revision, keyed <termsId>_r<revision>. Created in the same transaction as the commercialTerms write it records and never updated.",
+  "description": "Immutable history of every commercial terms revision, keyed <termsId>_r<revision>. Created in the same transaction as the commercialTerms write it records (by manageCommercialTerms, or by a founding-host place grant with actorUid system:foundingHostOffer) and never updated.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schemaVersion", "termsId", "scope", "organizerId", "revision", "terms", "reason", "actorUid", "createdAtMillis"],
@@ -20,5 +20,5 @@
   "x-firestore-collection": "commercialTermsRevisions",
   "x-firestore-path": "commercialTermsRevisions/{revisionId}",
   "x-document-id-field": "revisionId",
-  "x-owner": "manageCommercialTerms admin callable"
+  "x-owner": "manageCommercialTerms admin callable; the founding-host place grant"
 }

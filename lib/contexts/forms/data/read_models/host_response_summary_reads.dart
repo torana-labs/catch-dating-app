@@ -2,30 +2,35 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.
 import 'package:catch_platform/firebase/host_summary_reader.dart';
 
 // firestore-index: hostResponseSummaries (organizerId:ASCENDING, formId:ASCENDING, offer.status:ASCENDING, submittedAtMillis:DESCENDING, __name__:DESCENDING)
+// firestore-index: hostResponseSummaries (organizerId:ASCENDING, reviewStatus:ASCENDING, submittedAtMillis:DESCENDING, __name__:DESCENDING)
+// firestore-index: hostResponseSummaries (organizerId:ASCENDING, reviewStatus:ASCENDING, submittedAtMillis:ASCENDING, __name__:ASCENDING)
 
 /// Ordinary inbox pages contain metadata only. Answer filters and detail reads
 /// retain their source-authorized callable path. Offered entries are read
-/// only here: the derived offer lives on the summary, not the source.
+/// only here: the derived offer lives on the summary, not the source. The
+/// all-form inbox also filters by an application's review status (only with
+/// applications included, as the callable requires) and by submission date.
 class HostResponseSummaryReads {
   const HostResponseSummaryReads(this.reader);
   final HostSummaryReader reader;
 
   /// Whether the inbox read model can serve [request]: the plain inbox and
-  /// offered entries, without answer, identity, date or text filters.
+  /// offered entries, a review status (all forms, applications included)
+  /// and a submission date range, without form, answer, identity, status or
+  /// text filters.
   static bool supports(HostFormResponseListRequest request) {
     final offered = request.offeredOnly;
     return !((request.formId != null && !offered) ||
         (offered && !request.includeApplications) ||
+        (request.reviewStatus != null &&
+            (offered || !request.includeApplications)) ||
         request.contactId != null ||
         request.versionId != null ||
-        request.reviewStatus != null ||
         request.statuses.isNotEmpty ||
         request.identityKinds.isNotEmpty ||
         request.sourceLinkId != null ||
         request.answerFilters.isNotEmpty ||
-        (request.query?.trim().isNotEmpty ?? false) ||
-        request.from != null ||
-        request.to != null);
+        (request.query?.trim().isNotEmpty ?? false));
   }
 
   /// One page of a request [supports] accepts.
@@ -45,16 +50,27 @@ class HostResponseSummaryReads {
       descending: !request.oldestFirst,
       queryKey:
           '${request.includeApplications}/${request.oldestFirst}/'
-          '${offered ? 'offered/${request.formId}' : 'all'}',
+          '${offered ? 'offered/${request.formId}' : 'all'}/'
+          '${request.reviewStatus?.name}/'
+          '${request.from?.millisecondsSinceEpoch}/'
+          '${request.to?.millisecondsSinceEpoch}',
       limit: request.limit,
       equalities: offered
           ? {
               'formId': ?request.formId,
               'offer.status': HostFormEntryOfferStatus.offered.name,
             }
-          : request.includeApplications
-          ? const {}
-          : const {'kind': 'response'},
+          : {
+              if (!request.includeApplications) 'kind': 'response',
+              // Only an entry with an application has a review status.
+              'reviewStatus': ?request.reviewStatus?.name,
+            },
+      // Both ends are inclusive, as the callable compares them.
+      lowerInclusive: request.from?.millisecondsSinceEpoch,
+      upperExclusive: switch (request.to) {
+        final to? => to.millisecondsSinceEpoch + 1,
+        null => null,
+      },
       cursor: request.cursor,
     );
     final entries = page.documents

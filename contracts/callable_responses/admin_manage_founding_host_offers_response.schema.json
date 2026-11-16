@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_founding_host_offers_response.schema.json",
+  "title": "AdminManageFoundingHostOffersCallableResponse",
+  "description": "The founding-host offers in force, one per city that has been opened, in market id order (just the named city when a read or replacement names one). Counts only; the organizers holding places are not listed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["offers", "defaultCap", "trialDays"],
+  "properties": {
+    "defaultCap": {"type": "integer", "minimum": 1, "maximum": 1000, "description": "The cap the owner decided (50), for a city that has not been opened yet."},
+    "trialDays": {"type": "integer", "minimum": 1, "maximum": 366},
+    "offers": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["marketId", "citySlug", "revision", "status", "cap", "takenCount", "placesLeft", "trialDays", "endsAtMillis", "openedAtMillis", "lastPlaceAtMillis", "reason", "updatedByUid", "updatedAtMillis"],
+        "properties": {
+          "marketId": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,49}$"},
+          "citySlug": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+          "revision": {"type": "integer", "minimum": 1},
+          "status": {"enum": ["open", "soldOut", "closed"]},
+          "cap": {"type": "integer", "minimum": 1, "maximum": 1000},
+          "takenCount": {"type": "integer", "minimum": 0, "maximum": 1000},
+          "placesLeft": {"type": "integer", "minimum": 0, "maximum": 1000},
+          "trialDays": {"type": "integer", "minimum": 1, "maximum": 366},
+          "endsAtMillis": {"type": ["integer", "null"], "minimum": 1},
+          "openedAtMillis": {"type": "integer", "minimum": 1},
+          "lastPlaceAtMillis": {"type": ["integer", "null"], "minimum": 1},
+          "reason": {"type": "string", "minLength": 3, "maxLength": 500},
+          "updatedByUid": {"type": "string", "minLength": 1, "maxLength": 180},
+          "updatedAtMillis": {"type": "integer", "minimum": 1}
+        }
+      }
+    }
+  }
+}

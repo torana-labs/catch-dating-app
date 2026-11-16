@@ -28,7 +28,7 @@ import {useEffect, useState, type ReactNode} from "react";
 import {homeCityAreas, homeFormats, homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {activeMarket} from "@content/markets";
-import {guestAppLive, publicSiteCopy} from "@content/site";
+import {guestAppLive} from "@content/site";
 import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {Form} from "../../../shared/ui/primitives";
@@ -432,7 +432,7 @@ export function HomePageSections({captures, downloadUrl, home}: {captures: Captu
     <>
       <PublicSiteHeader
         actions={<><CityPicker cities={home.cities} onChoose={home.chooseCity} selected={home.city} /><CatchButton href="#app" label={copy.header.app} size="sm" /></>}
-        links={[{...publicSiteCopy.whatsOn, href: home.exploreHref}, publicSiteCopy.forHosts]}
+        whatsOnHref={home.exploreHref}
       />
       <WebsitePageMain id="top">
         <HomeHero captures={captures} home={home} />
