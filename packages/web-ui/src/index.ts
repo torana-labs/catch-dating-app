@@ -41,6 +41,53 @@ export type {
 } from "./components/CatchBand";
 export {CatchBandHeader} from "./components/CatchBandHeader";
 export type {CatchBandHeaderAlign, CatchBandHeaderDirection, CatchBandHeaderProps} from "./components/CatchBandHeader";
+// The playbook section components (website-playbook kit), with the vocabulary they share.
+export type {CatchBandAction, CatchBandFootnote, CatchBandLink} from "./components/catchBandParts";
+export {CatchCardGrid} from "./components/CatchCardGrid";
+export type {
+  CatchCardGridCity,
+  CatchCardGridColumns,
+  CatchCardGridEmpty,
+  CatchCardGridItems,
+  CatchCardGridKind,
+  CatchCardGridPerson,
+  CatchCardGridProps,
+} from "./components/CatchCardGrid";
+export {CatchCtaSection} from "./components/CatchCtaSection";
+export type {CatchCtaSectionProps} from "./components/CatchCtaSection";
+export {CatchFaqSection} from "./components/CatchFaqSection";
+export type {CatchFaqSectionProps} from "./components/CatchFaqSection";
+export {CatchHeroSection} from "./components/CatchHeroSection";
+export type {
+  CatchHeroSectionAside,
+  CatchHeroSectionLayout,
+  CatchHeroSectionProofItem,
+  CatchHeroSectionProps,
+} from "./components/CatchHeroSection";
+export {CatchSplitSection} from "./components/CatchSplitSection";
+export type {
+  CatchSplitSectionAlign,
+  CatchSplitSectionCheck,
+  CatchSplitSectionGroup,
+  CatchSplitSectionMetric,
+  CatchSplitSectionProps,
+} from "./components/CatchSplitSection";
+export {CatchStoryCard} from "./components/CatchStoryCard";
+export type {CatchStoryCardProps, CatchStoryCardStat} from "./components/CatchStoryCard";
+export {CatchScreenPreview} from "./components/CatchScreenPreview";
+export type {
+  CatchScreenPreviewBar,
+  CatchScreenPreviewButton,
+  CatchScreenPreviewChoice,
+  CatchScreenPreviewCounter,
+  CatchScreenPreviewField,
+  CatchScreenPreviewKind,
+  CatchScreenPreviewProps,
+  CatchScreenPreviewRow,
+  CatchScreenPreviewStat,
+  CatchScreenPreviewTile,
+  CatchScreenPreviewTilt,
+} from "./components/CatchScreenPreview";
 export {catchFormatAccentOf, catchFormatOf} from "./components/palette";
 /** A Website v2 activity format: run, dinner, games, courts or nightsOut. */
 export type {Format as CatchFormat} from "./components/palette";

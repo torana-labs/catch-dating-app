@@ -1,0 +1,167 @@
+"use client";
+
+import {useId, type HTMLAttributes, type ReactNode} from "react";
+import {catchBandActions, catchBandColor, catchBandFootnoteMark, type CatchBandAction, type CatchBandFootnote, type CatchBandLink} from "./catchBandParts";
+import type {CatchTextTone} from "./catchCoreVocabulary";
+import {CatchBandHeader} from "./CatchBandHeader";
+import {CatchButton} from "./CatchButton";
+import {CatchChip} from "./CatchChip";
+import {CatchGroundProvider} from "./CatchGroundProvider";
+import {CatchHeroImage} from "./CatchHeroImage";
+import {CatchStack} from "./CatchStack";
+import {CatchSurface} from "./CatchSurface";
+import {CatchText} from "./CatchText";
+import type {Ground} from "./palette";
+import styles from "./CatchHeroSection.module.css";
+
+/** split: copy beside the media on a ground band. photo: the copy over a full-bleed photo. */
+export type CatchHeroSectionLayout = "split" | "photo";
+
+/** One proof line, such as a rating, with an optional footnote mark. */
+export interface CatchHeroSectionProofItem {
+  text: string;
+  footnote?: CatchBandFootnote;
+}
+
+/** A small floating card over the media: a title and label-value rows. */
+export interface CatchHeroSectionAside {
+  title: string;
+  rows: readonly {label: string; value: string}[];
+}
+
+export interface CatchHeroSectionProps extends Omit<HTMLAttributes<HTMLElement>, "children" | "className" | "color" | "style" | "title"> {
+  /** The headline. Resolved copy; the caller localizes it. */
+  title: string;
+  /** Defaults to 1: a hero opens its page. */
+  level?: 1 | 2;
+  kicker?: string;
+  /** The kicker's colour; defaults to the secondary ink. */
+  kickerTone?: CatchTextTone;
+  lead?: string;
+  /** Short labels under the lead, drawn as tag chips. */
+  labels?: readonly string[];
+  /** Proof lines, such as counts and ratings, each with an optional footnote mark. */
+  proof?: readonly CatchHeroSectionProofItem[];
+  /** D20 buttons: the first primary and the rest secondary unless named. */
+  actions?: readonly CatchBandAction[];
+  /** A small line under the actions. */
+  note?: string;
+  /** A side link under everything, drawn as a neutral text button. */
+  link?: CatchBandLink;
+  /** split: the media column, usually a CatchScreenPreview. It sits on the band's bottom edge. */
+  media?: ReactNode;
+  /** split: a small card floating over the media. */
+  aside?: CatchHeroSectionAside;
+  /** split: the band's Website v2 ground; text takes its inks, and ink the dark theme. Defaults to the plain band. */
+  ground?: Ground;
+  /** Defaults to split. */
+  layout?: CatchHeroSectionLayout;
+  /** photo: the photo's URL. Without one the branded no-photo fill shows. */
+  image?: string;
+  /** photo: the photo's alternative text; without it the photo is decorative. */
+  imageAlt?: string;
+}
+
+/**
+ * The opening band of a website page (the playbook kit's hero and photo
+ * hero): a kicker, the page headline, a lead, label chips, proof lines with
+ * footnote marks, D20 actions, a note and a side link, beside a media slot
+ * with an optional floating card, on a Website v2 ground. The photo layout
+ * sets the same copy in the dark theme over a full-bleed photo under the
+ * detail-hero scrim. The headline takes CatchBandHeader's page-title role,
+ * inside the 72px cap of D19. The band is a section named by its headline.
+ */
+export function CatchHeroSection({
+  title,
+  level = 1,
+  kicker,
+  kickerTone,
+  lead,
+  labels,
+  proof,
+  actions,
+  note,
+  link,
+  media,
+  aside,
+  ground,
+  layout = "split",
+  image,
+  imageAlt,
+  id,
+  ...rest
+}: CatchHeroSectionProps) {
+  const titleId = `${useId()}-title`;
+  const chips = labels?.filter((label) => label.trim() !== "") ?? [];
+  const copy = (
+    <CatchStack className={styles.copy} gap={24}>
+      <CatchBandHeader kicker={kicker} kickerTone={kickerTone} lead={lead} level={level} title={title} titleId={titleId} />
+      {chips.length > 0 ? (
+        <CatchStack as="ul" className={styles.list} direction="row" gap={8} wrap>
+          {chips.map((label, index) => <li key={`${index}:${label}`}><CatchChip label={label} recipe="tag" /></li>)}
+        </CatchStack>
+      ) : null}
+      {proof && proof.length > 0 ? (
+        <CatchStack as="ul" className={styles.list} direction="row" gap={12} wrap>
+          {proof.map((item, index) => (
+            <li className={styles.proof} key={`${index}:${item.text}`}>
+              <CatchText variant="label-action">{item.text}{catchBandFootnoteMark(item.footnote)}</CatchText>
+            </li>
+          ))}
+        </CatchStack>
+      ) : null}
+      {catchBandActions(actions)}
+      {note ? <CatchText as="p" tone="secondary" variant="body-meta">{note}</CatchText> : null}
+      {link ? <span className={styles.link}><CatchButton href={link.href} label={link.label} recipe="text" tone="neutral" /></span> : null}
+    </CatchStack>
+  );
+
+  if (layout === "photo") {
+    return (
+      <CatchSurface {...rest} aria-labelledby={titleId} as="section" block="band" data-layout="photo" id={id}>
+        <div className={styles.photo}>
+          <span className={styles.image}><CatchHeroImage imageUrl={image} semanticLabel={imageAlt} /></span>
+          <div className={styles.over} data-catch-theme="dark">
+            <CatchGroundProvider ground="night" theme="night">{copy}</CatchGroundProvider>
+          </div>
+        </div>
+      </CatchSurface>
+    );
+  }
+
+  const hasMedia = media != null || aside != null;
+  return (
+    <CatchSurface
+      {...rest}
+      aria-labelledby={titleId}
+      as="section"
+      block="band"
+      color={catchBandColor(ground)}
+      data-layout="split"
+      id={id}
+      padding={hasMedia ? "none" : undefined}
+    >
+      {hasMedia ? (
+        <CatchStack align="end" className={styles.split} collapseBelow="expanded" direction="row" equal gap={64}>
+          <div className={styles.text}>{copy}</div>
+          <div className={styles.media}>
+            {media}
+            {aside ? (
+              <CatchSurface block="floating" className={styles.aside}>
+                <CatchText as="p" variant="title-row">{aside.title}</CatchText>
+                <dl className={styles.rows}>
+                  {aside.rows.map((row, index) => (
+                    <div className={styles.row} key={`${index}:${row.label}`}>
+                      <dt><CatchText tone="secondary" variant="body-small">{row.label}</CatchText></dt>
+                      <dd><CatchText numeric variant="label-action">{row.value}</CatchText></dd>
+                    </div>
+                  ))}
+                </dl>
+              </CatchSurface>
+            ) : null}
+          </div>
+        </CatchStack>
+      ) : copy}
+    </CatchSurface>
+  );
+}
