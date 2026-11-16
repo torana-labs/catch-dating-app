@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_instant_draft_payload.schema.json",
+  "title": "GetInstantDraftCallablePayload",
+  "description": "Callable payload accepted by getInstantDraft: the draft page polls its draft with the id and the private token from its URL fragment. App Check is required; sign-in is not.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["draftId", "accessToken"],
+  "properties": {
+    "draftId": {"type": "string", "pattern": "^draft-[a-f0-9]{40}$"},
+    "accessToken": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"}
+  }
+}

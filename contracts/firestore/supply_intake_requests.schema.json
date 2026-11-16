@@ -86,6 +86,65 @@
         }
       ]
     },
+    "instantDraft": {
+      "description": "Present only on a request the website's instant draft tool created (origin web_instant_draft). It holds the submitter's private draft handle and WhatsApp follow-up consent. Its listing is never published before claim: whoever approves it (the instant draft worker or staff) creates a private, unpublished, claimable organizer draft. capture is immutable; outcome records what the worker decided once the build finished.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "draftId", "accessTokenHash", "requestKind", "entry", "link", "whatsapp", "followUp", "outcome"],
+      "properties": {
+        "schemaVersion": {"const": 1},
+        "draftId": {"$ref": "#/definitions/id"},
+        "accessTokenHash": {"$ref": "#/definitions/hash", "description": "SHA-256 of the website's private draft token. The token itself stays in the submitter's browser (a URL fragment) and is never stored or logged."},
+        "requestKind": {"enum": ["event_link", "form_link"]},
+        "entry": {"enum": ["event_page_tool", "demo_request"]},
+        "link": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["url", "provider", "support", "reason"],
+          "properties": {
+            "url": {"type": "string", "minLength": 1, "maxLength": 2000, "pattern": "^https?://"},
+            "provider": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]{0,59}$"},
+            "support": {"enum": ["instant", "best_effort", "staff_follow_up"]},
+            "reason": {"anyOf": [{"$ref": "#/definitions/code"}, {"type": "null"}]}
+          }
+        },
+        "whatsapp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["phone", "consentVersion", "consentedAt", "purpose"],
+          "properties": {
+            "phone": {"type": "string", "pattern": "^\\+[1-9][0-9]{7,14}$"},
+            "consentVersion": {"const": "instant-draft-whatsapp-v1"},
+            "consentedAt": {"type": "string", "format": "date-time"},
+            "purpose": {"const": "instant_draft_follow_up"}
+          }
+        },
+        "followUp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["channel", "mode"],
+          "properties": {
+            "channel": {"const": "whatsapp"},
+            "mode": {"const": "staff_reply", "description": "A person replies from the Admin Inbox until Catch-owned WhatsApp templates are approved."}
+          }
+        },
+        "outcome": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["state", "reasons", "at"],
+              "properties": {
+                "state": {"enum": ["draft_ready", "needs_staff"]},
+                "reasons": {"type": "array", "maxItems": 20, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_:-]{0,79}$"}},
+                "at": {"type": "string", "format": "date-time"}
+              }
+            }
+          ]
+        }
+      }
+    },
     "createdAt": {"type": "string", "format": "date-time"},
     "updatedAt": {"type": "string", "format": "date-time"}
   },
