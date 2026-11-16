@@ -22,7 +22,7 @@ const parts = [
   // The site chrome parts: the offer strip's banner, the breadcrumb and the nav menu.
   "CatchBanner", "CatchBreadcrumbRow", "CatchNavMenu",
   // The playbook section components.
-  "CatchScreenPreview", "CatchHeroSection", "CatchSplitSection", "CatchCtaSection",
+  "CatchScreenPreview", "CatchHeroSection", "CatchSplitSection", "CatchCtaSection", "CatchFaqSection",
 ];
 const sheets: Record<string, string> = Object.fromEntries([
   ...parts.map((name) => [name, strip(read(`./${name}.module.css`))]),

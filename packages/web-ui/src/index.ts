@@ -45,6 +45,8 @@ export type {CatchBandHeaderAlign, CatchBandHeaderDirection, CatchBandHeaderProp
 export type {CatchBandAction, CatchBandFootnote, CatchBandLink} from "./components/catchBandParts";
 export {CatchCtaSection} from "./components/CatchCtaSection";
 export type {CatchCtaSectionProps} from "./components/CatchCtaSection";
+export {CatchFaqSection} from "./components/CatchFaqSection";
+export type {CatchFaqSectionProps} from "./components/CatchFaqSection";
 export {CatchHeroSection} from "./components/CatchHeroSection";
 export type {
   CatchHeroSectionAside,
