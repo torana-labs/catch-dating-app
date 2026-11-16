@@ -11,7 +11,7 @@ import type {StoreCtaCopy} from "./types";
 export const guestAppLive = Boolean(brand.stores.consumer.ios || brand.stores.consumer.android);
 export const guestAppActionLabel = guestAppLive ? "Get the app" : "Get notified";
 
-/** A WhatsApp chat with Catch on its support number (brand.json), with the message already typed. */
+/** A WhatsApp chat on the support number in brand.json, with the message already typed. */
 export function whatsappChatHref(message: string) {
   return `https://wa.me/${brand.support.whatsapp.replace(/\D/gu, "")}?text=${encodeURIComponent(message)}`;
 }
