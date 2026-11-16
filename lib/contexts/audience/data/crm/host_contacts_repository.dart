@@ -33,30 +33,21 @@ part 'host_contacts_repository.g.dart';
 class HostContactsRepository {
   const HostContactsRepository(
     this._functions, {
-    this.summaries,
+    required this.summaries,
     this.rosterInsights,
   });
 
-  final HostContactSummaryReads? summaries;
+  /// The directory read model. Only queries it cannot serve (a name search,
+  /// intersecting filter groups) and contact detail use callables.
+  final HostContactSummaryReads summaries;
 
   /// The door's roster label listeners; reads need them.
   final HostRosterInsightReads? rosterInsights;
 
   final FirebaseFunctions _functions;
 
-  Future<HostCrmSummary> getSummary(String organizerId) async {
-    final summary = await summaries?.summary(organizerId);
-    if (summary != null) return summary;
-    return callHostCrm(
-      _functions,
-      name: 'getOrganizerCrmSummary',
-      payload: GetOrganizerCrmSummaryCallableRequest(
-        organizerId: organizerId,
-      ).toJson(),
-      action: 'load organizer CRM summary',
-      parse: HostCrmSummary.fromCallableData,
-    );
-  }
+  Future<HostCrmSummary> getSummary(String organizerId) =>
+      summaries.summary(organizerId);
 
   /// The event's roster labels as the server last evaluated them, with the
   /// member label shown, updated while it is listened to.
@@ -73,8 +64,9 @@ class HostContactsRepository {
     HostAudienceQuery query = const HostAudienceQuery(),
     int limit = ReadLimitPolicy.directoryPage,
   }) async {
-    final page = await summaries?.list(organizerId, query: query, limit: limit);
-    if (page != null) return page;
+    if (HostContactSummaryReads.supports(query)) {
+      return summaries.list(organizerId, query: query, limit: limit);
+    }
     return callHostCrm(
       _functions,
       name: 'listOrganizerContacts',
@@ -108,7 +100,7 @@ class HostContactsRepository {
     String organizerId, {
     HostAudienceQuery query = const HostAudienceQuery(),
   }) async {
-    final count = await summaries?.count(organizerId, query);
+    final count = await summaries.count(organizerId, query);
     if (count != null) {
       return (count: count, coverage: HostAudienceMatchCountCoverage.exact);
     }

@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -21,7 +23,14 @@ HostSavedAudienceSummary row(String id) => HostSavedAudienceSummary(
 );
 
 class _PagedGroups extends HostSavedAudienceRepository {
-  _PagedGroups() : super(_UnusedFunctions());
+  _PagedGroups()
+    : super(
+        _UnusedFunctions(),
+        summaries: HostSummaryReader(
+          FakeFirebaseFirestore(),
+          actorId: () => 'host',
+        ),
+      );
   int calls = 0;
   final continuation = Completer<HostSavedAudienceSummaryPage>();
   @override
@@ -156,7 +165,14 @@ void main() {
 }
 
 class _RefreshingGroups extends HostSavedAudienceRepository {
-  _RefreshingGroups() : super(_UnusedFunctions());
+  _RefreshingGroups()
+    : super(
+        _UnusedFunctions(),
+        summaries: HostSummaryReader(
+          FakeFirebaseFirestore(),
+          actorId: () => 'host',
+        ),
+      );
 
   final requests = <String?>[];
   final refreshRequested = Completer<void>();

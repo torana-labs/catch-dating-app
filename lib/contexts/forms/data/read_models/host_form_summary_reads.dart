@@ -3,19 +3,21 @@ import 'dart:convert';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
 
+/// The form list from `hostFormSummaries`. Only a title search still needs
+/// the server's evaluation.
 class HostFormSummaryReads {
   const HostFormSummaryReads(this.reader);
   final HostSummaryReader reader;
 
-  Future<HostFormPage?> list(HostFormListRequest request) async {
-    if (request.query?.trim().isNotEmpty ?? false) return null;
-    final directory = await reader.directory(request.organizerId);
-    if (directory?['formSummaryVersion'] != 1) {
-      if (request.cursor?.startsWith(HostSummaryCursor.prefix) ?? false) {
-        throw StateError('The form directory changed; refresh this list.');
-      }
-      return null;
+  static bool supports(HostFormListRequest request) =>
+      request.query?.trim().isEmpty ?? true;
+
+  /// One page of a request [supports] accepts.
+  Future<HostFormPage> list(HostFormListRequest request) async {
+    if (!supports(request)) {
+      throw ArgumentError('The form directory cannot serve a title search.');
     }
+    await reader.activatedDirectory(request.organizerId, 'formSummaryVersion');
     final statuses =
         request.statuses.isEmpty
               ? ['draft', 'published', 'paused']

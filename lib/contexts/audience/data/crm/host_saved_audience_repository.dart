@@ -23,9 +23,10 @@ part 'host_saved_audience_repository.g.dart';
 // firestore-index: hostGroupSummaries (organizerId:ASCENDING, status:ASCENDING, lastPreviewAtMillis:DESCENDING, __name__:DESCENDING)
 // firestore-index: hostGroupSummaries (organizerId:ASCENDING, status:ASCENDING, isStatic:ASCENDING, lastPreviewAtMillis:DESCENDING, __name__:DESCENDING)
 class HostSavedAudienceRepository {
-  const HostSavedAudienceRepository(this._functions, {this.summaries});
+  const HostSavedAudienceRepository(this._functions, {required this.summaries});
 
-  final HostSummaryReader? summaries;
+  /// The group directory read model (`hostGroupSummaries`, `hostGroupDetails`).
+  final HostSummaryReader summaries;
 
   final FirebaseFunctions _functions;
 
@@ -93,61 +94,25 @@ class HostSavedAudienceRepository {
     }
 
     checkCurrent();
-    final directory = await summaries?.directory(organizerId);
+    await summaries.activatedDirectory(organizerId, 'groupSummaryVersion');
     checkCurrent();
-    if (directory?['groupSummaryVersion'] == 1) {
-      final page = await summaries!.page(
-        collection: 'hostGroupSummaries',
-        organizerId: organizerId,
-        orderField: byName ? 'searchName' : 'lastPreviewAtMillis',
-        descending: !byName,
-        queryKey: jsonEncode(['active', byName, isStatic]),
-        limit: limit,
-        equalities: {'status': 'active', 'isStatic': ?isStatic},
-        cursor: cursor,
-      );
-      checkCurrent();
-      return HostSavedAudienceSummaryPage(
-        audiences: page.documents
-            .map((doc) => HostSavedAudienceSummary.fromMap(doc['row'] as Map))
-            .toList(),
-        nextCursor: page.nextCursor,
-      );
-    }
-    if (cursor?.startsWith(HostSummaryCursor.prefix) ?? false) {
-      throw StateError('The group directory changed; refresh this list.');
-    }
-    // Preserve exhaustive contains search and global local sort before cutover.
-    final rows = <HostSavedAudienceSummary>[];
-    final cursors = <String>{};
-    String? legacyCursor;
-    do {
-      checkCurrent();
-      final page = await listSavedAudiences(
-        organizerId,
-        cursor: legacyCursor,
-        limit: ReadLimitPolicy.historyPage,
-      );
-      checkCurrent();
-      rows.addAll(page.audiences.map(HostSavedAudienceSummary.fromAudience));
-      legacyCursor = page.nextCursor;
-      if (legacyCursor != null &&
-          (rows.length >= 2500 || !cursors.add(legacyCursor))) {
-        throw StateError('Group directory could not be exhausted safely.');
-      }
-    } while (legacyCursor != null);
-    final visible =
-        rows
-            .where((row) => isStatic == null || row.isStatic == isStatic)
-            .toList()
-          ..sort(
-            (a, b) => byName
-                ? a.name.toLowerCase().compareTo(b.name.toLowerCase())
-                : (b.lastPreviewAt ?? DateTime(0)).compareTo(
-                    a.lastPreviewAt ?? DateTime(0),
-                  ),
-          );
-    return HostSavedAudienceSummaryPage(audiences: visible, nextCursor: null);
+    final page = await summaries.page(
+      collection: 'hostGroupSummaries',
+      organizerId: organizerId,
+      orderField: byName ? 'searchName' : 'lastPreviewAtMillis',
+      descending: !byName,
+      queryKey: jsonEncode(['active', byName, isStatic]),
+      limit: limit,
+      equalities: {'status': 'active', 'isStatic': ?isStatic},
+      cursor: cursor,
+    );
+    checkCurrent();
+    return HostSavedAudienceSummaryPage(
+      audiences: page.documents
+          .map((doc) => HostSavedAudienceSummary.fromMap(doc['row'] as Map))
+          .toList(),
+      nextCursor: page.nextCursor,
+    );
   }
 
   /// Load one active definition after the user selects its summary.
@@ -158,49 +123,22 @@ class HostSavedAudienceRepository {
     required bool Function() isCurrent,
   }) async {
     if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
-    final directory = await summaries?.directory(organizerId);
+    await summaries.activatedDirectory(organizerId, 'groupSummaryVersion');
     if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
-    if (directory?['groupSummaryVersion'] == 1) {
-      final data = await summaries!.document(
-        collection: 'hostGroupDetails',
-        organizerId: organizerId,
-        id: audienceId,
-      );
-      if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
-      if (data == null) throw StateError('Saved group is no longer available.');
-      final audience = HostSavedAudience.fromMap(data['row'] as Map);
-      if (audience.organizerId != organizerId ||
-          audience.audienceId != audienceId ||
-          audience.status != 'active') {
-        throw StateError('Saved group is no longer available.');
-      }
-      return audience;
+    final data = await summaries.document(
+      collection: 'hostGroupDetails',
+      organizerId: organizerId,
+      id: audienceId,
+    );
+    if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
+    if (data == null) throw StateError('Saved group is no longer available.');
+    final audience = HostSavedAudience.fromMap(data['row'] as Map);
+    if (audience.organizerId != organizerId ||
+        audience.audienceId != audienceId ||
+        audience.status != 'active') {
+      throw StateError('Saved group is no longer available.');
     }
-    String? cursor;
-    final seenCursors = <String>{};
-    var count = 0;
-    do {
-      if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
-      final page = await listSavedAudiences(
-        organizerId,
-        cursor: cursor,
-        limit: 50,
-      );
-      if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
-      for (final item in page.audiences) {
-        if (item.audienceId == audienceId &&
-            item.organizerId == organizerId &&
-            item.status == 'active') {
-          return item;
-        }
-      }
-      count += page.audiences.length;
-      cursor = page.nextCursor;
-      if (cursor != null && (count >= 2500 || !seenCursors.add(cursor))) {
-        throw StateError('Saved group directory could not be exhausted.');
-      }
-    } while (cursor != null);
-    throw StateError('Saved group is no longer available.');
+    return audience;
   }
 
   Future<HostSavedAudience> upsertSavedAudience({
