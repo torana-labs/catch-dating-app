@@ -39,6 +39,8 @@ export type {
   CatchBandSpacing,
   CatchBandWidth,
 } from "./components/CatchBand";
+export {CatchBandHeader} from "./components/CatchBandHeader";
+export type {CatchBandHeaderAlign, CatchBandHeaderDirection, CatchBandHeaderProps} from "./components/CatchBandHeader";
 export {catchFormatAccentOf, catchFormatOf} from "./components/palette";
 /** A Website v2 activity format: run, dinner, games, courts or nightsOut. */
 export type {Format as CatchFormat} from "./components/palette";
@@ -156,6 +158,8 @@ export {CatchErrorState} from "./components/CatchErrorState";
 export type {CatchErrorStateMode, CatchErrorStateProps} from "./components/CatchErrorState";
 export {CatchFactTile} from "./components/CatchFactTile";
 export type {CatchFactTileEmphasis, CatchFactTileNoteTone, CatchFactTileProps} from "./components/CatchFactTile";
+export {CatchFeatureTile} from "./components/CatchFeatureTile";
+export type {CatchFeatureTileProps} from "./components/CatchFeatureTile";
 export {CatchField} from "./components/CatchField";
 export type {
   CatchFieldInputProps,
