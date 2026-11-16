@@ -12,6 +12,7 @@ import {
   type CatchFormStepListStatus,
 } from "@catch/web-ui";
 import type {ReactNode} from "react";
+import {interpolateContent as fill} from "@content/interpolate";
 import {claimAccountLinkingErrorMessage} from "../../shared/auth/claimAccountLinking";
 import {salesDemoCopy, salesDemoFlowCopy} from "../../content/salesDemo";
 import {useEffect, useLayoutEffect, useState} from "react";
@@ -266,7 +267,7 @@ function DemoSessionView({controller}: {controller: Controller}) {
     <Module title={salesDemoCopy.nextSampleStep}>
       {!controller.fresh ? <Line>{salesDemoCopy.checkTheLatestSessionBeforeContinuing}</Line> : null}
       <Actions>
-        {retry ? <CatchButton label={`${salesDemoCopy.retry} ${salesDemoActionTitle(retry.action, retry.choice)}`}
+        {retry ? <CatchButton label={fill(salesDemoFlowCopy.retryAction, {action: salesDemoActionTitle(retry.action, retry.choice)})}
           onPressed={blocked ? null : () => act(retry.action, retry.choice)} size="md" /> :
           <DemoStepActions session={session} disabled={blocked} onAction={act} />}
         {available("requestAssistance") && !session.assistanceRequested && !retry ?

@@ -89,4 +89,6 @@ export const salesDemoFlowCopy = {
   completed: " Completed",
   inProgress: " In progress",
   verifiedAccount: "verified account",
+  /** salesDemoCopy.retry ("Retry:") before the step's action, as the button read before. */
+  retryAction: "Retry: {action}",
 } as const;
