@@ -1,0 +1,38 @@
+/*
+ * One story as a band (the playbook kit's story): the copy and the photo
+ * 64px apart, stacking below 840px. The avatar sits 14px from the name; the
+ * quote is a display-sm block quote with no indent; the metrics are three
+ * tiles across, 12px apart, one column below 840px.
+ */
+.copy,
+.media { min-width: 0; }
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: var(--catch-space-micro14);
+}
+
+.name {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro2);
+  min-width: 0;
+}
+
+.quote { margin: 0; }
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--catch-space-s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link { display: flex; }
+
+@container catch-page (width < 840px) {
+  .metrics { grid-template-columns: minmax(0, 1fr); }
+}
