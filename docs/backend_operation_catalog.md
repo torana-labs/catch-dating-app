@@ -150,16 +150,24 @@ public write.
 | P1 | Edge documents were the source of truth, but event-club parent projections relied only on callable updates or batch repair tools. | Fixed. `syncOrganizerMemberStats` recomputes `memberCount` from active membership edges, and `syncOrganizerNextEvent` recomputes `nextEventAt` / `nextEventLabel` from active future event documents. Event callables also refresh the next-event projection before returning. |
 | P0 | Historical events split attendee-facing venue text and coordinates across nullable legacy fields, so enforcing a required structured location in every Dart read would make unrepaired records unreadable. | Strict on new and edited writes, discovery, and self-check-in; compatibility-deferred for Dart deserialization only, so `Event.meetingLocation` stays nullable on reads. The historical-event repair is moot under wipe-and-reseed. |
 
-`getEventViewerState` (the website guest surface and older app builds; the
-Consumer app composes the same state from listeners) exposes the private account-scoped
-`readEventViewerStateSource`. It shares policy, schedule, membership, inventory and
-owned paid-admission readers in one read transaction. It keeps retained
-admission and attendance separate from present eligibility, never applies seat
-or identity plans, and returns unavailable for incomplete bounded sources.
-The website selects the guest adapter with `surface: guest`, observing owned
-roster/application/payment status without requiring a consumer profile. It never
-reserves inventory or grants approval; existing mutation owners revalidate each
-action. Native consumers retain their current adapter.
+`getEventViewerState` (app builds before the listener viewer, including the
+Host store build; the Consumer app composes the same state from listeners)
+exposes the private account-scoped `readEventViewerStateSource`. It shares
+policy, schedule, membership, inventory and owned paid-admission readers in one
+read transaction. It keeps retained admission and attendance separate from
+present eligibility, never applies seat or identity plans, and returns
+unavailable for incomplete bounded sources. It never reserves inventory or
+grants approval; existing mutation owners revalidate each action.
+
+The website's event page no longer calls it. A phone-verified guest's step
+comes from three listeners: `eventGuestEntries/{eventId}` (how a guest with no
+record of their own enters the published event, for a community member and
+for anyone else), the guest's own `guestEventStatuses/{eventId}_{uid}` row
+(booking, roster place, website or offer payment, application and offer
+invitation) and `guestBookingFacts/{uid}` (community membership). The browser
+decides the step in the order the retired `surface: guest` read used
+(`website/src/features/events/guestEventState.ts`) and closes the entry when
+the event starts or an offer invitation expires. Every command still decides.
 
 ## Cloud Functions Inventory
 
@@ -170,6 +178,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 
 | Function | Type | Initiator | Writes | Notes |
 |---|---|---|---|---|
+| `onGuestEventStatus*Written` (participations, attendees, guest payments, applications, offer invitations) and `onEventGuestEntry*Written` (events, organizers, application forms) | Firestore triggers | Website event page listeners | `guestEventStatuses/{eventId}_{uid}`, `eventGuestEntries/{eventId}` | Rebuild one guest's row from their own records and delete it when none remain; rebuild an event's entry from the event, its organizer and its application form and delete it when the event is unpublished; an event change outside booking counters also rebuilds its guests' rows. Unchanged documents are not rewritten. Guest-only get for rows; signed-in get for entries. |
 | `onEventChatDirectory*Written` (memberships, participations, attendees, rooms, events, users) | Firestore triggers | Consumer chat list listener | `eventChatDirectoryEntries/{eventId}_{uid}` | Rebuild one row (or every row of an event or person) from `readEventChatAccess`; delete it when access ends. Owner-only list under rules. |
 | `listEventChats` | Callable | Consumer builds before the chat directory listener | Bounded candidate directory over owned memberships, participations and linked attendees | UID-bound continuation; current admission per event; deleted-account fences; access metadata only. |
 | `getEventChatAccess` / `updateEventChatAccess` | Callable | Event chat access | Room availability, explicit participant memberships and replay receipts | Current canonical organizer/admission checks; claimed identity and phone verification for join; revision fences; no automatic admission, messages or card disclosure. |
@@ -184,7 +193,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `onEventApplicationApprovalNotification` / `onEventApprovalNotificationPreference` | Firestore triggers | Approval transition or guest preference change | Deterministic approval outbox and Operations work | One phone lane and one independent email lane per approval revision; current source, permission, organizer and identity rechecked before submission. |
 | `onEventApprovalNotificationMessage` / `retryEventApprovalNotifications` | Firestore trigger / five-minute scheduler | Durable approval work | Shared Operations leases, checkpoints, private dispatch proofs and account budgets | WhatsApp first, SMS only after confirmed technical failure; replaceable email transport. Unknown outcomes never authorize fallback. Provider settings default off. |
 | `onEventApprovalWhatsappReceipt` | Firestore trigger | Verified provider webhook queue | Approval outbox receipt and durable work wakeup | Requires signed ingress evidence and immutable attempt/endpoint/payload correlation. Email and SMS acceptance records submission only, not delivery. |
-| `getEventViewerState` | Callable | Website guest event page; Consumer builds before the listener viewer | No domain writes; canonical private viewer read source | Auth/App Check/rate limits; current grant/review/policy/inventory checks, independent retained admission/attendance, strict response and bounded incomplete-source rejection. |
+| `getEventViewerState` | Callable | App builds before the listener viewer (Consumer and the Host store build) | No domain writes; canonical private viewer read source | Auth/App Check/rate limits; current grant/review/policy/inventory checks, independent retained admission/attendance, strict response and bounded incomplete-source rejection. |
 | `addEventHostPhoto` / `listEventHostPhotos` / `deleteEventHostPhoto` | Callable | Host after-event photos and the guest after-event screen | `eventHostPhotos/{eventId}_{photoId}`, private Storage under `events/{eventId}/hostPhotos/{photoId}/`; deletes the staged `hostPhotoUploads` original | Organizer owners and managers stage a JPEG or PNG original (8 MB, after the event starts; Storage rules) and add it; the server re-encodes display and thumbnail JPEGs with no EXIF or location metadata, caps an event at 100 photos and replays an added photo. The list returns signed URLs without download tokens to the host team and to guests who checked in (an attended booking, or a ready runtime participant whose roster row is checked in); anyone else gets `access: none` and no photos. The host team removes a photo and its files. No download action, notification or retention sweep. `cleanUpStagedHostPhotosDaily` (daily scheduler) deletes staged originals older than 24 hours, which still carry EXIF and GPS when an add never ran. |
 | `listParticipantActivity` / `getParticipantActivity` | Callable | Own account form activity | No domain writes; bounded UID query and exact immutable response/version proof | Auth-derived account only, including email/account-only submissions. No profile claim, answers, private Host notes or admission inference. Subject/source-bound cursors advance over omitted rows. |
 | `listParticipantFormProfiles` / `getParticipantFormProfile` / `getParticipantFormPhoto` / `claimParticipantFormProfile` | Callable | Participant form profile review | Private proposals, users, intake, selected card pointers and claim receipts | Verified phone and exact response ownership; explicit review, revision checks, payload-bound replay and deletion/withdrawal checks. No event admission or public grant. |

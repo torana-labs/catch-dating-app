@@ -10,7 +10,7 @@ vi.mock("./PublicEventRegistration", () => ({PublicEventRegistration: ({mode}: {
 type Controller = Parameters<typeof GuestEventEntryView>[0]["controller"];
 function controller(action = "bookPaid"): Controller {
   return {user: {uid: "one", phoneNumber: "+919000000001"}, loading: false, error: false,
-    viewer: {guest: {action, publicFormId: "application", runtimeId: "runtime", expiresAtMillis: 9e12}},
+    viewer: {guest: {action, publicFormId: "application", runtimeId: "runtime"}},
     pending: false, refresh: vi.fn(), changePhone: vi.fn(), changeAccount: vi.fn(),
     phone: "", code: "", codeSent: false, recaptchaId: "test-phone", message: "",
     setPhone: vi.fn(), setCode: vi.fn(), submit: vi.fn(),
@@ -23,7 +23,7 @@ function view(c: Controller, startLabel: string | null = "Book now") {
 beforeEach(() => vi.clearAllMocks());
 afterEach(cleanup);
 
-it("keeps one checkout in place through status polling", () => {
+it("keeps one checkout in place through status changes", () => {
   const {rerender} = render(view(controller()));
   const actions = screen.getAllByRole("button", {name: "Book now"});
   expect(actions).toHaveLength(1);

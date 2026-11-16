@@ -200,5 +200,36 @@ describe("firestore.rules", () => {
       }));
       await assertFails(deleteDoc(doc(db, "externalEvents", "external-public")));
     });
+
+    it("lets a guest get an event's guest entry and only their own status", async () => {
+      const entry = {schemaVersion: 1, eventId: "event-1", organizerId: "club-1",
+        open: true, startAtMillis: 1, publicFormId: null,
+        registration: {guest: "bookPaid", member: "bookPaid"}, updatedAtMillis: 1};
+      const status = (uid) => ({schemaVersion: 1, eventId: "event-1", uid,
+        organizerId: "club-1", booking: "registered", ambiguous: false,
+        runtimeId: null, publicPaymentId: null, paymentRecoverable: false,
+        offerPaymentId: null, offerGrantId: null, offerExpiresAtMillis: null,
+        offerAdmissible: true, offerAmbiguous: false, applicationStatus: null,
+        updatedAtMillis: 1});
+      await seed(["eventGuestEntries", "event-1"], entry);
+      await seed(["guestEventStatuses", "event-1_guest-1"], status("guest-1"));
+      await seed(["guestEventStatuses", "event-1_guest-2"], status("guest-2"));
+      const guest = authedDb("guest-1");
+      await assertSucceeds(getDoc(doc(guest, "eventGuestEntries", "event-1")));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(),
+        "eventGuestEntries", "event-1")));
+      await assertFails(getDocs(collection(guest, "eventGuestEntries")));
+      await assertFails(setDoc(doc(guest, "eventGuestEntries", "event-1"), entry));
+      await assertSucceeds(getDoc(doc(guest, "guestEventStatuses", "event-1_guest-1")));
+      // A guest with no record of their own reads a missing row.
+      await assertSucceeds(getDoc(doc(guest, "guestEventStatuses", "event-2_guest-1")));
+      await assertFails(getDoc(doc(guest, "guestEventStatuses", "event-1_guest-2")));
+      await assertFails(getDocs(query(collection(guest, "guestEventStatuses"),
+        where("uid", "==", "guest-1"))));
+      await assertFails(setDoc(doc(guest, "guestEventStatuses", "event-1_guest-1"),
+        status("guest-1")));
+      await seed(["deletedUsers", "guest-1"], {deletedAt: Timestamp.now()});
+      await assertFails(getDoc(doc(guest, "guestEventStatuses", "event-1_guest-1")));
+    });
   });
 });

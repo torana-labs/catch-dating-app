@@ -4400,8 +4400,17 @@ projected by `decideOrganizerCommunityMembership`). It mirrors
 `evaluateHostMembershipEntitlement`; `contracts/parity/event_booking_viewer_cases.json`
 holds the cases both implementations must pass. A block between the guest and
 someone on the roster, the seat ledger's holds and invite-code validity stay
-command-time checks. The callable below keeps serving the website's guest
-surface and older app builds.
+command-time checks. The callable below keeps serving older app builds.
+
+The website's event page shows a phone-verified guest's step from listeners
+too: `eventGuestEntries/{eventId}` holds how a guest with no record of their
+own enters a published event (free registration, paid booking, the
+application form, or not here) for a community member and for anyone else,
+and `guestEventStatuses/{eventId}_{uid}` holds what the guest's own booking,
+roster row, website or offer payment, application and offer invitation say.
+Triggers rebuild both from current records; the browser combines them with
+`guestBookingFacts/{uid}` and decides the step, closing it at the event's start
+or an invitation's expiry. The `surface: guest` adapter is retired.
 
 `getEventViewerState` is an Auth/App-Check-protected, rate-limited callable over
 `readEventViewerStateSource`. Its strict request accepts no subject UID or

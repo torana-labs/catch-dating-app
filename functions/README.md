@@ -243,7 +243,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `listEventChatParticipants` | `src/chats/listEventChatParticipants.ts` | Current joined/claimed participant names and roles; account-bound cursor and bidirectional block filtering |
 | `getEventChatProfile` / `getEventChatProfileSharing` / `updateEventChatProfileSharing` | `src/chats/eventChatProfiles.ts` | Private sharing choices and current admission-protected participant mini profiles; only explicitly selected core and same-organizer applicant fields |
 | `listParticipantMessagingPreferences` / `withdrawParticipantMessagingPermission` | `src/messaging/participantMessagingPreferences.ts` | Own-account paginated WhatsApp permission reads and sender-specific idempotent withdrawals; preserves other senders and SMS |
-| `getEventViewerState` | `src/events/eventViewerState.ts` | Auth-derived private current eligibility and independent admission/attendance facts; shared canonical readers, bounded source queries, no seat or identity writes |
+| `getEventViewerState` | `src/events/eventViewerState.ts` | Auth-derived private current eligibility and independent admission/attendance facts for app builds before the listener viewer; shared canonical readers, bounded source queries, no seat or identity writes |
 | `listParticipantActivity` / `getParticipantActivity` | `src/profiles/participantActivity.ts` | Auth-derived own form submission metadata, exact source/version/deletion proof and bounded subject-bound pagination; no profile claim or admission inference |
 | `listParticipantFormProfiles` / `getParticipantFormProfile` / `getParticipantFormPhoto` / `claimParticipantFormProfile` | `src/profiles/` | Verified owner-only form profile directory, designated-answer review, metadata-free private photo preview, and explicit revision-fenced claim; no event admission or sharing grant |
 | `createOrganizerFormAssetIntent` / `finalizeOrganizerFormAsset` | `src/organizers/organizerFormAssets.ts` | Authorize and finalize form/version/question-scoped respondent uploads without exposing raw Storage authority |
@@ -535,6 +535,14 @@ enter previews.
 | `onEventChatDirectoryUserWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds a person's chat directory rows when their profile claim or deletion changes |
 | `onEventChatSignalMembershipWritten` | `src/chatSignals/eventChatSignals.ts` | Not yet described. |
 | `onEventChatSignalRoomWritten` | `src/chatSignals/eventChatSignals.ts` | Not yet described. |
+| `onEventGuestEntryEventWritten` | `src/guestEvents/triggers.ts` | Rebuilds the event's `eventGuestEntries` document and its guests' `guestEventStatuses` rows when anything besides booking counters changes |
+| `onEventGuestEntryFormWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest entry of the event an application form targets when the form is published, paused or retargeted |
+| `onEventGuestEntryOrganizerWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest entries of an organizer's published events when its visibility or public page changes |
+| `onGuestEventStatusApplicationWritten` | `src/guestEvents/triggers.ts` | Rebuilds the applicant's `guestEventStatuses` row when an event application changes |
+| `onGuestEventStatusAttendeeWritten` | `src/guestEvents/triggers.ts` | Rebuilds the linked guest's `guestEventStatuses` row when a roster row's link, source or status changes |
+| `onGuestEventStatusOfferRecipientWritten` | `src/guestEvents/triggers.ts` | Rebuilds the recipient's `guestEventStatuses` row when an offer invitation changes |
+| `onGuestEventStatusParticipationWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest's `guestEventStatuses` row when their Catch booking status changes |
+| `onGuestEventStatusPaymentWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest's `guestEventStatuses` row when a website or offer payment changes |
 | `onProgramGuestWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a guest's phone or household changes. |
 | `onProgramHouseholdWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a household's primary phone changes. |
 | `onProgramWhatsappInboundMessageCreated` | `src/programs/programWhatsapp/inboundTrigger.ts` | Runs the wedding assistant (handleProgramWhatsappInbound) for each stored inbound guest message; replies through sendProgramServiceReply or passes the thread to the planner. |

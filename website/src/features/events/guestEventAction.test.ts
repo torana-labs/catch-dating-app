@@ -2,7 +2,7 @@ import {expect, it} from "vitest";
 import {guestEventAction as action, type GuestEventState} from "./guestEventAction";
 const guest = (change: Partial<GuestEventState>): GuestEventState => ({
   action: "registered", publicFormId: null, applicationStatus: null, offerGrantId: null,
-  publicPaymentId: null, runtimeId: null, attendeeId: null, expiresAtMillis: 9e12,
+  publicPaymentId: null, runtimeId: null,
   offerPaymentId: null, ...change,
 });
 it.each([
