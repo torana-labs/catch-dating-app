@@ -1,0 +1,170 @@
+{
+  "$schema": "../playbookPage.schema.json",
+  "id": "host_run_clubs",
+  "route": "host_run_clubs",
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [{"label": "For hosts", "to": {"route": "host"}}],
+      "current": "Run and walk clubs"
+    }
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "coral",
+      "kicker": "{{brand.name}} for run clubs · Free runs stay free",
+      "title": "Every runner in a pace group before Sunday.",
+      "lead": "Sign-ups, pace pods, a first hello at the start line and next week’s run already booked. Without the 200-message WhatsApp thread.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host", "anchor": "start"}, "emphasis": "primary"},
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run a run club and have a question about hosting on {{brand.name}}."},
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {
+        "label": "Running several chapters or a brand-partner series? Ask for a walkthrough",
+        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run several run club chapters and would like a walkthrough."}
+      },
+      "chip": {
+        "title": "Sunday Social Run",
+        "rows": [
+          {"label": "Booked", "value": "34"},
+          {"label": "New this week", "value": "9"},
+          {"label": "In a pod", "value": "32"}
+        ]
+      },
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Pace pods",
+          "subtitle": "Carter Road Social Run · Sun 8 Nov",
+          "stats": [
+            {"value": "12", "label": "runners"},
+            {"value": "3", "label": "pods"},
+            {"value": "2", "label": "no pod yet"}
+          ],
+          "rows": [
+            {"title": "Chatty", "detail": "Around 7:30 a km · Dev, Ira and 2 more", "tag": "4 runners"},
+            {"title": "Steady", "detail": "Around 6:30 a km · Meher, Tara and 1 more", "tag": "3 runners"},
+            {"title": "Quick", "detail": "Around 5:30 a km · Rhea, Arjun and 1 more", "tag": "3 runners"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "sound-familiar",
+      "ground": "white",
+      "kicker": "Sound familiar?",
+      "title": "Running is the easy part.",
+      "columns": 3,
+      "items": [
+        {
+          "title": "The Saturday-night sign-up thread",
+          "body": "“Is there space?” “Can I bring a friend?” “What pace is the group?” Two hundred messages for one run.",
+          "fix": "One page with spots left, pace on booking, and a waitlist that fills itself."
+        },
+        {
+          "title": "Newcomers who run alone and never come back",
+          "body": "The regulars run off together. The first-timer ends up at the back, on their own.",
+          "fix": "Pace pods of six to eight, and a first hello at the start line."
+        },
+        {
+          "title": "No-shows you find at the start line",
+          "body": "Forty said yes, twenty-two turned up, and the café is holding forty coffees.",
+          "fix": "Reminders on the day, upfront payment for paid runs, and a clear count."
+        }
+      ]
+    },
+    {
+      "type": "timeline",
+      "id": "run-morning",
+      "ground": "ink",
+      "kicker": "A run on {{brand.name}}",
+      "title": "From Thursday’s sign-ups to next Sunday.",
+      "steps": [
+        {"time": "Thursday", "title": "Pace pods, set before Sunday", "body": "Every booking brings a pace. {{brand.name}} builds pods of six to eight so no pod is all strangers."},
+        {"time": "6:20 AM", "title": "Check in, then pocket the phone", "body": "QR or self check-in at the meeting point."},
+        {"time": "6:30 AM", "title": "A first hello at the start line", "body": "Each pod gets one question to answer before they set off."},
+        {"time": "7:15 AM", "title": "Nobody left on the road", "body": "You see who is back at the finish."},
+        {"time": "Sunday", "title": "The next run, already easier", "body": "Photos and a one-tap “same time next week?”. Anyone who asked for a steadier pace starts in a steadier pod."}
+      ],
+      "media": {"kind": "capture", "slot": "host-formats-pods"}
+    },
+    {
+      "type": "checklist",
+      "id": "checklist",
+      "ground": "paper",
+      "kicker": "Buyer’s checklist",
+      "title": "What to look for in a run club app.",
+      "lead": "Whatever you choose, check these eight things. {{brand.name}} does all of them.",
+      "items": [
+        {"title": "Free runs stay free", "body": "No fee on runs you don’t charge for."},
+        {"title": "Pace groups built for you", "body": "From the pace each runner books with."},
+        {"title": "Check-in at the meeting point", "body": "QR or self check-in, then phones away."},
+        {"title": "Paid runs in rupees, by UPI", "body": "For coached sessions, races and partner runs."},
+        {"title": "Help for newcomers", "body": "A pod and a first hello, not the back of the pack."},
+        {"title": "One record per runner", "body": "Every run they’ve done with you, in one place."},
+        {"title": "Links for partners and posts", "body": "See which café, brand or post brought runners in."},
+        {"title": "More than runs", "body": "Post-run brunches, socials and quizzes on the same page."}
+      ]
+    },
+    {
+      "type": "pricing",
+      "id": "pricing",
+      "ground": "ink",
+      "kicker": "Pricing for run clubs",
+      "price": "₹0",
+      "priceNote": "for free runs, every week. 5% on paid runs, never more than ₹10,000 in a 30-day billing cycle.",
+      "lead": "Free for 30 days from your first event. Payment gateway fees are separate.",
+      "examples": [
+        {"title": "A free Sunday social run, 40 runners", "value": "₹0", "body": "Every week, for as long as it’s free."},
+        {"title": "A coached interval session, 20 runners at ₹300", "value": "₹300 a session", "body": "5% of ₹6,000, paid when runners book."},
+        {"title": "A monthly brand-partner 10K, 150 runners at ₹500", "value": "₹3,750 a race", "body": "5% of ₹75,000. The fee never passes ₹10,000 in a billing cycle."}
+      ],
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host", "anchor": "start"}, "emphasis": "primary"},
+        {"label": "See full pricing", "to": {"route": "host", "anchor": "pricing"}, "emphasis": "secondary"}
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Run club questions",
+      "title": "What run club leads ask us.",
+      "items": [
+        {"question": "Can my free runs stay free?", "answer": "Yes. {{brand.name}} charges nothing on runs you don’t charge for, every week. The 5% fee applies only to paid tickets, and never passes ₹10,000 in a 30-day billing cycle."},
+        {"question": "Do runners need to download an app?", "answer": "No. Runners book on your page and check in at the meeting point. Live moments open in their phone’s browser."},
+        {"question": "Can we keep our WhatsApp group?", "answer": "Yes, and most clubs do. Keep chatting there and post your {{brand.name}} link for sign-ups, payments and pods."},
+        {"question": "How are pace groups made?", "answer": "Every booking brings a pace. {{brand.name}} builds pods of six to eight at a similar pace and spreads newcomers so no pod is all strangers. You can move anyone before the run."},
+        {"question": "Can I charge for some runs and not others?", "answer": "Yes. Each event has its own price, so a free social run and a paid coached session can sit side by side."},
+        {"question": "Can I bring my runners across from another tool?", "answer": "Yes. Import your list from any tool. Nothing changes for runners until the morning of the run."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "yellow",
+      "kicker": "Bring your club across in an afternoon",
+      "title": "Your next run, without the thread.",
+      "lead": "Start the free trial, or message us on WhatsApp and we’ll send you the run club setup guide.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host", "anchor": "start"}, "emphasis": "primary"},
+        {
+          "label": "Get the setup guide on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, please send me the run club setup guide."},
+          "emphasis": "secondary"
+        }
+      ],
+      "leadForm": {"id": "run_club_setup_guide", "label": "Your WhatsApp number", "submitLabel": "Send the guide"},
+      "storeBadges": true,
+      "media": {"kind": "capture", "slot": "guest-explore"}
+    }
+  ]
+}
