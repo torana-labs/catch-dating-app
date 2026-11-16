@@ -91,7 +91,8 @@ function ContinuationWorkspace({continuationId, api, auth}: {
       setChallenge(null); setCode(""); setAuthError(""); await auth.signOut?.();
     }}>{continuationCopy.signOut}</Button> : null}
   </>;
-  return <><PublicSiteHeader /><ClaimFlowMain>
+  // Finishing a demo setup is a one-job flow: the host bar without the footer's help band.
+  return <><PublicSiteHeader variant="host" /><ClaimFlowMain>
     <EventRuntimePanel kicker={continuationCopy.kicker} title={continuationCopy.title}
       body={continuationCopy.body}>
       {!validId ? <p>{continuationCopy.invalidLink}</p> : !c.authReady ?
@@ -133,7 +134,7 @@ function ContinuationWorkspace({continuationId, api, auth}: {
         </>}
       {c.notice || authError ? <FormStatus status={{tone: "is-error", message: c.notice || authError}} /> : null}
     </EventRuntimePanel>
-  </ClaimFlowMain><PublicSiteFooter /></>;
+  </ClaimFlowMain><PublicSiteFooter helpBand={false} variant="host" /></>;
 }
 
 function ContinuationClaim({view, email, phone}: {

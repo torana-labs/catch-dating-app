@@ -27,6 +27,7 @@ import {assertOrganizerVisibilityDecisionAllowed} from "./supplyVisibilityPolicy
 import {newSalesAccount} from "./sales/account";
 import type {SalesActivity, SalesOpportunity, SalesTask} from "./sales/types";
 import {growthFactsCollection, listingChannel, newGrowthFacts} from "../growth/organizerGrowthFacts";
+import {DRAFT_TTL_DAYS} from "../instantDrafts/model";
 
 // Ops approve listings and events; claims stay the owner's (one of Admin's
 // three jobs: owner, sales associate, ops and support). Approving also opens
@@ -66,6 +67,8 @@ interface StoredRequest {
   status: string;
   approval: unknown;
   request: {origin: {kind: string; id: string} | null; submittedAt?: string};
+  /** Present only on a website instant draft request (supplyIntakeRequests.instantDraft). */
+  instantDraft?: unknown;
 }
 
 /** One approval per listing, whoever approves it and however often. */
@@ -91,6 +94,12 @@ export interface ListingApprover {
   checklist: ListingDecisionChecklist;
   /** Opens the Sales activity note: "Listing approved", "Listing auto-published". */
   activityLead: string;
+  /**
+   * False when no person approves (the instant draft worker): the draft then
+   * opens no Sales account, opportunity or tasks owned by a pseudo-user.
+   * Defaults to true.
+   */
+  salesRecords?: boolean;
 }
 
 /**
@@ -101,6 +110,12 @@ export interface ListingApprover {
  * organizer's Sales account, opportunity, review and claim-invite tasks, and
  * an activity attributed to the request. Indexing and app discovery stay
  * separate decisions, made after the organizer is verified.
+ *
+ * A listing from the website's instant draft tool never publishes before
+ * claim (owner decision, 16 Nov 2026): approving it, by staff or by the
+ * instant draft worker, saves the same organizer as a private, unpublished,
+ * claimable draft with a held review decision. Its imported events stay
+ * blocked (organizer_page_unpublished) until the claimed owner publishes.
  */
 export async function adminApproveOrganizerListingHandler(
   request: CallableRequest<unknown>,
@@ -149,6 +164,7 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
   let organizerId = "";
   let salesOwnerUid = "";
   let created = false;
+  let publishStatus: "published" | "draft" = "published";
 
   await db.runTransaction(async (tx) => {
     const workItemSnap = await tx.get(workItemRef);
@@ -163,6 +179,11 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
     const requestRef = db.collection(supplyIntakeCollections.requests).doc(listing.requestId);
     const [receiptSnap, requestSnap] = await Promise.all([tx.get(receiptRef), tx.get(requestRef)]);
     const stored = requestSnap.data() as StoredRequest | undefined;
+    const draftForClaim = stored?.instantDraft !== undefined && stored.instantDraft !== null;
+    publishStatus = draftForClaim ? "draft" : "published";
+    if (draftForClaim && recordValue(recordValue(stored?.instantDraft)?.outcome)?.state === "expired") {
+      throw new HttpsError("failed-precondition", "This instant draft expired unclaimed. Ask the organizer to send the link again.");
+    }
     if (receiptSnap.exists) {
       // The request's approval replays an identical approval and refuses a different one.
       const receipt = receiptSnap.data() ?? {};
@@ -191,7 +212,7 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
     const timestamp = deps.serverTimestamp();
     const now = deps.now().toISOString();
     const organizer = buildListingOrganizer({data, listing, market, adminUid: adminContext.uid, timestamp,
-      checkedAt: admin.firestore.Timestamp.fromDate(new Date(now))});
+      checkedAt: admin.firestore.Timestamp.fromDate(new Date(now)), publishStatus});
     assertOrganizerPublicContent(organizer, "Approving this listing");
     organizer.adminSearch = buildOrganizerAdminSearchProjection(organizerId, organizer, timestamp,
       "adminApproveOrganizerListing") as never;
@@ -219,28 +240,38 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
       reviewedByUid: adminContext.uid, reviewedAt: timestamp as never, updatedAt: timestamp as never,
     };
     tx.create(receiptRef, receipt);
-    const decision: OrganizerIntakeReviewDecisionDocument = {
+    const decision: OrganizerIntakeReviewDecisionDocument = draftForClaim ? {
+      schemaVersion: 1, entityId: organizerId, decision: "hold", decisionStatus: "held",
+      publishStatus: "draft", indexStatus: "noindex", appVisibility: "hidden", checklist: approver.checklist,
+      note: data.note, reviewedByUid: adminContext.uid, reviewedAt: timestamp as never, updatedAt: timestamp as never,
+      projectionState: "not_projectable",
+    } : {
       schemaVersion: 1, entityId: organizerId, decision: "approve_public", decisionStatus: "approved_public",
       publishStatus: "published", indexStatus: "noindex", appVisibility: "hidden", checklist: approver.checklist,
       note: data.note, reviewedByUid: adminContext.uid, reviewedAt: timestamp as never, updatedAt: timestamp as never,
       projectionState: "pending_static_generation",
     };
     tx.create(db.collection(reviewDecisionCollection).doc(organizerId), decision);
+    // An instant draft nobody claims is removed 30 days after it was saved (expireInstantDrafts).
     tx.update(requestRef, {approval: {approvalId, organizerId, approvedByUid: adminContext.uid, approvedAt: now,
-      materialHash, salesOwnerUid}, updatedAt: now});
+      materialHash, salesOwnerUid}, ...(draftForClaim ? {instantDraft: {...recordValue(stored.instantDraft),
+      expiresAt: new Date(Date.parse(now) + DRAFT_TTL_DAYS * 24 * 60 * 60 * 1000).toISOString()}} : {}),
+    updatedAt: now});
     if (intentRef && intentSnap?.data()?.status === "needs_identity_review") {
       const intent = intentSnap.data() ?? {};
       tx.update(intentRef, {revision: Number(intent.revision) + 1, status: "linked", organizerId,
         linkedAt: admin.firestore.Timestamp.fromDate(new Date(now)), linkedBy: adminContext.uid,
         linkRequestId: approvalId, updatedAt: admin.firestore.Timestamp.fromDate(new Date(now))});
     }
-    writeSalesRecords(tx, db, {approvalId, organizerId, organizer, ownerUid: salesOwnerUid,
-      actorUid: adminContext.uid, now, listing, origin: origin?.kind ?? "none", name: data.name,
-      activityLead: approver.activityLead});
+    if (approver.salesRecords !== false) {
+      writeSalesRecords(tx, db, {approvalId, organizerId, organizer, ownerUid: salesOwnerUid,
+        actorUid: adminContext.uid, now, listing, origin: salesOrigin(origin?.kind), name: data.name,
+        activityLead: approver.activityLead, draftForClaim});
+    }
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: approver.auditAction, targetPath: organizerRef.path, request, before: {},
       after: {organizerId, approvalId, listingId: listing.listingId, requestId: listing.requestId,
-        publicSlug: data.publicSlug, publishStatus: "published", indexStatus: "noindex",
+        publicSlug: data.publicSlug, publishStatus, indexStatus: "noindex",
         appVisibility: "hidden", claimState: "unclaimed", salesOwnerUid},
       note: data.note, serverTimestamp: deps.serverTimestamp,
     });
@@ -248,12 +279,21 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
   });
 
   return {approvalId, organizerId, organizerPath: `organizers/${organizerId}`, created,
-    publishStatus: "published", indexStatus: "noindex", appVisibility: "hidden", claimState: "unclaimed", salesOwnerUid};
+    publishStatus, indexStatus: "noindex", appVisibility: "hidden", claimState: "unclaimed", salesOwnerUid};
+}
+
+type SalesOrigin = "admin_nomination" | "sales_inbound_intent" | "message_nomination" | "discovery_run" | "none";
+
+/** The Sales activity names only the front doors its contract lists; an instant draft reads as none. */
+function salesOrigin(kind: string | undefined): SalesOrigin {
+  return kind === "admin_nomination" || kind === "sales_inbound_intent" || kind === "message_nomination" ||
+    kind === "discovery_run" ? kind : "none";
 }
 
 function writeSalesRecords(tx: FirebaseFirestore.Transaction, db: FirebaseFirestore.Firestore, input: {
   approvalId: string; organizerId: string; organizer: OrganizerDocument; ownerUid: string; actorUid: string;
-  now: string; listing: ReviewedListing; origin: string; name: string; activityLead: string;
+  now: string; listing: ReviewedListing; origin: SalesOrigin; name: string; activityLead: string;
+  draftForClaim: boolean;
 }): void {
   const {approvalId, organizerId, ownerUid, actorUid, now} = input;
   const account = {...newSalesAccount(organizerId, input.organizer as unknown as Record<string, unknown>,
@@ -269,7 +309,9 @@ function writeSalesRecords(tx: FirebaseFirestore.Transaction, db: FirebaseFirest
     schemaVersion: 1, classification: "sales_private", taskId: `${approvalId}_${suffix}`, organizerId,
     contactId: null, revision: 1, kind, title, dueAt: null, ownerUid, status: "open",
     createdAt: now, updatedAt: now, updatedBy: actorUid});
-  for (const entry of [task("review", "research", "Check the published listing and its events"),
+  const reviewTitle = input.draftForClaim ? "Check the private draft and its events" :
+    "Check the published listing and its events";
+  for (const entry of [task("review", "research", reviewTitle),
     task("claim", "follow_up", `Invite ${input.name} to claim their page`)]) {
     tx.create(db.collection("salesTasks").doc(entry.taskId), entry);
   }
@@ -277,9 +319,9 @@ function writeSalesRecords(tx: FirebaseFirestore.Transaction, db: FirebaseFirest
   const activity: SalesActivity = {schemaVersion: 1, classification: "sales_private", activityId, organizerId,
     opportunityId, type: "listing_approved", channel: null, outcome: null, providerConfirmed: false, occurredAt: now,
     recordedAt: now, note: `${input.activityLead} from ${frontDoorLabel(input.listing)}. ` +
-      "Published as an unclaimed page, not yet indexed.", actorUid,
-    source: {kind: "supply_intake", requestId: input.listing.requestId, approvalId,
-      origin: input.origin as "admin_nomination" | "sales_inbound_intent" | "message_nomination" | "discovery_run" | "none"}};
+      (input.draftForClaim ? "Saved as a private draft that goes live only after its organizer claims it." :
+        "Published as an unclaimed page, not yet indexed."), actorUid,
+    source: {kind: "supply_intake", requestId: input.listing.requestId, approvalId, origin: input.origin}};
   tx.create(db.collection("salesActivities").doc(activityId), activity);
 }
 
@@ -289,10 +331,11 @@ function frontDoorLabel(listing: ReviewedListing): string {
   return listing.submittedBy.role === "partner" ? "a partner nomination" : "an associate nomination";
 }
 
-function buildListingOrganizer({data, listing, market, adminUid, timestamp, checkedAt}: {
+function buildListingOrganizer({data, listing, market, adminUid, timestamp, checkedAt, publishStatus}: {
   data: ListingApprovalInput; listing: ReviewedListing;
   market: NonNullable<ReturnType<typeof marketForIdOrAlias>>; adminUid: string;
   timestamp: FirebaseFirestore.FieldValue; checkedAt: FirebaseFirestore.Timestamp;
+  publishStatus: "published" | "draft";
 }): OrganizerDocument {
   const formats = listing.categories.slice(0, 12);
   const sources = listing.links.slice(0, 8);
@@ -314,7 +357,7 @@ function buildListingOrganizer({data, listing, market, adminUid, timestamp, chec
       claimedAt: null, claimedByUid: null},
     claim: {state: "unclaimed", claimHref: null, lastClaimRequestId: null},
     publicPage: {slug: data.publicSlug, citySlug: market.slug, canonicalPath: `/organizers/${data.publicSlug}/`,
-      publishStatus: "published", indexStatus: "noindex", robots: "noindex, follow",
+      publishStatus, indexStatus: "noindex", robots: "noindex, follow",
       seoTitle: null, seoDescription: null, lastRenderedAt: null},
     provenance: {origin: "import", sourceConfidence: "medium", verificationStatus: "sourceBacked",
       lastVerifiedAt: checkedAt as never},

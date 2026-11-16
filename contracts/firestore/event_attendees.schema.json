@@ -91,7 +91,19 @@
       "type": "integer",
       "minimum": 1,
       "maximum": 20,
-      "description": "Places this guest-list row holds at the door: the guest and anyone arriving on the same booking. Written only by Host roster import and walk-ins; Catch bookings hold one place. Missing values read as 1."
+      "description": "Places this guest-list row holds at the door: the guest and anyone arriving on the same booking. Written by Host roster import, walk-ins and multi-place public checkout (the paid booking's placeCount, one pass for the party); other Catch bookings hold one place. Missing values read as 1."
+    },
+    "guestNames": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 19,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80,
+        "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+      },
+      "description": "Names of the other people arriving on this row's booking, as the booker gave them: displayName plus guestNames is the party, so the guest list can read 'Riya + Arjun, Meera'. Private roster contact data like displayName; written only by multi-place public checkout, with partySize, and never merged into organizer contacts. Missing means no named guests."
     },
     "revenueAmountMinor": {
       "type": ["integer", "null"],

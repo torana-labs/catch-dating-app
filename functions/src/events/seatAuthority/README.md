@@ -87,3 +87,12 @@ invitation invalidation commit together. Account deletion releases pair holds
 before retiring identity proof, and transactional deletion guards prevent new
 holds or bookings during cleanup. These source changes do not activate a
 production migration or release gate.
+
+Multi-place public checkout keeps one reservation per canonical identity and
+records the booking's place count on it as `places` (missing means 1). A
+checkout hold takes `places` seats from the shared inventory, confirmation
+moves all of them into `occupied`, and every release (expiry, refund,
+cancellation, host status change or batch transfer) returns the count the
+reservation recorded. Ordinary reserve, batch import and walk-ins always book
+one place, and single-place requests keep their original receipt hashes so
+existing receipts replay. Cross Paths temporary holds are always one place.

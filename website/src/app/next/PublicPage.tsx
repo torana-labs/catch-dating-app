@@ -12,6 +12,7 @@ import {usePublicHostListings} from "../../features/organizers/usePublicEventLis
 import {getHostListingRouteForPath} from "../../features/organizers/routing";
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../../features/events/eventDetailModel";
 import {useEventPage} from "../../features/events/eventPageContext";
+import {eventBreadcrumbJsonLd, eventBreadcrumbs} from "../../features/events/eventBreadcrumbs";
 import {publishedLegalContent} from "../../content/legal";
 import type {PublicContact} from "../../content/publicContact";
 import {MarketingConsentBanner} from "../../features/marketing/MarketingConsentBanner";
@@ -63,8 +64,12 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
       description: event.summary, url: `${brand.web.origin}${event.path}`,
       location: {"@type": "Place", name: event.location},
       organizer: {"@type": "Organization", name: event.listing.name, url: `${brand.web.origin}${event.listing.path}`}};
-    content = event && eventRoute?.page.eventId === event.eventId ?
-      <Event listing={event.listing} mapImageUrl={eventRoute.mapImageUrl} page={eventRoute.page} /> : <Missing />;
+    const shown = event && eventRoute?.page.eventId === event.eventId ? eventRoute.page : null;
+    // The breadcrumb the page draws, stated once more for search: What's on, the open city, the event.
+    if (structured !== null && shown) structured = [structured, eventBreadcrumbJsonLd(
+      eventBreadcrumbs({city: shown.organizer.city, title: shown.item.event.title}), {origin: brand.web.origin, path: shown.path})];
+    content = event && shown ?
+      <Event listing={event.listing} mapImageUrl={eventRoute!.mapImageUrl} page={shown} /> : <Missing />;
   } else if (page === "claim") {
     const state = claimRouteStateForLocation(location);
     state.listing = listings.find(item => item.id === state.lookup || item.slug === state.lookup || item.path === state.lookup || item.legacyPaths?.includes(state.lookup ?? "")) ?? null;
