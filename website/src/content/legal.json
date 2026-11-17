@@ -30,7 +30,7 @@
           ],
           "bullets": [
             "Account and profile information, including name, contact details, age confirmation, city, photos, prompts, preferences, reviews, messages, support requests, reports, and claim requests.",
-            "Event and interaction information, including registrations, waitlists, attendance, check-in, the people you pick to stay in touch with after an event and the people you have picked each other with, blocks, reports, host actions, saved organizers, and aggregate event outcomes. If you used the earlier profile deck, we also hold the likes and passes you made there until your account is deleted; we no longer collect them.",
+            "Event and interaction information, including registrations, waitlists, attendance, check-in, the people you pick to stay in touch with after an event and whether they pick you too, blocks, reports, host actions, saved organizers, and aggregate event outcomes. If you used the earlier version of the app, where you could like or pass on people's profiles, we still hold the likes and passes you made there until your account is deleted. We no longer collect them, but they still apply: an earlier like counts as a pick if that person picks you, and people you liked or passed are not shown to you to pick again.",
             "Payment information for paid bookings, including the amount, currency, payment and refund status, and the order, payment, and refund references from Razorpay. Card, UPI, and bank details are entered in Razorpay's checkout; {{brand.name}} does not see or store them.",
             "Organiser payment connections. When an organiser connects Razorpay, we store their Razorpay account ID and keep their access credentials encrypted in a separate secrets store. They are used only to run that organiser's checkouts, refunds, and payment updates.",
             "Cross Paths information, including your private global and per-event visibility choices, the event connected to a suggestion or invitation, invitation responses, and safety or eligibility state needed to prevent an unsafe or ineligible introduction.",
@@ -51,8 +51,8 @@
         {
           "heading": "Public and private information",
           "paragraphs": [
-            "Organizer and event pages, reviews, organizer responses, and content labelled public may be visible to anyone and indexed by search engines. The people you pick are not told unless they pick you too; if you pick each other, you can message each other. Hosts receive operational and aggregate information, such as how many pairs picked each other; they should not receive your individual picks unless a feature clearly says so.",
-            "Cross Paths is not a public attendee list. If you separately enable Cross Paths for your account and for a selected event you are attending, {{brand.name}} may show your public profile and your intention to attend that event to a limited number of other members attending or able to book that event who have also opted in, and whose stated gender and age preferences match yours both ways, and may let them send a limited event invitation. You can withdraw future visibility through the relevant controls; accepted plans, safety records, and earlier processing may remain where needed to operate the feature, protect members, or comply with law."
+            "Organizer and event pages, reviews, organizer responses, and content labelled public may be visible to anyone and indexed by search engines. For 24 hours after an event you checked in to, if you have a complete profile, other guests who checked in and have a complete profile can see your public profile so they can pick you to stay in touch, and you can see theirs. You only see, and are only shown to, people whose gender and age fit the preferences you set and whose own preferences fit your gender and age. The people you pick are not told unless they pick you too; if you pick each other, you can message each other. Hosts receive operational and aggregate information, such as how many pairs picked each other; they should not receive your individual picks unless a feature clearly says so.",
+            "Cross Paths is not a public attendee list. If you turn on Cross Paths for your account and for a selected event you have booked, {{brand.name}} may show your public profile, and that you are going to that event, to other people with a complete profile who have booked or can still book that event. You are only shown to people whose gender and age fit the preferences you set and whose own preferences fit your gender and age. Someone who sees you can send you a limited invitation to that event only if they have turned on Cross Paths too; if you accept, you share a plan for the event and can message each other. You can withdraw future visibility through the relevant controls; accepted plans, safety records, and earlier processing may remain where needed to operate the feature, protect people, or comply with law."
           ]
         },
         {
@@ -61,7 +61,7 @@
             "We may share data with service providers supporting hosting, databases, authentication, storage, analytics, crash reporting, communications, moderation, maps, search, and security; with an organizer when you request an organizer-operated service; when required by law or needed to protect people; during a business reorganization; or at your direction. We do not sell personal data for money.",
             "Razorpay processes payments for paid bookings. For a paid booking, we send Razorpay the order amount and a booking reference, and the organiser who sells the ticket receives your booking, the amount you paid, and the details they need to run the event and handle refunds. The payment details you enter in Razorpay's checkout go to Razorpay under its own privacy policy.",
             "Advertising partners. We advertise {{brand.name}} on Google (Google Ads and Google Analytics) and Meta (Facebook and Instagram) and measure which ads work. With your marketing choice on our website, their tags record the pages and booking steps you reach. When you book an event, create an account, or set up as a host, we may send Google and Meta a record of that action (its type, value, event category, an event reference and the ad-click identifiers saved with it) together with your phone number, email address, first name and city in hashed form. Hashing scrambles each value one way before it leaves us, but it is not anonymous: Google and Meta compare it with their own account data to link the action to an ad you saw. We may also share hashed contact lists of people who booked or host on {{brand.name}}, so they can find people with similar interests and avoid showing our ads to existing customers.",
-            "We never share your gender, age, photos, prompts, messages, the people you picked or who picked you, your preferences, or Cross Paths activity with advertisers. You can withdraw your website marketing choice at any time through Privacy choices, and you can ask us to stop sending your data to advertising partners by writing to {{brand.support.email}}. We then stop sending new records and remove you from the lists we share within seven days. Records already received by Google or Meta are handled under their own privacy policies.",
+            "We never share your gender, age, photos, prompts, messages, your picks or who picked you (including any earlier likes and passes), your gender and age preferences or other profile preferences, or Cross Paths activity with advertisers. You can withdraw your website marketing choice at any time through Privacy choices, and you can ask us to stop sending your data to advertising partners by writing to {{brand.support.email}}. We then stop sending new records and remove you from the lists we share within seven days. Records already received by Google or Meta are handled under their own privacy policies.",
             "External event and ticket links lead to third parties whose policies apply. Non-essential website analytics and marketing tags load only after you accept them. Essential storage may support security, consent, saved organizers, the city you chose, forms, and site operation."
           ]
         },
@@ -283,7 +283,7 @@
       "eyebrow": "Account",
       "title": "Delete your account",
       "summary": "Delete your {{brand.name}} or {{brand.stores.hostAppName}} account and associated data in the app, or request deletion by email without installing the app.",
-      "effectiveDate": "12 November 2026",
+      "effectiveDate": "17 November 2026",
       "sections": [
         {
           "heading": "One account for {{brand.name}} and {{brand.stores.hostAppName}}",
@@ -323,7 +323,7 @@
             "Your profile: name, date of birth, photos, prompts, personal details, preferences, and city.",
             "Your {{brand.stores.hostAppName}} profile and photo, and your access to organizer teams.",
             "Event registrations and waitlist places, saved events, and notifications; organizer follows are ended.",
-            "Your picks, blocks, any likes and passes from the earlier profile deck, and your Cross Paths settings, consents, and invitations.",
+            "Picks you made and picks others made of you, blocks, any likes and passes from the earlier version of the app, and your Cross Paths settings, consents, and invitations.",
             "Messages you posted in event chats, private event form and room choices, and your communication preferences and consents.",
             "Broadcasts you sent as a host, and your device notification token."
           ]
@@ -335,7 +335,7 @@
           ],
           "bullets": [
             "Reviews you wrote stay published under the name Deleted user.",
-            "Your connections with the people you have picked each other with end, and those chats are hidden from both people; the message records are retained and may be used for safety and abuse review.",
+            "Chats that opened because you and another person picked each other, and your other one-to-one chats, such as Cross Paths plans and chats with an organizer's host, close and are hidden from both people; the message records are retained and may be used for safety and abuse review.",
             "Payment and refund records, for accounting, refunds, disputes, and legal requirements.",
             "Safety reports you made or that involve you, for review.",
             "Organizer pages, events, guest lists, and business records that belong to an organizer stay with that organizer and its remaining hosts, without a link to your account.",
