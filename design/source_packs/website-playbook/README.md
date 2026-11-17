@@ -39,15 +39,17 @@ The check needs the root npm install (`bash tool/git/bootstrap_worktree.sh --tar
 
 `--against <dir>` also requires the generated boards to match the files in `<dir>` byte for byte, for example a download of the published canvas.
 
-To bring canvas edits back, replace the changed files, run the check, update the hashes and `importedAt` in `source-pack.json`, and commit.
+To bring canvas edits back, replace the changed files, run the check, update the hashes and `importedAt` in `source-pack.json`, run `node tool/design/playbook/import_kit_tokens.mjs` and `node tool/design_tokens.mjs` when a kit stylesheet changed, and commit.
 
 ## How to use them
 
 - Build each kit component as a `@catch/web-ui` section component, then compose pages from them (blueprint D18). The kit-to-library mapping and the PR sequence are in the implementation plan.
-- Snap to the decided library defaults:
-  - Headlines max out at 72px under D19; the hero kit uses 80px.
-  - Buttons have 4px corners under D20; the kit uses pills.
-  - Colours come from tokens. Each kit tone (`m-coral`, `m-pink`, `m-yellow`, `m-mint`, `m-indigo`, `m-magenta`, `ink`) maps to a `Ground` value.
+- The canvas values are the defaults (owner decision, blueprint D26). Do not snap to older library caps:
+  - The hero headline is 80px (`typography.role.displayHero`); D19's 72px cap is retired.
+  - Buttons are pills (`radius.button`); D20's corners are retired.
+  - Colours, type steps, radii and spacing come from tokens that hold the kit's own values. Each kit tone (`m-coral`, `m-pink`, `m-yellow`, `m-mint`, `m-indigo`, `m-magenta`, `ink`) maps to a `Ground` value, and the `ink` ground is the kit's `#1B171B`.
+  - `tool/design/playbook/import_kit_tokens.mjs` writes the kit's values into `design/tokens/catch.tokens.json`, and its README holds the table that maps every kit selector and value to its token. After a canvas change, run it and then `node tool/design_tokens.mjs`; its `--check` fails CI while the kit and the tokens disagree.
+  - The kit stylesheets keep literal values because the canvas serves only its own flat file set; the importer's check is what keeps them and the site on one value.
 - Copy written in square brackets, such as `[N]` or `[date]`, is a placeholder awaiting an owner decision or real data. It renders dashed on the canvas and must never ship.
 - Sample people, organisers, reviews and figures inside mock screens are illustrative. Data-bound sections read the live read models.
 - Phone numbers in the boards are the dummy `+91 00000 00000`. Real contact links come from the brand pack.

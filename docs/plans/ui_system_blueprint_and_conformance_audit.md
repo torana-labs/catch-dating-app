@@ -1254,6 +1254,33 @@ member that imports an unlisted member, the root package included, compiles and
 runs (measured on Dart 3.13.7, 2026-11-02). The two rules in point 5 hold until
 their conditions are met.
 
+### D26. The design canvas owns the token values (owner decision, 2026-11-17)
+
+1. **Source.** The values the website playbook kit draws on the design canvas
+   ("Catch directions", Website · conversion playbook) are the token values.
+   Where the canvas and a library default disagree, the canvas wins.
+2. **Caps retire.** D19's 72px headline cap and D20's corners stop being caps.
+   The hero role is the canvas's 80px, and every button in every framework is
+   a pill (`radius-button`, an alias of `radius-pill`). The canvas's panel and
+   mat corners (36px and 28px) join the radius scale.
+3. **Pipeline.** `tool/design/playbook/import_kit_tokens.mjs` writes the kit's
+   values into `design/tokens/catch.tokens.json` through its map, and
+   `tool/design_tokens.mjs` carries them to the website CSS and the Flutter
+   constants. A shared scale step (spacing, an app type role) is only checked,
+   so a kit value that moves off the scale needs a remap, not a new step.
+
+**Why.** The live site drifted from the canvas because the source pack told
+builders to snap to library defaults the owner never chose for the website.
+
+**Supersedes.** D22's button corner and its standing rule that pills are for
+chips and filters, not actions. D23 point 3 for token values: the canvas is
+upstream of the token file for what it draws; components and everything else
+the canvas does not draw stay as D23 says.
+
+**Checked by.** `design:website-playbook-tokens` (the importer's `--check`)
+fails on drift between the kit and the token file, and `design:tokens` keeps
+the generated outputs in step.
+
 Rejected alternatives:
 
 - **Redraw the canvas to the D19 and D20 values (D22).** The owner reviewed the

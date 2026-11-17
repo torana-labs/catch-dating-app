@@ -102,6 +102,21 @@ not been redrawn reads them and takes the new values:
 by the activity pigment (§3). The old `heroGrad` brand gradient is **deprecated**:
 hero gradients derive from the activity pigment or ink instead.
 
+### 2.1 The design canvas owns the token values (D26)
+
+The website playbook kit on the design canvas ("Catch directions", Website ·
+conversion playbook) is the source of truth for the values it draws. Where a
+library default disagrees, the canvas wins: D19's 72px headline cap and D20's
+button corners are retired, not caps. `tool/design/playbook/import_kit_tokens.mjs`
+writes the kit's values into `design/tokens/catch.tokens.json`, and its mapping
+table in `tool/design/playbook/README.md` names the token for every kit colour,
+type step, radius and spacing value. Brand-wide values reach both frameworks
+(the ink ground is the canvas's `#1B171B`, `palette.inkGround`, and the tertiary
+text on it is `palette.nightTertiary`, `#8A8079`); values only the website
+draws, such as its warm text and hairline greys, live under `website.*` and
+reach CSS only. `design:website-playbook-tokens` fails CI when the kit and the
+token file disagree.
+
 ---
 
 ## 3. Activity color system — the only chroma (keep + refine)
@@ -236,14 +251,14 @@ only. Tracking is in em, so it scales with the size.
 
 | Role | Size | Line height | Weight | Letter-spacing | Use |
 | --- | --- | --- | --- | --- | --- |
-| `display-hero` | 96px | 0.9 | 760 | −0.045em | Website hero lines |
+| `display-hero` | 80px | 0.98 | 760 | −0.03em | Website hero lines (canvas-owned, D26) |
 | `display-xl` | 64px | 0.95 | 760 | −0.04em | Page titles on desktop; celebration numbers |
 | `display-lg` | 48px | 1.0 | 760 | −0.03em | Page titles on tablets; moments |
 | `display-title` | 38px | 1.0 | 760 | −0.03em | Page titles on phones; subject titles |
 | `display-section` | 30px | 1.05 | 760 | −0.02em | Tab-home section titles and step titles |
 | `display-sm` | 24px | 1.1 | 760 | −0.01em | Section titles; big numbers in stats |
 | `display-xs` | 20px | 1.1 | 760 | 0 | Titles on small posters and cards |
-| `body-lead` | 20px | 1.5 | 400 | 0 | Website lead paragraphs |
+| `body-lead` | 19px | 1.5 | 400 | 0 | Website lead paragraphs (canvas-owned, D26) |
 | `body-input` | 16px | 1.5 | 400 | 0 | Typed text in fields; long reading |
 | `body` | 15px | 1.45 | 400 | 0 | Body copy |
 | `body-small` | 14px | 1.43 | 400 | 0 | Second lines and notes |
@@ -265,6 +280,10 @@ and form lane is `pane-lane`, 600px.
 | `page-title` | `display-title` | `display-lg` | `display-xl` |
 | `section-title` | `display-sm` | `display-sm` | `display-section` |
 | `hero` | `display-lg` | `display-xl` | `display-hero` |
+
+D19's 72px headline cap no longer applies: the design canvas owns the hero
+size (D26). The website's other display steps the canvas draws, such as its
+56px section headline, are `website.type.*` tokens.
 
 The D19 display steps and the IBM Plex Mono roles (`typography.brand`) stay as
 deprecated aliases until P7 deletes them; `CatchTextStyles` reads the role that
@@ -437,17 +456,20 @@ bars), `shadow-sheet` (bottom sheets and docks over content) and `shadow-dialog`
 | Radius | Value | Use |
 | --- | --- | --- |
 | `radius-xs` | 6px | Checkboxes only |
-| `radius-sm` | 10px | Buttons, fields, squares under 64px such as date and icon tiles |
+| `radius-sm` | 10px | Fields, squares under 64px such as date and icon tiles |
 | `radius-md` | 16px | Anything nested inside a tile; choice cards |
 | `radius-lg` | 20px | Tiles |
 | `radius-xl` | 24px | Spotlights, floating blocks, sheets |
+| `radius-mat` | 28px | Colour mats, mock cards and photos; website panels and the footer card on phones |
+| `radius-panel` | 36px | Website panels and the footer card on wide pages |
 | `radius-pill` | 999px | Chips, badges, avatars, switches, segmented items |
+| `radius-button` | `radius-pill` | Every button, in every framework |
 
 `interactiveTile` (12px) is deleted; its name stays as a deprecated alias of
 `radius-sm` until P7.
 
-**The button shape.** Every button has 10px corners (`radius-sm`) in every
-framework; pills are for chips and filters, not actions. Heights are `control-lg`,
+**The button shape.** Every button is a pill (`radius-button`) in every
+framework, as the design canvas draws it (D26 retired D20's corner). Heights are `control-lg`,
 `control-md` and `control-sm` (48, 40 and 32px). There are six variants: primary,
 secondary, ghost, quiet, accent and danger. Secondary carries a `stroke-control`
 (1.5px) outline in `controlLine`. Hover is `opacity-hover` (4%) and press is
