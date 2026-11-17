@@ -43,10 +43,10 @@ TARGET_FIELDS = %w[
 PLAY_TRACKS = %w[internal alpha beta production qa].freeze
 MINIMUM_ANDROID_VERSION_CODE = 100_000
 # App Store fields that can change on a live version without a new submission,
-# by metadata file name and App Store Connect localization attribute.
-APP_STORE_LIVE_FIELDS = {
-  "promotional_text" => "promotionalText", "support_url" => "supportUrl", "marketing_url" => "marketingUrl"
-}.freeze
+# by metadata file name and App Store Connect localization attribute. Apple
+# refuses the support and marketing URLs on a live version ("cannot be edited
+# at this time"), so only the promotional text goes.
+APP_STORE_LIVE_FIELDS = { "promotional_text" => "promotionalText" }.freeze
 
 opt_out_usage
 default_platform(:ios)
