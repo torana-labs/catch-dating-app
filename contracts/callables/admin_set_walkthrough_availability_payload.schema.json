@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_set_walkthrough_availability_payload.schema.json",
+  "title": "AdminSetWalkthroughAvailabilityCallablePayload",
+  "description": "An admin or the owner saves the walkthrough staff calendar: weekly windows in India time, slot length, lead time, horizon and closed dates. expectedRevision is the revision they read (0 when none is saved yet); a stale save is refused. Existing bookings keep their slots.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin)",
+  "required": ["expectedRevision", "settings"],
+  "properties": {
+    "expectedRevision": {"type": "integer", "minimum": 0},
+    "settings": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/availabilitySettings"},
+    "note": {"type": "string", "minLength": 1, "maxLength": 300, "description": "Why, for the audit log."}
+  }
+}
