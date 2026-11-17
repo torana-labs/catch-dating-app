@@ -110,6 +110,10 @@ export const claimedOrganizerPage: OrganizerPageRecord = {
       icon: null, pinned: false, showUntil: null},
     {id: "shop", label: "Club tees and caps", subtitle: "Ships across India", url: "https://shop.example.com/lantern-lane",
       icon: "shop", pinned: false, showUntil: null},
+    {id: "instagram", label: "Instagram", subtitle: null, url: "https://www.instagram.com/lanternlaneruns/", icon: "social",
+      pinned: false, showUntil: null},
+    {id: "youtube", label: "YouTube", subtitle: null, url: "https://www.youtube.com/@lanternlaneruns", icon: "social",
+      pinned: false, showUntil: null},
   ],
   upcomingEvents: upcoming,
   pastMoments: past,
@@ -136,6 +140,7 @@ export const claimedOrganizerPage: OrganizerPageRecord = {
     sources: [],
     host: {name: "Kabir Rao", role: "Founder · pace lead", avatarUrl: null},
   },
+  womenLed: false,
 };
 
 /** The page Catch built from public Luma and Instagram pages, before the club claims it. */
@@ -182,6 +187,7 @@ export const generatedOrganizerPage: OrganizerPageRecord = {
       {type: "user_supplied", label: "User seed input", detail: "Seeded by an operator", confidence: "low"},
     ],
   },
+  womenLed: false,
 };
 
 /** A claimed page between plans: nothing upcoming yet. */

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:catch_ui_lints/src/architecture_context_map.dart';
 import 'package:catch_ui_lints/src/architecture_findings.dart';
+import 'package:catch_ui_lints/src/architecture_firestore_boundary.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 List<ArchitectureFinding> _direction(String path, String source) {
@@ -14,6 +15,12 @@ List<ArchitectureFinding> _direction(String path, String source) {
     unit: unit,
   );
 }
+
+List<ArchitectureFinding> _firestore(String path, String source) =>
+    firestoreBoundaryFindings(
+      relativePath: path,
+      unit: parseString(content: source, throwIfDiagnostics: false).unit,
+    );
 
 List<String> _rules(String path, String source) => [
   for (final finding in _direction(path, source)) finding.code,
@@ -669,7 +676,7 @@ class HostOrganizersScreen extends ConsumerWidget {}
       );
     });
 
-    test('manual declarations are flagged outside the platform layer', () {
+    test('manual declarations are flagged everywhere, platform included', () {
       expect(
         _rules(
           'lib/chats/presentation/chat_route_view_model.dart',
@@ -678,17 +685,48 @@ class HostOrganizersScreen extends ConsumerWidget {}
         [ArchitectureCodes.manualProviderDeclaration],
       );
       for (final path in const [
-        'lib/core/firebase_providers.dart',
-        'packages/platform/lib/firebase_providers.dart',
+        'lib/contexts/events/data/event_repository.dart',
+        'packages/platform/lib/firebase/firebase_providers.dart',
+        'packages/kernel/lib/clock.dart',
+        'apps/host/lib/today/today_view_model.dart',
       ]) {
         expect(
           _rules(
             path,
             'final firestoreProvider = Provider((ref) => FirebaseFirestore.instance);\n',
           ),
-          isEmpty,
+          [ArchitectureCodes.manualProviderDeclaration],
           reason: path,
         );
+      }
+    });
+
+    test('a builder call counts wherever it is written', () {
+      const path = 'lib/sample/presentation/owners.dart';
+      for (final source in const [
+        'Object build() { return Provider<int>((ref) => 1); }\n',
+        'final providers = [StateProvider<int>((ref) => 0)];\n',
+        'final p = NotifierProvider<Counter, int>(Counter.new);\n',
+        'final p = AsyncNotifierProvider.autoDispose.family<C, int, String>(C.new);\n',
+        'final p = StreamProvider<Map<String, List<int>>>((ref) => const Stream.empty());\n',
+        'class Owners { static final p = StateNotifierProvider<N, int>((ref) => N()); }\n',
+      ]) {
+        expect(_rules(path, source), [
+          ArchitectureCodes.manualProviderDeclaration,
+        ], reason: source);
+      }
+    });
+
+    test('type annotations and generated providers are not declarations', () {
+      const path = 'lib/sample/presentation/owners.dart';
+      for (final source in const [
+        'Provider<int> pick(Provider<int> provider) => provider;\n',
+        'typedef Make = Provider<int> Function();\n',
+        "import 'package:flutter_riverpod/flutter_riverpod.dart' show Provider;\n",
+        '@riverpod\nint count(Ref ref) => 0;\n',
+        'final value = ref.watch(countProvider(1));\n',
+      ]) {
+        expect(_rules(path, source), isEmpty, reason: source);
       }
     });
 
@@ -720,6 +758,93 @@ final firstProvider = rp.FutureProvider.autoDispose.family<int, String>((ref, ke
           'final other = other_lib.Provider<int>(1);\n',
         ),
         isEmpty,
+      );
+    });
+  });
+
+  group('firestore boundary', () {
+    const firestore =
+        "import 'package:cloud_firestore/cloud_firestore.dart';\n";
+
+    test('Firestore imports are flagged outside the data layer', () {
+      for (final path in const [
+        'lib/explore/presentation/explore_discovery_window_controller.dart',
+        'lib/hosts/events/presentation/host_events_timeline_controller.dart',
+        'lib/app_bootstrap.dart',
+        'lib/contexts/events/domain/event.dart',
+        'lib/contexts/events/actions/book_event.dart',
+        'lib/contexts/events/parts/event_row.dart',
+        'lib/pages/welcome/welcome_screen.dart',
+        'apps/host/lib/today/today_view_model.dart',
+        'packages/platform/lib/push/fcm_service.dart',
+        'packages/platform/lib/errors/backend_error_util.dart',
+        'packages/kernel/lib/clock.dart',
+      ]) {
+        expect(_firestore(path, firestore).map((finding) => finding.code), [
+          ArchitectureCodes.firestoreOutsideData,
+        ], reason: path);
+      }
+      expect(
+        _firestore(
+          'lib/explore/presentation/a.dart',
+          "import 'package:cloud_firestore_platform_interface/cloud_firestore_platform_interface.dart';\n",
+        ),
+        hasLength(1),
+      );
+    });
+
+    test('the data layer and platform/firebase may use Firestore', () {
+      for (final path in const [
+        'lib/contexts/events/data/event_repository.dart',
+        'lib/contexts/audience/data/crm/host_contacts_repository.dart',
+        'packages/platform/lib/firebase/cursor_page.dart',
+      ]) {
+        expect(
+          _firestore(path, '${firestore}void f(FirebaseException e) {}\n'),
+          isEmpty,
+          reason: path,
+        );
+      }
+    });
+
+    test('FirebaseException stays where Firebase failures are translated', () {
+      const source = 'bool f(Object e) => e is FirebaseException;\n';
+      expect(
+        _firestore(
+          'lib/force_update/presentation/a.dart',
+          source,
+        ).map((finding) => finding.code),
+        [ArchitectureCodes.firestoreOutsideData],
+      );
+      expect(
+        _firestore(
+          'packages/platform/lib/errors/app_error_message.dart',
+          source,
+        ),
+        isEmpty,
+      );
+      expect(
+        _firestore(
+          'lib/force_update/presentation/a.dart',
+          "// FirebaseException in a comment\nconst s = 'FirebaseException';\n",
+        ),
+        isEmpty,
+      );
+    });
+
+    test('Firestore findings cannot be ignored', () {
+      const path = 'lib/explore/presentation/a.dart';
+      final source =
+          '// ignore: catch_ui_lints/catch_arch_firestore_outside_data -- legacy\n$firestore';
+      final unit = parseString(content: source, throwIfDiagnostics: false).unit;
+      expect(
+        ignorePolicyFindings(
+          relativePath: path,
+          source: source,
+          unit: unit,
+          findings: _firestore(path, source),
+        ).map((finding) => finding.reason),
+        [contains('holds everywhere')],
       );
     });
   });
@@ -943,8 +1068,9 @@ import 'package:catch_dating_app/contexts/bookings/data/booking_repository.dart'
 
   group('exceptions', () {
     const legacy = 'lib/chats/presentation/chat_route_view_model.dart';
-    const provider = 'final aProvider = Provider<int>((ref) => 1);\n';
-    const code = 'catch_ui_lints/catch_arch_manual_provider_declaration';
+    const provider =
+        "import 'package:catch_dating_app/events/presentation/widgets/event_row.dart';\n";
+    const code = 'catch_ui_lints/catch_arch_cross_feature_presentation_import';
 
     test('a reasoned ignore on a legacy file is accepted', () {
       expect(
@@ -984,6 +1110,24 @@ import 'package:catch_dating_app/contexts/bookings/data/booking_repository.dart'
         ),
         [contains('holds everywhere')],
       );
+      expect(
+        _ignoreProblems(
+          legacy,
+          '// ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- CAT156\n'
+          'final aProvider = Provider<int>((ref) => 1);\n',
+        ),
+        [contains('holds everywhere')],
+      );
+    });
+
+    test('the provider and Firestore rules are hard gates and errors', () {
+      for (final code in const [
+        ArchitectureCodes.manualProviderDeclaration,
+        ArchitectureCodes.firestoreOutsideData,
+      ]) {
+        expect(ArchitectureCodes.hardGates, contains(code));
+        expect(ArchitectureCodes.errors, contains(code));
+      }
     });
 
     test('code under the bounded-context roots carries no exceptions', () {

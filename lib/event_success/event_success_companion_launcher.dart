@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
@@ -28,41 +29,22 @@ enum EventSuccessCompanionLaunchMoment { checkedIn }
 enum EventSuccessCompanionLaunchResult { launched, alreadyHandled, unavailable }
 
 class EventSuccessCompanionLaunchRegistry {
-  final _seededUids = <String>{};
-  final _statusesByUid = <String, Map<String, EventParticipationStatus>>{};
+  final _openEventIdsByUid = <String, Set<String>>{};
   final _launchedKeys = <String>{};
 
-  List<EventParticipation> attendedTransitionsForUser({
+  /// The events whose booking left the guest's open bookings (signed up or
+  /// waitlisted) since the last call: each may now be attended, so the
+  /// caller reads that one booking to decide. The first call for a guest
+  /// only records the set.
+  List<String> departedEventIdsForUser({
     required String uid,
-    required List<EventParticipation> participations,
+    required List<EventParticipation> openBookings,
   }) {
-    final previousStatuses = _statusesByUid.putIfAbsent(uid, () => {});
-    final nextStatuses = <String, EventParticipationStatus>{
-      for (final participation in participations)
-        participation.eventId: participation.status,
-    };
-
-    if (!_seededUids.contains(uid)) {
-      _seededUids.add(uid);
-      previousStatuses
-        ..clear()
-        ..addAll(nextStatuses);
-      return const [];
-    }
-
-    final transitions = <EventParticipation>[];
-    for (final participation in participations) {
-      final previousStatus = previousStatuses[participation.eventId];
-      if (previousStatus == null) continue;
-      if (previousStatus == EventParticipationStatus.attended) continue;
-      if (participation.status != EventParticipationStatus.attended) continue;
-      transitions.add(participation);
-    }
-
-    previousStatuses
-      ..clear()
-      ..addAll(nextStatuses);
-    return transitions;
+    final next = {for (final booking in openBookings) booking.eventId};
+    final previous = _openEventIdsByUid[uid];
+    _openEventIdsByUid[uid] = next;
+    if (previous == null) return const [];
+    return List.unmodifiable(previous.difference(next).toList()..sort());
   }
 
   bool claimLaunch({
@@ -78,9 +60,46 @@ class EventSuccessCompanionLaunchRegistry {
   }
 
   void reset() {
-    _seededUids.clear();
-    _statusesByUid.clear();
+    _openEventIdsByUid.clear();
     _launchedKeys.clear();
+  }
+}
+
+/// Reads the guest's booking for [eventId] once and launches the companion
+/// when it is attended.
+Future<EventSuccessCompanionLaunchResult>
+launchEventSuccessCompanionIfAttended({
+  required BuildContext context,
+  required WidgetRef ref,
+  required String uid,
+  required String eventId,
+}) async {
+  try {
+    final participation = await ref
+        .read(eventParticipationRepositoryProvider)
+        .fetchParticipation(eventId: eventId, uid: uid);
+    if (participation?.status != EventParticipationStatus.attended ||
+        !context.mounted) {
+      return EventSuccessCompanionLaunchResult.unavailable;
+    }
+    return await launchEventSuccessCompanionForParticipation(
+      context: context,
+      ref: ref,
+      uid: uid,
+      participation: participation!,
+    );
+  } catch (error, stackTrace) {
+    FlutterError.reportError(
+      FlutterErrorDetails(
+        exception: error,
+        stack: stackTrace,
+        library: 'event_success',
+        context: ErrorDescription(
+          'while reading a booking that left the open bookings',
+        ),
+      ),
+    );
+    return EventSuccessCompanionLaunchResult.unavailable;
   }
 }
 

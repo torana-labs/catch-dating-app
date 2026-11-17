@@ -9,6 +9,54 @@ part of 'device_location.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(deviceLocationGateway)
+final deviceLocationGatewayProvider = DeviceLocationGatewayProvider._();
+
+final class DeviceLocationGatewayProvider
+    extends
+        $FunctionalProvider<
+          DeviceLocationGateway,
+          DeviceLocationGateway,
+          DeviceLocationGateway
+        >
+    with $Provider<DeviceLocationGateway> {
+  DeviceLocationGatewayProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'deviceLocationGatewayProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$deviceLocationGatewayHash();
+
+  @$internal
+  @override
+  $ProviderElement<DeviceLocationGateway> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  DeviceLocationGateway create(Ref ref) {
+    return deviceLocationGateway(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DeviceLocationGateway value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DeviceLocationGateway>(value),
+    );
+  }
+}
+
+String _$deviceLocationGatewayHash() =>
+    r'c94a9709956cfcbc7b6714f2255dcd426c334b04';
+
 @ProviderFor(DeviceLocation)
 final deviceLocationProvider = DeviceLocationProvider._();
 

@@ -62,19 +62,19 @@ void main() {
       read = container.read(owner).requireValue;
       expect(read.data, 'insights#2');
       expect(read.fetchedAt, start.add(const Duration(minutes: 6)));
-      expect(read.hasRefreshError, isFalse);
+      expect(container.read(owner).hasError, isFalse);
       stale.close();
 
-      // A failed background refetch keeps the data and records the
-      // failure; it never becomes an error state.
+      // A failed background refetch keeps the data beside the error, as
+      // Riverpod keeps a provider's previous value when a rebuild fails.
       async.elapse(const Duration(minutes: 6));
       callable.failNext = true;
       final failing = container.listen(owner, (_, _) {});
       settle();
       final kept = container.read(owner);
-      expect(kept.hasError, isFalse);
+      expect(kept.hasError, isTrue);
+      expect(kept.hasValue, isTrue);
       expect(kept.requireValue.data, 'insights#2');
-      expect(kept.requireValue.hasRefreshError, isTrue);
       expect(kept.requireValue.fetchedAt, read.fetchedAt);
       expect(
         kept.requireValue.age(start.add(async.elapsed)),
@@ -91,14 +91,17 @@ void main() {
       settle();
       expect(callable.requests, hasLength(4));
       expect(container.read(owner).requireValue.data, 'insights#4');
-      expect(container.read(owner).requireValue.hasRefreshError, isFalse);
+      expect(container.read(owner).hasError, isFalse);
       failing.close();
 
-      // A first read that outlasts the timeout fails.
+      // A first read that outlasts the host reports first-load deadline
+      // fails.
       const slowQuery = _InsightsQuery(organizerId: 'org-2', days: 7);
       callable.hangNext = true;
       final slow = container.listen(_insightsProvider(slowQuery), (_, _) {});
-      async.elapse(const Duration(seconds: 13));
+      async.elapse(const Duration(seconds: 19));
+      expect(container.read(_insightsProvider(slowQuery)).isLoading, isTrue);
+      async.elapse(const Duration(seconds: 1));
       settle();
       expect(
         container.read(_insightsProvider(slowQuery)).error,
@@ -108,16 +111,91 @@ void main() {
     });
   });
 
+  test('a first load and a refresh each run out at their own deadline, '
+      'and a timed-out refresh keeps the data', () {
+    fakeAsync((async) {
+      final start = DateTime(2026, 11, 3, 9);
+      final callable = _FakeCallable();
+      final container = ProviderContainer.test(
+        retry: (_, _) => null,
+        overrides: [
+          appClockProvider.overrideWithValue(
+            AppClock.custom(() => start.add(async.elapsed)),
+          ),
+          _callableProvider.overrideWithValue(callable),
+        ],
+      );
+      const query = _InsightsQuery(organizerId: 'org-1', days: 7);
+      final owner = _liveProvider(query);
+
+      // liveOperations: a first load gets six seconds.
+      callable.hangNext = true;
+      final first = container.listen(owner, (_, _) {});
+      async.elapse(const Duration(milliseconds: 5999));
+      expect(container.read(owner).isLoading, isTrue);
+      async.elapse(const Duration(milliseconds: 1));
+      async.flushMicrotasks();
+      expect(container.read(owner).error, isA<TimeoutException>());
+      expect(container.read(owner).hasValue, isFalse);
+
+      // The user's Retry loads it.
+      container.invalidate(owner);
+      async
+        ..flushMicrotasks()
+        ..elapse(Duration.zero);
+      expect(container.read(owner).requireValue.data, 'insights#2');
+      final loadedAt = container.read(owner).requireValue.fetchedAt;
+
+      // A refetch of data on screen gets five seconds, and running out
+      // keeps the data beside the timeout.
+      callable.hangNext = true;
+      container.invalidate(owner);
+      async.flushMicrotasks();
+      expect(container.read(owner).isRefreshing, isTrue);
+      async.elapse(const Duration(milliseconds: 4999));
+      expect(container.read(owner).isRefreshing, isTrue);
+      async.elapse(const Duration(milliseconds: 1));
+      async.flushMicrotasks();
+      final kept = container.read(owner);
+      expect(kept.error, isA<TimeoutException>());
+      expect(kept.requireValue.data, 'insights#2');
+      expect(kept.requireValue.fetchedAt, loadedAt);
+      first.close();
+    });
+  });
+
   test('a first read that fails rethrows instead of inventing data', () async {
     const client = CallableReadClient(clock: AppClock());
     await expectLater(
       client.read<Map<String, Object?>, String>(
+        policy: CachePolicies.discovery,
         query: const _InsightsQuery(organizerId: 'org-1', days: 7),
         fetch: (_) => Future.error(StateError('down')),
-        previous: null,
+        refreshing: false,
       ),
       throwsStateError,
     );
+  });
+
+  test('read classes the owner listed take their own deadlines; the rest '
+      'take the default', () {
+    Duration first(CachePolicy p) => p.deadline(refreshing: false);
+    Duration again(CachePolicy p) => p.deadline(refreshing: true);
+    expect(first(CachePolicies.liveOperations), const Duration(seconds: 6));
+    expect(again(CachePolicies.liveOperations), const Duration(seconds: 5));
+    expect(first(CachePolicies.bookingState), const Duration(seconds: 8));
+    expect(again(CachePolicies.bookingState), const Duration(seconds: 8));
+    expect(first(CachePolicies.hostReports), const Duration(seconds: 20));
+    expect(again(CachePolicies.hostReports), const Duration(seconds: 20));
+    for (final policy in [
+      CachePolicies.discovery,
+      CachePolicies.hostCustomerRecords,
+      CachePolicies.accountReference,
+      CachePolicies.listener,
+    ]) {
+      expect(first(policy), const Duration(seconds: 10), reason: '$policy');
+      expect(again(policy), const Duration(seconds: 10), reason: '$policy');
+    }
   });
 }
 
@@ -176,9 +254,26 @@ final class _Insights extends AsyncNotifier<CachedRead<String>> {
     policy: CachePolicies.hostReports,
     query: query,
     fetch: ref.read(_callableProvider).call,
-    previous: state.value,
+    refreshing: state.hasValue,
   );
 }
 
 final _insightsProvider = AsyncNotifierProvider.autoDispose
     .family<_Insights, CachedRead<String>, _InsightsQuery>(_Insights.new);
+
+final class _Live extends AsyncNotifier<CachedRead<String>> {
+  _Live(this.query);
+
+  final _InsightsQuery query;
+
+  @override
+  Future<CachedRead<String>> build() => ref.callableRead(
+    policy: CachePolicies.liveOperations,
+    query: query,
+    fetch: ref.read(_callableProvider).call,
+    refreshing: state.hasValue,
+  );
+}
+
+final _liveProvider = AsyncNotifierProvider.autoDispose
+    .family<_Live, CachedRead<String>, _InsightsQuery>(_Live.new);

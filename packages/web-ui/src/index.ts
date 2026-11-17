@@ -40,6 +40,7 @@ export type {
   CatchBandWidth,
 } from "./components/CatchBand";
 export {CatchBandHeader} from "./components/CatchBandHeader";
+export {useCatchBandKicker} from "./components/CatchBandHeader";
 export type {CatchBandHeaderAlign, CatchBandHeaderDirection, CatchBandHeaderProps, CatchBandHeaderSize, CatchKickerAccent} from "./components/CatchBandHeader";
 // The playbook section components (website-playbook kit), with the vocabulary they share.
 export type {CatchBandAction, CatchBandFootnote, CatchBandLink} from "./components/catchBandParts";
@@ -346,7 +347,7 @@ export type {CatchPhotoTileProps} from "./components/CatchPhotoTile";
 export {CatchPreviewCard} from "./components/CatchPreviewCard";
 export type {CatchPreviewCardProps, CatchPreviewCardSize} from "./components/CatchPreviewCard";
 export {CatchProfileHeader} from "./components/CatchProfileHeader";
-export type {CatchProfileHeaderProps, CatchProfileHeaderStat} from "./components/CatchProfileHeader";
+export type {CatchProfileHeaderLayout, CatchProfileHeaderProps, CatchProfileHeaderStat} from "./components/CatchProfileHeader";
 export {CatchQrCode} from "./components/CatchQrCode";
 export type {CatchQrCodeErrorCorrection, CatchQrCodeProps, CatchQrCodeSize} from "./components/CatchQrCode";
 export {CatchRatingSummary} from "./components/CatchRatingSummary";

@@ -696,6 +696,10 @@ Hard rules:
   Storage, Remote Config, App Check, and plugin-specific types belong in
   repository/data boundaries or feature-neutral adapter seams that keep those
   SDKs out of domain models and validators.
+- Firestore itself is narrower: only `lib/contexts/*/data/**` and
+  `packages/platform/lib/firebase/**` touch `cloud_firestore` or its types;
+  controllers, view models, screens and widgets never do. Checked:
+  `catch_arch_firestore_outside_data` (see Architecture lint exceptions).
 - Domain serialization that still needs Firestore `Timestamp` handling routes
   through `packages/platform/lib/firebase/firestore_converters.dart`; new domain code
   must not add direct Firebase imports. The long-term target is no Firebase API calls or Firebase types
@@ -732,7 +736,7 @@ cross-feature edges, high-fan-out providers, aliases, and intentional manual
 provider exceptions, so moving a file moves its reviews:
 
 ```dart
-// provider-graph: manual-provider:lookupProvider planned CAT156 -- why this is still handwritten
+// provider-graph: cross-feature-presentation:lookupProvider->otherProvider planned CAT156 -- why this edge still exists
 ```
 
 The check rejects dangling or duplicate provider nodes,
@@ -740,8 +744,13 @@ unresolved internal references, reactive cycles, unreviewed candidates, and
 stale review decisions. Full JSON and compact summary output are deterministic,
 read-only, and created only on demand or as ephemeral CI evidence. Feature-owned
 async providers should follow the generated family reference in
-`ARCH-PROVIDER-CODEGEN-001`; manual providers require an exact reviewed
-exception rather than an implicit allowlist.
+`ARCH-PROVIDER-CODEGEN-001`. A handwritten provider is never allowed:
+`catch_arch_manual_provider_declaration` fails any `Provider(`,
+`FutureProvider(`, `StreamProvider(`, `StateProvider(`, `NotifierProvider(`,
+`AsyncNotifierProvider(`, `StreamNotifierProvider(`, `StateNotifierProvider(` or
+`ChangeNotifierProvider(` call, with or without `.family` / `.autoDispose`, in
+any analysed file, `packages/platform/lib/` included. Tests override generated
+providers instead.
 
 The graph also derives responsibility review candidates from class ancestry and
 AST callsites: Listenable state owners (including inherited ChangeNotifier and
@@ -764,9 +773,7 @@ unresolved signal whose changed fields and caller contract still need review.
 Neither disposition claims compliance. Use `accepted-exception` only for a
 named mechanical/framework/service responsibility, such as the router
 Listenable bridge. Do not generate approvals from counts or use directory,
-filename, or whole-file ownership exceptions. A manual provider declaration
-likewise takes its own `// ignore:` with a reason, so the Programs debt does not
-admit another declaration in the same file.
+filename, or whole-file ownership exceptions.
 
 This is a parsed-source review gate, not whole-program type/flow analysis.
 Dynamic dispatch, typedef/tear-off callback aliases, re-export-only ancestry,
@@ -2778,8 +2785,8 @@ Use these lifecycle rules:
   stops watching it.
 - Use `@Riverpod(keepAlive: true)` only when the stream is deliberately global
   or prewarmed. Document the reason at the provider or call site with a
-  `// keepalive:` marker within the three lines above the annotation or
-  handwritten provider declaration; `catch_arch_undocumented_keep_alive` enforces
+  `// keepalive:` marker within the three lines above the annotation;
+  `catch_arch_undocumented_keep_alive` enforces
   that marker.
 - For bottom-tab branches retained by `StatefulShellRoute.indexedStack`, decide
   whether the stream should remain active while its tab is inactive. If not,
@@ -4129,9 +4136,35 @@ is one comment next to the code, not a row in a list, so moving a file moves its
 exception:
 
 ```dart
-// ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- CAT156 migration debt
-final programEventsControllerProvider = Provider.autoDispose
+// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- CAT156 actor fence
+import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 ```
+
+Two rules hold everywhere, take no `// ignore:` and report as errors:
+
+- `catch_arch_manual_provider_declaration`: providers are declared only with
+  `@riverpod` / `@Riverpod` code generation. Any handwritten Riverpod builder
+  call (`Provider(`, `FutureProvider.autoDispose.family<A, B>(`,
+  `rp.StateProvider(` behind a Riverpod import prefix, and so on) is a finding,
+  in `lib/`, `apps/*/lib/`, `packages/kernel/lib/` and `packages/platform/lib/`.
+  Type annotations such as `Provider<int> provider` are not calls and pass.
+  riverpod_lint 3.1.4 has no rule for this (its
+  `avoid_manual_providers_as_generated_provider_dependency` was removed with
+  riverpod_lint 3), so the Catch plugin owns it. All riverpod_lint 3.1.4 rules
+  are warning rules and are on by default; `lint:riverpod-plugin-smoke` proves
+  they load.
+- `catch_arch_firestore_outside_data`: Firestore stays in the data layer. Only
+  `lib/contexts/*/data/**` and `packages/platform/lib/firebase/**` may import
+  `cloud_firestore` (or its platform interface) or hold its types. Elsewhere
+  the rule flags the import, any declaration or expression whose resolved type
+  is built from a Firestore type (an inferred `final cursor = page.nextCursor`
+  holding a `DocumentSnapshot`, a `Timestamp`, a `Query`, `FirebaseFirestore`),
+  and `FirebaseException`, which may also be read in
+  `packages/platform/lib/errors/**`, the layer that translates Firebase
+  failures into `AppException`. Paging cursors cross the boundary as the
+  opaque `PageCursor` from `packages/platform/lib/firebase/cursor_page.dart`;
+  domain serialisation uses `firestoreTimestampFromDateTime` and the other
+  `firestore_converters.dart` helpers, which return plain `Object`.
 
 A display-state adapter (`*_state.dart`), a context `parts/` widget and any file
 whose first lines say `// architecture: provider-free` stay free of Riverpod,
@@ -4141,7 +4174,7 @@ The promise lives in the file, so it moves with the file.
 `catch_arch_invalid_ignore` rejects an exception that applies to the whole file,
 gives no reason after `--`, no longer matches a finding, names a rule that holds
 everywhere (barrel exports, parts stay provider-free, the public API rule,
-placement), or sits under `lib/contexts/`, `lib/pages/`, `packages/kernel/lib/`,
+placement, handwritten providers, Firestore outside the data layer), or sits under `lib/contexts/`, `lib/pages/`, `packages/kernel/lib/`,
 `packages/platform/lib/` or an app destination. `catch_no_allow_debt` still rejects
 ignores of the UI rules. `// keepalive:`, `// public-api:` and
 `// architecture:allow stream-timeout` markers keep their meaning.
@@ -5396,14 +5429,16 @@ CatchFormList<UpdateUserProfilePatch>(
 
 Reference implementation:
 
-- `packages/platform/lib/firebase/cursor_page.dart` owns `limit + 1`, opaque document cursors,
-  and honest `hasMore` state.
+- `packages/platform/lib/firebase/cursor_page.dart` owns `limit + 1`, the opaque
+  `PageCursor` (the last returned document, wrapped privately) and honest
+  `hasMore` state. Repositories resume with `startAfterCursor`; controllers
+  only keep and return the cursor (`catch_arch_firestore_outside_data`).
 - `lib/explore/presentation/explore_discovery_window_controller.dart` is the
   reference provider family: the normalized query pair is its identity, the
   notifier alone accumulates pages, and views receive immutable state.
 - `lib/contexts/discovery/data/event_discovery_repository.dart` and
-  `lib/contexts/events/data/external_event_repository.dart` retain raw Firestore cursors
-  through client-side post-filtering so rejected documents are never fetched
+  `lib/contexts/events/data/external_event_repository.dart` keep the Firestore
+  cursor of the last fetched document through client-side post-filtering so rejected documents are never fetched
   repeatedly or skipped.
 - `packages/platform/lib/firebase/read_limit_policy.dart` owns every numeric Firestore page or
   working-set ceiling. Repository code does not introduce numeric literals.

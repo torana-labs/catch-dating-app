@@ -1,6 +1,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
+import 'dart:async';
+
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/cache/cache_policies.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -107,6 +111,57 @@ void main() {
     );
   });
 
+  testWidgets('a first load runs out on the app clock and offers Retry; '
+      'a cached read keeps its data when a refetch fails', (tester) async {
+    final clock = _RecordingClock();
+    final value = ValueNotifier<AsyncValue<int>>(const AsyncLoading<int>());
+    addTearDown(value.dispose);
+    var retries = 0;
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [appClockProvider.overrideWithValue(clock)],
+        child: MaterialApp(
+          theme: CatchTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: ValueListenableBuilder<AsyncValue<int>>(
+              valueListenable: value,
+              builder: (context, current, _) => CatchAsyncBoundary<int>(
+                value: current,
+                initialLoadTimeout: CachePolicies.liveOperations.firstLoad,
+                retainDataOn: catchCachedReadRetainedData,
+                onRetry: () => retries++,
+                builder: (_, data) => Text('Data $data'),
+                loadingBuilder: (_) => const Text('Loading'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(clock.timers, [const Duration(seconds: 6)]);
+    await pumpFeatureUiFor(tester, const Duration(seconds: 6));
+    expect(find.text('Try again'), findsOneWidget);
+    await tester.tap(find.text('Try again'));
+    await tester.pump();
+    expect(retries, 1);
+
+    value.value = const AsyncData<int>(1);
+    await tester.pump();
+    expect(find.text('Data 1'), findsOneWidget);
+
+    // A refetch that fails, a timeout included, keeps the data: the screen
+    // says it could not refresh rather than replacing the data.
+    value.value = AsyncError<int>(
+      TimeoutException('refresh'),
+      StackTrace.empty,
+    ).copyWithPrevious(const AsyncData<int>(1));
+    await tester.pump();
+    expect(find.text('Data 1'), findsOneWidget);
+    expect(find.text('Try again'), findsNothing);
+  });
+
   for (final sliver in [false, true]) {
     testWidgets('disabling a pending timeout cancels it (sliver: $sliver)', (
       tester,
@@ -165,5 +220,17 @@ void main() {
       await pumpFeatureUiFor(tester, deadline * 2);
       expect(tester.takeException(), isNull);
     });
+  }
+}
+
+final class _RecordingClock extends AppClock {
+  _RecordingClock();
+
+  final timers = <Duration>[];
+
+  @override
+  Timer timer(Duration duration, void Function() callback) {
+    timers.add(duration);
+    return super.timer(duration, callback);
   }
 }

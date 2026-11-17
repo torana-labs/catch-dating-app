@@ -1,8 +1,9 @@
 import 'dart:async';
 
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/cache/cache_policies.dart';
 import 'package:catch_platform/cache/screen_time_to_content.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
-import 'package:catch_platform/firebase/initial_load_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_boundary_builders.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_boundary_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
@@ -15,6 +16,14 @@ export 'catch_async_boundary_builders.dart';
 export 'catch_async_boundary_policy.dart';
 
 /// Exhaustive async-state selection with one timeout and recovery lifecycle.
+///
+/// A first load (nothing to show yet) that outlasts [initialLoadTimeout]
+/// becomes the localized timeout error with Retry; a screen of a cached read
+/// passes its read class's `CachePolicies.x.firstLoad`. The deadline runs on
+/// the app clock, so tests drive it with `fake_async`. Once data is showing
+/// there is no deadline: a refetch that fails keeps the data when
+/// [retainDataOn] includes [CatchAsyncBoundaryMode.error], as
+/// [catchCachedReadRetainedData] does.
 ///
 /// The default constructor builds boxes; [CatchAsyncBoundary.sliver] requires
 /// sliver-producing builders. The boundary supplies branded defaults and never
@@ -32,7 +41,7 @@ class CatchAsyncBoundary<T> extends StatefulWidget {
     this.errorContext = AppErrorContext.generic,
     this.onRetry,
     this.retainDataOn = defaultCatchAsyncRetainedData,
-    this.initialLoadTimeout = InitialLoadPolicy.standard,
+    this.initialLoadTimeout = CachePolicies.defaultFirstLoad,
   }) : _sliver = false,
        fillRemaining = true;
 
@@ -45,7 +54,7 @@ class CatchAsyncBoundary<T> extends StatefulWidget {
     this.errorContext = AppErrorContext.generic,
     this.onRetry,
     this.retainDataOn = defaultCatchAsyncRetainedData,
-    this.initialLoadTimeout = InitialLoadPolicy.standard,
+    this.initialLoadTimeout = CachePolicies.defaultFirstLoad,
     this.fillRemaining = true,
   }) : _sliver = true;
 
@@ -131,10 +140,23 @@ class _CatchAsyncBoundaryState<T> extends State<CatchAsyncBoundary<T>> {
     if (_timedOut || _deadline != null || widget.initialLoadTimeout == null) {
       return;
     }
-    _deadline = Timer(widget.initialLoadTimeout!, () {
+    _deadline = _clock().timer(widget.initialLoadTimeout!, () {
       if (!mounted || !isCatchAsyncBlockingLoading(widget.value)) return;
       setState(() => _timedOut = true);
     });
+  }
+
+  // A boundary outside any ProviderScope, such as a Widgetbook preview or a
+  // bare widget test, runs on the device clock.
+  AppClock _clock() {
+    try {
+      return ProviderScope.containerOf(
+        context,
+        listen: false,
+      ).read(appClockProvider);
+    } on StateError {
+      return const AppClock();
+    }
   }
 
   void _retry() {
