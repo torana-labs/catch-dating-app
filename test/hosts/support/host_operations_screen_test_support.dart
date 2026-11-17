@@ -235,19 +235,6 @@ List _hostOrganizerOverrides({
     ...hosted.map((organizer) => organizer.id),
   };
   return [
-    programEventsControllerProvider.overrideWith((ref, request) {
-      final controller = ProgramEventsController(
-        isActorCurrent: () => true,
-        fetchPage: ({cursor, programId}) async =>
-            const OrganizerProgramInventoryPage(programs: []),
-        mutate: (_, _) async =>
-            throw StateError('Preview inventory is read only'),
-        onMutation: (_) {},
-      );
-      ref.onDispose(controller.dispose);
-      unawaited(controller.refresh());
-      return controller;
-    }),
     eventRepositoryProvider.overrideWithValue(
       _FixedHostEventRepository(timelineEventsByOrganizer),
     ),
@@ -314,10 +301,10 @@ class _FixedHostEventRepository extends Fake implements EventRepository {
   final Map<String, List<Event>> eventsByOrganizer;
 
   @override
-  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchActiveEventsPage({
+  Future<CursorPage<Event, PageCursor<Event>>> fetchActiveEventsPage({
     required String organizerId,
     required DateTime sessionBoundary,
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) async {
     final events = eventsByOrganizer[organizerId] ?? const <Event>[];
@@ -331,10 +318,10 @@ class _FixedHostEventRepository extends Fake implements EventRepository {
   }
 
   @override
-  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchPastEventsPage({
+  Future<CursorPage<Event, PageCursor<Event>>> fetchPastEventsPage({
     required String organizerId,
     required DateTime sessionBoundary,
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) async {
     final events = eventsByOrganizer[organizerId] ?? const <Event>[];

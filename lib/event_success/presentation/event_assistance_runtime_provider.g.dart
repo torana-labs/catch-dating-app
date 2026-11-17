@@ -155,7 +155,7 @@ final class EventAssistanceRuntimeForAccountProvider
     required (EventAssistanceRuntimeScope, {EventAssistanceAccount account})
     super.argument,
   }) : super(
-         retry: _noRuntimeReadRetry,
+         retry: noAutomaticRetry,
          name: r'eventAssistanceRuntimeForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -203,7 +203,7 @@ final class EventAssistanceRuntimeForAccountProvider
 }
 
 String _$eventAssistanceRuntimeForAccountHash() =>
-    r'96105593f23d19bb1316e22fa99c24d2bf75a91c';
+    r'fc895987a4283c740c7ee05e2710cd7e4013d558';
 
 /// The event's automation for one sign-in period, without sender choices.
 /// It is a Firestore listener: no cache tags or lifetime, and writes never
@@ -218,7 +218,7 @@ final class EventAssistanceRuntimeForAccountFamily extends $Family
         > {
   EventAssistanceRuntimeForAccountFamily._()
     : super(
-        retry: _noRuntimeReadRetry,
+        retry: noAutomaticRetry,
         name: r'eventAssistanceRuntimeForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,

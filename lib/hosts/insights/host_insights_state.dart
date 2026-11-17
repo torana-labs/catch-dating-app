@@ -48,6 +48,7 @@ class HostInsightsState {
     this.visits = 0,
     this.linkClicks = 0,
     this.nights = const <HostAnalyticsNight>[],
+    this.refreshFailedMinutes,
     this.error,
     this.stackTrace,
   });
@@ -60,6 +61,7 @@ class HostInsightsState {
       visits = 0,
       linkClicks = 0,
       nights = const <HostAnalyticsNight>[],
+      refreshFailedMinutes = null,
       error = null,
       stackTrace = null;
 
@@ -81,6 +83,10 @@ class HostInsightsState {
 
   /// The period's events, fullest first.
   final List<HostAnalyticsNight> nights;
+
+  /// Set when a refresh of the report on screen failed or timed out: the
+  /// kept report's age in minutes, for "Couldn't refresh. Updated 4 min ago".
+  final int? refreshFailedMinutes;
   final Object? error;
   final StackTrace? stackTrace;
 

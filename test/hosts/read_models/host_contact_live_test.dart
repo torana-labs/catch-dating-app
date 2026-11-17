@@ -53,19 +53,21 @@ void main() {
     await contact('c', 'Chand', 10);
   });
 
-  test('a window lists the first rows and says whether more follow', () async {
-    final window = await reads
-        .watchWindow('org', query: const HostAudienceQuery(), limit: 2)
+  test('a page lists the first rows and says whether more follow', () async {
+    final pages = await reads
+        .watchPages('org', query: const HostAudienceQuery(), pageSize: 2)
+        .pages
         .first;
 
-    expect(window.contacts.map((row) => row.contactId), ['a', 'b']);
-    expect(window.hasMore, isTrue);
+    expect(pages.items.map((row) => row.contactId), ['a', 'b']);
+    expect(pages.hasMore, isTrue);
   });
 
-  test('a contact the server adds shows in the open window', () async {
+  test('a contact the server adds shows in the open page', () async {
     final ids = reads
-        .watchWindow('org', query: const HostAudienceQuery(), limit: 10)
-        .map((window) => window.contacts.map((row) => row.contactId).toList());
+        .watchPages('org', query: const HostAudienceQuery(), pageSize: 10)
+        .pages
+        .map((pages) => pages.items.map((row) => row.contactId).toList());
     final expectation = expectLater(
       ids,
       emitsInOrder([

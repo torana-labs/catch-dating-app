@@ -167,10 +167,10 @@ class EventRepository with EventRepositoryActions {
   /// The fixed [sessionBoundary] keeps paging stable while the Host Events
   /// screen is open. Presentation logic can still move an event from live to
   /// past as its clock advances without reissuing the Firestore query.
-  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchActiveEventsPage({
+  Future<CursorPage<Event, PageCursor<Event>>> fetchActiveEventsPage({
     required String organizerId,
     required DateTime sessionBoundary,
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
     // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
@@ -223,10 +223,10 @@ class EventRepository with EventRepositoryActions {
   );
 
   /// Fetches completed organizer events newest-first with an opaque cursor.
-  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchPastEventsPage({
+  Future<CursorPage<Event, PageCursor<Event>>> fetchPastEventsPage({
     required String organizerId,
     required DateTime sessionBoundary,
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
     // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
@@ -250,9 +250,9 @@ class EventRepository with EventRepositoryActions {
   ///
   /// Cancelled events keep `publicationState == 'published'`, so they share
   /// the published index family; the timeline merges them into history.
-  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchCancelledEventsPage({
+  Future<CursorPage<Event, PageCursor<Event>>> fetchCancelledEventsPage({
     required String organizerId,
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
     // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,startTime:DESCENDING,__name__:DESCENDING)
@@ -268,15 +268,13 @@ class EventRepository with EventRepositoryActions {
     action: 'fetch cancelled organizer events page',
   );
 
-  Future<CursorPage<Event, DocumentSnapshot<Event>>> _fetchOrganizerEventsPage(
+  Future<CursorPage<Event, PageCursor<Event>>> _fetchOrganizerEventsPage(
     Query<Map<String, dynamic>> query, {
-    required DocumentSnapshot<Event>? startAfter,
+    required PageCursor<Event>? startAfter,
     required int limit,
     required String action,
   }) async {
-    final windowed = startAfter == null
-        ? query
-        : query.startAfterDocument(startAfter);
+    final windowed = query.startAfterCursor(startAfter);
     final page = await decodePublishedEventQuery(windowed)
         .fetchDocumentCursorPage(
           limit: limit,

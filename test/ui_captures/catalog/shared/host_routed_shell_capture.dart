@@ -26,7 +26,6 @@ import 'package:catch_dating_app/hosts/presentation/organizer_management/host_or
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/today/host_today_controller.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
-import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_dating_app/routing/shell/host_shell_screen.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
@@ -157,19 +156,6 @@ List<Object> hostOperationsProviderOverrides({
   };
 
   return [
-    programEventsControllerProvider.overrideWith((ref, request) {
-      final controller = ProgramEventsController(
-        isActorCurrent: () => true,
-        fetchPage: ({cursor, programId}) async =>
-            OrganizerProgramInventoryPage(programs: programRows),
-        mutate: (_, _) async =>
-            throw StateError('Preview inventory is read only'),
-        onMutation: (_) {},
-      );
-      ref.onDispose(controller.dispose);
-      unawaited(controller.refresh());
-      return controller;
-    }),
     watchActiveEventsForOrganizerProvider.overrideWith(
       (ref, query) => Stream.value(
         timelineEventsByOrganizer[query.organizerId] ?? const <Event>[],

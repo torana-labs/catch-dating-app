@@ -65,6 +65,17 @@ export const Generated: Story = {
   render: () => <StoryPage><CatchBand aria-label="Generated" pb="compact" pt="compact">{inRail(generated)}</CatchBand></StoryPage>,
 };
 
+/** The organiser page's hero: the cover across the content width, the copy on the left and the actions at its foot on the right. */
+export const Hero: Story = {
+  parameters: {catchComponent: {id: "shared_profile_header", routeIds: storyRoutes, states: ["hero", "claimed", "cover-photo", "verified-seal", "actions"]}},
+  render: () => (
+    <StoryPage>
+      <CatchBand aria-label="Hero" pb="compact" pt="compact"><CatchProfileHeader {...claimed} layout="hero" /></CatchBand>
+      <CatchBand aria-label="Hero, generated" pb="compact" pt="compact"><CatchProfileHeader {...generated} layout="hero" nameElement="h2" /></CatchBand>
+    </StoryPage>
+  ),
+};
+
 /** The organiser page's header, for a guest and before a claim. */
 export const Reference: Story = {
   parameters: {catchComponent: {id: "shared_profile_header", routeIds: storyRoutes, states: ["board-reference"]}},

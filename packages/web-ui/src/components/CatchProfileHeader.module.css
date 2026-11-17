@@ -1,7 +1,8 @@
 /*
- * Website v2 profile header (CAT-251): a 170px cover at radius lg (140px
- * below 840px), an 88px monogram in a 4px white ring that overlaps the
- * cover's foot by 50px, then the copy 8px apart and the actions 14px below.
+ * Website v2 profile header (CAT-251), rail layout: a 170px cover at radius
+ * lg (140px below 840px), an 88px monogram in a 4px white ring that overlaps
+ * the cover's foot by 50px, then the copy 8px apart and the actions 14px
+ * below. The hero layout follows at the end of the file.
  */
 .header {
   display: flex;
@@ -92,3 +93,77 @@
 @container catch-page (width < 840px) {
   .cover { height: 140px; }
 }
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--catch-space-s2);
+}
+
+/*
+ * hero: the organiser page's owner-approved layout (17 Nov 2026), drawn from
+ * the WebOrgV2 board's rail parts. The cover runs across the content width
+ * at website.profile.coverHeight with the board's 24px corners; the 144px
+ * logo in its white ring sits website.profile.monogramOverlap over the
+ * cover's foot. Under it the copy, held to website.profile.copyMax, sits on
+ * the left with the name in the canvas's section headline size, and the
+ * actions, website.profile.actionsWidth wide, on the right at the copy's
+ * foot. Below 840px the cover, logo and name step down and the actions stack
+ * under the copy at full width.
+ */
+.header[data-layout="hero"] {
+  gap: var(--catch-space-micro6);
+}
+
+.header[data-layout="hero"] .cover {
+  height: var(--catch-website-profile-cover-height);
+  border-radius: var(--catch-radius-xl);
+}
+
+.header[data-layout="hero"] .monogram {
+  margin-top: calc(-1 * var(--catch-website-profile-monogram-overlap));
+  margin-inline-start: var(--catch-space-s12);
+}
+
+.heroRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--catch-space-s10);
+}
+
+.heroRow .copy {
+  flex: 1 1 auto;
+  max-width: var(--catch-website-profile-copy-max);
+}
+
+.heroRow .nameRow > :first-child {
+  --catch-text-size: var(--catch-website-type-section-size);
+  --catch-text-line-height: var(--catch-typography-role-display-hero-line-height);
+  --catch-text-tracking: var(--catch-typography-role-display-hero-tracking);
+}
+
+.heroRow .actions {
+  flex: none;
+  width: var(--catch-website-profile-actions-width);
+}
+
+@container catch-page (width < 840px) {
+  .header[data-layout="hero"] .cover { height: var(--catch-website-profile-compact-cover-height); }
+
+  .header[data-layout="hero"] .monogram {
+    margin-top: calc(-1 * var(--catch-website-profile-compact-monogram-overlap));
+    margin-inline-start: var(--catch-space-s5);
+  }
+
+  .heroRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--catch-space-micro14);
+  }
+
+  .heroRow .nameRow > :first-child { --catch-text-size: var(--catch-website-type-section-compact-size); }
+
+  .heroRow .actions { width: auto; }
+}
+

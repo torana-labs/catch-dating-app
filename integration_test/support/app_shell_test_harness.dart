@@ -62,9 +62,9 @@ import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
+import 'package:catch_platform/firebase/push_installation_store.dart';
 import 'package:catch_platform/push/fcm_service.dart';
 import 'package:catch_platform/routing/route_contract.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' show User;
@@ -650,10 +650,9 @@ class FakeShellEventDiscoveryRepository implements EventDiscoveryRepository {
   }
 
   @override
-  Future<CursorPage<Event, DocumentSnapshot<Event>>>
-  fetchDiscoverableEventsPage(
+  Future<CursorPage<Event, PageCursor<Event>>> fetchDiscoverableEventsPage(
     EventDiscoveryQuery query, {
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
   }) async =>
       CursorPage(items: await fetchDiscoverableEvents(query), hasMore: false);
 
@@ -666,7 +665,11 @@ class FakeShellEventDiscoveryRepository implements EventDiscoveryRepository {
 }
 
 class RecordingFcmService extends FcmService {
-  RecordingFcmService() : super(FakeFirebaseFirestore(), ErrorLogger.silent());
+  RecordingFcmService()
+    : super(
+        PushInstallationStore(FakeFirebaseFirestore()),
+        ErrorLogger.silent(),
+      );
 
   final initializedUids = <String>[];
 
@@ -688,7 +691,10 @@ class RecordingFcmService extends FcmService {
 
 class UnsupportedTestFcmService extends FcmService {
   UnsupportedTestFcmService()
-    : super(FakeFirebaseFirestore(), ErrorLogger.silent());
+    : super(
+        PushInstallationStore(FakeFirebaseFirestore()),
+        ErrorLogger.silent(),
+      );
 
   @override
   bool get isSupportedPlatform => false;

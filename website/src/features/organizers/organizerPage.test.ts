@@ -25,6 +25,12 @@ describe("organizerPageRecord", () => {
     expect(record).not.toHaveProperty("recommendedOrganizers");
   });
 
+  it("carries the read model's women-led label and reads an absent one as false", () => {
+    expect(organizerPageRecord({...readModel(), womenLed: true}, organizerPageReadAt).womenLed).toBe(true);
+    const {womenLed: _omitted, ...before} = readModel();
+    expect(organizerPageRecord(before, organizerPageReadAt).womenLed).toBe(false);
+  });
+
   it("moves events that ended after the page was built into past moments", () => {
     const later = Date.parse("2026-11-10T00:00:00+05:30");
     const record = organizerPageRecord(readModel(), later);
@@ -43,7 +49,7 @@ describe("organizerPageFromListing", () => {
 
   it("builds the same record from a listing, as the read model's builder does", () => {
     const record = organizerPageFromListing(demo, Date.parse("2026-01-01T00:00:00Z"));
-    expect(record).toMatchObject({organizerId: demo.id, path: demo.path, links: [],
+    expect(record).toMatchObject({organizerId: demo.id, path: demo.path, links: [], womenLed: false,
       followerCount: demo.metrics?.followerCount ?? 0, identity: {name: demo.name, verified: true}});
     const ids = [...record.upcomingEvents, ...record.pastMoments].map((item) => item.eventId).sort();
     expect(ids).toEqual((demo.catchEvents ?? []).map((event) => event.id).sort());

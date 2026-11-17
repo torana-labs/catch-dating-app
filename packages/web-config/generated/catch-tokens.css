@@ -460,6 +460,12 @@
   --catch-website-tile-compact-min-height: 160px;
   --catch-website-tile-icon-size: 28px;
   --catch-website-tile-bento-compact-min-height: 150px;
+  --catch-website-profile-cover-height: 340px;
+  --catch-website-profile-compact-cover-height: 180px;
+  --catch-website-profile-monogram-overlap: 62px;
+  --catch-website-profile-compact-monogram-overlap: 48px;
+  --catch-website-profile-copy-max: 640px;
+  --catch-website-profile-actions-width: 420px;
   --catch-website-plan-media-height: 150px;
   --catch-website-badge-pad-block: 5px;
   --catch-website-chip-dot-size: 8px;

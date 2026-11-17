@@ -172,7 +172,7 @@ final class EventAssistanceDepartureHistoryForAccountProvider
     })
     super.argument,
   }) : super(
-         retry: _noHistoryReadRetry,
+         retry: noAutomaticRetry,
          name: r'eventAssistanceDepartureHistoryForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -224,7 +224,7 @@ final class EventAssistanceDepartureHistoryForAccountProvider
 }
 
 String _$eventAssistanceDepartureHistoryForAccountHash() =>
-    r'8aed24fbcf10de2460f54730e6739a7b4af8251b';
+    r'aea95d8a730ff2bc281de88faf6fe3e1ff2cf769';
 
 /// One history page for one sign-in period: Firestore listeners on the
 /// group's view and the page of departure views. No cache tags or lifetime;
@@ -238,7 +238,7 @@ final class EventAssistanceDepartureHistoryForAccountFamily extends $Family
         > {
   EventAssistanceDepartureHistoryForAccountFamily._()
     : super(
-        retry: _noHistoryReadRetry,
+        retry: noAutomaticRetry,
         name: r'eventAssistanceDepartureHistoryForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,

@@ -84,7 +84,7 @@ final class HostInsightsControllerProvider
 }
 
 String _$hostInsightsControllerHash() =>
-    r'1e4c4e8dd0dcb172977d465518c0e8ecdaac4a59';
+    r'9a6ecc1ae016823728a195f42e1bdcb614fdd107';
 
 /// The organizer's report for one period through the cached host-reports
 /// read ([hostAnalyticsProvider], tagged `hostReports`): the stats, bookings
