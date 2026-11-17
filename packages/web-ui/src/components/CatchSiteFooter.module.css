@@ -1,10 +1,45 @@
 /*
- * Website v2 site footer (CAT-260): an optional header band over a hairline,
- * four link columns (two to five by prop) and optional footnotes over a
- * hairline, then the wordmark and tagline. Two columns below 840px, the
- * expanded window size.
+ * The design canvas's site footer (playbook-panels.css .pg .foot and
+ * .pg .bigwm, kit/KitFooter.dc.html). Every value is a token the importer
+ * keeps equal to the kit (tool/design/playbook/README.md):
+ *
+ * - an inset card, 16px under the page and 24px from its sides, with 36px
+ *   corners, on the ink ground; 8px insets and 28px corners on phones;
+ * - padding 64px above and 40px below, and at least 72px at the sides, more
+ *   once the page is wider than the 1200px content;
+ * - a top band over a hairline: a 22px title and 38px pill buttons;
+ * - link columns 24px apart with 15px bold titles and 14px links on a 2.0
+ *   row rhythm; two columns 28px apart on phones;
+ * - the giant coral wordmark, 120px to 330px with the page width (31% of it
+ *   on phones), then the 12px legal line.
+ *
+ * The footer element is the container the wordmark's size and the phone
+ * arrangement read, as the canvas page (.pg) is on the canvas. The canvas
+ * switches at 600px wide.
  */
-.header {
+.footer {
+  container: catch-site-footer / inline-size;
+  box-sizing: border-box;
+  width: 100%;
+  padding-bottom: var(--catch-space-s4);
+  font-family: var(--catch-font-function), system-ui, sans-serif;
+}
+
+.card {
+  margin: var(--catch-space-s4) var(--catch-website-content-gutter) 0;
+  padding: var(--catch-space-s16)
+    max(
+      var(--catch-website-panel-pad-inline),
+      calc((100% - var(--catch-website-content-max)) / 2 - var(--catch-website-content-gutter))
+    )
+    var(--catch-space-s10);
+  overflow: hidden;
+  border-radius: var(--catch-radius-panel);
+  background: var(--catch-ground-ink-fill);
+  color: var(--catch-ground-ink-ink);
+}
+
+.top {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -12,10 +47,42 @@
   gap: var(--catch-space-s4);
   margin-bottom: var(--catch-space-s10);
   padding-bottom: var(--catch-space-s9);
-  border-bottom: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-ink) 14%, transparent);
+  border-bottom: var(--catch-stroke-hairline) solid var(--catch-color-dark-line);
+  /* The canvas's small button (.pg .b.sm): 38px, 16px sides, a 14px label. */
+  --catch-button-sm-height: var(--catch-website-button-sm-height);
+  --catch-button-sm-pad: var(--catch-space-s4);
+  --catch-button-sm-size: var(--catch-typography-role-label-action-size);
 }
 
-.header > :is(h2, h3, p) { margin: 0; }
+.top > :is(h2, h3, p) { margin: 0; }
+
+/* The canvas sets the footer's headings in the text face at its normal width, whatever a page's own heading rules say. */
+.title,
+.heading {
+  font-family: var(--catch-font-function), system-ui, sans-serif;
+  font-stretch: normal;
+  font-variation-settings: normal;
+  letter-spacing: normal;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--catch-website-footer-title-size);
+  font-weight: var(--catch-typography-role-title-bar-weight);
+  line-height: normal;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--catch-space-micro10);
+}
+
+/* The canvas's outlined button on ink (.pg .b.ow): white label, a 70% white outline. */
+.card .actions [data-variant="ghost"] {
+  --catch-button-border: var(--catch-website-color-on-ink-control-line);
+  color: var(--catch-palette-white);
+}
 
 .groups {
   display: grid;
@@ -27,78 +94,86 @@
 .groups[data-columns="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .groups[data-columns="5"] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 
-.group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--catch-space-s3);
+.heading {
+  margin: 0 0 var(--catch-space-micro14);
+  font-size: var(--catch-typography-role-body-size);
+  font-weight: var(--catch-typography-role-title-bar-weight);
+  line-height: normal;
 }
 
 .links {
-  display: flex;
-  flex-direction: column;
-  gap: var(--catch-space-s3);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .link {
-  color: var(--catch-theme-ink);
+  display: block;
+  color: var(--catch-ground-ink-ink-secondary);
+  font-size: var(--catch-typography-role-body-small-size);
+  line-height: var(--catch-website-footer-link-line-height);
   text-decoration: none;
 }
 
-.link:hover {
-  text-decoration: underline;
-}
+a.link:hover { color: var(--catch-ground-ink-ink); }
 
-.link:focus-visible {
+a.link:focus-visible {
   border-radius: var(--catch-radius-xs);
-  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-ground-ink-ink);
   outline-offset: var(--catch-space-micro2);
 }
 
+.note { color: var(--catch-palette-night-tertiary); }
+
 /* Footnotes carry their own numbers, so the list draws none. */
 .footnotes {
-  display: flex;
-  flex-direction: column;
-  gap: var(--catch-space-s1);
   margin: var(--catch-space-s6) 0 0;
   padding: 0;
+  color: var(--catch-palette-night-tertiary);
+  font-size: var(--catch-typography-role-label-badge-size);
+  line-height: var(--catch-website-footer-note-line-height);
   list-style: none;
 }
 
-/* The tagline sits on the wordmark's baseline; a note follows under it. */
-.base {
+/* A flex box, so the giant wordmark's own 0.8 leading sets the row with no strut. */
+.mark {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
+  margin: var(--catch-website-wordmark-footer-gap) 0 0;
+  color: var(--catch-palette-coral);
+}
+
+.legal {
+  display: flex;
   justify-content: space-between;
   gap: var(--catch-space-s4);
-  margin-top: var(--catch-space-s12);
-  padding-top: var(--catch-space-s7);
-  border-top: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-ink) 14%, transparent);
+  margin-top: var(--catch-space-s7);
+  color: var(--catch-palette-night-tertiary);
+  font-size: var(--catch-typography-role-label-badge-size);
 }
 
-/* With no header, columns or footnotes before it, the base opens the footer. */
-.base:first-child {
-  margin-top: 0;
-  padding-top: 0;
-  border-top: 0;
-}
+@container catch-site-footer (width <= 600px) {
+  .card {
+    margin: var(--catch-space-s2) var(--catch-space-s2) 0;
+    padding: var(--catch-space-s9) var(--catch-space-s5) var(--catch-website-footer-compact-pad-bottom);
+    border-radius: var(--catch-radius-mat);
+  }
 
-.lines {
-  display: flex;
-  flex-direction: column;
-  gap: var(--catch-space-s1);
-}
-
-.lines > p {
-  margin: 0;
-}
-
-@container catch-page (width < 840px) {
   .groups,
   .groups[data-columns] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: var(--catch-space-s7);
   }
+
+  /* The canvas stacks the top band's buttons on phones, each as wide as the widest. */
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mark {
+    margin-top: var(--catch-space-s10);
+    --catch-wordmark-band-size: var(--catch-website-wordmark-footer-compact-size-fluid);
+  }
+
+  .legal { flex-direction: column; }
 }

@@ -36,6 +36,11 @@ export interface CatchNavMenuProps {
   align?: "start" | "end";
   /** Called when a link is followed, such as to record the click. */
   onLinkPressed?: (link: CatchNavMenuLink) => void;
+  /**
+   * button (the default): a small quiet button. link: plain text in the site
+   * header's page-link type with the canvas's 14px chevron, among the links.
+   */
+  appearance?: "button" | "link";
 }
 
 /** Below the medium window size (600px) the header's phone menu carries these links instead. */
@@ -69,7 +74,7 @@ function linksIn(panel: HTMLElement | null) {
  * its link semantics. Below 600px it renders nothing, and the header's phone
  * menu carries the links.
  */
-export function CatchNavMenu({label, links, current = false, align = "start", onLinkPressed}: CatchNavMenuProps) {
+export function CatchNavMenu({label, links, current = false, align = "start", onLinkPressed, appearance = "button"}: CatchNavMenuProps) {
   const compact = useSyncExternalStore(subscribeCompact, compactNow, compactOnServer);
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
@@ -143,6 +148,7 @@ export function CatchNavMenu({label, links, current = false, align = "start", on
         aria-controls={panelId}
         aria-expanded={open}
         className={styles.trigger}
+        data-appearance={appearance}
         data-current={current || undefined}
         data-on={ground}
         data-recipe="default"

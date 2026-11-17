@@ -57,6 +57,33 @@ describe("CatchSiteFooter", () => {
     expect(within(footer).getByRole("link", {name: "Sample action"}).getAttribute("href")).toBe("/help/");
   });
 
+  it("draws the canvas's top band from a title and actions, over the navigation", () => {
+    render(
+      <CatchSiteFooter
+        {...base}
+        groups={groups.slice(0, 2)}
+        headerActions={<a href="/help/">Sample action</a>}
+        headerTitle="We reply on WhatsApp, usually within an hour."
+      />,
+    );
+    const footer = screen.getByRole("contentinfo");
+    const heading = within(footer).getByRole("heading", {level: 2, name: "We reply on WhatsApp, usually within an hour."});
+    const nav = within(footer).getByRole("navigation");
+    expect(heading.compareDocumentPosition(nav) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(footer).getByRole("link", {name: "Sample action"}).getAttribute("href")).toBe("/help/");
+  });
+
+  it("sets the legal line under the giant wordmark: the tagline, then the note", () => {
+    render(<CatchSiteFooter {...base} groups={groups.slice(0, 1)} note="Sample operator line." />);
+    const footer = screen.getByRole("contentinfo");
+    const wordmark = within(footer).getByRole("link", {name: "Brand"});
+    const tagline = within(footer).getByText("A sample tagline.");
+    const note = within(footer).getByText("Sample operator line.");
+    expect(wordmark.dataset.size).toBe("band");
+    expect(wordmark.compareDocumentPosition(tagline) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(tagline.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it("lists footnotes in order after the navigation and before the wordmark", () => {
     render(<CatchSiteFooter {...base} footnotes={["1. A first sample note.", <>2. A second note with a <a href="/source/">source</a>.</>]} groups={groups.slice(0, 2)} />);
     const footer = screen.getByRole("contentinfo");

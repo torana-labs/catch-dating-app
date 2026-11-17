@@ -154,13 +154,14 @@ void _registerCatchPrimitivesControlsTests() {
     expect(styles.map((style) => style.letterSpacing).toSet(), {0});
     // Blueprint D22: the six older names read display-sm to display-hero, at
     // weight 760, with line height and em tracking tightening as the size grows.
+    // D26: the hero takes the design canvas's 80px, 0.98 line height, -0.03em.
     const d22 = [
       (24.0, 1.10, -0.010),
       (30.0, 1.05, -0.020),
       (38.0, 1.00, -0.030),
       (48.0, 1.00, -0.030),
       (64.0, 0.95, -0.040),
-      (96.0, 0.90, -0.045),
+      (80.0, 0.98, -0.030),
     ];
     for (final (index, (size, height, trackingEm)) in d22.indexed) {
       final style = displays[index];
