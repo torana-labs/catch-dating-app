@@ -5,8 +5,6 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_communication_r
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_task.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';

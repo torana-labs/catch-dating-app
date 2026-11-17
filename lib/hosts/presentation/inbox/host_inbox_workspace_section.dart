@@ -59,6 +59,11 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
       ref.watch(chatsListViewModelProvider),
     );
     final whatsappState = catchAsyncStateFromAsyncValue(whatsappAsync);
+    void retryPartialSources() {
+      ref.invalidate(hostWhatsappThreadPagesProvider(organizer.id));
+      onRetry(organizer.id);
+    }
+
     final programsState = catchAsyncStateFromAsyncValue(programsAsync);
     final events = eventsState.value;
     final requestedProgramId = requestedScope?.programId;
@@ -231,10 +236,7 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
                       whatsappState.hasError)
                     CatchButton(
                       label: context.l10n.sharedActionTryAgain,
-                      onPressed: () {
-                        retryHostInboxWhatsappThreads(ref, organizer.id);
-                        onRetry(organizer.id);
-                      },
+                      onPressed: retryPartialSources,
                     ),
                 ],
               ),
@@ -529,7 +531,3 @@ class HostInboxEmptyState extends StatelessWidget {
     );
   }
 }
-
-/// Reads the inbox's WhatsApp threads again after a failure.
-void retryHostInboxWhatsappThreads(WidgetRef ref, String organizerId) =>
-    ref.invalidate(hostWhatsappThreadPagesProvider(organizerId));
