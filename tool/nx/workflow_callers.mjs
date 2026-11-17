@@ -66,6 +66,7 @@ export const notCalledByCi = {
   ".github/workflows/functions-drift.yml": "maintenance: weekly schedule and dispatch, report-only, read-only on dev",
   ".github/workflows/city-interest-backfill.yml": "operations: dispatch only",
   ".github/workflows/data-validation.yml": "operations: schedule and dispatch",
+  ".github/workflows/deck-era-purge.yml": "operations: dispatch only",
   ".github/workflows/demo-ops-ci.yml": "its own pull_request and push triggers validate it",
   ".github/workflows/dependabot-auto-merge.yml": "its own pull_request trigger, Dependabot PRs only",
   ".github/workflows/host-measurement-preview.yml": "deploy: dispatch only",

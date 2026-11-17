@@ -3273,8 +3273,8 @@ ceiling, and outbound-only behavior are verified together.
 ### Retired swipe deck purge (one-off)
 
 The owner decided in November 2026 to purge everything the retired swipe deck
-stored. `tool/data/purge_deck_era_records.mjs` is the one-off tool; running it
-is an owner or ops step. The deck-era rule lives in
+stored. `tool/data/purge_deck_era_records.mjs` is the one-off tool, and it
+runs through the `Deck-era purge` workflow described below. The deck-era rule lives in
 `functions/src/matching/deckEraDecision.ts` and the tool loads it from the
 Functions build. A `profileDecisions` document is deck-era when any of these
 holds:
@@ -3309,61 +3309,89 @@ it runs again:
 
 Before applying anywhere:
 
-- Confirm with the owner that the 7 Nov 2026 data hold (see
-  `docs/backend_operation_catalog.md`) does not cover these collections.
-- Build Functions from the commit that carries `deckEraDecision.ts`.
+- The owner confirmed in November 2026 that no data hold covers these
+  collections, and that chats made by one deck like plus one current pick are
+  deleted.
 - The tool keeps no backup of deleted content, on purpose, so nothing deleted
   survives it. Firestore point-in-time recovery, where enabled, still keeps
   the old versions for its retention window.
 
-**Order: purge first, then deploy.** You can also do both in one window.
+**Run it through the workflow.** `.github/workflows/deck-era-purge.yml`
+(Actions, "Deck-era purge") is the only way to run the purge against a real
+environment. It is dispatch only, from main only, with two inputs:
 
-- Purging first is safe with the old Functions. Once the deck documents are
-  gone, nothing deck-era is left for them to count.
-- Deploying first is not safe. The new `fetchSwipeCandidates` stops hiding
-  people a guest liked or passed in the deck. If that guest picks one of them
-  before the purge, the pick fails: the old document still exists, and the
-  rules allow create only.
-- Old app builds can still write deck-shaped decisions until the follow-ups
-  below land. So run the dry run again after the deploy, and apply again if it
-  finds anything. The tool is idempotent.
+- `environment`: `dev` or `prod`, default `dev`;
+- `mode`: `dry-run` or `apply`, default `dry-run`.
+
+The workflow runs in the chosen GitHub environment, so a prod run waits for
+the `prod` environment approval. It signs in with that environment's deploy
+identity through Workload Identity, with no key. It builds Functions so the
+tool can load the deck-era rule, and runs the tool with `--summary-only`, so
+the job summary holds counts only: no match ids, document paths or contacts.
+On a prod apply it adds `--allow-prod`. On apply it uploads the deleted
+`participantSignalFacts` and `matches` ids as the artifact
+`deck-era-purge-manifest-<env>`, kept for one day, for the Storage and
+BigQuery steps below.
 
 ```bash
-npm --prefix functions run build
-node tool/data/purge_deck_era_records.mjs --env dev --manifest build/deck-purge/dev.ndjson
-node tool/data/purge_deck_era_records.mjs --env staging --manifest build/deck-purge/staging.ndjson
-node tool/data/purge_deck_era_records.mjs --env prod --json --manifest build/deck-purge/prod.ndjson
+gh workflow run deck-era-purge.yml --ref main -f environment=dev -f mode=dry-run
+gh workflow run deck-era-purge.yml --ref main -f environment=dev -f mode=apply
+gh workflow run deck-era-purge.yml --ref main -f environment=prod -f mode=dry-run
+gh workflow run deck-era-purge.yml --ref main -f environment=prod -f mode=apply
 ```
+
+The local CLI (`node tool/data/purge_deck_era_records.mjs --emulator`) is for
+the emulator and fixtures only.
+
+**Order: purge first, then the live-code change.** The change that makes
+`onSwipeCreated` and `fetchSwipeCandidates` ignore deck-era decisions ships in
+a separate PR, after the prod purge.
+
+- Purging first is safe with today's Functions. Once the deck documents are
+  gone, nothing deck-era is left for them to count.
+- Shipping the live change first would not be safe. The new
+  `fetchSwipeCandidates` stops hiding people a guest liked or passed in the
+  deck. If that guest picks one of them before the purge, the pick fails: the
+  old document still exists, and the rules allow create only.
+- Old app builds can still write deck-shaped decisions until the follow-ups
+  below land. So dispatch a dry run again after the live change deploys, and
+  apply again if it finds anything. The tool is idempotent.
 
 **Check the dry-run counts before applying:**
 
-- `plainLikesCaughtOnlyByTimestamp` are plain likes that only the cutoff
-  marks as deck-era. Expect them to be dated before the deck had reactions.
-- Look at every warning. Unresolved facts and chats of unknown origin are
-  kept and reported, never guessed at.
+- `plain likes caught only by the timestamp` are plain likes that only the
+  cutoff marks as deck-era. Expect them to be dated before the deck had
+  reactions.
+- Check the warning count. Unresolved facts and chats of unknown origin are
+  kept and reported, never guessed at. The warnings themselves contain
+  document paths, so they never go in the job summary; the counts are what the
+  owner reviews.
 - Note the chat counts. Deleting a chat ends the conversation for both
   people.
 
-**Apply.** Apply to each environment in turn (dev, staging, prod), then
-deploy:
+**Apply** dev first, then prod. After an apply, the tool plans again and
+prints the result in the same summary. Expect zero deck-era decisions, zero
+deck-era like facts and zero chats left to delete.
+
+**Delete chat images from Storage.** Download the apply run's manifest
+artifact within a day:
 
 ```bash
-node tool/data/purge_deck_era_records.mjs --env dev --apply --manifest build/deck-purge/dev.ndjson
-node tool/data/purge_deck_era_records.mjs --env prod --apply --allow-prod --manifest build/deck-purge/prod.ndjson
+gh run download <run-id> -n deck-era-purge-manifest-<env> -D build/deck-purge/<env>
 ```
 
-After an apply, the tool plans again and prints the result. Expect zero
-deck-era decisions, zero deck-era like facts and zero chats left to delete.
-
-**Delete chat images from Storage.** The plan lists `storageImagePrefixes`
-(`matches/{matchId}/images/`) for the chats it deleted. The bucket is the
+Each `{"collection":"matches","document_id":"<matchId>"}` line is a deleted
+chat whose images live under `matches/<matchId>/images/`. The bucket is the
 `storageBucket` in `lib/firebase_options_<env>.dart`. For prod:
 
 ```bash
-gcloud storage rm --recursive "gs://catch-dating-app-64e51.firebasestorage.app/matches/<matchId>/images/"
+jq -r 'select(.collection == "matches") | .document_id' build/deck-purge/prod/manifest.ndjson |
+  while read -r id; do
+    gcloud storage rm --recursive "gs://catch-dating-app-64e51.firebasestorage.app/matches/$id/images/" || true
+  done
 ```
 
-A prefix with no objects returns "No URLs matched"; that is not an error here.
+A chat with no images returns "No URLs matched"; that is not an error here.
 
 **Remove the BigQuery rows (ops SQL).** The Firestore export extensions keep
 every past version of `participantSignalFacts` and `matches` in their
@@ -3374,14 +3402,14 @@ tool.
 
 Run it at least 90 minutes after the Firestore apply. Until then the delete
 rows the extension streams sit in the streaming buffer, and DML that touches
-them fails. Use the manifest from the apply run, with `PROJECT` set to the
-environment's project id and `--location=asia-south1`.
+them fails. Use the manifest artifact from the apply run, with `PROJECT` set
+to the environment's project id and `--location=asia-south1`.
 
 ```bash
 bq --project_id="$PROJECT" --location=asia-south1 load --replace \
   --source_format=NEWLINE_DELIMITED_JSON \
   catch_marketplace_metrics.deck_era_purge_manifest \
-  build/deck-purge/prod.ndjson collection:STRING,document_id:STRING
+  build/deck-purge/prod/manifest.ndjson collection:STRING,document_id:STRING
 ```
 
 Dry run. Expect the row counts to cover every manifest id that was ever

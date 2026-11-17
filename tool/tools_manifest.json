@@ -1110,6 +1110,30 @@
       "role": "gate"
     },
     {
+      "id": "ci:deck-era-purge-workflow",
+      "category": "ci",
+      "path": "tool/ci/deck_era_purge_workflow.test.mjs",
+      "command": "node --test tool/ci/deck_era_purge_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/deck-era-purge.yml",
+        "tool/ci/deck_era_purge_workflow.test.mjs"
+      ],
+      "description": "Keeps the deck-era purge workflow dispatch-only from main, dry-run by default, keyless and least-privileged, counts-only in its summary, and passing --allow-prod only for a prod apply.",
+      "checks": [
+        "node --check tool/ci/deck_era_purge_workflow.test.mjs",
+        "node --test tool/ci/deck_era_purge_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:delivery-core",
       "category": "ci",
       "path": "tool/ci/delivery_core.mjs",
