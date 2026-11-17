@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/organizers/data/host_event_staff_repository.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_event_staff_controller.g.dart';
@@ -7,6 +8,9 @@ part 'host_event_staff_controller.g.dart';
 HostEventStaffController hostEventStaffController(Ref ref) =>
     HostEventStaffController(ref);
 
+/// Each action reads the repository before its request starts and touches
+/// the Ref no more once it waits, so an auto-disposed provider read without a
+/// listener can go away mid-request safely.
 class HostEventStaffController {
   const HostEventStaffController(this._ref);
 
@@ -28,7 +32,7 @@ class HostEventStaffController {
       .grant(
         eventId: eventId,
         phoneNumber: phoneNumber,
-        expiresAt: window.expiresFrom(DateTime.now()),
+        expiresAt: window.expiresFrom(_ref.read(appClockProvider).now()),
       );
 
   Future<HostEventStaffList> revoke({

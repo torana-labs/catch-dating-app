@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/image_upload_job.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:flutter/foundation.dart';
@@ -145,6 +146,9 @@ class HostOrganizerMediaSaveResult {
   bool get hasFailures => failures.isNotEmpty;
 }
 
+/// Each action reads what it needs from [_ref] before its first `await`: the
+/// provider is auto-disposed, and a widget that reads it without listening can
+/// let it go while an upload runs, after which the Ref throws.
 class HostOrganizerEditController implements HostOrganizerEditActions {
   const HostOrganizerEditController(this._ref);
 
@@ -210,6 +214,9 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
     ValueChanged<HostOrganizerMediaProgress>? onProgress,
   }) async {
     final uid = requireSignedInUid(_ref, action: 'edit this organizer media');
+    final uploads = _ref.read(imageUploadRepositoryProvider);
+    final organizers = _ref.read(organizersRepositoryProvider);
+    final clock = _ref.read(appClockProvider);
     if (!organizer.isHostedBy(uid)) {
       throw const BackendOperationException(
         code: 'club-host-edit-required',
@@ -228,6 +235,7 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
     try {
       if (photoInputs != null) {
         resolvedInputs = await _resolvePhotoInputs(
+          uploads,
           uid: uid,
           organizerId: organizer.id,
           inputs: photoInputs,
@@ -245,23 +253,21 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
               ),
             ),
           );
-          final upload = await _ref
-              .read(imageUploadRepositoryProvider)
-              .uploadOrganizerLogo(
-                uid: uid,
-                organizerId: organizer.id,
-                mediaId: logo.id,
-                image: logo.image,
-                onProgress: (progress) => onProgress?.call(
-                  HostOrganizerMediaProgress(
-                    id: logo.id,
-                    state: ImageUploadJobState(
-                      stage: progress.stage,
-                      progress: progress.fraction,
-                    ),
-                  ),
+          final upload = await uploads.uploadOrganizerLogo(
+            uid: uid,
+            organizerId: organizer.id,
+            mediaId: logo.id,
+            image: logo.image,
+            onProgress: (progress) => onProgress?.call(
+              HostOrganizerMediaProgress(
+                id: logo.id,
+                state: ImageUploadJobState(
+                  stage: progress.stage,
+                  progress: progress.fraction,
                 ),
-              );
+              ),
+            ),
+          );
           resolvedLogo = logo.copyWith(
             uploadedPhoto: UploadedPhoto.fromUpload(
               url: upload.url,
@@ -299,7 +305,7 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
           for (final indexedInput in resolvedInputs.indexed)
             indexedInput.$2.resolvedPhoto.copyWith(
               position: indexedInput.$1,
-              updatedAt: DateTime.now(),
+              updatedAt: clock.now(),
             ),
         ];
         patch['imageUrl'] = photos.isEmpty ? null : photos.first.url;
@@ -315,15 +321,14 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
         patch['logoPhoto'] = null;
       }
       if (patch.isNotEmpty) {
-        await _ref
-            .read(organizersRepositoryProvider)
-            .updateOrganizer(
-              organizerId: organizer.id,
-              patch: UpdateOrganizerPatch.raw(patch),
-            );
+        await organizers.updateOrganizer(
+          organizerId: organizer.id,
+          patch: UpdateOrganizerPatch.raw(patch),
+        );
       }
     } catch (_) {
-      await discardOrganizerMedia(
+      await _discard(
+        uploads,
         photoInputs: resolvedInputs ?? const [],
         logo: resolvedLogo,
       );
@@ -337,7 +342,8 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
     );
   }
 
-  Future<List<HostOrganizerMediaInput>> _resolvePhotoInputs({
+  Future<List<HostOrganizerMediaInput>> _resolvePhotoInputs(
+    ImageUploadRepository uploads, {
     required String uid,
     required String organizerId,
     required List<HostOrganizerMediaInput> inputs,
@@ -361,24 +367,22 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
             return;
           }
           try {
-            final upload = await _ref
-                .read(imageUploadRepositoryProvider)
-                .uploadOrganizerPhoto(
-                  uid: uid,
-                  organizerId: organizerId,
-                  mediaId: id,
-                  position: index,
-                  image: image,
-                  onProgress: (progress) => onProgress?.call(
-                    HostOrganizerMediaProgress(
-                      id: id,
-                      state: ImageUploadJobState(
-                        stage: progress.stage,
-                        progress: progress.fraction,
-                      ),
-                    ),
+            final upload = await uploads.uploadOrganizerPhoto(
+              uid: uid,
+              organizerId: organizerId,
+              mediaId: id,
+              position: index,
+              image: image,
+              onProgress: (progress) => onProgress?.call(
+                HostOrganizerMediaProgress(
+                  id: id,
+                  state: ImageUploadJobState(
+                    stage: progress.stage,
+                    progress: progress.fraction,
                   ),
-                );
+                ),
+              ),
+            );
             resolved[index] = input.copyWith(
               uploadedPhoto: UploadedPhoto.fromUpload(
                 url: upload.url,
@@ -421,8 +425,17 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
   Future<void> discardOrganizerMedia({
     required List<HostOrganizerMediaInput> photoInputs,
     HostPickedOrganizerLogo? logo,
+  }) => _discard(
+    _ref.read(imageUploadRepositoryProvider),
+    photoInputs: photoInputs,
+    logo: logo,
+  );
+
+  Future<void> _discard(
+    ImageUploadRepository repository, {
+    required List<HostOrganizerMediaInput> photoInputs,
+    HostPickedOrganizerLogo? logo,
   }) async {
-    final repository = _ref.read(imageUploadRepositoryProvider);
     final paths = <String>{
       for (final input in photoInputs)
         if (input is HostNewOrganizerPhotoInput && input.uploadedPhoto != null)

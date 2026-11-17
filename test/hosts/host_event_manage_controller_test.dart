@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
@@ -82,6 +85,35 @@ void main() {
       expect(copiedText.single, contains('il=v2_invite-link-1_test-token'));
     },
   );
+
+  test('createInviteLink finishes after its auto-disposed provider is gone, '
+      'with no Ref use after the await', () async {
+    final gate = Completer<void>();
+    final slow = _SlowInviteLinkRepository(gate.future);
+    final isolated = ProviderContainer.test(
+      overrides: [
+        uidProvider.overrideWithValue(const AsyncData<String?>('host-1')),
+        eventRepositoryProvider.overrideWith((ref) => slow),
+        clipboardSetterProvider.overrideWithValue((ClipboardData data) async {
+          copiedText.add(data.text ?? '');
+        }),
+      ],
+    );
+    // A widget reads the actions without listening, as a tap handler does.
+    final pending = isolated
+        .read(hostEventManageActionsProvider)
+        .createInviteLink(
+          event: HostOperationsFixtures.privateEvent,
+          inviteCode: 'VIP123',
+          draft: const HostInviteLinkDraft(label: 'Instagram bio'),
+        );
+    // The unlistened provider is disposed while the request waits.
+    await isolated.pump();
+
+    gate.complete();
+    expect(await pending, 'Instagram bio');
+    expect(copiedText.single, contains('invite=VIP123'));
+  });
 
   test('copyInviteLink resolves and copies the opaque token URL', () async {
     final event = HostOperationsFixtures.privateEvent;
@@ -216,4 +248,24 @@ void main() {
     expect(sharedParams?.title, contains('-ops.csv'));
     expect(sharedParams?.fileNameOverrides?.single, contains('-ops.csv'));
   });
+}
+
+final class _SlowInviteLinkRepository extends FakeEventRepository {
+  _SlowInviteLinkRepository(this.gate);
+
+  final Future<void> gate;
+
+  @override
+  Future<CreateEventInviteLinkCallableResponse> createInviteLink({
+    required String eventId,
+    required String label,
+    String? source,
+  }) async {
+    await gate;
+    return super.createInviteLink(
+      eventId: eventId,
+      label: label,
+      source: source,
+    );
+  }
 }
