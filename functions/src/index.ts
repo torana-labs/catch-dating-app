@@ -1113,6 +1113,10 @@ export {onHostProviderConnectionViewConnectionChanged,
   "./hostReadModels/providerConnectionViewTriggers";
 export {onHostFormVersionFilterSourceChanged} from
   "./hostReadModels/formVersionFilterTriggers";
+export {onHostRequestViewParticipationWritten, onHostRequestViewEventWritten,
+  onHostRequestViewProfileWritten, onHostRequestViewContactSummaryWritten,
+  onHostRequestViewContactWritten} from
+  "./hostReadModels/requestViewTriggers";
 export {onHostRosterInsightEventChanged, onHostRosterInsightAttendeeChanged,
   onHostRosterInsightEdgeChanged, onHostRosterInsightContactChanged,
   onHostRosterInsightTraitsChanged,
