@@ -14,7 +14,6 @@ part of 'event_viewer_state_provider.dart';
 /// published plans and their server-projected booking facts. Each listener
 /// delivers its own writes, so a booking command needs no invalidation. The
 /// UID isolates the account generation; it is never sent as authority.
-// provider-graph: high-fan-out:eventViewerStateProvider accepted -- The listeners form one booking-state read model for one guest and event: auth, the event, the booking, the profile, scheduled events for the overlap check, paid memberships, the event's membership rules, the organizer's published plans, the server-projected guest facts, and (for capped plans) benefit uses and signed-up events. Composing them in one place keeps the dock and the booking flow on the same rules as the server, which the shared parity cases pin.
 
 @ProviderFor(eventViewerState)
 final eventViewerStateProvider = EventViewerStateFamily._();
@@ -25,7 +24,6 @@ final eventViewerStateProvider = EventViewerStateFamily._();
 /// published plans and their server-projected booking facts. Each listener
 /// delivers its own writes, so a booking command needs no invalidation. The
 /// UID isolates the account generation; it is never sent as authority.
-// provider-graph: high-fan-out:eventViewerStateProvider accepted -- The listeners form one booking-state read model for one guest and event: auth, the event, the booking, the profile, scheduled events for the overlap check, paid memberships, the event's membership rules, the organizer's published plans, the server-projected guest facts, and (for capped plans) benefit uses and signed-up events. Composing them in one place keeps the dock and the booking flow on the same rules as the server, which the shared parity cases pin.
 
 final class EventViewerStateProvider
     extends
@@ -41,7 +39,6 @@ final class EventViewerStateProvider
   /// published plans and their server-projected booking facts. Each listener
   /// delivers its own writes, so a booking command needs no invalidation. The
   /// UID isolates the account generation; it is never sent as authority.
-  // provider-graph: high-fan-out:eventViewerStateProvider accepted -- The listeners form one booking-state read model for one guest and event: auth, the event, the booking, the profile, scheduled events for the overlap check, paid memberships, the event's membership rules, the organizer's published plans, the server-projected guest facts, and (for capped plans) benefit uses and signed-up events. Composing them in one place keeps the dock and the booking flow on the same rules as the server, which the shared parity cases pin.
   EventViewerStateProvider._({
     required EventViewerStateFamily super.from,
     required (String, String, {String? inviteCode}) super.argument,
@@ -91,7 +88,7 @@ final class EventViewerStateProvider
   }
 }
 
-String _$eventViewerStateHash() => r'71d94b2898d7fdd26dda211dcbda4df4333260da';
+String _$eventViewerStateHash() => r'a76877f0e831ee032ab010523565a848b9bdb868';
 
 /// One guest's booking state for one event, composed from Firestore
 /// listeners on the documents they may read: the event, their booking,
@@ -99,7 +96,6 @@ String _$eventViewerStateHash() => r'71d94b2898d7fdd26dda211dcbda4df4333260da';
 /// published plans and their server-projected booking facts. Each listener
 /// delivers its own writes, so a booking command needs no invalidation. The
 /// UID isolates the account generation; it is never sent as authority.
-// provider-graph: high-fan-out:eventViewerStateProvider accepted -- The listeners form one booking-state read model for one guest and event: auth, the event, the booking, the profile, scheduled events for the overlap check, paid memberships, the event's membership rules, the organizer's published plans, the server-projected guest facts, and (for capped plans) benefit uses and signed-up events. Composing them in one place keeps the dock and the booking flow on the same rules as the server, which the shared parity cases pin.
 
 final class EventViewerStateFamily extends $Family
     with
@@ -122,7 +118,6 @@ final class EventViewerStateFamily extends $Family
   /// published plans and their server-projected booking facts. Each listener
   /// delivers its own writes, so a booking command needs no invalidation. The
   /// UID isolates the account generation; it is never sent as authority.
-  // provider-graph: high-fan-out:eventViewerStateProvider accepted -- The listeners form one booking-state read model for one guest and event: auth, the event, the booking, the profile, scheduled events for the overlap check, paid memberships, the event's membership rules, the organizer's published plans, the server-projected guest facts, and (for capped plans) benefit uses and signed-up events. Composing them in one place keeps the dock and the booking flow on the same rules as the server, which the shared parity cases pin.
 
   EventViewerStateProvider call(
     String eventId,

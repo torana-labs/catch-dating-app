@@ -39,7 +39,7 @@ final class MessagingPermissionsControllerProvider
 }
 
 String _$messagingPermissionsControllerHash() =>
-    r'25059130e50f03a88469e079a14015fe8ecbdeaa';
+    r'cfa35cd3c934b0b9a2bb428c8e42fddf5461cfc1';
 
 abstract class _$MessagingPermissionsController
     extends $AsyncNotifier<MessagingPermissionsState> {
