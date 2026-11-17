@@ -151,12 +151,13 @@ test("published legal copy uses the apps' words and no dating language", () => {
   // Catch is a social-events platform (owner decision, 12 Nov 2026): picks and Stay in touch, never dates or matches.
   assert.doesNotMatch(copy, /\bdating\b|\ba match\b|\bmatch(?:es|ed|ing)\b|\bcatches\b|\bswip(?:e|es|ing)\b|\bcompatible\b|\bromantic\b|\ba relationship\b|\bdeck\b/iu);
   const privacy = pageCopy(pages.privacy);
-  // Every disclosure stays: picks, mutual picks and their messages, the retired deck's history, and the preference filter.
+  // Every disclosure stays: picks, mutual picks and their messages, the retired deck's deletion, and the preference filter.
   assert.match(privacy, /people you pick to stay in touch with/u);
   assert.match(privacy, /if you pick each other, you can message each other/u);
-  assert.match(privacy, /likes and passes you made there until your account is deleted/u);
-  // onSwipeCreated: a kept like still pairs with a new pick; fetchSwipeCandidates: any earlier decision hides that person.
-  assert.match(privacy, /an earlier like counts as a pick if that person picks you, and people you liked or passed are not shown to you to pick again/u);
+  // tool/data/purge_deck_era_records.mjs deleted every deck-era decision, its comments and the chats it opened (prod, 17 Nov 2026).
+  assert.match(privacy, /we have deleted the likes and passes you made there, any comments you added to them, and the chats that opened because of them/u);
+  assert.match(privacy, /A chat that was closed after a block or report is kept for safety review/u);
+  assert.doesNotMatch(privacy, /an earlier like counts as a pick|until your account is deleted\. We no longer collect them/u);
   // fetchSwipeCandidates: checked-in guests with complete profiles, 24 hours after the event.
   assert.match(privacy, /For 24 hours after an event you checked in to, if you have a complete profile, other guests who checked in/u);
   // isReciprocallyEligible gates both Stay in touch and Cross Paths.
@@ -169,6 +170,6 @@ test("published legal copy uses the apps' words and no dating language", () => {
   assert.match(privacy, /do not knowingly offer \{\{brand\.name\}\} to children|do not knowingly offer Catch to children/u);
   const deletion = pageCopy(pages.account_deletion);
   // queueSwipeCleanup deletes decisions in both directions; queueMatchCleanup closes every one-to-one chat.
-  assert.match(deletion, /Picks you made and picks others made of you, blocks, any likes and passes from the earlier version of the app/u);
+  assert.match(deletion, /Picks you made and picks others made of you, blocks, and your Cross Paths settings/u);
   assert.match(deletion, /your other one-to-one chats, such as Cross Paths plans and chats with an organizer's host, close and are hidden from both people/u);
 });
