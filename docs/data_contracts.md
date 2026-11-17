@@ -5816,9 +5816,11 @@ organisers in the city and whether the city is `live` or `launchingSoon`
   counts are then a floor.
 - `formatPages` has one entry per city-by-format page (`/<citySlug>/<slug>/`):
   `slug`, `organizerCount`, `upcomingEventCount`, `freeEventCount` (30 days)
-  and `indexing`, which is `index, follow` when the city has launched and has
-  3 or more organisers or 5 or more upcoming plans in the format (owner
-  decision, 16 Nov 2026). The 13 formats and their explicit activity-kind and
+  and `indexing`, which is `index, follow` when the city has 3 or more
+  organisers or 5 or more upcoming plans in the format (owner decision, 16 Nov
+  2026), whether or not the city has launched (owner decision, 17 Nov 2026).
+  A city that has not launched counts the published organisers joining it and
+  no plans, so only its organiser count can reach the bar. The 13 formats and their explicit activity-kind and
   keyword tables are in `functions/src/cityPlans/discoveryFormats.ts`. Plans
   and organisers carry the `discoveryFormats` they count toward and their
   resolved `womenLed` label, and `womenLedPlanCount` counts the women-led plans
