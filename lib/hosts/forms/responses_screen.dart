@@ -131,8 +131,9 @@ class _HostResponsesScreenState extends ConsumerState<HostResponsesScreen> {
       body = CatchLocalizedErrorState(
         error,
         context: AppErrorContext.formResponses,
-        onRetry: () =>
-            ref.invalidate(hostFormResponsesControllerProvider(request!)),
+        onRetry: () => ref
+            .read(hostFormResponsesControllerProvider(request!).notifier)
+            .retry(),
       );
     } else {
       body = HostResponsesBody(

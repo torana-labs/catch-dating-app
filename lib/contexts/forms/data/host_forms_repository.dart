@@ -27,6 +27,11 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:crypto/crypto.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+export 'package:catch_dating_app/contexts/forms/data/read_models/host_form_summary_reads.dart'
+    show HostFormWindow;
+export 'package:catch_dating_app/contexts/forms/data/read_models/host_response_summary_reads.dart'
+    show HostFormResponseWindow, HostResponseSummaryReads;
+
 part 'host_forms_repository.g.dart';
 
 // firestore-index: hostFormSummaries (organizerId:ASCENDING, status:ASCENDING, updatedAtMillis:DESCENDING, __name__:DESCENDING)
@@ -105,8 +110,11 @@ class HostFormsRepository {
     parse: HostFormPaymentPage.fromCallableData,
   );
 
-  Future<HostFormPage> listForms(HostFormListRequest request) =>
-      _required(summaries, 'form list').list(request);
+  /// The first [limit] forms of [request] while it is listened to.
+  Stream<HostFormWindow> watchForms(
+    HostFormListRequest request, {
+    required int limit,
+  }) => _required(summaries, 'form list').watchWindow(request, limit: limit);
 
   Future<List<HostFormTemplateSummary>> listTemplates(String organizerId) =>
       _call(
@@ -290,6 +298,14 @@ class HostFormsRepository {
     action: 'create organizer form share link',
     parse: HostFormShareLink.fromCallableData,
   );
+
+  /// The first [limit] rows of a request the response read model serves
+  /// ([HostResponseSummaryReads.supports]) while it is listened to.
+  Stream<HostFormResponseWindow> watchResponses(
+    HostFormResponseListRequest request, {
+    required int limit,
+  }) =>
+      _required(responses, 'response inbox').watchWindow(request, limit: limit);
 
   Future<HostFormResponsePage> listResponses(
     HostFormResponseListRequest request,

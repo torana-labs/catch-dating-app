@@ -127,15 +127,13 @@ class _HostCreateEventScope extends StatelessWidget {
           eventDraftRepositoryProvider.overrideWithValue(
             HostFixtureEventDraftRepository(drafts: const <EventDraft>[]),
           ),
-          fetchOrganizerProvider(widgetbookOrganizer.id).overrideWith(
+          watchOrganizerProvider(widgetbookOrganizer.id).overrideWith(
             (ref) => switch (organizerValue) {
-              AsyncData(:final value) => value,
+              AsyncData(:final value) => Stream<Organizer?>.value(value),
               AsyncError(:final error, :final stackTrace) =>
-                Future<Organizer?>.error(error, stackTrace),
-              AsyncLoading() => Future<Organizer?>.delayed(
-                const Duration(days: 1),
-              ),
-              null => widgetbookOrganizer,
+                Stream<Organizer?>.error(error, stackTrace),
+              AsyncLoading() => const Stream<Organizer?>.empty(),
+              null => Stream<Organizer?>.value(widgetbookOrganizer),
             },
           ),
           // Photo recovery restores before the create flow renders; previews

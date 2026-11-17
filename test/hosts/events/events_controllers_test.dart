@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
@@ -6,6 +8,7 @@ import 'package:catch_dating_app/contexts/bookings/data/event_participation_repo
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/read_models/host_event_summary_reads.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/host_event_staff_repository.dart';
@@ -20,6 +23,7 @@ import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_workspace_state.dart';
 import 'package:catch_dating_app/hosts/events/events_controller.dart';
 import 'package:catch_dating_app/hosts/events/events_state.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:riverpod/misc.dart' show Override;
@@ -86,7 +90,10 @@ ProviderContainer _container(List<Override> overrides) =>
 
 void main() {
   group('hostEventsController', () {
-    List<Override> base(Stream<List<Event>> upcoming) => [
+    List<Override> base(
+      Stream<List<Event>> upcoming, {
+      Stream<HostEventDraftWindow> drafts = const Stream.empty(),
+    }) => [
       watchActiveEventsForOrganizerProvider(
         ActiveOrganizerEventsQuery(
           organizerId: eventsOrganizerId,
@@ -94,6 +101,10 @@ void main() {
         ),
       ).overrideWith((ref) => upcoming),
       authenticatedSessionProvider.overrideWithValue(const AsyncLoading()),
+      hostEventDraftsProvider(
+        eventsOrganizerId,
+        _eventsRequest.day,
+      ).overrideWith((ref) => drafts),
       hostEventsProgrammesProvider(eventsOrganizerId).overrideWith(
         (ref) async => [
           const OrganizerProgramListRow(
@@ -135,6 +146,48 @@ void main() {
         'supper',
         'clay',
       ]);
+    });
+
+    test('lists the drafts from their listener as they change', () async {
+      final drafts = StreamController<HostEventDraftWindow>();
+      addTearDown(drafts.close);
+      final container = _container(
+        base(Stream.value(comingEvents), drafts: drafts.stream),
+      );
+      container.listen(hostEventsControllerProvider(_eventsRequest), (_, _) {});
+      drafts.add(const HostEventDraftWindow(events: [], hasMore: false));
+      await flushTestEventQueue();
+      expect(
+        container.read(hostEventsControllerProvider(_eventsRequest)).drafts,
+        isEmpty,
+      );
+      drafts.add(
+        const HostEventDraftWindow(events: [draftItem], hasMore: false),
+      );
+      await flushTestEventQueue();
+      expect(
+        container
+            .read(hostEventsControllerProvider(_eventsRequest))
+            .drafts
+            .map((draft) => draft.eventId),
+        ['draft-1'],
+      );
+    });
+
+    test('a failed drafts listener marks history failed', () async {
+      final container = _container(
+        base(
+          Stream.value(comingEvents),
+          drafts: Stream.error(StateError('offline')),
+        ),
+      );
+      container.listen(hostEventsControllerProvider(_eventsRequest), (_, _) {});
+      await flushTestEventQueue();
+      final state = container.read(
+        hostEventsControllerProvider(_eventsRequest),
+      );
+      expect(state.status, HostEventsStatus.ready);
+      expect(state.historyFailed, isTrue);
     });
 
     test('a failed listener is the error state', () async {

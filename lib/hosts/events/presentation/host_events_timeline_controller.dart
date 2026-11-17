@@ -30,6 +30,18 @@ PrivateEventSetupRepository privateEventSetupTimelineRepository(Ref ref) {
   );
 }
 
+/// The organizer's unpublished events starting on or after [from], soonest
+/// first, as a listener: a draft saved, published or cancelled in Create or
+/// a workspace shows on return without a reread.
+@riverpod
+Stream<HostEventDraftWindow> hostEventDrafts(
+  Ref ref,
+  String organizerId,
+  DateTime from,
+) => ref
+    .watch(privateEventSetupTimelineRepositoryProvider)
+    .watchDrafts(organizerId: organizerId, from: from);
+
 @immutable
 class HostEventsTimelineRequest {
   const HostEventsTimelineRequest({
@@ -62,12 +74,9 @@ class HostEventsTimelineData {
     required this.pastCursor,
     required this.hasMoreActive,
     required this.hasMorePast,
-    this.unpublishedUpcoming = const <PrivateEventSetupInventoryItem>[],
-    this.unpublishedHistory = const <PrivateEventSetupInventoryItem>[],
     this.cancelledEvents = const <Event>[],
     this.cancelledCursor,
     this.hasMoreCancelled = false,
-    this.unpublishedCursors = const {},
     this.historyInitialized = true,
     this.loadingMoreActive = false,
     this.loadingMorePast = false,
@@ -78,13 +87,6 @@ class HostEventsTimelineData {
 
   final List<Event> activeEvents;
   final List<Event> pastEvents;
-
-  /// Organizer-only events still in setup (`publicationState: 'private'`).
-  /// They share the `events` collection and this timeline; the light
-  /// inventory projection is used because setup drafts may not yet carry
-  /// the fields the rich Event model requires.
-  final List<PrivateEventSetupInventoryItem> unpublishedUpcoming;
-  final List<PrivateEventSetupInventoryItem> unpublishedHistory;
   final List<Event> cancelledEvents;
   final DocumentSnapshot<Event>? activeCursor;
   final DocumentSnapshot<Event>? pastCursor;
@@ -92,7 +94,6 @@ class HostEventsTimelineData {
   final bool hasMoreActive;
   final bool hasMorePast;
   final bool hasMoreCancelled;
-  final Map<PrivateEventSetupScope, String> unpublishedCursors;
   final bool historyInitialized;
   final bool loadingMoreActive;
   final bool loadingMorePast;
@@ -108,14 +109,8 @@ class HostEventsTimelineData {
     return List.unmodifiable(byId.values);
   }
 
-  bool get hasMoreUpcoming =>
-      hasMoreActive ||
-      unpublishedCursors.containsKey(PrivateEventSetupScope.upcoming);
-  bool get hasMoreHistory =>
-      hasMorePast ||
-      hasMoreCancelled ||
-      unpublishedCursors.containsKey(PrivateEventSetupScope.past) ||
-      unpublishedCursors.containsKey(PrivateEventSetupScope.cancelled);
+  bool get hasMoreUpcoming => hasMoreActive;
+  bool get hasMoreHistory => hasMorePast || hasMoreCancelled;
   bool get canLoadMoreActive => hasMoreUpcoming && !loadingMoreActive;
   bool get canLoadMorePast =>
       historyInitialized && hasMoreHistory && !loadingMorePast;
@@ -123,8 +118,6 @@ class HostEventsTimelineData {
   HostEventsTimelineData copyWith({
     List<Event>? activeEvents,
     List<Event>? pastEvents,
-    List<PrivateEventSetupInventoryItem>? unpublishedUpcoming,
-    List<PrivateEventSetupInventoryItem>? unpublishedHistory,
     List<Event>? cancelledEvents,
     DocumentSnapshot<Event>? activeCursor,
     bool clearActiveCursor = false,
@@ -135,7 +128,6 @@ class HostEventsTimelineData {
     bool? hasMoreActive,
     bool? hasMorePast,
     bool? hasMoreCancelled,
-    Map<PrivateEventSetupScope, String>? unpublishedCursors,
     bool? historyInitialized,
     bool? loadingMoreActive,
     bool? loadingMorePast,
@@ -147,8 +139,6 @@ class HostEventsTimelineData {
   }) => HostEventsTimelineData(
     activeEvents: activeEvents ?? this.activeEvents,
     pastEvents: pastEvents ?? this.pastEvents,
-    unpublishedUpcoming: unpublishedUpcoming ?? this.unpublishedUpcoming,
-    unpublishedHistory: unpublishedHistory ?? this.unpublishedHistory,
     cancelledEvents: cancelledEvents ?? this.cancelledEvents,
     activeCursor: clearActiveCursor ? null : activeCursor ?? this.activeCursor,
     pastCursor: clearPastCursor ? null : pastCursor ?? this.pastCursor,
@@ -158,7 +148,6 @@ class HostEventsTimelineData {
     hasMoreActive: hasMoreActive ?? this.hasMoreActive,
     hasMorePast: hasMorePast ?? this.hasMorePast,
     hasMoreCancelled: hasMoreCancelled ?? this.hasMoreCancelled,
-    unpublishedCursors: unpublishedCursors ?? this.unpublishedCursors,
     historyInitialized: historyInitialized ?? this.historyInitialized,
     loadingMoreActive: loadingMoreActive ?? this.loadingMoreActive,
     loadingMorePast: loadingMorePast ?? this.loadingMorePast,
@@ -199,32 +188,10 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
     }
     final previous = state.value;
     final repository = ref.watch(eventRepositoryProvider);
-    final setups = ref.watch(privateEventSetupTimelineRepositoryProvider);
     final active = _capture(
       () => repository.fetchActiveEventsPage(
         organizerId: request.organizerId,
         sessionBoundary: request.sessionBoundary,
-      ),
-    );
-    final upcoming = _capture(
-      () => _readUnpublishedPage(
-        setups,
-        request.organizerId,
-        PrivateEventSetupScope.upcoming,
-      ),
-    );
-    final privatePast = _capture(
-      () => _readUnpublishedPage(
-        setups,
-        request.organizerId,
-        PrivateEventSetupScope.past,
-      ),
-    );
-    final privateCancelled = _capture(
-      () => _readUnpublishedPage(
-        setups,
-        request.organizerId,
-        PrivateEventSetupScope.cancelled,
       ),
     );
     final past = _capture(
@@ -238,38 +205,23 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
           repository.fetchCancelledEventsPage(organizerId: request.organizerId),
     );
 
-    // Reads run independently, but failures retain the original source order:
-    // active, private upcoming, private past, private cancelled, published past,
-    // published cancelled. Every started future already has an error handler.
+    // Reads run independently, but failures retain the source order: active,
+    // past, cancelled. Every started future already has an error handler.
     final activePage = _valueOrThrow(await active);
-    final upcomingPage = _valueOrThrow(await upcoming);
     if (ref.mounted &&
         generation == _generation &&
         identical(
           request.session,
           ref.read(authenticatedSessionProvider).asData?.value,
         )) {
-      unawaited(
-        _finishInitialHistory(
-          generation,
-          future,
-          privatePast,
-          privateCancelled,
-          past,
-          cancelled,
-        ),
-      );
+      unawaited(_finishInitialHistory(generation, future, past, cancelled));
     }
-    return _appendUnpublished(_initialState(activePage, previous), {
-      PrivateEventSetupScope.upcoming: upcomingPage,
-    }).copyWith(loadingMorePast: true);
+    return _initialState(activePage, previous).copyWith(loadingMorePast: true);
   }
 
   Future<void> _finishInitialHistory(
     int generation,
     Future<HostEventsTimelineData> initial,
-    Future<AsyncValue<PrivateEventSetupInventoryPage>> privatePast,
-    Future<AsyncValue<PrivateEventSetupInventoryPage>> privateCancelled,
     Future<AsyncValue<CursorPage<Event, DocumentSnapshot<Event>>>> past,
     Future<AsyncValue<CursorPage<Event, DocumentSnapshot<Event>>>> cancelled,
   ) async {
@@ -277,28 +229,19 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
       // build owns the first AsyncData. History must not be overwritten by its
       // later completion, including when every repository answers immediately.
       await initial;
-      final unpublishedPast = _valueOrThrow(await privatePast);
-      final unpublishedCancelled = _valueOrThrow(await privateCancelled);
       final pastResult = await past;
       final cancelledResult = await cancelled;
       final latest = _currentData(generation);
       if (latest == null) return;
       final failure = pastResult.hasError ? pastResult : cancelledResult;
       state = AsyncData(
-        _appendUnpublished(
-          _appendPast(
-            latest.copyWith(
-              pastEvents: pastResult.hasError ? null : const [],
-              cancelledEvents: cancelledResult.hasError ? null : const [],
-              unpublishedHistory: const [],
-            ),
-            pastResult.asData?.value,
-            cancelledResult.asData?.value,
+        _appendPast(
+          latest.copyWith(
+            pastEvents: pastResult.hasError ? null : const [],
+            cancelledEvents: cancelledResult.hasError ? null : const [],
           ),
-          {
-            PrivateEventSetupScope.past: unpublishedPast,
-            PrivateEventSetupScope.cancelled: unpublishedCancelled,
-          },
+          pastResult.asData?.value,
+          cancelledResult.asData?.value,
         ).copyWith(
           loadingMorePast: false,
           historyInitialized: !failure.hasError,
@@ -308,8 +251,6 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
       );
     } on Object catch (error, stackTrace) {
       if (_currentData(generation) == null) return;
-      // Private inventory is required, even when its history read finishes
-      // after Upcoming. Preserve the existing page-level failure contract.
       state = AsyncError(error, stackTrace);
     }
   }
@@ -321,9 +262,6 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
     if (current == null || !current.canLoadMoreActive) return;
     final request = this.request;
     final repository = ref.read(eventRepositoryProvider);
-    final setups = current.unpublishedCursors.isEmpty
-        ? null
-        : ref.read(privateEventSetupTimelineRepositoryProvider);
     state = AsyncData(
       current.copyWith(loadingMoreActive: true, clearActiveLoadMoreError: true),
     );
@@ -335,19 +273,10 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
               startAfter: current.activeCursor,
             )
           : null;
-      if (_currentData(generation) == null) return;
-      final unpublishedPage = await _readUnpublishedContinuation(
-        setups,
-        request.organizerId,
-        current,
-        PrivateEventSetupScope.upcoming,
-      );
       final latest = _currentData(generation);
       if (latest == null) return;
       state = AsyncData(
-        _appendUnpublished(_appendActive(latest, page), {
-          PrivateEventSetupScope.upcoming: ?unpublishedPage,
-        }).copyWith(loadingMoreActive: false),
+        _appendActive(latest, page).copyWith(loadingMoreActive: false),
       );
     } on Object catch (error) {
       final latest = _currentData(generation);
@@ -365,9 +294,6 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
     if (current == null || !current.canLoadMorePast) return;
     final request = this.request;
     final repository = ref.read(eventRepositoryProvider);
-    final setups = current.unpublishedCursors.isEmpty
-        ? null
-        : ref.read(privateEventSetupTimelineRepositoryProvider);
     state = AsyncData(
       current.copyWith(loadingMorePast: true, clearPastError: true),
     );
@@ -386,27 +312,14 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
               startAfter: current.cancelledCursor,
             )
           : null;
-      if (_currentData(generation) == null) return;
-      final unpublishedPast = await _readUnpublishedContinuation(
-        setups,
-        request.organizerId,
-        current,
-        PrivateEventSetupScope.past,
-      );
-      if (_currentData(generation) == null) return;
-      final unpublishedCancelled = await _readUnpublishedContinuation(
-        setups,
-        request.organizerId,
-        current,
-        PrivateEventSetupScope.cancelled,
-      );
       final latest = _currentData(generation);
       if (latest == null) return;
       state = AsyncData(
-        _appendUnpublished(_appendPast(latest, page, cancelledPage), {
-          PrivateEventSetupScope.past: ?unpublishedPast,
-          PrivateEventSetupScope.cancelled: ?unpublishedCancelled,
-        }).copyWith(loadingMorePast: false),
+        _appendPast(
+          latest,
+          page,
+          cancelledPage,
+        ).copyWith(loadingMorePast: false),
       );
     } on Object catch (error, stackTrace) {
       final latest = _currentData(generation);
@@ -467,21 +380,6 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
     );
   }
 
-  Future<PrivateEventSetupInventoryPage?> _readUnpublishedContinuation(
-    PrivateEventSetupRepository? repository,
-    String organizerId,
-    HostEventsTimelineData current,
-    PrivateEventSetupScope scope,
-  ) async {
-    final cursor = current.unpublishedCursors[scope];
-    if (cursor == null || repository == null) return null;
-    return repository.list(
-      organizerId: organizerId,
-      scope: scope,
-      cursor: cursor,
-    );
-  }
-
   // A page response updates its own lane in the latest state. Never restore a
   // pre-await snapshot over the other tab's progress, or a refreshed session.
   HostEventsTimelineData? _currentData(int generation) =>
@@ -493,43 +391,6 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
           )
       ? state.asData?.value
       : null;
-}
-
-HostEventsTimelineData _appendUnpublished(
-  HostEventsTimelineData current,
-  Map<PrivateEventSetupScope, PrivateEventSetupInventoryPage> pages,
-) {
-  final cursors = Map<PrivateEventSetupScope, String>.of(
-    current.unpublishedCursors,
-  );
-  for (final entry in pages.entries) {
-    final cursor = entry.value.nextCursor;
-    if (cursor == null) {
-      cursors.remove(entry.key);
-    } else {
-      cursors[entry.key] = cursor;
-    }
-  }
-  List<PrivateEventSetupInventoryItem> merge(
-    Iterable<PrivateEventSetupInventoryItem> previous,
-    Iterable<PrivateEventSetupInventoryItem> additions,
-  ) => List.unmodifiable(
-    {
-      for (final item in previous) item.eventId: item,
-      for (final item in additions) item.eventId: item,
-    }.values,
-  );
-  return current.copyWith(
-    unpublishedUpcoming: merge(
-      current.unpublishedUpcoming,
-      pages[PrivateEventSetupScope.upcoming]?.events ?? const [],
-    ),
-    unpublishedHistory: merge(current.unpublishedHistory, [
-      ...?pages[PrivateEventSetupScope.past]?.events,
-      ...?pages[PrivateEventSetupScope.cancelled]?.events,
-    ]),
-    unpublishedCursors: Map.unmodifiable(cursors),
-  );
 }
 
 // Capture synchronous throws as well as asynchronous failures immediately, so
@@ -550,12 +411,6 @@ Future<AsyncValue<T>> _capture<T>(Future<T> Function() read) async {
   }
 }
 
-Future<PrivateEventSetupInventoryPage> _readUnpublishedPage(
-  PrivateEventSetupRepository repository,
-  String organizerId,
-  PrivateEventSetupScope scope,
-) => repository.list(organizerId: organizerId, scope: scope);
-
 HostEventsTimelineData _initialState(
   CursorPage<Event, DocumentSnapshot<Event>> activePage,
   HostEventsTimelineData? previous,
@@ -563,14 +418,6 @@ HostEventsTimelineData _initialState(
   activeEvents: activePage.items,
   pastEvents: previous?.pastEvents ?? const [],
   cancelledEvents: previous?.cancelledEvents ?? const [],
-  unpublishedHistory: previous?.unpublishedHistory ?? const [],
-  unpublishedCursors: {
-    for (final entry
-        in (previous?.unpublishedCursors ??
-                const <PrivateEventSetupScope, String>{})
-            .entries)
-      if (entry.key != PrivateEventSetupScope.upcoming) entry.key: entry.value,
-  },
   activeCursor: activePage.nextCursor,
   pastCursor: previous?.pastCursor,
   cancelledCursor: previous?.cancelledCursor,

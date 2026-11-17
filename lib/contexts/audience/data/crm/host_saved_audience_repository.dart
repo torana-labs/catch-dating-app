@@ -27,6 +27,7 @@ class HostSavedAudienceRepository {
 
   /// The group directory read model (`hostGroupSummaries`, `hostGroupDetails`).
   final HostSummaryReader summaries;
+  static const groupMarker = 'groupSummaryVersion';
 
   final FirebaseFunctions _functions;
 
@@ -61,41 +62,48 @@ class HostSavedAudienceRepository {
     parse: HostSavedAudienceFilterOptions.fromCallableData,
   );
 
-  Future<HostSavedAudienceSummaryPage> listGroupSummaries(
+  /// The first [limit] active groups by name (or most recently previewed)
+  /// while they are listened to: a group saved, archived or previewed
+  /// elsewhere shows at once.
+  Stream<HostGroupSummaryWindow> watchGroupSummaries(
     String organizerId, {
-    String? cursor,
-    int limit = ReadLimitPolicy.historyPage,
+    required int limit,
     bool byName = true,
     bool? isStatic,
-    bool Function()? isCurrent,
-  }) async {
-    void checkCurrent() {
-      if (isCurrent != null && !isCurrent()) {
-        throw StateError('Group directory was superseded.');
-      }
-    }
+  }) => summaries
+      .watchWindow(
+        collection: 'hostGroupSummaries',
+        organizerId: organizerId,
+        orderField: byName ? 'searchName' : 'lastPreviewAtMillis',
+        descending: !byName,
+        limit: limit,
+        marker: groupMarker,
+        equalities: {'status': 'active', 'isStatic': ?isStatic},
+      )
+      .map(
+        (window) => HostGroupSummaryWindow(
+          audiences: [
+            for (final doc in window.documents)
+              HostSavedAudienceSummary.fromMap(doc['row'] as Map),
+          ],
+          hasMore: window.hasMore,
+        ),
+      );
 
-    checkCurrent();
-    await summaries.activatedDirectory(organizerId, 'groupSummaryVersion');
-    checkCurrent();
-    final page = await summaries.page(
-      collection: 'hostGroupSummaries',
-      organizerId: organizerId,
-      orderField: byName ? 'searchName' : 'lastPreviewAtMillis',
-      descending: !byName,
-      queryKey: jsonEncode(['active', byName, isStatic]),
-      limit: limit,
-      equalities: {'status': 'active', 'isStatic': ?isStatic},
-      cursor: cursor,
-    );
-    checkCurrent();
-    return HostSavedAudienceSummaryPage(
-      audiences: page.documents
-          .map((doc) => HostSavedAudienceSummary.fromMap(doc['row'] as Map))
-          .toList(),
-      nextCursor: page.nextCursor,
-    );
-  }
+  /// One active group's definition while it is listened to: a save
+  /// elsewhere delivers the new revision. A group archived or removed
+  /// fails as no longer available, never a stale definition.
+  Stream<HostSavedAudience> watchSavedAudience({
+    required String organizerId,
+    required String audienceId,
+  }) => summaries
+      .watchDocument(
+        collection: 'hostGroupDetails',
+        organizerId: organizerId,
+        id: audienceId,
+        marker: groupMarker,
+      )
+      .map((data) => _activeAudience(data, organizerId, audienceId));
 
   /// Load one active definition after the user selects its summary.
   /// Never fall back to the supplied revision when it is missing or unavailable.
@@ -105,7 +113,7 @@ class HostSavedAudienceRepository {
     required bool Function() isCurrent,
   }) async {
     if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
-    await summaries.activatedDirectory(organizerId, 'groupSummaryVersion');
+    await summaries.activatedDirectory(organizerId, groupMarker);
     if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
     final data = await summaries.document(
       collection: 'hostGroupDetails',
@@ -113,6 +121,14 @@ class HostSavedAudienceRepository {
       id: audienceId,
     );
     if (!isCurrent()) throw StateError('Saved group refresh was superseded.');
+    return _activeAudience(data, organizerId, audienceId);
+  }
+
+  static HostSavedAudience _activeAudience(
+    Map<String, dynamic>? data,
+    String organizerId,
+    String audienceId,
+  ) {
     if (data == null) throw StateError('Saved group is no longer available.');
     final audience = HostSavedAudience.fromMap(data['row'] as Map);
     if (audience.organizerId != organizerId ||
@@ -216,128 +232,130 @@ Future<HostSavedAudienceFilterOptions> hostSavedAudienceFilterOptions(
     .watch(hostSavedAudienceRepositoryProvider)
     .savedAudienceFilterOptions(organizerId);
 
-/// Fresh selected Group details stay alive only while the requested read runs.
-/// Session changes still dispose the provider and fence the repository result.
+/// A selected group's definition, as a listener on `hostGroupDetails`.
 @riverpod
-Future<HostSavedAudience> hostSavedAudienceDetail(
+Stream<HostSavedAudience> hostSavedAudienceDetail(
   Ref ref,
   String organizerId,
   String audienceId,
-) async {
-  final repository = ref.watch(hostSavedAudienceRepositoryProvider);
-  final pendingRead = ref.keepAlive();
-  try {
-    return await repository.reloadSavedAudience(
-      organizerId: organizerId,
-      audienceId: audienceId,
-      isCurrent: () => ref.mounted,
-    );
-  } finally {
-    pendingRead.close();
-  }
-}
+) => ref
+    .watch(hostSavedAudienceRepositoryProvider)
+    .watchSavedAudience(organizerId: organizerId, audienceId: audienceId);
 
-/// Every active group's metadata from `hostGroupSummaries`: the Audience
-/// workspace's exhaustive local name search and the campaign editor's group
-/// picker. Full selected-member lists load only when a group opens.
+/// The most groups the exhaustive directory lists before it fails safely.
+const hostAllGroupsLimit = 2500;
+
+/// Every active group's metadata from `hostGroupSummaries`, by name, as a
+/// listener: the Audience workspace's exhaustive local name search and the
+/// campaign editor's group picker. Full selected-member lists load only when
+/// a group opens.
 @riverpod
-Future<HostSavedAudienceSummaryPage> hostAllSavedAudienceSummaries(
+Stream<HostSavedAudienceSummaryPage> hostAllSavedAudienceSummaries(
   Ref ref,
   String organizerId,
-) async {
-  final operationRef = ref;
-  final repository = ref.watch(hostSavedAudienceRepositoryProvider);
-  final audiences = <HostSavedAudienceSummary>[];
-  final cursors = <String>{};
-  String? cursor;
-  do {
-    final page = await repository.listGroupSummaries(
-      organizerId,
-      cursor: cursor,
-      isCurrent: () => operationRef.mounted,
-    );
-    if (!ref.mounted) throw StateError('Group directory was disposed.');
-    audiences.addAll(page.audiences);
-    cursor = page.nextCursor;
-    if (cursor != null && (audiences.length >= 2500 || !cursors.add(cursor))) {
-      throw StateError('Group directory could not be exhausted safely.');
-    }
-  } while (cursor != null);
-  return HostSavedAudienceSummaryPage(audiences: audiences, nextCursor: null);
+) => ref
+    .watch(hostSavedAudienceRepositoryProvider)
+    .watchGroupSummaries(organizerId, limit: hostAllGroupsLimit)
+    .map((window) {
+      if (window.hasMore) {
+        throw StateError('Group directory could not be exhausted safely.');
+      }
+      return HostSavedAudienceSummaryPage(
+        audiences: window.audiences,
+        nextCursor: null,
+      );
+    });
+
+/// How many groups one directory query listens to; it grows by a page each
+/// time the list asks for more.
+@riverpod
+class HostGroupDirectoryWindow extends _$HostGroupDirectoryWindow {
+  @override
+  int build(String organizerId, {bool byName = true, bool? isStatic}) =>
+      ReadLimitPolicy.directoryPage;
+
+  void grow() => state += ReadLimitPolicy.directoryPage;
 }
 
-/// First-page publication and continuation belong to one authenticated scope.
+/// The first rows of one group directory query, as a listener.
+@riverpod
+Stream<HostGroupSummaryWindow> hostGroupDirectoryListener(
+  Ref ref,
+  String organizerId, {
+  required int limit,
+  bool byName = true,
+  bool? isStatic,
+}) => ref
+    .watch(hostSavedAudienceRepositoryProvider)
+    .watchGroupSummaries(
+      organizerId,
+      limit: limit,
+      byName: byName,
+      isStatic: isStatic,
+    );
+
+/// The paginated group directory, live: the first page, then a larger
+/// listener each time the list asks for more. A larger listener that fails
+/// keeps the rows already shown and reports the failure under them.
 @riverpod
 class HostGroupDirectoryController extends _$HostGroupDirectoryController {
-  int _generation = 0;
-
   @override
   Future<HostGroupDirectoryState> build(
     String organizerId, {
     bool byName = true,
     bool? isStatic,
   }) async {
-    final generation = ++_generation;
-    final operationRef = ref;
-    ref.onDispose(() => ++_generation);
-    final page = await ref
-        .watch(hostSavedAudienceRepositoryProvider)
-        .listGroupSummaries(
+    final limit = ref.watch(
+      hostGroupDirectoryWindowProvider(
+        organizerId,
+        byName: byName,
+        isStatic: isStatic,
+      ),
+    );
+    final previous = state.value;
+    final HostGroupSummaryWindow window;
+    try {
+      window = await ref.watch(
+        hostGroupDirectoryListenerProvider(
           organizerId,
+          limit: limit,
           byName: byName,
           isStatic: isStatic,
-          limit: ReadLimitPolicy.directoryPage,
-          isCurrent: () => operationRef.mounted && generation == _generation,
-        );
-    if (!operationRef.mounted || generation != _generation) {
-      throw StateError('Group directory was superseded.');
+        ).future,
+      );
+    } on Object catch (error) {
+      if (limit == ReadLimitPolicy.directoryPage || previous == null) rethrow;
+      return HostGroupDirectoryState(
+        audiences: previous.audiences,
+        hasMore: previous.hasMore,
+        loadMoreError: error,
+      );
     }
-    return HostGroupDirectoryState(page: page);
+    return HostGroupDirectoryState(
+      audiences: List.unmodifiable(window.audiences),
+      hasMore: window.hasMore,
+    );
   }
 
-  Future<void> loadMore() async {
-    // A refresh can retain old data, but its cursor no longer owns this read.
-    if (!ref.mounted || state.isLoading || state.hasError) return;
+  /// Listens to one more page; the list keeps its rows meanwhile.
+  void loadMore() {
     final current = state.asData?.value;
-    if (current == null ||
-        current.loadingMore ||
-        current.page.nextCursor == null) {
-      return;
-    }
-    final generation = _generation;
-    final operationRef = ref;
+    if (current == null || !current.canLoadMore) return;
     state = AsyncData(
-      HostGroupDirectoryState(page: current.page, loadingMore: true),
+      HostGroupDirectoryState(
+        audiences: current.audiences,
+        hasMore: current.hasMore,
+        loadingMore: true,
+      ),
     );
-    try {
-      final page = await ref
-          .read(hostSavedAudienceRepositoryProvider)
-          .listGroupSummaries(
+    ref
+        .read(
+          hostGroupDirectoryWindowProvider(
             organizerId,
             byName: byName,
             isStatic: isStatic,
-            cursor: current.page.nextCursor,
-            limit: ReadLimitPolicy.directoryPage,
-            isCurrent: () => operationRef.mounted && generation == _generation,
-          );
-      if (!operationRef.mounted || generation != _generation) return;
-      final rows = {
-        for (final row in current.page.audiences) row.audienceId: row,
-        for (final row in page.audiences) row.audienceId: row,
-      };
-      state = AsyncData(
-        HostGroupDirectoryState(
-          page: HostSavedAudienceSummaryPage(
-            audiences: List.unmodifiable(rows.values),
-            nextCursor: page.nextCursor,
-          ),
-        ),
-      );
-    } on Object catch (error) {
-      if (!operationRef.mounted || generation != _generation) return;
-      state = AsyncData(
-        HostGroupDirectoryState(page: current.page, loadMoreError: error),
-      );
-    }
+          ).notifier,
+        )
+        .grow();
   }
 }

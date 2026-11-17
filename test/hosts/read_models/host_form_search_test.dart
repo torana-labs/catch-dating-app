@@ -75,23 +75,54 @@ void main() {
   });
 
   test('a search matches title or description, case-insensitive', () async {
-    final page = await reads.list(
-      const HostFormListRequest(organizerId: 'org', query: ' run '),
-    );
+    final window = await reads
+        .watchWindow(
+          const HostFormListRequest(organizerId: 'org', query: ' run '),
+          limit: 1,
+        )
+        .first;
 
-    expect(page.items.map((item) => item.formId), ['run', 'supper']);
-    expect(page.nextCursor, isNull);
+    expect(window.forms.map((item) => item.formId), ['run', 'supper']);
+    expect(window.hasMore, isFalse);
   });
 
   test('a search keeps the status filter', () async {
-    final page = await reads.list(
-      const HostFormListRequest(
-        organizerId: 'org',
-        query: 'run',
-        statuses: {HostFormLifecycleStatus.archived},
-      ),
-    );
+    final window = await reads
+        .watchWindow(
+          const HostFormListRequest(
+            organizerId: 'org',
+            query: 'run',
+            statuses: {HostFormLifecycleStatus.archived},
+          ),
+          limit: 25,
+        )
+        .first;
 
-    expect(page.items.map((item) => item.formId), ['old']);
+    expect(window.forms.map((item) => item.formId), ['old']);
+  });
+
+  test('a form the server changes shows in the open list', () async {
+    final titles = reads
+        .watchWindow(const HostFormListRequest(organizerId: 'org'), limit: 25)
+        .map((window) => window.forms.map((item) => item.formId).toList());
+    final expectation = expectLater(
+      titles,
+      emitsInOrder([
+        ['run', 'supper', 'yoga'],
+        ['yoga', 'run', 'supper'],
+      ]),
+    );
+    await pumpEventQueue();
+    await _seed(db, 'yoga', title: 'Yoga', updatedAt: 9);
+    await expectation;
+  });
+
+  test('more forms than the window says so', () async {
+    final window = await reads
+        .watchWindow(const HostFormListRequest(organizerId: 'org'), limit: 2)
+        .first;
+
+    expect(window.forms.map((item) => item.formId), ['run', 'supper']);
+    expect(window.hasMore, isTrue);
   });
 }

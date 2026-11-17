@@ -473,7 +473,7 @@ class _ManyFilters extends HostFormResponsesController {
 class _Forms extends HostFormsDirectoryController {
   @override
   Future<HostFormsDirectoryState> build(HostFormListRequest request) async =>
-      HostFormsDirectoryState(forms: responseFilterForms, nextCursor: null);
+      HostFormsDirectoryState(forms: responseFilterForms, hasMore: false);
 }
 
 class _ScopedResponses extends HostFormResponsesController {

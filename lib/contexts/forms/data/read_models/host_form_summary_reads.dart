@@ -1,71 +1,75 @@
-import 'dart:convert';
-
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
 
-/// The form list from `hostFormSummaries`, title searches included.
+/// The first rows of one live form list, and whether more follow.
+class HostFormWindow {
+  const HostFormWindow({required this.forms, required this.hasMore});
+
+  final List<HostFormSummary> forms;
+  final bool hasMore;
+}
+
+/// The form list from `hostFormSummaries`, title searches included, as a
+/// listener: a form the server adds, changes or removes shows at once.
 class HostFormSummaryReads {
   const HostFormSummaryReads(this.reader);
   final HostSummaryReader reader;
+  static const marker = 'formSummaryVersion';
 
   /// The most forms a search reads before it asks for narrower filters.
   static const maxSearchedForms = 500;
 
-  /// One page of the list, or every form whose title or description
-  /// contains the search (as the callable matched, case-insensitive).
-  Future<HostFormPage> list(HostFormListRequest request) async {
-    await reader.activatedDirectory(request.organizerId, 'formSummaryVersion');
+  /// The first [limit] forms of the list, newest change first, or every
+  /// form whose title or description contains the search (as the callable
+  /// matched, case-insensitive) while it is listened to.
+  Stream<HostFormWindow> watchWindow(
+    HostFormListRequest request, {
+    required int limit,
+  }) {
     final statuses =
         request.statuses.isEmpty
               ? ['draft', 'published', 'paused']
               : request.statuses.map((item) => item.name).toList()
           ..sort();
     final purposes = request.purposes.map((item) => item.name).toList()..sort();
-    Future<HostSummaryPage> page({required int limit, String? cursor}) =>
-        reader.page(
-          collection: 'hostFormSummaries',
-          organizerId: request.organizerId,
-          orderField: 'updatedAtMillis',
-          descending: true,
-          queryKey: jsonEncode([statuses, purposes]),
-          limit: limit,
-          inFilters: {
-            'status': statuses,
-            if (purposes.isNotEmpty) 'purpose': purposes,
-          },
-          cursor: cursor,
-        );
     final search = request.query?.trim().toLowerCase() ?? '';
-    if (search.isEmpty) {
-      final first = await page(limit: request.limit, cursor: request.cursor);
-      return HostFormPage.fromCallableData({
-        'organizerId': request.organizerId,
-        'items': first.documents.map((doc) => doc['row']).toList(),
-        'nextCursor': first.nextCursor,
-      });
-    }
     // A contains-match cannot be indexed; forms are few, so read them all.
-    final rows = <Object?>[];
-    var read = 0;
-    String? cursor;
-    do {
-      final next = await page(limit: 100, cursor: cursor);
-      read += next.documents.length;
-      for (final doc in next.documents) {
-        final row = doc['row'] as Map;
-        final text = '${row['title']} ${row['description'] ?? ''}'
-            .toLowerCase();
-        if (text.contains(search)) rows.add(row);
+    final windows = reader.watchWindow(
+      collection: 'hostFormSummaries',
+      organizerId: request.organizerId,
+      orderField: 'updatedAtMillis',
+      descending: true,
+      limit: search.isEmpty ? limit : maxSearchedForms,
+      marker: marker,
+      inFilters: {
+        'status': statuses,
+        if (purposes.isNotEmpty) 'purpose': purposes,
+      },
+    );
+    return windows.map((window) {
+      if (search.isEmpty) {
+        return HostFormWindow(
+          forms: [
+            for (final doc in window.documents)
+              HostFormSummary.fromMap(doc['row'] as Map),
+          ],
+          hasMore: window.hasMore,
+        );
       }
-      cursor = next.nextCursor;
-      if (cursor != null && read >= maxSearchedForms) {
+      if (window.hasMore) {
         throw StateError('Too many forms to search. Narrow the filters.');
       }
-    } while (cursor != null);
-    return HostFormPage.fromCallableData({
-      'organizerId': request.organizerId,
-      'items': rows,
-      'nextCursor': null,
+      return HostFormWindow(
+        forms: [
+          for (final doc in window.documents)
+            if ('${(doc['row'] as Map)['title']} '
+                    '${(doc['row'] as Map)['description'] ?? ''}'
+                .toLowerCase()
+                .contains(search))
+              HostFormSummary.fromMap(doc['row'] as Map),
+        ],
+        hasMore: false,
+      );
     });
   }
 }

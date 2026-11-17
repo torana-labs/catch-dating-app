@@ -180,7 +180,7 @@ Typed handoffs:
 | `HostPersonScreen` | `lib/hosts/people/person_screen.dart` | Actions: open_customer_event, undo_customer_merge, retry_customer_detail, open_personal_whatsapp_handoff. |
 | `HostAudienceView` | `lib/hosts/presentation/host_audience_view.dart` | Closed peer-mode vocabulary for People, Audiences, Forms, and Responses. |
 | `HostFormsScreen` | `lib/hosts/forms/forms_screen.dart` | The Forms tab inside People; one form, its questions, responses, one answer and offers live beside it under lib/hosts/forms. |
-| `HostFormsDirectoryController` | `lib/hosts/presentation/forms/host_forms_controller.dart` | Organizer form inventory state. |
+| `HostFormsDirectoryController` | `lib/hosts/presentation/forms/host_forms_directory_controller.dart` | Organizer form inventory state. |
 | `HostFormEditorController` | `lib/hosts/presentation/forms/host_forms_controller.dart` | Draft/editor state and publication actions. |
 | `HostFormResponsesController` | `lib/hosts/presentation/forms/host_form_operations_controller.dart` | Response list and review-facing projection. |
 | `HostFormAutomationsController` | `lib/hosts/presentation/forms/host_form_operations_controller.dart` | Automation configuration and run recovery. |
