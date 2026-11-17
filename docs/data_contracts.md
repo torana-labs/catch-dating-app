@@ -2945,7 +2945,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Organizer WhatsApp Inbox and reply reservation | server-only TTL-bound `organizerWhatsappThreads/{threadId}`, `organizerWhatsappMessages/{messageId}`, and `organizerWhatsappReplyOperations/{operationId}` |
 | External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}` and `providerSyncRuns/{runId}`; manager-readable `externalEventMappings/{mappingId}` (get only) and `hostProviderConnectionViews/{organizerId}` |
 | Door roster labels and Catch spend | manager-readable `hostEventRosterInsightViews/{eventId}` and `hostOrganizerSpendProjections/{organizerId}`; server-only `organizerSpendTotals/{organizerId}` |
-| Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}`; the grantee may get only their own grant, every other read and all writes are denied |
+| Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}`; the grantee may get only their own grant, the organizer's current managers may list an event's grants, and all writes are denied |
 | Door staff presence | `eventStaffPresence/{eventId}_{uid}`, readable by the event's managers and `viewRoster` staff, written only by `heartbeatEventStaffPresence` |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
@@ -5104,8 +5104,11 @@ while `expiresAt` is in the future.
 It records organizer,
 grantor, role, issue/expiry/revocation and revision; grants expire within 14
 days and are capped at 50 active rows per event. A grantee may get only their
-own grant, which the Host operator route reads to resolve its permissions; every
-other direct read and all writes are denied. Staff operate through callables
+own grant, which the Host operator route reads to resolve its permissions. The
+organizer's current managers list an event's grants for the Host staff panel and
+door team (a query on `eventId` and `organizerId`, newest `updatedAt` first, at
+most 50); an active grant past `expiresAt` reads as expired. Every other direct
+read and all writes are denied. Staff operate through callables
 and the restricted Host operator route,
 which never grants CRM, campaign, import, provider, event-edit or organizer-wide
 authority. Organizer managers continue to work without a grant.

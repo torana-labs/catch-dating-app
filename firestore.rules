@@ -2203,11 +2203,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // The grantee gets their own grant. The organizer's current managers list
+    // an event's grants for the staff panel; the query names the organizer.
     match /eventStaffGrants/{grantId} {
       allow get: if isAuthed()
         && resource.data.uid == request.auth.uid
         && grantId == eventStaffGrantDocId(resource.data.eventId, request.auth.uid);
-      allow list, write: if false;
+      allow list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
     }
 
     // Private wedding/corporate programs. Every document in this family is

@@ -236,8 +236,6 @@ class HostShellBackend {
           'daysLeft': null,
         },
       },
-      // The event workspace's door reads its staff: nobody granted yet.
-      'listEventStaff' => {'eventId': eventId, 'members': const <Object?>[]},
       // The event report's photos for checked-in guests: none shared yet.
       'listEventHostPhotos' => {
         'eventId': eventId,
