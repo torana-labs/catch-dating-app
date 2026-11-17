@@ -54,8 +54,8 @@ abstract class ProfilePhoto with _$ProfilePhoto {
     if (prompt != null) 'prompt': photoPromptSelectionToJson(prompt!),
     if (moderation != null) 'moderation': moderation!.toJson(),
     'position': position,
-    'createdAt': const TimestampConverter().toJson(createdAt),
-    'updatedAt': const TimestampConverter().toJson(updatedAt),
+    'createdAt': firestoreTimestampFromDateTime(createdAt),
+    'updatedAt': firestoreTimestampFromDateTime(updatedAt),
   };
 
   factory ProfilePhoto.fromJson(Map<String, dynamic> json) =>

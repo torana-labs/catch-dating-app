@@ -2,7 +2,7 @@ import 'package:catch_kernel/brand.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/errors/error_logger.dart';
-import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/firebase/config_documents.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -133,12 +133,11 @@ final class LiveBrand {
 @Riverpod(keepAlive: true)
 Future<LiveBrand> liveBrand(Ref ref) async {
   try {
-    final snap = await ref
-        .watch(firebaseFirestoreProvider)
-        .doc('config/brand')
-        .get()
+    final data = await ref
+        .watch(configDocumentsProvider)
+        .read('config/brand')
         .timeout(const Duration(seconds: 3));
-    return LiveBrand.fromConfig(snap.data());
+    return LiveBrand.fromConfig(data);
   } catch (error, stackTrace) {
     // A store link is never worth an error screen: use the reviewed values.
     ref
