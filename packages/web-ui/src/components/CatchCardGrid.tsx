@@ -144,6 +144,8 @@ interface CatchCardGridBaseProps extends Omit<HTMLAttributes<HTMLElement>, "chil
   headerAction?: CatchBandAction;
   /** Chip links under the cards, such as more formats. */
   chips?: readonly CatchCardGridChip[];
+  /** A row under the cards and chips, before the actions, such as a thin week's notify bar. The page owns its state. */
+  footer?: ReactNode;
   /** Defaults to 3. */
   columns?: CatchCardGridColumns;
   /** Defaults to grid. */
@@ -243,7 +245,8 @@ function cards(props: CatchCardGridItems, heading: "h2" | "h3"): {id: string; no
  * A band of cards (the playbook kit's card grid): an optional
  * CatchBandHeader, a filters slot, a row of links, then plan, organiser,
  * city, review, story or person cards, three or four across on a wide page
- * and one below 840px, an empty state when there are none, and D20 actions.
+ * and one below 840px, an empty state when there are none, an optional
+ * footer row the page fills (such as a notify bar), and D20 actions.
  * Entry tiles and format cards are the homepage's (six tiles across, two on
  * phones; five format cards in a rail), with chip links under them, and a
  * header can carry one button across from it.
@@ -254,7 +257,7 @@ function cards(props: CatchCardGridItems, heading: "h2" | "h3"): {id: string; no
  */
 export function CatchCardGrid(props: CatchCardGridProps) {
   const {
-    title, label, level = 2, kicker, kickerTone, kickerAccent, lead, align = "start", filters, links, empty, actions, headerAction, chips,
+    title, label, level = 2, kicker, kickerTone, kickerAccent, lead, align = "start", filters, links, empty, actions, headerAction, chips, footer,
     columns = 3, layout = "grid", ground, kind, items, ...rest
   } = props;
   const titleId = `${useId()}-title`;
@@ -301,6 +304,7 @@ export function CatchCardGrid(props: CatchCardGridProps) {
           ))}
         </ul>
       ) : null}
+      {footer}
       {catchBandActions(actions)}
     </CatchSurface>
   );

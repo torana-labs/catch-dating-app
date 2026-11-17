@@ -1,8 +1,8 @@
-import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
+import {cleanup, fireEvent, render, screen, waitFor, within} from "@testing-library/react";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {brand} from "@catch/brand";
-import {homeCatalogFixture, mumbaiLiveCatalog, puneLaunchingSoonCatalog} from "../../stories/fixtures/homeCatalogs";
+import {homeCatalogFixture, mumbaiLiveCatalog, mumbaiThinCatalog, puneLaunchingSoonCatalog} from "../../stories/fixtures/homeCatalogs";
 import type {HomeReview} from "./homeModel";
 import {HomePage} from "./HomePage";
 
@@ -15,6 +15,15 @@ vi.mock("../marketing/useFoundingHostOffer", () => ({useFoundingHostOffer: (mark
   return Boolean(market) && foundingOffer.open;
 }}));
 
+// Website leads carry the site's App Check token; the page's Firebase stays unloaded.
+vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: async () => "app-check-token"}));
+const leadPost = vi.fn<typeof fetch>();
+const leadReply = (status: number, kind = "referral") => new Response(JSON.stringify(status === 200 ?
+  {ok: true, alreadyJoined: false, lead: {leadId: "c".repeat(64), requestKind: kind, isNew: true}} : {error: "Sample refusal"}), {status});
+// The lead tests keep the catalog they are given, so the only request is the lead.
+const keepCatalog = async () => null;
+const leadBody = (call: number) => JSON.parse(String(leadPost.mock.calls[call][1]?.body));
+
 // The home page's capture slots, as the website manifest records them (their page bindings are
 // checked against capture_manifest.json in marketingCaptures.test.tsx).
 const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-checked-in", "guest-after-event", "host-live-tablet"].map((id) => [id, {
@@ -25,7 +34,7 @@ const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-check
 const bandTitles = (container: HTMLElement) => [...container.querySelectorAll("main > section[aria-labelledby]")]
   .map((band) => container.ownerDocument.getElementById(band.getAttribute("aria-labelledby") ?? "")?.textContent);
 
-afterEach(() => {cleanup(); trackMarketingEvent.mockReset(); foundingOffer.open = false; foundingOffer.markets = [];});
+afterEach(() => {cleanup(); trackMarketingEvent.mockReset(); foundingOffer.open = false; foundingOffer.markets = []; leadPost.mockReset(); vi.unstubAllGlobals();});
 
 // Each test renders the whole page, which a loaded CI runner can take seconds over.
 describe("homepage", {timeout: 20_000}, () => {
@@ -105,13 +114,46 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(hero.textContent).not.toMatch(/verified|★/u);
   });
 
-  it("asks for a host introduction on WhatsApp, and puts the main action in the phone bar", () => {
+  it("asks for a host introduction in the refer form, and puts the main action in the phone bar", () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const refer = within(screen.getByRole("region", {name: "Know a host who’d be great here?"}));
-    expect(refer.getByRole("link", {name: "Introduce them"}).getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/u);
+    const form = within(refer.getByRole("form", {name: "Know a host who’d be great here?"}));
+    for (const name of ["Your name", "Your WhatsApp number", "Host or club name", "Their Instagram or website", "How do you know them?"]) {
+      expect(form.getByRole("textbox", {name: new RegExp(name.replace("?", "\\?"), "u")})).toBeTruthy();
+    }
+    expect(form.getByRole("button", {name: "Introduce them"}).getAttribute("type")).toBe("submit");
+    expect(form.getByText("Tapping Introduce them means we’ll message you on WhatsApp about this introduction.")).toBeTruthy();
+    expect(form.getByRole("link", {name: "Privacy policy"}).getAttribute("href")).toBe("/privacy/");
+    // The introduction goes through the form now, and the board's ticket offer waits for its terms.
+    expect(refer.queryByRole("link", {name: "Introduce them"})).toBeNull();
     expect(refer.queryByText(/on us|free ticket/iu)).toBeNull();
     const dock = within(screen.getByRole("group", {name: "Quick actions"}));
     expect(dock.getByRole("link", {name: "See plans"}).getAttribute("href")).toBe("#whats-on");
+  });
+
+  it("sends a host introduction as a referral lead, offers to try again after a failure, then confirms it", async () => {
+    vi.stubGlobal("fetch", leadPost);
+    leadPost.mockResolvedValueOnce(leadReply(503)).mockResolvedValueOnce(leadReply(200));
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} loadCatalog={keepCatalog} />);
+    const refer = within(screen.getByRole("region", {name: "Know a host who’d be great here?"}));
+    const type = (name: RegExp, value: string) => fireEvent.change(refer.getByRole("textbox", {name}), {target: {value}});
+    fireEvent.click(refer.getByRole("button", {name: "Introduce them"}));
+    expect(refer.getByText("Enter your name.")).toBeTruthy();
+    expect(leadPost).not.toHaveBeenCalled();
+    type(/Your name/u, "Asha Rao");
+    type(/Your WhatsApp number/u, "98765 43210");
+    type(/Host or club name/u, "Lantern Lane Social");
+    type(/Their Instagram or website/u, "@lanternlanesocial");
+    type(/How do you know them/u, "I go to their supper club");
+    fireEvent.click(refer.getByRole("button", {name: "Introduce them"}));
+    expect(await refer.findByText("That didn’t go through. Check your connection and try again.")).toBeTruthy();
+    fireEvent.click(refer.getByRole("button", {name: "Try again"}));
+    expect(await refer.findByText("Thanks for introducing Lantern Lane Social. We’ll message you on WhatsApp about it.")).toBeTruthy();
+    expect(refer.queryByRole("form")).toBeNull();
+    expect(leadPost.mock.calls[1][1]?.headers).toMatchObject({"X-Firebase-AppCheck": "app-check-token"});
+    expect(leadBody(1)).toMatchObject({requestKind: "referral", fullName: "Asha Rao", city: "Mumbai", cityId: "in-mh-mumbai",
+      lead: {requestId: leadBody(0).lead.requestId, phone: "+919876543210", consent: {purpose: "leadFollowUp", version: "host-referral-whatsapp-v1"},
+        entry: "home-refer", referral: {hostName: "Lantern Lane Social", hostLink: "@lanternlanesocial", relationship: "I go to their supper club"}}});
   });
 
   it("filters a busy week by format from the chips, and says when a format has none", () => {
@@ -175,6 +217,32 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(hosts.getByText("Payment gateway fees are charged separately by the payment provider.")).toBeTruthy();
     expect(hosts.getByRole("link", {name: "Talk to us on WhatsApp"})).toBeTruthy();
     expect(screen.queryByText(/Here for the plans/u)).toBeNull();
+    // A thin week offers new plans on WhatsApp under the cards.
+    expect(within(plans.getByRole("form", {name: "Want to hear first?"})).getByText("New Indore plans on WhatsApp, about once a week.")).toBeTruthy();
+  });
+
+  it("sends a thin week's notify bar as a city alerts lead for the city, and confirms it", async () => {
+    vi.stubGlobal("fetch", leadPost);
+    leadPost.mockResolvedValueOnce(leadReply(200, "city_alerts"));
+    render(<HomePage captures={captures} catalog={mumbaiThinCatalog} loadCatalog={keepCatalog} />);
+    const plans = within(screen.getByRole("region", {name: "Coming up in Mumbai"}));
+    const bar = within(plans.getByRole("form", {name: "Want to hear first?"}));
+    expect(bar.getByText("Tapping Notify me means we’ll message you about new plans in Mumbai, and nothing else.")).toBeTruthy();
+    fireEvent.change(bar.getByRole("textbox", {name: /Your WhatsApp number/u}), {target: {value: "98765"}});
+    fireEvent.click(bar.getByRole("button", {name: "Notify me"}));
+    expect(await bar.findByText("Check your WhatsApp number. Include the country code if it isn’t a local number.")).toBeTruthy();
+    expect(leadPost).not.toHaveBeenCalled();
+    fireEvent.change(bar.getByRole("textbox", {name: /Your WhatsApp number/u}), {target: {value: "98765 43210"}});
+    fireEvent.click(bar.getByRole("button", {name: "Notify me"}));
+    expect(await plans.findByText("Done. We’ll message you on WhatsApp when new Mumbai plans go up.")).toBeTruthy();
+    await waitFor(() => expect(plans.queryByRole("form", {name: "Want to hear first?"})).toBeNull());
+    expect(leadBody(0)).toMatchObject({requestKind: "city_alerts", city: "Mumbai", cityId: "in-mh-mumbai",
+      lead: {phone: "+919876543210", consent: {purpose: "cityNewPlans", version: "city-new-plans-whatsapp-v1"}, entry: "home-thin-week", cityAlerts: {interests: []}}});
+  });
+
+  it("keeps the notify bar to a thin week", () => {
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
+    expect(screen.queryByRole("form", {name: "Want to hear first?"})).toBeNull();
   });
 
   it("widens a busy city's quiet week to the next two weeks instead of an empty band", () => {
