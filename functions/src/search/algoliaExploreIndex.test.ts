@@ -158,6 +158,36 @@ test("buildEventSearchRecord uses the organizer city and event time", () => {
   assert.equal(record?.startTimeEpoch, 1780104600);
 });
 
+test("search records carry the resolved women-led label", () => {
+  const declared = (value: boolean | null, lockedByAdmin = false) => ({
+    value, lockedByAdmin, setByUid: "host-1",
+    setByRole: lockedByAdmin ? "admin" as const : "owner" as const,
+    setAt: timestamp("2026-05-01T00:00:00.000Z"),
+  });
+  const womenLedOrganizer = organizer({womenLed: {...declared(true),
+    value: true}});
+  assert.equal(buildOrganizerSearchRecord("club-1", organizer())?.womenLed,
+    false);
+  assert.equal(buildOrganizerSearchRecord("club-1",
+    womenLedOrganizer)?.womenLed, true);
+  // Events inherit the organizer default unless they override it.
+  assert.equal(buildEventSearchRecord("event-1", event(),
+    womenLedOrganizer)?.womenLed, true);
+  assert.equal(buildEventSearchRecord("event-1",
+    event({womenLed: declared(false)}), womenLedOrganizer)?.womenLed, false);
+  assert.equal(buildEventSearchRecord("event-1",
+    event({womenLed: declared(null)}), womenLedOrganizer)?.womenLed, true);
+  assert.equal(buildEventSearchRecord("event-1",
+    event({womenLed: declared(true)}), organizer())?.womenLed, true);
+  // An admin lock on either side clears the label.
+  assert.equal(buildEventSearchRecord("event-1",
+    event({womenLed: declared(false, true)}), womenLedOrganizer)?.womenLed,
+  false);
+  assert.equal(buildEventSearchRecord("event-1",
+    event({womenLed: declared(true)}), organizer({womenLed: {
+      ...declared(false, true), value: false}}))?.womenLed, false);
+});
+
 test("buildEventSearchRecord omits cancelled events", () => {
   assert.equal(
     buildEventSearchRecord(
@@ -192,11 +222,13 @@ test("index settings expose required filters", () => {
     "filterOnly(locationMarketId)",
     "filterOnly(status)",
     "filterOnly(archived)",
+    "filterOnly(womenLed)",
   ]);
   assert.deepEqual(eventSearchIndexSettings().attributesForFaceting, [
     "filterOnly(discoveryMarketId)",
     "filterOnly(status)",
     "filterOnly(organizerId)",
+    "filterOnly(womenLed)",
   ]);
 });
 

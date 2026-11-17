@@ -144,9 +144,8 @@ Stream<List<T>> watchDocumentsOneByOne<T>({
 ///
 /// The returned stream is single-subscription by design.
 ///
-/// This extracted common code was previously duplicated in
-/// [EventRepository._watchEventsForParticipationStatuses] and
-/// [SavedEventRepository.watchSavedEventDetailsForUser].
+/// Explore uses it for personal and search results it already holds ids for.
+/// A guest's own lists read their event cards instead.
 Stream<List<Event>> watchEventsByIdStream({
   required Stream<List<String>> idStream,
   required CollectionReference<Event> eventsRef,

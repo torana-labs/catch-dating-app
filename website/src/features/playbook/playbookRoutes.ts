@@ -94,10 +94,6 @@ export const playbookFamilyRoutes = [
   {id: "city_format", group: "discovery", pattern: "/:city/:format/", cityParam: "city"},
 ] as const satisfies readonly PlaybookFamilyRoute[];
 
-export type PlaybookFixedRouteId = (typeof playbookFixedRoutes)[number]["id"];
-export type PlaybookFamilyRouteId = (typeof playbookFamilyRoutes)[number]["id"];
-export type PlaybookRouteId = PlaybookFixedRouteId | PlaybookFamilyRouteId;
-
 /**
  * The existing site routes a playbook action or breadcrumb may name, with
  * the canonical path each links to. The route checker holds every entry to
@@ -118,8 +114,6 @@ export const siteRouteHrefs = {
   refunds: "/refunds/",
   contact: "/contact/",
 } as const;
-
-export type SiteRouteId = keyof typeof siteRouteHrefs;
 
 /** A path matched to a playbook route: the route, its parameters and the key its content is registered under. */
 export interface PlaybookRouteMatch {

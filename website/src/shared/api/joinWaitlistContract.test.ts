@@ -32,6 +32,23 @@ describe("joinWaitlistContract", () => {
     })).toBe(true);
   });
 
+  it("accepts a website lead without a city or role, and only as a lead", () => {
+    const lead = {
+      requestKind: "guide",
+      lead: {
+        requestId: "req_guide_0123456789abcdef",
+        phone: "+919812345678",
+        consent: {purpose: "leadFollowUp", version: "lead-2026-11"},
+        sourcePage: "/run-clubs/",
+        entry: "rc-wa",
+        guide: {format: "run_club"},
+      },
+    };
+    expect(isJoinWaitlistHttpRequest(lead)).toBe(true);
+    expect(isJoinWaitlistHttpRequest({...lead, role: "host"})).toBe(false);
+    expect(isJoinWaitlistHttpRequest({city: "Delhi", role: "member", lead: lead.lead})).toBe(false);
+  });
+
   it("rejects incomplete requests and malformed responses", () => {
     expect(isJoinWaitlistHttpRequest({
       fullName: "Member Name",

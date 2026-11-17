@@ -162,6 +162,34 @@ test("the accepted page fetch policy reads the nominated page and books it again
   assert.equal((db.read(`${supplyIntakeCollections.usage}/2026-10`) as {networkRequests: number}).networkRequests, 2);
 });
 
+test("a website instant draft reads from the tool's own monthly allowance, never the one nominations share", async () => {
+  const html = "<html><head><title>Afterfly</title><meta property=\"og:title\" content=\"Afterfly\"></head><body></body></html>";
+  const draftRequest = request({requestId: "nom-afterfly-1", kind: "self_submission",
+    submittedBy: {role: "organizer", uid: null, partnerId: null}, origin: {kind: "web_instant_draft", id: "web-1"}});
+  const {db, requested, deps} = setup({request: draftRequest}, {transport: async ({url}) => url.pathname === "/robots.txt" ?
+    {status: 404, location: null, contentType: "text/plain", body: Buffer.alloc(0)} :
+    {status: 200, location: null, contentType: "text/html", body: Buffer.from(html)}});
+  // Nominations have spent their whole month; drafts still read.
+  db.write(`${supplyIntakeCollections.usage}/2026-10`, {schemaVersion: 1, monthKey: "2026-10", networkRequests: 600,
+    updatedAt: NOW});
+  assert.equal(await processSupplyIntakeRequest(deps, "nom-afterfly-1"), "completed");
+  assert.equal(requested.length, 2);
+  assert.equal((db.read(`${supplyIntakeCollections.usage}/2026-10`) as {networkRequests: number}).networkRequests, 600);
+  assert.deepEqual(db.read(`${supplyIntakeCollections.usage}/instant-draft-pages-2026-10`),
+    {schemaVersion: 1, monthKey: "2026-10", networkRequests: 2, updatedAt: NOW});
+  const receipt = (db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as
+    {result: {captureReceipts: Array<{budgetWindow: {monthLimit: number}}>}}).result.captureReceipts[0];
+  assert.equal(receipt.budgetWindow.monthLimit, 300);
+
+  // A spent draft allowance reads nothing more, and leaves nominations alone.
+  const spent = setup({request: draftRequest});
+  spent.db.write(`${supplyIntakeCollections.usage}/instant-draft-pages-2026-10`, {schemaVersion: 1, monthKey: "2026-10",
+    networkRequests: 300, updatedAt: NOW});
+  assert.equal(await processSupplyIntakeRequest(spent.deps, "nom-afterfly-1"), "completed");
+  assert.deepEqual(spent.requested, []);
+  assert.equal(spent.db.read(`${supplyIntakeCollections.usage}/2026-10`), undefined);
+});
+
 test("page fetch fails closed without the accepted decision, and never touches the network", async () => {
   for (const decision of [null, {...acceptedPageFetchDecision, decision: "hold", decisionStatus: "held"}]) {
     const {db, requested, deps} = setup({attempts: SUPPLY_INTAKE_MAX_ATTEMPTS - 1}, {decision});

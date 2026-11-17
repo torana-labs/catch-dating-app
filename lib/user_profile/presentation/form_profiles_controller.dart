@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/profiles/data/form_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/form_profile_photo_preview.dart';
@@ -31,8 +32,24 @@ class FormProfilesController extends _$FormProfilesController {
     if (uid == null) {
       throw const SignInRequiredException('review form profiles');
     }
-    final page = await ref.watch(formProfileRepositoryProvider).list();
-    return FormProfilesState(page: page);
+    final page = await ref.watch(formProfileRepositoryProvider).list(uid);
+    return FormProfilesState(page: await _named(page));
+  }
+
+  /// Names each row from the public organizer lookup. A deleted or hidden
+  /// organizer stays unnamed, as the list callable left it.
+  Future<FormProfilePage> _named(FormProfilePage page) async {
+    final names = await organizerNames(
+      ref,
+      page.items.map((row) => row.organizerId),
+    );
+    return FormProfilePage(
+      items: [
+        for (final row in page.items)
+          row.withOrganizerName(names[row.organizerId]),
+      ],
+      nextCursor: page.nextCursor,
+    );
   }
 
   Future<void> loadMore() async {
@@ -46,9 +63,11 @@ class FormProfilesController extends _$FormProfilesController {
     final uid = requireSignedInUid(ref, action: 'review form profiles');
     state = AsyncData(FormProfilesState(page: current.page, loadingMore: true));
     try {
-      final page = await ref
-          .read(formProfileRepositoryProvider)
-          .list(cursor: current.page.nextCursor);
+      final page = await _named(
+        await ref
+            .read(formProfileRepositoryProvider)
+            .list(uid, cursor: current.page.nextCursor),
+      );
       if (!ref.mounted ||
           generation != _generation ||
           ref.read(uidProvider).asData?.value != uid) {
@@ -77,11 +96,40 @@ class FormProfilesController extends _$FormProfilesController {
   }
 }
 
+/// The organizer names for [organizerIds] from the public organizer lookup;
+/// none when the lookup fails, so names never block a guest's own data.
+Future<Map<String, String>> organizerNames(
+  Ref ref,
+  Iterable<String> organizerIds,
+) async {
+  final ids = organizerIds.toSet();
+  if (ids.isEmpty) return const {};
+  try {
+    return await ref.read(
+      organizerNameLookupProvider(OrganizerNameLookupQuery(ids)).future,
+    );
+  } on Object {
+    return const {};
+  }
+}
+
+/// The review, kept current from the guest's read models while on screen.
 @riverpod
-Future<FormProfileReview> formProfileReview(Ref ref, String responseId) async {
+Stream<FormProfileReview> formProfileReview(Ref ref, String responseId) async* {
   final uid = await ref.watch(uidProvider.future);
   if (uid == null) throw const SignInRequiredException('review form profile');
-  return ref.watch(formProfileRepositoryProvider).review(responseId);
+  String? organizerId;
+  String? organizerName;
+  await for (final review
+      in ref
+          .watch(formProfileRepositoryProvider)
+          .watchReview(uid, responseId)) {
+    if (review.organizerId != organizerId) {
+      organizerId = review.organizerId;
+      organizerName = (await organizerNames(ref, [organizerId]))[organizerId];
+    }
+    yield review.withOrganizerName(organizerName);
+  }
 }
 
 @riverpod
@@ -101,7 +149,6 @@ class FormProfileClaimController extends _$FormProfileClaimController {
     await ref.read(formProfileRepositoryProvider).claim(request);
     if (!ref.mounted || ref.read(uidProvider).asData?.value != uid) return;
     ref.invalidate(formProfilesControllerProvider);
-    ref.invalidate(formProfileReviewProvider(request.responseId));
   }
 }
 

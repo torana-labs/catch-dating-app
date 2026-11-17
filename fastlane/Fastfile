@@ -7,6 +7,16 @@
 #   bundle exec fastlane android beta role:consumer upload:false  # build and verify only
 #   bundle exec fastlane ios release role:host build:N # submit a tested build for review
 #   bundle exec fastlane android release role:host version_code:N rollout:0.1
+#   bundle exec fastlane ios download_listing role:host     # store listing -> repo
+#   bundle exec fastlane ios listing role:host              # repo -> version being prepared
+#   bundle exec fastlane ios listing role:host live:true    # promotional text and URLs, live now
+#   bundle exec fastlane android download_listing role:host
+#   bundle exec fastlane android listing role:host [validate:true]
+#
+# Store listings (copy, keywords, categories, screenshots) live in
+# fastlane/metadata/<role>/: ios/ and ios_screenshots/ for the App Store,
+# android/ for Google Play. The Store Listing workflow downloads and uploads
+# them; App Review contact and demo-account details stay in App Store Connect.
 #
 # Builds always go through tool/flutter_with_env.sh, which selects the prod
 # Firebase files, prod dart-defines, CATCH_APP_ROLE, the entrypoint and the
@@ -21,6 +31,7 @@ require "digest"
 require "fileutils"
 require "json"
 require "open3"
+require "tmpdir"
 
 REPO_ROOT = File.expand_path("..", __dir__)
 ROLES = %w[consumer host].freeze
@@ -31,6 +42,8 @@ TARGET_FIELDS = %w[
 # Play tracks a version code may already occupy. A new code must exceed all.
 PLAY_TRACKS = %w[internal alpha beta production qa].freeze
 MINIMUM_ANDROID_VERSION_CODE = 100_000
+# App Store fields that can change on a live version without a new submission.
+APP_STORE_LIVE_FIELDS = %w[promotional_text support_url marketing_url].freeze
 
 opt_out_usage
 default_platform(:ios)
@@ -100,6 +113,23 @@ def highest_play_version_code(package_name)
     UI.message("Play track #{track}: #{e.message.lines.first&.strip}")
     []
   end.map(&:to_i).max.to_i
+end
+
+# Where a role's store listing lives in the repo.
+def listing_paths(role)
+  base = File.join(REPO_ROOT, "fastlane", "metadata", role)
+  { ios: File.join(base, "ios"), ios_screenshots: File.join(base, "ios_screenshots"),
+    android: File.join(base, "android") }
+end
+
+def images_in?(path)
+  Dir.glob(File.join(path, "**", "*.{png,jpg,jpeg}"), File::FNM_CASEFOLD).any?
+end
+
+def require_listing!(path, role)
+  return if Dir.exist?(path) && !Dir.empty?(path)
+
+  UI.user_error!("#{path} is empty; run download_listing role:#{role} first and commit the result")
 end
 
 def verify_callable_dependencies(role)
@@ -198,10 +228,14 @@ platform :ios do
     build_number = options[:build].to_s
     UI.user_error!("build:<TestFlight build number> is required") unless build_number.match?(/\A\d+\z/)
     # App Store Connect refuses a submission whose version has no "What's New",
-    # so the notes travel with the code: fastlane/metadata/<role>/en-US/release_notes.txt.
-    metadata_path = File.join(REPO_ROOT, "fastlane", "metadata", role)
+    # so the notes travel with the code: fastlane/metadata/<role>/ios/en-US/release_notes.txt.
+    # The rest of the listing in that folder, and any screenshots, ship with
+    # the submission too.
+    paths = listing_paths(role)
+    metadata_path = paths[:ios]
     notes = File.join(metadata_path, "en-US", "release_notes.txt")
     UI.user_error!("#{notes} is missing; write this version's What's New there") unless File.exist?(notes)
+    screenshots = images_in?(paths[:ios_screenshots])
     with_api_key do |key, _key_path|
     upload_to_app_store(
       api_key: key,
@@ -211,7 +245,9 @@ platform :ios do
       skip_binary_upload: true,
       skip_metadata: false,
       metadata_path: metadata_path,
-      skip_screenshots: true,
+      screenshots_path: paths[:ios_screenshots],
+      skip_screenshots: !screenshots,
+      overwrite_screenshots: screenshots,
       submit_for_review: true,
       automatic_release: false,
       phased_release: true,
@@ -223,6 +259,77 @@ platform :ios do
     summarize("App Store submission (#{role})", [
       ["App", target["ios.bundleId"]], ["Version (build)", "#{marketing_version(target)} (#{build_number})"],
       ["Release", "phased after approval, released manually"]
+    ])
+  end
+
+  desc "Download the App Store listing (the version being prepared, else the live one) into fastlane/metadata/<role>"
+  lane :download_listing do |options|
+    require "deliver"
+    require "deliver/setup"
+    require "deliver/download_screenshots"
+    role = role_option(options)
+    target = app_target(role)
+    paths = listing_paths(role)
+    platform = Spaceship::ConnectAPI::Platform::IOS
+    with_api_key do |key, _key_path|
+      FileUtils.rm_rf([paths[:ios], paths[:ios_screenshots]])
+      config = FastlaneCore::Configuration.create(Deliver::Options.available_options, {
+        api_key: key, app_identifier: target["ios.bundleId"], platform: "ios", skip_binary_upload: true,
+        metadata_path: paths[:ios], screenshots_path: paths[:ios_screenshots]
+      })
+      # Signs in and finds the app, as `fastlane deliver download_metadata` does.
+      Deliver::Runner.new(config, skip_version: true)
+      app = Deliver.cache[:app]
+      version = app.get_edit_app_store_version(platform: platform)
+      config[:use_live_version] = version.nil?
+      version ||= app.get_live_app_store_version(platform: platform)
+      UI.user_error!("#{target['ios.bundleId']} has no App Store version to download") unless version
+      Deliver::Setup.new.generate_metadata_files(app, version, paths[:ios], config)
+      Deliver::DownloadScreenshots.download(config, paths[:ios_screenshots])
+      # The App Review contact and demo-account password stay in App Store
+      # Connect. deliver leaves them unchanged when this folder is absent.
+      FileUtils.rm_rf(File.join(paths[:ios], "review_information"))
+      summarize("App Store listing downloaded (#{role})", [
+        ["App", target["ios.bundleId"]],
+        ["Version", "#{version.version_string} (#{version.app_store_state})"],
+        ["Screenshots", Dir.glob(File.join(paths[:ios_screenshots], "**", "*.*")).size]
+      ])
+    end
+  end
+
+  desc "Upload the repo's App Store listing to the version being prepared (live:true: promotional text and URLs on the live version)"
+  lane :listing do |options|
+    role = role_option(options)
+    target = app_target(role)
+    paths = listing_paths(role)
+    require_listing!(paths[:ios], role)
+    live = options[:live].to_s == "true"
+    common = { app_identifier: target["ios.bundleId"], skip_binary_upload: true, submit_for_review: false,
+               run_precheck_before_submit: false, force: true }
+    with_api_key do |key, _key_path|
+      if live
+        # Everything else on a live version is locked until the next submission.
+        Dir.mktmpdir do |dir|
+          Dir.glob(File.join(paths[:ios], "*", "{#{APP_STORE_LIVE_FIELDS.join(',')}}.txt")).each do |file|
+            destination = File.join(dir, File.basename(File.dirname(file)), File.basename(file))
+            FileUtils.mkdir_p(File.dirname(destination))
+            FileUtils.cp(file, destination)
+          end
+          upload_to_app_store(common.merge(api_key: key, metadata_path: dir, edit_live: true, skip_screenshots: true))
+        end
+      else
+        screenshots = images_in?(paths[:ios_screenshots])
+        # app_version makes sure the version being prepared is this one,
+        # creating it when none is, so the listing ships with the next release.
+        upload_to_app_store(common.merge(api_key: key, app_version: marketing_version(target),
+                                         metadata_path: paths[:ios], screenshots_path: paths[:ios_screenshots],
+                                         skip_screenshots: !screenshots, overwrite_screenshots: screenshots))
+      end
+    end
+    summarize("App Store listing uploaded (#{role})", [
+      ["App", target["ios.bundleId"]],
+      ["Version", live ? "live (#{APP_STORE_LIVE_FIELDS.join(', ')})" : marketing_version(target)],
+      ["Goes public", live ? "now" : "when that version is approved and released"]
     ])
   end
 end
@@ -282,6 +389,49 @@ platform :android do
                          skip_upload_changelogs: true, skip_upload_images: true, skip_upload_screenshots: true)
     summarize("Play production rollout (#{role})", [
       ["Package", target["android.applicationId"]], ["Version code", version_code], ["Rollout", rollout]
+    ])
+  end
+
+  desc "Download the Google Play store listing into fastlane/metadata/<role>/android"
+  lane :download_listing do |options|
+    role = role_option(options)
+    target = app_target(role)
+    path = listing_paths(role)[:android]
+    # supply refuses to download into an existing folder.
+    FileUtils.rm_rf(path)
+    # The track only picks which release's notes supply also downloads; every
+    # app with a Play record has an internal-track build.
+    download_from_play_store(package_name: target["android.applicationId"], metadata_path: path, track: "internal")
+    # Play release notes travel with builds, not with the listing.
+    FileUtils.rm_rf(Dir.glob(File.join(path, "*", "changelogs")))
+    summarize("Play listing downloaded (#{role})", [
+      ["Package", target["android.applicationId"]],
+      ["Languages", Dir.children(path).sort.join(", ")],
+      ["Images", Dir.glob(File.join(path, "*", "images", "**", "*.*")).size]
+    ])
+  end
+
+  desc "Upload the repo's Google Play store listing (validate:true checks it without saving)"
+  lane :listing do |options|
+    role = role_option(options)
+    target = app_target(role)
+    package_name = target["android.applicationId"]
+    path = listing_paths(role)[:android]
+    require_listing!(path, role)
+    validate = options[:validate].to_s == "true"
+    # supply edits the listing inside an edit tied to a release; the newest
+    # internal-track build is always there and nothing about it changes.
+    version_code = google_play_track_version_codes(package_name: package_name, track: "internal").map(&:to_i).max
+    UI.user_error!("#{package_name} has no internal-track build to anchor the listing edit") unless version_code
+    # Only image types with local files are touched; sync_image_upload skips
+    # images whose checksum already matches Play's.
+    upload_to_play_store(package_name: package_name, track: "internal", version_code: version_code,
+                         metadata_path: path, skip_upload_aab: true, skip_upload_apk: true,
+                         skip_upload_changelogs: true, skip_upload_metadata: false,
+                         skip_upload_images: false, skip_upload_screenshots: false,
+                         sync_image_upload: true, validate_only: validate)
+    summarize(validate ? "Play listing validated (#{role})" : "Play listing uploaded (#{role})", [
+      ["Package", package_name], ["Goes public", validate ? "not saved" : "after Google's review"]
     ])
   end
 end

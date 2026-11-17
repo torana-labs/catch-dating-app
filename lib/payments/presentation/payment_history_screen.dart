@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
@@ -81,14 +81,8 @@ class PaymentHistoryBody extends ConsumerWidget {
       onRetry: () => ref.invalidate(watchPaymentsForUserProvider(userId)),
       builder: (context, paymentHistory) => PaymentHistoryList(
         paymentHistory: paymentHistory,
-        onRetryEventTitles: () {
-          final eventIds = {
-            for (final row in paymentHistory.rows) row.payment.eventId,
-          };
-          if (eventIds.isNotEmpty) {
-            ref.invalidate(watchEventsByIdsProvider(EventsByIdQuery(eventIds)));
-          }
-        },
+        onRetryEventTitles: () =>
+            ref.invalidate(watchOwnEventCardsByIdProvider(userId)),
       ),
     );
   }

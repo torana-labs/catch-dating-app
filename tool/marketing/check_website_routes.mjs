@@ -1277,7 +1277,7 @@ export const OrganizerSearch = {
     fixed: [{id: "host_run_clubs", group: "host", path: "/host/run-clubs/"}],
     families: [],
     siteHrefs: {host: "/host/"},
-    citySlugs: ["mumbai", "delhi"],
+    citySlugs: ["metro-one", "metro-two"],
     hosting: {hosting: [{target: "marketing", redirects: [], rewrites: []}]},
   };
   assert.deepEqual(contentFamilyRouteErrors(contentInputs), []);
@@ -1322,8 +1322,10 @@ export const OrganizerSearch = {
   );
   assert.match(contentFamilyRouteErrors({...contentInputs, siteHrefs: {host: "/hosts/"}}).join("\n"), /siteRouteHrefs.host/u);
   assert.equal(matchPlaybookRoute("/host/run-clubs")?.contentKey, "host_run_clubs");
-  assert.equal(matchPlaybookRoute("/new-to-mumbai/")?.contentKey, "new_to_city/mumbai");
-  assert.equal(matchPlaybookRoute("/mumbai/run-clubs/")?.contentKey, "city_format/mumbai/run-clubs");
+  // A catalog city, read from the market pack rather than named here.
+  const catalogSlug = inMarket.cities[0].slug;
+  assert.equal(matchPlaybookRoute(`/new-to-${catalogSlug}/`)?.contentKey, `new_to_city/${catalogSlug}`);
+  assert.equal(matchPlaybookRoute(`/${catalogSlug}/run-clubs/`)?.contentKey, `city_format/${catalogSlug}/run-clubs`);
   console.log("Website route checker self-test passed.");
 }
 

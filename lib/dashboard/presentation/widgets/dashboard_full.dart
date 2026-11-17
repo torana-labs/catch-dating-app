@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/events/data/event_calendar_links.dart';
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_location_links.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
@@ -104,14 +104,14 @@ class _DashboardFullSliverBodyState
     );
   }
 
-  void _logWindowImpression(Event event) {
+  void _logWindowImpression(GuestEventCard event) {
     ref
         .read(appAnalyticsProvider)
         .logEvent(
           AnalyticsEvents.catchWindowImpression,
           parameters: {
             AnalyticsParameters.surface: 'home',
-            AnalyticsParameters.eventId: event.id,
+            AnalyticsParameters.eventId: event.eventId,
           },
         );
   }
@@ -141,9 +141,9 @@ class _DashboardFullSliverBodyState
         );
   }
 
-  String _moduleForEvent(Event event) {
+  String _moduleForEvent(GuestEventCard event) {
     return widget.viewModel.windowedEvents.any(
-          (window) => window.event.id == event.id,
+          (window) => window.event.eventId == event.eventId,
         )
         ? context.l10n.dashboardDashboardFullVisiblecopyCatchWindow
         : context.l10n.dashboardDashboardFullVisiblecopyFocusRail;
@@ -188,19 +188,22 @@ class _DashboardFullSliverBodyState
     }
   }
 
-  void _openEvent(BuildContext context, Event event) {
+  void _openEvent(BuildContext context, GuestEventCard event) {
     _logAction(
       _moduleForEvent(event),
       context.l10n.dashboardDashboardFullVisiblecopyViewEvent,
     );
+    // Event detail reads the event itself; the card carries no live terms.
     context.pushNamed(
       Routes.dashboardEventDetailScreen.name,
-      pathParameters: {'organizerId': event.organizerId, 'eventId': event.id},
-      extra: event,
+      pathParameters: {
+        'organizerId': event.organizerId,
+        'eventId': event.eventId,
+      },
     );
   }
 
-  void _openDirections(Event event) {
+  void _openDirections(GuestEventCard event) {
     _logAction(
       _moduleForEvent(event),
       context.l10n.dashboardDashboardFullVisiblecopyDirections,
@@ -208,19 +211,21 @@ class _DashboardFullSliverBodyState
     unawaited(
       ref
           .read(externalLinkControllerProvider)
-          .openExternal(directionsUriForEvent(event)),
+          .openExternal(directionsUriForCard(event)),
     );
   }
 
-  void _addToCalendar(Event event) {
+  void _addToCalendar(GuestEventCard event) {
     _logAction(
       _moduleForEvent(event),
       context.l10n.dashboardDashboardFullVisiblecopyAddToCalendar,
     );
-    unawaited(ref.read(eventCalendarControllerProvider).addToCalendar(event));
+    unawaited(
+      ref.read(eventCalendarControllerProvider).addCardToCalendar(event),
+    );
   }
 
-  void _openSwipe(BuildContext context, Event event) {
+  void _openSwipe(BuildContext context, GuestEventCard event) {
     _logAction(
       _moduleForEvent(event),
       context.l10n.dashboardDashboardFullVisiblecopyOpenCatchWindow,
@@ -231,16 +236,16 @@ class _DashboardFullSliverBodyState
           AnalyticsEvents.catchWindowOpen,
           parameters: {
             AnalyticsParameters.surface: 'home',
-            AnalyticsParameters.eventId: event.id,
+            AnalyticsParameters.eventId: event.eventId,
           },
         );
     context.pushNamed(
       Routes.eventRecapScreen.name,
-      pathParameters: {'eventId': event.id},
+      pathParameters: {'eventId': event.eventId},
     );
   }
 
-  void _writeReview(BuildContext context, Event event) {
+  void _writeReview(BuildContext context, GuestEventCard event) {
     _logAction(
       _moduleForEvent(event),
       context.l10n.dashboardDashboardFullVisiblecopyWriteReview,
@@ -248,12 +253,12 @@ class _DashboardFullSliverBodyState
     showWriteReviewSheet(
       context: context,
       organizerId: event.organizerId,
-      eventId: event.id,
+      eventId: event.eventId,
       reviewer: widget.user,
     );
   }
 
-  void _checkIn(BuildContext context, Event event) {
+  void _checkIn(BuildContext context, GuestEventCard event) {
     _logAction(
       _moduleForEvent(event),
       context.l10n.dashboardDashboardFullVisiblecopyCheckIn,
@@ -261,19 +266,26 @@ class _DashboardFullSliverBodyState
     unawaited(_runCheckInFlow(context, event));
   }
 
-  Future<void> _runCheckInFlow(BuildContext context, Event event) async {
+  Future<void> _runCheckInFlow(
+    BuildContext context,
+    GuestEventCard card,
+  ) async {
     final controller = DashboardEventFocusController(ref: ref);
     final venueSessionToken = await showEventVenueSessionScanner(
       context: context,
-      eventId: event.id,
+      eventId: card.eventId,
     );
     if (venueSessionToken == null || !context.mounted) return;
     try {
       await DashboardEventFocusController.selfCheckInMutation.run(ref, (
         tx,
       ) async {
-        await controller.selfCheckIn(tx, event, venueSessionToken);
+        await controller.selfCheckIn(tx, card.eventId, venueSessionToken);
         if (!context.mounted) return;
+        // The companion and the celebration need the whole event; read the
+        // one event checked in to, not the list.
+        final event = await controller.readCheckedInEvent(tx, card.eventId);
+        if (event == null || !context.mounted) return;
         final launchResult = await launchEventSuccessCompanionIfAvailable(
           context: context,
           ref: ref,

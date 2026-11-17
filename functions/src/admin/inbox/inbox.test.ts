@@ -127,6 +127,63 @@ test("claims, enquiries, access and imported events project to their own types",
   assert.match(event?.subtitle ?? "", /^Afterfly · 14 Nov/u);
 });
 
+function websiteLead(kind: string, overrides: Record<string, unknown> = {}) {
+  const payloads: Record<string, Record<string, unknown>> = {
+    venue: {venue: {spaceName: "The Loft", area: "Lower Parel", capacity: "60 standing", nights: "Tuesdays"}},
+    referral: {referral: {hostName: "Lantern Lane Social", hostLink: "@lanternlane", relationship: "I go to their dinners"},
+      referralCredit: {status: "missing_referrer_account", referrerUid: null, referrerRole: null}},
+    city_alerts: {cityAlerts: {interests: ["runs", "nights_out"]}},
+  };
+  return {source: "website", status: "needs_identity_review", leadKind: kind, fullName: null, phone: "+919812345678",
+    city: "mumbai", createdAt: "2026-10-31T10:00:00.000Z",
+    lead: {consent: {purpose: kind === "city_alerts" ? "cityNewPlans" : "leadFollowUp", version: "lead-2026-11"},
+      sourcePage: "/venues/", entry: "list", ...payloads[kind]}, ...overrides};
+}
+
+test("a website lead is its own type, says its kind and waits for a WhatsApp reply", () => {
+  const venue = projectInboxSource("salesInboundIntent", "lead-1", websiteLead("venue"));
+  assert.equal(venue?.type, "lead");
+  assert.equal(venue?.itemId, "enquiry-lead-1");
+  assert.equal(venue?.title, "List a space: The Loft");
+  assert.equal(venue?.subtitle, "WhatsApp +919812345678 · Lower Parel · 60 standing · Tuesdays");
+  assert.equal(venue?.cameFrom, "Website /venues/");
+  assert.deepEqual(venue?.state, {code: "reply_on_whatsapp", label: "Reply on WhatsApp", tone: "warning"});
+  assert.equal(venue?.lifecycle, "open");
+  const referral = projectInboxSource("salesInboundIntent", "lead-2", websiteLead("referral", {fullName: "Neha Shah"}));
+  assert.equal(referral?.title, "Host referral: Neha Shah");
+  assert.match(referral?.subtitle ?? "", /Lantern Lane Social · @lanternlane · I go to their dinners · Referrer not signed in/u);
+  const alerts = projectInboxSource("salesInboundIntent", "lead-3", websiteLead("city_alerts"));
+  assert.equal(alerts?.title, "New plans in their city");
+  assert.equal(alerts?.subtitle, "WhatsApp +919812345678 · Runs, Nights out");
+  const linked = projectInboxSource("salesInboundIntent", "lead-2", websiteLead("referral", {status: "linked",
+    organizerId: "org-1", linkedBy: "dev", linkedAt: "2026-11-01T10:00:00.000Z"}));
+  assert.equal(linked?.lifecycle, "closed");
+  assert.equal(linked?.state.code, "linked");
+});
+
+test("staff close a lead with what they replied, and it can come back", async () => {
+  const h = harness();
+  await h.sync("salesInboundIntent", "lead-1", websiteLead("venue"));
+  const listed = await h.list({type: "lead"});
+  valid(validateList, listed);
+  assert.deepEqual(listed.items.map((item) => item.itemId), ["enquiry-lead-1"]);
+  assert.equal(listed.totals.types.lead, 1);
+  const update = (data: Record<string, unknown>) => adminUpdateInboxItemHandler(h.request({itemId: "enquiry-lead-1",
+    assigneeUid: null, snoozedUntil: null, note: null, ...data}), h.deps);
+  await assert.rejects(update({action: "dismiss"}), /Say why/);
+  const closed = await update({action: "dismiss", note: "Sent the venue guide on WhatsApp."});
+  assert.equal(closed.item.status, "done");
+  const journey = await adminGetInboxItemHandler(h.request({itemId: "enquiry-lead-1"}), h.deps);
+  valid(validateGet, journey);
+  assert.deepEqual(journey.journey.at(-1)?.title, "Closed");
+  assert.equal(journey.journey.at(-1)?.detail, "Sent the venue guide on WhatsApp.");
+  // The source stays as captured; a later write leaves the lead closed.
+  await h.sync("salesInboundIntent", "lead-1", websiteLead("venue"));
+  assert.equal((h.db.read("adminInboxItems/enquiry-lead-1") as {status: string}).status, "done");
+  const reopened = await update({action: "reopen"});
+  assert.equal(reopened.item.state.code, "reply_on_whatsapp");
+});
+
 const listingEvent = (overrides: Partial<ListingEventFacts> = {}): ListingEventFacts => ({
   intakeRequestId: "req-1", approvedAt: "2026-10-29T10:00:00.000Z", organizerName: "Afterfly", citySlug: "mumbai",
   eventWorkItemId: "wi-event-1", eventId: "ext-afterfly-mixer", title: "Singles mixer night", startAt: "2026-11-07T14:00:00.000Z",
@@ -173,6 +230,35 @@ test("a dismissal holds across source writes until someone reopens it, and only 
 
   await h.sync("supplyIntakeRequest", "req-1", nomination("req-1"));
   await assert.rejects(update({action: "dismiss", note: "Not for us."}, "supply-req-1"), /Decide this item/);
+});
+
+test("a website instant draft waits for a WhatsApp reply from a person, who dismisses it once sent", async () => {
+  const h = harness();
+  const draft = (overrides: Record<string, unknown> = {}) => nomination("draft-1", {
+    request: {...nomination("draft-1").request, kind: "self_submission", seed: {name: null,
+      urls: ["https://lu.ma/afterfly"], notes: null, categories: []},
+    submittedBy: {role: "organizer", uid: null, partnerId: null}, origin: {kind: "web_instant_draft", id: "web-1"}},
+    instantDraft: {schemaVersion: 1, draftId: "draft-1", accessTokenHash: "c".repeat(64), requestKind: "event_link",
+      entry: "event_page_tool", link: {url: "https://lu.ma/afterfly", provider: "luma", support: "instant", reason: null},
+      whatsapp: {phone: "+919000000001", consentVersion: "instant-draft-whatsapp-v1", consentedAt: "2026-10-28T16:11:00.000Z",
+        purpose: "instant_draft_follow_up", verifiedByUid: "submitter-1"}, followUp: {channel: "whatsapp", mode: "staff_reply"},
+      outcome: null},
+    ...overrides});
+  const waiting = projectInboxSource("supplyIntakeRequest", "draft-1", draft())!;
+  assert.deepEqual([waiting.cameFrom, waiting.lifecycle, waiting.state.code, waiting.state.label],
+    ["Website draft tool", "open", "reply_on_whatsapp", "Reply on WhatsApp"]);
+  assert.deepEqual(waiting.journey.find((step) => step.stepId === "whatsapp-consent")?.detail, "+919000000001");
+  const saved = projectInboxSource("supplyIntakeRequest", "draft-1", draft({approval: {approvalId: "ap", organizerId: "org",
+    approvedByUid: "supply-instant-draft", approvedAt: "2026-10-28T16:14:00.000Z", materialHash: "d".repeat(64),
+    salesOwnerUid: "supply-instant-draft"}}))!;
+  assert.deepEqual([saved.lifecycle, saved.state.label], ["open", "Draft ready, reply on WhatsApp"]);
+  assert.ok(saved.journey.some((step) => step.title === "Saved as a private draft"));
+  assert.equal(saved.journey.some((step) => step.stepId === "published"), false, "a draft is never shown as published");
+
+  await h.sync("supplyIntakeRequest", "draft-1", draft());
+  const dismissed = await adminUpdateInboxItemHandler(h.request({itemId: "supply-draft-1", action: "dismiss",
+    assigneeUid: null, snoozedUntil: null, note: "Sent the draft link on WhatsApp."}), h.deps);
+  assert.deepEqual([dismissed.item.status, dismissed.item.state.code], ["done", "dismissed"]);
 });
 
 test("the inbox lists oldest first with real totals, a page at a time", async () => {

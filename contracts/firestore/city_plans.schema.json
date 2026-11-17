@@ -21,6 +21,7 @@
     "windowEnd",
     "planCount",
     "formatCounts",
+    "womenLedPlanCount",
     "monthWindowEnd",
     "upcomingEvents30d",
     "hasUpcomingMonth",
@@ -85,6 +86,11 @@
         "other": {"type": "integer", "minimum": 0}
       }
     },
+    "womenLedPlanCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Plans in the 14-day window that are women-led, counted like planCount and not capped by plans."
+    },
     "monthWindowEnd": {
       "type": "string",
       "format": "date-time",
@@ -107,7 +113,7 @@
       "type": "object",
       "additionalProperties": false,
       "description": "One entry per city-by-format page, keyed by format. Counts only: no plan or organiser is named here.",
-      "required": ["runClubs", "racketSports", "pickleball", "padel", "tennis", "badminton", "supperClubs", "quizNights", "nightlife", "studios", "workshops", "bookClubs", "outdoors"],
+      "required": ["runClubs", "racketSports", "pickleball", "padel", "tennis", "badminton", "supper", "quizNights", "nightlife", "studios", "workshops", "books", "outdoors"],
       "properties": {
         "runClubs": {"$ref": "#/definitions/formatPage"},
         "racketSports": {"$ref": "#/definitions/formatPage"},
@@ -115,12 +121,12 @@
         "padel": {"$ref": "#/definitions/formatPage"},
         "tennis": {"$ref": "#/definitions/formatPage"},
         "badminton": {"$ref": "#/definitions/formatPage"},
-        "supperClubs": {"$ref": "#/definitions/formatPage"},
+        "supper": {"$ref": "#/definitions/formatPage"},
         "quizNights": {"$ref": "#/definitions/formatPage"},
         "nightlife": {"$ref": "#/definitions/formatPage"},
         "studios": {"$ref": "#/definitions/formatPage"},
         "workshops": {"$ref": "#/definitions/formatPage"},
-        "bookClubs": {"$ref": "#/definitions/formatPage"},
+        "books": {"$ref": "#/definitions/formatPage"},
         "outdoors": {"$ref": "#/definitions/formatPage"}
       }
     },
@@ -150,7 +156,7 @@
     "discoveryFormat": {
       "type": "string",
       "description": "A city-by-format page's format, from discoveryFormats in functions/src/cityPlans/discoveryFormats.ts. A plan counts toward the formats of its activity kind or, for an open activity, the formats its organiser lists; a racket sport counts toward racketSports and its own sport.",
-      "enum": ["runClubs", "racketSports", "pickleball", "padel", "tennis", "badminton", "supperClubs", "quizNights", "nightlife", "studios", "workshops", "bookClubs", "outdoors"]
+      "enum": ["runClubs", "racketSports", "pickleball", "padel", "tennis", "badminton", "supper", "quizNights", "nightlife", "studios", "workshops", "books", "outdoors"]
     },
     "discoveryFormats": {
       "type": "array",
@@ -269,6 +275,10 @@
           "$ref": "#/definitions/discoveryFormats",
           "description": "The city-by-format pages the plan counts toward."
         },
+        "womenLed": {
+          "type": "boolean",
+          "description": "The plan's resolved women-led label, copied from its organizer page event. A page event without one reads as false."
+        },
         "organizer": {
           "type": "object",
           "additionalProperties": false,
@@ -351,6 +361,10 @@
         "discoveryFormats": {
           "$ref": "#/definitions/discoveryFormats",
           "description": "The city-by-format pages the organiser counts toward, from its upcoming plans and its listed category and formats."
+        },
+        "womenLed": {
+          "type": "boolean",
+          "description": "The organiser's resolved women-led default, copied from its organizer page. A page without one, and an organiser joining a city that has not launched, reads as false."
         },
         "nextPlan": {
           "anyOf": [

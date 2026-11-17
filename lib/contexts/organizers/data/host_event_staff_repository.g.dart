@@ -55,7 +55,7 @@ final class HostEventStaffRepositoryProvider
 }
 
 String _$hostEventStaffRepositoryHash() =>
-    r'ea9d8514f8dabbe2ff01d10f1a7d693430da9cb6';
+    r'0062df26988d501a2da49dee765aceb3cc2c7755';
 
 @ProviderFor(hostOperatorEvent)
 final hostOperatorEventProvider = HostOperatorEventFamily._();

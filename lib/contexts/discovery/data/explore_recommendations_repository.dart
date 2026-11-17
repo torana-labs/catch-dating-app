@@ -82,8 +82,8 @@ Future<List<ExploreEventRecommendationCandidate>> exploreRecommendedEvents(
 List<ExploreEventRecommendation> rankExploreEventRecommendations({
   required List<ExploreEventRecommendationCandidate> candidates,
   required Set<String> signedUpEventIds,
-  required List<Event> attendedEvents,
-  required List<Event> signedUpEvents,
+  required List<GuestEventCard> attendedEvents,
+  required List<GuestEventCard> signedUpEvents,
   required DateTime now,
   UserProfile? viewer,
   int limit = ReadLimitPolicy.recommendationRail,
@@ -267,12 +267,12 @@ double _startTimeScore(Event event, DateTime now) {
 }
 
 _EventTimeBucket? _timePreferenceFromEvents({
-  required List<Event> attendedEvents,
-  required List<Event> signedUpEvents,
+  required List<GuestEventCard> attendedEvents,
+  required List<GuestEventCard> signedUpEvents,
   required DateTime now,
 }) {
   final counts = <_EventTimeBucket, int>{};
-  void addRun(Event event, int weight) {
+  void addRun(GuestEventCard event, int weight) {
     if (event.startTime.isAfter(now)) return;
     final bucket = _EventTimeBucket.fromHour(event.startTime.hour);
     counts[bucket] = (counts[bucket] ?? 0) + weight;

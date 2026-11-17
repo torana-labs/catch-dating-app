@@ -3,7 +3,8 @@ import test from "node:test";
 import {readFileSync} from "node:fs";
 import {
   backfillPublicOrganizers, projectPublicOrganizer, publicOrganizerEligible,
-  reconcilePublicOrganizer, PUBLIC_ORGANIZER_FIELDS,
+  reconcilePublicOrganizer, PUBLIC_ORGANIZER_DERIVED_FIELDS,
+  PUBLIC_ORGANIZER_FIELDS,
 } from "./publicOrganizerProjection";
 import {validatePublicOrganizerDocument} from
   "../shared/generated/validators/publicOrganizerDocument";
@@ -82,8 +83,25 @@ class FakeQuery {
 const deps = (store: FakeStore) => ({firestore: () => store.db()});
 
 test("the allowlist matches the public contract exactly", () => {
-  assert.deepEqual([...PUBLIC_ORGANIZER_FIELDS].sort(),
+  assert.deepEqual(
+    [...PUBLIC_ORGANIZER_FIELDS, ...PUBLIC_ORGANIZER_DERIVED_FIELDS].sort(),
     Object.keys(publicSchema.properties).sort());
+});
+
+test("womenLed projects the resolved label without its audit fields", () => {
+  const declaration = {value: true, setByUid: "host-1", setByRole: "owner",
+    setAt: {seconds: 1, nanoseconds: 0}, lockedByAdmin: false};
+  const declared = projectPublicOrganizer({...organizerDoc(),
+    womenLed: declaration});
+  assert.equal(declared.womenLed, true);
+  assert.equal(validatePublicOrganizerDocument(declared), true,
+    JSON.stringify(validatePublicOrganizerDocument.errors));
+  assert.equal(projectPublicOrganizer(organizerDoc()).womenLed, false);
+  assert.equal(projectPublicOrganizer({...organizerDoc(), womenLed: {
+    ...declaration, value: false, setByRole: "admin", lockedByAdmin: true,
+  }}).womenLed, false);
+  assert.equal(validatePublicOrganizerDocument({...declared,
+    womenLed: declaration}), false);
 });
 
 test("private fields never reach the projection", () => {

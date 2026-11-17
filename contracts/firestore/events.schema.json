@@ -240,6 +240,11 @@
       "type": "boolean",
       "x-catch-ownership": "callable-owned"
     },
+    "womenLed": {
+      "$ref": "../shared/women_led_common.schema.json#/definitions/eventWomenLed",
+      "description": "This event's override of its organizer's women-led default, set by an organizer owner or manager through updateEvent or by an admin through adminUpdateEventDetails. Absent or value null follows the organizer. Informational and filterable only; it never restricts attendance (see constraints and eventPolicy.admission for that).",
+      "x-catch-ownership": "callable-owned"
+    },
     "discoveryMarketId": {
       "$ref": "../shared/event_common.schema.json#/definitions/marketId",
       "x-catch-ownership": "callable-owned"

@@ -145,6 +145,10 @@
             },
             "booking": {
               "$ref": "#/definitions/catchBooking"
+            },
+            "womenLed": {
+              "$ref": "women_led_common.schema.json#/definitions/publicWomenLed",
+              "description": "Present and resolved on pages built since women-led plans shipped: the event's override, else its organizer's default, false under an admin lock. Readers treat absence as false."
             }
           }
         },
@@ -173,6 +177,10 @@
             },
             "booking": {
               "$ref": "#/definitions/externalBooking"
+            },
+            "womenLed": {
+              "$ref": "women_led_common.schema.json#/definitions/publicWomenLed",
+              "description": "Present and resolved on pages built since women-led plans shipped: an imported event follows its organizer's default, false under an admin lock. Readers treat absence as false."
             }
           }
         }
@@ -273,6 +281,10 @@
               "$ref": "#/definitions/externalBooking"
             }
           ]
+        },
+        "womenLed": {
+          "$ref": "women_led_common.schema.json#/definitions/publicWomenLed",
+          "description": "Resolved like the page event it summarizes. Readers treat absence as false."
         }
       },
       "not": {
@@ -577,6 +589,10 @@
         "upcomingEventCount": {
           "type": "integer",
           "minimum": 0
+        },
+        "womenLed": {
+          "$ref": "women_led_common.schema.json#/definitions/publicWomenLed",
+          "description": "The organizer's resolved women-led default. Readers treat absence as false."
         }
       }
     }

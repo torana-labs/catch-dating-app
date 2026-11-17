@@ -76,7 +76,7 @@ final class PaymentHistoryViewModelProvider
 }
 
 String _$paymentHistoryViewModelHash() =>
-    r'53546446aefd2cb573a60b12f956571f32ab8f89';
+    r'a34fffefec69cca6318440dd493205186584a46d';
 
 final class PaymentHistoryViewModelFamily extends $Family
     with

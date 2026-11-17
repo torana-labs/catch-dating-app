@@ -112,7 +112,8 @@
               "organizerClaimRequest",
               "salesInboundIntent",
               "accessApplication",
-              "externalEvent"
+              "externalEvent",
+              "walkthroughBooking"
             ]
           },
           "sourceId": {

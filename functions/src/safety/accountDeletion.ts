@@ -380,11 +380,13 @@ async function queueParticipantPrivateStateCleanup(
     "eventApprovalNotificationReceipts", "hostMemberships",
     "hostMembershipCheckouts", "hostMembershipBenefitUses",
     "eventChatDirectoryEntries",
-    "guestBookingFacts", "guestEventStatuses"]) {
+    "guestBookingFacts", "guestEventStatuses", "participantFormProfileViews",
+    "participantIntakeProfileViews"]) {
     const records = await db.collection(collection)
       .where("uid", "==", uid).get();
     records.forEach((doc) => writer.delete(doc.ref));
   }
+  writer.delete(db.collection("participantIntakeProfiles").doc(uid));
   const messages = await db.collection("eventChatMessages")
     .where("uid", "==", uid).get();
   messages.forEach((doc) => writer.update(doc.ref, {

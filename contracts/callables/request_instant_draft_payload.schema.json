@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/request_instant_draft_payload.schema.json",
+  "title": "RequestInstantDraftCallablePayload",
+  "description": "Callable payload accepted by requestInstantDraft: the website's 'event page from a link' tool (or a demo request) sends one event or form link with explicit WhatsApp follow-up consent. App Check is required, and so is a signed-in caller whose Firebase phone was verified with a one-time code (the website's 'Continue with phone' sheet, the verification checkout uses): that verified phone is the WhatsApp number Catch replies to and the number the per-number limit counts. The website generates accessToken itself (32 random bytes, base64url), keeps it only in the draft link's URL fragment and memory, and the server stores only its SHA-256, so an exact retry with the same requestId finds the same draft.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["requestId", "requestKind", "entry", "link", "accessToken", "whatsapp"],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{15,79}$",
+      "description": "The website's idempotency key for this submission, such as a UUID. The same key with different content is refused."
+    },
+    "requestKind": {
+      "type": "string",
+      "enum": ["event_link", "form_link"],
+      "description": "event_link: a public event or organizer page (Luma, District, Urbanaut, an organizer's own website). form_link: a public form whose questions should become an organizer form with its linked event."
+    },
+    "entry": {
+      "type": "string",
+      "enum": ["event_page_tool", "demo_request"]
+    },
+    "link": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 2000,
+      "pattern": "^https?://"
+    },
+    "accessToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$",
+      "description": "The draft's private bearer token, chosen by the website. Never put it in a query string, analytics or logs."
+    },
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["consentVersion", "followUpConsent"],
+      "properties": {
+        "phone": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{7,14}$",
+          "description": "Optional. The number is taken from the caller's verified Firebase phone; when sent, it must equal that phone or the request is refused (failed-precondition)."
+        },
+        "consentVersion": {
+          "type": "string",
+          "const": "instant-draft-whatsapp-v1",
+          "description": "The reviewed consent copy: Catch staff may message this number on WhatsApp about this draft."
+        },
+        "followUpConsent": {
+          "type": "boolean",
+          "const": true,
+          "description": "True only when the submitter ticked the WhatsApp follow-up box themselves."
+        }
+      }
+    },
+    "city": {
+      "anyOf": [
+        {"type": "string", "minLength": 2, "maxLength": 80},
+        {"type": "null"}
+      ],
+      "description": "Optional: the city the submitter runs events in. A city that maps to an open launch market is used as given; otherwise Catch infers the market from the imported events' location, and when it cannot, getInstantDraft answers needs_city with the open markets to choose from."
+    }
+  }
+}

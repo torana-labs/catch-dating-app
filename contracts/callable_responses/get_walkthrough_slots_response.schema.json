@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_walkthrough_slots_response.schema.json",
+  "title": "GetWalkthroughSlotsCallableResponse",
+  "description": "Open walkthrough slots, times only: no staff names, ids or other bookings. A day appears only when it has an open slot. bookingOpen false (staff closed booking, or set no windows) tells the page to show its request form instead.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "getWalkthroughSlots",
+  "required": ["timeZone", "utcOffset", "bookingOpen", "slotMinutes", "generatedAt", "days", "followUp"],
+  "properties": {
+    "timeZone": {"const": "Asia/Kolkata"},
+    "utcOffset": {"const": "+05:30"},
+    "bookingOpen": {"type": "boolean"},
+    "slotMinutes": {"type": ["integer", "null"], "enum": [15, 20, 30, 45, 60, 90, null]},
+    "generatedAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/instant"},
+    "days": {
+      "type": "array",
+      "maxItems": 28,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["date", "weekday", "label", "slots"],
+        "properties": {
+          "date": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/localDate"},
+          "weekday": {"type": "integer", "minimum": 1, "maximum": 7},
+          "label": {"type": "string", "minLength": 1, "maxLength": 20, "description": "Wed 18 Nov"},
+          "slots": {"type": "array", "minItems": 1, "maxItems": 96, "items": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slot"}}
+        }
+      }
+    },
+    "followUp": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/followUp"}
+  }
+}

@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/events/domain/event_capacity_labels.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
-import 'package:catch_dating_app/events/shared/event_price_copy.dart';
+import 'package:catch_dating_app/events/shared/event_tiles/event_rail_data.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/theme/activity_palette.dart';
@@ -29,9 +29,42 @@ EventDateRailCardStripPosition eventDateRailCardStripPositionFor(
 }
 
 class EventDateRailCard extends StatelessWidget {
-  const EventDateRailCard({
+  /// A ticket for a full event: discovery and organizer surfaces.
+  EventDateRailCard({
     super.key,
-    required this.event,
+    required Event event,
+    required this.kicker,
+    this.title,
+    this.supportingLabel,
+    this.priceLabel,
+    this.capacityLabel,
+    this.statusLabel,
+    this.showAttendeeSignal = false,
+    this.stripPosition = EventDateRailCardStripPosition.single,
+    this.heroTag,
+    this.onTap,
+  }) : data = EventRailData.fromEvent(event);
+
+  /// A ticket for one of the guest's own events, from its event card. It
+  /// shows capacity terms, never live counts.
+  EventDateRailCard.card({
+    super.key,
+    required GuestEventCard card,
+    required this.kicker,
+    this.title,
+    this.supportingLabel,
+    this.priceLabel,
+    this.capacityLabel,
+    this.statusLabel,
+    this.stripPosition = EventDateRailCardStripPosition.single,
+    this.heroTag,
+    this.onTap,
+  }) : data = EventRailData.fromCard(card),
+       showAttendeeSignal = false;
+
+  const EventDateRailCard.data({
+    super.key,
+    required this.data,
     required this.kicker,
     this.title,
     this.supportingLabel,
@@ -44,7 +77,7 @@ class EventDateRailCard extends StatelessWidget {
     this.onTap,
   });
 
-  final Event event;
+  final EventRailData data;
   final String kicker;
   final String? title;
   final String? supportingLabel;
@@ -59,19 +92,17 @@ class EventDateRailCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final visual = eventActivityVisual(event.activityKind, context: context);
-    final capacity = EventCapacityLabels(event);
+    final visual = eventActivityVisual(data.activityKind, context: context);
     final effectiveStatus = statusLabel?.trim();
     final effectiveSupporting = supportingLabel?.trim();
     final effectiveTitle = title?.trim().isNotEmpty == true
         ? title!.trim()
-        : _eventIdentityTitle(event);
-    final effectivePrice = (priceLabel ?? eventPriceLabel(context.l10n, event))
+        : data.identityTitle;
+    final effectivePrice = (priceLabel ?? data.priceLabelFor(context.l10n))
         .trim();
-    final effectiveCapacity =
-        capacityLabel?.trim() ?? capacity.goingAvailabilityLabel();
+    final effectiveCapacity = capacityLabel?.trim() ?? data.capacityLabel;
     final decisionLabel = [
-      EventFormatters.time(event.startTime),
+      EventFormatters.time(data.startTime),
       effectiveCapacity,
     ].where((label) => label.trim().isNotEmpty).join(' · ');
     final showDecisionStatus =
@@ -95,7 +126,7 @@ class EventDateRailCard extends StatelessWidget {
     final semanticLabel = <String>[
       effectiveTitle,
       kicker,
-      event.longDateLabel,
+      data.longDateLabel,
       if (effectiveSupporting != null && effectiveSupporting.isNotEmpty)
         effectiveSupporting,
       decisionLabel,
@@ -144,19 +175,19 @@ class EventDateRailCard extends StatelessWidget {
                         color: t.ink2,
                       ),
                     ],
-                    if (showAttendeeSignal && event.signedUpCount > 0) ...[
+                    if (showAttendeeSignal && data.signedUpCount > 0) ...[
                       gapH8,
                       CatchAvatarRow(
                         countLabelBuilder: catchAvatarCountLabelBuilder(
                           context.l10n,
                         ),
                         items: const [],
-                        totalCount: event.signedUpCount,
+                        totalCount: data.signedUpCount,
                         size: 24,
-                        veiledCount: event.signedUpCount,
+                        veiledCount: data.signedUpCount,
                         veiledColors: ActivityPalette.resolve(
                           context,
-                          event.activityKind,
+                          data.activityKind,
                         ).avatarColors,
                       ),
                     ],
@@ -177,7 +208,7 @@ class EventDateRailCard extends StatelessWidget {
               bottom: 0,
               width: _dateRailWidth,
               child: DateRail(
-                startTime: event.startTime,
+                startTime: data.startTime,
                 color: visual.accent,
                 activityIcon: visual.icon,
               ),
@@ -601,10 +632,4 @@ class DateRail extends StatelessWidget {
       ),
     );
   }
-}
-
-String _eventIdentityTitle(Event event) {
-  return event.eventFormat.customActivityLabel == null
-      ? event.eventFormat.label
-      : event.eventFormat.eventTitleLabel;
 }

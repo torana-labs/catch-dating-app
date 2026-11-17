@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -42,6 +43,11 @@ class EventCalendarController {
 
   Future<bool> addToCalendar(Event event) {
     return _addEvent(calendarEventPayloadForEvent(event));
+  }
+
+  /// Adds one of the guest's own events from its event card.
+  Future<bool> addCardToCalendar(GuestEventCard card) {
+    return _addEvent(calendarEventPayloadForCard(card));
   }
 }
 
@@ -99,4 +105,24 @@ String _calendarLocation(Event event) {
     return event.locationName;
   }
   return '${event.locationName}, $locationDetails';
+}
+
+/// The same calendar entry from a guest event card. A card without a valid
+/// end lasts an hour.
+CalendarEventPayload calendarEventPayloadForCard(GuestEventCard card) {
+  final notes = card.locationNotes?.trim();
+  return CalendarEventPayload(
+    title: card.title,
+    description: [
+      'Catch event',
+      card.description?.trim() ?? '',
+      card.activitySummaryLabel,
+      if (notes != null && notes.isNotEmpty) notes,
+    ].where((line) => line.isNotEmpty).join('\n'),
+    location: notes == null || notes.isEmpty
+        ? card.locationName
+        : '${card.locationName}, $notes',
+    startTime: card.startTime,
+    endTime: card.endTime ?? card.startTime.add(const Duration(hours: 1)),
+  );
 }

@@ -15,6 +15,7 @@
     "nightsOut": 1,
     "other": 0
   },
+  "womenLedPlanCount": 1,
   "monthWindowEnd": "2026-06-13T00:00:00.000Z",
   "upcomingEvents30d": 8,
   "hasUpcomingMonth": true,
@@ -62,7 +63,7 @@
       "freeEventCount": 0,
       "indexing": "noindex, follow"
     },
-    "supperClubs": {
+    "supper": {
       "slug": "supper-clubs",
       "organizerCount": 1,
       "upcomingEventCount": 1,
@@ -97,7 +98,7 @@
       "freeEventCount": 0,
       "indexing": "noindex, follow"
     },
-    "bookClubs": {
+    "books": {
       "slug": "book-clubs",
       "organizerCount": 0,
       "upcomingEventCount": 0,
@@ -134,7 +135,8 @@
       },
       "discoveryFormats": [
         "runClubs"
-      ]
+      ],
+      "womenLed": true
     },
     {
       "source": "catch",
@@ -157,7 +159,8 @@
       },
       "discoveryFormats": [
         "quizNights"
-      ]
+      ],
+      "womenLed": false
     },
     {
       "source": "catch",
@@ -179,8 +182,9 @@
         "path": "/organizers/next-proof/"
       },
       "discoveryFormats": [
-        "supperClubs"
-      ]
+        "supper"
+      ],
+      "womenLed": false
     },
     {
       "source": "catch",
@@ -203,7 +207,8 @@
       },
       "discoveryFormats": [
         "nightlife"
-      ]
+      ],
+      "womenLed": false
     }
   ],
   "organizers": [
@@ -235,10 +240,11 @@
       },
       "discoveryFormats": [
         "runClubs",
-        "supperClubs",
+        "supper",
         "quizNights",
         "nightlife"
-      ]
+      ],
+      "womenLed": true
     }
   ],
   "builtAt": {

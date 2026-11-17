@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/participant_intake_profile_views.schema.json",
+  "title": "ParticipantIntakeProfileViewDocument",
+  "description": "Server-maintained guest-owned read view of the two portable intake values the form profile review shows: the intake revision that claimParticipantFormProfile fences a LinkedIn save on, and the saved LinkedIn URL. Written by a trigger on participantIntakeProfiles/{uid}; a guest without an intake profile has no view, which reads as revision 0 and no LinkedIn URL, as getParticipantFormProfile returned it. Never the other intake values or their sources.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "participantIntakeProfileViews",
+  "x-firestore-path": "participantIntakeProfileViews/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "Participant form profile view projector (profiles form profile view triggers)",
+  "required": [
+    "uid",
+    "intakeRevision",
+    "linkedinUrl",
+    "version"
+  ],
+  "properties": {
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "intakeRevision": {
+      "$ref": "../callable_responses/get_participant_form_profile_response.schema.json#/properties/intakeRevision",
+      "x-catch-ownership": "server-only"
+    },
+    "linkedinUrl": {
+      "$ref": "../callable_responses/get_participant_form_profile_response.schema.json#/properties/currentLinkedinUrl",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

@@ -85,6 +85,7 @@ export const notCalledByCi = {
   ".github/workflows/play-signing-fingerprints.yml": "operations: dispatch only",
   ".github/workflows/pr-closed-cancel.yml": "its own pull_request (closed) trigger",
   ".github/workflows/release-readiness.yml": "release: dispatch only",
+  ".github/workflows/store-listing.yml": "release: dispatch only",
   ".github/workflows/ui-capture-render.yml": "maintenance: dispatch only",
   ".github/workflows/website-next-preview.yml": "deploy: dispatch only",
   ".github/workflows/website-next-promote.yml": "deploy: dispatch only",

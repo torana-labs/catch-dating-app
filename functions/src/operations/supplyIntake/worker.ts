@@ -81,7 +81,7 @@ export async function processSupplyIntakeRequest(deps: SupplyIntakeWorkerDeps, r
     // Read before any page fetch is reserved, so a failed read costs no budget.
     const inventory = await loadOrganizerInventory(deps.db, request, runtime.organizerReferenceFromDocument);
     const linkSearch = await (deps.linkSearch ?? ((current) => defaultLinkSearch(deps, current)))(policy);
-    const {source, settle} = await pageSourceFor(deps, policy);
+    const {source, settle} = await pageSourceFor(deps, policy, pageAllowanceFor(request));
     const discovery = await instagramDiscovery(deps);
     // Instagram profiles go to Business Discovery; every other URL to the
     // page source.
@@ -138,15 +138,32 @@ export async function processSupplyIntakeRequest(deps: SupplyIntakeWorkerDeps, r
 const CONTRACT_ERRORS = new Set(["INVALID_INTAKE_REQUEST", "INVALID_ACQUISITION_POLICY",
   "ACQUISITION_POLICY_DECISION_REQUIRED"]);
 
+/** Which monthly page allowance a request reads from. */
+export type PageAllowance = "shared" | "web_instant_draft";
+
+/**
+ * A website instant draft reads from the tool's own monthly allowance
+ * (owner decision, 16 Nov 2026), so drafts never starve staff nominations;
+ * every other front door shares the main one.
+ */
+export function pageAllowanceFor(request: {origin?: {kind?: unknown} | null}): PageAllowance {
+  return request.origin?.kind === "web_instant_draft" ? "web_instant_draft" : "shared";
+}
+
+/** The usage document that counts one allowance's month: {monthKey}, or instant-draft-pages-{monthKey}. */
+export function pageUsageDocId(monthKey: string, allowance: PageAllowance): string {
+  return allowance === "web_instant_draft" ? `instant-draft-pages-${monthKey}` : monthKey;
+}
+
 /**
  * Live fetching only when policy enables it; its cited decision must exist and
  * be accepted or the request fails closed. Otherwise a source that captures
  * nothing, so the listing still forms from the nomination and records every
  * seed as a gap for research. Claim verification reads Luma pages through the
- * same gate and monthly allowance.
+ * same gate and the shared monthly allowance.
  */
 export async function pageSourceFor(deps: Pick<SupplyIntakeWorkerDeps, "db" | "now" | "transport">,
-  policy: AcquisitionPolicy):
+  policy: AcquisitionPolicy, allowance: PageAllowance = "shared"):
   Promise<{source: IntakePageSource; settle: () => Promise<void>}> {
   const runtime = await packagedIntake();
   if (!policy.pageFetch.enabled) {
@@ -154,21 +171,24 @@ export async function pageSourceFor(deps: Pick<SupplyIntakeWorkerDeps, "db" | "n
   }
   const decision = await deps.db.collection(supplyIntakeCollections.decisions).doc(String(policy.pageFetch.decisionId)).get();
   const monthKey = deps.now().toISOString().slice(0, 7);
-  const usageRef = deps.db.collection(supplyIntakeCollections.usage).doc(monthKey);
+  const usageRef = deps.db.collection(supplyIntakeCollections.usage).doc(pageUsageDocId(monthKey, allowance));
   const cap = policy.pageFetch.maxRequestsPerIntake;
+  const monthlyCap = allowance === "web_instant_draft" ? policy.pageFetch.maxInstantDraftRequestsPerMonth :
+    policy.pageFetch.maxRequestsPerMonth;
   // Constructing the port validates the decision before anything is reserved.
-  const draft = runtime.pageFetchBudgetLedgers({policy, monthKey});
+  const draft = runtime.pageFetchBudgetLedgers({policy, monthKey, allowance});
   new runtime.GuardedPageFetchPort({policy, policyDecision: decision.data() ?? null, budgets: draft, clock: deps.now});
   const {used, reserved} = await deps.db.runTransaction(async (tx) => {
     const usage = await tx.get(usageRef);
     const used = usage.exists ? Number((usage.data() as {networkRequests?: number}).networkRequests ?? 0) : 0;
-    const reserved = Math.max(0, Math.min(cap, policy.pageFetch.maxRequestsPerMonth - used));
+    const reserved = Math.max(0, Math.min(cap, monthlyCap - used));
     tx.set(usageRef, {schemaVersion: 1, monthKey, networkRequests: used + reserved, updatedAt: deps.now().toISOString()});
     return {used, reserved};
   });
   // The intake ledger starts pre-consumed so its remaining allowance is the
   // reservation; the transaction above, not this process, enforces the month.
-  const budgets = runtime.pageFetchBudgetLedgers({policy, monthKey, intakeConsumed: cap - reserved, monthlyConsumed: used});
+  const budgets = runtime.pageFetchBudgetLedgers({policy, monthKey, intakeConsumed: cap - reserved, monthlyConsumed: used,
+    allowance});
   const port = new runtime.GuardedPageFetchPort({policy, policyDecision: decision.data(), budgets, clock: deps.now,
     ...(deps.transport ? {transport: deps.transport} : {})});
   return {

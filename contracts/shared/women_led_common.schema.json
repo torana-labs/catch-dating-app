@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/women_led_common.schema.json",
+  "title": "WomenLedCommon",
+  "description": "Women-led is a self-declared hosting label: the plan is led or hosted by women. It is informational and filterable only. It never restricts who may attend; attendance limits stay in event constraints and admission policy. An organizer declares a default that applies to its plans, an event may override that default, and an admin may clear either and lock it for moderation. Each declaration records who set it, in which role and when.",
+  "type": "object",
+  "definitions": {
+    "setByRole": {
+      "type": "string",
+      "description": "The authority that made the latest change: the organizer owner or a manager through the Host edit callables, or an admin through the audited admin detail callables.",
+      "enum": [
+        "owner",
+        "manager",
+        "admin"
+      ]
+    },
+    "adminAction": {
+      "type": "string",
+      "description": "Admin moderation of the label. set declares it (and lifts a lock), clear removes it and locks it so the Host cannot declare it again, release lifts a lock without declaring it (an organizer stays undeclared; an event returns to its organizer's default).",
+      "enum": [
+        "set",
+        "clear",
+        "release"
+      ]
+    },
+    "organizerWomenLed": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The organizer's women-led default for its plans, with its audit fields. A locked declaration is never women-led, and while it is locked no event of this organizer is women-led either. An admin lock always stores value false and setByRole admin; the callables enforce it.",
+      "required": [
+        "value",
+        "setByUid",
+        "setByRole",
+        "setAt",
+        "lockedByAdmin"
+      ],
+      "properties": {
+        "value": {
+          "type": "boolean"
+        },
+        "setByUid": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "setByRole": {
+          "$ref": "#/definitions/setByRole"
+        },
+        "setAt": {
+          "$ref": "event_common.schema.json#/definitions/timestamp"
+        },
+        "lockedByAdmin": {
+          "type": "boolean",
+          "description": "True after an admin cleared the label. The Host cannot declare it again until an admin sets or releases it."
+        }
+      }
+    },
+    "eventWomenLed": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An event's override of its organizer's women-led default, with its audit fields. value null follows the organizer default; an absent field does too. An admin lock always stores value false and setByRole admin; the callables enforce it.",
+      "required": [
+        "value",
+        "setByUid",
+        "setByRole",
+        "setAt",
+        "lockedByAdmin"
+      ],
+      "properties": {
+        "value": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "setByUid": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "setByRole": {
+          "$ref": "#/definitions/setByRole"
+        },
+        "setAt": {
+          "$ref": "event_common.schema.json#/definitions/timestamp"
+        },
+        "lockedByAdmin": {
+          "type": "boolean",
+          "description": "True after an admin cleared the label on this event. The Host cannot declare it again until an admin sets or releases it."
+        }
+      }
+    },
+    "publicWomenLed": {
+      "type": "boolean",
+      "description": "The resolved public label: true when the plan or organizer is women-led after event overrides and admin locks. Read models derive it; they never copy the audit fields."
+    }
+  }
+}

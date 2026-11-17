@@ -92,6 +92,13 @@ describe("playbook page indexes", () => {
     }
   });
 
+  it("holds back a page whose pricing calculator has no component yet", async () => {
+    const page = (await loadPlaybookPage(resolvePlaybookPage("/host/run-clubs/")!))!;
+    const withCalculator = {...page, sections: page.sections.map((section) =>
+      section.type === "pricing" ? {...section, calculator: "pricingCalculator" as const} : section)};
+    expect(pendingPlaybookBindings(withCalculator)).toEqual(["custom:pricingCalculator"]);
+  });
+
   it("renders the run-clubs sample: no pending bindings, brand resolved, noindex until approved", async () => {
     const ref = resolvePlaybookPage("/host/run-clubs")!;
     expect(ref.match.contentKey).toBe("host_run_clubs");
