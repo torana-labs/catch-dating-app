@@ -4,7 +4,7 @@ import type {ReactNode} from "react";
 import {expect, userEvent, within} from "storybook/test";
 import {HomePage} from "../features/home/HomePage";
 import type {HomeCatalog} from "../features/home/homeTypes";
-import {homeCatalogFixture, mumbaiLiveCatalog, puneLaunchingSoonCatalog} from "./fixtures/homeCatalogs";
+import {homeCatalogFixture, mumbaiLiveCatalog, mumbaiThinCatalog, puneLaunchingSoonCatalog} from "./fixtures/homeCatalogs";
 
 const meta = {
   title: "Marketing Website/Homepage",
@@ -76,6 +76,20 @@ export const ThinCity: Story = {
   name: "Indore, too few plans · 1280",
   parameters: {catchComponent: {id: "route_home", routeIds: ["home"], states: ["thin-city"]}},
   render: () => page(homeCatalogFixture("indore"), 1280),
+};
+
+/** Mumbai with three plans in two weeks, as the board's "live but thin" state: the plans dated, nearest first, and the host band moved up. */
+export const MumbaiThin1280: Story = {
+  name: "Mumbai thin · 1280",
+  parameters: {catchComponent: {id: "route_home", routeIds: ["home"], states: ["thin-city"]}},
+  render: () => page(mumbaiThinCatalog, 1280),
+};
+
+/** Mumbai thin on a 390px page, with the phone action bar. */
+export const MumbaiThin390: Story = {
+  name: "Mumbai thin · 390",
+  parameters: {catchComponent: {id: "home_page_sections", routeIds: ["home"], states: ["phone-live"]}},
+  render: () => page(mumbaiThinCatalog, 390),
 };
 
 /** Nothing could be read: the live city stays live and says so. */

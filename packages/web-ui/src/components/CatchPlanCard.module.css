@@ -82,6 +82,74 @@
   }
 }
 
+/*
+ * The canvas plan card (.plan), when the card has a date: white at radius xl
+ * with a hairline ring and 14px inside, a 150px photo or poster at radius md,
+ * the date square beside the title and host, and the price and places over a
+ * hairline. It keeps this shape at every width; a rail scrolls it sideways.
+ */
+.card[data-layout="kit"] {
+  box-sizing: border-box;
+  padding: var(--catch-space-micro14);
+  border-radius: var(--catch-radius-xl);
+  box-shadow: var(--catch-website-shadow-card-ring);
+}
+
+.card[data-layout="kit"]:hover { box-shadow: var(--catch-website-shadow-card-ring), var(--catch-elevation-raised); }
+
+.card[data-layout="kit"] .media {
+  height: var(--catch-website-plan-media-height);
+  border-radius: var(--catch-radius-md);
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--catch-space-s3);
+  margin: var(--catch-space-micro14) 0;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s1);
+  min-width: 0;
+}
+
+.title.title { line-height: var(--catch-website-type-card-title-line-height); }
+
+.label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--catch-space-s2);
+  margin-top: auto;
+  padding-top: var(--catch-space-s3);
+  border-top: var(--catch-stroke-hairline) solid var(--catch-website-color-line-row);
+}
+
+.metaText.metaText { font-weight: var(--catch-typography-role-label-action-weight); }
+
+.availability.availability { color: var(--catch-palette-pink-deep); }
+
+@container catch-page (width < 840px) {
+  .card[data-layout="kit"] { flex-direction: column; }
+
+  .card[data-layout="kit"] .media {
+    width: 100%;
+    height: var(--catch-website-plan-media-height);
+    min-height: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .card {
     transition: none;

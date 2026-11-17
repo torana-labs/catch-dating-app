@@ -1,0 +1,91 @@
+/*
+ * The phone action bar (playbook-panels.css .pg .mbar): hidden on wide pages.
+ * On a phone-width page it is a sticky ink pill 8px above the screen's foot
+ * and 8px from its sides, 8px inside and between its parts, with the kit's
+ * shadow. Its pills are 44px: the main one filled coral (pink on the
+ * homepage) in ink, the second outlined on the ink, and the WhatsApp button a
+ * green circle.
+ */
+.dock {
+  display: none;
+}
+
+@media (max-width: 599px) {
+  .dock { display: flex; }
+}
+
+/* In a phone-width frame (a story's PageFrame) the frame's width decides. */
+@container catch-page (width < 600px) {
+  .dock { display: flex; }
+}
+
+.dock {
+  position: sticky;
+  z-index: var(--catch-layer-sticky);
+  bottom: var(--catch-space-s2);
+  gap: var(--catch-space-s2);
+  margin: var(--catch-space-s2);
+  padding: var(--catch-space-s2);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-palette-ink);
+  box-shadow: var(--catch-website-shadow-dock);
+}
+
+.action {
+  display: inline-flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 0;
+  height: var(--catch-size-touch-min);
+  padding: 0 var(--catch-space-s4);
+  border: var(--catch-stroke-control) solid transparent;
+  border-radius: var(--catch-radius-pill);
+  font-family: var(--catch-font-stack-sans);
+  font-size: var(--catch-typography-role-label-button-size);
+  font-weight: var(--catch-typography-role-label-button-weight);
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.action[data-kind="primary"] {
+  border-color: var(--catch-palette-coral);
+  background: var(--catch-palette-coral);
+  color: var(--catch-palette-ink);
+}
+
+.action[data-kind="primary"][data-accent="pink"] {
+  border-color: var(--catch-palette-pink);
+  background: var(--catch-palette-pink);
+}
+
+.action[data-kind="secondary"] {
+  border-color: var(--catch-website-color-dock-secondary-line);
+  background: transparent;
+  color: var(--catch-palette-white);
+}
+
+.whatsapp {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--catch-size-touch-min);
+  height: var(--catch-size-touch-min);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-website-color-whatsapp);
+  color: var(--catch-palette-ink);
+}
+
+.glyph {
+  width: var(--catch-website-header-contact-icon-size);
+  height: var(--catch-website-header-contact-icon-size);
+}
+
+.action:focus-visible,
+.whatsapp:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-palette-white);
+  outline-offset: var(--catch-space-micro2);
+}

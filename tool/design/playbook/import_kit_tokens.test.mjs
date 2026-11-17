@@ -5,6 +5,7 @@ import path from "node:path";
 import {test} from "node:test";
 import {
   applyWrites,
+  boardCss,
   findDeclaration,
   kitHexes,
   kitLiteral,
@@ -60,6 +61,25 @@ test("reads kit literals as DTCG values", () => {
   assert.deepEqual(kitLiteral("-.05em", "dimension"), {value: -0.05, unit: "em"});
   assert.deepEqual(kitLiteral("24cqi", "dimension"), {value: 24, unit: "cqi"});
   assert.equal(kitLiteral(".8", "number"), 0.8);
+});
+
+test("reads a box-shadow as DTCG shadow layers, and nothing else as one", () => {
+  const shadow = kitLiteral("0 30px 60px -20px rgba(20,17,20,.45),0 0 0 1px rgba(0,0,0,.5)", "shadow");
+  assert.equal(shadow.length, 2);
+  assert.deepEqual(shadow[0].offsetY, {value: 30, unit: "px"});
+  assert.deepEqual(shadow[0].spread, {value: -20, unit: "px"});
+  assert.equal(shadow[0].color.alpha, 0.45);
+  assert.deepEqual(kitLiteral("0 8px 20px rgba(0,0,0,.3)", "shadow")[0].spread, {value: 0, unit: "px"});
+  assert.equal(kitLiteral("inset 0 0 0 1px rgba(0,0,0,.5)", "shadow"), null);
+  assert.equal(kitLiteral("16px", "shadow"), null);
+});
+
+test("takes a board's declarations from its <style> elements", () => {
+  const html = "<x-dc><helmet><style>.notify{border-radius:22px}</style></helmet><style>.hchip{gap:12px}</style></x-dc>";
+  const rules = parseKitCss(boardCss(html, "oneoff/Board.dc.html"));
+  assert.equal(findDeclaration(rules, {selector: ".notify", property: "border-radius"}), "22px");
+  assert.equal(findDeclaration(rules, {selector: ".hchip", property: "gap"}), "12px");
+  assert.equal(boardCss(".a{gap:1px}", "kit.css"), ".a{gap:1px}");
 });
 
 test("plans owned writes, new tokens and role aliases", () => {
@@ -118,6 +138,7 @@ test("the import is idempotent and --check passes after it", () => {
     for (const file of [
       "design/source_packs/website-playbook/kit/playbook-panels.css",
       "design/source_packs/website-playbook/kit/playbook-kit.css",
+      "design/source_packs/website-playbook/oneoff/PlaybookHome.dc.html",
       "design/tokens/catch.tokens.json",
       "design/source_packs/website-playbook/README.md",
       "design/source_packs/website-playbook/source-pack.json",
