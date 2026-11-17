@@ -43,6 +43,25 @@ export const eventRehearsalCopy = {
     "We could not confirm these sample answers. Retry to check the same request.",
   requiredDataComplete: "Sample answers provided to the Host.",
   requiredDataClosed: "This practice request is no longer open.",
+  /**
+   * The event profile fields a Host can request, by field id
+   * (contracts/shared/event_runtime_profile.schema.json RuntimeFieldId).
+   * interestedInGenders holds the genders a guest would like to meet, as the
+   * live event form asks it; relationshipGoal holds the profile's
+   * looking-for answer.
+   */
+  requiredFieldLabels: {
+    displayName: "Name",
+    gender: "Gender",
+    interestedInGenders: "Genders you'd like to meet",
+    relationshipGoal: "What you're looking for",
+    dateOfBirth: "Age",
+    paceBand: "Running pace",
+    skillBand: "Skill level",
+    dietaryAndSeatingNotes: "Dietary or seating needs",
+    questionnaireAnswerIds: "Event questions",
+    teamName: "Team name",
+  },
   refresh: "Refresh practice room",
   actionsBody:
     "Every action changes only this synthetic guest and appears on the Host practice screen.",

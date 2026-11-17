@@ -55,7 +55,7 @@ export const eventDetailCopy = {
       alreadyRegistered: "You were already registered. Your roster place is confirmed.",
       waitlisted: "The event is full, so you are now on the organizer's waitlist.",
       privacy:
-        `Your name and verified number are used for this booking and can prefill ${brand.name} if you later continue in the app. A dating profile is not created, and this operational data is not permission for advertising.`,
+        `Your name and verified number are used for this booking and can prefill ${brand.name} if you later continue in the app. This operational data is not permission for advertising.`,
       whatsappConsent:
         "Send me future event announcements from this organizer on WhatsApp",
       smsConsent:
@@ -186,7 +186,7 @@ export const guestEventCopy = {
   invalidCode: "Check your verification code and try again.",
   verificationFailed: "Phone verification could not start. Check your number and current account, then try again.",
   unavailable: "Your event status is unavailable. Refresh before continuing.",
-  privacy: "Your verified number identifies your bookings and applications. No app download or dating profile is required. Marketing preferences are optional.",
+  privacy: "Your verified number identifies your bookings and applications. No app download is required. Marketing preferences are optional.",
   apply: "Apply to attend", offer: "Review your offer", payment: "Manage booking and payment",
   runtime: "Prepare for your event", help: "Get help",
   status: {
