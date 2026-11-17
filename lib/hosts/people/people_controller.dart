@@ -6,6 +6,8 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_quer
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
+import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -111,46 +113,46 @@ class HostPeopleDirectoryPage {
     required this.matchCount,
     required this.atLeast,
     this.loadingMore = false,
+    this.loadMoreError,
   });
 
   final List<HostAudienceContact> contacts;
+
+  /// Whether more rows follow; true after a failed page so asking again
+  /// retries it.
   final bool hasMore;
   final int matchCount;
   final bool atLeast;
   final bool loadingMore;
 
-  HostPeopleDirectoryPage copyWith({bool? loadingMore}) =>
-      HostPeopleDirectoryPage(
-        contacts: contacts,
-        hasMore: hasMore,
-        matchCount: matchCount,
-        atLeast: atLeast,
-        loadingMore: loadingMore ?? this.loadingMore,
-      );
+  /// Why the next page failed; the rows shown stay.
+  final Object? loadMoreError;
 }
 
 /// How many People rows one screen shows before asking for more.
-const hostPeoplePageSize = 30;
+const hostPeoplePageSize = ReadLimitPolicy.directoryPage;
 
-/// How many rows the People list listens to for one request; it grows by a
-/// page each time the list asks for more.
+/// The request's contacts, a page at a time, every row shown live. Each
+/// page is its own listener, so asking for more reads only the new page.
 @riverpod
-class HostPeopleWindow extends _$HostPeopleWindow {
+class HostPeopleContactPages extends _$HostPeopleContactPages {
+  late LivePager<HostAudienceContact> _pager;
+
   @override
-  int build(HostPeopleRequest request) => hostPeoplePageSize;
+  Stream<LivePages<HostAudienceContact>> build(HostPeopleRequest request) {
+    _pager = ref
+        .watch(hostContactsRepositoryProvider)
+        .watchContacts(
+          request.organizerId,
+          query: request.query,
+          pageSize: hostPeoplePageSize,
+        );
+    return _pager.pages;
+  }
 
-  void grow() => state += hostPeoplePageSize;
+  /// Opens the next page, or retries the one that failed.
+  void loadMore() => _pager.loadMore();
 }
-
-/// The first rows of the request's contact query, as a listener.
-@riverpod
-Stream<HostContactWindow> hostPeopleContacts(
-  Ref ref,
-  HostPeopleRequest request,
-  int limit,
-) => ref
-    .watch(hostContactsRepositoryProvider)
-    .watchContacts(request.organizerId, query: request.query, limit: limit);
 
 /// The People list's contacts, most recent first (by name for a search),
 /// live: a contact the server adds, changes or removes shows at once, and
@@ -159,30 +161,31 @@ Stream<HostContactWindow> hostPeopleContacts(
 class HostPeopleDirectory extends _$HostPeopleDirectory {
   @override
   Future<HostPeopleDirectoryPage> build(HostPeopleRequest request) async {
-    final limit = ref.watch(hostPeopleWindowProvider(request));
-    final window = await ref.watch(
-      hostPeopleContactsProvider(request, limit).future,
+    final pages = await ref.watch(
+      hostPeopleContactPagesProvider(request).future,
     );
     final contactDirectory = await ref.watch(
       hostContactDirectoryProvider(request.organizerId).future,
     );
     final count =
         contactDirectory.count(request.query) ??
-        (window.hasMore ? null : window.contacts.length);
+        (pages.hasMore ? null : pages.items.length);
     return HostPeopleDirectoryPage(
-      contacts: window.contacts,
-      hasMore: window.hasMore,
-      matchCount: count ?? window.contacts.length,
+      contacts: pages.items,
+      hasMore: pages.hasMore,
+      matchCount: count ?? pages.items.length,
       atLeast: count == null,
+      loadingMore: pages.loadingMore,
+      loadMoreError: pages.nextPageError,
     );
   }
 
-  /// Listens to one more page; the list keeps its rows meanwhile.
+  /// Opens one more page, or retries a failed one; the list keeps its rows
+  /// meanwhile.
   Future<void> loadMore() async {
     final current = catchAsyncStateFromAsyncValue(state).value;
     if (current == null || !current.hasMore || current.loadingMore) return;
-    state = AsyncData(current.copyWith(loadingMore: true));
-    ref.read(hostPeopleWindowProvider(request).notifier).grow();
+    ref.read(hostPeopleContactPagesProvider(request).notifier).loadMore();
   }
 }
 
@@ -272,7 +275,7 @@ HostPeopleState hostPeopleController(Ref ref, HostPeopleRequest request) {
 void retryHostPeopleReads(WidgetRef ref, HostPeopleRequest request) {
   ref
     ..invalidate(hostContactDirectoryProvider(request.organizerId))
-    ..invalidate(hostPeopleContactsProvider)
+    ..invalidate(hostPeopleContactPagesProvider(request))
     ..invalidate(hostPeopleDirectoryProvider(request))
     ..invalidate(hostAllSavedAudienceSummariesProvider(request.organizerId));
   for (final filter in HostPeopleFilter.values) {

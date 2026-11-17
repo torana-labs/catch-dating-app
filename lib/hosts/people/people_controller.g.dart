@@ -106,54 +106,51 @@ final class HostPeopleOrganizerFamily extends $Family
   String toString() => r'hostPeopleOrganizerProvider';
 }
 
-/// How many rows the People list listens to for one request; it grows by a
-/// page each time the list asks for more.
+/// The request's contacts, a page at a time, every row shown live. Each
+/// page is its own listener, so asking for more reads only the new page.
 
-@ProviderFor(HostPeopleWindow)
-final hostPeopleWindowProvider = HostPeopleWindowFamily._();
+@ProviderFor(HostPeopleContactPages)
+final hostPeopleContactPagesProvider = HostPeopleContactPagesFamily._();
 
-/// How many rows the People list listens to for one request; it grows by a
-/// page each time the list asks for more.
-final class HostPeopleWindowProvider
-    extends $NotifierProvider<HostPeopleWindow, int> {
-  /// How many rows the People list listens to for one request; it grows by a
-  /// page each time the list asks for more.
-  HostPeopleWindowProvider._({
-    required HostPeopleWindowFamily super.from,
+/// The request's contacts, a page at a time, every row shown live. Each
+/// page is its own listener, so asking for more reads only the new page.
+final class HostPeopleContactPagesProvider
+    extends
+        $StreamNotifierProvider<
+          HostPeopleContactPages,
+          LivePages<HostAudienceContact>
+        > {
+  /// The request's contacts, a page at a time, every row shown live. Each
+  /// page is its own listener, so asking for more reads only the new page.
+  HostPeopleContactPagesProvider._({
+    required HostPeopleContactPagesFamily super.from,
     required HostPeopleRequest super.argument,
   }) : super(
          retry: null,
-         name: r'hostPeopleWindowProvider',
+         name: r'hostPeopleContactPagesProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$hostPeopleWindowHash();
+  String debugGetCreateSourceHash() => _$hostPeopleContactPagesHash();
 
   @override
   String toString() {
-    return r'hostPeopleWindowProvider'
+    return r'hostPeopleContactPagesProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  HostPeopleWindow create() => HostPeopleWindow();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(int value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<int>(value),
-    );
-  }
+  HostPeopleContactPages create() => HostPeopleContactPages();
 
   @override
   bool operator ==(Object other) {
-    return other is HostPeopleWindowProvider && other.argument == argument;
+    return other is HostPeopleContactPagesProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -162,152 +159,71 @@ final class HostPeopleWindowProvider
   }
 }
 
-String _$hostPeopleWindowHash() => r'665ee1d6bf9aebd1a1140e31c1e6210f09f80439';
+String _$hostPeopleContactPagesHash() =>
+    r'6554e0348b165084d09c5a93a541a8def275f39d';
 
-/// How many rows the People list listens to for one request; it grows by a
-/// page each time the list asks for more.
+/// The request's contacts, a page at a time, every row shown live. Each
+/// page is its own listener, so asking for more reads only the new page.
 
-final class HostPeopleWindowFamily extends $Family
+final class HostPeopleContactPagesFamily extends $Family
     with
         $ClassFamilyOverride<
-          HostPeopleWindow,
-          int,
-          int,
-          int,
+          HostPeopleContactPages,
+          AsyncValue<LivePages<HostAudienceContact>>,
+          LivePages<HostAudienceContact>,
+          Stream<LivePages<HostAudienceContact>>,
           HostPeopleRequest
         > {
-  HostPeopleWindowFamily._()
+  HostPeopleContactPagesFamily._()
     : super(
         retry: null,
-        name: r'hostPeopleWindowProvider',
+        name: r'hostPeopleContactPagesProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  /// How many rows the People list listens to for one request; it grows by a
-  /// page each time the list asks for more.
+  /// The request's contacts, a page at a time, every row shown live. Each
+  /// page is its own listener, so asking for more reads only the new page.
 
-  HostPeopleWindowProvider call(HostPeopleRequest request) =>
-      HostPeopleWindowProvider._(argument: request, from: this);
+  HostPeopleContactPagesProvider call(HostPeopleRequest request) =>
+      HostPeopleContactPagesProvider._(argument: request, from: this);
 
   @override
-  String toString() => r'hostPeopleWindowProvider';
+  String toString() => r'hostPeopleContactPagesProvider';
 }
 
-/// How many rows the People list listens to for one request; it grows by a
-/// page each time the list asks for more.
+/// The request's contacts, a page at a time, every row shown live. Each
+/// page is its own listener, so asking for more reads only the new page.
 
-abstract class _$HostPeopleWindow extends $Notifier<int> {
+abstract class _$HostPeopleContactPages
+    extends $StreamNotifier<LivePages<HostAudienceContact>> {
   late final _$args = ref.$arg as HostPeopleRequest;
   HostPeopleRequest get request => _$args;
 
-  int build(HostPeopleRequest request);
+  Stream<LivePages<HostAudienceContact>> build(HostPeopleRequest request);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<int, int>;
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<LivePages<HostAudienceContact>>,
+              LivePages<HostAudienceContact>
+            >;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<int, int>,
-              int,
+              AnyNotifier<
+                AsyncValue<LivePages<HostAudienceContact>>,
+                LivePages<HostAudienceContact>
+              >,
+              AsyncValue<LivePages<HostAudienceContact>>,
               Object?,
               Object?
             >;
     return element.handleCreate(ref, () => build(_$args));
   }
-}
-
-/// The first rows of the request's contact query, as a listener.
-
-@ProviderFor(hostPeopleContacts)
-final hostPeopleContactsProvider = HostPeopleContactsFamily._();
-
-/// The first rows of the request's contact query, as a listener.
-
-final class HostPeopleContactsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<HostContactWindow>,
-          HostContactWindow,
-          Stream<HostContactWindow>
-        >
-    with
-        $FutureModifier<HostContactWindow>,
-        $StreamProvider<HostContactWindow> {
-  /// The first rows of the request's contact query, as a listener.
-  HostPeopleContactsProvider._({
-    required HostPeopleContactsFamily super.from,
-    required (HostPeopleRequest, int) super.argument,
-  }) : super(
-         retry: null,
-         name: r'hostPeopleContactsProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$hostPeopleContactsHash();
-
-  @override
-  String toString() {
-    return r'hostPeopleContactsProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $StreamProviderElement<HostContactWindow> $createElement(
-    $ProviderPointer pointer,
-  ) => $StreamProviderElement(pointer);
-
-  @override
-  Stream<HostContactWindow> create(Ref ref) {
-    final argument = this.argument as (HostPeopleRequest, int);
-    return hostPeopleContacts(ref, argument.$1, argument.$2);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is HostPeopleContactsProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$hostPeopleContactsHash() =>
-    r'810252e252285bd9a8ac8bd01403cf49f4250c74';
-
-/// The first rows of the request's contact query, as a listener.
-
-final class HostPeopleContactsFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          Stream<HostContactWindow>,
-          (HostPeopleRequest, int)
-        > {
-  HostPeopleContactsFamily._()
-    : super(
-        retry: null,
-        name: r'hostPeopleContactsProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// The first rows of the request's contact query, as a listener.
-
-  HostPeopleContactsProvider call(HostPeopleRequest request, int limit) =>
-      HostPeopleContactsProvider._(argument: (request, limit), from: this);
-
-  @override
-  String toString() => r'hostPeopleContactsProvider';
 }
 
 /// The People list's contacts, most recent first (by name for a search),
@@ -363,7 +279,7 @@ final class HostPeopleDirectoryProvider
 }
 
 String _$hostPeopleDirectoryHash() =>
-    r'ef7915e2de1be38d56ab3ce483efccaf951f7495';
+    r'5b2918a8469b93a6508e593807736f2f2463bac1';
 
 /// The People list's contacts, most recent first (by name for a search),
 /// live: a contact the server adds, changes or removes shows at once, and
