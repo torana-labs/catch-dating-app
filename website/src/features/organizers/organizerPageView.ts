@@ -201,7 +201,8 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
       accent,
       format: pageFormat,
       monogram: record.identity.logo.text || catchAvatarInitialsOf(record.identity.name),
-      monogramGround: generated ? "white" : accent,
+      // The hero sets more of the logo below the cover than the board's rail did, so a generated page's logo takes paper, not white on white.
+      monogramGround: generated ? "paper" : accent,
       verified: record.identity.verified,
       ...(generated ? {tag: copy.generatedTag} : {}),
       labels: record.womenLed ? [copy.labels.womenLed] : [],

@@ -28,16 +28,19 @@ export function OrganizerIdentitySection({controller}: {controller: OrganizerPag
   return (
     <CatchProfileHeader
       actions={(
-        <CatchStack direction="row" equal gap={8}>
-          <CatchButton
-            fill
-            label={follow.following ? copy.following : copy.follow}
-            leadingIcon={follow.following ? "check" : undefined}
-            onPressed={follow.press}
-            status={follow.pending ? "loading" : "idle"}
-            variant={follow.following ? "secondary" : "primary"}
-          />
-          <CatchButton fill label={copy.share} leadingIcon="share" onPressed={share.toggle} variant="secondary" />
+        <CatchStack gap={8}>
+          <CatchStack direction="row" equal gap={8}>
+            <CatchButton
+              fill
+              label={follow.following ? copy.following : copy.follow}
+              leadingIcon={follow.following ? "check" : undefined}
+              onPressed={follow.press}
+              status={follow.pending ? "loading" : "idle"}
+              variant={follow.following ? "secondary" : "primary"}
+            />
+            <CatchButton fill label={copy.share} leadingIcon="share" onPressed={share.toggle} variant="secondary" />
+          </CatchStack>
+          {follow.byPhone ? <CatchText as="p" tone="secondary" variant="body-small">{copy.followNote}</CatchText> : null}
         </CatchStack>
       )}
       badges={header.labels.length ? (
@@ -64,15 +67,14 @@ export function OrganizerIdentitySection({controller}: {controller: OrganizerPag
 /**
  * What Follow and Share open, at the top of the rail: the phone follow
  * sheet (or the account step), a follow error, and the share card with its
- * QR code. Nothing while both are closed.
+ * QR code. Nothing while both are closed. The line on following by phone
+ * sits under the buttons in the hero.
  */
 export function OrganizerFollowPanels({controller}: {controller: OrganizerPageController}) {
   const {follow, share, view} = controller;
-  const followNote = follow.byPhone ? <CatchText as="p" tone="secondary" variant="body-small">{copy.followNote}</CatchText> : null;
-  if (!followNote && !follow.phone && !follow.account && !follow.error && !share.open) return null;
+  if (!follow.phone && !follow.account && !follow.error && !share.open) return null;
   return (
     <CatchStack gap={12}>
-      {followNote}
       {follow.phone ? <OrganizerFollowSheet error={follow.error} name={view.name} phone={follow.phone} /> : null}
       {follow.account ? <CatchGroundCard><CatchStack gap={12}>{renderAccountForm(follow.account)}</CatchStack></CatchGroundCard> : null}
       {!follow.phone && follow.error ? <CatchText as="p" role="alert" tone="danger" variant="body-small">{follow.error}</CatchText> : null}

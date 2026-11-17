@@ -37,7 +37,7 @@ describe("organizerPageView", () => {
 
   it("heads a generated page with its tag, where it came from and who is waiting", () => {
     const {header} = view(generatedOrganizerPage);
-    expect(header).toMatchObject({verified: false, tag: "Built from public pages · not claimed yet", monogramGround: "white",
+    expect(header).toMatchObject({verified: false, tag: "Built from public pages · not claimed yet", monogramGround: "paper",
       coverUrl: null, meta: "Colaba, Mumbai · summarised from Luma and Instagram"});
     // No verified review yet, so there is no rating: unverified reviews never make an average.
     expect(header.stats.map((stat) => [stat.value, stat.label])).toEqual([["38", copy.stats.waiting]]);
