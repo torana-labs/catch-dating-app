@@ -9,7 +9,7 @@ import {planAffected} from "../harness/lib/component_graph.mjs";
 import {compare} from "../nx/shadow_plan.mjs";
 
 const repoRoot = path.resolve(new URL("../..", import.meta.url).pathname);
-const tracked = execFileSync("git", ["ls-files"], {cwd: repoRoot, encoding: "utf8"}).split("\n").filter(Boolean);
+const tracked = execFileSync("git", ["ls-files"], {cwd: repoRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024}).split("\n").filter(Boolean);
 const nx = JSON.parse(fs.readFileSync(path.join(repoRoot, "nx.json"), "utf8"));
 const nxOptions = nx.plugins[0].options;
 const laneBuildIos = () => nxOptions.sourceProjects.find((project) => project.name === "lane-build-ios");
