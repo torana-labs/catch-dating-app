@@ -2981,8 +2981,27 @@ roster. Post-event Catch, Event Recap, and identified post-event avatar
 enrichment use the App-Check-protected `fetchSwipeCandidates` callable, which
 returns only public profile projections after the server verifies the
 24-hour window, viewer attendance, reciprocal gender and age preferences,
-prior decisions, and blocks in both directions. Anonymous attendee volume is
+prior current picks, and blocks in both directions. Anonymous attendee volume is
 rendered from callable-owned event aggregates instead of roster enumeration.
+
+Current Stay in touch picks and the retired swipe deck's decisions share
+`profileDecisions/{uid}/outgoing/{targetId}`. A decision is deck-era when it
+is a pass, has any reaction field or a comment, or was created before
+2026-11-12T12:50:04Z, when the deck was retired. The rule lives in
+`functions/src/matching/deckEraDecision.ts`. Only a like that matches none of
+these is a current pick, and only current picks have any effect:
+
+- `onSwipeCreated` opens a `match` chat only when both people's decisions are
+  current picks.
+- `onSwipeCreated` ignores a newly written deck-era decision completely.
+- No like comment becomes a chat message any more.
+- `fetchSwipeCandidates` hides only people the viewer picked with a current
+  pick.
+
+`tool/data/purge_deck_era_records.mjs` is the one-off purge of deck-era
+decisions. It also removes the chats that exist only because of a deck-era
+like, and the signal facts and counters derived from them. Its runbook is in
+`docs/release_operations.md`.
 
 ### Standalone Host Operational Attendees
 

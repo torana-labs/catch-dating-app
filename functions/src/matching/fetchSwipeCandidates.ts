@@ -27,6 +27,7 @@ import {isReciprocallyEligible} from
   "../shared/relationshipEligibility";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
+import {isDeckEraDecision} from "./deckEraDecision";
 
 const swipeWindowDurationMs = 24 * 60 * 60 * 1000;
 const boundedCandidateLimit = 1000;
@@ -114,7 +115,13 @@ export async function fetchSwipeCandidatesHandler(
       .collection("outgoing").limit(boundedCandidateLimit).get(),
     fetchUidsBlockedWithViewer(db, viewerUid),
   ]);
-  const decidedUids = new Set(decisionSnap.docs.map((doc) => doc.id));
+  // Only current picks hide someone. Deck-era likes and passes (see
+  // deckEraDecision.ts) no longer keep anyone out of the pick list.
+  const decidedUids = new Set(
+    decisionSnap.docs
+      .filter((doc) => !isDeckEraDecision(doc.data()))
+      .map((doc) => doc.id)
+  );
   const visibleIds = orderedCandidateIds.filter(
     (uid) => !decidedUids.has(uid) && !blockedUids.has(uid)
   );
