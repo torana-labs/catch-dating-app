@@ -251,7 +251,7 @@
           "city-picker"
         ]
       },
-      "notes": "Website v2 homepage composed only of @catch/web-ui parts (D18): the page arranges the parts and binds the city's cityPlans read model to them; copy lives in content/homePage.ts."
+      "notes": "The homepage on the playbook's homepage board, composed only of @catch/web-ui section components (D18): the page binds the city's cityPlans read model to them in one of three states. Busy: five or more plans in the next 14 days. Thin: an open city with fewer than five, which lists every plan with its date and moves the host band up to third. Launching: a city that has not opened leads with hosts and puts the opening-day notice where the plans would be. A city whose plans cannot be read stays busy and says so, never \"New\" or a count. Copy lives in content/homePage.ts."
     },
     {
       "id": "home_page_sections",
@@ -263,23 +263,22 @@
       "source": "website/src/features/home/sections/homeSections.tsx",
       "exportName": "HomePageSections",
       "css": [
-        "packages/web-ui/src/components/CatchTopBar.module.css",
-        "packages/web-ui/src/components/CatchMenu.module.css",
+        "packages/web-ui/src/components/CatchHeroSection.module.css",
+        "packages/web-ui/src/components/CatchCardGrid.module.css",
+        "packages/web-ui/src/components/CatchSplitSection.module.css",
+        "packages/web-ui/src/components/CatchCtaSection.module.css",
+        "packages/web-ui/src/components/CatchFaqSection.module.css",
+        "packages/web-ui/src/components/CatchReviewItem.module.css",
+        "packages/web-ui/src/components/CatchDeviceFrame.module.css",
+        "packages/web-ui/src/components/CatchAppCaptureImage.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
         "packages/web-ui/src/components/CatchStack.module.css",
         "packages/web-ui/src/components/CatchText.module.css",
-        "packages/web-ui/src/components/CatchSurface.module.css",
-        "packages/web-ui/src/components/CatchSection.module.css",
-        "packages/web-ui/src/components/CatchIndexRow.module.css",
-        "packages/web-ui/src/components/CatchChip.module.css",
-        "packages/web-ui/src/components/CatchRail.module.css",
-        "packages/web-ui/src/components/CatchEventCard.module.css",
-        "packages/web-ui/src/components/CatchOrganizerCard.module.css",
-        "packages/web-ui/src/components/CatchMeter.module.css",
-        "packages/web-ui/src/components/CatchQrCode.module.css",
-        "packages/web-ui/src/components/CatchAccordion.module.css",
         "packages/web-ui/src/components/CatchField.module.css",
-        "packages/web-ui/src/components/CatchCheckboxInput.module.css"
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchQrCode.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -290,7 +289,7 @@
           "phone-launching-soon"
         ]
       },
-      "notes": "The homepage's sections in the WebHomeV2 board's order, private to one assembly: header with the city picker, hero, format tiles, this week or launching soon, how a night works, organisers, the host band, the app band, the FAQ and the footer. Each section arranges library parts and binds the controller's view of the city (D18)."
+      "notes": "The homepage's bands in the board's order, private to one assembly: the header with the city picker, the hero (CatchHeroSection), this week's or the next two weeks' plans (CatchCardGrid) or the launching-soon notice (CatchCtaSection), how a night works and the proof (CatchSplitSection), organisers (CatchCardGrid), the host band (CatchSplitSection; third in a thin or launching city, after the proof in a busy one), the app band (CatchCtaSection), the FAQ (CatchFaqSection) and the footer. Each band arranges library parts and binds the controller's view of the city (D18)."
     },
     {
       "id": "shared_identity_display_shell",
@@ -1493,6 +1492,7 @@
       "id": "shared_hero_section",
       "kind": "supporting-component",
       "routeIds": [
+        "home",
         "host_run_clubs"
       ],
       "owner": "shared/parts",
@@ -1502,12 +1502,14 @@
         "catch.button",
         "catch.chip",
         "catch.detail_media",
+        "catch.metric_strip",
         "catch.root",
+        "catch.section",
         "catch.stack",
         "catch.surface",
         "catch.text"
       ],
-      "comparisonReason": "The opening band of a website page (the playbook kit's hero and photo hero): kicker, h1, lead, tag chips, footnoted proof lines, band actions, a side link, and a screen beside it with a floating stat card, or a full-bleed photo. It composes catch.button, catch.chip, catch.detail_media, catch.stack, catch.surface and catch.text inside its own ground (catch.root's ground provider); it is a page band, not any of those parts, and implements none of their contracts.",
+      "comparisonReason": "The opening band of a website page (the playbook kit's hero and photo hero): kicker, h1, lead, tag chips, footnoted proof lines, band actions, a side link, and a screen beside it with a floating stat card, or a full-bleed photo. It composes catch.button, catch.chip, catch.detail_media, catch.stack, catch.surface and catch.text inside its own ground (catch.root's ground provider); it is a page band, not any of those parts, and implements none of their contracts. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators) and not a catch.metric_strip of caller-formatted metrics.",
       "css": [
         "packages/web-ui/src/components/CatchHeroSection.module.css"
       ],
@@ -1520,12 +1522,13 @@
           "phone"
         ]
       },
-      "notes": "Website T4 under D18: the kit's KitHero and KitPhotoHero. First consumer: the playbook renderer (features/playbook/PlaybookSections.tsx), the run-clubs page. Search aliases: Hero, HeroBand, PageHero, Masthead."
+      "notes": "Website T4 under D18: the kit's KitHero and KitPhotoHero. Consumers: the homepage (features/home/sections/homeSections.tsx) and the playbook renderer (features/playbook/PlaybookSections.tsx), the run-clubs page. Search aliases: Hero, HeroBand, PageHero, Masthead."
     },
     {
       "id": "shared_split_section",
       "kind": "supporting-component",
       "routeIds": [
+        "home",
         "host_run_clubs"
       ],
       "owner": "shared/parts",
@@ -1536,11 +1539,12 @@
         "catch.journey_steps",
         "catch.marker",
         "catch.metric_strip",
+        "catch.section",
         "catch.stack",
         "catch.surface",
         "catch.text"
       ],
-      "comparisonReason": "A two-column website band (the kit's split, timeline and checklist): a heading with ticks, groups, numbered or timed steps, ticked checks, a metric and actions, beside an optional media column. It lays out catch.journey_steps, catch.marker, catch.metric_strip, catch.button and catch.text on catch.stack inside a catch.surface band; it is a band layout, not a step list, metric strip or surface.",
+      "comparisonReason": "A two-column website band (the kit's split, timeline and checklist): a heading with ticks, groups, numbered or timed steps, ticked checks, a metric and actions, beside an optional media column. It lays out catch.journey_steps, catch.marker, catch.metric_strip, catch.button and catch.text on catch.stack inside a catch.surface band; it is a band layout, not a step list, metric strip or surface. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators); it places a catch.metric_strip metric rather than being one.",
       "css": [
         "packages/web-ui/src/components/CatchSplitSection.module.css"
       ],
@@ -1553,22 +1557,25 @@
           "groups"
         ]
       },
-      "notes": "Website T4 under D18: KitSplit, KitTimeline and KitChecklist. First consumer: the playbook renderer, the run-clubs timeline and checklist. Search aliases: Split, MediaSplit, Timeline, Checklist, FeatureRow."
+      "notes": "Website T4 under D18: KitSplit, KitTimeline and KitChecklist. Consumers: the homepage (features/home/sections/homeSections.tsx) and the playbook renderer, the run-clubs timeline and checklist. Search aliases: Split, MediaSplit, Timeline, Checklist, FeatureRow."
     },
     {
       "id": "shared_cta_section",
       "kind": "supporting-component",
       "routeIds": [
+        "home",
         "host_run_clubs"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchCtaSection.tsx",
       "exportName": "CatchCtaSection",
       "comparedWith": [
+        "catch.metric_strip",
+        "catch.section",
         "catch.stack",
         "catch.surface"
       ],
-      "comparisonReason": "The closing call to action of a website page (the kit's final band): heading, actions, store badges, a capture slot for the page's own phone form, and a media column. It stacks its parts with catch.stack in a catch.surface band; it is a page band, not a stack or a surface.",
+      "comparisonReason": "The closing call to action of a website page (the kit's final band): heading, actions, store badges, a capture slot for the page's own phone form, and a media column. It stacks its parts with catch.stack in a catch.surface band; it is a page band, not a stack or a surface. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators) and not a catch.metric_strip of caller-formatted metrics.",
       "css": [
         "packages/web-ui/src/components/CatchCtaSection.module.css"
       ],
@@ -1580,12 +1587,13 @@
           "capture"
         ]
       },
-      "notes": "Website T4 under D18: KitFinal. First consumer: the playbook renderer, the run-clubs closing band. Search aliases: FinalCta, ClosingBand, CallToAction, StartBand."
+      "notes": "Website T4 under D18: KitFinal. Consumers: the homepage (features/home/sections/homeSections.tsx) and the playbook renderer, the run-clubs closing band. Search aliases: FinalCta, ClosingBand, CallToAction, StartBand."
     },
     {
       "id": "shared_faq_section",
       "kind": "supporting-component",
       "routeIds": [
+        "home",
         "host_run_clubs"
       ],
       "owner": "shared/parts",
@@ -1593,9 +1601,11 @@
       "exportName": "CatchFaqSection",
       "comparedWith": [
         "catch.accordion",
+        "catch.metric_strip",
+        "catch.section",
         "catch.surface"
       ],
-      "comparisonReason": "A website questions band (the kit's FAQ): a heading and a footer line beside a catch.accordion of questions, in a catch.surface band. It frames the accordion as a page band and does not reimplement it.",
+      "comparisonReason": "A website questions band (the kit's FAQ): a heading and a footer line beside a catch.accordion of questions, in a catch.surface band. It frames the accordion as a page band and does not reimplement it. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators) and not a catch.metric_strip of caller-formatted metrics.",
       "css": [
         "packages/web-ui/src/components/CatchFaqSection.module.css"
       ],
@@ -1606,7 +1616,7 @@
           "footer"
         ]
       },
-      "notes": "Website T4 under D18: KitFaq. First consumer: the playbook renderer, the run-clubs questions. Search aliases: Faq, Questions, QuestionsBand."
+      "notes": "Website T4 under D18: KitFaq. Consumers: the homepage (features/home/sections/homeSections.tsx) and the playbook renderer, the run-clubs questions. Search aliases: Faq, Questions, QuestionsBand."
     },
     {
       "id": "shared_screen_preview",
@@ -1847,6 +1857,7 @@
       "id": "shared_card_grid",
       "kind": "supporting-component",
       "routeIds": [
+        "home",
         "stories",
         "new_to_city",
         "city_format",
@@ -1875,7 +1886,7 @@
           "person"
         ]
       },
-      "notes": "Website T4 under D18: KitCards. The playbook contract's data-bound cards section will bind to it once each source has its read-model adapter; until then pages with cards 404. Search aliases: CardGrid, Cards, Directory."
+      "notes": "Website T4 under D18: KitCards. First consumer: the homepage's plans and organisers bands. The playbook contract's data-bound cards section will bind to it once each source has its read-model adapter; until then pages with cards 404. Search aliases: CardGrid, Cards, Directory."
     },
     {
       "id": "shared_story_card",
@@ -4853,13 +4864,7 @@
           "dense"
         ]
       },
-      "notes": "Website T4 under D18 (G6 activity cover). Twin of the Flutter member catch.event_card.activity_backdrop (Flutter EventBackdropImage): the activity's duotone ground and line pattern, drawn at its rendered size. Pure geometry and the server-side SVG live in activityArtwork.ts (@catch/web-ui/artwork); activityArtworkParity.test.ts pins both to the Flutter painter. Search aliases: ActivityCover, ActivityArtwork, EventCover, FallbackImage, PatternCover.",
-      "comparedWith": [
-        "catch.detail_media",
-        "catch.graded_image",
-        "catch.network_image"
-      ],
-      "comparisonReason": "Draws generated activity artwork (a duotone ground and line pattern) where there is no photo, for event media and the format tiles; it loads no image, grades no photo and lays out no detail media, so it is the activity backdrop member of catch.event_card rather than any image contract."
+      "notes": "Website T4 under D18 (G6 activity cover). Twin of the Flutter member catch.event_card.activity_backdrop (Flutter EventBackdropImage): the activity's duotone ground and line pattern, drawn at its rendered size. Pure geometry and the server-side SVG live in activityArtwork.ts (@catch/web-ui/artwork); activityArtworkParity.test.ts pins both to the Flutter painter. Search aliases: ActivityCover, ActivityArtwork, EventCover, FallbackImage, PatternCover."
     },
     {
       "id": "shared_event_thumbnail",
@@ -5044,10 +5049,6 @@
       "owner": "shared/layout",
       "source": "packages/web-ui/src/components/CatchScroller.tsx",
       "exportName": "CatchScroller",
-      "comparedWith": [
-        "catch.rail"
-      ],
-      "comparisonReason": "A full-bleed band row: its first item lines up with the page content edge while items scroll out to the viewport edge, it never wraps, and its items can grow to share the row (the boards' format tiles). catch.rail is a content-width row that fades the edge hiding more and wraps into a grid on desktops. The two overlap; folding page-edge bleed into CatchRail and retiring CatchScroller is a follow-up.",
       "css": [
         "packages/web-ui/src/components/CatchScroller.module.css"
       ],
@@ -5064,7 +5065,7 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-248). A keyboard-focusable sideways rail whose items snap to its start; a page-edge rail pads its first item to the content edge of a full-width CatchBand while items scroll to the viewport edge. Search aliases: Carousel, HorizontalScroll, Rail, Slider, ScrollRow, Shelf, HorizontalList, Swiper."
+      "notes": "Website T4 under D18 (CAT-248). A keyboard-focusable sideways rail whose items snap to its start; a page-edge rail pads its first item to the content edge of a full-width CatchBand while items scroll to the viewport edge. Search aliases: Carousel, HorizontalScroll, Rail, Slider, ScrollRow, Shelf, HorizontalList, Swiper. It overlaps catch.rail (a content-width row that fades its hidden edge and wraps into a grid on desktops); folding page-edge bleed into CatchRail and retiring CatchScroller is a follow-up."
     },
     {
       "id": "shared_scroll_story",
@@ -5376,7 +5377,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "organizer_listing_canonical",
-        "event_detail_canonical"
+        "event_detail_canonical",
+        "home"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchReviewItem.tsx",
@@ -5870,13 +5872,9 @@
       "source": "packages/web-ui/src/components/CatchFormatTile.tsx",
       "exportName": "CatchFormatTile",
       "comparedWith": [
-        "catch.surface",
-        "catch.text",
-        "catch.analytics_metric",
-        "catch.icon_tile",
-        "catch.option_card"
+        "catch.text"
       ],
-      "comparisonReason": "A website card for one event format: photo or format artwork, the format name and this week's count, as a link or a pressed toggle that filters the week. Not a block that tells children their ground (catch.surface), not a caller-formatted metric with missing-data states (catch.analytics_metric), not an icon-only tile (catch.icon_tile) and not a checked form choice (catch.option_card). It composes catch.text for its labels.",
+      "comparisonReason": "A website card for one event format: photo or format artwork, the format name and this week's count, as a link or a pressed toggle that filters the week. It composes catch.text for its labels and is a format card, not a text role.",
       "css": [
         "packages/web-ui/src/components/CatchFormatTile.module.css"
       ],
