@@ -1,4 +1,4 @@
-import {CatchButton, CatchGap, CatchLoadingIndicator, CatchLegacyText} from "@catch/web-ui";
+import {CatchButton, CatchLoadingIndicator} from "@catch/web-ui";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router";
 import {eventInviteCopy as copy} from "../../content/eventInvite";
@@ -51,15 +51,14 @@ export function EventInvitePage({resolve = resolveEventInviteLanding, redirect =
     };
   }, [inviteToken, redirect, resolve]);
 
+  // The LiveInvite board: an invitation that cannot resolve says why under its
+  // headline and offers help; one on its way shows the invitation loading.
   return failed ? (
-    <EventBookingFrame title={copy.unavailableTitle}>
-      <CatchGap size="related">
-        <CatchLegacyText as="p" color="danger" role="status" variant="bodyM">{copy.unavailableBody}</CatchLegacyText>
-        <CatchButton fullWidth href="/help/" label={copy.helpAction} onPressed={noop} variant="secondary" />
-      </CatchGap>
+    <EventBookingFrame body={copy.unavailableBody} kicker={copy.brand} title={copy.unavailableTitle}>
+      <CatchButton fullWidth href="/help/" label={copy.helpAction} onPressed={noop} variant="secondary" />
     </EventBookingFrame>
   ) : (
-    <EventBookingFrame title={copy.title}>
+    <EventBookingFrame kicker={copy.kicker} title={copy.title}>
       <CatchLoadingIndicator label={copy.loading} />
     </EventBookingFrame>
   );

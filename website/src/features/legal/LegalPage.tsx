@@ -1,65 +1,87 @@
-import type {PublishedLegalPage} from "../../content/types";
-import {publishedLegalContent} from "../../content/legal";
+import {CatchButton, CatchGroundCard, CatchStack, CatchText} from "@catch/web-ui";
+import type {PublishedLegalPage, PublishedLegalSection} from "../../content/types";
+import {legalPageCopy, publishedLegalContent} from "../../content/legal";
 import {fallbackPublicContact, renderContactText, type PublicContact} from "../../content/publicContact";
-import {whatsappChatCopy, whatsappChatHref} from "../../content/site";
+import {siteFooterCopy, whatsappChatCopy, whatsappChatHref} from "../../content/site";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
-import {
-  LegalDocument,
-  LegalDocumentContact,
-  LegalDocumentEffective,
-  LegalDocumentEyebrow,
-  LegalDocumentHeader,
-  LegalDocumentSections,
-  LegalDocumentSummary,
-  PlainLink,
-} from "../../shared/ui/primitives";
+import {LegalDocument, type LegalDocumentSection} from "../../shared/ui/primitives";
 
+const contactPath = "/contact/";
+
+/** A stable anchor for each section: its heading, lowercased, and its place. */
+function sectionId(section: PublishedLegalSection, index: number) {
+  const slug = section.heading.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/gu, "-").replace(/^-|-$/gu, "");
+  return `${slug || "section"}-${index + 1}`;
+}
+
+/** Each section's related pages, once each, in the order the document names them. */
+function relatedLinks(page: PublishedLegalPage) {
+  const seen = new Set<string>();
+  return page.sections.flatMap((section) => section.links ?? []).filter((link) => {
+    if (seen.has(link.href) || link.href === page.path) return false;
+    seen.add(link.href);
+    return true;
+  });
+}
+
+/**
+ * /privacy/, /terms/, /help/, /refunds/, /delete-account/ and /contact/ on
+ * the LiveLegal board: one article template. The sections and their lists
+ * come from the published document; beside them, the contents and a card
+ * with the reply line, a person on WhatsApp, the support email and the
+ * document's related pages. /contact/ leads with the WhatsApp button.
+ */
 export function LegalPage({page, effectiveDate, contact = fallbackPublicContact}: {
   page: PublishedLegalPage;
   effectiveDate: string;
   contact?: PublicContact;
 }) {
   const {ui} = publishedLegalContent;
+  const sections: LegalDocumentSection[] = page.sections.map((section, index) => ({
+    id: sectionId(section, index),
+    title: section.heading,
+    paragraphs: section.paragraphs.map((paragraph) => renderContactText(paragraph, contact)),
+    list: section.bullets?.map((bullet) => renderContactText(bullet, contact)),
+  }));
+  const related = relatedLinks(page);
+  const onContactPage = page.path === contactPath;
   return (
     <>
       <PublicSiteHeader />
       <WebsitePageMain id="top">
-        <LegalDocument>
-          <LegalDocumentHeader>
-            <LegalDocumentEyebrow>{page.eyebrow}</LegalDocumentEyebrow>
-            <h1>{page.title}</h1>
-            <LegalDocumentSummary>{page.summary}</LegalDocumentSummary>
-            <LegalDocumentEffective>{ui.effectivePrefix} {page.effectiveDate ?? effectiveDate}</LegalDocumentEffective>
-          </LegalDocumentHeader>
-          <LegalDocumentSections>
-            {page.sections.map((section) => (
-              <section key={section.heading}>
-                <h2>{section.heading}</h2>
-                {section.paragraphs.map((paragraph) => (
-                  <p key={paragraph}>{renderContactText(paragraph, contact)}</p>
-                ))}
-                {section.bullets ? (
-                  <ul>
-                    {section.bullets.map((bullet) => <li key={bullet}>{renderContactText(bullet, contact)}</li>)}
-                  </ul>
-                ) : null}
-                {section.links ? (
-                  <ul>
-                    {section.links.map((link) => (
-                      <li key={link.href}><PlainLink href={link.href}>{link.label}</PlainLink></li>
+        <LegalDocument
+          aside={(
+            <CatchGroundCard as="aside" ground="mint">
+              <CatchStack gap={12}>
+                <CatchText as="h2" variant="title-row">{ui.contactPrompt}</CatchText>
+                <CatchText as="p" variant="body-small">{siteFooterCopy.helpBand.title}</CatchText>
+                <CatchStack align="start" gap={8}>
+                  {/* A person on WhatsApp, not only an email (leak 7). */}
+                  <CatchButton href={whatsappChatHref(whatsappChatCopy.generalMessage)} label={whatsappChatCopy.chat}
+                    newTab size="md" variant="primary" />
+                  {onContactPage ? null : (
+                    <CatchButton href={contactPath} label={publishedLegalContent.pages.contact.title} size="md" variant="secondary" />
+                  )}
+                  <CatchButton href={`mailto:${contact.supportEmail}`} label={contact.supportEmail} recipe="text" tone="neutral" />
+                </CatchStack>
+                {related.length ? (
+                  <CatchStack gap={4}>
+                    <CatchText as="h3" tone="secondary" variant="label-kicker">{legalPageCopy.related}</CatchText>
+                    {related.map((link) => (
+                      <CatchButton href={link.href} key={link.href} label={link.label} recipe="text" tone="neutral" />
                     ))}
-                  </ul>
+                  </CatchStack>
                 ) : null}
-              </section>
-            ))}
-          </LegalDocumentSections>
-          <LegalDocumentContact>
-            <p>{ui.contactPrompt}</p>
-            <PlainLink href={`mailto:${contact.supportEmail}`}>{contact.supportEmail}</PlainLink>
-            {/* A person on WhatsApp, not only an email (leak 7). */}
-            <PlainLink href={whatsappChatHref(whatsappChatCopy.generalMessage)}>{whatsappChatCopy.chat}</PlainLink>
-          </LegalDocumentContact>
-        </LegalDocument>
+              </CatchStack>
+            </CatchGroundCard>
+          )}
+          kicker={page.eyebrow}
+          lead={page.summary}
+          meta={`${ui.effectivePrefix} ${page.effectiveDate ?? effectiveDate}`}
+          sections={sections}
+          title={page.title}
+          tocLabel={legalPageCopy.tocLabel}
+        />
       </WebsitePageMain>
       <PublicSiteFooter />
     </>

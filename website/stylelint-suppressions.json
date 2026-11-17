@@ -78,17 +78,6 @@
       "count": 3
     }
   },
-  "src/styles/legal.css": {
-    "declaration-property-unit-allowed-list": {
-      "count": 23
-    },
-    "declaration-property-value-allowed-list": {
-      "count": 5
-    },
-    "media-feature-name-value-allowed-list": {
-      "count": 1
-    }
-  },
   "src/styles/organizers.css": {
     "declaration-property-unit-allowed-list": {
       "count": 50
