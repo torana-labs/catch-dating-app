@@ -4,6 +4,9 @@ import {readRouteCatalog} from "./publicCatalog";
 import {readPublicContact} from "./publicContact";
 import {cityForPath, isLegalPageKey, pageMeta, pageMetaForCity, pageMetaForWeddingsPath, pageMetaForListing, pageMetaForEvent, pageMetaForPlaybook, type PageKey} from "../app/pageMeta";
 import {loadPlaybookPage, resolvePlaybookPage} from "../features/playbook/playbookPages";
+import {matchDiscoveryRoute} from "../features/discovery/discoveryModel";
+import {discoveryPageMeta, discoveryPageStatus} from "../features/discovery/discoveryRoute";
+import {readHomeCatalog} from "./homeCatalog";
 import {getHostListingRouteForPath} from "../features/organizers/routing";
 import {previewCardFor, previewCardImage} from "./previewCards";
 import {generatedPreviewCardFor, generatedPreviewCardImage} from "./generatedPreviewCards";
@@ -24,15 +27,24 @@ export const resolvePublicRoute = cache(async (pathname: string) => {
     "/weddings": "weddings", "/weddings/apply": "weddings", "/organizers": "organizers", "/privacy": "privacy", "/terms": "terms", "/help": "help",
     "/delete-account": "account_deletion", "/refunds": "refunds", "/contact": "contact", "/claim": "claim"};
   const city = cityForPath(key);
+  // A city-by-format or new-to-the-city page reads its city here, before the playbook pages: whether
+  // it is a page or a 404 must be known before the render streams (the proxy decides the status).
+  const discoveryRoute = listingRoute || event ? null : matchDiscoveryRoute(pathname);
+  const discoveryCatalog = discoveryRoute ? await readHomeCatalog(discoveryRoute.citySlug) : undefined;
+  const discoveryStatus = discoveryRoute && discoveryCatalog ? discoveryPageStatus(discoveryRoute, discoveryCatalog) : null;
+  const discovery = discoveryRoute && discoveryCatalog && discoveryStatus !== "notFound" ?
+    {route: discoveryRoute, catalog: discoveryCatalog, unavailable: discoveryStatus === "unavailable"} : undefined;
   // A redesign page renders from its content file; a registered route without one, or whose page
   // uses a section no kit component draws yet, is not found.
-  const playbookRef = listingRoute || event ? null : resolvePlaybookPage(pathname);
+  const playbookRef = listingRoute || event || discoveryRoute ? null : resolvePlaybookPage(pathname);
   const playbookPage = playbookRef ? await loadPlaybookPage(playbookRef) : null;
   const playbook = playbookRef && playbookPage ? {page: playbookPage, canonicalPath: playbookRef.match.canonicalPath} : undefined;
-  const page: PageKey = listingRoute ? "listing" : event ? "event_detail" : playbook ? "playbook" : city ? "visitor_discovery" : routes[key] ??
+  const page: PageKey = listingRoute ? "listing" : event ? "event_detail" : discovery ? "discovery" :
+    discoveryRoute ? "not_found" : playbook ? "playbook" : city ? "visitor_discovery" : routes[key] ??
     (/^\/claim\/[^/]+$/.test(key) ? "claim" : "not_found");
   const contact = isLegalPageKey(page) ? await readPublicContact() : null;
   const meta = listingRoute ? pageMetaForListing(listingRoute.listing) : event ? pageMetaForEvent(event) :
+    discovery ? discoveryPageMeta(discovery.route, discovery.catalog) : discoveryRoute ? pageMeta.not_found :
     playbook ? pageMetaForPlaybook(playbook.page, playbook.canonicalPath) :
     city ? pageMetaForCity(city) :
     pageMetaForWeddingsPath(pathname) ?? pageMeta[page as keyof typeof pageMeta];
@@ -46,5 +58,5 @@ export const resolvePublicRoute = cache(async (pathname: string) => {
     robots: productionIndexing() ? meta.robots ?? "index, follow" : "noindex, follow", openGraph: {title: meta.title, description: meta.description,
       url: `${brand.web.origin}${meta.canonicalPath}`, type: "website", images: [image]},
     twitter: {card: "summary_large_image", title: meta.title, description: meta.twitterDescription, images: [image]}};
-  return {page, catalog, metadata, listingRoute, event, live, contact, citySlug: city?.slug, playbook};
+  return {page, catalog, metadata, listingRoute, event, live, contact, citySlug: city?.slug, playbook, discovery};
 });

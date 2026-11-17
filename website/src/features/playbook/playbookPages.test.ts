@@ -84,14 +84,6 @@ describe("playbook page indexes", () => {
     }
   });
 
-  it("gives every city family page a market city", () => {
-    const slugs = new Set(websiteCities.map((city) => city.slug));
-    for (const ref of refs) {
-      const cityParam = (ref.match.route as {cityParam?: string}).cityParam;
-      if (cityParam) expect(slugs.has(ref.match.params[cityParam]), ref.match.contentKey).toBe(true);
-    }
-  });
-
   it("holds back a page whose pricing calculator has no component yet", async () => {
     const page = (await loadPlaybookPage(resolvePlaybookPage("/host/run-clubs/")!))!;
     const withCalculator = {...page, sections: page.sections.map((section) =>
@@ -114,8 +106,9 @@ describe("playbook route resolution", () => {
     expect(matchPlaybookRoute("/host/racket-sports/")?.contentKey).toBe("host_racket_sports");
     expect(resolvePlaybookPage("/host/racket-sports/")).toBeNull();
     expect(resolvePlaybookPage("/stories/nobody/")).toBeNull();
-    expect(resolvePlaybookPage("/mumbai/run-clubs/")).toBeNull();
-    expect(resolvePlaybookPage("/new-to-mumbai/")).toBeNull();
+    // The discovery pages are matched before the playbook pages, never as one.
+    expect(matchPlaybookRoute("/mumbai/run-clubs/")).toBeNull();
+    expect(matchPlaybookRoute("/new-to-mumbai/")).toBeNull();
     expect(resolvePlaybookPage("/organizers/afterfly/")).toBeNull();
   });
 

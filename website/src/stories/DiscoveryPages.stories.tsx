@@ -12,14 +12,14 @@ import {mumbaiLiveCatalog} from "./fixtures/homeCatalogs";
 /**
  * The redesign's guest discovery pages, bound to a city's cityPlans read
  * model: /<city>/<format>/ (PlaybookCityFormat) above and below the
- * indexing bar, and /new-to-<city>/ (PlaybookNewToCity). Their route
- * registrations (routes.json, components.json) join when the pages are
- * wired into the router.
+ * indexing bar, and /new-to-<city>/ (PlaybookNewToCity): the city_format
+ * and new_to_city routes in design/website/routes.json.
  */
 const meta = {
   title: "Marketing Website/Discovery pages",
   parameters: {
     a11y: {test: "error"},
+    catchRouteContract: {path: "design/website/routes.json"},
     layout: "fullscreen",
   },
 } satisfies Meta;
@@ -42,6 +42,10 @@ const newToCity = (catalog: HomeCatalog, width: 390 | 1280 = 1280) => (
 /** Run clubs in Mumbai, above the bar: the backend's counts, the runs, the clubs, first time, questions and the capture. */
 export const CityFormatIndexed: Story = {
   name: "/mumbai/run-clubs/ · indexed · 1280",
+  parameters: {
+    catchRoute: {id: "city_format", reviewStates: ["indexed", "phone", "below-the-bar", "unavailable", "not-found"],
+      stateCoverage: {storybook: ["indexed", "phone", "below-the-bar", "unavailable"], manual: ["not-found"]}},
+  },
   render: () => cityFormat(mumbaiDiscoveryCatalog, "runClubs", "/mumbai/run-clubs/"),
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
@@ -71,6 +75,10 @@ export const CityFormatUnavailable: Story = {
 /** New to Mumbai: this week's newcomer plans and the board's authored bands. */
 export const NewToCity: Story = {
   name: "/new-to-mumbai/ · 1280",
+  parameters: {
+    catchRoute: {id: "new_to_city", reviewStates: ["page", "phone", "quiet-week"],
+      stateCoverage: {storybook: ["page", "phone", "quiet-week"], manual: []}},
+  },
   render: () => newToCity(mumbaiDiscoveryCatalog),
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
