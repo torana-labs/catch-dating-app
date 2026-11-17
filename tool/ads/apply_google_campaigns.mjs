@@ -3,6 +3,7 @@ import {execFileSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
+import {brand} from "@catch/brand";
 import {parseCommonArgs} from "../lib/cli_args.mjs";
 
 // Plans, and with --apply creates, the Google Ads campaigns in
@@ -65,8 +66,8 @@ export function loadGoogleCampaigns(file = POLICY_PATH) {
       for (const headline of headlines) {
         if (headline.length > 30) throw new Error(`${where} headline over 30 characters: ${headline}`);
       }
-      if (!group.finalUrl?.startsWith("https://catchdates.com/")) {
-        throw new Error(`${where} ad group "${group.name}" must land on catchdates.com.`);
+      if (!/^\/[a-z0-9/-]*$/.test(group.landingPath ?? "")) {
+        throw new Error(`${where} ad group "${group.name}" needs a site landing path such as /host/.`);
       }
       if (!group.keywords?.length) throw new Error(`${where} ad group "${group.name}" has no keywords.`);
       for (const keyword of group.keywords) {
@@ -121,7 +122,7 @@ export function createCampaignOperations(customerId, campaign) {
         keyword: {text: keyword.text, matchType: keyword.match}}}});
     }
     ops.push({adGroupAdOperation: {create: {adGroup, status: "ENABLED", ad: {
-      finalUrls: [group.finalUrl],
+      finalUrls: [new URL(group.landingPath, brand.web.origin).href],
       responsiveSearchAd: {
         headlines: [...campaign.sharedHeadlines, ...group.headlines].map((text) => ({text})),
         descriptions: campaign.descriptions.map((text) => ({text})),

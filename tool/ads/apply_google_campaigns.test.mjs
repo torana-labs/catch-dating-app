@@ -3,6 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import {brand} from "@catch/brand";
 import {
   applyGoogleCampaigns,
   createCampaignOperations,
@@ -32,8 +33,8 @@ test("policy guards: paused only, prefix, copy limits, landing domain", () => {
     /headline over 30/);
   assert.throws(withPolicy((p) => { p.campaigns[0].descriptions[0] = "x".repeat(91); }),
     /description over 90/);
-  assert.throws(withPolicy((p) => { p.campaigns[0].adGroups[0].finalUrl = "https://example.com/"; }),
-    /must land on catchdates.com/);
+  assert.throws(withPolicy((p) => { p.campaigns[0].adGroups[0].landingPath = "https://example.com/"; }),
+    /needs a site landing path/);
   assert.throws(withPolicy((p) => { p.campaigns[0].dailyBudgetInr = 50000; }),
     /between 1 and 5000/);
   assert.throws(withPolicy((p) => {
@@ -54,7 +55,9 @@ test("one atomic request creates a paused campaign and its children", () => {
   assert.equal(created.campaignBudget, budget.resourceName);
   const keywords = ops.filter((op) => op.adGroupCriterionOperation).length;
   assert.equal(keywords, campaign.adGroups.reduce((n, g) => n + g.keywords.length, 0));
-  assert.equal(ops.filter((op) => op.adGroupAdOperation).length, campaign.adGroups.length);
+  const ads = ops.filter((op) => op.adGroupAdOperation);
+  assert.equal(ads.length, campaign.adGroups.length);
+  assert.equal(new URL(ads[0].adGroupAdOperation.create.ad.finalUrls[0]).origin, brand.web.origin);
 });
 
 test("plan validates creates, keeps existing campaigns, and apply writes once", async () => {
