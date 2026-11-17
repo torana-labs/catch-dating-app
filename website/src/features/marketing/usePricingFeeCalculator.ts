@@ -25,5 +25,3 @@ export function usePricingFeeCalculator(initialSales: number = hostFeeSalesRange
     rateText: formatPricingRate(quote.effectiveRate),
   };
 }
-
-export type PricingFeeCalculatorState = ReturnType<typeof usePricingFeeCalculator>;
