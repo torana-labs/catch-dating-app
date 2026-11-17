@@ -1630,7 +1630,15 @@ How a run works:
   `tsc` reads: `functions/src` (generated contracts included), the package
   files, the tsconfigs and the Node and TypeScript versions
   (`tool/firebase/functions_build_hash.mjs`), so any commit with the same
-  inputs finds it. The deploy does not use it yet.
+  inputs finds it.
+- The deploy ships that build instead of compiling: after `npm ci` and
+  `prebuild` it computes the same hash, takes the newest matching artifact from
+  a successful CI run of main or main's merge queue in this repository (never a
+  pull request or a dispatch on another branch), verifies every `lib` file
+  against the digest, and installs it. The run summary names the CI run and
+  commit. Anything else (no build, expired, untrusted run, a file that does not
+  match) prints a warning and compiles as before, so the build can never fail a
+  deploy (`tool/firebase/select_functions_build.mjs`).
 - Before any change, the run summary lists the codebases whose hash changed
   against the recorded hashes, with the number of Functions in each (what the
   CLI rebuilds when the plan falls back), then the per-Function plan. Nothing
