@@ -1069,7 +1069,6 @@
       "write": "server only",
       "exportedFunctions": [
         "registerPublicEvent",
-        "getOrganizerCrmSummary",
         "requestAccountDeletion",
         "onGuestMessagingPermissionOrganizerPreferenceChanged"
       ],
@@ -1158,7 +1157,6 @@
         "onEventAttendeeAudienceProjected",
         "onOrganizerCommunicationPreferenceAudienceProjected",
         "onOrganizerContactEventEdgeInviteAttributed",
-        "getOrganizerCrmSummary",
         "listOrganizerContacts",
         "getOrganizerContactDetail",
         "mergeOrganizerContacts",
@@ -1960,14 +1958,13 @@
       "rulesMatch": "/organizerAudienceSummaries/{organizerId}",
       "typescriptInterface": "OrganizerAudienceSummaryDocument",
       "dartModel": null,
-      "owner": "organizer audience projection and getOrganizerCrmSummary",
-      "read": "server only; manager aggregate access is callable-owned",
+      "owner": "organizer audience projection",
+      "read": "server only; managers read aggregate counts from hostDirectorySummaries",
       "write": "server only",
       "exportedFunctions": [
         "onEventAttendeeAudienceProjected",
         "onOrganizerCommunicationPreferenceAudienceProjected",
-        "onOrganizerContactEventEdgeInviteAttributed",
-        "getOrganizerCrmSummary"
+        "onOrganizerContactEventEdgeInviteAttributed"
       ],
       "migrationNotes": [
         "Summary reads replace the legacy 2500-row callable scan after dual-write backfill comparison."
@@ -4506,7 +4503,7 @@
         "requestAccountDeletion"
       ],
       "migrationNotes": [
-        "Replaces the listEventChats callable for the Consumer chat list (#1337 wave 2). Backfilled by the event-chat-directory migration; listEventChats keeps serving older app builds."
+        "Replaced the listEventChats callable for the Consumer chat list (#1337 wave 2), now retired. Backfilled by the event-chat-directory migration."
       ]
     },
     {
@@ -5032,7 +5029,7 @@
         "onEventGuestEntryFormWritten"
       ],
       "migrationNotes": [
-        "Replaces the getEventViewerState guest surface for the website event page (#1337). Backfilled by the guest-event-read-models migration."
+        "Replaced the getEventViewerState guest surface for the website event page (#1337); that callable is retired. Backfilled by the guest-event-read-models migration."
       ]
     },
     {
@@ -5058,7 +5055,7 @@
         "requestAccountDeletion"
       ],
       "migrationNotes": [
-        "Replaces the getEventViewerState guest surface for the website event page (#1337). Backfilled by the guest-event-read-models migration; account deletion removes it.",
+        "Replaced the getEventViewerState guest surface for the website event page (#1337); that callable is retired. Backfilled by the guest-event-read-models migration; account deletion removes it.",
         "Carries participationStatus and the guest event card for the guest's booking lists (#1340); the guest-event-cards migration fills them on older rows."
       ]
     },
@@ -5080,7 +5077,7 @@
         "requestAccountDeletion"
       ],
       "migrationNotes": [
-        "Lets the Consumer event screen show booking state from listeners instead of getEventViewerState (#1337 wave 2). Backfilled from organizerCommunityMemberships by the guestBookingFactsCommunityMemberships migration; account deletion removes it."
+        "Lets the Consumer event screen show booking state from listeners instead of the retired getEventViewerState callable (#1337 wave 2). Backfilled from organizerCommunityMemberships by the guestBookingFactsCommunityMemberships migration; account deletion removes it."
       ]
     },
     {
@@ -5408,7 +5405,6 @@
       "write": "server only; manageEventMembershipRules",
       "exportedFunctions": [
         "manageEventMembershipRules",
-        "getEventViewerState",
         "signUpForFreeEvent",
         "managePublicEventCheckout"
       ],

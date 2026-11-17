@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/get_organizer_crm_summary_response.schema.json",
   "title": "GetOrganizerCrmSummaryCallableResponse",
-  "description": "Projected Host CRM counts. No attendee identity or contact field is returned.",
+  "description": "Projected Host CRM counts, stored as hostDirectorySummaries.summary. The callable that first returned this shape is retired; the name stays so the stored summary keeps its type. No attendee identity or contact field is included.",
   "type": "object",
   "additionalProperties": false,
   "required": [
