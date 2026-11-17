@@ -21,16 +21,13 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const catchComponent = {
-  id: "pricing_fee_calculator",
-  routeIds: ["host", "pricing"],
-  states: ["below-cap", "capped", "pricing-section-slot"],
-};
+// catchComponent names the website registry's entry (design/website/components.json).
+const storyRoutes = ["host", "pricing"];
 
 /** Below the cap at the shared starting sales, then at the cap: 5% stops at the cap for the billing cycle. */
 export const FeeCalculator: Story = {
   name: "Pricing fee calculator",
-  parameters: {catchComponent},
+  parameters: {catchComponent: {id: "pricing_fee_calculator", routeIds: storyRoutes, states: ["below-cap", "capped"]}},
   render: () => (
     <CatchRoot theme="day">
       <PricingFeeCalculator />
@@ -47,7 +44,7 @@ export const FeeCalculator: Story = {
 /** In CatchPricingSection's calculator slot on the ink band, as /host/ and /pricing/ show it. */
 export const InPricingSection: Story = {
   name: "Pricing fee calculator · in the pricing band",
-  parameters: {layout: "fullscreen", catchComponent},
+  parameters: {layout: "fullscreen", catchComponent: {id: "pricing_fee_calculator", routeIds: storyRoutes, states: ["pricing-section-slot"]}},
   render: () => {
     const pricing = hostLandingCopy.pricing;
     return (
