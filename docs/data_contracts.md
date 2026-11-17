@@ -3269,6 +3269,24 @@ as its own `cityNewPlans` consent that is off unless ticked; the contract
 rejects `newPlans: true` on a city-launch request. Only city-launch notices
 count toward `cityInterest`.
 
+### Walkthrough Booking
+
+`walkthroughAvailability/default` is the one staff calendar: weekly windows in
+India time, a slot length, a lead time, a horizon of at most 28 days and closed
+dates. India keeps UTC+05:30 all year, so `utcOffsetMinutes` is the constant
+330 and slots are computed with that fixed offset, never a daylight-saving
+rule. `walkthroughSlotHolds/{calendar}-{UTC start}` makes a slot bookable once:
+every booking or move of a slot reads and writes that document in its
+transaction, and a cancellation or move sets it `released`.
+`walkthroughBookings/{wt-sha256(phone, requestId)}` holds the booker's verified
+WhatsApp number, the hash of the website's manage token, the
+`leadFollowUp` consent, every move and the staff confirmation, which covers only
+the slot it names. All three are server-only; the website reads open slots
+through `getWalkthroughSlots`, which returns times only. A booking is the
+slot-attached form of the website `walkthrough` lead: a lead without a slot
+stays a `salesInboundIntents` lead, and a booking projects to its own Admin
+Inbox item (`walkthroughBooking` source kind, enquiry type).
+
 ### Waitlist City Attribution
 
 The website launch notice names its city by catalog id. `joinWaitlist` accepts

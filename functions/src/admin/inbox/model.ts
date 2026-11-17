@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import {marketForIdOrAlias} from "../../locations/marketConfig";
+import {projectWalkthroughBooking} from "../../walkthroughs/inbox";
 
 /**
  * The Admin inbox: one list of everything waiting on a person. Each source
@@ -15,7 +16,7 @@ export const INBOX_JOURNEY_COLLECTION = "adminInboxJourney";
 export const INBOX_ITEM_TYPES = ["listing", "event", "claim", "enquiry", "lead", "access", "stuck"] as const;
 export type InboxItemType = typeof INBOX_ITEM_TYPES[number];
 
-export const INBOX_SOURCE_KINDS = ["supplyIntakeRequest", "organizerClaimRequest", "salesInboundIntent", "accessApplication", "externalEvent"] as const;
+export const INBOX_SOURCE_KINDS = ["supplyIntakeRequest", "organizerClaimRequest", "salesInboundIntent", "accessApplication", "externalEvent", "walkthroughBooking"] as const;
 export type InboxSourceKind = typeof INBOX_SOURCE_KINDS[number];
 
 /** working: nobody needs to act yet. waiting/snoozed: a person does. done: decided or gone. */
@@ -124,6 +125,7 @@ export const sourceCollections: Record<InboxSourceKind, string> = {
   salesInboundIntent: "salesInboundIntents",
   accessApplication: "accessApplications",
   externalEvent: "externalEvents",
+  walkthroughBooking: "walkthroughBookings",
 };
 
 const itemPrefixes: Record<InboxSourceKind, string> = {
@@ -132,6 +134,7 @@ const itemPrefixes: Record<InboxSourceKind, string> = {
   salesInboundIntent: "enquiry",
   accessApplication: "access",
   externalEvent: "event",
+  walkthroughBooking: "walkthrough",
 };
 
 export function inboxItemId(kind: InboxSourceKind, sourceId: string): string {
@@ -156,6 +159,7 @@ export function projectInboxSource(kind: InboxSourceKind, sourceId: string, data
   case "salesInboundIntent": return projectEnquiry(sourceId, data);
   case "accessApplication": return projectAccess(sourceId, data, context);
   case "externalEvent": return projectExternalEvent(sourceId, data, context);
+  case "walkthroughBooking": return projectWalkthroughBooking(sourceId, data);
   }
 }
 
