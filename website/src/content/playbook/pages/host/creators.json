@@ -57,6 +57,7 @@
       "ground": "white",
       "kicker": "Sound familiar?",
       "title": "The audience is the easy part.",
+      "align": "center",
       "columns": 3,
       "items": [
         {"title": "“DM me for details”", "body": "Two hundred DMs for twenty-five seats, and payments by screenshot.", "fix": "One link in your bio: seats left, paid at booking."},

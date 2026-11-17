@@ -104,9 +104,9 @@
         "kind": "excerpt",
         "card": {
           "title": "The code, in short",
-          "tiles": [
-            {"title": "Hosts", "body": "Run the event as described. Honour the cancellation policy you chose. Treat every guest lawfully and respectfully.", "ground": "white"},
-            {"title": "Guests", "body": "Treat people lawfully and respectfully. No harassment, threats, stalking, discrimination or exploitation. Don’t impersonate anyone, and don’t expose anyone’s private information.", "ground": "white"}
+          "rows": [
+            {"title": "Hosts", "detail": "Run the event as described. Honour the cancellation policy you chose. Treat every guest lawfully and respectfully."},
+            {"title": "Guests", "detail": "Treat people lawfully and respectfully. No harassment, threats, stalking, discrimination or exploitation. Don’t impersonate anyone, and don’t expose anyone’s private information."}
           ]
         }
       }

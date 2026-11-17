@@ -46,6 +46,7 @@
       "ground": "white",
       "kicker": "Sound familiar?",
       "title": "The playing is the easy part.",
+      "align": "center",
       "columns": 3,
       "items": [
         {"title": "Lopsided games", "body": "A first-timer paired with your strongest player, 11–1, and neither of them comes back.", "fix": "Every booking brings a level; rounds are planned so matches stay close."},

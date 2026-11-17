@@ -66,6 +66,7 @@
       "ground": "white",
       "kicker": "Sound familiar?",
       "title": "The cooking is the easy part.",
+      "align": "center",
       "columns": 3,
       "items": [
         {"title": "A form that tells you nothing", "body": "Forty names and phone numbers, and no idea who will get on with whom.", "fix": "Applications with your own questions, approved one by one."},

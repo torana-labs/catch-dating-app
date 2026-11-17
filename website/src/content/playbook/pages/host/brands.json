@@ -61,17 +61,20 @@
       "ground": "white",
       "kicker": "Two ways brands use {{brand.name}}",
       "title": "Run it yourself, or back the hosts who already do.",
+      "align": "center",
       "columns": 2,
       "items": [
         {
           "title": "Run community nights under your brand",
           "body": "A page for your brand, events in each city, applications or paid booking, the door and the follow-up.",
-          "list": ["Your brand page and events", "Invite-only links for launches", "Reports after every night"]
+          "list": ["Your brand page and events", "Invite-only links for launches", "Reports after every night"],
+          "ground": "coral"
         },
         {
           "title": "Back run clubs, supper clubs and quiz nights",
           "body": "Hosts run the night on {{brand.name}}; you give each one a link and see what your partnership brought.",
-          "list": ["A link per partner host and creator", "Bookings and attendance by partner", "Repeat guests by partner"]
+          "list": ["A link per partner host and creator", "Bookings and attendance by partner", "Repeat guests by partner"],
+          "ground": "white"
         }
       ]
     },

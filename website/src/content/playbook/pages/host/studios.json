@@ -66,6 +66,7 @@
       "ground": "white",
       "kicker": "Sound familiar?",
       "title": "Teaching is the easy part.",
+      "align": "center",
       "columns": 3,
       "items": [
         {"title": "First-timers who never come back", "body": "A full workshop on Saturday, and none of them at a class the week after.", "fix": "After their first session they see what a member pays, and you see who came twice."},

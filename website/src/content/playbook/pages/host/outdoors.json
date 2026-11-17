@@ -66,6 +66,7 @@
       "ground": "white",
       "kicker": "Sound familiar?",
       "title": "The trail is the easy part.",
+      "align": "center",
       "columns": 3,
       "items": [
         {"title": "A spreadsheet of waivers", "body": "Forms in one place, payments in another, and three people who never signed.", "fix": "Waiver signed and paid at booking, on one record per person."},

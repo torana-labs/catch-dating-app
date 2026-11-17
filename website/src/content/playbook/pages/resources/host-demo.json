@@ -50,6 +50,7 @@
       "ground": "white",
       "kicker": "What you’ll do",
       "title": "Four things, in about ten minutes.",
+      "align": "center",
       "columns": 4,
       "items": [
         {"figure": "1", "title": "Review applicants", "body": "Sample applicants answer your own questions. Approve, waitlist or decline them.", "ground": "pink"},

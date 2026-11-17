@@ -49,6 +49,7 @@
       "ground": "white",
       "kicker": "Sound familiar?",
       "title": "The courts are the easy part.",
+      "align": "center",
       "columns": 3,
       "items": [
         {"title": "Empty courts at 3 PM on a Tuesday", "body": "Peak hours sell themselves; the rest of the week doesn’t.", "fix": "A weekly social with paid booking and a waitlist, at the hours you need filled."},

@@ -66,6 +66,7 @@
       "ground": "white",
       "kicker": "Sound familiar?",
       "title": "The space is the easy part.",
+      "align": "center",
       "columns": 3,
       "items": [
         {"title": "Tuesdays that don’t pay the rent", "body": "The kitchen’s staffed and the bar is stocked, and twelve people come in.", "fix": "A regular night that sells tickets ahead, so you know who’s coming."},
@@ -79,28 +80,33 @@
       "ground": "white",
       "kicker": "Run your own nights",
       "title": "Pick a format that suits the room.",
+      "align": "center",
       "lead": "Each one comes with a run of show, from bookings to the follow-up.",
       "columns": 4,
       "items": [
         {
           "title": "Quiz and game nights",
           "body": "Teams formed at the door, scores on the screen.",
-          "link": {"label": "For quiz nights", "to": {"route": "host_quiz_nights"}}
+          "link": {"label": "For quiz nights", "to": {"route": "host_quiz_nights"}},
+          "ground": "yellow"
         },
         {
           "title": "Supper clubs",
           "body": "Long tables, applications and seats planned for you.",
-          "link": {"label": "For supper clubs", "to": {"route": "host_supper_clubs"}}
+          "link": {"label": "For supper clubs", "to": {"route": "host_supper_clubs"}},
+          "ground": "pink"
         },
         {
           "title": "Court socials",
           "body": "Levels, rotations and fair court time.",
-          "link": {"label": "For racket sports", "to": {"route": "host_racket_sports"}}
+          "link": {"label": "For racket sports", "to": {"route": "host_racket_sports"}},
+          "ground": "mint"
         },
         {
           "title": "Run and brunch",
           "body": "A club starts and finishes at your door.",
-          "link": {"label": "For run clubs", "to": {"route": "host_run_clubs"}}
+          "link": {"label": "For run clubs", "to": {"route": "host_run_clubs"}},
+          "ground": "coral"
         }
       ]
     },

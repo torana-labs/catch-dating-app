@@ -66,6 +66,7 @@
       "ground": "white",
       "kicker": "Sound familiar?",
       "title": "The questions are the easy part.",
+      "align": "center",
       "columns": 3,
       "items": [
         {"title": "The team of regulars who win every week", "body": "Same table, same names on the board. Newer teams stop coming back.", "fix": "Balanced teams of five, with no team stacked with regulars."},
@@ -104,7 +105,8 @@
             "One record per player, wherever they played",
             "Paid in rupees by UPI when players book, not cash at the door",
             "Teams, scores and the reveal on your phone or an iPad"
-          ]
+          ],
+          "ground": "yellow"
         },
         {
           "title": "Venues",

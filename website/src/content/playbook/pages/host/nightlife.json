@@ -49,6 +49,7 @@
       "ground": "white",
       "kicker": "Sound familiar?",
       "title": "Selling the tickets is the easy part.",
+      "align": "center",
       "columns": 3,
       "items": [
         {"title": "Everyone stands with their friends", "body": "Fifty people, eleven circles, and the people who came alone by the bar.", "fix": "Small groups that change through the night, with one icebreaker at a time."},

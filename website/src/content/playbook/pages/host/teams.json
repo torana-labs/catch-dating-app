@@ -66,6 +66,7 @@
       "ground": "white",
       "kicker": "Sound familiar?",
       "title": "Booking the venue is the easy part.",
+      "align": "center",
       "columns": 3,
       "items": [
         {"title": "Fifty thumbs up, twenty people", "body": "An emoji in the team channel isn’t an RSVP, and you’ve ordered food for fifty.", "fix": "A real yes on a private link, and a count at the door you can trust."},
