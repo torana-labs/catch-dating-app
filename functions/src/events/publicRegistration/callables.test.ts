@@ -209,3 +209,33 @@ test("a routing refusal at prepare reports the same reason, without an order",
         return true;
       });
   });
+
+test("public checkout saves ad context outside the replay identity",
+  async () => {
+    const h = await ready();
+    const saved: Array<Record<string, unknown>> = [];
+    const deps = {...h.deps, adContext: async (input: {
+      paymentId: string; uid: string; eventId: string; organizerId: string;
+      click: unknown;
+    }) => {
+      saved.push(input);
+      return "created" as const;
+    }};
+    await assert.rejects(handle(request({...h.prepare,
+      adContext: {gclid: "short"}}), deps));
+    await assert.rejects(handle(request({...h.prepare,
+      adContext: {email: "guest@example.com"}}), deps));
+    const click = {gclid: "Cj0KCQiA_synthetic", utmSource: "google"};
+    const first = await handle(request({...h.prepare, adContext: click}),
+      deps);
+    assert.equal(first.payment?.status, "checkoutReady");
+    assert.equal(saved.length, 1);
+    assert.equal(saved[0].paymentId, first.payment?.paymentId);
+    assert.equal(saved[0].uid, uid);
+    assert.equal(saved[0].eventId, eventId);
+    assert.deepEqual(saved[0].click, click);
+    // A retry with different click values is the same request, not a reuse.
+    const retried = await handle(request({...h.prepare,
+      adContext: {fbclid: "IwAR_synthetic_click"}}), deps);
+    assert.equal(retried.payment?.paymentId, first.payment?.paymentId);
+  });

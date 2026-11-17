@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/ad_click_context.schema.json",
+  "title": "Ad click context",
+  "description": "The closed set of ad-click identifiers and campaign labels a browser may hand to a checkout. Every field is optional; at least one is present. No contact details, URLs or free text.",
+  "definitions": {
+    "clickContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "gclid": {"$ref": "#/definitions/clickId", "description": "Google Ads click ID."},
+        "gbraid": {"$ref": "#/definitions/clickId", "description": "Google Ads app-to-web click ID (iOS)."},
+        "wbraid": {"$ref": "#/definitions/clickId", "description": "Google Ads web-to-app click ID (iOS)."},
+        "fbclid": {"$ref": "#/definitions/clickId", "description": "Meta click ID from the landing URL."},
+        "fbclidCapturedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991,
+          "description": "When the browser first saw fbclid; Meta's fbc value uses it."
+        },
+        "fbp": {
+          "type": "string",
+          "pattern": "^fb\\.[0-9]\\.[0-9]{10,13}\\.[0-9]{1,20}$",
+          "description": "Meta browser ID cookie (_fbp)."
+        },
+        "fbc": {
+          "type": "string",
+          "pattern": "^fb\\.[0-9]\\.[0-9]{10,13}\\.[A-Za-z0-9_-]{10,512}$",
+          "description": "Meta click cookie (_fbc)."
+        },
+        "utmSource": {"$ref": "#/definitions/campaignLabel"},
+        "utmMedium": {"$ref": "#/definitions/campaignLabel"},
+        "utmCampaign": {"$ref": "#/definitions/campaignLabel"},
+        "utmContent": {"$ref": "#/definitions/campaignLabel"}
+      }
+    },
+    "clickId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{10,512}$"
+    },
+    "campaignLabel": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]{1,64}$",
+      "description": "A reviewed campaign label; the browser sends only labels from its closed vocabulary."
+    }
+  }
+}
