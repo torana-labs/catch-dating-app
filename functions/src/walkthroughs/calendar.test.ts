@@ -2,7 +2,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  DEFAULT_AVAILABILITY,
   addDays,
+  effectiveAvailability,
   indiaDate,
   normalizedSettings,
   offeredRange,
@@ -117,6 +119,65 @@ test("a closed calendar, or one without windows, offers nothing", () => {
   assert.deepEqual(openSlotDays({settings: {...weekdays10to12, weeklyWindows: []}, now, held: none}), []);
   assert.deepEqual(openSlotDays({settings: null, now, held: none}), []);
   assert.equal(offeredSlot({...weekdays10to12, enabled: false}, now, "2026-11-16T04:30:00.000Z"), null);
+});
+
+test("the default calendar: weekdays 10:00 to 18:00 IST in 30-minute slots, 2 hours' lead, 14 days ahead", () => {
+  assert.deepEqual(DEFAULT_AVAILABILITY, {
+    enabled: true, slotMinutes: 30, leadTimeMinutes: 120, horizonDays: 14,
+    weeklyWindows: [1, 2, 3, 4, 5].map((weekday) => ({weekday, start: "10:00", end: "18:00"})),
+    closedDates: [],
+  });
+  assert.deepEqual(settingsProblems(DEFAULT_AVAILABILITY), [], "staff could save it as it is");
+  const {settings} = effectiveAvailability(null);
+  // Monday 16 November 2026, 05:30 in India: all of today is past the lead time.
+  const now = new Date("2026-11-16T00:00:00.000Z");
+  const days = openSlotDays({settings, now, days: 28, held: none});
+  // Two working weeks: Mon 16 to Fri 20 and Mon 23 to Fri 27; no weekend, nothing past the 14-day horizon.
+  assert.deepEqual(days.map((day) => day.label), [
+    "Mon 16 Nov", "Tue 17 Nov", "Wed 18 Nov", "Thu 19 Nov", "Fri 20 Nov",
+    "Mon 23 Nov", "Tue 24 Nov", "Wed 25 Nov", "Thu 26 Nov", "Fri 27 Nov",
+  ]);
+  for (const day of days) {
+    assert.equal(day.slots.length, 16, day.label);
+    assert.equal(day.slots[0].label, `${day.label}, 10:00 IST`);
+    assert.equal(day.slots.at(-1)!.label, `${day.label}, 17:30 IST`);
+  }
+  // The first slot starts at 10:00 and the last ends at 18:00 India time.
+  assert.deepEqual([days[0].slots[0].startAt, days[0].slots.at(-1)!.endAt], ["2026-11-16T04:30:00.000Z", "2026-11-16T12:30:00.000Z"]);
+  assert.equal(offeredSlot(settings, now, "2026-11-16T12:30:00.000Z"), null, "18:00 starts no slot");
+  assert.equal(offeredSlot(settings, now, "2026-11-16T04:00:00.000Z"), null, "09:30 starts no slot");
+  assert.equal(offeredSlot(settings, now, "2026-11-21T04:30:00.000Z"), null, "Saturday");
+  assert.equal(offeredSlot(settings, now, "2026-11-22T04:30:00.000Z"), null, "Sunday");
+  assert.deepEqual(slotsOnDate(settings, "2026-11-21"), []);
+  assert.deepEqual(slotsOnDate(settings, "2026-11-22"), []);
+});
+
+test("the default calendar's 2-hour lead time cuts off today's early slots", () => {
+  const {settings} = effectiveAvailability(null);
+  // 10:15 in India: the cutoff is 12:15, so 12:30 is the first slot today.
+  const at1015 = new Date("2026-11-16T04:45:00.000Z");
+  const today = openSlotDays({settings, now: at1015, days: 1, held: none})[0];
+  assert.equal(today.slots[0].label, "Mon 16 Nov, 12:30 IST");
+  assert.equal(today.slots.length, 11);
+  assert.equal(offeredSlot(settings, at1015, "2026-11-16T06:30:00.000Z"), null, "12:00 is inside the lead time");
+  assert.equal(offeredSlot(settings, at1015, "2026-11-16T07:00:00.000Z")?.label, "Mon 16 Nov, 12:30 IST");
+  // Exactly two hours before 10:00, the 10:00 slot is still offered.
+  assert.equal(offeredSlot(settings, new Date("2026-11-16T02:30:00.000Z"), "2026-11-16T04:30:00.000Z")?.label, "Mon 16 Nov, 10:00 IST");
+  // From 16:00 the 17:30 slot is gone too; Friday evening's next slot is Monday 10:00.
+  assert.deepEqual(openSlotDays({settings, now: new Date("2026-11-16T10:30:00.000Z"), days: 2, held: none}).map((day) => day.label), ["Tue 17 Nov"]);
+  const friday = openSlotDays({settings, now: new Date("2026-11-20T11:00:00.000Z"), days: 4, held: none});
+  assert.deepEqual(friday.map((day) => day.slots[0].label), ["Mon 23 Nov, 10:00 IST"]);
+});
+
+test("a saved calendar replaces the default, including one that closes booking", () => {
+  assert.equal(effectiveAvailability(undefined).source, "default");
+  assert.deepEqual(effectiveAvailability(weekdays10to12), {source: "saved", settings: weekdays10to12});
+  const closed = {...weekdays10to12, enabled: false};
+  assert.deepEqual(effectiveAvailability(closed), {source: "saved", settings: closed});
+  // A copy: changing it leaves the default as it was.
+  const copy = effectiveAvailability(null).settings;
+  copy.weeklyWindows[0].end = "12:00";
+  assert.equal(DEFAULT_AVAILABILITY.weeklyWindows[0].end, "18:00");
 });
 
 test("settings problems name what the schema cannot check", () => {
