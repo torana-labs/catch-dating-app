@@ -33,6 +33,8 @@ import {
 import {preparePublicGuestIdentity} from "./identity";
 import {
   publicCheckoutQuote,
+  publicBookingPlaces,
+  publicGuestNames,
   assertReviewedPublicQuote,
   registrationUnavailable,
   type PublicCheckoutQuote,
@@ -52,6 +54,8 @@ export async function reservePublicPayment(input: {
   uid: string;
   phoneE164: string;
   displayName: string;
+  /** One name per place after the booker's; absent for one place. */
+  guestNames?: string[];
   requestId: string;
   reviewedQuote: PublicCheckoutQuote;
   routing: PaymentRoutingSnapshot;
@@ -65,6 +69,7 @@ export async function reservePublicPayment(input: {
         eventId: string;
         attendeeId: string;
         status: "registered" | "checkedIn";
+        placeCount: number;
       };
     }
 > {
@@ -80,6 +85,9 @@ export async function reservePublicPayment(input: {
   } = input;
   const displayName = input.displayName.trim().replace(/\s+/gu, " ");
   if (!displayName || displayName.length > 120) registrationUnavailable();
+  // The reviewed quote names the places; absent (older clients) is one.
+  const places = publicBookingPlaces(reviewedQuote.placeCount);
+  const guestNames = publicGuestNames(input.guestNames, places);
   const paymentId = publicPaymentId(eventId, uid, requestId);
   const requestHash = createHash("sha256")
     .update(
@@ -88,6 +96,8 @@ export async function reservePublicPayment(input: {
         uid,
         phoneE164,
         displayName,
+        // Absent for one place, so an older single-place request replays.
+        ...(guestNames.length > 0 ? {guestNames} : {}),
         requestId,
         reviewedQuote,
         inviteLinkId,
@@ -121,7 +131,7 @@ export async function reservePublicPayment(input: {
     const quote = publicCheckoutQuote(eventId, event, organizer, nowMillis,
       await publicGuestMembership({db, tx, event, uid, nowMillis}),
       await publicHostMembershipQuoteTerms({db, tx, eventId, event, uid,
-        nowMillis}));
+        nowMillis}), places);
     assertReviewedPublicQuote(reviewedQuote, quote);
     const organizerId = event.organizerId!;
     if (
@@ -165,6 +175,7 @@ export async function reservePublicPayment(input: {
           eventId,
           attendeeId: identity.attendeeId,
           status: existingStatus,
+          placeCount: identity.existing?.partySize ?? 1,
         },
       };
     }
@@ -197,8 +208,15 @@ export async function reservePublicPayment(input: {
       },
       {nowMillis},
     );
-    if (roster.totalBooked >= ledger.capacity) {
+    const placesLeft = ledger.capacity - roster.totalBooked;
+    if (placesLeft <= 0) {
       registrationUnavailable("This event is now full.");
+    }
+    if (placesLeft < places) {
+      throw new HttpsError("failed-precondition",
+        `Only ${placesLeft} ${placesLeft === 1 ? "place is" : "places are"} ` +
+          "left. Choose fewer places.",
+        {reason: "notEnoughPlaces", placesLeft});
     }
     const hold = await prepareCheckoutHold({
       tx: seats,
@@ -207,6 +225,7 @@ export async function reservePublicPayment(input: {
         subject: identity.identity,
         operation: "checkoutHold",
         paymentId,
+        places,
         requestId: `hold_${paymentId}`,
         expectedLedgerRevision: ledger.revision,
         expectedCapacityRevision: ledger.capacityRevision,
@@ -236,6 +255,11 @@ export async function reservePublicPayment(input: {
       routing,
       cancellationPolicy: quote.cancellationPolicy,
       amountPaise: quote.amountPaise,
+      placeCount: places,
+      unitAmountPaise: quote.unitAmountPaise ?? quote.amountPaise,
+      ...(quote.memberPlaceCount ? {memberPlaceCount: quote.memberPlaceCount,
+        guestUnitAmountPaise: quote.guestUnitAmountPaise} : {}),
+      ...(guestNames.length > 0 ? {guestNames} : {}),
       currency: quote.currency,
       receipt: paymentId,
       status: "creatingOrder",

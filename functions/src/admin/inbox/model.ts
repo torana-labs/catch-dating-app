@@ -159,6 +159,9 @@ export function projectInboxSource(kind: InboxSourceKind, sourceId: string, data
   }
 }
 
+/** The state of an instant draft that waits for a person's WhatsApp reply; it can be dismissed once sent. */
+export const INSTANT_DRAFT_REPLY_STATE = "reply_on_whatsapp";
+
 const submitterLabels: Record<string, string> = {
   associate: "Sales associate", partner: "Partner", organizer: "The organizer", system: "Discovery",
 };
@@ -177,11 +180,18 @@ function projectSupplyIntakeRequest(sourceId: string, data: Data): InboxProjecti
   const updatedAt = iso(data.updatedAt) ?? submittedAt;
   const who = submitterLabels[String(submittedBy?.role)] ?? "Someone";
   const channel = String(origin?.kind ?? "");
+  // A website instant draft: its submitter waits for a WhatsApp reply from a
+  // person until Catch-owned WhatsApp templates are approved.
+  const instantDraft = channel === "web_instant_draft" ? record(data.instantDraft) : null;
+  const draftWhatsapp = record(instantDraft?.whatsapp);
+  const draftOutcome = record(instantDraft?.outcome);
   const cameFrom = channel === "message_nomination" ? `${who} on WhatsApp` :
     channel === "admin_nomination" ? `${who} in Admin` :
       channel === "sales_inbound_intent" ? "Host website" :
-        channel === "discovery_run" ? "Discovery" : who;
-  const market = marketForIdOrAlias(text(request.market));
+        channel === "discovery_run" ? "Discovery" :
+          instantDraft ? (instantDraft.entry === "demo_request" ? "Website demo request" : "Website draft tool") : who;
+  // An instant draft records the market it was saved in (submitted, read from its events, or picked).
+  const market = marketForIdOrAlias(text(record(instantDraft?.market)?.marketId) ?? text(request.market));
   const city = market?.slug ?? text(request.market);
   const journey: JourneyStep[] = [{
     stepId: "submitted",
@@ -189,11 +199,16 @@ function projectSupplyIntakeRequest(sourceId: string, data: Data): InboxProjecti
     title: channel === "message_nomination" ? `${who} sent a link on WhatsApp` :
       channel === "sales_inbound_intent" ? "Came in from the host website" :
         channel === "discovery_run" ? "Found by discovery" :
-          request.kind === "self_submission" ? "The organizer sent their own details" : `${who} nominated it`,
+          instantDraft ? `Sent ${instantDraft.requestKind === "form_link" ? "a form" : "an event"} link for an instant draft` :
+            request.kind === "self_submission" ? "The organizer sent their own details" : `${who} nominated it`,
     detail: urls[0] ?? text(seed?.name),
     actorUid: text(submittedBy?.uid),
     tone: "ink",
   }];
+  if (instantDraft) {
+    journey.push({stepId: "whatsapp-consent", occurredAt: iso(draftWhatsapp?.consentedAt) ?? submittedAt,
+      title: "Asked for a reply on WhatsApp", detail: text(draftWhatsapp?.phone), actorUid: null, tone: "ink"});
+  }
   const receipts = Array.isArray(result?.captureReceipts) ? result.captureReceipts.map(record) : [];
   receipts.forEach((receipt, index) => {
     if (!receipt) return;
@@ -231,7 +246,16 @@ function projectSupplyIntakeRequest(sourceId: string, data: Data): InboxProjecti
       tone: "danger",
     });
   }
-  if (approval) {
+  if (instantDraft && draftOutcome?.state === "needs_city") {
+    journey.push({stepId: "needs-city", occurredAt: iso(draftOutcome.at) ?? updatedAt,
+      title: "Asked the organizer to pick a city", detail: "Its events did not say which city", actorUid: null,
+      tone: "ink"});
+  }
+  if (approval && instantDraft) {
+    journey.push({stepId: "draft-saved", occurredAt: iso(approval.approvedAt) ?? updatedAt,
+      title: "Saved as a private draft", detail: "Nothing goes live until the organizer claims it",
+      actorUid: text(approval.approvedByUid), tone: "success"});
+  } else if (approval) {
     const approvedAt = iso(approval.approvedAt) ?? updatedAt;
     journey.push({stepId: "approved", occurredAt: approvedAt, title: "Approved", detail: null,
       actorUid: text(approval.approvedByUid), tone: "success"});
@@ -243,10 +267,26 @@ function projectSupplyIntakeRequest(sourceId: string, data: Data): InboxProjecti
   let lifecycle: InboxLifecycle;
   let state: InboxState;
   let closedAt: string | null = null;
-  if (data.status === "failed") {
+  if (instantDraft && draftOutcome?.state === "expired") {
+    // Nobody claimed it within 30 days; the cleanup removed the draft and freed its page address.
+    lifecycle = "closed";
+    closedAt = iso(draftOutcome.at) ?? updatedAt;
+    state = {code: "expired", label: "Draft removed, never claimed", tone: "neutral"};
+    journey.push({stepId: "draft-expired", occurredAt: closedAt, title: "Removed after 30 days unclaimed",
+      detail: "Its page address is free again", actorUid: null, tone: "ink"});
+  } else if (data.status === "failed") {
     type = "stuck";
     lifecycle = "open";
     state = {code: "needs_person", label: "Needs a person", tone: "danger"};
+  } else if (data.status === "completed" && instantDraft && draftOutcome?.state === "needs_city" && !approval) {
+    // The organizer picks the city on the draft page; nothing for staff to do yet.
+    lifecycle = "working";
+    state = {code: "waiting_for_city", label: "Waiting for the organizer to pick a city", tone: "neutral"};
+  } else if (data.status === "completed" && instantDraft) {
+    // Open until a person replies on WhatsApp and dismisses it with a note.
+    lifecycle = "open";
+    state = approval ? {code: INSTANT_DRAFT_REPLY_STATE, label: "Draft ready, reply on WhatsApp", tone: "info"} :
+      {code: INSTANT_DRAFT_REPLY_STATE, label: "Reply on WhatsApp", tone: "warning"};
   } else if (data.status === "completed" && approval) {
     lifecycle = "closed";
     closedAt = iso(approval.approvedAt) ?? updatedAt;

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/supply_intake_usage.schema.json",
   "title": "SupplyIntakeUsageDocument",
-  "description": "Durable monthly network usage for Supply Intake: page fetches at {monthKey}, handle web searches at web-search-{monthKey}. The worker reserves an intake's allowance here in a transaction before any request leaves the process (and releases unused page fetches); the monthly caps in acquisition_policy.json are enforced against these counts, never against process memory.",
+  "description": "Durable monthly network usage for Supply Intake: page fetches at {monthKey}, page fetches for the website instant draft tool's own allowance at instant-draft-pages-{monthKey}, handle web searches at web-search-{monthKey}. The worker reserves an intake's allowance here in a transaction before any request leaves the process (and releases unused page fetches); the monthly caps in acquisition_policy.json (pageFetch.maxRequestsPerMonth, pageFetch.maxInstantDraftRequestsPerMonth, webSearch.maxQueriesPerMonth) are enforced against these counts, never against process memory.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "supplyIntakeUsage",

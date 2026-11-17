@@ -86,6 +86,88 @@
         }
       ]
     },
+    "instantDraft": {
+      "description": "Present only on a request the website's instant draft tool created (origin web_instant_draft). It holds the submitter's private draft handle and WhatsApp follow-up consent, bound to the phone the submitter verified with Firebase. Its listing is never published before claim: whoever approves it (the instant draft worker or staff) creates a private, unpublished, claimable organizer draft, and its imported events publish only when the claimed owner publishes the page. Everything but market, expiresAt and outcome is immutable; outcome records what the worker decided once the build finished.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "draftId", "accessTokenHash", "requestKind", "entry", "link", "whatsapp", "followUp", "outcome"],
+      "properties": {
+        "schemaVersion": {"const": 1},
+        "draftId": {"$ref": "#/definitions/id"},
+        "accessTokenHash": {"$ref": "#/definitions/hash", "description": "SHA-256 of the website's private draft token. The token itself stays in the submitter's browser (a URL fragment) and is never stored or logged."},
+        "requestKind": {"enum": ["event_link", "form_link"]},
+        "entry": {"enum": ["event_page_tool", "demo_request"]},
+        "link": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["url", "provider", "support", "reason"],
+          "properties": {
+            "url": {"type": "string", "minLength": 1, "maxLength": 2000, "pattern": "^https?://"},
+            "provider": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]{0,59}$"},
+            "support": {"enum": ["instant", "best_effort", "staff_follow_up"]},
+            "reason": {"anyOf": [{"$ref": "#/definitions/code"}, {"type": "null"}]}
+          }
+        },
+        "whatsapp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["phone", "consentVersion", "consentedAt", "purpose", "verifiedByUid"],
+          "properties": {
+            "phone": {"type": "string", "pattern": "^\\+[1-9][0-9]{7,14}$"},
+            "consentVersion": {"const": "instant-draft-whatsapp-v1"},
+            "consentedAt": {"type": "string", "format": "date-time"},
+            "purpose": {"const": "instant_draft_follow_up"},
+            "verifiedByUid": {"$ref": "#/definitions/id", "description": "The Firebase user whose verified phone is this number (requestInstantDraft refuses any other number)."}
+          }
+        },
+        "followUp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["channel", "mode"],
+          "properties": {
+            "channel": {"const": "whatsapp"},
+            "mode": {"const": "staff_reply", "description": "A person replies from the Admin Inbox until Catch-owned WhatsApp templates are approved."}
+          }
+        },
+        "market": {
+          "description": "The open launch market the draft is saved in once it is known: the submitted city, the city of its imported events, or the one the submitter chose after needs_city.",
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["marketId", "source", "at"],
+              "properties": {
+                "marketId": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,79}$"},
+                "source": {"enum": ["submitted", "event_location", "chosen"]},
+                "at": {"type": "string", "format": "date-time"}
+              }
+            }
+          ]
+        },
+        "expiresAt": {
+          "description": "Set when the draft is saved: 30 days later the scheduled cleanup removes it if it is still unclaimed and unpublished. Null once it is claimed, published or expired; the cleanup reads only due drafts.",
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "outcome": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["state", "reasons", "at"],
+              "description": "draft_ready and needs_staff are final; needs_city waits for the submitter to pick a city; expired means the unclaimed draft was removed after 30 days.",
+              "properties": {
+                "state": {"enum": ["draft_ready", "needs_staff", "needs_city", "expired"]},
+                "reasons": {"type": "array", "maxItems": 20, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_:-]{0,79}$"}},
+                "at": {"type": "string", "format": "date-time"}
+              }
+            }
+          ]
+        }
+      }
+    },
     "createdAt": {"type": "string", "format": "date-time"},
     "updatedAt": {"type": "string", "format": "date-time"}
   },

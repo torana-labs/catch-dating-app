@@ -190,6 +190,10 @@
     },
     "listing": {
       "$ref": "../shared/public_page_common.schema.json#/definitions/listing"
+    },
+    "womenLed": {
+      "$ref": "../shared/women_led_common.schema.json#/definitions/publicWomenLed",
+      "description": "The organizer's resolved women-led default, for the page label. Each event in upcomingEvents and pastMoments carries its own resolved value, because an event may override the default. Pages built before women-led plans shipped omit it; readers treat absence as false."
     }
   }
 }

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "marketId": "in-mh-mumbai",
+  "citySlug": "mumbai",
+  "status": "open",
+  "cap": 50,
+  "placesLeft": 38,
+  "trialDays": 90,
+  "endsAtMillis": null,
+  "updatedAtMillis": 1763300000000,
+  "lastOrganizerId": "org-1"
+}

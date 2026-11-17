@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/founding_host_offers.schema.json",
+  "title": "FoundingHostOfferDocument",
+  "description": "One city's founding-host offer, at foundingHostOffers/{marketId} (a canonical market id from contracts/catalogs/markets.json). The first adminManageFoundingHostOffers replacement opens the offer; an organizer in the market that gains an owner while places are left and before the optional deadline takes the next place in a transaction that increments takenCount, so no two organizers take the same place. revision counts the owner's changes only; a place does not bump it. Never holds organizer or owner identities. Direct client access is denied; publicFoundingHostOffers carries the public count.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "foundingHostOffers",
+  "x-firestore-path": "foundingHostOffers/{marketId}",
+  "x-document-id-field": "marketId",
+  "x-owner": "adminManageFoundingHostOffers (cap and deadline) and the founding place grant (takenCount, lastPlaceAtMillis)",
+  "required": ["schemaVersion", "marketId", "revision", "cap", "endsAtMillis", "trialDays", "takenCount", "openedAtMillis", "lastPlaceAtMillis", "reason", "updatedByUid", "updatedAtMillis"],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "callable-owned"},
+    "marketId": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,49}$", "x-catch-ownership": "callable-owned"},
+    "revision": {"type": "integer", "minimum": 1, "description": "Owner changes to cap or deadline; a taken place does not bump it.", "x-catch-ownership": "callable-owned"},
+    "cap": {"type": "integer", "minimum": 1, "maximum": 1000, "description": "Founding places in the city. The owner decided 50 on 16 Nov 2026. Never below takenCount.", "x-catch-ownership": "callable-owned"},
+    "endsAtMillis": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991, "description": "The offer closes at this instant; null means no deadline (the default).", "x-catch-ownership": "callable-owned"},
+    "trialDays": {"type": "integer", "minimum": 1, "maximum": 366, "description": "Free days a founding place grants, written into the organizer's commercial terms override (90).", "x-catch-ownership": "callable-owned"},
+    "takenCount": {"type": "integer", "minimum": 0, "maximum": 1000, "description": "Places taken; each one has a foundingHostPlaces record with its place number.", "x-catch-ownership": "trigger-owned"},
+    "openedAtMillis": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "description": "When the offer was first opened. Organizers that gained an owner earlier are not founding hosts.", "x-catch-ownership": "callable-owned"},
+    "lastPlaceAtMillis": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "trigger-owned"},
+    "reason": {"type": "string", "minLength": 3, "maxLength": 500, "x-catch-ownership": "callable-owned"},
+    "updatedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "updatedAtMillis": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "callable-owned"}
+  }
+}

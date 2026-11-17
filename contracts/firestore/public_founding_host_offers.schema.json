@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/public_founding_host_offers.schema.json",
+  "title": "PublicFoundingHostOfferDocument",
+  "description": "Public projection of one city's founding-host offer, at publicFoundingHostOffers/{marketId}, for the website's \"[N] of 50 places left\" strip. Rewritten in the same transaction as every owner change and every taken place, so placesLeft never runs ahead of the private counter. Holds counts only: no organizer, owner or staff identities. Anyone may read it; clients never write it. status is computed at write time, so a reader must also treat endsAtMillis at or before now as closed. An absent document means the city has no offer and the strip stays hidden.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "publicFoundingHostOffers",
+  "x-firestore-path": "publicFoundingHostOffers/{marketId}",
+  "x-document-id-field": "marketId",
+  "x-owner": "adminManageFoundingHostOffers and the founding place grant (functions/src/foundingHosts)",
+  "required": ["schemaVersion", "marketId", "citySlug", "status", "cap", "placesLeft", "trialDays", "endsAtMillis", "updatedAtMillis"],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "server-only"},
+    "marketId": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,49}$", "x-catch-ownership": "server-only"},
+    "citySlug": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "description": "The market's website slug, as in contracts/catalogs/markets.json.", "x-catch-ownership": "server-only"},
+    "status": {"enum": ["open", "soldOut", "closed"], "description": "open while places are left before the deadline; soldOut when none are left; closed once the deadline passed at the last write.", "x-catch-ownership": "server-only"},
+    "cap": {"type": "integer", "minimum": 1, "maximum": 1000, "x-catch-ownership": "server-only"},
+    "placesLeft": {"type": "integer", "minimum": 0, "maximum": 1000, "x-catch-ownership": "server-only"},
+    "trialDays": {"type": "integer", "minimum": 1, "maximum": 366, "x-catch-ownership": "server-only"},
+    "endsAtMillis": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "server-only"},
+    "updatedAtMillis": {"type": "integer", "minimum": 1, "maximum": 9007199254740991, "x-catch-ownership": "server-only"}
+  }
+}

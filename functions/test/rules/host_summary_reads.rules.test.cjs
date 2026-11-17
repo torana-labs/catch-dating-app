@@ -127,6 +127,37 @@ describe("firestore.rules", () => {
         await assertFails(getDoc(doc(authedDb("host-1"), name, "own")));
       }
     });
+    it("lets managers get form version answer filters and nothing else", async () => {
+      await seed(["organizers", "org"], summaryOrganizer({hostUserIds: ["manager"]}));
+      await seed(["organizers", "other"], summaryOrganizer({hostUserId: "other-host"}));
+      await seed(["hostFormVersionFilters", "form_v1"], {organizerId: "org",
+        formId: "form", versionId: "form_v1", formVersion: 1,
+        answerFilterOptions: [], version: 1});
+      await seed(["hostFormVersionFilters", "foreign_v1"], {organizerId: "other",
+        formId: "foreign", versionId: "foreign_v1", formVersion: 1,
+        answerFilterOptions: [], version: 1});
+      for (const uid of ["host-1", "manager"]) {
+        await assertSucceeds(getDoc(doc(authedDb(uid), "hostFormVersionFilters",
+          "form_v1")));
+      }
+      const db = authedDb("host-1");
+      const missing = await assertSucceeds(getDoc(doc(db,
+        "hostFormVersionFilters", "form_v9")));
+      assert.equal(missing.exists(), false);
+      await assertFails(getDoc(doc(db, "hostFormVersionFilters", "foreign_v1")));
+      await assertFails(getDoc(doc(authedDb("operator-1"),
+        "hostFormVersionFilters", "form_v1")));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(),
+        "hostFormVersionFilters", "form_v1")));
+      await assertFails(getDocs(query(collection(db, "hostFormVersionFilters"),
+        where("organizerId", "==", "org"))));
+      await assertFails(setDoc(doc(db, "hostFormVersionFilters", "form_v2"),
+        {organizerId: "org"}));
+      await assertFails(updateDoc(doc(db, "hostFormVersionFilters", "form_v1"),
+        {formVersion: 2}));
+      await assertFails(deleteDoc(doc(db, "hostFormVersionFilters", "form_v1")));
+      await assertFails(getDoc(doc(db, "organizerFormVersions", "form_v1")));
+    });
     it("revokes unpublished Event summary reads when the organizer archives", async () => {
       await seed(["organizers", "org"], summaryOrganizer());
       await seed(["hostEventSummaries", "event"], {organizerId: "org"});

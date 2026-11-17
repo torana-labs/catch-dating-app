@@ -24,7 +24,9 @@ import {supplyIntakeCollections} from "./worker";
 // Publishes events Supply Intake imported for an approved organizer listing
 // as read-only, outbound-only externalEvents. Staff publish them through
 // adminPublishListingEvents; the event publication policy publishes the ones
-// that pass every automated check when a listing is approved. Both run the
+// that pass every automated check when a listing is approved; and a claimed
+// owner of a website instant draft publishes them by publishing the page
+// (instantDrafts/publishOnClaim.ts). All of them run the
 // Supply Intake import plan (event-import.mjs) and review rules
 // (event-publication.mjs) from the packaged Operations runtime, then write
 // through the same checks as any external event: contract validation, the
@@ -129,7 +131,13 @@ export type ListingEventActor =
   | {kind: "staff"; adminContext: AdminContext; checklist: StaffChecklist; note: string;
       blockerResolutions: Map<string, ListingEventReview["blockerResolutions"]>;
       eventLocations?: Map<string, StaffEventLocation>; request?: CallableRequest<unknown>}
-  | {kind: "policy"};
+  | {kind: "policy"}
+  /**
+   * The claimed owner of the organizer, publishing its page (owner decision,
+   * 16 Nov 2026, for website instant drafts). Their publish is the review:
+   * every automated check must still pass, and the organizer must be theirs.
+   */
+  | {kind: "owner"; ownerUid: string};
 
 export type ListingEventOutcome =
   | "published" | "would_publish" | "already_published" | "withdrawn" | "blocked" | "awaiting_staff";
@@ -199,9 +207,17 @@ export async function publishListingEvents(input: {
         return blocked(eventWorkItemId, null, ["organizer_listing_pending"]);
       }
       const owner = listing.organizer;
+      if (input.actor.kind === "owner" && !claimedBy(owner.organizer, input.actor.ownerUid)) {
+        return blocked(eventWorkItemId, null, ["organizer_not_claimed_by_owner"]);
+      }
       const now = deps.now().toISOString();
       const automated = runtime.automatedEventReview({event, organizer: owner.attribution, policy, now});
-      const review = input.actor.kind === "policy" ? automated.review : runtime.staffEventReview({
+      const review = input.actor.kind === "policy" ? automated.review : input.actor.kind === "owner" ? {
+        reviewerUid: input.actor.ownerUid, decidedAt: now,
+        note: "Published when its claimed organizer published their page; the event passed every automated check.",
+        ownerSafeCopyReviewed: automated.review.ownerSafeCopyReviewed, importPolicyAcknowledged: true,
+        blockerResolutions: [],
+      } : runtime.staffEventReview({
         reviewerUid: input.actor.adminContext.uid, decidedAt: now, note: input.actor.note,
         checklist: input.actor.checklist,
         blockerResolutions: input.actor.blockerResolutions.get(eventWorkItemId) ?? [],
@@ -213,15 +229,17 @@ export async function publishListingEvents(input: {
           appVisibility: owner.organizer.appVisibility === "discoverable" ? "discoverable" : "hidden"}});
       // A replay (same key) and an event that already exists answer before
       // anything that may have changed since: the clock, the policy, the copy.
-      const actorUid = input.actor.kind === "policy" ? runtime.AUTO_PUBLISH_ACTOR : input.actor.adminContext.uid;
+      const actorUid = input.actor.kind === "policy" ? runtime.AUTO_PUBLISH_ACTOR :
+        input.actor.kind === "owner" ? input.actor.ownerUid : input.actor.adminContext.uid;
       const idempotencyKey = `${input.idempotencyKey}:${shortHash(eventWorkItemId)}`;
       const receiptRef = db.collection("externalEventPublicationReceipts")
         .doc(publicationReceiptId(actorUid, "publish", idempotencyKey));
       const eventRef = db.collection("externalEvents").doc(plan.eventId);
       const inputHash = publicationInputHash({intakeRequestId: input.intakeRequestId, eventWorkItemId,
         executionMode: input.executionMode, actor: input.actor.kind === "policy" ? policy.policyVersion :
-          {checklist: input.actor.checklist, note: input.actor.note, resolutions: review.blockerResolutions,
-            location: review.location ?? null}});
+          input.actor.kind === "owner" ? {owner: input.actor.ownerUid} :
+            {checklist: input.actor.checklist, note: input.actor.note, resolutions: review.blockerResolutions,
+              location: review.location ?? null}});
       const [receiptSnap, eventSnap] = await Promise.all([tx.get(receiptRef), tx.get(eventRef)]);
       if (receiptSnap.exists) {
         const receipt = receiptSnap.data() ?? {};
@@ -240,6 +258,11 @@ export async function publishListingEvents(input: {
         return {eventWorkItemId, eventId: plan.eventId, outcome: "awaiting_staff" as const, receiptPath: null,
           idempotent: false, blockers: unique([...blockers, ...automated.findings.map((finding) => finding.check),
             ...(policy.mode === runtime.AUTO_PUBLISH_MODE ? [] : ["staff_review_policy"])])};
+      }
+      // The owner's publish replaces the policy mode, never the automated checks.
+      if (input.actor.kind === "owner" && automated.findings.length > 0) {
+        return {eventWorkItemId, eventId: plan.eventId, outcome: "awaiting_staff" as const, receiptPath: null,
+          idempotent: false, blockers: unique([...blockers, ...automated.findings.map((finding) => finding.check)])};
       }
       if (blockers.length > 0 || plan.status !== "write_ready" || !plan.document) {
         return blocked(eventWorkItemId, plan.eventId, blockers.length > 0 ? blockers : ["import_plan_incomplete"]);
@@ -314,6 +337,12 @@ export function approvedOrganizer(organizerId: string, organizer: Record<string,
   });
   return {organizerId, organizer, citySlug: market?.slug ?? null, blockers,
     attribution: {name: stringValue(organizer.name) || null, links}};
+}
+
+/** Pure: whether this organizer's claim went through and it is owned by this user. */
+export function claimedBy(organizer: Record<string, unknown>, uid: string): boolean {
+  const claimState = recordValue(organizer.claim)?.state;
+  return (claimState === "claimed" || claimState === "verified") && organizer.ownerUserId === uid;
 }
 
 /** Pure: the reviewed facts of one listing_event_candidate work item. */

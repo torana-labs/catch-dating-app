@@ -44,6 +44,10 @@
         "crossPathsDiscoveryEnabled": {
           "type": "boolean"
         },
+        "womenLed": {
+          "$ref": "../shared/women_led_common.schema.json#/definitions/adminAction",
+          "description": "Moderates this event's women-led override: set declares it, clear removes and locks it, release lifts the lock and returns the event to its organizer's default. Recorded with the admin uid, role and time, and in the admin audit log with the review note."
+        },
         "eventFormat": {
           "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
         },
