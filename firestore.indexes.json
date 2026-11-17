@@ -7381,6 +7381,34 @@
       ]
     },
     {
+      "collectionGroup": "savedEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "eventCard.startTimeMillis",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "savedEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "eventCard.startTimeMillis",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "hostResponseSummaries",
       "queryScope": "COLLECTION",
       "fields": [
