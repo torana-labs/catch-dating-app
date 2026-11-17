@@ -373,6 +373,7 @@ abstract final class GeneratedCatchWebsiteTokens {
   static const double planMediaHeight = 150.0;
   static const double badgePadBlock = 5.0;
   static const double chipDotSize = 8.0;
+  static const double rangeThumbSize = 20.0;
   static const double calculatorValueSize = 52.0;
   static const double calculatorCompactValueSize = 40.0;
   static const double calculatorTileSize = 34.0;

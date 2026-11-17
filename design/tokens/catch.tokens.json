@@ -6561,6 +6561,16 @@
         }
       }
     },
+    "range": {
+      "thumbSize": {
+        "$type": "dimension",
+        "$description": "The range slider's thumb: a filled dot the size of the canvas's system slider thumb.",
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        }
+      }
+    },
     "calculator": {
       "valueSize": {
         "$type": "dimension",

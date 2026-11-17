@@ -32,15 +32,15 @@
 
 /* The slider's thumb is the canvas's coral (.rng, accent-color coral): a filled 20px dot with an ink-ground rim; the system slider keeps its focus ring. */
 .range input::-webkit-slider-thumb {
-  width: var(--catch-space-s5);
-  height: var(--catch-space-s5);
+  width: var(--catch-website-range-thumb-size);
+  height: var(--catch-website-range-thumb-size);
   border: var(--catch-stroke-focus) solid var(--catch-ground-ink-fill);
   background: var(--catch-palette-coral);
 }
 
 .range input::-moz-range-thumb {
-  width: var(--catch-space-s5);
-  height: var(--catch-space-s5);
+  width: var(--catch-website-range-thumb-size);
+  height: var(--catch-website-range-thumb-size);
   border: var(--catch-stroke-focus) solid var(--catch-ground-ink-fill);
   background: var(--catch-palette-coral);
 }
