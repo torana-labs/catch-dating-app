@@ -7,20 +7,33 @@
       "name": "Catch Host | Search | Organisers",
       "status": "PAUSED",
       "dailyBudgetInr": 700,
-      "bidding": {"strategy": "MAXIMIZE_CLICKS", "maxCpcInr": 40},
+      "bidding": {
+        "strategy": "MAXIMIZE_CLICKS",
+        "maxCpcInr": 40
+      },
       "note": "Maximize clicks until the Qualified host conversion (7906748544) has about 15 a month, then switch to maximize conversions.",
       "finalUrlSuffix": "utm_source=google&utm_medium=cpc&utm_campaign=host_acquisition_2026",
-      "languages": [{"id": 1000, "name": "English"}],
-      "locations": [
-        {"id": 20456, "name": "Delhi"},
-        {"id": 1007764, "name": "Faridabad"},
-        {"id": 1007765, "name": "Gurugram"},
-        {"id": 1007768, "name": "Bengaluru"},
-        {"id": 1007785, "name": "Mumbai"},
-        {"id": 1007820, "name": "Ghaziabad"},
-        {"id": 1007826, "name": "Noida"}
+      "languages": [
+        1000
       ],
-      "negativeKeywords": ["job", "jobs", "salary", "course", "courses", "certification", "internship"],
+      "locations": [
+        20456,
+        1007764,
+        1007765,
+        1007768,
+        1007785,
+        1007820,
+        1007826
+      ],
+      "negativeKeywords": [
+        "job",
+        "jobs",
+        "salary",
+        "course",
+        "courses",
+        "certification",
+        "internship"
+      ],
       "sharedHeadlines": [
         "Catch Host for Organisers",
         "Sell Tickets to Your Events",
@@ -42,42 +55,97 @@
           "name": "Ticketing",
           "finalUrl": "https://catchdates.com/host/",
           "maxCpcInr": 40,
-          "headlines": ["Event Ticketing for India", "Sell Event Tickets Online"],
+          "headlines": [
+            "Event Ticketing for India",
+            "Sell Event Tickets Online"
+          ],
           "keywords": [
-            {"text": "sell event tickets online", "match": "PHRASE"},
-            {"text": "event ticketing platform", "match": "PHRASE"},
-            {"text": "event ticketing india", "match": "PHRASE"},
-            {"text": "sell tickets online india", "match": "PHRASE"},
-            {"text": "event registration software", "match": "PHRASE"},
-            {"text": "event management software", "match": "PHRASE"}
+            {
+              "text": "sell event tickets online",
+              "match": "PHRASE"
+            },
+            {
+              "text": "event ticketing platform",
+              "match": "PHRASE"
+            },
+            {
+              "text": "event ticketing india",
+              "match": "PHRASE"
+            },
+            {
+              "text": "sell tickets online india",
+              "match": "PHRASE"
+            },
+            {
+              "text": "event registration software",
+              "match": "PHRASE"
+            },
+            {
+              "text": "event management software",
+              "match": "PHRASE"
+            }
           ]
         },
         {
           "name": "Clubs and communities",
           "finalUrl": "https://catchdates.com/host/",
           "maxCpcInr": 40,
-          "headlines": ["Run Your Club From One App", "For Run Clubs and Supper Clubs"],
+          "headlines": [
+            "Run Your Club From One App",
+            "For Run Clubs and Supper Clubs"
+          ],
           "keywords": [
-            {"text": "run club app", "match": "PHRASE"},
-            {"text": "manage run club", "match": "PHRASE"},
-            {"text": "community event app", "match": "PHRASE"},
-            {"text": "supper club booking", "match": "PHRASE"},
-            {"text": "app to host events", "match": "PHRASE"}
+            {
+              "text": "run club app",
+              "match": "PHRASE"
+            },
+            {
+              "text": "manage run club",
+              "match": "PHRASE"
+            },
+            {
+              "text": "community event app",
+              "match": "PHRASE"
+            },
+            {
+              "text": "supper club booking",
+              "match": "PHRASE"
+            },
+            {
+              "text": "app to host events",
+              "match": "PHRASE"
+            }
           ]
         },
         {
           "name": "Check-in and guest lists",
           "finalUrl": "https://catchdates.com/host/",
           "maxCpcInr": 40,
-          "headlines": ["Event Check-In by QR Code", "Know Who Has Arrived"],
+          "headlines": [
+            "Event Check-In by QR Code",
+            "Know Who Has Arrived"
+          ],
           "keywords": [
-            {"text": "event check in app", "match": "PHRASE"},
-            {"text": "qr code event check in", "match": "PHRASE"},
-            {"text": "guest list management software", "match": "PHRASE"},
-            {"text": "event check in software", "match": "EXACT"}
+            {
+              "text": "event check in app",
+              "match": "PHRASE"
+            },
+            {
+              "text": "qr code event check in",
+              "match": "PHRASE"
+            },
+            {
+              "text": "guest list management software",
+              "match": "PHRASE"
+            },
+            {
+              "text": "event check in software",
+              "match": "EXACT"
+            }
           ]
         }
-      ]
+      ],
+      "locationsNote": "Google geo target constant IDs (the October pilot's Tier 1 set); the plan prints their names from Google."
     }
   ]
 }

@@ -59,17 +59,21 @@ test("one atomic request creates a paused campaign and its children", () => {
 
 test("plan validates creates, keeps existing campaigns, and apply writes once", async () => {
   const calls = [];
+  const places = policy.campaigns[0].locations.map((id) =>
+    ({geoTargetConstant: {id: String(id), name: `Place ${id}`}}));
   const api = {
-    search: async () => [{campaign: {name: "Catch Host | Search | Organisers", status: "PAUSED"}}],
+    search: async (query) => query.includes("geo_target_constant") ? places :
+      [{campaign: {name: "Catch Host | Search | Organisers", status: "PAUSED"}}],
     mutate: async (ops, validateOnly) => { calls.push(validateOnly); return {}; },
   };
   const kept = await planGoogleCampaigns({policy, api});
   assert.deepEqual(kept.changes.map((c) => c.kind), ["keep"]);
   assert.equal(await applyGoogleCampaigns({plan: kept, api}), 0);
   assert.deepEqual(calls, []);
-  api.search = async () => [];
+  api.search = async (query) => query.includes("geo_target_constant") ? places : [];
   const fresh = await planGoogleCampaigns({policy, api});
   assert.deepEqual(fresh.changes.map((c) => c.kind), ["create"]);
+  assert.equal(fresh.changes[0].locations.length, policy.campaigns[0].locations.length);
   assert.deepEqual(calls, [true]);
   assert.equal(await applyGoogleCampaigns({plan: fresh, api}), 1);
   assert.deepEqual(calls, [true, false]);

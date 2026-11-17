@@ -39,6 +39,11 @@ export function loadGoogleCampaigns(file = POLICY_PATH) {
     if (!(campaign.dailyBudgetInr > 0 && campaign.dailyBudgetInr <= 5000)) {
       throw new Error(`${where} daily budget must be between 1 and 5000 INR.`);
     }
+    for (const list of ["locations", "languages"]) {
+      if (!campaign[list]?.length || !campaign[list].every((id) => Number.isSafeInteger(id) && id > 0)) {
+        throw new Error(`${where} ${list} must be a non-empty list of Google IDs.`);
+      }
+    }
     if (campaign.bidding?.strategy !== "MAXIMIZE_CLICKS" &&
         campaign.bidding?.strategy !== "MAXIMIZE_CONVERSIONS") {
       throw new Error(`${where} bidding must be MAXIMIZE_CLICKS or MAXIMIZE_CONVERSIONS.`);
@@ -99,10 +104,10 @@ export function createCampaignOperations(customerId, campaign) {
         {targetSpend: {cpcBidCeilingMicros: micros(campaign.bidding.maxCpcInr)}} :
         {maximizeConversions: {}}),
     }}},
-    ...campaign.locations.map((location) => ({campaignCriterionOperation: {create: {
-      campaign: campaignName, location: {geoTargetConstant: `geoTargetConstants/${location.id}`}}}})),
-    ...campaign.languages.map((language) => ({campaignCriterionOperation: {create: {
-      campaign: campaignName, language: {languageConstant: `languageConstants/${language.id}`}}}})),
+    ...campaign.locations.map((id) => ({campaignCriterionOperation: {create: {
+      campaign: campaignName, location: {geoTargetConstant: `geoTargetConstants/${id}`}}}})),
+    ...campaign.languages.map((id) => ({campaignCriterionOperation: {create: {
+      campaign: campaignName, language: {languageConstant: `languageConstants/${id}`}}}})),
     ...(campaign.negativeKeywords ?? []).map((text) => ({campaignCriterionOperation: {create: {
       campaign: campaignName, negative: true, keyword: {text, matchType: "BROAD"}}}})),
   ];
@@ -151,15 +156,23 @@ export async function planGoogleCampaigns({policy, api}) {
   const rows = await api.search("SELECT campaign.name, campaign.status FROM campaign " +
     "WHERE campaign.status != 'REMOVED'");
   const existing = new Map(rows.map((row) => [row.campaign.name, row.campaign.status]));
+  const ids = [...new Set(policy.campaigns.flatMap((campaign) => campaign.locations))];
+  const places = await api.search("SELECT geo_target_constant.id, geo_target_constant.name " +
+    `FROM geo_target_constant WHERE geo_target_constant.id IN (${ids.join(",")})`);
+  const placeNames = new Map(places.map((row) =>
+    [Number(row.geoTargetConstant.id), row.geoTargetConstant.name]));
   const changes = [];
   for (const campaign of policy.campaigns) {
+    const missing = campaign.locations.filter((id) => !placeNames.has(id));
+    if (missing.length) throw new Error(`Unknown Google location IDs: ${missing.join(", ")}.`);
     if (existing.has(campaign.name)) {
       changes.push({kind: "keep", target: campaign.name, status: existing.get(campaign.name)});
       continue;
     }
     const operations = createCampaignOperations(policy.customerId, campaign);
     await api.mutate(operations, true);
-    changes.push({kind: "create", target: campaign.name, operations});
+    changes.push({kind: "create", target: campaign.name, operations,
+      locations: campaign.locations.map((id) => placeNames.get(id))});
   }
   return {customerId: policy.customerId, changes};
 }
@@ -191,14 +204,15 @@ async function main() {
   const policy = loadGoogleCampaigns();
   const api = googleAdsApi({customerId: policy.customerId, token: accessToken()});
   const plan = await planGoogleCampaigns({policy, api});
-  const summary = plan.changes.map(({kind, target, status, operations}) =>
-    ({kind, target, ...(status ? {status} : {}), ...(operations ? {operations: operations.length} : {})}));
+  const summary = plan.changes.map(({kind, target, status, operations, locations}) =>
+    ({kind, target, ...(status ? {status} : {}), ...(operations ? {operations: operations.length} : {}),
+      ...(locations ? {locations} : {})}));
   if (args.json) console.log(JSON.stringify(summary, null, 2));
   else {
     console.log(`Google Ads plan for ${plan.customerId}:`);
     for (const change of summary) {
       console.log(change.kind === "create" ?
-        `- create ${change.target} (PAUSED, ${change.operations} operations, validated)` :
+        `- create ${change.target} (PAUSED, ${change.operations} operations, validated) in ${change.locations.join(", ")}` :
         `- keep ${change.target} (exists, ${change.status}; left unchanged)`);
     }
   }
