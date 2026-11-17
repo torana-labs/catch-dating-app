@@ -12,6 +12,15 @@ enum CatchAsyncBoundaryMode { refresh, reload, error }
 
 const defaultCatchAsyncRetainedData = {CatchAsyncBoundaryMode.refresh};
 
+/// Retention for a cached read: a failed or timed-out refetch keeps the data
+/// on screen (Riverpod keeps the previous value beside the error), and the
+/// screen says it could not refresh instead of replacing the data with an
+/// error.
+const catchCachedReadRetainedData = {
+  CatchAsyncBoundaryMode.refresh,
+  CatchAsyncBoundaryMode.error,
+};
+
 CatchAsyncBoundaryStatus catchAsyncBoundaryStatus<T>(
   AsyncValue<T> value, {
   Set<CatchAsyncBoundaryMode> retainDataOn = defaultCatchAsyncRetainedData,

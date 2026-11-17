@@ -1,14 +1,13 @@
 import {
-  CatchAvatar,
+  CatchBadge,
   CatchButton,
   CatchCheckboxInput,
   CatchCodeInput,
   CatchField,
-  CatchHeroImage,
-  CatchIcon,
+  CatchGroundCard,
+  CatchProfileHeader,
   CatchQrCode,
   CatchStack,
-  CatchSurface,
   CatchText,
 } from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
@@ -16,56 +15,71 @@ import {renderAccountForm} from "../../../account/accountForm";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
 
 /**
- * The board's hero: a photo from a past event, or the organiser's format
- * colour where there is none yet.
- */
-export function OrganizerCover({controller}: {controller: OrganizerPageController}) {
-  const {header, name} = controller.view;
-  return header.coverUrl ?
-    <CatchHeroImage framed imageUrl={header.coverUrl} semanticLabel={header.coverAlt ?? copy.coverAlt(name)} showScrim={false} /> :
-    <CatchSurface aria-hidden="true" aspect={1.95} block="spotlight" color={header.format} />;
-}
-
-/**
- * Who the organiser is, then follow and share: the top of the first phone
- * screen. The logo, the name with its verified mark, the headline, the place,
- * one line of numbers, and the two buttons.
+ * The hero across the content width (owner-approved layout, 17 Nov 2026):
+ * the cover, a past event's photo or the organiser's colour, with the logo
+ * over its foot; then the name with its verified seal, the generated page's
+ * tag, the women-led label, the headline, the place, and one line of numbers
+ * that each have data behind them on the left, and Follow and Share on the
+ * right. A phone stacks the buttons under the numbers.
  */
 export function OrganizerIdentitySection({controller}: {controller: OrganizerPageController}) {
   const {follow, share, view} = controller;
   const {header} = view;
-  const stats = header.stats.map((stat) => `${stat.value} ${stat.label}`).join(" · ");
   return (
-    <CatchStack gap={20}>
-      <CatchStack gap={12}>
-        <CatchAvatar initials={header.monogram} name={view.name} size={72} />
-        <CatchStack align="center" direction="row" gap={8}>
-          <CatchText as="h1" variant="page-title">{view.name}</CatchText>
-          {header.verified ? <CatchIcon label={copy.verifiedLabel} name="protected" size={24} /> : null}
+    <CatchProfileHeader
+      actions={(
+        <CatchStack gap={8}>
+          <CatchStack direction="row" equal gap={8}>
+            <CatchButton
+              fill
+              label={follow.following ? copy.following : copy.follow}
+              leadingIcon={follow.following ? "check" : undefined}
+              onPressed={follow.press}
+              status={follow.pending ? "loading" : "idle"}
+              variant={follow.following ? "secondary" : "primary"}
+            />
+            <CatchButton fill label={copy.share} leadingIcon="share" onPressed={share.toggle} variant="secondary" />
+          </CatchStack>
+          {follow.byPhone ? <CatchText as="p" tone="secondary" variant="body-small">{copy.followNote}</CatchText> : null}
         </CatchStack>
-        {header.tag ? <CatchText tone="secondary" variant="label-kicker">{header.tag}</CatchText> : null}
-        {header.headline ? <CatchText as="p" variant="body-lead">{header.headline}</CatchText> : null}
-        {header.meta ? <CatchText as="p" tone="secondary" variant="body-small">{header.meta}</CatchText> : null}
-        {stats ? <CatchText as="p" variant="label-action">{stats}</CatchText> : null}
-      </CatchStack>
-      <CatchStack gap={8}>
-        <CatchStack direction="row" equal gap={8}>
-          <CatchButton
-            fill
-            label={follow.following ? copy.following : copy.follow}
-            onPressed={follow.press}
-            status={follow.pending ? "loading" : "idle"}
-            variant={follow.following ? "secondary" : "primary"}
-          />
-          <CatchButton fill label={copy.share} leadingIcon="share" onPressed={share.toggle} variant="secondary" />
+      )}
+      badges={header.labels.length ? (
+        <CatchStack direction="row" gap={8} wrap>
+          {header.labels.map((label) => <CatchBadge key={label} label={label} size="md" tone="brand" />)}
         </CatchStack>
-        {follow.byPhone ? <CatchText as="p" tone="secondary" variant="body-small">{copy.followNote}</CatchText> : null}
-      </CatchStack>
+      ) : undefined}
+      coverAlt={header.coverUrl ? header.coverAlt ?? copy.coverAlt(view.name) : undefined}
+      coverGround={header.accent}
+      coverUrl={header.coverUrl}
+      headline={header.headline || undefined}
+      layout="hero"
+      meta={header.meta || undefined}
+      monogram={header.monogram}
+      monogramGround={header.monogramGround}
+      name={view.name}
+      stats={header.stats}
+      tag={header.tag}
+      verifiedLabel={header.verified ? copy.verifiedLabel : undefined}
+    />
+  );
+}
+
+/**
+ * What Follow and Share open, at the top of the rail: the phone follow
+ * sheet (or the account step), a follow error, and the share card with its
+ * QR code. Nothing while both are closed. The line on following by phone
+ * sits under the buttons in the hero.
+ */
+export function OrganizerFollowPanels({controller}: {controller: OrganizerPageController}) {
+  const {follow, share, view} = controller;
+  if (!follow.phone && !follow.account && !follow.error && !share.open) return null;
+  return (
+    <CatchStack gap={12}>
       {follow.phone ? <OrganizerFollowSheet error={follow.error} name={view.name} phone={follow.phone} /> : null}
-      {follow.account ? <CatchSurface>{renderAccountForm(follow.account)}</CatchSurface> : null}
+      {follow.account ? <CatchGroundCard><CatchStack gap={12}>{renderAccountForm(follow.account)}</CatchStack></CatchGroundCard> : null}
       {!follow.phone && follow.error ? <CatchText as="p" role="alert" tone="danger" variant="body-small">{follow.error}</CatchText> : null}
       {share.open ? (
-        <CatchSurface>
+        <CatchGroundCard><CatchStack gap={12}>
           <CatchStack align="center" direction="row" gap={16}>
             <CatchQrCode label={copy.qrLabel(share.displayUrl)} size="m" value={share.url} />
             <CatchStack gap={8}>
@@ -77,7 +91,7 @@ export function OrganizerIdentitySection({controller}: {controller: OrganizerPag
               {share.copyState === "failed" ? <CatchText as="p" role="alert" tone="danger" variant="body-small">{copy.copyFailed}</CatchText> : null}
             </CatchStack>
           </CatchStack>
-        </CatchSurface>
+        </CatchStack></CatchGroundCard>
       ) : null}
     </CatchStack>
   );
@@ -90,14 +104,14 @@ function OrganizerFollowSheet({error, name, phone}: {error: string; name: string
   const sheet = copy.followSheet;
   if (phone.step === "done") {
     return (
-      <CatchSurface role="status">
+      <CatchGroundCard role="status"><CatchStack gap={6}>
         <CatchText as="p" variant="title-row">{sheet.doneTitle(name)}</CatchText>
         <CatchText as="p" tone="secondary" variant="body-small">{sheet.doneBody(phone.whatsapp)}</CatchText>
-      </CatchSurface>
+      </CatchStack></CatchGroundCard>
     );
   }
   return (
-    <CatchSurface>
+    <CatchGroundCard><CatchStack gap={12}>
       <CatchStack gap={4}>
         <CatchText as="p" variant="title-row">{phone.step === "phone" ? sheet.phoneTitle : sheet.codeTitle}</CatchText>
         <CatchText as="p" tone="secondary" variant="body-small">{phone.step === "phone" ? sheet.phoneBody(name) : sheet.codeBody(phone.shown)}</CatchText>
@@ -140,6 +154,6 @@ function OrganizerFollowSheet({error, name, phone}: {error: string; name: string
         onPressed={phone.step === "phone" ? phone.sendCode : phone.confirm}
         status={phone.pending ? "loading" : "idle"}
       />
-    </CatchSurface>
+    </CatchStack></CatchGroundCard>
   );
 }

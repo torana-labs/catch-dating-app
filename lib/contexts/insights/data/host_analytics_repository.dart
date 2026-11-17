@@ -536,8 +536,15 @@ class HostAnalyticsRepository {
   Future<HostAnalyticsReport> getHostAnalytics(HostAnalyticsQuery query) =>
       withBackendErrorContext(
         () async {
+          // The request gives up with the screen: never later than the host
+          // reports deadline the read applies.
           final result = await _functions
-              .httpsCallable('getHostAnalytics')
+              .httpsCallable(
+                'getHostAnalytics',
+                options: HttpsCallableOptions(
+                  timeout: CachePolicies.hostReports.firstLoad,
+                ),
+              )
               .call(query.toCallableRequest().toJson());
           return HostAnalyticsReport.fromCallableData(result.data);
         },
@@ -589,7 +596,7 @@ class HostAnalytics extends _$HostAnalytics {
       policy: CachePolicies.hostReports,
       query: read,
       fetch: ref.watch(hostAnalyticsRepositoryProvider).getHostAnalytics,
-      previous: state.value,
+      refreshing: state.hasValue,
     );
     // A report that arrives after sign-out or an account change is dropped.
     _requireSession(read.session);

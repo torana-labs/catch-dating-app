@@ -27,7 +27,6 @@ import 'package:catch_dating_app/hosts/programmes/planner/programme_trips_screen
 import 'package:catch_dating_app/hosts/programmes/planner/programmes_home_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
-import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod/misc.dart' show Override;
@@ -136,10 +135,10 @@ List<Override> plannerCaptureOverrides() => [
       snapshotExpiresAt: null,
     ),
   ),
-  programCreateControllerProvider((
+  programCreateProvider((
     accountId: 'meher',
     organizerId: plannerOrganizerId,
-  )).overrideWith((ref) async => plannerCreateController()),
+  )).overrideWithBuild((ref, _) async => plannerCreateController().view),
 ];
 
 Widget plannerProgrammeCapture() =>

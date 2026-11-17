@@ -4,7 +4,9 @@ import 'package:catch_dating_app/contexts/events/data/event_callable_responses.d
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -156,6 +158,46 @@ void main() {
       },
     );
 
+    test('watchEventsForOrganizer reads the live and coming page and the most '
+        'recent ended page, never the oldest events', () async {
+      final now = DateTime(2026, 11, 18, 12);
+      final clocked = EventRepository(
+        firestore,
+        functions,
+        clock: AppClock.custom(() => now),
+      );
+      Event at(String id, int dayOffset) => buildEvent(
+        id: id,
+        organizerId: 'club-2',
+        startTime: now.add(Duration(days: dayOffset)),
+        endTime: now.add(Duration(days: dayOffset, hours: 2)),
+      );
+      // More ended events than one page: the oldest must not be read.
+      for (var day = 1; day <= ReadLimitPolicy.directoryPage + 5; day++) {
+        await _seedEvent(firestore, at('past-$day', -day));
+      }
+      final soon = at('soon', 1);
+      final later = at('later', 9);
+      await _seedEvent(firestore, later);
+      await _seedEvent(firestore, soon);
+      final cancelled = at('cancelled', 2);
+      await _seedEvent(firestore, cancelled);
+      await firestore.collection('events').doc(cancelled.id).update({
+        'status': 'cancelled',
+      });
+
+      final events = await clocked
+          .watchEventsForOrganizer(organizerId: 'club-2')
+          .first;
+      final ids = events.map((event) => event.id).toList();
+
+      expect(ids, hasLength(ReadLimitPolicy.directoryPage + 2));
+      expect(ids.sublist(ids.length - 2), ['soon', 'later']);
+      expect(ids.first, 'past-${ReadLimitPolicy.directoryPage}');
+      expect(ids, isNot(contains('past-${ReadLimitPolicy.directoryPage + 1}')));
+      expect(ids, isNot(contains('cancelled')));
+    });
+
     test('watchEventsForOrganizer excludes synthetic QA events', () async {
       final real = buildEvent(id: 'real', organizerId: 'club-2');
       final synthetic = buildEvent(
@@ -195,10 +237,6 @@ void main() {
 
         await expectLater(
           repository.watchEventsForOrganizer(organizerId: 'club-2'),
-          emits([published]),
-        );
-        await expectLater(
-          repository.watchEventsForOrganizers(organizerIds: const ['club-2']),
           emits([published]),
         );
         expect(
@@ -316,32 +354,6 @@ void main() {
         );
         expect(pastSecond.items, [olderPast]);
         expect(pastSecond.hasMore, isFalse);
-      },
-    );
-
-    test(
-      'watchEventsForOrganizers merges hosted clubs in start-time order',
-      () async {
-        final later = buildEvent(
-          id: 'later',
-          organizerId: 'club-2',
-          startTime: DateTime(2026, 7, 10, 20),
-        );
-        final earlier = buildEvent(
-          id: 'earlier',
-          startTime: DateTime(2026, 7, 10, 18),
-        );
-        await _seedEvent(firestore, later);
-        await _seedEvent(firestore, earlier);
-        final other = buildEvent(id: 'other', organizerId: 'club-3');
-        await _seedEvent(firestore, other);
-
-        await expectLater(
-          repository.watchEventsForOrganizers(
-            organizerIds: const ['club-2', 'club-1'],
-          ),
-          emits([earlier, later]),
-        );
       },
     );
 
@@ -904,24 +916,6 @@ void main() {
         final value = await container.read(provider.future);
 
         expect(value, [event]);
-      },
-    );
-
-    test(
-      'watchEventsForOrganizersProvider delegates to the repository',
-      () async {
-        final first = buildEvent(id: 'first');
-        final second = buildEvent(id: 'second', organizerId: 'club-2');
-        await _seedEvent(firestore, first);
-        await _seedEvent(firestore, second);
-
-        final provider = watchEventsForOrganizersProvider(
-          EventsForOrganizersQuery(const ['club-2', 'club-1']),
-        );
-        final subscription = container.listen(provider, (_, _) {});
-        addTearDown(subscription.close);
-
-        expect(await container.read(provider.future), [first, second]);
       },
     );
 

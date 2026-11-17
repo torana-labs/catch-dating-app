@@ -16,13 +16,11 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
-import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/organizer_management/host_organizer_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
-import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_platform/schema_contracts/generated/host_attention_policies.g.dart';
@@ -102,19 +100,6 @@ class WidgetbookHostShellScope extends StatelessWidget {
       for (final organizer in effectiveOwnedOrganizers) organizer.id: organizer,
     };
     final overrides = [
-      programEventsControllerProvider.overrideWith((ref, request) {
-        final controller = ProgramEventsController(
-          isActorCurrent: () => true,
-          fetchPage: ({cursor, programId}) async =>
-              OrganizerProgramInventoryPage(programs: const []),
-          mutate: (_, _) async =>
-              throw StateError('Preview inventory is read only'),
-          onMutation: (_) {},
-        );
-        ref.onDispose(controller.dispose);
-        unawaited(controller.refresh());
-        return controller;
-      }),
       watchActiveEventsForOrganizerProvider.overrideWith(
         (ref, query) =>
             organizerEventStreams[query.organizerId] ??
