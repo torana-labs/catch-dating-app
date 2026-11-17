@@ -1,5 +1,6 @@
 import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
+import {CatchNavMenu} from "./CatchNavMenu";
 import {CatchTopBar} from "./CatchTopBar";
 import {CatchViewport} from "./CatchViewport";
 
@@ -53,10 +54,10 @@ describe("CatchTopBar site", () => {
 
   it("draws page links as plain links and a link with pages as a dropdown in its place", () => {
     const onLink = vi.fn();
-    render(<CatchTopBar links={[{label: "What’s on", href: "/explore/"}, {label: "For hosts", menu: {links: [{href: "/host/", label: "Catch for hosts"}], onLinkPressed: onLink}}, {label: "Pricing", href: "/host/pricing/"}]}
+    render(<CatchTopBar links={[{label: "What’s on", href: "/explore/"}, {label: "For hosts", menu: <CatchNavMenu appearance="link" label="For hosts" links={[{href: "/host/", label: "Catch for hosts"}]} onLinkPressed={onLink} />}, {label: "Pricing", href: "/host/pricing/"}]}
       menuExtras={[{href: "/host/", label: "Catch for hosts"}]} title="Catch" variant="site" />);
     const nav = screen.getByRole("navigation", {name: "Site"});
-    const items = [...nav.querySelectorAll(":scope > a, :scope > button, :scope > div > button")].map((element) => element.textContent?.trim());
+    const items = [...nav.querySelectorAll(":scope > a, :scope > button, :scope > span > div > button")].map((element) => element.textContent?.trim());
     expect(items).toEqual(["What’s on", "For hosts", "Pricing"]);
     const trigger = screen.getByRole("button", {name: "For hosts"});
     expect(trigger.dataset.appearance).toBe("link");
@@ -66,7 +67,7 @@ describe("CatchTopBar site", () => {
   });
 
   it("opens the phone menu from a round button named Menu, listing the links without the dropdown's own label", () => {
-    render(<CatchTopBar links={[{label: "What’s on", href: "/explore/"}, {label: "For hosts", menu: {links: [{href: "/host/", label: "Catch for hosts"}]}}]}
+    render(<CatchTopBar links={[{label: "What’s on", href: "/explore/"}, {label: "For hosts", menu: <CatchNavMenu appearance="link" label="For hosts" links={[{href: "/host/", label: "Catch for hosts"}]} />}]}
       menuExtras={[{href: "/host/", label: "Catch for hosts"}]} title="Catch" variant="site" />);
     const menu = screen.getByRole("button", {name: "Menu"});
     expect(menu.textContent).toBe("");

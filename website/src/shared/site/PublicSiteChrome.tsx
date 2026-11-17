@@ -2,6 +2,7 @@ import {
   CatchBanner,
   CatchBreadcrumbRow,
   CatchButton,
+  CatchNavMenu,
   CatchSiteFooter,
   CatchStack,
   CatchSurface,
@@ -113,7 +114,9 @@ function navPlan(entries: readonly (SiteLinkCopy | SiteNavGroupCopy)[]): {items:
 const trackNav = (link: SiteNavItem) => trackSiteCtaClick(`nav_${slugForTracking(link.label)}`, link.href);
 const withNavTracking = (link: SiteNavItem): CatchTopBarAction => ({...link, onPressed: () => trackNav(link)});
 const navAction = (item: SiteNavItem | SiteNavGroupCopy): CatchTopBarAction =>
-  isGroup(item) ? {label: item.label, menu: {links: item.links, onLinkPressed: trackNav}} : withNavTracking(item);
+  isGroup(item)
+    ? {label: item.label, menu: <CatchNavMenu appearance="link" label={item.label} links={item.links} onLinkPressed={trackNav} />}
+    : withNavTracking(item);
 
 /**
  * The one public header, the system's site top bar, on every public route:

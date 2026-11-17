@@ -226,6 +226,8 @@
 
 .siteLink:hover { color: var(--catch-palette-ink); }
 
+.siteMenuLink { display: inline-flex; }
+
 .siteLink:focus-visible,
 .contact:focus-visible {
   border-radius: var(--catch-radius-xs);

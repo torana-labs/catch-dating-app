@@ -3,7 +3,6 @@ import {CatchButton} from "./CatchButton";
 import {CatchIcon} from "./CatchIcon";
 import {CatchLegacyIcon} from "./CatchLegacyIcon";
 import {CatchMenu} from "./CatchMenu";
-import {CatchNavMenu, type CatchNavMenuLink} from "./CatchNavMenu";
 import {CatchWordmark} from "./CatchWordmark";
 import {useCatchViewport} from "./catchViewportContext";
 import styles from "./CatchTopBar.module.css";
@@ -14,11 +13,11 @@ export interface CatchTopBarAction {
   href?: string;
   onPressed?: () => void;
   /**
-   * site: makes this page link a dropdown of these pages in its place among
-   * the links (the canvas's "For hosts ▾"). The phone menu leaves it out, so
-   * pass its pages in menuExtras.
+   * site: a dropdown drawn in this link's place among the links, such as a
+   * CatchNavMenu with the link appearance (the canvas's "For hosts ▾"). The
+   * phone menu leaves it out, so pass its pages in menuExtras.
    */
-  menu?: {links: readonly CatchNavMenuLink[]; onLinkPressed?: (link: CatchNavMenuLink) => void};
+  menu?: ReactNode;
 }
 
 /** site: the header's contact link, such as WhatsApp: a mark with a short label the phone drops. */
@@ -124,7 +123,7 @@ export function CatchTopBar({variant = "tool", title, kicker, back, action, acti
             {links && links.length > 0 ? (
               <nav aria-label={linksLabel} className={styles.links}>
                 {links.map((link) => link.menu != null
-                  ? <CatchNavMenu appearance="link" key={link.label} label={link.label} links={link.menu.links} onLinkPressed={link.menu.onLinkPressed} />
+                  ? <span className={styles.siteMenuLink} key={link.label}>{link.menu}</span>
                   : <SiteLink action={link} key={link.label} />)}
               </nav>
             ) : null}
