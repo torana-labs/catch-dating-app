@@ -3226,10 +3226,14 @@ it never appears twice. Raw answers, list answer highlights, participant UIDs,
 review notes, grants and asset URLs are excluded. Ordinary all-form inbox pages
 read these summaries through the SDK, as do an application review-status filter
 (applications included, as the callable requires) and a submission date range
-inclusive at both ends. Form-scoped/filter-choice queries, answer filters,
-response status, identity and source filters, contact joins and text search keep
-the existing callable behavior until their own equivalent indexed read contracts
-are implemented.
+inclusive at both ends. A form's response page (applications included) reads
+its entries here too, by `formId`, optionally for one native version (the
+entry's `row.response.versionId`, as the callable filters) and one review
+status. Its version scope comes from the form's `hostFormSummaries` row and its
+answer filter options from `hostFormVersionFilters` (below); an imported
+application form has neither. Answer filters, response status, identity and
+source filters, contact joins and text search keep the existing callable
+behavior until their own equivalent indexed read contracts are implemented.
 `hostFormVersionFilters/{versionId}` gives form-scoped pages a published native
 form version's answer filter options without the callable: `organizerId`,
 `formId`, `versionId`, `formVersion` (N in `formId_vN`), `version` and
