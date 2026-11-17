@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/chats/chats.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
@@ -23,6 +26,7 @@ import 'package:catch_dating_app/hosts/people/people_state.dart';
 import 'package:catch_dating_app/hosts/people/person_controller.dart';
 import 'package:catch_dating_app/hosts/people/person_state.dart';
 import 'package:catch_dating_app/hosts/people/saved_group_controller.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -34,7 +38,8 @@ const _org = 'organizer-1';
 
 class _Contacts extends Fake implements HostContactsRepository {
   final queries = <HostAudienceQuery>[];
-  final limits = <int>[];
+  final pageSizes = <int>[];
+  final pager = _Pager();
 
   @override
   Stream<HostContactDirectory> watchDirectory(String organizerId) =>
@@ -67,22 +72,42 @@ class _Contacts extends Fake implements HostContactsRepository {
       );
 
   @override
-  Stream<HostContactWindow> watchContacts(
+  LivePager<HostAudienceContact> watchContacts(
     String organizerId, {
     required HostAudienceQuery query,
-    required int limit,
+    int pageSize = hostPeoplePageSize,
   }) {
     queries.add(query);
-    limits.add(limit);
-    final first = limit <= hostPeoplePageSize;
-    return Stream.value(
-      HostContactWindow(
-        contacts: first
-            ? peopleContacts.take(2).toList()
-            : peopleContacts.take(3).toList(),
-        hasMore: first,
-      ),
+    pageSizes.add(pageSize);
+    return pager;
+  }
+}
+
+/// Two pages: two people, then a third with nothing after it.
+class _Pager implements LivePager<HostAudienceContact> {
+  final _controller = StreamController<LivePages<HostAudienceContact>>();
+  var loadMoreCalls = 0;
+
+  @override
+  Stream<LivePages<HostAudienceContact>> get pages {
+    _controller.add(
+      LivePages(items: peopleContacts.take(2).toList(), hasMore: true),
     );
+    return _controller.stream;
+  }
+
+  @override
+  void loadMore() {
+    loadMoreCalls++;
+    _controller
+      ..add(
+        LivePages(
+          items: peopleContacts.take(2).toList(),
+          hasMore: true,
+          loadingMore: true,
+        ),
+      )
+      ..add(LivePages(items: peopleContacts.take(3).toList(), hasMore: false));
   }
 }
 
@@ -182,12 +207,13 @@ void main() {
     await container
         .read(hostPeopleDirectoryProvider(request).notifier)
         .loadMore();
-    // More rows means listening to a larger window.
+    // More rows opens one more page on the same pager.
     await _settle(container);
     state = container.read(hostPeopleControllerProvider(request));
     expect(state.people.map((person) => person.contactId), ['rk', 'dp', 'as']);
     expect(state.canLoadMore, isFalse);
-    expect(contacts.limits.last, hostPeoplePageSize * 2);
+    expect(contacts.pager.loadMoreCalls, 1);
+    expect(contacts.pageSizes, [hostPeoplePageSize]);
   });
 
   test('a filter asks the directory for its segment', () async {

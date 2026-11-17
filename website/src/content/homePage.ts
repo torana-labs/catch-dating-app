@@ -38,6 +38,54 @@ export const homePageCopy = {
     busyAction: "See what’s on in {city}",
     thinAction: "See what’s coming up",
     hostAction: "Host an event",
+    /** The plan chip over the hero's phone: where the soonest plan meets, and its places when known. */
+    chipMeta: "{place} · {availability}",
+    /** Until the app is on a store: the white notify card under the hero's buttons. */
+    notice: {title: `The ${appName} app is on its way`, body: "Get new {city} plans on WhatsApp, and the app the day it launches."},
+  },
+  /** "Whoever you are": six ways in, each a link to the plans or the band it names. */
+  entries: {
+    eyebrow: "Start from where you are",
+    title: "Whoever you are, there’s an easy first plan.",
+    items: [
+      {id: "new", title: "New to {city}", body: "Plans that welcome first-timers, and a group on day one."},
+      {id: "solo", title: "Coming on your own", body: "Hosts plan the first ten minutes, so nobody stands alone."},
+      {id: "level", title: "Find your level", body: "Runs by pace, courts by level, quizzes by team."},
+      {id: "friends", title: "Bring your friends", body: "Book together and stay on the same team."},
+      {id: "daytime", title: "Weekdays and daytime", body: "For remote workers, freelancers and early birds."},
+      /** The two checks the safety band can stand behind (the board's "verified hosts" and "women-led plans" have nothing behind them yet). */
+      {id: "safety", title: "Safety first", body: "Reviews from people who went, and a quieter way to ask."},
+    ],
+  },
+  /** "Start with what you feel like doing": the formats, each a link to the city's plans in it. */
+  formats: {
+    eyebrow: "Something for every kind of evening",
+    title: "Start with what you feel like doing.",
+    lead: "Every plan has a host who’s there on the night.",
+    cards: [
+      {format: "run", title: "Runs and walks", body: "Pace groups and a first hello.", more: "Run clubs in {city}"},
+      {format: "courts", title: "Racket sports", body: "Pickleball, padel, tennis, badminton.", more: "Courts in {city}"},
+      {format: "dinner", title: "Dinners", body: "Long tables and new people.", more: "Supper clubs in {city}"},
+      {format: "games", title: "Games and quizzes", body: "Teams, rounds and a final.", more: "Quiz nights in {city}"},
+      {format: "nightsOut", title: "Nights out", body: "Crawls and socials.", more: "Nights out in {city}"},
+    ],
+    /** More kinds of plan: each searches the city's plans for its word. */
+    chips: [
+      {label: "Yoga, spin and fitness", search: "yoga"},
+      {label: "Workshops and classes", search: "workshop"},
+      {label: "Book clubs and open mics", search: "book club"},
+      {label: "Cycling and treks", search: "cycling"},
+    ],
+  },
+  /** The phone action bar. */
+  dock: {label: "Quick actions", plans: "See plans"},
+  /** "Know a host": a guest introduces a host on WhatsApp. */
+  refer: {
+    eyebrow: `Bring a host to ${brand.name}`,
+    title: "Know a host who’d be great here?",
+    lead: "Introduce them on WhatsApp, and we’ll take it from there.",
+    action: "Introduce them",
+    message: `Hi ${brand.name}, I’d like to introduce a host.`,
   },
   /** A city that has not opened leads with hosts. */
   launchHero: {
@@ -166,8 +214,17 @@ export const homePageCopy = {
     /** Until the app is on a store (guestAppLive), the band is a WhatsApp notice for the launch. */
     soonEyebrow: `The ${appName} app · coming soon`,
     soonTitle: "Be first in the app, and first to new plans.",
-    /** Where store badges would stand before launch: a quiet link down to the notice. */
-    heroLink: "The app is coming · Get notified",
+    /** The bento tiles around the app band's notice: what the app does, each line checkable in it. */
+    tiles: {
+      book: {tag: "Book", body: "Book in a couple of taps."},
+      reminders: {tag: "Reminders", body: "Where to meet, and a nudge the day before."},
+      chat: {tag: "Group chat", body: "Your group chat stays open after the night."},
+      follow: {tag: "Follow", body: "The hosts you like, and their next plan first."},
+      solo: {tag: "On your own?", body: "Hosts plan a group, a game or a first hello."},
+      free: {tag: "Free to use", body: "Browsing is free. Hosts set the price of each plan."},
+    },
+    /** The Book tile's small card: the soonest real plan. */
+    bookCard: "{when} · {price}",
     notify: {
       phone: "WhatsApp number",
       phoneHint: "98765 43210",

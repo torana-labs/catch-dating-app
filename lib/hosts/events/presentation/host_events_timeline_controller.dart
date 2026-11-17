@@ -9,7 +9,6 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -88,9 +87,9 @@ class HostEventsTimelineData {
   final List<Event> activeEvents;
   final List<Event> pastEvents;
   final List<Event> cancelledEvents;
-  final DocumentSnapshot<Event>? activeCursor;
-  final DocumentSnapshot<Event>? pastCursor;
-  final DocumentSnapshot<Event>? cancelledCursor;
+  final PageCursor<Event>? activeCursor;
+  final PageCursor<Event>? pastCursor;
+  final PageCursor<Event>? cancelledCursor;
   final bool hasMoreActive;
   final bool hasMorePast;
   final bool hasMoreCancelled;
@@ -119,11 +118,11 @@ class HostEventsTimelineData {
     List<Event>? activeEvents,
     List<Event>? pastEvents,
     List<Event>? cancelledEvents,
-    DocumentSnapshot<Event>? activeCursor,
+    PageCursor<Event>? activeCursor,
     bool clearActiveCursor = false,
-    DocumentSnapshot<Event>? pastCursor,
+    PageCursor<Event>? pastCursor,
     bool clearPastCursor = false,
-    DocumentSnapshot<Event>? cancelledCursor,
+    PageCursor<Event>? cancelledCursor,
     bool clearCancelledCursor = false,
     bool? hasMoreActive,
     bool? hasMorePast,
@@ -222,8 +221,8 @@ class HostEventsTimelineController extends _$HostEventsTimelineController {
   Future<void> _finishInitialHistory(
     int generation,
     Future<HostEventsTimelineData> initial,
-    Future<AsyncValue<CursorPage<Event, DocumentSnapshot<Event>>>> past,
-    Future<AsyncValue<CursorPage<Event, DocumentSnapshot<Event>>>> cancelled,
+    Future<AsyncValue<CursorPage<Event, PageCursor<Event>>>> past,
+    Future<AsyncValue<CursorPage<Event, PageCursor<Event>>>> cancelled,
   ) async {
     try {
       // build owns the first AsyncData. History must not be overwritten by its
@@ -412,7 +411,7 @@ Future<AsyncValue<T>> _capture<T>(Future<T> Function() read) async {
 }
 
 HostEventsTimelineData _initialState(
-  CursorPage<Event, DocumentSnapshot<Event>> activePage,
+  CursorPage<Event, PageCursor<Event>> activePage,
   HostEventsTimelineData? previous,
 ) => HostEventsTimelineData(
   activeEvents: activePage.items,
@@ -429,7 +428,7 @@ HostEventsTimelineData _initialState(
 
 HostEventsTimelineData _appendActive(
   HostEventsTimelineData current,
-  CursorPage<Event, DocumentSnapshot<Event>>? page,
+  CursorPage<Event, PageCursor<Event>>? page,
 ) => page == null
     ? current
     : current.copyWith(
@@ -442,8 +441,8 @@ HostEventsTimelineData _appendActive(
 
 HostEventsTimelineData _appendPast(
   HostEventsTimelineData current,
-  CursorPage<Event, DocumentSnapshot<Event>>? page,
-  CursorPage<Event, DocumentSnapshot<Event>>? cancelledPage,
+  CursorPage<Event, PageCursor<Event>>? page,
+  CursorPage<Event, PageCursor<Event>>? cancelledPage,
 ) => current.copyWith(
   pastEvents: page == null
       ? current.pastEvents
