@@ -4,17 +4,14 @@ import {useId, type HTMLAttributes, type ReactNode} from "react";
 import {catchBandActions, catchBandColor, type CatchBandAction} from "./catchBandParts";
 import {CatchBandHeader, useCatchBandKicker, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchButton} from "./CatchButton";
+import {CatchFeeExamples, type CatchFeeExample} from "./CatchFeeExamples";
 import {CatchSurface} from "./CatchSurface";
 import {CatchText} from "./CatchText";
 import type {Ground} from "./palette";
 import styles from "./CatchFeeSection.module.css";
 
 /** A worked example under the columns: what is sold, the fee on it and how that is reached. Resolved copy. */
-export interface CatchFeeSectionExample {
-  title: string;
-  value: string;
-  body?: string;
-}
+export type CatchFeeSectionExample = CatchFeeExample;
 
 /** The band's foot line: a sentence and one small action across from it. */
 export interface CatchFeeSectionFoot {
@@ -100,17 +97,7 @@ export function CatchFeeSection({
         </div>
         {calculator != null ? <div className={styles.calculator}>{calculator}</div> : null}
       </div>
-      {examples && examples.length > 0 ? (
-        <ul className={styles.examples}>
-          {examples.map((example) => (
-            <li className={styles.example} key={example.title}>
-              <CatchText as="span" className={styles.exampleTitle} variant="label-action">{example.title}</CatchText>
-              <CatchText as="span" className={styles.exampleValue} numeric variant="display-section">{example.value}</CatchText>
-              {example.body ? <CatchText as="span" className={styles.exampleBody} variant="body-meta">{example.body}</CatchText> : null}
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      {examples && examples.length > 0 ? <div className={styles.examples}><CatchFeeExamples examples={examples} on="ink" /></div> : null}
       {foot ? (
         <div className={styles.foot}>
           <CatchText as="p" variant="body">{foot.text}</CatchText>

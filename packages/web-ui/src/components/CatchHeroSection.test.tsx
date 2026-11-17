@@ -104,6 +104,17 @@ describe("CatchHeroSection", () => {
     expect(screen.getByText("One message when it launches.")).toBeTruthy();
   });
 
+  it("sets a leading picture beside the notice's words", () => {
+    const {container} = render(
+      <CatchHeroSection notice={{title: "On a laptop?", body: "Scan it.", leading: <span>QR</span>, children: <a href="#link">Get the link</a>}} title="Hosts" />,
+    );
+    const card = container.querySelector("[data-leading]")!;
+    expect(card).toBeTruthy();
+    const qr = screen.getByText("QR");
+    expect(qr.compareDocumentPosition(screen.getByText("On a laptop?")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(card.contains(screen.getByRole("link", {name: "Get the link"}))).toBe(true);
+  });
+
   it("draws the plan chip with its date square beside the title and one line, over the media", () => {
     const {container} = render(
       <CatchHeroSection aside={{title: "Thursday Pub Quiz", meta: "Khar Social · 6 left", date: {weekday: "Thu", day: "20", month: "Nov", ground: "yellow"}}}

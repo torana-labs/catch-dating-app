@@ -4,6 +4,7 @@
  * (40px on phones), the slider in coral, its ends at 12px in the tertiary
  * night ink, the result tiles two across 12px apart on a translucent fill at
  * 18px corners with 34px figures, the status in mint and 12px fine print.
+ * The thumb is a coral dot (the canvas's accent-colour thumb).
  * It is drawn for the ink ground the fee band sits on.
  */
 .calculator {
@@ -28,6 +29,23 @@
   line-height: 1;
   letter-spacing: var(--catch-website-type-xs-tracking);
 }
+
+/* The slider's thumb is the canvas's coral (.rng, accent-color coral): a filled 20px dot with an ink-ground rim; the system slider keeps its focus ring. */
+.range input::-webkit-slider-thumb {
+  width: var(--catch-space-s5);
+  height: var(--catch-space-s5);
+  border: var(--catch-stroke-focus) solid var(--catch-ground-ink-fill);
+  background: var(--catch-palette-coral);
+}
+
+.range input::-moz-range-thumb {
+  width: var(--catch-space-s5);
+  height: var(--catch-space-s5);
+  border: var(--catch-stroke-focus) solid var(--catch-ground-ink-fill);
+  background: var(--catch-palette-coral);
+}
+
+
 
 .scale {
   display: flex;

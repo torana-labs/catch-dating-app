@@ -1,6 +1,7 @@
 "use client";
 
 import type {HTMLAttributes} from "react";
+import {CatchFeeExamples, type CatchFeeExample} from "./CatchFeeExamples";
 import {CatchText} from "./CatchText";
 import styles from "./CatchFeeCapChart.module.css";
 
@@ -12,11 +13,7 @@ export interface CatchFeeCapChartPart {
 }
 
 /** A worked example under the bar. Resolved copy. */
-export interface CatchFeeCapChartExample {
-  title: string;
-  value: string;
-  body?: string;
-}
+export type CatchFeeCapChartExample = CatchFeeExample;
 
 export interface CatchFeeCapChartProps extends Omit<HTMLAttributes<HTMLDivElement>, "children" | "className" | "color" | "style"> {
   /** The stretch the fee is charged on, then the stretch past the cap. */
@@ -42,17 +39,7 @@ export function CatchFeeCapChart({parts, examples, ...rest}: CatchFeeCapChartPro
           </span>
         ))}
       </div>
-      {examples && examples.length > 0 ? (
-        <ul className={styles.examples}>
-          {examples.map((example) => (
-            <li className={styles.example} key={example.title}>
-              <CatchText as="span" className={styles.exampleTitle} variant="label-action">{example.title}</CatchText>
-              <CatchText as="span" className={styles.exampleValue} numeric variant="display-section">{example.value}</CatchText>
-              {example.body ? <CatchText as="span" tone="secondary" variant="body-small">{example.body}</CatchText> : null}
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      {examples && examples.length > 0 ? <div className={styles.examples}><CatchFeeExamples columns={2} examples={examples} /></div> : null}
     </div>
   );
 }

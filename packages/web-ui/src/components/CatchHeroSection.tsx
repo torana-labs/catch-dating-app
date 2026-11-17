@@ -47,6 +47,8 @@ export interface CatchHeroSectionNotice {
   title: string;
   body?: string;
   children: ReactNode;
+  /** A picture before the words, such as the host landing's QR code (PlaybookHosts .qr): it sits beside them. */
+  leading?: ReactNode;
 }
 
 export interface CatchHeroSectionProps extends Omit<HTMLAttributes<HTMLElement>, "children" | "className" | "color" | "style" | "title"> {
@@ -141,11 +143,14 @@ export function CatchHeroSection({
       ) : null}
       {catchBandActions(actions)}
       {notice ? (
-        <div className={styles.notice} data-catch-theme="light">
+        <div className={styles.notice} data-catch-theme="light" data-leading={notice.leading != null ? "" : undefined}>
           <CatchGroundProvider ground="ground" theme="day">
-            <CatchText as="h2" variant="label-button">{notice.title}</CatchText>
-            {notice.body ? <CatchText as="p" className={styles.noticeBody} tone="secondary" variant="body-meta">{notice.body}</CatchText> : null}
-            {notice.children}
+            {notice.leading != null ? <div className={styles.noticeLeading}>{notice.leading}</div> : null}
+            <div className={styles.noticeCopy}>
+              <CatchText as="h2" variant="label-button">{notice.title}</CatchText>
+              {notice.body ? <CatchText as="p" className={styles.noticeBody} tone="secondary" variant="body-meta">{notice.body}</CatchText> : null}
+              {notice.children}
+            </div>
           </CatchGroundProvider>
         </div>
       ) : null}
