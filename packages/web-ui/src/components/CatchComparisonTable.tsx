@@ -1,9 +1,9 @@
 "use client";
 
 import {useId, type HTMLAttributes} from "react";
-import {catchBandColor} from "./catchBandParts";
+import {catchBandColor, catchBandKickerAccent} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
-import {CatchBandHeader} from "./CatchBandHeader";
+import {CatchBandHeader, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchSurface} from "./CatchSurface";
 import {CatchText} from "./CatchText";
 import type {Ground} from "./palette";
@@ -28,6 +28,8 @@ export interface CatchComparisonTableProps extends Omit<HTMLAttributes<HTMLEleme
   level?: 1 | 2;
   kicker?: string;
   kickerTone?: CatchTextTone;
+  /** The kicker's accent on white, paper and ink; defaults to the kit's (indigo, coral on ink). A colour ground takes its secondary ink. */
+  kickerAccent?: CatchKickerAccent;
   lead?: string;
   /** The compared options' headings, one per column after the row labels. */
   columns: readonly string[];
@@ -61,6 +63,7 @@ export function CatchComparisonTable({
   level = 2,
   kicker,
   kickerTone,
+  kickerAccent,
   lead,
   columns,
   rowHeader = "",
@@ -75,7 +78,7 @@ export function CatchComparisonTable({
   const footer = [source, checked].filter(Boolean).join(" · ");
   return (
     <CatchSurface {...rest} aria-labelledby={titleId} as="section" block="band" color={catchBandColor(ground)}>
-      <CatchBandHeader kicker={kicker} kickerTone={kickerTone} lead={lead} level={level} title={title} titleId={titleId} />
+      <CatchBandHeader kicker={kicker} kickerAccent={catchBandKickerAccent(kickerAccent, ground, "indigo")} kickerTone={kickerTone} lead={lead} level={level} size="section" title={title} titleId={titleId} />
       <div className={styles.card} data-catch-theme="light">
         <table aria-labelledby={titleId} className={styles.table} role="table">
           <thead className={styles.head} role="rowgroup">

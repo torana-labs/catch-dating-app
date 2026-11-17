@@ -1,9 +1,9 @@
 "use client";
 
 import {useId, type HTMLAttributes, type ReactNode} from "react";
-import {catchBandActions, catchBandColor, type CatchBandAction} from "./catchBandParts";
+import {catchBandActions, catchBandColor, catchBandKickerAccent, type CatchBandAction} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
-import {CatchBandHeader} from "./CatchBandHeader";
+import {CatchBandHeader, type CatchBandHeaderSize, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchStack} from "./CatchStack";
 import {CatchStoreButton, type CatchStoreButtonProps} from "./CatchStoreButton";
 import {CatchSurface} from "./CatchSurface";
@@ -17,6 +17,10 @@ export interface CatchCtaSectionProps extends Omit<HTMLAttributes<HTMLElement>, 
   level?: 1 | 2;
   kicker?: string;
   kickerTone?: CatchTextTone;
+  /** The kicker's accent on white, paper and ink; defaults to the kit's (indigo, coral on ink). A colour ground takes its secondary ink. */
+  kickerAccent?: CatchKickerAccent;
+  /** The canvas headline size; defaults to section (56px, 36px on phones). The homepage's app band takes feature. */
+  titleSize?: CatchBandHeaderSize;
   lead?: string;
   /** D20 buttons: the first primary and the rest secondary unless named. */
   actions?: readonly CatchBandAction[];
@@ -47,6 +51,8 @@ export function CatchCtaSection({
   level = 2,
   kicker,
   kickerTone,
+  kickerAccent,
+  titleSize = "section",
   lead,
   actions,
   stores,
@@ -60,7 +66,7 @@ export function CatchCtaSection({
   const isFlush = flush && media != null;
   const copy = (
     <CatchStack className={styles.copy} gap={24}>
-      <CatchBandHeader kicker={kicker} kickerTone={kickerTone} lead={lead} level={level} title={title} titleId={titleId} />
+      <CatchBandHeader kicker={kicker} kickerAccent={catchBandKickerAccent(kickerAccent, ground, "indigo")} kickerTone={kickerTone} lead={lead} level={level} size={titleSize} title={title} titleId={titleId} />
       {catchBandActions(actions)}
       {capture != null ? <div className={styles.capture}>{capture}</div> : null}
       {stores && stores.length > 0 ? (

@@ -5928,7 +5928,7 @@
           "compact"
         ]
       },
-      "notes": "Website T4 under D18. Headline at the page-title role (38, 48 and 64px by size class), inside the 72px cap of D19. Renders a plain div, never a banner landmark. First consumer: the not-found page. The library's stories (packages/web-ui/src/components/CatchBandHeader.stories.tsx) do not declare catchComponent yet, so coverage stays planned. Search aliases: SectionHeader, BandHeading, SectionIntro, Kicker, Eyebrow."
+      "notes": "Website T4 under D18. Headline at one of the canvas sizes when a section asks (D26: hero 80/44px, section 56/36px, feature 42/32px, small 30/26px at -0.03em), else the page-title role (38, 48 and 64px by size class). Kickers take the canvas accent (deep on white and paper, bright on ink, the ground's secondary ink on a colour) at .04em. Renders a plain div, never a banner landmark. First consumer: the not-found page. The library's stories (packages/web-ui/src/components/CatchBandHeader.stories.tsx) do not declare catchComponent yet, so coverage stays planned. Search aliases: SectionHeader, BandHeading, SectionIntro, Kicker, Eyebrow."
     },
     {
       "id": "shared_breadcrumb_row",

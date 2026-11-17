@@ -117,6 +117,16 @@ draws, such as its warm text and hairline greys, live under `website.*` and
 reach CSS only. `design:website-playbook-tokens` fails CI when the kit and the
 token file disagree.
 
+The canvas also owns the website's section shape. Every coloured or ink
+section is an inset panel (`radius.panel`, `website.panel.*`; `radius.mat` and
+8px insets on phones) and plain sections run flush, both on the 1200px
+`website.content.max`. Section headlines take the canvas sizes (hero 80/44px,
+section 56/36px, `website.type.*`) at -0.03em, and kickers take the section's
+accent (`website.color.kicker.*`: the deep tone on white and paper, the bright
+fill on ink, the ground's secondary ink on a colour) at .04em. A coloured
+`CatchSurface` band draws the panel, and `CatchBandHeader`'s `size` and
+`kickerAccent` carry the rest.
+
 ---
 
 ## 3. Activity color system — the only chroma (keep + refine)

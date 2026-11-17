@@ -5528,6 +5528,89 @@
           ],
           "alpha": 0.7
         }
+      },
+      "stepOnLight": {
+        "$type": "color",
+        "$description": "A step card's fill on white, paper or a colour panel.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.55
+        }
+      },
+      "stepOnInk": {
+        "$type": "color",
+        "$description": "A step card's fill on the ink panel.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.07
+        }
+      },
+      "kicker": {
+        "$description": "Section kicker accents on the website. The canvas sets a kicker in a section's accent: the deep tone on white and paper, the bright fill on the ink panel. On a colour panel a kicker takes the ground's secondary ink instead.",
+        "day": {
+          "pink": {
+            "$type": "color",
+            "$description": "A pink kicker on white or paper.",
+            "$value": "{palette.pinkDeep}"
+          },
+          "mint": {
+            "$type": "color",
+            "$description": "A mint kicker on white or paper.",
+            "$value": "{palette.mintDeep}"
+          },
+          "indigo": {
+            "$type": "color",
+            "$description": "A indigo kicker on white or paper.",
+            "$value": "{palette.indigoDeep}"
+          },
+          "coral": {
+            "$type": "color",
+            "$description": "A coral kicker on white or paper.",
+            "$value": "{palette.coralDeep}"
+          },
+          "yellow": {
+            "$type": "color",
+            "$description": "A yellow kicker on white or paper.",
+            "$value": "{palette.yellowDeep}"
+          }
+        },
+        "night": {
+          "pink": {
+            "$type": "color",
+            "$description": "A pink kicker on the ink panel.",
+            "$value": "{palette.pink}"
+          },
+          "mint": {
+            "$type": "color",
+            "$description": "A mint kicker on the ink panel.",
+            "$value": "{palette.mint}"
+          },
+          "indigo": {
+            "$type": "color",
+            "$description": "A indigo kicker on the ink panel.",
+            "$value": "{palette.indigo}"
+          },
+          "coral": {
+            "$type": "color",
+            "$description": "A coral kicker on the ink panel.",
+            "$value": "{palette.coral}"
+          },
+          "yellow": {
+            "$type": "color",
+            "$description": "A yellow kicker on the ink panel.",
+            "$value": "{palette.yellow}"
+          }
+        }
       }
     },
     "type": {
@@ -5602,6 +5685,49 @@
           "$type": "number",
           "$description": "Website body copy's leading. App body copy keeps typography.role.body.lineHeight.",
           "$value": 1.5
+        }
+      },
+      "kicker": {
+        "lineHeight": {
+          "$type": "dimension",
+          "$description": "A section kicker's leading on the website. App kickers keep typography.role.labelKicker.lineHeight.",
+          "$value": {
+            "value": 18,
+            "unit": "px"
+          }
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$description": "A section kicker's tracking on the website. App kickers keep typography.role.labelKicker.tracking.",
+          "$value": {
+            "value": 0.04,
+            "unit": "em"
+          }
+        }
+      },
+      "figure": {
+        "weight": {
+          "$type": "number",
+          "$description": "The weight of the display figures the website sets in Archivo: step numbers, stats and prices.",
+          "$value": 800
+        }
+      },
+      "feature": {
+        "size": {
+          "$type": "dimension",
+          "$description": "A feature headline on wide pages, such as the homepage's app band (the homepage board's .bento .mid h2). The kit stylesheets do not draw it, so the importer does not own it.",
+          "$value": {
+            "value": 42,
+            "unit": "px"
+          }
+        },
+        "compactSize": {
+          "$type": "dimension",
+          "$description": "A feature headline on phones (the homepage board's .bento .mid h2 on phones).",
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          }
         }
       }
     },
@@ -5783,6 +5909,26 @@
         "$description": "A website date or icon square's corners. App squares keep radius.sm.",
         "$value": {
           "value": 12,
+          "unit": "px"
+        }
+      }
+    },
+    "hero": {
+      "textPadBottom": {
+        "$type": "dimension",
+        "$description": "Space under a hero's copy, whose media runs to the panel's bottom edge.",
+        "$value": {
+          "value": 72,
+          "unit": "px"
+        }
+      }
+    },
+    "steps": {
+      "markerWidth": {
+        "$type": "dimension",
+        "$description": "The number column of a website step card.",
+        "$value": {
+          "value": 40,
           "unit": "px"
         }
       }

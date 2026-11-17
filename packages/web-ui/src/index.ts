@@ -40,7 +40,7 @@ export type {
   CatchBandWidth,
 } from "./components/CatchBand";
 export {CatchBandHeader} from "./components/CatchBandHeader";
-export type {CatchBandHeaderAlign, CatchBandHeaderDirection, CatchBandHeaderProps} from "./components/CatchBandHeader";
+export type {CatchBandHeaderAlign, CatchBandHeaderDirection, CatchBandHeaderProps, CatchBandHeaderSize, CatchKickerAccent} from "./components/CatchBandHeader";
 // The playbook section components (website-playbook kit), with the vocabulary they share.
 export type {CatchBandAction, CatchBandFootnote, CatchBandLink} from "./components/catchBandParts";
 export {CatchArticleBody} from "./components/CatchArticleBody";

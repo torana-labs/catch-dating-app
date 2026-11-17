@@ -1,9 +1,9 @@
 "use client";
 
 import {useId, type HTMLAttributes, type ReactNode} from "react";
-import {catchBandActions, catchBandColor, catchBandFootnoteMark, type CatchBandAction, type CatchBandFootnote, type CatchBandLink} from "./catchBandParts";
+import {catchBandActions, catchBandColor, catchBandFootnoteMark, catchBandKickerAccent, type CatchBandAction, type CatchBandFootnote, type CatchBandLink} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
-import {CatchBandHeader} from "./CatchBandHeader";
+import {CatchBandHeader, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchButton} from "./CatchButton";
 import {CatchChip} from "./CatchChip";
 import {CatchGroundProvider} from "./CatchGroundProvider";
@@ -35,8 +35,10 @@ export interface CatchHeroSectionProps extends Omit<HTMLAttributes<HTMLElement>,
   /** Defaults to 1: a hero opens its page. */
   level?: 1 | 2;
   kicker?: string;
-  /** The kicker's colour; defaults to the secondary ink. */
+  /** The kicker's colour as a tone; it wins over kickerAccent. */
   kickerTone?: CatchTextTone;
+  /** The kicker's accent on white, paper and ink; defaults to pink (coral on ink). A colour ground, the usual hero, takes its secondary ink. */
+  kickerAccent?: CatchKickerAccent;
   lead?: string;
   /** Short labels under the lead, drawn as tag chips. */
   labels?: readonly string[];
@@ -68,14 +70,16 @@ export interface CatchHeroSectionProps extends Omit<HTMLAttributes<HTMLElement>,
  * footnote marks, D20 actions, a note and a side link, beside a media slot
  * with an optional floating card, on a Website v2 ground. The photo layout
  * sets the same copy in the dark theme over a full-bleed photo under the
- * detail-hero scrim. The headline takes CatchBandHeader's page-title role,
- * inside the 72px cap of D19. The band is a section named by its headline.
+ * detail-hero scrim. The headline takes the canvas's hero size (80px, 44px on
+ * phones). On a ground the band is an inset panel straight under the header.
+ * The band is a section named by its headline.
  */
 export function CatchHeroSection({
   title,
   level = 1,
   kicker,
   kickerTone,
+  kickerAccent,
   lead,
   labels,
   proof,
@@ -95,7 +99,7 @@ export function CatchHeroSection({
   const chips = labels?.filter((label) => label.trim() !== "") ?? [];
   const copy = (
     <CatchStack className={styles.copy} gap={24}>
-      <CatchBandHeader kicker={kicker} kickerTone={kickerTone} lead={lead} level={level} title={title} titleId={titleId} />
+      <CatchBandHeader kicker={kicker} kickerAccent={catchBandKickerAccent(kickerAccent, layout === "photo" ? "ink" : ground, "pink")} kickerTone={kickerTone} lead={lead} level={level} size="hero" title={title} titleId={titleId} />
       {chips.length > 0 ? (
         <CatchStack as="ul" className={styles.list} direction="row" gap={8} wrap>
           {chips.map((label, index) => <li key={`${index}:${label}`}><CatchChip label={label} recipe="tag" /></li>)}
