@@ -24,7 +24,7 @@ Widget formProfileReviewScreenPreview(BuildContext context) =>
           uidProvider.overrideWith((_) => Stream.value('preview-person')),
           formProfileReviewProvider(
             'response',
-          ).overrideWith((_) async => _review()),
+          ).overrideWith((_) => Stream.value(_review())),
           formProfilePhotoPreviewProvider(
             'response',
             'photo',

@@ -13,22 +13,33 @@ class FormProfileSummary {
     required this.cardFieldCount,
   });
 
-  factory FormProfileSummary.fromMap(Map<Object?, Object?> json) =>
-      FormProfileSummary(
-        responseId: json['responseId']! as String,
-        organizerId: json['organizerId']! as String,
-        formTitle: json['formTitle']! as String,
-        organizerName: json['organizerName'] as String?,
-        submittedAt: DateTime.fromMillisecondsSinceEpoch(
-          json['submittedAtMillis']! as int,
-        ),
-        claimedAt: switch (json['claimedAtMillis']) {
-          final int millis => DateTime.fromMillisecondsSinceEpoch(millis),
-          null => null,
-          _ => throw const FormatException('Invalid profile claim date'),
-        },
-        cardFieldCount: json['cardFieldCount']! as int,
-      );
+  /// One `participantFormProfileViews` row. Organizer names are not stored
+  /// on the row; the caller names it from the public organizer lookup.
+  factory FormProfileSummary.fromView(
+    String responseId,
+    Map<String, Object?> view, {
+    String? organizerName,
+  }) => FormProfileSummary(
+    responseId: responseId,
+    organizerId: view['organizerId']! as String,
+    formTitle: view['formTitle']! as String,
+    organizerName: organizerName,
+    submittedAt: DateTime.fromMillisecondsSinceEpoch(
+      view['submittedAtMillis']! as int,
+    ),
+    claimedAt: _optionalMillis(view['claimedAtMillis']),
+    cardFieldCount: (view['selectedCardQuestionIds']! as List).length,
+  );
+
+  FormProfileSummary withOrganizerName(String? name) => FormProfileSummary(
+    responseId: responseId,
+    organizerId: organizerId,
+    formTitle: formTitle,
+    organizerName: name,
+    submittedAt: submittedAt,
+    claimedAt: claimedAt,
+    cardFieldCount: cardFieldCount,
+  );
 
   final String responseId;
   final String organizerId;
@@ -45,13 +56,6 @@ class FormProfilePage {
     required Iterable<FormProfileSummary> items,
     required this.nextCursor,
   }) : items = List.unmodifiable(items);
-  factory FormProfilePage.fromMap(Map<Object?, Object?> json) =>
-      FormProfilePage(
-        items: (json['items']! as List).map(
-          (item) => FormProfileSummary.fromMap(item as Map),
-        ),
-        nextCursor: json['nextCursor'] as String?,
-      );
   final List<FormProfileSummary> items;
   final String? nextCursor;
 
@@ -99,7 +103,7 @@ class FormProfileField {
            : value,
        options = Map.unmodifiable(options);
 
-  factory FormProfileField.fromMap(Map<Object?, Object?> json) =>
+  factory FormProfileField.fromView(Map<Object?, Object?> json) =>
       FormProfileField(
         questionId: json['questionId']! as String,
         destination: FormProfileDestination.values.byName(
@@ -186,27 +190,50 @@ class FormProfileReview {
                      : entry.value,
              });
 
-  factory FormProfileReview.fromMap(
-    Map<Object?, Object?> json,
-  ) => FormProfileReview(
-    responseId: json['responseId']! as String,
-    organizerId: json['organizerId']! as String,
-    formTitle: json['formTitle']! as String,
-    organizerName: json['organizerName'] as String?,
-    profileRevision: json['profileRevision']! as int,
-    intakeRevision: json['intakeRevision']! as int,
-    termsVersion: json['termsVersion']! as String,
-    fields: (json['fields']! as List).map(
-      (field) => FormProfileField.fromMap(field as Map),
+  /// The review from the guest's own read models: the
+  /// `participantFormProfileViews` row, the profile revision and reviewed
+  /// profile values from `users/{uid}`, and the intake revision and LinkedIn
+  /// URL from `participantIntakeProfileViews` (none reads as revision 0).
+  factory FormProfileReview.fromViews({
+    required String responseId,
+    required Map<String, Object?> view,
+    required int profileRevision,
+    required Map<String, Object?>? currentProfile,
+    required Map<String, Object?>? intake,
+    String? organizerName,
+  }) => FormProfileReview(
+    responseId: responseId,
+    organizerId: view['organizerId']! as String,
+    formTitle: view['formTitle']! as String,
+    organizerName: organizerName,
+    profileRevision: profileRevision,
+    intakeRevision: intake?['intakeRevision'] as int? ?? 0,
+    termsVersion: view['termsVersion']! as String,
+    fields: (view['fields']! as List).map(
+      (field) => FormProfileField.fromView(field as Map),
     ),
-    selectedCardQuestionIds: (json['selectedCardQuestionIds']! as List)
+    selectedCardQuestionIds: (view['selectedCardQuestionIds']! as List)
         .cast<String>(),
-    currentProfile: (json['currentProfile'] as Map?)?.cast<String, Object?>(),
-    currentLinkedinUrl: json['currentLinkedinUrl'] as String?,
-    cardRevision: json['cardRevision']! as int,
-    claimedAt: json['claimedAtMillis'] == null
-        ? null
-        : DateTime.fromMillisecondsSinceEpoch(json['claimedAtMillis']! as int),
+    currentProfile: currentProfile,
+    currentLinkedinUrl: intake?['linkedinUrl'] as String?,
+    cardRevision: view['cardRevision']! as int,
+    claimedAt: _optionalMillis(view['claimedAtMillis']),
+  );
+
+  FormProfileReview withOrganizerName(String? name) => FormProfileReview(
+    responseId: responseId,
+    organizerId: organizerId,
+    formTitle: formTitle,
+    organizerName: name,
+    profileRevision: profileRevision,
+    intakeRevision: intakeRevision,
+    termsVersion: termsVersion,
+    fields: fields,
+    selectedCardQuestionIds: selectedCardQuestionIds,
+    currentProfile: currentProfile,
+    currentLinkedinUrl: currentLinkedinUrl,
+    cardRevision: cardRevision,
+    claimedAt: claimedAt,
   );
 
   final String responseId;
@@ -223,3 +250,9 @@ class FormProfileReview {
   final int cardRevision;
   final DateTime? claimedAt;
 }
+
+DateTime? _optionalMillis(Object? value) => switch (value) {
+  final int millis => DateTime.fromMillisecondsSinceEpoch(millis),
+  null => null,
+  _ => throw const FormatException('Invalid form profile date'),
+};

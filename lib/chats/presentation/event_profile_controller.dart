@@ -82,7 +82,7 @@ class EventProfileEditorController extends _$EventProfileEditorController {
     if (settings.canShare && _foreground) {
       try {
         for (var page = 0; page < _pages; page++) {
-          final result = await repo.list(cursor: cursor);
+          final result = await repo.list(uid, cursor: cursor);
           for (final row in result.items) {
             if (row.organizerId == settings.organizerId &&
                 row.claimedAt != null &&
@@ -97,7 +97,7 @@ class EventProfileEditorController extends _$EventProfileEditorController {
             ? _cardId
             : settings.selection?.card?.responseId;
         if (selected != null) {
-          final reviewed = await repo.review(selected);
+          final reviewed = await repo.watchReview(uid, selected).first;
           if (eventCardFields(reviewed, settings.organizerId).isNotEmpty) {
             card = reviewed;
           }
