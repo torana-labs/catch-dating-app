@@ -30,10 +30,12 @@
 .stack[data-rail] { display: grid; }
 .stack[data-rail="narrow"] { grid-template-columns: minmax(0, 1fr) 380px; }
 .stack[data-rail="wide"] { grid-template-columns: minmax(0, 1fr) 420px; }
+.stack[data-rail="sidebar"] { grid-template-columns: minmax(0, 1fr) var(--catch-layout-sidebar); }
 .stack[data-rail="fit"] { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
 .stack[data-rail="fit"][data-rail-side="start"] { grid-template-columns: auto minmax(0, 1fr); }
 .stack[data-rail="narrow"][data-rail-side="start"] { grid-template-columns: 380px minmax(0, 1fr); }
 .stack[data-rail="wide"][data-rail-side="start"] { grid-template-columns: 420px minmax(0, 1fr); }
+.stack[data-rail="sidebar"][data-rail-side="start"] { grid-template-columns: var(--catch-layout-sidebar) minmax(0, 1fr); }
 .stack[data-rail] > * { min-width: 0; }
 .stack[data-sticky-rail] { align-items: start; }
 .stack[data-sticky-rail][data-rail-side="end"] > :last-child,
