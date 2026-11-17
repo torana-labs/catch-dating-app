@@ -52,6 +52,15 @@ export interface CatchPricingSectionProps extends Omit<HTMLAttributes<HTMLElemen
 }
 
 /**
+ * The section's kicker. It is its own component so the kicker reads the
+ * ground of the band it renders in (an ink band takes the night accent), not
+ * the ground outside the section.
+ */
+function PricingKicker({children, accent, tone}: {children: string; accent: CatchKickerAccent; tone?: CatchTextTone}) {
+  return <CatchText {...useCatchBandKicker({accent, tone})}>{children}</CatchText>;
+}
+
+/**
  * The pricing band of a website page (the playbook kit's pricing): a
  * kicker, the rate as one giant figure (the web display-giant role), the
  * headline that completes it, the cap and trial lines and D20 actions,
@@ -76,11 +85,10 @@ export function CatchPricingSection({
   ...rest
 }: CatchPricingSectionProps) {
   const titleId = `${useId()}-title`;
-  const kickerProps = useCatchBandKicker({accent: kickerAccent, tone: kickerTone});
   const copy = (
     <CatchStack className={styles.copy} gap={24}>
       <CatchStack gap={16}>
-        {kicker ? <CatchText {...kickerProps}>{kicker}</CatchText> : null}
+        {kicker ? <PricingKicker accent={kickerAccent} tone={kickerTone}>{kicker}</PricingKicker> : null}
         <CatchText as="p" className={styles.rate} numeric variant="display-giant">{rate}</CatchText>
       </CatchStack>
       <CatchBandHeader level={level} size="small" title={title} titleId={titleId} />

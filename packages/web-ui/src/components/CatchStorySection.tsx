@@ -57,6 +57,15 @@ export interface CatchStorySectionProps extends Omit<HTMLAttributes<HTMLElement>
 }
 
 /**
+ * The section's kicker. It is its own component so the kicker reads the
+ * ground of the band it renders in (an ink band takes the night accent), not
+ * the ground outside the section.
+ */
+function StoryKicker({children, accent, tone}: {children: string; accent: CatchKickerAccent; tone?: CatchTextTone}) {
+  return <CatchText {...useCatchBandKicker({accent, tone})}>{children}</CatchText>;
+}
+
+/**
  * One customer story as a band (the playbook kit's story): a kicker, an
  * avatar or initials beside the storyteller's name (the band's headline) and
  * a meta line, their words as a block quote, measured results as metric
@@ -66,10 +75,9 @@ export interface CatchStorySectionProps extends Omit<HTMLAttributes<HTMLElement>
  */
 export function CatchStorySection({title, level = 2, kicker, kickerTone, kickerAccent, meta, avatar, quote, metrics, media, link, ground, ...rest}: CatchStorySectionProps) {
   const titleId = `${useId()}-title`;
-  const kickerProps = useCatchBandKicker({accent: catchBandKickerAccent(kickerAccent, ground, "pink"), tone: kickerTone});
   const copy = (
     <CatchStack className={styles.copy} gap={24}>
-      {kicker ? <CatchText {...kickerProps}>{kicker}</CatchText> : null}
+      {kicker ? <StoryKicker accent={catchBandKickerAccent(kickerAccent, ground, "pink")} tone={kickerTone}>{kicker}</StoryKicker> : null}
       <div className={styles.who}>
         {avatar ? (
           avatar.image

@@ -1,5 +1,6 @@
 import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
+import {CatchRoot} from "./CatchRoot";
 import {CatchStorySection} from "./CatchStorySection";
 
 afterEach(cleanup);
@@ -39,5 +40,10 @@ describe("CatchStorySection", () => {
     render(<CatchStorySection ground="paper" media={<div data-testid="photo" />} quote="Words." title="Sample" />);
     expect(screen.getByTestId("photo")).toBeTruthy();
     expect(screen.getByRole("region").dataset.band).toBe("tile");
+  });
+
+  it("draws its kicker in the night accent on the ink band, inside a day root", () => {
+    render(<CatchRoot theme="day"><CatchStorySection ground="ink" kicker="Story" quote="Words." title="Organiser" /></CatchRoot>);
+    expect(screen.getByText("Story").dataset).toMatchObject({accent: "coral", on: "night"});
   });
 });
