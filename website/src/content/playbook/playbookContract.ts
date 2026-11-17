@@ -31,8 +31,6 @@ export type PlaybookGround = (typeof playbookGrounds)[number];
 export const playbookHeaderVariants = ["guest", "host", "minimal"] as const;
 export const playbookFooterVariants = ["guest", "host", "minimal"] as const;
 
-/** The read models a data-bound card section can list. */
-export const playbookCardSources = ["cityPlans", "organisers", "cities", "stories", "playbooks", "people"] as const;
 
 /** The site components a `custom` section may name. */
 export const playbookCustomComponents = ["noShowCalculator", "eventPageFromLink", "walkthroughSlots", "pricingCalculator"] as const;
@@ -372,10 +370,7 @@ export type PlaybookSectionOf<T extends PlaybookSectionType> = Extract<PlaybookS
 export type PlaybookAction = Infer<typeof action>;
 export type PlaybookDestination = Infer<typeof destination>;
 export type PlaybookMedia = Infer<typeof media>;
-export type PlaybookExcerptCard = Infer<typeof excerptCard>;
-export type PlaybookCardSource = PlaybookSectionOf<"cards">["source"];
 export type PlaybookLeadForm = NonNullable<PlaybookSectionOf<"cta">["leadForm"]>;
-export type PlaybookPageMeta = PlaybookPageDocument["meta"];
 
 /**
  * One page's content in a section's page index
