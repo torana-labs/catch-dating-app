@@ -8,20 +8,27 @@ part of 'host_person_conversation_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// One WhatsApp conversation while it is open, live: a new customer message
+/// or a reply shows without a reload. Null until the thread has a view.
 
 @ProviderFor(hostPersonWhatsappDetail)
 final hostPersonWhatsappDetailProvider = HostPersonWhatsappDetailFamily._();
 
+/// One WhatsApp conversation while it is open, live: a new customer message
+/// or a reply shows without a reload. Null until the thread has a view.
+
 final class HostPersonWhatsappDetailProvider
     extends
         $FunctionalProvider<
-          AsyncValue<HostWhatsappThreadDetail>,
-          HostWhatsappThreadDetail,
-          FutureOr<HostWhatsappThreadDetail>
+          AsyncValue<HostWhatsappThreadDetail?>,
+          HostWhatsappThreadDetail?,
+          Stream<HostWhatsappThreadDetail?>
         >
     with
-        $FutureModifier<HostWhatsappThreadDetail>,
-        $FutureProvider<HostWhatsappThreadDetail> {
+        $FutureModifier<HostWhatsappThreadDetail?>,
+        $StreamProvider<HostWhatsappThreadDetail?> {
+  /// One WhatsApp conversation while it is open, live: a new customer message
+  /// or a reply shows without a reload. Null until the thread has a view.
   HostPersonWhatsappDetailProvider._({
     required HostPersonWhatsappDetailFamily super.from,
     required (String, String) super.argument,
@@ -45,12 +52,12 @@ final class HostPersonWhatsappDetailProvider
 
   @$internal
   @override
-  $FutureProviderElement<HostWhatsappThreadDetail> $createElement(
+  $StreamProviderElement<HostWhatsappThreadDetail?> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<HostWhatsappThreadDetail> create(Ref ref) {
+  Stream<HostWhatsappThreadDetail?> create(Ref ref) {
     final argument = this.argument as (String, String);
     return hostPersonWhatsappDetail(ref, argument.$1, argument.$2);
   }
@@ -68,12 +75,15 @@ final class HostPersonWhatsappDetailProvider
 }
 
 String _$hostPersonWhatsappDetailHash() =>
-    r'6c032abcf7ba1b9a7200787ce4b7f55f5a7facea';
+    r'7434f5b46b4b2d3e277a4589fd4146d5133a2015';
+
+/// One WhatsApp conversation while it is open, live: a new customer message
+/// or a reply shows without a reload. Null until the thread has a view.
 
 final class HostPersonWhatsappDetailFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<HostWhatsappThreadDetail>,
+          Stream<HostWhatsappThreadDetail?>,
           (String, String)
         > {
   HostPersonWhatsappDetailFamily._()
@@ -84,6 +94,9 @@ final class HostPersonWhatsappDetailFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// One WhatsApp conversation while it is open, live: a new customer message
+  /// or a reply shows without a reload. Null until the thread has a view.
 
   HostPersonWhatsappDetailProvider call(String organizerId, String threadId) =>
       HostPersonWhatsappDetailProvider._(

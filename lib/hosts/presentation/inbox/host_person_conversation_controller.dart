@@ -5,14 +5,16 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_person_conversation_controller.g.dart';
 
+/// One WhatsApp conversation while it is open, live: a new customer message
+/// or a reply shows without a reload. Null until the thread has a view.
 @riverpod
-Future<HostWhatsappThreadDetail> hostPersonWhatsappDetail(
+Stream<HostWhatsappThreadDetail?> hostPersonWhatsappDetail(
   Ref ref,
   String organizerId,
   String threadId,
 ) => ref
     .watch(hostWhatsappRepositoryProvider)
-    .getWhatsappThread(organizerId: organizerId, threadId: threadId);
+    .watchWhatsappThread(organizerId: organizerId, threadId: threadId);
 
 @riverpod
 HostPersonConversationController hostPersonConversationController(Ref ref) =>
@@ -38,10 +40,6 @@ class HostPersonConversationController {
           body: body,
           idempotencyKey: idempotencyKey,
         );
-    if (!ref.mounted) return;
-    ref.invalidate(
-      hostPersonWhatsappDetailProvider(organizerId, thread.threadId),
-    );
-    ref.invalidate(hostWhatsappThreadsProvider(organizerId));
+    // The conversation and inbox listeners deliver the saved reply.
   }
 }

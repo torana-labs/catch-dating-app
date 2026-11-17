@@ -536,7 +536,7 @@ class _HostAutomationRuleEditorState
                                           .read(messagesProvider.notifier)
                                           .loadMore(),
                                     ),
-                                  if (page.nextCursor != null)
+                                  if (page.error == null && page.hasMore)
                                     CatchButton(
                                       label: l.hostAutomationDraftsMore,
                                       variant: CatchButtonVariant.secondary,

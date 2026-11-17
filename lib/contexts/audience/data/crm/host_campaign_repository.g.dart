@@ -55,55 +55,45 @@ final class HostCampaignRepositoryProvider
 }
 
 String _$hostCampaignRepositoryHash() =>
-    r'835b9a00b265320c8154b29924c6e5fe35ba8713';
+    r'664f96eb691b81f7b93713ea9fa05d8bde65714c';
 
-@ProviderFor(hostSends)
-final hostSendsProvider = HostSendsFamily._();
+/// The organizer's Sends history, a page at a time, every row shown live.
 
-final class HostSendsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<HostSendsPage>,
-          HostSendsPage,
-          FutureOr<HostSendsPage>
-        >
-    with $FutureModifier<HostSendsPage>, $FutureProvider<HostSendsPage> {
-  HostSendsProvider._({
-    required HostSendsFamily super.from,
+@ProviderFor(HostSendPages)
+final hostSendPagesProvider = HostSendPagesFamily._();
+
+/// The organizer's Sends history, a page at a time, every row shown live.
+final class HostSendPagesProvider
+    extends $StreamNotifierProvider<HostSendPages, LivePages<HostSendSummary>> {
+  /// The organizer's Sends history, a page at a time, every row shown live.
+  HostSendPagesProvider._({
+    required HostSendPagesFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'hostSendsProvider',
+         name: r'hostSendPagesProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$hostSendsHash();
+  String debugGetCreateSourceHash() => _$hostSendPagesHash();
 
   @override
   String toString() {
-    return r'hostSendsProvider'
+    return r'hostSendPagesProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  $FutureProviderElement<HostSendsPage> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<HostSendsPage> create(Ref ref) {
-    final argument = this.argument as String;
-    return hostSends(ref, argument);
-  }
+  HostSendPages create() => HostSendPages();
 
   @override
   bool operator ==(Object other) {
-    return other is HostSendsProvider && other.argument == argument;
+    return other is HostSendPagesProvider && other.argument == argument;
   }
 
   @override
@@ -112,22 +102,65 @@ final class HostSendsProvider
   }
 }
 
-String _$hostSendsHash() => r'd47dd53ab3f0e76adc681e94db8e251344160005';
+String _$hostSendPagesHash() => r'd0b3c49777d0d84ade60fdb8fae0e48f14b58fe4';
 
-final class HostSendsFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<HostSendsPage>, String> {
-  HostSendsFamily._()
+/// The organizer's Sends history, a page at a time, every row shown live.
+
+final class HostSendPagesFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          HostSendPages,
+          AsyncValue<LivePages<HostSendSummary>>,
+          LivePages<HostSendSummary>,
+          Stream<LivePages<HostSendSummary>>,
+          String
+        > {
+  HostSendPagesFamily._()
     : super(
         retry: null,
-        name: r'hostSendsProvider',
+        name: r'hostSendPagesProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  HostSendsProvider call(String organizerId) =>
-      HostSendsProvider._(argument: organizerId, from: this);
+  /// The organizer's Sends history, a page at a time, every row shown live.
+
+  HostSendPagesProvider call(String organizerId) =>
+      HostSendPagesProvider._(argument: organizerId, from: this);
 
   @override
-  String toString() => r'hostSendsProvider';
+  String toString() => r'hostSendPagesProvider';
+}
+
+/// The organizer's Sends history, a page at a time, every row shown live.
+
+abstract class _$HostSendPages
+    extends $StreamNotifier<LivePages<HostSendSummary>> {
+  late final _$args = ref.$arg as String;
+  String get organizerId => _$args;
+
+  Stream<LivePages<HostSendSummary>> build(String organizerId);
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<LivePages<HostSendSummary>>,
+              LivePages<HostSendSummary>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<LivePages<HostSendSummary>>,
+                LivePages<HostSendSummary>
+              >,
+              AsyncValue<LivePages<HostSendSummary>>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, () => build(_$args));
+  }
 }

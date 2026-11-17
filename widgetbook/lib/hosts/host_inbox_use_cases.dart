@@ -22,6 +22,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_page_body.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -388,16 +389,11 @@ class _HostInboxFrame extends StatelessWidget {
         ).overrideWithValue(
           AsyncData(_messagingSetup(HostInboxSurfaceFixtures.organizer.id)),
         ),
-        hostSendsProvider(
+        hostSendPagesProvider(
           HostInboxSurfaceFixtures.organizer.id,
-        ).overrideWithValue(
-          AsyncData(
-            HostSendsPage(
-              organizerId: HostInboxSurfaceFixtures.organizer.id,
-              sends: const [],
-              nextCursor: null,
-            ),
-          ),
+        ).overrideWithBuild(
+          (ref, notifier) =>
+              Stream.value(const LivePages(items: [], hasMore: false)),
         ),
         hostManualSendTasksProvider(
           HostInboxSurfaceFixtures.organizer.id,
@@ -410,16 +406,11 @@ class _HostInboxFrame extends StatelessWidget {
             ),
           ),
         ),
-        hostWhatsappThreadsProvider(
+        hostWhatsappThreadPagesProvider(
           HostInboxSurfaceFixtures.organizer.id,
-        ).overrideWithValue(
-          AsyncData(
-            HostWhatsappThreadPage(
-              organizerId: HostInboxSurfaceFixtures.organizer.id,
-              threads: const [],
-              nextCursor: null,
-            ),
-          ),
+        ).overrideWithBuild(
+          (ref, notifier) =>
+              Stream.value(const LivePages(items: [], hasMore: false)),
         ),
         watchOrganizerPostRemainingWeeklyQuotaProvider(
           HostInboxSurfaceFixtures.organizer.id,

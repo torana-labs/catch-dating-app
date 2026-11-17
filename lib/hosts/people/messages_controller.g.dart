@@ -9,14 +9,14 @@ part of 'messages_controller.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// Messages, composed from the Catch conversations listener, the WhatsApp
-/// threads read, the organizer's events (for Tonight) and Automatic
+/// threads listener, the organizer's events (for Tonight) and Automatic
 /// messages (for its row).
 
 @ProviderFor(hostMessagesController)
 final hostMessagesControllerProvider = HostMessagesControllerFamily._();
 
 /// Messages, composed from the Catch conversations listener, the WhatsApp
-/// threads read, the organizer's events (for Tonight) and Automatic
+/// threads listener, the organizer's events (for Tonight) and Automatic
 /// messages (for its row).
 
 final class HostMessagesControllerProvider
@@ -28,7 +28,7 @@ final class HostMessagesControllerProvider
         >
     with $Provider<HostMessagesState> {
   /// Messages, composed from the Catch conversations listener, the WhatsApp
-  /// threads read, the organizer's events (for Tonight) and Automatic
+  /// threads listener, the organizer's events (for Tonight) and Automatic
   /// messages (for its row).
   HostMessagesControllerProvider._({
     required HostMessagesControllerFamily super.from,
@@ -84,10 +84,10 @@ final class HostMessagesControllerProvider
 }
 
 String _$hostMessagesControllerHash() =>
-    r'6add31fda66ee44e3795d474484dac3119067a34';
+    r'1347177ef40180d12c5db80dbddfd3b0ef5f706b';
 
 /// Messages, composed from the Catch conversations listener, the WhatsApp
-/// threads read, the organizer's events (for Tonight) and Automatic
+/// threads listener, the organizer's events (for Tonight) and Automatic
 /// messages (for its row).
 
 final class HostMessagesControllerFamily extends $Family
@@ -102,7 +102,7 @@ final class HostMessagesControllerFamily extends $Family
       );
 
   /// Messages, composed from the Catch conversations listener, the WhatsApp
-  /// threads read, the organizer's events (for Tonight) and Automatic
+  /// threads listener, the organizer's events (for Tonight) and Automatic
   /// messages (for its row).
 
   HostMessagesControllerProvider call(HostMessagesRequest request) =>

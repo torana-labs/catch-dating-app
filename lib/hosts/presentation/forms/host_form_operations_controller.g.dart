@@ -747,16 +747,26 @@ abstract class _$HostFormAutomationsController
   }
 }
 
+/// The draft campaigns an automation can hand off to, a page at a time and
+/// live, so a draft saved in Sends shows here at once. A draft that is
+/// already scheduled is left out.
+
 @ProviderFor(HostAutomationMessagesController)
 final hostAutomationMessagesControllerProvider =
     HostAutomationMessagesControllerFamily._();
 
+/// The draft campaigns an automation can hand off to, a page at a time and
+/// live, so a draft saved in Sends shows here at once. A draft that is
+/// already scheduled is left out.
 final class HostAutomationMessagesControllerProvider
     extends
-        $AsyncNotifierProvider<
+        $StreamNotifierProvider<
           HostAutomationMessagesController,
           HostAutomationMessagesState
         > {
+  /// The draft campaigns an automation can hand off to, a page at a time and
+  /// live, so a draft saved in Sends shows here at once. A draft that is
+  /// already scheduled is left out.
   HostAutomationMessagesControllerProvider._({
     required HostAutomationMessagesControllerFamily super.from,
     required String super.argument,
@@ -796,7 +806,11 @@ final class HostAutomationMessagesControllerProvider
 }
 
 String _$hostAutomationMessagesControllerHash() =>
-    r'd963e5a64d7f23deea96fc646409aa679114c92b';
+    r'13d420022d31e976c47cf32f04ff7b91bf034a17';
+
+/// The draft campaigns an automation can hand off to, a page at a time and
+/// live, so a draft saved in Sends shows here at once. A draft that is
+/// already scheduled is left out.
 
 final class HostAutomationMessagesControllerFamily extends $Family
     with
@@ -804,7 +818,7 @@ final class HostAutomationMessagesControllerFamily extends $Family
           HostAutomationMessagesController,
           AsyncValue<HostAutomationMessagesState>,
           HostAutomationMessagesState,
-          FutureOr<HostAutomationMessagesState>,
+          Stream<HostAutomationMessagesState>,
           String
         > {
   HostAutomationMessagesControllerFamily._()
@@ -816,6 +830,10 @@ final class HostAutomationMessagesControllerFamily extends $Family
         isAutoDispose: true,
       );
 
+  /// The draft campaigns an automation can hand off to, a page at a time and
+  /// live, so a draft saved in Sends shows here at once. A draft that is
+  /// already scheduled is left out.
+
   HostAutomationMessagesControllerProvider call(String organizerId) =>
       HostAutomationMessagesControllerProvider._(
         argument: organizerId,
@@ -826,12 +844,16 @@ final class HostAutomationMessagesControllerFamily extends $Family
   String toString() => r'hostAutomationMessagesControllerProvider';
 }
 
+/// The draft campaigns an automation can hand off to, a page at a time and
+/// live, so a draft saved in Sends shows here at once. A draft that is
+/// already scheduled is left out.
+
 abstract class _$HostAutomationMessagesController
-    extends $AsyncNotifier<HostAutomationMessagesState> {
+    extends $StreamNotifier<HostAutomationMessagesState> {
   late final _$args = ref.$arg as String;
   String get organizerId => _$args;
 
-  FutureOr<HostAutomationMessagesState> build(String organizerId);
+  Stream<HostAutomationMessagesState> build(String organizerId);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
