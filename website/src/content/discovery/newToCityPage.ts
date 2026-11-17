@@ -67,7 +67,7 @@ export const newToCityPageCopy = {
     items: [
       {question: "Is it weird to go on my own?", answer: "Not at these. Hosts plan for people coming alone: groups, teams and tables are made for you, and first-timers get a hello."},
       {question: "What’s the easiest first plan?", answer: "A free Sunday run or a pub quiz. Both put you in a group straight away and last about two hours."},
-      {question: "Do I need the app?", answer: "No. Book, pay and check in on the website in your phone’s browser."},
+      {question: "Do I need the app?", answer: "No. You can book and pay for a plan on the website in your phone’s browser. Some hosts also check you in there; the rest check you in at the door."},
       {question: "How do I keep meeting the same people?", answer: "Go back to the plans you liked and follow the host. Regulars are how friendships start."},
       {question: "Will hosts message me?", answer: "About the plan you booked, yes: where to be and any changes. Anything else, like news of their next event, only if you say yes."},
       {question: "What if I can’t make it?", answer: "Cancel from your booking. Refunds follow the host’s cancellation policy, shown before you book."},
