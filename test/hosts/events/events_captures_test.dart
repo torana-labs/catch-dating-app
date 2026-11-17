@@ -42,7 +42,9 @@ void main() {
     hostOperableOrganizersProvider(
       uid,
     ).overrideWithValue(AsyncData([organizer])),
-    fetchOrganizerProvider(organizer.id).overrideWith((ref) async => organizer),
+    watchOrganizerProvider(
+      organizer.id,
+    ).overrideWith((ref) => Stream.value(organizer)),
     hostEventsControllerProvider(
       HostEventsRequest(organizerId: organizer.id, now: eventsNow),
     ).overrideWithValue(eventsReady()),
