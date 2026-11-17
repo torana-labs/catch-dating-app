@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -127,7 +128,7 @@ class EventAssistanceDeliveries extends _$EventAssistanceDeliveries {
 /// The delivery page read owner. It is a Firestore listener: it declares no
 /// cache tags or lifetime, and commands never invalidate it; the delivery
 /// view triggers deliver their result.
-@Riverpod(retry: _noDeliveryReadRetry)
+@Riverpod(retry: noAutomaticRetry)
 Stream<EventAssistanceDeliveriesSession> eventAssistanceDeliveriesForAccount(
   Ref ref,
   EventAssistanceDeliveryQuery query, {
@@ -149,5 +150,3 @@ Stream<EventAssistanceDeliveriesSession> eventAssistanceDeliveriesForAccount(
         );
       });
 }
-
-Duration? _noDeliveryReadRetry(int retryCount, Object error) => null;

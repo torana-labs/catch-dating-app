@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_cont
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 
 /// The organizer's contact directory document: everyone's summary and the
 /// per-segment counts the triggers keep.
@@ -35,14 +36,6 @@ class HostContactDirectory {
   }
 }
 
-/// The first rows of one live contact query.
-class HostContactWindow {
-  const HostContactWindow({required this.contacts, required this.hasMore});
-
-  final List<HostAudienceContact> contacts;
-  final bool hasMore;
-}
-
 /// The contact directory from `hostContactSummaries` and the organizer's
 /// directory document. Only an intersecting filter group (segments with
 /// tags) still needs the server's evaluation. A name search is a prefix
@@ -64,34 +57,26 @@ class HostContactSummaryReads {
     return HostContactDirectory(data).count(query);
   }
 
-  /// The first [limit] contacts of a query [supports] accepts, while it is
-  /// listened to: the same filters and order as [list].
-  Stream<HostContactWindow> watchWindow(
+  /// The contacts of a query [supports] accepts, [pageSize] at a time,
+  /// every row shown kept live: the same filters and order as [list].
+  LivePager<HostAudienceContact> watchPages(
     String organizerId, {
     required HostAudienceQuery query,
-    required int limit,
+    required int pageSize,
   }) {
     final spec = _ContactQuerySpec(query);
     return reader
-        .watchWindow(
+        .watchPages(
           collection: 'hostContactSummaries',
           organizerId: organizerId,
           orderField: spec.orderField,
           descending: spec.descending,
-          limit: limit,
+          pageSize: pageSize,
           arrayField: spec.arrayField,
           arrayValues: spec.arrayValues,
           prefix: spec.search,
         )
-        .map(
-          (window) => HostContactWindow(
-            contacts: [
-              for (final doc in window.documents)
-                HostAudienceContact.fromMap(doc['row'] as Map),
-            ],
-            hasMore: window.hasMore,
-          ),
-        );
+        .map((doc) => HostAudienceContact.fromMap(doc['row'] as Map));
   }
 
   static bool supports(HostAudienceQuery query) {

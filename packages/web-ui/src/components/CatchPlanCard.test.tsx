@@ -32,4 +32,15 @@ describe("CatchPlanCard", () => {
     expect(container.querySelector("img")).toBeNull();
     expect((container.querySelector("[aria-hidden='true']") as HTMLElement).dataset.ground).toBe("paper");
   });
+
+  it("with a date, takes the canvas card: the date square beside the title, the label read but not shown", () => {
+    render(<CatchPlanCard date={{weekday: "Sun", day: "23", month: "Nov"}} detail="Carter Road Runners · Bandra" format="run" href="/events/run/"
+      label="Run clubs · Sun 6:30 AM" posterLabel="Run club" price="Free" availability="18 left" title="Carter Road Social Run" />);
+    const card = screen.getByRole("link", {name: /Carter Road Social Run/});
+    expect(card.dataset.layout).toBe("kit");
+    const date = card.querySelector("time") as HTMLElement;
+    expect(date.dataset).toMatchObject({size: "sm", ground: "coral"});
+    expect(card.textContent).toContain("Run clubs · Sun 6:30 AM");
+    expect(card.textContent).toContain("18 left");
+  });
 });

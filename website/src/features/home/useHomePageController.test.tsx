@@ -12,12 +12,12 @@ const shifted = (days: number, count: number) => {
 };
 
 describe("useHomePageController", () => {
-  it("binds a busy city's week, six plans at a time, and filters it by format", () => {
+  it("binds a busy city's week, three plans at a time as the board's rail, and filters it by format", () => {
     const {result} = renderHook(() => useHomePageController(mumbaiLiveCatalog));
     expect(result.current.state).toBe("busy");
     expect(result.current.live).toBe(true);
     expect(result.current.weekCount).toBe(10);
-    expect(result.current.plans).toHaveLength(6);
+    expect(result.current.plans).toHaveLength(3);
     expect(result.current.heroEyebrow).toBe("In Mumbai this week · 10 plans");
     expect(result.current.heroPlan?.title).toBe("Thursday Evening Pub Quiz");
     act(() => result.current.setFilter("courts"));
@@ -74,7 +74,7 @@ describe("useHomePageController", () => {
     expect(result.current.weekCount).toBe(0);
     expect(result.current.upcoming).toBe(true);
     expect(result.current.heroEyebrow).toBe("In Mumbai · plans for the next two weeks");
-    expect(result.current.note).toBe("Nothing on this week, so here’s everything in Mumbai over the next two weeks: 6 of 10 shown.");
+    expect(result.current.note).toBe("Nothing on this week, so here’s everything in Mumbai over the next two weeks: 3 of 10 shown.");
   });
 
   it("keeps a city it could not read open and says so, never new or thin", () => {

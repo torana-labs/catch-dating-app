@@ -3,7 +3,6 @@ import 'package:catch_dating_app/contexts/events/data/external_event_repository.
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -44,8 +43,8 @@ class ExploreDiscoveryWindowState {
 
   final List<Event> internalEvents;
   final List<ExternalEvent> externalEvents;
-  final DocumentSnapshot<Event>? internalCursor;
-  final DocumentSnapshot<ExternalEvent>? externalCursor;
+  final PageCursor<Event>? internalCursor;
+  final PageCursor<ExternalEvent>? externalCursor;
   final bool hasMoreInternal;
   final bool hasMoreExternal;
   final bool isLoadingMore;
@@ -103,7 +102,7 @@ class ExploreDiscoveryWindow extends _$ExploreDiscoveryWindow {
                   request.internalQuery,
                   startAfter: current.internalCursor,
                 )
-          : Future.value(CursorPage.empty<Event, DocumentSnapshot<Event>>());
+          : Future.value(CursorPage.empty<Event, PageCursor<Event>>());
       final externalFuture = current.hasMoreExternal
           ? ref
                 .read(externalEventRepositoryProvider)
@@ -112,10 +111,7 @@ class ExploreDiscoveryWindow extends _$ExploreDiscoveryWindow {
                   startAfter: current.externalCursor,
                 )
           : Future.value(
-              CursorPage.empty<
-                ExternalEvent,
-                DocumentSnapshot<ExternalEvent>
-              >(),
+              CursorPage.empty<ExternalEvent, PageCursor<ExternalEvent>>(),
             );
       final (internalPage, externalPage) = await (
         internalFuture,
@@ -148,8 +144,8 @@ class ExploreDiscoveryWindow extends _$ExploreDiscoveryWindow {
 }
 
 ExploreDiscoveryWindowState _fromPages(
-  CursorPage<Event, DocumentSnapshot<Event>> internalPage,
-  CursorPage<ExternalEvent, DocumentSnapshot<ExternalEvent>> externalPage,
+  CursorPage<Event, PageCursor<Event>> internalPage,
+  CursorPage<ExternalEvent, PageCursor<ExternalEvent>> externalPage,
 ) {
   return ExploreDiscoveryWindowState(
     internalEvents: internalPage.items,

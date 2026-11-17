@@ -155,7 +155,7 @@ final class EventAssistanceLateJoinSettingForAccountProvider
     required (EventAssistanceGroupScope, {EventAssistanceAccount account})
     super.argument,
   }) : super(
-         retry: _noSettingReadRetry,
+         retry: noAutomaticRetry,
          name: r'eventAssistanceLateJoinSettingForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -204,7 +204,7 @@ final class EventAssistanceLateJoinSettingForAccountProvider
 }
 
 String _$eventAssistanceLateJoinSettingForAccountHash() =>
-    r'6df3e1b77f15cb3f1bd4c100b569ec338bb095a8';
+    r'ddd8eec99b02112eac72cf620007e078dc2f2f00';
 
 /// The group's late-join setting for one sign-in period. It is a Firestore
 /// listener: no cache tags or lifetime, and writes never invalidate it. Each
@@ -218,7 +218,7 @@ final class EventAssistanceLateJoinSettingForAccountFamily extends $Family
         > {
   EventAssistanceLateJoinSettingForAccountFamily._()
     : super(
-        retry: _noSettingReadRetry,
+        retry: noAutomaticRetry,
         name: r'eventAssistanceLateJoinSettingForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,

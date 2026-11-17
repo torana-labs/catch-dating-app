@@ -57,7 +57,7 @@ final class PrivateEventSetupTimelineRepositoryProvider
 }
 
 String _$privateEventSetupTimelineRepositoryHash() =>
-    r'6625bdf327ae68ea78e5fabd4fe31880721d8719';
+    r'47f8d1ad7c283aa746b3bbb67a595c047ea82fdb';
 
 /// The organizer's unpublished events starting on or after [from], soonest
 /// first, as a listener: a draft saved, published or cancelled in Create or
@@ -207,7 +207,7 @@ final class HostEventsTimelineControllerProvider
 }
 
 String _$hostEventsTimelineControllerHash() =>
-    r'd52d96aacf3d521c6e408811c3e39f2e2faf2bdb';
+    r'a611ac1975259fbfbaae8a50880a457536ca9244';
 
 final class HostEventsTimelineControllerFamily extends $Family
     with

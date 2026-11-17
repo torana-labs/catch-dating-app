@@ -210,7 +210,7 @@ final class EventAssistanceDepartureForAccountProvider
     required (EventAssistanceGroupScope, {EventDepartureAccount account})
     super.argument,
   }) : super(
-         retry: _noDepartureReadRetry,
+         retry: noAutomaticRetry,
          name: r'eventAssistanceDepartureForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -259,7 +259,7 @@ final class EventAssistanceDepartureForAccountProvider
 }
 
 String _$eventAssistanceDepartureForAccountHash() =>
-    r'e7a3fdae2cbf49942dc8d108993ba5af52f75cce';
+    r'd0bce46e4da19d4a62345878a9379c599dab3f54';
 
 /// The group's departure view for one sign-in period. It is a Firestore
 /// listener: it declares no cache tags or lifetime and writes never
@@ -275,7 +275,7 @@ final class EventAssistanceDepartureForAccountFamily extends $Family
         > {
   EventAssistanceDepartureForAccountFamily._()
     : super(
-        retry: _noDepartureReadRetry,
+        retry: noAutomaticRetry,
         name: r'eventAssistanceDepartureForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
