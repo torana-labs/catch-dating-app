@@ -39,8 +39,9 @@ class HostMembershipEventOffer {
   bool get makesEventFree => memberPriceInPaise == 0 && !unlocksAccess;
 }
 
-/// Server-evaluated membership facts for one viewer and event, from the
-/// opt-in `hostMembership` object of `getEventViewerState`.
+/// Membership facts for one viewer and event. The event screen builds them
+/// on the device with `hostMembershipEventFacts`;
+/// [EventHostMembershipFacts.fromMap] reads the same fields from a map.
 class EventHostMembershipFacts {
   const EventHostMembershipFacts({
     required this.memberPlanName,

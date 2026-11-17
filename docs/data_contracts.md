@@ -3443,14 +3443,13 @@ when a bounded canonical-history check proves that the organizer has no
 `eventAttendees`; absence of projection state alone is not treated as an
 incomplete migration.
 
-`getOrganizerCrmSummary` reads `organizerAudienceSummaries` only when its
-coverage is `exact` and returns only privacy-bounded counts for contacts, past
-and repeat attendees,
-linked accounts, imports, and explicit WhatsApp/SMS reachability. During the
-dual-write migration it falls back to the legacy bounded attendee/preference
-scan for organizers without exact coverage. Partial summaries remain migration
-diagnostics and never replace the legacy cards. It never returns attendee
-identity or contact fields. `listOrganizerContacts` and
+Managers read privacy-bounded CRM counts (contacts, past and repeat attendees,
+linked accounts, imports, and explicit WhatsApp/SMS reachability) from
+`hostDirectorySummaries/{organizerId}.summary`, which the Host read model
+projector maintains from contact views; `summary.truncated` marks coverage that
+is not yet `exact`. It never carries attendee identity or contact fields. The
+`getOrganizerCrmSummary` callable, with its legacy bounded attendee/preference
+fallback, is retired. `listOrganizerContacts` and
 `getOrganizerContactDetail` are separate manager-authorized, server-paginated
 boundaries. They return only organizer-owned endpoints plus explainable
 attendance/reachability facts; no Event Success private input is a CRM field. The
@@ -4414,8 +4413,8 @@ explicit join/leave and mute choices and versioned room terms.
 client access is denied. A room does not create event admission, a dating match,
 a public profile, or an organizer-card sharing grant.
 
-The Consumer chat list listens to `eventChatDirectoryEntries` instead of
-calling `listEventChats`: one row per event chat a person may see, at
+The Consumer chat list listens to `eventChatDirectoryEntries`: one row per
+event chat a person may see, at
 `{eventId}_{uid}`. Triggers on chat memberships, bookings, roster rows, rooms
 (revision changes), events (name, status, organizer, start) and users
 (profile claim, deletion) rebuild a row from `readEventChatAccess` and delete
@@ -4423,16 +4422,9 @@ it when access ends, so out-of-order triggers converge. A row stores the
 room's own settings; the app derives the time-dependent room mode and its
 read, post and join flags as `readEventChatAccess` does. A person lists only
 their own rows. Opening a chat still goes through the access and message
-callables. `listEventChats` keeps serving older app builds:
-
-`listEventChats` discovers the caller's candidates from memberships, native
-participations and linked operational attendees in that order. Each request
-scans at most ten candidate records plus lookahead; a UID-bound cursor advances
-across sources, including empty pages after revoked candidates are filtered.
-Every returned event is active and passes the same current admission check.
-A membership row discovers an ID only and never preserves revoked access.
-Deleted-account checks cover even empty scans. Directory responses contain room
-access metadata, not messages, answers, participant profiles or private cards.
+callables. The `listEventChats` callable that served older app builds is
+retired. Directory rows contain room access metadata, not messages, answers,
+participant profiles or private cards.
 
 Every access reads current organizer authority and current admission in the
 same transaction. Guests need a `signedUp`/`attended` participation or exactly
@@ -4620,8 +4612,8 @@ Direct client get/list/create/update/delete is denied for all four collections.
 
 ### Authenticated Event Viewer Read Source
 
-The Consumer app shows event booking state from Firestore listeners, not this
-callable: `eventViewerStateProvider` (`lib/contexts/bookings/data`) composes
+The Consumer app shows event booking state from Firestore listeners:
+`eventViewerStateProvider` (`lib/contexts/bookings/data`) composes
 the event, the guest's own booking, profile and paid memberships, the event's
 `eventMembershipRules`, the organizer's published plans, the guest's other
 booked events (overlap) and `guestBookingFacts/{uid}` (community membership,
@@ -4630,7 +4622,8 @@ projected by `decideOrganizerCommunityMembership`). It mirrors
 `evaluateHostMembershipEntitlement`; `contracts/parity/event_booking_viewer_cases.json`
 holds the cases both implementations must pass. A block between the guest and
 someone on the roster, the seat ledger's holds and invite-code validity stay
-command-time checks. The callable below keeps serving older app builds.
+command-time checks. The `getEventViewerState` callable that served older app
+builds is retired.
 
 The website's event page shows a phone-verified guest's step from listeners
 too: `eventGuestEntries/{eventId}` holds how a guest with no record of their
@@ -4657,28 +4650,11 @@ Clients never write the card. The `guest-event-cards` migration in
 `tool/data/lib/firestore_consolidation_migrations.mjs` creates the missing
 rows and fills the two fields on older documents, fill-only.
 
-`getEventViewerState` is an Auth/App-Check-protected, rate-limited callable over
-`readEventViewerStateSource`. Its strict request accepts no subject UID or
-organizer override; its response includes no private fields or checkout keys.
-One transaction reads the Auth-derived UID's public event, deletion
-state, native participation, current grant, review, policy, capacity/holds,
-schedule and seat-identity proof. Membership, review, future eligibility,
-payment, admission and attendance remain separate facts. It shares
-`signupPolicyDecision`, canonical schedule reads and the existing seat planner;
-it never applies plans, creates identity aliases, reserves seats or sends OTPs.
-A native payment pointer does not establish payment. An optional owned public
-payment uses `projectPublicPayment` and its immutable receipt/current roster
-proof in the same transaction, with checkout credentials suppressed. Public
-paid admission requires neither a Consumer profile nor native participation.
-
-Each candidate query reads at most 101 rows; an incomplete source closes future
-booking. Private visibility, external continuations and imported-guest linkage
-need their owning adapters and remain unavailable here. Admission history
-survives revoked membership, while new booking still checks current profile,
-review, invite, capacity, cohort/ratio and schedule. Policy and inventory
-revisions describe an observation, not a reservation or later write authority.
-The final native booking transaction also rechecks persisted host review,
-preventing a stale preflight approval from admitting a declined request.
+The composed viewer keeps membership, review, future eligibility, payment,
+admission and attendance as separate facts. It is an observation, not a
+reservation or later write authority: the final native booking transaction
+rechecks persisted host review, preventing a stale preflight approval from
+admitting a declined request.
 
 ### Private Program Functions And Guests
 

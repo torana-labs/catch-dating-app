@@ -1710,12 +1710,13 @@ the existing form policy allows; current booking quote/history still require OTP
 ### Public event guest entry
 
 The public event page keeps informational listing data separate from the
-account-scoped `getEventViewerState` read. Its optional `surface: guest` adapter
-projects current linked attendees, native participation, application review,
-claimed offer recovery, public payment recovery and runtime entry. It requires a
-current verified Auth phone but no consumer profile. The generated response is
-shared with the website; the native adapter and its booking-readiness rules
-remain distinct. Guests never receive CRM notes, answers or invitation secrets.
+guest's account-scoped state, which it reads from listeners:
+`eventGuestEntries/{eventId}`, the guest's own `guestEventStatuses/{eventId}_{uid}`
+row and `guestBookingFacts/{uid}` (`website/src/features/events/guestEventState.ts`
+decides the step). That state covers linked attendees, native participation,
+application review, offer and public payment recovery, and runtime entry. It
+requires a current verified Auth phone but no consumer profile. Guests never
+receive CRM notes, answers or invitation secrets.
 
 The page routes to existing `/f/`, `/offer/`, `/booking/` and `/join/` owners.
 One current published event-targeted application form with a verified identity

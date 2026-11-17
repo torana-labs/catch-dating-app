@@ -109,7 +109,7 @@ These are deferred to phase 2 or later:
 | Existing Route webhook | `functions/src/payments/formPayments/formPaymentTriggers.ts` (`organizerFormPaymentWebhook`), `razorpayFormProvider.ts` (`formWebhookEvents`) | It accepts only `payment.*` and `refund.*` and dispatches by receipt prefix. Memberships get their own endpoint, so the form and event inbox stays unchanged. |
 | Legacy Razorpay | `functions/src/payments/razorpayWebhook.ts` (bills and payment links only; the native checkout is retired) | Not used. |
 | Event pricing and admission | `functions/src/events/eventPolicy.ts`: `quotePriceInPaise`, `signupPolicyDecision`, `requiresCommunityMembership` | The list price stays the policy quote. Membership evaluation runs **after** the policy quote and does not change the policy hash (`seatAuthority/firestoreAdapter.ts` `deriveEventSeatPolicy`), so policy locks are unaffected. |
-| Viewer quote and route | `functions/src/events/eventViewerStateSource.ts` (`getEventViewerState`), `lib/contexts/events/domain/event_viewer_state.dart` | The single read the app uses for price and route. A 0 quote routes to `catchFreeBooking`; anything else routes to `catchCheckout`. Membership adds `memberPricing` and `membershipOffer` facts and two restrictions. |
+| Viewer quote and route | `lib/contexts/bookings/domain/event_viewer_composition.dart` (`composeEventViewerState`, from listeners; the `getEventViewerState` callable is retired), `lib/contexts/events/domain/event_viewer_state.dart` | The single read the app uses for price and route. A 0 quote routes to `catchFreeBooking`; anything else routes to `catchCheckout`. Membership adds `memberPricing` and `membershipOffer` facts and two restrictions. |
 | Free booking | `functions/src/events/signUpForFreeEvent.ts`, `functions/src/events/signUpUserForEvent.ts` | Rejects any non-zero quote. An included member's quote becomes 0, so this path must evaluate membership too. |
 | Paid INR checkout | `functions/src/events/publicRegistration/` (`managePublicEventCheckout`): `policy.ts` `publicCheckoutQuote`, `reservation.ts`, `admission.ts` | Today the price is the flat `event.priceInPaise`, and the quote is frozen and compared as canonical JSON. The app's native INR order flow is retired, so discounted members pay through this path on the website. |
 | Community membership | `functions/src/memberships/communityMembershipAuthority.ts`, `organizerCommunityMemberships` | A host-approved, unpaid admission entitlement behind `admission.format: "membersOnly"`. It is **not** the paid membership; see [D-1](#decisions). |
@@ -360,7 +360,7 @@ These call the evaluator inside their existing transaction or read:
 
 | Path | Change |
 | --- | --- |
-| `eventViewerStateSource.ts` | Adds `memberPricing` and `membershipOffer` to the source and response. `quotedPriceInPaise` becomes the member price, so an included member routes to `catchFreeBooking`. The two restrictions join `futureBooking.reason`. |
+| `eventViewerStateSource.ts` (retired with `getEventViewerState`; the app's `composeEventViewerState` now applies these facts) | Adds `memberPricing` and `membershipOffer` to the source and response. `quotedPriceInPaise` becomes the member price, so an included member routes to `catchFreeBooking`. The two restrictions join `futureBooking.reason`. |
 | `signUpForFreeEvent.ts` | Uses the member price before the "requires payment" check. Writes `hostMembershipBenefitUses` after a successful booking whose `memberPriceApplied`. Also enforces the members-only and early-access restrictions. |
 | `publicRegistration/policy.ts` `publicCheckoutQuote` and `reservation.ts` | The quote takes an optional member pricing. `amountPaise` becomes the member price, and a `listAmountPaise` is added when it differs. A member price of 0 is refused here, and the member books in the app instead ([D-8](#decisions)). The frozen-quote comparison continues to guard the price. |
 | Stripe and waitlist-offer acceptance | List price only; the restrictions still apply ([D-9](#decisions)). |
@@ -895,15 +895,15 @@ Manual QA, in Razorpay **test mode** only:
    1. `firestore.indexes.json`;
    2. `firestore.rules`;
    3. Functions: the new callables, webhook and schedules, plus the changed
-      `getEventViewerState`, `signUpForFreeEvent`, `managePublicEventCheckout`
-      and audience projection;
+      `signUpForFreeEvent`, `managePublicEventCheckout` and audience
+      projection;
    4. the Host and Consumer apps.
 3. **Firebase deploy order.** This follows `docs/release_operations.md`:
    1. `firestore.indexes.json`;
    2. `firestore.rules`;
    3. Functions: the new callables, webhook and schedules, plus the changed
-      `getEventViewerState`, `signUpForFreeEvent`, `managePublicEventCheckout`
-      and audience projection;
+      `signUpForFreeEvent`, `managePublicEventCheckout` and audience
+      projection;
    4. the Host and Consumer apps.
 
    Older app builds keep working: the new viewer-state and roster fields are

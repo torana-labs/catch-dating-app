@@ -8,7 +8,7 @@
   "x-firestore-collection": "organizerAudienceSummaries",
   "x-firestore-path": "organizerAudienceSummaries/{organizerId}",
   "x-document-id-field": "organizerId",
-  "x-owner": "organizer audience projection and getOrganizerCrmSummary",
+  "x-owner": "organizer audience projection",
   "required": [
     "organizerId", "contactCount", "pastAttendeeCount",
     "repeatAttendeeCount", "linkedAccountCount", "importedContactCount",
