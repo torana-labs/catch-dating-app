@@ -1,1 +1,1 @@
-events,hosts,organizers,checkin,guestlist,clubs,waitlist,tickets,attendance,runclubs
+rsvp,qr,scanner,attendance,waitlist,door,meetup,community,club,planner,crm,wedding,venue,party

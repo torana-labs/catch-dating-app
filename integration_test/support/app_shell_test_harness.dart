@@ -656,6 +656,13 @@ class FakeShellEventDiscoveryRepository implements EventDiscoveryRepository {
     DocumentSnapshot<Event>? startAfter,
   }) async =>
       CursorPage(items: await fetchDiscoverableEvents(query), hasMore: false);
+
+  @override
+  Stream<List<Event>> watchSearchHitEvents(ExploreSearchEventsQuery query) =>
+      Stream.value([
+        for (final event in events)
+          if (query.eventIds.contains(event.id)) event,
+      ]);
 }
 
 class RecordingFcmService extends FcmService {

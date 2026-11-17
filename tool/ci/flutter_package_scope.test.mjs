@@ -169,7 +169,7 @@ test("relative directives that leave a package join its closure transitively", (
 });
 
 test("Widgetbook and Consumer reach the root test helpers their tests import", () => {
-  const files = execFileSync("git", ["ls-files"], {cwd: repoRoot, encoding: "utf8"}).split("\n").filter(Boolean);
+  const files = execFileSync("git", ["ls-files"], {cwd: repoRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024}).split("\n").filter(Boolean);
   const listFiles = (entry) => files.filter((name) => name.startsWith(entry));
   const widgetbook = packageClosure("widgetbook", readRepo, listFiles);
   for (const helper of ["test/test_pump_helpers.dart", "test/goldens/support/golden_pump.dart", "test/support/catch_test_fonts.dart"]) {
@@ -225,7 +225,7 @@ test("web-only packages are derived from the tree and skip every job no closure 
 });
 
 test("the repository's React packages are web-only and no job's closure reaches them", () => {
-  const files = execFileSync("git", ["ls-files"], {cwd: repoRoot, encoding: "utf8"}).split("\n").filter(Boolean);
+  const files = execFileSync("git", ["ls-files"], {cwd: repoRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024}).split("\n").filter(Boolean);
   const web = webOnlyPackages(files, repoManifests);
   for (const directory of ["packages/web-ui", "packages/web-ui-react18", "packages/web-config", "packages/brand"]) {
     assert.ok(web.includes(directory), directory);

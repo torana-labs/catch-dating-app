@@ -3153,9 +3153,12 @@ and writers before a client using SDK reads, then backfill and activate each
 organizer. `onHostDirectoryOrganizerCreated` activates every model for a new
 organizer, which has no sources yet. The Host app reads the contact, form,
 group, response and event directories only through their markers: a missing
-marker is an error to retry, never a callable fallback. Online reads
-use the server under current rules; offline reads fall back to the device
-cache.
+marker is an error to retry, never a callable fallback. Each directory list is
+a Firestore listener over a window of its first rows (`limit + 1`, to know
+whether more follow); asking for more listens to a window one page larger, at
+most 2,500 rows. A server change shows in the open list at once, a write needs
+no reread, and a list opens offline from the device cache. A larger window that
+fails keeps the rows already shown and reports the failure under them.
 
 The normal SDK contact page reads at most `limit + 1` small summaries and one
 counts document. Single segment and single filter-family queries use indexes.
@@ -3171,18 +3174,21 @@ The same read boundary applies to `hostFormSummaries/{formId}` and
 editable draft definition. A form title search reads every summary that passes
 the status and purpose filters (at most 500) and matches title and description
 as a case-insensitive substring on the device, as `listOrganizerForms` did. Event summaries cover only unpublished inventory;
-published Events already use SDK reads. Unpublished Event rules additionally
+published Events already use SDK reads. The Events tab listens to the active
+unpublished events starting on or after the start of today, soonest first, as
+its drafts. Unpublished Event rules additionally
 require a currently active, unarchived organizer (the shared
 `isActiveHostSummaryManager` rule helper).
 
 `hostGroupSummaries/{audienceId}` contains name, lifecycle, revision, group kind
 and preview metadata. Predicates and up to 2500 selected contact IDs are kept in
 `hostGroupDetails/{audienceId}`, a manager-readable **get-only** projection for
-one selected group. After verified SDK cutover, the paginated Groups controller
-publishes the first 30-row page, applies name/recent-preview sorting and group-type filters in indexed
-queries, and loads further pages only on request. Contains-name search preserves
-the existing bounded exhaustive behavior over the summaries, which the People
-groups list and the campaign group picker share. Mutation, membership preview
+one selected group, listened to while that group is open so a save delivers its
+new revision. The paginated Groups controller listens to a 30-row window,
+applies name/recent-preview sorting and group-type filters in indexed queries,
+and grows the window by a page only on request. Contains-name search listens to
+every active group's summary by name (at most 2,500; more fails safely), which
+the People groups list and the campaign group picker share. Mutation, membership preview
 and the saved-group filter options stay callable.
 
 The Today attention queue reads `organizerAttentionItems` and
@@ -3231,9 +3237,13 @@ its entries here too, by `formId`, optionally for one native version (the
 entry's `row.response.versionId`, as the callable filters) and one review
 status. Its version scope comes from the form's `hostFormSummaries` row and its
 answer filter options from `hostFormVersionFilters` (below); an imported
-application form has neither. Answer filters, response status, identity and
-source filters, contact joins and text search keep the existing callable
-behavior until their own equivalent indexed read contracts are implemented.
+application form has neither. One form's answers in one response status, newest
+first and without applications, read here too by the entry's
+`row.response.status` (only a response entry has one); the form builder's
+Overview reads its latest submitted answer this way. Answer filters, identity
+and source filters, contact joins, text search and other response status
+combinations stay on `listOrganizerFormResponses`: they are the recorded search
+exception, which needs server evaluation over answers and identities.
 `hostFormVersionFilters/{versionId}` gives form-scoped pages a published native
 form version's answer filter options without the callable: `organizerId`,
 `formId`, `versionId`, `formVersion` (N in `formId_vN`), `version` and
@@ -5841,7 +5851,10 @@ queries:
 - **Feed and history surfaces** are growing collections. They require a
   reviewed page size, a stable ordered cursor, refresh behavior, and an honest
   `hasMore` state. Realtime first-page listeners are allowed when freshness is
-  product-critical, but older history still loads through a cursor.
+  product-critical, but older history still loads through a cursor. Host
+  directories instead grow one listener window a page at a time, up to the
+  reviewed cap in
+  [Organizer Communication Preferences And CRM](#organizer-communication-preferences-and-crm).
 - **Rosters and bounded working sets** require a reviewed limit based on the
   product's real domain bound. If the domain is not actually bounded, they use
   the feed/history policy.
