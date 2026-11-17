@@ -4,6 +4,7 @@ import {describe, expect, it, vi} from "vitest";
 import {useCityAlertsController} from "./useCityAlertsController";
 
 vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent: vi.fn()}));
+vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => "site-token")}));
 
 const place = {citySlug: "mumbai", cityLabel: "Mumbai", sourcePage: "/mumbai/", entry: "ex-wa"};
 const submitEvent = () => ({preventDefault: vi.fn()}) as unknown as FormEvent<HTMLFormElement>;
@@ -29,6 +30,18 @@ describe("useCityAlertsController", () => {
       lead: expect.objectContaining({phone: "+919800000000", entry: "ex-wa", sourcePage: "/mumbai/", cityAlerts: {interests: ["runs"]}}),
     }));
     expect(result.current.sent).toBe(true);
+  });
+
+  it("sends the site's App Check token by default, which the lead intake requires", async () => {
+    const fetch = vi.fn(async () => new Response(JSON.stringify(receipt), {status: 200}));
+    vi.stubGlobal("fetch", fetch);
+    const {result} = renderHook(() => useCityAlertsController(place, ["runs"]));
+    act(() => result.current.setPhone("9800000000"));
+    await act(() => result.current.handleSubmit(submitEvent()));
+    expect(fetch).toHaveBeenCalledWith("/api/join-waitlist", expect.objectContaining({
+      headers: {"Content-Type": "application/json", "X-Firebase-AppCheck": "site-token"}}));
+    expect(result.current.sent).toBe(true);
+    vi.unstubAllGlobals();
   });
 
   it("retries a failed send as the same lead, and a new number as a new one", async () => {

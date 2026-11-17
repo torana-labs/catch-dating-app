@@ -49,6 +49,7 @@ import type {StartOrganizerClaimVerificationCallableResponse} from "../../functi
 import type {ConfirmOrganizerClaimVerificationCallablePayload} from "../../functions/src/shared/generated/confirmOrganizerClaimVerificationCallablePayload";
 import type {ConfirmOrganizerClaimVerificationCallableResponse} from "../../functions/src/shared/generated/confirmOrganizerClaimVerificationCallableResponse";
 import type {FirebaseApp} from "firebase/app";
+import type {AppCheck} from "firebase/app-check";
 import type {Auth, User} from "firebase/auth";
 import type {Functions} from "firebase/functions";
 import type {Firestore} from "firebase/firestore";
@@ -223,6 +224,7 @@ let publicRuntimePromise: Promise<PublicFirebaseRuntime | null> | null = null;
 
 interface PublicFirebaseRuntime {
   app: FirebaseApp;
+  appCheck: AppCheck;
   functions: Functions;
 }
 
@@ -1199,11 +1201,24 @@ async function loadPublicFirebaseRuntime():
     import("firebase/functions"),
   ]);
   const app = initializeApp(config);
-  initializeAppCheck(app, {
+  const appCheck = initializeAppCheck(app, {
     provider: new ReCaptchaEnterpriseProvider(appCheckSiteKey),
     isTokenAutoRefreshEnabled: true,
   });
-  return {app, functions: getFunctions(app, "asia-south1")};
+  return {app, appCheck, functions: getFunctions(app, "asia-south1")};
+}
+
+/**
+ * The site's App Check token for the HTTP Functions that require one, such
+ * as the lead intake behind /api/join-waitlist (sent as X-Firebase-AppCheck).
+ * Null where this build has no Firebase or App Check configuration; a token
+ * that cannot be minted rejects, and the caller decides what to send.
+ */
+export async function getWebsiteAppCheckToken(): Promise<string | null> {
+  const runtime = await getPublicFirebaseRuntime();
+  if (!runtime) return null;
+  const {getToken} = await import("firebase/app-check");
+  return (await getToken(runtime.appCheck)).token;
 }
 
 async function loadFirebaseRuntime(): Promise<FirebaseRuntime | null> {

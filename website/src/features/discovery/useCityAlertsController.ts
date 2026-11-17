@@ -7,6 +7,7 @@ import {
   cityAlertRequest,
   cityAlertRequestId,
   postCityAlert,
+  type CityAlertAppCheck,
   type CityAlertInterest,
   type CityAlertPlace,
   type CityAlertReceipt,
@@ -16,13 +17,20 @@ import type {JoinWaitlistHTTPRequest} from "../../shared/api/joinWaitlistContrac
 type Phase = "idle" | "sending" | "sent";
 
 /**
+ * The site's App Check token, loaded with Firebase only when a form is sent.
+ * The lead intake refuses a city_alerts lead without one (401).
+ */
+const siteAppCheck: CityAlertAppCheck = async () => (await import("../../firebase")).getWebsiteAppCheckToken();
+const postWithAppCheck = (body: JoinWaitlistHTTPRequest) => postCityAlert(body, siteAppCheck);
+
+/**
  * Owns one "Get new plans in {city} on WhatsApp" form: the number, the
  * request id that makes a retry the same lead, and the sending and sent
  * states. Sending is the lead intake's; this only builds and posts the
  * city_alerts request.
  */
 export function useCityAlertsController(place: CityAlertPlace, interests: readonly CityAlertInterest[],
-  submit: (body: JoinWaitlistHTTPRequest) => Promise<CityAlertReceipt> = postCityAlert) {
+  submit: (body: JoinWaitlistHTTPRequest) => Promise<CityAlertReceipt> = postWithAppCheck) {
   const [phone, setPhone] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
