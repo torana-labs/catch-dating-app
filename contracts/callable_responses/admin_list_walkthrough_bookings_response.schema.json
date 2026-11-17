@@ -2,17 +2,27 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/admin_list_walkthrough_bookings_response.schema.json",
   "title": "AdminListWalkthroughBookingsCallableResponse",
-  "description": "The saved calendar (null when none is saved), how many slots are open from now, and the bookings in the range, earliest slot first.",
+  "description": "The saved calendar (null when none is saved), the calendar slots come from now and whether it is the built-in default, how many slots are open from now, and the bookings in the range, earliest slot first.",
   "type": "object",
   "additionalProperties": false,
   "x-owner": "adminListWalkthroughBookings",
-  "required": ["generatedAt", "timeZone", "fromDate", "toDate", "availability", "openSlotCount", "bookings", "truncated"],
+  "required": ["generatedAt", "timeZone", "fromDate", "toDate", "availability", "calendar", "openSlotCount", "bookings", "truncated"],
   "properties": {
     "generatedAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/instant"},
     "timeZone": {"const": "Asia/Kolkata"},
     "fromDate": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/localDate"},
     "toDate": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/localDate", "description": "Last India-time day of the range, included."},
     "availability": {"anyOf": [{"type": "null"}, {"$ref": "../shared/walkthrough_common.schema.json#/definitions/availabilityView"}]},
+    "calendar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "settings"],
+      "description": "The calendar the website's slots come from now. source is saved when staff saved one (availability), else default: the built-in Monday to Friday 10:00 to 18:00 IST calendar, 30-minute slots, 2 hours' lead, 14 days ahead. Saving a calendar (expectedRevision 0) replaces the default.",
+      "properties": {
+        "source": {"enum": ["saved", "default"]},
+        "settings": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/availabilitySettings"}
+      }
+    },
     "openSlotCount": {"type": "integer", "minimum": 0, "description": "Slots the website offers now, across the calendar's horizon."},
     "bookings": {"type": "array", "maxItems": 500, "items": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/adminBookingRow"}},
     "truncated": {"type": "boolean", "description": "True when more than 500 bookings fall in the range."}

@@ -335,9 +335,10 @@ test("a city that has not launched lists who is joining, with no pages", () => {
     formats: ["run"], followerCount: 3, claimState: "unclaimed",
     upcomingPlanCount: 0, nextPlan: null, discoveryFormats: ["runClubs"],
     womenLed: false}]);
-  // Joining organisers count toward their format; no page is indexed and
-  // the header has nothing to show until the city launches.
+  // Joining organisers count toward their format; one is below the bar,
+  // and the header has nothing to show until the city launches.
   assert.equal(city.formatPages.runClubs.organizerCount, 1);
+  assert.equal(city.formatPages.runClubs.upcomingEventCount, 0);
   assert.equal(city.formatPages.runClubs.indexing, "noindex, follow");
   assert.equal(city.upcomingEvents30d, 0);
   assert.equal(city.hasUpcomingMonth, false);
@@ -345,18 +346,35 @@ test("a city that has not launched lists who is joining, with no pages", () => {
     JSON.stringify(validateCityPlansDocument.errors));
 });
 
-test("a city that has not launched indexes no format page, however many " +
-  "organisers join", () => {
-  const joining = ["a", "b", "c", "d"].map((id) => ({
+test("a city that has not launched indexes a format page at 3 joining " +
+  "organisers (owner decision, 17 Nov 2026)", () => {
+  const listing = (id: string, category: string) => ({
     id: `runners-${id}`, name: `Runners ${id}`, citySlug: "pune",
-    category: "Run club", formats: [], logo: {mode: "monogram", text: "R",
+    category, formats: [], logo: {mode: "monogram", text: "R",
       status: "not_verified"}, metrics: {followerCount: 0},
     authority: {claimState: "unclaimed"},
-  }) as unknown as HostListing);
-  const city = buildCityPlans({market: pune, now, organizerPages: [],
-    joiningOrganizers: joining});
-  assert.equal(city.formatPages.runClubs.organizerCount, 4);
-  assert.equal(city.formatPages.runClubs.indexing, "noindex, follow");
+  }) as unknown as HostListing;
+  const build = (joining: HostListing[]) => buildCityPlans({market: pune,
+    now, organizerPages: livePages(), joiningOrganizers: joining});
+  const two = build(["a", "b"].map((id) => listing(id, "Run club")));
+  assert.equal(two.formatPages.runClubs.organizerCount, 2);
+  assert.equal(two.formatPages.runClubs.indexing, "noindex, follow");
+  // Organisers listed in another city, or in another format, do not count.
+  const three = build([...["a", "b", "c"].map((id) => listing(id, "Run club")),
+    {...listing("d", "Run club"), citySlug: "mumbai"} as HostListing,
+    listing("e", "Supper club")]);
+  assert.equal(three.formatPages.runClubs.organizerCount, 3);
+  assert.equal(three.formatPages.runClubs.indexing, "index, follow");
+  assert.equal(three.formatPages.supper.organizerCount, 1);
+  assert.equal(three.formatPages.supper.indexing, "noindex, follow");
+  // The city's launched organizer pages are not read, so its plan counts
+  // stay at zero: only joining organisers can meet the bar.
+  for (const format of discoveryFormats) {
+    assert.equal(three.formatPages[format].upcomingEventCount, 0, format);
+  }
+  assert.equal(three.status, "launchingSoon");
+  assert.ok(validateCityPlansDocument(stored(three)),
+    JSON.stringify(validateCityPlansDocument.errors));
 });
 
 test("activities and free-text formats map to homepage formats", () => {
@@ -401,7 +419,7 @@ test("format pages hold counts only, keyed by known formats", () => {
   const formatPages: CityPlans["formatPages"] = fixture.formatPages;
   assert.ok(validateCityPlansDocument(fixture),
     JSON.stringify(validateCityPlansDocument.errors));
-  // The fixture is a launched city, so its indexing follows the rule.
+  // Launched or not, a format page's indexing follows the bar.
   for (const format of discoveryFormats) {
     const entry = formatPages[format];
     assert.equal(entry.indexing, entry.organizerCount >= 3 ||

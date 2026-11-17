@@ -121,20 +121,18 @@ test("listed categories and formats name the formats they mean", () => {
 test("a format page is indexed at 3 organisers or 5 upcoming plans", () => {
   assert.deepEqual(formatPageIndexing,
     {minOrganizers: 3, minUpcomingEvents: 5});
-  const cases: [boolean, number, number, string][] = [
-    [true, 0, 0, "noindex, follow"],
-    [true, 2, 0, "noindex, follow"],
-    [true, 0, 4, "noindex, follow"],
-    [true, 2, 4, "noindex, follow"],
-    [true, 3, 0, "index, follow"],
-    [true, 0, 5, "index, follow"],
-    [true, 3, 5, "index, follow"],
-    [true, 40, 200, "index, follow"],
-    [false, 3, 5, "noindex, follow"],
-    [false, 40, 200, "noindex, follow"],
+  const cases: [number, number, string][] = [
+    [0, 0, "noindex, follow"],
+    [2, 0, "noindex, follow"],
+    [0, 4, "noindex, follow"],
+    [2, 4, "noindex, follow"],
+    [3, 0, "index, follow"],
+    [0, 5, "index, follow"],
+    [3, 5, "index, follow"],
+    [40, 200, "index, follow"],
   ];
-  for (const [launched, organizers, events, indexing] of cases) {
-    assert.equal(formatPageIndexingFor(launched, organizers, events),
-      indexing, `${launched} ${organizers} ${events}`);
+  for (const [organizers, events, indexing] of cases) {
+    assert.equal(formatPageIndexingFor(organizers, events),
+      indexing, `${organizers} ${events}`);
   }
 });

@@ -41,6 +41,15 @@ test("only admin and the owner reach the walkthrough Admin actions", async () =>
 
 test("staff save the calendar against the revision they read, audited, and see the slots it opens", async () => {
   const h = harness({settings: null});
+  // Before any save, the list reports the default calendar in use and the slots it opens.
+  const before = await adminListWalkthroughBookingsHandler(h.call({}, staff()), h.deps);
+  assertContract("AdminListWalkthroughBookingsCallableResponse", before);
+  assert.equal(before.availability, null);
+  assert.equal(before.calendar.source, "default");
+  assert.deepEqual(before.calendar.settings.weeklyWindows.map((window) => `${window.weekday} ${window.start}-${window.end}`),
+    ["1 10:00-18:00", "2 10:00-18:00", "3 10:00-18:00", "4 10:00-18:00", "5 10:00-18:00"]);
+  // Ten weekdays of 16 slots, less Monday's 10:00, 10:30 and 11:00 inside the 2-hour lead at 09:30.
+  assert.equal(before.openSlotCount, 157);
   const settings = {...SETTINGS, weeklyWindows: [{weekday: 2, start: "15:00", end: "16:00"}, {weekday: 1, start: "16:00", end: "17:00"}],
     closedDates: ["2026-11-24"]};
   const saved = await adminSetWalkthroughAvailabilityHandler(h.call({expectedRevision: 0, settings, note: "Pilot hours"}, staff()), h.deps);
@@ -57,6 +66,13 @@ test("staff save the calendar against the revision they read, audited, and see t
   assert.equal(audits.length, 1);
   assert.deepEqual([audits[0].action, audits[0].targetPath, audits[0].actorUid, audits[0].note],
     ["walkthroughs.set-availability", "walkthroughAvailability/default", STAFF_UID, "Pilot hours"]);
+  // The first save records the default it replaced.
+  const [auditBefore, auditAfter] = [audits[0].before, audits[0].after] as Array<Record<string, unknown>>;
+  assert.deepEqual([auditBefore.source, auditBefore.revision, auditBefore.leadTimeMinutes], ["default", 0, 120]);
+  assert.deepEqual([auditAfter.source, auditAfter.revision], ["saved", 1]);
+  const after = await adminListWalkthroughBookingsHandler(h.call({}, staff()), h.deps);
+  assert.deepEqual([after.calendar.source, after.availability?.revision], ["saved", 1]);
+  assert.deepEqual(after.calendar.settings, saved.availability.settings);
   // An unchanged save keeps the revision and writes no audit entry.
   const same = await adminSetWalkthroughAvailabilityHandler(h.call({expectedRevision: 1, settings}, staff("adminOwner")), h.deps);
   assert.deepEqual([same.changed, same.availability.revision], [false, 1]);
