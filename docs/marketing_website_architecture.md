@@ -194,12 +194,13 @@ shells keep their existing composition and authority.
 The redesign's pages (`design/source_packs/website-playbook`) are content,
 not code. Every path from the sitemap board is registered now as a
 `contentFamily` route in `design/website/routes.json`, matching
-`website/src/features/playbook/playbookRoutes.ts`: 40 single pages and 7
+`website/src/features/playbook/playbookRoutes.ts`: 40 single pages and 5
 families (`/host/first-event/:plan/`, `/stories/:slug/`, `/compare/:slug/`,
-`/playbooks/:slug/`, `/lp/:campaign/`, `/new-to-:city/` and
-`/:city/:format/`). A route renders only once its page is in its section's
-index; until then it is a clean 404, as is a page that uses a section or
-option no kit component draws yet (`features/playbook/playbookBindings.ts`).
+`/playbooks/:slug/` and `/lp/:campaign/`). The sitemap board's two city
+families are discovery pages instead (below). A route renders only once its
+page is in its section's index; until then it is a clean 404, as is a page
+that uses a section or option no kit component draws yet
+(`features/playbook/playbookBindings.ts`).
 
 - **Contract.** `content/playbook/playbookContract.ts` is the one spec for the
   page types, the browser-safe validator and `playbookPage.schema.json`
@@ -231,6 +232,28 @@ option no kit component draws yet (`features/playbook/playbookBindings.ts`).
   until those pages ship. A lead form renders only once its slot in
   `playbookLeadForms.ts` is filled; a custom section only once its component
   is in `custom/`.
+
+### Discovery pages
+
+The city-by-format page (`/<city>/<format>/`, PlaybookCityFormat) and the
+new-to-the-city page (`/new-to-<city>/`, PlaybookNewToCity) are bound to the
+city's cityPlans read model, not authored: they are the `dataFamily` routes
+`city_format` and `new_to_city` in routes.json, owned by `features/discovery`.
+`matchDiscoveryRoute` (`discoveryModel.ts`) matches a website city and one of
+the contract's format page slugs before the playbook pages, in
+`server/publicRoute.ts` and the Vite shell. The route reads the city
+(`readHomeCatalog`) and `discoveryRoute.ts` decides the rest: a format with no
+organiser and no plan in the city is a 404, decided before the render
+streams; a city that cannot be read, or has no format pages yet, renders the
+page's unavailable state with a 503. A format page is indexed, and listed in
+the Next sitemap (`server/discoverySitemap.ts`), only when the read model's
+`formatPages[format].indexing` says `index, follow`; a new-to-the-city page
+stays noindex and out of the sitemap until the owner approves it. Neither has
+static output. Indexing before a city launches is the read model's decision
+too (`formatPageIndexingFor`, owner decision of 17 Nov 2026). Their closing
+"Get new plans on WhatsApp" band opens a WhatsApp chat naming the city, as
+every playbook page's actions do, until the website lead client can send a
+`city_alerts` lead with the site's App Check token.
 
 ### How to add a playbook page
 

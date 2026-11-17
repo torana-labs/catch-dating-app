@@ -159,7 +159,10 @@ for (const event of publicEvents) {
 
 // The redesign's content pages: every registered page that renders, with
 // its own meta. A page is noindex (and so out of sitemap.xml) until its
-// meta.noindex is false; ad landing pages always are.
+// meta.noindex is false; ad landing pages always are. The discovery pages
+// (/<city>/<format>/, /new-to-<city>/) have no static output: they are bound
+// to the city's cityPlans read model, which only the Next render reads, and
+// only its sitemap lists the format pages the backend indexes.
 for (const ref of registeredPlaybookPages()) {
   const file = path.join(websiteRoot, "src", "content", "playbook", "pages", ref.match.route.group, ref.entry.file);
   const page = validatedPlaybookPage(JSON.parse(fs.readFileSync(file, "utf8")));
