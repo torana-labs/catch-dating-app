@@ -60,6 +60,98 @@ it("reviews exact terms before a hold, then uses only server admission", async (
   expect(result.current.admission).toEqual(admission);
   expect(window.sessionStorage.length).toBe(0);
 });
+// Multi-place booking (PR #1887): a quote for N places, N - 1 guest names on prepare.
+const partyQuote = (places: number, member = false) => member ?
+  {...quote, amountPaise: 6000 + 10000 * (places - 1), placeCount: places, unitAmountPaise: 6000, memberPlaceCount: 1, guestUnitAmountPaise: 10000, listAmountPaise: 10000} :
+  {...quote, amountPaise: 10000 * places, placeCount: places, unitAmountPaise: 10000};
+it("books one place without place fields or guest names, as before multi-place booking", async () => {
+  const {result} = renderHook(() => usePublicCheckoutController("event1", null), {wrapper});
+  await waitFor(() => expect(result.current.quote).toEqual(quote));
+  expect(api.call).toHaveBeenCalledWith({action: "quote", eventId: "event1"});
+  expect(result.current.places).toBe(1);
+  expect(result.current.guestNames).toEqual([]);
+  act(() => result.current.setName("Maya"));
+  await act(async () => {await result.current.pay();});
+  const sent = api.call.mock.calls.find(([input]) => input.action === "prepare")![0];
+  expect("guestNames" in sent).toBe(false);
+});
+it("re-quotes for the party and sends a trimmed name for each guest", async () => {
+  api.call.mockImplementation(async (input) => input.action === "find" ? response() :
+    input.action === "quote" ? {...response(), quote: input.placeCount ? partyQuote(input.placeCount) : quote} :
+      input.action === "prepare" ? response({...ready, amountPaise: 30000, placeCount: 3, unitAmountPaise: 10000, checkout: {...ready.checkout, amountPaise: 30000}}) :
+        response({...admitted, amountPaise: 30000, placeCount: 3, unitAmountPaise: 10000, cancellationQuote: {refundAmountPaise: 30000}}, {...admission, placeCount: 3}));
+  const {result} = renderHook(() => usePublicCheckoutController("event1", null), {wrapper});
+  await waitFor(() => expect(result.current.quote).toEqual(quote));
+  await act(async () => {await result.current.changePlaces(3);});
+  expect(api.call).toHaveBeenLastCalledWith({action: "quote", eventId: "event1", placeCount: 3});
+  expect(result.current.quote).toEqual(partyQuote(3));
+  expect(result.current.places).toBe(3);
+  expect(result.current.guestNames).toEqual(["", ""]);
+  await act(async () => {await result.current.changePlaces(9);});
+  expect(result.current.places).toBe(4);
+  await act(async () => {await result.current.changePlaces(3);});
+  act(() => result.current.setName("Maya"));
+  act(() => result.current.setGuestName(0, "  Riya   Shah "));
+  await act(async () => {await result.current.pay();});
+  expect(api.call.mock.calls.some(([input]) => input.action === "prepare")).toBe(false);
+  expect(result.current.status.message).toBe("Add a name for each guest, up to 80 characters.");
+  act(() => result.current.setGuestName(1, "Arjun"));
+  await act(async () => {await result.current.pay();});
+  expect(api.call).toHaveBeenCalledWith(expect.objectContaining({action: "prepare", displayName: "Maya",
+    guestNames: ["Riya Shah", "Arjun"], reviewedQuote: partyQuote(3)}));
+  expect(result.current.admission).toEqual({...admission, placeCount: 3});
+});
+it("refuses a party larger than the places left and lets the guest choose fewer", async () => {
+  api.call.mockImplementation(async (input) => input.action === "find" ? response() :
+    input.action === "quote" ? {...response(), quote: input.placeCount ? partyQuote(input.placeCount) : quote} :
+      input.action === "prepare" ? Promise.reject(Object.assign(new Error("Only 1 place is left."), {details: {reason: "notEnoughPlaces", placesLeft: 1}})) :
+        response(admitted, admission));
+  const {result} = renderHook(() => usePublicCheckoutController("event1", null), {wrapper});
+  await waitFor(() => expect(result.current.quote).toEqual(quote));
+  await act(async () => {await result.current.changePlaces(2);});
+  act(() => result.current.setName("Maya"));
+  act(() => result.current.setGuestName(0, "Riya"));
+  await act(async () => {await result.current.pay();});
+  expect(result.current.status).toEqual({message: "Only 1 place is left. Choose fewer places.", tone: "is-error"});
+  expect(result.current.placesLeft).toBe(1);
+  expect(result.current.nameLocked).toBe(false);
+  expect(window.sessionStorage.length).toBe(0);
+  await act(async () => {await result.current.changePlaces(1);});
+  expect(api.call).toHaveBeenLastCalledWith({action: "quote", eventId: "event1"});
+  expect(result.current.places).toBe(1);
+  expect(result.current.guestNames).toEqual([]);
+});
+it("replays a saved multi-place attempt with its own places and names after a reload", async () => {
+  api.call.mockImplementation(async (input) => input.action === "find" ? response() :
+    input.action === "quote" ? {...response(), quote: input.placeCount ? partyQuote(input.placeCount) : quote} : Promise.reject(new Error("Lost response")));
+  const first = renderHook(() => usePublicCheckoutController("event1", null), {wrapper});
+  await waitFor(() => expect(first.result.current.quote).toEqual(quote));
+  await act(async () => {await first.result.current.changePlaces(2);});
+  act(() => first.result.current.setName("Maya"));
+  act(() => first.result.current.setGuestName(0, "Riya"));
+  await act(async () => {await first.result.current.pay();});
+  const sent = api.call.mock.calls.find(([input]) => input.action === "prepare")![0];
+  first.unmount();
+  const next = renderHook(() => usePublicCheckoutController("event1", null), {wrapper});
+  await waitFor(() => expect(next.result.current.guestNames).toEqual(["Riya"]));
+  expect(next.result.current.places).toBe(2);
+  expect(next.result.current.nameLocked).toBe(true);
+  await act(async () => {await next.result.current.pay();});
+  expect(api.call).toHaveBeenLastCalledWith(sent);
+});
+it("shows the member price on the member's own place and the list price on each guest's", async () => {
+  api.call.mockImplementation(async (input) => input.action === "find" ? response() :
+    input.action === "quote" ? {...response(), quote: input.placeCount ? partyQuote(input.placeCount, true) : quote} : response(ready));
+  render(<PublicPaidEventRegistration eventId="event1" inviteToken={null} />, {wrapper});
+  fireEvent.click(await screen.findByRole("button", {name: "One more place"}));
+  fireEvent.click(await screen.findByRole("button", {name: "One more place"}));
+  expect(await screen.findByText("Your place, member price")).toBeTruthy();
+  expect(screen.getByText("2 guest places × ₹100.00")).toBeTruthy();
+  expect(screen.getByText("₹260.00")).toBeTruthy();
+  expect(screen.getByRole("textbox", {name: "Guest 2’s name"})).toBeTruthy();
+  expect(screen.getByRole("textbox", {name: "Guest 3’s name"})).toBeTruthy();
+  expect(screen.getByRole("button", {name: "Reserve 3 places and pay ₹260.00"})).toBeTruthy();
+});
 it("retains request identity after a lost prepare response and across reload", async () => {
   api.call.mockImplementation(async (input) => input.action === "find" ? response() : input.action === "quote" ? {...response(), quote} : Promise.reject(new Error("Lost response")));
   const first = renderHook(() => usePublicCheckoutController("event1", null), {wrapper});
@@ -118,6 +210,16 @@ it("rejects crossed event, provider amount, and offer-ledger response authority"
   expect(() => assertPublicCheckoutResponse(response({...ready, paymentId: `ep_${"a".repeat(32)}`}), "event1")).toThrow();
   expect(() => assertPublicCheckoutResponse(response({...ready, checkout: {...ready.checkout, amountPaise: 1}}), "event1")).toThrow();
   expect(() => assertPublicCheckoutResponse(response({...ready, status: "refunded", checkout: null}, admission), "event1")).toThrow();
+});
+it("accepts the place fields of a multi-place quote, payment and admission, and rejects ones that do not add up", () => {
+  expect(() => assertPublicCheckoutResponse({...response(), quote: partyQuote(3)}, "event1")).not.toThrow();
+  expect(() => assertPublicCheckoutResponse({...response(), quote: partyQuote(2, true)}, "event1")).not.toThrow();
+  expect(() => assertPublicCheckoutResponse(response({...admitted, placeCount: 1, unitAmountPaise: 10000}, {...admission, placeCount: 1}), "event1")).not.toThrow();
+  expect(() => assertPublicCheckoutResponse({...response(), quote: {...partyQuote(3), amountPaise: 20000}}, "event1")).toThrow();
+  expect(() => assertPublicCheckoutResponse({...response(), quote: {...quote, placeCount: 1, unitAmountPaise: 10000}}, "event1")).toThrow();
+  expect(() => assertPublicCheckoutResponse({...response(), quote: {...partyQuote(5)}}, "event1")).toThrow();
+  expect(() => assertPublicCheckoutResponse(response({...admitted, placeCount: 2, unitAmountPaise: 10000}), "event1")).toThrow();
+  expect(() => assertPublicCheckoutResponse(response(admitted, {...admission, placeCount: 0}), "event1")).toThrow();
 });
 it("allows an explicit new booking after an expired hold without reusing the old attempt", async () => {
   const expired = {...ready, status: "expired", checkout: null};

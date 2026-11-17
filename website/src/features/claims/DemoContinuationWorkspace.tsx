@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchField, CatchFlowLayout} from "@catch/web-ui";
 import {continuationCopy} from "../../content/salesDemoContinuation";
 import {claimAccountLinkingErrorMessage} from "../../shared/auth/claimAccountLinking";
 import {useEffect, useRef, useState} from "react";
@@ -12,7 +12,6 @@ import {
   FormStatus,
   EventRuntimeLoading,
   EventRuntimeModule,
-  EventRuntimePanel,
 } from "../../shared/ui/primitives";
 import {claimContactValidationMessage, claimRoleOptions, parseProofUrls,
   type ClaimRole} from "./claimModel";
@@ -93,8 +92,8 @@ function ContinuationWorkspace({continuationId, api, auth}: {
   </>;
   // Finishing a demo setup is a one-job flow: the host bar without the footer's help band.
   return <><PublicSiteHeader variant="host" /><ClaimFlowMain>
-    <EventRuntimePanel kicker={continuationCopy.kicker} title={continuationCopy.title}
-      body={continuationCopy.body}>
+    <CatchFlowLayout kicker={continuationCopy.kicker} lead={continuationCopy.body}
+      title={continuationCopy.title}>
       {!validId ? <p>{continuationCopy.invalidLink}</p> : !c.authReady ?
         <EventRuntimeLoading label={continuationCopy.checkingAccount} /> : !c.viewer ? <>
           <p>{continuationCopy.signInPrompt}</p>
@@ -133,7 +132,7 @@ function ContinuationWorkspace({continuationId, api, auth}: {
           <Button disabled={c.pending} onClick={() => void c.query.refetch()}>{continuationCopy.checkStatus}</Button>
         </>}
       {c.notice || authError ? <FormStatus status={{tone: "is-error", message: c.notice || authError}} /> : null}
-    </EventRuntimePanel>
+    </CatchFlowLayout>
   </ClaimFlowMain><PublicSiteFooter helpBand={false} variant="host" /></>;
 }
 

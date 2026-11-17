@@ -1,18 +1,23 @@
-import {CatchField, CatchGap} from "@catch/web-ui";
+import {
+  CatchBanner,
+  CatchButton,
+  CatchField,
+  CatchFormStepList,
+  CatchGroundCard,
+  CatchIndexRow,
+  CatchLoadingIndicator,
+  CatchSection,
+  CatchStack,
+  CatchText,
+  type CatchFormStepListStatus,
+} from "@catch/web-ui";
+import type {ReactNode} from "react";
+import {interpolateContent as fill} from "@content/interpolate";
 import {claimAccountLinkingErrorMessage} from "../../shared/auth/claimAccountLinking";
-import {salesDemoCopy} from "../../content/salesDemo";
+import {salesDemoCopy, salesDemoFlowCopy} from "../../content/salesDemo";
 import {useEffect, useLayoutEffect, useState} from "react";
 import {useParams} from "react-router";
-import {
-  Button,
-  ButtonLink,
-  EventRuntimeFrame,
-  EventRuntimeLoading,
-  EventRuntimeModule,
-  EventRuntimePanel,
-  EventRuntimePracticeBanner,
-  FormStatus,
-} from "../../shared/ui/primitives";
+import {EventBookingFrame} from "../../shared/site/EventBookingFrame";
 import {websiteSalesDemoAuth, type SalesDemoAuth,
   type SalesDemoPhoneChallenge} from "./salesDemoAuth";
 import {grantFromSalesDemoFragment, salesDemoActionTitle,
@@ -46,54 +51,102 @@ function SalesDemoInvitation({invitationId, api, auth}: {
   const preview = !controller.privateAccessDenied && controller.preview.isSuccess && !controller.preview.isFetching ? controller.preview.data : undefined;
   const invalidId = !/^[A-Za-z0-9_-]{3,128}$/u.test(invitationId);
 
-  return <EventRuntimeFrame brandLabel={salesDemoCopy.catch} brandWord={salesDemoCopy.catch}
-    eventTitle={preview?.preview.brandName}>
-    {invalidId || controller.privateAccessDenied || controller.preview.isError ? <EventRuntimePanel
-      kicker={salesDemoCopy.privateExample} title={salesDemoCopy.thisPreviewIsUnavailable}
-      body={salesDemoCopy.theInvitationMayHaveExpiredOr}>
-      <Button type="button" onClick={() => void controller.retryPreview()}>{salesDemoCopy.tryAgain}</Button>
-      {controller.continuationId ? <ButtonLink href={`/claim/?continuation=${encodeURIComponent(controller.continuationId)}`}>
-        {salesDemoCopy.continuePreservedSetup}</ButtonLink> : controller.canRecoverPreservation ?
-        <Button disabled={controller.pending} onClick={() => void controller.preserveSetup()}>
-          {salesDemoCopy.recoverSetup}</Button> : null}
-      {controller.setupNotice || controller.notice ? <FormStatus status={{tone: "is-error", message: controller.setupNotice || controller.notice}} /> : null}
+  if (invalidId || controller.privateAccessDenied || controller.preview.isError) {
+    return <EventBookingFrame body={salesDemoCopy.theInvitationMayHaveExpiredOr} card={false}
+      kicker={salesDemoCopy.privateExample} title={salesDemoCopy.thisPreviewIsUnavailable}>
+      <Block>
+        <CatchStack gap={12}>
+          <CatchStack align="start" direction="row" gap={8} wrap>
+            <CatchButton label={salesDemoCopy.tryAgain} onPressed={() => void controller.retryPreview()} size="md" />
+            {controller.continuationId ? <CatchButton href={`/claim/?continuation=${encodeURIComponent(controller.continuationId)}`}
+              label={salesDemoCopy.continuePreservedSetup} size="md" variant="secondary" /> : controller.canRecoverPreservation ?
+              <CatchButton label={salesDemoCopy.recoverSetup} onPressed={controller.pending ? null : () => void controller.preserveSetup()}
+                size="md" variant="secondary" /> : null}
+          </CatchStack>
+          {controller.setupNotice || controller.notice ? <Problem message={controller.setupNotice || controller.notice} /> : null}
+        </CatchStack>
+      </Block>
       {!invalidId && grantToken ? <DemoAccessView controller={controller} auth={auth}
         hasGrant cta={salesDemoCopy.verifyInvitedContact}
         interactiveAvailable={false} /> : null}
-    </EventRuntimePanel> : controller.preview.isPending || !preview ?
-      <EventRuntimeLoading label={salesDemoCopy.loadingPrivatePreview} /> :
-      <EventRuntimePanel kicker={salesDemoCopy.privateWorkflowPreview}
-        title={preview.preview.headline} body={preview.preview.scenario}>
-        <CatchGap size="section">
-          <EventRuntimePracticeBanner>{preview.notice}</EventRuntimePracticeBanner>
-          <EventRuntimeModule title={salesDemoCopy.whatYouCanExplore}>
-            <ol>{preview.preview.steps.map((step, index) =>
-              <li key={`${index}-${step}`}>{step}</li>)}</ol>
-          </EventRuntimeModule>
-          {preview.preview.retainedTools.length ? <EventRuntimeModule
-            title={salesDemoCopy.whatStaysWithYourCurrentTools}>
-            <ul>{preview.preview.retainedTools.map((tool) =>
-              <li key={tool}>{tool}</li>)}</ul>
-          </EventRuntimeModule> : null}
-          {preview.preview.limitations.length ? <EventRuntimeModule
-            title={salesDemoCopy.knownLimitsOfThisExample}>
-            <ul>{preview.preview.limitations.map((limit) =>
-              <li key={limit}>{limit}</li>)}</ul>
-          </EventRuntimeModule> : null}
-          {preview.expiresAt ? <p>{salesDemoCopy.availableUntil}{" "}{new Date(preview.expiresAt).toLocaleString()}.</p> : null}
-          <p>{salesDemoCopy.noRealMessagesChargesGuestAdmission}</p>
-          {controller.notice ? <FormStatus status={{message: controller.notice,
-            tone: "is-error"}} /> : null}
-          {controller.session ? <DemoSessionView controller={controller} /> :
-            <DemoAccessView controller={controller} auth={auth}
-              hasGrant={Boolean(grantToken)} cta={preview.preview.cta}
-              interactiveAvailable={preview.interactiveAvailable} />}
-        </CatchGap>
-      </EventRuntimePanel>}
-  </EventRuntimeFrame>;
+    </EventBookingFrame>;
+  }
+  if (controller.preview.isPending || !preview) {
+    return <EventBookingFrame card={false} kicker={salesDemoCopy.privateWorkflowPreview} title={salesDemoCopy.loadingPrivatePreview}>
+      <Block><CatchLoadingIndicator label={salesDemoCopy.loadingPrivatePreview} /></Block>
+    </EventBookingFrame>;
+  }
+  return <EventBookingFrame banner={<CatchBanner message={preview.notice} tone="warning" />} body={preview.preview.scenario}
+    card={false} kicker={salesDemoCopy.privateWorkflowPreview} title={preview.preview.headline}>
+    {controller.session ? <SampleSteps session={controller.session} /> : null}
+    <Block>
+      <CatchSection title={salesDemoCopy.whatYouCanExplore} dividers="between">
+        {preview.preview.steps.map((step, index) =>
+          <CatchIndexRow density="compact" key={`${index}-${step}`} marker={{kind: "number", value: index + 1}} title={step} wrap />)}
+      </CatchSection>
+    </Block>
+    {preview.preview.retainedTools.length ? <Block>
+      <CatchSection title={salesDemoCopy.whatStaysWithYourCurrentTools} dividers="between">
+        {preview.preview.retainedTools.map((tool) => <CatchIndexRow density="compact" key={tool} title={tool} wrap />)}
+      </CatchSection>
+    </Block> : null}
+    {preview.preview.limitations.length ? <Block>
+      <CatchSection title={salesDemoCopy.knownLimitsOfThisExample} dividers="between">
+        {preview.preview.limitations.map((limit) => <CatchIndexRow density="compact" key={limit} title={limit} wrap />)}
+      </CatchSection>
+    </Block> : null}
+    <CatchStack gap={4}>
+      {preview.expiresAt ? <CatchText as="p" tone="secondary" variant="body-small">
+        {salesDemoCopy.availableUntil}{" "}{new Date(preview.expiresAt).toLocaleString()}.
+      </CatchText> : null}
+      <CatchText as="p" tone="secondary" variant="body-small">{salesDemoCopy.noRealMessagesChargesGuestAdmission}</CatchText>
+    </CatchStack>
+    {controller.notice ? <Problem message={controller.notice} /> : null}
+    {controller.session ? <DemoSessionView controller={controller} /> :
+      <DemoAccessView controller={controller} auth={auth}
+        hasGrant={Boolean(grantToken)} cta={preview.preview.cta}
+        interactiveAvailable={preview.interactiveAvailable} />}
+  </EventBookingFrame>;
 }
 
 type Controller = ReturnType<typeof useSalesDemoController>;
+
+/** One block of the flow's column, as the board's flat cards. */
+function Block({children}: {children: ReactNode}) {
+  return <CatchGroundCard ground="white" outlined>{children}</CatchGroundCard>;
+}
+
+/** A titled block: the step's heading, then its parts 12px apart. */
+function Module({title, children}: {title: string; children: ReactNode}) {
+  return <Block>
+    <CatchStack gap={12}>
+      <CatchText as="h2" variant="title-row">{title}</CatchText>
+      {children}
+    </CatchStack>
+  </Block>;
+}
+
+function Line({children, status = false}: {children: ReactNode; status?: boolean}) {
+  return <CatchText as="p" role={status ? "status" : undefined} variant="body">{children}</CatchText>;
+}
+
+function Problem({message}: {message: string}) {
+  return <CatchText as="p" role="status" tone="danger" variant="body-small">{message}</CatchText>;
+}
+
+function Actions({children}: {children: ReactNode}) {
+  return <CatchStack align="start" direction="row" gap={8} wrap>{children}</CatchStack>;
+}
+
+const sampleStepIndex: Record<SalesDemoSession["step"], number> = {application: 1, reply: 2, admission: 3, complete: 4};
+
+/** The sample's progress on the board's rail: verify, review, reply, admit, then next steps. */
+function SampleSteps({session}: {session: SalesDemoSession}) {
+  const current = session.status === "completed" ? 4 : sampleStepIndex[session.step];
+  const status = (value: CatchFormStepListStatus) => salesDemoFlowCopy.stepStatus[value];
+  return <CatchFormStepList current={current} direction="row" label={salesDemoFlowCopy.stepsLabel} statusLabelBuilder={status}
+    items={salesDemoFlowCopy.steps.map((title, index) => ({index, title, status: index < current ? "complete" : "needsInformation"}))} />;
+}
 
 function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}: {
   controller: Controller; auth: SalesDemoAuth; hasGrant: boolean;
@@ -127,50 +180,51 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
       setAuthError(claimAccountLinkingErrorMessage(error, salesDemoCopy.thatVerificationCodeCouldNotBe));
     } finally {setAuthPending(false);}
   };
-  if (!interactiveAvailable && !hasGrant) return <EventRuntimeModule title={salesDemoCopy.previewOnly}>
-    <p>{salesDemoCopy.interactiveAccessHasNotBeenEnabled}</p>
-  </EventRuntimeModule>;
-  if (!hasGrant) return <EventRuntimeModule title={salesDemoCopy.interactiveLinkNeeded}>
-    <p>{salesDemoCopy.thisPreviewIsSafeToView}</p>
-  </EventRuntimeModule>;
-  return <EventRuntimeModule title={salesDemoCopy.tryTheSampleWorkflow}>
-    <p>{cta}</p>
-    {!controller.authReady ? <EventRuntimeLoading label={salesDemoCopy.checkingSignin} /> :
+  if (!interactiveAvailable && !hasGrant) return <Module title={salesDemoCopy.previewOnly}>
+    <Line>{salesDemoCopy.interactiveAccessHasNotBeenEnabled}</Line>
+  </Module>;
+  if (!hasGrant) return <Module title={salesDemoCopy.interactiveLinkNeeded}>
+    <Line>{salesDemoCopy.thisPreviewIsSafeToView}</Line>
+  </Module>;
+  const busy = authPending || controller.pending;
+  const phoneValid = /^\+[1-9][0-9]{7,14}$/u.test(phone.trim());
+  return <Module title={salesDemoCopy.tryTheSampleWorkflow}>
+    <Line>{cta}</Line>
+    {!controller.authReady ? <CatchLoadingIndicator label={salesDemoCopy.checkingSignin} /> :
       <>
       {controller.canTry ? <>
-        <p>{salesDemoCopy.signedInAs}{" "}{controller.viewer?.email ||
-          controller.viewer?.phoneNumber || "verified account"}{salesDemoCopy.theServerWillCheckThisIdentity}</p>
-        <Button type="button" onClick={() => void controller.start()}
-          disabled={controller.pending || authPending} loading={controller.pending}
-          loadingLabel={salesDemoCopy.openingSample}>{salesDemoCopy.openInteractiveExample}</Button>
-        {controller.canRestartSample ? <Button type="button" disabled={controller.pending || authPending}
-          onClick={() => void controller.restartSample()}>{salesDemoCopy.restartSample}</Button> : null}
+        <Line>{salesDemoCopy.signedInAs}{" "}{controller.viewer?.email ||
+          controller.viewer?.phoneNumber || salesDemoFlowCopy.verifiedAccount}{salesDemoCopy.theServerWillCheckThisIdentity}</Line>
+        <Actions>
+          <CatchButton label={salesDemoCopy.openInteractiveExample} onPressed={busy ? null : () => void controller.start()}
+            size="md" status={controller.pending ? "loading" : "idle"} />
+          {controller.canRestartSample ? <CatchButton label={salesDemoCopy.restartSample}
+            onPressed={busy ? null : () => void controller.restartSample()} size="md" variant="secondary" /> : null}
+        </Actions>
       </> : null}
-        <p>{salesDemoCopy.useTheInvitedEmailOrVerify}</p>
-        <CatchGap direction="horizontal" size="related" wrap><Button type="button" onClick={() => void google()}
-          disabled={authPending || controller.pending} loading={authPending}>
-          {controller.viewer ? salesDemoCopy.verifyGoogle : salesDemoCopy.continueGoogle}
-        </Button>
-        {controller.viewer && auth.signOut ? <Button type="button" variant="ghost"
-          disabled={authPending || controller.pending} onClick={async () => {
-            setChallenge(null); setCode(""); setAuthError(""); await auth.signOut?.();
-          }}>{salesDemoCopy.signOut}</Button> : null}
-        </CatchGap>
+        <CatchText as="p" tone="secondary" variant="body-small">{salesDemoCopy.useTheInvitedEmailOrVerify}</CatchText>
+        <Actions>
+          <CatchButton label={controller.viewer ? salesDemoCopy.verifyGoogle : salesDemoCopy.continueGoogle}
+            onPressed={busy ? null : () => void google()} size="md" status={authPending ? "loading" : "idle"} variant="secondary" />
+          {controller.viewer && auth.signOut ? <CatchButton label={salesDemoCopy.signOut}
+            onPressed={busy ? null : async () => {
+              setChallenge(null); setCode(""); setAuthError(""); await auth.signOut?.();
+            }} size="md" variant="quiet" /> : null}
+        </Actions>
         <CatchField
           recipe="input"
           id="sales-demo-phone"
           title={salesDemoCopy.orVerifyPhoneInternationalFormat}
           autoComplete="tel"
           value={phone}
-          inputMode={authPending || controller.pending || Boolean(challenge) ? "inactive" : "editable"}
+          inputMode={busy || Boolean(challenge) ? "inactive" : "editable"}
           onChanged={(value) => setPhone(value)}
           inputHint={salesDemoCopy.phonePlaceholder}
           keyboardType="phone"
         />
         <div id="sales-demo-recaptcha" />
-        {!challenge ? <Button type="button" variant="ghost"
-          disabled={authPending || controller.pending || !/^\+[1-9][0-9]{7,14}$/u.test(phone.trim())}
-          onClick={() => void sendCode()}>{salesDemoCopy.sendVerificationCode}</Button> : <>
+        {!challenge ? <Actions><CatchButton label={salesDemoCopy.sendVerificationCode}
+          onPressed={busy || !phoneValid ? null : () => void sendCode()} size="md" variant="secondary" /></Actions> : <>
           <CatchField
             recipe="input"
             id="sales-demo-code"
@@ -180,15 +234,16 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
             autoComplete="one-time-code"
             keyboardType="number"
           />
-          <Button type="button" variant="ghost" disabled={authPending || controller.pending || !code.trim()}
-            onClick={() => void verifyCode()}>{salesDemoCopy.verifyPhone}</Button>
-          <Button type="button" variant="ghost"
-            disabled={authPending || controller.pending}
-            onClick={() => {setChallenge(null); setCode(""); setAuthError("");}}>{salesDemoCopy.changeNumberOrResendCode}</Button>
+          <Actions>
+            <CatchButton label={salesDemoCopy.verifyPhone} onPressed={busy || !code.trim() ? null : () => void verifyCode()}
+              size="md" variant="secondary" />
+            <CatchButton label={salesDemoCopy.changeNumberOrResendCode}
+              onPressed={busy ? null : () => {setChallenge(null); setCode(""); setAuthError("");}} size="md" variant="quiet" />
+          </Actions>
         </>}
       </>}
-    {authError ? <FormStatus status={{message: authError, tone: "is-error"}} /> : null}
-  </EventRuntimeModule>;
+    {authError ? <Problem message={authError} /> : null}
+  </Module>;
 }
 
 function DemoSessionView({controller}: {controller: Controller}) {
@@ -197,31 +252,33 @@ function DemoSessionView({controller}: {controller: Controller}) {
   const available = (action: SalesDemoAction) => session.allowedActions.includes(action);
   const act = (action: SalesDemoAction, choice?: "approve" | "needs_info" |
     "welcome" | "clarify") => void controller.advance({action, choice});
+  const blocked = controller.pending || !controller.fresh;
   return <>
-    <EventRuntimeModule title={salesDemoCopy.yourIsolatedSample}>
-      <p>{salesDemoCopy.step}{" "}{session.step.replaceAll("_", " ")} ·
-        {session.status === "completed" ? " Completed" : " In progress"}</p>
-      <p>{salesDemoCopy.sampleApplicant}{" "}{session.application.applicantName} ·
-        {session.application.request}</p>
-      <p>{salesDemoCopy.review}{" "}{session.application.review.replaceAll("_", " ")}{salesDemoCopy.reply}{" "}{session.reply.template.replaceAll("_", " ")}{salesDemoCopy.guest}{" "}{session.guest.status.replaceAll("_", " ")}</p>
-      <p>{salesDemoCopy.onlySyntheticRecordsAreChanged}</p>
-    </EventRuntimeModule>
-    <EventRuntimeModule title={salesDemoCopy.nextSampleStep}>
-      {!controller.fresh ? <p>{salesDemoCopy.checkTheLatestSessionBeforeContinuing}</p> : null}
-      <CatchGap direction="horizontal" size="related" wrap>
-        {retry ? <Button type="button" disabled={controller.pending || !controller.fresh}
-          onClick={() => act(retry.action, retry.choice)}>{salesDemoCopy.retry}{" "}{salesDemoActionTitle(retry.action, retry.choice)}
-        </Button> : <DemoStepActions session={session} disabled={controller.pending ||
-          !controller.fresh} onAction={act} />}
+    <Module title={salesDemoCopy.yourIsolatedSample}>
+      <CatchStack gap={4}>
+        <Line>{salesDemoCopy.step}{" "}{session.step.replaceAll("_", " ")} ·
+          {session.status === "completed" ? salesDemoFlowCopy.completed : salesDemoFlowCopy.inProgress}</Line>
+        <Line>{salesDemoCopy.sampleApplicant}{" "}{session.application.applicantName} ·
+          {session.application.request}</Line>
+        <Line>{salesDemoCopy.review}{" "}{session.application.review.replaceAll("_", " ")}{salesDemoCopy.reply}{" "}{session.reply.template.replaceAll("_", " ")}{salesDemoCopy.guest}{" "}{session.guest.status.replaceAll("_", " ")}</Line>
+      </CatchStack>
+      <CatchText as="p" tone="secondary" variant="body-small">{salesDemoCopy.onlySyntheticRecordsAreChanged}</CatchText>
+    </Module>
+    <Module title={salesDemoCopy.nextSampleStep}>
+      {!controller.fresh ? <Line>{salesDemoCopy.checkTheLatestSessionBeforeContinuing}</Line> : null}
+      <Actions>
+        {retry ? <CatchButton label={fill(salesDemoFlowCopy.retryAction, {action: salesDemoActionTitle(retry.action, retry.choice)})}
+          onPressed={blocked ? null : () => act(retry.action, retry.choice)} size="md" /> :
+          <DemoStepActions session={session} disabled={blocked} onAction={act} />}
         {available("requestAssistance") && !session.assistanceRequested && !retry ?
-          <Button type="button" variant="ghost" disabled={controller.pending ||
-            !controller.fresh} onClick={() => act("requestAssistance")}>{salesDemoCopy.requestHelpWithThisDemo}</Button> : null}
-        <Button type="button" variant="ghost" disabled={controller.pending}
-          onClick={() => void controller.refresh()}>{salesDemoCopy.refreshSampleStatus}</Button>
-      </CatchGap>
-      {session.assistanceRequested ? <p role="status">{salesDemoCopy.assistanceRequestedThisRecordsAnInproduct}</p> : null}
-      {session.status === "completed" ? <p role="status">{salesDemoCopy.youCompletedThisSyntheticWorkflowA}</p> : null}
-    </EventRuntimeModule>
+          <CatchButton label={salesDemoCopy.requestHelpWithThisDemo} onPressed={blocked ? null : () => act("requestAssistance")}
+            size="md" variant="secondary" /> : null}
+        <CatchButton label={salesDemoCopy.refreshSampleStatus} onPressed={controller.pending ? null : () => void controller.refresh()}
+          size="md" variant="quiet" />
+      </Actions>
+      {session.assistanceRequested ? <Line status>{salesDemoCopy.assistanceRequestedThisRecordsAnInproduct}</Line> : null}
+      {session.status === "completed" ? <Line status>{salesDemoCopy.youCompletedThisSyntheticWorkflowA}</Line> : null}
+    </Module>
     {session.status === "completed" ? <DemoSetupView controller={controller} /> : null}
   </>;
 }
@@ -230,53 +287,54 @@ function DemoSetupView({controller}: {controller: Controller}) {
   const [confirm, setConfirm] = useState(false);
   const setup = controller.setup;
   const editorUrl = salesDemoFormEditorUrl(setup?.editorPath ?? null);
-  return <EventRuntimeModule title={salesDemoCopy.realSetupHandoff}>
-    <p>{salesDemoCopy.realSetupIsSeparate}</p>
-    {!setup || !controller.setupFresh ? <Button type="button"
-      disabled={controller.pending || !controller.fresh}
-      onClick={() => {setConfirm(false); void controller.readSetup();}}>
-      {salesDemoCopy.reviewSetupOptions}</Button> : null}
-    {controller.setupNotice ? <FormStatus status={{message: controller.setupNotice,
-      tone: "is-error"}} /> : null}
+  return <Module title={salesDemoCopy.realSetupHandoff}>
+    <Line>{salesDemoCopy.realSetupIsSeparate}</Line>
+    {!setup || !controller.setupFresh ? <Actions><CatchButton label={salesDemoCopy.reviewSetupOptions}
+      onPressed={controller.pending || !controller.fresh ? null : () => {setConfirm(false); void controller.readSetup();}}
+      size="md" /></Actions> : null}
+    {controller.setupNotice ? <Problem message={controller.setupNotice} /> : null}
     {setup && controller.setupFresh ? <>
-      <p>{setup.plan.mode === "template" ?
-        `${salesDemoCopy.reviewedTemplate}: ${setup.plan.title}` :
-        salesDemoCopy.manualHandoff}</p>
-      <ul>{setup.plan.requirements.map((step, index) =>
-        <li key={`${index}-${step}`}>{step}</li>)}</ul>
-      {setup.status === "manual_setup" ? <p>{salesDemoCopy.manualSetupNeeded}</p> : null}
+      <CatchSection dividers="between" title={setup.plan.mode === "template" ?
+        `${salesDemoCopy.reviewedTemplate}: ${setup.plan.title}` : salesDemoCopy.manualHandoff}>
+        {setup.plan.requirements.map((step, index) =>
+          <CatchIndexRow density="compact" key={`${index}-${step}`} title={step} wrap />)}
+      </CatchSection>
+      {setup.status === "manual_setup" ? <Line>{salesDemoCopy.manualSetupNeeded}</Line> : null}
       {setup.status === "claim_required" ? <>
-        <p>{salesDemoCopy.claimRequiredForDraft}</p>
-        {controller.continuationId ? <ButtonLink
-          href={`/claim/?continuation=${encodeURIComponent(controller.continuationId)}`}>
-          {salesDemoCopy.openClaimSetup}</ButtonLink> : controller.canPreserve ?
-          <Button type="button" disabled={controller.pending || !controller.fresh}
-            onClick={() => void controller.preserveSetup()}>{salesDemoCopy.preserveSetup}</Button> : null}
-        <p>{salesDemoCopy.preservedSetupGuidance}</p>
+        <Line>{salesDemoCopy.claimRequiredForDraft}</Line>
+        <Actions>
+          {controller.continuationId ? <CatchButton
+            href={`/claim/?continuation=${encodeURIComponent(controller.continuationId)}`}
+            label={salesDemoCopy.openClaimSetup} size="md" /> : controller.canPreserve ?
+            <CatchButton label={salesDemoCopy.preserveSetup}
+              onPressed={controller.pending || !controller.fresh ? null : () => void controller.preserveSetup()} size="md" /> : null}
+        </Actions>
+        <CatchText as="p" tone="secondary" variant="body-small">{salesDemoCopy.preservedSetupGuidance}</CatchText>
       </> : null}
       {setup.status === "ready" ? <>
-        <p>{salesDemoCopy.templateDraftNotPublished}</p>
-        {!confirm ? <Button type="button" disabled={controller.pending}
-          onClick={() => setConfirm(true)}>{salesDemoCopy.prepareTemplateDraft}</Button> :
-          <CatchGap direction="horizontal" size="related" wrap>
-            <Button type="button" disabled={controller.pending ||
-              !controller.fresh || !controller.setupFresh}
-              onClick={() => {setConfirm(false); void controller.prepareSetup();}}>
-              {salesDemoCopy.confirmPrepareTemplateDraft}</Button>
-            <Button type="button" variant="ghost" disabled={controller.pending}
-              onClick={() => setConfirm(false)}>{salesDemoCopy.cancel}</Button>
-          </CatchGap>}
+        <Line>{salesDemoCopy.templateDraftNotPublished}</Line>
+        <Actions>
+          {!confirm ? <CatchButton label={salesDemoCopy.prepareTemplateDraft}
+            onPressed={controller.pending ? null : () => setConfirm(true)} size="md" /> : <>
+            <CatchButton label={salesDemoCopy.confirmPrepareTemplateDraft}
+              onPressed={controller.pending || !controller.fresh || !controller.setupFresh ? null :
+                () => {setConfirm(false); void controller.prepareSetup();}} size="md" />
+            <CatchButton label={salesDemoCopy.cancel} onPressed={controller.pending ? null : () => setConfirm(false)}
+              size="md" variant="quiet" />
+          </>}
+        </Actions>
       </> : null}
       {setup.status === "prepared" ? <>
-        <p role="status">{salesDemoCopy.draftPrepared}</p>
-        {editorUrl ? <ButtonLink href={editorUrl}>{salesDemoCopy.finishInForms}</ButtonLink> :
-          <p>{salesDemoCopy.hostAppLinkUnavailable}</p>}
+        <Line status>{salesDemoCopy.draftPrepared}</Line>
+        {editorUrl ? <Actions><CatchButton href={editorUrl} label={salesDemoCopy.finishInForms} size="md" /></Actions> :
+          <Line>{salesDemoCopy.hostAppLinkUnavailable}</Line>}
       </> : null}
-      <Button type="button" variant="ghost" disabled={controller.pending}
-        onClick={() => {setConfirm(false); void controller.readSetup();}}>
-        {salesDemoCopy.refreshSetup}</Button>
+      <Actions>
+        <CatchButton label={salesDemoCopy.refreshSetup}
+          onPressed={controller.pending ? null : () => {setConfirm(false); void controller.readSetup();}} size="md" variant="quiet" />
+      </Actions>
     </> : null}
-  </EventRuntimeModule>;
+  </Module>;
 }
 
 function DemoStepActions({session, disabled, onAction}: {
@@ -284,25 +342,24 @@ function DemoStepActions({session, disabled, onAction}: {
   onAction: (action: SalesDemoAction, choice?: "approve" | "needs_info" |
     "welcome" | "clarify") => void;
 }) {
+  const press = (action: SalesDemoAction, choice?: "approve" | "needs_info" | "welcome" | "clarify") =>
+    disabled ? null : () => onAction(action, choice);
   if (session.step === "application" &&
       session.allowedActions.includes("reviewApplication")) return <>
-    <Button type="button" disabled={disabled}
-      onClick={() => onAction("reviewApplication", "approve")}>{salesDemoCopy.approveSampleApplication}</Button>
-    <Button type="button" variant="ghost" disabled={disabled}
-      onClick={() => onAction("reviewApplication", "needs_info")}>{salesDemoCopy.askSampleApplicantForMoreInformation}</Button>
+    <CatchButton label={salesDemoCopy.approveSampleApplication} onPressed={press("reviewApplication", "approve")} size="md" />
+    <CatchButton label={salesDemoCopy.askSampleApplicantForMoreInformation} onPressed={press("reviewApplication", "needs_info")}
+      size="md" variant="secondary" />
   </>;
   if (session.step === "reply" && session.allowedActions.includes("prepareReply")) {
-    return session.application.review === "needs_info" ? <Button type="button"
-      disabled={disabled} onClick={() => onAction("prepareReply", "clarify")}>{salesDemoCopy.prepareClarificationExample}</Button> : <>
-      <Button type="button" disabled={disabled}
-        onClick={() => onAction("prepareReply", "welcome")}>{salesDemoCopy.prepareWelcomeExample}</Button>
-      <Button type="button" variant="ghost" disabled={disabled}
-        onClick={() => onAction("prepareReply", "clarify")}>{salesDemoCopy.prepareClarificationExample}</Button>
+    return session.application.review === "needs_info" ?
+      <CatchButton label={salesDemoCopy.prepareClarificationExample} onPressed={press("prepareReply", "clarify")} size="md" /> : <>
+      <CatchButton label={salesDemoCopy.prepareWelcomeExample} onPressed={press("prepareReply", "welcome")} size="md" />
+      <CatchButton label={salesDemoCopy.prepareClarificationExample} onPressed={press("prepareReply", "clarify")}
+        size="md" variant="secondary" />
     </>;
   }
   if (session.step === "admission" && session.allowedActions.includes("admitGuest")) {
-    return <Button type="button" disabled={disabled}
-      onClick={() => onAction("admitGuest")}>{salesDemoCopy.admitSampleGuest}</Button>;
+    return <CatchButton label={salesDemoCopy.admitSampleGuest} onPressed={press("admitGuest")} size="md" />;
   }
-  return <p>{salesDemoCopy.noFurtherSampleStepIsAvailable}</p>;
+  return <Line>{salesDemoCopy.noFurtherSampleStepIsAvailable}</Line>;
 }
