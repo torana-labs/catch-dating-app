@@ -278,7 +278,10 @@
         "packages/web-ui/src/components/CatchText.module.css",
         "packages/web-ui/src/components/CatchField.module.css",
         "packages/web-ui/src/components/CatchCheckboxInput.module.css",
-        "packages/web-ui/src/components/CatchQrCode.module.css"
+        "packages/web-ui/src/components/CatchQrCode.module.css",
+        "packages/web-ui/src/components/CatchSiteDock.module.css",
+        "packages/web-ui/src/components/CatchPlanCard.module.css",
+        "packages/web-ui/src/components/CatchDateTile.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -289,7 +292,7 @@
           "phone-launching-soon"
         ]
       },
-      "notes": "The homepage's bands in the board's order, private to one assembly: the header with the city picker, the hero (CatchHeroSection), this week's or the next two weeks' plans (CatchCardGrid) or the launching-soon notice (CatchCtaSection), how a night works and the proof (CatchSplitSection), organisers (CatchCardGrid), the host band (CatchSplitSection; third in a thin or launching city, after the proof in a busy one), the app band (CatchCtaSection), the FAQ (CatchFaqSection) and the footer. Each band arranges library parts and binds the controller's view of the city (D18)."
+      "notes": "The homepage's bands in the board's order, private to one assembly: the header with the city picker; the hero (CatchHeroSection: the phone in the canvas bezel, the notify card until the app is on a store, and the soonest real plan as the floating chip); the entry tiles (CatchCardGrid entry); this week's or the next two weeks' plans as dated plan cards with the action across from the header (CatchCardGrid plan, a rail on phones) or the launching-soon notice (CatchCtaSection); the host band (CatchSplitSection; third in a thin or launching city, after the proof in a busy one); the formats (CatchCardGrid format, with chips); how a night works and the proof (CatchSplitSection); organisers (CatchCardGrid); the app band as the bento grid (CatchCtaSection tiles); the mint refer panel (CatchCtaSection, its introduction on WhatsApp); the FAQ (CatchFaqSection); the footer; and the phone action bar (CatchSiteDock). Each band arranges library parts and binds the controller's view of the city (D18)."
     },
     {
       "id": "shared_identity_display_shell",
@@ -4864,7 +4867,13 @@
           "dense"
         ]
       },
-      "notes": "Website T4 under D18 (G6 activity cover). Twin of the Flutter member catch.event_card.activity_backdrop (Flutter EventBackdropImage): the activity's duotone ground and line pattern, drawn at its rendered size. Pure geometry and the server-side SVG live in activityArtwork.ts (@catch/web-ui/artwork); activityArtworkParity.test.ts pins both to the Flutter painter. Search aliases: ActivityCover, ActivityArtwork, EventCover, FallbackImage, PatternCover."
+      "notes": "Website T4 under D18 (G6 activity cover). Twin of the Flutter member catch.event_card.activity_backdrop (Flutter EventBackdropImage): the activity's duotone ground and line pattern, drawn at its rendered size. Pure geometry and the server-side SVG live in activityArtwork.ts (@catch/web-ui/artwork); activityArtworkParity.test.ts pins both to the Flutter painter. Search aliases: ActivityCover, ActivityArtwork, EventCover, FallbackImage, PatternCover.",
+      "comparedWith": [
+        "catch.detail_media",
+        "catch.graded_image",
+        "catch.network_image"
+      ],
+      "comparisonReason": "Draws the activity's duotone ground and line pattern from geometry, with no photo: it is the artwork shown where there is no image, not media that loads, grades or frames a photo, so it implements none of catch.detail_media, catch.graded_image or catch.network_image."
     },
     {
       "id": "shared_event_thumbnail",
@@ -5100,6 +5109,7 @@
       "id": "shared_date_tile",
       "kind": "supporting-component",
       "routeIds": [
+        "home",
         "organizer_listing_canonical",
         "event_detail_canonical"
       ],
@@ -5119,7 +5129,14 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A calendar date on a palette ground: weekday, a displayS day and month in one time element, 72 x 78px and 56 x 66px on a phone. Search aliases: DateBadge, CalendarTile, DateBlock, DateChip, EventDate, CalendarIcon."
+      "notes": "Website T4 under D18 (CAT-249). A calendar date on a palette ground: weekday, a displayS day and month in one time element, 72 x 78px and 56 x 66px on a phone. Small (D26, the playbook homepage's .date): 48 x 52px with 12px corners, the weekday over the day and the month read but not shown, for the canvas plan card and the hero's plan chip. Search aliases: DateBadge, CalendarTile, DateBlock, DateChip, EventDate, CalendarIcon.",
+      "comparedWith": [
+        "catch.text",
+        "catch.analytics_metric",
+        "catch.icon_tile",
+        "catch.option_card"
+      ],
+      "comparisonReason": "A calendar date on a palette ground, read as one time element. It sets its weekday and day with catch.text roles (or, small, in the canvas's own date-square type) and is not a text role; it shares the tile role noun with catch.analytics_metric, catch.icon_tile and catch.option_card but shows no figure or trend, no icon and no choice, so it implements none of them."
     },
     {
       "id": "shared_sticky_aside",
@@ -5676,6 +5693,30 @@
         "catch.text"
       ],
       "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
+    },
+    {
+      "id": "shared_catch_site_dock",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchSiteDock.tsx",
+      "exportName": "CatchSiteDock",
+      "css": [
+        "packages/web-ui/src/components/CatchSiteDock.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchSiteDock.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "two-actions",
+          "whatsapp",
+          "wide-hidden"
+        ]
+      },
+      "notes": "Website T4 under D26 (the playbook kit's .mbar). The phone action bar: a sticky ink pill 8px above the screen's foot with the page's main action (coral, or pink on the homepage), an optional outlined second action and an optional WhatsApp button, 44px each. It draws nothing on a wide page and sits last on the page, so it rides the screen's foot and comes to rest under the footer. First consumer: the homepage. Not catch.bottom_action (Flutter's CatchDock bar, card and pane): links only, no summary, note or loading state, and hidden on wide pages. Search aliases: MobileBar, StickyCta, PhoneBar."
     },
     {
       "id": "shared_device_frame",

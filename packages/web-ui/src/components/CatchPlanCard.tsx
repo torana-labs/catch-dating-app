@@ -1,7 +1,9 @@
 "use client";
 
 import {useState} from "react";
+import {CatchDateTile, type CatchDateTileProps} from "./CatchDateTile";
 import {CatchLegacyText} from "./CatchLegacyText";
+import {CatchText} from "./CatchText";
 import {formatAccents, type Format} from "./palette";
 import styles from "./CatchPlanCard.module.css";
 
@@ -27,6 +29,13 @@ export interface CatchPlanCardProps {
   posterLabel: string;
   /** Called before navigation, such as for click tracking. */
   onClick?: () => void;
+  /**
+   * The plan's date. With one the card takes the canvas's plan card (.plan):
+   * a 150px photo or poster in a white card, the date square beside the title
+   * and host, and the price and places over a hairline. The label is then
+   * read, not shown.
+   */
+  date?: Omit<CatchDateTileProps, "size">;
 }
 
 /**
@@ -35,10 +44,35 @@ export interface CatchPlanCardProps {
  * left at the foot. Below 840px it becomes a row with the media at its start.
  * The whole card is one link.
  */
-export function CatchPlanCard({availability, detail, format, href, label, onClick, photoUrl, posterLabel, price, title}: CatchPlanCardProps) {
+export function CatchPlanCard({availability, date, detail, format, href, label, onClick, photoUrl, posterLabel, price, title}: CatchPlanCardProps) {
   const photo = photoUrl?.trim();
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const ground = format ? formatAccents[format] : "paper";
+  if (date) {
+    return (
+      <a className={styles.card} data-layout="kit" href={href} onClick={onClick}>
+        {photo && failedUrl !== photo ? (
+          <img alt="" className={styles.media} decoding="async" loading="lazy" onError={() => setFailedUrl(photo)} src={photo} />
+        ) : (
+          <span aria-hidden="true" className={`${styles.media} ${styles.poster}`} data-ground={ground}>
+            <CatchLegacyText as="span" maxLines={2} variant="displayXs">{posterLabel}</CatchLegacyText>
+          </span>
+        )}
+        <span className={styles.row}>
+          <CatchDateTile {...date} ground={date.ground ?? ground} size="sm" />
+          <span className={styles.copy}>
+            <CatchText as="span" className={styles.title} variant="title-bar">{title}</CatchText>{" "}
+            <CatchText as="span" className={styles.label}>{label}</CatchText>{" "}
+            <CatchText as="span" tone="secondary" variant="body-meta">{detail}</CatchText>
+          </span>
+        </span>{" "}
+        <span className={styles.meta}>
+          <CatchText as="span" className={styles.metaText} variant="body-meta">{price}</CatchText>
+          {availability ? <>{" "}<CatchText as="span" className={`${styles.metaText} ${styles.availability}`} variant="body-meta">{availability}</CatchText></> : null}
+        </span>
+      </a>
+    );
+  }
   return (
     <a className={styles.card} href={href} onClick={onClick}>
       {photo && failedUrl !== photo ? (

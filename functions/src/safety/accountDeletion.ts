@@ -381,7 +381,8 @@ async function queueParticipantPrivateStateCleanup(
     "hostMembershipCheckouts", "hostMembershipBenefitUses",
     "eventChatDirectoryEntries",
     "guestBookingFacts", "guestEventStatuses", "participantFormProfileViews",
-    "participantIntakeProfileViews", "adConversionContexts"]) {
+    "participantIntakeProfileViews", "adConversionContexts",
+    "adConversionDeliveries"]) {
     const records = await db.collection(collection)
       .where("uid", "==", uid).get();
     records.forEach((doc) => writer.delete(doc.ref));

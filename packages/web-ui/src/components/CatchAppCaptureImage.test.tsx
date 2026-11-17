@@ -54,4 +54,22 @@ describe("CatchAppCaptureImage", () => {
     expect(figure.dataset).toMatchObject({size: "fill", tilt: "none"});
     expect(figure.hasAttribute("data-bleed")).toBe(false);
   });
+
+  it("with bezel, cuts a framed phone capture to its screen inside the website bezel", () => {
+    render(<CatchAppCaptureImage alt="Explore" bezel bleed height={1924} loading="eager" size="hero" src="/explore.png" tilt="left" width={980} />);
+    const figure = screen.getByRole("figure");
+    expect(figure.dataset).toMatchObject({bezel: "", size: "hero", tilt: "left", bleed: ""});
+    const image = screen.getByRole("img", {name: "Explore"});
+    const screenBox = image.parentElement as HTMLElement;
+    expect(screenBox.style.getPropertyValue("--catch-capture-screen-aspect")).toBe("804 / 1748");
+    expect(screenBox.style.getPropertyValue("--catch-capture-crop-left")).toBe("-10.9453%");
+    expect(screenBox.style.getPropertyValue("--catch-capture-crop-width")).toBe("121.8905%");
+  });
+
+  it("draws any other capture as it is, even with bezel", () => {
+    render(<CatchAppCaptureImage alt="Tablet" bezel height={1668} src="/tablet.png" width={2388} />);
+    const figure = screen.getByRole("figure");
+    expect(figure.hasAttribute("data-bezel")).toBe(false);
+    expect(screen.getByRole("img", {name: "Tablet"}).parentElement).toBe(figure);
+  });
 });

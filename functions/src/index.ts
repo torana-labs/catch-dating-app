@@ -1145,6 +1145,10 @@ export {manageWebsiteAccount} from "./profiles/websiteAccount";
 
 export {onHostPilotCheckIn} from "./acquisition/pilotActivation";
 export {
+  onAdConversionGrowthFactsWritten,
+  sendAdConversions,
+} from "./acquisition/adConversions/worker";
+export {
   onOrganizerGrowthOrganizerWritten,
   onOrganizerGrowthClaimRequestCreated,
   onOrganizerGrowthParticipationWritten,
