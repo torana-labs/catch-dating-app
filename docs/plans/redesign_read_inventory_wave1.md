@@ -17,6 +17,9 @@ This document reports facts and makes no recommendation. The owner decides the
 default for redesigned screens, and the decision is recorded in
 `catch-knowledge`. Everything was read from the code at commit
 `6fb4785b15b2e5f9c86646432e7bc270ad0eddad`; the appendix lists how to re-run it.
+Rows C1, D1, R4, L10 and R6 and the counts below were updated on 17 November
+2026, when #1339 moved the organizer lookup and the forms directory onto
+listeners.
 
 ## The two ways a screen can read
 
@@ -67,8 +70,8 @@ forms, unpublished events, groups and responses.
 
 There are **71 reads** across the seven wave-1 screens. The same backend read
 can appear on more than one screen, so there are **51 distinct
-backend reads**: 26 callables, 17 listeners,
-6 one-shot reads and 2 one-shot reads with a callable
+backend reads**: 26 callables, 19 listeners,
+5 one-shot reads and 1 one-shot read with a callable
 fallback. The table counts one row per read per screen.
 
 **How each screen reads today**
@@ -77,12 +80,12 @@ fallback. The table counts one row per read per screen.
 |---|---|---|---|---|---|
 | Shell and navigation (3.0) | 4 | 0 | 3 | 1 | 0 |
 | Today (3.1) | 7 | 2 | 2 | 2 | 1 |
-| Create event (3.2) | 12 | 11 | 0 | 1 | 0 |
-| Door (3.3) | 18 | 7 | 7 | 4 | 0 |
-| Live console (3.4) | 23 | 14 | 7 | 1 | 1 |
+| Create event (3.2) | 12 | 11 | 1 | 0 | 0 |
+| Door (3.3) | 18 | 7 | 8 | 3 | 0 |
+| Live console (3.4) | 23 | 14 | 8 | 1 | 0 |
 | Insights (3.5) | 1 | 1 | 0 | 0 | 0 |
-| Event report (3.5) | 6 | 0 | 4 | 1 | 1 |
-| **All wave 1** | **71** | **35** | **23** | **10** | **3** |
+| Event report (3.5) | 6 | 0 | 6 | 0 | 0 |
+| **All wave 1** | **71** | **35** | **28** | **7** | **1** |
 
 **Whether each read could be a listener**
 
@@ -90,17 +93,17 @@ fallback. The table counts one row per read per screen.
 |---|---|---|---|---|---|
 | Shell and navigation (3.0) | 3 | 1 | 0 | 0 | 0 |
 | Today (3.1) | 2 | 3 | 1 | 1 | 0 |
-| Create event (3.2) | 0 | 1 | 5 | 4 | 2 |
-| Door (3.3) | 7 | 2 | 0 | 2 | 7 |
-| Live console (3.4) | 7 | 2 | 0 | 11 | 3 |
+| Create event (3.2) | 1 | 0 | 5 | 4 | 2 |
+| Door (3.3) | 8 | 1 | 0 | 2 | 7 |
+| Live console (3.4) | 8 | 1 | 0 | 11 | 3 |
 | Insights (3.5) | 0 | 0 | 0 | 0 | 1 |
-| Event report (3.5) | 4 | 2 | 0 | 0 | 0 |
-| **All wave 1** | **23** | **11** | **6** | **18** | **13** |
+| Event report (3.5) | 6 | 0 | 0 | 0 | 0 |
+| **All wave 1** | **28** | **6** | **6** | **18** | **13** |
 
 The buckets mean:
 
-- **Already a listener** (23): no change.
-- **Could be now** (11): the data and the rules already allow it, so
+- **Already a listener** (28): no change.
+- **Could be now** (6): the data and the rules already allow it, so
   only client code changes.
 - **After a rules change** (6): the document exists and holds what
   the screen shows, but rules deny clients.
@@ -300,7 +303,7 @@ and R (report). "Lane" says which of #1324 to #1329 names the read; "(group)" me
 | T5 Today | Rehearsal step of the roadmap | `hostTodayRehearsalCompletionProvider` → `EventRehearsalRepository.hasCompletedRehearsal` | Callable `getEventRehearsalSummary` | `functions/src/eventRehearsal/summary.ts` | Hides fields. Reads `eventRehearsalMilestones/{organizerId}`, then a legacy query on `eventRehearsals`, and returns one boolean ("without returning sessions or roster identity") | `eventRehearsalMilestones/{organizerId}` (fields `organizerId`, `completedAt`), written by `functions/src/eventRehearsal/handlers.ts`. Rules deny clients; built in P1.8 (PR #1528) | Yes, after a rules change on `eventRehearsalMilestones`. The milestone holds no private data. The legacy fallback would be dropped under the pre-launch wipe | On open, on return to Today | None |
 | T6 Today | Payouts step of the roadmap (owner only) | `watchHostPaymentAccountsProvider` | `hostPaymentAccounts` where `userId` is the user, `.snapshots()` | — | Not a callable | No | Already a listener | Realtime | None |
 | T7 Today | Which organizer Today is scoped to | `hostOperableOrganizersProvider` (same listeners as S2) | `organizers`, two `Filter.or` queries (`hostUserId` or `hostUserIds`; `hostUserId` or `ownerUserId`), limit 30, `.snapshots()` | — | Not a callable | No | Already a listener | Realtime | None |
-| C1 Create | Organizer for the route | `fetchOrganizerProvider` | `organizers/{id}` `.get()`, skipped when the route passes an `Organizer` as `extra` | — | Not a callable | No | Yes, now. Rules allow `get` on an organizer | On open | None |
+| C1 Create | Organizer for the route | `watchOrganizerProvider` | `organizers/{id}` `.snapshots()`, falling back to `publicOrganizers/{id}` when rules deny the full document; skipped when the route passes an `Organizer` as `extra` | — | Not a callable | No | Already a listener (#1339) | Realtime | None |
 | C2 Create | Basics step: organizer defaults | `PrivateEventCreateScreen.readOrganizerDefaults` → `ManagerEventSetupDefaultsRepository.get` | Callable `getOrganizerEventSetupDefaults` | `functions/src/organizers/eventSetupDefaults/callables.ts`, `service.ts` | Hides fields and computes. A transaction reads `organizers`, `deletedUsers`, `organizerEventSetupDefaults`; it adopts a legacy timezone once and hashes the result (`preferencesHash`). Rules deny the defaults document | None. The source is `organizerEventSetupDefaults/{organizerId}`; built in P1.8 (PR #1528) | Yes, after a rules change on `organizerEventSetupDefaults`. The update command needs `preferencesHash`, so the hash must move onto the document or the fence must change | On open of the step | None |
 | C3 Create | Basics step: the saved event, when resuming | `CreateEventDraftController.getPrivateEventSetup` → `PrivateEventSetupRepository.get` | Callable `getPrivateEventSetup` | `functions/src/events/progressiveSetup/callables.ts`, `readModel.ts`, `commitments.ts` | Computes and joins. One transaction reads `organizers`, `deletedUsers`, `events`, `eventSetupPreferences` and one row each from the commitment collections, then computes `canEditBasics` and `publicationReadiness` from server time. Rules deny `eventSetupPreferences`, and the client `Event` model cannot decode a basics-only event | None for one event. `hostEventSummaries/{eventId}` holds only a list row; built in P1.8 (PR #1528) | Yes, new read model. Readiness depends on time, so a writer alone does not keep it true | On open of the step | None |
 | C4 Create | Details step: event | `PrivateEventDetailsController.load` → `PrivateEventSetupRepository.get` | Callable `getPrivateEventSetup` | `functions/src/events/progressiveSetup/callables.ts`, `readModel.ts`, `commitments.ts` | Computes and joins. One transaction reads `organizers`, `deletedUsers`, `events`, `eventSetupPreferences` and one row each from the commitment collections, then computes `canEditBasics` and `publicationReadiness` from server time. Rules deny `eventSetupPreferences`, and the client `Event` model cannot decode a basics-only event | None for one event. `hostEventSummaries/{eventId}` holds only a list row; built in P1.8 (PR #1528) | Yes, new read model. Readiness depends on time, so a writer alone does not keep it true | On open of the step | None |
@@ -312,7 +315,7 @@ and R (report). "Lane" says which of #1324 to #1329 names the read; "(group)" me
 | C10 Create | Offer preferences: saved terms | `EventOfferPreferencesController.load` → `EventOfferPreferencesRepository.get` | Callable `getEventOfferConfiguration` | `functions/src/organizerEventOffers/callables.ts`, `eventOfferService.ts` | Computes and hides. A transaction checks the manager, reads the event and `eventSetupPreferences`, and computes `suggestedExpiresAtMillis` from server time. Rules deny `eventSetupPreferences` | None. The source is `eventSetupPreferences/{eventId}`; built once events converged on the progressive-setup shape, decision Q (PR #1542) | Yes, after a rules change on `eventSetupPreferences`. The suggested expiry would move to the client clock | On open | None |
 | C11 Create | Offer preferences: organizer defaults | `EventOfferPreferencesController.load` → `ManagerEventSetupDefaultsRepository.get` | Callable `getOrganizerEventSetupDefaults` | `functions/src/organizers/eventSetupDefaults/callables.ts`, `service.ts` | Hides fields and computes. A transaction reads `organizers`, `deletedUsers`, `organizerEventSetupDefaults`; it adopts a legacy timezone once and hashes the result (`preferencesHash`). Rules deny the defaults document | None. The source is `organizerEventSetupDefaults/{organizerId}`; built in P1.8 (PR #1528) | Yes, after a rules change on `organizerEventSetupDefaults`. The update command needs `preferencesHash`, so the hash must move onto the document or the fence must change | On open | None |
 | C12 Create | Offer preferences: what the settings would do | `EventOfferPreferencesRepository.preview` | Callable `previewEventOfferPreferences` | `functions/src/organizerEventOffers/callables.ts` | Needs server trust. Source comment: "Read-only review uses exactly the same resolver and fences as saving". It is a dry run of a command, not stored data | None | No. It evaluates an unsaved draft, so there is no document to listen to | On each review | None |
-| D1 Door | Organizer for the route | `HostEventManageRouteScreen` → `fetchOrganizerProvider` | `organizers/{id}` `.get()` | — | Not a callable | No | Yes, now. Rules allow `get` on an organizer | On open | None |
+| D1 Door | Organizer for the route | `HostEventManageRouteScreen` → `watchOrganizerProvider` | `organizers/{id}` `.snapshots()`, falling back to `publicOrganizers/{id}` when rules deny the full document | — | Not a callable | No | Already a listener (#1339) | Realtime | None |
 | D2 Door | Event for the route | `HostEventManageRouteScreen` → `watchEventProvider` | `events/{id}` `.snapshots()` | — | Not a callable | No | Already a listener | Realtime | #1326 names the Host event manage listeners as a group |
 | D3 Door | Booked count and capacity | `watchEventParticipationRosterProvider` | `eventParticipations` where `eventId`, `status` in visible statuses, limit 1000, `.snapshots()` | — | Not a callable | No | Already a listener | Realtime | #1326 (group) |
 | D4 Door | Guest list with check-in state | `watchEventAttendeesProvider` | `eventAttendees` where `eventId`, limit 1000, `.snapshots()` | — | Not a callable | No | Already a listener | Realtime, but roster writes invalidate it (#1326 counts these) | #1326 (group, and names the after-write invalidations) |
@@ -339,7 +342,7 @@ and R (report). "Lane" says which of #1324 to #1329 names the read; "(group)" me
 | L7 Live | Wingman help requests | `watchEventSuccessWingmanRequestsProvider` | `eventSuccessWingmanRequests` where `eventId`, `status` active, `hostVisibleConsent` true, `.snapshots()` | — | Not a callable | No | Already a listener | Realtime | #1326 (group) |
 | L8 Live | Guest preferences | `watchEventSuccessPreferencesProvider` | `eventSuccessPreferences` where `eventId`, limit 1000, `.snapshots()` | — | Not a callable | No | Already a listener | Realtime | #1326 (group) |
 | L9 Live | Names on wingman requests | `eventSuccessAssignmentPeerProfilesProvider` → `fetchPublicProfiles` | `publicProfiles/{uid}` one `.get()` per person, in parallel | — | Not a callable | `publicProfiles` is itself a projection, written by the profile sync Function | No, by policy. `docs/data_contracts.md` Read Path Discipline forbids one listener per tile. It stays a one-shot Firestore read, no Function needed | On open | None |
-| L10 Live | Published forms, for the assignment features panel | `hostFormsDirectoryControllerProvider` → `HostFormsRepository.listForms` | `hostDirectorySummaries/{organizerId}` then `hostFormSummaries` query, both `.get()` (cache when offline); `listOrganizerForms` only for a title search | `functions/src/organizers/organizerForms.ts` (fallback) | Hides fields. The fallback reads `organizerForms` after a manager check. Rules deny `organizerForms`; the summary holds only the list row, not the editable draft | `hostFormSummaries/{formId}`, written by `functions/src/hostReadModels/simpleStore.ts` via `onHostFormSummaryChanged` | Yes, now. Rules already allow managers to read the summary and marker | On open; watched whenever the console section is ready, used only by the assignment features panel | #1324 names `listOrganizerForms` |
+| L10 Live | Published forms, for the assignment features panel | `hostFormsDirectoryControllerProvider` → `hostFormsListenerProvider` → `HostFormsRepository.watchForms` | `hostDirectorySummaries/{organizerId}` marker, then a `hostFormSummaries` query window `.snapshots()` that grows a page at a time; a title search listens to up to 500 summaries and matches on the device | — (no callable since #1339) | Not a callable | `hostFormSummaries/{formId}`, written by `functions/src/hostReadModels/simpleStore.ts` via `onHostFormSummaryChanged` | Already a listener (#1339) | Realtime; watched whenever the console section is ready, used only by the assignment features panel | #1324 names `listOrganizerForms` |
 | L11 Live | Needs: guest help requests | `eventAssistanceCasesProvider` → `EventAssistanceCasesRepository.fetch` | Callable `listEventAssistanceCases` | `functions/src/eventSuccess/operations/hostCasesHandlers.ts`, `hostCasesStore.ts` | Joins and hides. Reads `eventAssistanceCases` filtered to `owner` eventLead ("Safety ownership never crosses this boundary"), joins `eventAttendees`, `organizers`, `events`, and drops the name when the source changed. Rules deny `eventAssistanceCases` | None | Yes, new read model. The raw collection also holds safety cases, so it cannot be opened. Built in P1.8 (PR #1533) | On open of the sheet, no timer | #1327 names `listEventAssistance*` |
 | L12 Live | Messages: delivery problems | `eventAssistanceDeliveriesProvider` → `EventAssistanceDeliveriesRepository.fetch` | Callable `listEventAssistanceDeliveries` | `functions/src/eventSuccess/operations/hostDeliveriesHandlers.ts`, `hostDeliveriesStore.ts` | Joins and computes. For each `eventAssistanceMessages` row it reads `eventAttendees`, `eventAssistanceGuests`, `operationRuns`, `operationWorkItems`, then projects a status. Rules deny all of them except `eventAttendees` | None | Yes, new read model, rewritten on message, guest and work-item changes. Built in P1.8 (PR #1533) | On open of the sheet, no timer | #1327 names `listEventAssistance*` |
 | L13 Live | Movement: group departure state | `eventAssistanceDepartureProvider` → `EventAssistanceDepartureRepository.fetch` | Callable `getEventAssistanceGroupProgress` | `functions/src/eventSuccess/operations/groupProgressHandlers.ts`, `groupProgressStore.ts`, `groupProgressReader.ts`, `groupStaffAuthority.ts` | Needs server trust and computes. Reads `events`, `eventSuccessPlans`, `eventAssistanceGroupProgress`, `eventStaffGrants`. Group leads pass through a duty check against an array of duties with expiry and a source hash | None; built in P1.8 (PR #1534) as `hostEventGroupProgressViews` | Yes, new read model for managers. Group-lead access would need duties stored per group, because rules cannot search that array by field | On open of the sheet, no timer | #1327 names `getEventAssistance*` |
@@ -357,9 +360,9 @@ and R (report). "Lane" says which of #1324 to #1329 names the read; "(group)" me
 | R1 Report | Event scorecard and funnel | `watchEventSuccessScorecardProvider` | `eventSuccessScorecards/{eventId}` `.snapshots()` | — | Not a callable | Yes. This document is a read model, written by `functions/src/marketplace/eventSuccessScorecards.ts` (six triggers, plus calls from the matching Functions) | Already a listener | Realtime | #1326 (group) |
 | R2 Report | Plan behind the report | `watchEventSuccessPlanProvider` | `eventSuccessPlans/{eventId}` `.snapshots()` | — | Not a callable | No | Already a listener | Realtime | #1326 (group) |
 | R3 Report | Guest reviews | `watchReviewsForEventProvider` | `reviews` where `eventId`, ordered by `createdAt`, limit 50, `.snapshots()` | — | Not a callable | No | Already a listener | Realtime | #1326 (group) |
-| R4 Report | Organizer for the route | `HostEventManageRouteScreen` → `fetchOrganizerProvider` | `organizers/{id}` `.get()` | — | Not a callable | No | Yes, now. Rules allow `get` on an organizer | On open | None |
+| R4 Report | Organizer for the route | `HostEventManageRouteScreen` → `watchOrganizerProvider` | `organizers/{id}` `.snapshots()`, falling back to `publicOrganizers/{id}` when rules deny the full document | — | Not a callable | No | Already a listener (#1339) | Realtime | None |
 | R5 Report | Event for the route | `HostEventManageRouteScreen` → `watchEventProvider` | `events/{id}` `.snapshots()` | — | Not a callable | No | Already a listener | Realtime | #1326 (group) |
-| R6 Report | Published forms (watched by the console section on this tab too) | `hostFormsDirectoryControllerProvider` → `HostFormsRepository.listForms` | `hostDirectorySummaries/{organizerId}` then `hostFormSummaries` query, both `.get()` (cache when offline); `listOrganizerForms` only for a title search | `functions/src/organizers/organizerForms.ts` (fallback) | Hides fields. The fallback reads `organizerForms` after a manager check. Rules deny `organizerForms`; the summary holds only the list row, not the editable draft | `hostFormSummaries/{formId}`, written by `functions/src/hostReadModels/simpleStore.ts` via `onHostFormSummaryChanged` | Yes, now. Rules already allow managers to read the summary and marker | On open; watched whenever the console section is ready, used only by the assignment features panel | #1324 names `listOrganizerForms` |
+| R6 Report | Published forms (watched by the console section on this tab too) | `hostFormsDirectoryControllerProvider` → `hostFormsListenerProvider` → `HostFormsRepository.watchForms` | `hostDirectorySummaries/{organizerId}` marker, then a `hostFormSummaries` query window `.snapshots()` that grows a page at a time; a title search listens to up to 500 summaries and matches on the device | — (no callable since #1339) | Not a callable | `hostFormSummaries/{formId}`, written by `functions/src/hostReadModels/simpleStore.ts` via `onHostFormSummaryChanged` | Already a listener (#1339) | Realtime; watched whenever the console section is ready, used only by the assignment features panel | #1324 names `listOrganizerForms` |
 
 ## Traced and not counted
 
