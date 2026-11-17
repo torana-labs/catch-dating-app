@@ -3270,6 +3270,188 @@ projection. External-event publication/takedown must be smoke-tested through
 the Admin dry-run-then-apply actions so the immutable receipt, organizer
 ceiling, and outbound-only behavior are verified together.
 
+### Retired swipe deck purge (one-off)
+
+The owner decided in November 2026 to purge everything the retired swipe deck
+stored. `tool/data/purge_deck_era_records.mjs` is the one-off tool; running it
+is an owner or ops step. The deck-era rule lives in
+`functions/src/matching/deckEraDecision.ts` and the tool loads it from the
+Functions build. A `profileDecisions` document is deck-era when any of these
+holds:
+
+- it is a pass;
+- it has any reaction field or a comment;
+- it was created before 2026-11-12T12:50:04Z, when the deck was retired
+  (`ec12ccadb`) and the first pick writer merged.
+
+Only a like that matches none of these is a current Stay in touch pick.
+
+The tool deletes the following, in this order, so a failed run finishes when
+it runs again:
+
+1. **Chats made by deck likes.** These are `matches` with conversationType
+   `match` (or none) where both people liked each other and at least one of
+   the likes is deck-era. For each one it deletes:
+   - the chat's `participantSignalFacts` (matched by `matchId`);
+   - both `notifications/{uid}/items/match_{matchId}` items;
+   - every message in the chat;
+   - the chat document.
+
+   It keeps a chat when both likes are current picks. It keeps blocked chats
+   untouched for safety review. It never deletes Cross Paths plans or Host
+   inquiries.
+2. **Deck-era like facts.** These are `outgoing_like`, `incoming_like` and
+   `private_interest_*` facts in `participantSignalFacts`. Each batch reduces
+   `participantMetricCounters` by exactly the facts it deletes.
+3. **`profileReaction_*` messages** left in chats it kept.
+4. **The deck-era `profileDecisions` documents**, which takes every like
+   comment with them.
+
+Before applying anywhere:
+
+- Confirm with the owner that the 7 Nov 2026 data hold (see
+  `docs/backend_operation_catalog.md`) does not cover these collections.
+- Build Functions from the commit that carries `deckEraDecision.ts`.
+- The tool keeps no backup of deleted content, on purpose, so nothing deleted
+  survives it. Firestore point-in-time recovery, where enabled, still keeps
+  the old versions for its retention window.
+
+**Order: purge first, then deploy.** You can also do both in one window.
+
+- Purging first is safe with the old Functions. Once the deck documents are
+  gone, nothing deck-era is left for them to count.
+- Deploying first is not safe. The new `fetchSwipeCandidates` stops hiding
+  people a guest liked or passed in the deck. If that guest picks one of them
+  before the purge, the pick fails: the old document still exists, and the
+  rules allow create only.
+- Old app builds can still write deck-shaped decisions until the follow-ups
+  below land. So run the dry run again after the deploy, and apply again if it
+  finds anything. The tool is idempotent.
+
+```bash
+npm --prefix functions run build
+node tool/data/purge_deck_era_records.mjs --env dev --manifest build/deck-purge/dev.ndjson
+node tool/data/purge_deck_era_records.mjs --env staging --manifest build/deck-purge/staging.ndjson
+node tool/data/purge_deck_era_records.mjs --env prod --json --manifest build/deck-purge/prod.ndjson
+```
+
+**Check the dry-run counts before applying:**
+
+- `plainLikesCaughtOnlyByTimestamp` are plain likes that only the cutoff
+  marks as deck-era. Expect them to be dated before the deck had reactions.
+- Look at every warning. Unresolved facts and chats of unknown origin are
+  kept and reported, never guessed at.
+- Note the chat counts. Deleting a chat ends the conversation for both
+  people.
+
+**Apply.** Apply to each environment in turn (dev, staging, prod), then
+deploy:
+
+```bash
+node tool/data/purge_deck_era_records.mjs --env dev --apply --manifest build/deck-purge/dev.ndjson
+node tool/data/purge_deck_era_records.mjs --env prod --apply --allow-prod --manifest build/deck-purge/prod.ndjson
+```
+
+After an apply, the tool plans again and prints the result. Expect zero
+deck-era decisions, zero deck-era like facts and zero chats left to delete.
+
+**Delete chat images from Storage.** The plan lists `storageImagePrefixes`
+(`matches/{matchId}/images/`) for the chats it deleted. The bucket is the
+`storageBucket` in `lib/firebase_options_<env>.dart`. For prod:
+
+```bash
+gcloud storage rm --recursive "gs://catch-dating-app-64e51.firebasestorage.app/matches/<matchId>/images/"
+```
+
+A prefix with no objects returns "No URLs matched"; that is not an error here.
+
+**Remove the BigQuery rows (ops SQL).** The Firestore export extensions keep
+every past version of `participantSignalFacts` and `matches` in their
+`_raw_changelog` tables. Those versions include `peerUid`, and for chats, both
+participants. The repo's BigQuery tooling is `bq` scripts, and the extension
+owns these tables. So this is reviewed SQL, run by hand, not part of the
+tool.
+
+Run it at least 90 minutes after the Firestore apply. Until then the delete
+rows the extension streams sit in the streaming buffer, and DML that touches
+them fails. Use the manifest from the apply run, with `PROJECT` set to the
+environment's project id and `--location=asia-south1`.
+
+```bash
+bq --project_id="$PROJECT" --location=asia-south1 load --replace \
+  --source_format=NEWLINE_DELIMITED_JSON \
+  catch_marketplace_metrics.deck_era_purge_manifest \
+  build/deck-purge/prod.ndjson collection:STRING,document_id:STRING
+```
+
+Dry run. Expect the row counts to cover every manifest id that was ever
+exported:
+
+```sql
+SELECT 'participant_signal_facts' AS source, COUNT(*) AS changelog_rows,
+  COUNT(DISTINCT document_id) AS documents
+FROM `PROJECT.catch_marketplace_metrics.participant_signal_facts_raw_changelog`
+WHERE document_id IN (
+  SELECT document_id FROM `PROJECT.catch_marketplace_metrics.deck_era_purge_manifest`
+  WHERE collection = 'participantSignalFacts')
+UNION ALL
+SELECT 'matches', COUNT(*), COUNT(DISTINCT document_id)
+FROM `PROJECT.catch_analytics.matches_raw_changelog`
+WHERE document_id IN (
+  SELECT document_id FROM `PROJECT.catch_marketplace_metrics.deck_era_purge_manifest`
+  WHERE collection = 'matches');
+```
+
+Validate the deletes with `bq query --dry_run --use_legacy_sql=false`, then
+run them:
+
+```sql
+DELETE FROM `PROJECT.catch_marketplace_metrics.participant_signal_facts_raw_changelog`
+WHERE document_id IN (
+  SELECT document_id FROM `PROJECT.catch_marketplace_metrics.deck_era_purge_manifest`
+  WHERE collection = 'participantSignalFacts');
+
+DELETE FROM `PROJECT.catch_analytics.matches_raw_changelog`
+WHERE document_id IN (
+  SELECT document_id FROM `PROJECT.catch_marketplace_metrics.deck_era_purge_manifest`
+  WHERE collection = 'matches');
+```
+
+Rerun the count query and expect zero. Then drop
+`catch_marketplace_metrics.deck_era_purge_manifest`, and refresh the marts so
+the daily aggregates drop the deck likes and chats:
+
+```bash
+tool/analytics/deploy_user_analytics_bigquery.sh <env> --refresh-only
+tool/analytics/deploy_host_analytics_bigquery.sh <env> --refresh-only
+```
+
+BigQuery keeps deleted rows for its time-travel and fail-safe windows (7 days
+each by default) before they are gone for good.
+
+`participant_metric_counters_raw_changelog` holds per-user totals only. It has
+no peer ids and is not deleted. Firestore `eventSuccessScorecards` for past
+events keep aggregate counts until they are next refreshed.
+
+**Follow-ups.** Today's rules still accept deck-shaped decisions (passes,
+reaction fields, comments) from old app builds. Pick one of these:
+
+- **Tighten the rules.** This is not a rules-only change, because
+  `tool/contracts/check_firestore_rules_semantics.mjs` pins
+  `hasValidSwipeCreate` to the stored `swipes.schema.json` fields. So it
+  belongs in a change that also removes `pass` and the reaction fields from
+  `contracts/firestore/swipes.schema.json`, the `profileDecisions` operation
+  in `tool/contracts/firestore_contract.json`, the Dart `Swipe` model and the
+  rules tests. Ship it after the prod purge, so stored documents still
+  validate until then.
+- **Raise `min_build_*`** in Remote Config to the first released build without
+  the deck, the one carrying `ec12ccadb`. Follow the force-update steps above.
+
+Until one of them lands, the Functions ignore new deck-shaped decisions, and
+rerunning the dry run shows any that accumulate. Publish the privacy-policy
+wording that says this data was deleted only after the prod purge, Storage and
+BigQuery steps are all done.
+
 ## Smoke Tests
 
 After a backend deploy, smoke test:
