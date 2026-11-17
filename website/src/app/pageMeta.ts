@@ -7,6 +7,8 @@ import type {PublishedLegalPageKey} from "../content/types";
 import {websiteCities} from "../content/markets";
 import type {MarketCity} from "../content/markets/types";
 import {explorePageCopy} from "../content/explorePage";
+import type {PlaybookPageDocument} from "../content/playbook/playbookContract";
+import {resolvePlaybookPage} from "../features/playbook/playbookPages";
 
 export type PageKey =
   | "sales_demo"
@@ -36,7 +38,8 @@ export type PageKey =
   | "account_deletion"
   | "refunds"
   | "contact"
-  | "not_found";
+  | "not_found"
+  | "playbook";
 
 export interface PageMeta {
   title: string;
@@ -53,8 +56,23 @@ export function isLegalPageKey(page: PageKey): page is PublishedLegalPageKey {
     page === "refunds" || page === "contact";
 }
 
-export const pageMeta: Record<Exclude<PageKey, "listing" | "event_detail">, PageMeta> =
+export const pageMeta: Record<Exclude<PageKey, "listing" | "event_detail" | "playbook">, PageMeta> =
   websiteMeta.routes;
+
+/**
+ * A playbook page's metadata, from the meta block in its own content file.
+ * `noindex` is the owner's approval flag: until a page's PR sets it false,
+ * the page is noindex and stays out of the sitemap.
+ */
+export function pageMetaForPlaybook(page: PlaybookPageDocument, canonicalPath: string): PageMeta {
+  return {
+    title: page.meta.title,
+    description: page.meta.description,
+    twitterDescription: page.meta.socialDescription ?? page.meta.description,
+    canonicalPath,
+    ...(page.meta.noindex ? {robots: "noindex, follow"} : {}),
+  };
+}
 
 /** Catch for weddings' application page shares the landing's page key, with its own metadata. */
 export function pageMetaForWeddingsPath(pathname: string): PageMeta | null {
@@ -132,6 +150,8 @@ export function getPageKey(
   if (["/host", "/host/"].includes(pathname)) return "host";
   if (["/weddings", "/weddings/", "/weddings/apply", "/weddings/apply/"].includes(pathname)) return "weddings";
   if (pathname.startsWith("/organizers")) return "organizers";
+  // A redesign page whose content is registered; a registered route without content stays not_found.
+  if (resolvePlaybookPage(pathname)) return "playbook";
   if (pathname === "/cities" || pathname === "/cities/") return "cities";
   if (pathname === "/explore" || pathname === "/explore/" || cityForPath(pathname)) return "visitor_discovery";
   if (pathname === "/" || pathname === "") return "home";
