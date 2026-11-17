@@ -3172,12 +3172,15 @@ and writers before a client using SDK reads, then backfill and activate each
 organizer. `onHostDirectoryOrganizerCreated` activates every model for a new
 organizer, which has no sources yet. The Host app reads the contact, form,
 group, response and event directories only through their markers: a missing
-marker is an error to retry, never a callable fallback. Each directory list is
-a Firestore listener over a window of its first rows (`limit + 1`, to know
-whether more follow); asking for more listens to a window one page larger, at
-most 2,500 rows. A server change shows in the open list at once, a write needs
-no reread, and a list opens offline from the device cache. A larger window that
-fails keeps the rows already shown and reports the failure under them.
+marker is an error to retry, never a callable fallback. The People contact
+list reads live pages (see [Live pages](#live-pages)): each 30-row page is its
+own listener, so asking for more reads only the new page, at most 2,500 rows.
+The form, response, group and draft lists still listen to a window of their
+first rows (`limit + 1`) that grows by a page on request, rereading the rows
+already shown, until they move to live pages. A server change shows in the
+open list at once, a write needs no reread, and a list opens offline from the
+device cache. A page that fails keeps the rows above it and reports the
+failure under them; asking again retries it.
 
 The normal SDK contact page reads at most `limit + 1` small summaries and one
 counts document. Single segment and single filter-family queries use indexes.
@@ -5880,7 +5883,7 @@ queries:
   reviewed page size, a stable ordered cursor, refresh behavior, and an honest
   `hasMore` state. Realtime first-page listeners are allowed when freshness is
   product-critical, but older history still loads through a cursor. Host
-  directories instead grow one listener window a page at a time, up to the
+  directories keep every shown row live with live pages (below), up to the
   reviewed cap in
   [Organizer Communication Preferences And CRM](#organizer-communication-preferences-and-crm).
 - **Rosters and bounded working sets** require a reviewed limit based on the
@@ -5952,6 +5955,22 @@ create cursor gaps or re-read the full archive.
 Explore accumulates both discovery cursors, shows `N+` while either has more,
 and exposes a load-more action. Its map count includes only records with a
 complete coordinate pair.
+
+#### Live pages
+
+`packages/platform/lib/firebase/live_paged_query.dart` owns paged lists whose
+every shown row must stay live. Firestore bills a listener for each document
+in its initial result set and for each later change, and a listener whose
+limit changes is a new query that reads every earlier row from the server
+again; the device cache spares only a listener resumed on the same query
+within 30 minutes. A window that grows by a page of `p` rows therefore costs
+`p(1 + 2 + ... + n)` reads for `n` pages. Live pages cost `np`: page `k`
+listens after the last shown row of page `k - 1` with `limit(p + 1)`, earlier
+pages keep their listeners, and a page that rows push past its limit listens
+once more bounded by its own last row so no row falls between pages.
+Controllers see only `LivePager` and `LivePages` from `live_pages.dart`
+(rows, `hasMore`, `loadingMore`, the next page's error); the data layer owns
+the cursors. A list whose later rows need not stay live uses `CursorPage`.
 
 ### Feed freshness policy
 

@@ -2,6 +2,7 @@ import type {Meta, StoryObj} from "@storybook/react-vite";
 import {CatchHeroSection} from "./CatchHeroSection";
 import {CatchRoot} from "./CatchRoot";
 import {CatchScreenPreview} from "./CatchScreenPreview";
+import {CatchText} from "./CatchText";
 
 // Neutral sample copy: no figure here is a real measurement.
 const sample = {
@@ -68,3 +69,20 @@ export const Compact: Story = {
 export const Split: Story = {args: {ground: "yellow", media}};
 export const Photo: Story = {args: {layout: "photo"}};
 export const Ink: Story = {args: {ground: "ink"}};
+
+/** The homepage hero: a white notice card under the actions, and the plan chip with its date square over the media. */
+export const NoticeAndChip: Story = {
+  render: () => (
+    <CatchRoot size="expanded" theme="day">
+      <CatchHeroSection
+        {...sample}
+        aside={{title: "A sample plan", meta: "Sample place · Places left", date: {weekday: "Thu", day: "20", month: "Nov", ground: "yellow"}}}
+        ground="pink"
+        media={media}
+        notice={{title: "A sample notice", body: "A sample line about what the form sends.", children: (
+          <CatchText tone="secondary" variant="body-small">The page's form goes here.</CatchText>
+        )}}
+      />
+    </CatchRoot>
+  ),
+};

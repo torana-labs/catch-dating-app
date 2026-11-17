@@ -26,10 +26,12 @@ class GuestEventCardsRepository {
   static const _savedPath = 'savedEvents';
 
   /// Events the guest has a Catch booking at in one of [statuses], by start.
+  /// [limit] keeps a history list to its most recent rows.
   Stream<List<GuestEventCard>> watchBookedCards({
     required String uid,
     required Set<EventParticipationStatus> statuses,
     bool descending = false,
+    int limit = ReadLimitPolicy.boundedWorkingSet,
   }) {
     if (statuses.isEmpty) return Stream.value(const []);
     final names = statuses.map((status) => status.name).toList()..sort();
@@ -42,7 +44,7 @@ class GuestEventCardsRepository {
     return withBackendErrorStream(
       () => query
           .orderBy('eventCard.startTimeMillis', descending: descending)
-          .limit(ReadLimitPolicy.boundedWorkingSet)
+          .limit(limit)
           .snapshots()
           .map((snap) => _listed(snap.docs.map((doc) => doc.data())))
           .distinct(_sameCards),
@@ -128,7 +130,10 @@ Stream<List<GuestEventCard>> watchSignedUpEventCards(Ref ref, String uid) => ref
       statuses: const {EventParticipationStatus.signedUp},
     );
 
-/// Events the guest attended, most recent first.
+/// The guest's most recent attended events, newest first. Attendance only
+/// grows, and its readers (the home's catch windows and review prompt, and
+/// Explore's time-of-day signal) use recent events, so the listener reads
+/// one history page instead of every event the guest ever attended.
 @riverpod
 Stream<List<GuestEventCard>> watchAttendedEventCards(Ref ref, String uid) => ref
     .watch(guestEventCardsRepositoryProvider)
@@ -136,6 +141,7 @@ Stream<List<GuestEventCard>> watchAttendedEventCards(Ref ref, String uid) => ref
       uid: uid,
       statuses: const {EventParticipationStatus.attended},
       descending: true,
+      limit: ReadLimitPolicy.historyPage,
     );
 
 /// Events the guest is booked or waitlisted at, for schedule overlaps.

@@ -94,4 +94,37 @@ describe("CatchCardGrid", () => {
     expect(screen.getByRole("link", {name: "See all"})).toBeTruthy();
     expect(screen.getByRole("region").dataset.band).toBe("tile");
   });
+
+  it("draws entry tiles as links on their grounds, six across, with an icon and a heading each", () => {
+    const {container} = render(
+      <CatchCardGrid columns={6} items={[
+        {id: "new", title: "New to Mumbai", body: "Plans that welcome first-timers.", href: "/mumbai/", ground: "coral", icon: "location"},
+        {id: "safety", title: "Safety first", body: "Reviews from people who went.", href: "#safety", ground: "ink", icon: "safety"},
+      ]} kind="entry" title="Whoever you are" />,
+    );
+    const tile = screen.getByRole("link", {name: /New to Mumbai/});
+    expect(tile.dataset.ground).toBe("coral");
+    expect(screen.getByRole("link", {name: /Safety first/}).dataset.catchTheme).toBe("dark");
+    expect(screen.getByRole("heading", {level: 3, name: "New to Mumbai"})).toBeTruthy();
+    expect((container.querySelector("ul") as HTMLElement).dataset).toMatchObject({kind: "entry", columns: "6"});
+  });
+
+  it("draws format cards with a photo, or the format's artwork without one, in a rail with chips and a header action", () => {
+    const {container} = render(
+      <CatchCardGrid chips={[{label: "Yoga and fitness", href: "/mumbai/?q=yoga", dot: "indigo"}]} columns={5}
+        headerAction={{label: "See everything", href: "/mumbai/"}} items={[
+          {id: "run", title: "Runs and walks", body: "Pace groups.", more: "Run clubs in Mumbai", href: "/mumbai/?format=run", ground: "coral", format: "run", photoUrl: "/run.jpg"},
+          {id: "games", title: "Games and quizzes", body: "Teams and rounds.", more: "Quiz nights in Mumbai", href: "/mumbai/?format=games", ground: "yellow", format: "games"},
+        ]} kind="format" layout="rail" title="Start with what you feel like doing" />,
+    );
+    const run = screen.getByRole("link", {name: /Runs and walks/});
+    expect(run.querySelector("img")?.getAttribute("src")).toBe("/run.jpg");
+    expect(screen.getByRole("link", {name: /Games and quizzes/}).querySelector("img[src='/run.jpg']")).toBeNull();
+    expect((container.querySelector("ul") as HTMLElement).dataset).toMatchObject({kind: "format", layout: "rail"});
+    expect(screen.getByRole("link", {name: "Yoga and fitness"}).getAttribute("href")).toBe("/mumbai/?q=yoga");
+    const heading = screen.getByRole("heading", {level: 2});
+    const action = screen.getByRole("link", {name: "See everything"});
+    expect(heading.compareDocumentPosition(action) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(action.compareDocumentPosition(run) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
 });

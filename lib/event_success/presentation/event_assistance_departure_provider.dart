@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/live/data/event_assistance_departure_r
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_assistance_departure_provider.g.dart';
@@ -86,7 +87,7 @@ class EventAssistanceDeparture extends _$EventAssistanceDeparture {
 /// invalidate it. Each delivery is a new session and retires the previous
 /// one, so a decision built on an older snapshot asks for a fresh review
 /// instead of being replaced in the background.
-@Riverpod(retry: _noDepartureReadRetry)
+@Riverpod(retry: noAutomaticRetry)
 Stream<EventDepartureSession> eventAssistanceDepartureForAccount(
   Ref ref,
   EventAssistanceGroupScope scope, {
@@ -112,4 +113,3 @@ Stream<EventDepartureSession> eventAssistanceDepartureForAccount(
 }
 
 // A listener error is shown with a retry; it is never retried silently.
-Duration? _noDepartureReadRetry(int retryCount, Object error) => null;

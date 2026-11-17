@@ -175,7 +175,7 @@ final class EventAssistanceAccountabilityForAccountProvider
     })
     super.argument,
   }) : super(
-         retry: _noAccountabilityReadRetry,
+         retry: noAutomaticRetry,
          name: r'eventAssistanceAccountabilityForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -227,7 +227,7 @@ final class EventAssistanceAccountabilityForAccountProvider
 }
 
 String _$eventAssistanceAccountabilityForAccountHash() =>
-    r'fcfafb90113de5747b4c05fd8494a35ececd0ae4';
+    r'f4dfd007d36922b1f1406973e8bad072144862f8';
 
 /// The guest's visit review for one sign-in period. It is a Firestore
 /// listener: it declares no cache tags or lifetime and writes never
@@ -242,7 +242,7 @@ final class EventAssistanceAccountabilityForAccountFamily extends $Family
         > {
   EventAssistanceAccountabilityForAccountFamily._()
     : super(
-        retry: _noAccountabilityReadRetry,
+        retry: noAutomaticRetry,
         name: r'eventAssistanceAccountabilityForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,

@@ -127,6 +127,15 @@ fill on ink, the ground's secondary ink on a colour) at .04em. A coloured
 `CatchSurface` band draws the panel, and `CatchBandHeader`'s `size` and
 `kickerAccent` carry the rest.
 
+Plain sections take the canvas's open rhythm: 112px above and 24px below
+(60 and 8 on phones). In a website band a field puts its label above a 48px
+box, and on phones a band's buttons stack full width. The homepage board's
+own stylesheet (`oneoff/PlaybookHome.dc.html`) owns the parts only the
+homepage draws, and the importer reads it beside the kit: the hero phone in
+the canvas bezel (`CatchAppCaptureImage` `bezel`), its notify card and plan
+chip, entry tiles and format cards (`CatchCardGrid`), the bento app band
+(`CatchCtaSection` `tiles`) and the phone action bar (`CatchSiteDock`).
+
 ---
 
 ## 3. Activity color system — the only chroma (keep + refine)
