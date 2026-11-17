@@ -329,7 +329,7 @@ function AppNoticeForm({compact = false, home}: {compact?: boolean; home: Home})
       recipe="input" required title={notify.phone} value={notice.phone} />
   );
   const submit = (
-    <CatchButton fill={!compact} label={notify.action} onPressed={() => undefined} size={compact ? "sm" : "lg"} status={notice.sending ? "loading" : "idle"} type="submit" />
+    <CatchButton label={notify.action} onPressed={() => undefined} size={compact ? "sm" : "lg"} status={notice.sending ? "loading" : "idle"} type="submit" />
   );
   return (
     <CatchStack gap={12}>
@@ -338,9 +338,12 @@ function AppNoticeForm({compact = false, home}: {compact?: boolean; home: Home})
           <CatchStack gap={compact ? 8 : 12}>
             {compact ? <CatchStack collapseBelow="medium" direction="row" gap={8} railWidth="fit">{field}{submit}</CatchStack> : field}
             <CatchCheckboxInput label={fill(notify.newPlans, {city})} onChanged={notice.sending ? null : notice.setNewPlans} value={notice.newPlans} />
-            {compact ? null : submit}
-            <CatchText tone="secondary" variant="body-small">{notify.consent}</CatchText>
-            <CatchStack align="start"><CatchButton href="/privacy/" label={notify.privacy} size="sm" variant="quiet" /></CatchStack>
+            {compact ? null : <CatchStack align="start">{submit}</CatchStack>}
+            {/* The consent line in the canvas's fine print, with the privacy policy across from it. */}
+            <CatchStack direction="row" gap={8} railWidth="fit">
+              <CatchText tone="secondary" variant="body-meta">{notify.consent}</CatchText>
+              <CatchButton href="/privacy/" label={notify.privacy} size="sm" variant="quiet" />
+            </CatchStack>
           </CatchStack>
         </Form>
       )}

@@ -44,7 +44,7 @@ describe("homepage", {timeout: 20_000}, () => {
 
     const week = within(main.getByRole("region", {name: "This week in Mumbai"}));
     expect(week.getByText("10 plans this week")).toBeTruthy();
-    expect(week.getByText("6 of 10 plans shown. Hosts set their own prices.")).toBeTruthy();
+    expect(week.getByText("3 of 10 plans shown. Hosts set their own prices.")).toBeTruthy();
     const quiz = week.getByRole("link", {name: /Thursday Evening Pub Quiz/});
     expect(quiz.getAttribute("href")).toBe("/events/thursday-pub-quiz/");
     expect(quiz.textContent).toContain("Games and quizzes");
@@ -122,7 +122,7 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(screen.getByText("Showing 3 of 3 this week · Games and quizzes")).toBeTruthy();
     expect(week().queryByRole("link", {name: /Strangers’ Supper/})).toBeNull();
     fireEvent.click(screen.getByRole("radio", {name: "Everything"}));
-    expect(screen.getByText("6 of 10 plans shown. Hosts set their own prices.")).toBeTruthy();
+    expect(screen.getByText("3 of 10 plans shown. Hosts set their own prices.")).toBeTruthy();
     fireEvent.click(screen.getByRole("radio", {name: "Pickleball"}));
     expect(week().getByRole("link", {name: /Doubles Ladder Night/}).textContent).toContain("Full");
   });
@@ -182,7 +182,7 @@ describe("homepage", {timeout: 20_000}, () => {
     const later = mumbaiLiveCatalog.plans.plans.slice(0, 6).map((plan) => ({...plan, startTime: shift(plan.startTime)!, endTime: shift(plan.endTime)}));
     render(<HomePage captures={captures} catalog={{...mumbaiLiveCatalog, plans: {...mumbaiLiveCatalog.plans, plans: later}}} />);
     const plans = within(screen.getByRole("region", {name: "Coming up in Mumbai"}));
-    expect(plans.getByText("Nothing on this week, so here’s everything in Mumbai over the next two weeks: 6 of 6 shown.")).toBeTruthy();
+    expect(plans.getByText("Nothing on this week, so here’s everything in Mumbai over the next two weeks: 3 of 6 shown.")).toBeTruthy();
     expect(plans.getAllByRole("link", {name: /Thursday Evening Pub Quiz/})[0].textContent).toMatch(/Fri 6 Nov, 7:30 PM/u);
   });
 
