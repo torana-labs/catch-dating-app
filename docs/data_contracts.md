@@ -4363,7 +4363,8 @@ path; existing client initial-create, booking and social-readiness gates remain
 unchanged. Claiming does not admit someone to an event or grant room sharing.
 Owner cards contain only selected applicant-answer pointers, never CRM notes,
 tags or private review fields. Card reads must revalidate the source response.
-Account deletion removes proposals, cards and claim receipts.
+Account deletion removes proposals, cards, claim receipts and the
+participant's `participantIntakeProfiles/{uid}` saved answers.
 
 A selected form photo must still match the owned response, form, version, draft
 and question. Its bytes and digest are verified, safety checked, stripped of

@@ -386,6 +386,7 @@ async function queueParticipantPrivateStateCleanup(
       .where("uid", "==", uid).get();
     records.forEach((doc) => writer.delete(doc.ref));
   }
+  writer.delete(db.collection("participantIntakeProfiles").doc(uid));
   const messages = await db.collection("eventChatMessages")
     .where("uid", "==", uid).get();
   messages.forEach((doc) => writer.update(doc.ref, {
