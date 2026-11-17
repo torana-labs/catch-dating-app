@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:catch_platform/firebase/firestore_converters.dart';
 
 class UploadedPhoto {
   const UploadedPhoto({
@@ -89,8 +89,8 @@ class UploadedPhoto {
     'thumbnailUrl': thumbnailUrl,
     'thumbnailStoragePath': thumbnailStoragePath,
     'position': position,
-    'createdAt': Timestamp.fromDate(createdAt),
-    'updatedAt': Timestamp.fromDate(updatedAt),
+    'createdAt': firestoreTimestampFromDateTime(createdAt),
+    'updatedAt': firestoreTimestampFromDateTime(updatedAt),
   };
 
   @override
@@ -123,8 +123,7 @@ class UploadedPhoto {
 const Object _unset = Object();
 
 DateTime _dateTimeFromJson(Object? value) {
-  if (value is Timestamp) return value.toDate();
-  if (value is DateTime) return value;
+  if (nullableDateTimeFromFirestoreValue(value) case final date?) return date;
   if (value is String) return DateTime.parse(value);
   if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
   return DateTime.fromMillisecondsSinceEpoch(0);

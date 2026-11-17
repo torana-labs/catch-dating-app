@@ -149,7 +149,7 @@ final class _TimedReadOwner extends AsyncNotifier<CachedRead<String>> {
       policy: CachePolicies.hostReports,
       query: query,
       fetch: (request) => _fetch(ref, request),
-      previous: state.value,
+      refreshing: state.hasValue,
     );
   }
 }
@@ -172,7 +172,7 @@ final class _SessionReadOwner extends AsyncNotifier<CachedRead<String>> {
       session: query.session,
       query: query,
       fetch: (request) => _fetch(ref, request),
-      previous: state.value,
+      refreshing: state.hasValue,
     );
   }
 }
@@ -194,7 +194,7 @@ final class _RecordReadOwner extends AsyncNotifier<CachedRead<String>> {
       policy: CachePolicies.hostCustomerRecords,
       query: query,
       fetch: (request) => _fetch(ref, request),
-      previous: state.value,
+      refreshing: state.hasValue,
     );
   }
 }

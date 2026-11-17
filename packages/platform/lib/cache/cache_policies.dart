@@ -1,10 +1,12 @@
 // Owner: Suvrat Garg (product owner). Every value below is a product decision:
-// how stale each class of data may be shown and how long it stays in memory
-// after its screen closes. They are the answers the owner approved on
+// how stale each class of data may be shown, how long it stays in memory
+// after its screen closes and how long a load may take before the screen says
+// it timed out. The lifetimes are the answers the owner approved on
 // 1 November 2026 to the caching contract's product questions (issue #1323,
-// docs/screen_data_caching.md). Change a value only with the owner's approval,
-// and keep every caching Duration in this file: no read owner writes one
-// inline (CACHE-POLICY-001).
+// docs/screen_data_caching.md); the load deadlines are the timeout policy the
+// owner approved on 17 November 2026. Change a value only with the owner's
+// approval, and keep every caching Duration in this file: no read owner
+// writes one inline (CACHE-POLICY-001).
 
 import 'package:catch_platform/cache/cache_policy.dart';
 
@@ -15,12 +17,27 @@ import 'package:catch_platform/cache/cache_policy.dart';
 /// return without a background refetch (zero: always refetched on return;
 /// null: never, because a listener delivers its own updates). No policy here
 /// writes data to disk; the persisted-read store (#1330) owns that tier.
+///
+/// `firstLoad` and `refresh` are the load deadlines: how long a first load
+/// (nothing on screen) or a background refetch (data on screen) may take
+/// before it fails with a timeout. A class the table gives no deadline takes
+/// [defaultFirstLoad] and [defaultRefresh].
 abstract final class CachePolicies {
+  /// The first-load deadline of a read class with none of its own, and of a
+  /// screen that is not a cached read, such as a listener or a composition.
+  static const defaultFirstLoad = Duration(seconds: 10);
+
+  /// The refresh deadline of a read class with none of its own.
+  static const defaultRefresh = Duration(seconds: 10);
+
   /// Host reports and counts: analytics, form analytics, attendance report,
   /// roster insights, CRM and programme counts (question 1).
+  /// Reports aggregate a period server-side, so they may take 20 seconds.
   static const hostReports = CachePolicy(
     retain: Duration(minutes: 10),
     staleAfter: Duration(minutes: 5),
+    firstLoad: Duration(seconds: 20),
+    refresh: Duration(seconds: 20),
   );
 
   /// Host customer records with personal data: contact, form response,
@@ -35,19 +52,27 @@ abstract final class CachePolicies {
   /// departures, checkpoints, presence, assistance roster (question 3).
   /// Listeners stay live; function views are kept 60 seconds and refetched on
   /// every return, with cached rows shown as updating.
+  /// A host at a live event needs an answer fast: a first load gets six
+  /// seconds and a refetch five.
   static const liveOperations = CachePolicy(
     retain: Duration(seconds: 60),
     staleAfter: Duration.zero,
+    firstLoad: Duration(seconds: 6),
+    refresh: Duration(seconds: 5),
   );
 
   /// Booking state: price, seats, eligibility, waitlist (question 4).
+  /// A booking decision waits at most eight seconds.
   static const bookingState = CachePolicy(
     retain: Duration(minutes: 5),
     staleAfter: Duration(seconds: 60),
+    firstLoad: Duration(seconds: 8),
+    refresh: Duration(seconds: 8),
   );
 
   /// Discovery: search results, recommendations, cross-paths suggestions,
   /// "who's going" avatars (question 5).
+  /// Its load deadlines are the defaults, ten seconds each.
   static const discovery = CachePolicy(
     retain: Duration(minutes: 10),
     staleAfter: Duration(minutes: 2),

@@ -8,7 +8,6 @@ import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_
 import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/firestore_converters.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../events/events_test_helpers.dart';
 import '../../test_pump_helpers.dart';
 
-typedef TimelinePage = CursorPage<Event, DocumentSnapshot<Event>>;
+typedef TimelinePage = CursorPage<Event, PageCursor<Event>>;
 typedef TimelinePageStep = Future<TimelinePage> Function();
 
 Future<HostEventsTimelineData> settledTimeline(
@@ -50,7 +49,7 @@ ProviderContainer timelineContainer(EventRepository repository) {
   return container;
 }
 
-Future<DocumentSnapshot<Event>> timelineEventCursor(String id) async {
+Future<PageCursor<Event>> timelineEventCursor(String id) async {
   final firestore = FakeFirebaseFirestore();
   final reference = firestore
       .collection('events')
@@ -61,7 +60,7 @@ Future<DocumentSnapshot<Event>> timelineEventCursor(String id) async {
       )
       .doc(id);
   await reference.set(buildEvent(id: id));
-  return reference.get();
+  return PageCursor.after(await reference.get());
 }
 
 class PagedEventRepository extends Fake implements EventRepository {
@@ -74,15 +73,15 @@ class PagedEventRepository extends Fake implements EventRepository {
   final List<TimelinePageStep> activeSteps;
   final List<TimelinePageStep> pastSteps;
   final List<TimelinePageStep> cancelledSteps;
-  final List<DocumentSnapshot<Event>?> cancelledStartAfterCalls = [];
-  final List<DocumentSnapshot<Event>?> activeStartAfterCalls = [];
-  final List<DocumentSnapshot<Event>?> pastStartAfterCalls = [];
+  final List<PageCursor<Event>?> cancelledStartAfterCalls = [];
+  final List<PageCursor<Event>?> activeStartAfterCalls = [];
+  final List<PageCursor<Event>?> pastStartAfterCalls = [];
 
   @override
   Future<TimelinePage> fetchActiveEventsPage({
     required String organizerId,
     required DateTime sessionBoundary,
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) {
     activeStartAfterCalls.add(startAfter);
@@ -93,7 +92,7 @@ class PagedEventRepository extends Fake implements EventRepository {
   Future<TimelinePage> fetchPastEventsPage({
     required String organizerId,
     required DateTime sessionBoundary,
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) {
     pastStartAfterCalls.add(startAfter);
@@ -103,7 +102,7 @@ class PagedEventRepository extends Fake implements EventRepository {
   @override
   Future<TimelinePage> fetchCancelledEventsPage({
     required String organizerId,
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) {
     cancelledStartAfterCalls.add(startAfter);

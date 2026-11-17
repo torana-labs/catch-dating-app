@@ -27,7 +27,6 @@ import 'package:catch_dating_app/contexts/organizers/domain/organizer_host_defau
 import 'package:catch_dating_app/contexts/organizers/domain/update_organizer_patch.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
-import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_editor.dart';
@@ -44,7 +43,6 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';
 import 'package:catch_dating_app/organizers/presentation/detail/organizer_detail_view_model.dart';
-import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
@@ -62,7 +60,6 @@ import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

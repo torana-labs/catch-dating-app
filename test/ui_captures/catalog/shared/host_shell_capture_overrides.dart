@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/connections/data/match_repository.dart
 import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_platform/firebase/push_installation_store.dart';
 import 'package:catch_platform/push/fcm_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -30,7 +31,10 @@ class CaptureSilentErrorLogger extends ErrorLogger {
 
 class CaptureUnsupportedFcmService extends FcmService {
   CaptureUnsupportedFcmService()
-    : super(FakeFirebaseFirestore(), CaptureSilentErrorLogger());
+    : super(
+        PushInstallationStore(FakeFirebaseFirestore()),
+        CaptureSilentErrorLogger(),
+      );
 
   @override
   bool get isSupportedPlatform => false;

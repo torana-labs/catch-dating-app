@@ -189,10 +189,10 @@
           "role": "Recoverable organizer-scoped Program creation route entered from Events."
         },
         {
-          "id": "program_inventory_controller",
-          "file": "lib/programs/presentation/program_events_controller.dart",
-          "symbol": "ProgramEventsController",
-          "role": "Bounded Program inventory, exact saved-row confirmation, mutation, retry, and actor-generation fences."
+          "id": "program_create_provider",
+          "file": "lib/programs/presentation/program_create_controller.dart",
+          "symbol": "ProgramCreate",
+          "role": "Generated notifier for one account and organizer's Program creation: draft recovery from the command journal, exact saved-row confirmation and actor fences."
         },
         {
           "id": "program_inventory_row",
@@ -230,7 +230,7 @@
         "test/hosts/host_events_timeline_controller_test.dart",
         "test/hosts/host_operations_screen_test.dart",
         "test/programs/program_create_controller_test.dart",
-        "test/programs/program_events_controller_test.dart"
+        "test/programs/program_create_provider_test.dart"
       ]
     },
     {

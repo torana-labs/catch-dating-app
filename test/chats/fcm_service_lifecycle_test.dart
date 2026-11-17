@@ -6,6 +6,7 @@ import 'package:catch_dating_app/notifications/presentation/foreground_notificat
 import 'package:catch_dating_app/routing/shell/app_shell.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_platform/firebase/push_installation_store.dart';
 import 'package:catch_platform/push/fcm_service.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -89,7 +90,7 @@ class _SupportedFcm extends FcmService {
     Stream<RemoteMessage> foreground,
     Stream<RemoteMessage> opened,
   ) : super(
-        db,
+        PushInstallationStore(db),
         ErrorLogger.silent(),
         messaging: sdk,
         foregroundMessages: foreground,
