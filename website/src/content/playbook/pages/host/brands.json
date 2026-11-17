@@ -1,0 +1,170 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_brands",
+  "route": "host_brands",
+  "meta": {
+    "title": "{{brand.name}} for brands | Community events you can measure",
+    "description": "Run your own community nights or back hosts who already have the crowd. Every partner, creator and post gets its own link, with bookings, attendance and repeat guests for each.",
+    "socialDescription": "Know exactly who your events reached. {{brand.name}} for brands that run community events.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {"links": [{"label": "For hosts", "to": {"route": "host"}}], "current": "Brands"}
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "coral",
+      "kicker": "{{brand.name}} for brands that run community events",
+      "title": "Know exactly who your events reached.",
+      "lead": "Run your own community nights or back hosts who already have the crowd. Every partner, creator and post gets its own link, and you see the bookings, attendance and repeat guests each one brought.",
+      "actions": [
+        {
+          "label": "Ask for a walkthrough",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I work on a brand’s community events and would like a 15-minute walkthrough."},
+          "emphasis": "primary"
+        },
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I have a question about running brand events on {{brand.name}}."},
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {
+        "label": "A host looking for a sponsor? Tell us about your nights",
+        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I host events and I’m looking for a brand sponsor. Here’s what I run:"}
+      },
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Run series · October",
+          "subtitle": "Four cities · 9 partner clubs",
+          "stats": [
+            {"value": "1,820", "label": "booked"},
+            {"value": "1,544", "label": "came"},
+            {"value": "38%", "label": "came again"}
+          ],
+          "bars": [
+            {"label": "Partner clubs", "value": "1,102", "share": 100},
+            {"label": "Creators", "value": "452", "share": 41},
+            {"label": "Your app", "value": "266", "share": 24}
+          ]
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "two-ways",
+      "ground": "white",
+      "kicker": "Two ways brands use {{brand.name}}",
+      "title": "Run it yourself, or back the hosts who already do.",
+      "columns": 2,
+      "items": [
+        {
+          "title": "Run community nights under your brand",
+          "body": "A page for your brand, events in each city, applications or paid booking, the door and the follow-up.",
+          "list": ["Your brand page and events", "Invite-only links for launches", "Reports after every night"]
+        },
+        {
+          "title": "Back run clubs, supper clubs and quiz nights",
+          "body": "Hosts run the night on {{brand.name}}; you give each one a link and see what your partnership brought.",
+          "list": ["A link per partner host and creator", "Bookings and attendance by partner", "Repeat guests by partner"]
+        }
+      ]
+    },
+    {
+      "type": "split",
+      "id": "attribution",
+      "ground": "white",
+      "kicker": "Attribution",
+      "title": "Every partner, measured the same way.",
+      "lead": "Give every host, creator, store and post its own link. {{brand.name}} follows each one from the first visit to a booking and to the door.",
+      "ticks": ["Visits, bookings and attendance for every link", "Repeat guests, not just first visits", "One report across cities and partners"],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Links · Run series",
+          "label": "Bookings per link",
+          "rows": [
+            {"title": "Carter Road Runners", "detail": "Mumbai · 4 runs", "value": "412"},
+            {"title": "Sea Face Striders", "detail": "Mumbai · 4 runs", "value": "286"},
+            {"title": "Creator · @runwithrhea", "detail": "Reel and stories", "value": "198"},
+            {"title": "Store QR codes", "detail": "12 stores", "value": "131"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "checklist",
+      "id": "permission",
+      "ground": "paper",
+      "kicker": "Guests and permission",
+      "title": "Reach without overreach.",
+      "lead": "You see counts and outcomes for every partner. Contact details come only from people who said yes to hearing from your brand.",
+      "items": [
+        {"title": "Aggregate reports by default", "body": "Bookings, attendance and repeats by partner."},
+        {"title": "Opt-in per brand and channel", "body": "Asked clearly, recorded when given."},
+        {"title": "Hosts keep their guests", "body": "A partnership never moves a host’s list to you."},
+        {"title": "Private links for launches", "body": "Invite-only events stay off public pages."}
+      ]
+    },
+    {
+      "type": "pricing",
+      "id": "pricing",
+      "ground": "ink",
+      "kicker": "Pricing for brands",
+      "price": "5%",
+      "title": "of ticket sales, never more than ₹10,000 per billing cycle.",
+      "trial": "The same 5% and the same cap as every host. Free events stay free. Payment gateway fees are separate. Multi-city series and programmes: ask for a walkthrough and we’ll plan it with you.",
+      "examples": [
+        {"title": "Free community runs", "value": "₹0", "body": "Free events stay free."},
+        {"title": "A paid launch night, 200 at ₹500", "value": "₹5,000", "body": "5% of ₹1,00,000."}
+      ],
+      "actions": [
+        {
+          "label": "Ask for a walkthrough",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like a walkthrough for a brand series across cities."},
+          "emphasis": "primary"
+        },
+        {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Brand questions",
+      "title": "What brands ask us.",
+      "items": [
+        {"question": "Can we see the guests partner hosts bring?", "answer": "You see counts: bookings, attendance and repeat guests by partner. Names and contact details only come from people who opted in to hear from your brand."},
+        {"question": "Can we run events in several cities?", "answer": "Yes. Each city’s events sit on your brand page, and the report rolls them up."},
+        {"question": "Can we keep a launch invite-only?", "answer": "Yes. Invite-only events stay off public pages; only people with your link can book."},
+        {"question": "How do we find hosts to partner with?", "answer": "Ask us for a walkthrough on WhatsApp and tell us the cities and formats you want. We’ll introduce hosts who fit."},
+        {"question": "Do guests need an app?", "answer": "No. Guests book and check in in their phone’s browser."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Planning a series?",
+      "title": "Show us the cities. We’ll show you the reach.",
+      "lead": "A 15-minute walkthrough, then we set it up with you.",
+      "actions": [
+        {
+          "label": "Ask for a walkthrough",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like a 15-minute walkthrough for our brand’s community events."},
+          "emphasis": "primary"
+        },
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I have a question about running brand events on {{brand.name}}."},
+          "emphasis": "secondary"
+        }
+      ]
+    }
+  ]
+}

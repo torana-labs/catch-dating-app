@@ -1,0 +1,176 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_teams",
+  "route": "host_teams",
+  "meta": {
+    "title": "{{brand.name}} for teams | Team socials where people meet outside their team",
+    "description": "A private link only your colleagues have, RSVPs you can trust, groups that mix teams on purpose, and a short report on who came. Free for socials that don’t sell tickets.",
+    "socialDescription": "Team socials where people meet someone outside their team. {{brand.name}} for HR, people teams and team leads.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {"links": [{"label": "For hosts", "to": {"route": "host"}}], "current": "Teams and companies"}
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "yellow",
+      "kicker": "{{brand.name}} for HR, people teams and team leads",
+      "title": "Team socials where people meet someone outside their team.",
+      "lead": "A private link only your colleagues have, RSVPs you can trust, groups that mix teams on purpose, and a report on who came and who met whom. Free for socials that don’t sell tickets.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I plan team socials and have a question about {{brand.name}}."},
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {
+        "label": "Planning a multi-day offsite with travel and rooms? Ask for a walkthrough",
+        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’m planning a multi-day offsite and would like a walkthrough."}
+      },
+      "chip": {
+        "title": "New-joiner social",
+        "rows": [
+          {"label": "Invited", "value": "60"},
+          {"label": "Said yes", "value": "52"},
+          {"label": "Came", "value": "48"}
+        ]
+      },
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Groups, round 2",
+          "subtitle": "New-joiner social · Thursday",
+          "stats": [
+            {"value": "48", "label": "here"},
+            {"value": "7", "label": "teams"},
+            {"value": "14", "label": "new joiners"}
+          ],
+          "rows": [
+            {"title": "Group 1", "detail": "Design, Sales, Finance, Eng ×2, Ops", "tag": "6 · 5 teams"},
+            {"title": "Group 2", "detail": "Two new joiners, one from each floor", "tag": "6 · 6 teams"},
+            {"title": "Group 3", "detail": "Nobody who sits together", "tag": "6 · 4 teams"}
+          ],
+          "note": "Next round in 8 minutes · new groups"
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "sound-familiar",
+      "ground": "white",
+      "kicker": "Sound familiar?",
+      "title": "Booking the venue is the easy part.",
+      "columns": 3,
+      "items": [
+        {"title": "Fifty thumbs up, twenty people", "body": "An emoji in the team channel isn’t an RSVP, and you’ve ordered food for fifty.", "fix": "A real yes on a private link, and a count at the door you can trust."},
+        {"title": "Everyone stands with their team", "body": "Engineering by the window, Sales by the bar, the new joiners by the door.", "fix": "Small groups that mix teams on purpose and change a few times."},
+        {"title": "No idea if it worked", "body": "Leadership asks if the offsite helped. You have photos.", "fix": "Who came, who met someone new, and what they thought, in one report."}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "mixing",
+      "ground": "white",
+      "kicker": "Mixing on purpose",
+      "title": "Groups that put people next to someone new.",
+      "lead": "When people RSVP, ask their team and how long they’ve been here. {{brand.name}} makes small groups that mix teams and seniority, and changes them a few times through the evening, with one thing to talk about each round.",
+      "ticks": [
+        "Groups mixed across teams, floors or offices",
+        "New joiners spread out, never left together in a corner",
+        "Rounds as long as you want them",
+        "Afterwards, people say who they met"
+      ],
+      "media": {"kind": "capture", "slot": "host-formats-mix"}
+    },
+    {
+      "type": "timeline",
+      "id": "team-social",
+      "ground": "ink",
+      "kicker": "A team social on {{brand.name}}",
+      "title": "A new-joiner social, start to finish.",
+      "steps": [
+        {"time": "Two weeks out", "title": "One private link", "body": "Post it in the team channel. It stays off public pages; only people with the link can RSVP."},
+        {"time": "As they RSVP", "title": "Two quick questions", "body": "Which team, and how long they’ve been here. That’s all {{brand.name}} needs to mix the groups."},
+        {"time": "Day before", "title": "A nudge in the team channel", "body": "Post where, when and what to expect. Colleagues using the app also get a reminder 15 minutes before it starts."},
+        {"time": "On the evening", "title": "Check in, then mix", "body": "Colleagues scan in and see their first group. A few rounds later, everyone’s met people outside their team."},
+        {"time": "Next morning", "title": "A report for leadership", "body": "Who came, how many new people each person met, and what they thought, in a few lines."}
+      ],
+      "media": {"kind": "capture", "slot": "host-live-tablet"}
+    },
+    {
+      "type": "checklist",
+      "id": "checklist",
+      "ground": "paper",
+      "kicker": "Buyer’s checklist",
+      "title": "What to look for in software for team socials.",
+      "lead": "Check these eight things, whichever tool you choose. {{brand.name}} does all of them.",
+      "items": [
+        {"title": "A private link", "body": "Off public pages, for your team only."},
+        {"title": "A real RSVP", "body": "Not an emoji in a channel."},
+        {"title": "Groups that mix teams", "body": "And spread out new joiners."},
+        {"title": "Who said yes, by name", "body": "So you know who to nudge."},
+        {"title": "Check-in at the door", "body": "A count you can trust."},
+        {"title": "Feedback afterwards", "body": "Ratings and who they met."},
+        {"title": "A short report", "body": "For whoever asks if it worked."},
+        {"title": "Free when nobody pays", "body": "No fee on free events."}
+      ]
+    },
+    {
+      "type": "pricing",
+      "id": "pricing",
+      "ground": "ink",
+      "kicker": "Pricing for teams",
+      "price": "₹0",
+      "title": "for socials your company pays for. Free events stay free.",
+      "trial": "If colleagues buy a ticket, say for an optional trip, it’s 5% of what they pay, never more than ₹10,000 per billing cycle. Payment gateway fees are separate.",
+      "examples": [
+        {"title": "A new-joiner social for 60", "value": "₹0", "body": "Your company pays the venue; nobody buys a ticket."},
+        {"title": "A monthly team social", "value": "₹0", "body": "Every month, as long as it’s free to attend."},
+        {"title": "An optional weekend trip, 30 at ₹4,000", "value": "₹6,000", "body": "5% of ₹1,20,000 colleagues paid."}
+      ],
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Team questions",
+      "title": "What hosts ask us.",
+      "items": [
+        {"question": "Is it really free?", "answer": "Yes, if nobody pays to attend. {{brand.name}} charges 5% only when people buy tickets, and free events stay free."},
+        {"question": "Can we keep it to our company?", "answer": "Yes. Make the event invite-only: it stays off public pages and only people with your private link can RSVP."},
+        {"question": "Do colleagues need an app?", "answer": "No. They RSVP, check in and see their group in their phone’s browser."},
+        {"question": "Can you run a multi-day offsite?", "answer": "Yes, with programmes: arrivals, transport, rooms, forms and messages for everyone attending. Ask us for a walkthrough on WhatsApp and we’ll set it up with you."},
+        {"question": "Can we hire a host to run it?", "answer": "Not through {{brand.name}} yet. Many quiz, supper and run hosts on {{brand.name}} run private events; message them from their page."},
+        {"question": "What does the report show?", "answer": "Who RSVP’d and came, and, if you ask for feedback, ratings and how many new people they met. It never shows anyone’s private answers."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "yellow",
+      "kicker": "Your next team social",
+      "title": "Get people talking to someone new.",
+      "lead": "Set up a free social, or message us on WhatsApp and we’ll send you the team social guide.",
+      "actions": [
+        {"label": "Set up a free social", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Get the team social guide on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, please send me the team social guide."},
+          "emphasis": "secondary"
+        }
+      ],
+      "leadForm": {"id": "team_social_setup_guide", "requestKind": "guide", "format": "teams", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
+      "media": {"kind": "capture", "slot": "guest-explore"}
+    }
+  ]
+}

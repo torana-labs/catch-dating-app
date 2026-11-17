@@ -1,0 +1,191 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_colleges",
+  "route": "host_colleges",
+  "meta": {
+    "title": "{{brand.name}} for college societies | Recruitment, tickets and a quick door",
+    "description": "Recruitment forms that sort themselves, student-price tickets paid by UPI, a door that moves a queue of three hundred, and records you can hand to next year’s committee.",
+    "socialDescription": "Run the society like it’ll outlast your batch. {{brand.name}} for college societies, fests and alumni chapters.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {"links": [{"label": "For hosts", "to": {"route": "host"}}], "current": "Colleges and alumni"}
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "coral",
+      "kicker": "{{brand.name}} for college societies, fests and alumni chapters",
+      "title": "Run the society like it’ll outlast your batch.",
+      "lead": "Recruitment forms that sort themselves, event tickets at student prices paid by UPI, a door that moves a queue of three hundred, and a list of members you can hand to next year’s committee.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run a college society and have a question about hosting on {{brand.name}}."},
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {
+        "label": "Running an alumni network across cities? Ask for a walkthrough",
+        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run an alumni network across cities and would like a walkthrough."}
+      },
+      "chip": {
+        "title": "Screening night",
+        "rows": [
+          {"label": "Booked", "value": "212"},
+          {"label": "Checked in", "value": "198"},
+          {"label": "First years", "value": "81"}
+        ]
+      },
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Your community",
+          "subtitle": "Film Society · IIT Indore",
+          "stats": [
+            {"value": "1,240", "label": "followers"},
+            {"value": "186", "label": "applied"},
+            {"value": "3", "label": "this month"}
+          ],
+          "rows": [
+            {"title": "Fri · Screening night", "detail": "₹49 for students · ₹99 for guests", "tag": "212 of 250"},
+            {"title": "Recruitment · core team", "detail": "186 applied · 24 accepted", "tag": "Applications"},
+            {"title": "Alumni meetup · Bengaluru", "detail": "Batches of 2015 to 2024", "tag": "Free · 64"}
+          ],
+          "note": "Hand over to the 2026 committee"
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "sound-familiar",
+      "ground": "white",
+      "kicker": "Sound familiar?",
+      "title": "Picking the film is the easy part.",
+      "columns": 3,
+      "items": [
+        {
+          "title": "Recruitment in a Google Sheet",
+          "body": "Two hundred form responses, five reviewers, and a colour-coding system only one of them understands.",
+          "fix": "Applications with a review status for each person, and notes your whole core team can see."
+        },
+        {"title": "A queue to the auditorium", "body": "Three hundred people, one printed list and a volunteer with a highlighter.", "fix": "Everyone scans in. Volunteers get the door for the night, and only the door."},
+        {"title": "Everything leaves with the seniors", "body": "Next year’s committee starts with no list, no history and no idea who came.", "fix": "Your page, followers and records stay; hand access to the new team."}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "recruitment",
+      "ground": "white",
+      "kicker": "Recruitment",
+      "title": "Two hundred applications, sorted by Friday.",
+      "lead": "Publish an application form with your own questions. Responses land in one inbox; mark each one in review, waitlisted or declined, or accept them, and leave notes your core team can see.",
+      "ticks": [
+        "Your questions, conditional ones included",
+        "A review status and notes for each applicant",
+        "Charts of how everyone answered, and an export",
+        "Bring in last year’s Google Forms responses"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Core team recruitment · 186 applied",
+          "rows": [
+            {"title": "Why the Film Society?", "detail": "I’ve run a screening club at school for two years…"},
+            {"title": "Which team?", "detail": "Events · Design"},
+            {"title": "Note from Kavya", "detail": "Strong. Interview on Tuesday, then accept."}
+          ],
+          "actions": ["Accept", "Decline"]
+        }
+      }
+    },
+    {
+      "type": "timeline",
+      "id": "screening-night",
+      "ground": "ink",
+      "kicker": "A screening night on {{brand.name}}",
+      "title": "From poster to packed auditorium.",
+      "steps": [
+        {"time": "A week out", "title": "One link on every poster", "body": "A QR on the posters, a link in the batch groups. Student and guest prices, paid by UPI."},
+        {"time": "As they book", "title": "See which posters worked", "body": "A link per hostel, department group or poster shows where bookings came from."},
+        {"time": "Day before", "title": "A post in the batch groups", "body": "Hall, time and what to bring are on every ticket; share a reminder in your own groups. App users also get one 15 minutes before it starts."},
+        {"time": "7:00 PM", "title": "Three hundred in, no queue", "body": "Everyone scans in on their own phone. Volunteers check off anyone without one."},
+        {"time": "Next morning", "title": "Who came, for next time", "body": "First years, regulars and followers, in your records for the next event and the next committee."}
+      ],
+      "media": {"kind": "capture", "slot": "host-live-tablet"}
+    },
+    {
+      "type": "checklist",
+      "id": "checklist",
+      "ground": "paper",
+      "kicker": "Buyer’s checklist",
+      "title": "What to look for in software for a college society.",
+      "lead": "Check these eight things, whichever tool you choose. {{brand.name}} does all of them.",
+      "items": [
+        {"title": "Application forms", "body": "With review status and notes."},
+        {"title": "Student and guest prices", "body": "Paid by UPI, at booking."},
+        {"title": "Free events stay free", "body": "No fee when nobody pays."},
+        {"title": "A door for big crowds", "body": "Everyone scans in."},
+        {"title": "Volunteer door access", "body": "For one event, then it ends."},
+        {"title": "A link per poster or group", "body": "See what filled the hall."},
+        {"title": "Records that stay", "body": "Followers and history, year to year."},
+        {"title": "Hand over access", "body": "To next year’s committee."}
+      ]
+    },
+    {
+      "type": "pricing",
+      "id": "pricing",
+      "ground": "ink",
+      "kicker": "Pricing for societies",
+      "price": "5%",
+      "title": "of ticket sales, never more than ₹10,000 per billing cycle.",
+      "trial": "Free for 30 days from your first event, 90 for founding hosts. Payment gateway fees are separate.",
+      "examples": [
+        {"title": "A screening for 250 at ₹49", "value": "₹613 a night", "body": "5% of ₹12,250."},
+        {"title": "A festival weekend, 1,200 passes at ₹299", "value": "₹10,000", "body": "Capped. 5% would be ₹17,940."},
+        {"title": "An alumni meetup, free", "value": "₹0", "body": "Free events stay free."}
+      ],
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Society questions",
+      "title": "What hosts ask us.",
+      "items": [
+        {"question": "Can students pay a different price from guests?", "answer": "Set up separate events or ask applicants who they are; the price they see is the price they pay, by UPI or card."},
+        {"question": "Can our volunteers run the door?", "answer": "Yes. Give each volunteer door access for one event, on their own phone. It ends with the event."},
+        {"question": "What happens when the committee changes?", "answer": "Your page, followers, events and records stay. Add next year’s team and take the old team’s access away."},
+        {"question": "Our events are mostly free. Is that OK?", "answer": "Yes. Free events stay free. You pay 5% only on tickets sold, and never more than ₹10,000 per billing cycle."},
+        {"question": "Do students need an app?", "answer": "No. They book, pay and check in on your page in their phone’s browser."},
+        {"question": "Can alumni chapters in different cities use it?", "answer": "Yes. Each meetup is its own event on your page. Ask us for a walkthrough on WhatsApp and we’ll help you set up the chapters."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Your next event",
+      "title": "Pack the hall. Keep the list.",
+      "lead": "Start the free trial, or message us on WhatsApp and we’ll send you the society setup guide.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Get the setup guide on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, please send me the society setup guide."},
+          "emphasis": "secondary"
+        }
+      ],
+      "leadForm": {"id": "society_setup_guide", "requestKind": "guide", "format": "colleges", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
+      "media": {"kind": "capture", "slot": "guest-explore"}
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_outdoors",
+  "route": "host_outdoors",
+  "meta": {
+    "title": "{{brand.name}} for treks, rides and outdoor groups | Waivers, groups and headcounts",
+    "description": "Bookings with fitness level and a signed waiver, groups with a lead each, a count at every regroup point, and the people who loved it told first about the next trail.",
+    "socialDescription": "Everyone out, everyone back. {{brand.name}} for trekking, cycling and outdoor groups.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {"links": [{"label": "For hosts", "to": {"route": "host"}}], "current": "Treks, rides and outdoors"}
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "mint",
+      "kicker": "{{brand.name}} for trekking, cycling and outdoor groups",
+      "title": "Everyone out, everyone back.",
+      "lead": "Bookings with fitness level and waiver signed, groups with a lead each, a count at every regroup point, and the people who loved it told first about the next trail.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run treks or rides and have a question about hosting on {{brand.name}}."},
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {
+        "label": "Running treks for a company? Ask for a walkthrough",
+        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run treks for companies and would like a walkthrough."}
+      },
+      "chip": {
+        "title": "Kalsubai sunrise",
+        "rows": [
+          {"label": "Waivers signed", "value": "42 of 42"},
+          {"label": "First trek", "value": "14"},
+          {"label": "Back home", "value": "40"}
+        ]
+      },
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Groups · Kalsubai sunrise",
+          "subtitle": "Sahyadri Saturdays · 42 booked",
+          "stats": [
+            {"value": "42", "label": "checked in"},
+            {"value": "4", "label": "groups"},
+            {"value": "0", "label": "missing"}
+          ],
+          "rows": [
+            {"title": "Group 1 · steady", "detail": "Lead: Meera · 11 people", "tag": "All back"},
+            {"title": "Group 2 · easy", "detail": "Lead: Arjun · 10 people", "tag": "All back"},
+            {"title": "Group 3 · easy", "detail": "Lead: Dev · 11 people", "tag": "2 still out"}
+          ],
+          "note": "Regroup at the summit marker in 20 minutes"
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "sound-familiar",
+      "ground": "white",
+      "kicker": "Sound familiar?",
+      "title": "The trail is the easy part.",
+      "columns": 3,
+      "items": [
+        {"title": "A spreadsheet of waivers", "body": "Forms in one place, payments in another, and three people who never signed.", "fix": "Waiver signed and paid at booking, on one record per person."},
+        {"title": "Counting heads on a hillside", "body": "Forty people, four groups, and a headcount shouted at every stop.", "fix": "Each lead marks who’s with them; anyone missing shows on your screen."},
+        {"title": "Beginners who struggle and never return", "body": "A first-timer stuck at the back of the fast group.", "fix": "Groups by fitness level, each with a lead who knows who’s new."}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "before-the-trail",
+      "ground": "white",
+      "kicker": "Before the trail",
+      "title": "Fitness level and waiver, before anyone pays.",
+      "lead": "Ask about fitness, experience and medical needs at booking, and collect a signed waiver with it. Groups are planned from the answers.",
+      "ticks": [
+        "A waiver signed with every booking",
+        "Fitness level and experience at booking",
+        "Emergency details only you and your leads see",
+        "Paid by UPI or card"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Booking · Kalsubai sunrise",
+          "rows": [
+            {"title": "How often do you trek?", "detail": "A few times a year"},
+            {"title": "Fitness level", "detail": "Steady: I can climb for 3 hours"},
+            {"title": "Waiver", "detail": "Read and signed, 9:12 AM", "tag": "Signed"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "timeline",
+      "id": "trek",
+      "ground": "ink",
+      "kicker": "A trek on {{brand.name}}",
+      "title": "From sign-ups to the drive home.",
+      "steps": [
+        {"time": "Monday", "title": "Bookings, waivers and levels", "body": "Everyone books with a fitness level and a signed waiver. Groups are planned so beginners get an easy group and a lead."},
+        {"time": "4:30 AM", "title": "Check in at the pick-up", "body": "People scan in at the meeting point. Leads see their group on their own phone."},
+        {"time": "Trailhead", "title": "A first hello in each group", "body": "Each group gets one question to break the ice before they set off."},
+        {"time": "Summit", "title": "Count at every regroup", "body": "Leads mark who’s with them. Anyone not marked shows on your screen."},
+        {"time": "Evening", "title": "Everyone home, then the next trail", "body": "Leads mark people as home. Photos go out, and people who loved it hear about the next trek first."}
+      ],
+      "media": {"kind": "capture", "slot": "host-live-tablet"}
+    },
+    {
+      "type": "checklist",
+      "id": "checklist",
+      "ground": "paper",
+      "kicker": "Buyer’s checklist",
+      "title": "What to look for in software for outdoor groups.",
+      "lead": "Check these eight things, whichever tool you choose. {{brand.name}} does all of them.",
+      "items": [
+        {"title": "Waivers with every booking", "body": "Signed, kept as a receipt."},
+        {"title": "Fitness level at booking", "body": "Groups planned from it."},
+        {"title": "A lead for every group", "body": "On their own phone."},
+        {"title": "Counts at regroup points", "body": "Anyone missing, flagged."},
+        {"title": "Paid booking", "body": "UPI or card, refunds by your policy."},
+        {"title": "A waitlist", "body": "For the treks that sell out."},
+        {"title": "Help for beginners", "body": "An easy group and a first hello."},
+        {"title": "One record per person", "body": "Every trek they’ve done with you."}
+      ]
+    },
+    {
+      "type": "pricing",
+      "id": "pricing",
+      "ground": "ink",
+      "kicker": "Pricing for outdoor groups",
+      "price": "5%",
+      "title": "of ticket sales, never more than ₹10,000 per billing cycle.",
+      "trial": "Free for 30 days from your first trek, 90 for founding hosts. Payment gateway fees are separate.",
+      "examples": [
+        {"title": "A 40-person trek at ₹1,800", "value": "₹3,600 a trek", "body": "5% of ₹72,000."},
+        {"title": "Three treks in a billing cycle", "value": "₹10,000 a billing cycle", "body": "5% would be ₹10,800; the cap stops it at ₹10,000."},
+        {"title": "A free Sunday ride", "value": "₹0", "body": "Free events stay free."}
+      ],
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Outdoor questions",
+      "title": "What hosts ask us.",
+      "items": [
+        {"question": "Can people sign a waiver when they book?", "answer": "Yes. Add a waiver form to the event: the terms, an acknowledgement and a signature, kept as a receipt."},
+        {"question": "Who can see emergency details?", "answer": "You and the leads you give access to for that event. Nobody else."},
+        {"question": "Does {{brand.name}} track people on the trail?", "answer": "No. Leads mark who’s with them at each regroup and at the end. {{brand.name}} shows you anyone not marked."},
+        {"question": "Can leads use their own phones?", "answer": "Yes. Give each lead access for the event; it ends when the event does."},
+        {"question": "Does {{brand.name}} book transport?", "answer": "No. Add pick-up points and times to the event, and they’re on every booking."},
+        {"question": "Do people need an app?", "answer": "No. They book, sign and check in in their phone’s browser."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "mint",
+      "kicker": "Your next trail",
+      "title": "Everyone out. Everyone back.",
+      "lead": "Start the free trial, or message us on WhatsApp and we’ll send you the outdoor group setup guide.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Get the setup guide on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, please send me the outdoor group setup guide."},
+          "emphasis": "secondary"
+        }
+      ],
+      "leadForm": {"id": "outdoor_group_setup_guide", "requestKind": "guide", "format": "outdoors", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."}
+    }
+  ]
+}
