@@ -1,60 +1,97 @@
 import {
-  CatchBand,
+  CatchAppCaptureImage,
   CatchButton,
-  CatchChoiceInput,
-  CatchEmptyState,
-  CatchGap,
-  CatchGrid,
-  CatchOrganizerCard,
-  CatchPlanCard,
+  CatchCardGrid,
+  CatchChip,
+  CatchPageTabBar,
   CatchSearchField,
-  CatchSplit,
-  CatchLegacyText,
+  CatchStack,
+  CatchText,
+  type CatchBandAction,
+  type CatchCardGridEmpty,
 } from "@catch/web-ui";
+import {discoveryPagesCopy} from "@content/discovery/discoveryPages";
 import {explorePageCopy as copy} from "@content/explorePage";
-import {homeFormats, homePageCopy} from "@content/homePage";
+import {homeFormats} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
+import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot";
+import {CityAlertsCapture, cityAlertsAnchor} from "../../discovery/CityAlertsCapture";
+import {DiscoveryDock} from "../../discovery/DiscoveryDock";
+import {organizerGridItems, planGridItems} from "../../discovery/discoveryCards";
 import {CitySiteChrome} from "./cityChrome";
 import type {ExploreFilters, ExploreView, ExploreWhen} from "../exploreModel";
 import type {ExplorePageController} from "../useExplorePageController";
 
 type Explore = ExplorePageController;
-// A link button's press only navigates.
-const follow = () => undefined;
-const views: ExploreView[] = ["plans", "organisers"];
 const whens: ExploreWhen[] = ["any", "today", "weekend", "week"];
 const formats: ExploreFilters["format"][] = ["all", ...homeFormats.map((item) => item.format)];
 const formatLabel = (value: ExploreFilters["format"]) =>
   value === "all" ? copy.formats.everything : homeFormats.find((item) => item.format === value)?.name ?? value;
+/** The results band's anchor: the phone action bar and the empty window's hosts link scroll to it. */
+const resultsAnchor = "explore-results";
 
-function ExploreHeading({explore}: {explore: Explore}) {
+/** The page's headline, by what it leads with: what's on, the next two weeks, nothing yet, or launching soon. */
+function exploreHeading(explore: Explore): {kicker: string; title: string; lead: string} {
   const city = explore.city.label;
-  const soon = !explore.live && !explore.unavailable;
+  const plansView = explore.filters.view === "plans";
+  if (explore.state === "soon") {
+    return {kicker: copy.soonKicker, title: fill(copy.soonTitle, {city}),
+      lead: explore.liveCity ? fill(copy.soonLead, {liveCity: explore.liveCity.label}) : copy.soonLeadAlone};
+  }
+  if (plansView && explore.state === "quiet") return {kicker: copy.quiet.kicker, title: fill(copy.quiet.title, {city}), lead: copy.quiet.lead};
+  if (plansView && explore.state === "empty") return {kicker: fill(copy.eyebrow, {city}), title: fill(copy.liveNoPlans, {city}), lead: copy.liveNoPlansBody};
+  return {kicker: fill(copy.eyebrow, {city}), title: fill(copy.title, {city}), lead: copy.lead};
+}
+
+/** The headline's actions: the live city and the host way in for a city not open; the hosts and the capture for an empty window. */
+function exploreActions(explore: Explore): CatchBandAction[] | undefined {
+  if (explore.state === "soon") {
+    return [
+      ...(explore.liveCity ? [{label: fill(copy.liveCityAction, {city: explore.liveCity.label}), href: explore.cityHref(explore.liveCity.slug)}] : []),
+      {label: fill(copy.soonHostAction, {city: explore.city.label}), href: "/host/#start", variant: "secondary"},
+    ];
+  }
+  if (explore.state === "empty" && explore.filters.view === "plans") {
+    return [{label: copy.seeHosts, href: explore.organisersHref}, {label: copy.getNotified, href: `#${cityAlertsAnchor}`, variant: "secondary"}];
+  }
+  return undefined;
+}
+
+/** One row of choice chips (the board's filter pills), as the homepage's plan filters draw them. */
+function ChipRow<T extends string>({label, values, selected, name, dot, onChanged}: {
+  label: string; values: readonly T[]; selected: T; name: (value: T) => string;
+  dot?: (value: T) => ExploreFilters["format"] | undefined; onChanged: (value: T) => void;
+}) {
   return (
-    <CatchSplit
-      align="end"
-      end={soon && explore.liveCity ? (
-        <CatchButton href={explore.cityHref(explore.liveCity.slug)} label={fill(copy.liveCityAction, {city: explore.liveCity.label})}
-          onPressed={follow} variant="secondary" />
-      ) : null}
-      ratio="sevenFive"
-      start={
-        <CatchGap size="related">
-          <CatchLegacyText as="p" color="coral" variant="supportingStrong">{fill(copy.eyebrow, {city})}</CatchLegacyText>
-          <CatchLegacyText as="h1" id="explore-title" variant="displayXl">{fill(soon ? copy.soonTitle : copy.title, {city})}</CatchLegacyText>
-          <CatchLegacyText as="p" color="ink2" variant="bodyLead">
-            {soon ? explore.liveCity ? fill(copy.soonLead, {liveCity: explore.liveCity.label}) : copy.soonLeadAlone : copy.lead}
-          </CatchLegacyText>
-        </CatchGap>
-      }
-    />
+    <CatchStack aria-label={label} direction="row" gap={8} role="radiogroup" wrap>
+      {values.map((value) => {
+        const accent = dot?.(value);
+        return (
+          <CatchChip colourWhenSelected dot={accent === undefined || accent === "all" || accent === "other" ? undefined : accent} key={value} kind="choice"
+            label={name(value)} onPressed={() => onChanged(value)} selected={selected === value} />
+        );
+      })}
+    </CatchStack>
   );
 }
 
+/** The Plans and Organisers tabs, the format pills and, for plans, the date pills; then search and the honest count. */
 function ExploreFilterBar({explore}: {explore: Explore}) {
   const {filters} = explore;
+  const leading = explore.state === "full" || explore.state === "filtered";
   return (
-    <CatchGap size="related">
+    <CatchStack gap={12}>
+      <CatchPageTabBar
+        label={copy.view.label}
+        onChanged={(view) => explore.update({view: view as ExploreView})}
+        options={explore.tabs}
+        selected={filters.view}
+      />
+      <ChipRow dot={(value) => value} label={copy.formats.label} name={formatLabel} onChanged={(format) => explore.update({format})}
+        selected={filters.format} values={formats} />
+      {filters.view === "plans" ? (
+        <ChipRow label={copy.when.label} name={(when) => copy.when[when]} onChanged={(when) => explore.update({when})} selected={filters.when} values={whens} />
+      ) : null}
       <CatchSearchField
         copy={{searchLabel: copy.search.label, clearTooltip: (query) => fill(copy.search.clear, {query}), closeSearchLabel: copy.search.close}}
         onSubmitted={(query) => explore.update({query: query.trim()})}
@@ -62,109 +99,94 @@ function ExploreFilterBar({explore}: {explore: Explore}) {
         semanticLabel={copy.search.label}
         value={filters.query}
       />
-      <CatchChoiceInput
-        options={views.map((view) => ({value: view, label: copy.view[view]}))}
-        onChanged={(view) => explore.update({view})}
-        recipe="segmented"
-        selected={filters.view}
-      />
-      <CatchChoiceInput
-        itemLabelBuilder={formatLabel}
-        mode="single"
-        onChanged={(chosen) => explore.update({format: [...chosen][0] ?? "all"})}
-        selected={new Set([filters.format])}
-        values={formats}
-      />
-      {filters.view === "plans" ? (
-        <CatchChoiceInput
-          itemLabelBuilder={(when: ExploreWhen) => copy.when[when]}
-          mode="single"
-          onChanged={(chosen) => explore.update({when: [...chosen][0] ?? "any"})}
-          selected={new Set([filters.when])}
-          values={whens}
-        />
-      ) : null}
-    </CatchGap>
+      {/* The count only where it is news: never “0 plans” for a city that is waiting. */}
+      {leading ? <CatchText aria-live="polite" as="p" tone="secondary" variant="body-small">{explore.summary}</CatchText> : null}
+    </CatchStack>
   );
 }
 
 /**
- * Nothing to show with no filter set: the city is waiting for plans (or, not
- * yet open, for its first hosts), not missing a filter, so it gets its own
- * empty state and no "0 plans" count.
+ * What an empty grid says: a filter miss offers Clear filters; a city that
+ * is waiting (not open yet, or nothing listed) says so, never "0 plans";
+ * an open city's empty window has its headline instead.
  */
-function waitingForFirstPlans(explore: Explore) {
-  const shown = explore.filters.view === "organisers" ? explore.organizers.length : explore.plans.length;
-  return !explore.unavailable && !explore.filtered && shown === 0;
-}
-
-function ExploreResults({explore}: {explore: Explore}) {
+function exploreEmpty(explore: Explore): CatchCardGridEmpty | undefined {
   const city = explore.city.label;
-  const empty = (title: string, message: string) => (
-    <CatchEmptyState actions={explore.filtered ? <CatchButton label={copy.clear} onPressed={explore.clear} variant="secondary" /> : undefined}
-      announce="polite" message={message} title={title} />
-  );
-  if (explore.unavailable) return empty(copy.unavailable, copy.unavailableBody);
-  if (waitingForFirstPlans(explore)) {
-    if (explore.filters.view === "organisers") return empty(fill(copy.soonNoOrganisers, {city}), copy.soonNoOrganisersBody);
-    return explore.live
-      ? empty(fill(copy.liveNoPlans, {city}), copy.liveNoPlansBody)
-      : empty(fill(copy.soonNoPlans, {city}), copy.soonNoPlansBody);
-  }
+  if (explore.unavailable) return {title: copy.unavailable, message: copy.unavailableBody};
+  const clear = <CatchButton label={copy.clear} onPressed={explore.clear} variant="secondary" />;
   if (explore.filters.view === "organisers") {
-    return explore.organizers.length ? (
-      <CatchGrid columns={3} compactColumns={1}>
-        {explore.organizers.map((organizer) => (
-          <CatchOrganizerCard
-            action={organizer.action.kind === "page" ? (
-              <CatchButton href={organizer.action.href} label={homePageCopy.organisers.seePage} onPressed={follow}
-                semanticsLabel={fill(homePageCopy.organisers.seePageLabel, {name: organizer.name})} size="sm" variant="secondary" />
-            ) : organizer.action.kind === "claim" ? (
-              <CatchButton href={organizer.action.href} label={homePageCopy.organisers.claim} onPressed={follow} size="sm" variant="quiet" />
-            ) : undefined}
-            footnote={organizer.footnote}
-            href={organizer.href}
-            initials={organizer.initials}
-            key={organizer.key}
-            monogramGround={organizer.monogramGround}
-            name={organizer.name}
-            next={organizer.next}
-            subtitle={organizer.subtitle}
-          />
-        ))}
-      </CatchGrid>
-    ) : empty(copy.noOrganisers, fill(copy.noOrganisersBody, {city: explore.city.label}));
+    return explore.filtered ? {title: copy.noOrganisers, message: fill(copy.noOrganisersBody, {city}), actions: clear} :
+      {title: fill(copy.soonNoOrganisers, {city}), message: copy.soonNoOrganisersBody};
   }
-  return explore.plans.length ? (
-    <CatchGrid columns={4} compactColumns={1}>
-      {explore.plans.map((plan) => (
-        <CatchPlanCard availability={plan.availability} detail={plan.detail} format={plan.format} href={plan.href} key={plan.key}
-          label={plan.label} photoUrl={plan.photoUrl} posterLabel={plan.posterLabel} price={plan.price} title={plan.title} />
-      ))}
-    </CatchGrid>
-  ) : empty(copy.noPlans, copy.noPlansBody);
+  if (explore.filtered) return {title: copy.noPlans, message: copy.noPlansBody, actions: clear};
+  if (explore.state === "soon") return {title: fill(copy.soonNoPlans, {city}), message: copy.soonNoPlansBody};
+  return undefined;
+}
+
+/** The headline band: the plans or the organisers, as the board's card grid with the filters between. */
+function ExploreResults({explore}: {explore: Explore}) {
+  const heading = exploreHeading(explore);
+  // The board's kicker colours: coral over an empty window, pink otherwise.
+  const kickerAccent = explore.state === "empty" || explore.state === "soon" ? "coral" as const : undefined;
+  const shared = {
+    actions: exploreActions(explore),
+    empty: exploreEmpty(explore),
+    filters: <ExploreFilterBar explore={explore} />,
+    id: resultsAnchor,
+    kicker: heading.kicker,
+    kickerAccent,
+    lead: heading.lead,
+    level: 1 as const,
+    title: heading.title,
+  };
+  if (explore.unavailable) return <CatchCardGrid {...shared} items={[]} kind="plan" />;
+  return explore.filters.view === "organisers" ?
+    <CatchCardGrid {...shared} columns={4} items={organizerGridItems(explore.organizers)} kind="org" /> :
+    <CatchCardGrid {...shared} columns={3} items={planGridItems(explore.plans)} kind="plan" />;
+}
+
+/** Under the plans of an open city: who runs them, on the tint panel, and the way to all of them in the Organisers tab. */
+function ExploreHosts({explore}: {explore: Explore}) {
+  if (explore.filters.view !== "plans" || !explore.hosts.length) return null;
+  const band = explore.state === "full" ? copy.hosts.full : explore.state === "quiet" ? copy.hosts.quiet :
+    explore.state === "empty" ? {kicker: fill(copy.hosts.empty.kicker, {city: explore.city.label}), title: copy.hosts.empty.title} : null;
+  if (!band) return null;
+  return (
+    <CatchCardGrid
+      actions={explore.moreHosts ? [{label: copy.hosts.seeAll, href: explore.organisersHref, variant: "secondary"}] : undefined}
+      columns={4}
+      ground="paper"
+      items={organizerGridItems(explore.hosts)}
+      kicker={band.kicker}
+      kickerAccent="mint"
+      kind="org"
+      title={band.title}
+    />
+  );
 }
 
 /**
- * Explore and the city pages (CAT-261): a city's plans and organisers from
- * its cityPlans read model, filtered by search, format and date. It arranges
- * library parts and binds the controller's view of the city to them (D18).
+ * Explore and the city pages (the PlaybookExplore board): a city's plans and
+ * organisers from its cityPlans read model, with Plans and Organisers as
+ * tabs, filtered by format, date and search; the hosts under the plans on
+ * the tint panel; and, when the week is quiet, the window is empty or the
+ * city is not open yet, the WhatsApp band for new plans beside the app.
+ * Then the footer and the phone action bar. It arranges library parts and
+ * binds the controller's view of the city to them (D18).
  */
-export function ExplorePageSections({explore}: {explore: Explore}) {
+export function ExplorePageSections({captures = {}, explore}: {captures?: CaptureSlots; explore: Explore}) {
+  const capture = explore.state === "quiet" || explore.state === "empty" || explore.state === "soon";
+  const screen = captureSlot(captures, "guest-explore");
   return (
-    <CitySiteChrome cities={explore.cities} city={explore.city} exploreHref={explore.exploreHref} onChooseCity={explore.chooseCity}>
-      <CatchBand aria-labelledby="explore-title" pb="spacious" pt="compact">
-        <CatchGap size="majorSection">
-          <ExploreHeading explore={explore} />
-          <ExploreFilterBar explore={explore} />
-          <CatchGap size="section">
-            {waitingForFirstPlans(explore) ? null : (
-              <CatchLegacyText aria-live="polite" as="h2" color="ink2" variant="titleS">{explore.summary}</CatchLegacyText>
-            )}
-            <ExploreResults explore={explore} />
-          </CatchGap>
-        </CatchGap>
-      </CatchBand>
+    <CitySiteChrome cities={explore.cities} city={explore.city}
+      dock={<DiscoveryDock href={`#${resultsAnchor}`} label={discoveryPagesCopy.dock.explore} message={explore.notifyMessage} />}
+      exploreHref={explore.exploreHref} onChooseCity={explore.chooseCity} showWhatsOn={explore.showWhatsOn}>
+      <ExploreResults explore={explore} />
+      <ExploreHosts explore={explore} />
+      {capture ? (
+        <CityAlertsCapture city={explore.city.label} media={screen ? <CatchAppCaptureImage {...screen} bezel caption={undefined} size="md" tilt="right" /> : undefined}
+          message={explore.notifyMessage} />
+      ) : null}
     </CitySiteChrome>
   );
 }
