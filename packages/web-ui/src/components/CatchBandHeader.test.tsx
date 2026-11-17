@@ -103,6 +103,32 @@ describe("CatchBandHeader", () => {
     expect(header().dataset).toMatchObject({ground: "mint", catchTheme: "light"});
   });
 
+  it("sets the headline at the canvas's sizes when asked, through the hero role (D26)", () => {
+    const {rerender} = render(<CatchBandHeader size="section" title="Headline" />);
+    const heading = () => screen.getByRole("heading", {name: "Headline"});
+    expect(heading().dataset).toMatchObject({variant: "display-hero", display: "section"});
+    rerender(<CatchBandHeader size="small" title="Headline" />);
+    expect(heading().dataset).toMatchObject({variant: "display-section", display: "small"});
+    rerender(<CatchBandHeader title="Headline" />);
+    expect(heading().hasAttribute("data-display")).toBe(false);
+  });
+
+  it("draws a kicker accent on white and ink, and the ground's secondary ink on a colour", () => {
+    const {rerender} = render(<CatchBandHeader kicker="Questions" kickerAccent="mint" title="Headline" />);
+    const kicker = () => screen.getByText("Questions");
+    expect(kicker().dataset).toMatchObject({accent: "mint", on: "day", tone: "inherit"});
+    rerender(<CatchSurface block="band" color="ink"><CatchBandHeader kicker="Questions" kickerAccent="coral" title="Headline" /></CatchSurface>);
+    expect(kicker().dataset).toMatchObject({accent: "coral", on: "night"});
+    rerender(<CatchSurface block="band" color="indigo"><CatchBandHeader kicker="Questions" kickerAccent="coral" title="Headline" /></CatchSurface>);
+    expect(kicker().dataset.tone).toBe("secondary");
+    expect(kicker().hasAttribute("data-accent")).toBe(false);
+    rerender(<CatchBandHeader ground="pink" kicker="Questions" kickerAccent="coral" title="Headline" />);
+    expect(kicker().dataset.tone).toBe("secondary");
+    rerender(<CatchBandHeader kicker="Questions" kickerAccent="mint" kickerTone="success" title="Headline" />);
+    expect(kicker().dataset.tone).toBe("success");
+    expect(kicker().hasAttribute("data-accent")).toBe(false);
+  });
+
   it("reads an ink band's theme from the surface when no ground is given", () => {
     render(
       <CatchSurface block="band" color="ink">

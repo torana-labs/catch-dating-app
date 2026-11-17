@@ -1,10 +1,10 @@
 "use client";
 
 import {useId, type HTMLAttributes, type ReactNode} from "react";
-import {catchBandActions, catchBandColor, type CatchBandAction, type CatchBandLink} from "./catchBandParts";
+import {catchBandActions, catchBandColor, catchBandKickerAccent, type CatchBandAction, type CatchBandLink} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
 import {CatchBadge} from "./CatchBadge";
-import {CatchBandHeader} from "./CatchBandHeader";
+import {CatchBandHeader, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchButton} from "./CatchButton";
 import {CatchEmptyState} from "./CatchEmptyState";
 import {CatchHeroImage} from "./CatchHeroImage";
@@ -75,6 +75,8 @@ interface CatchCardGridBaseProps extends Omit<HTMLAttributes<HTMLElement>, "chil
   level?: 1 | 2;
   kicker?: string;
   kickerTone?: CatchTextTone;
+  /** The kicker's accent on white, paper and ink; defaults to the kit's (pink, coral on ink). A colour ground takes its secondary ink. */
+  kickerAccent?: CatchKickerAccent;
   lead?: string;
   /** Defaults to start. */
   align?: "start" | "center";
@@ -159,7 +161,7 @@ function cards(props: CatchCardGridItems, heading: "h2" | "h3"): {id: string; no
  */
 export function CatchCardGrid(props: CatchCardGridProps) {
   const {
-    title, label, level = 2, kicker, kickerTone, lead, align = "start", filters, links, empty, actions, columns = 3, ground,
+    title, label, level = 2, kicker, kickerTone, kickerAccent, lead, align = "start", filters, links, empty, actions, columns = 3, ground,
     kind, items, ...rest
   } = props;
   const titleId = `${useId()}-title`;
@@ -175,7 +177,7 @@ export function CatchCardGrid(props: CatchCardGridProps) {
       color={catchBandColor(ground)}
       data-kind={kind}
     >
-      {title ? <CatchBandHeader align={align} kicker={kicker} kickerTone={kickerTone} lead={lead} level={level} title={title} titleId={titleId} /> : null}
+      {title ? <CatchBandHeader align={align} kicker={kicker} kickerAccent={catchBandKickerAccent(kickerAccent, ground, "pink")} kickerTone={kickerTone} lead={lead} level={level} size={level === 1 ? "hero" : "section"} title={title} titleId={titleId} /> : null}
       {filters != null ? <div className={styles.filters} data-align={align}>{filters}</div> : null}
       {links && links.length > 0 ? (
         <CatchStack as="ul" className={styles.links} direction="row" gap={8} justify={align === "center" ? "center" : undefined} wrap>

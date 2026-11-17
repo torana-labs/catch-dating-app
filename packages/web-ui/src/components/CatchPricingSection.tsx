@@ -3,7 +3,7 @@
 import {useId, type HTMLAttributes, type ReactNode} from "react";
 import {catchBandActions, catchBandColor, type CatchBandAction} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
-import {CatchBandHeader} from "./CatchBandHeader";
+import {CatchBandHeader, CatchBandKicker, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchMetricTile} from "./CatchMetricTile";
 import {CatchStack} from "./CatchStack";
 import {CatchSurface} from "./CatchSurface";
@@ -34,6 +34,8 @@ export interface CatchPricingSectionProps extends Omit<HTMLAttributes<HTMLElemen
   /** A short label above the rate. */
   kicker?: string;
   kickerTone?: CatchTextTone;
+  /** The kicker's accent on white, paper and ink; defaults to the kit's yellow. A colour ground takes its secondary ink. */
+  kickerAccent?: CatchKickerAccent;
   /** The cap line, such as the most it costs in a month. */
   cap?: string;
   /** The trial line, such as how long it is free. */
@@ -62,7 +64,8 @@ export function CatchPricingSection({
   title,
   level = 2,
   kicker,
-  kickerTone = "secondary",
+  kickerTone,
+  kickerAccent = "yellow",
   cap,
   trial,
   actions,
@@ -76,10 +79,10 @@ export function CatchPricingSection({
   const copy = (
     <CatchStack className={styles.copy} gap={24}>
       <CatchStack gap={16}>
-        {kicker ? <CatchText tone={kickerTone} variant="label-kicker">{kicker}</CatchText> : null}
+        {kicker ? <CatchBandKicker accent={kickerAccent} tone={kickerTone}>{kicker}</CatchBandKicker> : null}
         <CatchText as="p" className={styles.rate} numeric variant="display-giant">{rate}</CatchText>
       </CatchStack>
-      <CatchBandHeader level={level} title={title} titleId={titleId} />
+      <CatchBandHeader level={level} size="small" title={title} titleId={titleId} />
       {cap || trial ? (
         <CatchStack gap={8}>
           {cap ? <CatchText as="p" variant="body-lead">{cap}</CatchText> : null}

@@ -21,6 +21,47 @@
 
 .title { text-wrap: balance; }
 
+/*
+ * The canvas's headline sizes (D26, .pg .d-hero, .d-sec and .d-sm, and the
+ * homepage's 42px app band). The headline renders in the hero role (small in
+ * display-section, for its 1.05 leading), so weight, leading and the -0.03em
+ * tracking come from there; these set the size. The canvas switches to its
+ * phone sizes at 600px.
+ */
+.header .title[data-display] { letter-spacing: var(--catch-typography-role-display-hero-tracking); }
+.header .title[data-display="hero"] { font-size: var(--catch-typography-role-display-hero-size); }
+.header .title[data-display="section"] { font-size: var(--catch-website-type-section-size); }
+.header .title[data-display="feature"] { font-size: var(--catch-website-type-feature-size); }
+.header .title[data-display="small"] { font-size: var(--catch-typography-role-display-section-size); }
+
+@media (max-width: 599px) {
+  .header .title[data-display="hero"] { font-size: var(--catch-website-type-hero-compact-size); }
+  .header .title[data-display="section"] { font-size: var(--catch-website-type-section-compact-size); }
+  .header .title[data-display="feature"] { font-size: var(--catch-website-type-feature-compact-size); }
+  .header .title[data-display="small"] { font-size: var(--catch-website-type-small-compact-size); }
+}
+
+/*
+ * A kicker (.pg .k): 13px on an 18px line at .04em, in its accent: the deep
+ * tone on white and paper, the bright fill on the ink ground. A kicker on a
+ * colour ground, or with a tone, keeps its text tone.
+ */
+.kicker.kicker[data-variant] {
+  line-height: var(--catch-website-type-kicker-line-height);
+  letter-spacing: var(--catch-website-type-kicker-tracking);
+}
+
+.kicker[data-on="day"][data-accent="pink"] { color: var(--catch-website-color-kicker-day-pink); }
+.kicker[data-on="day"][data-accent="mint"] { color: var(--catch-website-color-kicker-day-mint); }
+.kicker[data-on="day"][data-accent="indigo"] { color: var(--catch-website-color-kicker-day-indigo); }
+.kicker[data-on="day"][data-accent="coral"] { color: var(--catch-website-color-kicker-day-coral); }
+.kicker[data-on="day"][data-accent="yellow"] { color: var(--catch-website-color-kicker-day-yellow); }
+.kicker[data-on="night"][data-accent="pink"] { color: var(--catch-website-color-kicker-night-pink); }
+.kicker[data-on="night"][data-accent="mint"] { color: var(--catch-website-color-kicker-night-mint); }
+.kicker[data-on="night"][data-accent="indigo"] { color: var(--catch-website-color-kicker-night-indigo); }
+.kicker[data-on="night"][data-accent="coral"] { color: var(--catch-website-color-kicker-night-coral); }
+.kicker[data-on="night"][data-accent="yellow"] { color: var(--catch-website-color-kicker-night-yellow); }
+
 .header[data-direction="column"] .lead { max-width: var(--catch-layout-pane-lane); }
 
 /* A collapsed row keeps its parts full width, so the copy starts at the edge. */

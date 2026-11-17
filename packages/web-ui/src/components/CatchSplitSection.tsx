@@ -1,9 +1,9 @@
 "use client";
 
 import {useId, type HTMLAttributes, type ReactNode} from "react";
-import {catchBandActions, catchBandColor, type CatchBandAction, type CatchBandLink} from "./catchBandParts";
+import {catchBandActions, catchBandColor, catchBandKickerAccent, type CatchBandAction, type CatchBandLink} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
-import {CatchBandHeader} from "./CatchBandHeader";
+import {CatchBandHeader, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchButton} from "./CatchButton";
 import {CatchMarker} from "./CatchMarker";
 import {CatchMetricTile} from "./CatchMetricTile";
@@ -45,13 +45,17 @@ export interface CatchSplitSectionProps extends Omit<HTMLAttributes<HTMLElement>
   level?: 1 | 2;
   kicker?: string;
   kickerTone?: CatchTextTone;
+  /** The kicker's accent on white, paper and ink; defaults to the kit's (indigo, coral on ink). A colour ground takes its secondary ink. */
+  kickerAccent?: CatchKickerAccent;
   lead?: string;
   /** Ticked lines under the lead. */
   ticks?: readonly string[];
   /**
-   * Numbered steps (CatchStepList); a step's marker replaces its number, such
-   * as a time for a timeline. They take the second column when there is no
-   * media, and sit under the copy beside the media otherwise.
+   * Numbered steps, drawn as the canvas's step cards (.pg .steps): a display
+   * number beside the title and body on a translucent card. Steps with
+   * markers, such as times, are a timeline and draw as a CatchStepList. They
+   * take the second column when there is no media, and sit under the copy
+   * beside the media otherwise.
    */
   steps?: readonly CatchStepRowData[];
   /** A checklist of ticked tiles; placed like the steps. */
@@ -87,6 +91,7 @@ export function CatchSplitSection({
   level = 2,
   kicker,
   kickerTone,
+  kickerAccent,
   lead,
   ticks,
   steps,
@@ -105,7 +110,22 @@ export function CatchSplitSection({
   const tickLines = ticks?.filter((line) => line.trim() !== "") ?? [];
   const hasSteps = steps != null && steps.length > 0;
   const hasChecks = checks != null && checks.length > 0;
-  const stepList = hasSteps ? <CatchStepList steps={steps} /> : null;
+  const timeline = hasSteps && steps.some((step) => step.marker != null);
+  const stepTitle = level === 1 ? "h2" : "h3";
+  const stepList = !hasSteps ? null : timeline ? <CatchStepList steps={steps} /> : (
+    <ol className={styles.steps} data-on={ground === "ink" ? "night" : ground == null || ground === "white" || ground === "paper" ? "day" : "colour"} role="list">
+      {steps.map((step, index) => (
+        <li className={styles.step} key={`${index}:${step.title}`}>
+          <span aria-hidden="true" className={styles.stepNumber}>{index + 1}</span>
+          <span className={styles.stepCopy}>
+            <CatchText as={stepTitle} variant="title-bar">{step.title}</CatchText>
+            {step.body ? <CatchText as="p" className={styles.stepBody} tone="secondary" variant="body-small">{step.body}</CatchText> : null}
+            {step.tag?.trim() ? <CatchText as="p" className={styles.stepBody} variant="label-action">{step.tag}</CatchText> : null}
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
   const checkList = hasChecks ? (
     <ul className={styles.checks}>
       {checks.map((check, index) => (
@@ -123,7 +143,7 @@ export function CatchSplitSection({
   const isFlush = flush && media != null;
   const copy = (
     <CatchStack className={styles.copy} gap={24}>
-      <CatchBandHeader kicker={kicker} kickerTone={kickerTone} lead={lead} level={level} title={title} titleId={titleId} />
+      <CatchBandHeader kicker={kicker} kickerAccent={catchBandKickerAccent(kickerAccent, ground, "indigo")} kickerTone={kickerTone} lead={lead} level={level} size="section" title={title} titleId={titleId} />
       {tickLines.length > 0 ? (
         <ul className={styles.ticks}>
           {tickLines.map((line, index) => (
