@@ -15,7 +15,6 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -119,10 +118,9 @@ class _FakeEventDiscoveryRepository extends Fake
   }
 
   @override
-  Future<CursorPage<Event, DocumentSnapshot<Event>>>
-  fetchDiscoverableEventsPage(
+  Future<CursorPage<Event, PageCursor<Event>>> fetchDiscoverableEventsPage(
     EventDiscoveryQuery query, {
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
   }) async => CursorPage(items: events, hasMore: false);
 }
 
@@ -136,9 +134,9 @@ class _FakeExternalEventRepository extends Fake
   }
 
   @override
-  Future<CursorPage<ExternalEvent, DocumentSnapshot<ExternalEvent>>>
+  Future<CursorPage<ExternalEvent, PageCursor<ExternalEvent>>>
   fetchDiscoverableExternalEventsPage(
     ExternalEventDiscoveryQuery query, {
-    DocumentSnapshot<ExternalEvent>? startAfter,
+    PageCursor<ExternalEvent>? startAfter,
   }) async => const CursorPage(items: [], hasMore: false);
 }

@@ -27,16 +27,58 @@
 .media {
   position: relative;
   display: flex;
+  align-self: stretch;
   align-items: flex-end;
   justify-content: center;
   min-width: 0;
+  padding-top: var(--catch-space-s6);
 }
 
 .aside {
   position: absolute;
+  z-index: 1;
   inset: 30% auto auto 2%;
   min-width: 210px;
   transform: rotate(-2deg);
+}
+
+/*
+ * The homepage's plan chip (.hchip): a white card 4% in and 32% down the
+ * media, a date square beside the title, turned slightly. On phones it sits
+ * 24px above the media's foot at its start edge, over the phone.
+ */
+.aside.aside[data-chip] {
+  inset: 32% auto auto 4%;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--catch-space-s3);
+  min-width: 0;
+  padding: var(--catch-space-s3) var(--catch-space-s4) var(--catch-space-s3) var(--catch-space-s3);
+  border-radius: var(--catch-radius-lg);
+  background: var(--catch-palette-white);
+  box-shadow: var(--catch-website-shadow-chip);
+}
+
+.asideCopy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* The notify card (.notify): white, 22px corners, 16px inside, held to 540px, its fields 44px. */
+.notice {
+  --catch-field-box-height: var(--catch-size-field-md);
+  box-sizing: border-box;
+  max-width: var(--catch-website-hero-notify-max);
+  margin-top: calc(var(--catch-website-hero-notify-gap) - var(--catch-space-s6));
+  padding: var(--catch-space-s4);
+  border-radius: var(--catch-website-radius-card);
+  background: var(--catch-palette-white);
+  color: var(--catch-palette-ink);
+}
+
+.noticeBody {
+  margin: var(--catch-space-micro2) 0 var(--catch-space-micro10);
 }
 
 .rows {
@@ -81,10 +123,23 @@
 @media (max-width: 599px) {
   .split { padding-top: var(--catch-space-s10); }
   .text { padding-bottom: var(--catch-space-s2); }
+  .media { max-height: var(--catch-website-hero-compact-media-max); padding-top: var(--catch-space-s2); }
+
+  .aside.aside[data-chip] {
+    inset: auto auto var(--catch-space-s6) 0;
+    padding: var(--catch-space-s2) var(--catch-space-s3) var(--catch-space-s2) var(--catch-space-s2);
+  }
+
+  .aside[data-chip] time[data-size="sm"] {
+    width: var(--catch-website-date-compact-width);
+    height: var(--catch-website-date-compact-height);
+  }
+
+  .aside[data-chip] .asideCopy > :first-child { font-size: var(--catch-typography-role-body-meta-size); }
 }
 
 @container catch-page (width < 840px) {
-  .aside { position: static; transform: none; }
+  .aside:not([data-chip]) { position: static; transform: none; }
   .photo { min-height: 520px; }
   .over { padding: var(--catch-space-s7) var(--catch-space-s5); }
 }

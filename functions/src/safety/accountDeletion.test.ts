@@ -192,6 +192,8 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       "participantIntakeProfileViews/runner-2": {uid: "runner-2"},
       "adConversionContexts/pp_runner1": {uid: "runner-1"},
       "adConversionContexts/pp_runner2": {uid: "runner-2"},
+      "adConversionDeliveries/meta_hc_runner1": {uid: "runner-1"},
+      "adConversionDeliveries/meta_hc_runner2": {uid: "runner-2"},
       "participantIntakeProfiles/runner-1": {fields: [], revision: 1},
       "participantIntakeProfiles/runner-2": {fields: [], revision: 1},
       "catchCommunicationPreferences/runner-1": {
@@ -503,12 +505,14 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   for (const path of ["participantFormProfileViews/response-1",
     "participantIntakeProfileViews/runner-1",
     "adConversionContexts/pp_runner1",
+    "adConversionDeliveries/meta_hc_runner1",
     "participantIntakeProfiles/runner-1"]) {
     assert.ok(harness.deletedPublicDocs.includes(path));
   }
   for (const path of ["participantFormProfileViews/other-response",
     "participantIntakeProfileViews/runner-2",
     "adConversionContexts/pp_runner2",
+    "adConversionDeliveries/meta_hc_runner2",
     "participantIntakeProfiles/runner-2"]) {
     assert.equal(harness.deletedPublicDocs.includes(path), false);
   }

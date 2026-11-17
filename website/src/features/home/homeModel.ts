@@ -82,6 +82,22 @@ export function datedWhen(startTime: string, timezone: string) {
   return `${day.replace(",", "")}, ${time}`;
 }
 
+/** A plan's date square: the short weekday, the day and the short month in the city's time zone, and the ISO date. */
+export interface PlanDateParts {
+  weekday: string;
+  day: string;
+  month: string;
+  dateTime: string;
+}
+
+export function planDateParts(startTime: string, timezone: string): PlanDateParts {
+  const parts = new Intl.DateTimeFormat("en-GB", {weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: timezone})
+    .formatToParts(new Date(startTime));
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((item) => item.type === type)?.value ?? "";
+  const iso = new Intl.DateTimeFormat("en-CA", {year: "numeric", month: "2-digit", day: "2-digit", timeZone: timezone}).format(new Date(startTime));
+  return {weekday: part("weekday"), day: part("day"), month: part("month"), dateTime: iso};
+}
+
 export interface PlanCardView {
   key: string;
   href: string;
@@ -93,6 +109,10 @@ export interface PlanCardView {
   formatLabel: string;
   format: CatchFormat | null;
   detail: string;
+  /** Where the plan meets, such as "Khar Social". */
+  place: string;
+  /** The date square's parts in the city's time zone. */
+  date: PlanDateParts;
   price: string;
   availability?: string;
   photoUrl: string | null;
@@ -111,6 +131,8 @@ export function planCard(plan: HomePlan, timezone: string, withDate = false): Pl
     formatLabel: name ?? "",
     format: plan.format === "other" ? null : plan.format,
     detail: fill(copy.week.detail, {host: plan.organizer.name, place: plan.location}),
+    place: plan.location,
+    date: planDateParts(plan.startTime, timezone),
     price: plan.priceLabel,
     availability: plan.spotsLeft === null ? undefined :
       plan.spotsLeft === 0 ? copy.week.full : fill(copy.week.spotsLeft, {count: plan.spotsLeft}),
@@ -145,7 +167,8 @@ export interface OrganizerCardView {
   meta: string;
 }
 
-const formatGrounds: Record<CatchFormat, CatchBandGround> = {run: "coral", dinner: "pink", games: "yellow", courts: "mint", nightsOut: "magenta"};
+/** Each format's ground: its date squares, mats and chips. */
+export const formatGrounds: Record<CatchFormat, CatchBandGround> = {run: "coral", dinner: "pink", games: "yellow", courts: "mint", nightsOut: "magenta"};
 
 export function organizerCard(organizer: HomeOrganizer, city: HomeCity): OrganizerCardView {
   const firstFormat = organizer.formats.find((format): format is CatchFormat => format !== "other");

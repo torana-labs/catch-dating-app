@@ -1,0 +1,171 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/ad_conversion_deliveries.schema.json",
+  "title": "AdConversionDeliveryDocument",
+  "description": "Server-only queue of conversions waiting to be sent to one advertising platform (docs/ads_conversion_spec.md, Server delivery). One record per destination and event; the ID makes enqueueing idempotent. Matching keys are stored only as SHA-256 hex digests. Deleted with the account and at expiresAt.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "adConversionDeliveries",
+  "x-firestore-path": "adConversionDeliveries/{deliveryId}",
+  "x-document-id-field": "deliveryId",
+  "x-owner": "ad conversion delivery worker",
+  "required": [
+    "schemaVersion",
+    "deliveryId",
+    "destination",
+    "eventName",
+    "eventId",
+    "organizerId",
+    "uid",
+    "occurredAt",
+    "matching",
+    "valueMinor",
+    "currency",
+    "status",
+    "attempts",
+    "nextAttemptAt",
+    "lastAttemptAt",
+    "lastOutcome",
+    "createdAt",
+    "updatedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "deliveryId": {
+      "type": "string",
+      "pattern": "^(meta|google)_hc_[a-f0-9]{32}$"
+    },
+    "destination": {
+      "enum": [
+        "meta",
+        "google"
+      ]
+    },
+    "eventName": {
+      "enum": [
+        "organizer_signup",
+        "organizer_qualified"
+      ],
+      "description": "Contract event name from the ads conversion spec's event map."
+    },
+    "eventId": {
+      "type": "string",
+      "pattern": "^hc_[a-f0-9]{32}$",
+      "description": "Opaque event ID shared by every destination for this event, so each platform counts it once."
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The organizer's owner, whose contact details were hashed and whose deletion cancels the delivery."
+    },
+    "occurredAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "matching": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phoneSha256",
+        "emailSha256",
+        "externalIdSha256"
+      ],
+      "properties": {
+        "phoneSha256": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "SHA-256 of the owner's verified E.164 phone."
+        },
+        "emailSha256": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "SHA-256 of the trimmed, lowercased email, when one is on file."
+        },
+        "externalIdSha256": {
+          "$ref": "#/definitions/sha256",
+          "description": "SHA-256 of a namespaced organizer ID; never the raw ID."
+        }
+      }
+    },
+    "valueMinor": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "sending",
+        "accepted",
+        "rejected",
+        "unknown",
+        "cancelled"
+      ]
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "nextAttemptAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "lastAttemptAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "lastOutcome": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z_]{1,40}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Short outcome code; provider response bodies are never stored."
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    }
+  },
+  "definitions": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

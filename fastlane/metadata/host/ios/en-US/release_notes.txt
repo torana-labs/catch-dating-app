@@ -1,1 +1,8 @@
-Works with the latest Catch backend. Reliability fixes across event setup, the guest list and the live console.
+A redesigned Catch Host.
+
+• Today shows tonight's event and what needs you, most urgent first.
+• A faster door: check guests in by name even when the signal drops, scan tickets and add walk-ins.
+• Run the room from one live console, now laid out for iPad too.
+• Court rotations, tables and pods that mix guests fairly.
+• Application forms with responses, offers and optional fees.
+• A report after every event: who came, new faces, ticket sales and what guests said.

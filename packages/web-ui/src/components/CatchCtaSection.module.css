@@ -33,3 +33,92 @@
   .flush { padding-top: var(--catch-space-s10); }
   .flush .text { padding-bottom: var(--catch-space-s2); }
 }
+
+/*
+ * The bento grid (the homepage's app band, .bento): five columns 16px apart,
+ * the middle one wider and holding the copy on a paper tile at radius mat, two
+ * rows tall. Tiles are colour or ink at radius xl, 20px inside and at least
+ * 200px tall, a pill tag at the top and the line at the foot. On phones the
+ * grid is two columns: the copy first across both, wide tiles across both.
+ */
+.bento {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.8fr 1fr 1fr;
+  align-items: stretch;
+  gap: var(--catch-space-s4);
+}
+
+.mid {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  grid-column: 3;
+  grid-row: 1 / 3;
+  min-width: 0;
+  padding: var(--catch-space-s6);
+  border-radius: var(--catch-radius-mat);
+  background: var(--catch-ground-paper-fill);
+  color: var(--catch-ground-paper-ink);
+  --catch-theme-ink: var(--catch-ground-paper-ink);
+  --catch-theme-ink2: var(--catch-ground-paper-ink-secondary);
+}
+
+.mid .capture { max-width: none; }
+
+.tile {
+  composes: ground from "./grounds.module.css";
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--catch-space-s4);
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--catch-website-tile-min-height);
+  padding: var(--catch-space-s5);
+  border-radius: var(--catch-radius-xl);
+}
+
+.tile[data-wide] { min-height: 0; }
+.tile[data-wide="start"] { grid-column: 1 / 3; }
+.tile[data-wide="end"] { grid-column: 4 / 6; }
+
+.tag.tag {
+  align-self: flex-start;
+  padding: var(--catch-website-badge-pad-block) var(--catch-space-micro10);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-website-color-step-on-light);
+}
+
+.tile[data-ground="ink"] .tag.tag { background: var(--catch-website-color-step-on-ink); }
+
+.mini {
+  padding: var(--catch-space-micro10) var(--catch-space-s3);
+  border-radius: var(--catch-website-radius-field);
+  background: var(--catch-palette-white);
+  box-shadow: var(--catch-website-shadow-mini);
+  color: var(--catch-website-color-ink-body);
+  font-size: var(--catch-typography-role-label-badge-size);
+}
+
+.tileBody.tileBody {
+  font-weight: var(--catch-typography-role-label-action-weight);
+  line-height: var(--catch-website-type-tile-line-height);
+}
+
+@container catch-page (width < 840px) {
+  .bento { grid-template-columns: 1fr 1fr; }
+
+  .mid {
+    grid-column: 1 / 3;
+    grid-row: 1;
+    padding: var(--catch-space-s5);
+  }
+
+  .tile[data-wide="start"],
+  .tile[data-wide="end"] { grid-column: 1 / 3; }
+
+  .tile {
+    min-height: var(--catch-website-tile-bento-compact-min-height);
+    padding: var(--catch-space-s4);
+  }
+}

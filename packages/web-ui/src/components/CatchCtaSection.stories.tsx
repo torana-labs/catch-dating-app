@@ -62,3 +62,28 @@ export const Compact: Story = {
 
 export const WithMedia: Story = {args: {flush: true, ground: "pink", media}};
 export const WithCapture: Story = {args: {capture, stores}};
+
+const tiles = [
+  {id: "one", ground: "coral" as const, tag: "First tag", body: "A sample line about the app.", aside: <span>A sample small card</span>},
+  {id: "two", ground: "yellow" as const, tag: "Second tag", body: "A sample line about the app."},
+  {id: "three", ground: "ink" as const, tag: "Third tag", body: "A sample line about the app."},
+  {id: "four", ground: "mint" as const, tag: "Fourth tag", body: "A sample line about the app."},
+  {id: "five", ground: "pink" as const, tag: "Fifth tag", body: "A sample line about the app.", wide: true},
+  {id: "six", ground: "magenta" as const, tag: "Sixth tag", body: "A sample line about the app.", wide: true},
+];
+
+/** The bento grid around the copy and capture (the homepage's app band), wide and on a phone. */
+export const Bento: Story = {
+  render: () => (
+    <>
+      <CatchRoot size="expanded" theme="day">
+        <CatchCtaSection {...sample} capture={capture} tiles={tiles} titleSize="feature" />
+      </CatchRoot>
+      <CatchRoot size="compact" theme="day">
+        <div style={{width: 390, container: "catch-page / inline-size"}}>
+          <CatchCtaSection {...sample} capture={capture} tiles={tiles} title="A sample headline, phone" titleSize="feature" />
+        </div>
+      </CatchRoot>
+    </>
+  ),
+};
