@@ -19,7 +19,6 @@ import {
 import {
   refreshEventSuccessScorecard,
 } from "../marketplace/eventSuccessScorecards";
-import {isCurrentPick} from "./deckEraDecision";
 
 interface SwipeCreatedParams {
   swiperId: string;
@@ -51,12 +50,7 @@ const defaultDeps: SwipeCreatedDeps = {
 };
 
 /**
- * Creates a match when a newly created pick has a reciprocal current pick.
- *
- * Only current Stay in touch picks count. A deck-era decision (a pass, a like
- * with a reaction or comment, or anything older than the deck's retirement,
- * see `deckEraDecision.ts`) never opens a chat, never records signals and
- * never becomes a chat message, whichever side it is on.
+ * Creates a match when a newly created like has a reciprocal like.
  *
  * The Firestore trigger adapter passes path params and document data here so
  * tests can verify the match contract without the Functions event runtime.
@@ -69,10 +63,6 @@ export async function onSwipeCreatedHandler(
   deps: SwipeCreatedDeps = defaultDeps
 ): Promise<void> {
   if (!swipeData || swipeData.direction !== "like") return;
-  if (!isCurrentPick(swipeData)) {
-    logger.info("Ignoring deck-era profile decision", {swiperId, targetId});
-    return;
-  }
 
   const db = deps.firestore();
 
@@ -102,7 +92,7 @@ export async function onSwipeCreatedHandler(
     );
   await refreshEvents([swipeData.eventId]);
 
-  // Check if the target has already picked the swiper with a current pick.
+  // Check if the target has already liked the swiper.
   const reverseSwipeDoc = await db
     .collection(schemaProfileDecisionCollectionPath)
     .doc(targetId)
@@ -111,7 +101,7 @@ export async function onSwipeCreatedHandler(
     .get();
 
   const reverseSwipe = reverseSwipeDoc.data() as SwipeDocument | undefined;
-  if (!reverseSwipeDoc.exists || !isCurrentPick(reverseSwipe)) {
+  if (!reverseSwipeDoc.exists || reverseSwipe?.direction !== "like") {
     return;
   }
 
@@ -191,6 +181,11 @@ export async function onSwipeCreatedHandler(
     }
   }
 
+  await writeReactionCommentMessages(
+    resolvedMatchRef,
+    [reverseSwipe, swipeData],
+    deps
+  );
   if (createdDatingMatch) {
     logger.info("Match created", {
       matchId: resolvedMatchId,
@@ -227,6 +222,52 @@ async function refreshScorecardsForEvents(
   const refreshScorecard = deps.refreshScorecard;
   if (!refreshScorecard || eventIds.length === 0) return;
   await Promise.all(eventIds.map((eventId) => refreshScorecard(eventId)));
+}
+
+/**
+ * Writes swipe comments as deterministic starter messages after a match.
+ * @param {FirebaseFirestore.DocumentReference} matchRef Match document ref.
+ * @param {SwipeDocument[]} swipes Reciprocal swipe documents to inspect.
+ * @param {SwipeCreatedDeps} deps Injectable Firestore helpers.
+ * @return {Promise<void>} Resolves when all comment messages are written.
+ */
+async function writeReactionCommentMessages(
+  matchRef: FirebaseFirestore.DocumentReference,
+  swipes: SwipeDocument[],
+  deps: SwipeCreatedDeps
+): Promise<void> {
+  const writes: Promise<unknown>[] = [];
+  for (const swipe of swipes) {
+    const text = buildReactionCommentText(swipe);
+    if (!text) continue;
+    const messageId = `profileReaction_${swipe.swiperId}_${swipe.targetId}`;
+    writes.push(
+      matchRef.collection("messages").doc(messageId).set({
+        senderId: swipe.swiperId,
+        text,
+        sentAt: deps.serverTimestamp(),
+      })
+    );
+  }
+  await Promise.all(writes);
+}
+
+/**
+ * Builds a chat-safe message from a profile-section reaction comment.
+ * @param {SwipeDocument} swipe Swipe document that may contain reaction
+ * context.
+ * @return {string | null} Message text, or null when there is no comment.
+ */
+function buildReactionCommentText(swipe: SwipeDocument): string | null {
+  const comment = swipe.comment?.trim();
+  if (!comment) return null;
+
+  const label = swipe.reactionTargetLabel?.trim();
+  const preview = swipe.reactionTargetPreview?.trim();
+  if (!label && !preview) return comment;
+
+  const context = [label, preview].filter(Boolean).join(": ");
+  return `${comment}\n\nAbout ${context}`;
 }
 
 export const onSwipeCreated = onDocumentCreated(

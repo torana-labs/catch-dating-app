@@ -16,8 +16,10 @@
  * - a reaction field or a comment is present (non-null);
  * - `createdAt` is before 2026-11-12T12:50:04Z.
  *
- * `tool/data/purge_deck_era_records.mjs` loads this compiled module, so the
- * one-off purge and the live matching code apply the same rule.
+ * `tool/data/purge_deck_era_records.mjs` loads this compiled module. Live
+ * matching does not import it yet: the change that makes onSwipeCreated and
+ * fetchSwipeCandidates honour it ships after the prod purge, so both apply
+ * the same rule.
  */
 
 /** When the swipe deck was retired and the first pick writer merged. */
