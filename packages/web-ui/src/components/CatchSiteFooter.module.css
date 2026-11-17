@@ -56,6 +56,15 @@
 
 .top > :is(h2, h3, p) { margin: 0; }
 
+/* The canvas sets the footer's headings in the text face at its normal width, whatever a page's own heading rules say. */
+.title,
+.heading {
+  font-family: var(--catch-font-function), system-ui, sans-serif;
+  font-stretch: normal;
+  font-variation-settings: normal;
+  letter-spacing: normal;
+}
+
 .title {
   margin: 0;
   font-size: var(--catch-website-footer-title-size);
@@ -153,6 +162,12 @@ a.link:focus-visible {
   .groups[data-columns] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     row-gap: var(--catch-space-s7);
+  }
+
+  /* The canvas stacks the top band's buttons on phones, each as wide as the widest. */
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .mark {

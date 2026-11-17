@@ -298,7 +298,7 @@ function FooterHelpActions({variant}: {variant: SiteFooterVariant}) {
     : band.guestHelp;
   return (
     <>
-      <CatchButton href={whatsapp.href} label={whatsapp.label} leadingIcon="chat" onPressed={() => trackFooter(whatsapp)} size="sm" variant="light" />
+      <CatchButton href={whatsapp.href} label={whatsapp.label} onPressed={() => trackFooter(whatsapp)} size="sm" variant="light" />
       <CatchButton href={second.href} label={second.label} onPressed={() => trackFooter(second)} size="sm" variant="ghost" />
     </>
   );
