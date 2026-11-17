@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/get_walkthrough_slots_response.schema.json",
   "title": "GetWalkthroughSlotsCallableResponse",
-  "description": "Open walkthrough slots, times only: no staff names, ids or other bookings. A day appears only when it has an open slot. bookingOpen false (staff closed booking, or set no windows) tells the page to show its request form instead.",
+  "description": "Open walkthrough slots, times only: no staff names, ids or other bookings. A day appears only when it has an open slot. Slots come from the saved staff calendar or, while none is saved, the built-in default (Monday to Friday, 10:00 to 18:00 IST). bookingOpen false (staff saved a calendar that closes booking or has no windows) tells the page to show its request form instead.",
   "type": "object",
   "additionalProperties": false,
   "x-owner": "getWalkthroughSlots",

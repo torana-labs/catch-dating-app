@@ -32,7 +32,7 @@ export const memberLoop = [
 export const trustItems = [
   {
     title: "Attendance-gated",
-    body: "Dating surfaces open around real event participation, not cold browsing.",
+    body: "Catches and chat open only after a real event you attended, not cold browsing.",
   },
   {
     title: "Private by default",
@@ -127,7 +127,7 @@ export const activityMeta: Record<string, ActivityMeta> = {
     short: "DN",
   },
   singlesMixer: {
-    label: "Singles mixer",
+    label: "Social mixer",
     token: "var(--catch-activity-singles-mixer-accent)",
     short: "MX",
   },

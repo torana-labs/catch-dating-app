@@ -191,7 +191,7 @@
         },
         "indexing": {
           "type": "string",
-          "description": "index, follow when the city has launched and has 3 or more organisers or 5 or more upcoming plans in the format (owner decision, 16 Nov 2026); otherwise noindex, follow.",
+          "description": "index, follow when the city has 3 or more organisers or 5 or more upcoming plans in the format (owner decision, 16 Nov 2026), whether or not it has launched (owner decision, 17 Nov 2026); otherwise noindex, follow.",
           "enum": ["index, follow", "noindex, follow"]
         }
       }

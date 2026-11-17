@@ -3283,7 +3283,14 @@ count toward `cityInterest`.
 
 `walkthroughAvailability/default` is the one staff calendar: weekly windows in
 India time, a slot length, a lead time, a horizon of at most 28 days and closed
-dates. India keeps UTC+05:30 all year, so `utcOffsetMinutes` is the constant
+dates. While no calendar is saved, slots come from a built-in default (owner
+decision): Monday to Friday, 10:00 to 18:00 IST, 30-minute slots (the last
+starts at 17:30), a 2-hour lead time and a 14-day horizon
+(`DEFAULT_AVAILABILITY` in `functions/src/walkthroughs/calendar.ts`). A saved
+calendar replaces it, including one that closes booking; staff save one through
+`adminSetWalkthroughAvailability` with `expectedRevision` 0, and
+`adminListWalkthroughBookings` reports the calendar in use with `calendar.source`
+`saved` or `default`. India keeps UTC+05:30 all year, so `utcOffsetMinutes` is the constant
 330 and slots are computed with that fixed offset, never a daylight-saving
 rule. `walkthroughSlotHolds/{calendar}-{UTC start}` makes a slot bookable once:
 every booking or move of a slot reads and writes that document in its
@@ -5816,9 +5823,11 @@ organisers in the city and whether the city is `live` or `launchingSoon`
   counts are then a floor.
 - `formatPages` has one entry per city-by-format page (`/<citySlug>/<slug>/`):
   `slug`, `organizerCount`, `upcomingEventCount`, `freeEventCount` (30 days)
-  and `indexing`, which is `index, follow` when the city has launched and has
-  3 or more organisers or 5 or more upcoming plans in the format (owner
-  decision, 16 Nov 2026). The 13 formats and their explicit activity-kind and
+  and `indexing`, which is `index, follow` when the city has 3 or more
+  organisers or 5 or more upcoming plans in the format (owner decision, 16 Nov
+  2026), whether or not the city has launched (owner decision, 17 Nov 2026).
+  A city that has not launched counts the published organisers joining it and
+  no plans, so only its organiser count can reach the bar. The 13 formats and their explicit activity-kind and
   keyword tables are in `functions/src/cityPlans/discoveryFormats.ts`. Plans
   and organisers carry the `discoveryFormats` they count toward and their
   resolved `womenLed` label, and `womenLedPlanCount` counts the women-led plans

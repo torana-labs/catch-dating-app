@@ -172,7 +172,9 @@ export function discoveryFormatsForEvent(
 /**
  * Owner decision, 16 Nov 2026: a city-by-format page is indexed when the
  * city has 3 or more organisers or 5 or more upcoming events in the format.
- * A city that has not launched has no indexed format pages.
+ * Owner decision, 17 Nov 2026: the bar applies before a city launches too.
+ * A city that has not launched counts the published organisers joining it
+ * and has no public plans, so only its organiser count can meet the bar.
  */
 export const formatPageIndexing = {
   minOrganizers: 3,
@@ -181,10 +183,9 @@ export const formatPageIndexing = {
 
 export type FormatPageIndexing = "index, follow" | "noindex, follow";
 
-export function formatPageIndexingFor(launched: boolean,
-  organizerCount: number, upcomingEventCount: number): FormatPageIndexing {
-  return launched &&
-    (organizerCount >= formatPageIndexing.minOrganizers ||
-      upcomingEventCount >= formatPageIndexing.minUpcomingEvents) ?
+export function formatPageIndexingFor(organizerCount: number,
+  upcomingEventCount: number): FormatPageIndexing {
+  return organizerCount >= formatPageIndexing.minOrganizers ||
+    upcomingEventCount >= formatPageIndexing.minUpcomingEvents ?
     "index, follow" : "noindex, follow";
 }

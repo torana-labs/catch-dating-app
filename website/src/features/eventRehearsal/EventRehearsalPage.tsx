@@ -262,18 +262,8 @@ export function EventRehearsalPreview({
   );
 }
 
-const requiredFieldLabels = {
-  displayName: "Name",
-  gender: "Gender",
-  interestedInGenders: "Who you want to meet",
-  relationshipGoal: "Relationship goal",
-  dateOfBirth: "Age",
-  paceBand: "Running pace",
-  skillBand: "Skill level",
-  dietaryAndSeatingNotes: "Dietary or seating needs",
-  questionnaireAnswerIds: "Event questions",
-  teamName: "Team name",
-} satisfies Record<RehearsalRequiredField, string>;
+const requiredFieldLabels: Readonly<Record<RehearsalRequiredField, string>> =
+  eventRehearsalCopy.requiredFieldLabels;
 
 function EventRehearsalRequiredData({bootstrap, pending, fresh, retryRequired,
   blockedByReply, onSubmit}: {

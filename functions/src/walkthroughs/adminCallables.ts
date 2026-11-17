@@ -12,6 +12,7 @@ import {
   INDIA_TIME_ZONE,
   INDIA_UTC_OFFSET_MINUTES,
   addDays,
+  effectiveAvailability,
   indiaDate,
   indiaInstant,
   normalizedSettings,
@@ -45,6 +46,8 @@ import {
 // control-plane actions (contracts/admin/actions/walkthroughs.json) until an
 // Admin screen is built: set the staff calendar, see the bookings, and record
 // a WhatsApp confirmation or cancel for a host. Every change is audited.
+// Until staff save a calendar, slots come from the built-in default
+// (calendar.ts DEFAULT_AVAILABILITY); the list says which one is in use.
 
 export const walkthroughAdminRoles = ["admin", "adminOwner"] as const;
 
@@ -65,7 +68,11 @@ const defaultDeps: WalkthroughAdminDeps = {
 const MINUTE = 60 * 1000;
 const DEFAULT_LIST_DAYS = 14;
 
-/** Saves the staff calendar when it names the revision it read. Bookings keep their slots. */
+/**
+ * Saves the staff calendar when it names the revision it read (0 while the
+ * default is in use). Bookings keep their slots. The first save replaces the
+ * default, and the audit entry records the default as what it replaced.
+ */
 export async function adminSetWalkthroughAvailabilityHandler(request: CallableRequest<unknown>,
   deps: WalkthroughAdminDeps = defaultDeps): Promise<AdminSetWalkthroughAvailabilityResponse> {
   const adminContext = requireAdminRole(request, walkthroughAdminRoles);
@@ -90,8 +97,9 @@ export async function adminSetWalkthroughAvailabilityHandler(request: CallableRe
     tx.set(ref, doc);
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "walkthroughs.set-availability", targetPath: ref.path, request,
-      ...(current ? {before: {...current.settings, revision: current.revision}} : {}),
-      after: {...settings, revision: doc.revision}, note: data.note ?? null, serverTimestamp: deps.serverTimestamp,
+      before: current ? {...current.settings, revision: current.revision, source: "saved"} :
+        {...effectiveAvailability(null).settings, revision: 0, source: "default"},
+      after: {...settings, revision: doc.revision, source: "saved"}, note: data.note ?? null, serverTimestamp: deps.serverTimestamp,
     });
     return {doc, changed: true};
   });
@@ -103,7 +111,11 @@ export async function adminSetWalkthroughAvailabilityHandler(request: CallableRe
 export const adminSetWalkthroughAvailability = onCall(appCheckCallableOptionsWithLimits({maxInstances: 2}),
   (request) => adminSetWalkthroughAvailabilityHandler(request));
 
-/** The calendar, the open slot count and the bookings whose slots fall in a range of India-time days. */
+/**
+ * The saved calendar (null while none is saved), the calendar in use and
+ * whether it is the default, the open slot count and the bookings whose
+ * slots fall in a range of India-time days.
+ */
 export async function adminListWalkthroughBookingsHandler(request: CallableRequest<unknown>,
   deps: WalkthroughAdminDeps = defaultDeps): Promise<AdminListWalkthroughBookingsResponse> {
   const adminContext = requireAdminRole(request, walkthroughAdminRoles);
@@ -124,14 +136,16 @@ export async function adminListWalkthroughBookingsHandler(request: CallableReque
   const read = bookingsSnap.docs.map((doc) => doc.data() as WalkthroughBookingDocument);
   const bookings = read.slice(0, MAX_BOOKINGS_READ)
     .filter((booking) => data.includeCancelled === true || booking.status === "booked");
-  const settings = availability?.settings ?? null;
-  const held = settings ? await heldInHorizon(db, settings, now) : new Set<string>();
+  const calendar = effectiveAvailability(availability?.settings);
+  const {settings} = calendar;
+  const held = await heldInHorizon(db, settings, now);
   return {
     generatedAt: now.toISOString(),
     timeZone: INDIA_TIME_ZONE,
     fromDate,
     toDate: addDays(fromDate, days - 1),
     availability: availabilityView(availability),
+    calendar,
     openSlotCount: openSlotDays({settings, now, held}).reduce((count, day) => count + day.slots.length, 0),
     bookings: bookings.map(adminBookingRow),
     truncated: read.length > MAX_BOOKINGS_READ,
