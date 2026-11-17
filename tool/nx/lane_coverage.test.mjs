@@ -16,7 +16,6 @@ import {callerGraph, isControlPlane, laneForTask, targets} from "./shadow_plan.m
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const {minimatch} = createRequire(path.join(workspaceRoot, "package.json"))("minimatch");
 const matches = (file, pattern) => minimatch(file, pattern, {dot: true});
-// The tracked-file list outgrew execFileSync's 1 MiB default buffer (ENOBUFS).
 const tracked = execFileSync("git", ["ls-files"], {cwd: workspaceRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024}).trim().split("\n");
 
 function projectGraph() {
