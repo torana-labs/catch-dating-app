@@ -2600,10 +2600,18 @@ These contracts and services are not rollout authorization. Private persistence
 remains disabled until the explicit legacy publication backfill, all public
 readers/search projections and integrated privacy checks are complete.
 
-The offer picker uses `listOfferEventTargets` for both private and already
-published owned events. The bounded index
-uses canonical `organizerId`, status, start time and document ID; contradictory
-organizer ownership fails. This list exposes no payment settings.
+The offer picker reads coming events from Firestore under rules: published
+events from `events` (organizer, `publicationState` published, active, start
+time and document ID) and unpublished ones from the `hostEventSummaries` read
+model, merged soonest first and paged by start time and event ID. This list
+exposes no payment settings; picking an event never authorizes an offer.
+The offer workspace reads `organizerEventOffers` directly: current managers of
+the offer's organizer get an offer by its id (an offer not written yet reads as
+missing) and list an event's offers to the selected people
+(`organizerId`, `eventId`, `contactId in`). The stored document is what
+`getEventOffer` returned; an offered offer past `expiresAtMillis` reads as
+expired by the phone's clock. Receipts and audits stay server-only, and every
+offer command rereads the offer and checks its revision and generation.
 The offer settings screen reads the event's `eventSetupPreferences/{eventId}`
 document directly: current managers of the event's organizer get it under rules,
 and an event without saved settings reads as missing. The phone combines it with
@@ -3279,6 +3287,19 @@ The `host-form-version-filters` copy-forward migration in
 `tool/data/migrate_firestore_consolidation.mjs` creates views for versions
 published before the trigger. The version scope (active version and published
 version count) is already on the form's `hostFormSummaries` row.
+`hostEventRequestViews/{eventId}` gives Host Requests everyone waiting on one
+coming event without `listOrganizerRequests`: `organizerId`, `eventId`,
+`eventEndMillis`, `complete`, `version` and `rows`, the callable's rows for the
+event (join requests awaiting host approval and the waitlist numbered among the
+people the host can offer a spot, oldest ask first, at most 100). Triggers on the
+event, its waitlisted participations, public profiles, contacts and contact
+summaries write it; an event with nobody waiting, not active or over has none.
+Current organizer managers list their organizer's views by `organizerId` and
+`eventEndMillis`. Rows are not filtered by blocks: the phone hides anyone with a
+block either way using the reader's own `blocks` edges. A row's
+`offerExpiresAtMillis` is an active offer's expiry even after it passes; the
+phone compares it with its clock. The `host-event-request-views` copy-forward
+migration creates views for events that had people waiting before the triggers.
 Each summary may also carry two optional query fields, absent on older views and
 read as none: `reviewStatus` (a copy of the application's review status) and
 `offer {status, eventId, offeredAtMillis}`, the latest non-draft event offer made

@@ -1196,6 +1196,11 @@ lib/hosts/presentation/host_operations_screen.dart|catch_arch_multi_route_screen
 lib/chats/presentation/inbox/chats_list_view_model.dart|catch_arch_undocumented_keep_alive|const value = {'keepAlive': true};\nconst other = Object();\nvoid set({bool keepAlive = false}) {}\nvoid call() => set(keepAlive: true);
 lib/chats/presentation/chat_route_view_model.dart|catch_arch_manual_provider_declaration|import 'package:flutter_riverpod/flutter_riverpod.dart';\nfinal stateProvider = Provider<int>((ref) => 1);
 apps/consumer/lib/some_entrypoint.dart|catch_arch_manual_provider_declaration|import 'package:flutter_riverpod/flutter_riverpod.dart';\nfinal stateProvider = Provider<int>((ref) => 1);
+packages/platform/lib/device/clipboard.dart|catch_arch_manual_provider_declaration|import 'package:flutter_riverpod/flutter_riverpod.dart';\nObject providers() => [Provider<int>((ref) => 1)];
+lib/explore/presentation/explore_discovery_window_controller.dart|catch_arch_firestore_outside_data|import 'package:cloud_firestore/cloud_firestore.dart';
+packages/platform/lib/push/fcm_service.dart|catch_arch_firestore_outside_data|import 'package:cloud_firestore/cloud_firestore.dart';
+lib/hosts/events/presentation/host_events_cursor.dart|catch_arch_firestore_outside_data|import 'package:catch_platform/firebase/firebase_providers.dart';\nimport 'package:flutter_riverpod/flutter_riverpod.dart';\nObject read(ProviderContainer c) => c.read(firebaseFirestoreProvider).app;
+lib/force_update/presentation/force_update_diagnostics.dart|catch_arch_firestore_outside_data|import 'package:firebase_core/firebase_core.dart';\nbool failed(Object error) => error is FirebaseException;
 lib/contexts/events/parts/route_boundary.dart|catch_arch_provider_free_boundary|import 'package:catch_platform/routing/route_contract.dart';
 lib/contexts/events/data/event_store.dart|catch_arch_upward_layer_import|import 'package:catch_dating_app/routing/go_router.dart';
 lib/contexts/account/data/session.dart|catch_arch_context_order_import|import 'package:catch_dating_app/contexts/events/events.dart';
@@ -1213,20 +1218,52 @@ apps/host/lib/today/widgets/today_row.dart|catch_arch_provider_free_boundary|int
 apps/consumer/lib/explore/widgets/map_row.dart|catch_arch_provider_free_boundary|import 'package:flutter_riverpod/flutter_riverpod.dart';
 lib/pages/welcome/welcome_body.dart|catch_arch_provider_free_boundary|import 'package:flutter_riverpod/flutter_riverpod.dart';
 lib/pages/welcome/widgets/welcome_row.dart|catch_arch_provider_free_boundary|import 'package:flutter_riverpod/flutter_riverpod.dart';
-lib/chats/presentation/chat_route_widget.dart|catch_arch_invalid_ignore|// ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- stale exception\nclass ChatRouteWidget {}
+lib/chats/presentation/chat_route_widget.dart|catch_arch_invalid_ignore|// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- stale exception\nclass ChatRouteWidget {}
 ARCH
 
 # A reasoned ignore next to the code silences its finding and nothing else.
-probe_path="$probe_root/arch/lib/chats/presentation/chat_route_view_model.dart"
+probe_path="$probe_root/arch/lib/dashboard/presentation/widgets/dashboard_full.dart"
 stage_probe "architecture reasoned ignore" <<'DART'
+// ignore: catch_ui_lints/catch_arch_cross_feature_presentation_import -- seeded reason
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+DART
+expect_probe exact catch_arch_cross_feature_presentation_import 0
+expect_probe exact catch_arch_invalid_ignore 0
+expect_probe exact catch_no_allow_debt 0
+
+# The provider and Firestore rules hold everywhere: an ignore is itself a finding.
+probe_path="$probe_root/arch/lib/chats/presentation/chat_route_view_model.dart"
+stage_probe "manual provider ignore is refused" <<'DART'
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ignore: catch_ui_lints/catch_arch_manual_provider_declaration -- seeded reason
 final stateProvider = Provider<int>((ref) => 1);
 DART
-expect_probe exact catch_arch_manual_provider_declaration 0
-expect_probe exact catch_arch_invalid_ignore 0
-expect_probe exact catch_no_allow_debt 0
+expect_probe exact catch_arch_invalid_ignore 1
+
+# Firestore stays in the data layer: a repository and the platform Firebase seam
+# may hold Firestore types, and platform/errors may read FirebaseException.
+probe_path="$probe_root/arch/lib/contexts/events/data/event_cursor_store.dart"
+stage_probe "data layer may use Firestore" <<'DART'
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+Future<Object?> read(FirebaseFirestore db) async => (await db.doc('a/b').get()).data();
+DART
+expect_probe exact catch_arch_firestore_outside_data 0
+probe_path="$probe_root/arch/packages/platform/lib/firebase/config_reader.dart"
+stage_probe "platform firebase seam may use Firestore" <<'DART'
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+Object read(FirebaseFirestore db) => db.doc('config/brand');
+DART
+expect_probe exact catch_arch_firestore_outside_data 0
+probe_path="$probe_root/arch/packages/platform/lib/errors/firebase_failure.dart"
+stage_probe "platform errors may read FirebaseException" <<'DART'
+import 'package:firebase_core/firebase_core.dart';
+
+bool failed(Object error) => error is FirebaseException;
+DART
+expect_probe exact catch_arch_firestore_outside_data 0
 
 # The path makes the promise only for bodies, states and widgets/: a screen in the
 # same folder may watch, and a legacy body with no marker still may.

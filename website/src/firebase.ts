@@ -230,6 +230,7 @@ interface PublicFirebaseRuntime {
 
 interface FirebaseRuntime {
   app: FirebaseApp;
+  appCheck: AppCheck;
   auth: Auth;
   firestore: Firestore;
   functions: Functions;
@@ -286,16 +287,9 @@ export const watchPublicFormAuthState = watchClaimAuthState;
 export async function getPublicOrganizerForm(
   payload: GetPublicOrganizerFormCallablePayload
 ): Promise<GetPublicOrganizerFormCallableResponse> {
-  const runtime = await getPublicFirebaseRuntime();
-  if (!runtime || !publicFormsFirebaseConfigured) {
-    throw new Error("Public forms are not configured for this build.");
-  }
-  const {httpsCallable} = await import("firebase/functions");
-  const callable = httpsCallable<GetPublicOrganizerFormCallablePayload,
-    GetPublicOrganizerFormCallableResponse>(
-    runtime.functions, "getPublicOrganizerForm"
-  );
-  return (await callable(payload)).data;
+  // The public runtime: reading a form loads neither Auth nor Firestore.
+  return invokeWebsiteCallable<GetPublicOrganizerFormCallablePayload, GetPublicOrganizerFormCallableResponse>(
+    "getPublicOrganizerForm", payload, publicFormsFirebaseConfigured, "Public forms", "public");
 }
 
 export async function listParticipantFormActivity(
@@ -948,17 +942,8 @@ export async function signOutClaimUser() {
 export async function requestOrganizerClaim(
   payload: RequestOrganizerClaimPayload
 ): Promise<RequestOrganizerClaimResponse> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !claimFirebaseConfigured) {
-    throw new Error("Claim requests are not configured for this build.");
-  }
-  const {httpsCallable} = await import("firebase/functions");
-  const callable = httpsCallable<
-    RequestOrganizerClaimPayload,
-    RequestOrganizerClaimResponse
-  >(runtime.functions, "requestOrganizerClaim");
-  const result = await callable(payload);
-  return result.data;
+  return invokeWebsiteCallable<RequestOrganizerClaimPayload, RequestOrganizerClaimResponse>(
+    "requestOrganizerClaim", payload, claimFirebaseConfigured, "Claim requests");
 }
 
 export type OrganizerClaimVerificationOptions = OrganizerClaimVerificationOptionsCallableResponse;
@@ -1024,49 +1009,24 @@ export async function watchOrganizerClaimAttempt(
 export async function createPublicOrganizerReview(
   payload: CreatePublicOrganizerReviewPayload
 ): Promise<CreatePublicOrganizerReviewResponse> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !publicReviewsFirebaseConfigured) {
-    throw new Error("Public review writes are not configured for this build.");
-  }
-  const {httpsCallable} = await import("firebase/functions");
-  const callable = httpsCallable<
-    CreatePublicOrganizerReviewPayload,
-    CreatePublicOrganizerReviewResponse
-  >(runtime.functions, "createPublicOrganizerReview");
-  const result = await callable(payload);
-  return result.data;
+  return invokeWebsiteCallable<CreatePublicOrganizerReviewPayload, CreatePublicOrganizerReviewResponse>(
+    "createPublicOrganizerReview", payload, publicReviewsFirebaseConfigured, "Public review writes");
 }
 
 export async function listPublicOrganizerReviews(
   payload: ListPublicOrganizerReviewsPayload
 ): Promise<ListPublicOrganizerReviewsResponse> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !publicReviewsFirebaseConfigured) {
-    return {reviews: []};
-  }
-  const {httpsCallable} = await import("firebase/functions");
-  const callable = httpsCallable<
-    ListPublicOrganizerReviewsPayload,
-    ListPublicOrganizerReviewsResponse
-  >(runtime.functions, "listPublicOrganizerReviews");
-  const result = await callable(payload);
-  return result.data;
+  if (!publicReviewsFirebaseConfigured) return {reviews: []};
+  return invokeWebsiteCallable<ListPublicOrganizerReviewsPayload, ListPublicOrganizerReviewsResponse>(
+    "listPublicOrganizerReviews", payload, publicReviewsFirebaseConfigured, "Public reviews");
 }
 
 export async function recordOrganizerAnalyticsEvent(
   payload: RecordOrganizerAnalyticsEventPayload
 ): Promise<RecordOrganizerAnalyticsEventResponse> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !publicAnalyticsFirebaseConfigured) {
-    return {accepted: false};
-  }
-  const {httpsCallable} = await import("firebase/functions");
-  const callable = httpsCallable<
-    RecordOrganizerAnalyticsEventPayload,
-    RecordOrganizerAnalyticsEventResponse
-  >(runtime.functions, "recordOrganizerAnalyticsEvent");
-  const result = await callable(payload);
-  return result.data;
+  if (!publicAnalyticsFirebaseConfigured) return {accepted: false};
+  return invokeWebsiteCallable<RecordOrganizerAnalyticsEventPayload, RecordOrganizerAnalyticsEventResponse>(
+    "recordOrganizerAnalyticsEvent", payload, publicAnalyticsFirebaseConfigured, "Organiser analytics events");
 }
 
 export async function beginWebsiteAccountPhoneVerification(
@@ -1122,16 +1082,8 @@ export async function beginPublicEventPhoneVerification(
 export async function registerPublicEvent(
   payload: RegisterPublicEventPayload
 ): Promise<RegisterPublicEventResponse> {
-  const runtime = await getFirebaseRuntime();
-  if (!runtime || !publicEventRegistrationFirebaseConfigured) {
-    throw new Error("Website event registration is not configured for this build.");
-  }
-  const {httpsCallable} = await import("firebase/functions");
-  const callable = httpsCallable<
-    RegisterPublicEventPayload,
-    RegisterPublicEventResponse
-  >(runtime.functions, "registerPublicEvent");
-  return (await callable(payload)).data;
+  return invokeWebsiteCallable<RegisterPublicEventPayload, RegisterPublicEventResponse>(
+    "registerPublicEvent", payload, publicEventRegistrationFirebaseConfigured, "Website event registrations");
 }
 
 export async function recordEventInviteLinkOpen(
@@ -1220,10 +1172,39 @@ export async function getWebsiteAppCheckToken(): Promise<string | null> {
   try {
     const runtime = await getPublicFirebaseRuntime();
     if (!runtime) return null;
-    const {getToken} = await import("firebase/app-check");
-    return (await getToken(runtime.appCheck)).token || null;
+    return (await appCheckTokenWithinDeadline(runtime.appCheck)).token || null;
   } catch {
     return null;
+  }
+}
+
+/**
+ * How long a website call waits for its App Check token. App Check mints the
+ * token through the reCAPTCHA Enterprise script, which has no failure path:
+ * when a content blocker, a network or a firewall stops the script, the token
+ * never settles. The Functions SDK starts its own timeout only after the token,
+ * so without this a call, and the page waiting on it, would wait forever.
+ */
+const APP_CHECK_TOKEN_DEADLINE_MS = 15_000;
+
+class AppCheckDeadlineError extends Error {
+  constructor() {
+    super("App Check could not start in this browser.");
+    this.name = "AppCheckDeadlineError";
+  }
+}
+
+/** App Check's token, or an AppCheckDeadlineError once the deadline passes. */
+async function appCheckTokenWithinDeadline(appCheck: AppCheck) {
+  const {getToken} = await import("firebase/app-check");
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => reject(new AppCheckDeadlineError()), APP_CHECK_TOKEN_DEADLINE_MS);
+  });
+  try {
+    return await Promise.race([getToken(appCheck), deadline]);
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -1234,25 +1215,38 @@ async function loadFirebaseRuntime(): Promise<FirebaseRuntime | null> {
     import("firebase/firestore"),
   ]);
   if (!publicRuntime) return null;
-  const {app, functions} = publicRuntime;
+  const {app, appCheck, functions} = publicRuntime;
   return {
     app,
+    appCheck,
     auth: getAuth(app),
     firestore: getFirestore(app),
     functions,
   };
 }
 
+/**
+ * Every website callable goes through here, so each one waits a bounded time
+ * for App Check. "public" uses the runtime without Auth or Firestore, for
+ * calls that never act as a signed-in person.
+ */
 async function invokeWebsiteCallable<Request, Response>(
   name: string,
   payload: Request,
   configured: boolean,
-  capabilityLabel = "Event runtime"
+  capabilityLabel = "Event runtime",
+  runtimeKind: "full" | "public" = "full"
 ): Promise<Response> {
-  const runtime = await getFirebaseRuntime();
+  const runtime = runtimeKind === "public" ? await getPublicFirebaseRuntime() : await getFirebaseRuntime();
   if (!runtime || !configured) {
     throw new Error(`${capabilityLabel} are not configured for this build.`);
   }
+  // A token that cannot be minted in time fails the call instead of holding
+  // it. A token exchange that fails outright still lets the call go without
+  // one, as the SDK does, and the function answers for itself.
+  await appCheckTokenWithinDeadline(runtime.appCheck).catch((error: unknown) => {
+    if (error instanceof AppCheckDeadlineError) throw error;
+  });
   const {httpsCallable} = await import("firebase/functions");
   const callable = httpsCallable<Request, Response>(runtime.functions, name);
   return (await callable(payload)).data;

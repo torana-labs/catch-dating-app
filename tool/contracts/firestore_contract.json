@@ -586,7 +586,12 @@
       "read": "authenticated users, except deleted or blocked relationships",
       "write": "server only",
       "exportedFunctions": [
-        "syncPublicProfile"
+        "syncPublicProfile",
+        "onHostRequestViewParticipationWritten",
+        "onHostRequestViewEventWritten",
+        "onHostRequestViewProfileWritten",
+        "onHostRequestViewContactSummaryWritten",
+        "onHostRequestViewContactWritten"
       ]
     },
     {
@@ -659,7 +664,12 @@
         "joinEventWaitlist",
         "leaveEventWaitlist",
         "markEventAttendance",
-        "selfCheckInAttendance"
+        "selfCheckInAttendance",
+        "onHostRequestViewParticipationWritten",
+        "onHostRequestViewEventWritten",
+        "onHostRequestViewProfileWritten",
+        "onHostRequestViewContactSummaryWritten",
+        "onHostRequestViewContactWritten"
       ],
       "operations": [
         {
@@ -1160,7 +1170,12 @@
         "listOrganizerContacts",
         "getOrganizerContactDetail",
         "mergeOrganizerContacts",
-        "unmergeOrganizerContacts"
+        "unmergeOrganizerContacts",
+        "onHostRequestViewParticipationWritten",
+        "onHostRequestViewEventWritten",
+        "onHostRequestViewProfileWritten",
+        "onHostRequestViewContactSummaryWritten",
+        "onHostRequestViewContactWritten"
       ],
       "migrationNotes": [
         "Contacts are organizer-scoped operational records, never Consumer profiles.",
@@ -1331,6 +1346,30 @@
       ],
       "migrationNotes": [
         "answerFilterOptions equals what listOrganizerFormResponses returns for the version. The host-form-version-filters copy-forward migration creates views for versions published before the trigger."
+      ]
+    },
+    {
+      "id": "hostEventRequestViews",
+      "path": "hostEventRequestViews/{eventId}",
+      "rulesMatch": "/hostEventRequestViews/{eventId}",
+      "typescriptInterface": "HostEventRequestViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "lets managers list event request views and nothing else"
+      ],
+      "owner": "Host read model projector: hostReadModels request view triggers",
+      "read": "current organizer managers get and list their organizer's views by organizerId and eventEndMillis",
+      "write": "server only; rewritten from the event, its waitlisted participations, public profiles, contacts and contact summaries, and deleted when nobody waits or the event is not active or over",
+      "exportedFunctions": [
+        "onHostRequestViewParticipationWritten",
+        "onHostRequestViewEventWritten",
+        "onHostRequestViewProfileWritten",
+        "onHostRequestViewContactSummaryWritten",
+        "onHostRequestViewContactWritten"
+      ],
+      "migrationNotes": [
+        "rows equal what listOrganizerRequests returns for the event, unfiltered by blocks; readers hide anyone with a block either way. The host-event-request-views copy-forward migration creates views for events that had people waiting before the triggers."
       ]
     },
     {
@@ -2383,7 +2422,12 @@
         "markEventAttendance",
         "selfCheckInAttendance",
         "fetchSwipeCandidates",
-        "requestAccountDeletion"
+        "requestAccountDeletion",
+        "onHostRequestViewParticipationWritten",
+        "onHostRequestViewEventWritten",
+        "onHostRequestViewProfileWritten",
+        "onHostRequestViewContactSummaryWritten",
+        "onHostRequestViewContactWritten"
       ],
       "migrationNotes": [
         "Owns signed-up, waitlisted, attended, cancelled, and deleted event roster state; events documents retain only callable-owned aggregate counts.",
@@ -4606,10 +4650,10 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
-        "keeps event offers and evidence server-only"
+        "lets current managers read their organizer's event offers only"
       ],
       "owner": "event offer manager operations",
-      "read": "server only; current manager callable projection",
+      "read": "current organizer managers get an offer by id (missing reads as missing) and list an event's offers by organizerId, eventId and contactId; getEventOffer and listEventOffers remain for older builds",
       "write": "server only",
       "exportedFunctions": [
         "previewEventOffers",
@@ -4627,7 +4671,7 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
-        "keeps event offers and evidence server-only"
+        "keeps event offer receipts and audits server-only"
       ],
       "owner": "event offer manager operations",
       "read": "server only; current manager callable projection",
@@ -4648,7 +4692,7 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
-        "keeps event offers and evidence server-only"
+        "keeps event offer receipts and audits server-only"
       ],
       "owner": "event offer manager operations",
       "read": "server only; current manager callable projection",
@@ -4669,7 +4713,7 @@
       "dartModel": null,
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "rulesTestNames": [
-        "keeps event offers and evidence server-only"
+        "keeps event offer receipts and audits server-only"
       ],
       "owner": "event offer manager operations",
       "read": "server only; current manager callable projection",

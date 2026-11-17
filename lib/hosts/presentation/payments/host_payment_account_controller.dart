@@ -23,6 +23,9 @@ abstract interface class HostPaymentAccountActions {
   Future<void> refreshStatus(HostPaymentProvider provider);
 }
 
+/// Each action reads what it needs from [_ref] before its first `await`. The
+/// payout accounts are a Firestore listener, so it delivers the server's
+/// update itself and no action invalidates it.
 class HostPaymentAccountController implements HostPaymentAccountActions {
   const HostPaymentAccountController(this._ref);
 
@@ -39,27 +42,22 @@ class HostPaymentAccountController implements HostPaymentAccountActions {
     RazorpayHostOnboardingDetails? razorpayDetails,
   }) async {
     requireSignedInUid(_ref, action: 'set up payouts');
+    final accounts = _ref.read(hostPaymentAccountRepositoryProvider);
     if (provider == HostPaymentProvider.razorpay) {
       if (razorpayDetails == null) {
         throw ArgumentError.notNull('razorpayDetails');
       }
-      final uid = requireSignedInUid(_ref, action: 'set up Razorpay payouts');
-      await _ref
-          .read(hostPaymentAccountRepositoryProvider)
-          .createRazorpayAccount(razorpayDetails);
-      _ref.invalidate(watchHostPaymentAccountsProvider(uid));
+      requireSignedInUid(_ref, action: 'set up Razorpay payouts');
+      await accounts.createRazorpayAccount(razorpayDetails);
       return;
     }
-    final link = await _ref
-        .read(hostPaymentAccountRepositoryProvider)
-        .createOnboardingLink(
-          provider: provider,
-          country: country,
-          defaultCurrency: defaultCurrency,
-        );
-    final opened = await _ref
-        .read(externalLinkControllerProvider)
-        .openExternal(link.onboardingUrl);
+    final links = _ref.read(externalLinkControllerProvider);
+    final link = await accounts.createOnboardingLink(
+      provider: provider,
+      country: country,
+      defaultCurrency: defaultCurrency,
+    );
+    final opened = await links.openExternal(link.onboardingUrl);
     if (!opened) {
       throw ExternalActionException(
         'Could not open ${provider.name} onboarding.',
@@ -69,10 +67,9 @@ class HostPaymentAccountController implements HostPaymentAccountActions {
 
   @override
   Future<void> refreshStatus(HostPaymentProvider provider) async {
-    final uid = requireSignedInUid(_ref, action: 'refresh payouts');
+    requireSignedInUid(_ref, action: 'refresh payouts');
     await _ref
         .read(hostPaymentAccountRepositoryProvider)
         .refreshStatus(provider);
-    _ref.invalidate(watchHostPaymentAccountsProvider(uid));
   }
 }

@@ -1145,8 +1145,15 @@ service cloud.firestore {
     match /organizerFormAdmissionReceipts/{documentId} {
       allow read, write: if false;
     }
+    // A current manager of the offer's organizer reads its event offers: the
+    // stored document is what getEventOffer returned. An offer not written
+    // yet reads as missing. Every offer command still rechecks the revision
+    // and generation; receipts and audits stay server-only.
     match /organizerEventOffers/{documentId} {
-      allow read, write: if false;
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
     }
     match /organizerEventOfferActionReceipts/{documentId} {
       allow read, write: if false;
@@ -1430,6 +1437,13 @@ service cloud.firestore {
       allow write: if false;
     }
     match /hostContactSummaries/{contactId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    // Everyone waiting on one coming event, written ahead of time by the
+    // request view triggers. A current manager lists their organizer's views;
+    // authority comes from the organizer document, never from the view.
+    match /hostEventRequestViews/{eventId} {
       allow get, list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
     }

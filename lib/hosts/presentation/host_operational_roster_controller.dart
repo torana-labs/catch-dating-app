@@ -11,6 +11,7 @@ import 'package:catch_dating_app/contexts/events/data/event_runtime_claim_reposi
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_runtime_claim_request.dart';
 import 'package:catch_dating_app/contexts/insights/domain/insights_tags.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/cache/cache_tags.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -21,6 +22,9 @@ part 'host_operational_roster_controller.g.dart';
 HostOperationalRosterController hostOperationalRosterController(Ref ref) =>
     HostOperationalRosterController(ref);
 
+/// Each action reads what it needs from [_ref] before its first `await`: the
+/// provider is auto-disposed, and a widget that reads it without listening can
+/// let it go while a request runs, after which the Ref throws.
 class HostOperationalRosterController {
   const HostOperationalRosterController(this._ref);
 
@@ -80,12 +84,11 @@ class HostOperationalRosterController {
     HostRosterIntakeReview review, {
     required String organizerId,
   }) async {
+    final tags = _ref.read(cacheTagsProvider);
     final applied = await _ref
         .read(hostRosterIntakeRepositoryProvider)
         .apply(review);
-    _ref
-        .read(cacheTagsProvider)
-        .invalidate(InsightsTags.writtenFor(organizerId));
+    tags.invalidate(InsightsTags.writtenFor(organizerId));
     return applied;
   }
 
@@ -108,7 +111,7 @@ class HostOperationalRosterController {
             desiredCheckedIn: !attendee.isCheckedIn,
             expectedRevision: attendee.attendanceRevision,
             clientOperationId: clientOperationId,
-            createdAt: DateTime.now(),
+            createdAt: _ref.read(appClockProvider).now(),
             status: HostAttendanceOutboxStatus.pending,
           ),
           offline: _ref.read(isObviouslyOfflineProvider),
@@ -150,8 +153,10 @@ class HostOperationalRosterController {
     required String uid,
     required EventRuntimeClaimDecision decision,
     String? attendeeId,
-  }) async {
-    final status = await _ref
+  }) {
+    // The pending claims and the attendees are Firestore listeners: they
+    // deliver the review's writes themselves.
+    return _ref
         .read(eventRuntimeClaimRepositoryProvider)
         .review(
           eventId: eventId,
@@ -159,9 +164,6 @@ class HostOperationalRosterController {
           decision: decision,
           attendeeId: attendeeId,
         );
-    _ref.invalidate(watchPendingEventRuntimeClaimsProvider(eventId));
-    _ref.invalidate(watchEventAttendeesProvider(eventId));
-    return status;
   }
 
   Future<EventRosterHandoffInstructions> createRosterHandoff({
