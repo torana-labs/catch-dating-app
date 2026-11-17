@@ -8,7 +8,6 @@ import 'package:catch_dating_app/contexts/events/data/read_models/host_event_sum
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:catch_platform/firebase/host_summary_reader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -19,12 +18,7 @@ PrivateEventSetupRepository privateEventSetupTimelineRepository(Ref ref) {
   ref.watch(authenticatedSessionProvider);
   return PrivateEventSetupRepository(
     ref.read(firebaseFunctionsProvider),
-    summaries: HostEventSummaryReads(
-      HostSummaryReader(
-        ref.watch(firebaseFirestoreProvider),
-        actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
-      ),
-    ),
+    summaries: ref.watch(hostEventSummaryReadsProvider),
     views: ref.watch(hostEventSetupViewReadsProvider),
   );
 }

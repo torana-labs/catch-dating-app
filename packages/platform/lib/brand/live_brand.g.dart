@@ -64,4 +64,4 @@ final class LiveBrandProvider
   }
 }
 
-String _$liveBrandHash() => r'cf799bbdc51750751acab0c7bf6ac3737d1d762b';
+String _$liveBrandHash() => r'56835c9f3ad5c46b31e78b5f832ca771b9d6102e';
