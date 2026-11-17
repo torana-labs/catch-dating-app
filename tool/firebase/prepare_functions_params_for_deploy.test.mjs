@@ -72,6 +72,10 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'PROGRAM_ASSISTANT_ENABLED="false"',
     'PROGRAM_ASSISTANT_FEDERATION_RULE_ID=" "',
     'ANTHROPIC_ORGANIZATION_ID=" "',
+    'AD_CONVERSIONS_MODE="off"',
+    'AD_CONVERSIONS_META_TOKEN_VERSION=" "',
+    'AD_CONVERSIONS_META_TEST_EVENT_CODE=" "',
+    'AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT=" "',
     "",
   ].join("\n"));
   assert.equal(fs.statSync(result.outputPath).mode & 0o777, 0o600);
@@ -133,6 +137,10 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'PROGRAM_ASSISTANT_ENABLED="false"',
     'PROGRAM_ASSISTANT_FEDERATION_RULE_ID=" "',
     'ANTHROPIC_ORGANIZATION_ID=" "',
+    'AD_CONVERSIONS_MODE="off"',
+    'AD_CONVERSIONS_META_TOKEN_VERSION=" "',
+    'AD_CONVERSIONS_META_TEST_EVENT_CODE=" "',
+    'AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT=" "',
     "",
   ].join("\n"));
 });
@@ -775,4 +783,38 @@ test("the wedding assistant switches on only with an Anthropic federation rule a
       /must be an Anthropic organization UUID/);
   }
   assert.throws(() => materialize({PROGRAM_ASSISTANT_ENABLED: "yes"}), /must be true or false/);
+});
+
+test("ad conversions stay off unless a mode and both credentials are set", () => {
+  const materialize = (config) => {
+    const functionsDir = fixture();
+    prepareFunctionsParamsForDeploy({functionsDir, projectId: "catchdates-dev",
+      environment: {...publicIds, ...config}});
+    return fs.readFileSync(path.join(functionsDir, ".env.catchdates-dev"), "utf8");
+  };
+  const token = "projects/catchdates-dev/secrets/CATCH_META_ADS_TOKEN/versions/1";
+  const account = "catch-ads-automation@catchdates-dev.iam.gserviceaccount.com";
+  assert.match(materialize({}), /^AD_CONVERSIONS_MODE="off"$/m);
+  const live = materialize({AD_CONVERSIONS_MODE: "live",
+    AD_CONVERSIONS_META_TOKEN_VERSION: token,
+    AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT: account,
+    AD_CONVERSIONS_META_TEST_EVENT_CODE: "TEST12345"});
+  assert.match(live, /^AD_CONVERSIONS_MODE="live"$/m);
+  assert.match(live, new RegExp(`^AD_CONVERSIONS_META_TOKEN_VERSION="${token}"$`, "m"));
+  assert.throws(() => materialize({AD_CONVERSIONS_MODE: "validate"}),
+    /requires the Meta token version and Google service account/);
+  assert.throws(() => materialize({AD_CONVERSIONS_MODE: "on"}),
+    /must be off, validate or live/);
+  assert.throws(() => materialize({AD_CONVERSIONS_META_TOKEN_VERSION:
+    "projects/other/secrets/CATCH_META_ADS_TOKEN/versions/1"}),
+  /must pin CATCH_META_ADS_TOKEN in this project/);
+  assert.throws(() => materialize({AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT:
+    "catch-ads-automation@other.iam.gserviceaccount.com"}),
+  /must be a service account in this project/);
+  // The project id is matched literally: "." is not a wildcard.
+  assert.throws(() => materialize({AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT:
+    "catch-ads-automation@catchdates-devXiamXgserviceaccountXcom"}),
+  /must be a service account in this project/);
+  assert.throws(() => materialize({AD_CONVERSIONS_META_TEST_EVENT_CODE: "test1"}),
+    /must be a Meta test-event code/);
 });
