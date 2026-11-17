@@ -58,9 +58,13 @@ final class EventParticipationRepositoryProvider
 String _$eventParticipationRepositoryHash() =>
     r'ab518831dbeeaec7a287cd3b8809b3e86fca2987';
 
+/// The guest's open bookings (signed up or waitlisted), live.
+
 @ProviderFor(watchEventParticipationsForUser)
 final watchEventParticipationsForUserProvider =
     WatchEventParticipationsForUserFamily._();
+
+/// The guest's open bookings (signed up or waitlisted), live.
 
 final class WatchEventParticipationsForUserProvider
     extends
@@ -72,6 +76,7 @@ final class WatchEventParticipationsForUserProvider
     with
         $FutureModifier<List<EventParticipation>>,
         $StreamProvider<List<EventParticipation>> {
+  /// The guest's open bookings (signed up or waitlisted), live.
   WatchEventParticipationsForUserProvider._({
     required WatchEventParticipationsForUserFamily super.from,
     required String super.argument,
@@ -120,6 +125,8 @@ final class WatchEventParticipationsForUserProvider
 String _$watchEventParticipationsForUserHash() =>
     r'1bf4f2be9dcacd252dd8c708a1a753efc0070400';
 
+/// The guest's open bookings (signed up or waitlisted), live.
+
 final class WatchEventParticipationsForUserFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<EventParticipation>>, String> {
   WatchEventParticipationsForUserFamily._()
@@ -130,6 +137,8 @@ final class WatchEventParticipationsForUserFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The guest's open bookings (signed up or waitlisted), live.
 
   WatchEventParticipationsForUserProvider call(String uid) =>
       WatchEventParticipationsForUserProvider._(argument: uid, from: this);

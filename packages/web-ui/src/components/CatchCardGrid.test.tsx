@@ -95,6 +95,15 @@ describe("CatchCardGrid", () => {
     expect(screen.getByRole("region").dataset.band).toBe("tile");
   });
 
+  it("places the footer row under the cards and before the actions", () => {
+    render(<CatchCardGrid actions={[{label: "See all", href: "/all"}]} footer={<form aria-label="Sample footer" />} items={plans} kind="plan" title="Plans" />);
+    const card = screen.getByRole("link", {name: /First plan/});
+    const footer = screen.getByRole("form", {name: "Sample footer"});
+    const action = screen.getByRole("link", {name: "See all"});
+    expect(card.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(footer.compareDocumentPosition(action) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it("draws entry tiles as links on their grounds, six across, with an icon and a heading each", () => {
     const {container} = render(
       <CatchCardGrid columns={6} items={[
