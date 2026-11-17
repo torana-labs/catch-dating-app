@@ -192,7 +192,7 @@ void main() {
       final payload = original.command;
       subscription.close();
       await container.pump();
-      expect(container.exists(commandProvider), isTrue);
+      expect(container.read(commandProvider.exists), isTrue);
       container.read(query.notifier).reload();
       await container.pump();
       await completeRead(1, view: participationView());

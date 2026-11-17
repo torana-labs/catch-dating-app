@@ -363,8 +363,8 @@ class _CopyCollector extends RecursiveAstVisitor<void> {
     AstNode current = node;
     while (current.parent != null) {
       final parent = current.parent!;
-      if (parent is NamedExpression) {
-        final name = parent.name.label.name;
+      if (parent is NamedArgument) {
+        final name = parent.name.lexeme;
         return _copyArguments.contains(name) ? name : null;
       }
       if (parent is ArgumentList) {

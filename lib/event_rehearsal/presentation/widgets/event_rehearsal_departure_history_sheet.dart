@@ -90,7 +90,7 @@ class _EventRehearsalDepartureHistorySheetState
                 practiceOperatorId: selection.practiceOperatorId,
               );
               final detail = eventRehearsalMovementProvider(target);
-              if (ref.exists(detail)) ref.read(detail.notifier).reload();
+              if (ref.read(detail.exists)) ref.read(detail.notifier).reload();
               await showCatchBottomSheet<void>(
                 context: context,
                 builder: (_) =>

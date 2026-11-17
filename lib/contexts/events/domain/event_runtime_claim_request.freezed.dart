@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'event_runtime_claim_request.dart';
@@ -9,6 +9,7 @@ part of 'event_runtime_claim_request.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $EventRuntimeClaimRequestCopyWith<EventRuntimeClaimRequest> get copyWith => _$Ev
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventRuntimeClaimRequest&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.phoneLastFour, phoneLastFour) || other.phoneLastFour == phoneLastFour)&&const DeepCollectionEquality().equals(other.candidateAttendeeIds, candidateAttendeeIds)&&(identical(other.status, status) || other.status == status)&&(identical(other.reviewedBy, reviewedBy) || other.reviewedBy == reviewedBy)&&(identical(other.reviewReason, reviewReason) || other.reviewReason == reviewReason)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.reviewedAt, reviewedAt) || other.reviewedAt == reviewedAt));
+  final _this = this as EventRuntimeClaimRequest;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventRuntimeClaimRequest&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.eventId, _this.eventId) || other.eventId == _this.eventId)&&(identical(other.organizerId, _this.organizerId) || other.organizerId == _this.organizerId)&&(identical(other.uid, _this.uid) || other.uid == _this.uid)&&(identical(other.displayName, _this.displayName) || other.displayName == _this.displayName)&&(identical(other.phoneLastFour, _this.phoneLastFour) || other.phoneLastFour == _this.phoneLastFour)&&const DeepCollectionEquality().equals(other.candidateAttendeeIds, _this.candidateAttendeeIds)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.reviewedBy, _this.reviewedBy) || other.reviewedBy == _this.reviewedBy)&&(identical(other.reviewReason, _this.reviewReason) || other.reviewReason == _this.reviewReason)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt)&&(identical(other.reviewedAt, _this.reviewedAt) || other.reviewedAt == _this.reviewedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,uid,displayName,phoneLastFour,const DeepCollectionEquality().hash(candidateAttendeeIds),status,reviewedBy,reviewReason,createdAt,updatedAt,reviewedAt);
+int get hashCode {
+  final _this = this as EventRuntimeClaimRequest;
+  return Object.hash(runtimeType,_this.id,_this.eventId,_this.organizerId,_this.uid,_this.displayName,_this.phoneLastFour,const DeepCollectionEquality().hash(_this.candidateAttendeeIds),_this.status,_this.reviewedBy,_this.reviewReason,_this.createdAt,_this.updatedAt,_this.reviewedAt);
+}
 
 @override
 String toString() {
-  return 'EventRuntimeClaimRequest(id: $id, eventId: $eventId, organizerId: $organizerId, uid: $uid, displayName: $displayName, phoneLastFour: $phoneLastFour, candidateAttendeeIds: $candidateAttendeeIds, status: $status, reviewedBy: $reviewedBy, reviewReason: $reviewReason, createdAt: $createdAt, updatedAt: $updatedAt, reviewedAt: $reviewedAt)';
+  final _this = this as EventRuntimeClaimRequest;
+  return 'EventRuntimeClaimRequest(id: ${_this.id}, eventId: ${_this.eventId}, organizerId: ${_this.organizerId}, uid: ${_this.uid}, displayName: ${_this.displayName}, phoneLastFour: ${_this.phoneLastFour}, candidateAttendeeIds: ${_this.candidateAttendeeIds}, status: ${_this.status}, reviewedBy: ${_this.reviewedBy}, reviewReason: ${_this.reviewReason}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt}, reviewedAt: ${_this.reviewedAt})';
 }
 
 
@@ -66,7 +72,7 @@ class _$EventRuntimeClaimRequestCopyWithImpl<$Res>
 /// Create a copy of EventRuntimeClaimRequest
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? organizerId = null,Object? uid = null,Object? displayName = null,Object? phoneLastFour = null,Object? candidateAttendeeIds = null,Object? status = null,Object? reviewedBy = freezed,Object? reviewReason = freezed,Object? createdAt = null,Object? updatedAt = null,Object? reviewedAt = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(EventRuntimeClaimRequest(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
 as String,organizerId: null == organizerId ? _self.organizerId : organizerId // ignore: cast_nullable_to_non_nullable
@@ -221,7 +227,7 @@ return $default(_that.id,_that.eventId,_that.organizerId,_that.uid,_that.display
 @JsonSerializable()
 
 class _EventRuntimeClaimRequest extends EventRuntimeClaimRequest {
-  const _EventRuntimeClaimRequest({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.organizerId, required this.uid, required this.displayName, required this.phoneLastFour, final  List<String> candidateAttendeeIds = const <String>[], required this.status, this.reviewedBy, this.reviewReason, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.reviewedAt}): _candidateAttendeeIds = candidateAttendeeIds,super._();
+  const _EventRuntimeClaimRequest({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.organizerId, required this.uid, required this.displayName, required this.phoneLastFour,  List<String> candidateAttendeeIds = const <String>[], required this.status, this.reviewedBy, this.reviewReason, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.reviewedAt}): _candidateAttendeeIds = candidateAttendeeIds,super._();
   factory _EventRuntimeClaimRequest.fromJson(Map<String, dynamic> json) => _$EventRuntimeClaimRequestFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -257,16 +263,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventRuntimeClaimRequest&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.phoneLastFour, phoneLastFour) || other.phoneLastFour == phoneLastFour)&&const DeepCollectionEquality().equals(other._candidateAttendeeIds, _candidateAttendeeIds)&&(identical(other.status, status) || other.status == status)&&(identical(other.reviewedBy, reviewedBy) || other.reviewedBy == reviewedBy)&&(identical(other.reviewReason, reviewReason) || other.reviewReason == reviewReason)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.reviewedAt, reviewedAt) || other.reviewedAt == reviewedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventRuntimeClaimRequest&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.phoneLastFour, phoneLastFour) || other.phoneLastFour == phoneLastFour)&&const DeepCollectionEquality().equals(other.candidateAttendeeIds, _candidateAttendeeIds)&&(identical(other.status, status) || other.status == status)&&(identical(other.reviewedBy, reviewedBy) || other.reviewedBy == reviewedBy)&&(identical(other.reviewReason, reviewReason) || other.reviewReason == reviewReason)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.reviewedAt, reviewedAt) || other.reviewedAt == reviewedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,uid,displayName,phoneLastFour,const DeepCollectionEquality().hash(_candidateAttendeeIds),status,reviewedBy,reviewReason,createdAt,updatedAt,reviewedAt);
+int get hashCode {
+    return Object.hash(runtimeType,id,eventId,organizerId,uid,displayName,phoneLastFour,const DeepCollectionEquality().hash(_candidateAttendeeIds),status,reviewedBy,reviewReason,createdAt,updatedAt,reviewedAt);
+}
 
 @override
 String toString() {
-  return 'EventRuntimeClaimRequest(id: $id, eventId: $eventId, organizerId: $organizerId, uid: $uid, displayName: $displayName, phoneLastFour: $phoneLastFour, candidateAttendeeIds: $candidateAttendeeIds, status: $status, reviewedBy: $reviewedBy, reviewReason: $reviewReason, createdAt: $createdAt, updatedAt: $updatedAt, reviewedAt: $reviewedAt)';
+    return 'EventRuntimeClaimRequest(id: $id, eventId: $eventId, organizerId: $organizerId, uid: $uid, displayName: $displayName, phoneLastFour: $phoneLastFour, candidateAttendeeIds: $candidateAttendeeIds, status: $status, reviewedBy: $reviewedBy, reviewReason: $reviewReason, createdAt: $createdAt, updatedAt: $updatedAt, reviewedAt: $reviewedAt)';
 }
 
 

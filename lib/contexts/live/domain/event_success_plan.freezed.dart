@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'event_success_plan.dart';
@@ -9,6 +9,7 @@ part of 'event_success_plan.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -35,16 +36,21 @@ $EventSuccessPlanCopyWith<EventSuccessPlan> get copyWith => _$EventSuccessPlanCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.layoutId, layoutId) || other.layoutId == layoutId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other.selectedModuleIds, selectedModuleIds)&&(identical(other.targetAttendeeCount, targetAttendeeCount) || other.targetAttendeeCount == targetAttendeeCount)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.conversationGraphConsentMode, conversationGraphConsentMode) || other.conversationGraphConsentMode == conversationGraphConsentMode)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&const DeepCollectionEquality().equals(other.stepOverrides, stepOverrides)&&(identical(other.stepStartedAtMs, stepStartedAtMs) || other.stepStartedAtMs == stepStartedAtMs)&&(identical(other.pausedAtMs, pausedAtMs) || other.pausedAtMs == pausedAtMs)&&const DeepCollectionEquality().equals(other.crawlStopChanges, crawlStopChanges)&&(identical(other.liveControlRevision, liveControlRevision) || other.liveControlRevision == liveControlRevision)&&(identical(other.assignmentDraftRevision, assignmentDraftRevision) || other.assignmentDraftRevision == assignmentDraftRevision)&&(identical(other.publishedRotationRoundIndex, publishedRotationRoundIndex) || other.publishedRotationRoundIndex == publishedRotationRoundIndex)&&(identical(other.publishedRevealRoundIndex, publishedRevealRoundIndex) || other.publishedRevealRoundIndex == publishedRevealRoundIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.revealStatus, revealStatus) || other.revealStatus == revealStatus)&&(identical(other.activeRevealRoundIndex, activeRevealRoundIndex) || other.activeRevealRoundIndex == activeRevealRoundIndex)&&(identical(other.revealStartedAt, revealStartedAt) || other.revealStartedAt == revealStartedAt)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.frozenAt, frozenAt) || other.frozenAt == frozenAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
+  final _this = this as EventSuccessPlan;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessPlan&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.eventId, _this.eventId) || other.eventId == _this.eventId)&&(identical(other.organizerId, _this.organizerId) || other.organizerId == _this.organizerId)&&(identical(other.layoutId, _this.layoutId) || other.layoutId == _this.layoutId)&&(identical(other.playbookId, _this.playbookId) || other.playbookId == _this.playbookId)&&const DeepCollectionEquality().equals(other.selectedModuleIds, _this.selectedModuleIds)&&(identical(other.targetAttendeeCount, _this.targetAttendeeCount) || other.targetAttendeeCount == _this.targetAttendeeCount)&&(identical(other.structureConfig, _this.structureConfig) || other.structureConfig == _this.structureConfig)&&(identical(other.hostGoal, _this.hostGoal) || other.hostGoal == _this.hostGoal)&&(identical(other.wingmanRequestsEnabled, _this.wingmanRequestsEnabled) || other.wingmanRequestsEnabled == _this.wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, _this.contextualOpenersEnabled) || other.contextualOpenersEnabled == _this.contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, _this.compatibilityAffectsRanking) || other.compatibilityAffectsRanking == _this.compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, _this.questionnaireConfig) || other.questionnaireConfig == _this.questionnaireConfig)&&(identical(other.conversationGraphConsentMode, _this.conversationGraphConsentMode) || other.conversationGraphConsentMode == _this.conversationGraphConsentMode)&&(identical(other.activeStepIndex, _this.activeStepIndex) || other.activeStepIndex == _this.activeStepIndex)&&const DeepCollectionEquality().equals(other.stepOverrides, _this.stepOverrides)&&(identical(other.stepStartedAtMs, _this.stepStartedAtMs) || other.stepStartedAtMs == _this.stepStartedAtMs)&&(identical(other.pausedAtMs, _this.pausedAtMs) || other.pausedAtMs == _this.pausedAtMs)&&const DeepCollectionEquality().equals(other.crawlStopChanges, _this.crawlStopChanges)&&(identical(other.liveControlRevision, _this.liveControlRevision) || other.liveControlRevision == _this.liveControlRevision)&&(identical(other.assignmentDraftRevision, _this.assignmentDraftRevision) || other.assignmentDraftRevision == _this.assignmentDraftRevision)&&(identical(other.publishedRotationRoundIndex, _this.publishedRotationRoundIndex) || other.publishedRotationRoundIndex == _this.publishedRotationRoundIndex)&&(identical(other.publishedRevealRoundIndex, _this.publishedRevealRoundIndex) || other.publishedRevealRoundIndex == _this.publishedRevealRoundIndex)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.revealStatus, _this.revealStatus) || other.revealStatus == _this.revealStatus)&&(identical(other.activeRevealRoundIndex, _this.activeRevealRoundIndex) || other.activeRevealRoundIndex == _this.activeRevealRoundIndex)&&(identical(other.revealStartedAt, _this.revealStartedAt) || other.revealStartedAt == _this.revealStartedAt)&&(identical(other.attendeePrompt, _this.attendeePrompt) || other.attendeePrompt == _this.attendeePrompt)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt)&&(identical(other.frozenAt, _this.frozenAt) || other.frozenAt == _this.frozenAt)&&(identical(other.completedAt, _this.completedAt) || other.completedAt == _this.completedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,eventId,organizerId,layoutId,playbookId,const DeepCollectionEquality().hash(selectedModuleIds),targetAttendeeCount,structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,conversationGraphConsentMode,activeStepIndex,const DeepCollectionEquality().hash(stepOverrides),stepStartedAtMs,pausedAtMs,const DeepCollectionEquality().hash(crawlStopChanges),liveControlRevision,assignmentDraftRevision,publishedRotationRoundIndex,publishedRevealRoundIndex,status,revealStatus,activeRevealRoundIndex,revealStartedAt,attendeePrompt,createdAt,updatedAt,frozenAt,completedAt]);
+int get hashCode {
+  final _this = this as EventSuccessPlan;
+  return Object.hashAll([runtimeType,_this.id,_this.eventId,_this.organizerId,_this.layoutId,_this.playbookId,const DeepCollectionEquality().hash(_this.selectedModuleIds),_this.targetAttendeeCount,_this.structureConfig,_this.hostGoal,_this.wingmanRequestsEnabled,_this.contextualOpenersEnabled,_this.compatibilityAffectsRanking,_this.questionnaireConfig,_this.conversationGraphConsentMode,_this.activeStepIndex,const DeepCollectionEquality().hash(_this.stepOverrides),_this.stepStartedAtMs,_this.pausedAtMs,const DeepCollectionEquality().hash(_this.crawlStopChanges),_this.liveControlRevision,_this.assignmentDraftRevision,_this.publishedRotationRoundIndex,_this.publishedRevealRoundIndex,_this.status,_this.revealStatus,_this.activeRevealRoundIndex,_this.revealStartedAt,_this.attendeePrompt,_this.createdAt,_this.updatedAt,_this.frozenAt,_this.completedAt]);
+}
 
 @override
 String toString() {
-  return 'EventSuccessPlan(id: $id, eventId: $eventId, organizerId: $organizerId, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, conversationGraphConsentMode: $conversationGraphConsentMode, activeStepIndex: $activeStepIndex, stepOverrides: $stepOverrides, stepStartedAtMs: $stepStartedAtMs, pausedAtMs: $pausedAtMs, crawlStopChanges: $crawlStopChanges, liveControlRevision: $liveControlRevision, assignmentDraftRevision: $assignmentDraftRevision, publishedRotationRoundIndex: $publishedRotationRoundIndex, publishedRevealRoundIndex: $publishedRevealRoundIndex, status: $status, revealStatus: $revealStatus, activeRevealRoundIndex: $activeRevealRoundIndex, revealStartedAt: $revealStartedAt, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
+  final _this = this as EventSuccessPlan;
+  return 'EventSuccessPlan(id: ${_this.id}, eventId: ${_this.eventId}, organizerId: ${_this.organizerId}, layoutId: ${_this.layoutId}, playbookId: ${_this.playbookId}, selectedModuleIds: ${_this.selectedModuleIds}, targetAttendeeCount: ${_this.targetAttendeeCount}, structureConfig: ${_this.structureConfig}, hostGoal: ${_this.hostGoal}, wingmanRequestsEnabled: ${_this.wingmanRequestsEnabled}, contextualOpenersEnabled: ${_this.contextualOpenersEnabled}, compatibilityAffectsRanking: ${_this.compatibilityAffectsRanking}, questionnaireConfig: ${_this.questionnaireConfig}, conversationGraphConsentMode: ${_this.conversationGraphConsentMode}, activeStepIndex: ${_this.activeStepIndex}, stepOverrides: ${_this.stepOverrides}, stepStartedAtMs: ${_this.stepStartedAtMs}, pausedAtMs: ${_this.pausedAtMs}, crawlStopChanges: ${_this.crawlStopChanges}, liveControlRevision: ${_this.liveControlRevision}, assignmentDraftRevision: ${_this.assignmentDraftRevision}, publishedRotationRoundIndex: ${_this.publishedRotationRoundIndex}, publishedRevealRoundIndex: ${_this.publishedRevealRoundIndex}, status: ${_this.status}, revealStatus: ${_this.revealStatus}, activeRevealRoundIndex: ${_this.activeRevealRoundIndex}, revealStartedAt: ${_this.revealStartedAt}, attendeePrompt: ${_this.attendeePrompt}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt}, frozenAt: ${_this.frozenAt}, completedAt: ${_this.completedAt})';
 }
 
 
@@ -73,7 +79,7 @@ class _$EventSuccessPlanCopyWithImpl<$Res>
 /// Create a copy of EventSuccessPlan
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? organizerId = null,Object? layoutId = freezed,Object? playbookId = null,Object? selectedModuleIds = null,Object? targetAttendeeCount = null,Object? structureConfig = null,Object? hostGoal = null,Object? wingmanRequestsEnabled = null,Object? contextualOpenersEnabled = null,Object? compatibilityAffectsRanking = null,Object? questionnaireConfig = null,Object? conversationGraphConsentMode = null,Object? activeStepIndex = null,Object? stepOverrides = freezed,Object? stepStartedAtMs = freezed,Object? pausedAtMs = freezed,Object? crawlStopChanges = freezed,Object? liveControlRevision = null,Object? assignmentDraftRevision = null,Object? publishedRotationRoundIndex = null,Object? publishedRevealRoundIndex = null,Object? status = null,Object? revealStatus = null,Object? activeRevealRoundIndex = null,Object? revealStartedAt = freezed,Object? attendeePrompt = freezed,Object? createdAt = null,Object? updatedAt = null,Object? frozenAt = freezed,Object? completedAt = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(EventSuccessPlan(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
 as String,organizerId: null == organizerId ? _self.organizerId : organizerId // ignore: cast_nullable_to_non_nullable
@@ -247,7 +253,7 @@ return $default(_that.id,_that.eventId,_that.organizerId,_that.layoutId,_that.pl
 @JsonSerializable()
 
 class _EventSuccessPlan extends EventSuccessPlan {
-  const _EventSuccessPlan({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.organizerId, this.layoutId, required this.playbookId, required final  List<String> selectedModuleIds, required this.targetAttendeeCount, this.structureConfig = const EventSuccessStructureConfig.legacyDefault(), required this.hostGoal, this.wingmanRequestsEnabled = true, this.contextualOpenersEnabled = true, this.compatibilityAffectsRanking = false, this.questionnaireConfig = const EventSuccessQuestionnaireConfig.defaultTemplate(), this.conversationGraphConsentMode = EventSuccessConversationGraphConsentMode.optIn, this.activeStepIndex = 0, final  List<EventSuccessPlanStep>? stepOverrides, this.stepStartedAtMs, this.pausedAtMs, final  List<EventSuccessCrawlStopChange>? crawlStopChanges, this.liveControlRevision = 0, this.assignmentDraftRevision = 0, this.publishedRotationRoundIndex = -1, this.publishedRevealRoundIndex = -1, this.status = EventSuccessPlanStatus.setup, this.revealStatus = EventSuccessRevealStatus.idle, this.activeRevealRoundIndex = 0, @NullableTimestampConverter() this.revealStartedAt, this.attendeePrompt, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.frozenAt, @NullableTimestampConverter() this.completedAt}): _selectedModuleIds = selectedModuleIds,_stepOverrides = stepOverrides,_crawlStopChanges = crawlStopChanges,super._();
+  const _EventSuccessPlan({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.organizerId, this.layoutId, required this.playbookId, required  List<String> selectedModuleIds, required this.targetAttendeeCount, this.structureConfig = const EventSuccessStructureConfig.legacyDefault(), required this.hostGoal, this.wingmanRequestsEnabled = true, this.contextualOpenersEnabled = true, this.compatibilityAffectsRanking = false, this.questionnaireConfig = const EventSuccessQuestionnaireConfig.defaultTemplate(), this.conversationGraphConsentMode = EventSuccessConversationGraphConsentMode.optIn, this.activeStepIndex = 0,  List<EventSuccessPlanStep>? stepOverrides, this.stepStartedAtMs, this.pausedAtMs,  List<EventSuccessCrawlStopChange>? crawlStopChanges, this.liveControlRevision = 0, this.assignmentDraftRevision = 0, this.publishedRotationRoundIndex = -1, this.publishedRevealRoundIndex = -1, this.status = EventSuccessPlanStatus.setup, this.revealStatus = EventSuccessRevealStatus.idle, this.activeRevealRoundIndex = 0, @NullableTimestampConverter() this.revealStartedAt, this.attendeePrompt, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.frozenAt, @NullableTimestampConverter() this.completedAt}): _selectedModuleIds = selectedModuleIds,_stepOverrides = stepOverrides,_crawlStopChanges = crawlStopChanges,super._();
   factory _EventSuccessPlan.fromJson(Map<String, dynamic> json) => _$EventSuccessPlanFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -328,16 +334,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.layoutId, layoutId) || other.layoutId == layoutId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other._selectedModuleIds, _selectedModuleIds)&&(identical(other.targetAttendeeCount, targetAttendeeCount) || other.targetAttendeeCount == targetAttendeeCount)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.conversationGraphConsentMode, conversationGraphConsentMode) || other.conversationGraphConsentMode == conversationGraphConsentMode)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&const DeepCollectionEquality().equals(other._stepOverrides, _stepOverrides)&&(identical(other.stepStartedAtMs, stepStartedAtMs) || other.stepStartedAtMs == stepStartedAtMs)&&(identical(other.pausedAtMs, pausedAtMs) || other.pausedAtMs == pausedAtMs)&&const DeepCollectionEquality().equals(other._crawlStopChanges, _crawlStopChanges)&&(identical(other.liveControlRevision, liveControlRevision) || other.liveControlRevision == liveControlRevision)&&(identical(other.assignmentDraftRevision, assignmentDraftRevision) || other.assignmentDraftRevision == assignmentDraftRevision)&&(identical(other.publishedRotationRoundIndex, publishedRotationRoundIndex) || other.publishedRotationRoundIndex == publishedRotationRoundIndex)&&(identical(other.publishedRevealRoundIndex, publishedRevealRoundIndex) || other.publishedRevealRoundIndex == publishedRevealRoundIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.revealStatus, revealStatus) || other.revealStatus == revealStatus)&&(identical(other.activeRevealRoundIndex, activeRevealRoundIndex) || other.activeRevealRoundIndex == activeRevealRoundIndex)&&(identical(other.revealStartedAt, revealStartedAt) || other.revealStartedAt == revealStartedAt)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.frozenAt, frozenAt) || other.frozenAt == frozenAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.layoutId, layoutId) || other.layoutId == layoutId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other.selectedModuleIds, _selectedModuleIds)&&(identical(other.targetAttendeeCount, targetAttendeeCount) || other.targetAttendeeCount == targetAttendeeCount)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.conversationGraphConsentMode, conversationGraphConsentMode) || other.conversationGraphConsentMode == conversationGraphConsentMode)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&const DeepCollectionEquality().equals(other.stepOverrides, _stepOverrides)&&(identical(other.stepStartedAtMs, stepStartedAtMs) || other.stepStartedAtMs == stepStartedAtMs)&&(identical(other.pausedAtMs, pausedAtMs) || other.pausedAtMs == pausedAtMs)&&const DeepCollectionEquality().equals(other.crawlStopChanges, _crawlStopChanges)&&(identical(other.liveControlRevision, liveControlRevision) || other.liveControlRevision == liveControlRevision)&&(identical(other.assignmentDraftRevision, assignmentDraftRevision) || other.assignmentDraftRevision == assignmentDraftRevision)&&(identical(other.publishedRotationRoundIndex, publishedRotationRoundIndex) || other.publishedRotationRoundIndex == publishedRotationRoundIndex)&&(identical(other.publishedRevealRoundIndex, publishedRevealRoundIndex) || other.publishedRevealRoundIndex == publishedRevealRoundIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.revealStatus, revealStatus) || other.revealStatus == revealStatus)&&(identical(other.activeRevealRoundIndex, activeRevealRoundIndex) || other.activeRevealRoundIndex == activeRevealRoundIndex)&&(identical(other.revealStartedAt, revealStartedAt) || other.revealStartedAt == revealStartedAt)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.frozenAt, frozenAt) || other.frozenAt == frozenAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,eventId,organizerId,layoutId,playbookId,const DeepCollectionEquality().hash(_selectedModuleIds),targetAttendeeCount,structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,conversationGraphConsentMode,activeStepIndex,const DeepCollectionEquality().hash(_stepOverrides),stepStartedAtMs,pausedAtMs,const DeepCollectionEquality().hash(_crawlStopChanges),liveControlRevision,assignmentDraftRevision,publishedRotationRoundIndex,publishedRevealRoundIndex,status,revealStatus,activeRevealRoundIndex,revealStartedAt,attendeePrompt,createdAt,updatedAt,frozenAt,completedAt]);
+int get hashCode {
+    return Object.hashAll([runtimeType,id,eventId,organizerId,layoutId,playbookId,const DeepCollectionEquality().hash(_selectedModuleIds),targetAttendeeCount,structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,conversationGraphConsentMode,activeStepIndex,const DeepCollectionEquality().hash(_stepOverrides),stepStartedAtMs,pausedAtMs,const DeepCollectionEquality().hash(_crawlStopChanges),liveControlRevision,assignmentDraftRevision,publishedRotationRoundIndex,publishedRevealRoundIndex,status,revealStatus,activeRevealRoundIndex,revealStartedAt,attendeePrompt,createdAt,updatedAt,frozenAt,completedAt]);
+}
 
 @override
 String toString() {
-  return 'EventSuccessPlan(id: $id, eventId: $eventId, organizerId: $organizerId, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, conversationGraphConsentMode: $conversationGraphConsentMode, activeStepIndex: $activeStepIndex, stepOverrides: $stepOverrides, stepStartedAtMs: $stepStartedAtMs, pausedAtMs: $pausedAtMs, crawlStopChanges: $crawlStopChanges, liveControlRevision: $liveControlRevision, assignmentDraftRevision: $assignmentDraftRevision, publishedRotationRoundIndex: $publishedRotationRoundIndex, publishedRevealRoundIndex: $publishedRevealRoundIndex, status: $status, revealStatus: $revealStatus, activeRevealRoundIndex: $activeRevealRoundIndex, revealStartedAt: $revealStartedAt, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
+    return 'EventSuccessPlan(id: $id, eventId: $eventId, organizerId: $organizerId, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, conversationGraphConsentMode: $conversationGraphConsentMode, activeStepIndex: $activeStepIndex, stepOverrides: $stepOverrides, stepStartedAtMs: $stepStartedAtMs, pausedAtMs: $pausedAtMs, crawlStopChanges: $crawlStopChanges, liveControlRevision: $liveControlRevision, assignmentDraftRevision: $assignmentDraftRevision, publishedRotationRoundIndex: $publishedRotationRoundIndex, publishedRevealRoundIndex: $publishedRevealRoundIndex, status: $status, revealStatus: $revealStatus, activeRevealRoundIndex: $activeRevealRoundIndex, revealStartedAt: $revealStartedAt, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
 }
 
 
@@ -423,16 +431,21 @@ $EventSuccessCrawlStopChangeCopyWith<EventSuccessCrawlStopChange> get copyWith =
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessCrawlStopChange&&(identical(other.stopId, stopId) || other.stopId == stopId)&&(identical(other.title, title) || other.title == title)&&(identical(other.address, address) || other.address == address)&&(identical(other.changedAtMs, changedAtMs) || other.changedAtMs == changedAtMs));
+  final _this = this as EventSuccessCrawlStopChange;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessCrawlStopChange&&(identical(other.stopId, _this.stopId) || other.stopId == _this.stopId)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.address, _this.address) || other.address == _this.address)&&(identical(other.changedAtMs, _this.changedAtMs) || other.changedAtMs == _this.changedAtMs));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,stopId,title,address,changedAtMs);
+int get hashCode {
+  final _this = this as EventSuccessCrawlStopChange;
+  return Object.hash(runtimeType,_this.stopId,_this.title,_this.address,_this.changedAtMs);
+}
 
 @override
 String toString() {
-  return 'EventSuccessCrawlStopChange(stopId: $stopId, title: $title, address: $address, changedAtMs: $changedAtMs)';
+  final _this = this as EventSuccessCrawlStopChange;
+  return 'EventSuccessCrawlStopChange(stopId: ${_this.stopId}, title: ${_this.title}, address: ${_this.address}, changedAtMs: ${_this.changedAtMs})';
 }
 
 
@@ -461,7 +474,7 @@ class _$EventSuccessCrawlStopChangeCopyWithImpl<$Res>
 /// Create a copy of EventSuccessCrawlStopChange
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? stopId = null,Object? title = null,Object? address = freezed,Object? changedAtMs = null,}) {
-  return _then(_self.copyWith(
+  return _then(EventSuccessCrawlStopChange(
 stopId: null == stopId ? _self.stopId : stopId // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
@@ -628,16 +641,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessCrawlStopChange&&(identical(other.stopId, stopId) || other.stopId == stopId)&&(identical(other.title, title) || other.title == title)&&(identical(other.address, address) || other.address == address)&&(identical(other.changedAtMs, changedAtMs) || other.changedAtMs == changedAtMs));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessCrawlStopChange&&(identical(other.stopId, stopId) || other.stopId == stopId)&&(identical(other.title, title) || other.title == title)&&(identical(other.address, address) || other.address == address)&&(identical(other.changedAtMs, changedAtMs) || other.changedAtMs == changedAtMs));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,stopId,title,address,changedAtMs);
+int get hashCode {
+    return Object.hash(runtimeType,stopId,title,address,changedAtMs);
+}
 
 @override
 String toString() {
-  return 'EventSuccessCrawlStopChange(stopId: $stopId, title: $title, address: $address, changedAtMs: $changedAtMs)';
+    return 'EventSuccessCrawlStopChange(stopId: $stopId, title: $title, address: $address, changedAtMs: $changedAtMs)';
 }
 
 
@@ -695,16 +710,21 @@ $EventSuccessPlanStepCopyWith<EventSuccessPlanStep> get copyWith => _$EventSucce
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessPlanStep&&(identical(other.stepId, stepId) || other.stepId == stepId)&&(identical(other.title, title) || other.title == title)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.hostInstruction, hostInstruction) || other.hostInstruction == hostInstruction)&&(identical(other.attendeeExperience, attendeeExperience) || other.attendeeExperience == attendeeExperience)&&(identical(other.stage, stage) || other.stage == stage)&&const DeepCollectionEquality().equals(other.moduleIds, moduleIds));
+  final _this = this as EventSuccessPlanStep;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessPlanStep&&(identical(other.stepId, _this.stepId) || other.stepId == _this.stepId)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.durationMinutes, _this.durationMinutes) || other.durationMinutes == _this.durationMinutes)&&(identical(other.hostInstruction, _this.hostInstruction) || other.hostInstruction == _this.hostInstruction)&&(identical(other.attendeeExperience, _this.attendeeExperience) || other.attendeeExperience == _this.attendeeExperience)&&(identical(other.stage, _this.stage) || other.stage == _this.stage)&&const DeepCollectionEquality().equals(other.moduleIds, _this.moduleIds));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,stepId,title,durationMinutes,hostInstruction,attendeeExperience,stage,const DeepCollectionEquality().hash(moduleIds));
+int get hashCode {
+  final _this = this as EventSuccessPlanStep;
+  return Object.hash(runtimeType,_this.stepId,_this.title,_this.durationMinutes,_this.hostInstruction,_this.attendeeExperience,_this.stage,const DeepCollectionEquality().hash(_this.moduleIds));
+}
 
 @override
 String toString() {
-  return 'EventSuccessPlanStep(stepId: $stepId, title: $title, durationMinutes: $durationMinutes, hostInstruction: $hostInstruction, attendeeExperience: $attendeeExperience, stage: $stage, moduleIds: $moduleIds)';
+  final _this = this as EventSuccessPlanStep;
+  return 'EventSuccessPlanStep(stepId: ${_this.stepId}, title: ${_this.title}, durationMinutes: ${_this.durationMinutes}, hostInstruction: ${_this.hostInstruction}, attendeeExperience: ${_this.attendeeExperience}, stage: ${_this.stage}, moduleIds: ${_this.moduleIds})';
 }
 
 
@@ -733,7 +753,7 @@ class _$EventSuccessPlanStepCopyWithImpl<$Res>
 /// Create a copy of EventSuccessPlanStep
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? stepId = null,Object? title = null,Object? durationMinutes = null,Object? hostInstruction = null,Object? attendeeExperience = null,Object? stage = null,Object? moduleIds = null,}) {
-  return _then(_self.copyWith(
+  return _then(EventSuccessPlanStep(
 stepId: null == stepId ? _self.stepId : stepId // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,durationMinutes: null == durationMinutes ? _self.durationMinutes : durationMinutes // ignore: cast_nullable_to_non_nullable
@@ -882,7 +902,7 @@ return $default(_that.stepId,_that.title,_that.durationMinutes,_that.hostInstruc
 @JsonSerializable()
 
 class _EventSuccessPlanStep extends EventSuccessPlanStep {
-  const _EventSuccessPlanStep({required this.stepId, required this.title, required this.durationMinutes, this.hostInstruction = '', this.attendeeExperience = '', @JsonKey(unknownEnumValue: EventSuccessStage.activity) this.stage = EventSuccessStage.activity, final  List<String> moduleIds = const <String>[]}): _moduleIds = moduleIds,super._();
+  const _EventSuccessPlanStep({required this.stepId, required this.title, required this.durationMinutes, this.hostInstruction = '', this.attendeeExperience = '', @JsonKey(unknownEnumValue: EventSuccessStage.activity) this.stage = EventSuccessStage.activity,  List<String> moduleIds = const <String>[]}): _moduleIds = moduleIds,super._();
   factory _EventSuccessPlanStep.fromJson(Map<String, dynamic> json) => _$EventSuccessPlanStepFromJson(json);
 
 @override final  String stepId;
@@ -912,16 +932,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessPlanStep&&(identical(other.stepId, stepId) || other.stepId == stepId)&&(identical(other.title, title) || other.title == title)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.hostInstruction, hostInstruction) || other.hostInstruction == hostInstruction)&&(identical(other.attendeeExperience, attendeeExperience) || other.attendeeExperience == attendeeExperience)&&(identical(other.stage, stage) || other.stage == stage)&&const DeepCollectionEquality().equals(other._moduleIds, _moduleIds));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessPlanStep&&(identical(other.stepId, stepId) || other.stepId == stepId)&&(identical(other.title, title) || other.title == title)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.hostInstruction, hostInstruction) || other.hostInstruction == hostInstruction)&&(identical(other.attendeeExperience, attendeeExperience) || other.attendeeExperience == attendeeExperience)&&(identical(other.stage, stage) || other.stage == stage)&&const DeepCollectionEquality().equals(other.moduleIds, _moduleIds));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,stepId,title,durationMinutes,hostInstruction,attendeeExperience,stage,const DeepCollectionEquality().hash(_moduleIds));
+int get hashCode {
+    return Object.hash(runtimeType,stepId,title,durationMinutes,hostInstruction,attendeeExperience,stage,const DeepCollectionEquality().hash(_moduleIds));
+}
 
 @override
 String toString() {
-  return 'EventSuccessPlanStep(stepId: $stepId, title: $title, durationMinutes: $durationMinutes, hostInstruction: $hostInstruction, attendeeExperience: $attendeeExperience, stage: $stage, moduleIds: $moduleIds)';
+    return 'EventSuccessPlanStep(stepId: $stepId, title: $title, durationMinutes: $durationMinutes, hostInstruction: $hostInstruction, attendeeExperience: $attendeeExperience, stage: $stage, moduleIds: $moduleIds)';
 }
 
 
@@ -982,16 +1004,21 @@ $EventSuccessFeedbackCopyWith<EventSuccessFeedback> get copyWith => _$EventSucce
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessFeedback&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.welcomeRating, welcomeRating) || other.welcomeRating == welcomeRating)&&(identical(other.structureRating, structureRating) || other.structureRating == structureRating)&&(identical(other.metNewPeopleCount, metNewPeopleCount) || other.metNewPeopleCount == metNewPeopleCount)&&(identical(other.safetyConcern, safetyConcern) || other.safetyConcern == safetyConcern)&&(identical(other.privateNote, privateNote) || other.privateNote == privateNote)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  final _this = this as EventSuccessFeedback;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessFeedback&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.eventId, _this.eventId) || other.eventId == _this.eventId)&&(identical(other.organizerId, _this.organizerId) || other.organizerId == _this.organizerId)&&(identical(other.uid, _this.uid) || other.uid == _this.uid)&&(identical(other.welcomeRating, _this.welcomeRating) || other.welcomeRating == _this.welcomeRating)&&(identical(other.structureRating, _this.structureRating) || other.structureRating == _this.structureRating)&&(identical(other.metNewPeopleCount, _this.metNewPeopleCount) || other.metNewPeopleCount == _this.metNewPeopleCount)&&(identical(other.safetyConcern, _this.safetyConcern) || other.safetyConcern == _this.safetyConcern)&&(identical(other.privateNote, _this.privateNote) || other.privateNote == _this.privateNote)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,uid,welcomeRating,structureRating,metNewPeopleCount,safetyConcern,privateNote,createdAt,updatedAt);
+int get hashCode {
+  final _this = this as EventSuccessFeedback;
+  return Object.hash(runtimeType,_this.id,_this.eventId,_this.organizerId,_this.uid,_this.welcomeRating,_this.structureRating,_this.metNewPeopleCount,_this.safetyConcern,_this.privateNote,_this.createdAt,_this.updatedAt);
+}
 
 @override
 String toString() {
-  return 'EventSuccessFeedback(id: $id, eventId: $eventId, organizerId: $organizerId, uid: $uid, welcomeRating: $welcomeRating, structureRating: $structureRating, metNewPeopleCount: $metNewPeopleCount, safetyConcern: $safetyConcern, privateNote: $privateNote, createdAt: $createdAt, updatedAt: $updatedAt)';
+  final _this = this as EventSuccessFeedback;
+  return 'EventSuccessFeedback(id: ${_this.id}, eventId: ${_this.eventId}, organizerId: ${_this.organizerId}, uid: ${_this.uid}, welcomeRating: ${_this.welcomeRating}, structureRating: ${_this.structureRating}, metNewPeopleCount: ${_this.metNewPeopleCount}, safetyConcern: ${_this.safetyConcern}, privateNote: ${_this.privateNote}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt})';
 }
 
 
@@ -1020,7 +1047,7 @@ class _$EventSuccessFeedbackCopyWithImpl<$Res>
 /// Create a copy of EventSuccessFeedback
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? organizerId = null,Object? uid = null,Object? welcomeRating = null,Object? structureRating = null,Object? metNewPeopleCount = null,Object? safetyConcern = null,Object? privateNote = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
-  return _then(_self.copyWith(
+  return _then(EventSuccessFeedback(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
 as String,organizerId: null == organizerId ? _self.organizerId : organizerId // ignore: cast_nullable_to_non_nullable
@@ -1201,16 +1228,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessFeedback&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.welcomeRating, welcomeRating) || other.welcomeRating == welcomeRating)&&(identical(other.structureRating, structureRating) || other.structureRating == structureRating)&&(identical(other.metNewPeopleCount, metNewPeopleCount) || other.metNewPeopleCount == metNewPeopleCount)&&(identical(other.safetyConcern, safetyConcern) || other.safetyConcern == safetyConcern)&&(identical(other.privateNote, privateNote) || other.privateNote == privateNote)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessFeedback&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.welcomeRating, welcomeRating) || other.welcomeRating == welcomeRating)&&(identical(other.structureRating, structureRating) || other.structureRating == structureRating)&&(identical(other.metNewPeopleCount, metNewPeopleCount) || other.metNewPeopleCount == metNewPeopleCount)&&(identical(other.safetyConcern, safetyConcern) || other.safetyConcern == safetyConcern)&&(identical(other.privateNote, privateNote) || other.privateNote == privateNote)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,uid,welcomeRating,structureRating,metNewPeopleCount,safetyConcern,privateNote,createdAt,updatedAt);
+int get hashCode {
+    return Object.hash(runtimeType,id,eventId,organizerId,uid,welcomeRating,structureRating,metNewPeopleCount,safetyConcern,privateNote,createdAt,updatedAt);
+}
 
 @override
 String toString() {
-  return 'EventSuccessFeedback(id: $id, eventId: $eventId, organizerId: $organizerId, uid: $uid, welcomeRating: $welcomeRating, structureRating: $structureRating, metNewPeopleCount: $metNewPeopleCount, safetyConcern: $safetyConcern, privateNote: $privateNote, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'EventSuccessFeedback(id: $id, eventId: $eventId, organizerId: $organizerId, uid: $uid, welcomeRating: $welcomeRating, structureRating: $structureRating, metNewPeopleCount: $metNewPeopleCount, safetyConcern: $safetyConcern, privateNote: $privateNote, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 

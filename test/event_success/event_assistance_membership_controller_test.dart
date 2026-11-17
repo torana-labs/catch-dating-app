@@ -167,7 +167,7 @@ void main() {
       final payload = original.command;
       subscription.close();
       await container.pump();
-      expect(container.exists(commandProvider), isTrue);
+      expect(container.read(commandProvider.exists), isTrue);
       await deliver(view: membershipView(state: 'current'));
       final fresh = container.read(query).requireValue;
       container.listen(commandProvider, (_, _) {});

@@ -300,14 +300,14 @@ void retryHostLiveReads(WidgetRef ref, Event event) {
   final cases = eventAssistanceCasesProvider(
     EventAssistanceCaseQuery(organizerId: event.organizerId, eventId: event.id),
   );
-  if (ref.exists(cases)) ref.read(cases.notifier).reload();
+  if (ref.read(cases.exists)) ref.read(cases.notifier).reload();
   final deliveries = eventAssistanceDeliveriesProvider(
     EventAssistanceDeliveryQuery(
       organizerId: event.organizerId,
       eventId: event.id,
     ),
   );
-  if (ref.exists(deliveries)) ref.read(deliveries.notifier).reload();
+  if (ref.read(deliveries.exists)) ref.read(deliveries.notifier).reload();
 }
 
 /// The plan's teams or tables, each with the guests placed in it.

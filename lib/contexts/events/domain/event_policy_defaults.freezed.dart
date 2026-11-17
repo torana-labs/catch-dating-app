@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'event_policy_defaults.dart';
@@ -9,6 +9,7 @@ part of 'event_policy_defaults.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $EventPolicyDefaultsCopyWith<EventPolicyDefaults> get copyWith => _$EventPolicyD
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventPolicyDefaults&&(identical(other.admissionPreset, admissionPreset) || other.admissionPreset == admissionPreset)&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen)&&(identical(other.dynamicPricingEnabled, dynamicPricingEnabled) || other.dynamicPricingEnabled == dynamicPricingEnabled)&&(identical(other.dynamicPricingStepInPaise, dynamicPricingStepInPaise) || other.dynamicPricingStepInPaise == dynamicPricingStepInPaise)&&(identical(other.dynamicPricingMaxInPaise, dynamicPricingMaxInPaise) || other.dynamicPricingMaxInPaise == dynamicPricingMaxInPaise)&&(identical(other.cancellationPolicyId, cancellationPolicyId) || other.cancellationPolicyId == cancellationPolicyId));
+  final _this = this as EventPolicyDefaults;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventPolicyDefaults&&(identical(other.admissionPreset, _this.admissionPreset) || other.admissionPreset == _this.admissionPreset)&&(identical(other.minAge, _this.minAge) || other.minAge == _this.minAge)&&(identical(other.maxAge, _this.maxAge) || other.maxAge == _this.maxAge)&&(identical(other.maxMen, _this.maxMen) || other.maxMen == _this.maxMen)&&(identical(other.maxWomen, _this.maxWomen) || other.maxWomen == _this.maxWomen)&&(identical(other.dynamicPricingEnabled, _this.dynamicPricingEnabled) || other.dynamicPricingEnabled == _this.dynamicPricingEnabled)&&(identical(other.dynamicPricingStepInPaise, _this.dynamicPricingStepInPaise) || other.dynamicPricingStepInPaise == _this.dynamicPricingStepInPaise)&&(identical(other.dynamicPricingMaxInPaise, _this.dynamicPricingMaxInPaise) || other.dynamicPricingMaxInPaise == _this.dynamicPricingMaxInPaise)&&(identical(other.cancellationPolicyId, _this.cancellationPolicyId) || other.cancellationPolicyId == _this.cancellationPolicyId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,admissionPreset,minAge,maxAge,maxMen,maxWomen,dynamicPricingEnabled,dynamicPricingStepInPaise,dynamicPricingMaxInPaise,cancellationPolicyId);
+int get hashCode {
+  final _this = this as EventPolicyDefaults;
+  return Object.hash(runtimeType,_this.admissionPreset,_this.minAge,_this.maxAge,_this.maxMen,_this.maxWomen,_this.dynamicPricingEnabled,_this.dynamicPricingStepInPaise,_this.dynamicPricingMaxInPaise,_this.cancellationPolicyId);
+}
 
 @override
 String toString() {
-  return 'EventPolicyDefaults(admissionPreset: $admissionPreset, minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen, dynamicPricingEnabled: $dynamicPricingEnabled, dynamicPricingStepInPaise: $dynamicPricingStepInPaise, dynamicPricingMaxInPaise: $dynamicPricingMaxInPaise, cancellationPolicyId: $cancellationPolicyId)';
+  final _this = this as EventPolicyDefaults;
+  return 'EventPolicyDefaults(admissionPreset: ${_this.admissionPreset}, minAge: ${_this.minAge}, maxAge: ${_this.maxAge}, maxMen: ${_this.maxMen}, maxWomen: ${_this.maxWomen}, dynamicPricingEnabled: ${_this.dynamicPricingEnabled}, dynamicPricingStepInPaise: ${_this.dynamicPricingStepInPaise}, dynamicPricingMaxInPaise: ${_this.dynamicPricingMaxInPaise}, cancellationPolicyId: ${_this.cancellationPolicyId})';
 }
 
 
@@ -66,7 +72,7 @@ class _$EventPolicyDefaultsCopyWithImpl<$Res>
 /// Create a copy of EventPolicyDefaults
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? admissionPreset = null,Object? minAge = null,Object? maxAge = null,Object? maxMen = freezed,Object? maxWomen = freezed,Object? dynamicPricingEnabled = null,Object? dynamicPricingStepInPaise = freezed,Object? dynamicPricingMaxInPaise = freezed,Object? cancellationPolicyId = null,}) {
-  return _then(_self.copyWith(
+  return _then(EventPolicyDefaults(
 admissionPreset: null == admissionPreset ? _self.admissionPreset : admissionPreset // ignore: cast_nullable_to_non_nullable
 as EventAdmissionDefaultPreset,minAge: null == minAge ? _self.minAge : minAge // ignore: cast_nullable_to_non_nullable
 as int,maxAge: null == maxAge ? _self.maxAge : maxAge // ignore: cast_nullable_to_non_nullable
@@ -243,16 +249,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventPolicyDefaults&&(identical(other.admissionPreset, admissionPreset) || other.admissionPreset == admissionPreset)&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen)&&(identical(other.dynamicPricingEnabled, dynamicPricingEnabled) || other.dynamicPricingEnabled == dynamicPricingEnabled)&&(identical(other.dynamicPricingStepInPaise, dynamicPricingStepInPaise) || other.dynamicPricingStepInPaise == dynamicPricingStepInPaise)&&(identical(other.dynamicPricingMaxInPaise, dynamicPricingMaxInPaise) || other.dynamicPricingMaxInPaise == dynamicPricingMaxInPaise)&&(identical(other.cancellationPolicyId, cancellationPolicyId) || other.cancellationPolicyId == cancellationPolicyId));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventPolicyDefaults&&(identical(other.admissionPreset, admissionPreset) || other.admissionPreset == admissionPreset)&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen)&&(identical(other.dynamicPricingEnabled, dynamicPricingEnabled) || other.dynamicPricingEnabled == dynamicPricingEnabled)&&(identical(other.dynamicPricingStepInPaise, dynamicPricingStepInPaise) || other.dynamicPricingStepInPaise == dynamicPricingStepInPaise)&&(identical(other.dynamicPricingMaxInPaise, dynamicPricingMaxInPaise) || other.dynamicPricingMaxInPaise == dynamicPricingMaxInPaise)&&(identical(other.cancellationPolicyId, cancellationPolicyId) || other.cancellationPolicyId == cancellationPolicyId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,admissionPreset,minAge,maxAge,maxMen,maxWomen,dynamicPricingEnabled,dynamicPricingStepInPaise,dynamicPricingMaxInPaise,cancellationPolicyId);
+int get hashCode {
+    return Object.hash(runtimeType,admissionPreset,minAge,maxAge,maxMen,maxWomen,dynamicPricingEnabled,dynamicPricingStepInPaise,dynamicPricingMaxInPaise,cancellationPolicyId);
+}
 
 @override
 String toString() {
-  return 'EventPolicyDefaults(admissionPreset: $admissionPreset, minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen, dynamicPricingEnabled: $dynamicPricingEnabled, dynamicPricingStepInPaise: $dynamicPricingStepInPaise, dynamicPricingMaxInPaise: $dynamicPricingMaxInPaise, cancellationPolicyId: $cancellationPolicyId)';
+    return 'EventPolicyDefaults(admissionPreset: $admissionPreset, minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen, dynamicPricingEnabled: $dynamicPricingEnabled, dynamicPricingStepInPaise: $dynamicPricingStepInPaise, dynamicPricingMaxInPaise: $dynamicPricingMaxInPaise, cancellationPolicyId: $cancellationPolicyId)';
 }
 
 

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'launch_access_application.dart';
@@ -9,6 +9,7 @@ part of 'launch_access_application.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $LaunchAccessApplicationCopyWith<LaunchAccessApplication> get copyWith => _$Laun
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LaunchAccessApplication&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.applicationVersion, applicationVersion) || other.applicationVersion == applicationVersion)&&(identical(other.status, status) || other.status == status)&&(identical(other.city, city) || other.city == city)&&(identical(other.role, role) || other.role == role)&&const DeepCollectionEquality().equals(other.eventTypes, eventTypes)&&const DeepCollectionEquality().equals(other.availabilityWindows, availabilityWindows)&&(identical(other.wantsToHost, wantsToHost) || other.wantsToHost == wantsToHost)&&(identical(other.inviteCode, inviteCode) || other.inviteCode == inviteCode)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.referralSource, referralSource) || other.referralSource == referralSource)&&(identical(other.whyCatch, whyCatch) || other.whyCatch == whyCatch)&&(identical(other.cohortId, cohortId) || other.cohortId == cohortId)&&(identical(other.hostUserId, hostUserId) || other.hostUserId == hostUserId)&&(identical(other.reviewerUid, reviewerUid) || other.reviewerUid == reviewerUid)&&(identical(other.reviewNote, reviewNote) || other.reviewNote == reviewNote)&&(identical(other.submissionCount, submissionCount) || other.submissionCount == submissionCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.submittedAt, submittedAt) || other.submittedAt == submittedAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.reviewedAt, reviewedAt) || other.reviewedAt == reviewedAt));
+  final _this = this as LaunchAccessApplication;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LaunchAccessApplication&&(identical(other.uid, _this.uid) || other.uid == _this.uid)&&(identical(other.applicationVersion, _this.applicationVersion) || other.applicationVersion == _this.applicationVersion)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.city, _this.city) || other.city == _this.city)&&(identical(other.role, _this.role) || other.role == _this.role)&&const DeepCollectionEquality().equals(other.eventTypes, _this.eventTypes)&&const DeepCollectionEquality().equals(other.availabilityWindows, _this.availabilityWindows)&&(identical(other.wantsToHost, _this.wantsToHost) || other.wantsToHost == _this.wantsToHost)&&(identical(other.inviteCode, _this.inviteCode) || other.inviteCode == _this.inviteCode)&&(identical(other.instagramHandle, _this.instagramHandle) || other.instagramHandle == _this.instagramHandle)&&(identical(other.referralSource, _this.referralSource) || other.referralSource == _this.referralSource)&&(identical(other.whyCatch, _this.whyCatch) || other.whyCatch == _this.whyCatch)&&(identical(other.cohortId, _this.cohortId) || other.cohortId == _this.cohortId)&&(identical(other.hostUserId, _this.hostUserId) || other.hostUserId == _this.hostUserId)&&(identical(other.reviewerUid, _this.reviewerUid) || other.reviewerUid == _this.reviewerUid)&&(identical(other.reviewNote, _this.reviewNote) || other.reviewNote == _this.reviewNote)&&(identical(other.submissionCount, _this.submissionCount) || other.submissionCount == _this.submissionCount)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.submittedAt, _this.submittedAt) || other.submittedAt == _this.submittedAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt)&&(identical(other.reviewedAt, _this.reviewedAt) || other.reviewedAt == _this.reviewedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,uid,applicationVersion,status,city,role,const DeepCollectionEquality().hash(eventTypes),const DeepCollectionEquality().hash(availabilityWindows),wantsToHost,inviteCode,instagramHandle,referralSource,whyCatch,cohortId,hostUserId,reviewerUid,reviewNote,submissionCount,createdAt,submittedAt,updatedAt,reviewedAt]);
+int get hashCode {
+  final _this = this as LaunchAccessApplication;
+  return Object.hashAll([runtimeType,_this.uid,_this.applicationVersion,_this.status,_this.city,_this.role,const DeepCollectionEquality().hash(_this.eventTypes),const DeepCollectionEquality().hash(_this.availabilityWindows),_this.wantsToHost,_this.inviteCode,_this.instagramHandle,_this.referralSource,_this.whyCatch,_this.cohortId,_this.hostUserId,_this.reviewerUid,_this.reviewNote,_this.submissionCount,_this.createdAt,_this.submittedAt,_this.updatedAt,_this.reviewedAt]);
+}
 
 @override
 String toString() {
-  return 'LaunchAccessApplication(uid: $uid, applicationVersion: $applicationVersion, status: $status, city: $city, role: $role, eventTypes: $eventTypes, availabilityWindows: $availabilityWindows, wantsToHost: $wantsToHost, inviteCode: $inviteCode, instagramHandle: $instagramHandle, referralSource: $referralSource, whyCatch: $whyCatch, cohortId: $cohortId, hostUserId: $hostUserId, reviewerUid: $reviewerUid, reviewNote: $reviewNote, submissionCount: $submissionCount, createdAt: $createdAt, submittedAt: $submittedAt, updatedAt: $updatedAt, reviewedAt: $reviewedAt)';
+  final _this = this as LaunchAccessApplication;
+  return 'LaunchAccessApplication(uid: ${_this.uid}, applicationVersion: ${_this.applicationVersion}, status: ${_this.status}, city: ${_this.city}, role: ${_this.role}, eventTypes: ${_this.eventTypes}, availabilityWindows: ${_this.availabilityWindows}, wantsToHost: ${_this.wantsToHost}, inviteCode: ${_this.inviteCode}, instagramHandle: ${_this.instagramHandle}, referralSource: ${_this.referralSource}, whyCatch: ${_this.whyCatch}, cohortId: ${_this.cohortId}, hostUserId: ${_this.hostUserId}, reviewerUid: ${_this.reviewerUid}, reviewNote: ${_this.reviewNote}, submissionCount: ${_this.submissionCount}, createdAt: ${_this.createdAt}, submittedAt: ${_this.submittedAt}, updatedAt: ${_this.updatedAt}, reviewedAt: ${_this.reviewedAt})';
 }
 
 
@@ -66,7 +72,7 @@ class _$LaunchAccessApplicationCopyWithImpl<$Res>
 /// Create a copy of LaunchAccessApplication
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? applicationVersion = null,Object? status = null,Object? city = null,Object? role = null,Object? eventTypes = null,Object? availabilityWindows = null,Object? wantsToHost = null,Object? inviteCode = freezed,Object? instagramHandle = freezed,Object? referralSource = freezed,Object? whyCatch = freezed,Object? cohortId = freezed,Object? hostUserId = freezed,Object? reviewerUid = freezed,Object? reviewNote = freezed,Object? submissionCount = null,Object? createdAt = freezed,Object? submittedAt = freezed,Object? updatedAt = freezed,Object? reviewedAt = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(LaunchAccessApplication(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,applicationVersion: null == applicationVersion ? _self.applicationVersion : applicationVersion // ignore: cast_nullable_to_non_nullable
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
@@ -229,7 +235,7 @@ return $default(_that.uid,_that.applicationVersion,_that.status,_that.city,_that
 @JsonSerializable()
 
 class _LaunchAccessApplication extends LaunchAccessApplication {
-  const _LaunchAccessApplication({@JsonKey(includeToJson: false) this.uid = '', this.applicationVersion = 1, @JsonKey(unknownEnumValue: LaunchAccessApplicationStatus.pending) this.status = LaunchAccessApplicationStatus.pending, required this.city, @JsonKey(unknownEnumValue: LaunchAccessRole.member) this.role = LaunchAccessRole.member, final  List<LaunchAccessEventType> eventTypes = const [], final  List<LaunchAccessAvailabilityWindow> availabilityWindows = const [], this.wantsToHost = false, this.inviteCode, this.instagramHandle, this.referralSource, this.whyCatch, this.cohortId, this.hostUserId, this.reviewerUid, this.reviewNote, this.submissionCount = 1, @NullableTimestampConverter() this.createdAt, @NullableTimestampConverter() this.submittedAt, @NullableTimestampConverter() this.updatedAt, @NullableTimestampConverter() this.reviewedAt}): _eventTypes = eventTypes,_availabilityWindows = availabilityWindows,super._();
+  const _LaunchAccessApplication({@JsonKey(includeToJson: false) this.uid = '', this.applicationVersion = 1, @JsonKey(unknownEnumValue: LaunchAccessApplicationStatus.pending) this.status = LaunchAccessApplicationStatus.pending, required this.city, @JsonKey(unknownEnumValue: LaunchAccessRole.member) this.role = LaunchAccessRole.member,  List<LaunchAccessEventType> eventTypes = const [],  List<LaunchAccessAvailabilityWindow> availabilityWindows = const [], this.wantsToHost = false, this.inviteCode, this.instagramHandle, this.referralSource, this.whyCatch, this.cohortId, this.hostUserId, this.reviewerUid, this.reviewNote, this.submissionCount = 1, @NullableTimestampConverter() this.createdAt, @NullableTimestampConverter() this.submittedAt, @NullableTimestampConverter() this.updatedAt, @NullableTimestampConverter() this.reviewedAt}): _eventTypes = eventTypes,_availabilityWindows = availabilityWindows,super._();
   factory _LaunchAccessApplication.fromJson(Map<String, dynamic> json) => _$LaunchAccessApplicationFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String uid;
@@ -279,16 +285,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LaunchAccessApplication&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.applicationVersion, applicationVersion) || other.applicationVersion == applicationVersion)&&(identical(other.status, status) || other.status == status)&&(identical(other.city, city) || other.city == city)&&(identical(other.role, role) || other.role == role)&&const DeepCollectionEquality().equals(other._eventTypes, _eventTypes)&&const DeepCollectionEquality().equals(other._availabilityWindows, _availabilityWindows)&&(identical(other.wantsToHost, wantsToHost) || other.wantsToHost == wantsToHost)&&(identical(other.inviteCode, inviteCode) || other.inviteCode == inviteCode)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.referralSource, referralSource) || other.referralSource == referralSource)&&(identical(other.whyCatch, whyCatch) || other.whyCatch == whyCatch)&&(identical(other.cohortId, cohortId) || other.cohortId == cohortId)&&(identical(other.hostUserId, hostUserId) || other.hostUserId == hostUserId)&&(identical(other.reviewerUid, reviewerUid) || other.reviewerUid == reviewerUid)&&(identical(other.reviewNote, reviewNote) || other.reviewNote == reviewNote)&&(identical(other.submissionCount, submissionCount) || other.submissionCount == submissionCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.submittedAt, submittedAt) || other.submittedAt == submittedAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.reviewedAt, reviewedAt) || other.reviewedAt == reviewedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LaunchAccessApplication&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.applicationVersion, applicationVersion) || other.applicationVersion == applicationVersion)&&(identical(other.status, status) || other.status == status)&&(identical(other.city, city) || other.city == city)&&(identical(other.role, role) || other.role == role)&&const DeepCollectionEquality().equals(other.eventTypes, _eventTypes)&&const DeepCollectionEquality().equals(other.availabilityWindows, _availabilityWindows)&&(identical(other.wantsToHost, wantsToHost) || other.wantsToHost == wantsToHost)&&(identical(other.inviteCode, inviteCode) || other.inviteCode == inviteCode)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.referralSource, referralSource) || other.referralSource == referralSource)&&(identical(other.whyCatch, whyCatch) || other.whyCatch == whyCatch)&&(identical(other.cohortId, cohortId) || other.cohortId == cohortId)&&(identical(other.hostUserId, hostUserId) || other.hostUserId == hostUserId)&&(identical(other.reviewerUid, reviewerUid) || other.reviewerUid == reviewerUid)&&(identical(other.reviewNote, reviewNote) || other.reviewNote == reviewNote)&&(identical(other.submissionCount, submissionCount) || other.submissionCount == submissionCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.submittedAt, submittedAt) || other.submittedAt == submittedAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.reviewedAt, reviewedAt) || other.reviewedAt == reviewedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,uid,applicationVersion,status,city,role,const DeepCollectionEquality().hash(_eventTypes),const DeepCollectionEquality().hash(_availabilityWindows),wantsToHost,inviteCode,instagramHandle,referralSource,whyCatch,cohortId,hostUserId,reviewerUid,reviewNote,submissionCount,createdAt,submittedAt,updatedAt,reviewedAt]);
+int get hashCode {
+    return Object.hashAll([runtimeType,uid,applicationVersion,status,city,role,const DeepCollectionEquality().hash(_eventTypes),const DeepCollectionEquality().hash(_availabilityWindows),wantsToHost,inviteCode,instagramHandle,referralSource,whyCatch,cohortId,hostUserId,reviewerUid,reviewNote,submissionCount,createdAt,submittedAt,updatedAt,reviewedAt]);
+}
 
 @override
 String toString() {
-  return 'LaunchAccessApplication(uid: $uid, applicationVersion: $applicationVersion, status: $status, city: $city, role: $role, eventTypes: $eventTypes, availabilityWindows: $availabilityWindows, wantsToHost: $wantsToHost, inviteCode: $inviteCode, instagramHandle: $instagramHandle, referralSource: $referralSource, whyCatch: $whyCatch, cohortId: $cohortId, hostUserId: $hostUserId, reviewerUid: $reviewerUid, reviewNote: $reviewNote, submissionCount: $submissionCount, createdAt: $createdAt, submittedAt: $submittedAt, updatedAt: $updatedAt, reviewedAt: $reviewedAt)';
+    return 'LaunchAccessApplication(uid: $uid, applicationVersion: $applicationVersion, status: $status, city: $city, role: $role, eventTypes: $eventTypes, availabilityWindows: $availabilityWindows, wantsToHost: $wantsToHost, inviteCode: $inviteCode, instagramHandle: $instagramHandle, referralSource: $referralSource, whyCatch: $whyCatch, cohortId: $cohortId, hostUserId: $hostUserId, reviewerUid: $reviewerUid, reviewNote: $reviewNote, submissionCount: $submissionCount, createdAt: $createdAt, submittedAt: $submittedAt, updatedAt: $updatedAt, reviewedAt: $reviewedAt)';
 }
 
 
@@ -360,16 +368,21 @@ $LaunchAccessApplicationDraftCopyWith<LaunchAccessApplicationDraft> get copyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LaunchAccessApplicationDraft&&(identical(other.city, city) || other.city == city)&&(identical(other.role, role) || other.role == role)&&const DeepCollectionEquality().equals(other.eventTypes, eventTypes)&&const DeepCollectionEquality().equals(other.availabilityWindows, availabilityWindows)&&(identical(other.wantsToHost, wantsToHost) || other.wantsToHost == wantsToHost)&&(identical(other.inviteCode, inviteCode) || other.inviteCode == inviteCode)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.referralSource, referralSource) || other.referralSource == referralSource)&&(identical(other.whyCatch, whyCatch) || other.whyCatch == whyCatch));
+  final _this = this as LaunchAccessApplicationDraft;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LaunchAccessApplicationDraft&&(identical(other.city, _this.city) || other.city == _this.city)&&(identical(other.role, _this.role) || other.role == _this.role)&&const DeepCollectionEquality().equals(other.eventTypes, _this.eventTypes)&&const DeepCollectionEquality().equals(other.availabilityWindows, _this.availabilityWindows)&&(identical(other.wantsToHost, _this.wantsToHost) || other.wantsToHost == _this.wantsToHost)&&(identical(other.inviteCode, _this.inviteCode) || other.inviteCode == _this.inviteCode)&&(identical(other.instagramHandle, _this.instagramHandle) || other.instagramHandle == _this.instagramHandle)&&(identical(other.referralSource, _this.referralSource) || other.referralSource == _this.referralSource)&&(identical(other.whyCatch, _this.whyCatch) || other.whyCatch == _this.whyCatch));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,city,role,const DeepCollectionEquality().hash(eventTypes),const DeepCollectionEquality().hash(availabilityWindows),wantsToHost,inviteCode,instagramHandle,referralSource,whyCatch);
+int get hashCode {
+  final _this = this as LaunchAccessApplicationDraft;
+  return Object.hash(runtimeType,_this.city,_this.role,const DeepCollectionEquality().hash(_this.eventTypes),const DeepCollectionEquality().hash(_this.availabilityWindows),_this.wantsToHost,_this.inviteCode,_this.instagramHandle,_this.referralSource,_this.whyCatch);
+}
 
 @override
 String toString() {
-  return 'LaunchAccessApplicationDraft(city: $city, role: $role, eventTypes: $eventTypes, availabilityWindows: $availabilityWindows, wantsToHost: $wantsToHost, inviteCode: $inviteCode, instagramHandle: $instagramHandle, referralSource: $referralSource, whyCatch: $whyCatch)';
+  final _this = this as LaunchAccessApplicationDraft;
+  return 'LaunchAccessApplicationDraft(city: ${_this.city}, role: ${_this.role}, eventTypes: ${_this.eventTypes}, availabilityWindows: ${_this.availabilityWindows}, wantsToHost: ${_this.wantsToHost}, inviteCode: ${_this.inviteCode}, instagramHandle: ${_this.instagramHandle}, referralSource: ${_this.referralSource}, whyCatch: ${_this.whyCatch})';
 }
 
 
@@ -398,7 +411,7 @@ class _$LaunchAccessApplicationDraftCopyWithImpl<$Res>
 /// Create a copy of LaunchAccessApplicationDraft
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? city = null,Object? role = null,Object? eventTypes = null,Object? availabilityWindows = null,Object? wantsToHost = null,Object? inviteCode = null,Object? instagramHandle = null,Object? referralSource = null,Object? whyCatch = null,}) {
-  return _then(_self.copyWith(
+  return _then(LaunchAccessApplicationDraft(
 city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as LaunchAccessRole,eventTypes: null == eventTypes ? _self.eventTypes : eventTypes // ignore: cast_nullable_to_non_nullable
@@ -549,7 +562,7 @@ return $default(_that.city,_that.role,_that.eventTypes,_that.availabilityWindows
 
 
 class _LaunchAccessApplicationDraft extends LaunchAccessApplicationDraft {
-  const _LaunchAccessApplicationDraft({this.city = '', this.role = LaunchAccessRole.member, final  Set<LaunchAccessEventType> eventTypes = const {}, final  Set<LaunchAccessAvailabilityWindow> availabilityWindows = const {}, this.wantsToHost = false, this.inviteCode = '', this.instagramHandle = '', this.referralSource = '', this.whyCatch = ''}): _eventTypes = eventTypes,_availabilityWindows = availabilityWindows,super._();
+  const _LaunchAccessApplicationDraft({this.city = '', this.role = LaunchAccessRole.member,  Set<LaunchAccessEventType> eventTypes = const {},  Set<LaunchAccessAvailabilityWindow> availabilityWindows = const {}, this.wantsToHost = false, this.inviteCode = '', this.instagramHandle = '', this.referralSource = '', this.whyCatch = ''}): _eventTypes = eventTypes,_availabilityWindows = availabilityWindows,super._();
   
 
 @override@JsonKey() final  String city;
@@ -584,16 +597,18 @@ _$LaunchAccessApplicationDraftCopyWith<_LaunchAccessApplicationDraft> get copyWi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LaunchAccessApplicationDraft&&(identical(other.city, city) || other.city == city)&&(identical(other.role, role) || other.role == role)&&const DeepCollectionEquality().equals(other._eventTypes, _eventTypes)&&const DeepCollectionEquality().equals(other._availabilityWindows, _availabilityWindows)&&(identical(other.wantsToHost, wantsToHost) || other.wantsToHost == wantsToHost)&&(identical(other.inviteCode, inviteCode) || other.inviteCode == inviteCode)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.referralSource, referralSource) || other.referralSource == referralSource)&&(identical(other.whyCatch, whyCatch) || other.whyCatch == whyCatch));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LaunchAccessApplicationDraft&&(identical(other.city, city) || other.city == city)&&(identical(other.role, role) || other.role == role)&&const DeepCollectionEquality().equals(other.eventTypes, _eventTypes)&&const DeepCollectionEquality().equals(other.availabilityWindows, _availabilityWindows)&&(identical(other.wantsToHost, wantsToHost) || other.wantsToHost == wantsToHost)&&(identical(other.inviteCode, inviteCode) || other.inviteCode == inviteCode)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.referralSource, referralSource) || other.referralSource == referralSource)&&(identical(other.whyCatch, whyCatch) || other.whyCatch == whyCatch));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,city,role,const DeepCollectionEquality().hash(_eventTypes),const DeepCollectionEquality().hash(_availabilityWindows),wantsToHost,inviteCode,instagramHandle,referralSource,whyCatch);
+int get hashCode {
+    return Object.hash(runtimeType,city,role,const DeepCollectionEquality().hash(_eventTypes),const DeepCollectionEquality().hash(_availabilityWindows),wantsToHost,inviteCode,instagramHandle,referralSource,whyCatch);
+}
 
 @override
 String toString() {
-  return 'LaunchAccessApplicationDraft(city: $city, role: $role, eventTypes: $eventTypes, availabilityWindows: $availabilityWindows, wantsToHost: $wantsToHost, inviteCode: $inviteCode, instagramHandle: $instagramHandle, referralSource: $referralSource, whyCatch: $whyCatch)';
+    return 'LaunchAccessApplicationDraft(city: $city, role: $role, eventTypes: $eventTypes, availabilityWindows: $availabilityWindows, wantsToHost: $wantsToHost, inviteCode: $inviteCode, instagramHandle: $instagramHandle, referralSource: $referralSource, whyCatch: $whyCatch)';
 }
 
 

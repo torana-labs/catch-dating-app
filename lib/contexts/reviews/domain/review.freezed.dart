@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'review.dart';
@@ -9,6 +9,7 @@ part of 'review.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $ReviewCopyWith<Review> get copyWith => _$ReviewCopyWithImpl<Review>(this as Rev
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Review&&(identical(other.id, id) || other.id == id)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.reviewerUserId, reviewerUserId) || other.reviewerUserId == reviewerUserId)&&(identical(other.reviewerName, reviewerName) || other.reviewerName == reviewerName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.source, source) || other.source == source)&&(identical(other.moderationStatus, moderationStatus) || other.moderationStatus == moderationStatus)&&(identical(other.isAnonymous, isAnonymous) || other.isAnonymous == isAnonymous)&&(identical(other.submittedFromPath, submittedFromPath) || other.submittedFromPath == submittedFromPath)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.ownerResponse, ownerResponse) || other.ownerResponse == ownerResponse));
+  final _this = this as Review;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Review&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.organizerId, _this.organizerId) || other.organizerId == _this.organizerId)&&(identical(other.eventId, _this.eventId) || other.eventId == _this.eventId)&&(identical(other.reviewerUserId, _this.reviewerUserId) || other.reviewerUserId == _this.reviewerUserId)&&(identical(other.reviewerName, _this.reviewerName) || other.reviewerName == _this.reviewerName)&&(identical(other.rating, _this.rating) || other.rating == _this.rating)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.verificationStatus, _this.verificationStatus) || other.verificationStatus == _this.verificationStatus)&&(identical(other.source, _this.source) || other.source == _this.source)&&(identical(other.moderationStatus, _this.moderationStatus) || other.moderationStatus == _this.moderationStatus)&&(identical(other.isAnonymous, _this.isAnonymous) || other.isAnonymous == _this.isAnonymous)&&(identical(other.submittedFromPath, _this.submittedFromPath) || other.submittedFromPath == _this.submittedFromPath)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt)&&(identical(other.ownerResponse, _this.ownerResponse) || other.ownerResponse == _this.ownerResponse));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,organizerId,eventId,reviewerUserId,reviewerName,rating,comment,verificationStatus,source,moderationStatus,isAnonymous,submittedFromPath,createdAt,updatedAt,ownerResponse);
+int get hashCode {
+  final _this = this as Review;
+  return Object.hash(runtimeType,_this.id,_this.organizerId,_this.eventId,_this.reviewerUserId,_this.reviewerName,_this.rating,_this.comment,_this.verificationStatus,_this.source,_this.moderationStatus,_this.isAnonymous,_this.submittedFromPath,_this.createdAt,_this.updatedAt,_this.ownerResponse);
+}
 
 @override
 String toString() {
-  return 'Review(id: $id, organizerId: $organizerId, eventId: $eventId, reviewerUserId: $reviewerUserId, reviewerName: $reviewerName, rating: $rating, comment: $comment, verificationStatus: $verificationStatus, source: $source, moderationStatus: $moderationStatus, isAnonymous: $isAnonymous, submittedFromPath: $submittedFromPath, createdAt: $createdAt, updatedAt: $updatedAt, ownerResponse: $ownerResponse)';
+  final _this = this as Review;
+  return 'Review(id: ${_this.id}, organizerId: ${_this.organizerId}, eventId: ${_this.eventId}, reviewerUserId: ${_this.reviewerUserId}, reviewerName: ${_this.reviewerName}, rating: ${_this.rating}, comment: ${_this.comment}, verificationStatus: ${_this.verificationStatus}, source: ${_this.source}, moderationStatus: ${_this.moderationStatus}, isAnonymous: ${_this.isAnonymous}, submittedFromPath: ${_this.submittedFromPath}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt}, ownerResponse: ${_this.ownerResponse})';
 }
 
 
@@ -66,7 +72,7 @@ class _$ReviewCopyWithImpl<$Res>
 /// Create a copy of Review
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? organizerId = null,Object? eventId = freezed,Object? reviewerUserId = freezed,Object? reviewerName = null,Object? rating = null,Object? comment = null,Object? verificationStatus = null,Object? source = null,Object? moderationStatus = null,Object? isAnonymous = null,Object? submittedFromPath = freezed,Object? createdAt = null,Object? updatedAt = freezed,Object? ownerResponse = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(Review(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,organizerId: null == organizerId ? _self.organizerId : organizerId // ignore: cast_nullable_to_non_nullable
 as String,eventId: freezed == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
@@ -267,16 +273,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Review&&(identical(other.id, id) || other.id == id)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.reviewerUserId, reviewerUserId) || other.reviewerUserId == reviewerUserId)&&(identical(other.reviewerName, reviewerName) || other.reviewerName == reviewerName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.source, source) || other.source == source)&&(identical(other.moderationStatus, moderationStatus) || other.moderationStatus == moderationStatus)&&(identical(other.isAnonymous, isAnonymous) || other.isAnonymous == isAnonymous)&&(identical(other.submittedFromPath, submittedFromPath) || other.submittedFromPath == submittedFromPath)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.ownerResponse, ownerResponse) || other.ownerResponse == ownerResponse));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Review&&(identical(other.id, id) || other.id == id)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.reviewerUserId, reviewerUserId) || other.reviewerUserId == reviewerUserId)&&(identical(other.reviewerName, reviewerName) || other.reviewerName == reviewerName)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.verificationStatus, verificationStatus) || other.verificationStatus == verificationStatus)&&(identical(other.source, source) || other.source == source)&&(identical(other.moderationStatus, moderationStatus) || other.moderationStatus == moderationStatus)&&(identical(other.isAnonymous, isAnonymous) || other.isAnonymous == isAnonymous)&&(identical(other.submittedFromPath, submittedFromPath) || other.submittedFromPath == submittedFromPath)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.ownerResponse, ownerResponse) || other.ownerResponse == ownerResponse));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,organizerId,eventId,reviewerUserId,reviewerName,rating,comment,verificationStatus,source,moderationStatus,isAnonymous,submittedFromPath,createdAt,updatedAt,ownerResponse);
+int get hashCode {
+    return Object.hash(runtimeType,id,organizerId,eventId,reviewerUserId,reviewerName,rating,comment,verificationStatus,source,moderationStatus,isAnonymous,submittedFromPath,createdAt,updatedAt,ownerResponse);
+}
 
 @override
 String toString() {
-  return 'Review(id: $id, organizerId: $organizerId, eventId: $eventId, reviewerUserId: $reviewerUserId, reviewerName: $reviewerName, rating: $rating, comment: $comment, verificationStatus: $verificationStatus, source: $source, moderationStatus: $moderationStatus, isAnonymous: $isAnonymous, submittedFromPath: $submittedFromPath, createdAt: $createdAt, updatedAt: $updatedAt, ownerResponse: $ownerResponse)';
+    return 'Review(id: $id, organizerId: $organizerId, eventId: $eventId, reviewerUserId: $reviewerUserId, reviewerName: $reviewerName, rating: $rating, comment: $comment, verificationStatus: $verificationStatus, source: $source, moderationStatus: $moderationStatus, isAnonymous: $isAnonymous, submittedFromPath: $submittedFromPath, createdAt: $createdAt, updatedAt: $updatedAt, ownerResponse: $ownerResponse)';
 }
 
 
@@ -357,16 +365,21 @@ $ReviewOwnerResponseCopyWith<ReviewOwnerResponse> get copyWith => _$ReviewOwnerR
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReviewOwnerResponse&&(identical(other.hostUserId, hostUserId) || other.hostUserId == hostUserId)&&(identical(other.hostName, hostName) || other.hostName == hostName)&&(identical(other.hostAvatarUrl, hostAvatarUrl) || other.hostAvatarUrl == hostAvatarUrl)&&(identical(other.message, message) || other.message == message)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  final _this = this as ReviewOwnerResponse;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReviewOwnerResponse&&(identical(other.hostUserId, _this.hostUserId) || other.hostUserId == _this.hostUserId)&&(identical(other.hostName, _this.hostName) || other.hostName == _this.hostName)&&(identical(other.hostAvatarUrl, _this.hostAvatarUrl) || other.hostAvatarUrl == _this.hostAvatarUrl)&&(identical(other.message, _this.message) || other.message == _this.message)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,hostUserId,hostName,hostAvatarUrl,message,createdAt,updatedAt);
+int get hashCode {
+  final _this = this as ReviewOwnerResponse;
+  return Object.hash(runtimeType,_this.hostUserId,_this.hostName,_this.hostAvatarUrl,_this.message,_this.createdAt,_this.updatedAt);
+}
 
 @override
 String toString() {
-  return 'ReviewOwnerResponse(hostUserId: $hostUserId, hostName: $hostName, hostAvatarUrl: $hostAvatarUrl, message: $message, createdAt: $createdAt, updatedAt: $updatedAt)';
+  final _this = this as ReviewOwnerResponse;
+  return 'ReviewOwnerResponse(hostUserId: ${_this.hostUserId}, hostName: ${_this.hostName}, hostAvatarUrl: ${_this.hostAvatarUrl}, message: ${_this.message}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt})';
 }
 
 
@@ -395,7 +408,7 @@ class _$ReviewOwnerResponseCopyWithImpl<$Res>
 /// Create a copy of ReviewOwnerResponse
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? hostUserId = null,Object? hostName = null,Object? hostAvatarUrl = freezed,Object? message = null,Object? createdAt = null,Object? updatedAt = null,}) {
-  return _then(_self.copyWith(
+  return _then(ReviewOwnerResponse(
 hostUserId: null == hostUserId ? _self.hostUserId : hostUserId // ignore: cast_nullable_to_non_nullable
 as String,hostName: null == hostName ? _self.hostName : hostName // ignore: cast_nullable_to_non_nullable
 as String,hostAvatarUrl: freezed == hostAvatarUrl ? _self.hostAvatarUrl : hostAvatarUrl // ignore: cast_nullable_to_non_nullable
@@ -566,16 +579,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReviewOwnerResponse&&(identical(other.hostUserId, hostUserId) || other.hostUserId == hostUserId)&&(identical(other.hostName, hostName) || other.hostName == hostName)&&(identical(other.hostAvatarUrl, hostAvatarUrl) || other.hostAvatarUrl == hostAvatarUrl)&&(identical(other.message, message) || other.message == message)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReviewOwnerResponse&&(identical(other.hostUserId, hostUserId) || other.hostUserId == hostUserId)&&(identical(other.hostName, hostName) || other.hostName == hostName)&&(identical(other.hostAvatarUrl, hostAvatarUrl) || other.hostAvatarUrl == hostAvatarUrl)&&(identical(other.message, message) || other.message == message)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,hostUserId,hostName,hostAvatarUrl,message,createdAt,updatedAt);
+int get hashCode {
+    return Object.hash(runtimeType,hostUserId,hostName,hostAvatarUrl,message,createdAt,updatedAt);
+}
 
 @override
 String toString() {
-  return 'ReviewOwnerResponse(hostUserId: $hostUserId, hostName: $hostName, hostAvatarUrl: $hostAvatarUrl, message: $message, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'ReviewOwnerResponse(hostUserId: $hostUserId, hostName: $hostName, hostAvatarUrl: $hostAvatarUrl, message: $message, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 

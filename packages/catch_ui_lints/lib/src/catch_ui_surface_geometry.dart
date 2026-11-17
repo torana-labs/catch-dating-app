@@ -31,7 +31,6 @@ bool isCatchUiSquareSurface(InstanceCreationExpression node) {
 }
 
 Map<String, Expression> _arguments(InstanceCreationExpression node) => {
-  for (final argument
-      in node.argumentList.arguments.whereType<NamedExpression>())
-    argument.name.label.name: argument.expression,
+  for (final argument in node.argumentList.arguments.whereType<NamedArgument>())
+    argument.name.lexeme: argument.argumentExpression,
 };

@@ -82,7 +82,7 @@ class _EventAssistanceDepartureHistorySheetState
                   .checkpoint!
                   .scope;
               final detail = eventAssistanceCheckpointProvider(scope);
-              if (ref.exists(detail)) ref.read(detail.notifier).reload();
+              if (ref.read(detail.exists)) ref.read(detail.notifier).reload();
               await showCatchBottomSheet<void>(
                 context: context,
                 builder: (_) => EventAssistanceCheckpointSheet(

@@ -244,26 +244,19 @@ Map<String, Object?> collectComponentApi({
 }
 
 Map<String, Object?> _parameter(FormalParameter parameter) {
-  final normal = parameter is DefaultFormalParameter
-      ? parameter.parameter
-      : parameter;
-  final name = normal.name?.lexeme;
-  final kind = switch (normal) {
+  final name = parameter.name?.lexeme;
+  final kind = switch (parameter) {
     FieldFormalParameter() => 'field',
     SuperFormalParameter() => 'super',
     _ => 'value',
   };
-  final String? type = switch (normal) {
-    FieldFormalParameter(:final type, :final parameters) ||
-    SuperFormalParameter(:final type, :final parameters) =>
-      parameters == null
-          ? type?.toSource()
-          : '${type?.toSource() ?? 'dynamic'} Function${parameters.toSource()}',
-    SimpleFormalParameter(:final type) => type?.toSource(),
-    FunctionTypedFormalParameter(:final returnType, :final parameters) =>
-      '${returnType?.toSource() ?? 'dynamic'} Function${parameters.toSource()}',
-    _ => null,
-  };
+  // Function-typed parameters carry their return type in `type` and their
+  // parameter list in the suffix.
+  final declared = parameter.type?.toSource();
+  final suffix = parameter.functionTypedSuffix;
+  final String? type = suffix == null
+      ? declared
+      : '${declared ?? 'dynamic'} Function${suffix.formalParameters.toSource()}';
   return {
     // Named private field formals expose the name without the leading underscore.
     'name':

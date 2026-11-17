@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'event_publication_controller.dart';
@@ -9,6 +9,7 @@ part of 'event_publication_controller.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $EventPublicationStateCopyWith<EventPublicationState> get copyWith => _$EventPub
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventPublicationState&&(identical(other.event, event) || other.event == event)&&(identical(other.pending, pending) || other.pending == pending)&&(identical(other.receipt, receipt) || other.receipt == receipt)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.saving, saving) || other.saving == saving)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable));
+  final _this = this as EventPublicationState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventPublicationState&&(identical(other.event, _this.event) || other.event == _this.event)&&(identical(other.pending, _this.pending) || other.pending == _this.pending)&&(identical(other.receipt, _this.receipt) || other.receipt == _this.receipt)&&const DeepCollectionEquality().equals(other.error, _this.error)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.saving, _this.saving) || other.saving == _this.saving)&&(identical(other.actorAvailable, _this.actorAvailable) || other.actorAvailable == _this.actorAvailable));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,event,pending,receipt,const DeepCollectionEquality().hash(error),loading,saving,actorAvailable);
+int get hashCode {
+  final _this = this as EventPublicationState;
+  return Object.hash(runtimeType,_this.event,_this.pending,_this.receipt,const DeepCollectionEquality().hash(_this.error),_this.loading,_this.saving,_this.actorAvailable);
+}
 
 @override
 String toString() {
-  return 'EventPublicationState(event: $event, pending: $pending, receipt: $receipt, error: $error, loading: $loading, saving: $saving, actorAvailable: $actorAvailable)';
+  final _this = this as EventPublicationState;
+  return 'EventPublicationState(event: ${_this.event}, pending: ${_this.pending}, receipt: ${_this.receipt}, error: ${_this.error}, loading: ${_this.loading}, saving: ${_this.saving}, actorAvailable: ${_this.actorAvailable})';
 }
 
 
@@ -63,7 +69,7 @@ class _$EventPublicationStateCopyWithImpl<$Res>
 /// Create a copy of EventPublicationState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? event = freezed,Object? pending = freezed,Object? receipt = freezed,Object? error = freezed,Object? loading = null,Object? saving = null,Object? actorAvailable = null,}) {
-  return _then(_self.copyWith(
+  return _then(EventPublicationState(
 event: freezed == event ? _self.event : event // ignore: cast_nullable_to_non_nullable
 as PrivateEventBasicSummary?,pending: freezed == pending ? _self.pending : pending // ignore: cast_nullable_to_non_nullable
 as EventPublicationRequest?,receipt: freezed == receipt ? _self.receipt : receipt // ignore: cast_nullable_to_non_nullable
@@ -232,16 +238,18 @@ _$EventPublicationStateCopyWith<_EventPublicationState> get copyWith => __$Event
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventPublicationState&&(identical(other.event, event) || other.event == event)&&(identical(other.pending, pending) || other.pending == pending)&&(identical(other.receipt, receipt) || other.receipt == receipt)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.saving, saving) || other.saving == saving)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventPublicationState&&(identical(other.event, event) || other.event == event)&&(identical(other.pending, pending) || other.pending == pending)&&(identical(other.receipt, receipt) || other.receipt == receipt)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.saving, saving) || other.saving == saving)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,event,pending,receipt,const DeepCollectionEquality().hash(error),loading,saving,actorAvailable);
+int get hashCode {
+    return Object.hash(runtimeType,event,pending,receipt,const DeepCollectionEquality().hash(error),loading,saving,actorAvailable);
+}
 
 @override
 String toString() {
-  return 'EventPublicationState(event: $event, pending: $pending, receipt: $receipt, error: $error, loading: $loading, saving: $saving, actorAvailable: $actorAvailable)';
+    return 'EventPublicationState(event: $event, pending: $pending, receipt: $receipt, error: $error, loading: $loading, saving: $saving, actorAvailable: $actorAvailable)';
 }
 
 

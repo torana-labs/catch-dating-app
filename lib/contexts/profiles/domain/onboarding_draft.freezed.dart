@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'onboarding_draft.dart';
@@ -9,6 +9,7 @@ part of 'onboarding_draft.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $OnboardingDraftCopyWith<OnboardingDraft> get copyWith => _$OnboardingDraftCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingDraft&&(identical(other.step, step) || other.step == step)&&(identical(other.draftVersion, draftVersion) || other.draftVersion == draftVersion)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other.interestedInGenders, interestedInGenders)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&const DeepCollectionEquality().equals(other.profilePrompts, profilePrompts));
+  final _this = this as OnboardingDraft;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingDraft&&(identical(other.step, _this.step) || other.step == _this.step)&&(identical(other.draftVersion, _this.draftVersion) || other.draftVersion == _this.draftVersion)&&(identical(other.firstName, _this.firstName) || other.firstName == _this.firstName)&&(identical(other.lastName, _this.lastName) || other.lastName == _this.lastName)&&(identical(other.dateOfBirth, _this.dateOfBirth) || other.dateOfBirth == _this.dateOfBirth)&&(identical(other.phoneNumber, _this.phoneNumber) || other.phoneNumber == _this.phoneNumber)&&(identical(other.countryCode, _this.countryCode) || other.countryCode == _this.countryCode)&&(identical(other.gender, _this.gender) || other.gender == _this.gender)&&const DeepCollectionEquality().equals(other.interestedInGenders, _this.interestedInGenders)&&(identical(other.instagramHandle, _this.instagramHandle) || other.instagramHandle == _this.instagramHandle)&&const DeepCollectionEquality().equals(other.profilePrompts, _this.profilePrompts));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,step,draftVersion,firstName,lastName,dateOfBirth,phoneNumber,countryCode,gender,const DeepCollectionEquality().hash(interestedInGenders),instagramHandle,const DeepCollectionEquality().hash(profilePrompts));
+int get hashCode {
+  final _this = this as OnboardingDraft;
+  return Object.hash(runtimeType,_this.step,_this.draftVersion,_this.firstName,_this.lastName,_this.dateOfBirth,_this.phoneNumber,_this.countryCode,_this.gender,const DeepCollectionEquality().hash(_this.interestedInGenders),_this.instagramHandle,const DeepCollectionEquality().hash(_this.profilePrompts));
+}
 
 @override
 String toString() {
-  return 'OnboardingDraft(step: $step, draftVersion: $draftVersion, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, phoneNumber: $phoneNumber, countryCode: $countryCode, gender: $gender, interestedInGenders: $interestedInGenders, instagramHandle: $instagramHandle, profilePrompts: $profilePrompts)';
+  final _this = this as OnboardingDraft;
+  return 'OnboardingDraft(step: ${_this.step}, draftVersion: ${_this.draftVersion}, firstName: ${_this.firstName}, lastName: ${_this.lastName}, dateOfBirth: ${_this.dateOfBirth}, phoneNumber: ${_this.phoneNumber}, countryCode: ${_this.countryCode}, gender: ${_this.gender}, interestedInGenders: ${_this.interestedInGenders}, instagramHandle: ${_this.instagramHandle}, profilePrompts: ${_this.profilePrompts})';
 }
 
 
@@ -66,7 +72,7 @@ class _$OnboardingDraftCopyWithImpl<$Res>
 /// Create a copy of OnboardingDraft
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? step = null,Object? draftVersion = null,Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? phoneNumber = null,Object? countryCode = null,Object? gender = freezed,Object? interestedInGenders = null,Object? instagramHandle = freezed,Object? profilePrompts = null,}) {
-  return _then(_self.copyWith(
+  return _then(OnboardingDraft(
 step: null == step ? _self.step : step // ignore: cast_nullable_to_non_nullable
 as int,draftVersion: null == draftVersion ? _self.draftVersion : draftVersion // ignore: cast_nullable_to_non_nullable
 as int,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
@@ -219,7 +225,7 @@ return $default(_that.step,_that.draftVersion,_that.firstName,_that.lastName,_th
 @JsonSerializable()
 
 class _OnboardingDraft extends OnboardingDraft {
-  const _OnboardingDraft({required this.step, this.draftVersion = 0, this.firstName = '', this.lastName = '', @NullableTimestampConverter() this.dateOfBirth, this.phoneNumber = '', this.countryCode = defaultCountryDialCode, this.gender, final  List<Gender> interestedInGenders = const [], this.instagramHandle, final  List<ProfilePromptAnswer> profilePrompts = const []}): _interestedInGenders = interestedInGenders,_profilePrompts = profilePrompts,super._();
+  const _OnboardingDraft({required this.step, this.draftVersion = 0, this.firstName = '', this.lastName = '', @NullableTimestampConverter() this.dateOfBirth, this.phoneNumber = '', this.countryCode = defaultCountryDialCode, this.gender,  List<Gender> interestedInGenders = const [], this.instagramHandle,  List<ProfilePromptAnswer> profilePrompts = const []}): _interestedInGenders = interestedInGenders,_profilePrompts = profilePrompts,super._();
   factory _OnboardingDraft.fromJson(Map<String, dynamic> json) => _$OnboardingDraftFromJson(json);
 
 @override final  int step;
@@ -259,16 +265,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingDraft&&(identical(other.step, step) || other.step == step)&&(identical(other.draftVersion, draftVersion) || other.draftVersion == draftVersion)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other._interestedInGenders, _interestedInGenders)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&const DeepCollectionEquality().equals(other._profilePrompts, _profilePrompts));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingDraft&&(identical(other.step, step) || other.step == step)&&(identical(other.draftVersion, draftVersion) || other.draftVersion == draftVersion)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other.interestedInGenders, _interestedInGenders)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&const DeepCollectionEquality().equals(other.profilePrompts, _profilePrompts));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,step,draftVersion,firstName,lastName,dateOfBirth,phoneNumber,countryCode,gender,const DeepCollectionEquality().hash(_interestedInGenders),instagramHandle,const DeepCollectionEquality().hash(_profilePrompts));
+int get hashCode {
+    return Object.hash(runtimeType,step,draftVersion,firstName,lastName,dateOfBirth,phoneNumber,countryCode,gender,const DeepCollectionEquality().hash(_interestedInGenders),instagramHandle,const DeepCollectionEquality().hash(_profilePrompts));
+}
 
 @override
 String toString() {
-  return 'OnboardingDraft(step: $step, draftVersion: $draftVersion, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, phoneNumber: $phoneNumber, countryCode: $countryCode, gender: $gender, interestedInGenders: $interestedInGenders, instagramHandle: $instagramHandle, profilePrompts: $profilePrompts)';
+    return 'OnboardingDraft(step: $step, draftVersion: $draftVersion, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, phoneNumber: $phoneNumber, countryCode: $countryCode, gender: $gender, interestedInGenders: $interestedInGenders, instagramHandle: $instagramHandle, profilePrompts: $profilePrompts)';
 }
 
 

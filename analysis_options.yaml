@@ -1,7 +1,7 @@
 include: package:flutter_lints/flutter.yaml
 
 plugins:
-  riverpod_lint: 3.1.4
+  riverpod_lint: 3.2.0
   catch_ui_lints:
     path: packages/catch_ui_lints
 

@@ -188,9 +188,8 @@ Map<String, Object?> _reach(String path, String builder) {
 
 Map<String, Expression> _arguments(ArgumentList? arguments) => {
   for (final arg
-      in arguments?.arguments.whereType<NamedExpression>() ??
-          <NamedExpression>[])
-    arg.name.label.name: arg.expression,
+      in arguments?.arguments.whereType<NamedArgument>() ?? <NamedArgument>[])
+    arg.name.lexeme: arg.argumentExpression,
 };
 
 String? _constantString(

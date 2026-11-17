@@ -77,7 +77,7 @@ void main() {
       final change = repository.writes.single.change;
       subscription.close();
       await container.pump();
-      expect(container.exists(owner), isTrue);
+      expect(container.read(owner.exists), isTrue);
       expect(container.read(eventAssistancePendingCasesProvider), {
         review.request.scope,
       });

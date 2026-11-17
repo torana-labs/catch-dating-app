@@ -58,8 +58,8 @@ class _SheetPolicy extends RecursiveAstVisitor<void> {
     final type = target ?? name;
     final recipe = constructor ?? (target == null ? null : name);
     final props = <String, String>{
-      for (final arg in arguments.arguments.whereType<NamedExpression>())
-        arg.name.label.name: arg.expression.toSource(),
+      for (final arg in arguments.arguments.whereType<NamedArgument>())
+        arg.name.lexeme: arg.argumentExpression.toSource(),
     };
     if (type == 'CatchSheet' &&
         RegExp(
@@ -75,8 +75,7 @@ class _SheetPolicy extends RecursiveAstVisitor<void> {
     if (type == 'CatchButton' && recipe != 'sheet') {
       AstNode? ancestor = arguments.parent?.parent;
       while (ancestor != null) {
-        if (ancestor is NamedExpression &&
-            ancestor.name.label.name == 'footer') {
+        if (ancestor is NamedArgument && ancestor.name.lexeme == 'footer') {
           final owner = ancestor.parent?.parent;
           // A contained Sheet's footer pairs a primary with quiet or danger
           // actions of the system Sheet; the role rule is for pushed sheets.

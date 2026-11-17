@@ -34,7 +34,7 @@ class EventAssistanceLiveMovementSection extends ConsumerWidget {
           groupId: id,
         );
         final query = eventAssistanceDepartureProvider(scope);
-        if (ref.exists(query)) ref.read(query.notifier).reload();
+        if (ref.read(query.exists)) ref.read(query.notifier).reload();
         showCatchBottomSheet<void>(
           context: context,
           builder: (_) => EventAssistanceDepartureSheet(
@@ -55,7 +55,7 @@ class EventAssistanceLiveMovementSection extends ConsumerWidget {
         final query = eventAssistanceDepartureHistoryProvider(
           EventAssistanceDepartureHistoryQuery(scope),
         );
-        if (ref.exists(query)) ref.read(query.notifier).reload();
+        if (ref.read(query.exists)) ref.read(query.notifier).reload();
         showCatchBottomSheet<void>(
           context: context,
           builder: (_) => EventAssistanceDepartureHistorySheet(

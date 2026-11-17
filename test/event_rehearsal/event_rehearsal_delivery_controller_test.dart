@@ -139,7 +139,7 @@ void main() {
       final wire = original.toJson();
       subscription.close();
       await container.pump();
-      expect(container.exists(provider), isTrue);
+      expect(container.read(provider.exists), isTrue);
       container.read(query.notifier).reload();
       await container.pump();
       await completeRead(1);
@@ -319,7 +319,7 @@ void main() {
         await fail(0, actions.takeOver());
         subscription.close();
         await container.pump();
-        expect(container.exists(provider), isTrue);
+        expect(container.read(provider.exists), isTrue);
         switch (transition) {
           case 'switchBack':
             await signIn('host-2');
