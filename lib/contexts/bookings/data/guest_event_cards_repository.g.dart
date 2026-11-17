@@ -145,12 +145,18 @@ final class WatchSignedUpEventCardsFamily extends $Family
   String toString() => r'watchSignedUpEventCardsProvider';
 }
 
-/// Events the guest attended, most recent first.
+/// The guest's most recent attended events, newest first. Attendance only
+/// grows, and its readers (the home's catch windows and review prompt, and
+/// Explore's time-of-day signal) use recent events, so the listener reads
+/// one history page instead of every event the guest ever attended.
 
 @ProviderFor(watchAttendedEventCards)
 final watchAttendedEventCardsProvider = WatchAttendedEventCardsFamily._();
 
-/// Events the guest attended, most recent first.
+/// The guest's most recent attended events, newest first. Attendance only
+/// grows, and its readers (the home's catch windows and review prompt, and
+/// Explore's time-of-day signal) use recent events, so the listener reads
+/// one history page instead of every event the guest ever attended.
 
 final class WatchAttendedEventCardsProvider
     extends
@@ -162,7 +168,10 @@ final class WatchAttendedEventCardsProvider
     with
         $FutureModifier<List<GuestEventCard>>,
         $StreamProvider<List<GuestEventCard>> {
-  /// Events the guest attended, most recent first.
+  /// The guest's most recent attended events, newest first. Attendance only
+  /// grows, and its readers (the home's catch windows and review prompt, and
+  /// Explore's time-of-day signal) use recent events, so the listener reads
+  /// one history page instead of every event the guest ever attended.
   WatchAttendedEventCardsProvider._({
     required WatchAttendedEventCardsFamily super.from,
     required String super.argument,
@@ -209,9 +218,12 @@ final class WatchAttendedEventCardsProvider
 }
 
 String _$watchAttendedEventCardsHash() =>
-    r'fb7ecc3056e1eb388692f34cfb732186804fb4df';
+    r'0bf36d7c1589b2b0ca15c0f7975055b44fa55fb3';
 
-/// Events the guest attended, most recent first.
+/// The guest's most recent attended events, newest first. Attendance only
+/// grows, and its readers (the home's catch windows and review prompt, and
+/// Explore's time-of-day signal) use recent events, so the listener reads
+/// one history page instead of every event the guest ever attended.
 
 final class WatchAttendedEventCardsFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<GuestEventCard>>, String> {
@@ -224,7 +236,10 @@ final class WatchAttendedEventCardsFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Events the guest attended, most recent first.
+  /// The guest's most recent attended events, newest first. Attendance only
+  /// grows, and its readers (the home's catch windows and review prompt, and
+  /// Explore's time-of-day signal) use recent events, so the listener reads
+  /// one history page instead of every event the guest ever attended.
 
   WatchAttendedEventCardsProvider call(String uid) =>
       WatchAttendedEventCardsProvider._(argument: uid, from: this);

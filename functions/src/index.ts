@@ -1113,6 +1113,10 @@ export {onHostProviderConnectionViewConnectionChanged,
   "./hostReadModels/providerConnectionViewTriggers";
 export {onHostFormVersionFilterSourceChanged} from
   "./hostReadModels/formVersionFilterTriggers";
+export {onHostRequestViewParticipationWritten, onHostRequestViewEventWritten,
+  onHostRequestViewProfileWritten, onHostRequestViewContactSummaryWritten,
+  onHostRequestViewContactWritten} from
+  "./hostReadModels/requestViewTriggers";
 export {onHostRosterInsightEventChanged, onHostRosterInsightAttendeeChanged,
   onHostRosterInsightEdgeChanged, onHostRosterInsightContactChanged,
   onHostRosterInsightTraitsChanged,
@@ -1144,6 +1148,10 @@ export {onEventApplicationApprovalNotification,
 export {manageWebsiteAccount} from "./profiles/websiteAccount";
 
 export {onHostPilotCheckIn} from "./acquisition/pilotActivation";
+export {
+  onAdConversionGrowthFactsWritten,
+  sendAdConversions,
+} from "./acquisition/adConversions/worker";
 export {
   onOrganizerGrowthOrganizerWritten,
   onOrganizerGrowthClaimRequestCreated,

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/cache/cache_policy.dart';
-import 'package:catch_platform/firebase/initial_load_policy.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -18,18 +17,15 @@ abstract interface class CacheQuery<RequestT> {
 
 /// Data from a Cloud Function read or a one-shot get, with its freshness.
 ///
-/// A view model passes [fetchedAt] and [refreshError] through, so a screen
-/// can say "Updated 4 min ago" or "Couldn't refresh" without knowing the
-/// cache. Whether a background refetch is running is the provider's
+/// A view model passes [fetchedAt] through, so a screen can say "Updated
+/// 4 min ago" without knowing the cache. A failed background refetch is the
+/// provider's own state: Riverpod keeps the previous value beside the error
+/// (`hasValue && hasError`), so the screen keeps this data and can say
+/// "Couldn't refresh, updated 4 min ago". Whether a refetch is running is
 /// `AsyncValue.isRefreshing`.
 @immutable
 final class CachedRead<T> {
-  const CachedRead({
-    required this.data,
-    required this.fetchedAt,
-    this.refreshError,
-    this.refreshStackTrace,
-  });
+  const CachedRead({required this.data, required this.fetchedAt});
 
   /// The last data the read returned.
   final T data;
@@ -37,70 +33,41 @@ final class CachedRead<T> {
   /// When [data] arrived, by the app clock.
   final DateTime fetchedAt;
 
-  /// Why the last background refetch failed; null when it succeeded.
-  final Object? refreshError;
-
-  /// The stack trace of [refreshError].
-  final StackTrace? refreshStackTrace;
-
-  /// Whether the last background refetch failed and [data] is older than it.
-  bool get hasRefreshError => refreshError != null;
-
   /// How old [data] is at [now].
   Duration age(DateTime now) => now.difference(fetchedAt);
-
-  /// This read with its data kept after a failed background refetch.
-  CachedRead<T> withRefreshError(Object error, StackTrace stackTrace) =>
-      CachedRead(
-        data: data,
-        fetchedAt: fetchedAt,
-        refreshError: error,
-        refreshStackTrace: stackTrace,
-      );
 
   @override
   bool operator ==(Object other) =>
       other is CachedRead<T> &&
       other.data == data &&
-      other.fetchedAt == fetchedAt &&
-      other.refreshError == refreshError;
+      other.fetchedAt == fetchedAt;
 
   @override
-  int get hashCode => Object.hash(data, fetchedAt, refreshError);
+  int get hashCode => Object.hash(data, fetchedAt);
 }
 
 /// The one client for Cloud Function reads and one-shot gets.
 ///
-/// It builds the request from the query, bounds the wait with [timeout] and
-/// stamps the result with the app clock. When a background refetch fails it
-/// keeps the previous data and records the failure, so credible data is
-/// never replaced by a full-screen error; a first read still fails.
+/// It builds the request from the query, bounds the wait with the read
+/// class's deadline (its `firstLoad`, or its `refresh` when data is already
+/// showing) and stamps the result with the app clock. A failure, a timeout
+/// included, is rethrown: on a refetch Riverpod keeps the previous data
+/// beside the error, and a first load fails.
 final class CallableReadClient {
-  const CallableReadClient({
-    required this._clock,
-    this.timeout = InitialLoadPolicy.standard,
-  });
+  const CallableReadClient({required this._clock});
 
   final AppClock _clock;
 
-  /// How long one read may take before it fails with a timeout.
-  final Duration timeout;
-
-  /// Reads [query] through [fetch]. [previous] is the read owner's last
-  /// value: null on a first read, which fails on error; otherwise a failure
-  /// keeps it with [CachedRead.refreshError] set.
+  /// Reads [query] through [fetch] within [policy]'s deadline.
   Future<CachedRead<T>> read<RequestT, T>({
+    required CachePolicy policy,
     required CacheQuery<RequestT> query,
     required Future<T> Function(RequestT request) fetch,
-    required CachedRead<T>? previous,
+    required bool refreshing,
   }) async {
-    try {
-      final data = await fetch(query.toRequest()).timeout(timeout);
-      return CachedRead(data: data, fetchedAt: _clock.now());
-    } catch (error, stackTrace) {
-      if (previous == null) rethrow;
-      return previous.withRefreshError(error, stackTrace);
-    }
+    final deadline = policy.deadline(refreshing: refreshing);
+    final data = await fetch(query.toRequest()).timeout(deadline);
+    return CachedRead(data: data, fetchedAt: _clock.now());
   }
 }
 
@@ -118,13 +85,15 @@ extension CallableReadRef on Ref {
   /// [session] the family key carries.
   ///
   /// The read owner is an `AsyncNotifier` whose family argument is [query];
-  /// its `build` passes `state.value` as [previous], so a failed background
-  /// refetch keeps the data.
+  /// its `build` passes `state.hasValue` as [refreshing], so a refetch of
+  /// data already on screen gets the policy's `refresh` deadline and a first
+  /// load its `firstLoad`. A failed refetch keeps the data through
+  /// Riverpod's own state.
   Future<CachedRead<T>> callableRead<RequestT, T>({
     required CachePolicy policy,
     required CacheQuery<RequestT> query,
     required Future<T> Function(RequestT request) fetch,
-    required CachedRead<T>? previous,
+    required bool refreshing,
     CacheSession? session,
   }) async {
     final CacheLease lease;
@@ -137,9 +106,10 @@ extension CallableReadRef on Ref {
     }
     final client = read(callableReadClientProvider);
     final result = await client.read(
+      policy: policy,
       query: query,
       fetch: fetch,
-      previous: previous,
+      refreshing: refreshing,
     );
     lease.markFetched(result.fetchedAt);
     return result;

@@ -2600,10 +2600,18 @@ These contracts and services are not rollout authorization. Private persistence
 remains disabled until the explicit legacy publication backfill, all public
 readers/search projections and integrated privacy checks are complete.
 
-The offer picker uses `listOfferEventTargets` for both private and already
-published owned events. The bounded index
-uses canonical `organizerId`, status, start time and document ID; contradictory
-organizer ownership fails. This list exposes no payment settings.
+The offer picker reads coming events from Firestore under rules: published
+events from `events` (organizer, `publicationState` published, active, start
+time and document ID) and unpublished ones from the `hostEventSummaries` read
+model, merged soonest first and paged by start time and event ID. This list
+exposes no payment settings; picking an event never authorizes an offer.
+The offer workspace reads `organizerEventOffers` directly: current managers of
+the offer's organizer get an offer by its id (an offer not written yet reads as
+missing) and list an event's offers to the selected people
+(`organizerId`, `eventId`, `contactId in`). The stored document is what
+`getEventOffer` returned; an offered offer past `expiresAtMillis` reads as
+expired by the phone's clock. Receipts and audits stay server-only, and every
+offer command rereads the offer and checks its revision and generation.
 The offer settings screen reads the event's `eventSetupPreferences/{eventId}`
 document directly: current managers of the event's organizer get it under rules,
 and an event without saved settings reads as missing. The phone combines it with
@@ -3172,12 +3180,15 @@ and writers before a client using SDK reads, then backfill and activate each
 organizer. `onHostDirectoryOrganizerCreated` activates every model for a new
 organizer, which has no sources yet. The Host app reads the contact, form,
 group, response and event directories only through their markers: a missing
-marker is an error to retry, never a callable fallback. Each directory list is
-a Firestore listener over a window of its first rows (`limit + 1`, to know
-whether more follow); asking for more listens to a window one page larger, at
-most 2,500 rows. A server change shows in the open list at once, a write needs
-no reread, and a list opens offline from the device cache. A larger window that
-fails keeps the rows already shown and reports the failure under them.
+marker is an error to retry, never a callable fallback. The People contact
+list reads live pages (see [Live pages](#live-pages)): each 30-row page is its
+own listener, so asking for more reads only the new page, at most 2,500 rows.
+The form, response, group and draft lists still listen to a window of their
+first rows (`limit + 1`) that grows by a page on request, rereading the rows
+already shown, until they move to live pages. A server change shows in the
+open list at once, a write needs no reread, and a list opens offline from the
+device cache. A page that fails keeps the rows above it and reports the
+failure under them; asking again retries it.
 
 The normal SDK contact page reads at most `limit + 1` small summaries and one
 counts document. Single segment and single filter-family queries use indexes.
@@ -3276,6 +3287,19 @@ The `host-form-version-filters` copy-forward migration in
 `tool/data/migrate_firestore_consolidation.mjs` creates views for versions
 published before the trigger. The version scope (active version and published
 version count) is already on the form's `hostFormSummaries` row.
+`hostEventRequestViews/{eventId}` gives Host Requests everyone waiting on one
+coming event without `listOrganizerRequests`: `organizerId`, `eventId`,
+`eventEndMillis`, `complete`, `version` and `rows`, the callable's rows for the
+event (join requests awaiting host approval and the waitlist numbered among the
+people the host can offer a spot, oldest ask first, at most 100). Triggers on the
+event, its waitlisted participations, public profiles, contacts and contact
+summaries write it; an event with nobody waiting, not active or over has none.
+Current organizer managers list their organizer's views by `organizerId` and
+`eventEndMillis`. Rows are not filtered by blocks: the phone hides anyone with a
+block either way using the reader's own `blocks` edges. A row's
+`offerExpiresAtMillis` is an active offer's expiry even after it passes; the
+phone compares it with its clock. The `host-event-request-views` copy-forward
+migration creates views for events that had people waiting before the triggers.
 Each summary may also carry two optional query fields, absent on older views and
 read as none: `reviewStatus` (a copy of the application's review status) and
 `offer {status, eventId, offeredAtMillis}`, the latest non-draft event offer made
@@ -5880,7 +5904,7 @@ queries:
   reviewed page size, a stable ordered cursor, refresh behavior, and an honest
   `hasMore` state. Realtime first-page listeners are allowed when freshness is
   product-critical, but older history still loads through a cursor. Host
-  directories instead grow one listener window a page at a time, up to the
+  directories keep every shown row live with live pages (below), up to the
   reviewed cap in
   [Organizer Communication Preferences And CRM](#organizer-communication-preferences-and-crm).
 - **Rosters and bounded working sets** require a reviewed limit based on the
@@ -5952,6 +5976,22 @@ create cursor gaps or re-read the full archive.
 Explore accumulates both discovery cursors, shows `N+` while either has more,
 and exposes a load-more action. Its map count includes only records with a
 complete coordinate pair.
+
+#### Live pages
+
+`packages/platform/lib/firebase/live_paged_query.dart` owns paged lists whose
+every shown row must stay live. Firestore bills a listener for each document
+in its initial result set and for each later change, and a listener whose
+limit changes is a new query that reads every earlier row from the server
+again; the device cache spares only a listener resumed on the same query
+within 30 minutes. A window that grows by a page of `p` rows therefore costs
+`p(1 + 2 + ... + n)` reads for `n` pages. Live pages cost `np`: page `k`
+listens after the last shown row of page `k - 1` with `limit(p + 1)`, earlier
+pages keep their listeners, and a page that rows push past its limit listens
+once more bounded by its own last row so no row falls between pages.
+Controllers see only `LivePager` and `LivePages` from `live_pages.dart`
+(rows, `hasMore`, `loadingMore`, the next page's error); the data layer owns
+the cursors. A list whose later rows need not stay live uses `CursorPage`.
 
 ### Feed freshness policy
 

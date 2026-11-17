@@ -342,8 +342,36 @@ abstract final class GeneratedCatchWebsiteTokens {
   static const double panelPadInline = 72.0;
   static const double radiusField = 14.0;
   static const double radiusSquare = 12.0;
+  static const double radiusDevice = 44.0;
+  static const double radiusCard = 22.0;
   static const double heroTextPadBottom = 72.0;
+  static const double heroCompactMediaMax = 340.0;
+  static const double heroPhoneWidth = 360.0;
+  static const double heroPhoneBleed = -250.0;
+  static const double heroCompactPhoneWidth = 230.0;
+  static const double heroCompactPhoneBleed = -300.0;
+  static const double heroNotifyGap = 22.0;
+  static const double heroNotifyMax = 540.0;
   static const double stepsMarkerWidth = 40.0;
+  static const double sectionCompactPadTop = 60.0;
+  static const double dateWidth = 48.0;
+  static const double dateHeight = 52.0;
+  static const double dateLabelSize = 11.0;
+  static const double dateCompactWidth = 40.0;
+  static const double dateCompactHeight = 44.0;
+  static const double tileMinHeight = 200.0;
+  static const double tileCompactMinHeight = 160.0;
+  static const double tileIconSize = 28.0;
+  static const double tileBentoCompactMinHeight = 150.0;
+  static const double profileCoverHeight = 340.0;
+  static const double profileCompactCoverHeight = 180.0;
+  static const double profileMonogramOverlap = 62.0;
+  static const double profileCompactMonogramOverlap = 48.0;
+  static const double profileCopyMax = 640.0;
+  static const double profileActionsWidth = 420.0;
+  static const double planMediaHeight = 150.0;
+  static const double badgePadBlock = 5.0;
+  static const double chipDotSize = 8.0;
 }
 
 @immutable

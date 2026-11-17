@@ -10,6 +10,7 @@ import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/errors/provider_retry_policy.dart';
+import 'package:catch_platform/firebase/firebase_bootstrap.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/push/fcm_service.dart';
@@ -17,7 +18,6 @@ import 'package:catch_platform/riverpod_ui/failed_reads.dart';
 import 'package:catch_platform/startup/native_splash.dart';
 import 'package:catch_platform/startup/startup_animation_scope.dart';
 import 'package:catch_ui/catch_ui.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -268,7 +268,7 @@ Future<(Object, StackTrace)?> _initializeFirebaseServices() async {
   if (AppConfig.useFirebaseEmulators) {
     final host = AppConfig.firebaseEmulatorHost;
     await FirebaseAuth.instance.useAuthEmulator(host, 9099);
-    FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
+    useFirestoreEmulator(host);
     await FirebaseStorage.instance.useStorageEmulator(host, 9199);
     FirebaseFunctions.instanceFor(
       region: firebaseFunctionsRegion,
@@ -278,11 +278,7 @@ Future<(Object, StackTrace)?> _initializeFirebaseServices() async {
   await _configureFirebaseAuthTestingSettings();
   await _debugSignOutOnStartIfRequested();
 
-  // Enable offline persistence explicitly — defaults differ by platform
-  // (mobile: enabled, web: disabled). Setting it ensures consistent behavior.
-  FirebaseFirestore.instance.settings = const Settings(
-    persistenceEnabled: true,
-  );
+  enableFirestoreOfflinePersistence();
 
   final remoteConfigError = await _initializeRemoteConfig();
 
@@ -326,8 +322,8 @@ Future<void> _initializeDefaultFirebaseApp() async {
               storageBucket: '$demoProject.appspot.com',
             ),
     );
-  } on FirebaseException catch (error) {
-    if (error.code == 'duplicate-app' &&
+  } catch (error) {
+    if (isDuplicateFirebaseAppError(error) &&
         _hasDefaultFirebaseApp() &&
         (demoProject.isEmpty ||
             Firebase.app().options.projectId == demoProject)) {

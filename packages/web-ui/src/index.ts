@@ -40,6 +40,7 @@ export type {
   CatchBandWidth,
 } from "./components/CatchBand";
 export {CatchBandHeader} from "./components/CatchBandHeader";
+export {useCatchBandKicker} from "./components/CatchBandHeader";
 export type {CatchBandHeaderAlign, CatchBandHeaderDirection, CatchBandHeaderProps, CatchBandHeaderSize, CatchKickerAccent} from "./components/CatchBandHeader";
 // The playbook section components (website-playbook kit), with the vocabulary they share.
 export type {CatchBandAction, CatchBandFootnote, CatchBandLink} from "./components/catchBandParts";
@@ -47,11 +48,15 @@ export {CatchArticleBody} from "./components/CatchArticleBody";
 export type {CatchArticleBodyProps, CatchArticleBodySection, CatchArticleBodyTip} from "./components/CatchArticleBody";
 export {CatchCardGrid} from "./components/CatchCardGrid";
 export type {
+  CatchCardGridChip,
   CatchCardGridCity,
   CatchCardGridColumns,
   CatchCardGridEmpty,
+  CatchCardGridEntry,
+  CatchCardGridFormat,
   CatchCardGridItems,
   CatchCardGridKind,
+  CatchCardGridLayout,
   CatchCardGridPerson,
   CatchCardGridProps,
 } from "./components/CatchCardGrid";
@@ -63,7 +68,7 @@ export type {
   CatchComparisonTableRow,
 } from "./components/CatchComparisonTable";
 export {CatchCtaSection} from "./components/CatchCtaSection";
-export type {CatchCtaSectionProps} from "./components/CatchCtaSection";
+export type {CatchCtaSectionProps, CatchCtaSectionTile} from "./components/CatchCtaSection";
 export {CatchFaqSection} from "./components/CatchFaqSection";
 export type {CatchFaqSectionProps} from "./components/CatchFaqSection";
 export {CatchFlowLayout} from "./components/CatchFlowLayout";
@@ -79,6 +84,7 @@ export {CatchHeroSection} from "./components/CatchHeroSection";
 export type {
   CatchHeroSectionAside,
   CatchHeroSectionLayout,
+  CatchHeroSectionNotice,
   CatchHeroSectionProofItem,
   CatchHeroSectionProps,
 } from "./components/CatchHeroSection";
@@ -138,6 +144,8 @@ export {CatchSiteHeader} from "./components/CatchSiteHeader";
 export type {CatchSiteHeaderLink, CatchSiteHeaderProps} from "./components/CatchSiteHeader";
 export {CatchSiteFooter} from "./components/CatchSiteFooter";
 export type {CatchSiteFooterColumns, CatchSiteFooterGroup, CatchSiteFooterLink, CatchSiteFooterProps} from "./components/CatchSiteFooter";
+export {CatchSiteDock} from "./components/CatchSiteDock";
+export type {CatchSiteDockAction, CatchSiteDockProps} from "./components/CatchSiteDock";
 export {CatchDeviceFrame} from "./components/CatchDeviceFrame";
 export type {CatchDeviceFrameKind, CatchDeviceFrameOrientation, CatchDeviceFrameProps, CatchDeviceFrameTilt, CatchDeviceFrameWindowKind} from "./components/CatchDeviceFrame";
 export {CatchHeroShowcase} from "./components/CatchHeroShowcase";
@@ -339,7 +347,7 @@ export type {CatchPhotoTileProps} from "./components/CatchPhotoTile";
 export {CatchPreviewCard} from "./components/CatchPreviewCard";
 export type {CatchPreviewCardProps, CatchPreviewCardSize} from "./components/CatchPreviewCard";
 export {CatchProfileHeader} from "./components/CatchProfileHeader";
-export type {CatchProfileHeaderProps, CatchProfileHeaderStat} from "./components/CatchProfileHeader";
+export type {CatchProfileHeaderLayout, CatchProfileHeaderProps, CatchProfileHeaderStat} from "./components/CatchProfileHeader";
 export {CatchQrCode} from "./components/CatchQrCode";
 export type {CatchQrCodeErrorCorrection, CatchQrCodeProps, CatchQrCodeSize} from "./components/CatchQrCode";
 export {CatchRatingSummary} from "./components/CatchRatingSummary";

@@ -127,4 +127,13 @@ export const twentyFiveCityCatalog = catalogOf([
 ], "mumbai");
 
 export const mumbaiLiveCatalog = homeCatalogFixture("mumbai");
+
+/** Mumbai with three plans in the next two weeks: the board's "live but thin" state, plans dated and nearest first. */
+const thinIds = new Set(["carter-road-run", "thursday-pub-quiz", "long-table-supper"]);
+export const mumbaiThinCatalog: HomeCatalog = (() => {
+  const plans = mumbaiPlans.filter((plan) => thinIds.has(plan.eventId));
+  const thin: HomeCityPlans = {...mumbaiPlansFixture, planCount: plans.length, formatCounts: counts(plans), plans};
+  return homeCatalogFromPlans(activeMarket.cities, activeMarket.cities.map((market) => market.marketSlug === "mumbai" ? thin : byCity[market.marketSlug]),
+    "mumbai", homeStoryReadAt);
+})();
 export const puneLaunchingSoonCatalog = homeCatalogFixture("pune");

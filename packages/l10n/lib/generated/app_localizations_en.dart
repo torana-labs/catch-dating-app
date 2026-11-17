@@ -801,6 +801,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostInsightsBookingsEmpty => 'No bookings in this period.';
 
   @override
+  String hostInsightsRefreshFailed({required int minutes}) {
+    final intl.NumberFormat minutesNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String minutesString = minutesNumberFormat.format(minutes);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'Couldn\'t refresh. Updated $minutesString min ago',
+      one: 'Couldn\'t refresh. Updated 1 min ago',
+      zero: 'Couldn\'t refresh. Updated just now',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get hostInsightsCameBack => 'Came back';
 
   @override

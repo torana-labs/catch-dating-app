@@ -5,8 +5,7 @@ import 'package:catch_kernel/city_data.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/errors/error_logger.dart';
-import 'package:catch_platform/firebase/firebase_providers.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:catch_platform/firebase/config_documents.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'city_repository.g.dart';
@@ -17,19 +16,18 @@ part 'city_repository.g.dart';
 /// is missing or unreadable, the function falls back to the default city
 /// catalog so the picker never renders empty.
 class CityRepository {
-  const CityRepository(this._db, this._errorLogger);
+  const CityRepository(this._configDocuments, this._errorLogger);
 
   static const _configDocPath = 'config/cities';
 
-  final FirebaseFirestore _db;
+  final ConfigDocuments _configDocuments;
   final ErrorLogger _errorLogger;
 
   Future<List<CityData>> fetchCities() async {
     try {
-      final snap = await _db.doc(_configDocPath).get();
-      if (snap.exists) {
-        final data = snap.data();
-        final list = data?['cities'] as List<dynamic>?;
+      final data = await _configDocuments.read(_configDocPath);
+      if (data != null) {
+        final list = data['cities'] as List<dynamic>?;
         if (list != null && list.isNotEmpty) {
           return list
               .map((e) => CityData.fromJson(e as Map<String, dynamic>))
@@ -106,7 +104,7 @@ double _toRad(double deg) => deg * pi / 180;
 // single cached Firestore facade.
 @Riverpod(keepAlive: true)
 CityRepository cityRepository(Ref ref) => CityRepository(
-  ref.watch(firebaseFirestoreProvider),
+  ref.watch(configDocumentsProvider),
   ref.watch(errorLoggerProvider),
 );
 

@@ -1121,6 +1121,28 @@
       "recordReferences": false
     },
     {
+      "id": "functions.reference.ad-conversions-meta",
+      "sourcePaths": [
+        "functions/src/acquisition/adConversions/worker.ts"
+      ],
+      "owner": "host-acquisition",
+      "credentialClass": "provider-token",
+      "consumers": [
+        "sendAdConversions"
+      ],
+      "binding": {
+        "kind": "parameter",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "parameter": "AD_CONVERSIONS_META_TOKEN_VERSION",
+        "optional": true,
+        "secret": "CATCH_META_ADS_TOKEN"
+      },
+      "activationPolicy": "blank-current-reference-unconfigured",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": false
+    },
+    {
       "id": "functions.reference.instagram-discovery",
       "sourcePaths": [
         "functions/src/operations/supplyIntake/instagramDiscovery.ts"

@@ -1,5 +1,5 @@
 import 'package:catch_platform/app_config.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:catch_platform/firebase/firebase_bootstrap.dart';
 
 /// Returns a human-readable diagnostic for a force-update check error.
 ///
@@ -10,8 +10,8 @@ String? forceUpdateDevelopmentDiagnostic(Object? error) {
     return null;
   }
 
-  if (error is FirebaseException && error.plugin == 'remoteconfig') {
-    return 'Dev diagnostic: Remote Config fetch failed (${error.code}). '
+  if (remoteConfigFailureCode(error) case final code?) {
+    return 'Dev diagnostic: Remote Config fetch failed ($code). '
         'Check the Remote Config template in the Firebase Console for '
         '${AppConfig.environmentName}.';
   }

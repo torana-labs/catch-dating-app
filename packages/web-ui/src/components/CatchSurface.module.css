@@ -131,6 +131,25 @@
 .surface[data-block="band"][data-pad="lg"] { padding-block: var(--catch-space-s16); }
 :global([data-size="compact"]) .surface[data-block="band"][data-pad="lg"] { padding-block: var(--catch-space-s12); }
 
+/*
+ * A plain band at the default rhythm is the canvas's open section (.pg .open):
+ * 112px above and 24px below, so two plain sections sit 136px apart; on
+ * phones 60px above and 8px below.
+ */
+.surface[data-block="band"]:not([data-panel])[data-pad="lg"] {
+  padding-block: var(--catch-space-s28) var(--catch-space-s6);
+}
+
+@media (max-width: 599px) {
+  .surface[data-block="band"]:not([data-panel])[data-pad="lg"] {
+    padding-block: var(--catch-website-section-compact-pad-top) var(--catch-space-s2);
+  }
+}
+
+:global([data-size="compact"]) .surface[data-block="band"]:not([data-panel])[data-pad="lg"] {
+  padding-block: var(--catch-website-section-compact-pad-top) var(--catch-space-s2);
+}
+
 /* The canvas's tint panel is paper (.pg .tint), and its ink panel the ink ground (.pg .ink). */
 .surface[data-block="band"][data-band="tile"] {
   --catch-surface-fill: var(--catch-ground-paper-fill);

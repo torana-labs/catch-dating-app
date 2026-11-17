@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/messaging/data/chat_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'conversation_repository.g.dart';
@@ -11,7 +11,7 @@ part 'conversation_repository.g.dart';
 /// Opaque history position. Only the repository can construct storage cursors.
 final class ConversationMessageCursor {
   const ConversationMessageCursor._(this._document);
-  final DocumentSnapshot<ChatMessage> _document;
+  final PageCursor<ChatMessage> _document;
 }
 
 final class ConversationMessagePage {

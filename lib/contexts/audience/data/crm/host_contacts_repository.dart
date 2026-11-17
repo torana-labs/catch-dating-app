@@ -14,13 +14,14 @@ import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_summary_reads.dart'
-    show HostContactDirectory, HostContactWindow;
+    show HostContactDirectory;
 
 part 'host_contacts_repository.g.dart';
 
@@ -55,13 +56,13 @@ class HostContactsRepository {
   Stream<HostContactDirectory> watchDirectory(String organizerId) =>
       summaries.watchDirectory(organizerId);
 
-  /// The first [limit] contacts of [query] while it is listened to. Every
-  /// query the People list makes is one the directory serves.
-  Stream<HostContactWindow> watchContacts(
+  /// The contacts of [query], [pageSize] at a time, every row shown kept
+  /// live. Every query the People list makes is one the directory serves.
+  LivePager<HostAudienceContact> watchContacts(
     String organizerId, {
     required HostAudienceQuery query,
-    required int limit,
-  }) => summaries.watchWindow(organizerId, query: query, limit: limit);
+    int pageSize = ReadLimitPolicy.directoryPage,
+  }) => summaries.watchPages(organizerId, query: query, pageSize: pageSize);
 
   /// The event's roster labels as the server last evaluated them, with the
   /// member label shown, updated while it is listened to.

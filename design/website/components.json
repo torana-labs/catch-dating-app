@@ -278,7 +278,10 @@
         "packages/web-ui/src/components/CatchText.module.css",
         "packages/web-ui/src/components/CatchField.module.css",
         "packages/web-ui/src/components/CatchCheckboxInput.module.css",
-        "packages/web-ui/src/components/CatchQrCode.module.css"
+        "packages/web-ui/src/components/CatchQrCode.module.css",
+        "packages/web-ui/src/components/CatchSiteDock.module.css",
+        "packages/web-ui/src/components/CatchPlanCard.module.css",
+        "packages/web-ui/src/components/CatchDateTile.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -289,7 +292,7 @@
           "phone-launching-soon"
         ]
       },
-      "notes": "The homepage's bands in the board's order, private to one assembly: the header with the city picker, the hero (CatchHeroSection), this week's or the next two weeks' plans (CatchCardGrid) or the launching-soon notice (CatchCtaSection), how a night works and the proof (CatchSplitSection), organisers (CatchCardGrid), the host band (CatchSplitSection; third in a thin or launching city, after the proof in a busy one), the app band (CatchCtaSection), the FAQ (CatchFaqSection) and the footer. Each band arranges library parts and binds the controller's view of the city (D18)."
+      "notes": "The homepage's bands in the board's order, private to one assembly: the header with the city picker; the hero (CatchHeroSection: the phone in the canvas bezel, the notify card until the app is on a store, and the soonest real plan as the floating chip); the entry tiles (CatchCardGrid entry); this week's or the next two weeks' plans as dated plan cards with the action across from the header (CatchCardGrid plan, a rail on phones) or the launching-soon notice (CatchCtaSection); the host band (CatchSplitSection; third in a thin or launching city, after the proof in a busy one); the formats (CatchCardGrid format, with chips); how a night works and the proof (CatchSplitSection); organisers (CatchCardGrid); the app band as the bento grid (CatchCtaSection tiles); the mint refer panel (CatchCtaSection, its introduction on WhatsApp); the FAQ (CatchFaqSection); the footer; and the phone action bar (CatchSiteDock). Each band arranges library parts and binds the controller's view of the city (D18)."
     },
     {
       "id": "shared_identity_display_shell",
@@ -520,8 +523,7 @@
       "css": [
         "packages/web-ui/src/components/CatchRoot.module.css",
         "packages/web-ui/src/components/CatchTopBar.module.css",
-        "packages/web-ui/src/components/CatchPaneLayout.module.css",
-        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchBand.module.css",
         "packages/web-ui/src/components/CatchStack.module.css"
       ],
       "storybook": {
@@ -533,7 +535,7 @@
           "claim-pitch"
         ]
       },
-      "notes": "Organiser page route (CAT-251): a link-in-bio page that renders the organizerPublicPage read model, or the same record built from the listing until every page has one and in the static build. Every organiser page, claimed or generated, carries the site header (PublicSiteHeader) and ends with the site footer (PublicSiteFooter), both from shared/site (PublicSiteChrome.tsx); a page served on the organiser's own domain will keep the short PublicPageFooter once custom domains ship. The route story renders a generated listing fixture; OrganizerPage.stories.tsx covers the board states."
+      "notes": "Organiser page route (CAT-251): a link-in-bio page that renders the organizerPublicPage read model, or the same record built from the listing until every page has one and in the static build. HostListingPage draws it on the day ground in the owner-approved hero layout (17 Nov 2026) from the WebOrgV2 board. Every organiser page, claimed or generated, carries the site header (PublicSiteHeader) and ends with the site footer (PublicSiteFooter), both from shared/site (PublicSiteChrome.tsx). There is no own-domain state until custom domains ship. The women-led label comes from the read model's womenLed; a page built from the listing never shows it. The route story renders a generated listing fixture; OrganizerPage.stories.tsx covers the board states."
     },
     {
       "id": "route_event_detail",
@@ -781,8 +783,7 @@
       "source": "website/src/features/organizers/sections/HostListingSections.tsx",
       "exportName": "HostListingSections",
       "css": [
-        "packages/web-ui/src/components/CatchPaneLayout.module.css",
-        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchBand.module.css",
         "packages/web-ui/src/components/CatchStack.module.css"
       ],
       "storybook": {
@@ -794,7 +795,7 @@
           "first-phone-screen"
         ]
       },
-      "notes": "Arranges the organiser page (CAT-251): the rail holds identity, follow and share, the next event and the links, which together fill the first phone screen; the main column holds the claim pitch on a generated page, the calendar, past moments, reviews, about and the footer. Composes library parts only (D18)."
+      "notes": "Arranges the organiser page (CAT-251) in the owner-approved hero layout (17 Nov 2026): the hero across the content width (OrganizerIdentitySection), then the WebOrgV2 board's two columns. The 420px rail holds the follow and share panels when open, the next event, the links and the social profiles; the main column holds the claim card on a generated page, Coming up, What it's like, Reviews, About and the footer line with the owner's sign-in line. The owner view (#1109) adds its bar above the page on a claimed page. A phone stacks it all in that order. Composes library parts only (D18)."
     },
     {
       "id": "organizer_identity_section",
@@ -807,16 +808,11 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerIdentitySection.tsx",
       "exportName": "OrganizerIdentitySection",
       "css": [
-        "packages/web-ui/src/components/CatchAvatar.module.css",
-        "packages/web-ui/src/components/CatchHeroImage.module.css",
-        "packages/web-ui/src/components/CatchIcon.module.css",
-        "packages/web-ui/src/components/CatchStack.module.css",
-        "packages/web-ui/src/components/CatchSurface.module.css",
-        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchProfileHeader.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchQrCode.module.css",
-        "packages/web-ui/src/components/CatchField.module.css",
-        "packages/web-ui/src/components/CatchCodeInput.module.css"
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -825,35 +821,10 @@
         "states": [
           "claimed",
           "generated",
-          "share-open",
-          "follow-by-phone",
-          "follow-account-step"
+          "share-open"
         ]
       },
-      "notes": "Profile header with follow and share; the share card holds the page's QR code and copy action. Follow uses the visitor's account until follow by phone (CAT-253) lands; its sheet is built and hidden behind OrganizerPageBackends.followByPhone."
-    },
-    {
-      "id": "organizer_cover",
-      "kind": "supporting-component",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/organizerPage/OrganizerIdentitySection.tsx",
-      "exportName": "OrganizerCover",
-      "css": [
-        "packages/web-ui/src/components/CatchHeroImage.module.css",
-        "packages/web-ui/src/components/CatchSurface.module.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "photo",
-          "format-colour"
-        ]
-      },
-      "notes": "The RbWebOrgV2 hero above the identity: a past event's photo, or a spotlight in the organiser's format colour where there is none. Rendered by HostListingSections; the Guest and Generated stories draw it inside the page."
+      "notes": "The page's hero: CatchProfileHeader's hero layout with the cover photo or the organiser's colour, the logo over its foot, the name with its verified seal, the generated page's tag, the women-led label from the read model, the headline, the place and a stats line whose figures each have data behind them (followers, the verified-review rating with its count, nights hosted counting imported events too), with Follow and Share across from it and the follow-by-phone line under them."
     },
     {
       "id": "organizer_next_up_section",
@@ -867,9 +838,10 @@
       "exportName": "OrganizerNextUpSection",
       "css": [
         "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
         "packages/web-ui/src/components/CatchBadge.module.css",
-        "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchText.module.css"
+        "packages/web-ui/src/components/CatchButton.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -880,7 +852,7 @@
           "luma-event"
         ]
       },
-      "notes": "The next event wherever it is sold, as the preview card's feature size on ink, with a countdown, the source and the booking action."
+      "notes": "The next event wherever it is sold, as the board's ink spotlight at the top of the rail: the countdown in the coral kicker, where it is sold, the title and time, and the price beside the action. The whole spotlight opens the event."
     },
     {
       "id": "organizer_links_section",
@@ -893,8 +865,8 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerRailSections.tsx",
       "exportName": "OrganizerLinksSection",
       "css": [
-        "packages/web-ui/src/components/CatchSection.module.css",
-        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchLinkTile.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
         "packages/web-ui/src/components/CatchStack.module.css"
       ],
       "storybook": {
@@ -906,7 +878,62 @@
           "source-links"
         ]
       },
-      "notes": "The organiser's own links (CAT-254), pinned first and dropped after their show-until date, each drawn with the icon of the role the owner gave it; a page with no owner links shows the public pages its listing came from."
+      "notes": "The organiser's own links (CAT-254) as CatchLinkTiles, pinned first on the organiser's colour and dropped after their show-until date, each with the icon of the role the owner gave it; links with the social role move to the social profiles. A page with no owner links shows the public pages its listing came from."
+    },
+    {
+      "id": "organizer_socials_section",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/organizerPage/OrganizerRailSections.tsx",
+      "exportName": "OrganizerSocialsSection",
+      "css": [
+        "packages/web-ui/src/components/CatchIconAction.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerPage.stories.tsx",
+        "exportName": "Socials",
+        "states": [
+          "owner-social-links"
+        ]
+      },
+      "notes": "The owner links given the social role (CAT-254), as the board's row of round outlined icons under the links, each named by its link's label and drawn with its platform's glyph where the address names one."
+    },
+    {
+      "id": "organizer_follow_panels",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/organizerPage/OrganizerIdentitySection.tsx",
+      "exportName": "OrganizerFollowPanels",
+      "css": [
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchQrCode.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchCodeInput.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerPage.stories.tsx",
+        "exportName": "FollowByPhone",
+        "states": [
+          "follow-by-phone",
+          "follow-account-step"
+        ]
+      },
+      "notes": "What Follow and Share open, at the top of the rail on paper ground cards: the follow-by-phone sheet (CAT-253, built and hidden behind OrganizerPageBackends.followByPhone) or the account step, a follow error, and the share card with the page's QR code and copy action. Renders nothing while both are closed."
     },
     {
       "id": "organizer_events_section",
@@ -919,10 +946,15 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerEventsSections.tsx",
       "exportName": "OrganizerEventsSection",
       "css": [
+        "packages/web-ui/src/components/CatchBandHeader.module.css",
         "packages/web-ui/src/components/CatchSection.module.css",
         "packages/web-ui/src/components/CatchIndexRow.module.css",
-        "packages/web-ui/src/components/CatchSurface.module.css",
-        "packages/web-ui/src/components/CatchButton.module.css"
+        "packages/web-ui/src/components/CatchDateTile.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchEmptyState.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -934,7 +966,7 @@
           "empty-calendar"
         ]
       },
-      "notes": "Catch and imported events in one list, soonest first; each row names where it is sold. Catch rows open the event page and imported rows open the source."
+      "notes": "Coming up as the board's event rows: Catch and imported events in one list, soonest first, each with its date tile, time and place, where it is sold, the price, the places left on a Catch event, a women-led tag when the event carries the label and the organiser does not, and its action. Catch rows open the event page and imported rows open the page that sells them; an empty calendar says so."
     },
     {
       "id": "organizer_moments_section",
@@ -947,9 +979,9 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerEventsSections.tsx",
       "exportName": "OrganizerMomentsSection",
       "css": [
-        "packages/web-ui/src/components/CatchSection.module.css",
-        "packages/web-ui/src/components/CatchSurface.module.css",
-        "packages/web-ui/src/components/CatchHeroImage.module.css",
+        "packages/web-ui/src/components/CatchBandHeader.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchPhotoTile.module.css",
         "packages/web-ui/src/components/CatchStack.module.css"
       ],
       "storybook": {
@@ -961,7 +993,7 @@
           "generated-figures"
         ]
       },
-      "notes": "Past moments: photos alternating with figures on a claimed page, or what a generated page found with a slot for photos."
+      "notes": "What it's like: CatchPhotoTiles four across (two on a phone), past photos alternating with figures on a claimed page, or what a generated page found with a slot for photos. A figure shows only when the page has the data behind it."
     },
     {
       "id": "organizer_reviews_section",
@@ -974,11 +1006,15 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerReviewsSection.tsx",
       "exportName": "OrganizerReviewsSection",
       "css": [
-        "packages/web-ui/src/components/CatchSection.module.css",
-        "packages/web-ui/src/components/CatchIndexRow.module.css",
-        "packages/web-ui/src/components/CatchStarRating.module.css",
-        "packages/web-ui/src/components/CatchMeter.module.css",
-        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchBandHeader.module.css",
+        "packages/web-ui/src/components/CatchRatingSummary.module.css",
+        "packages/web-ui/src/components/CatchReviewItem.module.css",
+        "packages/web-ui/src/components/CatchAvatar.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
         "packages/web-ui/src/components/CatchStarInput.module.css",
         "packages/web-ui/src/components/CatchField.module.css"
       ],
@@ -993,7 +1029,7 @@
           "review-form"
         ]
       },
-      "notes": "Rating over its distribution and the latest reviews, each marked Booked on Catch or Unverified. The review form (CAT-169) is built and hidden behind OrganizerPageBackends.submitReview."
+      "notes": "Reviews as the board lays them out: the rating (CatchRatingSummary) in a 240px column beside the latest CatchReviewItem rows. The rating averages verified reviews (Booked on Catch) only and states their count; until one exists the page says why there is no rating yet. Each review is marked Booked on Catch or Unverified, with the organiser's reply or why a generated page has none. The review form (CAT-169) is built and hidden behind OrganizerPageBackends.submitReview."
     },
     {
       "id": "owner_view",
@@ -1217,10 +1253,14 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerAboutSections.tsx",
       "exportName": "OrganizerAboutSection",
       "css": [
-        "packages/web-ui/src/components/CatchMetricTile.module.css",
-        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchBandHeader.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchFactTile.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
         "packages/web-ui/src/components/CatchIndexRow.module.css",
-        "packages/web-ui/src/components/CatchAvatar.module.css"
+        "packages/web-ui/src/components/CatchAvatar.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1231,7 +1271,7 @@
           "generated"
         ]
       },
-      "notes": "The organiser's description, formats, public facts and host. Intake review notes never show."
+      "notes": "About: the organiser's description as the header's lead, the formats as tags, the public facts as paper CatchFactTiles and the host. Intake review notes never show."
     },
     {
       "id": "organizer_claim_section",
@@ -1244,10 +1284,12 @@
       "source": "website/src/features/organizers/sections/organizerPage/OrganizerAboutSections.tsx",
       "exportName": "OrganizerClaimSection",
       "css": [
-        "packages/web-ui/src/components/CatchSurface.module.css",
-        "packages/web-ui/src/components/CatchSection.module.css",
-        "packages/web-ui/src/components/CatchIndexRow.module.css",
-        "packages/web-ui/src/components/CatchButton.module.css"
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchBandHeader.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1258,7 +1300,7 @@
           "claim-pitch"
         ]
       },
-      "notes": "Generated pages only: what claiming the page gives the organiser, with the people already following and reviewing. The claim is free; the button opens /claim/ (CAT-256)."
+      "notes": "Generated pages only: the board's claim card on indigo at the top of the main column, with the people already following and reviewing, what claiming gives the organiser, and the way into /claim/ (CAT-256), or that a claim is being reviewed. The claim is free."
     },
     {
       "id": "organizer_page_footer",
@@ -1272,6 +1314,7 @@
       "exportName": "OrganizerPageFooter",
       "css": [
         "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
         "packages/web-ui/src/components/CatchButton.module.css"
       ],
       "storybook": {
@@ -1283,7 +1326,7 @@
           "generated"
         ]
       },
-      "notes": "\"Made with Catch · Make a page like this\" on a claimed page; where a generated page came from and how to report a mistake."
+      "notes": "\"Made with Catch · Make a page like this\" at the end of the main column on a claimed page; where a generated page came from and how to report a mistake. A line, not a <footer>: the site footer is the page's one contentinfo landmark."
     },
     {
       "id": "route_claim",
@@ -4864,7 +4907,13 @@
           "dense"
         ]
       },
-      "notes": "Website T4 under D18 (G6 activity cover). Twin of the Flutter member catch.event_card.activity_backdrop (Flutter EventBackdropImage): the activity's duotone ground and line pattern, drawn at its rendered size. Pure geometry and the server-side SVG live in activityArtwork.ts (@catch/web-ui/artwork); activityArtworkParity.test.ts pins both to the Flutter painter. Search aliases: ActivityCover, ActivityArtwork, EventCover, FallbackImage, PatternCover."
+      "notes": "Website T4 under D18 (G6 activity cover). Twin of the Flutter member catch.event_card.activity_backdrop (Flutter EventBackdropImage): the activity's duotone ground and line pattern, drawn at its rendered size. Pure geometry and the server-side SVG live in activityArtwork.ts (@catch/web-ui/artwork); activityArtworkParity.test.ts pins both to the Flutter painter. Search aliases: ActivityCover, ActivityArtwork, EventCover, FallbackImage, PatternCover.",
+      "comparedWith": [
+        "catch.detail_media",
+        "catch.graded_image",
+        "catch.network_image"
+      ],
+      "comparisonReason": "Draws the activity's duotone ground and line pattern from geometry, with no photo: it is the artwork shown where there is no image, not media that loads, grades or frames a photo, so it implements none of catch.detail_media, catch.graded_image or catch.network_image."
     },
     {
       "id": "shared_event_thumbnail",
@@ -5100,6 +5149,7 @@
       "id": "shared_date_tile",
       "kind": "supporting-component",
       "routeIds": [
+        "home",
         "organizer_listing_canonical",
         "event_detail_canonical"
       ],
@@ -5119,7 +5169,14 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A calendar date on a palette ground: weekday, a displayS day and month in one time element, 72 x 78px and 56 x 66px on a phone. Search aliases: DateBadge, CalendarTile, DateBlock, DateChip, EventDate, CalendarIcon."
+      "notes": "Website T4 under D18 (CAT-249). A calendar date on a palette ground: weekday, a displayS day and month in one time element, 72 x 78px and 56 x 66px on a phone. Small (D26, the playbook homepage's .date): 48 x 52px with 12px corners, the weekday over the day and the month read but not shown, for the canvas plan card and the hero's plan chip. Search aliases: DateBadge, CalendarTile, DateBlock, DateChip, EventDate, CalendarIcon.",
+      "comparedWith": [
+        "catch.text",
+        "catch.analytics_metric",
+        "catch.icon_tile",
+        "catch.option_card"
+      ],
+      "comparisonReason": "A calendar date on a palette ground, read as one time element. It sets its weekday and day with catch.text roles (or, small, in the canvas's own date-square type) and is not a text role; it shares the tile role noun with catch.analytics_metric, catch.icon_tile and catch.option_card but shows no figure or trend, no icon and no choice, so it implements none of them."
     },
     {
       "id": "shared_sticky_aside",
@@ -5207,7 +5264,11 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A label, its value and an optional note on a ground: the event page facts (When, Where, Price) and, as a stat on the displayS step, the owner view numbers with a positive change note. Nearest concept: catch.metric_strip (CatchMetricSection and CatchMetricTile), which sets the value above its label in the mono or metric role; the v2 tile leads with the label, so it is not a CatchMetricTile recipe. Search aliases: MetricTile, StatTile, StatCard, FactCard, KpiTile, InfoTile, KeyFact."
+      "notes": "Website T4 under D18 (CAT-249). A label, its value and an optional note on a ground: the event page facts (When, Where, Price) and, as a stat on the displayS step, the owner view numbers with a positive change note. Nearest concept: catch.metric_strip (CatchMetricSection and CatchMetricTile), which sets the value above its label in the mono or metric role; the v2 tile leads with the label, so it is not a CatchMetricTile recipe. Search aliases: MetricTile, StatTile, StatCard, FactCard, KpiTile, InfoTile, KeyFact.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "A label, its value and an optional note on a ground. It sets them in text roles; it is a fact tile, not a text primitive."
     },
     {
       "id": "shared_share_bar",
@@ -5259,10 +5320,17 @@
           "generated",
           "ground-cover",
           "tag",
-          "board-reference"
+          "board-reference",
+          "hero"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-251). The organiser page's identity: a cover photo or ground, an 88px monogram over its foot, the name with an optional verified seal, a tag, the headline, a meta line, a stats line and the caller's actions. Search aliases: ProfileHero, OrganiserHeader, OrganizerHeader, IdentityHeader, BioHeader."
+      "notes": "Website T4 under D18 (CAT-251). The organiser page's identity: a cover photo or ground, an 88px monogram over its foot, the name with an optional verified seal, a tag, the headline, a meta line, a stats line and the caller's actions. The hero layout (organiser page, owner-approved 17 Nov 2026) runs the cover across the content width with a 144px logo (96px on phones) and sets the actions across from the copy (website.profile.* tokens). Search aliases: ProfileHero, OrganiserHeader, OrganizerHeader, IdentityHeader, BioHeader.",
+      "comparedWith": [
+        "catch.detail_media",
+        "catch.person_avatar",
+        "catch.text"
+      ],
+      "comparisonReason": "The organiser page's identity block: a cover photo or ground, a monogram over its foot, the name with an optional seal, a tag, badges, the headline, meta and stats lines and the caller's actions, in the board's rail or the page's hero. It draws the monogram through catch.person_avatar, the cover through catch.detail_media's hero image and its words in catch.text; it is a profile header, not an avatar, image assembly or text role, and implements none of their contracts."
     },
     {
       "id": "shared_ground_card",
@@ -5342,7 +5410,11 @@
           "no-icon"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). One link in an organiser's link-in-bio list: an optional icon tile, title, subtitle, an optional owner stats line and an outward arrow; a pinned link takes an accent ground. A new-tab link carries rel noopener and a screen-reader note. Search aliases: LinkButton, LinkCard, LinkRow, BioLink, LinkInBio, LinkItem, LinktreeLink."
+      "notes": "Website T4 under D18 (CAT-249). One link in an organiser's link-in-bio list: an optional icon tile, title, subtitle, an optional owner stats line and an outward arrow; a pinned link takes an accent ground. A new-tab link carries rel noopener and a screen-reader note. Search aliases: LinkButton, LinkCard, LinkRow, BioLink, LinkInBio, LinkItem, LinktreeLink.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "One link in a link-in-bio list: an icon tile, title, subtitle, owner stats and an outward arrow. It sets its words in text roles; it is a link tile, not a text primitive."
     },
     {
       "id": "shared_rating_summary",
@@ -5370,7 +5442,11 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). An average rating in the displayXxl step over its star distribution: one coral bar per star count, scaled to the largest row and read by the caller's row label, with an optional policy note. Search aliases: RatingBreakdown, RatingHistogram, ReviewSummary, ScoreSummary, StarDistribution, RatingBars."
+      "notes": "Website T4 under D18 (CAT-249). An average rating in the displayXxl step over its star distribution: one coral bar per star count, scaled to the largest row and read by the caller's row label, with an optional policy note. Search aliases: RatingBreakdown, RatingHistogram, ReviewSummary, ScoreSummary, StarDistribution, RatingBars.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "An average rating over its star distribution with a count and a policy note. It sets the figures and labels in text roles; it is a rating summary, not a text primitive."
     },
     {
       "id": "shared_review_item",
@@ -5384,9 +5460,15 @@
       "source": "packages/web-ui/src/components/CatchReviewItem.tsx",
       "exportName": "CatchReviewItem",
       "comparedWith": [
+        "catch.analytics_metric",
+        "catch.event_card",
+        "catch.icon_tile",
+        "catch.index_row",
+        "catch.meta_row",
+        "catch.option_card",
         "catch.text"
       ],
-      "comparisonReason": "One review as an article named by the reviewer: stars, a verification badge slot, the text, the organiser's reply and a footer slot. It sets its lines in CatchLegacyText and implements no text contract itself.",
+      "comparisonReason": "One review as an article named by the reviewer: stars, a verification badge slot, the text, the organiser's reply and a footer slot. It sets its lines in CatchLegacyText and implements no text contract itself. Its name shares the item role noun with catch.index_row, catch.analytics_metric, catch.event_card, catch.icon_tile, catch.meta_row and catch.option_card, but it is one reviewer's article: no list row's leading and trailing slots, no metric, event, icon tile, meta line or selectable option.",
       "css": [
         "packages/web-ui/src/components/CatchReviewItem.module.css"
       ],
@@ -5678,6 +5760,30 @@
       "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
     },
     {
+      "id": "shared_catch_site_dock",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchSiteDock.tsx",
+      "exportName": "CatchSiteDock",
+      "css": [
+        "packages/web-ui/src/components/CatchSiteDock.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchSiteDock.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "two-actions",
+          "whatsapp",
+          "wide-hidden"
+        ]
+      },
+      "notes": "Website T4 under D26 (the playbook kit's .mbar). The phone action bar: a sticky ink pill 8px above the screen's foot with the page's main action (coral, or pink on the homepage), an optional outlined second action and an optional WhatsApp button, 44px each. It draws nothing on a wide page and sits last on the page, so it rides the screen's foot and comes to rest under the footer. First consumer: the homepage. Not catch.bottom_action (Flutter's CatchDock bar, card and pane): links only, no summary, note or loading state, and hidden on wide pages. Search aliases: MobileBar, StickyCta, PhoneBar."
+    },
+    {
       "id": "shared_device_frame",
       "kind": "supporting-component",
       "routeIds": [
@@ -5903,7 +6009,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "not_found",
-        "host_run_clubs"
+        "host_run_clubs",
+        "organizer_listing_canonical"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchBandHeader.tsx",
@@ -5928,7 +6035,7 @@
           "compact"
         ]
       },
-      "notes": "Website T4 under D18. Headline at one of the canvas sizes when a section asks (D26: hero 80/44px, section 56/36px, feature 42/32px, small 30/26px at -0.03em), else the page-title role (38, 48 and 64px by size class). Kickers take the canvas accent (deep on white and paper, bright on ink, the ground's secondary ink on a colour) at .04em. Renders a plain div, never a banner landmark. First consumer: the not-found page. The library's stories (packages/web-ui/src/components/CatchBandHeader.stories.tsx) do not declare catchComponent yet, so coverage stays planned. Search aliases: SectionHeader, BandHeading, SectionIntro, Kicker, Eyebrow."
+      "notes": "Website T4 under D18. Headline at one of the canvas sizes when a section asks (D26: hero 80/44px, section 56/36px, feature 42/32px, small 30/26px at -0.03em), else the page-title role (38, 48 and 64px by size class). Kickers take the canvas accent (deep on white and paper, bright on ink, the ground's secondary ink on a colour) at .04em. Renders a plain div, never a banner landmark. First consumer: the not-found page. The library's stories (packages/web-ui/src/components/CatchBandHeader.stories.tsx) do not declare catchComponent yet, so coverage stays planned. Search aliases: SectionHeader, BandHeading, SectionIntro, Kicker, Eyebrow. Also heads the organiser page's sections at the feature size (features/organizers: Coming up, What it's like, Reviews, About, the claim card)."
     },
     {
       "id": "shared_breadcrumb_row",

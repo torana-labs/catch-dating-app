@@ -137,40 +137,66 @@ class EventRepository with EventRepositoryActions {
     ),
   );
 
-  Stream<List<Event>> watchEventsForOrganizer({
-    required String organizerId,
-  }) => withBackendErrorStream(
-    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
-    () => _db
+  /// The organizer's current events for its page and the Host's event
+  /// pickers, by start time: the live and coming ones (soonest ending first,
+  /// one directory page) and the most recently ended ones (one directory
+  /// page), each a bounded listener. The boundary is the repository clock
+  /// when the listener opens. Older history pages through
+  /// [fetchPastEventsPage]; cancelled events are not included.
+  Stream<List<Event>> watchEventsForOrganizer({required String organizerId}) {
+    final boundary = Timestamp.fromDate(_clock.now());
+    Query<Map<String, dynamic>> active() => _db
         .collection(_collectionPath)
         .where('publicationState', isEqualTo: 'published')
         .where('organizerId', isEqualTo: organizerId)
-        .orderBy('startTime')
-        .limit(ReadLimitPolicy.historyPage)
-        .snapshots()
-        .map(
-          (snap) => snap.docs
-              .map(publishedRichEvent)
-              .whereType<Event>()
-              .where((event) => !event.synthetic)
-              .toList(),
-        ),
-    context: const BackendErrorContext(
-      service: BackendService.firestore,
-      action: 'watch organizer events',
-      resource: _collectionPath,
-    ),
-  );
+        .where('status', isEqualTo: EventLifecycleStatus.active.name);
+    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
+    final current = active()
+        .where('endTime', isGreaterThan: boundary)
+        .orderBy('endTime')
+        .orderBy(FieldPath.documentId)
+        .limit(ReadLimitPolicy.directoryPage);
+    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
+    final recent = active()
+        .where('endTime', isLessThanOrEqualTo: boundary)
+        .orderBy('endTime', descending: true)
+        .orderBy(FieldPath.documentId, descending: true)
+        .limit(ReadLimitPolicy.directoryPage);
+    List<Event> events(QuerySnapshot<Map<String, dynamic>> snap) => [
+      for (final event in snap.docs.map(publishedRichEvent).whereType<Event>())
+        if (!event.synthetic) event,
+    ];
+    return withBackendErrorStream(
+      () =>
+          _combineLatestPair(
+            current.snapshots().map(events),
+            recent.snapshots().map(events),
+          ).map((pair) {
+            final byId = {
+              for (final event in [...pair.$2, ...pair.$1]) event.id: event,
+            };
+            return List<Event>.unmodifiable(
+              byId.values.toList()
+                ..sort((a, b) => a.startTime.compareTo(b.startTime)),
+            );
+          }),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch organizer events',
+        resource: _collectionPath,
+      ),
+    );
+  }
 
   /// Fetches the organizer's nearest live and future events as a cursor page.
   ///
   /// The fixed [sessionBoundary] keeps paging stable while the Host Events
   /// screen is open. Presentation logic can still move an event from live to
   /// past as its clock advances without reissuing the Firestore query.
-  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchActiveEventsPage({
+  Future<CursorPage<Event, PageCursor<Event>>> fetchActiveEventsPage({
     required String organizerId,
     required DateTime sessionBoundary,
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
     // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
@@ -223,10 +249,10 @@ class EventRepository with EventRepositoryActions {
   );
 
   /// Fetches completed organizer events newest-first with an opaque cursor.
-  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchPastEventsPage({
+  Future<CursorPage<Event, PageCursor<Event>>> fetchPastEventsPage({
     required String organizerId,
     required DateTime sessionBoundary,
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
     // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
@@ -250,9 +276,9 @@ class EventRepository with EventRepositoryActions {
   ///
   /// Cancelled events keep `publicationState == 'published'`, so they share
   /// the published index family; the timeline merges them into history.
-  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchCancelledEventsPage({
+  Future<CursorPage<Event, PageCursor<Event>>> fetchCancelledEventsPage({
     required String organizerId,
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) => _fetchOrganizerEventsPage(
     // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,startTime:DESCENDING,__name__:DESCENDING)
@@ -268,15 +294,13 @@ class EventRepository with EventRepositoryActions {
     action: 'fetch cancelled organizer events page',
   );
 
-  Future<CursorPage<Event, DocumentSnapshot<Event>>> _fetchOrganizerEventsPage(
+  Future<CursorPage<Event, PageCursor<Event>>> _fetchOrganizerEventsPage(
     Query<Map<String, dynamic>> query, {
-    required DocumentSnapshot<Event>? startAfter,
+    required PageCursor<Event>? startAfter,
     required int limit,
     required String action,
   }) async {
-    final windowed = startAfter == null
-        ? query
-        : query.startAfterDocument(startAfter);
+    final windowed = query.startAfterCursor(startAfter);
     final page = await decodePublishedEventQuery(windowed)
         .fetchDocumentCursorPage(
           limit: limit,
@@ -296,22 +320,6 @@ class EventRepository with EventRepositoryActions {
       hasMore: page.hasMore,
     );
   }
-
-  Stream<List<Event>> watchEventsForOrganizers({
-    required List<String> organizerIds,
-  }) =>
-      watchEventsForOrganizerIdsStream(
-        organizerIds: organizerIds,
-        eventsRef: _eventsRef,
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'watch events for hosted organizers',
-          resource: _collectionPath,
-        ),
-      ).map(
-        (events) =>
-            events.where((event) => !event.synthetic).toList(growable: false),
-      );
 
   /// Generates a new unique Firestore document ID for an event without writing it.
   String generateId() => _eventsRef.doc().id;
@@ -413,14 +421,6 @@ Stream<EventVenueSession> eventVenueSession(Ref ref, String eventId) async* {
   }
 }
 
-@riverpod
-Stream<List<Event>> watchEventsForOrganizers(
-  Ref ref,
-  EventsForOrganizersQuery query,
-) => ref
-    .watch(eventRepositoryProvider)
-    .watchEventsForOrganizers(organizerIds: query.organizerIds);
-
 /// One organizer's events that end after the start of the given day.
 /// The day, not the instant, keys the listener, so it is reused all day.
 class ActiveOrganizerEventsQuery {
@@ -438,26 +438,6 @@ class ActiveOrganizerEventsQuery {
 
   @override
   int get hashCode => Object.hash(organizerId, endsAfter);
-}
-
-class EventsForOrganizersQuery {
-  EventsForOrganizersQuery._(Iterable<String> organizerIds)
-    : organizerIds = List.unmodifiable(organizerIds.toSet().toList()..sort());
-
-  factory EventsForOrganizersQuery(Iterable<String> organizerIds) =>
-      EventsForOrganizersQuery._(organizerIds);
-
-  static const _equality = ListEquality<String>();
-
-  final List<String> organizerIds;
-
-  @override
-  bool operator ==(Object other) =>
-      other is EventsForOrganizersQuery &&
-      _equality.equals(other.organizerIds, organizerIds);
-
-  @override
-  int get hashCode => _equality.hash(organizerIds);
 }
 
 class RecommendedEventsQuery {
@@ -490,3 +470,38 @@ Future<List<Event>> recommendedEvents(Ref ref, RecommendedEventsQuery query) =>
     ref
         .watch(eventRepositoryProvider)
         .fetchUpcomingEventsForOrganizers(query.followedOrganizerIds);
+
+/// The latest pair once both streams have emitted, then on every emission.
+/// Cancelling the result cancels both.
+Stream<(A, B)> _combineLatestPair<A, B>(Stream<A> first, Stream<B> second) {
+  late final StreamController<(A, B)> controller;
+  StreamSubscription<A>? firstSub;
+  StreamSubscription<B>? secondSub;
+  A? a;
+  B? b;
+  var hasA = false;
+  var hasB = false;
+  void emit() {
+    if (hasA && hasB) controller.add((a as A, b as B));
+  }
+
+  controller = StreamController<(A, B)>(
+    onListen: () {
+      firstSub = first.listen((value) {
+        a = value;
+        hasA = true;
+        emit();
+      }, onError: controller.addError);
+      secondSub = second.listen((value) {
+        b = value;
+        hasB = true;
+        emit();
+      }, onError: controller.addError);
+    },
+    onCancel: () async {
+      await Future.wait([?firstSub?.cancel(), ?secondSub?.cancel()]);
+      await controller.close();
+    },
+  );
+  return controller.stream;
+}

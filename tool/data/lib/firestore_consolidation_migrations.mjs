@@ -187,6 +187,26 @@ function functionsFormVersionFilters() {
   return formVersionFilterModule;
 }
 
+let requestViewModule = null;
+function functionsRequestViews() {
+  try {
+    requestViewModule ??= createFunctionsRequire()(
+      "./lib/hostReadModels/requestViewStore.js");
+  } catch (error) {
+    throw new Error(
+      "The host-event-request-views migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return requestViewModule;
+}
+
+/** One event's request view from current sources, read only. */
+function requestViewRow(db, eventId) {
+  const {hostEventRequestView} = functionsRequestViews();
+  return db.runTransaction((tx) => hostEventRequestView(db, tx, eventId, Date.now()));
+}
+
 let guestMessagingPermissionModule = null;
 function functionsGuestMessagingPermissions() {
   try {
@@ -622,6 +642,27 @@ export const MIGRATIONS = [
         targetId: (id) => id,
         transform: (data, id) =>
           functionsFormVersionFilters().hostFormVersionFilter(id, data),
+      },
+    ],
+  },
+  {
+    name: "host-event-request-views",
+    description:
+      "Host Requests read hostEventRequestViews (#1339) instead of the " +
+      "listOrganizerRequests callable. Every active coming event with anyone " +
+      "waiting gets its view, computed from the event, its waitlisted " +
+      "participations, public profiles and contact summaries exactly as the " +
+      "new triggers write it. Events with nobody waiting get none. Existing " +
+      "views are never replaced; events and participations are never " +
+      "changed. Build Functions first.",
+    steps: [
+      {
+        source: "events",
+        target: "hostEventRequestViews",
+        skipReason: "not an active coming event with someone waiting",
+        targetId: (id, data) => data.status === "active" &&
+          validId(data.organizerId) ? id : null,
+        transform: (data, id, db) => requestViewRow(db, id),
       },
     ],
   },

@@ -27,7 +27,10 @@ export interface CatchStackProps extends HTMLAttributes<HTMLElement> {
   collapseBelow?: "medium" | "expanded";
   /**
    * Rows only (proposal E1): one child keeps a fixed rail width, 380px
-   * (`narrow`, a booking rail) or 420px (`wide`, an organiser rail), and the
+   * (`narrow`, a booking rail), 420px (`wide`, an organiser rail) or 240px
+   * (`sidebar`, layout.sidebar: the organiser page's rating beside its
+   * reviews), or its own width (`fit`, a field's submit button, centred on
+   * the row), and the
    * other takes the rest. Pair it with `collapseBelow` so the two stack on a phone.
    */
   railWidth?: CatchStackRailWidth;
@@ -38,7 +41,7 @@ export interface CatchStackProps extends HTMLAttributes<HTMLElement> {
   as?: CatchStackElement;
 }
 
-export type CatchStackRailWidth = "narrow" | "wide";
+export type CatchStackRailWidth = "narrow" | "wide" | "sidebar" | "fit";
 
 /**
  * catch.stack: lays children out in a column or a row with a token gap. Use

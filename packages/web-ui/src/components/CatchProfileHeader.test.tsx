@@ -37,6 +37,26 @@ describe("CatchProfileHeader", () => {
     expect(container.querySelector("[data-initials='HL']")).toBeTruthy();
   });
 
+  it("lays the hero out with the copy before its actions and the badges under the name", () => {
+    const {container} = render(
+      <CatchProfileHeader
+        actions={<button type="button">Follow</button>}
+        badges={<span>Women-led</span>}
+        layout="hero"
+        name="Lantern Lane Runners"
+        stats={[{label: "followers", value: "2,140"}]}
+      />,
+    );
+    expect(container.firstElementChild?.getAttribute("data-layout")).toBe("hero");
+    const name = screen.getByRole("heading", {level: 1, name: "Lantern Lane Runners"});
+    const badge = screen.getByText("Women-led");
+    const follow = screen.getByRole("button", {name: "Follow"});
+    expect(name.compareDocumentPosition(badge) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(badge.compareDocumentPosition(follow) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    // Outside a root the page is compact, so the hero's logo takes its 96px phone step.
+    expect(container.querySelector("[style*='--catch-avatar-size: 96px']")).toBeTruthy();
+  });
+
   it("renders the caller's actions under the identity", () => {
     render(<CatchProfileHeader actions={<button type="button">Follow</button>} name="Lantern Lane Runners" nameElement="h2" />);
     expect(screen.getByRole("heading", {level: 2})).toBeTruthy();
