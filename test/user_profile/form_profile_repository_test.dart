@@ -46,26 +46,35 @@ void main() {
     repository = FormProfileRepository(_NoFunctions(), db);
   });
 
-  test('lists only the guest\'s own rows, one page at a time', () async {
-    for (var i = 0; i < 22; i++) {
-      await db
-          .collection('participantFormProfileViews')
-          .doc('r${i.toString().padLeft(2, '0')}')
-          .set(_view('person', selected: i == 0 ? ['cocktail'] : []));
-    }
-    await db
-        .collection('participantFormProfileViews')
-        .doc('other')
-        .set(_view('someone-else'));
-    final page = await repository.list('person');
-    expect(page.items, hasLength(FormProfileRepository.pageSize));
-    expect(page.items.first.responseId, 'r00');
-    expect(page.items.first.cardFieldCount, 1);
-    expect(page.items.first.organizerName, isNull);
-    expect(page.items[1].cardFieldCount, 0);
-    expect(page.nextCursor, 'r19');
-    expect(page.items.map((row) => row.responseId), isNot(contains('other')));
-  });
+  test(
+    'lists only the guest\'s own rows, newest first, a page at a time',
+    () async {
+      for (var i = 0; i < 22; i++) {
+        await db
+            .collection('participantFormProfileViews')
+            .doc('r${i.toString().padLeft(2, '0')}')
+            .set({
+              ..._view('person', selected: i == 21 ? ['cocktail'] : []),
+              'submittedAtMillis': 1000 + i,
+            });
+      }
+      await db.collection('participantFormProfileViews').doc('other').set({
+        ..._view('someone-else'),
+        'submittedAtMillis': 5000,
+      });
+      final page = await repository.list('person');
+      expect(page.items, hasLength(FormProfileRepository.pageSize));
+      expect(page.items.first.responseId, 'r21');
+      expect(page.items.first.cardFieldCount, 1);
+      expect(page.items.first.organizerName, isNull);
+      expect(page.items[1].cardFieldCount, 0);
+      expect(page.nextCursor, 'r02');
+      expect(page.items.map((row) => row.responseId), isNot(contains('other')));
+      final next = await repository.list('person', cursor: page.nextCursor);
+      expect(next.items.map((row) => row.responseId), ['r01', 'r00']);
+      expect(next.nextCursor, isNull);
+    },
+  );
 
   test(
     'the review combines the row, the profile and the intake view',

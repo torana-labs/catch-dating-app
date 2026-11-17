@@ -11,6 +11,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'form_profile_repository.g.dart';
 
+// firestore-index: participantFormProfileViews (uid:ASCENDING,submittedAtMillis:DESCENDING,__name__:DESCENDING)
+
 /// The guest's form profiles, read from their own read models: one
 /// `participantFormProfileViews` row per submitted form, their
 /// `participantIntakeProfileViews` document and their `users` document.
@@ -52,18 +54,22 @@ class FormProfileRepository {
     'interestedInGenders',
   };
 
-  /// One page of the guest's rows in response id order. The cursor is the
-  /// last row id of the previous page.
+  /// One page of the guest's rows, newest submission first. The cursor is
+  /// the last row id of the previous page; a cursor row that has since gone
+  /// restarts from the newest, and callers merge rows by response id.
   Future<FormProfilePage> list(String uid, {String? cursor}) =>
       withBackendErrorContext(
         () async {
-          var query = _db
-              .collection(views)
+          final rows = _db.collection(views);
+          var query = rows
               .where('uid', isEqualTo: uid)
-              .orderBy(FieldPath.documentId)
-              .limit(pageSize + 1);
-          if (cursor != null) query = query.startAfter([cursor]);
-          final snapshot = await query.get();
+              .orderBy('submittedAtMillis', descending: true)
+              .orderBy(FieldPath.documentId, descending: true);
+          if (cursor != null) {
+            final last = await rows.doc(cursor).get();
+            if (last.exists) query = query.startAfterDocument(last);
+          }
+          final snapshot = await query.limit(pageSize + 1).get();
           final page = snapshot.docs.take(pageSize).toList();
           return FormProfilePage(
             items: page.map(
@@ -142,7 +148,10 @@ class FormProfileRepository {
   /// Snapshots, holding back a cached "missing" until the server confirms.
   Stream<DocumentSnapshot<Map<String, dynamic>>> _confirmed(
     DocumentReference<Map<String, dynamic>> ref,
-  ) => ref.snapshots().where((doc) => doc.exists || !doc.metadata.isFromCache);
+  ) {
+    final snapshots = ref.snapshots();
+    return snapshots.where((doc) => doc.exists || !doc.metadata.isFromCache);
+  }
 
   Future<FormProfilePhotoPreview> photoPreview({
     required String responseId,

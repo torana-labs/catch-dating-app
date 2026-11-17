@@ -149,7 +149,6 @@ class FormProfileClaimController extends _$FormProfileClaimController {
     await ref.read(formProfileRepositoryProvider).claim(request);
     if (!ref.mounted || ref.read(uidProvider).asData?.value != uid) return;
     ref.invalidate(formProfilesControllerProvider);
-    ref.invalidate(formProfileReviewProvider(request.responseId));
   }
 }
 
