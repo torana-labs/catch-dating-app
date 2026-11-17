@@ -2,6 +2,9 @@ import {
   CatchButton,
   CatchChip,
   CatchField,
+  CatchFlowLayout,
+  CatchFormStepList,
+  CatchGroundCard,
   CatchIcon,
   CatchIndexRow,
   CatchMeter,
@@ -13,9 +16,12 @@ import {
   CatchSurface,
   CatchText,
   CatchTopBar,
+  type CatchFormStepListStatus,
 } from "@catch/web-ui";
+import type {ReactNode} from "react";
 import {interpolateContent as fill} from "@content/interpolate";
 import {weddingsCopy} from "@content/weddings";
+import {weddingsApplyCopy} from "../../../content/weddingsApply";
 import {PublicSiteFooter, WebsitePageMain} from "../../../shared/site";
 import type {WeddingsApplicationController, WeddingsStepOne} from "../useWeddingsController";
 import {firstName, sentSummary, stepTwoContact, stepTwoSummary} from "../weddingsModel";
@@ -53,22 +59,32 @@ function ChipGroup({id, label, options, selected, onPressed, multiple = false, e
  * complete; on the application page it moves on to step 2. Missing answers
  * show their errors after Continue is pressed.
  */
-export function StepOneCard({stepOne, onContinue, continueHref, idPrefix, titleAs = "h3"}: {
+export function StepOneCard({stepOne, onContinue, continueHref, idPrefix, titleAs = "h3", bare = false}: {
   stepOne: WeddingsStepOne;
-  /** h1 when the card is the page's subject (the application page's step 1). */
+  /** h1 when the card is the page's subject. */
   titleAs?: "h1" | "h3";
   onContinue: () => void;
   continueHref?: string;
   idPrefix: string;
+  /** The application page's step 1: the fields alone, as a flow block under the flow's own head and step rail. */
+  bare?: boolean;
 }) {
   const {draft, update, errors} = stepOne;
-  return (
+  // A plain function, not a component: a component made per render would remount the fields on every change.
+  const frame = (children: ReactNode) => bare ? (
+    <CatchGroundCard ground="white" outlined padding="spacious"><CatchStack gap={20}>{children}</CatchStack></CatchGroundCard>
+  ) : (
     <CatchSurface aria-labelledby={`${idPrefix}-title`} as="section" block="floating" padding="lg">
       <CatchStack align="baseline" direction="row" gap={8} justify="between" wrap>
         <CatchText as={titleAs} id={`${idPrefix}-title`} variant="display-sm">{one.title}</CatchText>
         <CatchText tone="secondary" variant="label-action">{one.step}</CatchText>
       </CatchStack>
       <CatchMeter kind="segments" label={one.step} max={2} thickness={4} value={1} />
+      {children}
+    </CatchSurface>
+  );
+  return frame(
+    <>
       <ChipGroup error={errors.who} id={`${idPrefix}-who`} label={one.who.label} onPressed={(option) => update("who", option)} options={one.who.options}
         selected={(option) => draft.who === option} />
       <ChipGroup error={errors.what} id={`${idPrefix}-what`} label={one.what.label} onPressed={(option) => update("what", option)} options={one.what.options}
@@ -92,7 +108,7 @@ export function StepOneCard({stepOne, onContinue, continueHref, idPrefix, titleA
         selected={(option) => draft.tools.includes(option)} />
       <CatchButton fill href={stepOne.complete ? continueHref : undefined} label={one.continue} onPressed={onContinue} trailingIcon="forward" />
       <CatchText tone="secondary" variant="body-small">{one.reply}</CatchText>
-    </CatchSurface>
+    </>,
   );
 }
 
@@ -116,12 +132,9 @@ function Counter({title, subtitle, unit, min, max, value, onChanged}: {
 function StepTwoForm({application}: {application: WeddingsApplicationController}) {
   const {stepTwo, updateStepTwo, stepTwoErrors: errors} = application;
   return (
-    <CatchSurface aria-labelledby="weddings-step-two-form" as="section" block="floating" padding="lg">
-      <CatchStack align="baseline" direction="row" gap={8} justify="between" wrap>
-        <CatchText as="h2" id="weddings-step-two-form" variant="display-sm">{two.title}</CatchText>
-        <CatchText tone="secondary" variant="label-action">{two.step}</CatchText>
-      </CatchStack>
-      <CatchMeter kind="segments" label={two.step} max={2} thickness={4} value={2} />
+    <CatchGroundCard aria-labelledby="weddings-step-two-form" as="section" ground="white" outlined padding="spacious">
+      <CatchStack gap={20}>
+      <CatchText as="h2" id="weddings-step-two-form" variant="display-sm">{two.title}</CatchText>
       <CatchSection container="tile" dividers="between">
         <Counter max={two.functions.max} min={two.functions.min} onChanged={(value) => updateStepTwo("functions", value)}
           subtitle={two.functions.subtitle} title={two.functions.title} unit={two.functions.one} value={stepTwo.functions} />
@@ -144,14 +157,16 @@ function StepTwoForm({application}: {application: WeddingsApplicationController}
       </CatchStack>
       {application.error ? <CatchText role="alert" tone="danger" variant="body-small">{application.error}</CatchText> : null}
       <CatchText tone="secondary" variant="body-small">{two.consent}</CatchText>
-    </CatchSurface>
+      </CatchStack>
+    </CatchGroundCard>
   );
 }
 
 /** After Send: the thanks, what was sent, and the way back. */
 function SentCard({application}: {application: WeddingsApplicationController}) {
   return (
-    <CatchSurface aria-labelledby="weddings-sent-title" aria-live="polite" as="section" block="floating" padding="lg">
+    <CatchGroundCard aria-labelledby="weddings-sent-title" aria-live="polite" as="section" ground="white" outlined padding="spacious">
+      <CatchStack gap={20}>
       <CatchStack align="center" direction="row" gap={8}>
         <CatchIcon label={sent.badge} name="success" size={24} />
         <CatchText tone="success" variant="label-action">{sent.badge}</CatchText>
@@ -167,41 +182,49 @@ function SentCard({application}: {application: WeddingsApplicationController}) {
         <CatchButton href="/weddings/#follow" label={sent.follow} variant="secondary" />
       </CatchStack>
       <CatchStack align="start"><CatchButton label={sent.edit} onPressed={application.reopen} size="sm" variant="quiet" /></CatchStack>
-    </CatchSurface>
+      </CatchStack>
+    </CatchGroundCard>
   );
 }
 
-/** Step 2 and the sent state: the summary and what happens next beside the form (they stack on phones). */
+/** The application's progress on the board's rail: step 1, then step 2. */
+function ApplicationSteps({current}: {current: number}) {
+  const status = (value: CatchFormStepListStatus) => weddingsApplyCopy.stepStatus[value];
+  return <CatchFormStepList current={current} direction="row" label={weddingsApplyCopy.stepsLabel} statusLabelBuilder={status}
+    items={weddingsApplyCopy.steps.map((title, index) => ({index, title, status: index < current ? "complete" : "needsInformation"}))} />;
+}
+
+/** Step 2 and the sent state as flow blocks: the summary, the form or the thanks, then what happens next. */
 function StepTwoPage({application}: {application: WeddingsApplicationController}) {
   const done = application.stage === "sent";
   return (
-    <CatchSurface aria-labelledby="weddings-apply-title" as="section" block="band" color="tile">
-      <CatchStack align="start" collapseBelow="expanded" direction="row" gap={48}>
-        <CatchStack gap={28}>
-          <CatchStack gap={20}>
-            <CatchText tone="info" variant="label-kicker">{done ? sent.kicker : two.kicker}</CatchText>
-            <CatchText as="h1" id="weddings-apply-title" variant="display-xl">{done ? sent.heading : two.heading}</CatchText>
-            <CatchSurface block="floating" padding="md">
-              <CatchText tone="secondary" variant="label-kicker">{two.yours}</CatchText>
-              <CatchText variant="title-row">{stepTwoSummary(application.stepOne.draft)}</CatchText>
-              <CatchText tone="secondary" variant="body-small">{stepTwoContact(application.stepOne.draft)}</CatchText>
-              <CatchStack align="start">
-                <CatchButton label={two.change} leadingIcon="back" onPressed={application.changeStepOne} size="sm" variant="quiet" />
-              </CatchStack>
-            </CatchSurface>
-          </CatchStack>
-          <CatchStack gap={16}>
-            <CatchText as="h2" variant="display-sm">{two.nextTitle}</CatchText>
-            <CatchStepList steps={two.next} />
+    <CatchFlowLayout kicker={done ? sent.kicker : two.kicker} kickerTone="info"
+      navigation={done ? undefined : <ApplicationSteps current={1} />} title={done ? sent.heading : two.heading}>
+      <CatchGroundCard ground="white" outlined>
+        <CatchStack gap={4}>
+          <CatchText tone="secondary" variant="label-kicker">{two.yours}</CatchText>
+          <CatchText variant="title-row">{stepTwoSummary(application.stepOne.draft)}</CatchText>
+          <CatchText tone="secondary" variant="body-small">{stepTwoContact(application.stepOne.draft)}</CatchText>
+          <CatchStack align="start">
+            <CatchButton label={two.change} leadingIcon="back" onPressed={application.changeStepOne} size="sm" variant="quiet" />
           </CatchStack>
         </CatchStack>
-        {done ? <SentCard application={application} /> : <StepTwoForm application={application} />}
-      </CatchStack>
-    </CatchSurface>
+      </CatchGroundCard>
+      {done ? <SentCard application={application} /> : <StepTwoForm application={application} />}
+      <CatchGroundCard ground="white" outlined>
+        <CatchStack gap={16}>
+          <CatchText as="h2" variant="display-sm">{two.nextTitle}</CatchText>
+          <CatchStepList steps={two.next} />
+        </CatchStack>
+      </CatchGroundCard>
+    </CatchFlowLayout>
   );
 }
 
-/** The application's current stage: step 1 if the landing did not hand it over, step 2, or sent. */
+/**
+ * The application on the LiveWeddingsApply board: the kit's flow with its
+ * step rail, at step 1 if the landing did not hand it over, step 2, or sent.
+ */
 export function WeddingsApplicationView({application}: {application: WeddingsApplicationController}) {
   return (
     <CatchRoot format="nightsOut" theme="day">
@@ -209,9 +232,9 @@ export function WeddingsApplicationView({application}: {application: WeddingsApp
         variant="site" />
       <WebsitePageMain id="top">
         {application.stage === "stepOne" ? (
-          <CatchSurface block="band" color="tile">
-            <StepOneCard idPrefix="weddings-apply-one" onContinue={application.continueToStepTwo} stepOne={application.stepOne} titleAs="h1" />
-          </CatchSurface>
+          <CatchFlowLayout kicker={one.step} kickerTone="info" navigation={<ApplicationSteps current={0} />} title={one.title}>
+            <StepOneCard bare idPrefix="weddings-apply-one" onContinue={application.continueToStepTwo} stepOne={application.stepOne} />
+          </CatchFlowLayout>
         ) : <StepTwoPage application={application} />}
       </WebsitePageMain>
       <PublicSiteFooter tagline={weddingsCopy.foot.applyBody} variant="host" wordmark={weddingsCopy.foot.title} />

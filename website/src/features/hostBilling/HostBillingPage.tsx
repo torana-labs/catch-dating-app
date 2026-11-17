@@ -1,11 +1,11 @@
 import {
   CatchButton,
   CatchEmptyState,
+  CatchFlowLayout,
+  CatchGroundCard,
   CatchIndexRow,
   CatchLoadingIndicator,
-  CatchPageBody,
   CatchPageTabBar,
-  CatchPaneLayout,
   CatchRoot,
   CatchSection,
   CatchStack,
@@ -29,67 +29,65 @@ import {
 } from "./hostBillingModel";
 import {useHostBillingController, type HostBillingController} from "./useHostBillingController";
 
-const titleId = "host-billing-title";
 
 export function HostBillingPage() {
   return <HostBillingView {...useHostBillingController()} />;
 }
 
 /**
- * /host/billing/: the organizer owner's billing on the web, the only place
- * Catch's prices, paying bills and choosing the tools-only plan appear (the
- * native Host app shows status only). Signed out it offers the phone-code
- * sign-in; the page is private and out of search.
+ * /host/billing/ on the LiveBilling board: the organizer owner's billing on
+ * the web, the only place Catch's prices, paying bills and choosing the
+ * tools-only plan appear (the native Host app shows status only). It is the
+ * kit's flow: signed out, its head asks for the owner's sign-in; signed in,
+ * a wide frame names the organiser and sets the trial, the plan and the
+ * bills side by side. The page is private and out of search.
  */
 export function HostBillingView(props: HostBillingController) {
   const {phase} = props;
+  const signedOut = phase === "signedOut";
+  const organizerName = props.organizers.find((item) => item.organizerId === props.organizerId)?.organizerName;
   return (
     <CatchRoot theme="day">
       <PublicSiteHeader breadcrumbs={{links: [publicSiteCopy.forHosts], current: copy.title}} variant="host" />
-      <WebsitePageMain aria-labelledby={titleId} id="host-billing">
-        <CatchPageBody gutter={false} pb="s8" pt="s4">
-          <CatchPaneLayout
-            main={
-              <CatchStack gap={24}>
-                <CatchStack gap={4}>
-                  <CatchText as="h1" id={titleId} variant="page-title">{copy.title}</CatchText>
-                  <CatchText tone="secondary" variant="body">{copy.subtitle}</CatchText>
-                </CatchStack>
-                {phase === "loading" ? <CatchStack align="center" gap={8} role="status">
-                  <CatchLoadingIndicator />
-                  <CatchText tone="secondary" variant="body-small">{copy.loading}</CatchText>
-                </CatchStack> : null}
-                {phase === "signedOut" ? <CatchEmptyState
-                  actions={<SignInButton label={copy.signedOut.action} size="md" variant="primary" />}
-                  message={copy.signedOut.message} title={copy.signedOut.title} /> : null}
-                {phase === "noOrganizers" ? <CatchEmptyState message={copy.noOrganizers.message}
-                  title={copy.noOrganizers.title} /> : null}
-                {phase === "notOwner" ? <CatchEmptyState message={copy.notOwner} /> : null}
-                {phase === "failed" ? <CatchEmptyState
-                  actions={<CatchButton label={copy.retry} onPressed={props.refresh} size="md" variant="secondary" />}
-                  message={copy.failed} /> : null}
-                {props.organizers.length > 1 && props.organizerId ? <CatchPageTabBar
-                  label={copy.organizer} onChanged={props.selectOrganizer} selected={props.organizerId} size="sm"
-                  options={props.organizers.map((item) => ({value: item.organizerId, label: item.organizerName}))} /> : null}
-                {phase === "ready" ? <BillingSections {...props} /> : null}
-              </CatchStack>
-            }
-            pattern="reading"
-          />
-        </CatchPageBody>
+      <WebsitePageMain id="host-billing">
+        <CatchFlowLayout
+          kicker={signedOut ? copy.title : organizerName ? fill(copy.kicker, {name: organizerName}) : undefined}
+          lead={signedOut ? copy.signedOut.message : copy.subtitle}
+          navigation={props.organizers.length > 1 && props.organizerId ? <CatchPageTabBar
+            label={copy.organizer} onChanged={props.selectOrganizer} selected={props.organizerId} size="sm"
+            options={props.organizers.map((item) => ({value: item.organizerId, label: item.organizerName}))} /> : undefined}
+          title={signedOut ? copy.signedOut.title : copy.title}
+          wide={phase === "ready"}
+        >
+          {phase === "loading" ? <CatchStack align="center" gap={8} role="status">
+            <CatchLoadingIndicator />
+            <CatchText tone="secondary" variant="body-small">{copy.loading}</CatchText>
+          </CatchStack> : null}
+          {signedOut ? <CatchGroundCard ground="white" outlined>
+            <CatchStack align="start"><SignInButton label={copy.signedOut.action} size="md" variant="primary" /></CatchStack>
+          </CatchGroundCard> : null}
+          {phase === "noOrganizers" ? <CatchEmptyState message={copy.noOrganizers.message}
+            title={copy.noOrganizers.title} /> : null}
+          {phase === "notOwner" ? <CatchEmptyState message={copy.notOwner} /> : null}
+          {phase === "failed" ? <CatchEmptyState
+            actions={<CatchButton label={copy.retry} onPressed={props.refresh} size="md" variant="secondary" />}
+            message={copy.failed} /> : null}
+          {phase === "ready" ? <BillingSections {...props} /> : null}
+        </CatchFlowLayout>
       </WebsitePageMain>
       <PublicSiteFooter variant="host" />
     </CatchRoot>
   );
 }
 
+/** The trial, the plan and the bills: each a block of the wide frame's two columns. */
 function BillingSections(props: HostBillingController) {
   return (
-    <CatchStack gap={32}>
+    <>
       {props.trial ? <TrialSection trial={props.trial} /> : null}
       {props.planView ? <PlanSection {...props} view={props.planView} /> : null}
       <BillsSection {...props} />
-    </CatchStack>
+    </>
   );
 }
 
@@ -178,7 +176,7 @@ export function billStatus(bill: Bill, nowMillis: number): {text: string; tone: 
 function BillsSection(props: HostBillingController) {
   const {bills, nowMillis} = props;
   return (
-    <CatchSection count={bills.length} dividers="between" title={copy.bills.title}
+    <CatchSection container="tile" count={bills.length} dividers="between" title={copy.bills.title}
       empty={<CatchEmptyState message={copy.bills.empty} variant="inline" />}>
       {bills.map((bill) => {
         const status = billStatus(bill, nowMillis);

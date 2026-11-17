@@ -82,6 +82,7 @@ export const accountPageCopy = {
     privacy: "Privacy and data",
   },
   signedOut: {
+    kicker: "Account",
     title: "Sign in to see your account",
     message: "Your plans, the organisers you follow and your reviews, in one place.",
     action: "Sign in",
@@ -147,7 +148,7 @@ export const accountPageCopy = {
     addPhone: "Add your phone to finish your account",
     addPhoneMessage: "Organisers reach you about your bookings by phone, so your account needs one.",
     signOut: "Sign out",
-    notProfile: "This is your account, not a dating profile. Nobody can browse it.",
+    notProfile: "This is your account, not a public profile. Nobody can browse it.",
   },
   messages: {
     title: "Messages from organisers",

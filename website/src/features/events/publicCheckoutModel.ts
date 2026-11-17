@@ -7,6 +7,7 @@ import {
   policy,
   validEventPayment,
 } from "../../shared/payments/eventPaymentValidation";
+import {MAX_CHECKOUT_PLACES, placeFieldsConsistent} from "./checkoutPlaces";
 export type PublicQuote = NonNullable<Response["quote"]>;
 export type PublicPayment = NonNullable<Response["payment"]>;
 export type PublicAdmission = NonNullable<Response["admission"]>;
@@ -20,6 +21,20 @@ function eventFacts(value: Record<string, unknown>) {
     value.eventName.length <= 200 &&
     integer(value.startTimeMillis)
   );
+}
+// Multi-place checkout (PR #1887) adds optional place fields: a quote's
+// place count is 2 to 4, a payment's or admission's 1 to 20. A one-place
+// quote carries none, so the reviewed quote echoes exactly what it read.
+const quotePlaceKeys = ["placeCount", "unitAmountPaise", "memberPlaceCount", "guestUnitAmountPaise"];
+const quoteOptionalKeys = [...quotePlaceKeys, "listAmountPaise"];
+const paymentPlaceKeys = quotePlaceKeys;
+const MAX_PAYMENT_PLACES = 20;
+/** The object's keys are the required ones plus any of the optional ones. */
+function keysWithOptional(value: Record<string, unknown>, required: string[], optional: string[]) {
+  return keys(value, [...required, ...optional.filter((key) => key in value)]);
+}
+function withoutKeys(value: Record<string, unknown>, omitted: string[]) {
+  return Object.fromEntries(Object.entries(value).filter(([key]) => !omitted.includes(key)));
 }
 export function assertPublicCheckoutResponse(
   value: unknown,
@@ -40,7 +55,7 @@ export function assertPublicCheckoutResponse(
   if (
     quote !== null &&
     (!record(quote) ||
-      !keys(quote, [
+      !keysWithOptional(quote, [
         "eventId",
         "eventName",
         "registrationRevision",
@@ -48,7 +63,10 @@ export function assertPublicCheckoutResponse(
         "amountPaise",
         "currency",
         "cancellationPolicy",
-      ]) ||
+      ], quoteOptionalKeys) ||
+      (quote.placeCount !== undefined && (quote.placeCount as number) < 2) ||
+      !placeFieldsConsistent(quote, MAX_CHECKOUT_PLACES) ||
+      (quote.listAmountPaise !== undefined && !integer(quote.listAmountPaise, 100)) ||
       !eventFacts(quote) ||
       quote.eventId !== eventId ||
       !integer(quote.registrationRevision, 0) ||
@@ -62,7 +80,12 @@ export function assertPublicCheckoutResponse(
     return invalid();
   const payment = value.payment;
   if (
-    !validEventPayment(payment, "pp", [
+    record(payment) &&
+    !placeFieldsConsistent(payment, MAX_PAYMENT_PLACES)
+  )
+    return invalid();
+  if (
+    !validEventPayment(record(payment) ? withoutKeys(payment, paymentPlaceKeys) : payment, "pp", [
       "eventId",
       "eventName",
       "startTimeMillis",
@@ -84,7 +107,8 @@ export function assertPublicCheckoutResponse(
   if (
     admission !== null &&
     (!record(admission) ||
-      !keys(admission, ["eventId", "attendeeId", "status"]) ||
+      !keysWithOptional(admission, ["eventId", "attendeeId", "status"], ["placeCount"]) ||
+      (admission.placeCount !== undefined && !(integer(admission.placeCount) && admission.placeCount <= MAX_PAYMENT_PLACES)) ||
       admission.eventId !== eventId ||
       !eventIdValid(admission.attendeeId) ||
       !["registered", "checkedIn"].includes(String(admission.status)) ||

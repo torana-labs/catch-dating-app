@@ -9,6 +9,7 @@ import {brand} from "./brand.ts";
 export const hostBillingCopy = {
   title: "Billing",
   subtitle: `What ${brand.name} charges your organiser, and your bills.`,
+  kicker: "Organiser · {name}",
   loading: "Loading your billing…",
   signedOut: {
     title: "Sign in to see your billing",

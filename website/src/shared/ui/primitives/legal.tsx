@@ -1,29 +1,22 @@
-import type {HTMLAttributes, ReactNode} from "react";
+import {CatchArticleBody, type CatchArticleBodySection} from "@catch/web-ui";
+import type {ReactNode} from "react";
 
-export function LegalDocument({children}: {children: ReactNode}) {
-  return <article className="legal-document">{children}</article>;
-}
+export type LegalDocumentSection = CatchArticleBodySection;
 
-export function LegalDocumentHeader({children}: {children: ReactNode}) {
-  return <header className="legal-document__header">{children}</header>;
-}
-
-export function LegalDocumentEyebrow(props: HTMLAttributes<HTMLParagraphElement>) {
-  return <p {...props} className="legal-document__eyebrow" />;
-}
-
-export function LegalDocumentSummary(props: HTMLAttributes<HTMLParagraphElement>) {
-  return <p {...props} className="legal-document__summary" />;
-}
-
-export function LegalDocumentEffective(props: HTMLAttributes<HTMLParagraphElement>) {
-  return <p {...props} className="legal-document__effective" />;
-}
-
-export function LegalDocumentSections({children}: {children: ReactNode}) {
-  return <div className="legal-document__sections">{children}</div>;
-}
-
-export function LegalDocumentContact({children}: {children: ReactNode}) {
-  return <aside className="legal-document__contact">{children}</aside>;
+/**
+ * A published legal, help or contact document as the playbook kit's article
+ * (the LiveLegal board): the head with the effective date as its meta line,
+ * the anchored sections, and beside them the contents and the contact card.
+ * It draws CatchArticleBody; the page supplies resolved copy.
+ */
+export function LegalDocument({kicker, title, lead, meta, sections, tocLabel, aside}: {
+  kicker: string;
+  title: string;
+  lead: string;
+  meta: string;
+  sections: readonly LegalDocumentSection[];
+  tocLabel: string;
+  aside: ReactNode;
+}) {
+  return <CatchArticleBody aside={aside} kicker={kicker} kickerTone="success" lead={lead} meta={meta} sections={sections} title={title} tocLabel={tocLabel} />;
 }
