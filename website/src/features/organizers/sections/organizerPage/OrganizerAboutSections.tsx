@@ -23,8 +23,8 @@ export function OrganizerAboutSection({controller}: {controller: OrganizerPageCo
     <CatchStack aria-labelledby={titleId} as="section" gap={16} id="about">
       <CatchBandHeader lead={about.text || undefined} size="feature" title={copy.aboutTitle} titleId={titleId} />
       {about.formats.length ? (
-        <CatchStack aria-label={copy.formatsLabel} as="ul" direction="row" gap={8} wrap>
-          {about.formats.map((format) => <li key={format}><CatchBadge label={format} size="md" tone="neutral" /></li>)}
+        <CatchStack direction="row" gap={8} wrap>
+          {about.formats.map((format) => <CatchBadge key={format} label={format} size="md" tone="neutral" />)}
         </CatchStack>
       ) : null}
       {about.facts.length ? (
@@ -64,15 +64,13 @@ export function OrganizerClaimSection({controller}: {controller: OrganizerPageCo
       <CatchStack gap={16}>
         <CatchBandHeader ground="indigo" kicker={pitch.label} lead={waiting ? `${waiting}. ${claim.built}` : claim.built}
           size="feature" title={pitch.title} titleId={titleId} />
-        <CatchGrid as="ul" columns={2} compactColumns={1}>
+        <CatchGrid columns={2} compactColumns={1}>
           {pitch.points.map((point) => (
-            <li key={point.title}>
-              <CatchGroundCard ground="white" padding="compact">
-                <CatchText as="p" variant="body">
-                  <strong>{point.title}</strong>{` ${point.body}`}
-                </CatchText>
-              </CatchGroundCard>
-            </li>
+            <CatchGroundCard ground="white" key={point.title} padding="compact">
+              <CatchText as="p" variant="body">
+                <CatchText as="span" variant="label-action">{point.title}</CatchText>{` ${point.body}`}
+              </CatchText>
+            </CatchGroundCard>
           ))}
         </CatchGrid>
         {claim.pending ? <CatchText as="p" variant="label-action">{pitch.pending}</CatchText> : null}

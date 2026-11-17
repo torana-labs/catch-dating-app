@@ -124,7 +124,6 @@ export const organizerPageCopy = {
     done: (name: string) => `Thanks, ${name}. Your review is up, marked unverified because you didn’t book this event on ${brand.name}.`,
   },
   aboutTitle: "About",
-  formatsLabel: "Formats",
   hostTitle: "Who runs it",
   claim: {
     label: "Is this your club?",
