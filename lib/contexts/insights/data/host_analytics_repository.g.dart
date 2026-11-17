@@ -144,7 +144,7 @@ final class HostAnalyticsProvider
   }
 }
 
-String _$hostAnalyticsHash() => r'b080b929f8c7aaaa5aff91f8c3d05d21147efe0d';
+String _$hostAnalyticsHash() => r'8d510b9f2eaf07bea58c988ef336be27a083721e';
 
 /// Host analytics, kept for the host reports window after the screen closes
 /// and refetched in the background once older than its staleness. A write
