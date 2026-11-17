@@ -489,10 +489,16 @@
       "exportName": "HostPage",
       "css": [
         "website/src/styles/site-shell.css",
-        "website/src/styles/host-foundation.css",
-        "website/src/styles/host.css",
-        "website/src/styles/flows.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchHeroSection.module.css",
+        "packages/web-ui/src/components/CatchCardGrid.module.css",
+        "packages/web-ui/src/components/CatchRouteCard.module.css",
+        "packages/web-ui/src/components/CatchTimelineSection.module.css",
+        "packages/web-ui/src/components/CatchComparisonTable.module.css",
+        "packages/web-ui/src/components/CatchFeeSection.module.css",
+        "packages/web-ui/src/components/CatchFaqSection.module.css",
+        "packages/web-ui/src/components/CatchCtaSection.module.css",
+        "packages/web-ui/src/components/CatchStepCards.module.css",
+        "packages/web-ui/src/components/CatchSiteDock.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -508,7 +514,7 @@
           "phone"
         ]
       },
-      "notes": "Host landing from the RbWebHostV2 board on the white ground: hero with Start free trial, Catch Host's official store badges, the trial terms and the today capture bleeding off the band; every kind of night with the format matrix; on the night (CatchNightScene, the format shared with the tiles and matrix); the tablet; from interested to expected (CatchPipelineBoard); for your guests; what brings people in; the ways to use Catch on the indigo band (CatchLayerMap); pricing (5% after a 30-day trial from the first event, capped at ₹10,000 a month); the FAQ; and the #start band with three steps, the badges and a link to Catch for weddings. App screens are capture slots (tool/marketing/capture_manifest.json). Retired-route anchors sit on the bands that carry that content. The route story covers the default state; the other review states are manual."
+      "notes": "The host landing, band for band as the PlaybookHosts board on the canvas system: the coral hero (the bezel phone, a person on WhatsApp, the walkthrough link and the laptop QR card); every kind of host (canvas format cards, each linking to #night-<format>); where you are today (CatchRouteCard); on the night (CatchTimelineSection with the format picker, each moment's capture beside it); how Catch compares; the fee band on ink (5% after the trial, capped per 30-day billing cycle, with the shared fee calculator, three worked examples and See full pricing); four ways to start (CatchRouteCard, the iPad capture in the see-it card); the FAQ; the yellow free-trial start band (step cards, Catch Host's badges); the footer's help band titled for hosts; and the phone dock. App screens are capture slots (tool/marketing/capture_manifest.json). Retired-route anchors are empty marks beside the bands that carry their content. The board's proof, story, no-show tool and referral bands wait for real data and backends. The route story covers the default state; the other review states are manual."
     },
     {
       "id": "route_organizer_listing",
@@ -1511,21 +1517,25 @@
       "source": "website/src/features/playbook/PlaybookPage.tsx",
       "exportName": "PlaybookPage",
       "css": [
-        "website/src/styles/site-shell.css",
-        "packages/web-ui/src/components/CatchHeroSection.module.css",
-        "packages/web-ui/src/components/CatchSplitSection.module.css",
+        "packages/web-ui/src/components/CatchBandHeader.module.css",
         "packages/web-ui/src/components/CatchCtaSection.module.css",
         "packages/web-ui/src/components/CatchFaqSection.module.css",
-        "packages/web-ui/src/components/CatchScreenPreview.module.css",
-        "packages/web-ui/src/components/CatchPricingSection.module.css",
         "packages/web-ui/src/components/CatchFeatureTile.module.css",
-        "packages/web-ui/src/components/CatchBandHeader.module.css"
+        "packages/web-ui/src/components/CatchFeeCalculator.module.css",
+        "packages/web-ui/src/components/CatchFeeCapChart.module.css",
+        "packages/web-ui/src/components/CatchFeeSection.module.css",
+        "packages/web-ui/src/components/CatchHeroSection.module.css",
+        "packages/web-ui/src/components/CatchPricingSection.module.css",
+        "packages/web-ui/src/components/CatchScreenPreview.module.css",
+        "packages/web-ui/src/components/CatchSplitSection.module.css",
+        "website/src/styles/site-shell.css"
       ],
       "storybook": {
         "status": "ready",
         "story": "website/src/stories/PlaybookPages.stories.tsx",
         "exportName": "RunClubs",
         "states": [
+          "pricing",
           "run-clubs"
         ]
       },
@@ -1794,7 +1804,8 @@
       "exportName": "CatchComparisonTable",
       "comparedWith": [
         "catch.surface",
-        "catch.text"
+        "catch.text",
+        "catch.table"
       ],
       "comparisonReason": "A website comparison band (the kit's table): compared columns, a corner label, rows of text or yes/no marks, a highlighted column and its source and checked date, set with catch.text in a catch.surface band. It is a read-only comparison, not a data table.",
       "css": [
@@ -1942,7 +1953,8 @@
       "exportName": "CatchStoryCard",
       "comparedWith": [
         "catch.detail_media",
-        "catch.text"
+        "catch.text",
+        "catch.event_card"
       ],
       "comparisonReason": "One story in a grid of stories: a 4:3 photo, a meta line, the title, a body and a figure at the foot. It places a CatchHeroImage and CatchText in a card and implements neither the detail media nor the text contract.",
       "css": [
@@ -5781,7 +5793,11 @@
           "wide-hidden"
         ]
       },
-      "notes": "Website T4 under D26 (the playbook kit's .mbar). The phone action bar: a sticky ink pill 8px above the screen's foot with the page's main action (coral, or pink on the homepage), an optional outlined second action and an optional WhatsApp button, 44px each. It draws nothing on a wide page and sits last on the page, so it rides the screen's foot and comes to rest under the footer. First consumer: the homepage. Not catch.bottom_action (Flutter's CatchDock bar, card and pane): links only, no summary, note or loading state, and hidden on wide pages. Search aliases: MobileBar, StickyCta, PhoneBar."
+      "notes": "Website T4 under D26 (the playbook kit's .mbar). The phone action bar: a sticky ink pill 8px above the screen's foot with the page's main action (coral, or pink on the homepage), an optional outlined second action and an optional WhatsApp button, 44px each. It draws nothing on a wide page and sits last on the page, so it rides the screen's foot and comes to rest under the footer. First consumer: the homepage. Not catch.bottom_action (Flutter's CatchDock bar, card and pane): links only, no summary, note or loading state, and hidden on wide pages. Search aliases: MobileBar, StickyCta, PhoneBar.",
+      "comparedWith": [
+        "catch.bottom_action"
+      ],
+      "comparisonReason": "The phone action bar of website pages: links only, no summary, note or loading state, and hidden on wide pages; not Flutter's CatchDock (catch.bottom_action)."
     },
     {
       "id": "shared_device_frame",
@@ -5822,123 +5838,6 @@
       "notes": "Website T4 under D18 (CAT-260). A generic device bezel (phone, Android phone with a punch-hole camera, or tablet held either way; nothing unique to Apple hardware) around an app screen for showing the Catch apps on the website, upright or turned. Geometry is one spec per kind as shares of the frame, so proportions hold at any size. The frame is decoration; the screen image carries the description. A browser kind (proposal W1) puts a quiet window with an optional address around a desktop capture, and bleed (L3) runs a device off its band's bottom edge, which clips it. Nearest concept: CatchAppCaptureImage, which frames a capture as a figure without hardware. Search aliases: BrowserFrame, BrowserWindow, PhoneFrame, DeviceMockup, Bezel, TabletFrame, ScreenFrame."
     },
     {
-      "id": "shared_format_matrix",
-      "kind": "supporting-component",
-      "routeIds": [
-        "host"
-      ],
-      "owner": "shared/parts",
-      "source": "packages/web-ui/src/components/CatchFormatMatrix.tsx",
-      "exportName": "CatchFormatMatrix",
-      "comparedWith": [
-        "catch.chip"
-      ],
-      "comparisonReason": "A website comparison table of event formats against the properties Catch tracks for each, with a format picker. It renders catch.chip for that picker; it does not implement the chip contract.",
-      "css": [
-        "packages/web-ui/src/components/CatchFormatMatrix.module.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "packages/web-ui/src/components/CatchFormatMatrix.stories.tsx",
-        "exportName": "Contract",
-        "states": [
-          "table",
-          "selected-column",
-          "chips",
-          "pick"
-        ]
-      },
-      "notes": "Website host landing, proposal WebFormatMatrix (\"Built for every kind of night\"). Several event formats' properties side by side: a table on a wide band whose column headings choose a format (its column tinted in the format's colour), and on a phone-width band format chips over the selected format's properties. The selection is shared with the page's night scene. Nearest concept: CatchTable, which lists records rather than comparing formats. Search aliases: WebFormatMatrix, ComparisonTable, FormatComparison, FeatureMatrix."
-    },
-    {
-      "id": "shared_night_scene",
-      "kind": "supporting-component",
-      "routeIds": [
-        "host"
-      ],
-      "owner": "shared/parts",
-      "source": "packages/web-ui/src/components/CatchNightScene.tsx",
-      "exportName": "CatchNightScene",
-      "comparedWith": [
-        "catch.chip"
-      ],
-      "comparisonReason": "A pinned, scroll-driven timeline of one evening for the host landing (proposal WebNightScene). On a phone it renders catch.chip for the format picker; it does not implement the chip contract.",
-      "css": [
-        "packages/web-ui/src/components/CatchNightScene.module.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "packages/web-ui/src/components/CatchNightScene.stories.tsx",
-        "exportName": "Contract",
-        "states": [
-          "first-moment",
-          "badge",
-          "format-picker",
-          "compact",
-          "focus-crop"
-        ]
-      },
-      "notes": "Website host landing, proposal WebNightScene (a scene mode for the scroll story). One evening, moment by moment, in a single pinned viewport: the scene pins while the reader scrolls a track one step taller per moment; the focused moment's screen fades in on a generic phone and a badge names the event property it relies on. Wide: timeline left, phone right, each moment a button that scrolls to it. Phone width: chips, phone, progress segments and a live caption. frame=\"capture\" (proposal night-framing, approved 14 Nov 2026): on a wide band the framed capture runs large off the scene's bottom edge (a partial device); at phone width each moment shows only its focus box as a frameless card at the band's width, beside the caption on a phone held sideways. Nearest concept: CatchScrollStory, whose chapters scroll beside pinned media. Search aliases: WebNightScene, ScrollScene, PinnedTimeline, OnTheNight."
-    },
-    {
-      "id": "shared_pipeline_board",
-      "kind": "supporting-component",
-      "routeIds": [
-        "host"
-      ],
-      "owner": "shared/parts",
-      "source": "packages/web-ui/src/components/CatchPipelineBoard.tsx",
-      "exportName": "CatchPipelineBoard",
-      "comparedWith": [
-        "catch.person_avatar",
-        "catch.button"
-      ],
-      "comparisonReason": "A website board showing applicants moving from interested to expected. It renders catch.person_avatar for each person and catch.button for the board's demo actions; it implements neither contract.",
-      "css": [
-        "packages/web-ui/src/components/CatchPipelineBoard.module.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "packages/web-ui/src/components/CatchPipelineBoard.stories.tsx",
-        "exportName": "Contract",
-        "states": [
-          "booked",
-          "compact",
-          "chosen-step"
-        ]
-      },
-      "notes": "Website host landing, proposal WebPipelineBoard (\"From interested to expected\"). Numbered step tabs over a board of columns; each guest is a chip that slides into the furthest column it reaches so far. Plays on its own while on screen (not under reduced motion); a chosen tab stops it, replay starts again. Nearest concept: CatchSection columns. Search aliases: WebPipelineBoard, Kanban, BookingFunnel, ApplicantBoard."
-    },
-    {
-      "id": "shared_layer_map",
-      "kind": "supporting-component",
-      "routeIds": [
-        "host"
-      ],
-      "owner": "shared/parts",
-      "source": "packages/web-ui/src/components/CatchLayerMap.tsx",
-      "exportName": "CatchLayerMap",
-      "comparedWith": [
-        "catch.icon"
-      ],
-      "comparisonReason": "A website diagram of how Catch's layers stack for one way of hosting. It renders catch.icon for each layer's glyph; it does not implement the icon contract.",
-      "css": [
-        "packages/web-ui/src/components/CatchLayerMap.module.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "packages/web-ui/src/components/CatchLayerMap.stories.tsx",
-        "exportName": "Layers",
-        "states": [
-          "layer-1",
-          "layer-2",
-          "layer-3",
-          "compact"
-        ]
-      },
-      "notes": "Website host landing, proposal WebLayerMap, on the indigo band (L2). Which jobs Catch runs at a chosen layer of adoption: solid white cards for the jobs Catch runs (new ones marked), dashed outlines with what the host keeps for the rest. Paired with a CatchPageTabBar. Nearest concept: CatchTable. Search aliases: WebLayerMap, AdoptionLayers, WaysToUse, FeatureLayers."
-    },
-    {
       "id": "shared_hero_showcase",
       "kind": "supporting-component",
       "routeIds": [
@@ -5977,10 +5876,6 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchFormatTile.tsx",
       "exportName": "CatchFormatTile",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "A website card for one event format: photo or format artwork, the format name and this week's count, as a link or a pressed toggle that filters the week. It composes catch.text for its labels and is a format card, not a text role.",
       "css": [
         "packages/web-ui/src/components/CatchFormatTile.module.css"
       ],
@@ -6171,7 +6066,8 @@
       },
       "notes": "Website T4 under D18 (CAT-260). One plan as a single link: the photo or a poster on its format accent, a label coloured by its format, the title, host and place, then the price and places left. Below 840px it becomes a row with the media at its start. Nearest concept: shared_preview_card (CatchPreviewCard), which has no media. Search aliases: EventCard, PlanTile, ListingCard, EventPreview.",
       "comparedWith": [
-        "catch.text"
+        "catch.text",
+        "catch.event_card"
       ],
       "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
     },
@@ -6559,6 +6455,347 @@
         ]
       },
       "notes": "An inline sign-in line at the moment of need (the organiser review form) that opens the sign-in sheet."
+    },
+    {
+      "id": "shared_catch_fee_section",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host",
+        "pricing"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchFeeSection.tsx",
+      "exportName": "CatchFeeSection",
+      "css": [
+        "packages/web-ui/src/components/CatchFeeSection.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchFeeSection.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "examples-foot",
+          "page-title"
+        ]
+      },
+      "notes": "Website T4 under D26 (PlaybookHosts #pricing, PlaybookPricing's opening panel). The ink fee band: a kicker, an optional page headline, the rate as the canvas's giant coral .price, its headline, the lead, translucent label pills and D20 actions beside the page's calculator; worked examples three across (.ex on ink) and a foot line over a hairline (.orgline). Not CatchPricingSection (the kit's KitPricing: examples beside the copy, calculator under the columns). Search aliases: PricingBand, FeeBand.",
+      "comparedWith": [
+        "catch.button",
+        "catch.surface",
+        "catch.text"
+      ],
+      "comparisonReason": "A website fee band that composes the button, surface and text contracts; it implements none of them."
+    },
+    {
+      "id": "shared_catch_fee_calculator",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host",
+        "pricing"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchFeeCalculator.tsx",
+      "exportName": "CatchFeeCalculator",
+      "css": [
+        "packages/web-ui/src/components/CatchFeeCalculator.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchFeeCalculator.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "below-cap",
+          "capped"
+        ]
+      },
+      "notes": "Website T4 under D26 (playbook-panels.css .calc2, .rng, .rmm, .tiles2, .capped, .fine). The presentational fee calculator for the ink fee band: the slider's figure in the display face, a coral CatchRangeInput with its ends, result tiles two across on the translucent fill, a mint status line (a live region) and fine print. The page owns the state and works every figure out. Search aliases: PriceCalculator, FeeSlider.",
+      "comparedWith": [
+        "catch.range_slider",
+        "catch.text"
+      ],
+      "comparisonReason": "A presentational price calculator that renders the system slider and text; it is not a slider or text contract itself."
+    },
+    {
+      "id": "shared_catch_fee_cap_chart",
+      "kind": "supporting-component",
+      "routeIds": [
+        "pricing"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchFeeCapChart.tsx",
+      "exportName": "CatchFeeCapChart",
+      "css": [
+        "packages/web-ui/src/components/CatchFeeCapChart.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchFeeCapChart.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "in-split"
+        ]
+      },
+      "notes": "Website T4 under D26 (PlaybookPricing .capbar). The cap chart: a 56px bar whose coral stretch is where the fee is charged and whose mint stretch is the rest of the billing cycle, then worked examples two across as white cards. The second column of /pricing/'s cap band (a CatchSplitSection on paper).",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "A static chart of a capped fee that labels its stretches with text; not a text contract."
+    },
+    {
+      "id": "shared_catch_route_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchRouteCard.tsx",
+      "exportName": "CatchRouteCard",
+      "css": [
+        "packages/web-ui/src/components/CatchRouteCard.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchRouteCard.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "link",
+          "button",
+          "ink"
+        ]
+      },
+      "notes": "Website T4 under D26 (PlaybookHosts .stg and .path). A filled way-forward card on any Website v2 ground at 24px corners: link cards (where you are today) end in an underlined link, button cards (however you like to start) carry a label, an optional picture and a D20 button at the foot. Not CatchFeatureTile (its ink ground is glass for ink bands, and it has no label or picture). Search aliases: PathCard, StageCard.",
+      "comparedWith": [
+        "catch.button",
+        "catch.root",
+        "catch.text"
+      ],
+      "comparisonReason": "A website way-forward card that sets its ground for its children and renders a button and text; it implements none of those contracts."
+    },
+    {
+      "id": "shared_catch_timeline_section",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchTimelineSection.tsx",
+      "exportName": "CatchTimelineSection",
+      "css": [
+        "packages/web-ui/src/components/CatchTimelineSection.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchTimelineSection.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "interactive",
+          "static"
+        ]
+      },
+      "notes": "Website T4 under D26 (PlaybookHosts #night: .flush, .tl, .fmedia). One night, moment by moment, on the ink panel: the header, optional controls (the host landing's format picker), a timeline down a hairline whose chosen moment is a translucent row with a coral edge and its line, each moment a button when the page can choose one; beside it the chosen moment's screen, flush with the band's foot. Replaces CatchNightScene on the host landing. Search aliases: NightTimeline, MomentTimeline.",
+      "comparedWith": [
+        "catch.surface",
+        "catch.text"
+      ],
+      "comparisonReason": "A website band with a selectable timeline beside a screen; it composes the surface and text contracts without implementing them."
+    },
+    {
+      "id": "shared_catch_step_cards",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host",
+        "home"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchStepCards.tsx",
+      "exportName": "CatchStepCards",
+      "css": [
+        "packages/web-ui/src/components/CatchStepCards.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchStepCards.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "current",
+          "night"
+        ]
+      },
+      "notes": "Website T4 under D26 (playbook-panels.css .pg .steps). The canvas's numbered step cards: a display number beside each step's title and line on a translucent card, on the day, night or a colour ground; a current step fills only its card (.steps li.on). CatchSplitSection draws its unmarked steps with it; the host landing's start band sets it in its capture. Not catch.step_list (CatchStepList, the marked timeline). Search aliases: StepCards, NumberedSteps.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Numbered step cards that set each title and line in text; not a text contract, and not the marked timeline (catch.step_list)."
+    },
+    {
+      "id": "shared_catch_fee_examples",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host",
+        "pricing"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchFeeExamples.tsx",
+      "exportName": "CatchFeeExamples",
+      "css": [
+        "packages/web-ui/src/components/CatchFeeExamples.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchFeeExamples.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "day",
+          "two-columns",
+          "ink"
+        ]
+      },
+      "notes": "Website T4 under D26 (playbook-panels.css .pg .ex). Worked examples of a fee: white cards with a hairline ring on white and paper (/pricing/'s examples and the cap chart), translucent on the ink fee band. CatchFeeSection and CatchFeeCapChart draw their examples with it.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Worked-example cards that set their figures in text; not a text contract."
+    },
+    {
+      "id": "pricing_examples_band",
+      "kind": "supporting-component",
+      "routeIds": [
+        "pricing"
+      ],
+      "owner": "features/marketing",
+      "source": "website/src/features/marketing/PricingBands.tsx",
+      "exportName": "PricingExamplesBand",
+      "css": [
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchFeeExamples.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PricingPage.stories.tsx",
+        "exportName": "ExamplesBand",
+        "states": [
+          "examples"
+        ]
+      },
+      "notes": "/pricing/'s worked examples (the pricingExamples custom section): the header over the fee on six kinds of night as white ring cards, worked out by the shared fee model, and the gateway line."
+    },
+    {
+      "id": "pricing_organisations_band",
+      "kind": "supporting-component",
+      "routeIds": [
+        "pricing"
+      ],
+      "owner": "features/marketing",
+      "source": "website/src/features/marketing/PricingBands.tsx",
+      "exportName": "PricingOrganisationsBand",
+      "css": [
+        "packages/web-ui/src/components/CatchSplitSection.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PricingPage.stories.tsx",
+        "exportName": "OrganisationsBand",
+        "states": [
+          "organisations"
+        ]
+      },
+      "notes": "/pricing/'s organisations band (the pricingOrganisations custom section): its words beside the walkthrough on WhatsApp and the weddings page, stacked in the second column."
+    },
+    {
+      "id": "pricing_fee_calculator",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host",
+        "pricing"
+      ],
+      "owner": "features/marketing",
+      "source": "website/src/features/marketing/PricingFeeCalculator.tsx",
+      "exportName": "PricingFeeCalculator",
+      "css": [
+        "packages/web-ui/src/components/CatchFeeCalculator.module.css",
+        "packages/web-ui/src/components/CatchRangeInput.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PricingFeeCalculator.stories.tsx",
+        "exportName": "FeeCalculator",
+        "states": [
+          "below-cap",
+          "capped"
+        ]
+      },
+      "notes": "The host fee calculator in the fee band's second column (CatchFeeCalculator): one billing cycle's ticket sales on a slider, the fee and effective rate after the trial, the cap line once the fee reaches the cap, and the trial and gateway lines. Every figure comes from the shared fee model (website/src/content/pricing.ts), so /host/ and /pricing/ agree with every page that states the price. It owns its state (usePricingFeeCalculator)."
+    },
+    {
+      "id": "pricing_fee_band",
+      "kind": "supporting-component",
+      "routeIds": [
+        "host",
+        "pricing"
+      ],
+      "owner": "features/marketing",
+      "source": "website/src/features/marketing/PricingBands.tsx",
+      "exportName": "PricingFeeBand",
+      "css": [
+        "packages/web-ui/src/components/CatchFeeSection.module.css",
+        "packages/web-ui/src/components/CatchFeeCalculator.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PricingFeeCalculator.stories.tsx",
+        "exportName": "InPricingSection",
+        "states": [
+          "host-band"
+        ]
+      },
+      "notes": "The fee band (CatchFeeSection) with the shared calculator: the rate, its headline and how the fee works from the shared fee model. /host/ adds the included labels, three worked examples and the organisations line; /pricing/ opens on it with its page headline (the pricingCalculator custom section)."
+    },
+    {
+      "id": "pricing_cap_band",
+      "kind": "supporting-component",
+      "routeIds": [
+        "pricing"
+      ],
+      "owner": "features/marketing",
+      "source": "website/src/features/marketing/PricingBands.tsx",
+      "exportName": "PricingCapBand",
+      "css": [
+        "packages/web-ui/src/components/CatchSplitSection.module.css",
+        "packages/web-ui/src/components/CatchFeeCapChart.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PricingPage.stories.tsx",
+        "exportName": "CapBand",
+        "states": [
+          "cap"
+        ]
+      },
+      "notes": "/pricing/'s cap band (the pricingCap custom section): its words beside CatchFeeCapChart, whose stretches and two billing cycles either side of the cap the shared fee model works out."
+    },
+    {
+      "id": "pricing_included_band",
+      "kind": "supporting-component",
+      "routeIds": [
+        "pricing"
+      ],
+      "owner": "features/marketing",
+      "source": "website/src/features/marketing/PricingBands.tsx",
+      "exportName": "PricingIncludedBand",
+      "css": [
+        "packages/web-ui/src/components/CatchSplitSection.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/PricingPage.stories.tsx",
+        "exportName": "IncludedBand",
+        "states": [
+          "included"
+        ]
+      },
+      "notes": "/pricing/'s \"Included\" band (the pricingIncluded custom section): its words beside every feature of the one plan as a tag chip, from the section's labels."
     }
   ]
 }

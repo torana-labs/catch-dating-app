@@ -2,7 +2,7 @@ import type {Meta, StoryObj} from "@storybook/react-vite";
 import {applyBrand} from "@content/brand";
 import pricing from "@content/playbook/pages/product/pricing.json";
 import {validatedPlaybookPage, type PlaybookSectionOf} from "@content/playbook/playbookContract";
-import {PricingCapBand, PricingIncludedBand} from "../features/marketing/PricingBands";
+import {PricingCapBand, PricingExamplesBand, PricingIncludedBand, PricingOrganisationsBand} from "../features/marketing/PricingBands";
 import {CatchRoot} from "@catch/web-ui";
 
 const meta = {
@@ -29,7 +29,10 @@ const customSection = (id: string): PlaybookSectionOf<"custom"> => {
   if (section?.type !== "custom") throw new Error(`/pricing/ has no custom section ${id}.`);
   return section;
 };
+const examplesSection = customSection("examples");
+const organisationsSection = customSection("organisations");
 const capSection = customSection("cap");
+const label = (section: PlaybookSectionOf<"custom">, key: string) => section.labels?.find((item) => item.key === key)?.text ?? "";
 const includedSection = customSection("included");
 
 /** The cap band alone: its words beside the cap chart the fee model works out. */
@@ -56,4 +59,28 @@ export const IncludedBand: Story = {
       </CatchRoot>
     );
   },
+};
+
+/** What hosts like you pay: the fee on six kinds of night as white ring cards. */
+export const ExamplesBand: Story = {
+  name: "/pricing/ · worked examples",
+  parameters: {layout: "fullscreen", catchComponent: {id: "pricing_examples_band", routeIds: ["pricing"], states: ["examples"]}},
+  render: () => (
+    <CatchRoot theme="day">
+      <PricingExamplesBand foot={label(examplesSection, "foot")} id="examples" kicker={examplesSection.kicker} title={examplesSection.title ?? ""} />
+    </CatchRoot>
+  ),
+};
+
+/** Venues, companies and programmes: the walkthrough and weddings buttons in the second column. */
+export const OrganisationsBand: Story = {
+  name: "/pricing/ · organisations",
+  parameters: {layout: "fullscreen", catchComponent: {id: "pricing_organisations_band", routeIds: ["pricing"], states: ["organisations"]}},
+  render: () => (
+    <CatchRoot theme="day">
+      <PricingOrganisationsBand
+        actions={[{label: label(organisationsSection, "walkthrough"), href: "#walkthrough"}, {label: label(organisationsSection, "weddings"), href: "/weddings/", variant: "secondary"}]}
+        id="organisations" kicker={organisationsSection.kicker} lead={organisationsSection.lead} title={organisationsSection.title ?? ""} />
+    </CatchRoot>
+  ),
 };
