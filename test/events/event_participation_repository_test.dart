@@ -102,6 +102,47 @@ void main() {
       },
     );
 
+    test('watchParticipationsForUser lists only open bookings; a booking that '
+        'left them reads once by id', () async {
+      for (final (eventId, status) in [
+        ('booked', 'signedUp'),
+        ('queued', 'waitlisted'),
+        ('went', 'attended'),
+        ('dropped', 'cancelled'),
+      ]) {
+        await _seedParticipation(
+          firestore,
+          eventId: eventId,
+          uid: 'runner-1',
+          status: status,
+        );
+      }
+      await _seedParticipation(
+        firestore,
+        eventId: 'booked',
+        uid: 'runner-2',
+        status: 'signedUp',
+      );
+
+      final open = await repository
+          .watchParticipationsForUser(uid: 'runner-1')
+          .first;
+      expect(open.map((booking) => booking.eventId).toSet(), {
+        'booked',
+        'queued',
+      });
+
+      final went = await repository.fetchParticipation(
+        eventId: 'went',
+        uid: 'runner-1',
+      );
+      expect(went?.status, EventParticipationStatus.attended);
+      expect(
+        await repository.fetchParticipation(eventId: 'none', uid: 'runner-1'),
+        isNull,
+      );
+    });
+
     test('roster retains the attendee check-in clock for live fairness', () {
       final createdAt = DateTime(2026, 5, 1, 9);
       final attendedAt = DateTime(2026, 5, 1, 10);

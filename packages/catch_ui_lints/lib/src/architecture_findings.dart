@@ -37,6 +37,7 @@ abstract final class ArchitectureCodes {
   static const unknownContext = 'catch_arch_unknown_context';
   static const legacyContextFile = 'catch_arch_legacy_context_file';
   static const providerFreeBoundary = 'catch_arch_provider_free_boundary';
+  static const firestoreOutsideData = 'catch_arch_firestore_outside_data';
   static const invalidIgnore = 'catch_arch_invalid_ignore';
 
   static const all = <String>[
@@ -62,6 +63,7 @@ abstract final class ArchitectureCodes {
     unknownContext,
     legacyContextFile,
     providerFreeBoundary,
+    firestoreOutsideData,
     invalidIgnore,
   ];
 
@@ -73,7 +75,15 @@ abstract final class ArchitectureCodes {
     unmappedFile,
     unknownContext,
     legacyContextFile,
+    manualProviderDeclaration,
+    firestoreOutsideData,
     invalidIgnore,
+  };
+
+  /// Reported as errors rather than warnings: the owner's layer rules.
+  static const errors = <String>{
+    manualProviderDeclaration,
+    firestoreOutsideData,
   };
 }
 
@@ -394,9 +404,6 @@ List<ArchitectureFinding> dependencyDirectionFindings({
           directive.prefix != null)
         directive.prefix!.name,
   };
-  final isHandwrittenApp = !RegExp(
-    r'^(?:lib/core|packages/platform/lib)/',
-  ).hasMatch(relativePath);
   final keepAliveMarker = RegExp(r'//\s*keepalive:\s*\S');
   final streamTimeoutOverride = RegExp(
     r'//\s*architecture:allow\s+stream-timeout\s+--\s+reason:\s*\S',
@@ -474,17 +481,13 @@ List<ArchitectureFinding> dependencyDirectionFindings({
         );
       }
     }
-    if (isHandwrittenApp &&
-        token.type == TokenType.IDENTIFIER &&
-        next.lexeme == '=') {
-      final builder = _manualProviderBuilder(next.next!, riverpodPrefixes);
-      if (builder != null) {
-        addToken(
-          ArchitectureCodes.manualProviderDeclaration,
-          token,
-          'Handwritten $builder providers outside the platform layer should use @riverpod codegen; give a reasoned // ignore: when one cannot.',
-        );
-      }
+    if (_providerBuilders.contains(lexeme) &&
+        _manualProviderBuilder(token, riverpodPrefixes)) {
+      addToken(
+        ArchitectureCodes.manualProviderDeclaration,
+        token,
+        'Declare providers with @riverpod / @Riverpod codegen, never by hand with $lexeme(...), .family or .autoDispose. Tests override generated providers instead.',
+      );
     }
     if (lexeme == 'class' &&
         next.lexeme.endsWith('Screen') &&
@@ -563,24 +566,35 @@ List<ArchitectureFinding> dependencyDirectionFindings({
   return findings;
 }
 
-// `Provider`, `rp.FutureProvider.autoDispose.family` and so on, when followed
-// by type arguments or a call.
-String? _manualProviderBuilder(Token start, Set<String> riverpodPrefixes) {
-  var token = start;
-  if (token.next!.lexeme == '.' &&
-      !_providerBuilders.contains(token.lexeme) &&
-      token.type == TokenType.IDENTIFIER) {
-    if (!riverpodPrefixes.contains(token.lexeme)) return null;
-    token = token.next!.next!;
+// `Provider(`, `rp.FutureProvider.autoDispose.family<A, B>(` and so on: a
+// builder token that is invoked, unqualified or behind a Riverpod import
+// prefix. A type annotation such as `Provider<int> x` is not a call.
+bool _manualProviderBuilder(Token builder, Set<String> riverpodPrefixes) {
+  final previous = builder.previous;
+  if (previous != null && _isMemberAccess(previous)) {
+    final prefix = previous.previous;
+    if (prefix == null || !riverpodPrefixes.contains(prefix.lexeme)) {
+      return false;
+    }
   }
-  if (!_providerBuilders.contains(token.lexeme)) return null;
-  final builder = token.lexeme;
-  token = token.next!;
+  var token = builder.next!;
   while (token.lexeme == '.' &&
       const {'autoDispose', 'family'}.contains(token.next!.lexeme)) {
     token = token.next!.next!;
   }
-  return const {'<', '('}.contains(token.lexeme) ? builder : null;
+  if (token.lexeme == '<') {
+    var depth = 0;
+    while (!token.isEof) {
+      final lexeme = token.lexeme;
+      if (lexeme == '<') depth++;
+      if (RegExp(r'^>+$').hasMatch(lexeme)) depth -= lexeme.length;
+      if (lexeme == '>=' || lexeme == '>>=') depth -= lexeme.length - 1;
+      token = token.next!;
+      if (depth <= 0) break;
+      if (const {';', '{', '}', '=>'}.contains(lexeme)) return false;
+    }
+  }
+  return token.lexeme == '(';
 }
 
 class _WidgetRefParameters extends RecursiveAstVisitor<void> {

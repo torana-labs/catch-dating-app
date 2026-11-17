@@ -113,3 +113,105 @@ export const FormatFilterAndCityPicker: Story = {
     await expect(within(canvasElement.ownerDocument.body).getByRole("menuitemradio", {name: /Pune/})).toBeInTheDocument();
   },
 };
+
+/**
+ * Storybook has no lead intake: the stories answer the site's lead posts
+ * themselves (accepted, refused or never), and leave every other request alone.
+ */
+const answerLeads = (answer: "accepted" | "failed" | "pending") => () => {
+  const original = window.fetch;
+  window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const body = typeof init?.body === "string" ? JSON.parse(init.body) as {requestKind?: string} : {};
+    if (!String(input).includes("/api/join-waitlist") || !body.requestKind) return original(input, init);
+    if (answer === "pending") return new Promise<Response>(() => undefined);
+    return answer === "accepted" ?
+      new Response(JSON.stringify({ok: true, alreadyJoined: false, lead: {leadId: "0".repeat(64), requestKind: body.requestKind, isNew: true}}), {status: 200}) :
+      new Response(JSON.stringify({error: "Unavailable"}), {status: 503});
+  }) as typeof fetch;
+  return () => {
+    window.fetch = original;
+  };
+};
+type Canvas = ReturnType<typeof within>;
+const notifyBar = (canvas: Canvas) => within(canvas.getByRole("form", {name: "Want to hear first?"}));
+const referForm = (canvas: Canvas) => within(canvas.getByRole("form", {name: "Know a host who’d be great here?"}));
+async function fillReferral(form: Canvas) {
+  await userEvent.type(form.getByRole("textbox", {name: /Your name/}), "Asha Rao");
+  await userEvent.type(form.getByRole("textbox", {name: /Your WhatsApp number/}), "98765 43210");
+  await userEvent.type(form.getByRole("textbox", {name: /Host or club name/}), "Lantern Lane Social");
+  await userEvent.type(form.getByRole("textbox", {name: /Their Instagram or website/}), "@lanternlanesocial");
+  await userEvent.type(form.getByRole("textbox", {name: /How do you know them/}), "I go to their supper club");
+}
+
+/** A thin week's notify bar, sent: new Mumbai plans on WhatsApp, as a city alerts lead. */
+export const CityAlertsSent1280: Story = {
+  name: "Thin week notify bar, sent · 1280",
+  beforeEach: answerLeads("accepted"),
+  render: () => page(mumbaiThinCatalog, 1280),
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    const bar = notifyBar(canvas);
+    await userEvent.type(bar.getByRole("textbox", {name: /Your WhatsApp number/}), "98765 43210");
+    await userEvent.click(bar.getByRole("button", {name: "Notify me"}));
+    await expect(await canvas.findByText("Done. We’ll message you on WhatsApp when new Mumbai plans go up.")).toBeInTheDocument();
+  },
+};
+
+/** The notify bar on a phone: a short number is refused under the field, then a send that fails offers to try again. */
+export const CityAlertsRetry390: Story = {
+  name: "Thin week notify bar, refused and retry · 390",
+  beforeEach: answerLeads("failed"),
+  render: () => page(mumbaiThinCatalog, 390),
+  play: async ({canvasElement}) => {
+    const bar = notifyBar(within(canvasElement));
+    const phone = bar.getByRole("textbox", {name: /Your WhatsApp number/});
+    await userEvent.type(phone, "98765");
+    await userEvent.click(bar.getByRole("button", {name: "Notify me"}));
+    await expect(await bar.findByText("Check your WhatsApp number. Include the country code if it isn’t a local number.")).toBeInTheDocument();
+    await userEvent.type(phone, "43210");
+    await userEvent.click(bar.getByRole("button", {name: "Notify me"}));
+    await expect(await bar.findByRole("button", {name: "Try again"})).toBeInTheDocument();
+  },
+};
+
+/** The refer form, sending: the fields are held and the button shows it is working. */
+export const HostReferralSubmitting1280: Story = {
+  name: "Know a host form, sending · 1280",
+  beforeEach: answerLeads("pending"),
+  render: () => page(mumbaiLiveCatalog, 1280),
+  play: async ({canvasElement}) => {
+    const form = referForm(within(canvasElement));
+    await fillReferral(form);
+    await userEvent.click(form.getByRole("button", {name: "Introduce them"}));
+    await expect(canvasElement.querySelector("form[aria-busy='true']")).not.toBeNull();
+  },
+};
+
+/** The refer form, sent: a referral lead, and the thanks in its place. */
+export const HostReferralSent1280: Story = {
+  name: "Know a host form, sent · 1280",
+  beforeEach: answerLeads("accepted"),
+  render: () => page(mumbaiLiveCatalog, 1280),
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    const form = referForm(canvas);
+    await fillReferral(form);
+    await userEvent.click(form.getByRole("button", {name: "Introduce them"}));
+    await expect(await canvas.findByText("Thanks for introducing Lantern Lane Social. We’ll message you on WhatsApp about it.")).toBeInTheDocument();
+  },
+};
+
+/** The refer form on a phone: each empty field says what it needs, then a send that fails offers to try again. */
+export const HostReferralRetry390: Story = {
+  name: "Know a host form, missing fields and retry · 390",
+  beforeEach: answerLeads("failed"),
+  render: () => page(mumbaiLiveCatalog, 390),
+  play: async ({canvasElement}) => {
+    const form = referForm(within(canvasElement));
+    await userEvent.click(form.getByRole("button", {name: "Introduce them"}));
+    await expect(await form.findByText("Enter your name.")).toBeInTheDocument();
+    await fillReferral(form);
+    await userEvent.click(form.getByRole("button", {name: "Introduce them"}));
+    await expect(await form.findByRole("button", {name: "Try again"})).toBeInTheDocument();
+  },
+};
