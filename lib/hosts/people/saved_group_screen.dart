@@ -169,7 +169,6 @@ class _HostSavedGroupScreenState extends ConsumerState<HostSavedGroupScreen> {
       );
       if (!mounted) return;
       _createRequestId = null;
-      refreshHostSavedGroup(ref, widget.organizerId, saved.audienceId);
       if (audience == null) {
         context.pushReplacementNamed(
           Routes.hostSavedAudienceDetailScreen.name,
@@ -195,7 +194,6 @@ class _HostSavedGroupScreenState extends ConsumerState<HostSavedGroupScreen> {
             .delete(organizerId: widget.organizerId, audience: audience),
       );
       if (!mounted) return;
-      refreshHostSavedGroup(ref, widget.organizerId, audience.audienceId);
       await Navigator.of(context).maybePop();
     } on Object {
       // The mutation is watched for errors, which the screen shows.

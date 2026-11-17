@@ -363,7 +363,7 @@ final class HostPeopleDirectoryProvider
 }
 
 String _$hostPeopleDirectoryHash() =>
-    r'a476adff620d1f10f40c19ab5a4b0dab56a9f5aa';
+    r'ef7915e2de1be38d56ab3ce483efccaf951f7495';
 
 /// The People list's contacts, most recent first (by name for a search),
 /// live: a contact the server adds, changes or removes shows at once, and
@@ -488,7 +488,7 @@ final class HostPeopleSegmentCountProvider
 }
 
 String _$hostPeopleSegmentCountHash() =>
-    r'3489bd553b5449edff4a1c8b7fdaba301cd58922';
+    r'fa208ac39cbb408ab242a30acb43bac1aa87f546';
 
 /// How many people one projection segment holds, from the live directory.
 

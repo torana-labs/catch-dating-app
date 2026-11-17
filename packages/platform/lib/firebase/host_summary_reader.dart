@@ -139,23 +139,32 @@ class HostSummaryReader {
     });
   }
 
+  /// The most rows one directory window listens to: the largest exhaustive
+  /// directory read (every saved group) fits in one window.
+  static const maxWindow = 2500;
+
   /// The first [limit] rows of one directory query while it is listened to:
   /// the same filters and order as [page], as a listener that follows every
-  /// change. Showing more means listening to a larger window.
+  /// change. Showing more means listening to a larger window. With a
+  /// [marker], the window opens once the organizer's directory says that
+  /// read model is active; a missing marker is a server fault to retry.
   Stream<HostSummaryWindow> watchWindow({
     required String collection,
     required String organizerId,
     required String orderField,
     required bool descending,
     required int limit,
+    String? marker,
     Map<String, Object> equalities = const {},
     Map<String, List<String>> inFilters = const {},
+    num? lowerInclusive,
+    num? upperExclusive,
     String? arrayField,
     List<String> arrayValues = const [],
     String? prefix,
   }) {
     _actor();
-    final boundedLimit = limit.clamp(1, 1000);
+    final boundedLimit = limit.clamp(1, maxWindow);
     Query<Map<String, dynamic>> query = _firestore
         .collection(collection)
         .where('organizerId', isEqualTo: organizerId);
@@ -164,6 +173,12 @@ class HostSummaryReader {
     }
     for (final entry in inFilters.entries) {
       query = query.where(entry.key, whereIn: entry.value);
+    }
+    if (lowerInclusive != null) {
+      query = query.where(orderField, isGreaterThanOrEqualTo: lowerInclusive);
+    }
+    if (upperExclusive != null) {
+      query = query.where(orderField, isLessThan: upperExclusive);
     }
     if (arrayField != null) {
       query = query.where(arrayField, arrayContainsAny: arrayValues);
@@ -177,22 +192,65 @@ class HostSummaryReader {
         .orderBy(orderField, descending: descending)
         .orderBy(FieldPath.documentId, descending: descending)
         .limit(boundedLimit + 1);
+    Stream<HostSummaryWindow> rows() => query.snapshots().map((snapshot) {
+      final docs = snapshot.docs.take(boundedLimit);
+      return HostSummaryWindow([
+        for (final doc in docs)
+          if (doc.data() case final value
+              when value['organizerId'] == organizerId && value['version'] == 1)
+            value
+          else
+            throw const FormatException('Unsupported directory summary.'),
+      ], hasMore: snapshot.docs.length > boundedLimit);
+    });
     return withBackendErrorStream(
-      () => query.snapshots().map((snapshot) {
-        final docs = snapshot.docs.take(boundedLimit);
-        return HostSummaryWindow([
-          for (final doc in docs)
-            if (doc.data() case final value
-                when value['organizerId'] == organizerId &&
-                    value['version'] == 1)
-              value
-            else
-              throw const FormatException('Unsupported directory summary.'),
-        ], hasMore: snapshot.docs.length > boundedLimit);
-      }),
+      () => marker == null
+          ? rows()
+          : Stream.fromFuture(
+              activatedDirectory(organizerId, marker),
+            ).asyncExpand((_) => rows()),
       context: BackendErrorContext(
         service: BackendService.firestore,
         action: 'watch Host list summaries',
+        resource: collection,
+      ),
+    );
+  }
+
+  /// One directory record while it is listened to; null while it does not
+  /// exist. A record the device has not cached yet stays loading offline
+  /// instead of reading as missing.
+  Stream<Map<String, dynamic>?> watchDocument({
+    required String collection,
+    required String organizerId,
+    required String id,
+    String? marker,
+  }) {
+    _actor();
+    Stream<Map<String, dynamic>?> record() => _firestore
+        .collection(collection)
+        .doc(id)
+        .snapshots()
+        .where((doc) => doc.exists || !doc.metadata.isFromCache)
+        .map((doc) {
+          final data = doc.data();
+          if (data != null &&
+              (data['organizerId'] != organizerId || data['version'] != 1)) {
+            throw const FormatException(
+              'Selected record owner or version changed.',
+            );
+          }
+          return data;
+        });
+    return withBackendErrorStream(
+      () => marker == null
+          ? record()
+          : Stream.fromFuture(
+              activatedDirectory(organizerId, marker),
+            ).asyncExpand((_) => record()),
+      context: BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch selected Host record',
         resource: collection,
       ),
     );

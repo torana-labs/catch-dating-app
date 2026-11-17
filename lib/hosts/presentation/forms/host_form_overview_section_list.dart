@@ -93,8 +93,7 @@ class HostFormOverviewSectionList extends ConsumerWidget {
           gapH32,
           CatchAsyncBoundary<HostFormResponsesState>(
             value: ref.watch(hostFormResponsesControllerProvider(request)),
-            onRetry: () =>
-                ref.invalidate(hostFormResponsesControllerProvider(request)),
+            onRetry: () => retryHostFormResponses(ref, request),
             loadingBuilder: (_) => CatchSection.containedLoadingRows(
               title: context.l10n.hostAudienceLatestResponse,
               layouts: const [

@@ -104,30 +104,30 @@ final class HostEventsProgrammesFamily extends $Family
   String toString() => r'hostEventsProgrammesProvider';
 }
 
-/// The Events tab: the coming events through their listener, drafts and
-/// past events through the events read owner, and the programmes. The
-/// listener keeps Upcoming current; the screen calls
-/// [refreshHostEventsHistory] when Create or a workspace returns, so a draft
-/// saved or published there shows on return.
+/// The Events tab: the coming events and the drafts through their
+/// listeners, past events through the events read owner, and the
+/// programmes. The listeners keep Upcoming and the drafts current; the
+/// screen calls [refreshHostEventsHistory] when Create or a workspace
+/// returns, so an event published or cancelled there moves to Past.
 
 @ProviderFor(hostEventsController)
 final hostEventsControllerProvider = HostEventsControllerFamily._();
 
-/// The Events tab: the coming events through their listener, drafts and
-/// past events through the events read owner, and the programmes. The
-/// listener keeps Upcoming current; the screen calls
-/// [refreshHostEventsHistory] when Create or a workspace returns, so a draft
-/// saved or published there shows on return.
+/// The Events tab: the coming events and the drafts through their
+/// listeners, past events through the events read owner, and the
+/// programmes. The listeners keep Upcoming and the drafts current; the
+/// screen calls [refreshHostEventsHistory] when Create or a workspace
+/// returns, so an event published or cancelled there moves to Past.
 
 final class HostEventsControllerProvider
     extends
         $FunctionalProvider<HostEventsState, HostEventsState, HostEventsState>
     with $Provider<HostEventsState> {
-  /// The Events tab: the coming events through their listener, drafts and
-  /// past events through the events read owner, and the programmes. The
-  /// listener keeps Upcoming current; the screen calls
-  /// [refreshHostEventsHistory] when Create or a workspace returns, so a draft
-  /// saved or published there shows on return.
+  /// The Events tab: the coming events and the drafts through their
+  /// listeners, past events through the events read owner, and the
+  /// programmes. The listeners keep Upcoming and the drafts current; the
+  /// screen calls [refreshHostEventsHistory] when Create or a workspace
+  /// returns, so an event published or cancelled there moves to Past.
   HostEventsControllerProvider._({
     required HostEventsControllerFamily super.from,
     required HostEventsRequest super.argument,
@@ -180,13 +180,13 @@ final class HostEventsControllerProvider
 }
 
 String _$hostEventsControllerHash() =>
-    r'51dc3c9f919568dcf5e1de01bd8ea1772b235635';
+    r'48278a593e9398e45fb34986c1bdcec0cb220f23';
 
-/// The Events tab: the coming events through their listener, drafts and
-/// past events through the events read owner, and the programmes. The
-/// listener keeps Upcoming current; the screen calls
-/// [refreshHostEventsHistory] when Create or a workspace returns, so a draft
-/// saved or published there shows on return.
+/// The Events tab: the coming events and the drafts through their
+/// listeners, past events through the events read owner, and the
+/// programmes. The listeners keep Upcoming and the drafts current; the
+/// screen calls [refreshHostEventsHistory] when Create or a workspace
+/// returns, so an event published or cancelled there moves to Past.
 
 final class HostEventsControllerFamily extends $Family
     with $FunctionalFamilyOverride<HostEventsState, HostEventsRequest> {
@@ -199,11 +199,11 @@ final class HostEventsControllerFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The Events tab: the coming events through their listener, drafts and
-  /// past events through the events read owner, and the programmes. The
-  /// listener keeps Upcoming current; the screen calls
-  /// [refreshHostEventsHistory] when Create or a workspace returns, so a draft
-  /// saved or published there shows on return.
+  /// The Events tab: the coming events and the drafts through their
+  /// listeners, past events through the events read owner, and the
+  /// programmes. The listeners keep Upcoming and the drafts current; the
+  /// screen calls [refreshHostEventsHistory] when Create or a workspace
+  /// returns, so an event published or cancelled there moves to Past.
 
   HostEventsControllerProvider call(HostEventsRequest request) =>
       HostEventsControllerProvider._(argument: request, from: this);

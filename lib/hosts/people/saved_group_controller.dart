@@ -79,7 +79,8 @@ HostSavedGroupState hostSavedGroupController(
   );
 }
 
-/// Reads a saved group again after a failure or a save.
+/// Reads a saved group again after a failure. A save needs no reread: the
+/// group's listener delivers the new revision, and its preview follows.
 void refreshHostSavedGroup(
   WidgetRef ref,
   String organizerId,

@@ -48,11 +48,11 @@ Future<List<OrganizerProgramListRow>> hostEventsProgrammes(
   );
 }
 
-/// The Events tab: the coming events through their listener, drafts and
-/// past events through the events read owner, and the programmes. The
-/// listener keeps Upcoming current; the screen calls
-/// [refreshHostEventsHistory] when Create or a workspace returns, so a draft
-/// saved or published there shows on return.
+/// The Events tab: the coming events and the drafts through their
+/// listeners, past events through the events read owner, and the
+/// programmes. The listeners keep Upcoming and the drafts current; the
+/// screen calls [refreshHostEventsHistory] when Create or a workspace
+/// returns, so an event published or cancelled there moves to Past.
 @riverpod
 HostEventsState hostEventsController(Ref ref, HostEventsRequest request) {
   final upcomingValue = ref.watch(
@@ -88,6 +88,10 @@ HostEventsState hostEventsController(Ref ref, HostEventsRequest request) {
           ),
         );
   final history = timeline?.value;
+  final draftsValue = ref.watch(
+    hostEventDraftsProvider(request.organizerId, request.day),
+  );
+  final drafts = draftsValue.value;
   final programmes =
       ref.watch(hostEventsProgrammesProvider(request.organizerId)).value ??
       const <OrganizerProgramListRow>[];
@@ -96,13 +100,17 @@ HostEventsState hostEventsController(Ref ref, HostEventsRequest request) {
   return HostEventsState(
     status: HostEventsStatus.ready,
     upcoming: upcoming,
-    drafts: List.unmodifiable(history?.unpublishedUpcoming ?? const []),
+    drafts: List.unmodifiable(drafts?.events ?? const []),
     past: List<Event>.unmodifiable(past),
     programmes: programmes,
     historyLoading:
         history == null && timeline?.error == null ||
-        (history?.loadingMorePast ?? false),
-    historyFailed: timeline?.error != null || history?.pastError != null,
+        (history?.loadingMorePast ?? false) ||
+        drafts == null && !draftsValue.hasError,
+    historyFailed:
+        timeline?.error != null ||
+        history?.pastError != null ||
+        draftsValue.hasError && drafts == null,
   );
 }
 
@@ -122,5 +130,6 @@ void retryHostEventsReads(WidgetRef ref, HostEventsRequest request) {
     ),
   );
   ref.invalidate(hostEventsTimelineControllerProvider);
+  ref.invalidate(hostEventDraftsProvider(request.organizerId, request.day));
   ref.invalidate(hostEventsProgrammesProvider(request.organizerId));
 }
