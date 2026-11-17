@@ -214,9 +214,6 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
     ValueChanged<HostOrganizerMediaProgress>? onProgress,
   }) async {
     final uid = requireSignedInUid(_ref, action: 'edit this organizer media');
-    final uploads = _ref.read(imageUploadRepositoryProvider);
-    final organizers = _ref.read(organizersRepositoryProvider);
-    final clock = _ref.read(appClockProvider);
     if (!organizer.isHostedBy(uid)) {
       throw const BackendOperationException(
         code: 'club-host-edit-required',
@@ -227,6 +224,14 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
         ),
       );
     }
+    // Read before the first await: the provider may be gone after it. Only a
+    // new photo or logo needs the upload repository.
+    final needsUploads = photoInputs != null || logo != null;
+    final uploads = needsUploads
+        ? _ref.read(imageUploadRepositoryProvider)
+        : null;
+    final organizers = _ref.read(organizersRepositoryProvider);
+    final clock = _ref.read(appClockProvider);
 
     final patch = <String, Object?>{};
     final failures = <String, Object>{};
@@ -235,7 +240,7 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
     try {
       if (photoInputs != null) {
         resolvedInputs = await _resolvePhotoInputs(
-          uploads,
+          uploads!,
           uid: uid,
           organizerId: organizer.id,
           inputs: photoInputs,
@@ -253,7 +258,7 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
               ),
             ),
           );
-          final upload = await uploads.uploadOrganizerLogo(
+          final upload = await uploads!.uploadOrganizerLogo(
             uid: uid,
             organizerId: organizer.id,
             mediaId: logo.id,
@@ -327,11 +332,13 @@ class HostOrganizerEditController implements HostOrganizerEditActions {
         );
       }
     } catch (_) {
-      await _discard(
-        uploads,
-        photoInputs: resolvedInputs ?? const [],
-        logo: resolvedLogo,
-      );
+      if (uploads != null) {
+        await _discard(
+          uploads,
+          photoInputs: resolvedInputs ?? const [],
+          logo: resolvedLogo,
+        );
+      }
       rethrow;
     }
     return HostOrganizerMediaSaveResult(
