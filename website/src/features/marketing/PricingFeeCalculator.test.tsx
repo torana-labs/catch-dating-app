@@ -28,7 +28,7 @@ describe("PricingFeeCalculator", () => {
   it("prices a billing cycle on the slider: 5% after the trial, capped at ₹10,000", () => {
     render(<PricingFeeCalculator />);
     expect(screen.getAllByText("₹6,000").length).toBeGreaterThan(0);
-    expect(screen.getByText(copy.uncapped)).toBeTruthy();
+    expect(screen.queryByText(copy.capped)).toBeNull();
     expect(screen.getByText(copy.trial)).toBeTruthy();
     expect(screen.getByText(copy.gateway)).toBeTruthy();
     fireEvent.change(screen.getByRole("slider", {name: copy.sales}), {target: {value: "300000"}});

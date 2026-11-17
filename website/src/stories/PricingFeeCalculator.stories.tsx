@@ -1,9 +1,10 @@
 import {expect, fireEvent, within} from "storybook/test";
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {CatchPricingSection, CatchRoot} from "@catch/web-ui";
+import {CatchRoot, CatchSurface} from "@catch/web-ui";
 import {hostLandingCopy} from "@content/hostLanding";
 import {hostFeeCalculatorCopy} from "@content/pricing";
 import {PricingFeeCalculator} from "../features/marketing/PricingFeeCalculator";
+import {PricingFeeBand} from "../features/pricing/PricingBands";
 
 const meta = {
   title: "Marketing Website/Shared/Pricing fee calculator",
@@ -24,33 +25,35 @@ type Story = StoryObj<typeof meta>;
 // catchComponent names the website registry's entry (design/website/components.json).
 const storyRoutes = ["host", "pricing"];
 
-/** Below the cap at the shared starting sales, then at the cap: 5% stops at the cap for the billing cycle. */
+/** Below the cap at the shared starting sales, then at the cap: 5% stops at the cap for the billing cycle. The calculator is drawn for the ink ground. */
 export const FeeCalculator: Story = {
   name: "Pricing fee calculator",
   parameters: {catchComponent: {id: "pricing_fee_calculator", routeIds: storyRoutes, states: ["below-cap", "capped"]}},
   render: () => (
     <CatchRoot theme="day">
-      <PricingFeeCalculator />
+      <CatchSurface block="band" color="ink">
+        <PricingFeeCalculator />
+      </CatchSurface>
     </CatchRoot>
   ),
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByText(hostFeeCalculatorCopy.uncapped)).toBeInTheDocument();
+    await expect(canvas.queryByText(hostFeeCalculatorCopy.capped)).toBeNull();
     fireEvent.change(canvas.getByRole("slider", {name: hostFeeCalculatorCopy.sales}), {target: {value: "500000"}});
     await expect(canvas.getByText(hostFeeCalculatorCopy.capped)).toBeInTheDocument();
   },
 };
 
-/** In CatchPricingSection's calculator slot on the ink band, as /host/ and /pricing/ show it. */
+/** In the fee band's second column on ink, as /host/ shows it (PricingFeeBand, CatchFeeSection). */
 export const InPricingSection: Story = {
-  name: "Pricing fee calculator · in the pricing band",
+  name: "Pricing fee calculator · in the fee band",
   parameters: {layout: "fullscreen", catchComponent: {id: "pricing_fee_calculator", routeIds: storyRoutes, states: ["pricing-section-slot"]}},
   render: () => {
     const pricing = hostLandingCopy.pricing;
     return (
       <CatchRoot theme="day">
-        <CatchPricingSection calculator={<PricingFeeCalculator />} cap={pricing.body} examples={pricing.examples} ground="ink"
-          kicker={pricing.kicker} rate={pricing.rate} title={pricing.title} trial={pricing.terms} />
+        <PricingFeeBand actions={[{label: pricing.start, href: "#start", variant: "light"}, {label: pricing.full, href: pricing.fullHref, variant: "ghost"}]}
+          examples={pricing.examples} id="pricing" kicker={pricing.kicker} labels={pricing.included} rateTitle={pricing.title} />
       </CatchRoot>
     );
   },

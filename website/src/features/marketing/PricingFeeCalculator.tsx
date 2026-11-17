@@ -1,5 +1,5 @@
-import {CatchMeter, CatchMetricTile, CatchRangeInput, CatchStack, CatchSurface, CatchText} from "@catch/web-ui";
-import {hostFeeCalculatorCopy as copy, hostFeeSalesRange as range, hostPricing} from "@content/pricing";
+import {CatchFeeCalculator} from "@catch/web-ui";
+import {hostFeeCalculatorCopy as copy, hostFeeSalesRange as range} from "@content/pricing";
 import {usePricingFeeCalculator} from "./usePricingFeeCalculator";
 
 export interface PricingFeeCalculatorProps {
@@ -9,30 +9,30 @@ export interface PricingFeeCalculatorProps {
 
 /**
  * The host fee calculator: one billing cycle's ticket sales on a slider, the
- * fee and the effective rate after the trial, the fee against the cap, and
- * the trial and gateway lines. It owns its state and reads every figure from
- * the shared fee model, so /host/'s pricing band and /pricing/ drop the same
- * calculator into CatchPricingSection's calculator slot.
+ * fee and the effective rate after the trial, the cap line once the fee
+ * reaches it, and the trial and gateway lines. It owns its state and reads
+ * every figure from the shared fee model, so /host/'s fee band and /pricing/
+ * show the same calculator in CatchFeeSection's second column.
  */
 export function PricingFeeCalculator({initialSales}: PricingFeeCalculatorProps) {
   const calculator = usePricingFeeCalculator(initialSales);
   return (
-    <CatchSurface block="floating" padding="lg">
-      <CatchText tone="secondary" variant="label-action">{copy.sales}</CatchText>
-      <CatchText aria-live="polite" numeric variant="display-lg">{calculator.salesText}</CatchText>
-      <CatchRangeInput label={copy.sales} max={range.max} min={range.min} onChange={calculator.setSales} step={range.step} value={calculator.sales} />
-      <CatchStack direction="row" justify="between">
-        <CatchText tone="secondary" variant="body-meta">{copy.min}</CatchText>
-        <CatchText tone="secondary" variant="body-meta">{copy.max}</CatchText>
-      </CatchStack>
-      <CatchStack collapseBelow="medium" direction="row" equal gap={12}>
-        <CatchMetricTile label={copy.fee} note={copy.feeNote} value={calculator.feeText} />
-        <CatchMetricTile label={copy.effective} note={copy.effectiveNote} value={calculator.rateText} />
-      </CatchStack>
-      <CatchMeter kind="cap" label={copy.capLabel} max={hostPricing.cap} thickness={8} value={calculator.fee} />
-      <CatchText tone={calculator.capped ? "success" : "secondary"} variant="label-action">{calculator.capped ? copy.capped : copy.uncapped}</CatchText>
-      <CatchText variant="body-small">{copy.trial}</CatchText>
-      <CatchText tone="secondary" variant="body-meta">{copy.gateway}</CatchText>
-    </CatchSurface>
+    <CatchFeeCalculator
+      fine={[copy.trial, copy.gateway]}
+      label={copy.sales}
+      max={range.max}
+      maxLabel={copy.max}
+      min={range.min}
+      minLabel={copy.min}
+      onChange={calculator.setSales}
+      status={calculator.capped ? copy.capped : undefined}
+      step={range.step}
+      tiles={[
+        {label: copy.fee, value: calculator.feeText, note: copy.feeNote},
+        {label: copy.effective, value: calculator.rateText, note: copy.effectiveNote},
+      ]}
+      value={calculator.sales}
+      valueText={calculator.salesText}
+    />
   );
 }

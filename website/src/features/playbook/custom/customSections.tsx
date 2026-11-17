@@ -1,6 +1,8 @@
 import type {ComponentType} from "react";
 import type {PlaybookSectionOf} from "../../../content/playbook/playbookContract";
 import type {CaptureSlots} from "../../../shared/media/captureSlot";
+import {PricingFeeCalculator} from "../../marketing/PricingFeeCalculator";
+import {PricingCapBand, PricingFeeBand, PricingIncludedBand} from "../../pricing/PricingBands";
 import type {PlaybookPageController} from "../usePlaybookPageController";
 import type {ReadyPlaybookCustomComponent} from "./readyCustomSections";
 
@@ -17,11 +19,41 @@ export interface PlaybookCustomSectionProps {
 }
 
 /**
+ * /pricing/'s fee band (pricingCalculator): the page headline over the rate,
+ * how the fee works and the calculator, all from the shared fee model, with
+ * the trial and WhatsApp actions from its labels. In a pricing section's
+ * calculator slot it is the calculator alone.
+ */
+function PricingCalculatorSection({section, labels, controller}: PlaybookCustomSectionProps) {
+  if (section.type !== "custom") return <PricingFeeCalculator />;
+  const actions = controller.actions([
+    {label: labels.start, to: {route: "host_start"}, emphasis: "primary"},
+    {label: labels.talk, to: {kind: "whatsapp", message: labels.talkMessage}, emphasis: "secondary"},
+  ], section.id);
+  return <PricingFeeBand actions={actions ?? []} id={section.id} kicker={section.kicker ?? ""} title={section.pageTitle ? section.title : undefined} />;
+}
+
+/** /pricing/'s cap band (pricingCap): its words beside the cap chart the fee model works out. */
+function PricingCapSection({section}: PlaybookCustomSectionProps) {
+  if (section.type !== "custom" || !section.title) return null;
+  return <PricingCapBand ground={section.ground} id={section.id} kicker={section.kicker} lead={section.lead} title={section.title} />;
+}
+
+/** /pricing/'s "Included" band (pricingIncluded): every label but `label` (the group's name) is a feature tag, in page order. */
+function PricingIncludedSection({section, labels}: PlaybookCustomSectionProps) {
+  if (section.type !== "custom" || !section.title) return null;
+  const items = (section.labels ?? []).filter((item) => item.key !== "label").map((item) => item.text);
+  return <PricingIncludedBand ground={section.ground} id={section.id} items={items} kicker={section.kicker} label={labels.label ?? section.title} lead={section.lead} title={section.title} />;
+}
+
+/**
  * The closed registry of custom section components, by the key a page names
  * (`"component": "noShowCalculator"`, or a pricing section's
- * `"calculator": "pricingCalculator"`): the no-show calculator, the event
- * page from a link form, the walkthrough time slots and the pricing
- * calculator. Each is added with its own PR, beside its key in
- * ./readyCustomSections.ts.
+ * `"calculator": "pricingCalculator"`). Each is added with its own PR, beside
+ * its key in ./readyCustomSections.ts.
  */
-export const playbookCustomSections: {readonly [K in ReadyPlaybookCustomComponent]: ComponentType<PlaybookCustomSectionProps>} = {};
+export const playbookCustomSections: {readonly [K in ReadyPlaybookCustomComponent]: ComponentType<PlaybookCustomSectionProps>} = {
+  pricingCalculator: PricingCalculatorSection,
+  pricingCap: PricingCapSection,
+  pricingIncluded: PricingIncludedSection,
+};

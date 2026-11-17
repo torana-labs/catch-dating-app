@@ -159,11 +159,15 @@ export const hostFeeCalculatorCopy = {
   feeNote: "after your trial",
   effective: "Your effective rate",
   effectiveNote: "of this billing cycle’s ticket sales",
-  capLabel: fill("Fee against the {cap} cap", {cap: facts.cap}),
   capped: fill("Capped. You pay {cap} however much more you sell this billing cycle.", {cap: facts.cap}),
-  uncapped: fill("The cap kicks in at {capReachedAt} of ticket sales in a billing cycle.", {capReachedAt: facts.capReachedAt}),
   trial: fill("In your first {trialDays} days from your first event: {zero}, whatever you sell.", {trialDays: facts.trialDays, zero: facts.zero}),
   gateway: "Payment gateway fees are separate. Your payment provider charges them at its own rate.",
+} as const;
+
+/** The cap chart's two stretches: where the fee is charged, and the rest of the cycle. */
+export const hostFeeCapChartCopy = {
+  charged: fill("{rate} on the first {capReachedAt}", {rate: facts.rate, capReachedAt: facts.capReachedAt}),
+  free: `No ${brand.name} fee on the rest of the billing cycle`,
 } as const;
 
 /** The price in one line, as each page states it. */

@@ -32,8 +32,12 @@ export const playbookHeaderVariants = ["guest", "host", "minimal"] as const;
 export const playbookFooterVariants = ["guest", "host", "minimal"] as const;
 
 
-/** The site components a `custom` section may name. */
-export const playbookCustomComponents = ["noShowCalculator", "eventPageFromLink", "walkthroughSlots", "pricingCalculator"] as const;
+/**
+ * The site components a `custom` section may name. The /pricing/ bands whose
+ * figures the shared fee model works out are custom: the fee band with its
+ * calculator, the cap and what the plan includes.
+ */
+export const playbookCustomComponents = ["noShowCalculator", "eventPageFromLink", "walkthroughSlots", "pricingCalculator", "pricingCap", "pricingIncluded"] as const;
 
 // ---------------------------------------------------------------------------
 // The spec language: a small, closed subset of JSON Schema.
@@ -315,6 +319,8 @@ const sectionSpec = {
     custom: obj({...base("custom"), component: oneOfValues(playbookCustomComponents)}, {
       ...bandOptional,
       title: copy(),
+      /** The title is the page's h1, as /pricing/'s fee band is. */
+      pageTitle: bool(),
       labels: list(obj({key: str("^[a-z][A-Za-z0-9]*$"), text: copy()}), 1, 40),
     }),
     /** A one-job flow: its step rail or tabs, then the screens of the current step. */

@@ -1,20 +1,13 @@
 import {describe, expect, it} from "vitest";
 import {validatePlaybookPage, type PlaybookPageDocument, type PlaybookSectionOf} from "./playbook/playbookContract";
-import {
-  hostFeeCycleExample,
-  hostFeeExample,
-  hostPricingFacts,
-  hostPricingLines,
-  pricingPageCycleExamples,
-  pricingPageFeeExamples,
-} from "./pricing";
-import pricingPage from "./pricingPage.json";
-import {brand} from "./brand";
+import {hostFeeExample, hostPricingFacts, hostPricingLines, pricingPageFeeExamples} from "./pricing";
+import pricingPage from "./playbook/pages/product/pricing.json";
 
-// The /pricing/ page's content, written to the playbook content contract. It
-// belongs at content/playbook/pages/product/pricing.json with a `pricing`
-// entry in that section's index; until the renderer moves it there, this test
-// keeps it valid and holds every figure in it to the shared fee model.
+// The /pricing/ page's content (content/playbook/pages/product/pricing.json),
+// written to the playbook content contract. The fee band, the cap and what the
+// plan includes are custom sections whose figures the shared fee model works
+// out in code; this test holds every figure the page's own words state to the
+// same model, so /pricing/ agrees with /host/ and the calculator.
 
 const page = pricingPage as unknown as PlaybookPageDocument;
 const section = <T extends PlaybookPageDocument["sections"][number]["type"]>(type: T, id: string) =>
@@ -34,20 +27,18 @@ describe("the /pricing/ page content", () => {
     expect(page.meta.noindex).toBe(true);
   });
 
-  it("has one pricing band, for the shared fee calculator's slot", () => {
-    expect(page.sections.filter((item) => item.type === "pricing").map((item) => item.id)).toEqual(["fee"]);
+  it("opens on the fee band with the calculator, then the cap and what is included, from the custom registry", () => {
+    expect(page.sections.filter((item) => item.type === "custom").map((item) => [item.id, item.component, item.ground]))
+      .toEqual([["fee", "pricingCalculator", "ink"], ["cap", "pricingCap", "paper"], ["included", "pricingIncluded", "white"]]);
+    expect(page.sections[0].id).toBe("fee");
   });
 
   it("shows only figures the fee model works out", () => {
-    const fee = section("pricing", "fee");
-    expect(fee.price).toBe(hostPricingFacts.rate);
-    expect(fee.title).toContain(`${hostPricingFacts.cap} per billing cycle`);
-    expect(fee.cap).toContain(hostPricingFacts.capReachedAt);
-    expect(fee.trial).toContain(`${hostPricingFacts.trialDays} days from your first event, ${hostPricingFacts.foundingTrialDays} for founding hosts`);
-    expect(fee.examples).toEqual(pricingPageCycleExamples.map(hostFeeCycleExample));
+    const cap = section("custom", "cap");
+    expect(cap.lead).toContain(`${hostPricingFacts.cap} in a billing cycle, which happens at ${hostPricingFacts.capReachedAt} of ticket sales`);
+    expect(cap.lead).toContain(`${hostPricingFacts.cycleDays}-day cycle`);
     const examples = section("tiles", "examples").items.map((item) => ({title: item.title, value: item.figure, body: item.body}));
     expect(examples).toEqual(pricingPageFeeExamples.map(hostFeeExample));
-    expect(section("hero", "top").lead).toBe(hostPricingLines.body.replace(brand.name, "{{brand.name}}"));
     expect(section("cta", "trial").title).toBe(`${hostPricingFacts.trialDays} days free. ${hostPricingFacts.foundingTrialDays} if you’re early.`);
     expect(section("cta", "organisations").lead).toContain(hostPricingLines.organisations);
   });
