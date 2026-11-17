@@ -67,15 +67,13 @@ const phoneDigits = (raw: string) => {
   return /^[6-9]\d{9}$/u.test(local) ? local : "";
 };
 
-export function useOrganizerPageController({backends = organizerPageBackends, listing, page, readAt, womenLed = false}: {
+export function useOrganizerPageController({backends = organizerPageBackends, listing, page, readAt}: {
   backends?: OrganizerPageBackends;
   listing: HostListing;
   page: OrganizerPageRecord;
   readAt: number;
-  /** The women-led label slot, until the read model carries the field (see OrganizerPageViewOptions). */
-  womenLed?: boolean;
 }) {
-  const view = useMemo(() => organizerPageView(page, readAt, {womenLed}), [page, readAt, womenLed]);
+  const view = useMemo(() => organizerPageView(page, readAt), [page, readAt]);
   const role: OrganizerPageRole = "guest";
   const copy = organizerPageCopy;
 

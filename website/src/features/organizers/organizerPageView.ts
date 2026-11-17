@@ -152,17 +152,8 @@ export function organizerPageKind(record: OrganizerPageRecord): OrganizerPageKin
   return owned ? "claimed" : "generated";
 }
 
-/**
- * What the page is told beyond its record. `womenLed` is the label slot for
- * women-led plans: the read model has no public field for it yet (the
- * backend is in progress), so the page passes it as a prop until it does.
- */
-export interface OrganizerPageViewOptions {
-  womenLed?: boolean;
-}
-
 /** Everything the organiser page shows, worked out once from its record at the read time. */
-export function organizerPageView(record: OrganizerPageRecord, readAt: number, options: OrganizerPageViewOptions = {}): OrganizerPageView {
+export function organizerPageView(record: OrganizerPageRecord, readAt: number): OrganizerPageView {
   const kind = organizerPageKind(record);
   const generated = kind === "generated";
   const allEvents = [...record.upcomingEvents, ...record.pastMoments];
@@ -202,7 +193,7 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number, o
       monogramGround: generated ? "white" : accent,
       verified: record.identity.verified,
       ...(generated ? {tag: copy.generatedTag} : {}),
-      labels: options.womenLed ? [copy.labels.womenLed] : [],
+      labels: record.womenLed ? [copy.labels.womenLed] : [],
       headline: record.identity.headline,
       meta: [placeOf(record), generated ? copy.summarisedFrom(sourceNames) : null].filter(Boolean).join(" · "),
       stats,

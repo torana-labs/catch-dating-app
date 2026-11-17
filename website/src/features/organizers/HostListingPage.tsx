@@ -14,14 +14,15 @@ import {organizerPageBackends, useOrganizerPageController, type OrganizerPageBac
  * playbook's panels language. It renders the organizer's
  * `organizerPublicPage` read model when the route read one, and otherwise the
  * same record built from the listing (pages assembled from their sources, and
- * the static build). On the site's own domain it carries the site header and
+ * the static build). The women-led label comes from the read model's
+ * `womenLed`; the listing has no such field, so its record never shows it. On the site's own domain it carries the site header and
  * footer (owner decision, 14 Nov 2026). A page served on the organiser's own
  * domain (`servedOn="ownDomain"`, the board's guest state) drops the site
  * header and keeps the short footer, so it reads as the club's page; custom
  * domains are not served yet, so only stories pass it.
  */
 export function HostListingPage({backends = organizerPageBackends, listing, ownerBackends = ownerViewBackends, ownerUid, page,
-  readAt, servedOn = "site", womenLed = false}: {
+  readAt, servedOn = "site"}: {
   backends?: OrganizerPageBackends;
   listing: HostListing;
   /** The owner view's reads and writes (#1109); stories pass fakes. */
@@ -32,17 +33,11 @@ export function HostListingPage({backends = organizerPageBackends, listing, owne
   readAt?: number;
   /** Where the page is served: the site's domain, or the organiser's own once custom domains ship. */
   servedOn?: "site" | "ownDomain";
-  /**
-   * The women-led label slot. The organiser read model has no public
-   * women-led field yet (its backend is in progress), so nothing passes it in
-   * production until the route reads one.
-   */
-  womenLed?: boolean;
 }) {
   const at = useMemo(() => readAt ?? Date.now(), [readAt]);
   const record = useMemo(() => page?.organizerId === listing.id ? page : organizerPageFromListing(listing, at),
     [at, listing, page]);
-  const controller = useOrganizerPageController({backends, listing, page: record, readAt: at, womenLed});
+  const controller = useOrganizerPageController({backends, listing, page: record, readAt: at});
   const owner = useOwnerViewController({backends: ownerBackends, claimed: controller.view.kind === "claimed",
     initialUid: ownerUid, organizerId: listing.id});
   const ownDomain = servedOn === "ownDomain";

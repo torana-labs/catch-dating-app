@@ -113,11 +113,15 @@ describe("HostListingSections", () => {
     expect(within(screen.getByRole("contentinfo")).getByRole("link", {name: "Privacy"})).toBeTruthy();
   });
 
-  it("shows the women-led label when the page is told it", () => {
-    renderPage(claimedOrganizerPage, undefined, {womenLed: true});
+  it("shows the women-led label when the read model says the organiser is women-led", () => {
+    renderPage({...claimedOrganizerPage, womenLed: true});
     expect(screen.getByText("Women-led")).toBeTruthy();
     cleanup();
     renderPage(claimedOrganizerPage);
+    expect(screen.queryByText("Women-led")).toBeNull();
+    cleanup();
+    // Without a read model the page builds its record from the listing, which has no women-led field.
+    renderPage(null);
     expect(screen.queryByText("Women-led")).toBeNull();
   });
 

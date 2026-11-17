@@ -57,27 +57,25 @@ function Providers({children, page}: {children: ReactNode; page: OrganizerPageRe
   );
 }
 
-function PageStory({backends = organizerPageBackends, page, servedOn, womenLed}: {
+function PageStory({backends = organizerPageBackends, page, servedOn}: {
   backends?: OrganizerPageBackends;
   page: OrganizerPageRecord;
   servedOn?: "site" | "ownDomain";
-  womenLed?: boolean;
 }) {
   return (
     <Providers page={page}>
       <HostListingPage backends={backends} listing={organizerStoryListing(page)} page={page} readAt={organizerPageReadAt}
-        servedOn={servedOn} womenLed={womenLed} />
+        servedOn={servedOn} />
     </Providers>
   );
 }
 
-function SectionHarness({backends, page, render, womenLed}: {
+function SectionHarness({backends, page, render}: {
   backends: OrganizerPageBackends;
   page: OrganizerPageRecord;
   render: (controller: OrganizerPageController) => ReactNode;
-  womenLed?: boolean;
 }) {
-  const controller = useOrganizerPageController({backends, listing: organizerStoryListing(page), page, readAt: organizerPageReadAt, womenLed});
+  const controller = useOrganizerPageController({backends, listing: organizerStoryListing(page), page, readAt: organizerPageReadAt});
   return <>{render(controller)}</>;
 }
 
@@ -86,19 +84,18 @@ function SectionHarness({backends, page, render, womenLed}: {
  * page gives it: the organiser rail of the profile band, or a band of its own
  * (the band sections draw their own).
  */
-function SectionStory({backends = organizerPageBackends, column, pages = [claimedOrganizerPage, generatedOrganizerPage], render, womenLed}: {
+function SectionStory({backends = organizerPageBackends, column, pages = [claimedOrganizerPage, generatedOrganizerPage], render}: {
   backends?: OrganizerPageBackends;
   column: "rail" | "band";
   pages?: OrganizerPageRecord[];
   render: (controller: OrganizerPageController) => ReactNode;
-  womenLed?: boolean;
 }) {
   return (
     <Providers page={pages[0]}>
       <CatchRoot theme="day">
         <CatchStack gap={40}>
           {pages.map((page) => {
-            const section = <SectionHarness backends={backends} page={page} render={render} womenLed={womenLed} />;
+            const section = <SectionHarness backends={backends} page={page} render={render} />;
             return column === "band" ? <CatchStack gap={0} key={page.organizerId}>{section}</CatchStack> : (
               <CatchBand as="div" key={page.organizerId} pb="compact" pt="compact" width="content">
                 <CatchStack collapseBelow="expanded" direction="row" gap={48} railSide="start" railWidth="wide">
@@ -158,14 +155,11 @@ export const Identity: Story = {
   },
 };
 
-/**
- * The women-led label under the name. The read model has no public field for
- * it yet, so the page takes it as a prop (the label slot) until it does.
- */
+/** The women-led label under the name, from the read model's `womenLed`. */
 export const IdentityWomenLed: Story = {
   parameters: {catchComponent: {id: "organizer_identity_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["claimed"]}},
   render: () => (
-    <SectionStory column="rail" pages={[claimedOrganizerPage]} womenLed
+    <SectionStory column="rail" pages={[{...claimedOrganizerPage, womenLed: true}]}
       render={(controller) => <OrganizerIdentitySection controller={controller} />} />
   ),
   play: async ({canvasElement}) => {

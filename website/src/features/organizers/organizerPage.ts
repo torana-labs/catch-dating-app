@@ -31,6 +31,8 @@ export interface OrganizerPageRecord {
   claim: PageDocument["claim"];
   capabilities: PageDocument["capabilities"];
   profile: Pick<HostListing, "listingVariant" | "facts" | "sources" | "host">;
+  /** The organiser's resolved women-led label; pages built before the field existed read as false. */
+  womenLed: boolean;
 }
 
 const pastLimit = 24;
@@ -52,6 +54,7 @@ export function organizerPageRecord(page: PageDocument, readAt: number): Organiz
     capabilities: page.capabilities,
     profile: {listingVariant: listing.listingVariant, facts: listing.facts, sources: listing.sources,
       ...(listing.host ? {host: listing.host} : {})},
+    womenLed: page.womenLed === true,
   }, readAt);
 }
 
@@ -59,6 +62,8 @@ export function organizerPageRecord(page: PageDocument, readAt: number): Organiz
  * The same record from a listing, for pages assembled from their sources
  * until every environment has read models, and for the static build. It
  * follows the read model's rules in functions/src/publicPages/pageModel.ts.
+ * The listing projection carries no women-led field, so only a page built
+ * from the read model shows the label.
  */
 export function organizerPageFromListing(listing: HostListing, readAt: number): OrganizerPageRecord {
   const events = [
@@ -102,6 +107,7 @@ export function organizerPageFromListing(listing: HostListing, readAt: number): 
     capabilities: listing.capabilities,
     profile: {listingVariant: listing.listingVariant, facts: listing.facts, sources: listing.sources,
       ...(listing.host ? {host: listing.host} : {})},
+    womenLed: false,
   }, readAt);
 }
 

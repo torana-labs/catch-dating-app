@@ -43,9 +43,9 @@ describe("organizerPageView", () => {
     expect(header.stats.map((stat) => [stat.value, stat.label])).toEqual([["38", copy.stats.waiting]]);
   });
 
-  it("shows the women-led label only when the page is told it, until the read model carries the field", () => {
-    expect(organizerPageView(claimedOrganizerPage, organizerPageReadAt, {womenLed: true}).header.labels).toEqual(["Women-led"]);
-    expect(organizerPageView(claimedOrganizerPage, organizerPageReadAt, {womenLed: false}).header.labels).toEqual([]);
+  it("shows the women-led label only when the record is women-led", () => {
+    expect(view({...claimedOrganizerPage, womenLed: true}).header.labels).toEqual(["Women-led"]);
+    expect(view(claimedOrganizerPage).header.labels).toEqual([]);
   });
 
   it("hides proof lines that have no data behind them", () => {
