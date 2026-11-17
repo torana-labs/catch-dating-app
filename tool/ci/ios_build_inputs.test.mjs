@@ -44,9 +44,11 @@ test("every tracked native iOS or toolchain file is an iOS build input", () => {
   const nativeLooking = (file) => /(^|\/)ios\//u.test(file) || /(^|\/)Podfile(\.lock)?$/u.test(file) ||
     /\.(podspec|xcconfig|entitlements|swift|plist|pbxproj|xcscheme|xcworkspacedata|storyboard|xib)$/u.test(file);
   // Not part of an iOS app build: Markdown, the macOS desktop app and its
-  // Firebase configuration, and offline Swift scripts for icons and store art.
+  // Firebase configuration, offline Swift scripts for icons and store art, and
+  // the App Store listing text and screenshots fastlane uploads.
   const outside = (file) => file.endsWith(".md") || /^apps\/[^/]+\/macos\//u.test(file) ||
-    /^firebase\/[^/]+\/(host\/)?macos\//u.test(file) || /^tool\/(branding|store)\/[^/]+\.swift$/u.test(file);
+    /^firebase\/[^/]+\/(host\/)?macos\//u.test(file) || /^tool\/(branding|store)\/[^/]+\.swift$/u.test(file) ||
+    /^fastlane\/metadata\//u.test(file);
   const unlisted = (files) => files.filter((file) => nativeLooking(file) && !outside(file) && !iosBuildInput(file));
   assert.ok(tracked.filter(nativeLooking).length > 300);
   assert.deepEqual(unlisted(tracked), []);
