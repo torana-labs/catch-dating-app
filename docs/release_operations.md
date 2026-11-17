@@ -3576,10 +3576,10 @@ runs the listing lanes from `main`:
   already live or in review, App Store Connect refuses it ("the version
   number has been previously used"); set `ios_version` to the next version
   (for example `1.0.4`) so the listing waits on that version instead.
-  `ios_live` sends only promotional text, support URL and marketing URL to
-  the live version, which go public straight away; App Store Connect locks
-  every other field on a live version. The lane writes those through
-  Spaceship because `deliver`'s `edit_live` crashes in fastlane 2.241.
+  `ios_live` sends only the promotional text to the live version, which
+  goes public straight away; App Store Connect locks every other field on a
+  live version, the support and marketing URLs included. The lane writes it
+  through Spaceship because `deliver`'s `edit_live` crashes in fastlane 2.241.
   An Android upload goes public after Google's review; `android_validate_only`
   checks it with Play without saving.
 

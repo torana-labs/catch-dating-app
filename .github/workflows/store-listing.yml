@@ -9,7 +9,7 @@ name: Store Listing
 #   approval.
 # - upload sends the committed listing. On iOS it lands on the version being
 #   prepared and goes public with that release; ios_live instead sends the
-#   promotional text and URLs to the live version at once. On Android it goes
+#   promotional text to the live version at once. On Android it goes
 #   public after Google's review. It runs in the reviewer-gated
 #   prod-mobile-release environment, like Mobile Production.
 #
@@ -33,7 +33,7 @@ on:
         options: [both, ios, android]
         default: both
       ios_live:
-        description: iOS upload only. Send promotional text and URLs to the live version now.
+        description: iOS upload only. Send the promotional text to the live version now.
         type: boolean
         default: false
       ios_version:
