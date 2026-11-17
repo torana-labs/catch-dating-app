@@ -382,26 +382,6 @@ void main() {
       expect(response.pushFailedCount, 1);
     });
 
-    test('watchEventsByIds chunks ids, skips missing, and sorts', () async {
-      final late = buildEvent(
-        id: 'event-12',
-        startTime: DateTime.now().add(const Duration(hours: 12)),
-      );
-      final early = buildEvent(
-        startTime: DateTime.now().add(const Duration(hours: 1)),
-      );
-      await _seedEvent(firestore, late);
-      await _seedEvent(firestore, early);
-      await _seedEvent(firestore, buildEvent(id: 'not-requested'));
-
-      await expectLater(
-        repository.watchEventsByIds(
-          eventIds: [for (var i = 1; i <= 12; i += 1) 'event-$i'],
-        ),
-        emits([early, late]),
-      );
-    });
-
     test(
       'fetchUpcomingEventsForOrganizers returns empty without querying for no clubs',
       () async {
@@ -944,21 +924,6 @@ void main() {
         expect(await container.read(provider.future), [first, second]);
       },
     );
-
-    test('watchEventsByIdsProvider delegates to the repository', () async {
-      final event = buildEvent();
-      await _seedEvent(firestore, event);
-
-      final provider = watchEventsByIdsProvider(
-        EventsByIdQuery(const ['event-1']),
-      );
-      final subscription = container.listen(provider, (_, _) {});
-      addTearDown(subscription.close);
-
-      final value = await container.read(provider.future);
-
-      expect(value, [event]);
-    });
 
     test('recommendedEventsProvider delegates to the repository', () async {
       final event = buildEvent();

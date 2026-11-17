@@ -3290,7 +3290,8 @@ Layout only, deleted with the screen:
 - `domain` Explore state: exploreFeedViewModelProvider reuses one dated window and counts days
 - `domain` Explore state: exploreFeedViewModelProvider keeps external supply separate
 - `domain` Explore state: exploreFeedViewModelProvider resolves viewer-specific availability
-- `domain` Explore state: exploreFeedViewModelProvider does not block on personal event enrichment
+- `domain` Explore state: exploreFeedViewModelProvider shows booked and saved events only when discovery returns them
+- `domain` Explore state: exploreFeedViewModelProvider adds live search hits discovery missed
 - `domain` Explore state: exploreOrganizersViewModelProvider surfaces auth uid errors
 - `domain` Explore state: exploreOrganizersViewModelProvider surfaces filtered list errors
 

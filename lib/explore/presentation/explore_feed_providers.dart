@@ -9,7 +9,6 @@ import 'package:catch_dating_app/contexts/discovery/data/explore_search_reposito
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/contexts/discovery/domain/saved_event.dart';
-import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/external_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
@@ -261,8 +260,20 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
         'Explore discovery window resolved without data, loading, or error.',
       ));
 
+  final participationByEventId = <String, EventParticipation>{
+    for (final participation
+        in participationsState.value ?? const <EventParticipation>[])
+      participation.eventId: participation,
+  };
+  // Explore is the city's discovery feed. A booked or saved event shows here
+  // when discovery returns it; the guest's own lists read their event cards.
+  // A synthetic QA event shows only to a viewer booked on it.
   final eventsById = <String, Event>{
-    for (final event in discoveryWindow.internalEvents) event.id: event,
+    for (final event in discoveryWindow.internalEvents)
+      if (!event.synthetic ||
+          participationByEventId[event.id]?.status ==
+              EventParticipationStatus.signedUp)
+        event.id: event,
   };
   final followedRecommendationsAsync =
       uid == null || followedOrganizerIds.isEmpty
@@ -290,35 +301,17 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
           ?.map((savedEvent) => savedEvent.eventId)
           .toSet() ??
       <String>{};
-  final missingPersonalEventIds = <String>{
-    for (final participation
-        in participationsState.value ?? const <EventParticipation>[])
-      if (participation.status == EventParticipationStatus.signedUp &&
-          !eventsById.containsKey(participation.eventId))
-        participation.eventId,
-    for (final eventId in savedEventIds)
-      if (!eventsById.containsKey(eventId)) eventId,
-  };
-  final personalEventsAsync = uid == null || missingPersonalEventIds.isEmpty
-      ? const AsyncData<List<Event>>([])
-      : ref.watch(
-          watchEventsByIdsProvider(EventsByIdQuery(missingPersonalEventIds)),
-        );
+  // Search results are the primary content while a search is on, so they
+  // block and surface errors.
   final searchEventsAsync =
       searchResult == null || searchResult.eventIds.isEmpty
       ? const AsyncData<List<Event>>([])
       : ref.watch(
-          watchEventsByIdsProvider(EventsByIdQuery(searchResult.eventIds)),
+          watchExploreSearchEventsProvider(
+            ExploreSearchEventsQuery(searchResult.eventIds),
+          ),
         );
-  final personalEventsState = catchAsyncStateFromAsyncValue(
-    personalEventsAsync,
-  );
   final searchEventsState = catchAsyncStateFromAsyncValue(searchEventsAsync);
-  // Personal event enrichment (out-of-city joined/saved events) is
-  // intentionally non-blocking: the feed renders immediately from in-city
-  // discovery and personal events stream in progressively, degrading
-  // gracefully if that secondary query is slow or fails. Search results, by
-  // contrast, are the primary content and must block/surface errors.
   if (searchEventsState.isLoading) return const AsyncLoading();
   if (searchEventsState.hasError) {
     return AsyncError(
@@ -327,19 +320,6 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
     );
   }
 
-  final participationByEventId = <String, EventParticipation>{
-    for (final participation
-        in participationsState.value ?? const <EventParticipation>[])
-      participation.eventId: participation,
-  };
-  for (final event in personalEventsState.value ?? const <Event>[]) {
-    final participation = participationByEventId[event.id];
-    if (sourceOrganizerIds.contains(event.organizerId) ||
-        (event.synthetic &&
-            participation?.status == EventParticipationStatus.signedUp)) {
-      eventsById[event.id] = event;
-    }
-  }
   for (final candidate
       in followedRecommendationsState.value ??
           const <ExploreEventRecommendationCandidate>[]) {

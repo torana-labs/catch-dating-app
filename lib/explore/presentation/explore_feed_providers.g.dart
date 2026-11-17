@@ -170,7 +170,7 @@ final class ExploreFeedViewModelProvider
 }
 
 String _$exploreFeedViewModelHash() =>
-    r'bf86086bd02282eaea59ad32c866bf995cd21121';
+    r'f365deab2136273a2265fe579d8d73dea17dc3c1';
 
 @ProviderFor(exploreRecommendations)
 final exploreRecommendationsProvider = ExploreRecommendationsProvider._();
@@ -223,4 +223,4 @@ final class ExploreRecommendationsProvider
 }
 
 String _$exploreRecommendationsHash() =>
-    r'bd1d80fc17668665e6726a9fbe6a3db894a5318a';
+    r'71f2642360107d2e3524b247f294506d70b76079';
