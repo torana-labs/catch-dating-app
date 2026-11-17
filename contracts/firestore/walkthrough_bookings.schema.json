@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/walkthrough_bookings.schema.json",
+  "title": "WalkthroughBookingDocument",
+  "description": "A prospective host's walkthrough booking: the slot it holds, the WhatsApp number its booker verified with a one-time code, and every change. It opens a task in the Admin Inbox; a person confirms on WhatsApp (decision 28: nothing is sent automatically). Server-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "walkthroughBookings",
+  "x-firestore-path": "walkthroughBookings/{bookingId}",
+  "x-document-id-field": "bookingId",
+  "x-owner": "bookWalkthrough, manageWalkthroughBooking and adminUpdateWalkthroughBooking",
+  "required": ["schemaVersion", "bookingId", "calendarId", "requestId", "status", "slot", "requestedSlotStartAt", "phone",
+    "verifiedByUid", "manageTokenHash", "name", "details", "cityId", "consent", "sourcePage", "entry", "followUp",
+    "staffConfirmation", "reschedules", "cancellation", "createdAt", "updatedAt"],
+  "definitions": {
+    "storedSlot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["holdId", "startAt", "endAt", "label"],
+      "properties": {
+        "holdId": {"type": "string", "pattern": "^default-[0-9]{8}T[0-9]{4}Z$"},
+        "startAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slotStart"},
+        "endAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slotStart"},
+        "label": {"type": "string", "minLength": 1, "maxLength": 40}
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "bookingId": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/bookingId"},
+    "calendarId": {"const": "default"},
+    "requestId": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/requestId"},
+    "status": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/bookingStatus"},
+    "slot": {"$ref": "#/definitions/storedSlot", "description": "The slot it holds now (or held when it was cancelled)."},
+    "requestedSlotStartAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slotStart", "description": "The slot first booked; a retry of the same request matches it."},
+    "phone": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/phone", "description": "The verified WhatsApp number staff reply to."},
+    "verifiedByUid": {"type": "string", "minLength": 1, "maxLength": 128, "description": "The Firebase account whose phone sign-in verified the number."},
+    "manageTokenHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "name": {"type": ["string", "null"], "minLength": 1, "maxLength": 100},
+    "details": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/details"},
+    "cityId": {
+      "anyOf": [
+        {"type": "string", "pattern": "^[a-z]{2}-[a-z0-9]{1,3}-[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 64},
+        {"type": "null"}
+      ],
+      "description": "The market catalog id, when the website knew it."
+    },
+    "consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["purpose", "version", "decidedAt"],
+      "properties": {
+        "purpose": {"const": "leadFollowUp"},
+        "version": {"type": "string", "pattern": "^[a-z0-9-]{1,40}$"},
+        "decidedAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/instant"}
+      }
+    },
+    "sourcePage": {"type": "string", "pattern": "^/[^\\s?#]*$", "maxLength": 512},
+    "entry": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,39}$"},
+    "followUp": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/followUp"},
+    "staffConfirmation": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["byUid", "at", "slotStartAt", "note"],
+          "description": "A person confirmed this slot on WhatsApp. It covers only the slot it names, so a move asks for a new confirmation.",
+          "properties": {
+            "byUid": {"type": "string", "minLength": 1, "maxLength": 128},
+            "at": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/instant"},
+            "slotStartAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slotStart"},
+            "note": {"type": ["string", "null"], "maxLength": 500}
+          }
+        }
+      ]
+    },
+    "reschedules": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["fromStartAt", "toStartAt", "at", "by"],
+        "properties": {
+          "fromStartAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slotStart"},
+          "toStartAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slotStart"},
+          "at": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/instant"},
+          "by": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/changeActor"}
+        }
+      }
+    },
+    "cancellation": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["at", "by", "byUid", "reason"],
+          "properties": {
+            "at": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/instant"},
+            "by": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/changeActor"},
+            "byUid": {"type": ["string", "null"], "maxLength": 128},
+            "reason": {"type": ["string", "null"], "maxLength": 500}
+          }
+        }
+      ]
+    },
+    "createdAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/instant"},
+    "updatedAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/instant"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "cancelled"}}},
+      "then": {"properties": {"cancellation": {"type": "object"}}},
+      "else": {"properties": {"cancellation": {"type": "null"}}}
+    }
+  ]
+}
