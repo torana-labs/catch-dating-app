@@ -205,9 +205,14 @@ function ConsentLine({privacy, text}: {privacy: string; text: string}) {
   );
 }
 
-/** A lead form's outcome: its confirmation, or why the send did not go through, announced either way. */
+/**
+ * A lead form's outcome: its confirmation, or why the send did not go
+ * through, announced either way. It keeps the ground's ink (the danger red
+ * does not hold its contrast on the mint panel); the button beside it offers
+ * to try again.
+ */
 function LeadStatus({problem, sent}: {problem: string | null; sent: string | null}) {
-  return <CatchText aria-live="polite" as="p" role="status" tone={problem ? "danger" : undefined} variant="body">{sent ?? problem ?? ""}</CatchText>;
+  return <CatchText aria-live="polite" as="p" role="status" variant="body">{sent ?? problem ?? ""}</CatchText>;
 }
 
 /**
