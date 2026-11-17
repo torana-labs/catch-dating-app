@@ -10,7 +10,6 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart'
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
-import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -71,7 +70,32 @@ class _RejectedPreferences extends Fake implements SharedPreferences {
   Future<bool> setString(String key, String value) async => false;
 }
 
-Future<(ProviderContainer, ProgramCreateController, _Inventory)> _load({
+/// Reads the generated create provider the way the screen does: the latest
+/// [ProgramCreateView] for every field, the notifier for every command.
+class _Session {
+  _Session(this._container);
+
+  final ProviderContainer _container;
+
+  ProgramCreateView get _view =>
+      _container.read(programCreateProvider(_scope)).requireValue;
+  ProgramCreate get _notifier =>
+      _container.read(programCreateProvider(_scope).notifier);
+
+  ProgramCreateValues get values => _view.values;
+  String get requestId => _view.requestId;
+  String? get programId => _view.programId;
+  Object? get error => _view.error;
+  bool get showErrors => _view.showErrors;
+  bool get actorChanged => _view.actorChanged;
+  bool get commandPending => _view.commandPending;
+  bool get fieldsLocked => _view.fieldsLocked;
+
+  void edit(ProgramCreateValues values) => _notifier.edit(values);
+  Future<String?> submit() => _notifier.submit();
+}
+
+Future<(ProviderContainer, _Session, _Inventory)> _load({
   ProgramCreateJournalValues? values,
   ProgramCreateJournalValues? submitted,
   String? programId,
@@ -112,10 +136,10 @@ Future<(ProviderContainer, ProgramCreateController, _Inventory)> _load({
     ],
   );
   addTearDown(container.dispose);
-  final provider = programCreateControllerProvider(_scope);
+  final provider = programCreateProvider(_scope);
   container.listen(provider, (_, _) {});
-  final controller = await container.read(provider.future);
-  return (container, controller, inventory);
+  await container.read(provider.future);
+  return (container, _Session(container), inventory);
 }
 
 void main() {
@@ -167,7 +191,7 @@ void main() {
       final (container, controller, inventory) = await _load();
       await expectLater(
         container.read(
-          programCreateControllerProvider((
+          programCreateProvider((
             accountId: 'other-account',
             organizerId: 'organizer',
           )).future,
@@ -219,6 +243,19 @@ void main() {
       expect(inventory.commands, isEmpty);
     },
   );
+
+  test('each edit and submit publishes a new view to listeners', () async {
+    final (container, controller, _) = await _load();
+    final published = <ProgramCreateView>[];
+    container.listen(programCreateProvider(_scope), (_, next) {
+      if (next.value case final view?) published.add(view);
+    });
+    controller.edit(controller.values.copyWith(title: 'Saket weekend'));
+    expect(published.single.values.title, 'Saket weekend');
+    expect(await controller.submit(), isNull);
+    expect(published.last.showErrors, isTrue);
+    expect(published.last.saving, isFalse);
+  });
 
   test(
     'fresh provider keeps absence of submitted command and title editable',
