@@ -363,6 +363,12 @@ abstract final class GeneratedCatchWebsiteTokens {
   static const double tileCompactMinHeight = 160.0;
   static const double tileIconSize = 28.0;
   static const double tileBentoCompactMinHeight = 150.0;
+  static const double profileCoverHeight = 340.0;
+  static const double profileCompactCoverHeight = 180.0;
+  static const double profileMonogramOverlap = 62.0;
+  static const double profileCompactMonogramOverlap = 48.0;
+  static const double profileCopyMax = 640.0;
+  static const double profileActionsWidth = 420.0;
   static const double planMediaHeight = 150.0;
   static const double badgePadBlock = 5.0;
   static const double chipDotSize = 8.0;

@@ -9,7 +9,6 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_summary.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
-import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -265,97 +264,3 @@ Stream<HostSavedAudienceSummaryPage> hostAllSavedAudienceSummaries(
         nextCursor: null,
       );
     });
-
-/// How many groups one directory query listens to; it grows by a page each
-/// time the list asks for more.
-@riverpod
-class HostGroupDirectoryWindow extends _$HostGroupDirectoryWindow {
-  @override
-  int build(String organizerId, {bool byName = true, bool? isStatic}) =>
-      ReadLimitPolicy.directoryPage;
-
-  void grow() => state += ReadLimitPolicy.directoryPage;
-}
-
-/// The first rows of one group directory query, as a listener.
-@riverpod
-Stream<HostGroupSummaryWindow> hostGroupDirectoryListener(
-  Ref ref,
-  String organizerId, {
-  required int limit,
-  bool byName = true,
-  bool? isStatic,
-}) => ref
-    .watch(hostSavedAudienceRepositoryProvider)
-    .watchGroupSummaries(
-      organizerId,
-      limit: limit,
-      byName: byName,
-      isStatic: isStatic,
-    );
-
-/// The paginated group directory, live: the first page, then a larger
-/// listener each time the list asks for more. A larger listener that fails
-/// keeps the rows already shown and reports the failure under them.
-@riverpod
-class HostGroupDirectoryController extends _$HostGroupDirectoryController {
-  @override
-  Future<HostGroupDirectoryState> build(
-    String organizerId, {
-    bool byName = true,
-    bool? isStatic,
-  }) async {
-    final limit = ref.watch(
-      hostGroupDirectoryWindowProvider(
-        organizerId,
-        byName: byName,
-        isStatic: isStatic,
-      ),
-    );
-    final previous = state.value;
-    final HostGroupSummaryWindow window;
-    try {
-      window = await ref.watch(
-        hostGroupDirectoryListenerProvider(
-          organizerId,
-          limit: limit,
-          byName: byName,
-          isStatic: isStatic,
-        ).future,
-      );
-    } on Object catch (error) {
-      if (limit == ReadLimitPolicy.directoryPage || previous == null) rethrow;
-      return HostGroupDirectoryState(
-        audiences: previous.audiences,
-        hasMore: previous.hasMore,
-        loadMoreError: error,
-      );
-    }
-    return HostGroupDirectoryState(
-      audiences: List.unmodifiable(window.audiences),
-      hasMore: window.hasMore,
-    );
-  }
-
-  /// Listens to one more page; the list keeps its rows meanwhile.
-  void loadMore() {
-    final current = state.asData?.value;
-    if (current == null || !current.canLoadMore) return;
-    state = AsyncData(
-      HostGroupDirectoryState(
-        audiences: current.audiences,
-        hasMore: current.hasMore,
-        loadingMore: true,
-      ),
-    );
-    ref
-        .read(
-          hostGroupDirectoryWindowProvider(
-            organizerId,
-            byName: byName,
-            isStatic: isStatic,
-          ).notifier,
-        )
-        .grow();
-  }
-}

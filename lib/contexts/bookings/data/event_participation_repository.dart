@@ -17,6 +17,7 @@ class EventParticipationRepository {
 
   static const _collectionPath = 'eventParticipations';
   static const _rosterVisibleStatuses = ['signedUp', 'waitlisted', 'attended'];
+  static const _openBookingStatuses = ['signedUp', 'waitlisted'];
   static const _hostReportStatuses = [
     'signedUp',
     'waitlisted',
@@ -34,11 +35,17 @@ class EventParticipationRepository {
         toJson: (participation) => participation.toJson(),
       );
 
+  /// The guest's open bookings: signed up or waitlisted. Attended and
+  /// cancelled rows are history and grow forever, so they are not listened
+  /// to; a row that leaves this set is read once by id
+  /// ([fetchParticipation]) by whoever needs its new status.
+  // firestore-index: eventParticipations (uid:ASCENDING,status:ASCENDING)
   Stream<List<EventParticipation>> watchParticipationsForUser({
     required String uid,
   }) => withBackendErrorStream(
     () => _participationsRef
         .where('uid', isEqualTo: uid)
+        .where('status', whereIn: _openBookingStatuses)
         .limit(ReadLimitPolicy.boundedWorkingSet)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
@@ -101,6 +108,24 @@ class EventParticipationRepository {
     ),
   );
 
+  /// One participation by its deterministic id, read once.
+  Future<EventParticipation?> fetchParticipation({
+    required String eventId,
+    required String uid,
+  }) => withBackendErrorContext(
+    () async {
+      final snapshot = await _participationsRef
+          .doc(eventParticipationId(eventId: eventId, uid: uid))
+          .get();
+      return snapshot.exists ? snapshot.data() : null;
+    },
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'fetch event participation',
+      resource: _collectionPath,
+    ),
+  );
+
   Stream<EventParticipation?> watchParticipation({
     required String eventId,
     required String uid,
@@ -123,6 +148,7 @@ class EventParticipationRepository {
 EventParticipationRepository eventParticipationRepository(Ref ref) =>
     EventParticipationRepository(ref.watch(firebaseFirestoreProvider));
 
+/// The guest's open bookings (signed up or waitlisted), live.
 @riverpod
 Stream<List<EventParticipation>> watchEventParticipationsForUser(
   Ref ref,

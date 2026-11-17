@@ -64,7 +64,7 @@ final class CityRepositoryProvider
   }
 }
 
-String _$cityRepositoryHash() => r'f662f86f2ef5af3a842d2250311c6d9a7dfbb81f';
+String _$cityRepositoryHash() => r'74aa633053874ad70768d83e4c917fe835b6a308';
 
 @ProviderFor(cityList)
 final cityListProvider = CityListProvider._();

@@ -10,6 +10,7 @@ import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_platform/cities/city_repository.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_platform/firebase/config_documents.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -98,7 +99,10 @@ void main() {
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           watchUserProfileProvider.overrideWith((ref) => profileStream.stream),
           cityRepositoryProvider.overrideWithValue(
-            CityRepository(firestore, ErrorLogger(shouldReportErrors: false)),
+            CityRepository(
+              ConfigDocuments(firestore),
+              ErrorLogger(shouldReportErrors: false),
+            ),
           ),
           deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
         ],
@@ -137,7 +141,10 @@ Future<ProviderContainer> _container({
         (ref) => Stream.value(profileCity == null ? null : user),
       ),
       cityRepositoryProvider.overrideWithValue(
-        CityRepository(firestore, ErrorLogger(shouldReportErrors: false)),
+        CityRepository(
+          ConfigDocuments(firestore),
+          ErrorLogger(shouldReportErrors: false),
+        ),
       ),
       deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(location)),
     ],

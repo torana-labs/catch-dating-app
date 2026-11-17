@@ -6,9 +6,8 @@ import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/errors/error_logger.dart';
-import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/firebase/push_installation_store.dart';
 import 'package:catch_platform/routing/route_contract.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kIsWeb;
@@ -152,7 +151,7 @@ void navigateToMessageRoute(GoRouter router, Map<String, Object?> data) {
 
 class FcmService {
   FcmService(
-    this._db,
+    this._installations,
     this._errorLogger, {
     FirebaseMessaging? messaging,
     Stream<RemoteMessage>? foregroundMessages,
@@ -165,7 +164,7 @@ class FcmService {
   static const _tokenOwnerPreferenceKey = 'catch.pushTokenOwner';
   static const _revokeTokenPreferenceKey = 'catch.pushTokenNeedsRevocation';
 
-  final FirebaseFirestore _db;
+  final PushInstallationStore _installations;
   final ErrorLogger _errorLogger;
   final FirebaseMessaging? _messagingOverride;
   final Stream<RemoteMessage>? _foregroundMessagesOverride;
@@ -265,8 +264,7 @@ class FcmService {
       if (uid != null)
         attempt(() async {
           final id = await _pushInstallationId();
-          final user = _db.collection('users').doc(uid);
-          await user.collection('pushInstallations').doc(id).delete();
+          await _installations.delete(uid: uid, installationId: id);
         }, 'push_installations'),
     ]);
   }
@@ -386,25 +384,26 @@ class FcmService {
   Future<void> _saveToken(String uid, String token, int generation) async {
     bool isCurrent() => generation == _generation && _initializedUid == uid;
     if (!isCurrent()) return;
-    final userRef = _db.collection('users').doc(uid);
-
     // Installations are the only push address store; senders pick the newest
     // device of the app they target.
     try {
       final installationId = await _pushInstallationId();
       final packageInfo = await PackageInfo.fromPlatform();
       if (!isCurrent()) return;
-      await userRef.collection('pushInstallations').doc(installationId).set({
-        'token': token,
-        'appRole': AppConfig.appRoleName,
-        'environment': AppConfig.environmentName,
-        'platform': _platformName,
-        'appVersion': packageInfo.version,
-        'buildNumber': packageInfo.buildNumber,
-        'locale': PlatformDispatcher.instance.locale.toLanguageTag(),
-        'timeZone': DateTime.now().timeZoneName,
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+      await _installations.save(
+        uid: uid,
+        installationId: installationId,
+        fields: {
+          'token': token,
+          'appRole': AppConfig.appRoleName,
+          'environment': AppConfig.environmentName,
+          'platform': _platformName,
+          'appVersion': packageInfo.version,
+          'buildNumber': packageInfo.buildNumber,
+          'locale': PlatformDispatcher.instance.locale.toLanguageTag(),
+          'timeZone': DateTime.now().timeZoneName,
+        },
+      );
     } catch (error, stackTrace) {
       _logError(error, stackTrace, resource: 'push_installations');
     }
@@ -465,7 +464,7 @@ class FcmService {
 @Riverpod(keepAlive: true)
 FcmService fcmService(Ref ref) {
   final service = FcmService(
-    ref.watch(firebaseFirestoreProvider),
+    ref.watch(pushInstallationStoreProvider),
     ref.watch(errorLoggerProvider),
   );
   ref.onDispose(() => unawaited(service.reset()));

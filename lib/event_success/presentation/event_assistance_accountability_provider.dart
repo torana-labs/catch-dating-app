@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/account/data/authenticated_session.dar
 import 'package:catch_dating_app/contexts/live/data/event_assistance_accountability_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -101,7 +102,7 @@ class EventAssistanceAccountability extends _$EventAssistanceAccountability {
 /// listener: it declares no cache tags or lifetime and writes never
 /// invalidate it. Each delivery is a new session and retires the previous
 /// one, so a decision built on an older snapshot asks for a fresh review.
-@Riverpod(retry: _noAccountabilityReadRetry)
+@Riverpod(retry: noAutomaticRetry)
 Stream<EventAssistanceAccountabilitySession>
 eventAssistanceAccountabilityForAccount(
   Ref ref,
@@ -126,4 +127,3 @@ eventAssistanceAccountabilityForAccount(
 }
 
 // A listener error is shown with a retry; it is never retried silently.
-Duration? _noAccountabilityReadRetry(int count, Object error) => null;

@@ -16,6 +16,7 @@ import 'package:catch_platform/analytics/app_analytics.dart';
 import 'package:catch_platform/app_config.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
 import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_platform/firebase/push_installation_store.dart';
 import 'package:catch_platform/push/fcm_service.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -680,7 +681,10 @@ final class _NoOpAnalyticsReporter implements AnalyticsReporter {
 
 class _UnsupportedFcmService extends FcmService {
   _UnsupportedFcmService()
-    : super(FakeFirebaseFirestore(), ErrorLogger.silent());
+    : super(
+        PushInstallationStore(FakeFirebaseFirestore()),
+        ErrorLogger.silent(),
+      );
 
   @override
   bool get isSupportedPlatform => false;

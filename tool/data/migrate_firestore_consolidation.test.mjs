@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -334,6 +335,43 @@ test("host-form-version-filters creates each missing view once", async () => {
   // Versions are untouched and a second run is a no-op.
   assert.deepEqual(db.data["organizerFormVersions/f1_v1"], version(1));
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
+test("host-event-request-views creates each coming event's view once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-event-request-views");
+  const requireFunctions = createRequire(new URL("../../functions/package.json", import.meta.url));
+  const {AudienceTestStore} = requireFunctions("./lib/organizers/organizerAudienceTestStore.js");
+  const {Timestamp} = requireFunctions("firebase-admin/firestore");
+  const start = Date.now() + 86_400_000;
+  const event = (extra = {}) => ({organizerId: "o1", status: "active", name: "Supper",
+    startTime: Timestamp.fromMillis(start), endTime: Timestamp.fromMillis(start + 3_600_000),
+    capacityLimit: 10, priceInPaise: 0, bookedCount: 10,
+    eventPolicy: {admission: {manualApprovalRequired: false}}, ...extra});
+  const store = new AudienceTestStore({
+    "events/e1": event(),
+    "events/e2": event(),
+    "events/e3": event({status: "cancelled"}),
+    "eventParticipations/e1_u1": {eventId: "e1", organizerId: "o1", uid: "u1",
+      status: "waitlisted", waitlistedAt: Timestamp.fromMillis(100),
+      createdAt: Timestamp.fromMillis(100)},
+    "eventParticipations/e3_u1": {eventId: "e3", organizerId: "o1", uid: "u1",
+      status: "waitlisted", waitlistedAt: Timestamp.fromMillis(100),
+      createdAt: Timestamp.fromMillis(100)},
+    "publicProfiles/u1": {name: "Zoya"},
+  });
+  const db = store.asFirestore();
+  db.doc = (docPath) => store.collection(docPath.split("/")[0]).doc(docPath.split("/")[1]);
+  const plan = await planMigration(db, migration);
+  // e2 has nobody waiting and e3 is cancelled.
+  assert.deepEqual(plan.totals, {scanned: 3, toCreate: 1, alreadyCopied: 0, conflicts: 0, skipped: 2});
+  await applyMigrationPlan(db, plan);
+  const view = store.docs["hostEventRequestViews/e1"];
+  assert.deepEqual(view.rows.map((row) => [row.uid, row.kind, row.waitlistPosition, row.name]),
+    [["u1", "waitlist", 1, "Zoya"]]);
+  // Sources are untouched and a second run is a no-op.
+  assert.equal(store.docs["eventParticipations/e1_u1"].status, "waitlisted");
+  const again = await planMigration(db, migration);
+  assert.deepEqual(again.totals, {scanned: 3, toCreate: 0, alreadyCopied: 1, conflicts: 0, skipped: 2});
 });
 
 test("guest-messaging-permissions creates each missing row once", async () => {

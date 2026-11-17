@@ -18,11 +18,16 @@ class HostInsightsBody extends StatelessWidget {
     required this.state,
     required this.onRangeChanged,
     required this.onOpenNight,
+    this.onRetryRefresh,
   });
 
   final HostInsightsState state;
   final ValueChanged<HostInsightsRange> onRangeChanged;
   final ValueChanged<HostAnalyticsNight> onOpenNight;
+
+  /// Refreshes the report again after a refresh failed; the kept report
+  /// stays on screen meanwhile.
+  final VoidCallback? onRetryRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +58,20 @@ class HostInsightsBody extends StatelessWidget {
       );
     }
 
+    final refreshFailedMinutes = state.refreshFailedMinutes;
+    final refreshFailed = refreshFailedMinutes == null
+        ? null
+        : CatchNotice.inline(
+            key: const ValueKey<String>('host-insights-refresh-failed'),
+            body: l10n.hostInsightsRefreshFailed(minutes: refreshFailedMinutes),
+            tone: CatchNoticeTone.neutral,
+            action: onRetryRefresh == null
+                ? null
+                : CatchNoticeAction(
+                    label: l10n.sharedActionTryAgain,
+                    onPressed: onRetryRefresh,
+                  ),
+          );
     final bookingsTitle = state.daily
         ? l10n.hostInsightsBookingsEachDay
         : l10n.hostInsightsBookingsEachWeek;
@@ -114,7 +133,7 @@ class HostInsightsBody extends StatelessWidget {
           children: [
             CatchStack(
               gap: CatchStackGap.g28,
-              children: [period, ?stats, bookings],
+              children: [period, ?refreshFailed, ?stats, bookings],
             ),
             CatchStack(gap: CatchStackGap.g28, children: [?sources, nights]),
           ],
@@ -124,7 +143,7 @@ class HostInsightsBody extends StatelessWidget {
     return CatchPageBody(
       child: CatchStack(
         gap: CatchStackGap.section,
-        children: [period, ?stats, bookings, ?sources, nights],
+        children: [period, ?refreshFailed, ?stats, bookings, ?sources, nights],
       ),
     );
   }
