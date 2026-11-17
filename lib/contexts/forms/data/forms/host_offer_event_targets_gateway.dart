@@ -196,40 +196,44 @@ class FirestoreHostOfferEventTargetsGateway
   Future<HostOfferEventTargetPage> list({
     required String organizerId,
     String? cursor,
-  }) => withBackendErrorContext(
-    () async {
-      final after = cursor == null
-          ? null
-          : _TargetCursor.decode(cursor, organizerId);
-      final asOf = after?.asOfMillis ?? clock.now().millisecondsSinceEpoch;
-      final pages = await Future.wait([
-        _published(organizerId, asOf, after),
-        _unpublished(organizerId, asOf, after),
-      ]);
-      final merged = [...pages[0], ...pages[1]]
-        ..sort((a, b) {
-          final byStart = a.startTime.compareTo(b.startTime);
-          return byStart != 0 ? byStart : a.eventId.compareTo(b.eventId);
-        });
-      final events = merged.take(pageSize).toList();
-      final last = events.isEmpty ? null : events.last;
-      return HostOfferEventTargetPage(
-        List.unmodifiable(events),
-        merged.length > pageSize && last != null
-            ? _TargetCursor(
-                organizerId: organizerId,
-                asOfMillis: asOf,
-                lastStartMillis: last.startTime.millisecondsSinceEpoch,
-                lastEventId: last.eventId,
-              ).encode()
-            : null,
-      );
-    },
-    context: const BackendErrorContext(
-      service: BackendService.firestore,
-      action: 'list event offer targets',
-      resource: 'events',
-    ),
+  }) async {
+    final after = cursor == null
+        ? null
+        : _TargetCursor.decode(cursor, organizerId);
+    final asOf = after?.asOfMillis ?? clock.now().millisecondsSinceEpoch;
+    final pages = await Future.wait([
+      _published(organizerId, asOf, after),
+      _unpublished(organizerId, asOf, after),
+    ]);
+    final merged = [...pages[0], ...pages[1]]
+      ..sort((a, b) {
+        final byStart = a.startTime.compareTo(b.startTime);
+        return byStart != 0 ? byStart : a.eventId.compareTo(b.eventId);
+      });
+    final events = merged.take(pageSize).toList();
+    final last = events.isEmpty ? null : events.last;
+    return HostOfferEventTargetPage(
+      List.unmodifiable(events),
+      merged.length > pageSize && last != null
+          ? _TargetCursor(
+              organizerId: organizerId,
+              asOfMillis: asOf,
+              lastStartMillis: last.startTime.millisecondsSinceEpoch,
+              lastEventId: last.eventId,
+            ).encode()
+          : null,
+    );
+  }
+
+  static const _publishedContext = BackendErrorContext(
+    service: BackendService.firestore,
+    action: 'list event offer targets',
+    resource: 'events',
+  );
+  static const _unpublishedContext = BackendErrorContext(
+    service: BackendService.firestore,
+    action: 'list event offer targets',
+    resource: 'hostEventSummaries',
   );
 
   Future<List<HostOfferEventTarget>> _published(
@@ -255,7 +259,10 @@ class FirestoreHostOfferEventTargetsGateway
         after.lastEventId,
       ]);
     }
-    final snapshot = await query.limit(pageSize + 1).get();
+    final snapshot = await withBackendErrorContext(
+      () => query.limit(pageSize + 1).get(),
+      context: _publishedContext,
+    );
     return [
       for (final doc in snapshot.docs)
         ?_publishedTarget(doc.id, doc.data(), organizerId),
@@ -278,7 +285,10 @@ class FirestoreHostOfferEventTargetsGateway
     if (after != null) {
       query = query.startAfter([after.lastStartMillis, after.lastEventId]);
     }
-    final snapshot = await query.limit(pageSize + 1).get();
+    final snapshot = await withBackendErrorContext(
+      () => query.limit(pageSize + 1).get(),
+      context: _unpublishedContext,
+    );
     return [
       for (final doc in snapshot.docs)
         ?_unpublishedTarget(doc.id, doc.data(), organizerId),

@@ -428,7 +428,9 @@ HostEventOffer _existingOffer({
 class _RouteFunctions extends Fake implements FirebaseFunctions {
   @override
   HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) =>
-      _RouteCallable(name);
+      // The route reads offers and events from Firestore; a read callable
+      // here would be a regression.
+      throw StateError('Unexpected callable: $name');
 }
 
 /// The route's Firestore: one unpublished event the offer picker lists, and
@@ -484,22 +486,4 @@ class _GatedConfigurationReads extends EventOfferConfigurationReads {
       ),
     );
   }
-}
-
-class _RouteCallable extends Fake implements HttpsCallable {
-  _RouteCallable(this.name);
-  final String name;
-  @override
-  Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
-    final Object data = switch (name) {
-      _ => throw StateError('Unexpected callable: $name'),
-    };
-    return _RouteResult<T>(data as T);
-  }
-}
-
-class _RouteResult<T> extends Fake implements HttpsCallableResult<T> {
-  _RouteResult(this.data);
-  @override
-  final T data;
 }

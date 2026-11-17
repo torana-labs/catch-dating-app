@@ -42,9 +42,6 @@ class HostEventOfferReads {
   /// offer workspace holds at most 25 responses.
   static const maxContacts = 30;
 
-  /// How long a read after a write waits for the written revision.
-  static const writeVisibleTimeout = Duration(seconds: 30);
-
   final FirebaseFirestore _db;
   final AppClock clock;
 
@@ -146,21 +143,17 @@ class HostEventOfferReads {
   }
 
   /// The offer once its listener shows at least [minRevision]: after a
-  /// command is acknowledged, the revision it wrote. Fails after
-  /// [writeVisibleTimeout] rather than waiting forever.
+  /// command is acknowledged, the revision it wrote.
   Future<HostEventOffer> currentOffer({
     required String organizerId,
     required String eventId,
     required String contactId,
     int minRevision = 1,
-  }) async =>
-      (await watchOffer(
-            organizerId: organizerId,
-            eventId: eventId,
-            contactId: contactId,
-          )
-          .firstWhere((offer) => offer != null && offer.revision >= minRevision)
-          .timeout(writeVisibleTimeout))!;
+  }) async => (await watchOffer(
+    organizerId: organizerId,
+    eventId: eventId,
+    contactId: contactId,
+  ).firstWhere((offer) => offer != null && offer.revision >= minRevision))!;
 
   static HostEventOffer _offer(
     String id,
