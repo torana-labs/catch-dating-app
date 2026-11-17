@@ -2,7 +2,6 @@ import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/errors/error_logger.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -66,9 +65,9 @@ class GeolocatorDeviceLocationGateway implements DeviceLocationGateway {
 }
 
 // keepalive: a stateless platform facade with no account state.
-final deviceLocationGatewayProvider = Provider<DeviceLocationGateway>(
-  (ref) => const GeolocatorDeviceLocationGateway(),
-);
+@Riverpod(keepAlive: true)
+DeviceLocationGateway deviceLocationGateway(Ref ref) =>
+    const GeolocatorDeviceLocationGateway();
 
 // keepalive: device location should be resolved once and reused by discovery
 // surfaces instead of re-prompting across route rebuilds.
