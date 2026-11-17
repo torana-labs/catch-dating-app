@@ -811,6 +811,10 @@ test("ad conversions stay off unless a mode and both credentials are set", () =>
   assert.throws(() => materialize({AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT:
     "catch-ads-automation@other.iam.gserviceaccount.com"}),
   /must be a service account in this project/);
+  // The project id is matched literally: "." is not a wildcard.
+  assert.throws(() => materialize({AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT:
+    "catch-ads-automation@catchdates-devXiamXgserviceaccountXcom"}),
+  /must be a service account in this project/);
   assert.throws(() => materialize({AD_CONVERSIONS_META_TEST_EVENT_CODE: "test1"}),
     /must be a Meta test-event code/);
 });

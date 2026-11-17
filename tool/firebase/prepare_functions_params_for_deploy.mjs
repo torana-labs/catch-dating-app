@@ -299,9 +299,12 @@ function normalizedProviderParams(environment = process.env, projectId) {
   "AD_CONVERSIONS_META_TOKEN_VERSION must pin CATCH_META_ADS_TOKEN in this project");
   assert(!adTestCode || /^TEST[A-Z0-9]{3,32}$/.test(adTestCode),
     "AD_CONVERSIONS_META_TEST_EVENT_CODE must be a Meta test-event code");
+  // A suffix comparison, not a regex built from the project id argument.
+  const adServiceAccountDomain = `@${projectId}.iam.gserviceaccount.com`;
   assert(!adServiceAccount ||
-    new RegExp(`^[a-z][a-z0-9-]{4,28}@${projectId}\\.iam\\.gserviceaccount\\.com$`)
-      .test(adServiceAccount),
+    adServiceAccount.endsWith(adServiceAccountDomain) &&
+      /^[a-z][a-z0-9-]{4,28}$/.test(
+        adServiceAccount.slice(0, -adServiceAccountDomain.length)),
   "AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT must be a service account in this project");
   assert(adMode === "off" || adTokenVersion && adServiceAccount,
     "AD_CONVERSIONS_MODE requires the Meta token version and Google service account");
