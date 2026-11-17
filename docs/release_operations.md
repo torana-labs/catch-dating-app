@@ -3344,12 +3344,16 @@ The local CLI (`node tool/data/purge_deck_era_records.mjs --emulator`) is for
 the emulator and fixtures only.
 
 **Order: purge first, then the live-code change.** The change that makes
-`onSwipeCreated` and `fetchSwipeCandidates` ignore deck-era decisions ships in
-a separate PR, after the prod purge.
+`onSwipeCreated` and `fetchSwipeCandidates` ignore deck-era decisions shipped
+in a separate PR, after the prod purge.
 
-- Purging first is safe with today's Functions. Once the deck documents are
-  gone, nothing deck-era is left for them to count.
-- Shipping the live change first would not be safe. The new
+- **Status.** The prod purge ran on 17 Nov 2026. It deleted 38 deck-era like
+  facts and adjusted 16 counters, and found 0 deck-era decisions and 0 chats
+  to delete. A re-check afterwards found 0 deck-era decisions, facts or
+  chats. The live-code change then shipped in its own PR, after #1944.
+- Purging first was safe with the Functions of the time. Once the deck
+  documents are gone, nothing deck-era is left for them to count.
+- Shipping the live change first would not have been safe. The new
   `fetchSwipeCandidates` stops hiding people a guest liked or passed in the
   deck. If that guest picks one of them before the purge, the pick fails: the
   old document still exists, and the rules allow create only.
