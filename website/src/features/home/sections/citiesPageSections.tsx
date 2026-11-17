@@ -1,53 +1,56 @@
-import {CatchBand, CatchButton, CatchGap, CatchGrid, CatchStack, CatchSurface, CatchText} from "@catch/web-ui";
+import {CatchCardGrid, CatchText, type CatchCardGridCity} from "@catch/web-ui";
 import {citiesPageCopy as copy} from "@content/citiesPage";
 import type {CitiesPageController, CitiesPageRow} from "../useCitiesPageController";
 import {CitySiteChrome} from "./cityChrome";
 
-// A link button's press only navigates.
-const follow = () => undefined;
-
-function CityRow({row}: {row: CitiesPageRow}) {
-  return (
-    <CatchSurface block="tile" padding="md">
-      <CatchStack gap={12}>
-        <CatchStack gap={4}>
-          <CatchText as="h3" variant="title-row">{row.label}</CatchText>
-          {row.note ? <CatchText tone="secondary" variant="body-meta">{row.note}</CatchText> : null}
-        </CatchStack>
-        <CatchButton href={row.href} label={row.action} onPressed={follow} size="sm" variant={row.live ? "primary" : "secondary"} />
-      </CatchStack>
-    </CatchSurface>
-  );
+/**
+ * A city as the board's city card: an open city takes the Open tag and its
+ * plans line; a launching city its launch tag and its country.
+ */
+function cityCard(row: CitiesPageRow, country: string): CatchCardGridCity {
+  return {
+    id: row.slug,
+    title: row.label,
+    live: row.live,
+    status: row.live ? copy.open : row.note ?? copy.soon,
+    body: row.live ? row.note : country,
+    action: {href: row.href, label: row.action},
+  };
 }
 
 /**
- * /cities/: every listed city, country by country, open cities first in
- * catalog order. Each city offers its page or the launch notice.
+ * /cities/ on the LiveCities board: the kit's city cards, country by
+ * country, open cities first in catalog order. The first country's grid
+ * carries the page's head; each city offers its page or the launch notice.
  */
 export function CitiesPageSections({cities}: {cities: CitiesPageController}) {
+  const [first, ...rest] = cities.groups;
+  // Under the head: the unavailable notice, or the first country's launch note when none of its cities is open.
+  const status = cities.unavailable ? <CatchText as="p" role="status" variant="body">{copy.unavailable}</CatchText> :
+    first?.note ? <CatchText as="p" tone="secondary" variant="body">{first.note}</CatchText> : undefined;
   return (
     <CitySiteChrome cities={cities.cities} city={cities.city} exploreHref={cities.exploreHref} onChooseCity={cities.chooseCity}>
-      <CatchBand aria-labelledby="cities-title" pb="spacious" pt="compact">
-        <CatchGap size="majorSection">
-          <CatchStack gap={8}>
-            <CatchText tone="secondary" variant="label-kicker">{copy.eyebrow}</CatchText>
-            <CatchText as="h1" id="cities-title" variant="display-xl">{copy.title}</CatchText>
-            <CatchText tone="secondary" variant="body-lead">{copy.lead}</CatchText>
-          </CatchStack>
-          {cities.unavailable ? <CatchText role="status" variant="body">{copy.unavailable}</CatchText> : null}
-          {cities.groups.map((group) => (
-            <CatchStack aria-labelledby={`cities-${group.isoCode}`} as="section" gap={16} key={group.isoCode}>
-              <CatchStack gap={4}>
-                <CatchText as="h2" id={`cities-${group.isoCode}`} variant="display-sm">{group.name}</CatchText>
-                {group.note ? <CatchText tone="secondary" variant="body">{group.note}</CatchText> : null}
-              </CatchStack>
-              <CatchGrid columns={4} compactColumns={2}>
-                {group.rows.map((row) => <CityRow key={row.slug} row={row} />)}
-              </CatchGrid>
-            </CatchStack>
-          ))}
-        </CatchGap>
-      </CatchBand>
+      <CatchCardGrid
+        columns={4}
+        empty={{title: copy.unavailable}}
+        filters={status}
+        items={first ? first.rows.map((row) => cityCard(row, first.name)) : []}
+        kicker={copy.eyebrow}
+        kind="city"
+        lead={copy.lead}
+        level={1}
+        title={copy.title}
+      />
+      {rest.map((group) => (
+        <CatchCardGrid
+          columns={4}
+          items={group.rows.map((row) => cityCard(row, group.name))}
+          key={group.isoCode}
+          kind="city"
+          lead={group.note}
+          title={group.name}
+        />
+      ))}
     </CitySiteChrome>
   );
 }

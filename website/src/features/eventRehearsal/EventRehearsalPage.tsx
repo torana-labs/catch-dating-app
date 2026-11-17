@@ -1,21 +1,17 @@
 import {
   CatchBadge,
+  CatchBanner,
   CatchButton,
   CatchIcon,
   CatchIndexRow,
   CatchLoadingIndicator,
   CatchNotice,
-  CatchPageBody,
-  CatchPaneLayout,
-  CatchRoot,
   CatchSection,
   CatchStack,
   CatchSurface,
   CatchText,
-  CatchTopBar,
   type CatchNoticeTone,
 } from "@catch/web-ui";
-import {publicSiteCopy} from "@content/site";
 import type {ReactNode} from "react";
 import {useParams} from "react-router";
 import {eventRehearsalCopy} from "../../content/eventRehearsal";
@@ -23,7 +19,7 @@ import type {
   EventRehearsalGuestAction,
   EventRehearsalGuestBootstrap,
 } from "../../firebase";
-import {WebsitePageMain} from "../../shared/site";
+import {EventBookingFrame} from "../../shared/site/EventBookingFrame";
 import {EventRuntimeRouteMap} from "../../shared/ui/primitives";
 import {availableEventRehearsalGuestActions, canReplyToRehearsal,
   pendingRehearsalRequiredData, type RehearsalReply,
@@ -43,21 +39,17 @@ function EventRehearsalGuest({publicRehearsalId}: {publicRehearsalId: string}) {
 
   if (controller.isLoading) {
     return (
-      <RehearsalShell banner={eventRehearsalCopy.practiceBanner}>
-        <CatchText as="h1" variant="page-title">{eventRehearsalCopy.loadingTitle}</CatchText>
-        <CatchLoadingIndicator label={eventRehearsalCopy.loading} />
+      <RehearsalShell banner={eventRehearsalCopy.practiceBanner} kicker={eventRehearsalCopy.liveKicker}
+        title={eventRehearsalCopy.loadingTitle}>
+        <CatchSurface block="tile"><CatchLoadingIndicator label={eventRehearsalCopy.loading} /></CatchSurface>
       </RehearsalShell>
     );
   }
 
   if (controller.isUnavailable || !controller.bootstrap) {
     return (
-      <RehearsalShell>
-        <CatchStack gap={8}>
-          <CatchText tone="secondary" variant="label-kicker">{eventRehearsalCopy.unavailableKicker}</CatchText>
-          <CatchText as="h1" variant="page-title">{eventRehearsalCopy.unavailableTitle}</CatchText>
-          <CatchText tone="secondary" variant="body">{eventRehearsalCopy.unavailableBody}</CatchText>
-        </CatchStack>
+      <RehearsalShell body={eventRehearsalCopy.unavailableBody} kicker={eventRehearsalCopy.unavailableKicker}
+        title={eventRehearsalCopy.unavailableTitle}>
         <CatchButton fill label={eventRehearsalCopy.retry} onPressed={() => void controller.refresh()} />
       </RehearsalShell>
     );
@@ -79,28 +71,30 @@ function EventRehearsalGuest({publicRehearsalId}: {publicRehearsalId: string}) {
 }
 
 /**
- * The guest live screens in practice (P4.6): the same night ground, top bar
- * and parts as `/join`, under a practice notice. Every control changes only
- * the synthetic guest this phone holds.
+ * The guest live screens in practice, on the LiveRehearsal board: the kit's
+ * flow on the one-job chrome, the practice notice as its banner, the moment
+ * as its head and the guest's parts as the column's blocks. Every control
+ * changes only the synthetic guest this phone holds; the practice phone has
+ * no site footer.
  */
-function RehearsalShell({banner, children}: {banner?: string; children: ReactNode}) {
+function RehearsalShell({banner, kicker, title, body, children}: {
+  banner?: string;
+  kicker: string;
+  title: string;
+  body?: string;
+  children: ReactNode;
+}) {
   return (
-    <CatchRoot theme="night">
-      <CatchTopBar homeHref="/" title={publicSiteCopy.wordmark} variant="site" />
-      <WebsitePageMain id="event-rehearsal">
-        <CatchPageBody gutter={false} pb="s8" pt="s4">
-          <CatchPaneLayout
-            main={
-              <CatchStack gap={16}>
-                {banner ? <RehearsalNotice icon="flag" id="practice" title={banner} tone="warning" /> : null}
-                {children}
-              </CatchStack>
-            }
-            pattern="reading"
-          />
-        </CatchPageBody>
-      </WebsitePageMain>
-    </CatchRoot>
+    <EventBookingFrame
+      banner={banner ? <CatchBanner icon={<CatchIcon name="flag" />} title={banner} tone="warning" /> : undefined}
+      body={body}
+      card={false}
+      footer={false}
+      kicker={kicker}
+      title={title}
+    >
+      {children}
+    </EventBookingFrame>
   );
 }
 
@@ -169,17 +163,21 @@ export function EventRehearsalPreview({
     (bootstrap.actor.status === "disconnected" ? "disconnected" : "connected")) === "disconnected";
 
   return (
-    <RehearsalShell banner={bootstrap.practiceBanner}>
-      <CatchStack align="start" direction="row" gap={12} justify="between">
-        <CatchStack gap={2}>
-          <CatchText as="h1" variant="title-bar">{bootstrap.session.title}</CatchText>
-          <CatchText tone="secondary" variant="body-meta">
-            {eventRehearsalCopy.headMeta(bootstrap.session.locationName, clock)}
-          </CatchText>
+    <RehearsalShell banner={bootstrap.practiceBanner} body={eventRehearsalCopy.momentBodies[moment]}
+      kicker={complete ? eventRehearsalCopy.completeKicker : eventRehearsalCopy.liveKicker}
+      title={eventRehearsalCopy.momentTitles[moment]}>
+      <CatchSurface block="tile">
+        <CatchStack align="start" direction="row" gap={12} justify="between">
+          <CatchStack gap={2}>
+            <CatchText as="h2" variant="title-bar">{bootstrap.session.title}</CatchText>
+            <CatchText tone="secondary" variant="body-meta">
+              {eventRehearsalCopy.headMeta(bootstrap.session.locationName, clock)}
+            </CatchText>
+          </CatchStack>
+          <CatchBadge label={eventRehearsalCopy.actorBadge(bootstrap.actor.displayName,
+            eventRehearsalCopy.statusLabels[bootstrap.actor.status])} />
         </CatchStack>
-        <CatchBadge label={eventRehearsalCopy.actorBadge(bootstrap.actor.displayName,
-          eventRehearsalCopy.statusLabels[bootstrap.actor.status])} />
-      </CatchStack>
+      </CatchSurface>
 
       {bootstrap.actor.assistanceMessage ? (
         <EventRehearsalJoiningInstruction bootstrap={bootstrap}
@@ -193,16 +191,6 @@ export function EventRehearsalPreview({
           blockedByReply={replyState.retryChoice !== null}
           onSubmit={onRequiredData} />
       ) : null}
-
-      <CatchSurface block="spotlight" color="ink">
-        <CatchStack gap={8}>
-          <CatchText variant="label-kicker">
-            {complete ? eventRehearsalCopy.completeKicker : eventRehearsalCopy.liveKicker}
-          </CatchText>
-          <CatchText as="h2" variant="display-lg">{eventRehearsalCopy.momentTitles[moment]}</CatchText>
-          <CatchText variant="body">{eventRehearsalCopy.momentBodies[moment]}</CatchText>
-        </CatchStack>
-      </CatchSurface>
 
       <CatchSurface block="tile">
         <CatchStack gap={8}>

@@ -3,11 +3,11 @@ import {
   CatchButton,
   CatchEmptyState,
   CatchField,
+  CatchFlowLayout,
+  CatchGroundCard,
   CatchIndexRow,
   CatchLoadingIndicator,
-  CatchPageBody,
   CatchPageTabBar,
-  CatchPaneLayout,
   CatchQrCode,
   CatchRoot,
   CatchSection,
@@ -17,7 +17,7 @@ import {
 } from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {interpolateContent as fill} from "@content/interpolate";
-import {accountPageCopy as copy} from "../../content/account";
+import {accountPageCopy as copy, signInCopy} from "../../content/account";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {Form} from "../../shared/ui/primitives";
 import {renderAccountForm} from "./accountForm";
@@ -37,7 +37,11 @@ export type AccountPageViewProps = Omit<AccountPageController, "accountStep"> & 
   /** Details' phone step for an account signed in without a phone. */
   phoneStep?: ReactNode;
 };
-const titleId = "account-title";
+
+/** One block of the flow's column, as the board's flat cards. */
+function Block({children, ground = "white"}: {children: ReactNode; ground?: "white" | "mint"}) {
+  return <CatchGroundCard ground={ground} outlined={ground === "white"}>{children}</CatchGroundCard>;
+}
 
 export function AccountPage() {
   const {accountStep, ...controller} = useAccountPageController();
@@ -45,50 +49,50 @@ export function AccountPage() {
 }
 
 /**
- * The signed-in guest's /account/ (no board; drawn from the system): the
- * site top bar, the page title, a segmented tab bar for the six sections and
- * each section's rows or its empty state, in the reading lane. Not a dating
- * profile: no matching or preference fields. Signed out, it offers the
- * sign-in sheet; the page itself is private and out of search.
+ * The guest's /account/ on the LiveAccount board: the kit's flow, with the
+ * six sections as tabs over the column and each section's blocks in it.
+ * Signed out, the flow's head asks the guest to sign in and its one block
+ * opens the sign-in sheet. Not a public profile: no matching or preference
+ * fields. The page is private and out of search.
  */
 export function AccountPageView(props: AccountPageViewProps) {
   const {phase, account, tab, setTab} = props;
+  const signedOut = phase === "signedOut";
+  const ready = phase === "ready" && account;
   return (
     <CatchRoot theme="day">
       <PublicSiteHeader />
-      <WebsitePageMain aria-labelledby={titleId} id="account">
-        <CatchPageBody gutter={false} pb="s8" pt="s4">
-          <CatchPaneLayout
-            main={
-              <CatchStack gap={24}>
-                <CatchStack gap={4}>
-                  <CatchText as="h1" id={titleId} variant="page-title">{copy.title}</CatchText>
-                  {account ? <CatchText tone="secondary" variant="body">
-                    {[account.displayName, account.phoneNumber].filter(Boolean).join(" · ")}
-                  </CatchText> : null}
-                </CatchStack>
-                {phase === "loading" ? <CatchStack align="center" gap={8} role="status">
-                  <CatchLoadingIndicator />
-                  <CatchText tone="secondary" variant="body-small">{copy.loading}</CatchText>
-                </CatchStack> : null}
-                {phase === "signedOut" ? <CatchEmptyState
-                  actions={<SignInButton label={copy.signedOut.action} size="md" variant="primary" />}
-                  message={copy.signedOut.message} title={copy.signedOut.title} /> : null}
-                {phase === "failed" ? <CatchEmptyState
-                  actions={<CatchButton label={copy.retry} onPressed={props.refresh} size="md" variant="secondary" />}
-                  message={copy.failed} /> : null}
-                {phase === "ready" && account ? <>
-                  <CatchPageTabBar label={copy.tabsLabel} onChanged={setTab} selected={tab} size="sm"
-                    options={accountTabs.map((value) => ({value, label: copy.tabs[value], count: countFor(props, value)}))} />
-                  {props.notice.message ? <CatchText as="p" role="status"
-                    tone={props.notice.tone === "is-error" ? "danger" : "secondary"} variant="body-small">{props.notice.message}</CatchText> : null}
-                  <AccountTabPanel {...props} />
-                </> : null}
+      <WebsitePageMain id="account">
+        <CatchFlowLayout
+          banner={ready && props.notice.message ? <CatchText as="p" role="status"
+            tone={props.notice.tone === "is-error" ? "danger" : "secondary"} variant="body-small">{props.notice.message}</CatchText> : undefined}
+          kicker={signedOut ? copy.signedOut.kicker : account?.displayName || undefined}
+          kickerTone="secondary"
+          lead={signedOut ? copy.signedOut.message : account?.phoneNumber || undefined}
+          navigation={ready ? (
+            <CatchPageTabBar label={copy.tabsLabel} onChanged={setTab} selected={tab} size="sm"
+              options={accountTabs.map((value) => ({value, label: copy.tabs[value], count: countFor(props, value)}))} />
+          ) : undefined}
+          title={signedOut ? copy.signedOut.title : copy.title}
+        >
+          {phase === "loading" ? <CatchStack align="center" gap={8} role="status">
+            <CatchLoadingIndicator />
+            <CatchText tone="secondary" variant="body-small">{copy.loading}</CatchText>
+          </CatchStack> : null}
+          {signedOut ? <Block>
+            <CatchStack gap={12}>
+              <CatchStack gap={4}>
+                <CatchText as="h2" variant="title-row">{signInCopy.title}</CatchText>
+                <CatchText as="p" tone="secondary" variant="body-small">{signInCopy.subtitle}</CatchText>
               </CatchStack>
-            }
-            pattern="reading"
-          />
-        </CatchPageBody>
+              <CatchStack align="start"><SignInButton label={copy.signedOut.action} size="md" variant="primary" /></CatchStack>
+            </CatchStack>
+          </Block> : null}
+          {phase === "failed" ? <CatchEmptyState
+            actions={<CatchButton label={copy.retry} onPressed={props.refresh} size="md" variant="secondary" />}
+            message={copy.failed} /> : null}
+          {ready ? <AccountTabPanel {...props} /> : null}
+        </CatchFlowLayout>
       </WebsitePageMain>
       <PublicSiteFooter />
       <PassSheet {...props} />
@@ -121,16 +125,20 @@ function PlansTab({account, openPass}: AccountPageViewProps) {
       message={copy.plans.emptyMessage} title={copy.plans.emptyTitle} />;
   }
   return (
-    <CatchStack gap={32}>
-      <CatchSection count={upcoming.length} dividers="between" title={copy.plans.upcoming}
-        empty={<CatchEmptyState message={copy.plans.emptyMessage} title={copy.plans.emptyTitle} variant="inline" />}>
-        {upcoming.map((plan) => <PlanRow key={plan.eventId} openPass={openPass} plan={plan} />)}
-      </CatchSection>
-      <CatchSection count={past.length} dividers="between" title={copy.plans.past}
-        empty={<CatchEmptyState title={copy.plans.emptyPastTitle} variant="inline" />}>
-        {past.map((plan) => <PlanRow key={plan.eventId} openPass={openPass} plan={plan} />)}
-      </CatchSection>
-    </CatchStack>
+    <>
+      <Block>
+        <CatchSection count={upcoming.length} dividers="between" title={copy.plans.upcoming}
+          empty={<CatchEmptyState message={copy.plans.emptyMessage} title={copy.plans.emptyTitle} variant="inline" />}>
+          {upcoming.map((plan) => <PlanRow key={plan.eventId} openPass={openPass} plan={plan} />)}
+        </CatchSection>
+      </Block>
+      <Block>
+        <CatchSection count={past.length} dividers="between" title={copy.plans.past}
+          empty={<CatchEmptyState title={copy.plans.emptyPastTitle} variant="inline" />}>
+          {past.map((plan) => <PlanRow key={plan.eventId} openPass={openPass} plan={plan} />)}
+        </CatchSection>
+      </Block>
+    </>
   );
 }
 
@@ -178,7 +186,7 @@ function PassSheet({pass, closePass}: AccountPageViewProps) {
 function FollowingTab({account, unfollow, busy}: AccountPageViewProps) {
   const follows = account?.follows ?? [];
   return (
-    <CatchSection count={follows.length} dividers="between" title={copy.following.title}
+    <Block><CatchSection count={follows.length} dividers="between" title={copy.following.title}
       empty={<CatchEmptyState actions={<CatchButton href={copy.plans.exploreHref} label={copy.plans.explore} size="md" variant="secondary" />}
         message={copy.following.emptyMessage} title={copy.following.emptyTitle} />}>
       {follows.map((follow) => (
@@ -191,14 +199,14 @@ function FollowingTab({account, unfollow, busy}: AccountPageViewProps) {
           trailing={follow.path ? <CatchButton href={follow.path} label={copy.following.open} size="sm" variant="quiet" /> : undefined}
         />
       ))}
-    </CatchSection>
+    </CatchSection></Block>
   );
 }
 
 function ReviewsTab({account}: AccountPageViewProps) {
   const reviews = account?.reviews ?? [];
   return (
-    <CatchStack gap={12}>
+    <Block><CatchStack gap={12}>
       <CatchSection count={reviews.length} dividers="between" title={copy.reviews.title}
         empty={<CatchEmptyState message={copy.reviews.emptyMessage} title={copy.reviews.emptyTitle} />}>
         {reviews.map((review) => (
@@ -218,22 +226,22 @@ function ReviewsTab({account}: AccountPageViewProps) {
         ))}
       </CatchSection>
       {reviews.length ? <CatchText as="p" tone="secondary" variant="body-small">{copy.reviews.verifiedNote}</CatchText> : null}
-    </CatchStack>
+    </CatchStack></Block>
   );
 }
 
 function DetailsTab({details, phoneStep, signOut}: AccountPageViewProps) {
   if (details.needsPhone) {
     return (
-      <CatchStack gap={16}>
+      <Block><CatchStack gap={16}>
         <CatchEmptyState message={copy.details.addPhoneMessage} title={copy.details.addPhone} variant="inline" />
         {phoneStep}
-      </CatchStack>
+      </CatchStack></Block>
     );
   }
   return (
-    <CatchStack gap={16}>
-      <Form noValidate onSubmit={details.save}>
+    <>
+      <Block><CatchStack gap={16}><Form noValidate onSubmit={details.save}>
         <CatchStack gap={12}>
           <CatchText as="h2" variant="title-row">{copy.details.title}</CatchText>
           <CatchField autoComplete="name" maxLength={80} onChanged={details.setName} recipe="input" title={copy.details.name} value={details.name} />
@@ -251,18 +259,18 @@ function DetailsTab({details, phoneStep, signOut}: AccountPageViewProps) {
           </CatchText>
         </CatchStack>
       </Form>
-      <CatchText as="p" tone="secondary" variant="body-small">{copy.details.notProfile}</CatchText>
       <CatchStack align="start">
         <CatchButton label={copy.details.signOut} onPressed={() => void signOut()} size="md" variant="secondary" />
-      </CatchStack>
-    </CatchStack>
+      </CatchStack></CatchStack></Block>
+      <Block ground="mint"><CatchText as="p" variant="body">{copy.details.notProfile}</CatchText></Block>
+    </>
   );
 }
 
 function MessagesTab({account, stopWhatsapp, busy}: AccountPageViewProps) {
   const rows = account?.messages ?? [];
   return (
-    <CatchStack gap={12}>
+    <Block><CatchStack gap={12}>
       <CatchSection count={rows.length} dividers="between" title={copy.messages.title}
         empty={<CatchEmptyState message={copy.messages.emptyMessage} title={copy.messages.emptyTitle} />}>
         {rows.map((row) => (
@@ -278,27 +286,27 @@ function MessagesTab({account, stopWhatsapp, busy}: AccountPageViewProps) {
         ))}
       </CatchSection>
       {rows.length ? <CatchText as="p" tone="secondary" variant="body-small">{copy.messages.smsNote}</CatchText> : null}
-    </CatchStack>
+    </CatchStack></Block>
   );
 }
 
 function PrivacyTab({download, signOut}: AccountPageViewProps) {
   return (
-    <CatchStack gap={24}>
-      <CatchStack gap={8}>
+    <>
+      <Block><CatchStack gap={8}>
         <CatchText as="h2" variant="title-row">{copy.privacy.downloadTitle}</CatchText>
         <CatchText as="p" tone="secondary" variant="body">{copy.privacy.downloadMessage}</CatchText>
-        <CatchStack align="start"><CatchButton label={copy.privacy.download} onPressed={download} size="md" variant="secondary" /></CatchStack>
-      </CatchStack>
-      <CatchStack gap={8}>
+        <CatchStack align="start"><CatchButton label={copy.privacy.download} onPressed={download} size="md" variant="primary" /></CatchStack>
+      </CatchStack></Block>
+      <Block><CatchStack gap={8}>
         <CatchText as="h2" variant="title-row">{copy.privacy.deleteTitle}</CatchText>
         <CatchText as="p" tone="secondary" variant="body">{copy.privacy.deleteMessage}</CatchText>
         <CatchStack align="start"><CatchButton href={copy.privacy.deleteHref} label={copy.privacy.delete} size="md" variant="secondary" /></CatchStack>
-      </CatchStack>
+      </CatchStack></Block>
       <CatchStack align="start">
         <CatchButton label={copy.privacy.signOut} onPressed={() => void signOut()} size="md" variant="quiet" />
       </CatchStack>
-    </CatchStack>
+    </>
   );
 }
 

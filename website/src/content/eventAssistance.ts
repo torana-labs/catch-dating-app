@@ -16,6 +16,7 @@ export const guestUpdateFixture = {
 
 export const eventAssistanceCopy = {
   brand: `${brand.name} home`, brandWord: "catch", kicker: "Your event",
+  eventKicker: "Your event · {event}",
   loadingTitle: "Getting your update", loading: "Checking the latest instructions…",
   unavailableTitle: "This update is unavailable",
   unavailableBody: "Open the latest link in your event message. It may have expired or no longer apply to you.",
