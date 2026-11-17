@@ -204,6 +204,9 @@ abstract final class GeneratedCatchRadiusTokens {
   @Deprecated('Alias of radius.sm; P7 deletes it.')
   static const double interactiveTile = 10.0;
   static const double pill = 999.0;
+  static const double button = 999.0;
+  static const double panel = 36.0;
+  static const double mat = 28.0;
 }
 
 abstract final class GeneratedCatchFontFamilyTokens {
@@ -254,7 +257,7 @@ abstract final class GeneratedCatchPaletteTokens {
   static const Color pinkInk = Color(0xFF4A2330);
   static const Color yellow = Color(0xFFF5C451);
   static const Color yellowDeep = Color(0xFF8A6410);
-  static const Color yellowInk = Color(0xFF4A3608);
+  static const Color yellowInk = Color(0xFF4A3A0B);
   static const Color mint = Color(0xFF5CCB9F);
   static const Color mintDeep = Color(0xFF1F7A57);
   static const Color mintInk = Color(0xFF123D2C);
@@ -264,6 +267,8 @@ abstract final class GeneratedCatchPaletteTokens {
   static const Color magenta = Color(0xFFE58AC8);
   static const Color magentaDeep = Color(0xFFA3307F);
   static const Color magentaInk = Color(0xFF46163A);
+  static const Color inkGround = Color(0xFF1B171B);
+  static const Color nightTertiary = Color(0xFF8A8079);
 }
 
 abstract final class GeneratedCatchGroundTokens {
@@ -273,7 +278,7 @@ abstract final class GeneratedCatchGroundTokens {
   static const Color paperFill = Color(0xFFF6F0E8);
   static const Color paperInk = Color(0xFF141114);
   static const Color paperInkSecondary = Color(0xFF5A5450);
-  static const Color inkFill = Color(0xFF141114);
+  static const Color inkFill = Color(0xFF1B171B);
   static const Color inkInk = Color(0xFFF6EFE6);
   static const Color inkInkSecondary = Color(0xFFBDB3A7);
   static const Color coralFill = Color(0xFFF07A55);
@@ -284,7 +289,7 @@ abstract final class GeneratedCatchGroundTokens {
   static const Color pinkInkSecondary = Color(0xFF4A2330);
   static const Color yellowFill = Color(0xFFF5C451);
   static const Color yellowInk = Color(0xFF141114);
-  static const Color yellowInkSecondary = Color(0xFF4A3608);
+  static const Color yellowInkSecondary = Color(0xFF4A3A0B);
   static const Color mintFill = Color(0xFF5CCB9F);
   static const Color mintInk = Color(0xFF141114);
   static const Color mintInkSecondary = Color(0xFF123D2C);
@@ -308,7 +313,7 @@ abstract final class GeneratedCatchFormatTokens {
   static const Color gamesAccent = Color(0xFFF5C451);
   static const Color gamesDeep = Color(0xFF8A6410);
   static const Color gamesInk = Color(0xFF141114);
-  static const Color gamesInkSecondary = Color(0xFF4A3608);
+  static const Color gamesInkSecondary = Color(0xFF4A3A0B);
   static const Color courtsAccent = Color(0xFF5CCB9F);
   static const Color courtsDeep = Color(0xFF1F7A57);
   static const Color courtsInk = Color(0xFF141114);
@@ -320,8 +325,23 @@ abstract final class GeneratedCatchFormatTokens {
 }
 
 abstract final class GeneratedCatchWebsiteTokens {
-  static const double contentMax = 1180.0;
-  static const double headerHeight = 76.0;
+  static const double contentMax = 1200.0;
+  static const double contentGutter = 24.0;
+  static const double contentCompactGutter = 16.0;
+  static const double headerHeight = 68.0;
+  static const double headerCompactHeight = 60.0;
+  static const double headerGap = 26.0;
+  static const double headerCompactGap = 10.0;
+  static const double headerNavGap = 22.0;
+  static const double headerNavSize = 15.0;
+  static const double headerChevronSize = 14.0;
+  static const double headerContactIconSize = 20.0;
+  static const double footerCompactPadBottom = 26.0;
+  static const double footerTitleSize = 22.0;
+  static const double panelPadBlock = 88.0;
+  static const double panelPadInline = 72.0;
+  static const double radiusField = 14.0;
+  static const double radiusSquare = 12.0;
 }
 
 @immutable
@@ -549,10 +569,10 @@ abstract final class GeneratedCatchTypographyTokens {
 
 abstract final class GeneratedCatchTypeRoleTokens {
   static const TextStyle displayHero = TextStyle(
-    fontSize: 96.0,
-    height: 0.9,
+    fontSize: 80.0,
+    height: 0.98,
     fontWeight: FontWeight(760),
-    letterSpacing: -4.32,
+    letterSpacing: -2.4,
   );
   static const TextStyle displayXl = TextStyle(
     fontSize: 64.0,
@@ -591,7 +611,7 @@ abstract final class GeneratedCatchTypeRoleTokens {
     letterSpacing: 0.0,
   );
   static const TextStyle bodyLead = TextStyle(
-    fontSize: 20.0,
+    fontSize: 19.0,
     height: 1.5,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.0,
