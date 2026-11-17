@@ -119,7 +119,8 @@ test("the import is idempotent and --check passes after it", () => {
       "design/source_packs/website-playbook/kit/playbook-panels.css",
       "design/source_packs/website-playbook/kit/playbook-kit.css",
       "design/tokens/catch.tokens.json",
-      "tool/design/playbook/README.md",
+      "design/source_packs/website-playbook/README.md",
+      "design/source_packs/website-playbook/source-pack.json",
     ]) write(file, fs.readFileSync(path.join(repo, file)));
     // The repository already matches the kit.
     assert.deepEqual(runImport({root, check: true}).failures, []);
