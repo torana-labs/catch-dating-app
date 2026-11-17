@@ -21,13 +21,12 @@ const mumbaiWithoutPages = {...mumbaiDiscoveryCatalog, plans: withoutPages};
 
 describe("cityFormatPageMeta", () => {
   it("follows the backend's indexing decision, and is noindex without one", () => {
-    expect(cityFormatPageMeta(mumbaiDiscoveryCatalog, "runClubs")).toEqual({
-      title: `Run clubs in Mumbai | ${brand.name}`,
-      description: "Run clubs in Mumbai: upcoming runs, the clubs who run them and how to join.",
-      twitterDescription: "Run clubs in Mumbai: upcoming runs, the clubs who run them and how to join.",
-      canonicalPath: "/mumbai/run-clubs/",
-      robots: "index, follow",
-    });
+    const runClubs = cityFormatPageMeta(mumbaiDiscoveryCatalog, "runClubs");
+    expect(runClubs.title).toBe(`Run clubs in Mumbai | ${brand.name}`);
+    expect(runClubs.description).toBe("Run clubs in Mumbai: upcoming runs, the clubs who run them and how to join.");
+    expect(runClubs.twitterDescription).toBe(runClubs.description);
+    expect(runClubs.canonicalPath).toBe("/mumbai/run-clubs/");
+    expect(runClubs.robots).toBe("index, follow");
     expect(cityFormatPageMeta(mumbaiDiscoveryCatalog, "pickleball").robots).toBe("noindex, follow");
     expect(cityFormatPageMeta(puneDiscoveryCatalog, "runClubs").robots).toBe("noindex, follow");
     expect(cityFormatPageMeta(mumbaiWithoutPages, "runClubs").robots).toBe("noindex, follow");
