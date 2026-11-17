@@ -1,0 +1,7 @@
+Catch Host helps organizers plan events, manage guest admission, check people in, and follow up after an event.
+
+Create event listings with the details guests need. Configure capacity, admission and waitlist rules, and keep event operations together in one host workspace.
+
+During an event, review the guest roster and attendance, manage check-in, and use host tools to guide the experience. Afterward, review aggregate event reports and follow-up items.
+
+Catch Host is separate from the Catch consumer app. Organizer access is required to manage events.
