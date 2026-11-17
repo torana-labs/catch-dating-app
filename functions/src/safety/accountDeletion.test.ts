@@ -186,6 +186,10 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       "participantFormProfileProposals/other-response": {
         uid: "runner-2", organizerId: "club-1",
       },
+      "participantFormProfileViews/response-1": {uid: "runner-1"},
+      "participantFormProfileViews/other-response": {uid: "runner-2"},
+      "participantIntakeProfileViews/runner-1": {uid: "runner-1"},
+      "participantIntakeProfileViews/runner-2": {uid: "runner-2"},
       "catchCommunicationPreferences/runner-1": {
         uid: "runner-1", whatsapp: {status: "optedIn"},
       },
@@ -492,6 +496,14 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     "participantFormProfileProposals/response-1"));
   assert.equal(harness.deletedPublicDocs.includes(
     "participantFormProfileProposals/other-response"), false);
+  for (const path of ["participantFormProfileViews/response-1",
+    "participantIntakeProfileViews/runner-1"]) {
+    assert.ok(harness.deletedPublicDocs.includes(path));
+  }
+  for (const path of ["participantFormProfileViews/other-response",
+    "participantIntakeProfileViews/runner-2"]) {
+    assert.equal(harness.deletedPublicDocs.includes(path), false);
+  }
   assert.ok(harness.deletedPublicDocs.includes(
     "catchCommunicationPreferences/runner-1"));
   assert.ok(harness.deletedPublicDocs.includes(

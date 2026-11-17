@@ -1789,6 +1789,24 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // The guest's own form profile review rows and intake revision, projected
+    // from proposals, responses, organizer cards and the intake profile. A row
+    // not written yet reads as missing. Claims still go through the callable.
+    match /participantFormProfileViews/{responseId} {
+      allow get: if (resource == null && isAuthed())
+        || (isAuthed() && !isDeletedUser(request.auth.uid)
+          && resource.data.uid == request.auth.uid);
+      allow list: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && resource.data.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /participantIntakeProfileViews/{uid} {
+      allow get: if isAuthed() && request.auth.uid == uid
+        && !isDeletedUser(uid);
+      allow list, write: if false;
+    }
+
     match /participantOrganizerDataGrants/{grantId} {
       allow read, write: if false;
     }

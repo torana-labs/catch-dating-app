@@ -476,6 +476,11 @@ export {getEventViewerState} from "./events/eventViewerState";
 export {listParticipantActivity} from "./profiles/participantActivity";
 export {getParticipantFormProfile, claimParticipantFormProfile}
   from "./profiles/claimFormProfile";
+export {onParticipantFormProfileViewProposalChanged,
+  onParticipantFormProfileViewResponseChanged,
+  onParticipantFormProfileViewCardChanged,
+  onParticipantIntakeProfileViewChanged}
+  from "./profiles/participantFormProfileViewTriggers";
 export {updateUserProfile} from "./profiles/updateUserProfile";
 export {setCrossPathsEventConsent} from
   "./crossPaths/setCrossPathsEventConsent";
