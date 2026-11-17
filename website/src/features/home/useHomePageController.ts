@@ -1,6 +1,7 @@
 import {useMemo, useState} from "react";
 import {homeFormats, homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
+import {websiteCities} from "@content/markets";
 import {comingFormats, homeCityState, organizerCard, planCard, proofReview, upcomingPlans, weekPlans, type HomeReview} from "./homeModel";
 import type {CitySource} from "./cityChoice";
 import type {HomeCatalog, HomeFormat} from "./homeTypes";
@@ -53,6 +54,8 @@ export function useHomePageController(catalog: HomeCatalog, navigate: (href: str
     citySource,
     cities: catalog.cities,
     liveCity: catalog.liveCity,
+    /** The city's catalog id, which names its founding-host counter. */
+    marketId: websiteCities.find((item) => item.slug === city.slug)?.id,
     /** busy, thin or launching: which hero leads and where the host band sits. */
     state,
     live,

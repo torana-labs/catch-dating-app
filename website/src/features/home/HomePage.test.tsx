@@ -8,6 +8,12 @@ import {HomePage} from "./HomePage";
 
 const trackMarketingEvent = vi.hoisted(() => vi.fn());
 vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent}));
+// The city's public founding-host counter, closed unless a test opens it.
+const foundingOffer = vi.hoisted(() => ({open: false, markets: [] as (string | undefined)[]}));
+vi.mock("../marketing/useFoundingHostOffer", () => ({useFoundingHostOffer: (market: string | undefined) => {
+  foundingOffer.markets.push(market);
+  return Boolean(market) && foundingOffer.open;
+}}));
 
 // The home page's capture slots, as the website manifest records them (their page bindings are
 // checked against capture_manifest.json in marketingCaptures.test.tsx).
@@ -19,7 +25,7 @@ const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-check
 const bandTitles = (container: HTMLElement) => [...container.querySelectorAll("main > section[aria-labelledby]")]
   .map((band) => container.ownerDocument.getElementById(band.getAttribute("aria-labelledby") ?? "")?.textContent);
 
-afterEach(() => {cleanup(); trackMarketingEvent.mockReset();});
+afterEach(() => {cleanup(); trackMarketingEvent.mockReset(); foundingOffer.open = false; foundingOffer.markets = [];});
 
 // Each test renders the whole page, which a loaded CI runner can take seconds over.
 describe("homepage", {timeout: 20_000}, () => {
@@ -75,10 +81,13 @@ describe("homepage", {timeout: 20_000}, () => {
   });
 
   it("leads a launching city with hosts, then the opening-day notice in place of plans", () => {
+    foundingOffer.open = true;
     const {container} = render(<HomePage captures={captures} catalog={puneLaunchingSoonCatalog} />);
     const main = within(screen.getByRole("main"));
     expect(main.getByText("Launching soon in Pune")).toBeTruthy();
     const hero = within(main.getByRole("region", {name: "Bring people together in Pune? Be one of the first hosts."}));
+    expect(hero.getByText(/Founding hosts get 90 days without Catch fees\./u)).toBeTruthy();
+    expect(foundingOffer.markets).toContain("in-mh-pune");
     expect(hero.getByRole("link", {name: "Start hosting free"}).getAttribute("href")).toBe("/host/#start");
     expect(hero.getByRole("link", {name: "See what’s on in Mumbai"}).getAttribute("href")).toBe("/?city=mumbai");
     expect(main.queryByRole("heading", {name: /This week in/})).toBeNull();
@@ -88,10 +97,11 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(soon.getByRole("textbox", {name: /WhatsApp number/})).toBeTruthy();
     expect((soon.getByRole("checkbox", {name: "Also send me news about new hosts and plans in Pune"}) as HTMLInputElement).checked).toBe(false);
     expect(soon.getByRole("button", {name: "Notify me"}).getAttribute("type")).toBe("submit");
-    // The host band moves up to third, with a person on WhatsApp.
+    // The host band moves up to third, with the founding offer and a person on WhatsApp.
     expect(bandTitles(container).slice(0, 3)).toEqual(["Bring people together in Pune? Be one of the first hosts.", "Here for the plans?",
       "Bring people together? Run the whole night from one screen."]);
     const hosts = within(main.getByRole("region", {name: "Bring people together? Run the whole night from one screen."}));
+    expect(hosts.getByText(/^Founding hosts in Pune: 90 days without fees\./u)).toBeTruthy();
     expect(hosts.getByRole("link", {name: "Talk to us on WhatsApp"}).getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/u);
     // Organisers joining a city before launch have no page to link to.
     const organisers = within(main.getByRole("region", {name: "Follow them before Catch opens."}));
@@ -112,6 +122,7 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(plans.queryByRole("radiogroup")).toBeNull();
     expect(screen.queryByText(/^0 /u)).toBeNull();
     expect(bandTitles(container)[2]).toBe("Bring people together? Run the whole night from one screen.");
+    // The counter is closed: no founding offer, only the fees line.
     const hosts = within(screen.getByRole("region", {name: "Bring people together? Run the whole night from one screen."}));
     expect(hosts.queryByText(/Founding hosts/u)).toBeNull();
     expect(hosts.getByText("Payment gateway fees are charged separately by the payment provider.")).toBeTruthy();
@@ -165,7 +176,8 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(hosts.getByText("Payment gateway fees are charged separately by the payment provider.")).toBeTruthy();
     expect(hosts.getByRole("link", {name: "Start your free trial"}).getAttribute("href")).toBe("/host/#start");
     expect(hosts.getByRole("link", {name: "See Catch for hosts"}).getAttribute("href")).toBe("/host/");
-    // No founding offer is promised until the page can read the live counter, and nothing names a count of places.
+    // A busy city shows no founding offer and reads no counter, and nothing names a count of places.
+    expect(foundingOffer.markets.every((market) => market === undefined)).toBe(true);
     expect(container.textContent).not.toMatch(/Founding hosts|of 50|a month/u);
     expect(container.textContent).not.toMatch(/dating|singles|mixer|\bmatch/iu);
     expect(container.textContent).not.toMatch(/\[[^\]]*\]/u);

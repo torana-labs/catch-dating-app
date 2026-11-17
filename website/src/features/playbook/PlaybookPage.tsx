@@ -4,7 +4,7 @@ import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {PublicPageFooter, PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {playbookLeadForms} from "./playbookLeadForms";
 import {playbookSectionNode} from "./PlaybookSections";
-import {useFoundingHostOffer} from "./useFoundingHostOffer";
+import {useFoundingHostOffer} from "../marketing/useFoundingHostOffer";
 import {usePlaybookPageController, type PlaybookLeadFormSlots, type PlaybookPageController} from "./usePlaybookPageController";
 
 /**
