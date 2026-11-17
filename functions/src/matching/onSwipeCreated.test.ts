@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import * as admin from "firebase-admin";
 import {
   datingMatchIdForPair,
   onSwipeCreatedHandler,
@@ -53,53 +54,119 @@ test(
   }
 );
 
-test("onSwipeCreatedHandler writes reaction comments to chat", async () => {
-  const created: Record<string, unknown> = {};
-
-  await onSwipeCreatedHandler(
-    {
-      swiperId: "user-b",
-      targetId: "user-a",
-      swipeData: swipe("user-b", "user-a", "event-2", "like", {
-        reactionTargetLabel: "Bio",
-        reactionTargetPreview: "Always up for a sunrise event.",
-        comment: "This sounds like my kind of morning.",
+test(
+  "onSwipeCreatedHandler never counts a deck-era like or posts its comment",
+  async () => {
+    const deckEraReverseDecisions: Record<string, SwipeDocument> = {
+      reactionWithComment: swipe("user-a", "user-b", "event-1", "like", {
+        reactionTargetId: "heroPhoto",
+        reactionTargetType: "heroPhoto",
+        reactionTargetLabel: "Main photo",
+        comment: "Great finish-line photo.",
       }),
-    },
-    deps({
-      docs: {
-        "profileDecisions/user-a/outgoing/user-b": swipe(
-          "user-a",
-          "user-b",
-          "event-1",
-          "like",
-          {
-            reactionTargetLabel: "Main photo",
-            comment: "Great finish-line photo.",
-          }
-        ),
-      },
-      created,
-    })
-  );
+      commentOnly: swipe("user-a", "user-b", "event-1", "like", {
+        comment: "Hi!",
+      }),
+      plainLikeBeforeCutoff: swipe("user-a", "user-b", "event-1", "like", {
+        createdAt: timestamp("2026-11-12T12:50:03.999Z"),
+      }),
+      pass: swipe("user-a", "user-b", "event-1", "pass"),
+    };
 
-  const firstMessagePath =
-    "matches/user-a_user-b/messages/profileReaction_user-a_user-b";
-  const secondMessagePath =
-    "matches/user-a_user-b/messages/profileReaction_user-b_user-a";
-  assert.deepEqual(created[firstMessagePath], {
-    senderId: "user-a",
-    text: "Great finish-line photo.\n\nAbout Main photo",
-    sentAt: "SERVER_TIMESTAMP",
-  });
-  assert.deepEqual(created[secondMessagePath], {
-    senderId: "user-b",
-    text:
-      "This sounds like my kind of morning.\n\n" +
-      "About Bio: Always up for a sunrise event.",
-    sentAt: "SERVER_TIMESTAMP",
-  });
-});
+    for (const [label, reverse] of Object.entries(deckEraReverseDecisions)) {
+      const created: Record<string, unknown> = {};
+      const updated: Record<string, unknown> = {};
+      const refreshed: string[] = [];
+      await onSwipeCreatedHandler(
+        {
+          swiperId: "user-b",
+          targetId: "user-a",
+          swipeData: swipe("user-b", "user-a", "event-2", "like"),
+        },
+        deps({
+          docs: {"profileDecisions/user-a/outgoing/user-b": reverse},
+          created,
+          updated,
+          refreshed,
+        })
+      );
+      assert.deepEqual(created, {}, label);
+      assert.deepEqual(updated, {}, label);
+      // The new current pick still refreshes its own event's scorecard.
+      assert.deepEqual(refreshed, ["event-2"], label);
+    }
+  }
+);
+
+test(
+  "onSwipeCreatedHandler ignores a newly written deck-era decision",
+  async () => {
+    const newDeckEraDecisions: SwipeDocument[] = [
+      swipe("user-b", "user-a", "event-2", "like", {
+        reactionTargetId: "heroPhoto",
+        reactionTargetType: "heroPhoto",
+        comment: "From an old app build.",
+      }),
+      swipe("user-b", "user-a", "event-2", "like", {
+        createdAt: timestamp("2026-10-01T00:00:00.000Z"),
+      }),
+    ];
+    for (const swipeData of newDeckEraDecisions) {
+      const created: Record<string, unknown> = {};
+      const refreshed: string[] = [];
+      const signals: unknown[] = [];
+      await onSwipeCreatedHandler(
+        {swiperId: "user-b", targetId: "user-a", swipeData},
+        deps({
+          docs: {
+            "profileDecisions/user-a/outgoing/user-b": swipe(
+              "user-a",
+              "user-b",
+              "event-1",
+              "like"
+            ),
+          },
+          created,
+          refreshed,
+          signals,
+        })
+      );
+      assert.deepEqual(created, {});
+      assert.deepEqual(refreshed, []);
+      assert.deepEqual(signals, []);
+    }
+  }
+);
+
+test(
+  "onSwipeCreatedHandler matches current picks made exactly at the cutoff",
+  async () => {
+    const created: Record<string, unknown> = {};
+    const signals: unknown[] = [];
+    await onSwipeCreatedHandler(
+      {
+        swiperId: "user-b",
+        targetId: "user-a",
+        swipeData: swipe("user-b", "user-a", "event-2", "like"),
+      },
+      deps({
+        docs: {
+          "profileDecisions/user-a/outgoing/user-b": swipe(
+            "user-a",
+            "user-b",
+            "event-1",
+            "like",
+            {createdAt: timestamp("2026-11-12T12:50:04.000Z")}
+          ),
+        },
+        created,
+        signals,
+      })
+    );
+    assert.deepEqual(Object.keys(created), ["matches/user-a_user-b"]);
+    assert.equal(signals.length, 1);
+  }
+);
 
 test("onSwipeCreatedHandler appends event ids to an existing match", async (
 ) => {
@@ -246,9 +313,13 @@ function swipe(
     targetId,
     eventId,
     direction,
-    createdAt: "created-at" as unknown as FirebaseFirestore.Timestamp,
+    createdAt: timestamp("2026-11-14T08:00:00.000Z"),
     ...overrides,
   };
+}
+
+function timestamp(iso: string): FirebaseFirestore.Timestamp {
+  return admin.firestore.Timestamp.fromDate(new Date(iso));
 }
 
 function deps({
@@ -257,12 +328,14 @@ function deps({
   updated = {},
   refreshed = [],
   blocked = false,
+  signals = [],
 }: {
   docs?: Record<string, unknown>;
   created?: Record<string, unknown>;
   updated?: Record<string, unknown>;
   refreshed?: string[];
   blocked?: boolean;
+  signals?: unknown[];
 }) {
   return {
     firestore: () => firestore(docs, created, updated),
@@ -271,6 +344,9 @@ function deps({
     serverTimestamp: () => "SERVER_TIMESTAMP",
     refreshScorecard: async (eventId: string) => {
       refreshed.push(eventId);
+    },
+    recordSignalFacts: async (_db: unknown, facts: unknown) => {
+      signals.push(facts);
     },
   } as never;
 }
