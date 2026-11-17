@@ -48,6 +48,7 @@
   "archived": false,
   "archivedAt": null,
   "organizerType": "club",
+  "womenLed": true,
   "organizerPhotos": [],
   "followerCount": 12
 }

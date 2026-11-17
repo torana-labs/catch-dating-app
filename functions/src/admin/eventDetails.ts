@@ -43,6 +43,7 @@ import {
   crossPathsPilotMinimumEventLeadMillis,
 } from "../crossPaths/pilotPolicy";
 
+import {adminEventWomenLed} from "../organizers/womenLed";
 import {HOST_PILOT_REVIEWS, HOST_ACTIVATIONS, nextPilotReview} from
   "../acquisition/pilotActivation";
 import type {HostPilotEventReviewDocument} from
@@ -130,6 +131,14 @@ export interface AdminEventDetailsSnapshot {
     maxAge: number | null;
   };
   searchIndexStatus: "missing" | "indexed";
+  /** The event's override with its audit fields, or null if never set. */
+  womenLed: {
+    value: boolean | null;
+    lockedByAdmin: boolean;
+    setByUid: string;
+    setByRole: string;
+    setAtMillis: number | null;
+  } | null;
 }
 
 export interface AdminEventListRow {
@@ -300,6 +309,10 @@ export async function adminUpdateEventDetailsHandler(
       normalizeAdminUpdateEventDetailsPayload
     );
   const rawPatch = buildFirestorePatch(data.fields);
+  if (data.fields.womenLed !== undefined) {
+    rawPatch.womenLed = adminEventWomenLed(data.fields.womenLed,
+      adminContext.uid, deps.serverTimestamp());
+  }
   const pilotReview = data.fields.hostPilotReview;
   const editableFieldCount = Object.keys(rawPatch).length +
     (pilotReview ? 1 : 0);
@@ -522,6 +535,14 @@ function publicEventDetails(
     searchIndexStatus: (event.adminSearch?.tokens?.length ?? 0) > 0 ?
       "indexed" :
       "missing",
+    womenLed: event.womenLed ? {
+      value: event.womenLed.value,
+      lockedByAdmin: event.womenLed.lockedByAdmin,
+      setByUid: event.womenLed.setByUid,
+      setByRole: event.womenLed.setByRole,
+      setAtMillis: typeof event.womenLed.setAt?.toMillis === "function" ?
+        event.womenLed.setAt.toMillis() : null,
+    } : null,
   };
 }
 

@@ -38,7 +38,7 @@ export function cityMarket(slug: unknown): CityMarket | null {
 }
 
 const pageFields = ["organizerId", "path", "identity", "upcomingEvents",
-  "followerCount", "claim"] as const;
+  "followerCount", "claim", "womenLed"] as const;
 
 /** Reads what one city shows: its organizer pages, or who is joining. */
 export async function readCityPlanSources(
