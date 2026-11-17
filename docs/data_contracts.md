@@ -3293,11 +3293,30 @@ The website launch notice names its city by catalog id. `joinWaitlist` accepts
 `cityId` (a market catalog id, or null for a city the catalog does not have),
 `countryIsoCode`, `citySource` (`picked`, `network_guess`, `precise` or
 `typed`) and `cityOther` (the typed city when `cityId` is null), alongside the
-old free-text `city`, which stays required and readable. Functions reject a
+old free-text `city`, which stays required (except on a website lead) and
+readable. Functions reject a
 `cityId` the catalog does not have or that is `hidden`, take the country from
 the catalog, and reject a different `countryIsoCode`; a null `cityId` needs
 `cityOther`. The fields are stored on the `launchWaitlist` row. A submission
 without `cityId` (older clients, Host and weddings forms) is unchanged.
+
+### Website Leads
+
+The website's lead forms post to `joinWaitlist` with a `requestKind` (`guide`,
+`walkthrough`, `demo`, `venue`, `story`, `referral`, `org_contact` or
+`city_alerts`) and a `lead` object: a `requestId` reused on retries, the
+WhatsApp `phone`, the `consent` (purpose `cityNewPlans` for city alerts,
+`leadFollowUp` otherwise, with a version), the `sourcePage`, the form's
+`entry` and exactly one payload object named for the kind. A lead carries no
+`role`, email or Host application fields. Each lead is one
+`salesInboundIntents/{sha256(phone, requestId)}` row with `source: "website"`,
+`leadKind`, the normalized `lead` (its consent stamped with `decidedAt`), a
+nullable `fullName` and `city`, the `phone` and no email. A referral also
+stores the referred host as its `hostApplication`, the shape partner
+nominations use, so it seeds a Supply Intake listing, and records
+`lead.referralCredit` naming the signed-in referrer, or
+`missing_referrer_account` when there is none. The Admin Inbox projects each
+lead as a `lead` item that staff close with a note. Nothing is sent.
 
 Each WhatsApp launch notice with a city counts its person once per city:
 `cityInterestMarkers/{sha256(phone|cityKey)}` is created in the same
@@ -5774,6 +5793,21 @@ organisers in the city and whether the city is `live` or `launchingSoon`
   `rebuildCityPlansHourly` rebuilds every city, which moves plans into and
   out of the window. Each commit is a transaction that discards a rebuild
   which read its sources before the stored `builtAt`.
+- It also carries the header's 30-day signal: `monthWindowEnd` (`windowStart`
+  plus 30 days), `upcomingEvents30d` (every listed plan that starts before it
+  and has not ended, counted before plans are capped) and `hasUpcomingMonth`;
+  the website hides What's on where it is false. `monthCountsComplete` is false
+  when an organiser page's 50-plan list ends inside the month, so the 30-day
+  counts are then a floor.
+- `formatPages` has one entry per city-by-format page (`/<citySlug>/<slug>/`):
+  `slug`, `organizerCount`, `upcomingEventCount`, `freeEventCount` (30 days)
+  and `indexing`, which is `index, follow` when the city has launched and has
+  3 or more organisers or 5 or more upcoming plans in the format (owner
+  decision, 16 Nov 2026). The 13 formats and their explicit activity-kind and
+  keyword tables are in `functions/src/cityPlans/discoveryFormats.ts`. Plans
+  and organisers carry the `discoveryFormats` they count toward and their
+  resolved `womenLed` label, and `womenLedPlanCount` counts the women-led plans
+  in the 14-day window.
 - The collection is server-only in `firestore.rules`.
 
 ## Write Path Discipline

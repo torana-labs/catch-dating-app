@@ -387,7 +387,7 @@ enter previews.
 | `syncPublicProfile` | `src/profiles/` | `users/{userId}` onWrite — mirrors public fields + age gate |
 | `syncOrganizerFollowerStats` | `src/clubs/` | `organizerFollowers/{followerId}` onWrite — recomputes canonical follower totals |
 | `programTravelLegMoments` | `src/moments/momentSchedule.ts` | Travel-leg writes emit Moment facts on leg changes |
-| `onSalesInboundIntentForIntake` | `src/operations/supplyIntake/nominations.ts` | `salesInboundIntents/{intentId}` onCreate — a website host application or partner nomination that names an organizer or a link also becomes a Supply Intake request (deterministic id, idempotent) |
+| `onSalesInboundIntentForIntake` | `src/operations/supplyIntake/nominations.ts` | `salesInboundIntents/{intentId}` onCreate — a website host application, website referral lead or partner nomination that names an organizer or a link also becomes a Supply Intake request (deterministic id, idempotent) |
 | `onSupplyIntakeRequestCreated` | `src/operations/supplyIntake/triggers.ts` | `supplyIntakeRequests/{requestId}` onCreate — leases the request, gathers its pages, runs Supply Intake and imports the reviewable listing; searches an unreadable nomination's handle once through SerpApi when `SERPAPI_KEY_VERSION` and the web search decision allow it (`linkSearch.ts`); retries until the third failure |
 | `requestInstantDraft` | `src/instantDrafts/request.ts` | Website "event page from a link" tool and demo request (App Check; signed-in caller with a verified phone, which must match any `whatsapp.phone` sent): an event or form link becomes a `web_instant_draft` Supply Intake request with private draft state; limits per verified number, per address, 25 a day and 200 a month; idempotent per website request id; never publishes. |
 | `getInstantDraft` | `src/instantDrafts/status.ts` | Draft page poll with the draft token: building, draft_ready (the private draft and up to ten events), needs_city (with the open markets; an optional `city` continues the same draft), staff_follow_up or expired; saves a finished build as a private draft if the worker hook did not. |
@@ -453,7 +453,7 @@ enter previews.
 | `expireCrossPathsPairHolds` | `src/crossPaths/` | Every 5 minutes — releases expired companion reservations and invalidates their invitation receipt |
 | `retryOrganizerAutomations` | `src/organizers/organizerFormAutomations.ts` | Every minute — resumes due automation runs and expired leases with bounded retries and per-action deduplication |
 | `dispatchScheduledOrganizerCampaigns` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatches due, approved organizer campaign snapshots |
-| `rebuildCityPlansHourly` | `src/cityPlans/triggers.ts` | Hourly, rebuilds every city's `cityPlans` read model so plans move into and out of the 14-day window (CAT-260) |
+| `rebuildCityPlansHourly` | `src/cityPlans/triggers.ts` | Hourly, rebuilds every city's `cityPlans` read model so plans move into and out of the 14-day window and the 30-day and format page counts stay current (CAT-260) |
 | `wakeSnoozedInboxItemsEvery30Minutes` | `src/admin/inbox/triggers.ts` | Every 30 minutes, puts snoozed inbox items whose snooze ended back in the inbox |
 | `reconcileAdminInboxNightly` | `src/admin/inbox/triggers.ts` | Nightly (03:10 India time), re-projects every inbox source and the people index from their documents; idempotent, so it changes only what a failed trigger missed (the inbox and people triggers are not retried) |
 | `refreshPublicPageFollowers` | `src/publicPages/triggers.ts` | Every 30 minutes, rebuilds the public pages of organizers whose follower count changed |
@@ -605,7 +605,10 @@ so an over-limit caller stops before any billed work; do not start it alongside
 the read.
 
 The `joinWaitlist` HTTP endpoint uses `checkIpRateLimit()` — an in-memory
-per-IP counter (3 POSTs per hour). This does not survive cold starts.
+per-IP counter (3 POSTs per hour). This does not survive cold starts. Its
+website leads (`requestKind`) also use `checkRateLimit()`, with
+`joinWaitlistLeadNetwork` (per hashed network address) and
+`joinWaitlistLeadNumber` (per hashed number).
 
 ## Content moderation
 
@@ -662,7 +665,8 @@ The public `joinWaitlist` endpoint is an HTTPS endpoint for the marketing site,
 not a Firebase callable function. It uses an explicit CORS origin allowlist for
 Catch domains, Firebase Hosting domains, and local previews. Keep any future
 public web-abuse controls for that endpoint separate from callable App Check
-enforcement.
+enforcement. Its website leads verify the `X-Firebase-AppCheck` header in the
+handler, exempt only where `enforceAppCheckForRuntime` exempts callables.
 
 ## Backend rules
 
