@@ -159,7 +159,8 @@ test("old names resolve to their system role and are marked deprecated everywher
   assert.ok(css.includes("--catch-theme-bg: var(--catch-color-light-bg);"));
   assert.ok(css.includes("--catch-radius-interactive-tile: 10px;"));
   assert.ok(css.includes("--catch-motion-fast: 100ms;"));
-  assert.ok(css.includes("--catch-font-mono: system-ui;"));
+  // D26: the function face is the canvas's Inter, and mono still aliases it.
+  assert.ok(css.includes('--catch-font-mono: "Inter";'));
   const banner = css.indexOf("Deprecated aliases of the system v15 roles");
   assert.ok(banner > 0 && banner < css.indexOf("--catch-color-light-bg:"));
   assert.match(dart, /@Deprecated\('Alias of theme\.light\.color\.tile; P7 deletes it\.'\)\s+static const Color lightBg/u);

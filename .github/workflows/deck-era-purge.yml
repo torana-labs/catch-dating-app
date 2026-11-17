@@ -1,0 +1,127 @@
+name: Deck-era purge
+
+# Runs tool/data/purge_deck_era_records.mjs against one Firebase environment
+# with that environment's deploy identity, so the one-off purge of the retired
+# swipe deck's likes, passes and like comments is a logged, repeatable run
+# rather than a command on someone's laptop. The default is a dry run, which
+# only reads and writes the plan's counts to the job summary (--summary-only:
+# no match ids, document paths or contacts). `apply` deletes the deck-era
+# profileDecisions, the chats that exist only because of a deck-era like, and
+# their signal facts and counters; a rerun finds nothing left. On apply the
+# deleted participantSignalFacts and matches ids are kept for one day as an
+# artifact for the BigQuery cleanup. Dispatch only, from main only. Operator
+# guide: docs/release_operations.md, "Retired swipe deck purge (one-off)".
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Firebase environment to purge.
+        required: true
+        type: choice
+        options: [dev, prod]
+        default: dev
+      mode:
+        description: dry-run reads and reports; apply deletes.
+        required: true
+        type: choice
+        options: [dry-run, apply]
+        default: dry-run
+
+permissions:
+  contents: read
+
+jobs:
+  purge:
+    name: Purge deck-era records in ${{ inputs.environment }} (${{ inputs.mode }})
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    timeout-minutes: 60
+    environment: ${{ inputs.environment }}
+    # One purge per environment at a time; a second waits.
+    concurrency:
+      group: deck-era-purge-${{ inputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Run only from main
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "::error::The deck-era purge runs only from main, not $GITHUB_REF."
+            exit 1
+          fi
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      # The tool reads Firestore through firebase-admin and loads the deck-era
+      # rule from the Functions build, so install only the Functions family.
+      - name: Install the Functions dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash tool/git/bootstrap_worktree.sh --target functions
+
+      - name: Build Functions
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix functions run build
+          test -f functions/lib/matching/deckEraDecision.js
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Run the purge
+        shell: bash
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+          MODE: ${{ inputs.mode }}
+        run: |
+          set -euo pipefail
+          args=(--env "$TARGET_ENV" --summary-only)
+          case "$MODE" in
+            dry-run) ;;
+            apply)
+              args+=(--apply --manifest "$RUNNER_TEMP/deck-era-purge/manifest.ndjson")
+              if [[ "$TARGET_ENV" == "prod" ]]; then args+=(--allow-prod); fi
+              ;;
+            *)
+              echo "::error::Unknown mode '$MODE'."
+              exit 1
+              ;;
+          esac
+          node tool/data/purge_deck_era_records.mjs "${args[@]}" | tee purge-report.txt
+          {
+            echo "## Deck-era purge: $TARGET_ENV ($MODE)"
+            echo
+            echo '```text'
+            cat purge-report.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the deleted ids for the BigQuery cleanup
+        if: ${{ inputs.mode == 'apply' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: deck-era-purge-manifest-${{ inputs.environment }}
+          path: ${{ runner.temp }}/deck-era-purge/manifest.ndjson
+          if-no-files-found: error
+          retention-days: 1

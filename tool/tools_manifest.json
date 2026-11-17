@@ -1110,6 +1110,30 @@
       "role": "gate"
     },
     {
+      "id": "ci:deck-era-purge-workflow",
+      "category": "ci",
+      "path": "tool/ci/deck_era_purge_workflow.test.mjs",
+      "command": "node --test tool/ci/deck_era_purge_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/deck-era-purge.yml",
+        "tool/ci/deck_era_purge_workflow.test.mjs"
+      ],
+      "description": "Keeps the deck-era purge workflow dispatch-only from main, dry-run by default, keyless and least-privileged, counts-only in its summary, and passing --allow-prod only for a prod apply.",
+      "checks": [
+        "node --check tool/ci/deck_era_purge_workflow.test.mjs",
+        "node --test tool/ci/deck_era_purge_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:delivery-core",
       "category": "ci",
       "path": "tool/ci/delivery_core.mjs",
@@ -2332,6 +2356,26 @@
       "impactPaths": [
         "contracts/**/*.json",
         "tool/contracts/generate_schema_contracts.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "data:purge-deck-era-records",
+      "category": "data",
+      "path": "tool/data/purge_deck_era_records.mjs",
+      "command": "node tool/data/purge_deck_era_records.mjs --env <dev|staging|prod>",
+      "safety": "remote-destructive-apply-guarded",
+      "status": "active",
+      "description": "One-off purge of the retired swipe deck's likes, passes, comments and the chats and signal facts derived from them; dry run by default.",
+      "checks": [
+        "node --check tool/data/purge_deck_era_records.mjs",
+        "npm --prefix functions run build && node --test tool/data/purge_deck_era_records.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/purge_deck_era_records.test.mjs",
+        "tool/data/fixtures/deck_era_purge/fake_firestore.mjs",
+        "tool/data/fixtures/deck_era_purge/world.mjs",
+        "functions/src/matching/deckEraDecision.ts"
       ],
       "role": "generator"
     },
