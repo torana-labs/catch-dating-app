@@ -245,5 +245,142 @@ The canvas owns these values (blueprint D26). `tool/design/playbook/import_kit_t
 | `.pg .open` padding | `112px` | `space.s28` | match |
 | `.pg .btns` gap | `10px` | `space.micro10` | match |
 | `.pg .btns` margin-top | `28px` | `space.s7` | match |
+| `.pg .open` padding | `24px` | `space.s6` | match |
+| `.pg .open` padding (phone) | `60px` | `website.section.compactPadTop` | own |
+| `.pg .open` padding (phone) | `8px` | `space.s2` | match |
+| `.pg .in` padding | `14px` | `space.micro14` | match |
+| `.pg .fld label` font-size | `13px` | `typography.role.bodyMeta.size` | match |
+| `.pg .fld label` font-weight | `600` | `typography.role.labelAction.weight` | match |
+| `.pg .fld label` margin-bottom | `6px` | `space.micro6` | match |
+| `.pg .phone` border-radius | `44px` | `website.radius.device` | own |
+| `.pg .phone` padding | `8px` | `space.s2` | match |
+| `.pg .phone` box-shadow | `0 30px 60px -20px rgba(20,17,20,.45),0 0 0 1px rgba(0,0,0,.5)` | `website.shadow.device` | own |
+| `.pg .phone>img` border-radius | `36px` | `radius.panel` | match |
+| `.pg .mbar` bottom (phone) | `8px` | `space.s2` | match |
+| `.pg .mbar` margin (phone) | `8px` | `space.s2` | match |
+| `.pg .mbar` gap (phone) | `8px` | `space.s2` | match |
+| `.pg .mbar` padding (phone) | `8px` | `space.s2` | match |
+| `.pg .mbar` border-radius (phone) | `999px` | `radius.pill` | match |
+| `.pg .mbar` box-shadow (phone) | `0 16px 40px -12px rgba(0,0,0,.5)` | `website.shadow.dock` | own |
+| `.pg .mbar .b` height (phone) | `44px` | `size.touchMin` | match |
+| `.pg .mbar .b.wab` width (phone) | `44px` | `size.touchMin` | match |
+| `.mbar .b.sec` border-color (phone) | `rgba(255,255,255,.6)` | `website.color.dockSecondaryLine` | own |
+| `.hmedia` padding-top | `24px` | `space.s6` | match |
+| `.hmedia` padding-top (phone) | `8px` | `space.s2` | match |
+| `.hmedia` max-height (phone) | `340px` | `website.hero.compactMediaMax` | own |
+| `.hphone` width | `360px` | `website.hero.phoneWidth` | own |
+| `.hphone` margin-bottom | `-250px` | `website.hero.phoneBleed` | own |
+| `.hphone` width (phone) | `230px` | `website.hero.compactPhoneWidth` | own |
+| `.hphone` margin-bottom (phone) | `-300px` | `website.hero.compactPhoneBleed` | own |
+| `.notify` margin-top | `22px` | `website.hero.notifyGap` | own |
+| `.notify` border-radius | `22px` | `website.radius.card` | own |
+| `.notify` padding | `16px` | `space.s4` | match |
+| `.notify` max-width | `540px` | `website.hero.notifyMax` | own |
+| `.notify h3` font-size | `15px` | `typography.role.body.size` | match |
+| `.notify p` margin | `2px` | `space.micro2` | match |
+| `.notify p` margin | `10px` | `space.micro10` | match |
+| `.notify p` font-size | `13px` | `typography.role.bodyMeta.size` | match |
+| `.notify .row` gap | `8px` | `space.s2` | match |
+| `.notify .in` height | `44px` | `size.fieldMd` | match |
+| `.consent` font-size | `12px` | `typography.role.labelBadge.size` | match |
+| `.hchip` padding | `12px` | `space.s3` | match |
+| `.hchip` padding | `16px` | `space.s4` | match |
+| `.hchip` gap | `12px` | `space.s3` | match |
+| `.hchip` border-radius | `20px` | `radius.lg` | match |
+| `.hchip` box-shadow | `0 18px 40px -16px rgba(0,0,0,.45)` | `website.shadow.chip` | own |
+| `.hchip` bottom (phone) | `24px` | `space.s6` | match |
+| `.hchip` padding (phone) | `8px` | `space.s2` | match |
+| `.hchip` padding (phone) | `12px` | `space.s3` | match |
+| `.hchip p` font-size | `13px` | `typography.role.bodyMeta.size` | match |
+| `.hchip strong` font-size | `15px` | `typography.role.body.size` | match |
+| `.hchip strong` font-size (phone) | `13px` | `typography.role.bodyMeta.size` | match |
+| `.date` width | `48px` | `website.date.width` | own |
+| `.date` height | `52px` | `website.date.height` | own |
+| `.date` font | `11px` | `website.date.labelSize` | own |
+| `.date` letter-spacing | `.04em` | `website.type.kicker.tracking` | match |
+| `.date b` font | `22px` | `website.type.xs.size` | match |
+| `.hchip .date` width (phone) | `40px` | `website.date.compactWidth` | own |
+| `.hchip .date` height (phone) | `44px` | `website.date.compactHeight` | own |
+| `.entries` gap | `12px` | `space.s3` | match |
+| `.entries` margin-top | `40px` | `space.s10` | match |
+| `.entries` gap (phone) | `10px` | `space.micro10` | match |
+| `.ent` border-radius | `24px` | `radius.xl` | match |
+| `.ent` padding | `20px` | `space.s5` | match |
+| `.ent` min-height | `200px` | `website.tile.minHeight` | own |
+| `.ent` gap | `8px` | `space.s2` | match |
+| `.ent` min-height (phone) | `160px` | `website.tile.compactMinHeight` | own |
+| `.ent` padding (phone) | `16px` | `space.s4` | match |
+| `.ent svg` width | `28px` | `website.tile.iconSize` | own |
+| `.ent h3` font-size | `18px` | `website.type.cardTitle.size` | match |
+| `.ent h3` line-height | `1.2` | `website.type.tileTitle.lineHeight` | own |
+| `.ent p` font-size | `13px` | `typography.role.bodyMeta.size` | match |
+| `.ent p` line-height | `1.45` | `website.type.tileBody.lineHeight` | own |
+| `.ent p` color | `rgba(20,17,20,.78)` | `website.color.inkOnColour` | own |
+| `.hd` gap | `32px` | `space.s8` | match |
+| `.hd` gap (phone) | `16px` | `space.s4` | match |
+| `.rail` gap | `16px` | `space.s4` | match |
+| `.rail` margin-top | `40px` | `space.s10` | match |
+| `.r3` gap | `20px` | `space.s5` | match |
+| `.plan` border-radius | `24px` | `radius.xl` | match |
+| `.plan` padding | `14px` | `space.micro14` | match |
+| `.plan` box-shadow | `0 0 0 1px rgba(20,17,20,.06)` | `website.shadow.cardRing` | own |
+| `.plan .phx` height | `150px` | `website.plan.mediaHeight` | own |
+| `.plan .phx` border-radius | `16px` | `radius.md` | match |
+| `.plan .row` gap | `12px` | `space.s3` | match |
+| `.plan .row` margin-top | `14px` | `space.micro14` | match |
+| `.plan h3` font-size | `17px` | `typography.role.titleBar.size` | match |
+| `.plan h3` line-height | `1.25` | `website.type.cardTitle.lineHeight` | match |
+| `.plan p` margin | `4px` | `space.s1` | match |
+| `.plan p` font-size | `13px` | `typography.role.bodyMeta.size` | match |
+| `.plan .meta` margin-top | `14px` | `space.micro14` | match |
+| `.plan .meta` padding-top | `12px` | `space.s3` | match |
+| `.plan .meta` border-top | `#eee7e1` | `website.color.lineRow` | match |
+| `.plan .meta` font-size | `13px` | `typography.role.bodyMeta.size` | match |
+| `.plan .badge` left | `10px` | `space.micro10` | match |
+| `.plan .badge` padding | `5px` | `website.badge.padBlock` | own |
+| `.plan .badge` padding | `10px` | `space.micro10` | match |
+| `.plan .badge` font-size | `12px` | `typography.role.labelBadge.size` | match |
+| `.card .mat` padding | `10px` | `space.micro10` | match |
+| `.card .mat>div` border-radius | `20px` | `radius.lg` | match |
+| `.card h3` margin | `14px` | `space.micro14` | match |
+| `.card h3` font-size | `18px` | `website.type.cardTitle.size` | own |
+| `.card h3` line-height | `1.25` | `website.type.cardTitle.lineHeight` | own |
+| `.card .body` font-size | `14px` | `typography.role.bodySmall.size` | match |
+| `.card .body` margin-top | `4px` | `space.s1` | match |
+| `.card .more` margin-top | `10px` | `space.micro10` | match |
+| `.card .more` font-size | `13px` | `typography.role.bodyMeta.size` | match |
+| `.chips` gap | `10px` | `space.micro10` | match |
+| `.chips` margin-top | `20px` | `space.s5` | match |
+| `.chip2` min-height | `44px` | `size.touchMin` | match |
+| `.chip2` padding | `18px` | `space.micro18` | match |
+| `.chip2` box-shadow | `0 0 0 1px rgba(20,17,20,.1)` | `website.shadow.chipRing` | own |
+| `.chip2` font-size | `15px` | `typography.role.body.size` | match |
+| `.chip2` gap | `8px` | `space.s2` | match |
+| `.chip2 i` width | `8px` | `website.chip.dotSize` | own |
+| `.chip2` min-height (phone) | `40px` | `size.controlMd` | match |
+| `.chip2` padding (phone) | `14px` | `space.micro14` | match |
+| `.chip2` font-size (phone) | `14px` | `typography.role.bodySmall.size` | match |
+| `.bento` gap | `16px` | `space.s4` | match |
+| `.bento .mid` padding | `24px` | `space.s6` | match |
+| `.bento .mid` border-radius | `28px` | `radius.mat` | match |
+| `.bento .mid h2` font-size | `42px` | `website.type.feature.size` | match |
+| `.bento .mid` padding (phone) | `20px` | `space.s5` | match |
+| `.bento .mid h2` font-size (phone) | `32px` | `website.type.feature.compactSize` | match |
+| `.tile` border-radius | `24px` | `radius.xl` | match |
+| `.tile` padding | `20px` | `space.s5` | match |
+| `.tile` min-height | `200px` | `website.tile.minHeight` | match |
+| `.tile` gap | `16px` | `space.s4` | match |
+| `.tile` min-height (phone) | `150px` | `website.tile.bentoCompactMinHeight` | own |
+| `.tile` padding (phone) | `16px` | `space.s4` | match |
+| `.tile .tag` font-size | `12px` | `typography.role.labelBadge.size` | match |
+| `.tile .tag` padding | `5px` | `website.badge.padBlock` | match |
+| `.tile .tag` background | `rgba(255,255,255,.55)` | `website.color.stepOnLight` | match |
+| `.tile p` font-size | `15px` | `typography.role.body.size` | match |
+| `.tile p` line-height | `1.4` | `website.type.tile.lineHeight` | own |
+| `.frm` gap | `10px` | `space.micro10` | match |
+| `.frm` margin-top | `18px` | `space.micro18` | match |
+| `.frm .row` gap | `8px` | `space.s2` | match |
+| `.ref` gap | `48px` | `space.s12` | match |
+| `.ref` gap (phone) | `20px` | `space.s5` | match |
 
 <!-- kit-token-map:end -->

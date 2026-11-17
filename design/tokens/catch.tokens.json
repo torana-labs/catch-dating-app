@@ -5611,6 +5611,32 @@
             "$value": "{palette.yellow}"
           }
         }
+      },
+      "dockSecondaryLine": {
+        "$type": "color",
+        "$description": "The outline of the phone action bar's second button.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.6
+        }
+      },
+      "inkOnColour": {
+        "$type": "color",
+        "$description": "Secondary text on a colour tile.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0784313725,
+            0.0666666667,
+            0.0784313725
+          ],
+          "alpha": 0.78
+        }
       }
     },
     "type": {
@@ -5728,6 +5754,42 @@
             "value": 32,
             "unit": "px"
           }
+        }
+      },
+      "tileTitle": {
+        "lineHeight": {
+          "$type": "number",
+          "$description": "An entry tile's title leading.",
+          "$value": 1.2
+        }
+      },
+      "tileBody": {
+        "lineHeight": {
+          "$type": "number",
+          "$description": "An entry tile's line leading.",
+          "$value": 1.45
+        }
+      },
+      "cardTitle": {
+        "size": {
+          "$type": "dimension",
+          "$description": "A website card's title, such as a format card or an entry tile.",
+          "$value": {
+            "value": 18,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$description": "A website card's title leading.",
+          "$value": 1.25
+        }
+      },
+      "tile": {
+        "lineHeight": {
+          "$type": "number",
+          "$description": "An app tile's line leading.",
+          "$value": 1.4
         }
       }
     },
@@ -5911,6 +5973,22 @@
           "value": 12,
           "unit": "px"
         }
+      },
+      "device": {
+        "$type": "dimension",
+        "$description": "A phone frame's outer corners.",
+        "$value": {
+          "value": 44,
+          "unit": "px"
+        }
+      },
+      "card": {
+        "$type": "dimension",
+        "$description": "The corners of a small white card on a panel, such as the hero's notify card.",
+        "$value": {
+          "value": 22,
+          "unit": "px"
+        }
       }
     },
     "hero": {
@@ -5921,6 +5999,62 @@
           "value": 72,
           "unit": "px"
         }
+      },
+      "compactMediaMax": {
+        "$type": "dimension",
+        "$description": "The hero media's height on phones; the phone runs on under the panel's edge.",
+        "$value": {
+          "value": 340,
+          "unit": "px"
+        }
+      },
+      "phoneWidth": {
+        "$type": "dimension",
+        "$description": "The hero phone's width on wide pages.",
+        "$value": {
+          "value": 360,
+          "unit": "px"
+        }
+      },
+      "phoneBleed": {
+        "$type": "dimension",
+        "$description": "How far the hero phone runs past the panel's bottom edge on wide pages.",
+        "$value": {
+          "value": -250,
+          "unit": "px"
+        }
+      },
+      "compactPhoneWidth": {
+        "$type": "dimension",
+        "$description": "The hero phone's width on phones.",
+        "$value": {
+          "value": 230,
+          "unit": "px"
+        }
+      },
+      "compactPhoneBleed": {
+        "$type": "dimension",
+        "$description": "How far the hero phone runs past the panel's bottom edge on phones.",
+        "$value": {
+          "value": -300,
+          "unit": "px"
+        }
+      },
+      "notifyGap": {
+        "$type": "dimension",
+        "$description": "Space above the hero's notify card.",
+        "$value": {
+          "value": 22,
+          "unit": "px"
+        }
+      },
+      "notifyMax": {
+        "$type": "dimension",
+        "$description": "The hero notify card's widest.",
+        "$value": {
+          "value": 540,
+          "unit": "px"
+        }
       }
     },
     "steps": {
@@ -5929,6 +6063,316 @@
         "$description": "The number column of a website step card.",
         "$value": {
           "value": 40,
+          "unit": "px"
+        }
+      }
+    },
+    "section": {
+      "compactPadTop": {
+        "$type": "dimension",
+        "$description": "Space above a plain (unpanelled) section on phones.",
+        "$value": {
+          "value": 60,
+          "unit": "px"
+        }
+      }
+    },
+    "shadow": {
+      "device": {
+        "$type": "shadow",
+        "$description": "The shadow under a phone frame.",
+        "$value": [
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0784313725,
+                0.0666666667,
+                0.0784313725
+              ],
+              "alpha": 0.45
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 30,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 60,
+              "unit": "px"
+            },
+            "spread": {
+              "value": -20,
+              "unit": "px"
+            }
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0,
+                0,
+                0
+              ],
+              "alpha": 0.5
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 0,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 0,
+              "unit": "px"
+            },
+            "spread": {
+              "value": 1,
+              "unit": "px"
+            }
+          }
+        ]
+      },
+      "dock": {
+        "$type": "shadow",
+        "$description": "The shadow under the phone action bar.",
+        "$value": [
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0,
+                0,
+                0
+              ],
+              "alpha": 0.5
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 16,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 40,
+              "unit": "px"
+            },
+            "spread": {
+              "value": -12,
+              "unit": "px"
+            }
+          }
+        ]
+      },
+      "chip": {
+        "$type": "shadow",
+        "$description": "The shadow under a card floating over a hero's media.",
+        "$value": [
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0,
+                0,
+                0
+              ],
+              "alpha": 0.45
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 18,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 40,
+              "unit": "px"
+            },
+            "spread": {
+              "value": -16,
+              "unit": "px"
+            }
+          }
+        ]
+      },
+      "cardRing": {
+        "$type": "shadow",
+        "$description": "The hairline ring around a white card on paper.",
+        "$value": [
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0784313725,
+                0.0666666667,
+                0.0784313725
+              ],
+              "alpha": 0.06
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 0,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 0,
+              "unit": "px"
+            },
+            "spread": {
+              "value": 1,
+              "unit": "px"
+            }
+          }
+        ]
+      },
+      "chipRing": {
+        "$type": "shadow",
+        "$description": "The hairline ring around a white chip.",
+        "$value": [
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0784313725,
+                0.0666666667,
+                0.0784313725
+              ],
+              "alpha": 0.1
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 0,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 0,
+              "unit": "px"
+            },
+            "spread": {
+              "value": 1,
+              "unit": "px"
+            }
+          }
+        ]
+      }
+    },
+    "date": {
+      "width": {
+        "$type": "dimension",
+        "$description": "A date square's width.",
+        "$value": {
+          "value": 48,
+          "unit": "px"
+        }
+      },
+      "height": {
+        "$type": "dimension",
+        "$description": "A date square's height.",
+        "$value": {
+          "value": 52,
+          "unit": "px"
+        }
+      },
+      "labelSize": {
+        "$type": "dimension",
+        "$description": "A date square's weekday.",
+        "$value": {
+          "value": 11,
+          "unit": "px"
+        }
+      },
+      "compactWidth": {
+        "$type": "dimension",
+        "$description": "A date square's width in the hero chip on phones.",
+        "$value": {
+          "value": 40,
+          "unit": "px"
+        }
+      },
+      "compactHeight": {
+        "$type": "dimension",
+        "$description": "A date square's height in the hero chip on phones.",
+        "$value": {
+          "value": 44,
+          "unit": "px"
+        }
+      }
+    },
+    "tile": {
+      "minHeight": {
+        "$type": "dimension",
+        "$description": "A colour tile's least height: the homepage's entry and app tiles.",
+        "$value": {
+          "value": 200,
+          "unit": "px"
+        }
+      },
+      "compactMinHeight": {
+        "$type": "dimension",
+        "$description": "An entry tile's least height on phones.",
+        "$value": {
+          "value": 160,
+          "unit": "px"
+        }
+      },
+      "iconSize": {
+        "$type": "dimension",
+        "$description": "An entry tile's icon.",
+        "$value": {
+          "value": 28,
+          "unit": "px"
+        }
+      },
+      "bentoCompactMinHeight": {
+        "$type": "dimension",
+        "$description": "An app tile's least height on phones.",
+        "$value": {
+          "value": 150,
+          "unit": "px"
+        }
+      }
+    },
+    "plan": {
+      "mediaHeight": {
+        "$type": "dimension",
+        "$description": "A plan card's photo or poster.",
+        "$value": {
+          "value": 150,
+          "unit": "px"
+        }
+      }
+    },
+    "badge": {
+      "padBlock": {
+        "$type": "dimension",
+        "$description": "A pill tag's padding above and below.",
+        "$value": {
+          "value": 5,
+          "unit": "px"
+        }
+      }
+    },
+    "chip": {
+      "dotSize": {
+        "$type": "dimension",
+        "$description": "A chip's colour dot.",
+        "$value": {
+          "value": 8,
           "unit": "px"
         }
       }

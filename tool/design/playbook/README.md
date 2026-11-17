@@ -16,7 +16,13 @@ source of truth for the values the kit draws. The canvas draws with the kit
 stylesheets, `kit/playbook-panels.css` and `kit/playbook-kit.css`, which keep
 their own literal values: the canvas serves only its own flat file set and
 cannot load the repository's generated stylesheet. The importer is therefore
-what keeps the canvas, the website and the apps on one value.
+what keeps the canvas, the website and the apps on one value. The homepage
+board (`oneoff/PlaybookHome.dc.html`) also draws sections only the homepage
+has (entry tiles, format cards, the hero's notify card and plan chip, the
+bento app band and the refer panel) in its own `<style>`; the importer reads
+those declarations too. A board lends declarations only: its one-off inks are
+not kit colours and need no colour row. A `box-shadow` reads as a DTCG
+shadow token, layer by layer.
 
 To bring a canvas change into the code:
 

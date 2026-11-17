@@ -24,6 +24,11 @@
 export const kitFiles = {
   panels: "design/source_packs/website-playbook/kit/playbook-panels.css",
   kit: "design/source_packs/website-playbook/kit/playbook-kit.css",
+  // The homepage board's own stylesheet: the sections only the homepage draws
+  // (entry tiles, format cards, the hero's notify card and plan chip, the
+  // bento app band, the refer panel). It lends declarations only; its one-off
+  // inks are not kit colours, so it is left out of the hex coverage check.
+  home: "design/source_packs/website-playbook/oneoff/PlaybookHome.dc.html",
 };
 
 /** The kit's phone arrangement: `@container pg (max-width: 600px)`. */
@@ -132,6 +137,7 @@ export const colorMap = [
 
 const decl = (file, selector, property, token, extra = {}) => ({file, selector, property, token, ...extra});
 const P = (selector, property, token, extra) => decl("panels", selector, property, token, extra);
+const H = (selector, property, token, extra) => decl("home", selector, property, token, extra);
 const K = (selector, property, token, extra) => decl("kit", selector, property, token, extra);
 const match = {mode: "match"};
 const onPhone = {container: phone};
@@ -369,4 +375,179 @@ export const declarationMap = [
   P(".pg .open", "padding", "space.s28", {...match, pick: {regex: "^(\\d+px)"}}),
   P(".pg .btns", "gap", "space.micro10", match),
   P(".pg .btns", "margin-top", "space.s7", match),
+
+  // Plain sections (the kit's .open): 112px above and 24px below, 60 and 8 on phones.
+  P(".pg .open", "padding", "space.s6", {...match, pick: {part: 2}}),
+  P(".pg .open", "padding", "website.section.compactPadTop", {
+    ...onPhone, pick: {part: 0}, description: "Space above a plain (unpanelled) section on phones.",
+  }),
+  P(".pg .open", "padding", "space.s2", {...match, ...onPhone, pick: {part: 2}}),
+
+  // Fields: the label above the box.
+  P(".pg .in", "padding", "space.micro14", {...match, pick: {part: 1}}),
+  P(".pg .fld label", "font-size", "typography.role.bodyMeta.size", match),
+  P(".pg .fld label", "font-weight", "typography.role.labelAction.weight", match),
+  P(".pg .fld label", "margin-bottom", "space.micro6", match),
+
+  // The phone (device) frame.
+  P(".pg .phone", "border-radius", "website.radius.device", {
+    description: "A phone frame's outer corners.",
+  }),
+  P(".pg .phone", "padding", "space.s2", match),
+  P(".pg .phone", "box-shadow", "website.shadow.device", {
+    description: "The shadow under a phone frame.",
+  }),
+  P(".pg .phone>img", "border-radius", "radius.panel", match),
+
+  // The phone action bar (.mbar), shown on phones only.
+  P(".pg .mbar", "bottom", "space.s2", {...match, ...onPhone}),
+  P(".pg .mbar", "margin", "space.s2", {...match, ...onPhone}),
+  P(".pg .mbar", "gap", "space.s2", {...match, ...onPhone}),
+  P(".pg .mbar", "padding", "space.s2", {...match, ...onPhone}),
+  P(".pg .mbar", "border-radius", "radius.pill", {...match, ...onPhone}),
+  P(".pg .mbar", "box-shadow", "website.shadow.dock", {
+    ...onPhone, description: "The shadow under the phone action bar.",
+  }),
+  P(".pg .mbar .b", "height", "size.touchMin", {...match, ...onPhone}),
+  P(".pg .mbar .b.wab", "width", "size.touchMin", {...match, ...onPhone}),
+  H(".mbar .b.sec", "border-color", "website.color.dockSecondaryLine", {
+    ...onPhone, description: "The outline of the phone action bar's second button.",
+  }),
+
+  // Homepage hero: the phone, the notify card and the plan chip.
+  H(".hmedia", "padding-top", "space.s6", match),
+  H(".hmedia", "padding-top", "space.s2", {...match, ...onPhone}),
+  H(".hmedia", "max-height", "website.hero.compactMediaMax", {
+    ...onPhone, description: "The hero media's height on phones; the phone runs on under the panel's edge.",
+  }),
+  H(".hphone", "width", "website.hero.phoneWidth", {description: "The hero phone's width on wide pages."}),
+  H(".hphone", "margin-bottom", "website.hero.phoneBleed", {
+    description: "How far the hero phone runs past the panel's bottom edge on wide pages.",
+  }),
+  H(".hphone", "width", "website.hero.compactPhoneWidth", {...onPhone, description: "The hero phone's width on phones."}),
+  H(".hphone", "margin-bottom", "website.hero.compactPhoneBleed", {
+    ...onPhone, description: "How far the hero phone runs past the panel's bottom edge on phones.",
+  }),
+  H(".notify", "margin-top", "website.hero.notifyGap", {description: "Space above the hero's notify card."}),
+  H(".notify", "border-radius", "website.radius.card", {description: "The corners of a small white card on a panel, such as the hero's notify card."}),
+  H(".notify", "padding", "space.s4", match),
+  H(".notify", "max-width", "website.hero.notifyMax", {description: "The hero notify card's widest."}),
+  H(".notify h3", "font-size", "typography.role.body.size", match),
+  H(".notify p", "margin", "space.micro2", {...match, pick: {part: 0}}),
+  H(".notify p", "margin", "space.micro10", {...match, pick: {part: 2}}),
+  H(".notify p", "font-size", "typography.role.bodyMeta.size", match),
+  H(".notify .row", "gap", "space.s2", match),
+  H(".notify .in", "height", "size.fieldMd", match),
+  H(".consent", "font-size", "typography.role.labelBadge.size", match),
+  H(".hchip", "padding", "space.s3", {...match, pick: {part: 0}}),
+  H(".hchip", "padding", "space.s4", {...match, pick: {part: 1}}),
+  H(".hchip", "gap", "space.s3", match),
+  H(".hchip", "border-radius", "radius.lg", match),
+  H(".hchip", "box-shadow", "website.shadow.chip", {description: "The shadow under a card floating over a hero's media."}),
+  H(".hchip", "bottom", "space.s6", {...match, ...onPhone}),
+  H(".hchip", "padding", "space.s2", {...match, ...onPhone, pick: {part: 0}}),
+  H(".hchip", "padding", "space.s3", {...match, ...onPhone, pick: {part: 1}}),
+  H(".hchip p", "font-size", "typography.role.bodyMeta.size", match),
+  H(".hchip strong", "font-size", "typography.role.body.size", match),
+  H(".hchip strong", "font-size", "typography.role.bodyMeta.size", {...match, ...onPhone}),
+  H(".date", "width", "website.date.width", {description: "A date square's width."}),
+  H(".date", "height", "website.date.height", {description: "A date square's height."}),
+  H(".date", "font", "website.date.labelSize", {pick: {regex: " (\\d+px)/"}, description: "A date square's weekday."}),
+  H(".date", "letter-spacing", "website.type.kicker.tracking", match),
+  H(".date b", "font", "website.type.xs.size", {...match, pick: {regex: " (\\d+px)/"}}),
+  H(".hchip .date", "width", "website.date.compactWidth", {...onPhone, description: "A date square's width in the hero chip on phones."}),
+  H(".hchip .date", "height", "website.date.compactHeight", {...onPhone, description: "A date square's height in the hero chip on phones."}),
+
+  // Homepage entry tiles ("Whoever you are").
+  H(".entries", "gap", "space.s3", match),
+  H(".entries", "margin-top", "space.s10", match),
+  H(".entries", "gap", "space.micro10", {...match, ...onPhone}),
+  H(".ent", "border-radius", "radius.xl", match),
+  H(".ent", "padding", "space.s5", match),
+  H(".ent", "min-height", "website.tile.minHeight", {description: "A colour tile's least height: the homepage's entry and app tiles."}),
+  H(".ent", "gap", "space.s2", match),
+  H(".ent", "min-height", "website.tile.compactMinHeight", {...onPhone, description: "An entry tile's least height on phones."}),
+  H(".ent", "padding", "space.s4", {...match, ...onPhone}),
+  H(".ent svg", "width", "website.tile.iconSize", {description: "An entry tile's icon."}),
+  H(".ent h3", "font-size", "website.type.cardTitle.size", match),
+  H(".ent h3", "line-height", "website.type.tileTitle.lineHeight", {description: "An entry tile's title leading."}),
+  H(".ent p", "font-size", "typography.role.bodyMeta.size", match),
+  H(".ent p", "line-height", "website.type.tileBody.lineHeight", {description: "An entry tile's line leading."}),
+  H(".ent p", "color", "website.color.inkOnColour", {description: "Secondary text on a colour tile."}),
+
+  // Section headers with an action across (.hd) and rails of cards.
+  H(".hd", "gap", "space.s8", match),
+  H(".hd", "gap", "space.s4", {...match, ...onPhone}),
+  H(".rail", "gap", "space.s4", match),
+  H(".rail", "margin-top", "space.s10", match),
+  H(".r3", "gap", "space.s5", match),
+
+  // Plan cards.
+  H(".plan", "border-radius", "radius.xl", match),
+  H(".plan", "padding", "space.micro14", match),
+  H(".plan", "box-shadow", "website.shadow.cardRing", {description: "The hairline ring around a white card on paper."}),
+  H(".plan .phx", "height", "website.plan.mediaHeight", {description: "A plan card's photo or poster."}),
+  H(".plan .phx", "border-radius", "radius.md", match),
+  H(".plan .row", "gap", "space.s3", match),
+  H(".plan .row", "margin-top", "space.micro14", match),
+  H(".plan h3", "font-size", "typography.role.titleBar.size", match),
+  H(".plan h3", "line-height", "website.type.cardTitle.lineHeight", match),
+  H(".plan p", "margin", "space.s1", {...match, pick: {part: 0}}),
+  H(".plan p", "font-size", "typography.role.bodyMeta.size", match),
+  H(".plan .meta", "margin-top", "space.micro14", match),
+  H(".plan .meta", "padding-top", "space.s3", match),
+  H(".plan .meta", "border-top", "website.color.lineRow", {...match, pick: {regex: "(#[0-9a-fA-F]{6})"}}),
+  H(".plan .meta", "font-size", "typography.role.bodyMeta.size", match),
+  H(".plan .badge", "left", "space.micro10", match),
+  H(".plan .badge", "padding", "website.badge.padBlock", {pick: {part: 0}, description: "A pill tag's padding above and below."}),
+  H(".plan .badge", "padding", "space.micro10", {...match, pick: {part: 1}}),
+  H(".plan .badge", "font-size", "typography.role.labelBadge.size", match),
+
+  // Format cards and chips ("Start with what you feel like doing").
+  H(".card .mat", "padding", "space.micro10", match),
+  H(".card .mat>div", "border-radius", "radius.lg", match),
+  H(".card h3", "margin", "space.micro14", {...match, pick: {part: 0}}),
+  H(".card h3", "font-size", "website.type.cardTitle.size", {description: "A website card's title, such as a format card or an entry tile."}),
+  H(".card h3", "line-height", "website.type.cardTitle.lineHeight", {description: "A website card's title leading."}),
+  H(".card .body", "font-size", "typography.role.bodySmall.size", match),
+  H(".card .body", "margin-top", "space.s1", match),
+  H(".card .more", "margin-top", "space.micro10", match),
+  H(".card .more", "font-size", "typography.role.bodyMeta.size", match),
+  H(".chips", "gap", "space.micro10", match),
+  H(".chips", "margin-top", "space.s5", match),
+  H(".chip2", "min-height", "size.touchMin", match),
+  H(".chip2", "padding", "space.micro18", {...match, pick: {part: 1}}),
+  H(".chip2", "box-shadow", "website.shadow.chipRing", {description: "The hairline ring around a white chip."}),
+  H(".chip2", "font-size", "typography.role.body.size", match),
+  H(".chip2", "gap", "space.s2", match),
+  H(".chip2 i", "width", "website.chip.dotSize", {description: "A chip's colour dot."}),
+  H(".chip2", "min-height", "size.controlMd", {...match, ...onPhone}),
+  H(".chip2", "padding", "space.micro14", {...match, ...onPhone, pick: {part: 1}}),
+  H(".chip2", "font-size", "typography.role.bodySmall.size", {...match, ...onPhone}),
+
+  // The app band's bento grid.
+  H(".bento", "gap", "space.s4", match),
+  H(".bento .mid", "padding", "space.s6", match),
+  H(".bento .mid", "border-radius", "radius.mat", match),
+  H(".bento .mid h2", "font-size", "website.type.feature.size", match),
+  H(".bento .mid", "padding", "space.s5", {...match, ...onPhone}),
+  H(".bento .mid h2", "font-size", "website.type.feature.compactSize", {...match, ...onPhone}),
+  H(".tile", "border-radius", "radius.xl", match),
+  H(".tile", "padding", "space.s5", match),
+  H(".tile", "min-height", "website.tile.minHeight", match),
+  H(".tile", "gap", "space.s4", match),
+  H(".tile", "min-height", "website.tile.bentoCompactMinHeight", {...onPhone, description: "An app tile's least height on phones."}),
+  H(".tile", "padding", "space.s4", {...match, ...onPhone}),
+  H(".tile .tag", "font-size", "typography.role.labelBadge.size", match),
+  H(".tile .tag", "padding", "website.badge.padBlock", {...match, pick: {part: 0}}),
+  H(".tile .tag", "background", "website.color.stepOnLight", match),
+  H(".tile p", "font-size", "typography.role.body.size", match),
+  H(".tile p", "line-height", "website.type.tile.lineHeight", {description: "An app tile's line leading."}),
+  H(".frm", "gap", "space.micro10", match),
+  H(".frm", "margin-top", "space.micro18", match),
+  H(".frm .row", "gap", "space.s2", match),
+
+  // The refer panel.
+  H(".ref", "gap", "space.s12", match),
+  H(".ref", "gap", "space.s5", {...match, ...onPhone}),
 ];
