@@ -55,7 +55,7 @@ class HostEventWorkspaceScreen extends ConsumerWidget {
     );
     final state = ref.watch(hostEventWorkspaceControllerProvider(request));
     final uid = ref.watch(uidProvider).value;
-    final organizer = ref.watch(fetchOrganizerProvider(organizerId)).value;
+    final organizer = ref.watch(watchOrganizerProvider(organizerId)).value;
     final cancelling = ref
         .watch(HostEventBookingController.hostCancelEventMutation)
         .isPending;

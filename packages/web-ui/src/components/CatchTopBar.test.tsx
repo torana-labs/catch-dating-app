@@ -1,5 +1,6 @@
 import {cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
+import {CatchNavMenu} from "./CatchNavMenu";
 import {CatchTopBar} from "./CatchTopBar";
 import {CatchViewport} from "./CatchViewport";
 
@@ -40,13 +41,39 @@ describe("CatchTopBar site", () => {
     expect(screen.getByRole("link", {name: "Get the app"})).toBeTruthy();
   });
 
-  it("puts the account control last on the right, after the actions", () => {
+  it("puts the contact link and the account control before the actions, as the canvas draws them", () => {
     render(<CatchTopBar account={<button type="button">Sign in</button>} actions={<a href="/app">Get the app</a>} links={[{label: "Explore", href: "/explore/"}]}
-      title="Catch" variant="site" />);
-    const order = [...screen.getByRole("banner").querySelectorAll("a, button")].map((element) => element.textContent?.trim())
+      contact={{href: "https://wa.me/0", label: "Talk to us", accessibleLabel: "Talk to us on WhatsApp"}} title="Catch" variant="site" />);
+    const order = [...screen.getByRole("banner").querySelectorAll("a, button")]
+      .map((element) => element.getAttribute("aria-label") ?? element.textContent?.trim())
       .filter((label) => label !== "Menu");
-    expect(order).toEqual(["Catch", "Explore", "Get the app", "Sign in"]);
+    expect(order).toEqual(["Catch", "Explore", "Talk to us on WhatsApp", "Sign in", "Get the app"]);
+    expect(screen.getByRole("link", {name: "Talk to us on WhatsApp"}).textContent).toBe("Talk to us");
     expect(screen.getByRole("navigation", {name: "Site"}).parentElement!.contains(screen.getByRole("button", {name: "Sign in"}))).toBe(false);
+  });
+
+  it("draws page links as plain links and a link with pages as a dropdown in its place", () => {
+    const onLink = vi.fn();
+    render(<CatchTopBar links={[{label: "What’s on", href: "/explore/"}, {label: "For hosts", menu: <CatchNavMenu appearance="link" label="For hosts" links={[{href: "/host/", label: "Catch for hosts"}]} onLinkPressed={onLink} />}, {label: "Pricing", href: "/host/pricing/"}]}
+      menuExtras={[{href: "/host/", label: "Catch for hosts"}]} title="Catch" variant="site" />);
+    const nav = screen.getByRole("navigation", {name: "Site"});
+    const items = [...nav.querySelectorAll(":scope > a, :scope > button, :scope > span > div > button")].map((element) => element.textContent?.trim());
+    expect(items).toEqual(["What’s on", "For hosts", "Pricing"]);
+    const trigger = screen.getByRole("button", {name: "For hosts"});
+    expect(trigger.dataset.appearance).toBe("link");
+    fireEvent.click(trigger);
+    fireEvent.click(screen.getByRole("link", {name: "Catch for hosts"}));
+    expect(onLink).toHaveBeenCalledWith({href: "/host/", label: "Catch for hosts"});
+  });
+
+  it("opens the phone menu from a round button named Menu, listing the links without the dropdown's own label", () => {
+    render(<CatchTopBar links={[{label: "What’s on", href: "/explore/"}, {label: "For hosts", menu: <CatchNavMenu appearance="link" label="For hosts" links={[{href: "/host/", label: "Catch for hosts"}]} />}]}
+      menuExtras={[{href: "/host/", label: "Catch for hosts"}]} title="Catch" variant="site" />);
+    const menu = screen.getByRole("button", {name: "Menu"});
+    expect(menu.textContent).toBe("");
+    fireEvent.click(menu);
+    const labels = screen.getAllByRole("menuitem").map((item) => item.textContent?.trim());
+    expect(labels).toEqual(["What’s on", "Catch for hosts"]);
   });
 
   it("draws a whole phone menu in place of the built-in one when the site passes it", () => {

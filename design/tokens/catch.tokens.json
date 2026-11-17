@@ -27,6 +27,15 @@
             "format": "woff2"
           },
           {
+            "family": "Inter",
+            "style": "normal",
+            "weight": "100 900",
+            "source": "assets/fonts/Inter-Roman-VF.woff2",
+            "target": "packages/web-config/generated/assets/fonts/Inter-Roman-VF.woff2",
+            "url": "./assets/fonts/Inter-Roman-VF.woff2",
+            "format": "woff2"
+          },
+          {
             "family": "IBM Plex Mono",
             "style": "normal",
             "weight": "400",
@@ -3795,6 +3804,32 @@
         "hex": "#BDB3A7"
       }
     },
+    "nightTertiary": {
+      "$type": "color",
+      "$description": "Tertiary text on the ink ground: the footer's legal line and footnotes, and fine print. Canvas-owned.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.5411764706,
+          0.5019607843,
+          0.4745098039
+        ],
+        "hex": "#8A8079"
+      }
+    },
+    "inkGround": {
+      "$type": "color",
+      "$description": "The ink ground: dark panels, the offer strip and the footer card. Canvas-owned (Website · conversion playbook).",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1058823529,
+          0.0901960784,
+          0.1058823529
+        ],
+        "hex": "#1B171B"
+      }
+    },
     "coral": {
       "$value": {
         "colorSpace": "srgb",
@@ -3894,10 +3929,10 @@
         "colorSpace": "srgb",
         "components": [
           0.2901960784,
-          0.2117647059,
-          0.031372549
+          0.2274509804,
+          0.0431372549
         ],
-        "hex": "#4A3608"
+        "hex": "#4A3A0B"
       }
     },
     "mint": {
@@ -4033,7 +4068,7 @@
     },
     "ink": {
       "fill": {
-        "$value": "{palette.ink}"
+        "$value": "{palette.inkGround}"
       },
       "ink": {
         "$value": "{palette.nightInk}"
@@ -4415,7 +4450,7 @@
       }
     },
     "sm": {
-      "$description": "Buttons, squares under 64px (date tiles, icon tiles), fields.",
+      "$description": "Squares under 64px (date tiles, icon tiles), fields. Buttons take radius.button.",
       "$value": {
         "value": 10,
         "unit": "px"
@@ -4455,6 +4490,26 @@
       "$description": "Chips, badges, avatars, switches, segmented items.",
       "$value": {
         "value": 999,
+        "unit": "px"
+      }
+    },
+    "button": {
+      "$description": "Every button in every framework. The design canvas draws actions as pills (it retired D20's corner).",
+      "$value": "{radius.pill}"
+    },
+    "panel": {
+      "$type": "dimension",
+      "$description": "Website panels and the footer card on wide pages. Canvas-owned.",
+      "$value": {
+        "value": 36,
+        "unit": "px"
+      }
+    },
+    "mat": {
+      "$type": "dimension",
+      "$description": "Colour mats, mock cards and photos; panels and the footer card on phones. Canvas-owned.",
+      "$value": {
+        "value": 28,
         "unit": "px"
       }
     },
@@ -5003,7 +5058,8 @@
         "$value": "{font.family.voice}"
       },
       "function": {
-        "$value": "system-ui"
+        "$description": "Every non-display role on the website: Inter, self-hosted, as the design canvas sets text (blueprint D26). Flutter keeps the platform's own families at runtime (CatchFonts.functionFamily).",
+        "$value": "Inter"
       },
       "data": {
         "$description": "Deprecated alias of font.family.function; IBM Plex Mono retires from UI labels (blueprint D22). P7 deletes it.",
@@ -5047,7 +5103,7 @@
         "$value": "\"Archivo\", \"Arial Narrow\", sans-serif"
       },
       "sans": {
-        "$value": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif"
+        "$value": "\"Inter\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif"
       }
     }
   },
@@ -5056,7 +5112,23 @@
       "$type": "dimension",
       "max": {
         "$value": {
-          "value": 1180,
+          "value": 1200,
+          "unit": "px"
+        }
+      },
+      "gutter": {
+        "$type": "dimension",
+        "$description": "The page's side gutter on wide pages, where the content is narrower than the window.",
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        }
+      },
+      "compactGutter": {
+        "$type": "dimension",
+        "$description": "The page's side gutter on phones.",
+        "$value": {
+          "value": 16,
           "unit": "px"
         }
       }
@@ -5065,7 +5137,652 @@
       "$type": "dimension",
       "height": {
         "$value": {
-          "value": 76,
+          "value": 68,
+          "unit": "px"
+        }
+      },
+      "compactHeight": {
+        "$type": "dimension",
+        "$description": "The site header's height on phones.",
+        "$value": {
+          "value": 60,
+          "unit": "px"
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$description": "Space between the site header's parts.",
+        "$value": {
+          "value": 26,
+          "unit": "px"
+        }
+      },
+      "compactGap": {
+        "$type": "dimension",
+        "$description": "Space between the site header's parts on phones.",
+        "$value": {
+          "value": 10,
+          "unit": "px"
+        }
+      },
+      "navGap": {
+        "$type": "dimension",
+        "$description": "Space between the header's page links.",
+        "$value": {
+          "value": 22,
+          "unit": "px"
+        }
+      },
+      "navSize": {
+        "$type": "dimension",
+        "$description": "The header's page links.",
+        "$value": {
+          "value": 15,
+          "unit": "px"
+        }
+      },
+      "navWeight": {
+        "$type": "number",
+        "$description": "The header's page links.",
+        "$value": 500
+      },
+      "chevronSize": {
+        "$type": "dimension",
+        "$description": "A header dropdown's chevron.",
+        "$value": {
+          "value": 14,
+          "unit": "px"
+        }
+      },
+      "contactIconSize": {
+        "$type": "dimension",
+        "$description": "The header's WhatsApp mark.",
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        }
+      }
+    },
+    "color": {
+      "inkBody": {
+        "$type": "color",
+        "$description": "Header page links and long-form prose on white and paper.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.168627451,
+            0.1411764706,
+            0.1529411765
+          ],
+          "hex": "#2B2427"
+        }
+      },
+      "inkList": {
+        "$type": "color",
+        "$description": "List and table body text on white.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3019607843,
+            0.2705882353,
+            0.2862745098
+          ],
+          "hex": "#4D4549"
+        }
+      },
+      "inkMuted": {
+        "$type": "color",
+        "$description": "Breadcrumbs, consent lines and sources on white.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4196078431,
+            0.3843137255,
+            0.4
+          ],
+          "hex": "#6B6266"
+        }
+      },
+      "inkFaint": {
+        "$type": "color",
+        "$description": "Not-applicable comparison cells.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.6392156863,
+            0.6039215686,
+            0.5764705882
+          ],
+          "hex": "#A39A93"
+        }
+      },
+      "separator": {
+        "$type": "color",
+        "$description": "Breadcrumb separators.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7098039216,
+            0.6745098039,
+            0.6470588235
+          ],
+          "hex": "#B5ACA5"
+        }
+      },
+      "controlLine": {
+        "$type": "color",
+        "$description": "Outline of fields, chips, steppers and choice buttons on white.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8392156863,
+            0.8078431373,
+            0.7803921569
+          ],
+          "hex": "#D6CEC7"
+        }
+      },
+      "protoLine": {
+        "$type": "color",
+        "$description": "The canvas prototype switch's rule. Canvas only.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8117647059,
+            0.7764705882,
+            0.7450980392
+          ],
+          "hex": "#CFC6BE"
+        }
+      },
+      "lineOnPaper": {
+        "$type": "color",
+        "$description": "Hairlines on paper.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8901960784,
+            0.8549019608,
+            0.8196078431
+          ],
+          "hex": "#E3DAD1"
+        }
+      },
+      "lineFaq": {
+        "$type": "color",
+        "$description": "Question rules in the FAQ.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9019607843,
+            0.8745098039,
+            0.8509803922
+          ],
+          "hex": "#E6DFD9"
+        }
+      },
+      "lineRow": {
+        "$type": "color",
+        "$description": "Row hairlines and quiet tags on white.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9333333333,
+            0.9058823529,
+            0.8823529412
+          ],
+          "hex": "#EEE7E1"
+        }
+      },
+      "lineCell": {
+        "$type": "color",
+        "$description": "Table cell hairlines.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9450980392,
+            0.9215686275,
+            0.8980392157
+          ],
+          "hex": "#F1EBE5"
+        }
+      },
+      "placeholderStripe": {
+        "$type": "color",
+        "$description": "The darker stripe of a photo placeholder.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.937254902,
+            0.9058823529,
+            0.8705882353
+          ],
+          "hex": "#EFE7DE"
+        }
+      },
+      "protoStripe": {
+        "$type": "color",
+        "$description": "The darker stripe of the canvas prototype switch. Canvas only.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9529411765,
+            0.9333333333,
+            0.9137254902
+          ],
+          "hex": "#F3EEE9"
+        }
+      },
+      "protoStripeLight": {
+        "$type": "color",
+        "$description": "The lighter stripe of the canvas prototype switch. Canvas only.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9843137255,
+            0.9725490196,
+            0.9607843137
+          ],
+          "hex": "#FBF8F5"
+        }
+      },
+      "bannerStripe": {
+        "$type": "color",
+        "$description": "The lighter stripe of the yellow notice banner.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.968627451,
+            0.8117647059,
+            0.4196078431
+          ],
+          "hex": "#F7CF6B"
+        }
+      },
+      "tagWarn": {
+        "$type": "color",
+        "$description": "Warning tags and labels inside product mocks.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9882352941,
+            0.8901960784,
+            0.7098039216
+          ],
+          "hex": "#FCE3B5"
+        }
+      },
+      "tagGood": {
+        "$type": "color",
+        "$description": "Success tags inside product mocks.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8392156863,
+            0.9490196078,
+            0.9019607843
+          ],
+          "hex": "#D6F2E6"
+        }
+      },
+      "tagInfo": {
+        "$type": "color",
+        "$description": "Information tags inside product mocks.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8901960784,
+            0.9019607843,
+            0.9882352941
+          ],
+          "hex": "#E3E6FC"
+        }
+      },
+      "compareUs": {
+        "$type": "color",
+        "$description": "Catch's column in comparison tables.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9176470588,
+            0.968627451,
+            0.9450980392
+          ],
+          "hex": "#EAF7F1"
+        }
+      },
+      "compareUsInk": {
+        "$type": "color",
+        "$description": "Text in Catch's column of comparison tables.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0588235294,
+            0.2392156863,
+            0.168627451
+          ],
+          "hex": "#0F3D2B"
+        }
+      },
+      "deviceBezel": {
+        "$type": "color",
+        "$description": "Phone and tablet frames.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0705882353,
+            0.062745098,
+            0.0745098039
+          ],
+          "hex": "#121013"
+        }
+      },
+      "whatsapp": {
+        "$type": "color",
+        "$description": "WhatsApp's brand green, on the phone action bar's chat button.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.1450980392,
+            0.8274509804,
+            0.4
+          ],
+          "hex": "#25D366"
+        }
+      },
+      "chatGround": {
+        "$type": "color",
+        "$description": "A chat mock's ground.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9254901961,
+            0.8980392157,
+            0.8666666667
+          ],
+          "hex": "#ECE5DD"
+        }
+      },
+      "chatOwn": {
+        "$type": "color",
+        "$description": "The sender's own bubble in a chat mock.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8509803922,
+            0.9921568627,
+            0.8274509804
+          ],
+          "hex": "#D9FDD3"
+        }
+      },
+      "onInkControlLine": {
+        "$type": "color",
+        "$description": "The outline of a secondary button on the ink ground.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.7
+        }
+      }
+    },
+    "type": {
+      "hero": {
+        "compactSize": {
+          "$type": "dimension",
+          "$description": "The hero headline on phones.",
+          "$value": {
+            "value": 44,
+            "unit": "px"
+          }
+        }
+      },
+      "section": {
+        "size": {
+          "$type": "dimension",
+          "$description": "A section headline on wide pages.",
+          "$value": {
+            "value": 56,
+            "unit": "px"
+          }
+        },
+        "compactSize": {
+          "$type": "dimension",
+          "$description": "A section headline on phones.",
+          "$value": {
+            "value": 36,
+            "unit": "px"
+          }
+        }
+      },
+      "small": {
+        "compactSize": {
+          "$type": "dimension",
+          "$description": "A small display headline on phones.",
+          "$value": {
+            "value": 26,
+            "unit": "px"
+          }
+        }
+      },
+      "xs": {
+        "size": {
+          "$type": "dimension",
+          "$description": "The smallest display headline, such as a card title.",
+          "$value": {
+            "value": 22,
+            "unit": "px"
+          }
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$description": "The smallest display headline's tracking.",
+          "$value": {
+            "value": -0.02,
+            "unit": "em"
+          }
+        }
+      },
+      "lead": {
+        "compactSize": {
+          "$type": "dimension",
+          "$description": "A lead paragraph on phones.",
+          "$value": {
+            "value": 17,
+            "unit": "px"
+          }
+        }
+      },
+      "body": {
+        "lineHeight": {
+          "$type": "number",
+          "$description": "Website body copy's leading. App body copy keeps typography.role.body.lineHeight.",
+          "$value": 1.5
+        }
+      }
+    },
+    "wordmark": {
+      "bar": {
+        "size": {
+          "$type": "dimension",
+          "$description": "The wordmark in the site header.",
+          "$value": {
+            "value": 26,
+            "unit": "px"
+          }
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$description": "The header wordmark's tracking.",
+          "$value": {
+            "value": -0.03,
+            "unit": "em"
+          }
+        }
+      },
+      "weight": {
+        "$type": "number",
+        "$description": "The wordmark's weight in the header and the footer.",
+        "$value": 800
+      },
+      "footer": {
+        "sizeMin": {
+          "$type": "dimension",
+          "$description": "The footer wordmark's smallest size.",
+          "$value": {
+            "value": 120,
+            "unit": "px"
+          }
+        },
+        "sizeFluid": {
+          "$type": "dimension",
+          "$description": "The footer wordmark's size as a share of the page width.",
+          "$value": {
+            "value": 24,
+            "unit": "cqi"
+          }
+        },
+        "sizeMax": {
+          "$type": "dimension",
+          "$description": "The footer wordmark's largest size.",
+          "$value": {
+            "value": 330,
+            "unit": "px"
+          }
+        },
+        "compactSizeFluid": {
+          "$type": "dimension",
+          "$description": "The footer wordmark's size on phones, as a share of the page width.",
+          "$value": {
+            "value": 31,
+            "unit": "cqi"
+          }
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$description": "The footer wordmark's tracking.",
+          "$value": {
+            "value": -0.05,
+            "unit": "em"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$description": "The footer wordmark's leading.",
+          "$value": 0.8
+        },
+        "gap": {
+          "$type": "dimension",
+          "$description": "Space above the footer wordmark.",
+          "$value": {
+            "value": 56,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    "button": {
+      "lg": {
+        "padding": {
+          "$type": "dimension",
+          "$description": "A large button's side padding.",
+          "$value": {
+            "value": 22,
+            "unit": "px"
+          }
+        }
+      },
+      "sm": {
+        "height": {
+          "$type": "dimension",
+          "$description": "A small button's height, such as the header's action.",
+          "$value": {
+            "value": 38,
+            "unit": "px"
+          }
+        },
+        "compactHeight": {
+          "$type": "dimension",
+          "$description": "The header action's height on phones.",
+          "$value": {
+            "value": 36,
+            "unit": "px"
+          }
+        },
+        "compactSize": {
+          "$type": "dimension",
+          "$description": "The header action's label on phones.",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    "footer": {
+      "compactPadBottom": {
+        "$type": "dimension",
+        "$description": "Space under the footer card's legal line on phones.",
+        "$value": {
+          "value": 26,
+          "unit": "px"
+        }
+      },
+      "titleSize": {
+        "$type": "dimension",
+        "$description": "The footer's top band title.",
+        "$value": {
+          "value": 22,
+          "unit": "px"
+        }
+      },
+      "linkLineHeight": {
+        "$type": "number",
+        "$description": "The footer links' leading, which sets their row rhythm.",
+        "$value": 2
+      },
+      "noteLineHeight": {
+        "$type": "number",
+        "$description": "The footer footnotes' leading.",
+        "$value": 1.6
+      }
+    },
+    "panel": {
+      "padBlock": {
+        "$type": "dimension",
+        "$description": "Space above and below a panel's content on wide pages.",
+        "$value": {
+          "value": 88,
+          "unit": "px"
+        }
+      },
+      "padInline": {
+        "$type": "dimension",
+        "$description": "A panel's smallest side padding on wide pages.",
+        "$value": {
+          "value": 72,
+          "unit": "px"
+        }
+      }
+    },
+    "radius": {
+      "field": {
+        "$type": "dimension",
+        "$description": "A website field's corners. App fields keep radius.sm.",
+        "$value": {
+          "value": 14,
+          "unit": "px"
+        }
+      },
+      "square": {
+        "$type": "dimension",
+        "$description": "A website date or icon square's corners. App squares keep radius.sm.",
+        "$value": {
+          "value": 12,
           "unit": "px"
         }
       }
@@ -5084,13 +5801,13 @@
         "size": {
           "$type": "dimension",
           "$value": {
-            "value": 96,
+            "value": 80,
             "unit": "px"
           }
         },
         "lineHeight": {
           "$type": "number",
-          "$value": 0.9
+          "$value": 0.98
         },
         "weight": {
           "$type": "number",
@@ -5099,7 +5816,7 @@
         "tracking": {
           "$type": "dimension",
           "$value": {
-            "value": -0.045,
+            "value": -0.03,
             "unit": "em"
           }
         }
@@ -5287,7 +6004,7 @@
         "size": {
           "$type": "dimension",
           "$value": {
-            "value": 20,
+            "value": 19,
             "unit": "px"
           }
         },

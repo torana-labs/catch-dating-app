@@ -1,7 +1,7 @@
 import type {ReactNode} from "react";
 import styles from "./CatchWordmark.module.css";
 
-/** bar: the site top bar; band: the footer's ink band. */
+/** bar: the site top bar; band: the footer card's giant coral wordmark. */
 export type CatchWordmarkSize = "bar" | "band";
 
 export interface CatchWordmarkProps {
@@ -17,10 +17,10 @@ export interface CatchWordmarkProps {
 }
 
 /**
- * catch.wordmark: the brand typed in Archivo's display voice, the one 78%
- * width, weight and tracking ratio every display heading uses (blueprint
- * D19), so the top bar and the footer can never drift apart. It never wraps;
- * a sub-brand rides on the same line.
+ * catch.wordmark: the brand typed in Archivo at its one 78% width, at the
+ * design canvas's wordmark weight and tracking (blueprint D26), so the top
+ * bar and the footer can never drift apart. It never wraps; a sub-brand rides
+ * on the same line in the bar and steps under the footer's giant wordmark.
  */
 export function CatchWordmark({children, href, label, size = "bar", subBrand}: CatchWordmarkProps) {
   const words = <>{children}{subBrand ? <>{" "}<span className={styles.sub}>{subBrand}</span></> : null}</>;
