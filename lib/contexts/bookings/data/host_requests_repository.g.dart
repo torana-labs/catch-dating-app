@@ -55,19 +55,33 @@ final class HostRequestsRepositoryProvider
 }
 
 String _$hostRequestsRepositoryHash() =>
-    r'e78bb1da5895f9fd0ea571f12e5b76b57a5ff645';
+    r'e92a15288b4b6734fa8f8ceba2bf156e120d4be2';
+
+/// The organizer's requests read owner. It is a set of Firestore listeners:
+/// it declares no cache tags or lifetime, and writes never invalidate it; a
+/// screen restarts it only after it ended in an error. A new account gets a
+/// new list.
 
 @ProviderFor(hostOrganizerRequests)
 final hostOrganizerRequestsProvider = HostOrganizerRequestsFamily._();
+
+/// The organizer's requests read owner. It is a set of Firestore listeners:
+/// it declares no cache tags or lifetime, and writes never invalidate it; a
+/// screen restarts it only after it ended in an error. A new account gets a
+/// new list.
 
 final class HostOrganizerRequestsProvider
     extends
         $FunctionalProvider<
           AsyncValue<HostRequests>,
           HostRequests,
-          FutureOr<HostRequests>
+          Stream<HostRequests>
         >
-    with $FutureModifier<HostRequests>, $FutureProvider<HostRequests> {
+    with $FutureModifier<HostRequests>, $StreamProvider<HostRequests> {
+  /// The organizer's requests read owner. It is a set of Firestore listeners:
+  /// it declares no cache tags or lifetime, and writes never invalidate it; a
+  /// screen restarts it only after it ended in an error. A new account gets a
+  /// new list.
   HostOrganizerRequestsProvider._({
     required HostOrganizerRequestsFamily super.from,
     required String super.argument,
@@ -91,12 +105,12 @@ final class HostOrganizerRequestsProvider
 
   @$internal
   @override
-  $FutureProviderElement<HostRequests> $createElement(
+  $StreamProviderElement<HostRequests> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<HostRequests> create(Ref ref) {
+  Stream<HostRequests> create(Ref ref) {
     final argument = this.argument as String;
     return hostOrganizerRequests(ref, argument);
   }
@@ -113,10 +127,15 @@ final class HostOrganizerRequestsProvider
 }
 
 String _$hostOrganizerRequestsHash() =>
-    r'23f2f124041d8b31cd567a160eaf7e598b00f9df';
+    r'd71f421a9ee51fe6228afbbfa946badd898577f2';
+
+/// The organizer's requests read owner. It is a set of Firestore listeners:
+/// it declares no cache tags or lifetime, and writes never invalidate it; a
+/// screen restarts it only after it ended in an error. A new account gets a
+/// new list.
 
 final class HostOrganizerRequestsFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<HostRequests>, String> {
+    with $FunctionalFamilyOverride<Stream<HostRequests>, String> {
   HostOrganizerRequestsFamily._()
     : super(
         retry: null,
@@ -125,6 +144,11 @@ final class HostOrganizerRequestsFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The organizer's requests read owner. It is a set of Firestore listeners:
+  /// it declares no cache tags or lifetime, and writes never invalidate it; a
+  /// screen restarts it only after it ended in an error. A new account gets a
+  /// new list.
 
   HostOrganizerRequestsProvider call(String organizerId) =>
       HostOrganizerRequestsProvider._(argument: organizerId, from: this);
