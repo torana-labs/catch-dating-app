@@ -46,3 +46,27 @@ export const TiltedAndBleeding: Story = {
     </CatchSurface>
   ),
 };
+
+// A drawn stand-in at the exporter's framed phone size (980 × 1924), its screen 88px in from every edge.
+const framedPhone = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="980" height="1924" viewBox="0 0 980 1924">'
+  + '<rect x="64" y="64" width="852" height="1796" rx="140" fill="#121013"/>'
+  + '<rect x="88" y="88" width="804" height="1748" rx="116" fill="#f4f4f1"/>'
+  + '<rect x="128" y="240" width="480" height="56" rx="12" fill="#141414"/>'
+  + '<rect x="88" y="420" width="804" height="520" fill="#141414"/>'
+  + "</svg>",
+)}`;
+
+/** With bezel: the framed capture cut to its screen inside the canvas's phone, at the hero's size, turned and bleeding. */
+export const Bezel: Story = {
+  decorators: [Story => <Story />],
+  args: {src: framedPhone, width: 980, height: 1924},
+  render: (args) => (
+    <CatchSurface aria-label="Pink band" block="band" color="dinner">
+      <div style={{display: "flex", gap: 48, justifyContent: "center"}}>
+        <CatchAppCaptureImage {...args} bezel size="sm" />
+        <CatchAppCaptureImage {...args} bezel bleed size="hero" tilt="left" />
+      </div>
+    </CatchSurface>
+  ),
+};

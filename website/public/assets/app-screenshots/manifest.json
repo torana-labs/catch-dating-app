@@ -283,9 +283,7 @@
       "alt": "The morning after Saturday Trivia Social in the Catch app: a private rating for the organizer, the group chat, and the people you met to stay in touch with",
       "caption": "Fictional app preview. After the night: rate it privately, keep chatting and stay in touch.",
       "walkthroughStep": "Stay in touch",
-      "pages": [
-        "/"
-      ]
+      "pages": []
     },
     {
       "id": "wedding-rsvp",

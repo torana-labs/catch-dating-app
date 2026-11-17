@@ -1,4 +1,9 @@
-/* The capture PNG carries its own device frame and shadow; this only lays it out. */
+/*
+ * The capture PNG carries its own device frame and shadow; this only lays it
+ * out. With bezel, a framed phone capture is cut to its screen and set in the
+ * canvas's phone (.pg .phone): the website bezel, an 8px rim, 44px corners
+ * outside and 36px inside, and the canvas's shadow.
+ */
 .capture {
   display: grid;
   justify-items: center;
@@ -14,15 +19,55 @@
 /* A fixed size keeps its width beside other content in a row instead of shrinking away. */
 .capture:is([data-size="sm"], [data-size="md"], [data-size="lg"]) { flex: none; }
 .capture[data-size="fill"] { width: 100%; }
+/* The canvas hero phone (.hphone): 360px, 230px on phones. */
+.capture[data-size="hero"] { flex: none; width: var(--catch-website-hero-phone-width); }
 
-.capture[data-tilt="left"] .image { transform: rotate(-4deg); }
-.capture[data-tilt="right"] .image { transform: rotate(5deg); }
+.capture[data-tilt="left"] .image,
+.capture[data-tilt="left"] .phone { transform: rotate(-4deg); }
+.capture[data-tilt="right"] .image,
+.capture[data-tilt="right"] .phone { transform: rotate(5deg); }
 
 /* bleed (proposal L3): the device runs off the band's bottom edge; the band clips it. */
 .capture[data-bleed] { margin-bottom: -140px; }
+.capture[data-size="hero"][data-bleed] { margin-bottom: var(--catch-website-hero-phone-bleed); }
 
 @container catch-page (width < 840px) {
   .capture[data-bleed] { margin-bottom: -110px; }
+}
+
+@media (max-width: 599px) {
+  .capture[data-size="hero"] { width: var(--catch-website-hero-compact-phone-width); }
+  .capture[data-size="hero"][data-bleed] { margin-bottom: var(--catch-website-hero-compact-phone-bleed); }
+  .capture[data-size="hero"][data-tilt="left"] .phone { transform: rotate(-3deg); }
+}
+
+.phone {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--catch-space-s2);
+  border-radius: var(--catch-website-radius-device);
+  background: var(--catch-website-color-device-bezel);
+  box-shadow: var(--catch-website-shadow-device);
+}
+
+.screen {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: var(--catch-capture-screen-aspect);
+  border-radius: var(--catch-radius-panel);
+  background: var(--catch-palette-white);
+}
+
+.screenImage {
+  position: absolute;
+  top: var(--catch-capture-crop-top);
+  left: var(--catch-capture-crop-left);
+  display: block;
+  width: var(--catch-capture-crop-width);
+  max-width: none;
+  height: var(--catch-capture-crop-height);
 }
 
 .image {

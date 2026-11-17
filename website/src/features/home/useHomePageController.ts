@@ -8,8 +8,8 @@ import type {HomeCatalog, HomeFormat} from "./homeTypes";
 import {cityPagePath} from "./sections/cityChrome";
 
 export type HomeFilter = HomeFormat | "all";
-/** Plans shown at once before "See everything": two rows of three on a wide page. */
-const gridSize = 6;
+/** Plans shown at once before "See everything": the board's rail of three. */
+const gridSize = 3;
 
 /**
  * Owns the format filter and binds the city's read model to the page's

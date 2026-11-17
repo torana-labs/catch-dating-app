@@ -314,10 +314,10 @@ class _FixedHostEventRepository extends Fake implements EventRepository {
   final Map<String, List<Event>> eventsByOrganizer;
 
   @override
-  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchActiveEventsPage({
+  Future<CursorPage<Event, PageCursor<Event>>> fetchActiveEventsPage({
     required String organizerId,
     required DateTime sessionBoundary,
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) async {
     final events = eventsByOrganizer[organizerId] ?? const <Event>[];
@@ -331,10 +331,10 @@ class _FixedHostEventRepository extends Fake implements EventRepository {
   }
 
   @override
-  Future<CursorPage<Event, DocumentSnapshot<Event>>> fetchPastEventsPage({
+  Future<CursorPage<Event, PageCursor<Event>>> fetchPastEventsPage({
     required String organizerId,
     required DateTime sessionBoundary,
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
     int limit = ReadLimitPolicy.directoryPage,
   }) async {
     final events = eventsByOrganizer[organizerId] ?? const <Event>[];

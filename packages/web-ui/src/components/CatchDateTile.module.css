@@ -23,3 +23,44 @@
     height: 66px;
   }
 }
+
+/*
+ * sm: the canvas's date square (playbook homepage .date), 48 × 52px with 12px
+ * corners, the weekday in 11px caps over the day in display figures. The
+ * month is read with the date but not shown.
+ */
+.tile[data-size="sm"] {
+  position: relative;
+  width: var(--catch-website-date-width);
+  height: var(--catch-website-date-height);
+  border-radius: var(--catch-website-radius-square);
+}
+
+.weekday {
+  font-family: var(--catch-font-stack-sans);
+  font-size: var(--catch-website-date-label-size);
+  font-weight: var(--catch-typography-role-label-badge-weight);
+  line-height: var(--catch-typography-role-display-xs-line-height);
+  letter-spacing: var(--catch-website-type-kicker-tracking);
+  text-transform: uppercase;
+}
+
+.day {
+  font-family: var(--catch-font-stack-display);
+  font-size: var(--catch-website-type-xs-size);
+  font-weight: var(--catch-website-type-figure-weight);
+  font-stretch: 78%;
+  font-variation-settings: "wdth" 78;
+  line-height: 1;
+  white-space: pre;
+}
+
+.month {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
