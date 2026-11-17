@@ -38,14 +38,21 @@ export function footerCities(cities: readonly HomeCity[]): SiteFooterCity[] {
  * with each city's status sits left of Get the app. The footer lists every
  * city, the ones not open marked soon.
  */
-export function CitySiteChrome({appHref = "/#app", children, cities, city, exploreHref, onChooseCity}: {
+export function CitySiteChrome({appHref = "/#app", children, cities, city, dock, exploreHref, onChooseCity, showWhatsOn = true}: {
   /** The get-the-app band: on the homepage itself, its own anchor. */
   appHref?: string;
   children: ReactNode;
   cities: readonly HomeCity[];
   city: HomeCity;
+  /** The phone action bar, after the footer. */
+  dock?: ReactNode;
   exploreHref: string;
   onChooseCity: (slug: string) => void;
+  /**
+   * The header's What's on link. A city with no plan in the next 30 days
+   * hides it (the read model's hasUpcomingMonth); shown when unknown.
+   */
+  showWhatsOn?: boolean;
 }) {
   return <>
     <PublicSiteHeader
@@ -53,10 +60,12 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, explo
         <CityPicker cities={cities} onChoose={onChooseCity} selected={city} />
         <CatchButton href={appHref} label={copy.header.app} onPressed={follow} size="sm" />
       </>}
+      showWhatsOn={showWhatsOn}
       whatsOnHref={exploreHref}
     />
     <WebsitePageMain id="top">{children}</WebsitePageMain>
     <PublicSiteFooter appHref={appHref} exploreHref={exploreHref}
       cities={footerCities(cities)} />
+    {dock}
   </>;
 }
