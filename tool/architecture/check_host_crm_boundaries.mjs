@@ -24,6 +24,9 @@ const permissionCollectionReviewers = new Set([
   "functions/src/events/eventAttendees.ts",
   "functions/src/organizers/campaignDeliveryWorker.ts",
   "functions/src/messaging/participantMessagingPreferences.ts",
+  // Projects the guest's own permission rows read-only, with the same reads
+  // and summary as participantMessagingPreferences (#1896).
+  "functions/src/messaging/guestMessagingPermissionStore.ts",
   "functions/src/moments/momentWiring.ts",
   "functions/src/organizers/automationDeliveryWorker.ts",
   "functions/src/organizers/organizerFormMessagingConsent.ts",
