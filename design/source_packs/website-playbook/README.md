@@ -377,6 +377,11 @@ The canvas owns these values (blueprint D26). `tool/design/playbook/import_kit_t
 | `.tile .tag` background | `rgba(255,255,255,.55)` | `website.color.stepOnLight` | match |
 | `.tile p` font-size | `15px` | `typography.role.body.size` | match |
 | `.tile p` line-height | `1.4` | `website.type.tile.lineHeight` | own |
+| `.tile .mini` border-radius | `14px` | `website.radius.field` | match |
+| `.tile .mini` padding | `10px` | `space.micro10` | match |
+| `.tile .mini` padding | `12px` | `space.s3` | match |
+| `.tile .mini` font-size | `12px` | `typography.role.labelBadge.size` | match |
+| `.tile .mini` box-shadow | `0 8px 20px -10px rgba(0,0,0,.3)` | `website.shadow.mini` | own |
 | `.frm` gap | `10px` | `space.micro10` | match |
 | `.frm` margin-top | `18px` | `space.micro18` | match |
 | `.frm .row` gap | `8px` | `space.s2` | match |

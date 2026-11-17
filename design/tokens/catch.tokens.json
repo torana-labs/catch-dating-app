@@ -6269,6 +6269,39 @@
             }
           }
         ]
+      },
+      "mini": {
+        "$type": "shadow",
+        "$description": "The shadow under a small white card inside a tile.",
+        "$value": [
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0,
+                0,
+                0
+              ],
+              "alpha": 0.3
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 8,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 20,
+              "unit": "px"
+            },
+            "spread": {
+              "value": -10,
+              "unit": "px"
+            }
+          }
+        ]
       }
     },
     "date": {

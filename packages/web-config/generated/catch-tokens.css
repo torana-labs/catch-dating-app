@@ -450,6 +450,7 @@
   --catch-website-shadow-chip: 0 18px 40px -16px rgba(0, 0, 0, 0.45);
   --catch-website-shadow-card-ring: 0 0 0 1px rgba(20, 17, 20, 0.06);
   --catch-website-shadow-chip-ring: 0 0 0 1px rgba(20, 17, 20, 0.1);
+  --catch-website-shadow-mini: 0 8px 20px -10px rgba(0, 0, 0, 0.3);
   --catch-website-date-width: 48px;
   --catch-website-date-height: 52px;
   --catch-website-date-label-size: 11px;
