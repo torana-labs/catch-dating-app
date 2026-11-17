@@ -110,7 +110,8 @@ export const siteHeaderCopy = {
       {label: "Resources", links: [helpLink]},
     ] as readonly (SiteLinkCopy | SiteNavGroupCopy)[],
     action: hostStartLink,
-    whatsapp: {label: "Talk to us on WhatsApp", message: whatsappChatCopy.hostQuestionMessage},
+    /** The bar shows the short label beside the WhatsApp mark; the full one names the link. */
+    whatsapp: {label: "Talk to us on WhatsApp", shortLabel: "Talk to us", message: whatsappChatCopy.hostQuestionMessage},
   },
 } as const;
 

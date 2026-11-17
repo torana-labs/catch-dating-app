@@ -82,9 +82,14 @@ describe("Website v2 part tokens", () => {
 
   it("keeps the phone sizes on the expanded window size", () => {
     const expanded = tokens.match(/--catch-window-size-expanded-min-width:\s*(\d+)px/)?.[1];
-    for (const css of Object.values(sheets)) {
+    // The site footer is drawn to the design canvas, whose page switches to its
+    // phone arrangement at 600px wide (the medium window size), inclusive.
+    const medium = tokens.match(/--catch-window-size-medium-min-width:\s*(\d+)px/)?.[1];
+    for (const [name, css] of Object.entries(sheets)) {
       for (const query of css.matchAll(/@container\s+([\w-]+)\s*\(([^)]*)\)/g)) {
-        expect(`${query[1]} ${query[2].trim()}`).toBe(`catch-page width < ${expanded}px`);
+        expect(`${query[1]} ${query[2].trim()}`, name).toBe(name === "CatchSiteFooter"
+          ? `catch-site-footer width <= ${medium}px`
+          : `catch-page width < ${expanded}px`);
       }
     }
   });

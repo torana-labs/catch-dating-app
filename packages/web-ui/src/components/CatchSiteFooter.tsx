@@ -1,7 +1,4 @@
 import type {ReactNode} from "react";
-import {CatchBand} from "./CatchBand";
-import {CatchLegacyText} from "./CatchLegacyText";
-import {CatchText} from "./CatchText";
 import {CatchWordmark} from "./CatchWordmark";
 import styles from "./CatchSiteFooter.module.css";
 
@@ -29,24 +26,30 @@ export interface CatchSiteFooterProps {
   brandHref: string;
   /** The wordmark, such as "Catch". */
   brandLabel: string;
-  /** In `columns` columns on a wide page, two below 840px; none leaves out the navigation. */
+  /** In `columns` columns on a wide page, two on a phone; none leaves out the navigation. */
   groups: readonly CatchSiteFooterGroup[];
   /** The accessible name of the footer navigation, such as "Footer". */
   navLabel: string;
-  /** The line across from the wordmark. */
+  /** The legal line's first part, under the wordmark. */
   tagline: string;
   /** A product line after the wordmark, such as "for weddings". */
   brandSubBrand?: string;
-  /** A quiet line under the tagline, such as who operates the site. */
+  /** The legal line's second part, such as who operates the site. */
   note?: string;
   /** Called when a link is followed, such as to record the click. */
   onLinkPressed?: (link: CatchSiteFooterLink) => void;
-  /** Link columns on a wide page; defaults to 4. Below 840px there are always two. */
+  /** Link columns on a wide page; defaults to 4. On a phone there are always two. */
   columns?: CatchSiteFooterColumns;
   /**
-   * A band across the top of the footer, over a hairline, such as a help
-   * line with its actions. Its content lies in one row that wraps, its ends
-   * pushed apart; the caller supplies the heading and D20 buttons.
+   * The top band's title, such as a help line, set at the canvas's 22px. With
+   * `headerActions` it draws the canvas's top band over a hairline.
+   */
+  headerTitle?: ReactNode;
+  /** The top band's small buttons, at the canvas's 38px. */
+  headerActions?: ReactNode;
+  /**
+   * A free-form top band in place of `headerTitle` and `headerActions`. Its
+   * content lies in one row that wraps, its ends pushed apart.
    */
   header?: ReactNode;
   /** Numbered notes under the link columns, such as a statistic's source; each item carries its own number. */
@@ -54,10 +57,10 @@ export interface CatchSiteFooterProps {
 }
 
 /**
- * The Website v2 site footer on the ink ground: an optional header band over
- * a hairline, titled link columns (four by default, up to five), each link
- * flush with its title and the rows evenly spaced, optional footnotes, then
- * the wordmark with the tagline on its baseline.
+ * The design canvas's site footer (playbook KitFooter, `.pg .foot`): an inset
+ * card on the ink ground with 36px corners (28px on phones). An optional top
+ * band over a hairline, titled link columns, optional footnotes, the giant
+ * coral wordmark across the card, and the legal line under it.
  */
 export function CatchSiteFooter({
   brandHref,
@@ -67,53 +70,59 @@ export function CatchSiteFooter({
   footnotes = [],
   groups,
   header,
+  headerActions,
+  headerTitle,
   navLabel,
   note,
   onLinkPressed,
   tagline,
 }: CatchSiteFooterProps) {
+  const top = headerTitle != null || headerActions != null ? (
+    <div className={styles.top}>
+      {headerTitle != null ? <h2 className={styles.title}>{headerTitle}</h2> : null}
+      {headerActions != null ? <div className={styles.actions}>{headerActions}</div> : null}
+    </div>
+  ) : header ? <div className={styles.top}>{header}</div> : null;
   return (
-    <CatchBand as="footer" ground="ink" pb="compact" pt="regular">
-      {header ? <div className={styles.header}>{header}</div> : null}
-      {groups.length > 0 ? (
-        <nav aria-label={navLabel} className={styles.groups} data-columns={columns}>
-          {groups.map((group) => (
-            <div className={styles.group} key={group.title}>
-              <CatchLegacyText as="h2" color="ink2" variant="supportingStrong">{group.title}</CatchLegacyText>
-              <ul className={styles.links}>
-                {group.links.map((link) => (
-                  <li key={`${link.href}-${link.label}`}>
-                    <a className={styles.link} href={link.href} onClick={onLinkPressed ? () => onLinkPressed(link) : undefined}>
-                      <CatchLegacyText as="span" color="inherit" variant="bodyM">{link.label}</CatchLegacyText>
-                      {link.note ? <>{" "}<CatchLegacyText as="span" color="ink2" variant="supporting">{`· ${link.note}`}</CatchLegacyText></> : null}
-                    </a>
-                  </li>
-                ))}
-                {group.trailing ? (
-                  <li className={styles.link}>
-                    <CatchLegacyText as="span" color="inherit" variant="bodyM">{group.trailing}</CatchLegacyText>
-                  </li>
-                ) : null}
-              </ul>
-            </div>
-          ))}
-        </nav>
-      ) : null}
-      {footnotes.length > 0 ? (
-        <ol className={styles.footnotes}>
-          {footnotes.map((footnote, index) => (
-            // The notes are a fixed, ordered list: each one's place is its identity.
-            <li key={index}><CatchText tone="secondary" variant="body-meta">{footnote}</CatchText></li>
-          ))}
-        </ol>
-      ) : null}
-      <div className={styles.base}>
-        <CatchWordmark href={brandHref} size="band" subBrand={brandSubBrand}>{brandLabel}</CatchWordmark>
-        <div className={styles.lines}>
-          <CatchLegacyText as="p" color="ink2" variant="supporting">{tagline}</CatchLegacyText>
-          {note ? <CatchLegacyText as="p" color="ink2" variant="supporting">{note}</CatchLegacyText> : null}
+    <footer className={styles.footer} data-catch-theme="dark">
+      <div className={styles.card}>
+        {top}
+        {groups.length > 0 ? (
+          <nav aria-label={navLabel} className={styles.groups} data-columns={columns}>
+            {groups.map((group) => (
+              <div key={group.title}>
+                <h2 className={styles.heading}>{group.title}</h2>
+                <ul className={styles.links}>
+                  {group.links.map((link) => (
+                    <li key={`${link.href}-${link.label}`}>
+                      <a className={styles.link} href={link.href} onClick={onLinkPressed ? () => onLinkPressed(link) : undefined}>
+                        {link.label}
+                        {link.note ? <>{" "}<span className={styles.note}>{`· ${link.note}`}</span></> : null}
+                      </a>
+                    </li>
+                  ))}
+                  {group.trailing ? <li className={styles.link}>{group.trailing}</li> : null}
+                </ul>
+              </div>
+            ))}
+          </nav>
+        ) : null}
+        {footnotes.length > 0 ? (
+          <ol className={styles.footnotes}>
+            {footnotes.map((footnote, index) => (
+              // The notes are a fixed, ordered list: each one's place is its identity.
+              <li key={index}>{footnote}</li>
+            ))}
+          </ol>
+        ) : null}
+        <p className={styles.mark}>
+          <CatchWordmark href={brandHref} size="band" subBrand={brandSubBrand}>{brandLabel}</CatchWordmark>
+        </p>
+        <div className={styles.legal}>
+          <span>{tagline}</span>
+          {note ? <span>{note}</span> : null}
         </div>
       </div>
-    </CatchBand>
+    </footer>
   );
 }

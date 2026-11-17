@@ -22,7 +22,7 @@ describe("canonical public chrome", () => {
     expect(banner.queryByRole("link", {name: "Claim your page"})).toBeNull();
   });
 
-  it("puts the account entry last on the right, after the page's actions", () => {
+  it("puts the account entry on the right before the page's actions, as the canvas draws Sign in", () => {
     const signIn = vi.fn();
     render(
       <SiteAccountActionProvider value={{bar: <button onClick={signIn} type="button">Sign in</button>, menu: {label: "Sign in", onPressed: signIn}}}>
@@ -30,10 +30,11 @@ describe("canonical public chrome", () => {
       </SiteAccountActionProvider>,
     );
     const banner = screen.getByRole("banner");
-    const order = [...banner.querySelectorAll("a, button")].map((element) => element.textContent?.trim())
-      .filter((label) => label !== publicSiteCopy.menu.openLabel);
-    // Wordmark and links on the left; the primary action, then the account, on the right.
-    expect(order).toEqual(["Catch for hosts", "On the night", "Start free trial", "Sign in"]);
+    const order = [...banner.querySelectorAll("a, button")]
+      .filter((element) => element.getAttribute("aria-label") !== publicSiteCopy.menu.openLabel)
+      .map((element) => element.textContent?.trim());
+    // Wordmark and links on the left; the account, then the primary action, on the right.
+    expect(order).toEqual(["Catch for hosts", "On the night", "Sign in", "Start free trial"]);
     const signInButton = within(banner).getByRole("button", {name: "Sign in"});
     const leftGroup = within(banner).getByRole("navigation", {name: "Primary"}).parentElement!;
     expect(leftGroup.contains(signInButton)).toBe(false);
@@ -95,6 +96,8 @@ describe("canonical public chrome", () => {
       .toEqual([["What’s on", "/explore/"], ["Pricing", "/host/#pricing"], ["Help", "/help/"]]);
     expect(banner.queryByRole("button", {name: "Resources"})).toBeNull();
     const forHosts = banner.getByRole("button", {name: "For hosts"});
+    // The canvas sets the dropdown among the page links, after What's on.
+    expect(banner.getByRole("navigation", {name: "Primary"}).contains(forHosts)).toBe(true);
     expect(forHosts.getAttribute("aria-expanded")).toBe("false");
     fireEvent.click(forHosts);
     const panel = document.getElementById(forHosts.getAttribute("aria-controls")!)!;

@@ -164,51 +164,140 @@
 .segments > span[data-done] { background: var(--catch-theme-ink); }
 
 /*
- * site: the website header (the system's .c-topbar[data-variant="site"]): the
- * wordmark (catch.wordmark) and quiet page links 16px apart that fold away on
- * phones on the left; on the right the page's actions (a setting such as the
- * city, then the primary action) and last the account control, "Sign in" or
- * the avatar; and a hairline under the bar.
- */
-/*
- * The site bar takes its gutter from the window, on the size classes'
- * breakpoints, not from the nearest root: a page outside a sized root (a
- * legal page, a city page) would otherwise inset the wordmark less than the
- * homepage does at the same width.
+ * site: the design canvas's site header (playbook-panels.css .pg .bar,
+ * kit/KitHeader.dc.html), every value a token the importer keeps equal to the
+ * kit: a 68px transparent row with no rule under it, its parts 26px apart,
+ * inset to the 1200px content with at least 24px at the sides; the wordmark
+ * (catch.wordmark), then plain 15px page links 22px apart, dropdowns with a
+ * 14px chevron among them; on the right a green WhatsApp link, the account
+ * control, the page's actions with the 38px pill action, and on phones a 40px
+ * round menu button. Phones: 60px, parts 10px apart, 16px sides; the links,
+ * the account and the contact label fold away.
  */
 .bar[data-variant="site"] {
-  --catch-site-gutter: var(--catch-layout-gutter-compact);
-  padding-inline: max(var(--catch-site-gutter), calc((100% - var(--catch-website-content-max)) / 2));
-  background: var(--catch-theme-ground);
-  box-shadow: 0 var(--catch-stroke-hairline) 0 var(--catch-theme-line);
+  flex-direction: row;
+  align-items: center;
+  height: var(--catch-website-header-height);
+  padding-block: 0;
+  padding-inline: max(var(--catch-website-content-gutter), calc((100% - var(--catch-website-content-max)) / 2));
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--catch-font-function), system-ui, sans-serif;
+  /* The canvas's small button (.pg .b.sm): 38px, 16px sides, a 14px label. */
+  --catch-button-sm-height: var(--catch-website-button-sm-height);
+  --catch-button-sm-pad: var(--catch-space-s4);
+  --catch-button-sm-size: var(--catch-typography-role-label-action-size);
 }
 
 .siteRow {
   display: flex;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: space-between;
-  gap: var(--catch-space-s3);
-  min-height: var(--catch-size-control-md);
+  gap: var(--catch-website-header-gap);
+  min-width: 0;
 }
 
-.site { display: flex; align-items: center; gap: var(--catch-space-s6); min-width: 0; }
+.site { display: flex; align-items: center; gap: var(--catch-website-header-gap); min-width: 0; }
+
+.siteActions { display: inline-flex; flex: none; align-items: center; gap: var(--catch-website-header-gap); }
 
 .account { display: inline-flex; flex: none; align-items: center; }
 
-.links { display: flex; align-items: center; gap: var(--catch-space-s4); }
+.links {
+  display: flex;
+  align-items: center;
+  gap: var(--catch-website-header-nav-gap);
+  color: var(--catch-website-color-ink-body);
+  font-size: var(--catch-website-header-nav-size);
+  font-weight: var(--catch-website-header-nav-weight);
+}
+
+.siteLink {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.siteLink:hover { color: var(--catch-palette-ink); }
+
+.siteLink:focus-visible,
+.contact:focus-visible {
+  border-radius: var(--catch-radius-xs);
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.contact {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--catch-space-s2);
+  color: var(--catch-palette-mint-deep);
+  font-size: var(--catch-typography-role-label-action-size);
+  font-weight: var(--catch-typography-role-label-action-weight);
+  text-decoration: none;
+}
+
+.contact > svg {
+  width: var(--catch-website-header-contact-icon-size);
+  height: var(--catch-website-header-contact-icon-size);
+}
 
 .siteMenu { display: none; }
 
-@media (min-width: 600px) {
-  .bar[data-variant="site"] { --catch-site-gutter: var(--catch-layout-gutter-medium); }
+/* The canvas's phone menu (.pg .bar .menu): a 40px round button outlined in ink with three bars. */
+.menuButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--catch-size-control-md);
+  height: var(--catch-size-control-md);
+  margin: 0;
+  padding: 0;
+  border: var(--catch-stroke-control) solid var(--catch-palette-ink);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-palette-white);
+  color: var(--catch-palette-ink);
+  cursor: pointer;
 }
 
-@media (min-width: 840px) {
-  .bar[data-variant="site"] { --catch-site-gutter: var(--catch-layout-gutter-expanded); }
+.menuButton:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.menuBars { display: flex; flex-direction: column; gap: var(--catch-space-micro3); }
+
+.menuBars > span {
+  width: 16px;
+  height: var(--catch-stroke-focus-ring);
+  background: currentColor;
 }
 
 @media (max-width: 599px) {
+  .bar[data-variant="site"] {
+    height: var(--catch-website-header-compact-height);
+    padding-inline: var(--catch-website-content-compact-gutter);
+    /* The canvas's phone header action: 36px, 14px sides, a 13px label. */
+    --catch-button-sm-height: var(--catch-website-button-sm-compact-height);
+    --catch-button-sm-pad: var(--catch-space-micro14);
+    --catch-button-sm-size: var(--catch-website-button-sm-compact-size);
+  }
+
+  .siteRow,
+  .site,
+  .siteActions { gap: var(--catch-website-header-compact-gap); }
+
   .links,
-  .account { display: none; }
+  .account,
+  .contactLabel { display: none; }
+
   .siteMenu { display: inline-flex; }
 }

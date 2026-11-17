@@ -2,8 +2,6 @@ import {
   CatchBanner,
   CatchBreadcrumbRow,
   CatchButton,
-  CatchIconAction,
-  CatchNavMenu,
   CatchSiteFooter,
   CatchStack,
   CatchSurface,
@@ -93,23 +91,29 @@ export interface SiteBreadcrumbs {
 const isGroup = (entry: SiteLinkCopy | SiteNavGroupCopy): entry is SiteNavGroupCopy => "links" in entry;
 
 /**
- * Splits a variant's entries into the bar's plain links and its dropdowns.
- * A group of one page is that page as a plain link, and an empty group is
- * left out, so no dropdown opens onto nothing.
+ * A variant's entries in order, as the bar draws them: plain links, and a
+ * dropdown where a group has several pages. A group of one page is that page
+ * as a plain link, and an empty group is left out, so no dropdown opens onto
+ * nothing. `menus` lists the dropdowns again for the phone menu.
  */
-function navPlan(entries: readonly (SiteLinkCopy | SiteNavGroupCopy)[]): {links: SiteNavItem[]; menus: SiteNavGroupCopy[]} {
-  const links: SiteNavItem[] = [];
+function navPlan(entries: readonly (SiteLinkCopy | SiteNavGroupCopy)[]): {items: (SiteNavItem | SiteNavGroupCopy)[]; menus: SiteNavGroupCopy[]} {
+  const items: (SiteNavItem | SiteNavGroupCopy)[] = [];
   const menus: SiteNavGroupCopy[] = [];
   for (const entry of entries) {
-    if (!isGroup(entry)) links.push(entry);
-    else if (entry.links.length === 1) links.push(entry.links[0]);
-    else if (entry.links.length > 1) menus.push(entry);
+    if (!isGroup(entry)) items.push(entry);
+    else if (entry.links.length === 1) items.push(entry.links[0]);
+    else if (entry.links.length > 1) {
+      items.push(entry);
+      menus.push(entry);
+    }
   }
-  return {links, menus};
+  return {items, menus};
 }
 
 const trackNav = (link: SiteNavItem) => trackSiteCtaClick(`nav_${slugForTracking(link.label)}`, link.href);
 const withNavTracking = (link: SiteNavItem): CatchTopBarAction => ({...link, onPressed: () => trackNav(link)});
+const navAction = (item: SiteNavItem | SiteNavGroupCopy): CatchTopBarAction =>
+  isGroup(item) ? {label: item.label, menu: {links: item.links, onLinkPressed: trackNav}} : withNavTracking(item);
 
 /**
  * The one public header, the system's site top bar, on every public route:
@@ -152,32 +156,26 @@ export function PublicSiteHeader({
   const {brand, subBrand} = wordmarkParts(title);
   const minimal = variant === "minimal";
   const whatsOn = showWhatsOn ? [{...publicSiteCopy.whatsOn, href: whatsOnHref ?? publicSiteCopy.whatsOn.href}] : [];
-  const plan = minimal ? {links: [], menus: []}
-    : links ? {links: [...links], menus: []}
+  const plan = minimal ? {items: [], menus: []}
+    : links ? {items: [...links], menus: []}
     : navPlan([...whatsOn, ...siteHeaderCopy[variant].nav]);
   // Below 600px the dropdowns draw nothing, so the phone menu lists their pages after the links.
   const menuLinks = plan.menus.flatMap((menu) => menu.links);
+  const plainLinks = plan.items.filter((item): item is SiteNavItem => !isGroup(item));
   const primary = actions ?? (minimal ? null : <PrimaryAction link={siteHeaderCopy[variant].action} />);
   return (
     <>
       {offer ? <SiteOfferStrip offer={offer} /> : null}
       <CatchTopBar
         account={minimal ? undefined : account?.bar}
-        actions={(
-          <>
-            {plan.menus.map((menu) => (
-              <CatchNavMenu align="end" key={menu.label} label={menu.label} links={menu.links} onLinkPressed={trackNav} />
-            ))}
-            {variant === "host" ? <HostWhatsAppAction /> : null}
-            {primary}
-          </>
-        )}
+        actions={primary}
+        contact={variant === "host" ? hostWhatsAppContact() : undefined}
         homeHref="/"
-        links={plan.links.map(withNavTracking)}
+        links={plan.items.map(navAction)}
         linksLabel={publicSiteCopy.menu.navLabel}
         menuExtras={minimal ? undefined : [...menuLinks.map(withNavTracking), ...(account ? [account.menu] : [])]}
         menuLabel={publicSiteCopy.menu.openLabel}
-        siteMenu={minimal ? undefined : account?.phoneMenu?.([...plan.links, ...menuLinks], publicSiteCopy.menu.openLabel)}
+        siteMenu={minimal ? undefined : account?.phoneMenu?.([...plainLinks, ...menuLinks], publicSiteCopy.menu.openLabel)}
         subBrand={subBrand}
         title={brand}
         variant="site"
@@ -200,10 +198,10 @@ function PrimaryAction({link}: {link: SiteNavItem}) {
   return <CatchButton href={link.href} label={link.label} size="sm" />;
 }
 
-/** The host bar's WhatsApp link, an icon with its name, before the free trial. */
-function HostWhatsAppAction() {
-  const {label, message} = siteHeaderCopy.host.whatsapp;
-  return <CatchIconAction href={whatsappChatHref(message)} icon="chat" label={label} size="sm" variant="ghost" />;
+/** The host bar's WhatsApp link: the mark and "Talk to us", in green, before Sign in and the free trial. */
+function hostWhatsAppContact() {
+  const {label, message, shortLabel} = siteHeaderCopy.host.whatsapp;
+  return {accessibleLabel: label, href: whatsappChatHref(message), label: shortLabel};
 }
 
 /** The offer strip above the bar (catch.banner): persistent, never dismissed. */
@@ -285,11 +283,11 @@ function siteLinks(hrefs: readonly string[]): SiteNavItem[] {
 }
 
 /**
- * The footer's help band: a person answers on WhatsApp. Guest pages add
- * Help; host pages add the walkthrough, asked for on WhatsApp. It states no
- * hours.
+ * The footer's help band actions: a person answers on WhatsApp. Guest pages
+ * add Help; host pages add the walkthrough, asked for on WhatsApp. The band
+ * states no hours.
  */
-function FooterHelpBand({variant}: {variant: SiteFooterVariant}) {
+function FooterHelpActions({variant}: {variant: SiteFooterVariant}) {
   const band = siteFooterCopy.helpBand;
   const whatsapp = {href: whatsappChatHref(variant === "host" ? band.hostMessage : band.guestMessage), label: band.whatsapp};
   const second = variant === "host"
@@ -297,11 +295,8 @@ function FooterHelpBand({variant}: {variant: SiteFooterVariant}) {
     : band.guestHelp;
   return (
     <>
-      <CatchText as="h2" variant="title-bar">{band.title}</CatchText>
-      <CatchStack direction="row" gap={8} wrap>
-        <CatchButton href={whatsapp.href} label={whatsapp.label} leadingIcon="chat" onPressed={() => trackFooter(whatsapp)} size="sm" variant="light" />
-        <CatchButton href={second.href} label={second.label} onPressed={() => trackFooter(second)} size="sm" variant="ghost" />
-      </CatchStack>
+      <CatchButton href={whatsapp.href} label={whatsapp.label} leadingIcon="chat" onPressed={() => trackFooter(whatsapp)} size="sm" variant="light" />
+      <CatchButton href={second.href} label={second.label} onPressed={() => trackFooter(second)} size="sm" variant="ghost" />
     </>
   );
 }
@@ -350,10 +345,12 @@ export function PublicSiteFooter({
       brandHref="/"
       brandLabel={brand}
       brandSubBrand={subBrand}
-      columns={Math.min(5, Math.max(2, groups.length)) as CatchSiteFooterColumns}
+      // The canvas's five link columns, so each column keeps the canvas width.
+      columns={5 satisfies CatchSiteFooterColumns}
       footnotes={footnotes}
       groups={groups}
-      header={helpBand ? <FooterHelpBand variant={variant} /> : undefined}
+      headerActions={helpBand ? <FooterHelpActions variant={variant} /> : undefined}
+      headerTitle={helpBand ? siteFooterCopy.helpBand.title : undefined}
       navLabel={navLabel}
       note={publicSiteCopy.footerOperator}
       onLinkPressed={trackFooter}
