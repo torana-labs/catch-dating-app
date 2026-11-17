@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_send_summaries.schema.json",
+  "title": "HostSendSummaryDocument",
+  "description": "Server-maintained manager read view of one organizer Send for the Host Sends history and the automation message picker: a WhatsApp campaign, an event announcement or a follower update, with exactly the row listOrganizerCampaigns returns for it. The view id is the kind and the source id (campaign_{campaignId}, announcement_{broadcastId}, followerUpdate_{postId}). Written by triggers on organizerCampaigns, organizerBroadcastSummaries, organizer posts, organizerPostDeliveryOperations, and on template and saved audience renames. A follower update's WhatsApp leg campaign has no row of its own. Never message bodies, recipients, contact ids or delivery evidence, and never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostSendSummaries",
+  "x-firestore-path": "hostSendSummaries/{sendId}",
+  "x-document-id-field": "sendId",
+  "x-owner": "Host read model projector (hostReadModels send summary triggers)",
+  "required": [
+    "organizerId",
+    "sendId",
+    "kind",
+    "activityAtMillis",
+    "row",
+    "version"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "sendId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 220,
+      "pattern": "^(campaign|announcement|followerUpdate)_[^/]+$",
+      "x-catch-ownership": "server-only"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "campaign",
+        "announcement",
+        "followerUpdate"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "activityAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "row": {
+      "$ref": "../callable_responses/list_organizer_campaigns_response.schema.json#/definitions/send",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

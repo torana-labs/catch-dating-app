@@ -1798,11 +1798,11 @@ describe("firestore.rules", () => {
       await assertFails(updateDoc(decisionRef, {state: "reopened"}));
     });
 
-    it("keeps retained WhatsApp thread bodies callable-only", async () => {
+    it("keeps WhatsApp threads and reply reservations server-only", async () => {
+      // Messages are manager-readable; host_summary_reads covers them.
       const db = authedDb("owner-1");
       for (const [collectionName, documentId] of [
         ["organizerWhatsappThreads", "thread-1"],
-        ["organizerWhatsappMessages", "message-1"],
         ["organizerWhatsappReplyOperations", "operation-1"],
       ]) {
         await seed([collectionName, documentId], {
