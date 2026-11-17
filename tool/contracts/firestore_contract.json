@@ -4365,7 +4365,8 @@
         "getParticipantFormProfile",
         "getParticipantFormPhoto",
         "listParticipantFormProfiles",
-        "claimParticipantFormProfile"
+        "claimParticipantFormProfile",
+        "onParticipantFormProfileViewProposalChanged"
       ],
       "migrationNotes": [
         "Only explicit Catch profile and organizer-card questions create private pointers after verified submission. Existing canonical CRM mappings remain organizer-only.",
@@ -4385,7 +4386,8 @@
       "exportedFunctions": [
         "listParticipantFormProfiles",
         "claimParticipantFormProfile",
-        "requestAccountDeletion"
+        "requestAccountDeletion",
+        "onParticipantFormProfileViewCardChanged"
       ],
       "migrationNotes": [
         "Never populated from CRM notes, tags or organizer review data. Profile claiming does not grant event admission or public sharing."
@@ -4407,6 +4409,50 @@
       ],
       "migrationNotes": [
         "Never populated from CRM notes, tags or organizer review data. Profile claiming does not grant event admission or public sharing."
+      ]
+    },
+    {
+      "id": "participantFormProfileViews",
+      "path": "participantFormProfileViews/{responseId}",
+      "rulesMatch": "/participantFormProfileViews/{responseId}",
+      "typescriptInterface": "ParticipantFormProfileViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "rulesTestNames": [
+        "lets guests read only their own form profile review rows"
+      ],
+      "owner": "Participant form profile view projector: profiles form profile view triggers",
+      "read": "the guest gets and lists only rows whose uid is theirs, while their account is not deleted; a row not written yet reads as missing",
+      "write": "server only; written from the proposal, its response and version, and the organizer card, deleted once the proposal is unavailable to its owner",
+      "exportedFunctions": [
+        "onParticipantFormProfileViewProposalChanged",
+        "onParticipantFormProfileViewResponseChanged",
+        "onParticipantFormProfileViewCardChanged",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Each row equals what getParticipantFormProfile returns for the proposal and card parts and what listParticipantFormProfiles lists, without organizer names. The participant-form-profile-views copy-forward migration creates rows for proposals recorded before the triggers."
+      ]
+    },
+    {
+      "id": "participantIntakeProfileViews",
+      "path": "participantIntakeProfileViews/{uid}",
+      "rulesMatch": "/participantIntakeProfileViews/{uid}",
+      "typescriptInterface": "ParticipantIntakeProfileViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "rulesTestNames": [
+        "lets guests read only their own form profile review rows"
+      ],
+      "owner": "Participant form profile view projector: profiles form profile view triggers",
+      "read": "the guest gets only the document whose id is their uid, while their account is not deleted; nobody lists",
+      "write": "server only; written from participantIntakeProfiles/{uid}",
+      "exportedFunctions": [
+        "onParticipantIntakeProfileViewChanged",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Holds only the intake revision the claim fences a LinkedIn save on and the saved LinkedIn URL. The participant-form-profile-views migration creates views for intake profiles recorded before the trigger."
       ]
     },
     {

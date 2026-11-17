@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/participant_form_profile_views.schema.json",
+  "title": "ParticipantFormProfileViewDocument",
+  "description": "Server-maintained guest-owned read view of one submitted form's profile proposal, keyed by response id: exactly the designated answers, form title, dates and organizer-card selection that listParticipantFormProfiles and getParticipantFormProfile compute. Written by triggers on the proposal, the response and the organizer card; deleted when the proposal stops being available (withdrawal, a changed status, a deleted account). Never organizer-only answers, the identity contact snapshot, review notes or organizer names, and never claim authority: claims still go through claimParticipantFormProfile, which rereads every source.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "participantFormProfileViews",
+  "x-firestore-path": "participantFormProfileViews/{responseId}",
+  "x-owner": "Participant form profile view projector (profiles form profile view triggers)",
+  "required": [
+    "uid",
+    "organizerId",
+    "formId",
+    "formTitle",
+    "submittedAtMillis",
+    "claimedAtMillis",
+    "fields",
+    "selectedCardQuestionIds",
+    "cardRevision",
+    "termsVersion",
+    "version"
+  ],
+  "properties": {
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "$ref": "../callable_responses/get_participant_form_profile_response.schema.json#/properties/organizerId",
+      "x-catch-ownership": "server-only"
+    },
+    "formId": {
+      "$ref": "../callable_responses/get_participant_form_profile_response.schema.json#/properties/formId",
+      "x-catch-ownership": "server-only"
+    },
+    "formTitle": {
+      "$ref": "../callable_responses/get_participant_form_profile_response.schema.json#/properties/formTitle",
+      "x-catch-ownership": "server-only"
+    },
+    "submittedAtMillis": {
+      "$ref": "../callable_responses/get_participant_form_profile_response.schema.json#/properties/submittedAtMillis",
+      "x-catch-ownership": "server-only"
+    },
+    "claimedAtMillis": {
+      "$ref": "../callable_responses/get_participant_form_profile_response.schema.json#/properties/claimedAtMillis",
+      "x-catch-ownership": "server-only"
+    },
+    "fields": {
+      "$ref": "../callable_responses/get_participant_form_profile_response.schema.json#/properties/fields",
+      "x-catch-ownership": "server-only"
+    },
+    "selectedCardQuestionIds": {
+      "$ref": "../callable_responses/get_participant_form_profile_response.schema.json#/properties/selectedCardQuestionIds",
+      "x-catch-ownership": "server-only"
+    },
+    "cardRevision": {
+      "$ref": "../callable_responses/get_participant_form_profile_response.schema.json#/properties/cardRevision",
+      "x-catch-ownership": "server-only"
+    },
+    "termsVersion": {
+      "$ref": "../callable_responses/get_participant_form_profile_response.schema.json#/properties/termsVersion",
+      "x-catch-ownership": "server-only"
+    },
+    "version": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
