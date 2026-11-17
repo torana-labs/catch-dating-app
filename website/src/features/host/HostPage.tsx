@@ -29,7 +29,7 @@ import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {captureSlot} from "../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
-import {PricingFeeBand} from "../pricing/PricingBands";
+import {PricingFeeBand} from "../marketing/PricingBands";
 import {hostLandingHref, hostNightHref, useHostLandingController, type HostLandingController} from "./useHostLandingController";
 
 type Host = HostLandingController;

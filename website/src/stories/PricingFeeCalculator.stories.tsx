@@ -4,7 +4,7 @@ import {CatchRoot, CatchSurface} from "@catch/web-ui";
 import {hostLandingCopy} from "@content/hostLanding";
 import {hostFeeCalculatorCopy} from "@content/pricing";
 import {PricingFeeCalculator} from "../features/marketing/PricingFeeCalculator";
-import {PricingFeeBand} from "../features/pricing/PricingBands";
+import {PricingFeeBand} from "../features/marketing/PricingBands";
 
 const meta = {
   title: "Marketing Website/Shared/Pricing fee calculator",
@@ -47,7 +47,7 @@ export const FeeCalculator: Story = {
 /** In the fee band's second column on ink, as /host/ shows it (PricingFeeBand, CatchFeeSection). */
 export const InPricingSection: Story = {
   name: "Pricing fee calculator · in the fee band",
-  parameters: {layout: "fullscreen", catchComponent: {id: "pricing_fee_calculator", routeIds: storyRoutes, states: ["pricing-section-slot"]}},
+  parameters: {layout: "fullscreen", catchComponent: {id: "pricing_fee_band", routeIds: storyRoutes, states: ["host-band"]}},
   render: () => {
     const pricing = hostLandingCopy.pricing;
     return (

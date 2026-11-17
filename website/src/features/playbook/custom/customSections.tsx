@@ -2,7 +2,7 @@ import type {ComponentType} from "react";
 import type {PlaybookSectionOf} from "../../../content/playbook/playbookContract";
 import type {CaptureSlots} from "../../../shared/media/captureSlot";
 import {PricingFeeCalculator} from "../../marketing/PricingFeeCalculator";
-import {PricingCapBand, PricingFeeBand, PricingIncludedBand} from "../../pricing/PricingBands";
+import {PricingCapBand, PricingFeeBand, PricingIncludedBand} from "../../marketing/PricingBands";
 import type {PlaybookPageController} from "../usePlaybookPageController";
 import type {ReadyPlaybookCustomComponent} from "./readyCustomSections";
 

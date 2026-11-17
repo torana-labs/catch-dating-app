@@ -18,7 +18,7 @@ import {
   hostPricingLines,
   pricingPageCycleExamples,
 } from "@content/pricing";
-import {PricingFeeCalculator} from "../marketing/PricingFeeCalculator";
+import {PricingFeeCalculator} from "./PricingFeeCalculator";
 
 export interface PricingFeeBandProps {
   id: string;
