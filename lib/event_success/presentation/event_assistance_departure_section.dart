@@ -22,7 +22,14 @@ enum EventAssistanceDeparturePhase {
   unavailable,
 }
 
+/// One route alternative the event lead can move a departed group to.
+typedef EventAssistanceRouteOption = ({String alternativeId, String label});
+
 /// One departure form shared by real and synthetic transports.
+///
+/// With [routeChoices] and [onChangeRoute], the event lead can first move a
+/// departed group to another route alternative, the same way in practice
+/// and live.
 class EventAssistanceDepartureSection extends StatefulWidget {
   const EventAssistanceDepartureSection({
     super.key,
@@ -45,6 +52,9 @@ class EventAssistanceDepartureSection extends StatefulWidget {
     this.error,
     this.rosterLoading = false,
     this.rosterError,
+    this.routeChoices = const [],
+    this.onChangeRoute,
+    this.routeChanging = false,
   });
   final Object reviewIdentity;
   final List<EventAssistanceDepartureOption> destinations;
@@ -58,6 +68,14 @@ class EventAssistanceDepartureSection extends StatefulWidget {
   final Object? error, rosterError;
   final ValueChanged<EventAssistanceDepartureDraft> onConfirm;
   final VoidCallback onRetry, onReload, onDone;
+
+  /// Alternatives other than the active route; empty when the viewer is not
+  /// the event lead or the group has not departed.
+  final List<EventAssistanceRouteOption> routeChoices;
+  final ValueChanged<String>? onChangeRoute;
+
+  /// A route change is being saved.
+  final bool routeChanging;
   @override
   State<EventAssistanceDepartureSection> createState() =>
       _EventAssistanceDepartureSectionState();
@@ -66,6 +84,7 @@ class EventAssistanceDepartureSection extends StatefulWidget {
 class _EventAssistanceDepartureSectionState
     extends State<EventAssistanceDepartureSection> {
   AssistanceJoiningTarget? _destination;
+  String? _route;
   bool _recordRoster = false, _requestCheckpoint = false;
   Set<String> _selected = {};
   int? _dueAt;
@@ -75,6 +94,7 @@ class _EventAssistanceDepartureSectionState
     if (!identical(oldWidget.reviewIdentity, widget.reviewIdentity) &&
         widget.phase == EventAssistanceDeparturePhase.ready) {
       _destination = null;
+      _route = null;
       _recordRoster = false;
       _requestCheckpoint = false;
       _selected = {};
@@ -148,6 +168,45 @@ class _EventAssistanceDepartureSectionState
             variant: CatchLegacyTextVariant.supporting,
           ),
         gapH12,
+        if (widget.phase == EventAssistanceDeparturePhase.ready &&
+            widget.onChangeRoute != null &&
+            widget.routeChoices.isNotEmpty) ...[
+          CatchFieldLanes.single(
+            child: CatchField<String>.select(
+              key: const ValueKey('departure.route'),
+              copy: catchFieldCopy(l10n),
+              title: l10n.eventAssistanceRouteChangeTitle,
+              helperText: l10n.eventAssistanceRouteChangeBody,
+              contractExemption:
+                  'Selects one route alternative ID from the current authorized review; the backend rechecks it against the event route.',
+              values: [for (final r in widget.routeChoices) r.alternativeId],
+              value: widget.routeChoices.any((r) => r.alternativeId == _route)
+                  ? _route
+                  : null,
+              itemLabelBuilder: (value) => widget.routeChoices
+                  .firstWhere((r) => r.alternativeId == value)
+                  .label,
+              onChanged: widget.routeChanging
+                  ? null
+                  : (value) => setState(() => _route = value),
+            ),
+          ),
+          gapH8,
+          CatchButton(
+            key: const ValueKey('departure.changeRoute'),
+            label: l10n.eventAssistanceRouteChangeConfirm,
+            variant: CatchButtonVariant.secondary,
+            status: widget.routeChanging
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
+            onPressed:
+                widget.routeChanging ||
+                    !widget.routeChoices.any((r) => r.alternativeId == _route)
+                ? null
+                : () => widget.onChangeRoute!(_route!),
+          ),
+          gapH12,
+        ],
         if (ready) ...[
           CatchFieldLanes.single(
             child: CatchField<AssistanceJoiningTarget>.select(

@@ -3943,13 +3943,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String dashboardEventFocusListLabelAttendeesCheckedIn({
-    required int attendedCount,
-  }) {
-    return '$attendedCount checked in';
-  }
-
-  @override
   String get eventSuccessEventSuccessSetupBodyLabelNoTimer => 'No timer';
 
   @override
@@ -4283,14 +4276,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object body,
   }) {
     return '$title. $body';
-  }
-
-  @override
-  String dashboardEventFocusRailLabelSignedupcountCapacitylimit({
-    required Object signedUpCount,
-    required Object capacityLimit,
-  }) {
-    return '$signedUpCount/$capacityLimit';
   }
 
   @override
@@ -17409,6 +17394,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventAssistanceDepartureSaving => 'Recording departure…';
+
+  @override
+  String get eventAssistanceRouteChangeTitle => 'Change route';
+
+  @override
+  String get eventAssistanceRouteChangeBody =>
+      'Send the group a different way without recording a new departure.';
+
+  @override
+  String get eventAssistanceRouteChangeConfirm => 'Change route';
+
+  @override
+  String get eventAssistanceRouteChangeSaved => 'Route changed.';
 
   @override
   String get eventAssistanceDepartureUnknown =>
