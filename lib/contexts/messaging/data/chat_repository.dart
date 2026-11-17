@@ -69,10 +69,9 @@ class ChatRepository {
 
   /// Fetches one newest-first history page. Consumers prepend older pages
   /// after reversing for chronological presentation.
-  Future<CursorPage<ChatMessage, DocumentSnapshot<ChatMessage>>>
-  fetchMessagesPage({
+  Future<CursorPage<ChatMessage, PageCursor<ChatMessage>>> fetchMessagesPage({
     required String matchId,
-    DocumentSnapshot<ChatMessage>? startAfter,
+    PageCursor<ChatMessage>? startAfter,
     int limit = ReadLimitPolicy.historyPage,
   }) => withBackendErrorContext(
     () async {

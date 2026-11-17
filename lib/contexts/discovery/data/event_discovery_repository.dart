@@ -143,10 +143,9 @@ class EventDiscoveryRepository {
     return (await fetchDiscoverableEventsPage(query)).items;
   }
 
-  Future<CursorPage<Event, DocumentSnapshot<Event>>>
-  fetchDiscoverableEventsPage(
+  Future<CursorPage<Event, PageCursor<Event>>> fetchDiscoverableEventsPage(
     EventDiscoveryQuery query, {
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
   }) {
     // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,startTime:ASCENDING)
     // firestore-index: events (discoveryMarketId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,discoveryActivityKind:ASCENDING,startTime:ASCENDING)
@@ -163,7 +162,7 @@ class EventDiscoveryRepository {
     return withBackendErrorContext(
       () async {
         if (query.marketId.isEmpty) {
-          return CursorPage.empty<Event, DocumentSnapshot<Event>>();
+          return CursorPage.empty<Event, PageCursor<Event>>();
         }
 
         Query<Map<String, dynamic>> firestoreQuery = _eventsRef
@@ -187,9 +186,7 @@ class EventDiscoveryRepository {
         firestoreQuery = _applyGeoCellFilter(firestoreQuery, query);
         firestoreQuery = firestoreQuery.orderBy('startTime');
 
-        final windowed = startAfter == null
-            ? firestoreQuery
-            : firestoreQuery.startAfterDocument(startAfter);
+        final windowed = firestoreQuery.startAfterCursor(startAfter);
         final page = await decodePublishedEventQuery(windowed)
             .fetchDocumentCursorPage(
               limit: query.limit,
