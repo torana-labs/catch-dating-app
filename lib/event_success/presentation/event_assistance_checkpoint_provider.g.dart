@@ -168,7 +168,7 @@ final class EventAssistanceCheckpointForAccountProvider
     required (EventAssistanceCheckpointScope, {AuthenticatedSession account})
     super.argument,
   }) : super(
-         retry: _noCheckpointReadRetry,
+         retry: noAutomaticRetry,
          name: r'eventAssistanceCheckpointForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -217,7 +217,7 @@ final class EventAssistanceCheckpointForAccountProvider
 }
 
 String _$eventAssistanceCheckpointForAccountHash() =>
-    r'37075dd0693a02a3c5a7a58ad3bfd0b4774ba752';
+    r'a522de3a7d871cf9cc831227a88eb6b1ccd9bbe0';
 
 /// The checkpoint view for one sign-in period. It is a Firestore listener:
 /// no cache tags or lifetime, and writes never invalidate it. Each delivery
@@ -231,7 +231,7 @@ final class EventAssistanceCheckpointForAccountFamily extends $Family
         > {
   EventAssistanceCheckpointForAccountFamily._()
     : super(
-        retry: _noCheckpointReadRetry,
+        retry: noAutomaticRetry,
         name: r'eventAssistanceCheckpointForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
