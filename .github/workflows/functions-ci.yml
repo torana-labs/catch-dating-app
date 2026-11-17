@@ -85,6 +85,29 @@ jobs:
           CATCH_UNIT_TEST_JUNIT_PATH: ${{ inputs.mode == 'nightly' && format('{0}/build/ci/functions-unit-junit.xml', github.workspace) || '' }}
         run: npm --prefix functions test
 
+      # The tests built functions/lib. Main and its merge queue publish that
+      # tested build under its input hash, so the backend deploy can ship it
+      # instead of compiling again (tool/firebase/functions_build_hash.mjs).
+      - id: build
+        name: Describe the tested Functions build
+        env:
+          NODE_VERSION: ${{ steps.toolchain.outputs.node-version }}
+        run: |
+          node tool/firebase/functions_build_hash.mjs --functions-dir functions \
+            --node-version "$NODE_VERSION" --out build/functions-build --github-output "$GITHUB_OUTPUT"
+
+      - name: Publish the tested Functions build
+        if: ${{ steps.build.outputs.publish == 'true' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.build.outputs.name }}
+          path: |
+            functions/lib
+            build/functions-build/build.json
+            build/functions-build/lib-digest.json
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Retain the nightly Functions test report
         if: ${{ !cancelled() && inputs.mode == 'nightly' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
