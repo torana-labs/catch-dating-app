@@ -6631,14 +6631,6 @@ abstract class AppLocalizations {
   /// **'{hours}h left'**
   String dashboardEventFocusListLabelStaticTimeLeft({required int hours});
 
-  /// Attendee count on an open Catch window card; this is not a remaining candidate count.
-  ///
-  /// In en, this message translates to:
-  /// **'{attendedCount} checked in'**
-  String dashboardEventFocusListLabelAttendeesCheckedIn({
-    required int attendedCount,
-  });
-
   /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart (label).
   ///
   /// In en, this message translates to:
@@ -7212,15 +7204,6 @@ abstract class AppLocalizations {
   String dashboardActivitySectionLabelTitleBody({
     required Object title,
     required Object body,
-  });
-
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{signedUpCount}/{capacityLimit}'**
-  String dashboardEventFocusRailLabelSignedupcountCapacitylimit({
-    required Object signedUpCount,
-    required Object capacityLimit,
   });
 
   /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).

@@ -3943,13 +3943,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String dashboardEventFocusListLabelAttendeesCheckedIn({
-    required int attendedCount,
-  }) {
-    return '$attendedCount checked in';
-  }
-
-  @override
   String get eventSuccessEventSuccessSetupBodyLabelNoTimer => 'No timer';
 
   @override
@@ -4283,14 +4276,6 @@ class AppLocalizationsEn extends AppLocalizations {
     required Object body,
   }) {
     return '$title. $body';
-  }
-
-  @override
-  String dashboardEventFocusRailLabelSignedupcountCapacitylimit({
-    required Object signedUpCount,
-    required Object capacityLimit,
-  }) {
-    return '$signedUpCount/$capacityLimit';
   }
 
   @override

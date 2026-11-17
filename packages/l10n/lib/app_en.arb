@@ -7316,14 +7316,6 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_list"
   },
-  "dashboardEventFocusListLabelAttendeesCheckedIn": "{attendedCount} checked in",
-  "@dashboardEventFocusListLabelAttendeesCheckedIn": {
-    "description": "Attendee count on an open Catch window card; this is not a remaining candidate count.",
-    "placeholders": {"attendedCount": {"type": "int"}},
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "dashboard.presentation.widgets.event_focus_list"
-  },
   "@dashboardEventFocusRailLabelReviewPending": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
     "x-audience": "consumer",
@@ -8007,17 +7999,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.activity_section"
-  },
-  "dashboardEventFocusRailLabelSignedupcountCapacitylimit": "{signedUpCount}/{capacityLimit}",
-  "@dashboardEventFocusRailLabelSignedupcountCapacitylimit": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
-    "placeholders": {
-      "signedUpCount": {},
-      "capacityLimit": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
   "eventSuccessEventSuccessFeatureBlocksLabelRound": "{round}%",
   "@eventSuccessEventSuccessFeatureBlocksLabelRound": {
