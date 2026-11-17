@@ -37,22 +37,6 @@ class OrganizerFollowRepository {
     ),
   );
 
-  Stream<List<OrganizerFollow>> watchActiveFollowsForOrganizer({
-    required String organizerId,
-  }) => withBackendErrorStream(
-    () => _membershipsRef
-        .where('organizerId', isEqualTo: organizerId)
-        .where('status', isEqualTo: OrganizerFollowStatus.active.name)
-        .limit(ReadLimitPolicy.boundedWorkingSet)
-        .snapshots()
-        .map((snap) => snap.docs.map(_follow).toList()),
-    context: const BackendErrorContext(
-      service: BackendService.firestore,
-      action: 'watch organizer follows',
-      resource: _collectionPath,
-    ),
-  );
-
   Stream<OrganizerFollow?> watchFollow({
     required String organizerId,
     required String uid,
@@ -88,14 +72,6 @@ Stream<List<OrganizerFollow>> watchActiveOrganizerFollowsForUser(
 ) => ref
     .watch(organizerFollowRepositoryProvider)
     .watchActiveFollowsForUser(uid: uid);
-
-@riverpod
-Stream<List<OrganizerFollow>> watchActiveOrganizerFollowsForOrganizer(
-  Ref ref,
-  String organizerId,
-) => ref
-    .watch(organizerFollowRepositoryProvider)
-    .watchActiveFollowsForOrganizer(organizerId: organizerId);
 
 @riverpod
 Stream<OrganizerFollow?> watchOrganizerFollow(
