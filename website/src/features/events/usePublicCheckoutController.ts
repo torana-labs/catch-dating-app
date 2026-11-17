@@ -21,6 +21,7 @@ import { publicCheckoutFlowCopy } from "../../content/publicCheckout";
 import { interpolateContent as fill } from "@content/interpolate";
 import type { FormStatus } from "../../shared/forms/types";
 import type { ManagePublicEventCheckoutCallablePayload as Command } from "../../shared/contracts/generated/managePublicEventCheckoutCallablePayload";
+import { currentCheckoutAdContext } from "../../analytics/adContext";
 import {
   assertPublicCheckoutResponse,
   type PublicQuote,
@@ -54,6 +55,12 @@ function refusalMessage(error: unknown, fallback: string): string {
     return publicCheckoutFlowCopy.places.guestNamesError;
   return fallback;
 }
+/** Ad-click identifiers ride only on a new attempt; absent when there are none. */
+function adContextField() {
+  const adContext = currentCheckoutAdContext();
+  return adContext ? { adContext } : {};
+}
+
 export function usePublicCheckoutController(
   eventId: string,
   inviteToken: string | null,
@@ -363,6 +370,7 @@ export function usePublicCheckoutController(
               ...(cleanGuestNames.length > 0 ? { guestNames: cleanGuestNames } : {}),
               reviewedQuote: quote!,
               inviteToken,
+              ...adContextField(),
             };
           writeJournal(key, JSON.stringify(attempt.current));
         }

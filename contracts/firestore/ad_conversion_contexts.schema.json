@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/ad_conversion_contexts.schema.json",
+  "title": "AdConversionContextDocument",
+  "description": "Server-only ad-click context saved when a paid public checkout is prepared, so a later server conversion can be matched to the ad that caused it (docs/ads_conversion_spec.md, Server delivery). The first context for a checkout is kept; retries never replace it. Holds no contact details. Deleted with the account and at expiresAt.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "adConversionContexts",
+  "x-firestore-path": "adConversionContexts/{subjectId}",
+  "x-document-id-field": "subjectId",
+  "x-owner": "public event checkout service",
+  "required": [
+    "schemaVersion",
+    "subjectKind",
+    "subjectId",
+    "uid",
+    "eventId",
+    "organizerId",
+    "click",
+    "clientIpAddress",
+    "clientUserAgent",
+    "createdAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "subjectKind": {
+      "const": "publicEventPayment",
+      "description": "The authoritative record this context belongs to. A paid public checkout is the only kind today."
+    },
+    "subjectId": {
+      "type": "string",
+      "pattern": "^pp_[a-f0-9]{32}$",
+      "description": "The guestPayments document ID of the public checkout."
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "click": {
+      "$ref": "../shared/ad_click_context.schema.json#/definitions/clickContext"
+    },
+    "clientIpAddress": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64,
+          "pattern": "^[0-9A-Fa-f:.]+$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The caller's IP address as seen by the checkout callable, for Meta and Google matching. Null when it was unavailable or malformed."
+    },
+    "clientUserAgent": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "90 days after createdAt, the longest click-through window either platform accepts."
+    }
+  }
+}
