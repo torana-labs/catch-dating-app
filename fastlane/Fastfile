@@ -42,8 +42,11 @@ TARGET_FIELDS = %w[
 # Play tracks a version code may already occupy. A new code must exceed all.
 PLAY_TRACKS = %w[internal alpha beta production qa].freeze
 MINIMUM_ANDROID_VERSION_CODE = 100_000
-# App Store fields that can change on a live version without a new submission.
-APP_STORE_LIVE_FIELDS = %w[promotional_text support_url marketing_url].freeze
+# App Store fields that can change on a live version without a new submission,
+# by metadata file name and App Store Connect localization attribute.
+APP_STORE_LIVE_FIELDS = {
+  "promotional_text" => "promotionalText", "support_url" => "supportUrl", "marketing_url" => "marketingUrl"
+}.freeze
 
 opt_out_usage
 default_platform(:ios)
@@ -304,31 +307,45 @@ platform :ios do
     paths = listing_paths(role)
     require_listing!(paths[:ios], role)
     live = options[:live].to_s == "true"
+    # The version the listing is prepared for: the app's marketing version, or
+    # version: when that one is already live or in review and the listing
+    # should wait for the next.
+    version = options[:version].to_s.strip
+    version = marketing_version(target) if version.empty?
+    UI.user_error!("version must look like 1.2.3, not #{version.inspect}") unless version.match?(/\A\d+\.\d+(\.\d+)?\z/)
     common = { app_identifier: target["ios.bundleId"], skip_binary_upload: true, submit_for_review: false,
                run_precheck_before_submit: false, force: true }
     with_api_key do |key, _key_path|
       if live
         # Everything else on a live version is locked until the next submission.
-        Dir.mktmpdir do |dir|
-          Dir.glob(File.join(paths[:ios], "*", "{#{APP_STORE_LIVE_FIELDS.join(',')}}.txt")).each do |file|
-            destination = File.join(dir, File.basename(File.dirname(file)), File.basename(file))
-            FileUtils.mkdir_p(File.dirname(destination))
-            FileUtils.cp(file, destination)
+        # deliver's edit_live crashes in fastlane 2.241 (it never loads the
+        # version localizations, then enqueues nil), so this writes the
+        # localizations directly with the token app_store_connect_api_key set.
+        app = Spaceship::ConnectAPI::App.find(target["ios.bundleId"])
+        UI.user_error!("No App Store Connect app for #{target['ios.bundleId']}") unless app
+        live_version = app.get_live_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+        UI.user_error!("#{target['ios.bundleId']} has no live App Store version") unless live_version
+        live_version.get_app_store_version_localizations.each do |localization|
+          attributes = APP_STORE_LIVE_FIELDS.each_with_object({}) do |(file, attribute), result|
+            path = File.join(paths[:ios], localization.locale, "#{file}.txt")
+            result[attribute] = File.read(path).strip if File.exist?(path)
           end
-          upload_to_app_store(common.merge(api_key: key, metadata_path: dir, edit_live: true, skip_screenshots: true))
+          next if attributes.empty?
+          UI.message("Updating #{attributes.keys.join(', ')} for #{localization.locale} on live #{live_version.version_string}")
+          localization.update(attributes: attributes)
         end
       else
         screenshots = images_in?(paths[:ios_screenshots])
         # app_version makes sure the version being prepared is this one,
         # creating it when none is, so the listing ships with the next release.
-        upload_to_app_store(common.merge(api_key: key, app_version: marketing_version(target),
+        upload_to_app_store(common.merge(api_key: key, app_version: version,
                                          metadata_path: paths[:ios], screenshots_path: paths[:ios_screenshots],
                                          skip_screenshots: !screenshots, overwrite_screenshots: screenshots))
       end
     end
     summarize("App Store listing uploaded (#{role})", [
       ["App", target["ios.bundleId"]],
-      ["Version", live ? "live (#{APP_STORE_LIVE_FIELDS.join(', ')})" : marketing_version(target)],
+      ["Version", live ? "live (#{APP_STORE_LIVE_FIELDS.keys.join(', ')})" : version],
       ["Goes public", live ? "now" : "when that version is approved and released"]
     ])
   end
