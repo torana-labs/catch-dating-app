@@ -3,7 +3,6 @@ import 'package:catch_dating_app/contexts/bookings/data/event_participation_repo
 import 'package:catch_dating_app/contexts/discovery/data/event_discovery_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/domain/saved_event.dart';
-import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/external_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
@@ -40,6 +39,13 @@ void main() {
         seedPrefix: 'cross_paths_mumbai_qa',
         startTime: DateTime.now().add(const Duration(days: 1)),
       );
+      final otherQaEvent = event_test.buildEvent(
+        id: 'cross_paths_mumbai_qa_run_mumbai_01_02',
+        organizerId: organizer.id,
+        synthetic: true,
+        seedPrefix: 'cross_paths_mumbai_qa',
+        startTime: DateTime.now().add(const Duration(days: 2)),
+      );
       final participation = event_test.buildEventParticipation(
         event: qaEvent,
         uid: user.uid,
@@ -61,14 +67,13 @@ void main() {
           watchSavedEventsForUserProvider(
             user.uid,
           ).overrideWith((ref) => Stream.value(const <SavedEvent>[])),
-          watchEventsByIdsProvider(
-            EventsByIdQuery([qaEvent.id]),
-          ).overrideWith((ref) => Stream.value([qaEvent])),
           watchOrganizersForMessagingByIdsProvider(
             OrganizersByIdQuery([organizer.id]),
           ).overrideWith((ref) => Stream.value([organizer])),
+          // Discovery returns the city's synthetic events; the feed keeps
+          // only the one this viewer is booked on.
           eventDiscoveryRepositoryProvider.overrideWithValue(
-            _FakeEventDiscoveryRepository(),
+            _FakeEventDiscoveryRepository([qaEvent, otherQaEvent]),
           ),
           externalEventRepositoryProvider.overrideWithValue(
             _FakeExternalEventRepository(),
@@ -104,9 +109,13 @@ void main() {
 
 class _FakeEventDiscoveryRepository extends Fake
     implements EventDiscoveryRepository {
+  _FakeEventDiscoveryRepository(this.events);
+
+  final List<Event> events;
+
   @override
   Future<List<Event>> fetchDiscoverableEvents(EventDiscoveryQuery query) async {
-    return const [];
+    return events;
   }
 
   @override
@@ -114,7 +123,7 @@ class _FakeEventDiscoveryRepository extends Fake
   fetchDiscoverableEventsPage(
     EventDiscoveryQuery query, {
     DocumentSnapshot<Event>? startAfter,
-  }) async => const CursorPage(items: [], hasMore: false);
+  }) async => CursorPage(items: events, hasMore: false);
 }
 
 class _FakeExternalEventRepository extends Fake

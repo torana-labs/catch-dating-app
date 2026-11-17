@@ -7423,6 +7423,32 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "row.response.status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "submittedAtMillis",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "hostResponseSummaries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "formId",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "submittedAtMillis",
           "order": "ASCENDING"
         },

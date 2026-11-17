@@ -313,21 +313,6 @@ class EventRepository with EventRepositoryActions {
             events.where((event) => !event.synthetic).toList(growable: false),
       );
 
-  Stream<List<Event>> watchEventsByIds({required List<String> eventIds}) {
-    final uniqueIds = eventIds.toSet().toList()..sort();
-    if (uniqueIds.isEmpty) return Stream.value(const []);
-
-    return watchEventsByIdStream(
-      idStream: Stream.value(uniqueIds),
-      eventsRef: _eventsRef,
-      context: const BackendErrorContext(
-        service: BackendService.firestore,
-        action: 'watch events by id',
-        resource: _collectionPath,
-      ),
-    );
-  }
-
   /// Generates a new unique Firestore document ID for an event without writing it.
   String generateId() => _eventsRef.doc().id;
 
@@ -436,11 +421,6 @@ Stream<List<Event>> watchEventsForOrganizers(
     .watch(eventRepositoryProvider)
     .watchEventsForOrganizers(organizerIds: query.organizerIds);
 
-@riverpod
-Stream<List<Event>> watchEventsByIds(Ref ref, EventsByIdQuery query) => ref
-    .watch(eventRepositoryProvider)
-    .watchEventsByIds(eventIds: query.eventIds);
-
 /// One organizer's events that end after the start of the given day.
 /// The day, not the instant, keys the listener, so it is reused all day.
 class ActiveOrganizerEventsQuery {
@@ -458,27 +438,6 @@ class ActiveOrganizerEventsQuery {
 
   @override
   int get hashCode => Object.hash(organizerId, endsAfter);
-}
-
-class EventsByIdQuery {
-  EventsByIdQuery._(Iterable<String> eventIds)
-    : eventIds = List.unmodifiable(eventIds.toSet().toList()..sort());
-
-  factory EventsByIdQuery(Iterable<String> eventIds) =>
-      EventsByIdQuery._(eventIds);
-
-  static const _equality = ListEquality<String>();
-
-  final List<String> eventIds;
-
-  @override
-  bool operator ==(Object other) {
-    return other is EventsByIdQuery &&
-        _equality.equals(other.eventIds, eventIds);
-  }
-
-  @override
-  int get hashCode => _equality.hash(eventIds);
 }
 
 class EventsForOrganizersQuery {
