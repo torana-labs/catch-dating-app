@@ -320,7 +320,6 @@
     "EventSuccessLiveActionCallablePayload",
     "EventSuccessPlanDocument",
     "EventSuccessSpatialActionCallablePayload",
-    "EventWaitlistOfferDocument",
     "EventWhatsappBudgetDocument",
     "EventWhatsappConsentReceiptDocument",
     "EventWhatsappDispatchDocument",
