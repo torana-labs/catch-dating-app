@@ -19,6 +19,7 @@ const {
   getDocs,
   it,
   limit,
+  orderBy,
   organizer,
   query,
   review,
@@ -285,6 +286,34 @@ describe("firestore.rules", () => {
         "eventStaffGrants",
         "event-2__operator-1",
       ), eventStaffGrant({eventId: "event-2"})));
+    });
+
+    it("lets the organizer's managers list an event's staff grants", async () => {
+      await seed(["organizers", "club-1"], organizer());
+      await seed(["organizers", "club-2"], organizer({hostUserId: "host-2"}));
+      await seed(["events", "event-1"], event());
+      await seed(["eventStaffGrants", "event-1__operator-1"], eventStaffGrant());
+      await seed(["eventStaffGrants", "event-1__operator-2"],
+        eventStaffGrant({uid: "operator-2", status: "revoked"}));
+      const staff = (uid, organizerId = "club-1") => query(
+        collection(authedDb(uid), "eventStaffGrants"),
+        where("eventId", "==", "event-1"),
+        where("organizerId", "==", organizerId),
+        orderBy("updatedAt", "desc"), limit(50));
+      const listed = await assertSucceeds(getDocs(staff("host-1")));
+      assert.equal(listed.size, 2);
+      await assertFails(getDocs(staff("operator-1")));
+      await assertFails(getDocs(staff("host-2")));
+      // Naming their own organizer only ever matches their own grants.
+      const own = await assertSucceeds(getDocs(staff("host-2", "club-2")));
+      assert.equal(own.size, 0);
+      await assertFails(getDocs(query(collection(authedDb("host-1"),
+        "eventStaffGrants"), where("eventId", "==", "event-1"))));
+      await assertFails(getDocs(staff("runner-1")));
+      await assertFails(setDoc(doc(authedDb("host-1"), "eventStaffGrants",
+        "event-1__operator-3"), eventStaffGrant({uid: "operator-3"})));
+      await seed(["deletedUsers", "host-1"], {deletedAt: Timestamp.now()});
+      await assertFails(getDocs(staff("host-1")));
     });
 
     it("lets an event's managers and roster staff list who is on the door", async () => {
