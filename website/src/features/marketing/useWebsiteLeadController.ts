@@ -1,37 +1,17 @@
 import {useRef, useState} from "react";
-import {websiteCities} from "@content/markets";
-import type {WebsiteLeadForm, WebsiteLeadProblem, WebsiteLeadSubmission} from "../../../shared/api/websiteLead";
-import {createSiteLeadSubmission} from "../../marketing/websiteLead";
-import type {CitySource} from "../cityChoice";
-
-/** The city a homepage lead is for: the page's city, and how the site reached it. */
-export interface HomeLeadCity {
-  readonly label: string;
-  readonly slug: string;
-  readonly source?: CitySource;
-}
-
-/**
- * The lead's city fields: the label as shown, and for a catalog city its id
- * and country and how the site reached it, so the intake counts the city.
- */
-export function homeLeadCityFields(city: HomeLeadCity) {
-  const listed = websiteCities.find((item) => item.slug === city.slug);
-  return {
-    city: city.label,
-    ...(listed ? {cityId: listed.id, countryIsoCode: listed.countryIsoCode, ...(city.source ? {citySource: city.source} : {})} : {}),
-  };
-}
+import type {WebsiteLeadForm, WebsiteLeadProblem, WebsiteLeadSubmission} from "../../shared/api/websiteLead";
+import {createSiteLeadSubmission} from "./websiteLead";
 
 type LeadPhase = "idle" | "submitting" | "sent" | "failed";
 type LeadState = {phase: LeadPhase; problem: WebsiteLeadProblem | null; message: string};
 const idle: LeadState = {phase: "idle", problem: null, message: ""};
 
 /**
- * One homepage lead form's send: idle, submitting, sent, or failed with the
+ * One website lead form's send: idle, submitting, sent, or failed with the
  * lead client's problem and its words. The submission is made once for the
  * form's life, so sending the same answers again after a failure reuses the
- * request id and is the same lead; changed answers are a new one.
+ * request id and is the same lead; changed answers are a new one. The
+ * homepage's forms and the playbook pages' forms share it.
  */
 export function useWebsiteLeadController(submission?: WebsiteLeadSubmission) {
   const [lead] = useState(() => submission ?? createSiteLeadSubmission());

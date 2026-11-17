@@ -1,11 +1,18 @@
-import {cleanup, render, screen, within} from "@testing-library/react";
-import {afterEach, describe, expect, it} from "vitest";
+import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
+import {afterEach, describe, expect, it, vi} from "vitest";
+import {interpolateContent as fill} from "@content/interpolate";
 import {playbookCopy} from "@content/playbook/playbookCopy";
+import {websiteLeadCopy} from "@content/websiteLead";
 import {loadPlaybookPage, resolvePlaybookPage} from "./playbookPages";
 import {PlaybookPage} from "./PlaybookPage";
 import {playbookStructuredData} from "./playbookStructuredData";
 
-afterEach(cleanup);
+vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => "site-token")}));
+
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
 
 const page = (await loadPlaybookPage(resolvePlaybookPage("/host/run-clubs/")!))!;
 const captures = {};
@@ -33,12 +40,46 @@ describe("playbook page", () => {
     expect(screen.getAllByText(playbookCopy.whatsappReply, {exact: false}).length).toBeGreaterThan(0);
   });
 
-  it("shows no lead form while its slot is empty, and the slot's form once filled", () => {
-    const {unmount} = render(<PlaybookPage captures={captures} page={page} />);
+  it("shows no lead form while its kind's slot is empty, and the slot's form once filled", () => {
+    const {unmount} = render(<PlaybookPage captures={captures} leadForms={{}} page={page} />);
     expect(screen.queryByText("Send the guide")).toBeNull();
     unmount();
-    render(<PlaybookPage captures={captures} leadForms={{run_club_setup_guide: ({form}) => <span>{form.submitLabel}</span>}} page={page} />);
+    render(<PlaybookPage captures={captures} leadForms={{guide: ({form}) => <span>{form.submitLabel}</span>}} page={page} />);
     expect(screen.getByText("Send the guide")).toBeTruthy();
+  });
+
+  it("sends the run club setup guide request from the closing band, beside the WhatsApp action, and retries the same request", async () => {
+    const posts: {requestKind: string; lead: {requestId: string; entry: string; guide: unknown; consent: unknown}}[] = [];
+    const answers = [
+      new Response(JSON.stringify({error: "Unavailable"}), {status: 503}),
+      new Response(JSON.stringify({ok: true, alreadyJoined: false, lead: {leadId: "0".repeat(64), requestKind: "guide", isNew: true}}), {status: 200}),
+    ];
+    vi.stubGlobal("fetch", vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      posts.push(JSON.parse(String(init?.body)));
+      return answers.shift()!;
+    }));
+    render(<PlaybookPage captures={captures} page={page} />);
+    const band = within(document.getElementById("start")!);
+    expect(band.getByRole("link", {name: "Get the setup guide on WhatsApp"}).getAttribute("target")).toBe("_blank");
+    const form = within(band.getByRole("form", {name: "Send the guide"}));
+    expect(form.getByText(fill(playbookCopy.leadForm.consent, {action: "Send the guide"}))).toBeTruthy();
+    expect(form.getByText("We’ll message you on WhatsApp with the guide.")).toBeTruthy();
+
+    fireEvent.click(form.getByRole("button", {name: "Send the guide"}));
+    expect(await form.findByText(websiteLeadCopy.problems.invalid_phone)).toBeTruthy();
+    expect(posts).toHaveLength(0);
+
+    fireEvent.change(form.getByRole("textbox", {name: /Your WhatsApp number/u}), {target: {value: "98765 43210"}});
+    fireEvent.click(form.getByRole("button", {name: "Send the guide"}));
+    expect(await band.findByText(websiteLeadCopy.problems.failed)).toBeTruthy();
+    fireEvent.click(form.getByRole("button", {name: playbookCopy.leadForm.retry}));
+    expect(await band.findByText(playbookCopy.leadForm.sent.guide)).toBeTruthy();
+    expect(band.queryByRole("form", {name: "Send the guide"})).toBeNull();
+
+    expect(posts).toHaveLength(2);
+    expect(posts[1].lead.requestId).toBe(posts[0].lead.requestId);
+    expect(posts[0]).toMatchObject({requestKind: "guide", lead: {entry: "run_club_setup_guide", guide: {format: "run_club"},
+      consent: {purpose: "leadFollowUp", version: playbookCopy.leadForm.consentVersion}}});
   });
 
   it("states its questions as FAQPage and its breadcrumb as BreadcrumbList", () => {
