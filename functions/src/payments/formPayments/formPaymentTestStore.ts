@@ -83,9 +83,11 @@ export class FormPaymentTestStore {
     create: (ref: Ref, data: Data) => void;
     set: (ref: Ref, data: Data) => void;
     update: (ref: Ref, data: Data) => void;
+    delete: (ref: Ref) => void;
   }) => Promise<T>): Promise<T> {
     const run = this.tail.then(async () => {
-      const writes = new Map<string, Data>();
+      // A null value is a delete.
+      const writes = new Map<string, Data | null>();
       const result = await work({
         get: async (ref) => {
           assert.equal(writes.size, 0, "Reads must precede writes");
@@ -100,8 +102,12 @@ export class FormPaymentTestStore {
         set: (ref, data) => {
           writes.set(ref.path, {...data});
         },
+        delete: (ref) => {
+          writes.set(ref.path, null);
+        },
         update: (ref, data) => {
-          const before = writes.get(ref.path) ?? this.records.get(ref.path);
+          const before = writes.has(ref.path) ? writes.get(ref.path) :
+            this.records.get(ref.path);
           if (!before) throw new Error("Not found");
           const after = {...before};
           for (const [key, value] of Object.entries(data)) {
@@ -119,7 +125,10 @@ export class FormPaymentTestStore {
         this.failNextCommit = false;
         throw new Error("Interrupted commit");
       }
-      for (const [path, data] of writes) this.records.set(path, data);
+      for (const [path, data] of writes) {
+        if (data === null) this.records.delete(path);
+        else this.records.set(path, data);
+      }
       return result;
     });
     this.tail = run.catch(() => undefined);

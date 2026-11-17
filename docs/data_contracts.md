@@ -4339,6 +4339,24 @@ review. Normal `updateUserProfile` edits increment the same core revision.
 LinkedIn retains its existing private `participantIntakeProfiles` destination.
 Verified phone always comes from Auth, never an editable answer.
 
+Guest-owned read models carry the list and the review, so the app reads them
+directly instead of those two callables (#1339). `participantFormProfileViews/{responseId}` holds, for each
+proposal still available to its guest, exactly the proposal and card parts the
+review callable computes: designated answers, form title, submitted and claimed
+dates, `selectedCardQuestionIds`, `cardRevision` and `termsVersion`; the list's
+card field count is the length of the selection. The app's list query reads the
+guest's rows newest submission first (`uid`, `submittedAtMillis` descending,
+document id), twenty a page, with the last row id as cursor.
+`participantIntakeProfileViews/{uid}` holds only `intakeRevision` and the saved
+`linkedinUrl`; a missing view reads as revision 0 and no URL. The review takes
+`profileRevision` and the reviewed profile values (the claim payload's profile
+keys, birth date as a UTC calendar date) from `users/{uid}`. Triggers on the
+proposal, response, card and intake profile keep the views current and delete
+a row once its proposal is unavailable; the guest gets and lists only their own
+rows, and nobody writes them. Organizer names come from the public organizer
+lookup. The claim fence is unchanged, so a view that lags makes a claim fail
+closed and ask for a fresh review. `getParticipantFormPhoto` stays a callable.
+
 New claimed identities have `profileComplete=false`, empty dating preferences
 and discovery disabled. The server schema permits empty preferences for this
 path; existing client initial-create, booking and social-readiness gates remain
