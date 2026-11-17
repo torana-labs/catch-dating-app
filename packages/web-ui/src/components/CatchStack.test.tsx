@@ -60,8 +60,10 @@ describe("CatchStack", () => {
       <CatchRoot size="expanded">
         <CatchStack collapseBelow="expanded" data-testid="booking" direction="row" railWidth="narrow" stickyRail><main /><aside /></CatchStack>
         <CatchStack data-testid="organiser" direction="row" railSide="start" railWidth="wide"><aside /><main /></CatchStack>
+        <CatchStack data-testid="rating" direction="row" railSide="start" railWidth="sidebar"><div /><div /></CatchStack>
       </CatchRoot>,
     );
+    expect(screen.getByTestId("rating").dataset).toMatchObject({rail: "sidebar", railSide: "start"});
     expect(screen.getByTestId("booking").dataset).toMatchObject({rail: "narrow", railSide: "end", stickyRail: ""});
     expect(screen.getByTestId("organiser").dataset).toMatchObject({rail: "wide", railSide: "start"});
     expect(screen.getByTestId("organiser").hasAttribute("data-sticky-rail")).toBe(false);

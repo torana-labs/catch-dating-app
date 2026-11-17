@@ -22,10 +22,11 @@ vi.mock("../observeOrganizerProviders", () => ({observeOrganizerProviders: vi.fn
 
 afterEach(cleanup);
 
-function renderPage(page: OrganizerPageRecord | null, listing: HostListing = organizerStoryListing(page ?? claimedOrganizerPage)) {
+function renderPage(page: OrganizerPageRecord | null, listing: HostListing = organizerStoryListing(page ?? claimedOrganizerPage),
+  props: Partial<Parameters<typeof HostListingPage>[0]> = {}) {
   return render(
     <QueryClientProvider client={new QueryClient({defaultOptions: {queries: {retry: false}}})}>
-      <HostListingPage listing={listing} page={page} readAt={organizerPageReadAt} />
+      <HostListingPage listing={listing} page={page} readAt={organizerPageReadAt} {...props} />
     </QueryClientProvider>,
   );
 }
@@ -34,6 +35,7 @@ const follows = (first: Element, second: Element) =>
   Boolean(first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING);
 
 describe("HostListingSections", () => {
+  // The whole page and its many role queries: a loaded machine needs more than the default 5s.
   it("opens with identity, follow, the next event and the pinned link, then the calendar, moments, reviews, about and the site footer", () => {
     const {container} = renderPage(claimedOrganizerPage);
     const name = screen.getByRole("heading", {level: 1, name: "Lantern Lane Runners"});
@@ -55,9 +57,19 @@ describe("HostListingSections", () => {
     expect(footer.getByRole("link", {name: "What’s on"}).getAttribute("href")).toBe("/explore/");
     expect(footer.getByRole("link", {name: "Weddings"})).toBeTruthy();
     expect(footer.getByRole("button", {name: "Privacy choices"})).toBeTruthy();
-    expect(screen.getByText("2,140 followers · 4.8 ★ from 186 reviews · 12 nights", {exact: false})).toBeTruthy();
+    // Each proof line has data behind it; the rating counts verified reviews only and says how many.
+    // The hero carries them across the page, above the rail.
+    const rail = container.querySelector("aside[aria-label='Lantern Lane Runners']")!;
+    const hero = name.closest("main")!;
+    for (const stat of ["2,140 followers", "4.8 ★ · 120 verified reviews", "12 nights hosted"]) {
+      expect(hero.textContent).toContain(stat);
+      expect(rail.textContent).not.toContain(stat);
+    }
+    expect(within(rail as HTMLElement).getByRole("navigation", {name: "Social profiles"})).toBeTruthy();
+    // The help band ends every organiser page with the WhatsApp line.
+    expect(footer.getByText("We reply on WhatsApp, usually within an hour.")).toBeTruthy();
     expect(screen.getByRole("link", {name: "Make a page like this"}).getAttribute("href")).toBe("/host/");
-  });
+  }, 20_000);
 
   it("links Catch events to their page and imported events to where they are sold", () => {
     const {container} = renderPage(claimedOrganizerPage);
@@ -66,8 +78,20 @@ describe("HostListingSections", () => {
       "/events/lantern-sun-1/", "/events/lantern-wed-4/", "https://luma.com/lantern-lantern-night-14",
       "/events/lantern-15k-22/", "/events/lantern-sun-29/",
     ]);
+    expect(events.getByRole("heading", {name: "Coming up"})).toBeTruthy();
+    expect(events.getByText("From Catch and Luma, in one list")).toBeTruthy();
     expect(events.getAllByText("On Catch")).toHaveLength(4);
     expect(events.getByText("Luma")).toBeTruthy();
+  });
+
+  it("labels each review Booked on Catch or Unverified and explains the labels", () => {
+    const {container} = renderPage(claimedOrganizerPage);
+    const reviews = within(container.querySelector("#reviews") as HTMLElement);
+    expect(reviews.getAllByText("Booked on Catch")).toHaveLength(2);
+    expect(reviews.getAllByText("Unverified")).toHaveLength(1);
+    expect(reviews.getByText("Booked on Catch means the reviewer booked through Catch. Unverified reviews are shown, and labelled.")).toBeTruthy();
+    expect(reviews.getByText("from 120 verified reviews")).toBeTruthy();
+    expect(reviews.getByText("Kabir")).toBeTruthy();
   });
 
   it("keeps the Catch header and the claim pitch on a generated page, and never shows intake notes", () => {
@@ -83,6 +107,29 @@ describe("HostListingSections", () => {
     expect(screen.queryByRole("img", {name: "Verified organiser"})).toBeNull();
     expect(screen.getAllByText("Harbour Line Run Club hasn’t claimed this page, so they can’t reply yet.")).toHaveLength(2);
     expect(screen.getByRole("link", {name: "Something wrong? Tell us"}).getAttribute("href")).toBe("/help/");
+    // No verified review yet, so no rating anywhere on the page.
+    expect(screen.queryByText(/★ ·/u)).toBeNull();
+    expect(screen.getByText("2 reviews, none from a Catch booking yet, so no rating.")).toBeTruthy();
+  });
+
+  it("says nothing about the organiser's own domain until custom domains ship", () => {
+    const {container} = renderPage(generatedOrganizerPage);
+    expect(container.textContent).not.toMatch(/own domain|custom domain/iu);
+    cleanup();
+    const claimed = renderPage(claimedOrganizerPage);
+    expect(claimed.container.textContent).not.toMatch(/own domain|custom domain/iu);
+  });
+
+  it("shows the women-led label when the read model says the organiser is women-led", () => {
+    renderPage({...claimedOrganizerPage, womenLed: true});
+    expect(screen.getByText("Women-led")).toBeTruthy();
+    cleanup();
+    renderPage(claimedOrganizerPage);
+    expect(screen.queryByText("Women-led")).toBeNull();
+    cleanup();
+    // Without a read model the page builds its record from the listing, which has no women-led field.
+    renderPage(null);
+    expect(screen.queryByText("Women-led")).toBeNull();
   });
 
   it("hides the follow-by-phone sheet and the review form until their backends land", () => {
@@ -98,6 +145,8 @@ describe("HostListingSections", () => {
     cleanup();
     renderPage(noReviewsOrganizerPage);
     expect(screen.getByText("No reviews yet")).toBeTruthy();
+    // The rating counts verified reviews only, and the page says so while there is none.
+    expect(screen.getByText("No rating yet. The rating counts only reviews from people who booked on Catch.")).toBeTruthy();
     expect(screen.queryByText(/★ ·/u)).toBeNull();
   });
 

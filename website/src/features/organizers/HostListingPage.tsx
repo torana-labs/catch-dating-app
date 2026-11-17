@@ -10,13 +10,13 @@ import type {HostListing} from "./types";
 import {organizerPageBackends, useOrganizerPageController, type OrganizerPageBackends} from "./useOrganizerPageController";
 
 /**
- * /organizers/<slug>/ on the white ground, as the RbWebOrgV2 board. It
- * renders the organizer's `organizerPublicPage` read model when the route
- * read one, and otherwise the same record built from the listing (pages
- * assembled from their sources, and the static build). On the site's own domain it
- * carries the site header and footer (owner decision, 14 Nov 2026); a page
- * served on the organiser's own domain, once custom domains ship, keeps the
- * short footer.
+ * /organizers/<slug>/ on the white ground, as the WebOrgV2 board in the
+ * owner-approved hero layout (17 Nov 2026), between the site header and
+ * footer (owner decision, 14 Nov 2026). It renders the organizer's
+ * `organizerPublicPage` read model when the route read one, and otherwise the
+ * same record built from the listing (pages assembled from their sources, and
+ * the static build). The women-led label comes from the read model's
+ * `womenLed`; the listing has no such field, so its record never shows it.
  */
 export function HostListingPage({backends = organizerPageBackends, listing, ownerBackends = ownerViewBackends, ownerUid, page,
   readAt}: {

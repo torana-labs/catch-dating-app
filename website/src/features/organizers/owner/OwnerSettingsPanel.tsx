@@ -9,7 +9,7 @@ const copy = ownerViewCopy;
 export const ownerHostHref = "/host/";
 
 /**
- * The page's address and custom domain, Pixel and GA4 (the existing tracking
+ * The page's address, Pixel and GA4 (the existing tracking
  * settings, owner only), and the page's upcoming events with "Open in Catch
  * Host": events and live tools stay in the Host app.
  */
@@ -27,7 +27,6 @@ export function OwnerSettingsPanel({controller, displayUrl, events}: {
         <>
           <CatchSection dividers="between" title={copy.settings.addressTitle}>
             <CatchIndexRow subtitle={copy.settings.addressNote} title={displayUrl} wrap />
-            <CatchIndexRow subtitle={copy.settings.customDomainNote} title={copy.settings.customDomain} wrap />
           </CatchSection>
           <CatchSection dividers="none" note={copy.settings.trackingNote} title={copy.settings.trackingTitle}>
             {tracking.ready ? (

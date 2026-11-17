@@ -69,7 +69,7 @@ describe("useOwnerViewController", () => {
     const command = backends.manage.mock.calls[0][0];
     expect(command.action).toBe("setLinks");
     if (command.action !== "setLinks") throw new Error("unexpected");
-    expect(command.links.map((link) => link.id)).toEqual(["whatsapp", "night", "strava", "shop"]);
+    expect(command.links.map((link) => link.id)).toEqual(["whatsapp", "night", "strava", "shop", "instagram", "youtube"]);
     expect(command.links[0]).toMatchObject({label: "Join the WhatsApp community", pinned: true});
     await waitFor(() => expect(result.current.notice).toMatchObject({panel: "links", text: "saved"}));
   });
