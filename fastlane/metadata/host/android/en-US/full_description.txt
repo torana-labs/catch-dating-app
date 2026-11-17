@@ -1,36 +1,13 @@
-Catch Host is the workspace for people who run events: run clubs, supper clubs, quiz nights, workshops, racket socials and parties. Plan the event, fill the room, run the night and see what it created, all from your phone or tablet.
+Catch Host helps organizers prepare events and manage the people attending them.
 
-Plan and publish
-• Build an event in one guided flow: details, date, venue, tickets and the plan for the night.
-• Set capacity, approvals and a waitlist so the room fills on your terms.
-• Collect applications with a form you share on Instagram or WhatsApp, and review every response in one list.
+Use your organizer workspace to:
+• Create and update event details.
+• Keep your events and guest information together.
+• Manage attendance and event check-in.
+• Communicate through event conversations and announcements.
+• Work across the organizers you have access to.
 
-Take bookings
-• Guests book and pay through your own connected Razorpay account.
-• See who has paid, who is waiting and who is coming, in one guest list.
-
-Run the door
-• Check guests in by name, even when the signal drops, or scan their QR ticket.
-• Add walk-ins and offer open places to the waitlist.
-• Give event staff access to the guest list and the door, and nothing else.
-
-Run the room
-• Run quiz rounds, tables, pods and court rotations from one live console.
-• Rotations avoid repeat partners and share sitting out evenly.
-• Guests can ask you privately for an introduction, and you see it the moment they do.
-
-Keep in touch with your guests
-• Every booking, question and conversation in one inbox.
-• Message everyone booked, or send WhatsApp updates to guests who opted in.
-• Save groups such as your regulars and reach them again in a tap.
-
-See what you created
-• A report after every event: who came, new faces, ticket sales and what guests said.
-
-Your organizer page
-• A public page with your upcoming events, reviews and links, made to sit in your bio.
-
-Sign in with your phone number. The tools you see depend on your organizer access and event setup.
+Sign in with your phone number to access your Host account. Available tools depend on your organizer access and event setup.
 
 Catch Host is for adults aged 18 and over. Catch Host is operated by Torana.
 
