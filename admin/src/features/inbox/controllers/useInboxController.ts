@@ -30,7 +30,7 @@ const pageSize = 25;
 const inboxKey = ["inbox"] as const;
 
 export const inboxTypeLabels: Record<InboxType, string> = {
-  listing: "Listings", event: "Events", claim: "Claims", enquiry: "Enquiries", access: "Launch access", stuck: "Stuck",
+  listing: "Listings", event: "Events", claim: "Claims", enquiry: "Enquiries", lead: "Leads", access: "Launch access", stuck: "Stuck",
 };
 
 /**

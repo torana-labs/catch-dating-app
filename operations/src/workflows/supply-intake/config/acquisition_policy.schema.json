@@ -59,7 +59,7 @@
       }
     },
     "pageFetch": {
-      "description": "On-demand fetches of the pages an intake request names, separate from recurring crawls. Enabling cites an accepted on_demand_page_fetch_policy decision.",
+      "description": "On-demand fetches of the pages an intake request names, separate from recurring crawls. Enabling cites an accepted on_demand_page_fetch_policy decision. Requests from the website's instant draft tool (origin web_instant_draft) read from their own monthly allowance, maxInstantDraftRequestsPerMonth, so they never spend the maxRequestsPerMonth staff nominations and every other front door share.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -73,7 +73,8 @@
         "maxResponseBytes",
         "maxRedirects",
         "maxRequestsPerIntake",
-        "maxRequestsPerMonth"
+        "maxRequestsPerMonth",
+        "maxInstantDraftRequestsPerMonth"
       ],
       "properties": {
         "enabled": {
@@ -129,6 +130,12 @@
           "maximum": 200
         },
         "maxRequestsPerMonth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "maxInstantDraftRequestsPerMonth": {
+          "description": "The website instant draft tool's own monthly page allowance (owner decision, 16 Nov 2026: about 300 pages a month), separate from maxRequestsPerMonth. Each draft still reads at most maxRequestsPerIntake pages. Zero leaves drafts unread, which sends them to staff.",
           "type": "integer",
           "minimum": 0,
           "maximum": 100000
@@ -349,6 +356,9 @@
                 "const": 0
               },
               "maxRequestsPerMonth": {
+                "const": 0
+              },
+              "maxInstantDraftRequestsPerMonth": {
                 "const": 0
               }
             }

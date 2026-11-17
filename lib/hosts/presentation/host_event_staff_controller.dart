@@ -12,8 +12,12 @@ class HostEventStaffController {
 
   final Ref _ref;
 
-  Future<HostEventStaffList> list(String eventId) =>
-      _ref.read(hostEventStaffRepositoryProvider).listStaff(eventId);
+  Future<HostEventStaffList> list({
+    required String organizerId,
+    required String eventId,
+  }) => _ref
+      .read(hostEventStaffRepositoryProvider)
+      .listStaff(organizerId: organizerId, eventId: eventId);
 
   Future<HostEventStaffList> grant({
     required String eventId,

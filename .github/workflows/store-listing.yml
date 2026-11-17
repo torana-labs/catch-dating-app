@@ -1,0 +1,163 @@
+name: Store Listing
+
+# Moves the Consumer and Host store listings (copy, keywords, categories and
+# screenshots) between the stores and fastlane/metadata/<role>/ through
+# fastlane/Fastfile.
+#
+# - download reads each store and keeps the result as a workflow artifact to
+#   commit in a pull request. It changes nothing in the stores and needs no
+#   approval.
+# - upload sends the committed listing. On iOS it lands on the version being
+#   prepared and goes public with that release; ios_live instead sends the
+#   promotional text and URLs to the live version at once. On Android it goes
+#   public after Google's review. It runs in the reviewer-gated
+#   prod-mobile-release environment, like Mobile Production.
+#
+# Operator guide: docs/release_operations.md, "Store listings".
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: download (store to a reviewable artifact) or upload (repo to store)
+        type: choice
+        options: [download, upload]
+      app:
+        description: App
+        type: choice
+        options: [both, consumer, host]
+        default: both
+      platform:
+        description: Store
+        type: choice
+        options: [both, ios, android]
+        default: both
+      ios_live:
+        description: iOS upload only. Send promotional text and URLs to the live version now.
+        type: boolean
+        default: false
+      android_validate_only:
+        description: Android upload only. Check the listing with Google Play without saving it.
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: store-listing
+  cancel-in-progress: false
+
+jobs:
+  ios:
+    name: App Store ${{ inputs.action }} (${{ matrix.role }})
+    if: ${{ github.ref == 'refs/heads/main' && inputs.platform != 'android' }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.action == 'upload' && 'prod-mobile-release' || 'prod-mobile' }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        role: ${{ fromJSON(inputs.app == 'both' && '["consumer","host"]' || format('["{0}"]', inputs.app)) }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+      - name: Move the App Store listing
+        env:
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          ACTION: ${{ inputs.action }}
+          LIVE: ${{ inputs.ios_live }}
+          ROLE: ${{ matrix.role }}
+          FASTLANE_SKIP_UPDATE_CHECK: "1"
+          FASTLANE_HIDE_CHANGELOG: "1"
+          LC_ALL: en_US.UTF-8
+          LANG: en_US.UTF-8
+        run: |
+          set -euo pipefail
+          if [[ "$ACTION" == download ]]; then
+            bundle exec fastlane ios download_listing "role:$ROLE"
+            # The lane deletes App Review contact and demo-account details;
+            # never let them reach an artifact.
+            if [[ -e "fastlane/metadata/$ROLE/ios/review_information" ]]; then
+              echo "review_information is still present; refusing to keep the listing" >&2
+              exit 1
+            fi
+          else
+            bundle exec fastlane ios listing "role:$ROLE" "live:$LIVE"
+          fi
+      - name: Keep the downloaded listing
+        if: ${{ inputs.action == 'download' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: store-listing-ios-${{ matrix.role }}-${{ github.run_id }}
+          path: |
+            fastlane/metadata/${{ matrix.role }}/ios
+            fastlane/metadata/${{ matrix.role }}/ios_screenshots
+          if-no-files-found: error
+          retention-days: 14
+
+  android:
+    name: Google Play ${{ inputs.action }} (${{ matrix.role }})
+    if: ${{ github.ref == 'refs/heads/main' && inputs.platform != 'ios' }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.action == 'upload' && 'prod-mobile-release' || 'prod-mobile' }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        role: ${{ fromJSON(inputs.app == 'both' && '["consumer","host"]' || format('["{0}"]', inputs.app)) }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+      - name: Authenticate to Google Play without a stored key
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL }}
+      - name: Move the Google Play listing
+        env:
+          ACTION: ${{ inputs.action }}
+          VALIDATE: ${{ inputs.android_validate_only }}
+          ROLE: ${{ matrix.role }}
+          FASTLANE_SKIP_UPDATE_CHECK: "1"
+          FASTLANE_HIDE_CHANGELOG: "1"
+        run: |
+          set -euo pipefail
+          if [[ "$ACTION" == download ]]; then
+            bundle exec fastlane android download_listing "role:$ROLE"
+          else
+            bundle exec fastlane android listing "role:$ROLE" "validate:$VALIDATE"
+          fi
+      - name: Keep the downloaded listing
+        if: ${{ inputs.action == 'download' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: store-listing-android-${{ matrix.role }}-${{ github.run_id }}
+          path: fastlane/metadata/${{ matrix.role }}/android
+          if-no-files-found: error
+          retention-days: 14

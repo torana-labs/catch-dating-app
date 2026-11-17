@@ -39,3 +39,7 @@ class EventCapacityLabels {
 
   String get joinCtaAvailabilityLabel => '$spotsRemaining spots left';
 }
+
+/// Capacity terms without live counts, for a guest event card: "40 spots".
+String eventCapacityTermsLabel(int? capacityLimit) =>
+    capacityLimit == null || capacityLimit <= 0 ? '' : '$capacityLimit spots';

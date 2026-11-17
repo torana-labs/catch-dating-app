@@ -12,9 +12,9 @@ void _dashboardFullHomeShellTests() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchAttendedEventsProvider(
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncLoading<List<Event>>()),
+            ).overrideWithValue(const AsyncLoading<List<GuestEventCard>>()),
             exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, joinedOrganizerIds),
             ).overrideWithValue(noRecommendationCandidates),
@@ -53,8 +53,11 @@ void _dashboardFullHomeShellTests() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchAttendedEventsProvider(user.uid).overrideWithValue(
-              AsyncError<List<Event>>(Exception('boom'), StackTrace.empty),
+            watchAttendedEventCardsProvider(user.uid).overrideWithValue(
+              AsyncError<List<GuestEventCard>>(
+                Exception('boom'),
+                StackTrace.empty,
+              ),
             ),
             exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, joinedOrganizerIds),
@@ -102,9 +105,9 @@ void _dashboardFullHomeShellTests() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchAttendedEventsProvider(
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(AsyncData<List<Event>>([swipeRun])),
+            ).overrideWithValue(AsyncData(guestEventCardsOf([swipeRun]))),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp(
@@ -127,8 +130,10 @@ void _dashboardFullHomeShellTests() {
       final focusList = tester.widget<EventFocusList>(
         find.byType(EventFocusList),
       );
-      expect(focusList.windowedEvents.single.event.id, swipeRun.id);
-      expect(focusList.upcomingEvents.map((event) => event.id), [nextEvent.id]);
+      expect(focusList.windowedEvents.single.event.eventId, swipeRun.id);
+      expect(focusList.upcomingEvents.map((event) => event.eventId), [
+        nextEvent.id,
+      ]);
     });
 
     testWidgets('shows both open Catch windows without a swipe', (
@@ -154,9 +159,9 @@ void _dashboardFullHomeShellTests() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchAttendedEventsProvider(
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(AsyncData<List<Event>>([later, earlier])),
+            ).overrideWithValue(AsyncData(guestEventCardsOf([later, earlier]))),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp(
@@ -198,9 +203,9 @@ void _dashboardFullHomeShellTests() {
         ProviderScope(
           overrides: [
             dashboardNowProvider.overrideWithValue(now),
-            watchAttendedEventsProvider(
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
             exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, joinedOrganizerIds),
             ).overrideWithValue(noRecommendationCandidates),
@@ -260,9 +265,9 @@ void _dashboardFullHomeShellTests() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchAttendedEventsProvider(
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
             exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, joinedOrganizerIds),
             ).overrideWithValue(noRecommendationCandidates),
@@ -295,14 +300,14 @@ void _dashboardFullHomeShellTests() {
         bookedCount: 1,
         startTime: now.add(const Duration(minutes: 5)),
       );
-      final events = FakeEventRepository();
+      final events = FakeEventRepository()..fetchedEvent = event;
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchAttendedEventsProvider(
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
             exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(noRecommendationCandidates),
@@ -359,9 +364,9 @@ void _dashboardFullHomeShellTests() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchAttendedEventsProvider(
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
             exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(noRecommendationCandidates),
@@ -417,9 +422,9 @@ void _dashboardFullHomeShellTests() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchAttendedEventsProvider(
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
             exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(noRecommendationCandidates),
@@ -503,9 +508,9 @@ void _dashboardFullHomeShellTests() {
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
-              watchAttendedEventsProvider(
+              watchAttendedEventCardsProvider(
                 user.uid,
-              ).overrideWithValue(const AsyncData<List<Event>>([])),
+              ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
               exploreRecommendedEventsProvider(
                 recommendationsQueryFor(user.uid, const []),
               ).overrideWithValue(noRecommendationCandidates),
@@ -565,9 +570,9 @@ void _dashboardFullHomeShellTests() {
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
-              watchAttendedEventsProvider(
+              watchAttendedEventCardsProvider(
                 user.uid,
-              ).overrideWithValue(AsyncData<List<Event>>([attendedRun])),
+              ).overrideWithValue(AsyncData(guestEventCardsOf([attendedRun]))),
               watchReviewsByUserProvider(
                 user.uid,
               ).overrideWithValue(const AsyncData<List<Review>>([])),

@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_walkthrough_bookings_payload.schema.json",
+  "title": "AdminListWalkthroughBookingsCallablePayload",
+  "description": "An admin or the owner reads the walkthrough calendar and the bookings whose slots fall in a range of India-time days.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin)",
+  "properties": {
+    "fromDate": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/localDate", "description": "First India-time day; defaults to today."},
+    "days": {"type": "integer", "minimum": 1, "maximum": 60, "description": "Defaults to 14."},
+    "includeCancelled": {"type": "boolean", "description": "Defaults to false."}
+  }
+}

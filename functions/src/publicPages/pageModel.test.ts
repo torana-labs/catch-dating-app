@@ -114,6 +114,57 @@ test("organizer pages list every source in time order with booking targets",
     assert.deepEqual(organizerPage.listing.reviews, []);
   });
 
+test("pages carry the resolved women-led label, never its audit fields",
+  () => {
+    const parity = parityCase(everyVariant);
+    const setAt = Timestamp.fromMillis(inputs.now);
+    const declaration = (value: boolean | null, lockedByAdmin = false) => ({
+      value, setByUid: "host-secret-uid",
+      setByRole: lockedByAdmin ? "admin" : "owner", setAt, lockedByAdmin});
+    const organizer = {...parity.organizer,
+      data: {...parity.organizer.data, womenLed: declaration(true)}};
+    const catchEvents = parity.catchEvents.map((doc) =>
+      doc.id === "open-upcoming" ?
+        {...doc, data: {...doc.data, womenLed: declaration(false)}} : doc);
+    const {organizerPage, eventPages} = built({organizer, catchEvents});
+    assert.equal(organizerPage.womenLed, true);
+    const byId = Object.fromEntries([...organizerPage.upcomingEvents,
+      ...organizerPage.pastMoments].map((item) => [item.eventId,
+      item.womenLed]));
+    assert.deepEqual(byId, {"legacy-club-only": true, "open-upcoming": false,
+      "mixer-restricted": true, "paid-past": true, "ext-public": true});
+    const page = eventPages.find((item) => item.eventId === "open-upcoming");
+    assert(page);
+    assert.equal(page.item.womenLed, false);
+    assert.equal(page.organizer.womenLed, true);
+    assert.deepEqual(page.moreEvents.map((card) => card.womenLed),
+      [true, true]);
+    assert.equal(validateOrganizerPublicPageDocument(stored(organizerPage)),
+      true, JSON.stringify(validateOrganizerPublicPageDocument.errors));
+    for (const eventPage of eventPages) {
+      assert.equal(validateEventPublicPageDocument(stored(eventPage)), true,
+        JSON.stringify(validateEventPublicPageDocument.errors));
+    }
+    assert(!JSON.stringify([organizerPage, eventPages])
+      .includes("host-secret-uid"));
+
+    // An admin lock on the organizer clears every plan's label.
+    const lockedPages = built({catchEvents: parity.catchEvents.map((doc) =>
+      ({...doc, data: {...doc.data, womenLed: declaration(true)}})),
+    organizer: {...parity.organizer, data: {...parity.organizer.data,
+      womenLed: declaration(false, true)}}});
+    assert.equal(lockedPages.organizerPage.womenLed, false);
+    assert([...lockedPages.organizerPage.upcomingEvents,
+      ...lockedPages.organizerPage.pastMoments]
+      .every((item) => item.womenLed === false));
+
+    // Undeclared organizers publish false, not an absent label.
+    const plain = built();
+    assert.equal(plain.organizerPage.womenLed, false);
+    assert(plain.organizerPage.upcomingEvents
+      .every((item) => item.womenLed === false));
+  });
+
 test("reviews carry their verification state and a verified-only rating",
   () => {
     const {organizerPage} = built();

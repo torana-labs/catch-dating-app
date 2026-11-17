@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -10,8 +10,8 @@ class CalendarHomeState {
   });
 
   factory CalendarHomeState.from({
-    required List<Event> signedUpEvents,
-    List<Event> savedEvents = const <Event>[],
+    required List<GuestEventCard> signedUpEvents,
+    List<GuestEventCard> savedEvents = const <GuestEventCard>[],
     required DateTime now,
     DateTime? selectedDate,
     bool expanded = false,
@@ -139,7 +139,7 @@ class CalendarAgendaEventRowState {
     required this.status,
   });
 
-  final Event event;
+  final GuestEventCard event;
   final String? organizerName;
   final CalendarAgendaEventStatus status;
 
@@ -166,32 +166,35 @@ class CalendarEventSummary {
     this.nextEvent,
   });
 
-  final List<Event> events;
-  final List<Event> agendaEvents;
+  final List<GuestEventCard> events;
+  final List<GuestEventCard> agendaEvents;
   final Set<String> savedOnlyEventIds;
   final DateTime today;
   final DateTime anchorDate;
   final double totalDistance;
-  final Event? nextEvent;
+  final GuestEventCard? nextEvent;
 
-  bool isSavedOnly(Event event) => savedOnlyEventIds.contains(event.id);
+  bool isSavedOnly(GuestEventCard event) =>
+      savedOnlyEventIds.contains(event.eventId);
 
   static CalendarEventSummary from({
-    required List<Event> signedUpEvents,
-    List<Event> savedEvents = const <Event>[],
+    required List<GuestEventCard> signedUpEvents,
+    List<GuestEventCard> savedEvents = const <GuestEventCard>[],
     required DateTime now,
   }) {
-    final signedUpIds = signedUpEvents.map((event) => event.id).toSet();
+    final signedUpIds = signedUpEvents.map((event) => event.eventId).toSet();
     final savedOnlyEventIds = <String>{};
-    final byId = <String, Event>{};
+    final byId = <String, GuestEventCard>{};
 
     for (final event in savedEvents) {
       if (event.isCancelled || !event.startTime.isAfter(now)) continue;
-      byId[event.id] = event;
-      if (!signedUpIds.contains(event.id)) savedOnlyEventIds.add(event.id);
+      byId[event.eventId] = event;
+      if (!signedUpIds.contains(event.eventId)) {
+        savedOnlyEventIds.add(event.eventId);
+      }
     }
     for (final event in signedUpEvents) {
-      byId[event.id] = event;
+      byId[event.eventId] = event;
     }
 
     final sorted = byId.values.toList()
@@ -201,11 +204,11 @@ class CalendarEventSummary {
     // distance stats and are never the user's next event.
     final totalDistance = sorted
         .where((event) => !event.isCancelled)
-        .fold<double>(0, (sum, event) => sum + event.distanceKm);
+        .fold<double>(0, (sum, event) => sum + (event.distanceKm ?? 0));
 
-    final upcoming = <Event>[];
-    final cancelledUpcoming = <Event>[];
-    final past = <Event>[];
+    final upcoming = <GuestEventCard>[];
+    final cancelledUpcoming = <GuestEventCard>[];
+    final past = <GuestEventCard>[];
     for (final event in sorted) {
       if (!event.startTime.isBefore(now) && event.isCancelled) {
         cancelledUpcoming.add(event);

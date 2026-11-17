@@ -14,7 +14,6 @@ import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_platform/riverpod_ui/failed_reads.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +29,7 @@ class EventMap extends ConsumerStatefulWidget {
     this.onSelectionCleared,
     this.onCameraCenterChanged,
     this.onDistanceRingTapped,
-    this.viewModel,
+    required this.viewModel,
     this.onRetry,
     this.distanceRingRadiusKm,
     this.distanceRingLabel,
@@ -49,7 +48,9 @@ class EventMap extends ConsumerStatefulWidget {
   final VoidCallback? onSelectionCleared;
   final ValueChanged<LocationCoordinate>? onCameraCenterChanged;
   final VoidCallback? onDistanceRingTapped;
-  final AsyncValue<EventMapViewModel>? viewModel;
+
+  /// The map's events, from the screen that hosts it (Explore's feed).
+  final AsyncValue<EventMapViewModel> viewModel;
   final VoidCallback? onRetry;
   final double? distanceRingRadiusKm;
   final String? distanceRingLabel;
@@ -84,8 +85,7 @@ class _EventMapState extends ConsumerState<EventMap> {
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<EventMapViewModel> viewModelAsync =
-        widget.viewModel ?? ref.watch(eventMapViewModelProvider);
+    final AsyncValue<EventMapViewModel> viewModelAsync = widget.viewModel;
     final AsyncValue<LocationCoordinate?> deviceLocationAsync =
         widget.deviceLocation ?? ref.watch(deviceLocationProvider);
     final deviceLocation = catchAsyncStateFromAsyncValue(
@@ -101,12 +101,8 @@ class _EventMapState extends ConsumerState<EventMap> {
         Positioned.fill(
           child: CatchAsyncBoundary<EventMapViewModel>(
             value: viewModelAsync,
-            onRetry:
-                widget.onRetry ??
-                () => ref.retryFailedReads(
-                  viewModelAsync.error,
-                  composition: eventMapViewModelProvider,
-                ),
+            // The screen that owns the view model owns its retry.
+            onRetry: widget.onRetry,
             loadingBuilder: (_) => const EventMapLoadingBody(),
             errorBuilder: (_, error, _, onBoundaryRetry) =>
                 CatchLocalizedErrorState(

@@ -84,6 +84,7 @@ describe("playbook page contract", () => {
     ["custom section outside the registry", fixture((page) => {
       page.sections.push({type: "custom", id: "calculator", ground: "white", component: "roiCalculator"});
     })],
+    ["pricing calculator outside the registry", fixture((page) => {section(page, "pricing").calculator = "roiCalculator";})],
     ["store badges as true", fixture((page) => {section(page, "cta").storeBadges = true;})],
     ["qr code of a URL", fixture((page) => {
       section(page, "timeline").media = {kind: "qr", url: "https://example.com", label: "Open on your phone"};

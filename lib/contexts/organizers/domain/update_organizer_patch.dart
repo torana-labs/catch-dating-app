@@ -29,6 +29,7 @@ final class UpdateOrganizerPatch {
     Object? email = unsetSentinel,
     OrganizerHostDefaults? hostDefaults,
     bool? publicListingEnabled,
+    bool? womenLed,
   }) : _fields = {
          if (name != null) 'name': name,
          if (description != null) 'description': description,
@@ -57,6 +58,7 @@ final class UpdateOrganizerPatch {
          if (hostDefaults != null) 'hostDefaults': hostDefaults.toJson(),
          if (publicListingEnabled != null)
            'publicListingEnabled': publicListingEnabled,
+         if (womenLed != null) 'womenLed': womenLed,
        };
 
   /// Escape hatch for callers that compute the field key dynamically.

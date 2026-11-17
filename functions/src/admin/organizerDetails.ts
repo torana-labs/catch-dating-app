@@ -46,6 +46,7 @@ import {
   storedOwnerLinks,
   type OwnerLinkInput,
 } from "../organizers/organizerLinks";
+import {adminOrganizerWomenLed} from "../organizers/womenLed";
 
 const organizerDetailsRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -117,6 +118,14 @@ export interface AdminOrganizerDetailsSnapshot {
   };
   /** Organizer page links, expired ones included, in display order. */
   ownerLinks: OwnerLinkInput[];
+  /** The women-led declaration and its audit fields, or null if never set. */
+  womenLed: {
+    value: boolean;
+    lockedByAdmin: boolean;
+    setByUid: string;
+    setByRole: string;
+    setAtMillis: number | null;
+  } | null;
 }
 
 export interface AdminGetOrganizerDetailsResponse {
@@ -357,6 +366,11 @@ export async function adminUpdateOrganizerDetailsHandler(
       deps.serverTimestamp(),
       "adminUpdateOrganizerDetails"
     );
+    if (data.fields.womenLed !== undefined) {
+      // release keeps the current value, so it resolves against `before`.
+      patch.womenLed = adminOrganizerWomenLed(before.womenLed,
+        data.fields.womenLed, adminContext.uid, deps.serverTimestamp());
+    }
     for (const correction of fieldCorrectionsForUpdate({
       organizerId: data.organizerId,
       before,
@@ -556,6 +570,14 @@ function publicOrganizerDetails(
       formats: organizer.publicProfile?.formats ?? [],
     },
     ownerLinks: adminOwnerLinks(organizer.ownerLinks),
+    womenLed: organizer.womenLed ? {
+      value: organizer.womenLed.value,
+      lockedByAdmin: organizer.womenLed.lockedByAdmin,
+      setByUid: organizer.womenLed.setByUid,
+      setByRole: organizer.womenLed.setByRole,
+      setAtMillis: typeof organizer.womenLed.setAt?.toMillis === "function" ?
+        organizer.womenLed.setAt.toMillis() : null,
+    } : null,
   };
 }
 
@@ -721,6 +743,11 @@ function buildFirestorePatch(
     patch.ownerLinks = storedOwnerLinks(fields.ownerLinks,
       (date) => Timestamp.fromDate(date));
   }
+  if (fields.womenLed !== undefined) {
+    // Counted here; the handler resolves it against the stored declaration.
+    patch.womenLed = adminOrganizerWomenLed(undefined, fields.womenLed,
+      actorUid, timestamp);
+  }
   return patch;
 }
 
@@ -832,6 +859,7 @@ function normalizeOrganizerDetailsFields(
       "organizerType",
       "entityKind",
       "appVisibility",
+      "womenLed",
     ]),
     tags: normalizeStringArray(fields.tags),
     entitySubtypes: normalizeStringArray(fields.entitySubtypes),

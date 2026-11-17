@@ -281,6 +281,11 @@
       "description": "Canonical organizer subtype. Legacy documents without this field normalize to club until backfill is complete.",
       "x-catch-ownership": "trigger-owned"
     },
+    "womenLed": {
+      "$ref": "../shared/women_led_common.schema.json#/definitions/publicWomenLed",
+      "description": "Whether the organizer declares its plans women-led, resolved from organizers/{organizerId}.womenLed: false when undeclared or locked by an admin. The audit fields stay on the canonical document. Projections written before this field existed omit it; readers treat absence as false.",
+      "x-catch-ownership": "trigger-owned"
+    },
     "publicCategoryLabel": {
       "type": [
         "string",

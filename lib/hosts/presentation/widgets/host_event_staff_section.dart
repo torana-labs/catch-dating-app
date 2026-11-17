@@ -17,8 +17,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HostEventStaffSection extends ConsumerStatefulWidget {
-  const HostEventStaffSection({super.key, required this.eventId});
+  const HostEventStaffSection({
+    super.key,
+    required this.organizerId,
+    required this.eventId,
+  });
 
+  final String organizerId;
   final String eventId;
 
   @override
@@ -152,7 +157,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
       // provider-graph: ownership-widget-async:_HostEventStaffSectionState._load:await:hostEventStaffControllerProvider.list watch CAT156 -- Existing bounded review signal at _HostEventStaffSectionState._load (await:hostEventStaffControllerProvider.list). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
       final list = await ref
           .read(hostEventStaffControllerProvider)
-          .list(widget.eventId);
+          .list(organizerId: widget.organizerId, eventId: widget.eventId);
       if (mounted) setState(() => _staff = AsyncData(list));
     } catch (error, stackTrace) {
       if (mounted) setState(() => _staff = AsyncError(error, stackTrace));

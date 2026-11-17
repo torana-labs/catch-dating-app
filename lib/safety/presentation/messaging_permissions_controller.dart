@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/safety/data/messaging_permission_repository.dart';
 import 'package:catch_dating_app/contexts/safety/domain/messaging_permission.dart';
 import 'package:catch_platform/errors/app_exception.dart';
@@ -38,8 +39,42 @@ class MessagingPermissionsController extends _$MessagingPermissionsController {
     if (uid == null) {
       throw const SignInRequiredException('manage WhatsApp permissions');
     }
-    final page = await ref.watch(messagingPermissionRepositoryProvider).list();
-    return MessagingPermissionsState(uid: uid, page: page);
+    final page = await ref
+        .watch(messagingPermissionRepositoryProvider)
+        .list(uid);
+    return MessagingPermissionsState(uid: uid, page: await _named(page));
+  }
+
+  /// Names each organizer row from the public organizer lookup. A deleted
+  /// or hidden organizer stays unnamed, as the settings callable left it.
+  Future<MessagingPermissionPage> _named(MessagingPermissionPage page) async {
+    if (page.organizers.isEmpty) return page;
+    Map<String, String> names;
+    try {
+      names = await ref.read(
+        organizerNameLookupProvider(
+          OrganizerNameLookupQuery(
+            page.organizers.map((row) => row.organizerId).nonNulls,
+          ),
+        ).future,
+      );
+    } on Object {
+      names = const {};
+    }
+    return MessagingPermissionPage(
+      catchPermission: page.catchPermission,
+      organizers: [
+        for (final row in page.organizers)
+          MessagingPermission(
+            organizerId: row.organizerId,
+            organizerName: names[row.organizerId],
+            status: row.status,
+            receiptId: row.receiptId,
+            purposes: row.purposes,
+          ),
+      ],
+      nextCursor: page.nextCursor,
+    );
   }
 
   bool _isCurrent(String uid, int generation) =>
@@ -63,9 +98,11 @@ class MessagingPermissionsController extends _$MessagingPermissionsController {
       ),
     );
     try {
-      final next = await ref
-          .read(messagingPermissionRepositoryProvider)
-          .list(cursor: current.page.nextCursor);
+      final next = await _named(
+        await ref
+            .read(messagingPermissionRepositoryProvider)
+            .list(uid, cursor: current.page.nextCursor),
+      );
       if (!_isCurrent(uid, generation)) return;
       final rows = {
         for (final row in current.page.organizers) row.key: row,

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_state.dart';
@@ -15,7 +15,7 @@ AsyncValue<PaymentHistoryViewModel> paymentHistoryViewModel(
 
   return switch (paymentsAsync) {
     AsyncData(:final value) => AsyncData(
-      _paymentHistoryWithEventTitles(ref, value),
+      _paymentHistoryWithEventTitles(ref, userId, value),
     ),
     AsyncError(:final error, :final stackTrace) => AsyncError(
       error,
@@ -25,32 +25,34 @@ AsyncValue<PaymentHistoryViewModel> paymentHistoryViewModel(
   };
 }
 
+/// Names each payment's event from the guest's own event cards: one
+/// listener, never a join on `events`.
 PaymentHistoryViewModel _paymentHistoryWithEventTitles(
   Ref ref,
+  String userId,
   List<Payment> payments,
 ) {
-  final eventIds = {for (final payment in payments) payment.eventId};
-  if (eventIds.isEmpty) {
-    return buildPaymentHistoryViewModel(payments: payments, events: const []);
+  if (payments.isEmpty) {
+    return buildPaymentHistoryViewModel(
+      payments: payments,
+      cardsById: const {},
+    );
   }
-
-  final eventsAsync = ref.watch(
-    watchEventsByIdsProvider(EventsByIdQuery(eventIds)),
-  );
-  return switch (eventsAsync) {
+  final cardsAsync = ref.watch(watchOwnEventCardsByIdProvider(userId));
+  return switch (cardsAsync) {
     AsyncData(:final value) => buildPaymentHistoryViewModel(
       payments: payments,
-      events: value,
+      cardsById: value,
     ),
     AsyncError(:final error) => buildPaymentHistoryViewModel(
       payments: payments,
-      events: const [],
+      cardsById: const {},
       eventTitleStatus: PaymentEventTitleStatus.error,
       eventTitleError: error,
     ),
     _ => buildPaymentHistoryViewModel(
       payments: payments,
-      events: const [],
+      cardsById: const {},
       eventTitleStatus: PaymentEventTitleStatus.loading,
     ),
   };

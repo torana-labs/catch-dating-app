@@ -4,6 +4,8 @@ import type {Request, Response} from "express";
 import * as logger from "firebase-functions/logger";
 import {HttpsError, onRequest} from "firebase-functions/v2/https";
 import {checkIpRateLimit} from "../shared/rateLimit";
+import type {JoinWaitlistHTTPRequest} from
+  "../shared/generated/joinWaitlistHttpRequest";
 import type {JoinWaitlistHTTPResponse} from
   "../shared/generated/joinWaitlistHttpResponse";
 import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
@@ -15,6 +17,9 @@ import {
 } from "../shared/generated/validators/joinWaitlistHttpResponse";
 
 import {hostSalesIntentReplay, prepareHostSalesIntent} from "./hostSalesIntent";
+import {
+  defaultWebsiteLeadDeps, handleWebsiteLead, type WebsiteLeadDeps,
+} from "./websiteLead";
 import {readCityAttribution, type CityAttribution} from "./cityAttribution";
 import {prepareCityInterest} from "../cityInterest/cityInterest";
 import {hostConsentKey} from "../acquisition/consentPolicy";
@@ -511,7 +516,10 @@ function setCorsHeaders(request: {
   }
 
   response.set("Access-Control-Allow-Methods", "POST, OPTIONS");
-  response.set("Access-Control-Allow-Headers", "Content-Type");
+  // A website lead carries an App Check token, and a signed-in referral an
+  // ID token.
+  response.set("Access-Control-Allow-Headers",
+    "Content-Type, X-Firebase-AppCheck, Authorization");
   response.set("Vary", "Origin");
 
   return !origin || allowedOrigin !== null;
@@ -689,6 +697,8 @@ async function joinByWhatsapp(
 
 export function createJoinWaitlistHandler(options: {
   measurementEnabled: boolean;
+  /** Services for website leads (requestKind requests); tests replace them. */
+  lead?: WebsiteLeadDeps;
 }) {
   return async (request: Request, response: Response): Promise<void> => {
     if (!setCorsHeaders(request, response)) {
@@ -707,6 +717,14 @@ export function createJoinWaitlistHandler(options: {
     }
 
     const body = parseBody(request.body);
+    // A website lead has its own App Check, hashed limits and idempotency;
+    // every other submission continues exactly as before.
+    if (body.requestKind !== undefined) {
+      const result = await handleWebsiteLead(request, body,
+        options.lead ?? defaultWebsiteLeadDeps);
+      sendWaitlistJson(response, result.status, result.body);
+      return;
+    }
     const fullName = normalizeText(body.fullName);
     const email = normalizeEmail(body.email);
     const city = normalizeText(body.city);
@@ -849,7 +867,8 @@ export function createJoinWaitlistHandler(options: {
     const measurement = options.measurementEnabled && intent &&
       hostConsentAllowedOrigin(request.get("origin"),
         process.env.GCLOUD_PROJECT ?? process.env.GCP_PROJECT ?? "") ?
-      validatedBody.hostMeasurement : undefined;
+      validatedBody.hostMeasurement as JoinWaitlistHTTPRequest[
+        "hostMeasurement"] : undefined;
     const consentId = measurement ?
       hostConsentKey(measurement.capability) : null;
 

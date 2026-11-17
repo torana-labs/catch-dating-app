@@ -328,23 +328,6 @@ class EventRepository with EventRepositoryActions {
     );
   }
 
-  /// Streams the events whose ids [idStream] emits, re-querying whenever the
-  /// ids change. Other contexts use this to read events they reference.
-  Stream<List<Event>> watchEventsForIdStream(
-    Stream<List<String>> idStream, {
-    bool descending = false,
-    String action = 'watch events by id stream',
-  }) => watchEventsByIdStream(
-    idStream: idStream,
-    eventsRef: _eventsRef,
-    descending: descending,
-    context: BackendErrorContext(
-      service: BackendService.firestore,
-      action: action,
-      resource: _collectionPath,
-    ),
-  );
-
   /// Generates a new unique Firestore document ID for an event without writing it.
   String generateId() => _eventsRef.doc().id;
 

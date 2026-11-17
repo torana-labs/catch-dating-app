@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/book_walkthrough_payload.schema.json",
+  "title": "BookWalkthroughCallablePayload",
+  "description": "A prospective host books one open walkthrough slot. The caller must be signed in with a phone verified by a one-time code (the website's Continue with phone sheet, as checkout and instant drafts use); that phone is the WhatsApp number staff confirm on, and a sent phone must equal it. App Check protected and rate limited. The same requestId and manageToken return the same booking.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Website Start / Walkthrough page",
+  "required": ["requestId", "slotStartAt", "manageToken", "consent", "sourcePage", "entry"],
+  "properties": {
+    "requestId": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/requestId"},
+    "slotStartAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slotStart"},
+    "manageToken": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/manageToken"},
+    "phone": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/phone", "description": "Optional; when sent it must be the verified phone."},
+    "consent": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/consentInput"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 100},
+    "details": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/details"},
+    "cityId": {"type": "string", "pattern": "^[a-z]{2}-[a-z0-9]{1,3}-[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 64},
+    "sourcePage": {"type": "string", "pattern": "^/[^\\s?#]*$", "maxLength": 512},
+    "entry": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,39}$"}
+  }
+}

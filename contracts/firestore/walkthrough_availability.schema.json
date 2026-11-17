@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/walkthrough_availability.schema.json",
+  "title": "WalkthroughAvailabilityDocument",
+  "description": "The one staff calendar that walkthrough slots come from: weekly windows in India time, a slot length, a lead time and closed dates. Server-only; the website reads open slots through getWalkthroughSlots, which names no staff. No document means booking is closed and the website shows its request form.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "walkthroughAvailability",
+  "x-firestore-path": "walkthroughAvailability/{calendarId}",
+  "x-document-id-field": "calendarId",
+  "x-owner": "adminSetWalkthroughAvailability",
+  "required": ["schemaVersion", "calendarId", "timeZone", "utcOffsetMinutes", "settings", "revision", "updatedAt", "updatedByUid"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "calendarId": {"const": "default", "description": "One staff calendar for now."},
+    "timeZone": {"const": "Asia/Kolkata"},
+    "utcOffsetMinutes": {"const": 330, "description": "India keeps UTC+05:30 all year; slots are computed with this fixed offset, never a daylight-saving rule."},
+    "settings": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/availabilitySettings"},
+    "revision": {"type": "integer", "minimum": 1, "description": "Raised by one on every save; a save names the revision it read."},
+    "updatedAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/instant"},
+    "updatedByUid": {"type": "string", "minLength": 1, "maxLength": 128}
+  }
+}

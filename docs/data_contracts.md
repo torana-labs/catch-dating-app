@@ -2105,6 +2105,28 @@ segment, `publicPage.canonicalPath` owns the website URL, and
 or rerouting an organizer therefore does not require changing its document id
 or relationship references.
 
+### Women-Led Label
+
+`organizers/{organizerId}.womenLed` and `events/{eventId}.womenLed` hold an
+audited declaration `{value, setByUid, setByRole, setAt, lockedByAdmin}`
+(shared definitions in `contracts/shared/women_led_common.schema.json`). The
+organizer value is the default; an event value of `true` or `false` overrides
+it, and `null` or absent follows the organizer. Imported events follow their
+organizer. It is a label, not an attendance rule: attendance limits stay in
+`constraints.maxMen`/`maxWomen` and the admission policy.
+
+Owners and managers set it through `updateOrganizer` and `updateEvent`;
+admins send `set`, `clear` or `release` through the admin detail callables.
+`clear` turns the label off and sets `lockedByAdmin`, so a Host cannot turn it
+back on until `release`; an organizer lock turns it off for every event.
+Writing the stored value is a no-op, and a label change is not a plan change.
+
+Public read models carry only the resolved boolean, never the audit fields:
+`publicOrganizers.womenLed` (derived), `organizerPublicPage.womenLed` and each
+`upcomingEvents`/`pastMoments` item, and `eventPublicPage` `item`,
+`organizer` and `moreEvents[]`. Readers treat a missing value as `false`.
+Explore search records carry `womenLed` as an Algolia filter-only facet.
+
 ### Organizer Supply Capabilities
 
 Every canonical organizer, compatibility club projection, and published
@@ -2923,7 +2945,7 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Organizer WhatsApp Inbox and reply reservation | server-only TTL-bound `organizerWhatsappThreads/{threadId}`, `organizerWhatsappMessages/{messageId}`, and `organizerWhatsappReplyOperations/{operationId}` |
 | External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}` and `providerSyncRuns/{runId}`; manager-readable `externalEventMappings/{mappingId}` (get only) and `hostProviderConnectionViews/{organizerId}` |
 | Door roster labels and Catch spend | manager-readable `hostEventRosterInsightViews/{eventId}` and `hostOrganizerSpendProjections/{organizerId}`; server-only `organizerSpendTotals/{organizerId}` |
-| Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}`; the grantee may get only their own grant, every other read and all writes are denied |
+| Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}`; the grantee may get only their own grant, the organizer's current managers may list an event's grants, and all writes are denied |
 | Door staff presence | `eventStaffPresence/{eventId}_{uid}`, readable by the event's managers and `viewRoster` staff, written only by `heartbeatEventStaffPresence` |
 | Cross Paths event visibility | `eventCrossPathsConsents/{eventId_uid}` |
 | Cross Paths showcase eligibility | server-only `crossPathsShowcaseEligibility/{uid}` |
@@ -3204,10 +3226,14 @@ it never appears twice. Raw answers, list answer highlights, participant UIDs,
 review notes, grants and asset URLs are excluded. Ordinary all-form inbox pages
 read these summaries through the SDK, as do an application review-status filter
 (applications included, as the callable requires) and a submission date range
-inclusive at both ends. Form-scoped/filter-choice queries, answer filters,
-response status, identity and source filters, contact joins and text search keep
-the existing callable behavior until their own equivalent indexed read contracts
-are implemented.
+inclusive at both ends. A form's response page (applications included) reads
+its entries here too, by `formId`, optionally for one native version (the
+entry's `row.response.versionId`, as the callable filters) and one review
+status. Its version scope comes from the form's `hostFormSummaries` row and its
+answer filter options from `hostFormVersionFilters` (below); an imported
+application form has neither. Answer filters, response status, identity and
+source filters, contact joins and text search keep the existing callable
+behavior until their own equivalent indexed read contracts are implemented.
 `hostFormVersionFilters/{versionId}` gives form-scoped pages a published native
 form version's answer filter options without the callable: `organizerId`,
 `formId`, `versionId`, `formVersion` (N in `formId_vN`), `version` and
@@ -3243,17 +3269,54 @@ as its own `cityNewPlans` consent that is off unless ticked; the contract
 rejects `newPlans: true` on a city-launch request. Only city-launch notices
 count toward `cityInterest`.
 
+### Walkthrough Booking
+
+`walkthroughAvailability/default` is the one staff calendar: weekly windows in
+India time, a slot length, a lead time, a horizon of at most 28 days and closed
+dates. India keeps UTC+05:30 all year, so `utcOffsetMinutes` is the constant
+330 and slots are computed with that fixed offset, never a daylight-saving
+rule. `walkthroughSlotHolds/{calendar}-{UTC start}` makes a slot bookable once:
+every booking or move of a slot reads and writes that document in its
+transaction, and a cancellation or move sets it `released`.
+`walkthroughBookings/{wt-sha256(phone, requestId)}` holds the booker's verified
+WhatsApp number, the hash of the website's manage token, the
+`leadFollowUp` consent, every move and the staff confirmation, which covers only
+the slot it names. All three are server-only; the website reads open slots
+through `getWalkthroughSlots`, which returns times only. A booking is the
+slot-attached form of the website `walkthrough` lead: a lead without a slot
+stays a `salesInboundIntents` lead, and a booking projects to its own Admin
+Inbox item (`walkthroughBooking` source kind, enquiry type).
+
 ### Waitlist City Attribution
 
 The website launch notice names its city by catalog id. `joinWaitlist` accepts
 `cityId` (a market catalog id, or null for a city the catalog does not have),
 `countryIsoCode`, `citySource` (`picked`, `network_guess`, `precise` or
 `typed`) and `cityOther` (the typed city when `cityId` is null), alongside the
-old free-text `city`, which stays required and readable. Functions reject a
+old free-text `city`, which stays required (except on a website lead) and
+readable. Functions reject a
 `cityId` the catalog does not have or that is `hidden`, take the country from
 the catalog, and reject a different `countryIsoCode`; a null `cityId` needs
 `cityOther`. The fields are stored on the `launchWaitlist` row. A submission
 without `cityId` (older clients, Host and weddings forms) is unchanged.
+
+### Website Leads
+
+The website's lead forms post to `joinWaitlist` with a `requestKind` (`guide`,
+`walkthrough`, `demo`, `venue`, `story`, `referral`, `org_contact` or
+`city_alerts`) and a `lead` object: a `requestId` reused on retries, the
+WhatsApp `phone`, the `consent` (purpose `cityNewPlans` for city alerts,
+`leadFollowUp` otherwise, with a version), the `sourcePage`, the form's
+`entry` and exactly one payload object named for the kind. A lead carries no
+`role`, email or Host application fields. Each lead is one
+`salesInboundIntents/{sha256(phone, requestId)}` row with `source: "website"`,
+`leadKind`, the normalized `lead` (its consent stamped with `decidedAt`), a
+nullable `fullName` and `city`, the `phone` and no email. A referral also
+stores the referred host as its `hostApplication`, the shape partner
+nominations use, so it seeds a Supply Intake listing, and records
+`lead.referralCredit` naming the signed-in referrer, or
+`missing_referrer_account` when there is none. The Admin Inbox projects each
+lead as a `lead` item that staff close with a note. Nothing is sent.
 
 Each WhatsApp launch notice with a city counts its person once per city:
 `cityInterestMarkers/{sha256(phone|cityKey)}` is created in the same
@@ -4165,6 +4228,13 @@ replayed finalization is idempotent. Account deletion removes these preferences
 and receipts, and a deletion tombstone prevents a late payment from granting
 consent again. `listParticipantMessagingPreferences` lists only the signed-in
 UID's permissions, with at most 30 organizer rows and a document-ID cursor.
+The settings page reads the same summary from the guest-owned read model
+`guestMessagingPermissions/{permissionId}`: one row per sender (`catchpref_{uid}`
+for Catch, the `organizerCommunicationPreferences` id for an organizer), holding
+`uid`, `scope`, `organizerId` and the exact `preference` the callable computes.
+Triggers on both preference and both receipt collections keep it current; the
+guest may get and list only their own rows, and nobody writes them. Organizer
+names come from the public organizer lookup, so a rename never rewrites rows.
 Confirmed opt-in requires matching grant evidence. The exact authenticated
 `/settings/whatsapp` route remains available before profile setup.
 `withdrawParticipantMessagingPermission` stops one chosen purpose or the whole
@@ -4269,13 +4339,32 @@ review. Normal `updateUserProfile` edits increment the same core revision.
 LinkedIn retains its existing private `participantIntakeProfiles` destination.
 Verified phone always comes from Auth, never an editable answer.
 
+Guest-owned read models carry the list and the review, so the app reads them
+directly instead of those two callables (#1339). `participantFormProfileViews/{responseId}` holds, for each
+proposal still available to its guest, exactly the proposal and card parts the
+review callable computes: designated answers, form title, submitted and claimed
+dates, `selectedCardQuestionIds`, `cardRevision` and `termsVersion`; the list's
+card field count is the length of the selection. The app's list query reads the
+guest's rows newest submission first (`uid`, `submittedAtMillis` descending,
+document id), twenty a page, with the last row id as cursor.
+`participantIntakeProfileViews/{uid}` holds only `intakeRevision` and the saved
+`linkedinUrl`; a missing view reads as revision 0 and no URL. The review takes
+`profileRevision` and the reviewed profile values (the claim payload's profile
+keys, birth date as a UTC calendar date) from `users/{uid}`. Triggers on the
+proposal, response, card and intake profile keep the views current and delete
+a row once its proposal is unavailable; the guest gets and lists only their own
+rows, and nobody writes them. Organizer names come from the public organizer
+lookup. The claim fence is unchanged, so a view that lags makes a claim fail
+closed and ask for a fresh review. `getParticipantFormPhoto` stays a callable.
+
 New claimed identities have `profileComplete=false`, empty dating preferences
 and discovery disabled. The server schema permits empty preferences for this
 path; existing client initial-create, booking and social-readiness gates remain
 unchanged. Claiming does not admit someone to an event or grant room sharing.
 Owner cards contain only selected applicant-answer pointers, never CRM notes,
 tags or private review fields. Card reads must revalidate the source response.
-Account deletion removes proposals, cards and claim receipts.
+Account deletion removes proposals, cards, claim receipts and the
+participant's `participantIntakeProfiles/{uid}` saved answers.
 
 A selected form photo must still match the owned response, form, version, draft
 and question. Its bytes and digest are verified, safety checked, stripped of
@@ -4855,6 +4944,22 @@ The bounded native reader includes all program guests without requiring travel
 legs and rejects truncated source. No guest records are copied into the fence. Real emulator
 rules, transaction integration and combined feature acceptance remain gates.
 
+### Website Instant Drafts
+
+`requestInstantDraft` writes an ordinary Supply Intake request with origin
+`web_instant_draft` (always `self_submission`). Its private state sits on the
+server-only request as `supplyIntakeRequests.instantDraft`: the SHA-256 of the
+website's access token (never the token), the verified WhatsApp number with
+its consent and `whatsapp.verifiedByUid`, the link classification, the market
+(`market {marketId, source: chosen|given|inferred, at}`), `expiresAt` (30 days
+after the draft is saved) and the outcome (`building`, `draft_ready`,
+`needs_city`, `staff_follow_up` or `expired`). Page reads for these requests
+count against `supplyIntakeUsage/instant-draft-pages-{monthKey}`, a separate
+300-page monthly allowance. `getInstantDraft` returns `markets` (empty unless
+`needs_city`) and accepts an optional `city` that continues a `needs_city`
+draft. A claimed owner publishing the page is another way listing events
+publish (`onInstantDraftOrganizerPublished`).
+
 ### Organizer Application Intake
 
 Organizer applications are a provider-neutral intake domain. A Google Form,
@@ -5000,8 +5105,11 @@ while `expiresAt` is in the future.
 It records organizer,
 grantor, role, issue/expiry/revocation and revision; grants expire within 14
 days and are capped at 50 active rows per event. A grantee may get only their
-own grant, which the Host operator route reads to resolve its permissions; every
-other direct read and all writes are denied. Staff operate through callables
+own grant, which the Host operator route reads to resolve its permissions. The
+organizer's current managers list an event's grants for the Host staff panel and
+door team (a query on `eventId` and `organizerId`, newest `updatedAt` first, at
+most 50); an active grant past `expiresAt` reads as expired. Every other direct
+read and all writes are denied. Staff operate through callables
 and the restricted Host operator route,
 which never grants CRM, campaign, import, provider, event-edit or organizer-wide
 authority. Organizer managers continue to work without a grant.
@@ -5714,6 +5822,21 @@ organisers in the city and whether the city is `live` or `launchingSoon`
   `rebuildCityPlansHourly` rebuilds every city, which moves plans into and
   out of the window. Each commit is a transaction that discards a rebuild
   which read its sources before the stored `builtAt`.
+- It also carries the header's 30-day signal: `monthWindowEnd` (`windowStart`
+  plus 30 days), `upcomingEvents30d` (every listed plan that starts before it
+  and has not ended, counted before plans are capped) and `hasUpcomingMonth`;
+  the website hides What's on where it is false. `monthCountsComplete` is false
+  when an organiser page's 50-plan list ends inside the month, so the 30-day
+  counts are then a floor.
+- `formatPages` has one entry per city-by-format page (`/<citySlug>/<slug>/`):
+  `slug`, `organizerCount`, `upcomingEventCount`, `freeEventCount` (30 days)
+  and `indexing`, which is `index, follow` when the city has launched and has
+  3 or more organisers or 5 or more upcoming plans in the format (owner
+  decision, 16 Nov 2026). The 13 formats and their explicit activity-kind and
+  keyword tables are in `functions/src/cityPlans/discoveryFormats.ts`. Plans
+  and organisers carry the `discoveryFormats` they count toward and their
+  resolved `womenLed` label, and `womenLedPlanCount` counts the women-led plans
+  in the 14-day window.
 - The collection is server-only in `firestore.rules`.
 
 ## Write Path Discipline

@@ -1,49 +1,33 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
-import 'package:catch_dating_app/contexts/bookings/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_kernel/business_rules.dart';
 
-enum EventArrivalActionKind { selfCheckIn, takeAttendance }
-
+/// The guest's event whose self check-in is open now, from their booked
+/// event cards: what Home offers first on arrival.
 class EventArrivalAction {
-  const EventArrivalAction({required this.kind, required this.event});
+  const EventArrivalAction({required this.card});
 
-  final EventArrivalActionKind kind;
-  final Event event;
+  final GuestEventCard card;
 }
 
 EventArrivalAction? selectEventArrivalAction({
-  required List<Event> signedUpEvents,
-  required List<Event> hostedEvents,
-  required String uid,
+  required List<GuestEventCard> signedUpEvents,
   required DateTime now,
 }) {
-  final candidates = <EventArrivalAction>[
-    for (final event in signedUpEvents)
-      if (isSelfCheckInOpenForParticipationStatus(
-        event: event,
-        status: EventParticipationStatus.signedUp,
-        now: now,
-      ))
-        EventArrivalAction(
-          kind: EventArrivalActionKind.selfCheckIn,
-          event: event,
-        ),
-    for (final event in hostedEvents)
-      if (isHostAttendanceOpen(event: event, now: now))
-        EventArrivalAction(
-          kind: EventArrivalActionKind.takeAttendance,
-          event: event,
-        ),
-  ];
-
-  candidates.sort((a, b) {
-    final time = a.event.startTime.compareTo(b.event.startTime);
-    if (time != 0) return time;
-    return a.kind.index.compareTo(b.kind.index);
-  });
-
-  return candidates.firstOrNull;
+  final open =
+      signedUpEvents
+          .where(
+            (card) => _isSelfCheckInOpen(
+              startTime: card.startTime,
+              isSignedUp: true,
+              hasAttended: false,
+              now: now,
+            ),
+          )
+          .toList()
+        ..sort((a, b) => a.startTime.compareTo(b.startTime));
+  final card = open.firstOrNull;
+  return card == null ? null : EventArrivalAction(card: card);
 }
 
 bool isSelfCheckInOpenForParticipationStatus({
@@ -52,7 +36,7 @@ bool isSelfCheckInOpenForParticipationStatus({
   required DateTime now,
 }) {
   return _isSelfCheckInOpen(
-    event: event,
+    startTime: event.startTime,
     isSignedUp: status == EventParticipationStatus.signedUp,
     hasAttended: status == EventParticipationStatus.attended,
     now: now,
@@ -60,15 +44,15 @@ bool isSelfCheckInOpenForParticipationStatus({
 }
 
 bool _isSelfCheckInOpen({
-  required Event event,
+  required DateTime startTime,
   required bool isSignedUp,
   required bool hasAttended,
   required DateTime now,
 }) {
-  final startsAt = event.startTime.subtract(
+  final startsAt = startTime.subtract(
     const Duration(minutes: BusinessRules.eventSelfCheckInWindowBeforeMinutes),
   );
-  final endsAt = event.startTime.add(
+  final endsAt = startTime.add(
     const Duration(minutes: BusinessRules.eventSelfCheckInWindowAfterMinutes),
   );
   return isSignedUp &&

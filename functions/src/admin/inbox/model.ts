@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import {marketForIdOrAlias} from "../../locations/marketConfig";
+import {projectWalkthroughBooking} from "../../walkthroughs/inbox";
 
 /**
  * The Admin inbox: one list of everything waiting on a person. Each source
@@ -12,10 +13,10 @@ import {marketForIdOrAlias} from "../../locations/marketConfig";
 export const INBOX_ITEMS_COLLECTION = "adminInboxItems";
 export const INBOX_JOURNEY_COLLECTION = "adminInboxJourney";
 
-export const INBOX_ITEM_TYPES = ["listing", "event", "claim", "enquiry", "access", "stuck"] as const;
+export const INBOX_ITEM_TYPES = ["listing", "event", "claim", "enquiry", "lead", "access", "stuck"] as const;
 export type InboxItemType = typeof INBOX_ITEM_TYPES[number];
 
-export const INBOX_SOURCE_KINDS = ["supplyIntakeRequest", "organizerClaimRequest", "salesInboundIntent", "accessApplication", "externalEvent"] as const;
+export const INBOX_SOURCE_KINDS = ["supplyIntakeRequest", "organizerClaimRequest", "salesInboundIntent", "accessApplication", "externalEvent", "walkthroughBooking"] as const;
 export type InboxSourceKind = typeof INBOX_SOURCE_KINDS[number];
 
 /** working: nobody needs to act yet. waiting/snoozed: a person does. done: decided or gone. */
@@ -124,6 +125,7 @@ export const sourceCollections: Record<InboxSourceKind, string> = {
   salesInboundIntent: "salesInboundIntents",
   accessApplication: "accessApplications",
   externalEvent: "externalEvents",
+  walkthroughBooking: "walkthroughBookings",
 };
 
 const itemPrefixes: Record<InboxSourceKind, string> = {
@@ -132,6 +134,7 @@ const itemPrefixes: Record<InboxSourceKind, string> = {
   salesInboundIntent: "enquiry",
   accessApplication: "access",
   externalEvent: "event",
+  walkthroughBooking: "walkthrough",
 };
 
 export function inboxItemId(kind: InboxSourceKind, sourceId: string): string {
@@ -156,8 +159,12 @@ export function projectInboxSource(kind: InboxSourceKind, sourceId: string, data
   case "salesInboundIntent": return projectEnquiry(sourceId, data);
   case "accessApplication": return projectAccess(sourceId, data, context);
   case "externalEvent": return projectExternalEvent(sourceId, data, context);
+  case "walkthroughBooking": return projectWalkthroughBooking(sourceId, data);
   }
 }
+
+/** The state of an instant draft that waits for a person's WhatsApp reply; it can be dismissed once sent. */
+export const INSTANT_DRAFT_REPLY_STATE = "reply_on_whatsapp";
 
 const submitterLabels: Record<string, string> = {
   associate: "Sales associate", partner: "Partner", organizer: "The organizer", system: "Discovery",
@@ -177,11 +184,18 @@ function projectSupplyIntakeRequest(sourceId: string, data: Data): InboxProjecti
   const updatedAt = iso(data.updatedAt) ?? submittedAt;
   const who = submitterLabels[String(submittedBy?.role)] ?? "Someone";
   const channel = String(origin?.kind ?? "");
+  // A website instant draft: its submitter waits for a WhatsApp reply from a
+  // person until Catch-owned WhatsApp templates are approved.
+  const instantDraft = channel === "web_instant_draft" ? record(data.instantDraft) : null;
+  const draftWhatsapp = record(instantDraft?.whatsapp);
+  const draftOutcome = record(instantDraft?.outcome);
   const cameFrom = channel === "message_nomination" ? `${who} on WhatsApp` :
     channel === "admin_nomination" ? `${who} in Admin` :
       channel === "sales_inbound_intent" ? "Host website" :
-        channel === "discovery_run" ? "Discovery" : who;
-  const market = marketForIdOrAlias(text(request.market));
+        channel === "discovery_run" ? "Discovery" :
+          instantDraft ? (instantDraft.entry === "demo_request" ? "Website demo request" : "Website draft tool") : who;
+  // An instant draft records the market it was saved in (submitted, read from its events, or picked).
+  const market = marketForIdOrAlias(text(record(instantDraft?.market)?.marketId) ?? text(request.market));
   const city = market?.slug ?? text(request.market);
   const journey: JourneyStep[] = [{
     stepId: "submitted",
@@ -189,11 +203,16 @@ function projectSupplyIntakeRequest(sourceId: string, data: Data): InboxProjecti
     title: channel === "message_nomination" ? `${who} sent a link on WhatsApp` :
       channel === "sales_inbound_intent" ? "Came in from the host website" :
         channel === "discovery_run" ? "Found by discovery" :
-          request.kind === "self_submission" ? "The organizer sent their own details" : `${who} nominated it`,
+          instantDraft ? `Sent ${instantDraft.requestKind === "form_link" ? "a form" : "an event"} link for an instant draft` :
+            request.kind === "self_submission" ? "The organizer sent their own details" : `${who} nominated it`,
     detail: urls[0] ?? text(seed?.name),
     actorUid: text(submittedBy?.uid),
     tone: "ink",
   }];
+  if (instantDraft) {
+    journey.push({stepId: "whatsapp-consent", occurredAt: iso(draftWhatsapp?.consentedAt) ?? submittedAt,
+      title: "Asked for a reply on WhatsApp", detail: text(draftWhatsapp?.phone), actorUid: null, tone: "ink"});
+  }
   const receipts = Array.isArray(result?.captureReceipts) ? result.captureReceipts.map(record) : [];
   receipts.forEach((receipt, index) => {
     if (!receipt) return;
@@ -231,7 +250,16 @@ function projectSupplyIntakeRequest(sourceId: string, data: Data): InboxProjecti
       tone: "danger",
     });
   }
-  if (approval) {
+  if (instantDraft && draftOutcome?.state === "needs_city") {
+    journey.push({stepId: "needs-city", occurredAt: iso(draftOutcome.at) ?? updatedAt,
+      title: "Asked the organizer to pick a city", detail: "Its events did not say which city", actorUid: null,
+      tone: "ink"});
+  }
+  if (approval && instantDraft) {
+    journey.push({stepId: "draft-saved", occurredAt: iso(approval.approvedAt) ?? updatedAt,
+      title: "Saved as a private draft", detail: "Nothing goes live until the organizer claims it",
+      actorUid: text(approval.approvedByUid), tone: "success"});
+  } else if (approval) {
     const approvedAt = iso(approval.approvedAt) ?? updatedAt;
     journey.push({stepId: "approved", occurredAt: approvedAt, title: "Approved", detail: null,
       actorUid: text(approval.approvedByUid), tone: "success"});
@@ -243,10 +271,26 @@ function projectSupplyIntakeRequest(sourceId: string, data: Data): InboxProjecti
   let lifecycle: InboxLifecycle;
   let state: InboxState;
   let closedAt: string | null = null;
-  if (data.status === "failed") {
+  if (instantDraft && draftOutcome?.state === "expired") {
+    // Nobody claimed it within 30 days; the cleanup removed the draft and freed its page address.
+    lifecycle = "closed";
+    closedAt = iso(draftOutcome.at) ?? updatedAt;
+    state = {code: "expired", label: "Draft removed, never claimed", tone: "neutral"};
+    journey.push({stepId: "draft-expired", occurredAt: closedAt, title: "Removed after 30 days unclaimed",
+      detail: "Its page address is free again", actorUid: null, tone: "ink"});
+  } else if (data.status === "failed") {
     type = "stuck";
     lifecycle = "open";
     state = {code: "needs_person", label: "Needs a person", tone: "danger"};
+  } else if (data.status === "completed" && instantDraft && draftOutcome?.state === "needs_city" && !approval) {
+    // The organizer picks the city on the draft page; nothing for staff to do yet.
+    lifecycle = "working";
+    state = {code: "waiting_for_city", label: "Waiting for the organizer to pick a city", tone: "neutral"};
+  } else if (data.status === "completed" && instantDraft) {
+    // Open until a person replies on WhatsApp and dismisses it with a note.
+    lifecycle = "open";
+    state = approval ? {code: INSTANT_DRAFT_REPLY_STATE, label: "Draft ready, reply on WhatsApp", tone: "info"} :
+      {code: INSTANT_DRAFT_REPLY_STATE, label: "Reply on WhatsApp", tone: "warning"};
   } else if (data.status === "completed" && approval) {
     lifecycle = "closed";
     closedAt = iso(approval.approvedAt) ?? updatedAt;
@@ -353,6 +397,7 @@ function projectClaim(sourceId: string, data: Data, context: InboxContext): Inbo
 }
 
 function projectEnquiry(sourceId: string, data: Data): InboxProjection | null {
+  if (typeof data.leadKind === "string") return projectLead(sourceId, data);
   const createdAt = iso(data.createdAt) ?? epoch;
   const partner = data.source === "partner";
   // Optional; older intents carry no programme and read as an events Host.
@@ -387,6 +432,86 @@ function projectEnquiry(sourceId: string, data: Data): InboxProjection | null {
     nominatorUid: text(data.partnerUid),
     city: cityOf(text(data.city)),
     state: open ? {code: "new", label: "New", tone: "neutral"} :
+      status === "linked" ? {code: "linked", label: "Linked to a host", tone: "success"} :
+        {code: "dismissed", label: "Dismissed", tone: "neutral"},
+    lifecycle: open ? "open" : "closed",
+    waitingSince: createdAt,
+    closedAt: open ? null : iso(data.linkedAt) ?? iso(data.updatedAt) ?? createdAt,
+    recommendation: null,
+    journey,
+  };
+}
+
+const leadLabels: Record<string, string> = {
+  guide: "Send the setup guide", walkthrough: "Walkthrough request", demo: "Demo request", venue: "List a space",
+  story: "Put forward for a story", referral: "Host referral", org_contact: "College, team or brand",
+  city_alerts: "New plans in their city",
+};
+
+const interestLabels: Record<string, string> = {
+  runs: "Runs", courts: "Courts", dinners: "Dinners", quizzes: "Quizzes", nights_out: "Nights out", fitness: "Fitness",
+  workshops: "Workshops", books: "Book clubs",
+};
+
+/** What a lead asked for, in a line: "60 standing · Tuesdays", "Lantern Lane Social · @lanternlane". */
+function leadDetail(kind: string, lead: Data): string | null {
+  const payload = record(lead[{org_contact: "orgContact", city_alerts: "cityAlerts"}[kind] ?? kind]) ?? {};
+  const parts = (...values: unknown[]) => values.map(text).filter(Boolean).join(" · ") || null;
+  switch (kind) {
+  case "guide": return text(payload.format) ? `${humanize(text(payload.format))} guide` : null;
+  case "walkthrough": return parts(payload.preferredTime, payload.organisation, payload.whatYouRun);
+  case "demo": return parts(payload.whatYouHost, payload.currentQuestions);
+  case "venue": return parts(payload.area, payload.capacity, payload.nights);
+  case "story": return parts(payload.communityName, payload.cadence);
+  case "referral": {
+    const credit = record(lead.referralCredit);
+    return parts(payload.hostName, payload.hostLink, payload.relationship,
+      credit?.status === "referrer_account" ? "Referrer signed in" : "Referrer not signed in, no credit");
+  }
+  case "org_contact": return parts(humanize(text(payload.orgType)), payload.orgName, payload.message);
+  case "city_alerts": return strings(payload.interests).map((interest) => interestLabels[interest] ?? interest).join(", ") ||
+    "Any plans";
+  default: return null;
+  }
+}
+
+/**
+ * A website lead (joinWaitlist requestKind): a person waiting for a WhatsApp
+ * reply. Nothing is sent for staff, so it waits until someone replies and
+ * closes it with what they said. A referral closes itself when its listing
+ * is approved and links it.
+ */
+function projectLead(sourceId: string, data: Data): InboxProjection {
+  const kind = String(data.leadKind);
+  const lead = record(data.lead) ?? {};
+  const label = leadLabels[kind] ?? "Website lead";
+  const createdAt = iso(data.createdAt) ?? epoch;
+  const status = String(data.status);
+  const venue = kind === "venue" ? text(record(lead.venue)?.spaceName) : null;
+  const named = venue ?? text(data.fullName);
+  const phone = text(data.phone);
+  const journey: JourneyStep[] = [{stepId: "received", occurredAt: createdAt, title: `${label} from the website`,
+    detail: text(lead.sourcePage), actorUid: null, tone: "ink"}];
+  if (status === "linked") {
+    journey.push({stepId: "linked", occurredAt: iso(data.linkedAt) ?? iso(data.updatedAt) ?? createdAt,
+      title: "Linked to an organizer", detail: text(data.organizerId), actorUid: text(data.linkedBy), tone: "success"});
+  } else if (status === "dismissed") {
+    journey.push({stepId: "dismissed", occurredAt: iso(data.updatedAt) ?? createdAt, title: "Dismissed",
+      detail: null, actorUid: null, tone: "muted"});
+  }
+  const open = status === "needs_identity_review";
+  return {
+    itemId: inboxItemId("salesInboundIntent", sourceId),
+    type: "lead",
+    sourceKind: "salesInboundIntent",
+    sourceId,
+    sourcePath: `${sourceCollections.salesInboundIntent}/${sourceId}`,
+    title: named ? `${label}: ${named}` : label,
+    subtitle: [phone ? `WhatsApp ${phone}` : null, leadDetail(kind, lead)].filter(Boolean).join(" · ") || null,
+    cameFrom: text(lead.sourcePage) ? `Website ${text(lead.sourcePage)}` : "Website",
+    nominatorUid: null,
+    city: cityOf(text(data.city)),
+    state: open ? {code: "reply_on_whatsapp", label: "Reply on WhatsApp", tone: "warning"} :
       status === "linked" ? {code: "linked", label: "Linked to a host", tone: "success"} :
         {code: "dismissed", label: "Dismissed", tone: "neutral"},
     lifecycle: open ? "open" : "closed",

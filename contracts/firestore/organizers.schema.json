@@ -255,6 +255,11 @@
       "description": "Server-owned user id that made the latest organizer type decision.",
       "x-catch-ownership": "server-only"
     },
+    "womenLed": {
+      "$ref": "../shared/women_led_common.schema.json#/definitions/organizerWomenLed",
+      "description": "Self-declared women-led default for this organizer's plans, set by the owner or a manager through updateOrganizer or by an admin through adminUpdateOrganizerDetails. Absent means not declared. Informational and filterable only; it never restricts attendance.",
+      "x-catch-ownership": "callable-owned"
+    },
     "publicCategoryLabel": {
       "type": ["string", "null"],
       "maxLength": 120,
