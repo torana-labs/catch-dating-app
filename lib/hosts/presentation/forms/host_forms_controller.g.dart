@@ -606,7 +606,7 @@ final class HostFormsDirectoryControllerProvider
 }
 
 String _$hostFormsDirectoryControllerHash() =>
-    r'853dff12489b0a0e9dafa8e5e56365f7cc8173ff';
+    r'd29c90db680171a459f32150f0a7a925ca209121';
 
 /// The forms directory, live: a form the server adds, changes or removes
 /// shows at once, and the list opens offline from the device cache. More

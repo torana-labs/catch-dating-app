@@ -106,8 +106,13 @@ extension _HostFormResponsesFilters on _HostFormResponsesSectionState {
                           );
                           return CatchAsyncBoundary<HostFormsDirectoryState>(
                             value: directory,
-                            onRetry: () =>
-                                retryHostFormsDirectory(ref, request),
+                            onRetry: () => ref
+                                .read(
+                                  hostFormsDirectoryControllerProvider(
+                                    request,
+                                  ).notifier,
+                                )
+                                .retry(),
                             loadingBuilder: (_) =>
                                 CatchSkeleton.content(child: choices),
                             builder: (context, state) => Column(

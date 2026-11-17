@@ -21,10 +21,10 @@ import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' show WidgetRef;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_form_target_controller.dart';
+part 'host_forms_directory_controller.dart';
 part 'host_forms_controller.g.dart';
 part 'host_forms_directory_state.dart';
 

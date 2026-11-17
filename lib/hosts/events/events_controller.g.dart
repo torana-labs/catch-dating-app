@@ -180,7 +180,7 @@ final class HostEventsControllerProvider
 }
 
 String _$hostEventsControllerHash() =>
-    r'48278a593e9398e45fb34986c1bdcec0cb220f23';
+    r'7a01ec556438fc2021eea827e12ebdac12be2175';
 
 /// The Events tab: the coming events and the drafts through their
 /// listeners, past events through the events read owner, and the

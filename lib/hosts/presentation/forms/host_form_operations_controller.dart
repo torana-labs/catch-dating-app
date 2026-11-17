@@ -7,7 +7,6 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automatio
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_conversion.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' show WidgetRef;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_form_operations_controller.g.dart';
@@ -61,15 +60,6 @@ class HostFormResponsesState {
         : loadMoreError ?? this.loadMoreError,
   );
 }
-
-/// Reads a response list again after a failure: its listeners too, so a
-/// failed listener is not handed back as it was.
-void retryHostFormResponses(
-  WidgetRef ref,
-  HostFormResponseListRequest request,
-) => ref
-  ..invalidate(hostFormResponsesListenerProvider)
-  ..invalidate(hostFormResponsesControllerProvider(request));
 
 /// How many rows a live response request listens to; it grows by the
 /// request's page size each time the list asks for more.
@@ -144,6 +134,20 @@ class HostFormResponsesController extends _$HostFormResponsesController {
       versionScope: page.versionScope,
       nextCursor: page.nextCursor,
     );
+  }
+
+  /// Reads the list again after a failure. A live list opens its listener
+  /// again too, so a failed listener is not handed back as it was.
+  void retry() {
+    if (HostResponseSummaryReads.supports(request)) {
+      ref.invalidate(
+        hostFormResponsesListenerProvider(
+          request,
+          ref.read(hostFormResponsesWindowProvider(request)),
+        ),
+      );
+    }
+    ref.invalidateSelf();
   }
 
   Future<void> loadMore() async {

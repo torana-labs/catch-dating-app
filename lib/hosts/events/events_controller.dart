@@ -88,8 +88,8 @@ HostEventsState hostEventsController(Ref ref, HostEventsRequest request) {
           ),
         );
   final history = timeline?.value;
-  final draftsValue = ref.watch(
-    hostEventDraftsProvider(request.organizerId, request.day),
+  final draftsValue = catchAsyncStateFromAsyncValue(
+    ref.watch(hostEventDraftsProvider(request.organizerId, request.day)),
   );
   final drafts = draftsValue.value;
   final programmes =
@@ -106,11 +106,11 @@ HostEventsState hostEventsController(Ref ref, HostEventsRequest request) {
     historyLoading:
         history == null && timeline?.error == null ||
         (history?.loadingMorePast ?? false) ||
-        drafts == null && !draftsValue.hasError,
+        drafts == null && draftsValue.error == null,
     historyFailed:
         timeline?.error != null ||
         history?.pastError != null ||
-        draftsValue.hasError && drafts == null,
+        draftsValue.error != null && drafts == null,
   );
 }
 
