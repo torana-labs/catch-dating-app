@@ -127,6 +127,63 @@ test("claims, enquiries, access and imported events project to their own types",
   assert.match(event?.subtitle ?? "", /^Afterfly · 14 Nov/u);
 });
 
+function websiteLead(kind: string, overrides: Record<string, unknown> = {}) {
+  const payloads: Record<string, Record<string, unknown>> = {
+    venue: {venue: {spaceName: "The Loft", area: "Lower Parel", capacity: "60 standing", nights: "Tuesdays"}},
+    referral: {referral: {hostName: "Lantern Lane Social", hostLink: "@lanternlane", relationship: "I go to their dinners"},
+      referralCredit: {status: "missing_referrer_account", referrerUid: null, referrerRole: null}},
+    city_alerts: {cityAlerts: {interests: ["runs", "nights_out"]}},
+  };
+  return {source: "website", status: "needs_identity_review", leadKind: kind, fullName: null, phone: "+919812345678",
+    city: "mumbai", createdAt: "2026-10-31T10:00:00.000Z",
+    lead: {consent: {purpose: kind === "city_alerts" ? "cityNewPlans" : "leadFollowUp", version: "lead-2026-11"},
+      sourcePage: "/venues/", entry: "list", ...payloads[kind]}, ...overrides};
+}
+
+test("a website lead is its own type, says its kind and waits for a WhatsApp reply", () => {
+  const venue = projectInboxSource("salesInboundIntent", "lead-1", websiteLead("venue"));
+  assert.equal(venue?.type, "lead");
+  assert.equal(venue?.itemId, "enquiry-lead-1");
+  assert.equal(venue?.title, "List a space: The Loft");
+  assert.equal(venue?.subtitle, "WhatsApp +919812345678 · Lower Parel · 60 standing · Tuesdays");
+  assert.equal(venue?.cameFrom, "Website /venues/");
+  assert.deepEqual(venue?.state, {code: "reply_on_whatsapp", label: "Reply on WhatsApp", tone: "warning"});
+  assert.equal(venue?.lifecycle, "open");
+  const referral = projectInboxSource("salesInboundIntent", "lead-2", websiteLead("referral", {fullName: "Neha Shah"}));
+  assert.equal(referral?.title, "Host referral: Neha Shah");
+  assert.match(referral?.subtitle ?? "", /Lantern Lane Social · @lanternlane · I go to their dinners · Referrer not signed in/u);
+  const alerts = projectInboxSource("salesInboundIntent", "lead-3", websiteLead("city_alerts"));
+  assert.equal(alerts?.title, "New plans in their city");
+  assert.equal(alerts?.subtitle, "WhatsApp +919812345678 · Runs, Nights out");
+  const linked = projectInboxSource("salesInboundIntent", "lead-2", websiteLead("referral", {status: "linked",
+    organizerId: "org-1", linkedBy: "dev", linkedAt: "2026-11-01T10:00:00.000Z"}));
+  assert.equal(linked?.lifecycle, "closed");
+  assert.equal(linked?.state.code, "linked");
+});
+
+test("staff close a lead with what they replied, and it can come back", async () => {
+  const h = harness();
+  await h.sync("salesInboundIntent", "lead-1", websiteLead("venue"));
+  const listed = await h.list({type: "lead"});
+  valid(validateList, listed);
+  assert.deepEqual(listed.items.map((item) => item.itemId), ["enquiry-lead-1"]);
+  assert.equal(listed.totals.types.lead, 1);
+  const update = (data: Record<string, unknown>) => adminUpdateInboxItemHandler(h.request({itemId: "enquiry-lead-1",
+    assigneeUid: null, snoozedUntil: null, note: null, ...data}), h.deps);
+  await assert.rejects(update({action: "dismiss"}), /Say why/);
+  const closed = await update({action: "dismiss", note: "Sent the venue guide on WhatsApp."});
+  assert.equal(closed.item.status, "done");
+  const journey = await adminGetInboxItemHandler(h.request({itemId: "enquiry-lead-1"}), h.deps);
+  valid(validateGet, journey);
+  assert.deepEqual(journey.journey.at(-1)?.title, "Closed");
+  assert.equal(journey.journey.at(-1)?.detail, "Sent the venue guide on WhatsApp.");
+  // The source stays as captured; a later write leaves the lead closed.
+  await h.sync("salesInboundIntent", "lead-1", websiteLead("venue"));
+  assert.equal((h.db.read("adminInboxItems/enquiry-lead-1") as {status: string}).status, "done");
+  const reopened = await update({action: "reopen"});
+  assert.equal(reopened.item.state.code, "reply_on_whatsapp");
+});
+
 const listingEvent = (overrides: Partial<ListingEventFacts> = {}): ListingEventFacts => ({
   intakeRequestId: "req-1", approvedAt: "2026-10-29T10:00:00.000Z", organizerName: "Afterfly", citySlug: "mumbai",
   eventWorkItemId: "wi-event-1", eventId: "ext-afterfly-mixer", title: "Singles mixer night", startAt: "2026-11-07T14:00:00.000Z",

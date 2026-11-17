@@ -44,7 +44,8 @@ class EventViewerSources {
 
   /// Events the guest is booked or waitlisted at, for the
   /// overlapping-schedule check.
-  final List<Event> scheduledEvents;
+  /// The guest's booked and waitlisted events, from their event cards.
+  final List<GuestEventCard> scheduledEvents;
   final bool hasInviteCode;
 }
 
@@ -193,10 +194,10 @@ EventViewerState composeEventViewerState(EventViewerSources sources) {
   }
   final overlaps = sources.scheduledEvents.any(
     (other) =>
-        other.id != event.id &&
-        other.status != EventLifecycleStatus.cancelled &&
+        other.eventId != event.id &&
+        !other.isCancelled &&
         other.startTime.isBefore(event.endTime) &&
-        event.startTime.isBefore(other.endTime),
+        event.startTime.isBefore(other.endTime ?? other.startTime),
   );
   if (overlaps) return deny(EventViewerRestriction.scheduleConflict);
   return result(

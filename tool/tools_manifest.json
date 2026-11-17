@@ -5004,6 +5004,30 @@
       ]
     },
     {
+      "id": "firebase:functions-build-hash",
+      "category": "firebase",
+      "path": "tool/firebase/functions_build_hash.mjs",
+      "command": "node tool/firebase/functions_build_hash.mjs",
+      "safety": "read-only",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/firebase/functions_build_hash.test.mjs",
+        ".github/workflows/functions-ci.yml"
+      ],
+      "description": "Describes Functions CI's tested build: an input hash over functions/src (generated contracts included), the package files, tsconfigs and Node and TypeScript versions, plus a per-file digest of functions/lib. Main and its merge queue publish the build under that hash so the backend deploy can ship exactly what CI tested.",
+      "checks": [
+        "node --check tool/firebase/functions_build_hash.mjs",
+        "node --test tool/firebase/functions_build_hash.test.mjs"
+      ],
+      "role": "finder"
+    },
+    {
       "id": "firebase:functions-deploy-params",
       "category": "firebase",
       "path": "tool/firebase/prepare_functions_params_for_deploy.mjs",
@@ -5322,6 +5346,31 @@
           "instruction": "Compare the active Firestore and Storage Rules releases with the exact committed sources after every Deploy backend run. Missing credentials may skip local or untrusted CI checks; present but insufficient credentials, missing releases, and normalized-content drift fail closed."
         }
       ]
+    },
+    {
+      "id": "firebase:select-functions-build",
+      "category": "firebase",
+      "path": "tool/firebase/select_functions_build.mjs",
+      "command": "node tool/firebase/select_functions_build.mjs",
+      "safety": "read-only",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/firebase/select_functions_build.test.mjs",
+        "tool/firebase/functions_build_hash.mjs",
+        ".github/workflows/_backend-deploy.yml"
+      ],
+      "description": "Lets Deploy backend ship Functions CI's tested build: finds the functions-build artifact for this commit's input hash, accepts it only from a successful CI run of main or main's merge queue in this repository, verifies every lib file against its digest, and installs it; any doubt exits for a normal compile.",
+      "checks": [
+        "node --check tool/firebase/select_functions_build.mjs",
+        "node --test tool/firebase/select_functions_build.test.mjs"
+      ],
+      "role": "gate"
     },
     {
       "id": "firebase:storage-rules-firestore-iam",

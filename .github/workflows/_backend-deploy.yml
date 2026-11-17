@@ -41,6 +41,7 @@ on:
         default: ''
 
 permissions:
+  actions: read
   contents: write
   deployments: write
   id-token: write
@@ -122,12 +123,24 @@ jobs:
 
       - if: ${{ steps.guard.outputs.skip != 'true' }}
         uses: ./.github/actions/generate-contracts
+      # Functions CI publishes the lib its tests ran, under a hash of what tsc
+      # reads (tool/firebase/functions_build_hash.mjs). After prebuild has
+      # generated the same sources, the deploy ships that build if a trusted
+      # main or merge-queue CI run published it and every file verifies
+      # (tool/firebase/select_functions_build.mjs); otherwise it compiles here.
       - name: Install and build Functions
         if: ${{ steps.guard.outputs.skip != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NODE_VERSION: ${{ steps.toolchain.outputs.node-version }}
         run: |
           set -euo pipefail
           npm --prefix functions ci
-          npm --prefix functions run build
+          npm --prefix functions run prebuild
+          if ! node tool/firebase/select_functions_build.mjs --functions-dir functions \
+            --node-version "$NODE_VERSION" --repository "$GITHUB_REPOSITORY" --summary "$GITHUB_STEP_SUMMARY"; then
+            npm --prefix functions run build
+          fi
 
       - name: Authenticate to Google Cloud
         if: ${{ steps.guard.outputs.skip != 'true' }}

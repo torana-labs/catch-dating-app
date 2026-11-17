@@ -8,14 +8,14 @@ part of 'event_workspace_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The team members with access to the event's door, from the event staff
-/// read. It is read once per visit; granting access happens elsewhere.
+/// The team members with access to the event's door, read from the event's
+/// staff grants once per visit; granting access happens elsewhere.
 
 @ProviderFor(hostEventWorkspaceStaff)
 final hostEventWorkspaceStaffProvider = HostEventWorkspaceStaffFamily._();
 
-/// The team members with access to the event's door, from the event staff
-/// read. It is read once per visit; granting access happens elsewhere.
+/// The team members with access to the event's door, read from the event's
+/// staff grants once per visit; granting access happens elsewhere.
 
 final class HostEventWorkspaceStaffProvider
     extends
@@ -27,11 +27,11 @@ final class HostEventWorkspaceStaffProvider
     with
         $FutureModifier<HostEventStaffList>,
         $FutureProvider<HostEventStaffList> {
-  /// The team members with access to the event's door, from the event staff
-  /// read. It is read once per visit; granting access happens elsewhere.
+  /// The team members with access to the event's door, read from the event's
+  /// staff grants once per visit; granting access happens elsewhere.
   HostEventWorkspaceStaffProvider._({
     required HostEventWorkspaceStaffFamily super.from,
-    required String super.argument,
+    required HostEventRequest super.argument,
   }) : super(
          retry: null,
          name: r'hostEventWorkspaceStaffProvider',
@@ -58,7 +58,7 @@ final class HostEventWorkspaceStaffProvider
 
   @override
   FutureOr<HostEventStaffList> create(Ref ref) {
-    final argument = this.argument as String;
+    final argument = this.argument as HostEventRequest;
     return hostEventWorkspaceStaff(ref, argument);
   }
 
@@ -75,13 +75,17 @@ final class HostEventWorkspaceStaffProvider
 }
 
 String _$hostEventWorkspaceStaffHash() =>
-    r'cde52ebc0fa7ab028f38d071fdb1b31a2892945d';
+    r'58be9bf32b9f3c0d15788e74c5fdf4de7a8afc7d';
 
-/// The team members with access to the event's door, from the event staff
-/// read. It is read once per visit; granting access happens elsewhere.
+/// The team members with access to the event's door, read from the event's
+/// staff grants once per visit; granting access happens elsewhere.
 
 final class HostEventWorkspaceStaffFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<HostEventStaffList>, String> {
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<HostEventStaffList>,
+          HostEventRequest
+        > {
   HostEventWorkspaceStaffFamily._()
     : super(
         retry: null,
@@ -91,11 +95,11 @@ final class HostEventWorkspaceStaffFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The team members with access to the event's door, from the event staff
-  /// read. It is read once per visit; granting access happens elsewhere.
+  /// The team members with access to the event's door, read from the event's
+  /// staff grants once per visit; granting access happens elsewhere.
 
-  HostEventWorkspaceStaffProvider call(String eventId) =>
-      HostEventWorkspaceStaffProvider._(argument: eventId, from: this);
+  HostEventWorkspaceStaffProvider call(HostEventRequest request) =>
+      HostEventWorkspaceStaffProvider._(argument: request, from: this);
 
   @override
   String toString() => r'hostEventWorkspaceStaffProvider';
@@ -181,7 +185,7 @@ final class HostEventWorkspaceControllerProvider
 }
 
 String _$hostEventWorkspaceControllerHash() =>
-    r'c88e54ad467061148ec473d89bd39d6c1473999f';
+    r'e35c67cf7797ab6ceb4541ec7a179f2e2b593adb';
 
 /// The event workspace: the event, its roster insight view and attendees,
 /// tonight's plan through their listeners; the door team from the staff

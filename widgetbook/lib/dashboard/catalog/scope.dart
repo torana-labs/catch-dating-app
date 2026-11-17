@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/guest_event_cards_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
@@ -78,10 +79,13 @@ class WidgetbookDashboardScope extends StatelessWidget {
               membershipsStream ??
               Stream<List<OrganizerFollow>>.value(effectiveMemberships),
         ),
-        watchSignedUpEventsProvider(widgetbookDashboardViewer.uid).overrideWith(
+        watchSignedUpEventCardsProvider(
+          widgetbookDashboardViewer.uid,
+        ).overrideWith(
           (ref) =>
-              signedUpEventsStream ??
-              Stream<List<Event>>.value(effectiveSignedUpEvents),
+              (signedUpEventsStream ??
+                      Stream<List<Event>>.value(effectiveSignedUpEvents))
+                  .map(guestEventCardsOf),
         ),
         watchActivityNotificationsProvider(
           widgetbookDashboardViewer.uid,
@@ -91,9 +95,9 @@ class WidgetbookDashboardScope extends StatelessWidget {
                 widgetbookDashboardNotifications,
               ),
         ),
-        watchAttendedEventsProvider(
+        watchAttendedEventCardsProvider(
           widgetbookDashboardViewer.uid,
-        ).overrideWithValue(const AsyncData<List<Event>>([])),
+        ).overrideWithValue(const AsyncData<List<GuestEventCard>>([])),
         watchReviewsByUserProvider(
           widgetbookDashboardViewer.uid,
         ).overrideWithValue(

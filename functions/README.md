@@ -244,6 +244,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `getEventViewerState` | `src/events/eventViewerState.ts` | Auth-derived private current eligibility and independent admission/attendance facts for app builds before the listener viewer; shared canonical readers, bounded source queries, no seat or identity writes |
 | `listParticipantActivity` | `src/profiles/participantActivity.ts` | Auth-derived own form submission metadata, exact source/version/deletion proof and bounded subject-bound pagination; no profile claim or admission inference |
 | `listParticipantFormProfiles` / `getParticipantFormProfile` / `getParticipantFormPhoto` / `claimParticipantFormProfile` | `src/profiles/` | Verified owner-only form profile directory, designated-answer review, metadata-free private photo preview, and explicit revision-fenced claim; no event admission or sharing grant |
+| `onParticipantFormProfileViewProposalChanged` / `onParticipantFormProfileViewResponseChanged` / `onParticipantFormProfileViewCardChanged` / `onParticipantIntakeProfileViewChanged` | `src/profiles/participantFormProfileViewTriggers.ts` | Write each guest's own form profile review rows (`participantFormProfileViews`) and intake revision view (`participantIntakeProfileViews`) from proposals, responses, organizer cards and intake profiles |
 | `createOrganizerFormAssetIntent` / `finalizeOrganizerFormAsset` | `src/organizers/organizerFormAssets.ts` | Authorize and finalize form/version/question-scoped respondent uploads without exposing raw Storage authority |
 | `createOrganizerFormShareLink` / `getOrganizerFormShareAssets` | `src/organizers/organizerFormDistribution.ts` | Create opaque attributed links and return canonical link, QR, print, and embed assets for a published form |
 | `listOrganizerFormResponses` / `getOrganizerFormResponseDetail` / `getOrganizerFormAnalytics` | `src/organizers/organizerFormOperations.ts` | Page, inspect, and aggregate immutable form responses through organizer-authorized projections without screen-time response scans |
@@ -387,7 +388,7 @@ enter previews.
 | `syncPublicProfile` | `src/profiles/` | `users/{userId}` onWrite — mirrors public fields + age gate |
 | `syncOrganizerFollowerStats` | `src/clubs/` | `organizerFollowers/{followerId}` onWrite — recomputes canonical follower totals |
 | `programTravelLegMoments` | `src/moments/momentSchedule.ts` | Travel-leg writes emit Moment facts on leg changes |
-| `onSalesInboundIntentForIntake` | `src/operations/supplyIntake/nominations.ts` | `salesInboundIntents/{intentId}` onCreate — a website host application or partner nomination that names an organizer or a link also becomes a Supply Intake request (deterministic id, idempotent) |
+| `onSalesInboundIntentForIntake` | `src/operations/supplyIntake/nominations.ts` | `salesInboundIntents/{intentId}` onCreate — a website host application, website referral lead or partner nomination that names an organizer or a link also becomes a Supply Intake request (deterministic id, idempotent) |
 | `onSupplyIntakeRequestCreated` | `src/operations/supplyIntake/triggers.ts` | `supplyIntakeRequests/{requestId}` onCreate — leases the request, gathers its pages, runs Supply Intake and imports the reviewable listing; searches an unreadable nomination's handle once through SerpApi when `SERPAPI_KEY_VERSION` and the web search decision allow it (`linkSearch.ts`); retries until the third failure |
 | `requestInstantDraft` | `src/instantDrafts/request.ts` | Website "event page from a link" tool and demo request (App Check; signed-in caller with a verified phone, which must match any `whatsapp.phone` sent): an event or form link becomes a `web_instant_draft` Supply Intake request with private draft state; limits per verified number, per address, 25 a day and 200 a month; idempotent per website request id; never publishes. |
 | `getInstantDraft` | `src/instantDrafts/status.ts` | Draft page poll with the draft token: building, draft_ready (the private draft and up to ten events), needs_city (with the open markets; an optional `city` continues the same draft), staff_follow_up or expired; saves a finished build as a private draft if the worker hook did not. |
@@ -405,6 +406,7 @@ enter previews.
 | `onSalesInboundIntentWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `salesInboundIntents` onWrite — projects the enquiry's inbox item and journey steps |
 | `onAccessApplicationWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `accessApplications` onWrite — projects the launch access item and journey steps |
 | `onExternalEventWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `externalEvents` onWrite — projects the imported event's inbox item and journey steps |
+| `onWalkthroughBookingWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `walkthroughBookings` onWrite — projects the booking's confirm-on-WhatsApp task (`src/walkthroughs/inbox.ts`) and journey steps |
 | `onUserWrittenIndexPeople` | `src/admin/peopleSearch.ts` | `users` onWrite — keeps `adminPeopleIndex/{uid}` (name prefixes, phone digits) for logged people search |
 | `onSwipeCreated` | `src/matching/` | `profileDecisions/{id}/outgoing/{id}` onCreate — mutual-like → match |
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
@@ -452,7 +454,7 @@ enter previews.
 | `expireCrossPathsPairHolds` | `src/crossPaths/` | Every 5 minutes — releases expired companion reservations and invalidates their invitation receipt |
 | `retryOrganizerAutomations` | `src/organizers/organizerFormAutomations.ts` | Every minute — resumes due automation runs and expired leases with bounded retries and per-action deduplication |
 | `dispatchScheduledOrganizerCampaigns` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatches due, approved organizer campaign snapshots |
-| `rebuildCityPlansHourly` | `src/cityPlans/triggers.ts` | Hourly, rebuilds every city's `cityPlans` read model so plans move into and out of the 14-day window (CAT-260) |
+| `rebuildCityPlansHourly` | `src/cityPlans/triggers.ts` | Hourly, rebuilds every city's `cityPlans` read model so plans move into and out of the 14-day window and the 30-day and format page counts stay current (CAT-260) |
 | `wakeSnoozedInboxItemsEvery30Minutes` | `src/admin/inbox/triggers.ts` | Every 30 minutes, puts snoozed inbox items whose snooze ended back in the inbox |
 | `reconcileAdminInboxNightly` | `src/admin/inbox/triggers.ts` | Nightly (03:10 India time), re-projects every inbox source and the people index from their documents; idempotent, so it changes only what a failed trigger missed (the inbox and people triggers are not retried) |
 | `refreshPublicPageFollowers` | `src/publicPages/triggers.ts` | Every 30 minutes, rebuilds the public pages of organizers whose follower count changed |
@@ -488,6 +490,10 @@ enter previews.
 | `adminGetFinanceMonth` | `src/money/` | One month of Finance from bills, costs and nominator credit paid: ticket sales, what Catch earned (caps, free months, own terms), costs, Razorpay fees and GST that are not Catch's money, six-month series |
 | `adminManagePaymentIssues` | `src/money/` | Money issues: captured website/offer payments not admitted after 15 minutes, refunds pending a day, payments needing review, failed native bookings and refunds, overdue bills; confirm booking re-checks the checkout with Razorpay now; close records it was handled |
 | `adminGetGrowth` | `src/growth/` | Growth for a range from growth facts, bills, nominator credit and ad spend: cohorts by listing month, channels, nominators, best organizers |
+| `getWalkthroughSlots` | `src/walkthroughs/publicCallables.ts` | Public (App Check): open walkthrough slots of the next days from the one staff calendar, India time, times only |
+| `bookWalkthrough` | `src/walkthroughs/publicCallables.ts` | A prospective host books one slot with their code-verified WhatsApp number: transactional on the slot hold, idempotent per request id, rate limited; opens an Admin Inbox task, staff confirm on WhatsApp |
+| `manageWalkthroughBooking` | `src/walkthroughs/publicCallables.ts` | Read, cancel or move a walkthrough booking with its manage token or its verified phone |
+| `adminSetWalkthroughAvailability`, `adminListWalkthroughBookings`, `adminUpdateWalkthroughBooking` | `src/walkthroughs/adminCallables.ts` | Admin and owner set the walkthrough staff calendar (weekly India-time windows, slot length, lead time, closed dates), list bookings with each verified number, and confirm or cancel one |
 | `adminGetCityInterest` | `src/cityInterest/` | Interest by city from the `cityInterest` counters: people per city in all and over the last 7 and 30 days against the days before |
 | `adminGetMarketplace` | `src/marketplace/` | Marketplace from the warehouse's raw Firestore export views: events a week, places filled, no-shows and waitlists by city; guests by first-booking month and whether they came back; bookings each week; organizers going quiet with their sales owner |
 | `hostAcquisitionConsent` | `src/acquisition/` | Default-disabled versioned Host measurement grant and capability withdrawal |
@@ -600,7 +606,10 @@ so an over-limit caller stops before any billed work; do not start it alongside
 the read.
 
 The `joinWaitlist` HTTP endpoint uses `checkIpRateLimit()` — an in-memory
-per-IP counter (3 POSTs per hour). This does not survive cold starts.
+per-IP counter (3 POSTs per hour). This does not survive cold starts. Its
+website leads (`requestKind`) also use `checkRateLimit()`, with
+`joinWaitlistLeadNetwork` (per hashed network address) and
+`joinWaitlistLeadNumber` (per hashed number).
 
 ## Content moderation
 
@@ -657,7 +666,8 @@ The public `joinWaitlist` endpoint is an HTTPS endpoint for the marketing site,
 not a Firebase callable function. It uses an explicit CORS origin allowlist for
 Catch domains, Firebase Hosting domains, and local previews. Keep any future
 public web-abuse controls for that endpoint separate from callable App Check
-enforcement.
+enforcement. Its website leads verify the `X-Firebase-AppCheck` header in the
+handler, exempt only where `enforceAppCheckForRuntime` exempts callables.
 
 ## Backend rules
 

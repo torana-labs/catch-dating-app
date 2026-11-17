@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -33,15 +33,13 @@ class ReviewsHistoryScreen extends ConsumerWidget {
         ? null
         : catchAsyncStateFromAsyncValue(reviewsAsync);
     final reviews = reviewsState?.value;
-    AsyncValue<List<Event>> eventsAsync = const AsyncData<List<Event>>([]);
-    if (reviews != null && reviews.isNotEmpty) {
-      final eventIds = ReviewsHistoryState.eventIdsFor(reviews);
-      if (eventIds.isNotEmpty) {
-        eventsAsync = ref.watch(
-          watchEventsByIdsProvider(EventsByIdQuery(eventIds)),
-        );
-      }
-    }
+    // Reviewed events come from the guest's own event cards, never a join.
+    final AsyncValue<Map<String, GuestEventCard>> eventsAsync =
+        uid != null &&
+            reviews != null &&
+            ReviewsHistoryState.eventIdsFor(reviews).isNotEmpty
+        ? ref.watch(watchOwnEventCardsByIdProvider(uid))
+        : const AsyncData<Map<String, GuestEventCard>>({});
 
     final state = uidAsync.when<ReviewsHistoryState>(
       loading: () => const ReviewsHistoryLoading(),

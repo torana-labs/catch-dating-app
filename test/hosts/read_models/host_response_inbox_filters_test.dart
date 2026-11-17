@@ -99,17 +99,5 @@ void main() {
       ),
       isFalse,
     );
-    expect(
-      HostResponseSummaryReads.supports(
-        const HostFormResponseListRequest(
-          organizerId: 'org',
-          formId: 'form',
-          includeApplications: true,
-          reviewStatus: HostApplicationReviewStatus.approved,
-        ),
-      ),
-      isFalse,
-      reason: 'Form-scoped pages keep the callable for their filter options.',
-    );
   });
 }

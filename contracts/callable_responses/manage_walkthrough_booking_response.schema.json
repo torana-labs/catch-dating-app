@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_walkthrough_booking_response.schema.json",
+  "title": "ManageWalkthroughBookingCallableResponse",
+  "description": "The booking after the action. canChange is true while it is booked and its slot has not started. confirmed is true once a person confirmed the slot it now holds on WhatsApp.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "manageWalkthroughBooking",
+  "required": ["bookingId", "status", "slot", "timeZone", "confirmed", "canChange", "followUp", "changed"],
+  "properties": {
+    "bookingId": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/bookingId"},
+    "status": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/bookingStatus"},
+    "slot": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slot"},
+    "timeZone": {"const": "Asia/Kolkata"},
+    "confirmed": {"type": "boolean"},
+    "canChange": {"type": "boolean"},
+    "followUp": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/followUp"},
+    "changed": {"type": "boolean", "description": "False for a read, a repeated cancel or a move to the slot already held."}
+  }
+}

@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/events.dart'
+    show GuestEventCard;
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_keys.dart';
@@ -376,8 +378,13 @@ Future<void> _pumpPaymentHistory(
           'runner-1',
         ).overrideWith((ref) => Stream.value(payments)),
         if (eventIds.isNotEmpty)
-          watchEventsByIdsProvider(EventsByIdQuery(eventIds)).overrideWith(
-            (ref) => eventStream ?? Stream.value(events.values.toList()),
+          watchOwnEventCardsByIdProvider('runner-1').overrideWith(
+            (ref) => (eventStream ?? Stream.value(events.values.toList())).map(
+              (list) => {
+                for (final event in list)
+                  event.id: GuestEventCard.fromEvent(event),
+              },
+            ),
           ),
       ],
       child: _wrapPhoneSized(const PaymentHistoryScreen()),

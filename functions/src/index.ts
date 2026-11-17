@@ -476,6 +476,11 @@ export {getEventViewerState} from "./events/eventViewerState";
 export {listParticipantActivity} from "./profiles/participantActivity";
 export {getParticipantFormProfile, claimParticipantFormProfile}
   from "./profiles/claimFormProfile";
+export {onParticipantFormProfileViewProposalChanged,
+  onParticipantFormProfileViewResponseChanged,
+  onParticipantFormProfileViewCardChanged,
+  onParticipantIntakeProfileViewChanged}
+  from "./profiles/participantFormProfileViewTriggers";
 export {updateUserProfile} from "./profiles/updateUserProfile";
 export {setCrossPathsEventConsent} from
   "./crossPaths/setCrossPathsEventConsent";
@@ -617,6 +622,7 @@ export {
   onOrganizerClaimRequestWrittenSyncInbox,
   onSalesInboundIntentWrittenSyncInbox,
   onSupplyIntakeRequestWrittenSyncInbox,
+  onWalkthroughBookingWrittenSyncInbox,
   reconcileAdminInboxNightly,
   wakeSnoozedInboxItemsEvery30Minutes,
 } from "./admin/inbox/triggers";
@@ -1175,3 +1181,7 @@ export {adminManagePaymentIssues} from "./money/paymentIssues";
 export {adminGetGrowth} from "./growth/adminGetGrowth";
 export {adminGetMarketplace} from "./marketplace/adminGetMarketplace";
 export {adminGetCityInterest} from "./cityInterest/adminGetCityInterest";
+export {getWalkthroughSlots, bookWalkthrough, manageWalkthroughBooking} from
+  "./walkthroughs/publicCallables";
+export {adminSetWalkthroughAvailability, adminListWalkthroughBookings,
+  adminUpdateWalkthroughBooking} from "./walkthroughs/adminCallables";

@@ -207,6 +207,32 @@ function guestMessagingPermissionRow(db, row) {
   return db.runTransaction((tx) => guestMessagingPermission(db, tx, row));
 }
 
+let formProfileViewModule = null;
+function functionsFormProfileViews() {
+  try {
+    formProfileViewModule ??= createFunctionsRequire()(
+      "./lib/profiles/participantFormProfileViewStore.js");
+  } catch (error) {
+    throw new Error(
+      "The participant-form-profile-views migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return formProfileViewModule;
+}
+
+/** A guest's form profile review row from current sources, read only. */
+function formProfileViewRow(db, responseId) {
+  const {participantFormProfileView} = functionsFormProfileViews();
+  return db.runTransaction((tx) => participantFormProfileView(db, tx, responseId));
+}
+
+/** A guest's intake revision view from current sources, read only. */
+function intakeProfileViewRow(db, uid) {
+  const {participantIntakeProfileView} = functionsFormProfileViews();
+  return db.runTransaction((tx) => participantIntakeProfileView(db, tx, uid));
+}
+
 const profilePromptCatalog = JSON.parse(fs.readFileSync(
   new URL("../../../contracts/catalogs/profile_prompts.json", import.meta.url), "utf8"));
 const defaultPrompt = profilePromptCatalog.prompts.find(
@@ -627,6 +653,35 @@ export const MIGRATIONS = [
           id : null,
         transform: (data, id, db) => guestMessagingPermissionRow(db,
           {scope: "organizer", preferenceId: id}),
+      },
+    ],
+  },
+  {
+    name: "participant-form-profile-views",
+    description:
+      "The guest's form profile list and review read " +
+      "participantFormProfileViews and participantIntakeProfileViews " +
+      "instead of the listParticipantFormProfiles and " +
+      "getParticipantFormProfile callables. Every form profile proposal still " +
+      "available to its guest gets a review row, and every intake profile " +
+      "gets its revision view, computed from current sources as the new " +
+      "triggers write them. Withdrawn or unavailable proposals get none. " +
+      "Existing rows are never replaced; proposals, responses, cards and " +
+      "intake profiles are never changed. Build Functions first.",
+    steps: [
+      {
+        source: "participantFormProfileProposals",
+        target: "participantFormProfileViews",
+        skipReason: "no guest, or the proposal is no longer available",
+        targetId: (id, data) => validId(data.uid) ? id : null,
+        transform: (data, id, db) => formProfileViewRow(db, id),
+      },
+      {
+        source: "participantIntakeProfiles",
+        target: "participantIntakeProfileViews",
+        skipReason: "the account is deleted",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => intakeProfileViewRow(db, id),
       },
     ],
   },

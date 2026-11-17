@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_arrival_action.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
 import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
@@ -34,7 +35,9 @@ Widget dashboardEventFocusListReviewStates(BuildContext context) {
         label: 'upcoming event',
         child: WidgetbookDashboardPrimitiveFrame(
           child: EventFocusList(
-            upcomingEvents: [widgetbookDashboardNextEvent],
+            upcomingEvents: [
+              GuestEventCard.fromEvent(widgetbookDashboardNextEvent),
+            ],
             windowedEvents: const [],
             actions: _eventFocusActions,
             organizerNameBuilder: (_) => widgetbookDashboardOrganizer.name,
@@ -45,11 +48,12 @@ Widget dashboardEventFocusListReviewStates(BuildContext context) {
         label: 'check-in pending',
         child: WidgetbookDashboardPrimitiveFrame(
           child: EventFocusList(
-            upcomingEvents: [widgetbookDashboardNextEvent],
+            upcomingEvents: [
+              GuestEventCard.fromEvent(widgetbookDashboardNextEvent),
+            ],
             windowedEvents: const [],
             arrivalAction: EventArrivalAction(
-              kind: EventArrivalActionKind.selfCheckIn,
-              event: widgetbookDashboardNextEvent,
+              card: GuestEventCard.fromEvent(widgetbookDashboardNextEvent),
             ),
             checkInState: const EventFocusCheckInState(isPending: true),
             actions: _eventFocusActions,
@@ -72,7 +76,9 @@ Widget dashboardEventFocusListReviewStates(BuildContext context) {
         label: 'two open Catch windows and an upcoming event',
         child: WidgetbookDashboardPrimitiveFrame(
           child: EventFocusList(
-            upcomingEvents: [widgetbookDashboardNextEvent],
+            upcomingEvents: [
+              GuestEventCard.fromEvent(widgetbookDashboardNextEvent),
+            ],
             windowedEvents: [_window('first', 2), _window('second', 9)],
             now: DashboardSurfaceFixtures.now,
             actions: _eventFocusActions,
@@ -98,7 +104,7 @@ Widget dashboardEventFocusCardReviewStates(BuildContext context) {
         child: WidgetbookDashboardPrimitiveFrame(
           child: EventFocusCard(
             item: EventFocusItem(
-              event: widgetbookDashboardNextEvent,
+              event: GuestEventCard.fromEvent(widgetbookDashboardNextEvent),
               kind: EventFocusKind.upcoming,
               organizerName: widgetbookDashboardOrganizer.name,
             ),
@@ -114,7 +120,7 @@ Widget dashboardEventFocusCardReviewStates(BuildContext context) {
         child: WidgetbookDashboardPrimitiveFrame(
           child: EventFocusCard(
             item: EventFocusItem(
-              event: widgetbookDashboardNextEvent,
+              event: GuestEventCard.fromEvent(widgetbookDashboardNextEvent),
               kind: EventFocusKind.checkIn,
               organizerName: widgetbookDashboardOrganizer.name,
             ),
@@ -130,7 +136,9 @@ Widget dashboardEventFocusCardReviewStates(BuildContext context) {
         child: WidgetbookDashboardPrimitiveFrame(
           child: EventFocusCard(
             item: EventFocusItem(
-              event: DashboardSurfaceFixtures.attendedEvent,
+              event: GuestEventCard.fromEvent(
+                DashboardSurfaceFixtures.attendedEvent,
+              ),
               kind: EventFocusKind.afterEvent,
               organizerName: widgetbookDashboardOrganizer.name,
               canSwipe: true,
@@ -138,7 +146,6 @@ Widget dashboardEventFocusCardReviewStates(BuildContext context) {
               windowClosesAt: DashboardSurfaceFixtures.now.add(
                 const Duration(hours: 2),
               ),
-              attendedCount: 6,
             ),
             cardIndex: 2,
             cardCount: 3,
@@ -162,7 +169,7 @@ DashboardCatchWindow _window(String id, int hoursLeft) {
     endTime: endTime,
   );
   return DashboardCatchWindow(
-    event: event,
+    event: GuestEventCard.fromEvent(event),
     windowClosesAt: DashboardSurfaceFixtures.now.add(
       Duration(hours: hoursLeft),
     ),

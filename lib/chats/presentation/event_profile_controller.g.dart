@@ -57,7 +57,7 @@ final class EventProfileEditorControllerProvider
 }
 
 String _$eventProfileEditorControllerHash() =>
-    r'65c651ade50204f476506dede5c17889b1c3efbd';
+    r'80e7acc72ca15d3fa216158b2e0d49175868b589';
 
 final class EventProfileEditorControllerFamily extends $Family
     with

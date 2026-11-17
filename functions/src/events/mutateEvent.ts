@@ -86,7 +86,10 @@ import {
 import {requireScheduledEvent} from
   "./configuredEvent";
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
-import {isOrganizerManager} from "../shared/organizerHosts";
+import {isOrganizerManager, isOrganizerOwner} from
+  "../shared/organizerHosts";
+import {hostEventWomenLed, hostWomenLedRole, womenLedLocked} from
+  "../organizers/womenLed";
 import {
   normalizeUploadedPhotosForFirestore,
 } from "../shared/uploadedPhotoNormalization";
@@ -538,6 +541,18 @@ export async function updateEventHandler(
     let patch = buildUpdateEventPatch(event, data.fields, deps);
     patch = {...patch, ...publishedEventEditPatch(event,
       data.expectedSetupRevision, fieldsStartTimeMillis(event, data.fields))};
+    if (data.fields.womenLed !== undefined) {
+      const womenLed = hostEventWomenLed(event.womenLed,
+        data.fields.womenLed, womenLedLocked(organizer.womenLed),
+        {uid: hostUserId,
+          role: hostWomenLedRole(isOrganizerOwner(organizer, hostUserId))},
+        deps.serverTimestamp?.() ??
+          admin.firestore.FieldValue.serverTimestamp());
+      // The audit timestamp is a server sentinel until the write lands.
+      if (womenLed) {
+        patch.womenLed = womenLed as unknown as EventDocument["womenLed"];
+      }
+    }
     const scheduleChanged = hasScheduleTimeChange(event, data.fields);
     const policyChanged = hasPolicyChange(event, patch, data.fields,
       privateAccessSnap.data());

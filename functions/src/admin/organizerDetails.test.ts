@@ -549,6 +549,43 @@ test("adminUpdateOrganizerDetailsHandler saves allowed cleanup fields",
     assert.equal(h.firestore.auditLogs().length, 1);
   });
 
+test("admins set, clear and release the organizer women-led label",
+  async () => {
+    const id = "afterfly-run-club-indore";
+    const h = harness({[`organizers/${id}`]: organizerDoc({womenLed: {
+      value: true, setByUid: "host-1", setByRole: "owner",
+      setAt: "EARLIER", lockedByAdmin: false}})});
+    const moderate = (womenLed: string, token: FakeData = {admin: true}) =>
+      adminUpdateOrganizerDetailsHandler(callableRequest("admin-1", {
+        organizerId: id, fields: {womenLed},
+        reviewNote: "Report: the label does not match the hosts.",
+      }, token), h.deps);
+
+    const result = await moderate("clear");
+    assert.equal(result.updatedFieldCount, 1);
+    assert.deepEqual(h.firestore.get(`organizers/${id}`)?.womenLed, {
+      value: false, setByUid: "admin-1", setByRole: "admin",
+      setAt: "SERVER_TIMESTAMP", lockedByAdmin: true});
+    const [audit] = h.firestore.auditLogs();
+    assert.deepEqual((audit.after as FakeData).updatedFields,
+      ["adminSearch", "womenLed"]);
+    assert.equal(((audit.before as FakeData).organizer as FakeData)
+      .womenLed && (((audit.before as FakeData).organizer as FakeData)
+      .womenLed as FakeData).value, true);
+
+    await moderate("release", {support: true});
+    assert.deepEqual(h.firestore.get(`organizers/${id}`)?.womenLed, {
+      value: false, setByUid: "admin-1", setByRole: "admin",
+      setAt: "SERVER_TIMESTAMP", lockedByAdmin: false});
+    await moderate("set");
+    assert.equal((h.firestore.get(`organizers/${id}`)?.womenLed as FakeData)
+      .value, true);
+    assert.equal(h.firestore.auditLogs().length, 3);
+
+    await assert.rejects(() => moderate("clear", {salesStaff: true}),
+      (error) => assertHttpsCode(error, "permission-denied"));
+  });
+
 test("adminUpdateOrganizerDetailsHandler replaces the organizer page links",
   async () => {
     const h = harness({"organizers/afterfly-run-club-indore": organizerDoc()});
