@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import {FLOOR_EXIT_TITLE, ISSUE_TITLE, decideAlert, decideFloorExit, nightlyWindow} from "./main_red_alert.mjs";
+import {FLOOR_EXIT_TITLE, ISSUE_TITLE, decideAlert, decideFloorExit, nightlyWindow, owedFromIssue}
+  from "./main_red_alert.mjs";
 
 const run = (conclusion, extra = {}) => ({id: 7, html_url: "https://example.test/run/7", head_sha: "a".repeat(40),
   conclusion, event: "push", display_title: "CI", ...extra});
@@ -33,11 +34,73 @@ test("further failures comment on the open issue instead of opening another", ()
   assert.match(decision.body, /No individual job failed/u);
 });
 
-test("the next green run closes the issue; green with no issue does nothing", () => {
-  const decision = decideAlert({run: run("success"), openIssue: {number: 12}, jobs: []});
+// The issue as main_red_alert.mjs would read it back after the given posts.
+const owedAfter = (...decisions) => owedFromIssue(decisions.map((decision) => decision.body));
+const lint = "tools / Tool checks (lint-scanners)";
+
+test("a green run that ran every failed job closes the issue; green with no issue does nothing", () => {
+  const opened = decideAlert({run: run("failure"), openIssue: null, jobs: [job(lint, "failure"), job("Required CI", "success")]});
+  assert.deepEqual(owedAfter(opened), {jobs: [lint], pending: false, unknown: false});
+  const decision = decideAlert({run: run("success"), openIssue: {number: 12}, owed: owedAfter(opened),
+    jobs: [job(lint, "success"), job("Required CI", "success")]});
   assert.deepEqual([decision.action, decision.issue], ["close", 12]);
   assert.match(decision.body, /green again at aaaaaaaa/u);
   assert.deepEqual(decideAlert({run: run("success"), openIssue: null, jobs: []}), {action: "none"});
+});
+
+test("a green run that skipped the failed jobs comments once and leaves the issue open", () => {
+  const opened = decideAlert({run: run("failure"), openIssue: null, jobs: [job(lint, "failure"), job("Required CI", "failure")]});
+  const skipped = [job(lint, "skipped"), job("Required CI", "success")];
+  const first = decideAlert({run: run("success"), openIssue: {number: 12}, owed: owedAfter(opened), jobs: skipped});
+  assert.deepEqual([first.action, first.issue], ["comment", 12]);
+  assert.match(first.body, /green at aaaaaaaa .*, but `tools \/ Tool checks \(lint-scanners\)` did not run/u);
+  // Another green run that skips them again says nothing new.
+  assert.deepEqual(decideAlert({run: run("success"), openIssue: {number: 12}, owed: owedAfter(opened, first), jobs: skipped}),
+    {action: "none", reason: "still_owed"});
+  // A later run that passes them closes it.
+  assert.equal(decideAlert({run: run("success"), openIssue: {number: 12}, owed: owedAfter(opened, first),
+    jobs: [job(lint, "success")]}).action, "close");
+});
+
+test("a green nightly closes the issue even when the failed jobs are not listed", () => {
+  const opened = decideAlert({run: run("failure"), openIssue: null, jobs: [job(lint, "failure")]});
+  const decision = decideAlert({run: run("success", {event: "schedule"}), openIssue: {number: 12}, owed: owedAfter(opened),
+    jobs: [job("Required CI", "success")]});
+  assert.equal(decision.action, "close");
+});
+
+test("a further failure keeps owing earlier failed jobs it did not pass", () => {
+  const opened = decideAlert({run: run("failure"), openIssue: null, jobs: [job(lint, "failure")]});
+  const again = decideAlert({run: run("failure"), openIssue: {number: 12}, owed: owedAfter(opened),
+    jobs: [job(lint, "skipped"), job("flutter / Analyze & test", "failure")]});
+  assert.deepEqual(owedAfter(opened, again).jobs, ["flutter / Analyze & test", lint]);
+  // One that passes the earlier job drops it.
+  const fixed = decideAlert({run: run("failure"), openIssue: {number: 12}, owed: owedAfter(opened, again),
+    jobs: [job(lint, "success"), job("flutter / Analyze & test", "failure")]});
+  assert.deepEqual(owedAfter(opened, again, fixed).jobs, ["flutter / Analyze & test"]);
+});
+
+test("an issue with no record of its failed jobs waits for a green nightly", () => {
+  const first = decideAlert({run: run("success"), openIssue: {number: 12}, owed: null, jobs: [job("Required CI", "success")]});
+  assert.equal(first.action, "comment");
+  assert.match(first.body, /does not record which jobs failed/u);
+  assert.deepEqual(decideAlert({run: run("success"), openIssue: {number: 12}, owed: owedAfter(first), jobs: []}),
+    {action: "none", reason: "still_owed"});
+  // A failure keeps it unknown rather than trusting a partial list.
+  const failed = decideAlert({run: run("failure"), openIssue: {number: 12}, owed: owedAfter(first), jobs: [job(lint, "failure")]});
+  assert.equal(owedAfter(first, failed).unknown, true);
+  assert.equal(decideAlert({run: run("success"), openIssue: {number: 12}, owed: owedAfter(first, failed),
+    jobs: [job(lint, "success")]}).action, "comment");
+  assert.equal(decideAlert({run: run("success", {event: "schedule"}), openIssue: {number: 12}, owed: owedAfter(first),
+    jobs: []}).action, "close");
+});
+
+test("the owed-jobs record reads the latest valid post and ignores malformed ones", () => {
+  assert.equal(owedFromIssue([null, "no record here"]), null);
+  assert.deepEqual(owedFromIssue(['<!-- main-red-owed {"jobs":["a"]} -->', "<!-- main-red-owed {not json} -->",
+    '<!-- main-red-owed {"jobs":[1]} -->']), {jobs: ["a"], pending: false, unknown: false});
+  assert.deepEqual(owedFromIssue(['<!-- main-red-owed {"jobs":["a"]} -->', '<!-- main-red-owed {"jobs":["b"],"pending":true} -->']),
+    {jobs: ["b"], pending: true, unknown: false});
 });
 
 test("cancelled, skipped and neutral runs never change the alert", () => {
@@ -100,6 +163,9 @@ test("seven fully green days open one floor-exit issue with the restore steps", 
   assert.match(decision.body, /REPORTING_LANES/u);
   assert.match(decision.body, /Required CI/u);
   assert.deepEqual(decideFloorExit({runs: greenWeek(), now: NOW, openIssue: {number: 9}}), {action: "none"});
+  // Not while a "Main CI is red" issue is still owed a run.
+  assert.deepEqual(decideFloorExit({runs: greenWeek(), now: NOW, openIssue: null, alertOpen: true}),
+    {action: "none", reason: "alert_open"});
 });
 
 test("a red run inside the week, reporting lanes included, keeps the floor", () => {
