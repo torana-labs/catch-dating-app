@@ -88,7 +88,8 @@ export const hostLandingCopy = {
     title: "Built for whatever you bring people together for.",
     body: `A pace group, a seating plan and a group walking to the next bar are different jobs. ${brand.name} knows which one you’re running. Pick one to follow its night.`,
     label: "Event formats",
-    tileKicker: "Follow an evening",
+    /** Each format card's link: it picks the format and lands on its night. */
+    more: "Follow its night",
     stagesTitle: "Where you are today",
     stages: [
       {
@@ -117,11 +118,6 @@ export const hostLandingCopy = {
     pickerLead: "Show me a",
     timelineLabel: "Moments in the evening",
     position: "{index} of {total}",
-  },
-  tablet: {
-    kicker: "At the host stand",
-    title: "Bigger room? Put it on the iPad.",
-    body: "The same live controls, with the run of show and the room map side by side for whoever is running the floor.",
   },
   compare: {
     kicker: "Compare",
@@ -154,9 +150,14 @@ export const hostLandingCopy = {
     rate: facts.rate,
     title: hostPricingLines.rateTitleFree,
     body: hostPricingLines.body,
-    terms: `${fill("Founding hosts get {foundingTrialDays} days free.", {foundingTrialDays: facts.foundingTrialDays})} ${hostPricingLines.organisations}`,
+    /** What the one plan includes, as the band's label pills. */
+    included: ["Your page", "Bookings and waitlists", "Payments", "Check-in", "Live tools for the night", "Guest records", "Messages", "Reports"],
     start: startTrial,
-    /** Organisations and busy hosts talk to a person about their setup. */
+    /** Every included feature, the worked examples and the pricing questions live on /pricing/. */
+    full: "See full pricing",
+    fullHref: "/pricing/",
+    /** The band's foot: organisations and busy hosts talk to a person about their setup. */
+    organisations: "Running several nights a week, or buying for a company or venue?",
     talk: "Talk to us about your setup",
     talkMessage: `Hi ${brand.name}, I run several nights a week (or buy for a venue or company) and I'd like to talk about my setup.`,
     examples: hostLandingFeeExamples.map(hostFeeExample),
@@ -166,11 +167,11 @@ export const hostLandingCopy = {
     title: "Start now, look first, or talk to a person.",
     body: "No call needed to begin. If you’d rather see it or ask first, every route ends in the same free trial.",
     paths: [
-      {ground: "coral", title: "Start your free trial", body: `Download ${brand.stores.hostAppName} and publish your first event tonight. No call, no application.`, link: startTrial, to: {anchor: "start"}},
-      {ground: "paper", title: "Follow a night", body: "Pick a format and follow its evening, from the first booking to the morning after.", link: "See a night", to: {anchor: "night"}},
-      {ground: "mint", title: "Talk to us on WhatsApp", body: "A real person who knows hosting. We reply on WhatsApp, usually within an hour.", link: "Open WhatsApp", to: {whatsapp: whatsappChatCopy.hostQuestionMessage}},
-      {ground: "ink", title: "Book a 15-minute walkthrough", body: "For venues, studios, companies and multi-day programmes. We’ll set it up with you.", link: "Book on WhatsApp", to: {whatsapp: whatsappChatCopy.walkthroughMessage}},
-    ] satisfies readonly {ground: "coral" | "paper" | "mint" | "ink"; title: string; body: string; link: string; to: HostLandingTarget}[],
+      {ground: "coral", kicker: "Ready now", title: "Start your free trial", body: `Download ${brand.stores.hostAppName} and publish your first event tonight. No call, no application.`, link: startTrial, to: {anchor: "start"}},
+      {ground: "paper", kicker: "Want to see it", title: "Follow a night", body: "Pick a format and follow its evening, from the first booking to the morning after.", link: "See a night", to: {anchor: "night"}},
+      {ground: "mint", kicker: "Want a person", title: "Talk to us on WhatsApp", body: "A real person who knows hosting. We reply on WhatsApp, usually within an hour.", link: "Open WhatsApp", to: {whatsapp: whatsappChatCopy.hostQuestionMessage}},
+      {ground: "ink", kicker: "Want a meeting", title: "Book a 15-minute walkthrough", body: "For venues, studios, companies and multi-day programmes. We’ll set it up with you.", link: "Book on WhatsApp", to: {whatsapp: whatsappChatCopy.walkthroughMessage}},
+    ] satisfies readonly {ground: "coral" | "paper" | "mint" | "ink"; kicker: string; title: string; body: string; link: string; to: HostLandingTarget}[],
   },
   faq: {
     kicker: "Questions",
@@ -213,6 +214,12 @@ export const hostLandingCopy = {
     weddingsLead: "Running a wedding or a multi-day programme?",
     weddings: `${brand.name} for weddings`,
     weddingsHref: "/weddings/",
+  },
+  /** The phone action bar: the free trial and a person on WhatsApp. */
+  dock: {
+    label: "Quick actions",
+    start: startTrial,
+    whatsapp: "Talk to us on WhatsApp",
   },
   footer: {
     tagline: fill("For hosts in {cities}. Meet people in real life, through hosts who bring them together.", {cities: liveCities}),
@@ -290,41 +297,3 @@ export const hostNightFormats: readonly HostNightFormat[] = [
     ],
   },
 ];
-
-/** A rectangle in a capture's own pixels. */
-export interface HostNightBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-/**
- * Where the app screen sits inside every framed phone capture the night scene
- * shows (980 × 1924 PNGs from tool/marketing; the frame is the same on each).
- */
-export const hostNightCaptureScreen: HostNightBox = {x: 88, y: 88, width: 804, height: 1748};
-
-/**
- * The part of each capture a night moment is about, in capture pixels, from
- * the owner's NightFrameCropMap board (design canvas page "On the night ·
- * mobile framing"). A phone-width band shows only this box, so the app's text
- * reads at about 14 px instead of 4.6. Keep each box inside
- * hostNightCaptureScreen and re-check it when a capture is re-rendered. A slot
- * without a box shows the top of its screen.
- */
-export const hostNightFocus: Readonly<Record<string, HostNightBox>> = {
-  "host-formats-pods": {x: 112, y: 650, width: 756, height: 1080},
-  "host-door-in": {x: 112, y: 340, width: 756, height: 910},
-  "host-formats-mix": {x: 112, y: 350, width: 756, height: 580},
-  "host-live-console": {x: 112, y: 500, width: 756, height: 930},
-  "host-post-event-report": {x: 112, y: 380, width: 756, height: 680},
-  "host-door-arriving": {x: 112, y: 700, width: 756, height: 980},
-  "host-live-needs": {x: 112, y: 360, width: 756, height: 860},
-  "host-live-scores": {x: 112, y: 680, width: 756, height: 1040},
-  "host-formats-rules": {x: 112, y: 380, width: 756, height: 790},
-  "host-formats-courts-setup": {x: 112, y: 360, width: 756, height: 1000},
-  "host-formats-courts": {x: 112, y: 360, width: 756, height: 1060},
-  "host-formats-crawl": {x: 112, y: 360, width: 756, height: 1060},
-  "host-formats-crawl-move": {x: 112, y: 660, width: 756, height: 1080},
-};

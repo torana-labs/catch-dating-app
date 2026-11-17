@@ -1,13 +1,16 @@
-import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
+import {act, cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {brand} from "@catch/brand";
-import {hostLandingCopy as copy, hostNightCaptureScreen, hostNightFocus, hostNightFormats} from "@content/hostLanding";
+import {hostLandingCopy as copy, hostNightFormats} from "@content/hostLanding";
 import {hostFeeCalculatorCopy, hostPricingFacts} from "@content/pricing";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {HostPage} from "./HostPage";
-import {hostLandingHref} from "./useHostLandingController";
+import {hostLandingHref, hostNightHref} from "./useHostLandingController";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  window.history.replaceState(null, "", "/");
+});
 
 // The page's capture slots, as the website manifest records them (the real
 // bindings are checked against capture_manifest.json in marketingCaptures.test.tsx).
@@ -29,10 +32,9 @@ describe("host landing", {timeout: 20_000}, () => {
     // A host page's primary action is the trial, never the guest app.
     expect(banner.getByRole("link", {name: copy.sections.start}).getAttribute("href")).toBe("#start");
     expect(banner.queryByRole("link", {name: /Get the app|Get notified/u})).toBeNull();
-    // The site top bar opens pages, plus Pricing (the owner's 16 Nov call, until /pricing/ ships);
-    // the page's sections live in their own bar.
+    // The site top bar opens pages, Pricing among them (/pricing/); the page's sections live in their own bar.
     const nav = within(screen.getByRole("navigation", {name: "Primary"}));
-    expect(nav.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/explore/", "/host/#pricing", "/help/"]);
+    expect(nav.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/explore/", "/pricing/", "/help/"]);
     // The host header: the For hosts dropdown and WhatsApp before the free trial; the host footer.
     expect(banner.getByRole("button", {name: "For hosts"}).getAttribute("aria-expanded")).toBe("false");
     expect(banner.getByRole("link", {name: /WhatsApp/u}).getAttribute("href")).toMatch(/^https:\/\/wa\.me\//u);
@@ -43,7 +45,7 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(sectionLinks).toEqual(["#ways", "#night", "#pricing", "#faq", "#start"]);
     for (const href of sectionLinks) expect(container.querySelector(href!), href!).toBeTruthy();
     expect(sections.getByRole("link", {name: copy.sections.start, hidden: true}).getAttribute("href")).toBe("#start");
-    const bands: string[] = [copy.ways.title, copy.night.title, copy.tablet.title, copy.compare.title, copy.pricing.title,
+    const bands: string[] = [copy.ways.title, copy.ways.stagesTitle, copy.night.title, copy.compare.title, copy.pricing.title,
       copy.talk.title, copy.faq.title, copy.start.title];
     const headings = screen.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent ?? "");
     expect(headings.filter((heading) => bands.includes(heading))).toEqual(bands);
@@ -51,10 +53,11 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(screen.getByText(copy.footer.tagline)).toBeTruthy();
   });
 
-  it("states the trial terms per billing cycle in the hero and links Catch Host's App Store and Google Play listings", () => {
+  it("states the trial terms per billing cycle in the hero (no laptop QR card at phone width) and links Catch Host's App Store and Google Play listings", () => {
     renderPage();
     const hero = within(screen.getByRole("region", {name: copy.hero.title}));
     expect(hero.getByText(copy.hero.terms)).toBeTruthy();
+    expect(hero.queryByRole("img", {name: copy.start.qrLabel})).toBeNull();
     expect(copy.hero.terms).toContain(`${hostPricingFacts.cap} per billing cycle`);
     const apple = screen.getAllByRole("link", {name: "Download on the App Store"});
     expect(apple.map((link) => link.getAttribute("href"))).toEqual([brand.stores.host.ios]);
@@ -71,37 +74,45 @@ describe("host landing", {timeout: 20_000}, () => {
     }
   });
 
-  it("shares the picked format between the ways band's tiles and the night scene", () => {
+  it("links each format card to its night, which the night band follows moment by moment", () => {
     renderPage();
-    const scene = within(screen.getByRole("group", {name: `${hostNightFormats[0].event}, moment by moment`}));
-    expect(scene.getByRole("button", {name: new RegExp(hostNightFormats[0].moments[0].title)}).getAttribute("aria-current")).toBe("step");
-    fireEvent.click(screen.getByRole("button", {name: /Racket sports.*rotated by level/u}));
-    const courts = within(screen.getByRole("group", {name: "Pickleball Social, moment by moment"}));
+    const ways = within(screen.getByRole("region", {name: copy.ways.title}));
+    expect(ways.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(hostNightFormats.map((item) => hostNightHref(item.format)));
+    const timeline = within(screen.getByRole("list", {name: `${hostNightFormats[0].event}, moment by moment`}));
+    expect(timeline.getByRole("button", {name: new RegExp(hostNightFormats[0].moments[0].title)}).getAttribute("aria-current")).toBe("step");
+    expect(timeline.getByText(hostNightFormats[0].moments[0].body)).toBeTruthy();
+    // A card's hash picks its format.
+    act(() => {
+      window.history.replaceState(null, "", hostNightHref("courts"));
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    });
+    const courts = within(screen.getByRole("list", {name: "Pickleball Social, moment by moment"}));
     expect(courts.getByRole("button", {name: /Levels in, courts balanced/u}).getAttribute("aria-current")).toBe("step");
-    expect(courts.getAllByText("Doubles on three courts").length).toBeGreaterThan(0);
-    expect(screen.getByRole("button", {name: /Racket sports.*rotated by level/u}).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("radio", {name: "Pickleball"}).getAttribute("aria-checked")).toBe("true");
   });
 
-  it("shows each moment's screen from the capture pipeline", () => {
+  it("picks a format and a moment in the night band, and shows that moment's screen from the capture pipeline", () => {
     renderPage();
-    const scene = within(screen.getByRole("group", {name: `${hostNightFormats[0].event}, moment by moment`}));
-    expect(scene.getByRole("img", {name: marketingCaptures["host-formats-pods"].alt})).toBeTruthy();
+    const night = within(screen.getByRole("region", {name: copy.night.title}));
+    expect(night.getByRole("img", {name: marketingCaptures["host-formats-pods"].alt})).toBeTruthy();
+    fireEvent.click(night.getByRole("button", {name: /Nobody left on the road/u}));
+    expect(night.getByRole("button", {name: /Nobody left on the road/u}).getAttribute("aria-current")).toBe("step");
+    expect(night.getByRole("img", {name: marketingCaptures["host-live-console"].alt})).toBeTruthy();
+    fireEvent.click(night.getByRole("radio", {name: "Dinners"}));
+    const dinner = within(screen.getByRole("list", {name: "Long Table Supper, moment by moment"}));
+    expect(dinner.getByRole("button", {name: /Tables planned/u}).getAttribute("aria-current")).toBe("step");
   });
 
-  it("crops every night moment's capture to a focus box inside the app screen, so phones read the app at about 14 px", () => {
-    const screenBox = hostNightCaptureScreen;
+  it("names a screen for every moment of every night", () => {
     for (const format of hostNightFormats) {
-      for (const moment of format.moments) {
-        const box = hostNightFocus[moment.slot];
-        expect(box, moment.slot).toBeTruthy();
-        expect(box.x >= screenBox.x && box.y >= screenBox.y, moment.slot).toBe(true);
-        expect(box.x + box.width <= screenBox.x + screenBox.width, moment.slot).toBe(true);
-        expect(box.y + box.height <= screenBox.y + screenBox.height, moment.slot).toBe(true);
-        // At a 390 px phone (350 px of band), 15 pt body text in a 2x capture reads at 30 × 350 / width px.
-        expect(30 * 350 / box.width, moment.slot).toBeGreaterThanOrEqual(13.5);
-      }
+      for (const moment of format.moments) expect(marketingCaptures[moment.slot], `${format.format} ${moment.slot}`).toBeTruthy();
     }
-    expect(Object.keys(hostNightFocus).sort()).toEqual([...new Set(hostNightFormats.flatMap((format) => format.moments.map((moment) => moment.slot)))].sort());
+  });
+
+  it("leads each way in to its band or to a person, from where the host is today", () => {
+    renderPage();
+    const stages = within(screen.getByRole("region", {name: copy.ways.stagesTitle}));
+    expect(stages.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(copy.ways.stages.map((stage) => hostLandingHref(stage.to)));
   });
 
   it("prices a billing cycle on the shared calculator: 5% after the trial, capped at ₹10,000, with worked examples", () => {
@@ -115,8 +126,10 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(pricing.getByText("₹10,000")).toBeTruthy();
     expect(pricing.getByText(hostFeeCalculatorCopy.capped)).toBeTruthy();
     expect(pricing.getByText("3.3%")).toBeTruthy();
-    expect(pricing.getByText(copy.pricing.terms)).toBeTruthy();
+    for (const label of copy.pricing.included) expect(pricing.getByText(label)).toBeTruthy();
+    expect(pricing.getByText(copy.pricing.organisations)).toBeTruthy();
     expect(typed(pricing.getByRole("link", {name: copy.pricing.talk}).getAttribute("href"))).toBe(copy.pricing.talkMessage);
+    expect(pricing.getByRole("link", {name: copy.pricing.full}).getAttribute("href")).toBe("/pricing/");
   });
 
   it("compares only the tools the owner allows, with the fee per billing cycle", () => {
@@ -139,14 +152,18 @@ describe("host landing", {timeout: 20_000}, () => {
     const ways = within(screen.getByRole("region", {name: copy.talk.title}));
     expect(ways.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(copy.talk.paths.map((path) => hostLandingHref(path.to)));
     expect(ways.getByText(/usually within an hour/u)).toBeTruthy();
+    // The "see it" route shows the live console on the iPad.
+    expect(ways.getByRole("img", {name: marketingCaptures["host-live-tablet"].alt})).toBeTruthy();
+    const dock = within(screen.getByRole("group", {name: copy.dock.label}));
+    expect(dock.getByRole("link", {name: copy.dock.start}).getAttribute("href")).toBe("#start");
+    expect(dock.getByRole("link", {name: copy.dock.whatsapp}).getAttribute("href")!.startsWith(whatsappPrefix)).toBe(true);
   });
 
-  it("closes with three steps, Catch Host's badges (no QR code at phone width), a person and a link to Catch for weddings", () => {
+  it("closes with three steps, Catch Host's badges, a person and a link to Catch for weddings", () => {
     renderPage();
     const start = within(screen.getByRole("region", {name: copy.start.title}));
     expect(start.getByText(copy.start.steps[2].title)).toBeTruthy();
     expect(start.getByRole("link", {name: "Download on the App Store"}).getAttribute("href")).toBe(brand.stores.host.ios);
-    expect(start.queryByRole("img", {name: /QR/iu})).toBeNull();
     expect(start.getByRole("link", {name: copy.start.personWhatsapp}).getAttribute("href")!.startsWith(whatsappPrefix)).toBe(true);
     expect(start.getByRole("link", {name: copy.start.weddings}).getAttribute("href")).toBe("/weddings/");
   });
