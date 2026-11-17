@@ -112,8 +112,14 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
         body = CatchLocalizedErrorState(
           directory.error!,
           context: AppErrorContext.forms,
-          onRetry: () =>
-              ref.invalidate(hostFormsAccountDirectoryProvider(scope)),
+          onRetry: () {
+            ref
+                .read(
+                  hostFormsDirectoryControllerProvider(scope.request).notifier,
+                )
+                .retry();
+            ref.invalidate(hostFormsAccountDirectoryProvider(scope));
+          },
         );
       } else {
         body = HostFormsBody(

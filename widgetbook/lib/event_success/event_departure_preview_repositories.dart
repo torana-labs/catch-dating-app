@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/live/data/event_assistance_departure_r
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_route_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
@@ -135,5 +136,9 @@ class DeparturePreviewLiveRepository
   @override
   Future<EventAssistanceGroupProgressResult> confirm(
     EventAssistanceDepartureChange change,
+  ) async => throw previewUnconfirmed;
+  @override
+  Future<EventAssistanceGroupProgressResult> changeRoute(
+    EventAssistanceRouteChange change,
   ) async => throw previewUnconfirmed;
 }

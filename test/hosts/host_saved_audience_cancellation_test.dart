@@ -7,9 +7,22 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+HostSavedAudienceSummary _group(String id) => HostSavedAudienceSummary(
+  organizerId: 'a',
+  audienceId: id,
+  name: id,
+  status: 'active',
+  isStatic: false,
+  revision: 1,
+  lastPreviewMatchCount: null,
+  lastPreviewAt: null,
+  updatedAt: DateTime(2026),
+);
+
 void main() {
-  test('disposed exhaustive directory never requests the next page', () async {
-    final repository = _Pages();
+  test('the exhaustive directory listens to every group at once', () async {
+    final repository = _Windows();
+    addTearDown(repository.close);
     final container = ProviderContainer(
       overrides: [
         hostSavedAudienceRepositoryProvider.overrideWithValue(repository),
@@ -20,87 +33,86 @@ void main() {
       hostAllSavedAudienceSummariesProvider('a'),
       (_, _) {},
     );
-    expect(repository.requests, ['a:null']);
-    subscription.close();
-    await container.pump();
-    repository.pages.first.complete(
-      const HostSavedAudienceSummaryPage(audiences: [], nextCursor: 'next'),
+    addTearDown(subscription.close);
+    expect(repository.limits, [hostAllGroupsLimit]);
+    repository.windows.add(
+      HostGroupSummaryWindow(audiences: [_group('one')], hasMore: false),
     );
     await container.pump();
-    expect(repository.requests, ['a:null']);
+    expect(
+      container
+          .read(hostAllSavedAudienceSummariesProvider('a'))
+          .requireValue
+          .audiences
+          .map((group) => group.audienceId),
+      ['one'],
+    );
+    repository.windows.add(
+      HostGroupSummaryWindow(
+        audiences: [_group('one'), _group('two')],
+        hasMore: false,
+      ),
+    );
+    await container.pump();
+    expect(
+      container
+          .read(hostAllSavedAudienceSummariesProvider('a'))
+          .requireValue
+          .audiences
+          .map((group) => group.audienceId),
+      ['one', 'two'],
+    );
   });
 
-  test(
-    'active directory follows cursors and produces exhaustive data',
-    () async {
-      final repository = _Pages();
-      final container = ProviderContainer(
-        overrides: [
-          hostSavedAudienceRepositoryProvider.overrideWithValue(repository),
-        ],
-      );
-      addTearDown(container.dispose);
-      final subscription = container.listen(
-        hostAllSavedAudienceSummariesProvider('a'),
-        (_, _) {},
-      );
-      addTearDown(subscription.close);
-      final result = container.read(
-        hostAllSavedAudienceSummariesProvider('a').future,
-      );
-      repository.pages.first.complete(
-        const HostSavedAudienceSummaryPage(audiences: [], nextCursor: 'next'),
-      );
-      await container.pump();
-      expect(repository.requests, ['a:null', 'a:next']);
-      repository.pages.last.complete(
-        const HostSavedAudienceSummaryPage(audiences: [], nextCursor: null),
-      );
-      expect((await result).nextCursor, isNull);
-    },
-  );
+  test('a directory larger than the cap fails safely', () async {
+    final repository = _Windows();
+    addTearDown(repository.close);
+    final container = ProviderContainer(
+      overrides: [
+        hostSavedAudienceRepositoryProvider.overrideWithValue(repository),
+      ],
+    );
+    addTearDown(container.dispose);
+    final subscription = container.listen(
+      hostAllSavedAudienceSummariesProvider('a'),
+      (_, _) {},
+    );
+    addTearDown(subscription.close);
+    repository.windows.add(
+      HostGroupSummaryWindow(audiences: [_group('one')], hasMore: true),
+    );
+    await container.pump();
+    expect(
+      container.read(hostAllSavedAudienceSummariesProvider('a')).error,
+      isA<StateError>(),
+    );
+  });
 
-  test(
-    'organizer switch disposes old pagination while new scope loads',
-    () async {
-      final repository = _Pages();
-      final container = ProviderContainer(
-        overrides: [
-          hostSavedAudienceRepositoryProvider.overrideWithValue(repository),
-        ],
-      );
-      addTearDown(container.dispose);
-      final old = container.listen(
-        hostAllSavedAudienceSummariesProvider('a'),
-        (_, _) {},
-      );
-      old.close();
-      await container.pump();
-      final current = container.listen(
-        hostAllSavedAudienceSummariesProvider('b'),
-        (_, _) {},
-      );
-      addTearDown(current.close);
-      repository.pages.first.complete(
-        const HostSavedAudienceSummaryPage(
-          audiences: [],
-          nextCursor: 'old-next',
-        ),
-      );
-      await container.pump();
-      expect(repository.requests, ['a:null', 'b:null']);
-      repository.pages.last.complete(
-        const HostSavedAudienceSummaryPage(audiences: [], nextCursor: null),
-      );
-      await container.read(hostAllSavedAudienceSummariesProvider('b').future);
-    },
-  );
+  test('a closed directory stops listening', () async {
+    final repository = _Windows();
+    addTearDown(repository.close);
+    final container = ProviderContainer(
+      overrides: [
+        hostSavedAudienceRepositoryProvider.overrideWithValue(repository),
+      ],
+    );
+    addTearDown(container.dispose);
+    final subscription = container.listen(
+      hostAllSavedAudienceSummariesProvider('a'),
+      (_, _) {},
+    );
+    await container.pump();
+    expect(repository.windows.hasListener, isTrue);
+    subscription.close();
+    await container.pump();
+    expect(repository.windows.hasListener, isFalse);
+  });
 }
 
 class _Functions extends Fake implements FirebaseFunctions {}
 
-class _Pages extends HostSavedAudienceRepository {
-  _Pages()
+class _Windows extends HostSavedAudienceRepository {
+  _Windows()
     : super(
         _Functions(),
         summaries: HostSummaryReader(
@@ -108,20 +120,19 @@ class _Pages extends HostSavedAudienceRepository {
           actorId: () => 'host',
         ),
       );
-  final requests = <String>[];
-  final pages = <Completer<HostSavedAudienceSummaryPage>>[];
+  final limits = <int>[];
+  final windows = StreamController<HostGroupSummaryWindow>();
+
+  void close() => unawaited(windows.close());
+
   @override
-  Future<HostSavedAudienceSummaryPage> listGroupSummaries(
+  Stream<HostGroupSummaryWindow> watchGroupSummaries(
     String organizerId, {
-    String? cursor,
-    int limit = 25,
+    required int limit,
     bool byName = true,
     bool? isStatic,
-    bool Function()? isCurrent,
   }) {
-    requests.add('$organizerId:$cursor');
-    final page = Completer<HostSavedAudienceSummaryPage>();
-    pages.add(page);
-    return page.future;
+    limits.add(limit);
+    return windows.stream;
   }
 }

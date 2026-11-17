@@ -30,6 +30,10 @@ import {cancelPaidEventAdmission} from
   "../../payments/eventCheckout/eventPaymentCancellation";
 import {resolveInviteAttributionToken} from "../inviteLinks";
 import {
+  adClientIdentity,
+  recordPublicCheckoutAdContext,
+} from "../../acquisition/adConversionContext";
+import {
   assertCurrentPublicGuest,
   readPublicEventSource,
   publicGuestMembership,
@@ -98,6 +102,7 @@ export const publicCheckoutDefaults = {
   project: projectPublicPayment,
   invite: resolveInviteAttributionToken,
   cancel: cancelPaidEventAdmission,
+  adContext: recordPublicCheckoutAdContext,
 };
 
 export async function managePublicEventCheckoutHandler(
@@ -252,6 +257,16 @@ export async function managePublicEventCheckoutHandler(
         return checked(result, deps.now());
       }
       payment = reserved.payment;
+      await deps.adContext({
+        db,
+        paymentId: reserved.paymentId,
+        uid,
+        eventId: data.eventId,
+        organizerId: reserved.payment.organizerId,
+        click: data.adContext,
+        client: adClientIdentity(request),
+        nowMillis: deps.now(),
+      });
     }
     if (!payment) registrationUnavailable();
     if (data.action === "cancelAdmission") {

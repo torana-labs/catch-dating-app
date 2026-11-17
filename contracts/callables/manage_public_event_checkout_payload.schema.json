@@ -148,6 +148,10 @@
               "type": "null"
             }
           ]
+        },
+        "adContext": {
+          "$ref": "../shared/ad_click_context.schema.json#/definitions/clickContext",
+          "description": "Ad-click identifiers and campaign labels the browser holds under a marketing choice. Saved once per checkout in adConversionContexts; never part of the replay identity, so a retry with different values is not a reused request."
         }
       }
     },

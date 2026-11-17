@@ -117,7 +117,6 @@ class _HostFormNewScreenState extends ConsumerState<HostFormNewScreen> {
             ),
       );
       if (!mounted) return;
-      ref.invalidate(hostFormsDirectoryControllerProvider);
       context.pushReplacementNamed(
         Routes.hostFormBuilderScreen.name,
         pathParameters: {'formId': editor.form.formId},

@@ -15,7 +15,7 @@
       "eyebrow": "Legal",
       "title": "Privacy policy",
       "summary": "How {{brand.name}} collects, uses, shares, protects, and responds to requests about personal data.",
-      "effectiveDate": "12 November 2026",
+      "effectiveDate": "17 November 2026",
       "sections": [
         {
           "heading": "Who operates {{brand.name}}",
@@ -35,6 +35,7 @@
             "Organiser payment connections. When an organiser connects Razorpay, we store their Razorpay account ID and keep their access credentials encrypted in a separate secrets store. They are used only to run that organiser's checkouts, refunds, and payment updates.",
             "Cross Paths information, including your private global and per-event visibility choices, the event connected to a suggestion or invitation, invitation responses, and safety or eligibility state needed to prevent an unsafe or ineligible introduction.",
             "Website and host-lead information, including name, email, city, role, organization, public website or social link, application answers, consent choice, and campaign attribution attached to a submission.",
+            "Advertising measurement information. If you allow marketing measurement on our website, this includes the ad that brought you (such as Google's or Meta's click identifier and campaign labels) and the pages and booking steps you reach. When you book, create an account, or set up as a host, it includes the click identifiers saved with that action, the event category and the amount paid.",
             "Device and reliability information, including app version, operating system, browser, diagnostic events, crash information, security signals, and approximate location. Precise location is used only where a feature needs it and device permission allows it.",
             "Your city on the website. The website infers your approximate city from your network location to show plans near you; it uses only the city and does not store it or your network location. If you tap “Use my location”, your browser asks your permission and your device works out the nearest city from it; the location itself is never sent to or stored by {{brand.name}}. A city you choose is remembered in your browser so the site opens on it next time.",
             "Public-source listing information, such as organizer names, descriptions, public links, event dates and locations, source provenance, and freshness details. An unclaimed listing is not an endorsement or proof of a commercial relationship."
@@ -59,6 +60,8 @@
           "paragraphs": [
             "We may share data with service providers supporting hosting, databases, authentication, storage, analytics, crash reporting, communications, moderation, maps, search, and security; with an organizer when you request an organizer-operated service; when required by law or needed to protect people; during a business reorganization; or at your direction. We do not sell personal data for money.",
             "Razorpay processes payments for paid bookings. For a paid booking, we send Razorpay the order amount and a booking reference, and the organiser who sells the ticket receives your booking, the amount you paid, and the details they need to run the event and handle refunds. The payment details you enter in Razorpay's checkout go to Razorpay under its own privacy policy.",
+            "Advertising partners. We advertise {{brand.name}} on Google (Google Ads and Google Analytics) and Meta (Facebook and Instagram) and measure which ads work. With your marketing choice on our website, their tags record the pages and booking steps you reach. When you book an event, create an account, or set up as a host, we may send Google and Meta a record of that action (its type, value, event category, an event reference and the ad-click identifiers saved with it) together with your phone number, email address, first name and city in hashed form. Hashing scrambles each value one way before it leaves us, but it is not anonymous: Google and Meta compare it with their own account data to link the action to an ad you saw. We may also share hashed contact lists of people who booked or host on {{brand.name}}, so they can find people with similar interests and avoid showing our ads to existing customers.",
+            "We never share your gender, age, photos, prompts, messages, the people you picked or who picked you, your preferences, or Cross Paths activity with advertisers. You can withdraw your website marketing choice at any time through Privacy choices, and you can ask us to stop sending your data to advertising partners by writing to {{brand.support.email}}. We then stop sending new records and remove you from the lists we share within seven days. Records already received by Google or Meta are handled under their own privacy policies.",
             "External event and ticket links lead to third parties whose policies apply. Non-essential website analytics and marketing tags load only after you accept them. Essential storage may support security, consent, saved organizers, the city you chose, forms, and site operation."
           ]
         },

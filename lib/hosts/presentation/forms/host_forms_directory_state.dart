@@ -4,27 +4,27 @@ part of 'host_forms_controller.dart';
 class HostFormsDirectoryState {
   const HostFormsDirectoryState({
     required this.forms,
-    required this.nextCursor,
+    required this.hasMore,
     this.loadingMore = false,
     this.loadMoreError,
   });
 
   final List<HostFormSummary> forms;
-  final String? nextCursor;
+
+  /// Whether more forms follow the rows listened to.
+  final bool hasMore;
   final bool loadingMore;
   final Object? loadMoreError;
 
-  bool get canLoadMore => nextCursor != null && !loadingMore;
+  bool get canLoadMore => hasMore && !loadingMore;
 
   HostFormsDirectoryState copyWith({
-    List<HostFormSummary>? forms,
-    String? nextCursor,
     bool? loadingMore,
     Object? loadMoreError,
     bool clearLoadMoreError = false,
   }) => HostFormsDirectoryState(
-    forms: forms ?? this.forms,
-    nextCursor: nextCursor ?? this.nextCursor,
+    forms: forms,
+    hasMore: hasMore,
     loadingMore: loadingMore ?? this.loadingMore,
     loadMoreError: clearLoadMoreError
         ? null

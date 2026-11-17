@@ -7316,14 +7316,6 @@
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.event_focus_list"
   },
-  "dashboardEventFocusListLabelAttendeesCheckedIn": "{attendedCount} checked in",
-  "@dashboardEventFocusListLabelAttendeesCheckedIn": {
-    "description": "Attendee count on an open Catch window card; this is not a remaining candidate count.",
-    "placeholders": {"attendedCount": {"type": "int"}},
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "dashboard.presentation.widgets.event_focus_list"
-  },
   "@dashboardEventFocusRailLabelReviewPending": {
     "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
     "x-audience": "consumer",
@@ -8007,17 +7999,6 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "dashboard.presentation.widgets.activity_section"
-  },
-  "dashboardEventFocusRailLabelSignedupcountCapacitylimit": "{signedUpCount}/{capacityLimit}",
-  "@dashboardEventFocusRailLabelSignedupcountCapacitylimit": {
-    "description": "Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).",
-    "placeholders": {
-      "signedUpCount": {},
-      "capacityLimit": {}
-    },
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "dashboard.presentation.widgets.event_focus_rail"
   },
   "eventSuccessEventSuccessFeatureBlocksLabelRound": "{round}%",
   "@eventSuccessEventSuccessFeatureBlocksLabelRound": {
@@ -23794,6 +23775,14 @@
   "@eventAssistanceDepartureReviewing": {"description": "Host departure and checkpoint controls shared by live events and rehearsal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation"},
   "eventAssistanceDepartureSaving": "Recording departure…",
   "@eventAssistanceDepartureSaving": {"description": "Host departure and checkpoint controls shared by live events and rehearsal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation"},
+  "eventAssistanceRouteChangeTitle": "Change route",
+  "@eventAssistanceRouteChangeTitle": {"description": "Host route change control shared by live events and rehearsal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation"},
+  "eventAssistanceRouteChangeBody": "Send the group a different way without recording a new departure.",
+  "@eventAssistanceRouteChangeBody": {"description": "Host route change control shared by live events and rehearsal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation"},
+  "eventAssistanceRouteChangeConfirm": "Change route",
+  "@eventAssistanceRouteChangeConfirm": {"description": "Host route change control shared by live events and rehearsal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation"},
+  "eventAssistanceRouteChangeSaved": "Route changed.",
+  "@eventAssistanceRouteChangeSaved": {"description": "Host route change control shared by live events and rehearsal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation"},
   "eventAssistanceDepartureUnknown": "The result is unconfirmed. Retry to check this same departure.",
   "@eventAssistanceDepartureUnknown": {"description": "Host departure and checkpoint controls shared by live events and rehearsal.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation"},
   "eventAssistanceDepartureChanged": "The review changed. Reload before making a new departure decision.",

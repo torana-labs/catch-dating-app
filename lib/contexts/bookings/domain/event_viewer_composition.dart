@@ -49,11 +49,11 @@ class EventViewerSources {
   final bool hasInviteCode;
 }
 
-/// Mirrors the order of Functions' viewer read (`readEventViewerStateSource`)
-/// over the documents the guest can read. Three server checks stay with the
-/// booking commands only, which reject with "event unavailable": a block
-/// between the guest and someone on the roster, the seat ledger's holds, and
-/// whether an invite code is valid (a typed code counts here).
+/// Applies the booking commands' checks (`signupPolicyDecision` in Functions'
+/// `eventPolicy.ts`) to the documents the guest can read. Three server checks
+/// stay with the booking commands only, which reject with "event unavailable":
+/// a block between the guest and someone on the roster, the seat ledger's
+/// holds, and whether an invite code is valid (a typed code counts here).
 EventViewerState composeEventViewerState(EventViewerSources sources) {
   final event = sources.event;
   final now = sources.now;

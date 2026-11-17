@@ -1,11 +1,12 @@
 "use client";
 
 import {useId, type HTMLAttributes, type ReactNode} from "react";
-import {catchBandActions, catchBandColor, catchBandFootnoteMark, type CatchBandAction, type CatchBandFootnote, type CatchBandLink} from "./catchBandParts";
+import {catchBandActions, catchBandColor, catchBandFootnoteMark, catchBandKickerAccent, type CatchBandAction, type CatchBandFootnote, type CatchBandLink} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
-import {CatchBandHeader} from "./CatchBandHeader";
+import {CatchBandHeader, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchButton} from "./CatchButton";
 import {CatchChip} from "./CatchChip";
+import {CatchDateTile, type CatchDateTileProps} from "./CatchDateTile";
 import {CatchGroundProvider} from "./CatchGroundProvider";
 import {CatchHeroImage} from "./CatchHeroImage";
 import {CatchStack} from "./CatchStack";
@@ -23,10 +24,29 @@ export interface CatchHeroSectionProofItem {
   footnote?: CatchBandFootnote;
 }
 
-/** A small floating card over the media: a title and label-value rows. */
+/**
+ * A small floating card over the media: a title with label-value rows (the
+ * kit's .hchip), or the homepage's plan chip, a date square beside the title
+ * and one line under it.
+ */
 export interface CatchHeroSectionAside {
   title: string;
-  rows: readonly {label: string; value: string}[];
+  rows?: readonly {label: string; value: string}[];
+  /** The plan chip's date square; the month is read, not shown. */
+  date?: Omit<CatchDateTileProps, "size">;
+  /** One line under the title, such as "Khar Social · 6 left". */
+  meta?: string;
+}
+
+/**
+ * A white card under the actions (the homepage's .notify): a title, one line
+ * and the page's own form, such as a WhatsApp notify field. The page owns the
+ * form's state and submit.
+ */
+export interface CatchHeroSectionNotice {
+  title: string;
+  body?: string;
+  children: ReactNode;
 }
 
 export interface CatchHeroSectionProps extends Omit<HTMLAttributes<HTMLElement>, "children" | "className" | "color" | "style" | "title"> {
@@ -35,8 +55,10 @@ export interface CatchHeroSectionProps extends Omit<HTMLAttributes<HTMLElement>,
   /** Defaults to 1: a hero opens its page. */
   level?: 1 | 2;
   kicker?: string;
-  /** The kicker's colour; defaults to the secondary ink. */
+  /** The kicker's colour as a tone; it wins over kickerAccent. */
   kickerTone?: CatchTextTone;
+  /** The kicker's accent on white, paper and ink; defaults to pink (coral on ink). A colour ground, the usual hero, takes its secondary ink. */
+  kickerAccent?: CatchKickerAccent;
   lead?: string;
   /** Short labels under the lead, drawn as tag chips. */
   labels?: readonly string[];
@@ -46,6 +68,8 @@ export interface CatchHeroSectionProps extends Omit<HTMLAttributes<HTMLElement>,
   actions?: readonly CatchBandAction[];
   /** A small line under the actions. */
   note?: string;
+  /** split: a white card under the actions, such as a WhatsApp notify form. */
+  notice?: CatchHeroSectionNotice;
   /** A side link under everything, drawn as a neutral text button. */
   link?: CatchBandLink;
   /** split: the media column, usually a CatchScreenPreview. It sits on the band's bottom edge. */
@@ -65,22 +89,27 @@ export interface CatchHeroSectionProps extends Omit<HTMLAttributes<HTMLElement>,
 /**
  * The opening band of a website page (the playbook kit's hero and photo
  * hero): a kicker, the page headline, a lead, label chips, proof lines with
- * footnote marks, D20 actions, a note and a side link, beside a media slot
- * with an optional floating card, on a Website v2 ground. The photo layout
+ * footnote marks, D20 actions, a white notice card (such as a notify form), a
+ * note and a side link, beside a media slot with an optional floating card
+ * (label-value rows, or a plan chip with its date square), on a Website v2
+ * ground. The photo layout
  * sets the same copy in the dark theme over a full-bleed photo under the
- * detail-hero scrim. The headline takes CatchBandHeader's page-title role,
- * inside the 72px cap of D19. The band is a section named by its headline.
+ * detail-hero scrim. The headline takes the canvas's hero size (80px, 44px on
+ * phones). On a ground the band is an inset panel straight under the header.
+ * The band is a section named by its headline.
  */
 export function CatchHeroSection({
   title,
   level = 1,
   kicker,
   kickerTone,
+  kickerAccent,
   lead,
   labels,
   proof,
   actions,
   note,
+  notice,
   link,
   media,
   aside,
@@ -95,7 +124,7 @@ export function CatchHeroSection({
   const chips = labels?.filter((label) => label.trim() !== "") ?? [];
   const copy = (
     <CatchStack className={styles.copy} gap={24}>
-      <CatchBandHeader kicker={kicker} kickerTone={kickerTone} lead={lead} level={level} title={title} titleId={titleId} />
+      <CatchBandHeader kicker={kicker} kickerAccent={catchBandKickerAccent(kickerAccent, layout === "photo" ? "ink" : ground, "pink")} kickerTone={kickerTone} lead={lead} level={level} size="hero" title={title} titleId={titleId} />
       {chips.length > 0 ? (
         <CatchStack as="ul" className={styles.list} direction="row" gap={8} wrap>
           {chips.map((label, index) => <li key={`${index}:${label}`}><CatchChip label={label} recipe="tag" /></li>)}
@@ -111,6 +140,15 @@ export function CatchHeroSection({
         </CatchStack>
       ) : null}
       {catchBandActions(actions)}
+      {notice ? (
+        <div className={styles.notice} data-catch-theme="light">
+          <CatchGroundProvider ground="ground" theme="day">
+            <CatchText as="h2" variant="label-button">{notice.title}</CatchText>
+            {notice.body ? <CatchText as="p" className={styles.noticeBody} tone="secondary" variant="body-meta">{notice.body}</CatchText> : null}
+            {notice.children}
+          </CatchGroundProvider>
+        </div>
+      ) : null}
       {note ? <CatchText as="p" tone="secondary" variant="body-meta">{note}</CatchText> : null}
       {link ? <span className={styles.link}><CatchButton href={link.href} label={link.label} recipe="text" tone="neutral" /></span> : null}
     </CatchStack>
@@ -147,16 +185,22 @@ export function CatchHeroSection({
           <div className={styles.media}>
             {media}
             {aside ? (
-              <CatchSurface block="floating" className={styles.aside}>
-                <CatchText as="p" variant="title-row">{aside.title}</CatchText>
-                <dl className={styles.rows}>
-                  {aside.rows.map((row, index) => (
-                    <div className={styles.row} key={`${index}:${row.label}`}>
-                      <dt><CatchText tone="secondary" variant="body-small">{row.label}</CatchText></dt>
-                      <dd><CatchText numeric variant="label-action">{row.value}</CatchText></dd>
-                    </div>
-                  ))}
-                </dl>
+              <CatchSurface block="floating" className={styles.aside} data-chip={aside.date ? "" : undefined} padding={aside.date ? "none" : undefined}>
+                {aside.date ? <CatchDateTile {...aside.date} size="sm" /> : null}
+                <div className={styles.asideCopy}>
+                  <CatchText as="p" variant={aside.date ? "label-button" : "title-row"}>{aside.title}</CatchText>
+                  {aside.meta ? <CatchText as="p" tone="secondary" variant="body-meta">{aside.meta}</CatchText> : null}
+                  {aside.rows && aside.rows.length > 0 ? (
+                    <dl className={styles.rows}>
+                      {aside.rows.map((row, index) => (
+                        <div className={styles.row} key={`${index}:${row.label}`}>
+                          <dt><CatchText tone="secondary" variant="body-small">{row.label}</CatchText></dt>
+                          <dd><CatchText numeric variant="label-action">{row.value}</CatchText></dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : null}
+                </div>
               </CatchSurface>
             ) : null}
           </div>

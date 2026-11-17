@@ -21,11 +21,12 @@
   padding: var(--catch-space-s3) var(--catch-space-s4);
   /*
    * Quiet at rest, as in the app. A container may give resting fields a box:
-   * CatchGroundCard sets these for the boxed inputs the Website v2 boards draw.
+   * CatchGroundCard sets these for the boxed inputs the Website v2 boards draw,
+   * and a website band for the canvas's field box (.pg .in), corners included.
    */
   border: var(--catch-field-rest-stroke, var(--catch-stroke-hairline)) solid
     var(--catch-field-rest-line, transparent);
-  border-radius: var(--catch-radius-interactive-tile);
+  border-radius: var(--catch-field-radius, var(--catch-radius-interactive-tile));
   background: var(--catch-field-rest-fill, transparent);
   /* A field reads from the start edge, whatever its container aligns. */
   text-align: start;
@@ -225,4 +226,64 @@
 
 .field .counter:not([data-visible]) {
   visibility: hidden;
+}
+
+/*
+ * In a website band (not the ink panel) a field takes the canvas's field
+ * (.pg .fld, .pg .in): its label above the box, 13px semibold in the
+ * secondary ink and 6px over it, and a 48px box (a text area 96px; a
+ * container may set --catch-field-box-height) 14px
+ * inside, whose fill, control line and corners the band sets. A hidden label
+ * leaves the box alone, as the canvas's notify fields do. Focus rings the box.
+ */
+:global([data-block="band"]:not([data-band="ink"])) .field,
+:global([data-block="band"]:not([data-band="ink"])) .field[data-input-mode="editable"]:hover:not([data-focused]),
+:global([data-block="band"]:not([data-band="ink"])) .field[data-focused] {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:global([data-block="band"]:not([data-band="ink"])) .field:has(.control:focus-visible) {
+  outline: none;
+}
+
+:global([data-block="band"]:not([data-band="ink"])) .field .caption {
+  margin-bottom: var(--catch-space-micro6);
+  font-size: var(--catch-typography-role-body-meta-size);
+  font-weight: var(--catch-typography-role-label-action-weight);
+}
+
+:global([data-block="band"]:not([data-band="ink"])) .field > .control,
+:global([data-block="band"]:not([data-band="ink"])) .field .affixLane,
+:global([data-block="band"]:not([data-band="ink"])) .field .selectLane {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  /* A container may ask for the canvas's compact box, such as the hero's notify card (44px). */
+  height: var(--catch-field-box-height, var(--catch-size-control-lg));
+  padding: 0 var(--catch-space-micro14);
+  border: var(--catch-field-rest-stroke, var(--catch-stroke-hairline)) solid var(--catch-field-rest-line, var(--catch-theme-line2));
+  border-radius: var(--catch-field-radius, var(--catch-radius-interactive-tile));
+  background: var(--catch-field-rest-fill, var(--catch-theme-surface));
+}
+
+:global([data-block="band"]:not([data-band="ink"])) .field > textarea.control {
+  display: block;
+  height: auto;
+  min-height: calc(2 * var(--catch-size-control-lg));
+  padding: var(--catch-space-s3) var(--catch-space-micro14);
+}
+
+:global([data-block="band"]:not([data-band="ink"])) .field .selectLane .control { height: 100%; }
+
+:global([data-block="band"]:not([data-band="ink"])) .field .chevron { right: var(--catch-space-micro14); }
+
+:global([data-block="band"]:not([data-band="ink"])) .field > .control:focus-visible,
+:global([data-block="band"]:not([data-band="ink"])) .field .affixLane:has(.control:focus-visible),
+:global([data-block="band"]:not([data-band="ink"])) .field .selectLane:has(.control:focus-visible) {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-primary);
+  outline-offset: var(--catch-space-micro2);
 }

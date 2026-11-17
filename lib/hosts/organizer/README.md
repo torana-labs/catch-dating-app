@@ -83,7 +83,6 @@ Typed handoffs:
 - `contracts/callables/add_organizer_manager_payload.schema.json`
 - `contracts/callables/create_razorpay_host_payment_account_payload.schema.json`
 - `contracts/callables/create_stripe_host_onboarding_link_payload.schema.json`
-- `contracts/callables/get_organizer_crm_summary_payload.schema.json`
 - `contracts/callables/host_analytics_query_payload.schema.json`
 - `contracts/callables/refresh_razorpay_host_payment_account_payload.schema.json`
 - `contracts/callables/refresh_stripe_host_payment_account_payload.schema.json`

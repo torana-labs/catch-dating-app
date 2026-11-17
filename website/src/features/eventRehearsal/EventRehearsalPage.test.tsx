@@ -140,6 +140,23 @@ describe("EventRehearsalPreview", () => {
     expect(onRequiredData).toHaveBeenCalledOnce();
   });
 
+  it("names the preference fields a Host requests without dating wording", () => {
+    const now = bootstrap.session.virtualNowMillis;
+    render(<EventRehearsalPreview bootstrap={{...bootstrap,
+      actor: {...bootstrap.actor, requiredData: {
+        sourceHash: "a".repeat(64), profileRevision: 0, requestRevision: 1,
+        availableFieldIds: ["interestedInGenders", "relationshipGoal"], completedFieldIds: [],
+        request: {revision: 1, fieldIds: ["interestedInGenders", "relationshipGoal"],
+          completedFieldIds: [], status: "pending", requestedAt: now,
+          expiresAt: now + 60000, completedAt: null},
+      }}}} onAction={vi.fn()} onReply={vi.fn()}
+      onRequiredData={vi.fn()} onRefresh={vi.fn()} pending={false}
+      status={{message: "", tone: ""}} />);
+    expect(screen.getByText(eventRehearsalCopy.requiredFieldLabels.interestedInGenders)).toBeTruthy();
+    expect(screen.getByText(eventRehearsalCopy.requiredFieldLabels.relationshipGoal)).toBeTruthy();
+    expect(screen.queryByText(/relationship goal|who you want to meet|dating/iu)).toBeNull();
+  });
+
   it("keeps a completed practice data request read-only", () => {
     const now = bootstrap.session.virtualNowMillis;
     render(<EventRehearsalPreview bootstrap={{...bootstrap,

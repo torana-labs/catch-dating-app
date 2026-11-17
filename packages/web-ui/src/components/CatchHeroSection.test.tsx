@@ -15,9 +15,19 @@ describe("CatchHeroSection", () => {
     expect(container.querySelector("header")).toBeNull();
   });
 
-  it("takes level 2 and caps the headline at 64px on an expanded page", () => {
+  it("takes level 2 and sets the headline at the canvas's hero size at every size class (D26)", () => {
     render(<CatchRoot size="expanded" theme="day"><CatchHeroSection level={2} title="Second" /></CatchRoot>);
-    expect(screen.getByRole("heading", {level: 2, name: "Second"}).dataset.variant).toBe("display-xl");
+    const heading = screen.getByRole("heading", {level: 2, name: "Second"});
+    expect(heading.dataset).toMatchObject({variant: "display-hero", display: "hero"});
+  });
+
+  it("draws a hero on a ground as an inset panel, its kicker in the ground's secondary ink", () => {
+    render(<CatchHeroSection ground="pink" kicker="In Mumbai" title="Plans" />);
+    const band = screen.getByRole("region", {name: "Plans"});
+    expect(band.dataset).toMatchObject({block: "band", panel: ""});
+    const kicker = screen.getByText("In Mumbai");
+    expect(kicker.dataset.tone).toBe("secondary");
+    expect(kicker.dataset.accent).toBeUndefined();
   });
 
   it("draws the copy in order: kicker, headline, lead, labels, proof, actions, note, link", () => {
@@ -79,5 +89,33 @@ describe("CatchHeroSection", () => {
   it("passes an id through as the band's anchor", () => {
     render(<CatchHeroSection id="top" title="Headline" />);
     expect(screen.getByRole("region").id).toBe("top");
+  });
+
+  it("draws a white notice card under the actions, holding the page's own form", () => {
+    render(
+      <CatchHeroSection actions={[{label: "See plans", href: "#plans"}]} ground="pink"
+        notice={{title: "The app is on its way", body: "One message when it launches.", children: <form aria-label="Notify" />}} title="Plans" />,
+    );
+    const action = screen.getByRole("link", {name: "See plans"});
+    const title = screen.getByText("The app is on its way");
+    const form = screen.getByRole("form", {name: "Notify"});
+    expect(action.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(title.compareDocumentPosition(form) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByText("One message when it launches.")).toBeTruthy();
+  });
+
+  it("draws the plan chip with its date square beside the title and one line, over the media", () => {
+    const {container} = render(
+      <CatchHeroSection aside={{title: "Thursday Pub Quiz", meta: "Khar Social · 6 left", date: {weekday: "Thu", day: "20", month: "Nov", ground: "yellow"}}}
+        ground="pink" media={<img alt="Phone" src="/p.png" />} title="Plans" />,
+    );
+    const chip = container.querySelector("[data-chip]") as HTMLElement;
+    expect(chip).not.toBeNull();
+    const date = chip.querySelector("time") as HTMLElement;
+    expect(date.dataset).toMatchObject({size: "sm", ground: "yellow"});
+    expect(date.textContent).toContain("20");
+    expect(chip.textContent).toContain("Thursday Pub Quiz");
+    expect(chip.textContent).toContain("Khar Social · 6 left");
+    expect(chip.querySelector("dl")).toBeNull();
   });
 });

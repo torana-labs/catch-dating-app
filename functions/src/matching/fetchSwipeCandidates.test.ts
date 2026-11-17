@@ -242,6 +242,54 @@ test("returns only eligible candidates in attendance order", async () => {
   );
 });
 
+test("only current picks hide someone; deck-era decisions do not", async () => {
+  const candidate = (uid: string, attendedAt: string) => ({
+    [`eventParticipations/event-1_${uid}`]: participation(uid, attendedAt),
+    [`users/${uid}`]: profile({gender: "woman"}),
+    [`publicProfiles/${uid}`]: publicProfile(uid, 29),
+  });
+  const decision = (targetId: string, data: FakeData) => ({
+    [`profileDecisions/runner-1/outgoing/${targetId}`]: {
+      swiperId: "runner-1",
+      targetId,
+      eventId: "event-1",
+      ...data,
+    },
+  });
+  const afterCutoff = ts("2026-11-13T09:00:00.000Z");
+  const {deps} = harness({
+    ...candidate("deck-pass", "2026-05-02T02:41:00.000Z"),
+    ...decision("deck-pass", {direction: "pass", createdAt: afterCutoff}),
+    ...candidate("deck-reaction", "2026-05-02T02:42:00.000Z"),
+    ...decision("deck-reaction", {
+      direction: "like",
+      reactionTargetId: "heroPhoto",
+      reactionTargetType: "heroPhoto",
+      createdAt: afterCutoff,
+    }),
+    ...candidate("deck-plain-like", "2026-05-02T02:43:00.000Z"),
+    ...decision("deck-plain-like", {
+      direction: "like",
+      createdAt: ts("2026-11-12T12:50:03.999Z"),
+    }),
+    ...candidate("current-pick", "2026-05-02T02:44:00.000Z"),
+    ...decision("current-pick", {
+      direction: "like",
+      createdAt: ts("2026-11-12T12:50:04.000Z"),
+    }),
+  });
+
+  const result = await fetchSwipeCandidatesHandler(
+    request("runner-1", {eventId: "event-1"}),
+    deps
+  );
+
+  assert.deepEqual(
+    result.profiles.map((profile) => profile.uid),
+    ["runner-2", "deck-pass", "deck-reaction", "deck-plain-like"]
+  );
+});
+
 test("fails closed outside the window or without attendance", async () => {
   const beforeEvent = harness();
   const beforeResult = await fetchSwipeCandidatesHandler(

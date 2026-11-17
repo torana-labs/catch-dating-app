@@ -33,6 +33,8 @@ Map<String, Object?> departureResponse({
   int validUntil = departureNow + 100000,
   EventAssistanceGroupScope? scope,
   AssistanceJoiningTarget target = departureStop,
+  bool withAlternative = false,
+  String? routeDecisionId,
 }) {
   final currentScope = scope ?? departureScope();
   final current = revision > 0;
@@ -71,6 +73,7 @@ Map<String, Object?> departureResponse({
               'requestHash': 'd' * 64,
               'createdAt': departureNow - 20,
               'updatedAt': departureNow - 10,
+              'routeDecisionId': ?routeDecisionId,
             },
       'guidance': !current || oldSource || !eventOpen || !runtimeLive
           ? null
@@ -95,10 +98,27 @@ Map<String, Object?> departureResponse({
             'notes': '',
           },
         },
+        if (withAlternative)
+          {
+            'alternativeId': departureAlternative,
+            'target':
+                (target == departureMeeting ? departureStop : departureMeeting)
+                    .toJson(),
+            'label': 'Meeting point',
+            'location': {
+              'name': 'Meeting point',
+              'latitude': 12.95,
+              'longitude': 77.65,
+            },
+          },
       ],
     },
   };
 }
+
+/// The second route alternative [departureResponse] adds with
+/// `withAlternative`.
+final departureAlternative = 'alternative:${'1' * 64}';
 
 Map<String, Object?> departureRawView(Map<String, Object?> response) =>
     response['view']! as Map<String, Object?>;

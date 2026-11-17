@@ -107,6 +107,7 @@ final class AssistanceConfirmedProgress {
     required this.confirmedBy,
     required this.confirmedAt,
     required this.departureRosterId,
+    required this.routeDecisionId,
   });
 
   final int revision;
@@ -115,6 +116,10 @@ final class AssistanceConfirmedProgress {
   final String confirmedBy;
   final int confirmedAt;
   final String? departureRosterId;
+
+  /// The event lead's route decision that set this destination; null when a
+  /// departure set it.
+  final String? routeDecisionId;
 
   static AssistanceConfirmedProgress? _parse(
     Object? value,
@@ -138,6 +143,7 @@ final class AssistanceConfirmedProgress {
       'createdAt',
       'updatedAt',
       if (map.containsKey('departureRosterId')) 'departureRosterId',
+      if (map.containsKey('routeDecisionId')) 'routeDecisionId',
     });
     scope.requireMatch(map['context'], map['groupId']);
     final revision = assistanceInteger(map['revision']);
@@ -162,6 +168,9 @@ final class AssistanceConfirmedProgress {
       confirmedAt: confirmedAt,
       departureRosterId: map.containsKey('departureRosterId')
           ? _recordId(map['departureRosterId'], 'departure-roster')
+          : null,
+      routeDecisionId: map.containsKey('routeDecisionId')
+          ? assistanceId(map['routeDecisionId'])
           : null,
     );
   }
@@ -204,6 +213,22 @@ final class EventAssistanceGroupProgressView {
       runtimeLive &&
       destinations.isNotEmpty &&
       revision < 9007199254740991;
+
+  /// Only the event lead changes a departed group's route, to another
+  /// alternative from the current event route. The listener's authority
+  /// names the lead as the one who can report for anyone.
+  bool get canChangeRoute {
+    final current = progress;
+    return authority is AssistanceCanConfirmDeparture &&
+        (authority as AssistanceCanConfirmDeparture).checkpointReporter ==
+            AssistanceCheckpointReporter.anyAuthorizedOperator &&
+        authority.validUntil > serverTime &&
+        eventOpen &&
+        runtimeLive &&
+        current != null &&
+        revision < 9007199254740991 &&
+        destinations.any((item) => item.target != current.destination);
+  }
 }
 
 final class EventAssistanceGroupProgressResult {

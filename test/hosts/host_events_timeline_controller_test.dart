@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
-import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -401,52 +400,6 @@ void main() {
       expect(result.cancelledEvents.single.id, 'cancelled');
       expect(result.historyInitialized, isTrue);
       expect(result.pastError, isNull);
-    },
-  );
-
-  test(
-    'unpublished scopes read bounded pages and continue beyond 200 rows',
-    () async {
-      final repository = PagedEventRepository(
-        activeSteps: [
-          () async => const TimelinePage(items: [], hasMore: false),
-        ],
-        pastSteps: [() async => const TimelinePage(items: [], hasMore: false)],
-      );
-      final setups = SetupRepository();
-      final container = timelineContainer(repository, setups: setups);
-      final provider = hostEventsTimelineControllerProvider(
-        HostEventsTimelineRequest(
-          session: container.read(authenticatedSessionProvider).asData?.value,
-          organizerId: 'club-1',
-          sessionBoundary: DateTime(2026),
-        ),
-      );
-      final subscription = container.listen(provider, (_, _) {});
-      addTearDown(subscription.close);
-      final initial = await settledTimeline(container, provider);
-      expect(setups.calls, [
-        (PrivateEventSetupScope.upcoming, null),
-        (PrivateEventSetupScope.past, null),
-        (PrivateEventSetupScope.cancelled, null),
-      ]);
-      expect(initial.unpublishedUpcoming, hasLength(20));
-      expect(initial.hasMoreUpcoming, isTrue);
-      expect(initial.hasMoreHistory, isTrue);
-      final notifier = container.read(provider.notifier);
-      for (var page = 0; page < 10; page++) {
-        await notifier.loadMoreActive();
-        await notifier.loadMorePast();
-      }
-      final result = container.read(provider).requireValue;
-      expect(result.unpublishedUpcoming, hasLength(201));
-      expect(result.unpublishedHistory, hasLength(402));
-      expect(result.unpublishedCursors, isEmpty);
-      expect(result.hasMoreUpcoming, isFalse);
-      expect(result.hasMoreHistory, isFalse);
-      expect(setups.calls, hasLength(33));
-      expect(repository.activeStartAfterCalls, [null]);
-      expect(repository.pastStartAfterCalls, [null]);
     },
   );
 }

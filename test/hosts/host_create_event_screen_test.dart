@@ -75,7 +75,7 @@ void main() {
           initialOrganizer: initialOrganizer,
         ),
         overrides: [
-          fetchOrganizerProvider(
+          watchOrganizerProvider(
             initialOrganizer.id,
           ).overrideWithValue(const AsyncLoading<Organizer?>()),
         ],

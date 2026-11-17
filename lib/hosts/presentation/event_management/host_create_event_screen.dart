@@ -123,7 +123,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     final routeState = HostCreateEventRouteState.resolve(
       initialOrganizer: initialOrganizer,
       fetchedOrganizer: initialOrganizer == null
-          ? _catchAsyncState(ref.watch(fetchOrganizerProvider(organizerId)))
+          ? _catchAsyncState(ref.watch(watchOrganizerProvider(organizerId)))
           : null,
       uid: _catchAsyncState(ref.watch(uidProvider)),
     );
@@ -178,7 +178,7 @@ class HostCreateEventRouteBody extends ConsumerWidget {
           onRetry: () {
             switch (state.retryIntent) {
               case HostCreateEventRouteRetryIntent.reloadOrganizer:
-                ref.invalidate(fetchOrganizerProvider(organizerId));
+                ref.invalidate(watchOrganizerProvider(organizerId));
               case null:
                 break;
             }

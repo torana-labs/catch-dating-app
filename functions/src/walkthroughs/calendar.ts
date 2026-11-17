@@ -48,6 +48,38 @@ export interface SlotDay {
   slots: Slot[];
 }
 
+/**
+ * The calendar used while no staff calendar is saved (owner decision):
+ * Monday to Friday, 10:00 to 18:00 IST, 30-minute slots, 2 hours' lead and
+ * 14 days ahead, so the last slot starts at 17:30 and ends at 18:00. A
+ * calendar staff save through adminSetWalkthroughAvailability replaces it,
+ * including one that closes booking.
+ */
+export const DEFAULT_AVAILABILITY: Readonly<AvailabilitySettings> = Object.freeze({
+  enabled: true,
+  slotMinutes: 30,
+  leadTimeMinutes: 120,
+  horizonDays: 14,
+  weeklyWindows: [1, 2, 3, 4, 5].map((weekday) => ({weekday, start: "10:00", end: "18:00"})),
+  closedDates: [],
+});
+
+export type CalendarSource = "saved" | "default";
+
+/** The calendar slots come from: the saved one, else the built-in default. */
+export function effectiveAvailability(saved: AvailabilitySettings | null | undefined): {
+  source: CalendarSource;
+  settings: AvailabilitySettings;
+} {
+  return saved ? {source: "saved", settings: saved} : {source: "default", settings: defaultAvailability()};
+}
+
+/** A fresh copy of the default calendar, safe for a caller to change. */
+export function defaultAvailability(): AvailabilitySettings {
+  return {...DEFAULT_AVAILABILITY, weeklyWindows: DEFAULT_AVAILABILITY.weeklyWindows.map((window) => ({...window})),
+    closedDates: [...DEFAULT_AVAILABILITY.closedDates]};
+}
+
 /** Booking is open while staff enabled it and at least one window exists. */
 export function bookingOpen(settings: AvailabilitySettings | null | undefined): settings is AvailabilitySettings {
   return Boolean(settings?.enabled && settings.weeklyWindows.length > 0);

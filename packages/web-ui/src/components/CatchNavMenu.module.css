@@ -25,6 +25,33 @@
 
 .label { min-width: 0; }
 
+/*
+ * appearance="link": the canvas header's dropdown page link (.pg .bar nav a):
+ * no box, the header's 15px link type in its colour, a 14px chevron 4px after
+ * the label.
+ */
+.menu .trigger[data-appearance="link"] {
+  --catch-button-bg: transparent;
+  --catch-button-border: transparent;
+  --catch-button-fg: var(--catch-website-color-ink-body);
+  --catch-button-height: auto;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  font-size: var(--catch-website-header-nav-size);
+  font-weight: var(--catch-website-header-nav-weight);
+  line-height: normal;
+}
+
+.menu .trigger[data-appearance="link"]::after { display: none; }
+.menu .trigger[data-appearance="link"]:hover { --catch-button-fg: var(--catch-palette-ink); }
+.menu .trigger[data-appearance="link"] .chevron { margin-inline-start: var(--catch-space-s1); }
+
+.menu .trigger[data-appearance="link"] .chevron > svg {
+  width: var(--catch-website-header-chevron-size);
+  height: var(--catch-website-header-chevron-size);
+}
+
 .chevron {
   display: inline-flex;
   flex: none;

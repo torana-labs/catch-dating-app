@@ -1,7 +1,8 @@
 "use client";
 
 import type {HTMLAttributes} from "react";
-import type {CatchTextTone} from "./catchCoreVocabulary";
+import {catchGroundIsNight, type CatchGround, type CatchTextTone} from "./catchCoreVocabulary";
+import {useCatch} from "./catchRootContext";
 import type {Ground} from "./palette";
 import {CatchStack} from "./CatchStack";
 import {CatchText} from "./CatchText";
@@ -13,17 +14,74 @@ export type CatchBandHeaderAlign = "start" | "center";
 /** column: kicker, headline and lead stacked. row: the lead across from the headline, stacked below medium. */
 export type CatchBandHeaderDirection = "column" | "row";
 
+/**
+ * The canvas's display headline sizes (D26, playbook-panels.css .d-hero,
+ * .d-sec and .d-sm): hero 80px (44px on phones), section 56px (36px), feature
+ * 42px (32px), the homepage's app band, and small 30px (26px). All take the
+ * hero role's weight, .98 leading and -0.03em tracking; small keeps the
+ * display-section role's 1.05 leading.
+ */
+export type CatchBandHeaderSize = "hero" | "section" | "feature" | "small";
+
+/**
+ * A kicker's accent (playbook kit `.k` colours): the palette's deep tone on
+ * white and paper, its bright fill on the ink ground. On a colour ground a
+ * kicker takes the ground's secondary ink, whatever its accent.
+ */
+export type CatchKickerAccent = "pink" | "mint" | "indigo" | "coral" | "yellow";
+
+/** Where a kicker sits: day (white or paper), night (the ink ground) or a colour ground. */
+type KickerGround = "day" | "night" | "colour";
+
+function kickerGround(ground: Ground | undefined, context: CatchGround): KickerGround {
+  if (ground) return ground === "ink" ? "night" : ground === "white" || ground === "paper" ? "day" : "colour";
+  if (catchGroundIsNight(context)) return "night";
+  return context === "colour" ? "colour" : "day";
+}
+
+interface CatchBandKickerOptions {
+  /** The accent the kicker takes on white, paper and ink; leave it out for the secondary ink. */
+  accent?: CatchKickerAccent;
+  /** An explicit tone instead of an accent, such as success on a legal page. */
+  tone?: CatchTextTone;
+  /** The Website v2 ground, when no surface tells the kicker what it sits on. */
+  ground?: Ground;
+}
+
+/**
+ * The CatchText props of a section kicker (variant label-kicker) in the
+ * canvas's type (13px/18px at .04em) and colour: its accent on white, paper
+ * and ink, the ground's secondary ink on a colour, or an explicit tone.
+ * CatchBandHeader draws one; sections whose kicker sits outside a header (a
+ * price, a story) spread these onto their own CatchText.
+ */
+export function useCatchBandKicker({accent, tone, ground}: CatchBandKickerOptions) {
+  const on = kickerGround(ground, useCatch().ground);
+  const accented = tone == null && accent != null && on !== "colour";
+  return {
+    className: styles.kicker,
+    "data-accent": accented ? accent : undefined,
+    "data-on": accented ? on : undefined,
+    tone: accented ? "inherit" : tone ?? "secondary",
+    variant: "label-kicker",
+  } as const;
+}
+
 export interface CatchBandHeaderProps extends Omit<HTMLAttributes<HTMLElement>, "children" | "className" | "color" | "style" | "title"> {
   /** The headline. Resolved copy; the caller localizes it. */
   title: string;
   /** A short label above the headline. */
   kicker?: string;
-  /** The kicker's colour; defaults to the secondary ink of what the header sits on. */
+  /** The kicker's colour as a tone; it wins over kickerAccent. Without either, the secondary ink of what the header sits on. */
   kickerTone?: CatchTextTone;
+  /** The kicker's accent on white, paper and ink (a colour ground always takes its secondary ink). */
+  kickerAccent?: CatchKickerAccent;
   /** One or two sentences under (or across from) the headline, in the secondary ink. */
   lead?: string;
-  /** Renders the headline as an h1 or an h2; both take the page-title role. Defaults to 2. */
+  /** Renders the headline as an h1 or an h2. Defaults to 2. */
   level?: 1 | 2;
+  /** The canvas headline size; without one the headline takes the page-title role (38, 48 and 64px by size class). */
+  size?: CatchBandHeaderSize;
   /** Defaults to start. A row header always starts at the edge. */
   align?: CatchBandHeaderAlign;
   /** Defaults to column. */
@@ -40,8 +98,8 @@ export interface CatchBandHeaderProps extends Omit<HTMLAttributes<HTMLElement>, 
 
 /**
  * The opening of a website band: an optional kicker, a display headline and
- * an optional lead. The headline takes the page-title role (38, 48 and 64px by
- * size class), inside the 72px cap of blueprint D19 at every size. A row header
+ * an optional lead. The headline takes one of the canvas's sizes (D26), or
+ * the page-title role (38, 48 and 64px by size class) without one. A row header
  * sets the lead across from the headline on a wide page, as the host landing's
  * sections do. It draws no box; the band behind it owns the fill. It renders a
  * plain div, not a header element: a page has many bands, and a header outside
@@ -50,9 +108,11 @@ export interface CatchBandHeaderProps extends Omit<HTMLAttributes<HTMLElement>, 
 export function CatchBandHeader({
   title,
   kicker,
-  kickerTone = "secondary",
+  kickerTone,
+  kickerAccent,
   lead,
   level = 2,
+  size,
   align = "start",
   direction = "column",
   ground,
@@ -60,11 +120,21 @@ export function CatchBandHeader({
   ...rest
 }: CatchBandHeaderProps) {
   const row = direction === "row";
+  const kickerProps = useCatchBandKicker({accent: kickerAccent, tone: kickerTone, ground});
   const textAlign = !row && align === "center" ? "center" : undefined;
   const heading = (
     <>
-      {kicker ? <CatchText align={textAlign} tone={kickerTone} variant="label-kicker">{kicker}</CatchText> : null}
-      <CatchText align={textAlign} as={level === 1 ? "h1" : "h2"} className={styles.title} id={titleId} variant="page-title">{title}</CatchText>
+      {kicker ? <CatchText {...kickerProps} align={textAlign}>{kicker}</CatchText> : null}
+      <CatchText
+        align={textAlign}
+        as={level === 1 ? "h1" : "h2"}
+        className={styles.title}
+        data-display={size}
+        id={titleId}
+        variant={size ? (size === "small" ? "display-section" : "display-hero") : "page-title"}
+      >
+        {title}
+      </CatchText>
     </>
   );
   const leadText = lead

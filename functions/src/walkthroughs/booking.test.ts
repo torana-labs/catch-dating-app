@@ -42,13 +42,40 @@ test("the public slot read returns open India-time slots and nothing about staff
   assert.match(h.limits[0].key, /^walkthrough-ip-[a-f0-9]{32}$/);
 });
 
-test("with no calendar saved, or booking switched off, the page is told to show its request form", async () => {
-  const closed = harness({settings: null});
-  const none = await getWalkthroughSlotsHandler(closed.call({}), closed.deps);
-  assertContract("GetWalkthroughSlotsCallableResponse", none);
-  assert.deepEqual([none.bookingOpen, none.slotMinutes, none.days], [false, null, []]);
+test("with no calendar saved, the default weekday 10:00 to 18:00 IST calendar is open and books", async () => {
+  const h = harness({settings: null});
+  const slots = await getWalkthroughSlotsHandler(h.call({days: 7}), h.deps);
+  assertContract("GetWalkthroughSlotsCallableResponse", slots);
+  assert.deepEqual([slots.bookingOpen, slots.slotMinutes], [true, 30]);
+  // 09:30 on Monday with 2 hours' lead: today opens at 11:30; the weekend has none.
+  assert.deepEqual(slots.days.map((day) => [day.label, day.slots[0].label.slice(-9), day.slots.at(-1)!.label.slice(-9), day.slots.length]), [
+    ["Mon 16 Nov", "11:30 IST", "17:30 IST", 13],
+    ["Tue 17 Nov", "10:00 IST", "17:30 IST", 16],
+    ["Wed 18 Nov", "10:00 IST", "17:30 IST", 16],
+    ["Thu 19 Nov", "10:00 IST", "17:30 IST", 16],
+    ["Fri 20 Nov", "10:00 IST", "17:30 IST", 16],
+  ]);
+  const booked = await bookWalkthroughHandler(h.call(bookPayload({slotStartAt: "2026-11-16T12:00:00.000Z"}), verified()), h.deps);
+  assert.equal(booked.slot.label, "Mon 16 Nov, 17:30 IST");
+  await assertRefused(bookWalkthroughHandler(h.call(bookPayload({requestId: "web-inside-the-lead-time", slotStartAt: INSIDE_LEAD}),
+    verified(OTHER_PHONE)), h.deps), "failed-precondition", "slot_unavailable");
+  const moved = await manageWalkthroughBookingHandler(h.call({bookingId: booked.bookingId, action: "reschedule", manageToken: TOKEN,
+    slotStartAt: "2026-11-17T11:30:00.000Z"}), h.deps);
+  assert.equal(moved.slot.label, "Tue 17 Nov, 17:00 IST");
+  assert.equal(h.db.get("walkthroughAvailability/default"), undefined, "nothing is saved");
+});
+
+test("a saved calendar wins over the default, and one switched off tells the page to show its request form", async () => {
+  const tuesdays = harness({settings: {...SETTINGS, weeklyWindows: [{weekday: 2, start: "15:00", end: "16:00"}]}});
+  const saved = await getWalkthroughSlotsHandler(tuesdays.call({days: 7}), tuesdays.deps);
+  assert.deepEqual(saved.days.map((day) => [day.label, day.slots.map((slot) => slot.label.slice(-9))]), [
+    ["Tue 17 Nov", ["15:00 IST", "15:30 IST"]],
+  ]);
+  await assertRefused(bookWalkthroughHandler(tuesdays.call(bookPayload({slotStartAt: "2026-11-16T12:00:00.000Z"}), verified()), tuesdays.deps),
+    "failed-precondition", "slot_unavailable");
   const off = harness({settings: {...SETTINGS, enabled: false}});
   const paused = await getWalkthroughSlotsHandler(off.call({}), off.deps);
+  assertContract("GetWalkthroughSlotsCallableResponse", paused);
   assert.deepEqual([paused.bookingOpen, paused.slotMinutes, paused.days], [false, 30, []]);
   await assertRefused(bookWalkthroughHandler(off.call(bookPayload(), verified()), off.deps), "failed-precondition", "booking_closed");
 });

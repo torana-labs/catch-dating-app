@@ -101,3 +101,46 @@ export const Compact: Story = {
 
 export const Plans: Story = {};
 export const Empty: Story = {args: {items: [], empty: {title: "No sample plans yet", message: "Try another filter."}}};
+
+// Neutral sample tiles and cards: placeholder copy, no real figures.
+const entries = (["coral", "pink", "mint", "yellow", "indigo", "ink"] as const).map((ground, index) => ({
+  id: ground, title: `Sample tile ${index + 1}`, body: "A sample line about who this suits.", href: "#", ground,
+  icon: (["location", "person", "trend", "people", "anytime", "safety"] as const)[index],
+}));
+
+const formats = [
+  {id: "run", title: "First format", body: "A sample line.", more: "Sample link", href: "#", ground: "coral" as const, format: "run" as const},
+  {id: "courts", title: "Second format", body: "A sample line.", more: "Sample link", href: "#", ground: "mint" as const, format: "courts" as const},
+  {id: "dinner", title: "Third format", body: "A sample line.", more: "Sample link", href: "#", ground: "pink" as const, format: "dinner" as const},
+  {id: "games", title: "Fourth format", body: "A sample line.", more: "Sample link", href: "#", ground: "yellow" as const, format: "games" as const},
+  {id: "nights", title: "Fifth format", body: "A sample line.", more: "Sample link", href: "#", ground: "magenta" as const, format: "nightsOut" as const},
+];
+
+const chips = [
+  {label: "First chip", href: "#first", dot: "indigo" as const},
+  {label: "Second chip", href: "#second", dot: "yellow" as const},
+];
+
+/**
+ * The homepage's kinds: six entry tiles under a centred header, five format
+ * cards in a rail with chips, and dated plan cards with a header action on
+ * paper, wide and on a phone.
+ */
+export const HomepageKinds: Story = {
+  render: () => (
+    <>
+      <CatchRoot size="expanded" theme="day">
+        <CatchCardGrid align="center" columns={6} items={entries} kicker="Sample kicker" kind="entry" title="Sample entry tiles" />
+        <CatchCardGrid chips={chips} columns={5} items={formats} kicker="Sample kicker" kickerAccent="mint" kind="format" layout="rail" title="Sample formats" />
+        <CatchCardGrid ground="paper" headerAction={{label: "Sample action", href: "#"}} items={plans.map((plan, index) => ({...plan, date: {weekday: "Sun", day: String(20 + index), month: "Nov"}}))}
+          kind="plan" layout="rail" title="Sample dated plans" />
+      </CatchRoot>
+      <CatchRoot size="compact" theme="day">
+        <div style={{width: 390, container: "catch-page / inline-size"}}>
+          <CatchCardGrid align="center" columns={6} items={entries} kind="entry" title="Sample entry tiles, phone" />
+          <CatchCardGrid chips={chips} columns={5} items={formats} kind="format" layout="rail" title="Sample formats, phone" />
+        </div>
+      </CatchRoot>
+    </>
+  ),
+};

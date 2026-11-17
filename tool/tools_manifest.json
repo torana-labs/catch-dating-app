@@ -105,6 +105,31 @@
       "role": "finder"
     },
     {
+      "id": "ads:google-campaigns",
+      "category": "marketing",
+      "path": "tool/ads/apply_google_campaigns.mjs",
+      "command": "node tool/ads/apply_google_campaigns.mjs",
+      "safety": "remote-write",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "description": "Plans, and with --apply creates, the Google Ads campaigns in tool/ads/google_campaigns.json for customer 1016806229. Every campaign is created PAUSED for the owner to enable; existing campaigns are left unchanged. The plan asks Google to validate the create request without making anything.",
+      "checks": [
+        "node --check tool/ads/apply_google_campaigns.mjs",
+        "node --test tool/ads/apply_google_campaigns.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/ads/google_campaigns.json",
+        "tool/ads/apply_google_campaigns.test.mjs"
+      ],
+      "role": "operator",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
       "id": "agent:context-pack",
       "category": "agent",
       "path": "tool/agent/context_pack.mjs",
@@ -1106,6 +1131,30 @@
       "checks": [
         "node --check tool/ci/data_validation_workflow.test.mjs",
         "node --test tool/ci/data_validation_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:deck-era-purge-workflow",
+      "category": "ci",
+      "path": "tool/ci/deck_era_purge_workflow.test.mjs",
+      "command": "node --test tool/ci/deck_era_purge_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/deck-era-purge.yml",
+        "tool/ci/deck_era_purge_workflow.test.mjs"
+      ],
+      "description": "Keeps the deck-era purge workflow dispatch-only from main, dry-run by default, keyless and least-privileged, counts-only in its summary, and passing --allow-prod only for a prod apply.",
+      "checks": [
+        "node --check tool/ci/deck_era_purge_workflow.test.mjs",
+        "node --test tool/ci/deck_era_purge_workflow.test.mjs"
       ],
       "role": "gate"
     },
@@ -2332,6 +2381,26 @@
       "impactPaths": [
         "contracts/**/*.json",
         "tool/contracts/generate_schema_contracts.mjs"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "data:purge-deck-era-records",
+      "category": "data",
+      "path": "tool/data/purge_deck_era_records.mjs",
+      "command": "node tool/data/purge_deck_era_records.mjs --env <dev|staging|prod>",
+      "safety": "remote-destructive-apply-guarded",
+      "status": "active",
+      "description": "One-off purge of the retired swipe deck's likes, passes, comments and the chats and signal facts derived from them; dry run by default.",
+      "checks": [
+        "node --check tool/data/purge_deck_era_records.mjs",
+        "npm --prefix functions run build && node --test tool/data/purge_deck_era_records.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/purge_deck_era_records.test.mjs",
+        "tool/data/fixtures/deck_era_purge/fake_firestore.mjs",
+        "tool/data/fixtures/deck_era_purge/world.mjs",
+        "functions/src/matching/deckEraDecision.ts"
       ],
       "role": "generator"
     },
@@ -4085,6 +4154,36 @@
         "node tool/design/playbook/build_boards.mjs --help"
       ],
       "role": "generator"
+    },
+    {
+      "id": "design:website-playbook-tokens",
+      "category": "design",
+      "path": "tool/design/playbook/import_kit_tokens.mjs",
+      "impactPaths": [
+        "design/source_packs/website-playbook/kit/playbook-kit.css",
+        "design/source_packs/website-playbook/kit/playbook-panels.css",
+        "design/tokens/catch.tokens.json",
+        "tool/design/playbook/import_kit_tokens.test.mjs",
+        "tool/design/playbook/lib/kit_token_map.mjs",
+        "design/source_packs/website-playbook/README.md",
+        "design/source_packs/website-playbook/source-pack.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "command": "node tool/design/playbook/import_kit_tokens.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Imports the website playbook kit's values (the design canvas is the source of truth) into design/tokens/catch.tokens.json and rewrites the mapping table in the source pack README. --check fails when a kit hex has no mapping, a mapping is stale, a token or role alias differs from the kit, or the table is stale, so canvas drift fails CI.",
+      "checks": [
+        "node --check tool/design/playbook/import_kit_tokens.mjs",
+        "node --test tool/design/playbook/import_kit_tokens.test.mjs",
+        "node tool/design/playbook/import_kit_tokens.mjs --check"
+      ],
+      "role": "gate"
     },
     {
       "id": "design:widget-catalog",
@@ -6383,6 +6482,54 @@
         "tool/nx/lane_coverage.test.mjs",
         "nx.json",
         "tool/nx/catch_projects.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      }
+    },
+    {
+      "id": "meta:nx-lane-key",
+      "category": "meta",
+      "path": "tool/nx/lane_key.mjs",
+      "command": "node --test tool/nx/lane_key.test.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Lane input keys for result reuse (design B): a hash of every file a CI lane reads (Nx task input patterns, caller-graph files, selectors) in one commit's tree, computed from git ls-tree so a consumer can recompute a producer's key. The test checks each lane's key covers every file Nx hashes for its tasks. lane_key_replay.mjs estimates per-lane reuse over history; nothing in CI uses keys yet.",
+      "checks": [
+        "node --check tool/nx/lane_key.mjs",
+        "node --test tool/nx/lane_key.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/nx/lane_key.test.mjs",
+        "tool/nx/lane_key_replay.mjs",
+        "nx.json",
+        "tool/nx/catch_projects.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      }
+    },
+    {
+      "id": "meta:nx-lane-key-replay",
+      "category": "meta",
+      "path": "tool/nx/lane_key_replay.mjs",
+      "command": "node tool/nx/lane_key_replay.mjs --pairs <file>",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Offline replay of lane keys (design B): for pull request and queue run commit pairs, the share of each lane's queue runs whose key equals the pull request run's (--pairs), or for a commit list, how often a lane's key equals its parent's (--commits). Read-only; reports hit rates that decide which lane reuses results first.",
+      "checks": [
+        "node --check tool/nx/lane_key_replay.mjs"
+      ],
+      "impactPaths": [
+        "tool/nx/lane_key.mjs"
       ],
       "ciRequirements": {
         "repositoryView": "full",

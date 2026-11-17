@@ -106,6 +106,29 @@ class EventDiscoveryQuery {
   );
 }
 
+/// The events behind one Explore search: the hit ids the search returned,
+/// in rank order, at most one `whereIn` read.
+class ExploreSearchEventsQuery {
+  ExploreSearchEventsQuery(Iterable<String> eventIds)
+    : eventIds = List.unmodifiable(
+        (eventIds.map((id) => id.trim()).where((id) => id.isNotEmpty).toSet())
+            .take(ReadLimitPolicy.multiIdChunk),
+      );
+
+  static const _equality = ListEquality<String>();
+
+  /// Hit ids in rank order, de-duplicated and capped at one `whereIn` read.
+  final List<String> eventIds;
+
+  @override
+  bool operator ==(Object other) =>
+      other is ExploreSearchEventsQuery &&
+      _equality.equals(other.eventIds, eventIds);
+
+  @override
+  int get hashCode => _equality.hash(eventIds);
+}
+
 class EventDiscoveryRepository {
   const EventDiscoveryRepository(this._db);
 
@@ -196,6 +219,30 @@ class EventDiscoveryRepository {
     );
   }
 
+  /// The published events behind [query]'s search hits, as one listener so
+  /// the rows keep their live counts. Hits the search index still holds for
+  /// an unpublished or deleted event are left out.
+  Stream<List<Event>> watchSearchHitEvents(ExploreSearchEventsQuery query) {
+    if (query.eventIds.isEmpty) return Stream.value(const []);
+    return withBackendErrorStream(
+      () => _eventsRef
+          .where('publicationState', isEqualTo: 'published')
+          .where(FieldPath.documentId, whereIn: query.eventIds)
+          .limit(ReadLimitPolicy.multiIdChunk)
+          .snapshots()
+          .map(
+            (snapshot) => List<Event>.unmodifiable(
+              snapshot.docs.map(publishedRichEvent).whereType<Event>(),
+            ),
+          ),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch explore search events',
+        resource: _collectionPath,
+      ),
+    );
+  }
+
   Query<Map<String, dynamic>> _applyActivityFilter(
     Query<Map<String, dynamic>> firestoreQuery,
     EventDiscoveryQuery query,
@@ -254,10 +301,9 @@ class EventDiscoveryRepository {
 }
 
 bool _matchesPostQueryFilters(Event event, EventDiscoveryQuery query) {
-  // Synthetic worlds are internal QA data. Signed-in synthetic viewers receive
-  // their event through the canonical participation enrichment path instead of
-  // the public discovery query.
-  if (event.synthetic) return false;
+  // Synthetic worlds are internal QA data, kept here so a signed-in synthetic
+  // viewer finds their own event in its city. The Explore feed shows a
+  // synthetic event only to a viewer booked on it.
   // Link-only events are for people with the link. Rules cannot leave them
   // out of the list query without a field on every event, so Explore does.
   if (event.listing == EventListing.link) return false;
@@ -417,6 +463,14 @@ List<String> eventDiscoveryGeoCellsForRadius({
 EventDiscoveryRepository eventDiscoveryRepository(Ref ref) {
   return EventDiscoveryRepository(ref.watch(firebaseFirestoreProvider));
 }
+
+/// The live events behind one Explore search. Explore keeps the live
+/// "N going" label, so search rows read the events, not a guest's cards.
+@riverpod
+Stream<List<Event>> watchExploreSearchEvents(
+  Ref ref,
+  ExploreSearchEventsQuery query,
+) => ref.watch(eventDiscoveryRepositoryProvider).watchSearchHitEvents(query);
 
 @riverpod
 Future<List<Event>> discoverableEvents(Ref ref, EventDiscoveryQuery query) {

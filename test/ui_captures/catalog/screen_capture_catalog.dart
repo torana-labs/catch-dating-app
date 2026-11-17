@@ -3143,6 +3143,9 @@ List<Object> _hostCreateEventProviderOverrides({
     fetchOrganizerProvider(resolvedOrganizer.id).overrideWithValue(
       organizerValue ?? AsyncData<Organizer?>(resolvedOrganizer),
     ),
+    watchOrganizerProvider(resolvedOrganizer.id).overrideWithValue(
+      organizerValue ?? AsyncData<Organizer?>(resolvedOrganizer),
+    ),
     deviceLocationProvider.overrideWith(CaptureDeviceLocation.new),
     watchOrganizerEventVenuesProvider(
       resolvedOrganizer.id,
@@ -3195,6 +3198,9 @@ List<Object> _hostEditEventProviderOverrides({
       ),
     ),
     fetchOrganizerProvider(_dashboardHostOrganizer.id).overrideWithValue(
+      organizerValue ?? AsyncData<Organizer?>(_dashboardHostOrganizer),
+    ),
+    watchOrganizerProvider(_dashboardHostOrganizer.id).overrideWithValue(
       organizerValue ?? AsyncData<Organizer?>(_dashboardHostOrganizer),
     ),
     watchEventProvider(
@@ -3510,6 +3516,9 @@ List<Object> _hostManageRouteProviderOverrides({
       CaptureHostAttendanceOutboxStore(),
     ),
     fetchOrganizerProvider(effectiveOrganizer.id).overrideWithValue(
+      organizerValue ?? AsyncData<Organizer?>(effectiveOrganizer),
+    ),
+    watchOrganizerProvider(effectiveOrganizer.id).overrideWithValue(
       organizerValue ?? AsyncData<Organizer?>(effectiveOrganizer),
     ),
     watchEventProvider(

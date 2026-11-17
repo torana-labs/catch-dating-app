@@ -21,4 +21,13 @@ abstract final class CatchRadius {
   static const double profilePhotoBottom = 30.0;
   static const double attendedEventTile = 18.0;
   static const double pill = GeneratedCatchRadiusTokens.pill;
+
+  /// Every button: a pill, as the design canvas draws actions (blueprint D26).
+  static const double button = GeneratedCatchRadiusTokens.button;
+
+  /// Website panels and the footer card on wide pages (canvas-owned).
+  static const double panel = GeneratedCatchRadiusTokens.panel;
+
+  /// Colour mats, mock cards and photos (canvas-owned).
+  static const double mat = GeneratedCatchRadiusTokens.mat;
 }

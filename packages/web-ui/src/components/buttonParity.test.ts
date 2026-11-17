@@ -34,9 +34,9 @@ describe("CatchButton parity", () => {
     }
   });
 
-  it("draws D22's corners and Flutter's size table: sm 32, md 40, lg 48 by default", () => {
-    expect(tokens).toContain("radius = CatchRadius.sm");
-    expect(css).toContain("border-radius: var(--catch-radius-sm)");
+  it("draws the canvas pill (D26) and Flutter's size table: sm 32, md 40, lg 48 by default", () => {
+    expect(tokens).toContain("radius = CatchRadius.button");
+    expect(css).toContain("border-radius: var(--catch-radius-button)");
     const sizes = {sm: ["small", "s8", "s3"], md: ["medium", "s10", "s4"], lg: ["large", "s12", "s5"]} as const;
     for (const [size, [name, height, padding]] of Object.entries(sizes)) {
       expect(button).toMatch(new RegExp(`CatchButtonSize\\.${size} => const _ButtonSizeSpec\\(\\s*height: CatchButtonTokens\\.${name}Height,\\s*padding: CatchButtonTokens\\.${name}PaddingX`));
@@ -47,7 +47,8 @@ describe("CatchButton parity", () => {
     expect([height("small"), height("medium"), height("large")]).toEqual([32, 40, 48]);
     expect(css).toContain(`--catch-button-height: ${height("large")}px;\n  --catch-button-pad: var(--catch-space-s5);`);
     expect(css).toMatch(new RegExp(`\\[data-size="md"\\] \\{\\s*--catch-button-height: ${height("medium")}px;\\s*--catch-button-pad: var\\(--catch-space-s4\\);`));
-    expect(css).toMatch(new RegExp(`\\[data-size="sm"\\] \\{\\s*--catch-button-height: ${height("small")}px;\\s*--catch-button-pad: var\\(--catch-space-s3\\);\\s*font-size: var\\(--catch-typography-web-context-size\\);`));
+    // A surface such as the site header may set its own small size; Flutter's is the fallback.
+    expect(css).toMatch(new RegExp(`\\[data-size="sm"\\] \\{\\s*--catch-button-height: var\\(--catch-button-sm-height, ${height("small")}px\\);\\s*--catch-button-pad: var\\(--catch-button-sm-pad, var\\(--catch-space-s3\\)\\);\\s*font-size: var\\(--catch-button-sm-size, var\\(--catch-typography-web-context-size\\)\\);`));
     expect(button).toContain("this.size = CatchButtonSize.lg,");
     expect(ts).toContain('size = props.size ?? "lg";');
     expect(button).toContain("CatchTextStyles.bodyS(context).copyWith(fontWeight: FontWeight.w600)");

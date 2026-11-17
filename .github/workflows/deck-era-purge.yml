@@ -1,0 +1,333 @@
+name: Deck-era purge
+
+# Runs tool/data/purge_deck_era_records.mjs against one Firebase environment
+# with that environment's deploy identity, so the one-off purge of the retired
+# swipe deck's likes, passes and like comments is a logged, repeatable run
+# rather than a command on someone's laptop. The default is a dry run, which
+# only reads and writes the plan's counts to the job summary (--summary-only:
+# no match ids, document paths or contacts). `apply` deletes the deck-era
+# profileDecisions, the chats that exist only because of a deck-era like, and
+# their signal facts and counters; a rerun finds nothing left. On apply the
+# deleted participantSignalFacts and matches ids are kept for one day as an
+# artifact. `bigquery` takes that artifact from the apply run named by
+# source_run_id and deletes those documents' rows from the Firestore export
+# changelog tables, then refreshes the user analytics mart; a rerun deletes
+# only what is left. Dispatch only, from main only. Operator guide:
+# docs/release_operations.md, "Retired swipe deck purge (one-off)".
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Firebase environment to purge.
+        required: true
+        type: choice
+        options: [dev, prod]
+        default: dev
+      mode:
+        description: dry-run reads and reports; apply deletes from Firestore; bigquery deletes the apply run's ids from the BigQuery export.
+        required: true
+        type: choice
+        options: [dry-run, apply, bigquery]
+        default: dry-run
+      source_run_id:
+        description: bigquery only. The id of the apply run whose manifest artifact lists the ids.
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  purge:
+    name: Purge deck-era records in ${{ inputs.environment }} (${{ inputs.mode }})
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      actions: read
+    timeout-minutes: 60
+    environment: ${{ inputs.environment }}
+    # One purge per environment at a time; a second waits.
+    concurrency:
+      group: deck-era-purge-${{ inputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Run only from main
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "::error::The deck-era purge runs only from main, not $GITHUB_REF."
+            exit 1
+          fi
+
+      # bigquery mode reads one earlier apply run of this workflow. The
+      # export extension streams each Firestore change into BigQuery, and DML
+      # cannot touch streamed rows for up to 90 minutes, so the apply run must
+      # have finished at least that long ago.
+      - name: Check the inputs
+        id: source
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODE: ${{ inputs.mode }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+        run: |
+          set -euo pipefail
+          case "$MODE" in
+            dry-run|apply)
+              if [[ -n "$SOURCE_RUN_ID" ]]; then
+                echo "::error::source_run_id is only for bigquery mode."
+                exit 1
+              fi
+              exit 0
+              ;;
+            bigquery) ;;
+            *)
+              echo "::error::Unknown mode '$MODE'."
+              exit 1
+              ;;
+          esac
+          if [[ ! "$SOURCE_RUN_ID" =~ ^[1-9][0-9]{0,19}$ ]]; then
+            echo "::error::bigquery mode needs source_run_id: the numeric id of the apply run whose manifest it uses."
+            exit 1
+          fi
+          run_json="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID")"
+          if ! jq -e '.path == ".github/workflows/deck-era-purge.yml" and .head_branch == "main"
+              and .event == "workflow_dispatch" and .status == "completed" and .conclusion == "success"' \
+              <<<"$run_json" > /dev/null; then
+            echo "::error::Run $SOURCE_RUN_ID is not a successful Deck-era purge run from main."
+            exit 1
+          fi
+          completed="$(jq -er '.updated_at' <<<"$run_json")"
+          completed_epoch="$(date -u -d "$completed" +%s)"
+          ready_epoch=$(( completed_epoch + 90 * 60 ))
+          if (( $(date -u +%s) < ready_epoch )); then
+            echo "::error::Run $SOURCE_RUN_ID finished at $completed. Its changes can still be in BigQuery's streaming buffer, which DML cannot touch. Retry after $(date -u -d "@$ready_epoch" +%Y-%m-%dT%H:%MZ)."
+            exit 1
+          fi
+          echo "completed-epoch=$completed_epoch" >> "$GITHUB_OUTPUT"
+
+      # A missing artifact (expired, or not an apply run) fails here.
+      - name: Download the apply run's manifest
+        if: ${{ inputs.mode == 'bigquery' }}
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: deck-era-purge-manifest-${{ inputs.environment }}
+          path: ${{ runner.temp }}/deck-era-purge-source
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      # The tool reads Firestore through firebase-admin and loads the deck-era
+      # rule from the Functions build, so install only the Functions family.
+      - name: Install the Functions dependencies
+        if: ${{ inputs.mode != 'bigquery' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash tool/git/bootstrap_worktree.sh --target functions
+
+      - name: Build Functions
+        if: ${{ inputs.mode != 'bigquery' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix functions run build
+          test -f functions/lib/matching/deckEraDecision.js
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Run the purge
+        if: ${{ inputs.mode != 'bigquery' }}
+        shell: bash
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+          MODE: ${{ inputs.mode }}
+        run: |
+          set -euo pipefail
+          args=(--env "$TARGET_ENV" --summary-only)
+          case "$MODE" in
+            dry-run) ;;
+            apply)
+              args+=(--apply --manifest "$RUNNER_TEMP/deck-era-purge/manifest.ndjson")
+              if [[ "$TARGET_ENV" == "prod" ]]; then args+=(--allow-prod); fi
+              ;;
+            *)
+              echo "::error::Unknown mode '$MODE'."
+              exit 1
+              ;;
+          esac
+          node tool/data/purge_deck_era_records.mjs "${args[@]}" | tee purge-report.txt
+          {
+            echo "## Deck-era purge: $TARGET_ENV ($MODE)"
+            echo
+            echo '```text'
+            cat purge-report.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the deleted ids for the BigQuery cleanup
+        if: ${{ inputs.mode == 'apply' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: deck-era-purge-manifest-${{ inputs.environment }}
+          path: ${{ runner.temp }}/deck-era-purge/manifest.ndjson
+          if-no-files-found: error
+          retention-days: 1
+
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+        if: ${{ inputs.mode == 'bigquery' }}
+
+      # The export extensions keep every version of a document, including its
+      # deletion, in <table>_raw_changelog: participantSignalFacts in
+      # catch_marketplace_metrics, matches in catch_analytics. The SQL is fixed
+      # and the ids reach BigQuery only as the @ids array parameter, which bq
+      # reads from a file. A table with no manifest ids is not touched. The
+      # summary gets counts only. Deleting ids that are already gone deletes
+      # nothing, so a rerun is safe.
+      - name: Delete the purged documents from the BigQuery export
+        if: ${{ inputs.mode == 'bigquery' }}
+        shell: bash
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+          MANIFEST: ${{ runner.temp }}/deck-era-purge-source/manifest.ndjson
+          SOURCE_COMPLETED_EPOCH: ${{ steps.source.outputs.completed-epoch }}
+        run: |
+          set -euo pipefail
+          shopt -s inherit_errexit
+          case "$TARGET_ENV" in
+            dev|prod) ;;
+            *)
+              echo "::error::Unknown environment '$TARGET_ENV'."
+              exit 1
+              ;;
+          esac
+          if [[ ! "$SOURCE_COMPLETED_EPOCH" =~ ^[0-9]+$ ]]; then
+            echo "::error::The input check did not record when the apply run finished."
+            exit 1
+          fi
+          if [[ ! -s "$MANIFEST" ]]; then
+            echo "::error::The apply run's manifest is missing or empty. Use the run id of the apply that deleted the documents."
+            exit 1
+          fi
+          if ! jq -e -s 'length > 0 and all(.[]; type == "object" and keys == ["collection", "document_id"]
+              and (.collection == "participantSignalFacts" or .collection == "matches")
+              and (.document_id | type == "string" and test("^[^/]{1,1500}$")))' \
+              "$MANIFEST" > /dev/null 2>&1; then
+            echo "::error::The manifest is not the purge tool's NDJSON of {collection, document_id} lines."
+            exit 1
+          fi
+          project="$(jq -er --arg env "$TARGET_ENV" '.projects[$env]' .firebaserc)"
+          work="$RUNNER_TEMP/deck-era-bigquery"
+          mkdir -p "$work"
+
+          bq_run() { bq --quiet --headless --project_id="$project" --location=asia-south1 "$@"; }
+          # The backticks quote BigQuery table names; nothing in the SQL expands.
+          # shellcheck disable=SC2016
+          sql() {
+            case "$1" in
+              count:participant_signal_facts) echo 'SELECT COUNT(*) AS changelog_rows, COUNT(DISTINCT document_id) AS documents FROM `catch_marketplace_metrics.participant_signal_facts_raw_changelog` WHERE document_id IN UNNEST(@ids)' ;;
+              delete:participant_signal_facts) echo 'DELETE FROM `catch_marketplace_metrics.participant_signal_facts_raw_changelog` WHERE document_id IN UNNEST(@ids)' ;;
+              count:matches) echo 'SELECT COUNT(*) AS changelog_rows, COUNT(DISTINCT document_id) AS documents FROM `catch_analytics.matches_raw_changelog` WHERE document_id IN UNNEST(@ids)' ;;
+              delete:matches) echo 'DELETE FROM `catch_analytics.matches_raw_changelog` WHERE document_id IN UNNEST(@ids)' ;;
+              *) return 1 ;;
+            esac
+          }
+          count() {
+            local query result
+            query="$(sql "count:$1")"
+            result="$(bq_run --format=json query --use_legacy_sql=false --parameter="$2" "$query")"
+            jq -er '.[0] | "\(.changelog_rows | tonumber) \(.documents | tonumber)"' <<<"$result"
+          }
+          clean() {
+            local source="$1" collection="$2" table="$3"
+            local params="$work/$source.params.json"
+            jq -s --arg collection "$collection" '[{name: "ids",
+              parameterType: {type: "ARRAY", arrayType: {type: "STRING"}},
+              parameterValue: {arrayValues: ([.[] | select(.collection == $collection) | .document_id]
+                | unique | map({value: .}))}}]' "$MANIFEST" > "$params"
+            local ids
+            ids="$(jq '.[0].parameterValue.arrayValues | length' "$params")"
+            if (( ids == 0 )); then
+              echo "| $source | 0 | not touched | not touched |" >> "$GITHUB_STEP_SUMMARY"
+              return 0
+            fi
+            local metadata oldest_ms
+            if ! metadata="$(bq_run --format=json show "$table")"; then
+              echo "$metadata" >&2
+              echo "::error::Cannot read $table in $TARGET_ENV."
+              exit 1
+            fi
+            oldest_ms="$(jq -r '.streamingBuffer.oldestEntryTime // empty' <<<"$metadata")"
+            if [[ -n "$oldest_ms" ]] && (( oldest_ms / 1000 <= SOURCE_COMPLETED_EPOCH + 15 * 60 )); then
+              echo "::error::$table's streaming buffer still holds rows from $(date -u -d "@$(( oldest_ms / 1000 ))" +%Y-%m-%dT%H:%MZ), which can include the purge's changes, and DML cannot touch them. Retry later."
+              exit 1
+            fi
+            local before before_rows before_docs after after_rows after_docs query output
+            before="$(count "$source" "$params")"
+            read -r before_rows before_docs <<<"$before"
+            query="$(sql "delete:$source")"
+            bq_run query --use_legacy_sql=false --dry_run --parameter="$params" "$query"
+            if ! output="$(bq_run query --use_legacy_sql=false --parameter="$params" "$query" 2>&1)"; then
+              echo "$output" >&2
+              if grep -qi 'streaming buffer' <<<"$output"; then
+                echo "::error::BigQuery refused the delete from $table because matching rows are still in its streaming buffer. Nothing was deleted from it. Retry later."
+              else
+                echo "::error::The delete from $table failed."
+              fi
+              exit 1
+            fi
+            after="$(count "$source" "$params")"
+            read -r after_rows after_docs <<<"$after"
+            echo "| $source | $ids | $before_rows rows, $before_docs documents | $after_rows rows, $after_docs documents |" >> "$GITHUB_STEP_SUMMARY"
+            if (( after_rows != 0 )); then
+              echo "::error::$after_rows rows for the manifest ids remain in $table. Run bigquery mode again."
+              exit 1
+            fi
+          }
+
+          {
+            echo "## Deck-era purge: $TARGET_ENV (bigquery)"
+            echo
+            echo "| Export changelog | Manifest ids | Before | After |"
+            echo "|---|---|---|---|"
+          } >> "$GITHUB_STEP_SUMMARY"
+          clean participant_signal_facts participantSignalFacts catch_marketplace_metrics.participant_signal_facts_raw_changelog
+          clean matches matches catch_analytics.matches_raw_changelog
+
+      # The user mart counts likes, matches and chats from
+      # participant_signal_facts_raw_latest, so refresh it now rather than
+      # waiting for its nightly scheduled query. The host mart reads no signal
+      # facts or matches, so the purge does not change it.
+      - name: Refresh the user analytics mart
+        if: ${{ inputs.mode == 'bigquery' }}
+        shell: bash
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+        run: |
+          set -euo pipefail
+          bash tool/analytics/deploy_user_analytics_bigquery.sh "$TARGET_ENV" --refresh-only
+          {
+            echo
+            echo "Refreshed mart_user_analytics_daily."
+          } >> "$GITHUB_STEP_SUMMARY"

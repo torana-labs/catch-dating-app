@@ -33,6 +33,8 @@ export const markdownReaders = {
   // source-preflight runs the freshness check on every change; Tools runs the generator's own check.
   "tool/ci/generated_inventories.mjs": {"docs/widget_catalog.md": []},
   "tool/design/generate_widget_catalog.mjs": {"docs/widget_catalog.md": ["tools"]},
+  // The kit token importer rewrites and checks the mapping table in the source pack README.
+  "tool/design/playbook/import_kit_tokens.mjs": {"design/source_packs/website-playbook/README.md": ["tools"]},
   "tool/design/build_host_feature_responsibilities.mjs": {"lib/hosts/*/README.md": ["tools"]},
   "tool/design/check_comprehensive_todo_summary.mjs": {"docs/design_parity/comprehensive_todo.md": ["tools"]},
   "tool/design/component_matrix.mjs": {"design/components/component_matrix.md": ["tools"]},

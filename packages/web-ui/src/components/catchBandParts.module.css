@@ -1,0 +1,12 @@
+/*
+ * A section's action row (the playbook kit's .btns): on phones the buttons
+ * stack, each across the full width.
+ */
+@media (max-width: 599px) {
+  .actions.actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions > * { width: 100%; }
+}

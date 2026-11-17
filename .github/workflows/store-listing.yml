@@ -9,7 +9,7 @@ name: Store Listing
 #   approval.
 # - upload sends the committed listing. On iOS it lands on the version being
 #   prepared and goes public with that release; ios_live instead sends the
-#   promotional text and URLs to the live version at once. On Android it goes
+#   promotional text to the live version at once. On Android it goes
 #   public after Google's review. It runs in the reviewer-gated
 #   prod-mobile-release environment, like Mobile Production.
 #
@@ -33,9 +33,13 @@ on:
         options: [both, ios, android]
         default: both
       ios_live:
-        description: iOS upload only. Send promotional text and URLs to the live version now.
+        description: iOS upload only. Send the promotional text to the live version now.
         type: boolean
         default: false
+      ios_version:
+        description: iOS upload only. Version to prepare the listing for, when the app's marketing version is already live or in review (for example 1.0.4). Blank uses the marketing version.
+        type: string
+        default: ""
       android_validate_only:
         description: Android upload only. Check the listing with Google Play without saving it.
         type: boolean
@@ -79,6 +83,7 @@ jobs:
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           ACTION: ${{ inputs.action }}
           LIVE: ${{ inputs.ios_live }}
+          IOS_VERSION: ${{ inputs.ios_version }}
           ROLE: ${{ matrix.role }}
           FASTLANE_SKIP_UPDATE_CHECK: "1"
           FASTLANE_HIDE_CHANGELOG: "1"
@@ -95,7 +100,7 @@ jobs:
               exit 1
             fi
           else
-            bundle exec fastlane ios listing "role:$ROLE" "live:$LIVE"
+            bundle exec fastlane ios listing "role:$ROLE" "live:$LIVE" "version:$IOS_VERSION"
           fi
       - name: Keep the downloaded listing
         if: ${{ inputs.action == 'download' }}

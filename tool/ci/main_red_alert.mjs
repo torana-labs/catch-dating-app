@@ -3,7 +3,8 @@
 // no auto-revert). When main's CI (a push or the nightly) completes, this
 // keeps one GitHub issue, "Main CI is red", in step with it: opened on the
 // first failure, commented on each further failure, and closed with a comment
-// on the next success. Opening an issue notifies repository watchers.
+// on the next success that re-ran every job still owed. Opening an issue
+// notifies repository watchers.
 //
 // On 12 Nov 2026 main stayed red for hours three times (brand literals from
 // #1749, website lint suppressions, the cities route self-test) and nobody
@@ -21,6 +22,32 @@ const DAY = 24 * 60 * 60 * 1000;
 export const FLOOR_EXIT_DAYS = 7;
 const FAILED = new Set(["failure", "timed_out", "startup_failure", "action_required"]);
 const FOOTER = "\n\n---\n_Posted by the Main CI alert workflow (tool/ci/main_red_alert.mjs)._";
+// Each alert post records the jobs main still owes a green run, so a green run
+// that did not select them cannot close the issue (15 Nov 2026: #1929 closed on
+// a run that skipped the failing Tools jobs).
+const OWED_MARKER = /<!-- main-red-owed (\{.*?\}) -->/gu;
+
+/** The owed-jobs record in the latest alert post among `texts` (issue body, then comments). */
+export function owedFromIssue(texts) {
+  let owed = null;
+  for (const text of texts) {
+    for (const match of String(text ?? "").matchAll(OWED_MARKER)) {
+      try {
+        const value = JSON.parse(match[1]);
+        if (Array.isArray(value.jobs) && value.jobs.every((name) => typeof name === "string")) {
+          owed = {jobs: value.jobs, pending: value.pending === true, unknown: value.unknown === true};
+        }
+      } catch {
+        // A malformed record is ignored; an earlier valid one stands.
+      }
+    }
+  }
+  return owed;
+}
+
+const owedMarker = (jobs, {pending = false, unknown = false} = {}) =>
+  `\n<!-- main-red-owed ${JSON.stringify({jobs: [...new Set(jobs)].sort(),
+    ...(pending ? {pending} : {}), ...(unknown ? {unknown} : {})})} -->`;
 
 /**
  * What to do for a completed main CI run. Pure, so every case is testable.
@@ -31,17 +58,40 @@ const FOOTER = "\n\n---\n_Posted by the Main CI alert workflow (tool/ci/main_red
  * @param {{number:number}|null} input.openIssue The open alert issue, if any.
  * @param {Array<{id:number, event:string, conclusion:string|null, head_sha:string, created_at:string}>|null} [input.nightlies]
  *   Recent nightly runs, read only when a nightly failed; null if they could not be read.
+ * @param {{jobs:string[], pending:boolean, unknown?:boolean}|null} [input.owed] The open issue's
+ *   owed-jobs record (owedFromIssue); null when it has none, as an issue opened before the record
+ *   existed. Without a record only a green nightly, which runs every lane, closes the issue.
  */
-export function decideAlert({run, jobs, openIssue, nightlies = null}) {
+export function decideAlert({run, jobs, openIssue, nightlies = null, owed = null}) {
   assert.match(String(run?.head_sha ?? ""), /^[0-9a-f]{40}$/u, "A main CI run names its commit");
+  const passed = new Set(jobs.filter((job) => job.conclusion === "success").map((job) => job.name));
   if (run.conclusion === "success") {
-    return openIssue ?
-      {action: "close", issue: openIssue.number,
-        body: `Main CI is green again at ${run.head_sha.slice(0, 8)}: ${run.html_url}${FOOTER}`} :
-      {action: "none"};
+    if (!openIssue) return {action: "none"};
+    const sha = run.head_sha.slice(0, 8);
+    const known = owed && !owed.unknown;
+    // A nightly selects every lane, so it settles every owed job.
+    const missing = run.event === "schedule" ? [] : known ? owed.jobs.filter((name) => !passed.has(name)) : null;
+    if (missing?.length === 0) {
+      return {action: "close", issue: openIssue.number, body: `Main CI is green again at ${sha}: ${run.html_url}${FOOTER}`};
+    }
+    // Still owed: say so once per change in what is owed, and leave the issue open.
+    if (owed?.pending && (missing ? missing.length === owed.jobs.length : owed.unknown)) {
+      return {action: "none", reason: "still_owed"};
+    }
+    const body = missing ?
+      `Main CI is green at ${sha} (${run.html_url}), but ${missing.map((name) => `\`${name}\``).join(", ")} ` +
+        `did not run, so this stays open until a main run passes ${missing.length === 1 ? "it" : "them"} or the nightly is green.` :
+      `Main CI is green at ${sha} (${run.html_url}), but this issue does not record which jobs failed, ` +
+        "so it stays open until the nightly, which runs every lane, is green.";
+    return {action: "comment", issue: openIssue.number,
+      body: body + owedMarker(missing ?? [], {pending: true, unknown: !missing}) + FOOTER};
   }
   if (!FAILED.has(run.conclusion)) return {action: "none"};
   const failed = jobs.filter((job) => FAILED.has(job.conclusion));
+  // What main now owes: this run's failures plus earlier ones it did not pass.
+  const owedNow = [...failed.map((job) => job.name), ...(owed?.jobs ?? []).filter((name) => !passed.has(name))];
+  // An issue that never recorded its jobs stays unknown until a nightly settles it.
+  const unknown = Boolean(openIssue && (!owed || owed.unknown));
   const gating = failed.filter((job) => job.name === REQUIRED_CI_JOB || !REPORTING_LANES.includes(laneOfJob(job.name)));
   const reporting = failed.filter((job) => !gating.includes(job));
   const line = (job) => `- ${job.html_url ? `[${job.name}](${job.html_url})` : job.name}`;
@@ -55,8 +105,9 @@ export function decideAlert({run, jobs, openIssue, nightlies = null}) {
     ...(gating.length ? ["", "Gating jobs:", ...gating.map(line)] : []),
     ...(reporting.length ? ["", "Reporting jobs:", ...reporting.map(line)] : []),
     ...(failed.length ? [] : ["", "No individual job failed; open the run for details."]),
-    "", "Fix forward on main, then this issue closes itself on the next green main run.",
-  ].join("\n") + FOOTER;
+    "", "Fix forward on main, then this issue closes itself on the next green main run that runs these jobs " +
+      "(or the next green nightly).",
+  ].join("\n") + owedMarker(owedNow, {unknown}) + FOOTER;
   return openIssue ? {action: "comment", issue: openIssue.number, body} : {action: "open", title: ISSUE_TITLE, body};
 }
 
@@ -72,10 +123,13 @@ export function decideAlert({run, jobs, openIssue, nightlies = null}) {
  *   Main's push and nightly CI runs, reaching back at least FLOOR_EXIT_DAYS + 1 days.
  * @param {number} input.now Milliseconds since the epoch.
  * @param {{number:number}|null} input.openIssue The open floor-exit issue, if any.
+ * @param {boolean} [input.alertOpen] Whether a "Main CI is red" issue is still open: main
+ *   is not proven green while a failed job has not passed again.
  * @param {readonly string[]} [input.reportingLanes]
  */
-export function decideFloorExit({runs, now, openIssue, reportingLanes = REPORTING_LANES}) {
+export function decideFloorExit({runs, now, openIssue, alertOpen = false, reportingLanes = REPORTING_LANES}) {
   if (reportingLanes.length === 0 || openIssue) return {action: "none"};
+  if (alertOpen) return {action: "none", reason: "alert_open"};
   const since = now - FLOOR_EXIT_DAYS * DAY;
   const counted = runs.filter((run) => ["push", "schedule"].includes(run.event) && run.status === "completed" &&
     !["cancelled", "skipped", "neutral", null].includes(run.conclusion));
@@ -135,6 +189,8 @@ function main() {
     .flatMap((page) => page.jobs ?? []);
   const issues = JSON.parse(gh(["api", `repos/${repository}/issues?state=open&creator=github-actions%5Bbot%5D&per_page=100`]));
   const openIssue = issues.find((issue) => issue.title === ISSUE_TITLE && !issue.pull_request) ?? null;
+  const owed = openIssue ? owedFromIssue([openIssue.body, ...JSON.parse(gh(["api", "--paginate", "--slurp",
+    `repos/${repository}/issues/${openIssue.number}/comments?per_page=100`])).flat().map((comment) => comment.body)]) : null;
   let nightlies = null;
   if (run.event === "schedule" && FAILED.has(run.conclusion)) {
     try {
@@ -144,7 +200,7 @@ function main() {
       nightlies = null; // The alert still posts; the window reads "unknown".
     }
   }
-  const decision = decideAlert({run, jobs, openIssue, nightlies});
+  const decision = decideAlert({run, jobs, openIssue, nightlies, owed});
   if (decision.action === "open") {
     gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
   } else if (decision.action === "comment" || decision.action === "close") {
@@ -153,18 +209,19 @@ function main() {
       gh(["api", "-X", "PATCH", `repos/${repository}/issues/${decision.issue}`, "-f", "state=closed", "-f", "state_reason=completed"]);
     }
   }
-  console.log(`Main CI alert: ${decision.action} (run ${runId}, ${run.conclusion})`);
-  if (run.conclusion === "success") floorExit(repository, issues);
+  console.log(`Main CI alert: ${decision.action}${decision.reason ? ` (${decision.reason})` : ""} ` +
+    `(run ${runId}, ${run.conclusion})`);
+  if (run.conclusion === "success") floorExit(repository, issues, openIssue && decision.action !== "close");
 }
 
-function floorExit(repository, issues) {
+function floorExit(repository, issues, alertOpen) {
   const now = Date.now();
   const from = new Date(now - (FLOOR_EXIT_DAYS + 1) * DAY).toISOString().slice(0, 10);
   const runs = JSON.parse(gh(["api", "--paginate", "--slurp",
     `repos/${repository}/actions/workflows/ci.yml/runs?branch=main&created=%3E%3D${from}&per_page=100`]))
     .flatMap((page) => page.workflow_runs ?? []);
   const openIssue = issues.find((issue) => issue.title === FLOOR_EXIT_TITLE && !issue.pull_request) ?? null;
-  const decision = decideFloorExit({runs, now, openIssue});
+  const decision = decideFloorExit({runs, now, openIssue, alertOpen});
   if (decision.action === "open") {
     gh(["api", "-X", "POST", `repos/${repository}/issues`, "-f", `title=${decision.title}`, "-F", "body=@-"], decision.body);
   }
