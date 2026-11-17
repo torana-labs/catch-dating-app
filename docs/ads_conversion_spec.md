@@ -12,6 +12,27 @@ Catch acquisition uses one typed contract in
 adapters in `website/src/shared/analytics/catchProviders.ts` accept synthetic destinations only. The production
 controller has a disabled configured transport; no provider, credentials, tag,
 customer list, spend, policy change, or backend deployment is enabled by default.
+This document is the contract each change to that state must follow; the
+`Status` column of the event map records what is wired today.
+
+## Programmes and approved decisions
+
+Paid acquisition runs two programmes on Meta and Google. The guest programme
+optimises for a paid booking (`purchase`); the host programme optimises for a
+qualified host (`organizer_activated`, first published event). The owner
+approved these rules on 2026-11-17:
+
+| Decision | Rule |
+| --- | --- |
+| Browser transport | First-party Google tag (`gtag.js`) and Meta Pixel (`fbevents.js`) loaded on the Catch web origin after marketing consent. The preview iframe transport in `catchLiveTransport.ts` is superseded and is removed when the first-party transport ships. GTM stays out. |
+| Consent | Browser tags need the website marketing choice. Server-side conversions and customer lists rely on the notice shown at checkout, account creation and Host setup, and on the privacy policy, with an ad-matching opt-out that stops both. |
+| Purchase value | The ticket amount the guest paid, in INR, from the admitted payment record. |
+| Ad policy | The post-event matching feature makes Catch a dating service under Meta's and Google's ad policies. Ads never mention matching until Meta's written permission and Google's dating certification are granted. |
+| Spend | Test budget and launch cities are set in the ad accounts, not in code. |
+
+Two rules from the host-only version stay in force for both programmes: no
+matching, dating-interest, gender, age, photo, message or Cross Paths data
+enters any advertising payload, and organiser-owned pixels stay disabled.
 
 ### Host server permission preparation
 
@@ -95,6 +116,10 @@ activation receipts after cleanup. Direct browser reads and writes stay denied.
 
 ### Catch Host pilot destination configuration
 
+This section describes the preview transport that the first-party transport
+(next section) replaces. It stays accurate until that change removes the files
+it names.
+
 `analytics/catchLiveTransport.ts` owns the prepared, default-disabled Google
 transport. Its fixed destinations are GA4 `G-HZFG0DL2DK` (property
 `559735544`) and Ads `AW-18526407471/dUL7CNKBn6MdEK-WioJF` (customer
@@ -167,55 +192,126 @@ campaign attribution from a form response or intercepted request. Production
 activation requires separate permission, refreshed copy and consent, exact-source
 deployment and live acceptance. Ad launch remains a separate approval.
 
+### First-party browser transport
+
+One module under `website/src/analytics/` owns both browser tags on the Catch
+web origin. It loads `gtag.js` (GA4 `G-HZFG0DL2DK`, Ads customer `1016806229`)
+and `fbevents.js` (dataset `1844810253539672`) only after a current marketing
+choice, and loads GA4 alone for an analytics-only choice. Consent Mode defaults
+are set before either script loads: all four purposes denied, then updated from
+the receipt. Google's user-provided data setting and Meta advanced matching are
+on, fed only with the hashed phone and email of a booker or signed-in user on the
+confirmation page.
+
+The module maps the closed event allowlist below to each tag; it never reads or
+replays the diagnostic `dataLayer` bus. Withdrawal or downgrade stops both tags
+immediately, revokes Consent Mode purposes and clears the Catch-owned `_fbp`,
+`_fbc` and Google cookies it set. Requests already sent cannot be retracted.
+
 ## Boundary and current delivery
 
 The local `dataLayer` is a compatibility diagnostic bus, not an advertising export.
 Do not attach GTM to it or forward/replay it: it contains local search, city,
 raw CTA, claim and review diagnostics that are outside the outbound contract.
 `VITE_GTM_ID`, including the historical GTM-K7KLNQXP fallback, cannot load a tag.
-An external `window.gtag` is never called. A second tag stack is unnecessary.
+Only the first-party transport module calls `gtag` or `fbq`; no other code path
+loads or calls a tag.
 
 Catch-owned acquisition and organizer-owned public-page tracking are separate.
 Organizer publication remains hard-disabled with false/null public settings;
 its existing controlled adapters, authority checks and server contracts are
 unchanged. First-party organizer reporting still requires analytics consent.
-Public attendee events, private forms, booking, offer, OTP, profiles and service
-messaging never authorize Catch advertising. App observability and warehouse
-reporting are separate sources, not inputs to these advertising adapters.
+Public event pages, the public booking flow and the booking confirmation page
+are acquisition routes for the guest programme. Private forms, offers, OTP,
+profiles, matching, Cross Paths, messaging and Host workspace routes never
+authorize Catch advertising. App observability and warehouse reporting are
+separate sources, not inputs to the browser adapters.
 
-## Version 1 outbound event map
+## Version 2 outbound event map
 
-Each event has a fixed name and a rebuilt parameter allowlist. The synthetic
-Google adapter emits GA4 analysis; selected organizer outcomes also map to a
-separate Google Ads destination only with marketing permission. Meta requires
-marketing permission and excludes attendee and brand events. Diagnostic/start
-signals are not optimization outcomes.
+Each event has a fixed name and a rebuilt parameter allowlist. Browser events
+need the matching consent purpose; server events follow the server delivery
+rules below. A server event and its browser twin share one opaque event ID so
+each platform counts it once. Diagnostic and start signals are not optimisation
+outcomes.
 
-| Contract event | GA4 name | Meta name | Google Ads selected outcome | Current authoritative source |
-| --- | --- | --- | --- | --- |
-| `page_view` | `page_view` | `PageView` | No | Allowlisted acquisition SPA visit; one per lifecycle visit; first consent starts the current visit without replaying earlier pages. |
-| `cta_click` | `cta_click` | `CatchCtaClick` | No | Existing shared CTA helper; only a same-origin, allowlisted destination. Label and raw URL stay local. |
-| `acquisition_start` | `acquisition_start` | `CatchAcquisitionStart` | No | First form interaction in member waitlist, host lead or host operating application; first explicit claim lookup or selection, or the first code, review or review-request action in the claim panel (once per claim page). |
-| `lead_accepted` | `generate_lead` | `Lead` | Yes, organizer only | Validated successful `/api/join-waitlist` response with `ok: true`, authoritative `hostLead.isNew: true` with a stable server event ID, and unchanged submission-time permission. Member waitlist compatibility still uses `alreadyJoined: false`. |
-| `organizer_signup` | `sign_up` | `CompleteRegistration` | Yes | Unwired: organizer-account-created authority with `isNewAccount: true`; ordinary sign-in/OTP is rejected. |
-| `claim_approved` | `claim_approved` | `CatchClaimApproved` | Yes | Unwired: canonical claim decision with `status: approved`; pending submission is rejected. |
-| `organizer_activated` | `organizer_activated` | `CatchOrganizerActivated` | No initially | Unwired: first published non-test event with a successful real check-in; a draft/event-created click is rejected. |
-| `purchase` | `purchase` | `Purchase` | Yes | Unwired: settled Catch organizer payment authority, positive INR amount and opaque stable transaction ID; click/redirect/pending/free outcomes are rejected. |
+| Contract event | GA4 name | Meta name | Google Ads outcome | Sent from | Authoritative source | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| `page_view` | `page_view` | `PageView` | No | Browser | Allowlisted acquisition SPA visit; one per lifecycle visit; first consent starts the current visit without replaying earlier pages. | Wired (preview transport) |
+| `cta_click` | `cta_click` | `CatchCtaClick` | No | Browser | Existing shared CTA helper; only a same-origin, allowlisted destination. Label and raw URL stay local. | Wired (preview transport) |
+| `acquisition_start` | `acquisition_start` | `CatchAcquisitionStart` | No | Browser | First form interaction in member waitlist, host lead or host operating application; first explicit claim lookup or selection, or the first code, review or review-request action in the claim panel (once per claim page). | Wired (preview transport) |
+| `lead_accepted` | `generate_lead` | `Lead` | Secondary, organizer only | Browser and server | Validated successful `/api/join-waitlist` response with `ok: true`, authoritative `hostLead.isNew: true` with a stable server event ID, and unchanged submission-time permission. Member waitlist compatibility still uses `alreadyJoined: false`. | Wired (browser preview; server gated off) |
+| `event_viewed` | `view_item` | `ViewContent` | No | Browser | Public event page rendered for a published, public event; parameters are the opaque event ID, category, market and ticket price. | Unwired |
+| `checkout_started` | `begin_checkout` | `InitiateCheckout` | Interim primary while purchase volume is low | Browser | Checkout opened for a paid public event after the server created the order; value is ticket price times seats. | Unwired |
+| `purchase` | `purchase` | `Purchase` | Primary, guest | Server, with browser twin | `finalizePublicPayment` admits a paid seat: positive INR amount, the `publicEventPayments` ID as event and transaction ID. Pending, failed, refunded and free outcomes are rejected. | Unwired |
+| `free_registration` | `sign_up` (`method: event_rsvp`) | `CompleteRegistration` | No | Server, with browser twin | A free public registration is admitted. | Unwired |
+| `organizer_signup` | `sign_up` | `CompleteRegistration` | Secondary, organizer (action 7906745506) | Server | `organizerGrowthFacts.milestones.claimedAt` is first set for an owned organizer (`userCreated`, `claimed` or `transferred`), dated within the last seven days; programmatic, synthetic and demo organizers are rejected. | Wired (delivery off by default) |
+| `claim_approved` | `claim_approved` | `CatchClaimApproved` | No | Server | Canonical claim decision with `status: approved`; pending submission is rejected. | Unwired |
+| `organizer_qualified` | `organizer_qualified` | `QualifiedHost` | Primary, organizer (action 7906748544) | Server | `organizerGrowthFacts.milestones.firstEventAt` (the organizer's first event to take a booking) is first set for an owned organizer whose start is no more than 30 days past. A draft or event-created click is rejected. | Wired (delivery off by default) |
+| `organizer_activated` | `organizer_activated` | `CatchOrganizerActivated` | No | Server | First published non-test event with a successful real check-in (`hostOrganizerActivations`); a quality signal for reporting and audiences. | Unwired |
+| `organizer_first_paid_booking` | `organizer_first_paid_booking` | `FirstPaidBooking` | No | Server | `organizerGrowthFacts.milestones.firstPaidBookingAt` is first set. | Unwired |
 
-The eight events support four candidate advertising outcomes: accepted organizer
-lead, new organizer signup, approved claim, and confirmed organizer purchase.
-Which outcomes become bidding goals needs separate activation review. First
-activation is a quality signal initially. Current wiring supplies three diagnostic
-events (including claim start) and accepted leads; the remaining four outcomes are contract seams, not
-claims that providers already receive them.
+`purchase` was previously reserved for a settled organizer payment to Catch.
+Organiser billing is not an acquisition outcome and is no longer in this map.
 
-The current Host-only scope rejects `member_waitlist` and the consumer homepage
-at the measurement boundary; neither is sent to the acquisition property.
-`host_lead`, `host_application` and `claim` belong to organizer acquisition.
-Attendee booking and consumer paid conversion remain separate follow-ons.
-No app profile, matching, singles/dating interest, or attendance data enters this
-contract. App-side conversion inventories from older versions of this document
-were planning proposals and are not an approved advertising export.
+`host_lead`, `host_application` and `claim` belong to organizer acquisition;
+event, booking and confirmation routes belong to guest acquisition. Every event
+carries `content_category` (`guest` or `host`) so audiences and reports stay
+separate inside one dataset. No app profile, matching, singles/dating interest,
+gender or age data enters this contract. Attendance may select people for a
+customer list (for example repeat attendees) but is never an event parameter.
+App-side conversion inventories from older versions of this document were
+planning proposals and are not an approved advertising export.
+
+## Server delivery
+
+One server queue sends every server event in the map to Meta's Conversions API
+and to Google through the Data Manager API (the Google Ads API no longer accepts
+new offline-conversion integrations). It generalises the existing
+`functions/src/acquisition/metaDispatcher.ts`: a trigger on the authoritative
+record writes one pending delivery per destination, keyed by the event ID, and a
+scheduled worker sends it with bounded retries and an age limit, recording the
+provider response. An HTTP 200 alone does not confirm receipt.
+
+Each delivery carries the event name, event time, event ID, value and currency
+where the map gives one, the canonical page URL, and the click context saved
+with the authoritative record: `gclid`, `gbraid`, `wbraid`, `fbc`, `fbp`, client
+IP address and user agent. Matching keys are normalised and SHA-256 hashed on the
+server before they leave it: phone in E.164, email when present, first name,
+city and country `in`. Raw contact details never leave the server.
+
+A delivery is created only when the person has not opted out of ad matching and
+the account is not deleted or restricted. Opt-out or deletion cancels pending
+deliveries; requests already accepted by a provider cannot be retracted.
+Credentials are dedicated Catch identities held in Secret Manager; shared
+business identities are unsuitable.
+
+The queue lives in `functions/src/acquisition/adConversions/`: the
+`onAdConversionGrowthFactsWritten` trigger enqueues host conversions into
+`adConversionDeliveries`, and the `sendAdConversions` worker sends them every
+five minutes. `AD_CONVERSIONS_MODE` controls both: `off` (the default, and the
+setting in dev and staging) enqueues and sends nothing; `validate` sends Meta
+test events, only when `AD_CONVERSIONS_META_TEST_EVENT_CODE` is set, and
+Google validate-only requests, and leaves records pending; `live` records real
+conversions. The Meta token is read at send time from the pinned version in
+`AD_CONVERSIONS_META_TOKEN_VERSION` (the CatchAds system user); Google uploads
+act as the service account in `AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT`, so no
+credential is bound to a deployed Function. Host milestones happen in the Host
+app and on the server, so Meta receives them as `system_generated` events
+matched on hashed phone, email and a namespaced organizer ID; Google receives
+them as enhanced conversions for leads on `UPLOAD_CLICKS` actions. Records are
+cancelled when the owner's account is deleted or the event is older than seven
+days, and retried with backoff up to five attempts, since both platforms
+deduplicate on the event ID.
+
+## Customer lists
+
+A scheduled uploader may share hashed contact lists with Meta (custom audiences)
+and Google (Customer Match): paid bookers with their booking value, repeat
+attendees, active hosts and unqualified host leads, used as lookalike seeds and
+exclusions. Every upload drops deleted, restricted, under-18, staff, test and
+opted-out accounts, and a later upload removes anyone who opted out or deleted
+since the previous one, within seven days at most.
 
 ## Consent and lifecycle
 
@@ -224,11 +320,27 @@ analytics/marketing booleans, update time and the measurement mode (disabled,
 Google preview, Google live or Host server live). A mode change requires a fresh choice; permission
 chosen while integrations were disabled cannot silently activate providers. The banner offers essential only,
 analytics, and explicit analytics plus marketing, with a persistent Privacy choices
-control for withdrawal. Advertising remains disabled regardless of the choice.
+control for withdrawal. Advertising remains disabled regardless of the choice
+until the first-party transport ships with its own measurement mode; under the
+mode-change rule every earlier choice then needs a fresh one, so no choice made
+while advertising was disabled can switch the tags on.
 Legacy version-1, version-2 and version-3 choices, including `accepted`, can retain local
 analytics permission but never authorize the live transport or marketing;
 the banner requires a fresh choice.
 Malformed or unknown versioned receipts fail closed.
+
+### Ad-matching notice and opt-out
+
+Server events and customer lists do not depend on the browser banner. They rely
+on a short notice, linked to the privacy policy, shown where the person gives the
+data: the public checkout, app account creation and Host setup. The privacy
+policy names Google and Meta, what is shared, the hashing, and how to opt out.
+
+The opt-out is one record per person. Signed-in users store it on their account;
+guests who booked without an account are keyed by the SHA-256 hash of their E.164
+phone, so a request by email or phone covers past and future bookings. The
+server delivery queue and the customer-list uploader read this record before
+every send. Account deletion counts as an opt-out.
 
 Unset/essential permission starts no measurement session. Analytics alone allows
 synthetic Google analysis with advertising denied. Explicit marketing permits
@@ -256,14 +368,21 @@ requires consent defaults before measurement and updates when choices change.
 ## Payload and attribution
 
 Only exact acquisition routes in `acquisitionRoute` qualify, including `/claim`
-and `/claim/`; dynamic `/claim/:id`, organizer/event detail, form, booking, offer,
-private Host work and demo routes fail closed. Page location uses the fixed Catch
+and `/claim/`; dynamic `/claim/:id`, organizer detail, form, offer, private Host
+work and demo routes fail closed. The guest programme adds public event detail,
+the public booking flow and its confirmation page to the allowlist. Page location uses the fixed Catch
 origin, route name is a closed enum, and title is fixed to Catch. Referrer is
-omitted. Search/hash, arbitrary hosts, CTA text, proof URLs, names, email, phone,
+omitted. Search/hash, arbitrary hosts, CTA text, proof URLs, names, raw email or phone,
 private answers, reviews, guest lists, organizer/request IDs and sensitive dating
-attributes are never outbound parameters. Receipt IDs must be opaque generated
+attributes are never outbound parameters; hashed matching keys travel only in the
+dedicated matching fields described under server delivery. Receipt IDs must be opaque generated
 measurement IDs, not business identifiers. Purchase amount/currency are accepted
-only for the settled organizer authority.
+only from the admitted payment record.
+
+Click identifiers and approved campaign labels are captured on every
+acquisition route, not only Host routes, and travel with the checkout request so
+the admitted payment record holds them. Server delivery reads them from that
+record, never from the browser after the fact.
 
 Campaign retention uses first-party local storage, expires after 30 days and clears on denial or
 entry into an unapproved route. Only the closed, reviewed source/medium/campaign/
@@ -348,8 +467,9 @@ honeypot.
 A receipt ID is consumed once across business event names; purchase also consumes
 its transaction ID. The tab-local bounded dedupe set is never cleared to replay
 old conversions. It drops additional identified events if full. It is not a
-server idempotency store. CAPI/cross-device delivery later needs stable server
-IDs, event timestamps, browser/server dedupe, current consent and deletion rules.
+server idempotency store. Cross-device and browser/server dedupe come from the
+server delivery queue: one event ID per authoritative record, shared with the
+browser twin, and one delivery per destination keyed by that ID.
 
 ## Verification and separate activation approvals
 
@@ -361,19 +481,21 @@ and settled purchase semantics. Consent UI also needs rendered mobile/desktop,
 theme and large-text checks, plus the applicable registered website checks and
 final-tree generators.
 
-Before live activation, approve the exact Catch GA4 property/Google Ads conversion
-labels/Meta dataset and transport, consent copy and lawful/policy basis, eligible
-routes/categories, retention/deletion behavior, and a reviewed synthetic staging
-validation. Verify provider delivery, consent changes, URL/title/referrer isolation,
-SPA shutdown, dedupe and network payloads before enabling real destinations.
-GTM is optional only if a controlled integration needs it; it must never consume
-the existing bus wholesale. CAPI and customer matching are later steps. Organizer
-pixels require their own publication and policy approval and stay disabled.
+The owner approved the destinations (GA4 property 559735544, Ads customer
+1016806229, Meta dataset 1844810253539672), the first-party transport, the
+consent and opt-out model, the eligible routes and the event map above on
+2026-11-17. Each destination is switched on only after a synthetic staging run
+shows provider receipt (Meta Test Events, Google conversion diagnostics),
+consent changes, URL/title/referrer isolation, SPA shutdown, dedupe and the exact
+network payloads. GTM is optional only if a controlled integration needs it; it
+must never consume the existing bus wholesale. Organizer pixels require their
+own publication and policy approval and stay disabled.
 
-Missing server/app handoffs: organizer creation receipt, approved claim receipt,
-first real event check-in/activation receipt, settled organizer purchase receipt, and
-live acceptance of the prepared server marketing permission. Wire only those authorities when supplied;
-do not infer them from login, pending claims, form success or a purchase page.
+Authorities each server event needs: admitted payment (`finalizePublicPayment`),
+admitted free registration, organizer creation receipt, approved claim receipt,
+the growth-fact milestones and the first real check-in receipt. Wire only those
+authorities; do not infer them from login, pending claims, form success or a
+payment page.
 
 ## GA4 organiser key event
 

@@ -1,6 +1,6 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
-import {guestAppActionLabel, publicSiteCopy, siteFooterCopy, siteHeaderCopy} from "../../content/site";
+import {guestAppActionLabel, publicSiteCopy, siteFooterCopy, siteFooterDefaultCities, siteHeaderCopy} from "../../content/site";
 import {PublicSiteFooter, PublicSiteHeader, SiteAccountActionProvider} from "./PublicSiteChrome";
 import {trackSiteCtaClick} from "./siteTracking";
 
@@ -22,7 +22,7 @@ describe("canonical public chrome", () => {
     expect(banner.queryByRole("link", {name: "Claim your page"})).toBeNull();
   });
 
-  it("puts the account entry last on the right, after the page's actions", () => {
+  it("puts the account entry on the right before the page's actions, as the canvas draws Sign in", () => {
     const signIn = vi.fn();
     render(
       <SiteAccountActionProvider value={{bar: <button onClick={signIn} type="button">Sign in</button>, menu: {label: "Sign in", onPressed: signIn}}}>
@@ -30,10 +30,11 @@ describe("canonical public chrome", () => {
       </SiteAccountActionProvider>,
     );
     const banner = screen.getByRole("banner");
-    const order = [...banner.querySelectorAll("a, button")].map((element) => element.textContent?.trim())
-      .filter((label) => label !== publicSiteCopy.menu.openLabel);
-    // Wordmark and links on the left; the primary action, then the account, on the right.
-    expect(order).toEqual(["Catch for hosts", "On the night", "Start free trial", "Sign in"]);
+    const order = [...banner.querySelectorAll("a, button")]
+      .filter((element) => element.getAttribute("aria-label") !== publicSiteCopy.menu.openLabel)
+      .map((element) => element.textContent?.trim());
+    // Wordmark and links on the left; the account, then the primary action, on the right.
+    expect(order).toEqual(["Catch for hosts", "On the night", "Sign in", "Start free trial"]);
     const signInButton = within(banner).getByRole("button", {name: "Sign in"});
     const leftGroup = within(banner).getByRole("navigation", {name: "Primary"}).parentElement!;
     expect(leftGroup.contains(signInButton)).toBe(false);
@@ -95,6 +96,8 @@ describe("canonical public chrome", () => {
       .toEqual([["What’s on", "/explore/"], ["Pricing", "/host/#pricing"], ["Help", "/help/"]]);
     expect(banner.queryByRole("button", {name: "Resources"})).toBeNull();
     const forHosts = banner.getByRole("button", {name: "For hosts"});
+    // The canvas sets the dropdown among the page links, after What's on.
+    expect(banner.getByRole("navigation", {name: "Primary"}).contains(forHosts)).toBe(true);
     expect(forHosts.getAttribute("aria-expanded")).toBe("false");
     fireEvent.click(forHosts);
     const panel = document.getElementById(forHosts.getAttribute("aria-controls")!)!;
@@ -151,13 +154,14 @@ describe("canonical public chrome", () => {
     expect(screen.queryByRole("button", {name: /dismiss|close/iu})).toBeNull();
   });
 
-  it("renders the one site footer: Explore, Hosts with Weddings, Help and legal ending in Privacy choices, the operator line once", () => {
+  it("renders the one site footer: Explore, Cities, Hosts with Weddings, Help and legal ending in Privacy choices, the operator line once", () => {
     render(<PublicSiteFooter />);
     const footer = within(screen.getByRole("contentinfo"));
     const nav = within(footer.getByRole("navigation", {name: "Footer"}));
-    expect(nav.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent)).toEqual(["Explore", "Hosts", "Help and legal"]);
+    expect(nav.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent)).toEqual(["Explore", "Cities", "Hosts", "Help and legal"]);
     expect(nav.getAllByRole("link").map((link) => link.textContent)).toEqual([
       "What’s on", guestAppActionLabel,
+      ...siteFooterDefaultCities.map((city) => city.label),
       "Catch for hosts", "Pricing", "Start free trial", "Weddings", "Claim your page",
       "Help", "Privacy", "Terms", "Refunds", "Contact",
     ]);
@@ -183,12 +187,21 @@ describe("canonical public chrome", () => {
     expect(trackSiteCtaClick).toHaveBeenCalledWith("footer_Terms", "/terms/");
   });
 
+  it("shows every live city and the all-cities page when a guest page lists no cities", () => {
+    render(<PublicSiteFooter />);
+    const nav = within(screen.getByRole("navigation", {name: "Footer"}));
+    expect(nav.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent)).toEqual(["Explore", "Cities", "Hosts", "Help and legal"]);
+    expect(siteFooterDefaultCities.length).toBeGreaterThan(1);
+    for (const city of siteFooterDefaultCities) expect(nav.getByRole("link", {name: city.label}).getAttribute("href")).toBe(city.href);
+    expect(siteFooterDefaultCities.at(-1)).toEqual({href: "/cities/", label: siteFooterCopy.moreCities, soon: false});
+  });
+
   it("names a product page in the wordmark and keeps the same columns", () => {
     render(<PublicSiteFooter tagline="For planners." wordmark="Catch for weddings" />);
     const footer = within(screen.getByRole("contentinfo"));
     expect(footer.getByRole("link", {name: "Catch for weddings"}).getAttribute("href")).toBe("/");
     expect(footer.getByText("For planners.")).toBeTruthy();
-    expect(within(footer.getByRole("navigation", {name: "Footer"})).getAllByRole("heading", {level: 2})).toHaveLength(3);
+    expect(within(footer.getByRole("navigation", {name: "Footer"})).getAllByRole("heading", {level: 2})).toHaveLength(4);
   });
 
   it("leads the footer with the help band: WhatsApp and Help on guest pages, WhatsApp and the walkthrough on host pages", () => {

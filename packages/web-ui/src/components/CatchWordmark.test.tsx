@@ -20,16 +20,21 @@ describe("CatchWordmark", () => {
     expect(link.dataset.size).toBe("bar");
   });
 
-  it("uses the display voice of catch.text: the 78% width, display weight and display tracking ratio", () => {
-    const wordmark = block(css("CatchWordmark.module.css"), ".wordmark");
+  it("uses the display voice's 78% width and the canvas's wordmark weight and tracking", () => {
+    const sheet = css("CatchWordmark.module.css");
+    const wordmark = block(sheet, ".wordmark");
     const display = block(css("CatchText.module.css"), '.text[data-variant^="display"]');
     // The width axis is the one every display role sets.
     expect(display).toContain("font-stretch: 78%");
     expect(wordmark).toContain("font-stretch: 78%");
     expect(wordmark).toContain('font-variation-settings: "wdth" 78');
-    // Weight and tracking read the display tokens (an em ratio), never a fixed value.
-    expect(wordmark).toContain("font-weight: var(--catch-typography-role-display-xl-weight)");
-    expect(wordmark).toContain("letter-spacing: var(--catch-typography-role-display-xl-tracking)");
+    // Weight, size and tracking read the canvas's wordmark tokens (em ratios), never a fixed value.
+    expect(wordmark).toContain("font-weight: var(--catch-website-wordmark-weight)");
+    expect(block(sheet, '.wordmark[data-size="bar"]')).toContain("letter-spacing: var(--catch-website-wordmark-bar-tracking)");
+    expect(block(sheet, '.wordmark[data-size="bar"]')).toContain("font-size: var(--catch-website-wordmark-bar-size)");
+    const band = sheet.slice(sheet.indexOf('.wordmark[data-size="band"] {'));
+    expect(band).toContain("var(--catch-website-wordmark-footer-size-fluid)");
+    expect(band).toContain("letter-spacing: var(--catch-website-wordmark-footer-tracking)");
     // Word spacing: the one voice token, shared with every display role.
     expect(wordmark).toContain("word-spacing: var(--catch-font-word-spacing-voice)");
     expect(display).toContain("word-spacing: var(--catch-font-word-spacing-voice)");

@@ -31,8 +31,8 @@ export interface CatchSurfaceProps extends Omit<HTMLAttributes<HTMLElement>, "co
   /**
    * plain: no box. tile: the grey block (the default). spotlight: one per
    * screen, in a format colour or ink. floating: over other things, with a
-   * shadow. band: a full-width web page section with its content held to the
-   * page width.
+   * shadow. band: a web page section with its content held to the page
+   * width; with a color it is an inset panel (D26), without one it runs flush.
    */
   block?: CatchSurfaceBlock;
   /** Spotlight: a format or ink. Band: a format, ink, tile or indigo. Ignored for other blocks. */
@@ -123,6 +123,8 @@ export function CatchSurface({
     "data-format": block === "spotlight" || block === "band" ? resolved.format : undefined,
     "data-nested": resolved.nested ? "" : undefined,
     "data-on": ground,
+    // The canvas draws every coloured or ink section as an inset panel; a plain band stays flush.
+    "data-panel": block === "band" && color !== undefined ? "" : undefined,
     "data-pad": padding ?? defaultPadding(block, resolved.nested),
     style: aspect ? {...style, aspectRatio: String(aspect)} : style,
   };

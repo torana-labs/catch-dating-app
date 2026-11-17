@@ -83,14 +83,6 @@ export function EventRuntimeLive({
   );
 }
 
-export function EventRuntimePracticeBanner({children}: {children: ReactNode}) {
-  return <aside className="event-runtime__practice-banner">{children}</aside>;
-}
-
-export function EventRuntimeNoticeStack({children}: {children: ReactNode}) {
-  return <div className="event-runtime__notice-stack">{children}</div>;
-}
-
 export function EventRuntimeLiveHeader({
   badge,
   children,

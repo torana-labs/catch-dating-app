@@ -9,7 +9,7 @@ export const eventInviteCopy = {
   title: "You are invited",
   externalBody: (source: string) =>
     `${brand.name} will take you to ${source} to finish registration. ${brand.name} records this invitation open; the booking remains with ${source}.`,
-  catchBody: `Register here with your verified phone number. You do not need the ${brand.name} app or a dating profile.`,
+  catchBody: `Register here with your verified phone number. You do not need the ${brand.name} app.`,
   runtimeBody: "Continue to the no-download event page to verify your number and open the live event tools.",
   externalAction: (source: string) => `Continue to ${source}`,
   catchAction: "Continue to registration",

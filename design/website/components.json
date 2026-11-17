@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
   "version": 115,
-  "updated": "2026-11-16",
+  "updated": "2026-11-17",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -251,7 +251,7 @@
           "city-picker"
         ]
       },
-      "notes": "Website v2 homepage composed only of @catch/web-ui parts (D18): the page arranges the parts and binds the city's cityPlans read model to them; copy lives in content/homePage.ts."
+      "notes": "The homepage on the playbook's homepage board, composed only of @catch/web-ui section components (D18): the page binds the city's cityPlans read model to them in one of three states. Busy: five or more plans in the next 14 days. Thin: an open city with fewer than five, which lists every plan with its date and moves the host band up to third. Launching: a city that has not opened leads with hosts and puts the opening-day notice where the plans would be. A city whose plans cannot be read stays busy and says so, never \"New\" or a count. Copy lives in content/homePage.ts."
     },
     {
       "id": "home_page_sections",
@@ -263,23 +263,25 @@
       "source": "website/src/features/home/sections/homeSections.tsx",
       "exportName": "HomePageSections",
       "css": [
-        "packages/web-ui/src/components/CatchTopBar.module.css",
-        "packages/web-ui/src/components/CatchMenu.module.css",
+        "packages/web-ui/src/components/CatchHeroSection.module.css",
+        "packages/web-ui/src/components/CatchCardGrid.module.css",
+        "packages/web-ui/src/components/CatchSplitSection.module.css",
+        "packages/web-ui/src/components/CatchCtaSection.module.css",
+        "packages/web-ui/src/components/CatchFaqSection.module.css",
+        "packages/web-ui/src/components/CatchReviewItem.module.css",
+        "packages/web-ui/src/components/CatchDeviceFrame.module.css",
+        "packages/web-ui/src/components/CatchAppCaptureImage.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
         "packages/web-ui/src/components/CatchStack.module.css",
         "packages/web-ui/src/components/CatchText.module.css",
-        "packages/web-ui/src/components/CatchSurface.module.css",
-        "packages/web-ui/src/components/CatchSection.module.css",
-        "packages/web-ui/src/components/CatchIndexRow.module.css",
-        "packages/web-ui/src/components/CatchChip.module.css",
-        "packages/web-ui/src/components/CatchRail.module.css",
-        "packages/web-ui/src/components/CatchEventCard.module.css",
-        "packages/web-ui/src/components/CatchOrganizerCard.module.css",
-        "packages/web-ui/src/components/CatchMeter.module.css",
-        "packages/web-ui/src/components/CatchQrCode.module.css",
-        "packages/web-ui/src/components/CatchAccordion.module.css",
         "packages/web-ui/src/components/CatchField.module.css",
-        "packages/web-ui/src/components/CatchCheckboxInput.module.css"
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchQrCode.module.css",
+        "packages/web-ui/src/components/CatchSiteDock.module.css",
+        "packages/web-ui/src/components/CatchPlanCard.module.css",
+        "packages/web-ui/src/components/CatchDateTile.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -290,7 +292,7 @@
           "phone-launching-soon"
         ]
       },
-      "notes": "The homepage's sections in the WebHomeV2 board's order, private to one assembly: header with the city picker, hero, format tiles, this week or launching soon, how a night works, organisers, the host band, the app band, the FAQ and the footer. Each section arranges library parts and binds the controller's view of the city (D18)."
+      "notes": "The homepage's bands in the board's order, private to one assembly: the header with the city picker; the hero (CatchHeroSection: the phone in the canvas bezel, the notify card until the app is on a store, and the soonest real plan as the floating chip); the entry tiles (CatchCardGrid entry); this week's or the next two weeks' plans as dated plan cards with the action across from the header (CatchCardGrid plan, a rail on phones) or the launching-soon notice (CatchCtaSection); the host band (CatchSplitSection; third in a thin or launching city, after the proof in a busy one); the formats (CatchCardGrid format, with chips); how a night works and the proof (CatchSplitSection); organisers (CatchCardGrid); the app band as the bento grid (CatchCtaSection tiles); the mint refer panel (CatchCtaSection, its introduction on WhatsApp); the FAQ (CatchFaqSection); the footer; and the phone action bar (CatchSiteDock). Each band arranges library parts and binds the controller's view of the city (D18)."
     },
     {
       "id": "shared_identity_display_shell",
@@ -718,21 +720,21 @@
       "routeIds": [
         "event_booking",
         "event_offer",
-        "event_invite"
+        "event_invite",
+        "event_assistance",
+        "event_rehearsal",
+        "sales_demo"
       ],
       "owner": "shared/site",
       "source": "website/src/shared/site/EventBookingFrame.tsx",
       "exportName": "EventBookingFrame",
       "comparedWith": [
-        "catch.screen_body",
-        "catch.text"
+        "catch.pane_layout"
       ],
-      "comparisonReason": "A website page frame for private bookings: it places the booking card in a CatchSplit rail beside a CatchText heading inside a CatchBand. It lays out library parts and implements neither the screen body nor the text contract. Not a pane layout: a public booking page section, not a workspace screen of sibling panes.",
+      "comparisonReason": "A website frame for a booking with no event page: one CatchFlowLayout step (kicker, heading, lead and an optional banner) whose block is the booking card in a white outlined CatchGroundCard, between the site header and footer. It frames one public page's step and arranges no sibling workspace panes, so it implements no pane layout.",
       "css": [
-        "packages/web-ui/src/components/CatchBand.module.css",
-        "packages/web-ui/src/components/CatchSplit.module.css",
-        "packages/web-ui/src/components/CatchGroundCard.module.css",
-        "packages/web-ui/src/components/CatchText.module.css"
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -742,7 +744,7 @@
           "booking-steps"
         ]
       },
-      "notes": "A booking with no event page around it: a payment receipt, an offer, an invitation on its way to its event, or an event whose public page is gone. The event page's booking card in its rail, beside a heading that says what the booking is for, with no event detail beyond what its steps show."
+      "notes": "A booking or guest step with no event page around it: a payment receipt, an offer, an invitation on its way to its event, an event whose public page is gone, the guest's event update, a rehearsal or the private sales demo. The page's step on the flow layout: a kicker, a heading that says what the booking is for, an optional banner, and the card (or bare blocks with card={false}), with no event detail beyond what its steps show."
     },
     {
       "id": "event_booking_card",
@@ -1325,12 +1327,16 @@
       "routeIds": [
         "privacy",
         "terms",
-        "help"
+        "help",
+        "account_deletion",
+        "refunds",
+        "contact"
       ],
       "owner": "shared/ui/primitives",
       "source": "website/src/shared/ui/primitives/legal.tsx",
       "exportName": "LegalDocument",
       "css": [
+        "packages/web-ui/src/components/CatchArticleBody.module.css",
         "website/src/styles/legal.css"
       ],
       "storybook": {
@@ -1343,7 +1349,7 @@
           "contact"
         ]
       },
-      "notes": "Scanner-enforced document, header, label, sections, and contact shells for the three published legal routes."
+      "notes": "The legal, help and contact document as a CatchArticleBody with an \"On this page\" contents list; legal.css keeps only the page ground."
     },
     {
       "id": "route_legal",
@@ -1351,15 +1357,21 @@
       "routeIds": [
         "privacy",
         "terms",
-        "help"
+        "help",
+        "account_deletion",
+        "refunds",
+        "contact"
       ],
       "owner": "features/legal",
       "source": "website/src/features/legal/LegalPage.tsx",
       "exportName": "LegalPage",
       "css": [
-        "website/src/styles/site-shell.css",
         "website/src/styles/legal.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchArticleBody.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1483,6 +1495,7 @@
       "id": "shared_hero_section",
       "kind": "supporting-component",
       "routeIds": [
+        "home",
         "host_run_clubs"
       ],
       "owner": "shared/parts",
@@ -1492,12 +1505,14 @@
         "catch.button",
         "catch.chip",
         "catch.detail_media",
+        "catch.metric_strip",
         "catch.root",
+        "catch.section",
         "catch.stack",
         "catch.surface",
         "catch.text"
       ],
-      "comparisonReason": "The opening band of a website page (the playbook kit's hero and photo hero): kicker, h1, lead, tag chips, footnoted proof lines, band actions, a side link, and a screen beside it with a floating stat card, or a full-bleed photo. It composes catch.button, catch.chip, catch.detail_media, catch.stack, catch.surface and catch.text inside its own ground (catch.root's ground provider); it is a page band, not any of those parts, and implements none of their contracts.",
+      "comparisonReason": "The opening band of a website page (the playbook kit's hero and photo hero): kicker, h1, lead, tag chips, footnoted proof lines, band actions, a side link, and a screen beside it with a floating stat card, or a full-bleed photo. It composes catch.button, catch.chip, catch.detail_media, catch.stack, catch.surface and catch.text inside its own ground (catch.root's ground provider); it is a page band, not any of those parts, and implements none of their contracts. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators) and not a catch.metric_strip of caller-formatted metrics.",
       "css": [
         "packages/web-ui/src/components/CatchHeroSection.module.css"
       ],
@@ -1510,12 +1525,13 @@
           "phone"
         ]
       },
-      "notes": "Website T4 under D18: the kit's KitHero and KitPhotoHero. First consumer: the playbook renderer (features/playbook/PlaybookSections.tsx), the run-clubs page. Search aliases: Hero, HeroBand, PageHero, Masthead."
+      "notes": "Website T4 under D18: the kit's KitHero and KitPhotoHero. Consumers: the homepage (features/home/sections/homeSections.tsx) and the playbook renderer (features/playbook/PlaybookSections.tsx), the run-clubs page. Search aliases: Hero, HeroBand, PageHero, Masthead."
     },
     {
       "id": "shared_split_section",
       "kind": "supporting-component",
       "routeIds": [
+        "home",
         "host_run_clubs"
       ],
       "owner": "shared/parts",
@@ -1526,11 +1542,12 @@
         "catch.journey_steps",
         "catch.marker",
         "catch.metric_strip",
+        "catch.section",
         "catch.stack",
         "catch.surface",
         "catch.text"
       ],
-      "comparisonReason": "A two-column website band (the kit's split, timeline and checklist): a heading with ticks, groups, numbered or timed steps, ticked checks, a metric and actions, beside an optional media column. It lays out catch.journey_steps, catch.marker, catch.metric_strip, catch.button and catch.text on catch.stack inside a catch.surface band; it is a band layout, not a step list, metric strip or surface.",
+      "comparisonReason": "A two-column website band (the kit's split, timeline and checklist): a heading with ticks, groups, numbered or timed steps, ticked checks, a metric and actions, beside an optional media column. It lays out catch.journey_steps, catch.marker, catch.metric_strip, catch.button and catch.text on catch.stack inside a catch.surface band; it is a band layout, not a step list, metric strip or surface. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators); it places a catch.metric_strip metric rather than being one.",
       "css": [
         "packages/web-ui/src/components/CatchSplitSection.module.css"
       ],
@@ -1543,22 +1560,25 @@
           "groups"
         ]
       },
-      "notes": "Website T4 under D18: KitSplit, KitTimeline and KitChecklist. First consumer: the playbook renderer, the run-clubs timeline and checklist. Search aliases: Split, MediaSplit, Timeline, Checklist, FeatureRow."
+      "notes": "Website T4 under D18: KitSplit, KitTimeline and KitChecklist. Consumers: the homepage (features/home/sections/homeSections.tsx) and the playbook renderer, the run-clubs timeline and checklist. Search aliases: Split, MediaSplit, Timeline, Checklist, FeatureRow."
     },
     {
       "id": "shared_cta_section",
       "kind": "supporting-component",
       "routeIds": [
+        "home",
         "host_run_clubs"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchCtaSection.tsx",
       "exportName": "CatchCtaSection",
       "comparedWith": [
+        "catch.metric_strip",
+        "catch.section",
         "catch.stack",
         "catch.surface"
       ],
-      "comparisonReason": "The closing call to action of a website page (the kit's final band): heading, actions, store badges, a capture slot for the page's own phone form, and a media column. It stacks its parts with catch.stack in a catch.surface band; it is a page band, not a stack or a surface.",
+      "comparisonReason": "The closing call to action of a website page (the kit's final band): heading, actions, store badges, a capture slot for the page's own phone form, and a media column. It stacks its parts with catch.stack in a catch.surface band; it is a page band, not a stack or a surface. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators) and not a catch.metric_strip of caller-formatted metrics.",
       "css": [
         "packages/web-ui/src/components/CatchCtaSection.module.css"
       ],
@@ -1570,12 +1590,13 @@
           "capture"
         ]
       },
-      "notes": "Website T4 under D18: KitFinal. First consumer: the playbook renderer, the run-clubs closing band. Search aliases: FinalCta, ClosingBand, CallToAction, StartBand."
+      "notes": "Website T4 under D18: KitFinal. Consumers: the homepage (features/home/sections/homeSections.tsx) and the playbook renderer, the run-clubs closing band. Search aliases: FinalCta, ClosingBand, CallToAction, StartBand."
     },
     {
       "id": "shared_faq_section",
       "kind": "supporting-component",
       "routeIds": [
+        "home",
         "host_run_clubs"
       ],
       "owner": "shared/parts",
@@ -1583,9 +1604,11 @@
       "exportName": "CatchFaqSection",
       "comparedWith": [
         "catch.accordion",
+        "catch.metric_strip",
+        "catch.section",
         "catch.surface"
       ],
-      "comparisonReason": "A website questions band (the kit's FAQ): a heading and a footer line beside a catch.accordion of questions, in a catch.surface band. It frames the accordion as a page band and does not reimplement it.",
+      "comparisonReason": "A website questions band (the kit's FAQ): a heading and a footer line beside a catch.accordion of questions, in a catch.surface band. It frames the accordion as a page band and does not reimplement it. It is a whole page band with its own ground and heading, not a catch.section module (a quiet in-page group with a collection's empty content and separators) and not a catch.metric_strip of caller-formatted metrics.",
       "css": [
         "packages/web-ui/src/components/CatchFaqSection.module.css"
       ],
@@ -1596,7 +1619,7 @@
           "footer"
         ]
       },
-      "notes": "Website T4 under D18: KitFaq. First consumer: the playbook renderer, the run-clubs questions. Search aliases: Faq, Questions, QuestionsBand."
+      "notes": "Website T4 under D18: KitFaq. Consumers: the homepage (features/home/sections/homeSections.tsx) and the playbook renderer, the run-clubs questions. Search aliases: Faq, Questions, QuestionsBand."
     },
     {
       "id": "shared_screen_preview",
@@ -1780,15 +1803,25 @@
       "kind": "supporting-component",
       "routeIds": [
         "host_walkthrough",
-        "host_start"
+        "host_start",
+        "account",
+        "host_billing",
+        "event_booking",
+        "event_invite",
+        "event_assistance",
+        "event_rehearsal",
+        "sales_demo",
+        "weddings_apply",
+        "claim"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchFlowLayout.tsx",
       "exportName": "CatchFlowLayout",
       "comparedWith": [
-        "catch.surface"
+        "catch.surface",
+        "catch.pane_layout"
       ],
-      "comparisonReason": "The frame of one step of a website flow: navigation (a step rail or tabs), a banner, the step's headline, its content column and fine print, in a catch.surface. It is a page frame, not a surface.",
+      "comparisonReason": "The frame of one step of a website flow: navigation (a step rail or tabs), a banner, the step's headline, its content column and fine print, in a catch.surface. It is a page frame, not a surface, and it stacks one step's blocks in a column rather than arranging sibling workspace panes, so it is not a pane layout.",
       "css": [
         "packages/web-ui/src/components/CatchFlowLayout.module.css"
       ],
@@ -1827,13 +1860,22 @@
       "id": "shared_card_grid",
       "kind": "supporting-component",
       "routeIds": [
+        "home",
         "stories",
         "new_to_city",
-        "city_format"
+        "city_format",
+        "cities"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchCardGrid.tsx",
       "exportName": "CatchCardGrid",
+      "comparedWith": [
+        "catch.button",
+        "catch.empty_state",
+        "catch.stack",
+        "catch.surface"
+      ],
+      "comparisonReason": "A band of cards: a band header, filters and links, then plan, organiser, city, review, story or person cards in a three- or four-column grid, with an empty state and the band's actions. It lays out CatchButton, CatchEmptyState, CatchStack and CatchSurface and implements none of those contracts.",
       "css": [
         "packages/web-ui/src/components/CatchCardGrid.module.css"
       ],
@@ -1847,7 +1889,7 @@
           "person"
         ]
       },
-      "notes": "Website T4 under D18: KitCards. The playbook contract's data-bound cards section will bind to it once each source has its read-model adapter; until then pages with cards 404. Search aliases: CardGrid, Cards, Directory."
+      "notes": "Website T4 under D18: KitCards. First consumer: the homepage's plans and organisers bands. The playbook contract's data-bound cards section will bind to it once each source has its read-model adapter; until then pages with cards 404. Search aliases: CardGrid, Cards, Directory."
     },
     {
       "id": "shared_story_card",
@@ -1858,6 +1900,11 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchStoryCard.tsx",
       "exportName": "CatchStoryCard",
+      "comparedWith": [
+        "catch.detail_media",
+        "catch.text"
+      ],
+      "comparisonReason": "One story in a grid of stories: a 4:3 photo, a meta line, the title, a body and a figure at the foot. It places a CatchHeroImage and CatchText in a card and implements neither the detail media nor the text contract.",
       "css": [
         "packages/web-ui/src/components/CatchStoryCard.module.css"
       ],
@@ -2466,49 +2513,17 @@
       "notes": "Labelled pulse with role status: an inline recipe of CatchLoadingIndicator."
     },
     {
-      "id": "shared_event_runtime_notice_stack",
-      "kind": "supporting-component",
-      "routeIds": [
-        "event_assistance",
-        "household_rsvp"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
-      "exportName": "EventRuntimeNoticeStack",
-      "css": [
-        "website/src/styles/event-runtime.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "notices"
-        ]
-      },
-      "notes": "Shared website component; Vertical stack of runtime notices, not of complete sections."
-    },
-    {
       "id": "shared_event_runtime_panel",
       "kind": "supporting-component",
       "routeIds": [
         "claim",
         "claim_lookup",
-        "event_assistance",
-        "event_booking",
-        "event_invite",
         "event_offer",
-        "household_rsvp",
-        "sales_demo"
+        "household_rsvp"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
       "exportName": "EventRuntimePanel",
-      "comparedWith": [
-        "catch.section",
-        "catch.metric_strip",
-        "catch.control_shell",
-        "catch.surface"
-      ],
-      "comparisonReason": "Route main with an intro heading; page body layout, whose Flutter counterpart CatchPageBody is T3.",
       "css": [
         "website/src/styles/event-runtime.css"
       ],
@@ -2520,27 +2535,6 @@
         ]
       },
       "notes": "Shared website component; Route main with an intro heading; page body layout, whose Flutter counterpart CatchPageBody is T3."
-    },
-    {
-      "id": "shared_event_runtime_practice_banner",
-      "kind": "supporting-component",
-      "routeIds": [
-        "sales_demo"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
-      "exportName": "EventRuntimePracticeBanner",
-      "componentId": "catch.banner",
-      "css": [
-        "website/src/styles/event-runtime.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "practice"
-        ]
-      },
-      "notes": "Practice-mode notice above the runtime: an informational CatchBanner."
     },
     {
       "id": "shared_host_preview_section",
@@ -3000,11 +2994,7 @@
           "live-module-shell"
         ]
       },
-      "notes": "Governed visual ownership for attendee and rehearsal runtime frames, practice banner, panels, forms, consents, live header, action grid, notices, and module cards. Since P4.6 /join and /rehearse no longer render these shells; the event assistance page and the sales demo do.",
-      "comparedWith": [
-        "catch.pane_layout"
-      ],
-      "comparisonReason": "A guest-facing event runtime page frame inside the website; it arranges one public page, not sibling workspace panes."
+      "notes": "Governed visual ownership for attendee and rehearsal runtime frames, practice banner, panels, forms, consents, live header, action grid, notices, and module cards. Since P4.6 /join and /rehearse no longer render these shells, and since the live-flows restyle the event assistance page and the sales demo draw CatchFlowLayout instead; the EventRuntimeShells story keeps the frame visible."
     },
     {
       "id": "route_event_rehearsal",
@@ -3016,21 +3006,19 @@
       "source": "website/src/features/eventRehearsal/EventRehearsalPage.tsx",
       "exportName": "EventRehearsalPage",
       "css": [
-        "packages/web-ui/src/components/CatchRoot.module.css",
-        "packages/web-ui/src/components/CatchTopBar.module.css",
-        "packages/web-ui/src/components/CatchPageBody.module.css",
-        "packages/web-ui/src/components/CatchPaneLayout.module.css",
-        "packages/web-ui/src/components/CatchStack.module.css",
-        "packages/web-ui/src/components/CatchBadge.module.css",
-        "packages/web-ui/src/components/CatchSurface.module.css",
-        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchBanner.module.css",
         "packages/web-ui/src/components/CatchSection.module.css",
         "packages/web-ui/src/components/CatchIndexRow.module.css",
-        "packages/web-ui/src/components/CatchIcon.module.css",
         "packages/web-ui/src/components/CatchNotice.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
-        "website/src/styles/event-runtime.css"
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "planned",
@@ -3107,12 +3095,10 @@
       "source": "website/src/features/events/EventInvitePage.tsx",
       "exportName": "EventInvitePage",
       "css": [
-        "packages/web-ui/src/components/CatchBand.module.css",
-        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
         "packages/web-ui/src/components/CatchGroundCard.module.css",
-        "packages/web-ui/src/components/CatchText.module.css",
-        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
-        "packages/web-ui/src/components/CatchButton.module.css"
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -3237,7 +3223,12 @@
       "source": "website/src/features/eventAssistance/EventAssistancePage.tsx",
       "exportName": "EventAssistancePage",
       "css": [
-        "website/src/styles/event-runtime.css"
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "planned",
@@ -4312,13 +4303,18 @@
       "source": "website/src/features/events/PublicBookingPage.tsx",
       "exportName": "PublicBookingPage",
       "css": [
-        "packages/web-ui/src/components/CatchBand.module.css",
-        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
         "packages/web-ui/src/components/CatchGroundCard.module.css",
-        "packages/web-ui/src/components/CatchText.module.css",
-        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchFormStepList.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchStepper.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchField.module.css"
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -4343,7 +4339,17 @@
       "source": "website/src/features/salesDemo/SalesDemoPage.tsx",
       "exportName": "SalesDemoPage",
       "css": [
-        "website/src/styles/event-runtime.css"
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchBanner.module.css",
+        "packages/web-ui/src/components/CatchFormStepList.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "planned",
@@ -4427,7 +4433,10 @@
       "source": "website/src/features/home/CitiesPage.tsx",
       "exportName": "CitiesPage",
       "css": [
-        "website/src/styles/site-shell.css"
+        "website/src/styles/site-shell.css",
+        "packages/web-ui/src/components/CatchCardGrid.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -4864,7 +4873,7 @@
         "catch.graded_image",
         "catch.network_image"
       ],
-      "comparisonReason": "Draws generated activity artwork (a duotone ground and line pattern) where there is no photo, for event media and the format tiles; it loads no image, grades no photo and lays out no detail media, so it is the activity backdrop member of catch.event_card rather than any image contract."
+      "comparisonReason": "Draws the activity's duotone ground and line pattern from geometry, with no photo: it is the artwork shown where there is no image, not media that loads, grades or frames a photo, so it implements none of catch.detail_media, catch.graded_image or catch.network_image."
     },
     {
       "id": "shared_event_thumbnail",
@@ -5004,11 +5013,7 @@
           "board-reference-event"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-248). Two columns at 1:1, 7:5, or a 380px (booking) or 420px (organiser) rail on either side; they stack in source order when the page is narrower than 840px, snapped from the boards' 900px to the expanded window size. Search aliases: TwoColumn, TwoColumns, Columns, SplitLayout, SideBySide, Sidebar, SidebarLayout, RailLayout.",
-      "comparedWith": [
-        "catch.pane_layout"
-      ],
-      "comparisonReason": "A Website v2 section that places media beside copy inside a band; CatchPaneLayout arranges sibling workspace panes of an app screen."
+      "notes": "Website T4 under D18 (CAT-248). Two columns at 1:1, 7:5, or a 380px (booking) or 420px (organiser) rail on either side; they stack in source order when the page is narrower than 840px, snapped from the boards' 900px to the expanded window size. Search aliases: TwoColumn, TwoColumns, Columns, SplitLayout, SideBySide, Sidebar, SidebarLayout, RailLayout."
     },
     {
       "id": "shared_grid",
@@ -5053,10 +5058,6 @@
       "owner": "shared/layout",
       "source": "packages/web-ui/src/components/CatchScroller.tsx",
       "exportName": "CatchScroller",
-      "comparedWith": [
-        "catch.rail"
-      ],
-      "comparisonReason": "A full-bleed band row: its first item lines up with the page content edge while items scroll out to the viewport edge, it never wraps, and its items can grow to share the row (the boards' format tiles). catch.rail is a content-width row that fades the edge hiding more and wraps into a grid on desktops. The two overlap; folding page-edge bleed into CatchRail and retiring CatchScroller is a follow-up.",
       "css": [
         "packages/web-ui/src/components/CatchScroller.module.css"
       ],
@@ -5073,7 +5074,7 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-248). A keyboard-focusable sideways rail whose items snap to its start; a page-edge rail pads its first item to the content edge of a full-width CatchBand while items scroll to the viewport edge. Search aliases: Carousel, HorizontalScroll, Rail, Slider, ScrollRow, Shelf, HorizontalList, Swiper."
+      "notes": "Website T4 under D18 (CAT-248). A keyboard-focusable sideways rail whose items snap to its start; a page-edge rail pads its first item to the content edge of a full-width CatchBand while items scroll to the viewport edge. Search aliases: Carousel, HorizontalScroll, Rail, Slider, ScrollRow, Shelf, HorizontalList, Swiper. It overlaps catch.rail (a content-width row that fades its hidden edge and wraps into a grid on desktops); folding page-edge bleed into CatchRail and retiring CatchScroller is a follow-up."
     },
     {
       "id": "shared_scroll_story",
@@ -5108,6 +5109,7 @@
       "id": "shared_date_tile",
       "kind": "supporting-component",
       "routeIds": [
+        "home",
         "organizer_listing_canonical",
         "event_detail_canonical"
       ],
@@ -5127,7 +5129,14 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A calendar date on a palette ground: weekday, a displayS day and month in one time element, 72 x 78px and 56 x 66px on a phone. Search aliases: DateBadge, CalendarTile, DateBlock, DateChip, EventDate, CalendarIcon."
+      "notes": "Website T4 under D18 (CAT-249). A calendar date on a palette ground: weekday, a displayS day and month in one time element, 72 x 78px and 56 x 66px on a phone. Small (D26, the playbook homepage's .date): 48 x 52px with 12px corners, the weekday over the day and the month read but not shown, for the canvas plan card and the hero's plan chip. Search aliases: DateBadge, CalendarTile, DateBlock, DateChip, EventDate, CalendarIcon.",
+      "comparedWith": [
+        "catch.text",
+        "catch.analytics_metric",
+        "catch.icon_tile",
+        "catch.option_card"
+      ],
+      "comparisonReason": "A calendar date on a palette ground, read as one time element. It sets its weekday and day with catch.text roles (or, small, in the canvas's own date-square type) and is not a text role; it shares the tile role noun with catch.analytics_metric, catch.icon_tile and catch.option_card but shows no figure or trend, no icon and no choice, so it implements none of them."
     },
     {
       "id": "shared_sticky_aside",
@@ -5277,11 +5286,30 @@
       "kind": "supporting-component",
       "routeIds": [
         "organizer_listing_canonical",
-        "event_detail_canonical"
+        "event_detail_canonical",
+        "account",
+        "host_billing",
+        "event_booking",
+        "event_invite",
+        "event_assistance",
+        "event_rehearsal",
+        "sales_demo",
+        "weddings_apply",
+        "privacy",
+        "terms",
+        "help",
+        "account_deletion",
+        "refunds",
+        "contact"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchGroundCard.tsx",
       "exportName": "CatchGroundCard",
+      "comparedWith": [
+        "catch.surface",
+        "catch.event_card"
+      ],
+      "comparisonReason": "A rounded card on one Website v2 palette ground that holds whatever the page arranges in it. catch.surface tones are theme surfaces, not palette grounds, and the card carries no event of its own, so it implements neither the surface nor the event card contract.",
       "css": [
         "packages/web-ui/src/components/CatchGroundCard.module.css"
       ],
@@ -5366,11 +5394,16 @@
       "kind": "supporting-component",
       "routeIds": [
         "organizer_listing_canonical",
-        "event_detail_canonical"
+        "event_detail_canonical",
+        "home"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchReviewItem.tsx",
       "exportName": "CatchReviewItem",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "One review as an article named by the reviewer: stars, a verification badge slot, the text, the organiser's reply and a footer slot. It sets its lines in CatchLegacyText and implements no text contract itself.",
       "css": [
         "packages/web-ui/src/components/CatchReviewItem.module.css"
       ],
@@ -5662,6 +5695,30 @@
       "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
     },
     {
+      "id": "shared_catch_site_dock",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchSiteDock.tsx",
+      "exportName": "CatchSiteDock",
+      "css": [
+        "packages/web-ui/src/components/CatchSiteDock.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchSiteDock.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "two-actions",
+          "whatsapp",
+          "wide-hidden"
+        ]
+      },
+      "notes": "Website T4 under D26 (the playbook kit's .mbar). The phone action bar: a sticky ink pill 8px above the screen's foot with the page's main action (coral, or pink on the homepage), an optional outlined second action and an optional WhatsApp button, 44px each. It draws nothing on a wide page and sits last on the page, so it rides the screen's foot and comes to rest under the footer. First consumer: the homepage. Not catch.bottom_action (Flutter's CatchDock bar, card and pane): links only, no summary, note or loading state, and hidden on wide pages. Search aliases: MobileBar, StickyCta, PhoneBar."
+    },
+    {
       "id": "shared_device_frame",
       "kind": "supporting-component",
       "routeIds": [
@@ -5856,13 +5913,9 @@
       "source": "packages/web-ui/src/components/CatchFormatTile.tsx",
       "exportName": "CatchFormatTile",
       "comparedWith": [
-        "catch.surface",
-        "catch.text",
-        "catch.analytics_metric",
-        "catch.icon_tile",
-        "catch.option_card"
+        "catch.text"
       ],
-      "comparisonReason": "A website card for one event format: photo or format artwork, the format name and this week's count, as a link or a pressed toggle that filters the week. Not a block that tells children their ground (catch.surface), not a caller-formatted metric with missing-data states (catch.analytics_metric), not an icon-only tile (catch.icon_tile) and not a checked form choice (catch.option_card). It composes catch.text for its labels.",
+      "comparisonReason": "A website card for one event format: photo or format artwork, the format name and this week's count, as a link or a pressed toggle that filters the week. It composes catch.text for its labels and is a format card, not a text role.",
       "css": [
         "packages/web-ui/src/components/CatchFormatTile.module.css"
       ],
@@ -5916,7 +5969,7 @@
           "compact"
         ]
       },
-      "notes": "Website T4 under D18. Headline at the page-title role (38, 48 and 64px by size class), inside the 72px cap of D19. Renders a plain div, never a banner landmark. First consumer: the not-found page. The library's stories (packages/web-ui/src/components/CatchBandHeader.stories.tsx) do not declare catchComponent yet, so coverage stays planned. Search aliases: SectionHeader, BandHeading, SectionIntro, Kicker, Eyebrow."
+      "notes": "Website T4 under D18. Headline at one of the canvas sizes when a section asks (D26: hero 80/44px, section 56/36px, feature 42/32px, small 30/26px at -0.03em), else the page-title role (38, 48 and 64px by size class). Kickers take the canvas accent (deep on white and paper, bright on ink, the ground's secondary ink on a colour) at .04em. Renders a plain div, never a banner landmark. First consumer: the not-found page. The library's stories (packages/web-ui/src/components/CatchBandHeader.stories.tsx) do not declare catchComponent yet, so coverage stays planned. Search aliases: SectionHeader, BandHeading, SectionIntro, Kicker, Eyebrow."
     },
     {
       "id": "shared_breadcrumb_row",
@@ -6184,8 +6237,17 @@
       "source": "website/src/features/account/AccountPage.tsx",
       "exportName": "AccountPage",
       "css": [
-        "packages/web-ui/src/components/CatchPaneLayout.module.css",
-        "packages/web-ui/src/components/CatchStack.module.css"
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchPageTabBar.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchEmptyState.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "planned",
@@ -6259,8 +6321,15 @@
       "source": "website/src/features/hostBilling/HostBillingPage.tsx",
       "exportName": "HostBillingPage",
       "css": [
-        "packages/web-ui/src/components/CatchPaneLayout.module.css",
-        "packages/web-ui/src/components/CatchStack.module.css"
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchEmptyState.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "planned",

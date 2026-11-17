@@ -1483,6 +1483,7 @@ test("deploy and maintenance workflows ci.yml never calls select their own tests
     ".github/workflows/brand-config-publish.yml": ["ci:brand-config-publish-workflow"],
     ".github/workflows/_brand-config-publish.yml": ["ci:brand-config-publish-workflow"],
     ".github/workflows/city-interest-backfill.yml": ["ci:city-interest-backfill-workflow"],
+    ".github/workflows/deck-era-purge.yml": ["ci:deck-era-purge-workflow"],
     ".github/workflows/branch-prune.yml": ["git:branch-hygiene"],
     ".github/workflows/nx-shadow.yml": ["meta:nx-shadow-plan"],
     ".github/actions/find-queue-validation/action.yml": ["ci:web-hosting-delivery-workflow"],

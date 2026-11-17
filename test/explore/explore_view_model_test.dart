@@ -9,7 +9,6 @@ import 'package:catch_dating_app/contexts/discovery/data/event_discovery_reposit
 import 'package:catch_dating_app/contexts/discovery/data/explore_search_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/domain/saved_event.dart';
-import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/external_event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
@@ -2031,11 +2030,12 @@ void main() {
             watchSavedEventCardsProvider(user.uid).overrideWith(
               (ref) => Stream.value(guestEventCardsOf([savedEvent])),
             ),
-            watchEventsByIdsProvider(
-              EventsByIdQuery([joinedEvent.id]),
-            ).overrideWith((ref) => Stream.value([joinedEvent])),
             eventDiscoveryRepositoryProvider.overrideWithValue(
-              _FakeEventDiscoveryRepository([requestEvent, savedEvent]),
+              _FakeEventDiscoveryRepository([
+                joinedEvent,
+                requestEvent,
+                savedEvent,
+              ]),
             ),
             externalEventRepositoryProvider.overrideWithValue(
               _FakeExternalEventRepository([]),
@@ -2083,48 +2083,117 @@ void main() {
       },
     );
 
+    test('exploreFeedViewModelProvider shows booked and saved events only when '
+        'discovery returns them', () async {
+      final user = event_test.buildUser(uid: 'runner-own-events');
+      final organizer = buildOrganizer(id: 'club-own-events');
+      final joinedEvent = event_test.buildEvent(
+        id: 'joined-elsewhere',
+        organizerId: organizer.id,
+        startTime: DateTime.now().add(const Duration(days: 1)),
+      );
+      final savedEvent = event_test.buildEvent(
+        id: 'saved-elsewhere',
+        organizerId: organizer.id,
+        startTime: DateTime.now().add(const Duration(days: 2)),
+      );
+      final discoverableEvent = event_test.buildEvent(
+        id: 'discoverable-own-events',
+        organizerId: organizer.id,
+        startTime: DateTime.now().add(const Duration(days: 3)),
+      );
+
+      final container = ProviderContainer(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value(user.uid)),
+          watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+          watchOrganizersByLocationProvider(
+            _mumbaiMarketId,
+          ).overrideWith((ref) => Stream.value([organizer])),
+          watchActiveOrganizerFollowsForUserProvider(
+            user.uid,
+          ).overrideWith((ref) => Stream.value(const <OrganizerFollow>[])),
+          watchEventParticipationsForUserProvider(user.uid).overrideWith(
+            (ref) => Stream.value([
+              event_test.buildEventParticipation(
+                event: joinedEvent,
+                uid: user.uid,
+              ),
+            ]),
+          ),
+          watchSavedEventsForUserProvider(user.uid).overrideWith(
+            (ref) => Stream.value([
+              SavedEvent(
+                id: savedEventId(uid: user.uid, eventId: savedEvent.id),
+                uid: user.uid,
+                eventId: savedEvent.id,
+                savedAt: DateTime(2026, 5, 26),
+              ),
+            ]),
+          ),
+          eventDiscoveryRepositoryProvider.overrideWithValue(
+            _FakeEventDiscoveryRepository([discoverableEvent]),
+          ),
+          externalEventRepositoryProvider.overrideWithValue(
+            _FakeExternalEventRepository([]),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      container
+          .read(exploreFiltersProvider.notifier)
+          .setTimeFilter(ExploreTimeFilter.anytime);
+
+      final subscription = container.listen(
+        exploreFeedViewModelProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(subscription.close);
+      await container.pump();
+      await flushTestEventQueue();
+      await container.pump();
+
+      expect(subscription.read().hasValue, isTrue);
+      final viewModel = subscription.read().value!;
+      expect(viewModel.items.map((item) => item.event.id), [
+        'discoverable-own-events',
+      ]);
+      expect(viewModel.dateSupplyCount(ExploreTimeFilter.anytime), 1);
+    });
+
     test(
-      'exploreFeedViewModelProvider does not block on personal event enrichment',
+      'exploreFeedViewModelProvider adds live search hits discovery missed',
       () async {
-        final user = event_test.buildUser(uid: 'runner-enrichment');
-        final organizer = buildOrganizer(id: 'club-enrichment');
-        final joinedEvent = event_test.buildEvent(
-          id: 'joined-enrichment',
+        final organizer = buildOrganizer(id: 'club-search');
+        final discoverableEvent = event_test.buildEvent(
+          id: 'discoverable-search',
           organizerId: organizer.id,
           startTime: DateTime.now().add(const Duration(days: 1)),
         );
-        final discoverableEvent = event_test.buildEvent(
-          id: 'discoverable-enrichment',
+        final hitEvent = event_test.buildEvent(
+          id: 'search-hit',
           organizerId: organizer.id,
-          startTime: DateTime.now().add(const Duration(days: 2)),
+          startTime: DateTime.now().add(const Duration(days: 9)),
         );
-        final personalEvents = StreamController<List<Event>>();
-        addTearDown(personalEvents.close);
 
         final container = ProviderContainer(
           overrides: [
-            uidProvider.overrideWith((ref) => Stream.value(user.uid)),
-            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            uidProvider.overrideWith((ref) => Stream.value(null)),
             watchOrganizersByLocationProvider(
               _mumbaiMarketId,
             ).overrideWith((ref) => Stream.value([organizer])),
-            watchActiveOrganizerFollowsForUserProvider(
-              user.uid,
-            ).overrideWith((ref) => Stream.value(const <OrganizerFollow>[])),
-            watchEventParticipationsForUserProvider(user.uid).overrideWith(
-              (ref) => Stream.value([
-                event_test.buildEventParticipation(
-                  event: joinedEvent,
-                  uid: user.uid,
+            exploreSearchRepositoryProvider.overrideWithValue(
+              const _FakeExploreSearchRepository(
+                result: ExploreSearchResult(
+                  organizerIds: [],
+                  eventIds: ['search-hit'],
                 ),
-              ]),
+              ),
             ),
-            watchSavedEventsForUserProvider(
-              user.uid,
-            ).overrideWith((ref) => Stream.value(const <SavedEvent>[])),
-            watchEventsByIdsProvider(
-              EventsByIdQuery([joinedEvent.id]),
-            ).overrideWith((ref) => personalEvents.stream),
+            watchExploreSearchEventsProvider(
+              ExploreSearchEventsQuery(const ['search-hit']),
+            ).overrideWith((ref) => Stream.value([hitEvent])),
             eventDiscoveryRepositoryProvider.overrideWithValue(
               _FakeEventDiscoveryRepository([discoverableEvent]),
             ),
@@ -2137,6 +2206,7 @@ void main() {
         container
             .read(exploreFiltersProvider.notifier)
             .setTimeFilter(ExploreTimeFilter.anytime);
+        container.read(exploreSearchQueryProvider.notifier).setQuery('sunrise');
 
         final subscription = container.listen(
           exploreFeedViewModelProvider,
@@ -2144,22 +2214,18 @@ void main() {
           fireImmediately: true,
         );
         addTearDown(subscription.close);
+        await container.read(debouncedExploreSearchQueryProvider.future);
         await container.pump();
         await flushTestEventQueue();
         await container.pump();
 
-        expect(subscription.read().hasValue, isTrue);
+        expect(
+          subscription.read().hasValue,
+          isTrue,
+          reason: '${subscription.read()}',
+        );
         expect(subscription.read().value!.items.map((item) => item.event.id), [
-          'discoverable-enrichment',
-        ]);
-
-        personalEvents.add([joinedEvent]);
-        await flushTestEventQueue();
-        await container.pump();
-
-        expect(subscription.read().value!.items.map((item) => item.event.id), [
-          'joined-enrichment',
-          'discoverable-enrichment',
+          'search-hit',
         ]);
       },
     );
@@ -2301,9 +2367,13 @@ ExternalEvent _externalEvent({
 }
 
 class _FakeExploreSearchRepository implements ExploreSearchRepository {
-  const _FakeExploreSearchRepository({this.error});
+  const _FakeExploreSearchRepository({
+    this.error,
+    this.result = ExploreSearchResult.empty,
+  });
 
   final Object? error;
+  final ExploreSearchResult result;
 
   @override
   Future<ExploreSearchResult> searchExplore({
@@ -2313,6 +2383,6 @@ class _FakeExploreSearchRepository implements ExploreSearchRepository {
   }) async {
     final error = this.error;
     if (error != null) throw error;
-    return ExploreSearchResult.empty;
+    return result;
   }
 }

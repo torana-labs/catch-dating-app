@@ -17,17 +17,50 @@ import {
 import { openRazorpayCheckout } from "../../shared/payments/razorpayCheckout";
 import { eventOfferCopy } from "../../content/eventOffer";
 import { publicCheckoutCopy } from "../../content/events";
+import { publicCheckoutFlowCopy } from "../../content/publicCheckout";
+import { interpolateContent as fill } from "@content/interpolate";
 import type { FormStatus } from "../../shared/forms/types";
 import type { ManagePublicEventCheckoutCallablePayload as Command } from "../../shared/contracts/generated/managePublicEventCheckoutCallablePayload";
+import { currentCheckoutAdContext } from "../../analytics/adContext";
 import {
   assertPublicCheckoutResponse,
   type PublicQuote,
   type PublicPayment,
   type PublicAdmission,
 } from "./publicCheckoutModel";
+import {
+  clampPlaces,
+  guestNameValid,
+  guestNamesRefused,
+  normalizeGuestName,
+  notEnoughPlacesLeft,
+  resizeGuestNames,
+} from "./checkoutPlaces";
 
 type Attempt = Extract<Command, { action: "prepare" }>;
 type Phase = "loading" | "phone" | "otp" | "ready" | "unavailable";
+/** A quote request: one place sends no placeCount, as before multi-place booking. */
+const quoteCommand = (eventId: string, places: number): Command =>
+  places > 1 ? { action: "quote", eventId, placeCount: places } : { action: "quote", eventId };
+/** The message for a refusal the checkout can explain. */
+function refusalMessage(error: unknown, fallback: string): string {
+  if (organizerPaymentsNotReady(error))
+    return publicCheckoutCopy.organizerPaymentsNotReady;
+  const left = notEnoughPlacesLeft(error);
+  if (left !== null && left > 0) {
+    const copy = publicCheckoutFlowCopy.places.notEnoughPlaces;
+    return left === 1 ? copy.one : fill(copy.other, { count: left });
+  }
+  if (guestNamesRefused(error))
+    return publicCheckoutFlowCopy.places.guestNamesError;
+  return fallback;
+}
+/** Ad-click identifiers ride only on a new attempt; absent when there are none. */
+function adContextField() {
+  const adContext = currentCheckoutAdContext();
+  return adContext ? { adContext } : {};
+}
+
 export function usePublicCheckoutController(
   eventId: string,
   inviteToken: string | null,
@@ -41,6 +74,11 @@ export function usePublicCheckoutController(
   const [code, setCode] = useState("");
   const [name, setName] = useState(initialDisplayName);
   const [nameLocked, setNameLocked] = useState(false);
+  // Places on this booking (1 to 4) and a name for each guest after the booker.
+  const [places, setPlacesState] = useState(1);
+  const [guestNames, setGuestNames] = useState<string[]>([]);
+  // The places left, once a notEnoughPlaces refusal has said so.
+  const [placesLeft, setPlacesLeft] = useState<number | null>(null);
   const [quote, setQuote] = useState<PublicQuote | null>(null);
   const [payment, setPayment] = useState<PublicPayment | null>(null);
   const [previousPayment, setPreviousPayment] = useState<PublicPayment | null>(
@@ -87,11 +125,10 @@ export function usePublicCheckoutController(
       } catch (error) {
         // The organizer cannot take payments (not connected, or Catch's
         // Razorpay access was revoked): say so honestly; nothing was charged.
+        // A party larger than the places left is told how many remain.
         if (current(epoch))
           setStatus({
-            message: organizerPaymentsNotReady(error)
-              ? publicCheckoutCopy.organizerPaymentsNotReady
-              : errorMessage,
+            message: refusalMessage(error, errorMessage),
             tone: "is-error",
           });
       } finally {
@@ -137,6 +174,9 @@ export function usePublicCheckoutController(
       setPreviousPayment(null);
       setName(initialDisplayName);
       setNameLocked(false);
+      setPlacesState(1);
+      setGuestNames([]);
+      setPlacesLeft(null);
       setCode("");
       setStatus({ message: "", tone: "" });
       setUser(uid ? next : null);
@@ -170,21 +210,34 @@ export function usePublicCheckoutController(
         );
         if (!found || !current(epoch)) return;
         if (!found.payment && !found.admission && allowNewBookings) {
-          const result = apply(
-            await managePublicEventCheckout({ action: "quote", eventId }),
-            epoch,
-          );
-          if (!result || !current(epoch)) return;
-          if (!result.quote) throw new Error("Missing registration quote");
           const key = `catch-public-checkout:${JSON.stringify([user.uid, eventId])}`;
           if (reviewCurrentTerms) {
             clearJournal(key);
             attempt.current = null;
             setNameLocked(false);
           }
+          // A saved attempt is quoted for its own places, so it can be replayed.
           const saved = readJournal(key);
-          if (saved) {
-            const parsed = JSON.parse(saved) as Attempt;
+          const parsed = saved ? (JSON.parse(saved) as Attempt) : null;
+          const savedPlaces = clampPlaces(
+            Number(parsed?.reviewedQuote?.placeCount ?? 1),
+          );
+          const requested = parsed ? savedPlaces : reviewCurrentTerms ? 1 : places;
+          const result = apply(
+            await managePublicEventCheckout(quoteCommand(eventId, requested)),
+            epoch,
+          );
+          if (!result || !current(epoch)) return;
+          if (!result.quote) throw new Error("Missing registration quote");
+          const quoted = result.quote.placeCount ?? 1;
+          setPlacesState(quoted);
+          setGuestNames((names) =>
+            resizeGuestNames(
+              parsed && Array.isArray(parsed.guestNames) ? parsed.guestNames : names,
+              quoted,
+            ),
+          );
+          if (parsed) {
             if (typeof parsed.displayName === "string")
               setName(parsed.displayName);
             setNameLocked(true);
@@ -252,6 +305,18 @@ export function usePublicCheckoutController(
           });
           return;
         }
+        const quotedPlaces = quote?.placeCount ?? 1;
+        if (
+          guestNames.length !== quotedPlaces - 1 ||
+          !guestNames.every(guestNameValid)
+        ) {
+          setStatus({
+            message: publicCheckoutFlowCopy.places.guestNamesError,
+            tone: "is-error",
+          });
+          return;
+        }
+        const cleanGuestNames = guestNames.map(normalizeGuestName);
         // Keep the exact attempt in this tab until the server acknowledges it.
         // A reload first finds the UID-owned ledger; the journal closes the
         // small window where a previous prepare is still reaching the server.
@@ -278,12 +343,19 @@ export function usePublicCheckoutController(
               !parsed.displayName.trim() ||
               parsed.displayName.length > 120 ||
               (parsed.inviteToken !== null &&
-                typeof parsed.inviteToken !== "string")
+                typeof parsed.inviteToken !== "string") ||
+              (parsed.guestNames !== undefined &&
+                (!Array.isArray(parsed.guestNames) ||
+                  !parsed.guestNames.every(
+                    (guest) => typeof guest === "string" && guestNameValid(guest),
+                  )))
             )
               throw new Error("Invalid attempt journal");
             if (
               JSON.stringify(parsed.reviewedQuote) !== JSON.stringify(quote) ||
-              parsed.displayName !== name.trim()
+              parsed.displayName !== name.trim() ||
+              JSON.stringify(parsed.guestNames ?? []) !==
+                JSON.stringify(cleanGuestNames)
             ) {
               throw new Error("Review the original attempt before retrying");
             }
@@ -294,13 +366,29 @@ export function usePublicCheckoutController(
               eventId,
               requestId: crypto.randomUUID(),
               displayName: name.trim(),
+              // One place sends no names, keeping the original request hash.
+              ...(cleanGuestNames.length > 0 ? { guestNames: cleanGuestNames } : {}),
               reviewedQuote: quote!,
               inviteToken,
+              ...adContextField(),
             };
           writeJournal(key, JSON.stringify(attempt.current));
         }
         setNameLocked(true);
-        result = apply(await managePublicEventCheckout(attempt.current), epoch);
+        try {
+          result = apply(await managePublicEventCheckout(attempt.current), epoch);
+        } catch (error) {
+          // Refused before any hold: too few places left, or the names. Nothing
+          // was reserved, so the guest may change the booking and try again.
+          const left = notEnoughPlacesLeft(error);
+          if (current(epoch) && (left !== null || guestNamesRefused(error))) {
+            clearJournal(key);
+            attempt.current = null;
+            setNameLocked(false);
+            if (left !== null) setPlacesLeft(left);
+          }
+          throw error;
+        }
         if (current(epoch) && (result?.payment || result?.admission))
           clearJournal(key);
       }
@@ -348,10 +436,13 @@ export function usePublicCheckoutController(
       )
         return;
       const fresh = apply(
-        await managePublicEventCheckout({ action: "quote", eventId }),
+        await managePublicEventCheckout(quoteCommand(eventId, 1)),
         epoch,
       );
       if (!current(epoch) || !fresh?.quote) return;
+      setPlacesState(1);
+      setGuestNames([]);
+      setPlacesLeft(null);
       setPreviousPayment(prior);
       attempt.current = null;
       setNameLocked(false);
@@ -359,6 +450,31 @@ export function usePublicCheckoutController(
         `catch-public-checkout:${JSON.stringify([user.uid, eventId])}`,
       );
     }, publicCheckoutCopy.quoteChanged);
+  // A new place count is a new quote: the price and any member price follow it.
+  const changePlaces = (next: number) =>
+    run(async (epoch) => {
+      const requested = clampPlaces(next, placesLeft);
+      if (!user || !quote || payment || admission || nameLocked || requested === places)
+        return;
+      const previous = places;
+      setPlacesState(requested);
+      setGuestNames((names) => resizeGuestNames(names, requested));
+      try {
+        const result = apply(
+          await managePublicEventCheckout(quoteCommand(eventId, requested)),
+          epoch,
+        );
+        if (current(epoch) && result && !result.quote)
+          throw new Error("Missing registration quote");
+      } catch (error) {
+        if (current(epoch)) setPlacesState(previous);
+        throw error;
+      }
+    }, publicCheckoutCopy.quoteChanged);
+  const setGuestName = (index: number, value: string) =>
+    setGuestNames((names) =>
+      names.map((current, position) => (position === index ? value : current)),
+    );
   const reviewCancellation = () =>
     run(async (epoch) => {
       if (!user || !payment || !admission) return;
@@ -456,6 +572,11 @@ export function usePublicCheckoutController(
     name,
     nameLocked,
     setName,
+    places,
+    placesLeft,
+    changePlaces,
+    guestNames,
+    setGuestName,
     quote,
     payment,
     previousPayment,

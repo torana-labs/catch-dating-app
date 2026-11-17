@@ -22921,7 +22921,7 @@
         "symbol": "ReviewsHistoryScreen"
       },
       "stateController": {
-        "primary": "ReviewsHistoryScreen + ReviewsHistoryState + uidProvider + watchUserProfileProvider + watchReviewsByUserProvider + watchEventsByIdsProvider",
+        "primary": "ReviewsHistoryScreen + ReviewsHistoryState + uidProvider + watchUserProfileProvider + watchReviewsByUserProvider + watchOwnEventCardsByIdProvider",
         "files": [
           {
             "file": "lib/reviews/presentation/reviews_history_screen.dart",
@@ -22936,8 +22936,8 @@
             "symbol": "watchReviewsByUser"
           },
           {
-            "file": "lib/contexts/events/data/event_repository.dart",
-            "symbol": "watchEventsByIds"
+            "file": "lib/contexts/bookings/data/guest_event_cards_repository.dart",
+            "symbol": "watchOwnEventCardsById"
           },
           {
             "file": "lib/reviews/shared/write_review_sheet.dart",
@@ -23137,7 +23137,7 @@
           "id": "event_context_missing",
           "kind": "empty",
           "status": "captured",
-          "source": "ReviewsHistoryState reads only watchEventsByIdsProvider.asData and maps event enrichment loading, failure, and genuinely missing records to the same Event review or Legacy club review fallback labels.",
+          "source": "ReviewsHistoryState reads only watchOwnEventCardsByIdProvider.asData and maps event enrichment loading, failure, and genuinely missing records to the same Event review or Legacy club review fallback labels.",
           "nextAction": "Define an explicit enrichment loading/failure policy or a deliberately cached fallback with retry under DP-REVIEWS-HISTORY-005, then compare genuine missing-context copy against exported references.",
           "previewIds": [
             "ReviewsHistoryScreen/Screen states"
@@ -24659,8 +24659,8 @@
             "symbol": "paymentHistoryViewModel"
           },
           {
-            "file": "lib/contexts/events/data/event_repository.dart",
-            "symbol": "watchEventsByIds"
+            "file": "lib/contexts/bookings/data/guest_event_cards_repository.dart",
+            "symbol": "watchOwnEventCardsById"
           },
           {
             "file": "lib/contexts/payments/domain/payment.dart",
@@ -24920,7 +24920,7 @@
           "id": "event_title_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "When payments are resolved but watchEventsByIdsProvider is loading, PaymentHistoryViewModel preserves an explicit enrichment-loading status and PaymentHistoryList renders row-shaped skeletons instead of a false missing title.",
+          "source": "When payments are resolved but watchOwnEventCardsByIdProvider is loading, PaymentHistoryViewModel preserves an explicit enrichment-loading status and PaymentHistoryList renders row-shaped skeletons instead of a false missing title.",
           "captureIds": [
             "payment_history_event_title_loading"
           ],
@@ -25153,7 +25153,7 @@
         {
           "id": "DP-PAYMENT-HISTORY-003",
           "status": "closed",
-          "nextAction": "PaymentHistoryViewModel now batches event-title lookup through watchEventsByIdsProvider, feeds provider-free PaymentHistoryRow data into tiles, and tests resolved plus missing event-title fallback behavior."
+          "nextAction": "PaymentHistoryViewModel now reads event titles from watchOwnEventCardsByIdProvider, feeds provider-free PaymentHistoryRow data into tiles, and tests resolved plus missing event-title fallback behavior."
         },
         {
           "id": "DP-PAYMENT-HISTORY-004",

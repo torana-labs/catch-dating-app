@@ -509,7 +509,7 @@
         },
         {
           "id": "forms_directory",
-          "file": "lib/hosts/presentation/forms/host_forms_controller.dart",
+          "file": "lib/hosts/presentation/forms/host_forms_directory_controller.dart",
           "symbol": "HostFormsDirectoryController",
           "role": "Organizer form inventory state."
         },
@@ -912,7 +912,6 @@
         "contracts/callables/add_organizer_manager_payload.schema.json",
         "contracts/callables/create_razorpay_host_payment_account_payload.schema.json",
         "contracts/callables/create_stripe_host_onboarding_link_payload.schema.json",
-        "contracts/callables/get_organizer_crm_summary_payload.schema.json",
         "contracts/callables/host_analytics_query_payload.schema.json",
         "contracts/callables/refresh_razorpay_host_payment_account_payload.schema.json",
         "contracts/callables/refresh_stripe_host_payment_account_payload.schema.json",

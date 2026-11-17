@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
@@ -40,17 +39,11 @@ Future<HostEventsTimelineData> settledTimeline(
   }
 }
 
-ProviderContainer timelineContainer(
-  EventRepository repository, {
-  PrivateEventSetupRepository? setups,
-}) {
+ProviderContainer timelineContainer(EventRepository repository) {
   final container = ProviderContainer(
     overrides: [
       uidProvider.overrideWithValue(const AsyncData('account-a')),
       eventRepositoryProvider.overrideWithValue(repository),
-      privateEventSetupTimelineRepositoryProvider.overrideWithValue(
-        setups ?? emptySetupRepository,
-      ),
     ],
   );
   addTearDown(container.dispose);
@@ -120,60 +113,6 @@ class PagedEventRepository extends Fake implements EventRepository {
   }
 }
 
-/// Stable instance so `updateOverrides` keeps the same empty inventory.
-final emptySetupRepository = EmptySetupRepository();
-
-class EmptySetupRepository extends Fake implements PrivateEventSetupRepository {
-  @override
-  Future<PrivateEventSetupInventoryPage> list({
-    required String organizerId,
-    PrivateEventSetupScope? scope,
-    int limit = ReadLimitPolicy.privateEventSetupPage,
-    String? cursor,
-  }) async =>
-      const PrivateEventSetupInventoryPage(events: [], nextCursor: null);
-}
-
-class SetupRepository extends Fake implements PrivateEventSetupRepository {
-  final calls = <(PrivateEventSetupScope?, String?)>[];
-
-  @override
-  Future<PrivateEventSetupInventoryPage> list({
-    required String organizerId,
-    PrivateEventSetupScope? scope,
-    int limit = ReadLimitPolicy.privateEventSetupPage,
-    String? cursor,
-  }) async {
-    expect(limit, 20);
-    calls.add((scope, cursor));
-    final offset = cursor == null ? 0 : int.parse(cursor);
-    final end = (offset + limit).clamp(0, 201);
-    return PrivateEventSetupInventoryPage(
-      events: [
-        for (var i = offset; i < end; i++)
-          PrivateEventSetupInventoryItem(
-            eventId: '${scope!.name}-$i',
-            name: 'Setup $i',
-            city: const EventSetupCity(
-              cityId: 'in-mh-mumbai',
-              marketId: 'in-mh-mumbai',
-            ),
-            localDate: '2026-01-01',
-            localStartTime: '19:00',
-            timezone: 'Asia/Kolkata',
-            startTimeMillis: DateTime(2026).millisecondsSinceEpoch,
-            setupRevision: 1,
-            detailsConfigured: false,
-            status: scope == PrivateEventSetupScope.cancelled
-                ? 'cancelled'
-                : 'active',
-          ),
-      ],
-      nextCursor: end < 201 ? '$end' : null,
-    );
-  }
-}
-
 HostEventsTimelineControllerProvider timelineProvider(
   ProviderContainer container, [
   String organizerId = 'club-1',
@@ -188,14 +127,7 @@ HostEventsTimelineControllerProvider timelineProvider(
 // Drain queued provider publications through the shared deterministic helper.
 Future<void> flushTimeline() => flushTestEventQueue();
 
-enum TimelineSource {
-  active,
-  privateUpcoming,
-  privatePast,
-  privateCancelled,
-  past,
-  cancelled,
-}
+enum TimelineSource { active, past, cancelled }
 
 class PendingTimelineReads {
   PendingTimelineReads(this.prefix);
@@ -203,10 +135,6 @@ class PendingTimelineReads {
   final active = Completer<TimelinePage>();
   final past = Completer<TimelinePage>();
   final cancelled = Completer<TimelinePage>();
-  final private = {
-    for (final scope in PrivateEventSetupScope.values)
-      scope: Completer<PrivateEventSetupInventoryPage>(),
-  };
 
   void completeUpcoming({
     TimelineSource? failure,
@@ -219,10 +147,6 @@ class PendingTimelineReads {
       TimelinePage(items: [buildEvent(id: '$prefix-active')], hasMore: false),
       errors[TimelineSource.active],
     );
-    completePrivate(
-      PrivateEventSetupScope.upcoming,
-      errors[TimelineSource.privateUpcoming],
-    );
   }
 
   void completeHistory({
@@ -233,14 +157,6 @@ class PendingTimelineReads {
   }) {
     final errors = {...failures, ?failure: error!};
     final completions = [
-      () => completePrivate(
-        PrivateEventSetupScope.past,
-        errors[TimelineSource.privatePast],
-      ),
-      () => completePrivate(
-        PrivateEventSetupScope.cancelled,
-        errors[TimelineSource.privateCancelled],
-      ),
       () => completeTimelineRead(
         past,
         TimelinePage(items: [buildEvent(id: '$prefix-past')], hasMore: false),
@@ -259,35 +175,6 @@ class PendingTimelineReads {
       complete();
     }
   }
-
-  void completePrivate(PrivateEventSetupScope scope, Object? error) {
-    completeTimelineRead(
-      private[scope]!,
-      PrivateEventSetupInventoryPage(
-        events: [
-          PrivateEventSetupInventoryItem(
-            eventId: '$prefix-${scope.name}',
-            name: 'Setup',
-            city: const EventSetupCity(
-              cityId: 'in-mh-mumbai',
-              marketId: 'in-mh-mumbai',
-            ),
-            localDate: '2026-01-01',
-            localStartTime: '19:00',
-            timezone: 'Asia/Kolkata',
-            startTimeMillis: DateTime(2026).millisecondsSinceEpoch,
-            setupRevision: 1,
-            detailsConfigured: false,
-            status: scope == PrivateEventSetupScope.cancelled
-                ? 'cancelled'
-                : 'active',
-          ),
-        ],
-        nextCursor: '$prefix-${scope.name}-cursor',
-      ),
-      error,
-    );
-  }
 }
 
 void completeTimelineRead<T>(Completer<T> completer, T value, Object? error) {
@@ -304,30 +191,3 @@ PagedEventRepository timelineRepositoryFor(List<PendingTimelineReads> reads) =>
       pastSteps: [for (final read in reads) () => read.past.future],
       cancelledSteps: [for (final read in reads) () => read.cancelled.future],
     );
-
-class ControlledSetupRepository extends Fake
-    implements PrivateEventSetupRepository {
-  ControlledSetupRepository(List<PendingTimelineReads> reads)
-    : steps = {
-        for (final scope in PrivateEventSetupScope.values)
-          scope: [for (final read in reads) read.private[scope]!.future],
-      };
-  final Map<
-    PrivateEventSetupScope,
-    List<Future<PrivateEventSetupInventoryPage>>
-  >
-  steps;
-  final calls = <(PrivateEventSetupScope?, String?)>[];
-
-  @override
-  Future<PrivateEventSetupInventoryPage> list({
-    required String organizerId,
-    PrivateEventSetupScope? scope,
-    int limit = ReadLimitPolicy.privateEventSetupPage,
-    String? cursor,
-  }) {
-    expect(limit, 20);
-    calls.add((scope, cursor));
-    return steps[scope]!.removeAt(0);
-  }
-}

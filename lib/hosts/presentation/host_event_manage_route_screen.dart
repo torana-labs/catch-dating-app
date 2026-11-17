@@ -27,7 +27,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final organizerAsync = ref.watch(fetchOrganizerProvider(organizerId));
+    final organizerAsync = ref.watch(watchOrganizerProvider(organizerId));
     final eventAsync = ref.watch(watchEventProvider(eventId));
     final routeDataAsync = _hostEventManageRouteData(
       uid: catchAsyncStateFromAsyncValue(uidAsync),
@@ -40,7 +40,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
       value: routeDataAsync,
       onRetry: () {
         ref.invalidate(uidProvider);
-        ref.invalidate(fetchOrganizerProvider(organizerId));
+        ref.invalidate(watchOrganizerProvider(organizerId));
         ref.invalidate(watchEventProvider(eventId));
       },
       loadingBuilder: (_) => CatchRouteScaffold(

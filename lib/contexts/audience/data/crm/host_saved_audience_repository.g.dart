@@ -233,27 +233,24 @@ final class HostSavedAudienceFilterOptionsFamily extends $Family
   String toString() => r'hostSavedAudienceFilterOptionsProvider';
 }
 
-/// Fresh selected Group details stay alive only while the requested read runs.
-/// Session changes still dispose the provider and fence the repository result.
+/// A selected group's definition, as a listener on `hostGroupDetails`.
 
 @ProviderFor(hostSavedAudienceDetail)
 final hostSavedAudienceDetailProvider = HostSavedAudienceDetailFamily._();
 
-/// Fresh selected Group details stay alive only while the requested read runs.
-/// Session changes still dispose the provider and fence the repository result.
+/// A selected group's definition, as a listener on `hostGroupDetails`.
 
 final class HostSavedAudienceDetailProvider
     extends
         $FunctionalProvider<
           AsyncValue<HostSavedAudience>,
           HostSavedAudience,
-          FutureOr<HostSavedAudience>
+          Stream<HostSavedAudience>
         >
     with
         $FutureModifier<HostSavedAudience>,
-        $FutureProvider<HostSavedAudience> {
-  /// Fresh selected Group details stay alive only while the requested read runs.
-  /// Session changes still dispose the provider and fence the repository result.
+        $StreamProvider<HostSavedAudience> {
+  /// A selected group's definition, as a listener on `hostGroupDetails`.
   HostSavedAudienceDetailProvider._({
     required HostSavedAudienceDetailFamily super.from,
     required (String, String) super.argument,
@@ -277,12 +274,12 @@ final class HostSavedAudienceDetailProvider
 
   @$internal
   @override
-  $FutureProviderElement<HostSavedAudience> $createElement(
+  $StreamProviderElement<HostSavedAudience> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<HostSavedAudience> create(Ref ref) {
+  Stream<HostSavedAudience> create(Ref ref) {
     final argument = this.argument as (String, String);
     return hostSavedAudienceDetail(ref, argument.$1, argument.$2);
   }
@@ -300,17 +297,13 @@ final class HostSavedAudienceDetailProvider
 }
 
 String _$hostSavedAudienceDetailHash() =>
-    r'82040e9e316e0fb547fb6aff52d1368a49e9d44b';
+    r'dfe0ff00c8c75a7bf102f2d70196f226812a0013';
 
-/// Fresh selected Group details stay alive only while the requested read runs.
-/// Session changes still dispose the provider and fence the repository result.
+/// A selected group's definition, as a listener on `hostGroupDetails`.
 
 final class HostSavedAudienceDetailFamily extends $Family
     with
-        $FunctionalFamilyOverride<
-          FutureOr<HostSavedAudience>,
-          (String, String)
-        > {
+        $FunctionalFamilyOverride<Stream<HostSavedAudience>, (String, String)> {
   HostSavedAudienceDetailFamily._()
     : super(
         retry: null,
@@ -320,8 +313,7 @@ final class HostSavedAudienceDetailFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Fresh selected Group details stay alive only while the requested read runs.
-  /// Session changes still dispose the provider and fence the repository result.
+  /// A selected group's definition, as a listener on `hostGroupDetails`.
 
   HostSavedAudienceDetailProvider call(String organizerId, String audienceId) =>
       HostSavedAudienceDetailProvider._(
@@ -333,31 +325,34 @@ final class HostSavedAudienceDetailFamily extends $Family
   String toString() => r'hostSavedAudienceDetailProvider';
 }
 
-/// Every active group's metadata from `hostGroupSummaries`: the Audience
-/// workspace's exhaustive local name search and the campaign editor's group
-/// picker. Full selected-member lists load only when a group opens.
+/// Every active group's metadata from `hostGroupSummaries`, by name, as a
+/// listener: the Audience workspace's exhaustive local name search and the
+/// campaign editor's group picker. Full selected-member lists load only when
+/// a group opens.
 
 @ProviderFor(hostAllSavedAudienceSummaries)
 final hostAllSavedAudienceSummariesProvider =
     HostAllSavedAudienceSummariesFamily._();
 
-/// Every active group's metadata from `hostGroupSummaries`: the Audience
-/// workspace's exhaustive local name search and the campaign editor's group
-/// picker. Full selected-member lists load only when a group opens.
+/// Every active group's metadata from `hostGroupSummaries`, by name, as a
+/// listener: the Audience workspace's exhaustive local name search and the
+/// campaign editor's group picker. Full selected-member lists load only when
+/// a group opens.
 
 final class HostAllSavedAudienceSummariesProvider
     extends
         $FunctionalProvider<
           AsyncValue<HostSavedAudienceSummaryPage>,
           HostSavedAudienceSummaryPage,
-          FutureOr<HostSavedAudienceSummaryPage>
+          Stream<HostSavedAudienceSummaryPage>
         >
     with
         $FutureModifier<HostSavedAudienceSummaryPage>,
-        $FutureProvider<HostSavedAudienceSummaryPage> {
-  /// Every active group's metadata from `hostGroupSummaries`: the Audience
-  /// workspace's exhaustive local name search and the campaign editor's group
-  /// picker. Full selected-member lists load only when a group opens.
+        $StreamProvider<HostSavedAudienceSummaryPage> {
+  /// Every active group's metadata from `hostGroupSummaries`, by name, as a
+  /// listener: the Audience workspace's exhaustive local name search and the
+  /// campaign editor's group picker. Full selected-member lists load only when
+  /// a group opens.
   HostAllSavedAudienceSummariesProvider._({
     required HostAllSavedAudienceSummariesFamily super.from,
     required String super.argument,
@@ -381,12 +376,12 @@ final class HostAllSavedAudienceSummariesProvider
 
   @$internal
   @override
-  $FutureProviderElement<HostSavedAudienceSummaryPage> $createElement(
+  $StreamProviderElement<HostSavedAudienceSummaryPage> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<HostSavedAudienceSummaryPage> create(Ref ref) {
+  Stream<HostSavedAudienceSummaryPage> create(Ref ref) {
     final argument = this.argument as String;
     return hostAllSavedAudienceSummaries(ref, argument);
   }
@@ -404,16 +399,17 @@ final class HostAllSavedAudienceSummariesProvider
 }
 
 String _$hostAllSavedAudienceSummariesHash() =>
-    r'e6264ad0f0413534bacff53319ec65bcebf4f0cb';
+    r'7ed24e1a87086d12d1131205d99ff1c397b4b1a1';
 
-/// Every active group's metadata from `hostGroupSummaries`: the Audience
-/// workspace's exhaustive local name search and the campaign editor's group
-/// picker. Full selected-member lists load only when a group opens.
+/// Every active group's metadata from `hostGroupSummaries`, by name, as a
+/// listener: the Audience workspace's exhaustive local name search and the
+/// campaign editor's group picker. Full selected-member lists load only when
+/// a group opens.
 
 final class HostAllSavedAudienceSummariesFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<HostSavedAudienceSummaryPage>,
+          Stream<HostSavedAudienceSummaryPage>,
           String
         > {
   HostAllSavedAudienceSummariesFamily._()
@@ -425,9 +421,10 @@ final class HostAllSavedAudienceSummariesFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Every active group's metadata from `hostGroupSummaries`: the Audience
-  /// workspace's exhaustive local name search and the campaign editor's group
-  /// picker. Full selected-member lists load only when a group opens.
+  /// Every active group's metadata from `hostGroupSummaries`, by name, as a
+  /// listener: the Audience workspace's exhaustive local name search and the
+  /// campaign editor's group picker. Full selected-member lists load only when
+  /// a group opens.
 
   HostAllSavedAudienceSummariesProvider call(String organizerId) =>
       HostAllSavedAudienceSummariesProvider._(
@@ -439,20 +436,258 @@ final class HostAllSavedAudienceSummariesFamily extends $Family
   String toString() => r'hostAllSavedAudienceSummariesProvider';
 }
 
-/// First-page publication and continuation belong to one authenticated scope.
+/// How many groups one directory query listens to; it grows by a page each
+/// time the list asks for more.
+
+@ProviderFor(HostGroupDirectoryWindow)
+final hostGroupDirectoryWindowProvider = HostGroupDirectoryWindowFamily._();
+
+/// How many groups one directory query listens to; it grows by a page each
+/// time the list asks for more.
+final class HostGroupDirectoryWindowProvider
+    extends $NotifierProvider<HostGroupDirectoryWindow, int> {
+  /// How many groups one directory query listens to; it grows by a page each
+  /// time the list asks for more.
+  HostGroupDirectoryWindowProvider._({
+    required HostGroupDirectoryWindowFamily super.from,
+    required (String, {bool byName, bool? isStatic}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostGroupDirectoryWindowProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostGroupDirectoryWindowHash();
+
+  @override
+  String toString() {
+    return r'hostGroupDirectoryWindowProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  HostGroupDirectoryWindow create() => HostGroupDirectoryWindow();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostGroupDirectoryWindowProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostGroupDirectoryWindowHash() =>
+    r'84e7264efbb4c5419fd15e590c7d59e29c46a601';
+
+/// How many groups one directory query listens to; it grows by a page each
+/// time the list asks for more.
+
+final class HostGroupDirectoryWindowFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          HostGroupDirectoryWindow,
+          int,
+          int,
+          int,
+          (String, {bool byName, bool? isStatic})
+        > {
+  HostGroupDirectoryWindowFamily._()
+    : super(
+        retry: null,
+        name: r'hostGroupDirectoryWindowProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// How many groups one directory query listens to; it grows by a page each
+  /// time the list asks for more.
+
+  HostGroupDirectoryWindowProvider call(
+    String organizerId, {
+    bool byName = true,
+    bool? isStatic,
+  }) => HostGroupDirectoryWindowProvider._(
+    argument: (organizerId, byName: byName, isStatic: isStatic),
+    from: this,
+  );
+
+  @override
+  String toString() => r'hostGroupDirectoryWindowProvider';
+}
+
+/// How many groups one directory query listens to; it grows by a page each
+/// time the list asks for more.
+
+abstract class _$HostGroupDirectoryWindow extends $Notifier<int> {
+  late final _$args = ref.$arg as (String, {bool byName, bool? isStatic});
+  String get organizerId => _$args.$1;
+  bool get byName => _$args.byName;
+  bool? get isStatic => _$args.isStatic;
+
+  int build(String organizerId, {bool byName = true, bool? isStatic});
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<int, int>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int, int>,
+              int,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(
+      ref,
+      () => build(_$args.$1, byName: _$args.byName, isStatic: _$args.isStatic),
+    );
+  }
+}
+
+/// The first rows of one group directory query, as a listener.
+
+@ProviderFor(hostGroupDirectoryListener)
+final hostGroupDirectoryListenerProvider = HostGroupDirectoryListenerFamily._();
+
+/// The first rows of one group directory query, as a listener.
+
+final class HostGroupDirectoryListenerProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostGroupSummaryWindow>,
+          HostGroupSummaryWindow,
+          Stream<HostGroupSummaryWindow>
+        >
+    with
+        $FutureModifier<HostGroupSummaryWindow>,
+        $StreamProvider<HostGroupSummaryWindow> {
+  /// The first rows of one group directory query, as a listener.
+  HostGroupDirectoryListenerProvider._({
+    required HostGroupDirectoryListenerFamily super.from,
+    required (String, {int limit, bool byName, bool? isStatic}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostGroupDirectoryListenerProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostGroupDirectoryListenerHash();
+
+  @override
+  String toString() {
+    return r'hostGroupDirectoryListenerProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<HostGroupSummaryWindow> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<HostGroupSummaryWindow> create(Ref ref) {
+    final argument =
+        this.argument as (String, {int limit, bool byName, bool? isStatic});
+    return hostGroupDirectoryListener(
+      ref,
+      argument.$1,
+      limit: argument.limit,
+      byName: argument.byName,
+      isStatic: argument.isStatic,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostGroupDirectoryListenerProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostGroupDirectoryListenerHash() =>
+    r'd1f4c82d861d2971c29f2499dbd499394f9d8096';
+
+/// The first rows of one group directory query, as a listener.
+
+final class HostGroupDirectoryListenerFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          Stream<HostGroupSummaryWindow>,
+          (String, {int limit, bool byName, bool? isStatic})
+        > {
+  HostGroupDirectoryListenerFamily._()
+    : super(
+        retry: null,
+        name: r'hostGroupDirectoryListenerProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The first rows of one group directory query, as a listener.
+
+  HostGroupDirectoryListenerProvider call(
+    String organizerId, {
+    required int limit,
+    bool byName = true,
+    bool? isStatic,
+  }) => HostGroupDirectoryListenerProvider._(
+    argument: (organizerId, limit: limit, byName: byName, isStatic: isStatic),
+    from: this,
+  );
+
+  @override
+  String toString() => r'hostGroupDirectoryListenerProvider';
+}
+
+/// The paginated group directory, live: the first page, then a larger
+/// listener each time the list asks for more. A larger listener that fails
+/// keeps the rows already shown and reports the failure under them.
 
 @ProviderFor(HostGroupDirectoryController)
 final hostGroupDirectoryControllerProvider =
     HostGroupDirectoryControllerFamily._();
 
-/// First-page publication and continuation belong to one authenticated scope.
+/// The paginated group directory, live: the first page, then a larger
+/// listener each time the list asks for more. A larger listener that fails
+/// keeps the rows already shown and reports the failure under them.
 final class HostGroupDirectoryControllerProvider
     extends
         $AsyncNotifierProvider<
           HostGroupDirectoryController,
           HostGroupDirectoryState
         > {
-  /// First-page publication and continuation belong to one authenticated scope.
+  /// The paginated group directory, live: the first page, then a larger
+  /// listener each time the list asks for more. A larger listener that fails
+  /// keeps the rows already shown and reports the failure under them.
   HostGroupDirectoryControllerProvider._({
     required HostGroupDirectoryControllerFamily super.from,
     required (String, {bool byName, bool? isStatic}) super.argument,
@@ -491,9 +726,11 @@ final class HostGroupDirectoryControllerProvider
 }
 
 String _$hostGroupDirectoryControllerHash() =>
-    r'd383c92aa88487b753c361a88edfcb38abc9653d';
+    r'f141d07f8e188cd28601956a74be00f70506d64e';
 
-/// First-page publication and continuation belong to one authenticated scope.
+/// The paginated group directory, live: the first page, then a larger
+/// listener each time the list asks for more. A larger listener that fails
+/// keeps the rows already shown and reports the failure under them.
 
 final class HostGroupDirectoryControllerFamily extends $Family
     with
@@ -513,7 +750,9 @@ final class HostGroupDirectoryControllerFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// First-page publication and continuation belong to one authenticated scope.
+  /// The paginated group directory, live: the first page, then a larger
+  /// listener each time the list asks for more. A larger listener that fails
+  /// keeps the rows already shown and reports the failure under them.
 
   HostGroupDirectoryControllerProvider call(
     String organizerId, {
@@ -528,7 +767,9 @@ final class HostGroupDirectoryControllerFamily extends $Family
   String toString() => r'hostGroupDirectoryControllerProvider';
 }
 
-/// First-page publication and continuation belong to one authenticated scope.
+/// The paginated group directory, live: the first page, then a larger
+/// listener each time the list asks for more. A larger listener that fails
+/// keeps the rows already shown and reports the failure under them.
 
 abstract class _$HostGroupDirectoryController
     extends $AsyncNotifier<HostGroupDirectoryState> {

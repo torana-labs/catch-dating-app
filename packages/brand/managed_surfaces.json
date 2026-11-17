@@ -37,7 +37,11 @@
     {"path": "tool/marketing/lib/web_capture_screen.mjs", "kind": "text"},
     {"path": "packages/web-ui/src/components/CatchGroundCard.stories.tsx", "kind": "text"},
     {"path": "packages/web-ui/src/components/CatchQrCode.stories.tsx", "kind": "text"},
-    {"path": "packages/web-ui/src/components/CatchQrCode.test.tsx", "kind": "text"}
+    {"path": "packages/web-ui/src/components/CatchQrCode.test.tsx", "kind": "text"},
+    {"path": "fastlane/metadata/consumer/ios/en-US/*.txt", "kind": "text"},
+    {"path": "fastlane/metadata/consumer/android/en-US/*.txt", "kind": "text"},
+    {"path": "fastlane/metadata/host/ios/en-US/*.txt", "kind": "text"},
+    {"path": "fastlane/metadata/host/android/en-US/*.txt", "kind": "text"}
   ],
   "regenerated": [
     "packages/l10n/lib/generated/app_localizations_en.dart",

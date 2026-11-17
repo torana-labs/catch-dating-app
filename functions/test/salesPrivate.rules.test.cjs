@@ -9,6 +9,8 @@ const privatePaths = [
   "hostOperatorAlerts/synthetic-private",
   "hostAcquisitionConsents/synthetic-private",
   "hostAcquisitionDeliveries/synthetic-private",
+  "adConversionContexts/pp_0123456789abcdef0123456789abcdef",
+  "adConversionDeliveries/meta_hc_0123456789abcdef0123456789abcdef",
   "hostPilotEventReviews/synthetic-private",
   "hostOrganizerActivations/synthetic-private",
   "salesPartnerMemberships/partner-one", "salesPartnerAssignments/host-one",

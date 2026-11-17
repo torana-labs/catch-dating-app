@@ -33,7 +33,7 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Website v2 homepage (CAT-260, WebHomeV2 board): one city's plans from its cityPlans read model, or its launching-soon state, with formats, the guest story, organisers, the host band, the app band and the FAQ. A city that cannot be read stays live and says so.",
+      "notes": "The homepage on the playbook's homepage board: one city's cityPlans read model in one of three states, with how a night works, the proof, organisers, the host band, the app band and the FAQ. Busy: five or more plans in the next 14 days, with format chips. Thin: an open city with fewer than five, which lists every plan with its date and moves the host band up to third. Launching: the hero leads with hosts and the opening-day notice sits where the plans would be. A city whose plans cannot be read stays busy and says so, never \"New\" or a count. Review state ids are unchanged: thin-city and launching-soon are the thin and launching states, mumbai-live the busy one.",
       "review": {
         "priority": "p0",
         "status": "ready",

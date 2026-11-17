@@ -30,7 +30,8 @@ export interface CatchBandProps
 }
 
 /**
- * A full-width page section on one ground. Library text inside takes the
+ * A page section on one ground: white runs flush, and every other ground is
+ * an inset panel (D26). Library text inside takes the
  * ground's ink and secondary ink, and the ink ground resolves components
  * through the dark theme. The band declares the `catch-page` container, so
  * every Website v2 layout inside it switches to its phone arrangement when the

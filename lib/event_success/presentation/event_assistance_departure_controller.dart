@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/live/data/event_assistance_departure_r
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_observation.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_route_change.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_host_guests_provider.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -29,6 +30,9 @@ final class EventDeparturePendingAction {
 class EventAssistanceDepartureController
     extends _$EventAssistanceDepartureController {
   static final confirmMutation = Mutation<EventAssistanceGroupProgressResult>();
+
+  /// The event lead's route change, keyed by group like a departure.
+  static final routeMutation = Mutation<EventAssistanceGroupProgressResult>();
 
   @override
   void build() {
@@ -60,16 +64,11 @@ class EventAssistanceDepartureController
     AssistanceDepartureCheckpointRequest? checkpoint,
   }) {
     requireDepartureAccount(ref, session.account);
-    final random = Random.secure();
-    final id = List.generate(
-      16,
-      (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
-    ).join();
     return EventDeparturePendingAction._(
       session,
       EventAssistanceDepartureChange.prepare(
         snapshot: session.view,
-        operationId: 'departure:$id',
+        operationId: 'departure:${_randomId()}',
         destination: destination,
         roster: roster,
         checkpoint: checkpoint,
@@ -90,4 +89,43 @@ class EventAssistanceDepartureController
     ref.invalidate(eventAssistanceHostGuestsForAccountProvider);
     return result;
   }
+
+  /// Freezes the event lead's route decision against this session's view.
+  EventAssistanceRouteChange prepareRouteChange({
+    required EventDepartureSession session,
+    required String alternativeId,
+  }) {
+    requireDepartureAccount(ref, session.account);
+    final id = _randomId();
+    return EventAssistanceRouteChange.prepare(
+      snapshot: session.view,
+      operationId: 'route:$id',
+      decisionId: 'route-decision:$id',
+      alternativeId: alternativeId,
+    );
+  }
+
+  Future<EventAssistanceGroupProgressResult> changeRoute(
+    EventDepartureSession session,
+    EventAssistanceRouteChange change,
+  ) async {
+    requireDepartureAccount(ref, session.account);
+    if (!identical(change.snapshot, session.view)) {
+      throw const FormatException('Route change belongs to another review.');
+    }
+    final result = await ref
+        .read(eventAssistanceDepartureRepositoryProvider)
+        .changeRoute(change);
+    requireDepartureAccount(ref, session.account);
+    // The group's view is a listener; the trigger delivers the new route.
+    return result;
+  }
+}
+
+String _randomId() {
+  final random = Random.secure();
+  return List.generate(
+    16,
+    (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+  ).join();
 }

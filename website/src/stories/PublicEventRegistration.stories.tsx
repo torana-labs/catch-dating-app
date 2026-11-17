@@ -16,6 +16,7 @@ const amountPaise = 85000;
 const fixture: ReturnType<typeof usePublicCheckoutController> = {
   allowNewBookings: true, phase: "ready", phone: "+91 98765 43210", setPhone: empty, code: "", setCode: empty,
   nameLocked: false, name: guestName, setName: empty, user: null,
+  places: 1, placesLeft: null, changePlaces: async () => undefined, guestNames: [], setGuestName: empty,
   quote: {eventId: demoEventId, eventName: demoEventName, registrationRevision: 1,
     cancellationPolicy: {refundDeadlineMillis, eventStartsAtMillis: startMillis},
     startTimeMillis: startMillis, amountPaise, currency: "INR"},
@@ -44,6 +45,18 @@ export const Review: Story = {parameters: {catchComponent: {id: "public_paid_reg
   const [name, setName] = useState(guestName);
   return <Preview name={name} setName={setName} />;
 }};
+/** Three places: the member's own place at the member price, the two guests at the list price, each named. */
+export const MultiPlace: Story = {render: function MultiPlacePreview() {
+  const [guests, setGuests] = useState(["Arjun Mehta", ""]);
+  return <Preview places={3} guestNames={guests}
+    setGuestName={(index, value) => setGuests((names) => names.map((name, position) => position === index ? value : name))}
+    quote={{...fixture.quote!, amountPaise: 70000 + 2 * amountPaise, placeCount: 3, unitAmountPaise: 70000,
+      memberPlaceCount: 1, guestUnitAmountPaise: amountPaise}} />;
+}};
+/** Too few places left for the party: the refusal says how many remain and the stepper stops there. */
+export const NotEnoughPlaces: Story = {render: () => <Preview places={2} guestNames={["Arjun Mehta"]} placesLeft={1}
+  quote={{...fixture.quote!, amountPaise: 2 * amountPaise, placeCount: 2, unitAmountPaise: amountPaise}}
+  status={{message: "Only 1 place is left. Choose fewer places.", tone: "is-error"}} />};
 export const Phone: Story = {render: () => <Preview phase="phone" />};
 export const Otp: Story = {render: () => <Preview phase="otp" />};
 export const Pending: Story = {render: () => <Preview quote={null} payment={payment} />};

@@ -34,6 +34,26 @@ void main() {
     );
   });
 
+  group('ExploreSearchEventsQuery', () {
+    test('keeps rank order, drops blanks and repeats, caps at one read', () {
+      final query = ExploreSearchEventsQuery([
+        ' b ',
+        'a',
+        'b',
+        '',
+        for (var i = 0; i < 40; i += 1) 'e$i',
+      ]);
+
+      expect(query.eventIds.take(3), ['b', 'a', 'e0']);
+      expect(query.eventIds, hasLength(30));
+      expect(query, ExploreSearchEventsQuery(['b', 'a', ...query.eventIds]));
+      expect(
+        ExploreSearchEventsQuery(const ['a', 'b']),
+        isNot(ExploreSearchEventsQuery(const ['b', 'a'])),
+      );
+    });
+  });
+
   group('EventDiscoveryRepository', () {
     test(
       'queries indexed discovery fields before exact distance post-filtering',
@@ -146,7 +166,7 @@ void main() {
       expect(page.hasMore, isFalse);
     });
 
-    test('excludes synthetic events from public discovery', () async {
+    test('returns synthetic events for the feed to gate by booking', () async {
       final firestore = FakeFirebaseFirestore();
       final repository = EventDiscoveryRepository(firestore);
       final now = DateTime(2026, 5, 26, 10);
@@ -166,7 +186,60 @@ void main() {
         EventDiscoveryQuery.forCity(marketId: 'in-mh-mumbai', startAt: now),
       );
 
-      expect(events, isEmpty);
+      expect(events.map((event) => event.id), ['synthetic-event']);
+      expect(events.single.synthetic, isTrue);
+    });
+
+    test(
+      'watchSearchHitEvents reads published hits and skips the rest',
+      () async {
+        final firestore = FakeFirebaseFirestore();
+        final repository = EventDiscoveryRepository(firestore);
+        final now = DateTime(2026, 5, 26, 10);
+        final first = buildEvent(
+          id: 'hit-1',
+          startTime: now.add(const Duration(days: 1)),
+        );
+        final second = buildEvent(
+          id: 'hit-2',
+          startTime: now.add(const Duration(days: 2)),
+        );
+        final unpublished = buildEvent(
+          id: 'hit-unpublished',
+          startTime: now.add(const Duration(days: 3)),
+        );
+        await _seedDiscoverableEvent(firestore, first);
+        await _seedDiscoverableEvent(firestore, second);
+        await _seedDiscoverableEvent(firestore, unpublished, legacy: true);
+        await _seedDiscoverableEvent(
+          firestore,
+          buildEvent(id: 'not-a-hit', startTime: now),
+        );
+
+        final events = await repository
+            .watchSearchHitEvents(
+              ExploreSearchEventsQuery(const [
+                'hit-2',
+                'hit-missing',
+                'hit-unpublished',
+                'hit-1',
+              ]),
+            )
+            .first;
+
+        expect(events.map((event) => event.id).toSet(), {'hit-1', 'hit-2'});
+      },
+    );
+
+    test('watchSearchHitEvents reads nothing for no hits', () async {
+      final repository = EventDiscoveryRepository(FakeFirebaseFirestore());
+
+      expect(
+        await repository
+            .watchSearchHitEvents(ExploreSearchEventsQuery(const []))
+            .first,
+        isEmpty,
+      );
     });
 
     test('provider builds a repository from Firebase providers', () async {

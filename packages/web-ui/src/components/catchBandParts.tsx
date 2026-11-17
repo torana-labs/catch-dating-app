@@ -1,9 +1,11 @@
 import type {ReactNode} from "react";
+import type {CatchKickerAccent} from "./CatchBandHeader";
 import type {CatchSurfaceColor} from "./catchCoreVocabulary";
 import {CatchButton, type CatchButtonSize, type CatchButtonVariant} from "./CatchButton";
 import {CatchStack} from "./CatchStack";
 import type {CatchWebBandColor} from "./CatchSurface";
 import type {Ground} from "./palette";
+import styles from "./catchBandParts.module.css";
 
 /**
  * The vocabulary the website section components share (the playbook kit's
@@ -57,6 +59,15 @@ const bandColors: Readonly<Record<Ground, CatchSurfaceColor | CatchWebBandColor 
   magenta: "nightsOut",
 };
 
+/**
+ * A section's kicker accent: the one asked for, else coral on the ink ground
+ * (the canvas's night panels) and the section's own kit accent elsewhere. A
+ * colour ground draws any accent in its secondary ink.
+ */
+export function catchBandKickerAccent(accent: CatchKickerAccent | undefined, ground: Ground | undefined, fallback: CatchKickerAccent): CatchKickerAccent {
+  return accent ?? (ground === "ink" ? "coral" : fallback);
+}
+
 /** The band colour of a section's ground; no ground is the plain band. */
 export function catchBandColor(ground: Ground | undefined): CatchSurfaceColor | CatchWebBandColor | undefined {
   return ground ? bandColors[ground] : undefined;
@@ -64,12 +75,13 @@ export function catchBandColor(ground: Ground | undefined): CatchSurfaceColor | 
 
 /**
  * A wrapping row of D20 buttons, 12px apart: the first primary and the rest
- * secondary unless an action names its variant. Nothing when there are none.
+ * secondary unless an action names its variant; on phones they stack, full
+ * width, as the kit's .btns do. Nothing when there are none.
  */
 export function catchBandActions(actions: readonly CatchBandAction[] | undefined, size: CatchButtonSize = "lg"): ReactNode {
   if (!actions || actions.length === 0) return null;
   return (
-    <CatchStack align="center" direction="row" gap={12} wrap>
+    <CatchStack align="center" className={styles.actions} direction="row" gap={12} wrap>
       {actions.map((action, index) => (
         <CatchButton
           href={action.href}

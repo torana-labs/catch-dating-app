@@ -11,9 +11,9 @@ export 'private_event_setup_models.dart';
 export 'private_event_setup_view.dart';
 export 'read_models/host_event_setup_view_reads.dart'
     show privateEventSetupViewProvider;
+export 'read_models/host_event_summary_reads.dart' show HostEventDraftWindow;
 
 // firestore-index: hostEventSummaries (organizerId:ASCENDING, status:ASCENDING, startTimeMillis:ASCENDING, __name__:ASCENDING)
-// firestore-index: hostEventSummaries (organizerId:ASCENDING, status:ASCENDING, startTimeMillis:DESCENDING, __name__:DESCENDING)
 class PrivateEventSetupRepository {
   const PrivateEventSetupRepository(
     this._functions, {
@@ -157,36 +157,25 @@ class PrivateEventSetupRepository {
   );
 
   /// Manager inventory for basics-only private events that cannot be decoded
-  /// through the public rich Event model or a device-local draft list, from
-  /// the `hostEventSummaries` read model. A missing directory marker is an
-  /// error to retry, never a callable read.
-  Future<PrivateEventSetupInventoryPage> list({
+  /// through the public rich Event model or a device-local draft list: the
+  /// first [limit] active ones starting at or after [from], from the
+  /// `hostEventSummaries` read model, while they are listened to. A missing
+  /// directory marker is an error to retry, never a callable read.
+  Stream<HostEventDraftWindow> watchDrafts({
     required String organizerId,
-    PrivateEventSetupScope? scope,
+    required DateTime from,
     int limit = ReadLimitPolicy.privateEventSetupPage,
-    String? cursor,
   }) {
-    if (!isValidPrivateEventInventoryRequest(
-      organizerId: organizerId,
-      limit: limit,
-      cursor: cursor,
-    )) {
-      throw ArgumentError('Invalid private event inventory request');
-    }
     final reads = summaries;
     if (reads == null) {
       throw StateError('Private event inventory reads need the summaries.');
     }
-    return withBackendErrorContext(
-      () => reads.list(
-        organizerId: organizerId,
-        scope: scope ?? PrivateEventSetupScope.upcoming,
-        limit: limit,
-        cursor: cursor,
-      ),
+    return withBackendErrorStream(
+      () =>
+          reads.watchDrafts(organizerId: organizerId, from: from, limit: limit),
       context: const BackendErrorContext(
         service: BackendService.firestore,
-        action: 'list private event setups',
+        action: 'watch private event setups',
         resource: 'hostEventSummaries',
       ),
     );

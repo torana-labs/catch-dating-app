@@ -1,9 +1,9 @@
 "use client";
 
 import {useId, useState, type HTMLAttributes, type ReactNode} from "react";
-import {catchBandColor} from "./catchBandParts";
+import {catchBandColor, catchBandKickerAccent} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
-import {CatchBandHeader} from "./CatchBandHeader";
+import {CatchBandHeader, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchIndexRow} from "./CatchIndexRow";
 import {CatchMarker} from "./CatchMarker";
 import {CatchPageTabBar} from "./CatchPageTabBar";
@@ -53,6 +53,8 @@ export interface CatchTabSectionProps extends Omit<HTMLAttributes<HTMLElement>, 
   level?: 1 | 2;
   kicker?: string;
   kickerTone?: CatchTextTone;
+  /** The kicker's accent on white, paper and ink; defaults to the kit's (indigo, coral on ink). A colour ground takes its secondary ink. */
+  kickerAccent?: CatchKickerAccent;
   lead?: string;
   /** Defaults to tabs. */
   layout?: CatchTabSectionLayout;
@@ -84,6 +86,7 @@ export function CatchTabSection({
   level = 2,
   kicker,
   kickerTone,
+  kickerAccent,
   lead,
   layout = "tabs",
   items,
@@ -105,7 +108,7 @@ export function CatchTabSection({
     onChanged?.(next);
   };
   const heading = level === 1 ? "h2" : "h3";
-  const header = <CatchBandHeader align={align} kicker={kicker} kickerTone={kickerTone} lead={lead} level={level} title={title} titleId={titleId} />;
+  const header = <CatchBandHeader align={align} kicker={kicker} kickerAccent={catchBandKickerAccent(kickerAccent, ground, "indigo")} kickerTone={kickerTone} lead={lead} level={level} size="section" title={title} titleId={titleId} />;
   const band = (children: ReactNode) => (
     <CatchSurface {...rest} aria-labelledby={titleId} as="section" block="band" color={catchBandColor(ground)} data-layout={layout}>
       {header}

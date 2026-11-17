@@ -15,16 +15,34 @@ export function weekPlans(plans: readonly HomePlan[], readAt: number): HomePlan[
   });
 }
 
+const twoWeeks = 2 * week;
+
 /**
- * Every plan in the read model's window that has not ended, soonest first:
- * what the homepage shows when this week is empty, so a quiet city never
- * reads as an empty one.
+ * Every plan that has not ended and starts within fourteen days of the read,
+ * soonest first: what the homepage shows when this week is empty, and all of
+ * a thin city's plans, so a quiet city never reads as an empty one.
  */
 export function upcomingPlans(plans: readonly HomePlan[], readAt: number): HomePlan[] {
   return plans.filter((plan) => {
+    const start = Date.parse(plan.startTime);
     const end = Date.parse(plan.endTime ?? plan.startTime);
-    return !(Number.isFinite(end) && end < readAt);
+    return start < readAt + twoWeeks && !(Number.isFinite(end) && end < readAt);
   }).sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime));
+}
+
+/** An open city with fewer plans than this in the next two weeks is thin (owner decision, 16 Nov). */
+export const thinCityPlanCount = 5;
+
+/**
+ * How the homepage reads its city: busy (five or more plans in the next two
+ * weeks), thin (an open city with fewer) or launching (not open yet). The
+ * board's three states; a thin city moves the host band up.
+ */
+export type HomeCityState = "busy" | "thin" | "launching";
+
+export function homeCityState(plans: HomeCityPlans, readAt: number): HomeCityState {
+  if (plans.status !== "live") return "launching";
+  return upcomingPlans(plans.plans, readAt).length < thinCityPlanCount ? "thin" : "busy";
 }
 
 /**
@@ -64,6 +82,22 @@ export function datedWhen(startTime: string, timezone: string) {
   return `${day.replace(",", "")}, ${time}`;
 }
 
+/** A plan's date square: the short weekday, the day and the short month in the city's time zone, and the ISO date. */
+export interface PlanDateParts {
+  weekday: string;
+  day: string;
+  month: string;
+  dateTime: string;
+}
+
+export function planDateParts(startTime: string, timezone: string): PlanDateParts {
+  const parts = new Intl.DateTimeFormat("en-GB", {weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: timezone})
+    .formatToParts(new Date(startTime));
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((item) => item.type === type)?.value ?? "";
+  const iso = new Intl.DateTimeFormat("en-CA", {year: "numeric", month: "2-digit", day: "2-digit", timeZone: timezone}).format(new Date(startTime));
+  return {weekday: part("weekday"), day: part("day"), month: part("month"), dateTime: iso};
+}
+
 export interface PlanCardView {
   key: string;
   href: string;
@@ -75,6 +109,10 @@ export interface PlanCardView {
   formatLabel: string;
   format: CatchFormat | null;
   detail: string;
+  /** Where the plan meets, such as "Khar Social". */
+  place: string;
+  /** The date square's parts in the city's time zone. */
+  date: PlanDateParts;
   price: string;
   availability?: string;
   photoUrl: string | null;
@@ -93,36 +131,14 @@ export function planCard(plan: HomePlan, timezone: string, withDate = false): Pl
     formatLabel: name ?? "",
     format: plan.format === "other" ? null : plan.format,
     detail: fill(copy.week.detail, {host: plan.organizer.name, place: plan.location}),
+    place: plan.location,
+    date: planDateParts(plan.startTime, timezone),
     price: plan.priceLabel,
     availability: plan.spotsLeft === null ? undefined :
       plan.spotsLeft === 0 ? copy.week.full : fill(copy.week.spotsLeft, {count: plan.spotsLeft}),
     photoUrl: plan.photoUrl,
     posterLabel: homeFormats.find((item) => item.format === plan.format)?.poster ?? otherFormatPoster,
   };
-}
-
-export interface FormatTileView {
-  format: CatchFormat;
-  title: string;
-  body: string;
-  kicker: string;
-  /** This week's plans in the format. */
-  count: number;
-  photoUrl: string | null;
-}
-
-/** One tile per format: this week's count and a real plan's photo. */
-export function formatTiles(plans: HomeCityPlans, city: HomeCity, readAt: number): FormatTileView[] {
-  const thisWeek = weekPlans(plans.plans, readAt);
-  return homeFormats.map(({format, line, name}) => {
-    const inFormat = thisWeek.filter((plan) => plan.format === format);
-    return {
-      format, title: name, body: line, count: inFormat.length,
-      kicker: city.status !== "live" ? fill(copy.formats.soonKicker, {city: city.label}) :
-        inFormat.length ? fill(copy.formats.liveCount, {count: inFormat.length}) : fill(copy.formats.liveQuiet, {city: city.label}),
-      photoUrl: inFormat.find((plan) => plan.photoUrl)?.photoUrl ?? plans.plans.find((plan) => plan.format === format && plan.photoUrl)?.photoUrl ?? null,
-    };
-  });
 }
 
 /** The formats a launching-soon city's organisers run, as a sentence. */
@@ -151,7 +167,8 @@ export interface OrganizerCardView {
   meta: string;
 }
 
-const formatGrounds: Record<CatchFormat, CatchBandGround> = {run: "coral", dinner: "pink", games: "yellow", courts: "mint", nightsOut: "magenta"};
+/** Each format's ground: its date squares, mats and chips. */
+export const formatGrounds: Record<CatchFormat, CatchBandGround> = {run: "coral", dinner: "pink", games: "yellow", courts: "mint", nightsOut: "magenta"};
 
 export function organizerCard(organizer: HomeOrganizer, city: HomeCity): OrganizerCardView {
   const firstFormat = organizer.formats.find((format): format is CatchFormat => format !== "other");
@@ -174,6 +191,30 @@ export function organizerCard(organizer: HomeOrganizer, city: HomeCity): Organiz
     color: firstFormat,
     meta: [organizer.category, next, footnote, ...(page && unclaimed ? [copy.organisers.claim] : [])].join(" · "),
   };
+}
+
+/**
+ * A published guest review the homepage may quote as proof
+ * (contracts/firestore/reviews.schema.json, moderated for public pages).
+ * The page quotes only reviews whose writer booked the plan on Catch.
+ */
+export interface HomeReview {
+  reviewId: string;
+  /** The writer's public display name. */
+  reviewerName: string;
+  /** Stars out of five. */
+  rating: number;
+  comment: string;
+  /** The plan the writer went to. */
+  eventTitle: string;
+  /** verificationStatus "verified": the writer booked and attended the plan on Catch. */
+  verified: boolean;
+}
+
+/** The review the proof band quotes: the first verified one with words, or none. Never a placeholder. */
+export function proofReview(reviews: readonly HomeReview[]): HomeReview | null {
+  return reviews.find((review) => review.verified && review.comment.trim() !== "" &&
+    Number.isInteger(review.rating) && review.rating >= 1 && review.rating <= 5) ?? null;
 }
 
 /** The picker searches once there are more cities than this. */

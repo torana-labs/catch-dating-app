@@ -24,6 +24,7 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_form_target_controller.dart';
+part 'host_forms_directory_controller.dart';
 part 'host_forms_controller.g.dart';
 part 'host_forms_directory_state.dart';
 
@@ -46,73 +47,6 @@ Future<HostFormsDirectoryState> hostFormsAccountDirectory(
   // Keep the source family alive until its fresh read settles.
   ref.listen(hostFormsDirectoryControllerProvider(scope.request), (_, _) {});
   return fresh;
-}
-
-@riverpod
-class HostFormsDirectoryController extends _$HostFormsDirectoryController {
-  int _readGeneration = 0;
-
-  bool _matchesAccount(HostFormListRequest request) =>
-      request.accountUid == null ||
-      ref.read(firebaseAuthProvider).currentUser?.uid == request.accountUid;
-
-  @override
-  Future<HostFormsDirectoryState> build(HostFormListRequest request) async {
-    final generation = ++_readGeneration;
-    if (!_matchesAccount(request)) {
-      throw StateError('The Host account changed while loading forms.');
-    }
-    final page = await ref.read(hostFormsRepositoryProvider).listForms(request);
-    if (!ref.mounted ||
-        generation != _readGeneration ||
-        !_matchesAccount(request)) {
-      throw StateError('The Host account changed while loading forms.');
-    }
-    return HostFormsDirectoryState(
-      forms: page.items,
-      nextCursor: page.nextCursor,
-    );
-  }
-
-  Future<void> loadMore() async {
-    final current = state.asData?.value;
-    if (current == null || !current.canLoadMore || !_matchesAccount(request)) {
-      return;
-    }
-    final generation = _readGeneration;
-    state = AsyncData(
-      current.copyWith(loadingMore: true, clearLoadMoreError: true),
-    );
-    try {
-      final page = await ref
-          .read(hostFormsRepositoryProvider)
-          .listForms(request.copyWith(cursor: current.nextCursor));
-      if (!ref.mounted ||
-          generation != _readGeneration ||
-          !_matchesAccount(request)) {
-        return;
-      }
-      final byId = <String, HostFormSummary>{
-        for (final form in current.forms) form.formId: form,
-        for (final form in page.items) form.formId: form,
-      };
-      state = AsyncData(
-        HostFormsDirectoryState(
-          forms: List.unmodifiable(byId.values),
-          nextCursor: page.nextCursor,
-        ),
-      );
-    } on Object catch (error) {
-      if (!ref.mounted ||
-          generation != _readGeneration ||
-          !_matchesAccount(request)) {
-        return;
-      }
-      state = AsyncData(
-        current.copyWith(loadingMore: false, loadMoreError: error),
-      );
-    }
-  }
 }
 
 enum HostFormSaveState { saved, dirty, saving, conflict, failed }

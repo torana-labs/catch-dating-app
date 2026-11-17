@@ -5,6 +5,7 @@ import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repositor
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_draft.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_editor.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_section.dart';
@@ -15,6 +16,7 @@ import 'package:catch_platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EventAssistanceDepartureSheet extends ConsumerWidget {
@@ -37,6 +39,12 @@ class EventAssistanceDepartureSheet extends ConsumerWidget {
     final form = state is EventDepartureForm ? state : null;
     final attendees = ref.watch(watchEventAttendeesProvider(scope.eventId));
     final attendeesState = catchAsyncStateFromAsyncValue(attendees);
+    final routeChange = ref.watch(
+      EventAssistanceDepartureController.routeMutation(scope),
+    );
+    final routeError = routeChange.hasError
+        ? (routeChange as MutationError).error
+        : null;
     void run(Future<Object?> Function() action) {
       unawaited(() async {
         try {
@@ -142,7 +150,45 @@ class EventAssistanceDepartureSheet extends ConsumerWidget {
                         roster: form.selection,
                         checkpoint: form.checkpoint,
                       ),
-                error: form?.error,
+                error: form?.error ?? routeError,
+                routeChoices: review.view.canChangeRoute
+                    ? [
+                        for (final d in review.view.destinations)
+                          if (d.target != review.view.progress!.destination)
+                            (alternativeId: d.alternativeId, label: d.label),
+                      ]
+                    : const [],
+                routeChanging: routeChange.isPending,
+                onChangeRoute: form != null || !review.isCurrent
+                    ? null
+                    : (alternativeId) => unawaited(() async {
+                        try {
+                          await EventAssistanceDepartureController.routeMutation(
+                            scope,
+                          ).run(ref, (tx) {
+                            final departure = tx.get(
+                              eventAssistanceDepartureControllerProvider
+                                  .notifier,
+                            );
+                            return departure.changeRoute(
+                              review,
+                              departure.prepareRouteChange(
+                                session: review,
+                                alternativeId: alternativeId,
+                              ),
+                            );
+                          });
+                        } on Object {
+                          // The section shows the failure from routeError.
+                          return;
+                        }
+                        if (context.mounted) {
+                          showCatchNotice(
+                            context,
+                            context.l10n.eventAssistanceRouteChangeSaved,
+                          );
+                        }
+                      }()),
                 onConfirm: (draft) => run(() async {
                   controller.open(review);
                   controller.selectDestination(draft.destination);

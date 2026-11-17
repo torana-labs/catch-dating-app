@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import {createHash, timingSafeEqual} from "node:crypto";
 import {CallableRequest, HttpsError, type FunctionsErrorCode} from "firebase-functions/v2/https";
-import type {AvailabilitySettings, Slot, SlotMinutes, WeeklyWindow} from "./calendar";
+import type {AvailabilitySettings, CalendarSource, Slot, SlotMinutes, WeeklyWindow} from "./calendar";
 
 // The walkthrough booking contracts (contracts/callables/*walkthrough*,
 // contracts/callable_responses/*walkthrough*, contracts/firestore/walkthrough_*
@@ -159,6 +159,8 @@ export interface AdminListWalkthroughBookingsResponse {
   fromDate: string;
   toDate: string;
   availability: AvailabilityView | null;
+  /** The calendar slots come from now: the saved one, or the built-in default while none is saved. */
+  calendar: {source: CalendarSource; settings: AvailabilitySettings};
   openSlotCount: number;
   bookings: AdminBookingRow[];
   truncated: boolean;

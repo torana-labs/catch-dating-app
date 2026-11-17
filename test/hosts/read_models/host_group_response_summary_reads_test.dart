@@ -42,9 +42,10 @@ void main() {
         _UnusedFunctions(),
         summaries: HostSummaryReader(db, actorId: () => 'host'),
       );
-      final page = await repo.listGroupSummaries('org');
+      final page = await repo.watchGroupSummaries('org', limit: 30).first;
       expect(page.audiences.single.name, 'Members');
       expect(page.audiences.single.isStatic, isTrue);
+      expect(page.hasMore, isFalse);
       // No detail document was needed to render the directory.
       final definition = {
         'join': 'all',
@@ -93,8 +94,68 @@ void main() {
         ),
         throwsStateError,
       );
+      final watched = await repo
+          .watchSavedAudience(organizerId: 'org', audienceId: 'group')
+          .first;
+      expect(watched.revision, 1);
     },
   );
+
+  test('an open group follows its saves and fails once archived', () async {
+    final db = FakeFirebaseFirestore();
+    await db.collection('hostDirectorySummaries').doc('org').set({
+      'organizerId': 'org',
+      'groupSummaryVersion': 1,
+    });
+    Future<void> detail(int revision, String status) =>
+        db.collection('hostGroupDetails').doc('group').set({
+          'organizerId': 'org',
+          'version': 1,
+          'row': {
+            'organizerId': 'org',
+            'audienceId': 'group',
+            'name': 'Members',
+            'scope': 'organizerCrm',
+            'status': status,
+            'definition': {
+              'join': 'all',
+              'predicates': [
+                {
+                  'kind': 'staticMembers',
+                  'contactIds': ['person'],
+                },
+              ],
+            },
+            'definitionHash': 'a' * 64,
+            'definitionVersion': 1,
+            'revision': revision,
+            'lastPreviewMatchCount': null,
+            'lastPreviewAtMillis': null,
+            'createdAtMillis': 1000,
+            'updatedAtMillis': 1000 + revision,
+          },
+        });
+    await detail(1, 'active');
+    final repo = HostSavedAudienceRepository(
+      _UnusedFunctions(),
+      summaries: HostSummaryReader(db, actorId: () => 'host'),
+    );
+    final events = <Object>[];
+    final subscription = repo
+        .watchSavedAudience(organizerId: 'org', audienceId: 'group')
+        .listen(
+          (audience) => events.add(audience.revision),
+          onError: events.add,
+        );
+    addTearDown(subscription.cancel);
+    await pumpEventQueue();
+    await detail(2, 'active');
+    await pumpEventQueue();
+    await detail(3, 'archived');
+    await pumpEventQueue();
+    expect(events.take(2), [1, 2]);
+    expect(events.last, isA<StateError>());
+  });
 
   test(
     'Responses read unified metadata without answer or application joins',

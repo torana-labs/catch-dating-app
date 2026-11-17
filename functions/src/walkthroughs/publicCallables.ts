@@ -10,6 +10,7 @@ import {
   INDIA_TIME_ZONE,
   INDIA_UTC_OFFSET,
   bookingOpen,
+  effectiveAvailability,
   holdIdFor,
   offeredSlot,
   openSlotDays,
@@ -52,7 +53,9 @@ import {
 // The website's walkthrough booking (Start / Walkthrough page):
 //
 // - getWalkthroughSlots: public, App Check. The open slots of the next days,
-//   times only. bookingOpen false means show the request form.
+//   times only, from the saved staff calendar or, while none is saved, the
+//   built-in default (calendar.ts DEFAULT_AVAILABILITY). bookingOpen false
+//   means staff closed booking: show the request form.
 // - bookWalkthrough: App Check and a Firebase sign-in whose phone was verified
 //   with a one-time code. Books one slot for that WhatsApp number, once per
 //   request id, and opens a task in the Admin Inbox (inbox.ts). A person
@@ -88,14 +91,14 @@ export async function getWalkthroughSlotsHandler(request: CallableRequest<unknow
   await deps.checkRateLimit(db, limiterKey("ip", clientAddress(request)), "getWalkthroughSlots",
     {maxRequests: 120, windowMs: 10 * MINUTE});
   const now = deps.now();
-  const settings = availabilityOf(await availabilityRef(db).get())?.settings ?? null;
+  const {settings} = effectiveAvailability(availabilityOf(await availabilityRef(db).get())?.settings);
   const open = bookingOpen(settings);
   const held = open ? await heldInHorizon(db, settings, now) : new Set<string>();
   return {
     timeZone: INDIA_TIME_ZONE,
     utcOffset: INDIA_UTC_OFFSET,
     bookingOpen: open,
-    slotMinutes: settings?.slotMinutes ?? null,
+    slotMinutes: settings.slotMinutes,
     generatedAt: now.toISOString(),
     days: openSlotDays({settings, now, days: data.days ?? DEFAULT_SLOT_DAYS, held}),
     followUp: STAFF_REPLY,
@@ -135,7 +138,7 @@ export async function bookWalkthroughHandler(request: CallableRequest<unknown>,
     {replayOf: WalkthroughBookingDocument; created?: never} | {created: WalkthroughBookingDocument; replayOf?: never}> => {
     const [bookingSnap, holdSnap, availabilitySnap] = await tx.getAll(ref, slotHold, availabilityRef(db));
     if (bookingSnap.exists) return {replayOf: bookingSnap.data() as WalkthroughBookingDocument};
-    const settings = availabilityOf(availabilitySnap)?.settings ?? null;
+    const {settings} = effectiveAvailability(availabilityOf(availabilitySnap)?.settings);
     if (!bookingOpen(settings)) {
       throw refusal("failed-precondition", "Walkthrough booking is closed right now. Ask for a time instead.", "booking_closed");
     }
@@ -252,7 +255,7 @@ export async function manageWalkthroughBookingHandler(request: CallableRequest<u
       throw refusal("failed-precondition", "This booking has moved too often. Cancel it and book again.", "too_many_changes");
     }
     const [holdSnap, targetSnap, availabilitySnap] = await tx.getAll(currentHold, target!, availabilityRef(db));
-    const settings = availabilityOf(availabilitySnap)?.settings ?? null;
+    const {settings} = effectiveAvailability(availabilityOf(availabilitySnap)?.settings);
     const slot = offeredSlot(settings, now, data.slotStartAt!);
     if (!slot) throw refusal("failed-precondition", "That time is no longer offered. Pick another.", "slot_unavailable");
     if (heldByOther(targetSnap, booking.bookingId)) {

@@ -71,6 +71,21 @@ describe("CatchSplitSection", () => {
     expect(container.querySelectorAll("ol")).toHaveLength(1);
   });
 
+  it("draws unmarked steps as the canvas's numbered step cards, on the ink panel too", () => {
+    const steps = [{title: "Find a plan", body: "Who is hosting"}, {title: "Show up"}];
+    const {rerender} = render(<CatchSplitSection ground="ink" kicker="How a night works" steps={steps} title="Headline" />);
+    const list = screen.getByRole("list");
+    expect(list.dataset.on).toBe("night");
+    expect(within(list).getAllByRole("listitem").map((item) => item.textContent)).toEqual(["1Find a planWho is hosting", "2Show up"]);
+    expect(screen.getByRole("heading", {level: 3, name: "Find a plan"}).dataset.variant).toBe("title-bar");
+    expect(screen.getByText("How a night works").dataset).toMatchObject({accent: "coral", on: "night"});
+    rerender(<CatchSplitSection ground="mint" steps={steps} title="Headline" />);
+    expect(screen.getByRole("list").dataset.on).toBe("colour");
+    rerender(<CatchSplitSection kicker="Safety" steps={steps} title="Headline" />);
+    expect(screen.getByRole("list").dataset.on).toBe("day");
+    expect(screen.getByText("Safety").dataset).toMatchObject({accent: "indigo", on: "day"});
+  });
+
   it("draws a checklist of white tiles", () => {
     render(<CatchSplitSection checks={[{title: "First check", body: "Why"}, {title: "Second check"}]} ground="paper" title="Headline" />);
     const tile = screen.getByText("First check").closest("li")!;

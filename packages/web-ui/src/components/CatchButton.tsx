@@ -13,7 +13,7 @@ import styles from "./CatchButton.module.css";
 export type CatchButtonVariant = "primary" | "secondary" | "ghost" | "quiet" | "accent" | "danger" | "light";
 /** Flutter `CatchButtonSize`, the D20 sizes: sm 32px, md 40px, lg 48px (the default). */
 export type CatchButtonSize = "sm" | "md" | "lg";
-/** Flutter `CatchButtonMode`, retiring: under D20 both draw 4px corners. */
+/** Flutter `CatchButtonMode`, retiring: both draw the one pill (radius-button, D26). */
 export type CatchButtonMode = "pill" | "rounded";
 export type CatchButtonStatus = "idle" | "loading";
 /** The text recipe's label colour. */
@@ -127,7 +127,7 @@ export type CatchButtonProps =
 const countLabel = (count: number) => (count > 99 ? "99+" : String(count));
 
 /**
- * Flutter's `CatchButton` drawn to D20: 4px corners, primary, secondary,
+ * Flutter's `CatchButton`: a pill (D26), primary, secondary,
  * quiet, danger and light fills, three sizes, a label-colour overlay on
  * hover and press, a 2px ring outside the button on keyboard focus, 40%
  * opacity when disabled and three dots, with busy semantics, while loading.

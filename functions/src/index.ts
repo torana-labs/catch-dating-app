@@ -240,7 +240,6 @@ export {
 export {createOrganizerPost} from "./organizers/organizerPosts";
 export {dispatchPendingOrganizerFollowerUpdates} from
   "./organizers/organizerPostDelivery";
-export {getOrganizerCrmSummary} from "./organizers/organizerCrm";
 export {
   createOrganizerContact,
   createOrganizerContactNote,
@@ -472,7 +471,6 @@ export {
 } from "./profiles/syncPublicProfile";
 export {getParticipantFormPhoto} from "./profiles/formProfilePhotoPreview";
 export {listParticipantFormProfiles} from "./profiles/listFormProfiles";
-export {getEventViewerState} from "./events/eventViewerState";
 export {listParticipantActivity} from "./profiles/participantActivity";
 export {getParticipantFormProfile, claimParticipantFormProfile}
   from "./profiles/claimFormProfile";
@@ -729,7 +727,6 @@ export {actOnEventChatMessage} from "./chats/eventChatMessageActions";
 export {listEventChatParticipants} from "./chats/listEventChatParticipants";
 export {listEventChatMessages} from "./chats/listEventChatMessages";
 
-export {listEventChats} from "./chats/listEventChats";
 
 export {getEventChatProfileSharing, updateEventChatProfileSharing,
   getEventChatProfile} from "./chats/eventChatProfiles";
@@ -1147,6 +1144,10 @@ export {onEventApplicationApprovalNotification,
 export {manageWebsiteAccount} from "./profiles/websiteAccount";
 
 export {onHostPilotCheckIn} from "./acquisition/pilotActivation";
+export {
+  onAdConversionGrowthFactsWritten,
+  sendAdConversions,
+} from "./acquisition/adConversions/worker";
 export {
   onOrganizerGrowthOrganizerWritten,
   onOrganizerGrowthClaimRequestCreated,

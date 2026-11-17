@@ -3,9 +3,7 @@
  * checklist): the copy and its second column 64px apart, stacking below
  * 840px. Ticks take the system check marker, as CatchFeatureTile's lines do.
  * Checks are ground tiles at radius lg, two across in a column of their own.
- * A flush band drops its vertical padding: the columns take the band rhythm
- * at the top (64, 48 below 840px), the copy keeps it at the bottom and the
- * media meets the band's bottom edge.
+ * A flush band drops its vertical padding (see .flush below).
  */
 .copy,
 .text,
@@ -82,14 +80,69 @@
   min-width: 0;
 }
 
-.flush { padding-top: var(--catch-space-s16); }
+/*
+ * Step cards (.pg .steps): rows 6px apart, each a 20px-cornered card padded
+ * 14px by 18px, a 40px number column 14px from the copy. The number is an
+ * Archivo figure at 30px in coral (the ground's ink on a colour panel); the
+ * title is 17px bold and the body 14px, 4px under it. The card is white at
+ * 55% on white, paper and colour, and at 7% on the ink panel.
+ */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 
-.flush .text { padding-bottom: var(--catch-space-s16); }
+.step {
+  display: grid;
+  grid-template-columns: var(--catch-website-steps-marker-width) minmax(0, 1fr);
+  gap: var(--catch-space-micro14);
+  padding: var(--catch-space-micro14) var(--catch-space-micro18);
+  border-radius: var(--catch-radius-lg);
+  background: var(--catch-website-color-step-on-light);
+}
+
+.steps[data-on="night"] .step { background: var(--catch-website-color-step-on-ink); }
+
+.stepNumber {
+  color: var(--catch-palette-coral);
+  font-family: var(--catch-font-stack-display);
+  font-size: var(--catch-typography-role-display-section-size);
+  font-weight: var(--catch-website-type-figure-weight);
+  font-stretch: 78%;
+  font-variation-settings: "wdth" 78;
+  line-height: 1;
+}
+
+.steps[data-on="colour"] .stepNumber { color: var(--catch-theme-ink); }
+
+.stepCopy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.stepBody { margin-top: var(--catch-space-s1); }
+
+/*
+ * A flush band drops its vertical padding: the columns take the panel rhythm
+ * at the top (88px, 40px on phones) and the copy keeps it at the bottom (88px,
+ * 8px on phones), while the media meets the band's bottom edge.
+ */
+.flush { padding-top: var(--catch-website-panel-pad-block); }
+
+.flush .text { padding-bottom: var(--catch-website-panel-pad-block); }
 
 .flush .end { justify-content: flex-end; }
 
 @container catch-page (width < 840px) {
   .checks { grid-template-columns: minmax(0, 1fr); }
-  .flush { padding-top: var(--catch-space-s12); }
-  .flush .text { padding-bottom: 0; }
+}
+
+@media (max-width: 599px) {
+  .flush { padding-top: var(--catch-space-s10); }
+  .flush .text { padding-bottom: var(--catch-space-s2); }
 }

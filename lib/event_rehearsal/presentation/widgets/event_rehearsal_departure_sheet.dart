@@ -59,6 +59,8 @@ class EventRehearsalDepartureSheet extends ConsumerWidget {
               final snapshot = review.snapshot;
               final result = form?.result?.movementReview;
               final current = result?.current ?? snapshot.current;
+              final active =
+                  result?.activeDestination ?? snapshot.activeDestination;
               final role = snapshot.staffReview;
               final until = role == null || role.isManager
                   ? snapshot.endAt + 14400000
@@ -114,13 +116,11 @@ class EventRehearsalDepartureSheet extends ConsumerWidget {
                   for (final d in snapshot.destinations)
                     (target: d.target, label: d.label, detail: d.text),
                 ],
-                currentDestination: current == null
+                // A route decision moves the group like a live route change.
+                currentDestination: active == null
                     ? null
                     : snapshot.destinations
-                              .where(
-                                (d) =>
-                                    d.target == current.departure.destination,
-                              )
+                              .where((d) => d.target == active)
                               .firstOrNull
                               ?.label ??
                           context.l10n.eventAssistanceDepartureSourceChanged,
@@ -156,6 +156,38 @@ class EventRehearsalDepartureSheet extends ConsumerWidget {
                       )
                     : null,
                 error: form?.error,
+                routeChoices: snapshot.canChangeRoute
+                    ? [
+                        for (final d in snapshot.destinations)
+                          if (d.target != snapshot.activeDestination)
+                            (alternativeId: d.alternativeId, label: d.label),
+                      ]
+                    : const [],
+                onChangeRoute: (alternativeId) => run(() async {
+                  controller.open(review);
+                  final random = Random.secure();
+                  final id = List.generate(
+                    16,
+                    (_) =>
+                        random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+                  ).join();
+                  final result = await controller.submit(
+                    RehearsalChangeRoute(
+                      snapshot: snapshot,
+                      alternativeId: alternativeId,
+                      decisionId: 'route-decision:$id',
+                    ),
+                  );
+                  // A saved route needs a fresh review before the next move.
+                  controller.reload();
+                  if (context.mounted) {
+                    showCatchNotice(
+                      context,
+                      context.l10n.eventAssistanceRouteChangeSaved,
+                    );
+                  }
+                  return result;
+                }),
                 onConfirm: (draft) => run(() {
                   controller.open(review);
                   return controller.submit(

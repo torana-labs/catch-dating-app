@@ -50,4 +50,23 @@ describe("CatchCtaSection", () => {
     render(<CatchCtaSection ground="ink" title="Headline" />);
     expect(screen.getByRole("region").querySelector("[data-catch-theme='dark']")).not.toBeNull();
   });
+
+  it("sets the copy in a bento grid: two tiles, the copy, the other tiles, then the wide ones", () => {
+    const {container} = render(
+      <CatchCtaSection capture={<form aria-label="Notify" />} tiles={[
+        {id: "book", ground: "coral", tag: "Book", body: "Book in a couple of taps.", aside: <span>Sunday run</span>},
+        {id: "remind", ground: "yellow", tag: "Reminders", body: "A nudge the day before."},
+        {id: "chat", ground: "ink", tag: "Group chat", body: "Your group chat stays open."},
+        {id: "follow", ground: "mint", tag: "Follow", body: "The hosts you like."},
+        {id: "solo", ground: "pink", tag: "On your own?", body: "Hosts plan a first hello.", wide: true},
+        {id: "free", ground: "magenta", tag: "Free to use", body: "Browsing is free.", wide: true},
+      ]} title="Be first in the app" />,
+    );
+    const grid = (container.querySelector("[data-wide='start']") as HTMLElement).parentElement as HTMLElement;
+    const order = Array.from(grid.children).map((child) => (child as HTMLElement).dataset.ground ?? "copy");
+    expect(order).toEqual(["coral", "yellow", "copy", "ink", "mint", "pink", "magenta"]);
+    expect(Array.from(grid.children).map((child) => (child as HTMLElement).dataset.wide ?? "")).toEqual(["", "", "", "", "", "start", "end"]);
+    expect(screen.getByRole("form", {name: "Notify"})).toBeTruthy();
+    expect(screen.getByText("Sunday run")).toBeTruthy();
+  });
 });

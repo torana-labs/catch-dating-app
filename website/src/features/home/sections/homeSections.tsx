@@ -1,184 +1,201 @@
 import {
-  CatchAccordion,
   CatchAppCaptureImage,
+  CatchBadge,
   CatchButton,
+  CatchCardGrid,
   CatchCheckboxInput,
   CatchChip,
+  CatchCtaSection,
   CatchDeviceFrame,
-  CatchEventCard,
+  CatchFaqSection,
   CatchField,
-  CatchFormatTile,
-  CatchHeroShowcase,
-  CatchIndexRow,
-  CatchMenu,
-  CatchOrganizerCard,
+  CatchHeroSection,
   CatchQrCode,
-  CatchRail,
-  CatchScroller,
-  CatchSection,
+  CatchReviewItem,
+  CatchSiteDock,
+  CatchSplitSection,
   CatchStack,
-  CatchStoreButton,
-  CatchSurface,
   CatchText,
-  catchFormatAccentOf,
-  type CatchHeroShowcaseSticker,
-  type CatchTextTone,
+  type CatchBandAction,
+  type CatchCardGridEntry,
+  type CatchCtaSectionTile,
 } from "@catch/web-ui";
-import {useEffect, useState, type ReactNode} from "react";
+import type {ReactNode} from "react";
 import {homeCityAreas, homeFormats, homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {activeMarket} from "@content/markets";
-import {guestAppLive} from "@content/site";
+import {guestAppActionLabel, guestAppLive, whatsappChatCopy, whatsappChatHref} from "@content/site";
 import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../../shared/site";
 import {Form} from "../../../shared/ui/primitives";
 import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
+import {useFoundingHostOffer} from "../../marketing/useFoundingHostOffer";
 import {CityPicker} from "./CityPicker";
 import type {HomeFilter, HomePageController} from "../useHomePageController";
 import {useAppNoticeController} from "../useAppNoticeController";
 import {useLaunchNoticeController} from "../useLaunchNoticeController";
-import {cityPagePath, footerCities} from "./cityChrome";
+import {formatGrounds} from "../homeModel";
+import {footerCities} from "./cityChrome";
 
 type Home = HomePageController;
 const filterValues: HomeFilter[] = ["all", ...homeFormats.map((item) => item.format)];
-const areasOf = (home: Home) => homeCityAreas[home.city.marketSlug];
-const posterOf = (format: string | null) => homeFormats.find((item) => item.format === format)?.poster;
 
-/** A section opening: a coloured kicker over a display headline. */
-function Heading({id, kicker, title, tone = "secondary", as = "h2"}: {id?: string; kicker: string; title: string; tone?: CatchTextTone; as?: "h1" | "h2"}) {
-  return (
-    <CatchStack gap={8}>
-      <CatchText tone={tone} variant="label-kicker">{kicker}</CatchText>
-      <CatchText as={as} id={id} variant="display-xl">{title}</CatchText>
-    </CatchStack>
-  );
-}
-
-/** A heading with its lead or action across from it on a wide page. */
-function HeadingRow({children, aside}: {children: ReactNode; aside: ReactNode}) {
-  return <CatchStack align="end" collapseBelow="medium" direction="row" gap={32} justify="between">{children}{aside}</CatchStack>;
-}
-
-/** The Catch app's official store badges for one placement. */
-function StoreButtons({placement, size = "l"}: {placement: string; size?: "m" | "l"}) {
-  // Before the app is on a store, no "Coming soon" chips that capture nothing
-  // (leak 2): a quiet link down to the app band's WhatsApp notice instead.
-  if (!guestAppLive) return <CatchStack align="start"><CatchButton href="#app" label={copy.app.heroLink} size="sm" variant="quiet" /></CatchStack>;
-  return <LiveStoreButtons placement={placement} size={size} />;
-}
-
-function LiveStoreButtons({placement, size}: {placement: string; size: "m" | "l"}) {
-  const stores = useAppDownloadCtas({placement});
-  return (
-    <CatchStack align="center" direction="row" gap={12} wrap>
-      {stores.map((store) => (
-        <CatchStoreButton badgeSrc={store.badgeSrc} comingSoon={store.comingSoon} href={store.href || undefined} key={store.store} label={store.accessibleLabel} onClick={store.onClick} size={size} store={store.store} />
-      ))}
-    </CatchStack>
-  );
-}
-
-// The hero's stickers sit on white, ink and yellow, as the board sets them.
-const stickerGrounds = ["white", "ink", "yellow"] as const;
-
-function HomeHero({captures, home}: {captures: CaptureSlots; home: Home}) {
+/**
+ * The opening band. An open city leads with guests: the headline, the way to
+ * its plans and the host link in the phone's first screen, with the soonest
+ * plan floating over the app. A city that has not opened leads with hosts.
+ */
+function HomeHero({captures, home, offerOpen}: {captures: CaptureSlots; home: Home; offerOpen: boolean}) {
   const city = home.city.label;
+  if (home.state === "launching") {
+    const tablet = captureSlot(captures, "host-live-tablet", "eager");
+    return (
+      <CatchHeroSection
+        actions={[{label: copy.launchHero.startAction, href: "/host/#start"}, {label: copy.launchHero.hostsAction, href: "/host/"}]}
+        ground="indigo"
+        id="home-hero"
+        kicker={home.heroEyebrow}
+        lead={offerOpen ? copy.launchHero.foundingBody : copy.launchHero.body}
+        link={home.liveCity ? {label: fill(copy.soon.liveCityAction, {city: home.liveCity.label}), href: home.cityHref(home.liveCity.slug)} : undefined}
+        media={tablet ? <CatchDeviceFrame kind="tablet" tilt="left"><CatchAppCaptureImage {...tablet} caption={undefined} /></CatchDeviceFrame> : undefined}
+        title={fill(copy.launchHero.title, {city})}
+      />
+    );
+  }
   const explore = captureSlot(captures, "guest-explore", "eager");
-  const stickers: CatchHeroShowcaseSticker[] = home.stickers.map((plan, index) => {
-    const ground = stickerGrounds[index % stickerGrounds.length];
-    const accent = plan.format ? catchFormatAccentOf(plan.format) : null;
-    return {
-      label: fill(copy.hero.chipKicker, {format: posterOf(plan.format) ?? plan.formatLabel, when: plan.when}),
-      title: plan.title,
-      ground,
-      labelAccent: ground === "yellow" || !accent ? undefined : accent,
-    };
-  });
+  const plan = home.heroPlan;
   return (
-    <CatchSurface aria-labelledby="home-title" as="section" block="band">
-      <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={48}>
-        <CatchStack gap={20}>
-          <CatchText tone="danger" variant="label-kicker">{fill(home.live ? copy.hero.liveEyebrow : copy.hero.soonEyebrow, {city})}</CatchText>
-          <CatchText as="h1" id="home-title" variant="hero">{copy.hero.title}</CatchText>
-          <CatchText tone="secondary" variant="body-lead">{copy.hero.body}</CatchText>
-          <CatchStack direction="row" gap={8} wrap>
-            <CatchButton href="#whats-on" label={fill(home.live ? copy.hero.liveAction : copy.hero.soonAction, {city})} />
-            <CatchButton href="/host/" label={copy.hero.hostAction} variant="secondary" />
-          </CatchStack>
-          <StoreButtons placement="home_hero" />
-        </CatchStack>
-        <CatchHeroShowcase
-          device={explore ? <CatchAppCaptureImage {...explore} caption={undefined} tilt="left" /> : null}
-          ground="pink"
-          stickers={stickers}
-        />
-      </CatchStack>
-    </CatchSurface>
+    <CatchHeroSection
+      actions={[
+        {label: home.state === "thin" ? copy.hero.thinAction : fill(copy.hero.busyAction, {city}), href: "#whats-on"},
+        {label: copy.hero.hostAction, href: "/host/"},
+      ]}
+      // The soonest real plan floats over the phone; there is none to show before a city has plans.
+      aside={plan ? {
+        title: plan.title,
+        meta: plan.availability ? fill(copy.hero.chipMeta, {place: plan.place, availability: plan.availability}) : plan.place,
+        date: {...plan.date, ground: plan.format ? formatGrounds[plan.format] : "paper"},
+      } : undefined}
+      ground="pink"
+      id="home-hero"
+      kicker={home.heroEyebrow}
+      lead={copy.hero.body}
+      // The board's proof line ("Every host verified · ★ … from … guests") waits for real data: nothing reads verified hosts
+      // or a review count yet, so it is left out rather than shown with placeholders.
+      media={explore ? <CatchAppCaptureImage {...explore} bezel bleed caption={undefined} size="hero" tilt="left" /> : undefined}
+      // Before the app is on a store, no "Coming soon" badges that capture nothing (leak 2): the notify card instead.
+      notice={guestAppLive ? undefined : {title: copy.hero.notice.title, body: fill(copy.hero.notice.body, {city}), children: <AppNoticeForm compact home={home} />}}
+      title={copy.hero.title}
+    />
   );
 }
 
-function HomeFormats({home}: {home: Home}) {
-  return (
-    <CatchSurface aria-labelledby="home-formats-title" as="section" block="band">
-      <HeadingRow aside={<CatchText tone="secondary" variant="body">{copy.formats.lead}</CatchText>}>
-        <Heading id="home-formats-title" kicker={copy.formats.eyebrow} title={copy.formats.title} tone="success" />
-      </HeadingRow>
-      {/* The band already pads to the content edge, so the rail's first tile lines up with the heading. */}
-      <CatchScroller edge="none" gap="related" itemWidth="m" label={copy.formats.label}>
-        {home.tiles.map((tile) => home.live ? (
-          <CatchFormatTile body={tile.body} format={tile.format} key={tile.format} kicker={tile.kicker} onPressed={() => {
-            home.chooseTile(tile.format);
-            if (typeof document !== "undefined") document.getElementById("whats-on")?.scrollIntoView?.({behavior: "smooth", block: "start"});
-          }} photoUrl={tile.photoUrl} pressed={home.filter === tile.format} title={tile.title} />
-        ) : (
-          <CatchFormatTile body={tile.body} format={tile.format} href="#whats-on" key={tile.format} kicker={tile.kicker} photoUrl={tile.photoUrl} title={tile.title} />
-        ))}
-      </CatchScroller>
-    </CatchSurface>
-  );
-}
-
-function HomeThisWeek({home}: {home: Home}) {
+/** "Whoever you are": six ways in, each to the city's plans or the band it names. */
+function HomeEntries({home}: {home: Home}) {
   const city = home.city.label;
-  const areas = areasOf(home);
+  const targets: Record<string, Pick<CatchCardGridEntry, "href" | "ground" | "icon">> = {
+    new: {href: home.exploreHref, ground: "coral", icon: "location"},
+    solo: {href: "#how", ground: "pink", icon: "person"},
+    level: {href: home.exploreHref, ground: "mint", icon: "trend"},
+    friends: {href: home.exploreHref, ground: "yellow", icon: "people"},
+    daytime: {href: home.exploreHref, ground: "indigo", icon: "anytime"},
+    safety: {href: "#safety", ground: "ink", icon: "safety"},
+  };
   return (
-    <CatchSurface aria-labelledby="home-week-title" as="section" block="band" color="tile" id="whats-on">
-      <HeadingRow aside={<CatchButton href={home.exploreHref} label={fill(copy.week.action, {city})} />}>
-        <CatchStack gap={8}>
-          <CatchText tone="danger" variant="label-kicker">{home.upcoming ? copy.week.upcomingEyebrow : home.weekCount > 1 ? fill(copy.week.eyebrow, {count: home.weekCount}) :
-            home.weekCount ? copy.week.eyebrowOne : fill(copy.week.eyebrowNew, {city})}</CatchText>
-          <CatchText as="h2" id="home-week-title" variant="display-xl">{fill(home.upcoming ? copy.week.upcomingTitle : copy.week.title, {city})}</CatchText>
-          <CatchText tone="secondary" variant="body">{areas ? fill(copy.week.lead, {areas}) : fill(copy.week.leadNoAreas, {city})}</CatchText>
-        </CatchStack>
-      </HeadingRow>
-      <CatchStack aria-label={copy.week.filters} direction="row" gap={8} role="radiogroup" wrap>
-          {filterValues.map((value) => (
-            <CatchChip colourWhenSelected dot={value === "all" || value === "other" ? undefined : value} key={value} kind="choice"
-              label={value === "all" ? copy.week.everything : homeFormats.find((item) => item.format === value)?.name ?? value}
-              onPressed={() => home.setFilter(value)} selected={home.filter === value} />
-          ))}
-        </CatchStack>
-      {home.plans.length ? (
-        <CatchRail itemWidth={240} label={fill(home.upcoming ? copy.week.upcomingTitle : copy.week.title, {city})} wrap="auto">
-          {home.plans.map((plan) => (
-            <CatchEventCard format={plan.format ?? "games"} formatLabel={plan.formatLabel || undefined} href={plan.href} imageUrl={plan.photoUrl ?? undefined} key={plan.key}
-              place={plan.detail} price={plan.availability ? `${plan.price} · ${plan.availability}` : plan.price} title={plan.title} variant="compact" when={plan.when} />
-          ))}
-        </CatchRail>
-      ) : null}
-      <CatchText aria-live="polite" as="p" tone="secondary" variant="body-small">{home.note}</CatchText>
-    </CatchSurface>
+    <CatchCardGrid
+      align="center"
+      columns={6}
+      id="first-plan"
+      items={copy.entries.items.map((item) => ({id: item.id, title: item.id === "new" ? fill(copy.entries.items[0].title, {city}) : item.title, body: item.body,
+        ...targets[item.id]}))}
+      kicker={copy.entries.eyebrow}
+      kind="entry"
+      title={copy.entries.title}
+    />
   );
 }
 
-/** "Tell me when it opens": one WhatsApp message on opening day, news only if ticked. */
-function HomeLaunchNotice({home}: {home: Home}) {
+/** "Start with what you feel like doing": the formats, each to the city's plans in it, and more kinds as chips. */
+function HomeFormats({home}: {home: Home}) {
+  const city = home.city.label;
+  // Only photos approved for the live site; a format without one shows its activity artwork (website-v2 README, #875).
+  const photos: Partial<Record<string, string>> = {run: "/assets/events/social-run-music-hero-960.jpg", dinner: "/assets/marketing/home-dinner.jpg"};
+  const chipDots = ["indigo", "yellow", "pink", "mint"] as const;
+  return (
+    <CatchCardGrid
+      chips={copy.formats.chips.map((chip, index) => ({label: chip.label, href: `${home.exploreHref}?q=${encodeURIComponent(chip.search)}`, dot: chipDots[index % chipDots.length]}))}
+      columns={5}
+      id="formats"
+      items={copy.formats.cards.map((card) => ({
+        id: card.format, title: card.title, body: card.body, more: fill(card.more, {city}), href: `${home.exploreHref}?format=${card.format}`,
+        ground: formatGrounds[card.format], format: card.format, photoUrl: photos[card.format],
+      }))}
+      kicker={copy.formats.eyebrow}
+      kickerAccent="mint"
+      kind="format"
+      layout="rail"
+      lead={copy.formats.lead}
+      title={copy.formats.title}
+    />
+  );
+}
+
+/** The format chips of a busy city, and the line that says what is shown. */
+function PlanFilters({home}: {home: Home}) {
+  const note = home.plans.length ? <CatchText aria-live="polite" as="p" tone="secondary" variant="body-small">{home.note}</CatchText> : null;
+  if (home.state !== "busy" || home.unavailable) return note;
+  return (
+    <CatchStack gap={12}>
+      <CatchStack aria-label={copy.week.filters} direction="row" gap={8} role="radiogroup" wrap>
+        {filterValues.map((value) => (
+          <CatchChip colourWhenSelected dot={value === "all" || value === "other" ? undefined : value} key={value} kind="choice"
+            label={value === "all" ? copy.week.everything : homeFormats.find((item) => item.format === value)?.name ?? value}
+            onPressed={() => home.setFilter(value)} selected={home.filter === value} />
+        ))}
+      </CatchStack>
+      {note}
+    </CatchStack>
+  );
+}
+
+/**
+ * An open city's plans: this week, or the next two weeks when the week is
+ * quiet or the city is thin, never an empty band. The other open cities sit
+ * under the heading, so a visitor can switch city from here.
+ */
+function HomePlans({home}: {home: Home}) {
+  const city = home.city.label;
+  const areas = homeCityAreas[home.city.marketSlug];
+  const thin = home.state === "thin";
+  return (
+    <CatchCardGrid
+      empty={{title: home.note}}
+      filters={<PlanFilters home={home} />}
+      ground="paper"
+      headerAction={{label: thin ? copy.week.thinAction : fill(copy.week.action, {city}), href: home.exploreHref}}
+      id="whats-on"
+      items={home.plans.map((plan) => ({
+        id: plan.key, href: plan.href, title: plan.title, label: plan.label, format: plan.format, detail: plan.detail,
+        price: plan.price, availability: plan.availability, photoUrl: plan.photoUrl, posterLabel: plan.posterLabel, date: plan.date,
+      }))}
+      // A city that could not be read carries no count and is never called new.
+      kicker={home.unavailable ? undefined : home.upcoming ? copy.week.upcomingEyebrow : home.weekCount > 1 ? fill(copy.week.eyebrow, {count: home.weekCount}) :
+        home.weekCount ? copy.week.eyebrowOne : fill(copy.week.eyebrowNew, {city})}
+      kind="plan"
+      layout="rail"
+      lead={thin ? fill(copy.week.thinLead, {city}) : areas ? fill(copy.week.lead, {areas}) : fill(copy.week.leadNoAreas, {city})}
+      links={home.otherCities}
+      title={fill(home.upcoming ? copy.week.upcomingTitle : copy.week.title, {city})}
+    />
+  );
+}
+
+/** "Here for the plans?": one WhatsApp message on opening day, news only if ticked. */
+function LaunchNoticeForm({home}: {home: Home}) {
   const city = home.city.label;
   const notice = useLaunchNoticeController(city, undefined, {slug: home.city.slug, source: home.citySource});
   return (
     <CatchStack gap={12}>
-      <CatchText as="h3" variant="display-sm">{copy.notice.title}</CatchText>
-      <CatchText tone="secondary" variant="body">{fill(copy.notice.lead, {city})}</CatchText>
       {notice.joined ? null : (
         <Form noValidate onSubmit={notice.handleSubmit} pending={notice.sending}>
           <CatchStack gap={12}>
@@ -197,162 +214,136 @@ function HomeLaunchNotice({home}: {home: Home}) {
   );
 }
 
-/** A city that has not opened: what is coming, who is joining, the notice and the busiest live city. */
+/** A city that has not opened: what is coming, and the opening-day notice in place of plans. */
 function HomeLaunchingSoon({home}: {home: Home}) {
-  const city = home.city.label;
-  const areas = areasOf(home);
   return (
-    <CatchSurface aria-labelledby="home-soon-title" as="section" block="band" color="tile" id="whats-on">
-      <CatchStack gap={8}>
-        <Heading id="home-soon-title" kicker={copy.soon.eyebrow} title={fill(copy.soon.title, {city})} tone="info" />
-        <CatchText tone="secondary" variant="body-lead">{areas ? fill(copy.soon.lead, {areas}) : fill(copy.soon.leadNoAreas, {city})}</CatchText>
-      </CatchStack>
-      <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={24}>
-        <CatchSurface block="floating">
-          <CatchText tone="secondary" variant="label-kicker">{copy.soon.comingLabel}</CatchText>
-          <CatchText variant="display-sm">{home.coming}</CatchText>
-          {home.organizers.length ? (
-            <CatchSection kicker={copy.soon.joiningLabel}>
-              {home.organizers.map((organizer) => <CatchIndexRow density="regular" key={organizer.key} subtitle={organizer.subtitle} title={organizer.name} />)}
-            </CatchSection>
-          ) : null}
-        </CatchSurface>
-        <CatchSurface block="floating">
-          <HomeLaunchNotice home={home} />
-          <CatchStack gap={4}>
-            <CatchText as="h3" variant="title-row">{fill(copy.soon.knowHost, {city})}</CatchText>
-            <CatchStack align="start"><CatchButton href="/host/" label={copy.soon.knowHostAction} size="sm" variant="quiet" /></CatchStack>
-          </CatchStack>
-          <CatchStack gap={8}>
-            <CatchText as="h3" variant="title-row">{copy.soon.appTitle}</CatchText>
-            <StoreButtons placement="home_launching_soon" size="m" />
-          </CatchStack>
-        </CatchSurface>
-      </CatchStack>
-      {home.liveCity ? (
-        <CatchSurface block="floating" padding="md">
-          <CatchStack align="center" direction="row" gap={12} justify="between" wrap>
-            <CatchText variant="body"><CatchText as="strong" variant="title-row">{fill(copy.soon.liveCityNote, {city: home.liveCity.label})}</CatchText>{" "}
-              {fill(copy.soon.liveCityCount, {count: home.liveCity.weekPlanCount})}</CatchText>
-            <CatchButton href={home.cityHref(home.liveCity.slug)} label={fill(copy.soon.liveCityAction, {city: home.liveCity.label})} size="md" variant="secondary" />
-          </CatchStack>
-        </CatchSurface>
-      ) : null}
-    </CatchSurface>
+    <CatchCtaSection
+      capture={<LaunchNoticeForm home={home} />}
+      ground="paper"
+      id="whats-on"
+      kicker={copy.soon.eyebrow}
+      kickerAccent="pink"
+      lead={fill(copy.soon.lead, {coming: home.coming, city: home.city.label})}
+      title={copy.soon.title}
+    />
   );
 }
 
-/** How long each step of the guest story shows before the next, until the reader picks one. */
-const storyStepMs = 4_000;
-
-/** The guest story's step: it moves on by itself until the reader picks one, and holds still under reduced motion. */
-function useStoryStep(count: number) {
-  const [step, setStep] = useState(0);
-  const [auto, setAuto] = useState(true);
-  useEffect(() => {
-    const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (!auto || reduced) return undefined;
-    const timer = window.setInterval(() => setStep((current) => (current + 1) % count), storyStepMs);
-    return () => window.clearInterval(timer);
-  }, [auto, count]);
-  return {step, pick: (index: number) => { setStep(index); setAuto(false); }};
+/**
+ * The host band: in a busy city it follows the proof; in a thin or launching
+ * city it moves up to third place, with the founding-host offer while the
+ * city's counter reads open. A launching city's hero already shows the
+ * tablet, so the band keeps to its words there.
+ */
+function HomeHosts({captures, home, offerOpen}: {captures: CaptureSlots; home: Home; offerOpen: boolean}) {
+  const early = home.state !== "busy";
+  const tablet = captureSlot(captures, "host-live-tablet");
+  const media = home.state !== "launching" && tablet ?
+    <CatchDeviceFrame kind="tablet" tilt="left"><CatchAppCaptureImage {...tablet} caption={undefined} /></CatchDeviceFrame> : undefined;
+  const actions: CatchBandAction[] = early ?
+    [{label: copy.host.trial, href: "/host/#start"}, {label: copy.host.whatsapp, href: whatsappChatHref(whatsappChatCopy.hostQuestionMessage), newTab: true}] :
+    [{label: copy.host.trial, href: "/host/#start"}, {label: copy.host.action, href: "/host/"}];
+  return (
+    <CatchSplitSection
+      actions={actions}
+      body={early && offerOpen ? fill(copy.host.foundingBody, {city: home.city.label}) : copy.host.fees}
+      flush={media != null}
+      ground="indigo"
+      id="hosts"
+      kicker={copy.host.eyebrow}
+      lead={copy.host.body}
+      media={media}
+      title={copy.host.title}
+    />
+  );
 }
 
+/** How a night works: three steps beside the checked-in screen. */
 function HomeNight({captures}: {captures: CaptureSlots}) {
-  // One screen per story step; a step without a capture keeps the screen before it.
-  const screens = [captureSlot(captures, "guest-explore"), captureSlot(captures, "guest-checked-in"),
-    captureSlot(captures, "guest-after-event")];
-  const story = useStoryStep(copy.story.steps.length);
-  const screen = screens.slice(0, story.step + 1).reverse().find(Boolean) ?? null;
+  const checkedIn = captureSlot(captures, "guest-checked-in");
   return (
-    <CatchSurface aria-labelledby="home-story-title" as="section" block="band" color="ink" id="how">
-      <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={48}>
-        <CatchStack gap={20}>
-          <Heading id="home-story-title" kicker={copy.story.eyebrow} title={copy.story.title} tone="danger" />
-          <CatchText tone="secondary" variant="body-lead">{copy.story.lead}</CatchText>
-          <CatchSection dividers="none">
-            {copy.story.steps.map((step, index) => (
-              <CatchIndexRow density="regular" key={step.title} onTap={() => story.pick(index)} rank={index + 1} selected={index === story.step}
-                subtitle={step.body} title={step.title} wrap />
-            ))}
-          </CatchSection>
-        </CatchStack>
-        {screen ? <CatchAppCaptureImage {...screen} caption={undefined} size="md" tilt="right" /> : null}
-      </CatchStack>
-    </CatchSurface>
+    <CatchSplitSection
+      flush={checkedIn != null}
+      ground="ink"
+      id="how"
+      kicker={copy.story.eyebrow}
+      lead={copy.story.lead}
+      media={checkedIn ? <CatchAppCaptureImage {...checkedIn} caption={undefined} size="md" tilt="right" /> : undefined}
+      steps={copy.story.steps}
+      title={copy.story.title}
+    />
+  );
+}
+
+/** Proof: what is in place, and a real review only when a guest who booked has written one. */
+function HomeProof({home}: {home: Home}) {
+  const review = home.review;
+  return (
+    <CatchSplitSection
+      align="start"
+      checks={copy.safety.checks}
+      id="safety"
+      kicker={copy.safety.eyebrow}
+      kickerAccent="pink"
+      lead={copy.safety.lead}
+      media={review ? (
+        <CatchReviewItem badge={<CatchBadge label={copy.safety.verified} size="sm" tone="success" />} body={review.comment} meta={review.eventTitle}
+          name={review.reviewerName} rating={review.rating} ratingLabel={fill(copy.safety.rating, {rating: review.rating})} variant="card" />
+      ) : undefined}
+      title={copy.safety.title}
+    />
   );
 }
 
 function HomeOrganisers({home}: {home: Home}) {
   const city = home.city.label;
-  const title = home.live ? copy.organisers.liveTitle : copy.organisers.soonTitle;
   return (
-    <CatchSurface aria-labelledby="home-organisers-title" as="section" block="band" id="organisers">
-      <HeadingRow aside={<CatchText tone="secondary" variant="body">{copy.organisers.lead}</CatchText>}>
-        <Heading id="home-organisers-title" kicker={home.live ? copy.organisers.liveEyebrow : fill(copy.organisers.soonEyebrow, {city})} title={title} tone="danger" />
-      </HeadingRow>
-      {home.organizers.length ? (
-        <CatchRail itemWidth={340} label={title} wrap="always">
-          {home.organizers.map((organizer) => (
-            <CatchOrganizerCard color={organizer.color} href={organizer.action.kind === "none" ? undefined : organizer.action.href} initials={organizer.initials}
-              key={organizer.key} meta={organizer.meta} name={organizer.name} />
-          ))}
-        </CatchRail>
-      ) : null}
-      <CatchSurface block="spotlight" color="courts">
-        <CatchStack align="center" collapseBelow="medium" direction="row" gap={16} justify="between">
-          <CatchStack gap={4}>
-            <CatchText as="h3" variant="display-sm">{fill(copy.organisers.claimBand, {city})}</CatchText>
-            <CatchText variant="body">{copy.organisers.claimBandBody}</CatchText>
-          </CatchStack>
-          <CatchButton href="/claim/" label={copy.organisers.claimBandAction} />
-        </CatchStack>
-      </CatchSurface>
-    </CatchSurface>
+    <CatchCardGrid
+      actions={[{label: copy.organisers.claimBandAction, href: "/claim/", variant: "secondary"}]}
+      columns={4}
+      id="organisers"
+      items={home.organizers.map((organizer) => ({
+        id: organizer.key, name: organizer.name, initials: organizer.initials, color: organizer.color, meta: organizer.meta,
+        href: organizer.action.kind === "none" ? undefined : organizer.action.href,
+      }))}
+      kicker={fill(home.live ? copy.organisers.liveEyebrow : copy.organisers.soonEyebrow, {city})}
+      kind="org"
+      lead={copy.organisers.lead}
+      title={home.live ? copy.organisers.liveTitle : copy.organisers.soonTitle}
+    />
   );
 }
 
-function HomeHosts({captures}: {captures: CaptureSlots}) {
-  const tablet = captureSlot(captures, "host-live-tablet");
-  return (
-    <CatchSurface aria-labelledby="home-host-title" as="section" block="band" color="run" id="hosts">
-      <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={48}>
-        <CatchStack gap={20}>
-          <Heading id="home-host-title" kicker={copy.host.eyebrow} title={copy.host.title} tone="primary" />
-          <CatchText variant="body-lead">{copy.host.body}</CatchText>
-          <CatchSurface>
-            <CatchText variant="title-row">{copy.host.price}</CatchText>
-            <CatchText variant="body-small">{copy.host.priceNote}</CatchText>
-          </CatchSurface>
-          <CatchStack direction="row" gap={8} wrap>
-            <CatchButton href="/host/#start" label={copy.host.trial} />
-            <CatchButton href="/host/" label={copy.host.action} variant="secondary" />
-            <CatchButton href="/claim/" label={copy.host.claim} variant="ghost" />
-          </CatchStack>
-        </CatchStack>
-        {tablet ? <CatchDeviceFrame kind="tablet" tilt="left"><CatchAppCaptureImage {...tablet} caption={undefined} /></CatchDeviceFrame> : null}
-      </CatchStack>
-    </CatchSurface>
-  );
-}
-
-/** "Be first in the Catch app": one WhatsApp message at launch, new plans only if ticked. */
-function HomeAppNotice({home}: {home: Home}) {
+/**
+ * "Get notified": one WhatsApp message when the app launches, new plans only
+ * if ticked. Compact, in the hero's notify card, the number and the button
+ * share a row (they stack on a phone).
+ */
+function AppNoticeForm({compact = false, home}: {compact?: boolean; home: Home}) {
   const city = home.city.label;
   const notice = useAppNoticeController(city, undefined, {slug: home.city.slug, source: home.citySource});
   const notify = copy.app.notify;
+  const field = (
+    <CatchField autoComplete="tel-national" errorText={notice.status.tone === "is-error" ? notice.status.message : null} inputHint={notify.phoneHint}
+      inputMode={notice.sending ? "inactive" : "editable"} keyboardType="phone" labelMode="hidden" onChanged={notice.setPhone} prefixText={activeMarket.dialCode}
+      recipe="input" required title={notify.phone} value={notice.phone} />
+  );
+  const submit = (
+    <CatchButton label={notify.action} onPressed={() => undefined} size={compact ? "sm" : "lg"} status={notice.sending ? "loading" : "idle"} type="submit" />
+  );
   return (
     <CatchStack gap={12}>
       {notice.joined ? null : (
         <Form noValidate onSubmit={notice.handleSubmit} pending={notice.sending}>
-          <CatchStack gap={12}>
-            <CatchField autoComplete="tel-national" errorText={notice.status.tone === "is-error" ? notice.status.message : null} inputHint={notify.phoneHint}
-              inputMode={notice.sending ? "inactive" : "editable"} keyboardType="phone" labelMode="hidden" onChanged={notice.setPhone} prefixText={activeMarket.dialCode}
-              recipe="input" required title={notify.phone} value={notice.phone} />
+          <CatchStack gap={compact ? 8 : 12}>
+            {compact ? <CatchStack collapseBelow="medium" direction="row" gap={8} railWidth="fit">{field}{submit}</CatchStack> : field}
             <CatchCheckboxInput label={fill(notify.newPlans, {city})} onChanged={notice.sending ? null : notice.setNewPlans} value={notice.newPlans} />
-            <CatchButton fill label={notify.action} onPressed={() => undefined} status={notice.sending ? "loading" : "idle"} type="submit" />
-            <CatchText variant="body-small">{notify.consent}</CatchText>
-            <CatchStack align="start"><CatchButton href="/privacy/" label={notify.privacy} size="sm" variant="quiet" /></CatchStack>
+            {compact ? null : <CatchStack align="start">{submit}</CatchStack>}
+            {/* The consent line in the canvas's fine print, with the privacy policy across from it. */}
+            <CatchStack direction="row" gap={8} railWidth="fit">
+              <CatchText tone="secondary" variant="body-meta">{notify.consent}</CatchText>
+              <CatchButton href="/privacy/" label={notify.privacy} size="sm" variant="quiet" />
+            </CatchStack>
           </CatchStack>
         </Form>
       )}
@@ -361,73 +352,95 @@ function HomeAppNotice({home}: {home: Home}) {
   );
 }
 
-/** The QR code appears once there is one download link for both stores (CAT-204). */
+/**
+ * The app band (the board's bento): what the app does in tiles around the
+ * notice, or the store badges and QR code once it is on a store (CAT-204).
+ * The Book tile's small card is the soonest real plan, when there is one.
+ */
 function HomeApp({downloadUrl, home}: {downloadUrl?: string; home: Home}) {
-  if (!guestAppLive) {
+  const stores = useAppDownloadCtas({placement: "home_app_band"});
+  const tiles = copy.app.tiles;
+  const plan = home.heroPlan;
+  const bento: CatchCtaSectionTile[] = [
+    {id: "book", ground: "coral", ...tiles.book, aside: plan ? (
+      <CatchStack gap={2}>
+        <CatchText as="span" variant="label-badge">{plan.title}</CatchText>
+        <CatchText as="span" variant="body-meta">{fill(copy.app.bookCard, {when: plan.when, price: plan.price})}</CatchText>
+      </CatchStack>
+    ) : undefined},
+    {id: "reminders", ground: "yellow", ...tiles.reminders},
+    {id: "chat", ground: "ink", ...tiles.chat},
+    {id: "follow", ground: "mint", ...tiles.follow},
+    {id: "solo", ground: "pink", ...tiles.solo, wide: true},
+    {id: "free", ground: "magenta", ...tiles.free, wide: true},
+  ];
+  if (guestAppLive) {
     return (
-      <CatchSurface aria-labelledby="home-app-title" as="section" block="band" id="app">
-        <CatchSurface block="spotlight" color="dinner">
-          <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={32}>
-            <CatchStack gap={16}>
-              <CatchText variant="label-kicker">{copy.app.soonEyebrow}</CatchText>
-              <CatchText as="h2" id="home-app-title" variant="display-lg">{copy.app.soonTitle}</CatchText>
-              <CatchText variant="body-lead">{copy.app.soonBody}</CatchText>
-            </CatchStack>
-            <CatchSurface block="floating"><HomeAppNotice home={home} /></CatchSurface>
+      <CatchCtaSection
+        capture={downloadUrl ? (
+          <CatchStack align="start" gap={8}>
+            <CatchQrCode label={copy.app.qrLabel} value={downloadUrl} />
+            <CatchText variant="label-action">{copy.app.qr}</CatchText>
           </CatchStack>
-        </CatchSurface>
-      </CatchSurface>
+        ) : undefined}
+        id="app"
+        kicker={copy.app.eyebrow}
+        lead={copy.app.body}
+        stores={stores.map((store) => ({badgeSrc: store.badgeSrc, comingSoon: store.comingSoon, href: store.href || undefined, label: store.accessibleLabel,
+          onClick: store.onClick, size: "l", store: store.store}))}
+        tiles={bento}
+        title={copy.app.title}
+        titleSize="feature"
+      />
     );
   }
   return (
-    <CatchSurface aria-labelledby="home-app-title" as="section" block="band" id="app">
-      <CatchSurface block="spotlight" color="dinner">
-        <CatchStack align="center" collapseBelow="medium" direction="row" gap={32} justify="between">
-          <CatchStack gap={16}>
-            <CatchText variant="label-kicker">{copy.app.eyebrow}</CatchText>
-            <CatchText as="h2" id="home-app-title" variant="display-lg">{copy.app.title}</CatchText>
-            <CatchText variant="body-lead">{copy.app.body}</CatchText>
-            <StoreButtons placement="home_app_band" />
-          </CatchStack>
-          {downloadUrl ? (
-            <CatchSurface block="floating">
-              <CatchQrCode label={copy.app.qrLabel} value={downloadUrl} />
-              <CatchText variant="label-action">{copy.app.qr}</CatchText>
-            </CatchSurface>
-          ) : null}
-        </CatchStack>
-      </CatchSurface>
-    </CatchSurface>
+    <CatchCtaSection capture={<AppNoticeForm home={home} />} id="app" kicker={copy.app.soonEyebrow} tiles={bento} title={copy.app.soonTitle} titleSize="feature" />
+  );
+}
+
+/**
+ * "Know a host": a guest introduces a host. The website has no lead form
+ * that can reach the referral intake yet (website leads need App Check, and
+ * the playbook's lead forms wait for it), so the introduction goes on WhatsApp.
+ */
+function HomeRefer() {
+  return (
+    <CatchCtaSection
+      actions={[{label: copy.refer.action, href: whatsappChatHref(copy.refer.message), newTab: true}]}
+      ground="mint"
+      id="refer"
+      kicker={copy.refer.eyebrow}
+      lead={copy.refer.lead}
+      title={copy.refer.title}
+    />
   );
 }
 
 function HomeFaq() {
   return (
-    <CatchSurface aria-labelledby="home-faq-title" as="section" block="band" id="faq">
-      <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={48}>
-        <Heading id="home-faq-title" kicker={copy.faq.eyebrow} title={copy.faq.title} />
-        <CatchAccordion items={copy.faq.items.map((item) => ({title: item.question, body: item.answer}))} name="home-faq" size="lg" />
-      </CatchStack>
-    </CatchSurface>
-  );
-}
-
-/** The one site footer, with the homepage's cities (each city's status as the picker reads it). */
-function HomeFooter({home}: {home: Home}) {
-  return (
-    <PublicSiteFooter appHref="#app" exploreHref={home.exploreHref}
-      cities={footerCities(home.cities)} />
+    <CatchFaqSection
+      id="faq"
+      items={copy.faq.items.map((item) => ({id: item.id, question: item.question, answer: guestAppLive && "liveAnswer" in item ? item.liveAnswer : item.answer}))}
+      kicker={copy.faq.eyebrow}
+      title={copy.faq.title}
+    />
   );
 }
 
 /**
- * The homepage, band for band as the RbWebHomeV2 board: the site header with
- * the city picker, the hero, formats, this week (or launching soon), how a
- * night works, organisers, the host band, the app band, the FAQ and the
- * footer. It arranges system components and binds the controller's view of
- * the city to them.
+ * The homepage, band for band as the playbook's homepage board, in the
+ * city's state: the site header with the city picker, the hero, the entry
+ * tiles, the plans (or the launch notice), the host band early in a thin or
+ * launching city, the formats, how a night works, the proof, the host band
+ * late in a busy city, the organisers, the app band, the refer panel, the
+ * FAQ, the footer and the phone action bar. It arranges the
+ * library's section components and binds the controller's view of the city.
  */
 export function HomePageSections({captures, downloadUrl, home}: {captures: CaptureSlots; home: Home; downloadUrl?: string}) {
+  const early = home.state !== "busy";
+  // The founding offer shows only while the city's public counter reads open, never a place that is gone.
+  const offerOpen = useFoundingHostOffer(early ? home.marketId : undefined);
   return (
     <>
       <PublicSiteHeader
@@ -435,16 +448,25 @@ export function HomePageSections({captures, downloadUrl, home}: {captures: Captu
         whatsOnHref={home.exploreHref}
       />
       <WebsitePageMain id="top">
-        <HomeHero captures={captures} home={home} />
+        <HomeHero captures={captures} home={home} offerOpen={offerOpen} />
+        <HomeEntries home={home} />
+        {home.live ? <HomePlans home={home} /> : <HomeLaunchingSoon home={home} />}
+        {early ? <HomeHosts captures={captures} home={home} offerOpen={offerOpen} /> : null}
         <HomeFormats home={home} />
-        {home.live ? <HomeThisWeek home={home} /> : <HomeLaunchingSoon home={home} />}
         <HomeNight captures={captures} />
+        <HomeProof home={home} />
+        {early ? null : <HomeHosts captures={captures} home={home} offerOpen={offerOpen} />}
         <HomeOrganisers home={home} />
-        <HomeHosts captures={captures} />
         <HomeApp downloadUrl={downloadUrl} home={home} />
+        <HomeRefer />
         <HomeFaq />
       </WebsitePageMain>
-      <HomeFooter home={home} />
+      <PublicSiteFooter appHref="#app" cities={footerCities(home.cities)} exploreHref={home.exploreHref} />
+      <CatchSiteDock
+        label={copy.dock.label}
+        primary={{label: guestAppActionLabel, href: home.live ? "#app" : "#whats-on", accent: "pink"}}
+        secondary={home.live ? {label: copy.dock.plans, href: "#whats-on"} : {label: copy.hero.hostAction, href: "/host/"}}
+      />
     </>
   );
 }

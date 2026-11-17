@@ -4,7 +4,7 @@ import type {ReactNode} from "react";
 import {expect, userEvent, within} from "storybook/test";
 import {HomePage} from "../features/home/HomePage";
 import type {HomeCatalog} from "../features/home/homeTypes";
-import {homeCatalogFixture, mumbaiLiveCatalog, puneLaunchingSoonCatalog} from "./fixtures/homeCatalogs";
+import {homeCatalogFixture, mumbaiLiveCatalog, mumbaiThinCatalog, puneLaunchingSoonCatalog} from "./fixtures/homeCatalogs";
 
 const meta = {
   title: "Marketing Website/Homepage",
@@ -39,7 +39,7 @@ const stayOnFragmentLinks = () => {
 };
 const page = (catalog: HomeCatalog, width: 390 | 1280) => <Width width={width}><HomePage captures={marketingCaptures} catalog={catalog} loadCatalog={keepCatalog} navigate={stay} /></Width>;
 
-/** Mumbai live on a 1280px page, as the RbWebHomeV2 board's mumbai_live state. */
+/** Mumbai busy on a 1280px page, as the playbook homepage board's "live and busy" state. */
 export const MumbaiLive1280: Story = {
   name: "Mumbai live · 1280",
   parameters: {
@@ -50,14 +50,14 @@ export const MumbaiLive1280: Story = {
   render: () => page(mumbaiLiveCatalog, 1280),
 };
 
-/** Mumbai live on a 390px page. */
+/** Mumbai busy on a 390px page: the first screen holds the headline and both buttons. */
 export const MumbaiLive390: Story = {
   name: "Mumbai live · 390",
   parameters: {catchComponent: {id: "home_page_sections", routeIds: ["home"], states: ["phone-live"]}},
   render: () => page(mumbaiLiveCatalog, 390),
 };
 
-/** Pune launching soon on a 1280px page, as the board's launching_soon state. */
+/** Pune launching soon on a 1280px page, as the board's "launching" state: the hero leads with hosts. */
 export const LaunchingSoon1280: Story = {
   name: "Pune launching soon · 1280",
   parameters: {catchComponent: {id: "route_home", routeIds: ["home"], states: ["launching-soon"]}},
@@ -71,11 +71,25 @@ export const LaunchingSoon390: Story = {
   render: () => page(puneLaunchingSoonCatalog, 390),
 };
 
-/** A launched city with too few plans reads as launching soon, never a sparse page. */
+/** An open city with fewer than five plans in two weeks reads as thin: everything ahead, and the host band moves up. */
 export const ThinCity: Story = {
   name: "Indore, too few plans · 1280",
   parameters: {catchComponent: {id: "route_home", routeIds: ["home"], states: ["thin-city"]}},
   render: () => page(homeCatalogFixture("indore"), 1280),
+};
+
+/** Mumbai with three plans in two weeks, as the board's "live but thin" state: the plans dated, nearest first, and the host band moved up. */
+export const MumbaiThin1280: Story = {
+  name: "Mumbai thin · 1280",
+  parameters: {catchComponent: {id: "route_home", routeIds: ["home"], states: ["thin-city"]}},
+  render: () => page(mumbaiThinCatalog, 1280),
+};
+
+/** Mumbai thin on a 390px page, with the phone action bar. */
+export const MumbaiThin390: Story = {
+  name: "Mumbai thin · 390",
+  parameters: {catchComponent: {id: "home_page_sections", routeIds: ["home"], states: ["phone-live"]}},
+  render: () => page(mumbaiThinCatalog, 390),
 };
 
 /** Nothing could be read: the live city stays live and says so. */
@@ -85,7 +99,7 @@ export const CatalogUnavailable: Story = {
   render: () => page({...mumbaiLiveCatalog, phase: "unavailable", plans: {...mumbaiLiveCatalog.plans, plans: [], organizers: []}}, 1280),
 };
 
-/** A format tile filters the week; the city picker lists every city with its status. */
+/** A format chip filters the week; the city picker lists every city with its status. */
 export const FormatFilterAndCityPicker: Story = {
   name: "Format filter and city picker · 1280",
   parameters: {catchComponent: {id: "route_home", routeIds: ["home"], states: ["format-filter", "city-picker"]}},
@@ -93,7 +107,7 @@ export const FormatFilterAndCityPicker: Story = {
   render: () => page(mumbaiLiveCatalog, 1280),
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole("button", {name: /3 this week.*Games and quizzes/}));
+    await userEvent.click(canvas.getByRole("radio", {name: "Games and quizzes"}));
     await expect(canvas.getByText("Showing 3 of 3 this week · Games and quizzes")).toBeInTheDocument();
     await userEvent.click(canvas.getByRole("button", {name: "Mumbai"}));
     await expect(within(canvasElement.ownerDocument.body).getByRole("menuitemradio", {name: /Pune/})).toBeInTheDocument();

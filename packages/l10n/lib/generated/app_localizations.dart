@@ -6631,14 +6631,6 @@ abstract class AppLocalizations {
   /// **'{hours}h left'**
   String dashboardEventFocusListLabelStaticTimeLeft({required int hours});
 
-  /// Attendee count on an open Catch window card; this is not a remaining candidate count.
-  ///
-  /// In en, this message translates to:
-  /// **'{attendedCount} checked in'**
-  String dashboardEventFocusListLabelAttendeesCheckedIn({
-    required int attendedCount,
-  });
-
   /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart (label).
   ///
   /// In en, this message translates to:
@@ -7212,15 +7204,6 @@ abstract class AppLocalizations {
   String dashboardActivitySectionLabelTitleBody({
     required Object title,
     required Object body,
-  });
-
-  /// Product copy used by lib/dashboard/presentation/widgets/event_focus_list.dart (label).
-  ///
-  /// In en, this message translates to:
-  /// **'{signedUpCount}/{capacityLimit}'**
-  String dashboardEventFocusRailLabelSignedupcountCapacitylimit({
-    required Object signedUpCount,
-    required Object capacityLimit,
   });
 
   /// Product copy used by lib/event_success/presentation/event_success_feature_blocks.dart (label).
@@ -27730,6 +27713,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recording departure…'**
   String get eventAssistanceDepartureSaving;
+
+  /// Host route change control shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Change route'**
+  String get eventAssistanceRouteChangeTitle;
+
+  /// Host route change control shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Send the group a different way without recording a new departure.'**
+  String get eventAssistanceRouteChangeBody;
+
+  /// Host route change control shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Change route'**
+  String get eventAssistanceRouteChangeConfirm;
+
+  /// Host route change control shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Route changed.'**
+  String get eventAssistanceRouteChangeSaved;
 
   /// Host departure and checkpoint controls shared by live events and rehearsal.
   ///

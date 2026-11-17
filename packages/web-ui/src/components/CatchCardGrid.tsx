@@ -1,11 +1,13 @@
 "use client";
 
 import {useId, type HTMLAttributes, type ReactNode} from "react";
-import {catchBandActions, catchBandColor, type CatchBandAction, type CatchBandLink} from "./catchBandParts";
+import {catchBandActions, catchBandColor, catchBandKickerAccent, type CatchBandAction, type CatchBandLink} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
 import {CatchBadge} from "./CatchBadge";
-import {CatchBandHeader} from "./CatchBandHeader";
+import {CatchBandHeader, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchButton} from "./CatchButton";
+import {CatchIcon} from "./CatchIcon";
+import type {CatchIconName} from "../icons/catchIconRoles";
 import {CatchEmptyState} from "./CatchEmptyState";
 import {CatchHeroImage} from "./CatchHeroImage";
 import {CatchOrganizerCard, type CatchOrganizerCardProps} from "./CatchOrganizerCard";
@@ -15,14 +17,22 @@ import {CatchStack} from "./CatchStack";
 import {CatchStoryCard, type CatchStoryCardProps} from "./CatchStoryCard";
 import {CatchSurface} from "./CatchSurface";
 import {CatchText} from "./CatchText";
-import type {Ground} from "./palette";
+import type {CatchActivityKind} from "./activityArtwork";
+import {EventBackdropImage} from "./EventBackdropImage";
+import {formatActivityKinds, type Format, type Ground} from "./palette";
 import styles from "./CatchCardGrid.module.css";
 
-/** The card each item draws: plan, organiser, city, review, story or person. */
-export type CatchCardGridKind = "plan" | "org" | "city" | "review" | "story" | "person";
+/** The card each item draws: plan, organiser, city, review, story, person, entry tile or format card. */
+export type CatchCardGridKind = "plan" | "org" | "city" | "review" | "story" | "person" | "entry" | "format";
 
-/** Columns on a page at least 840px wide; one column below. */
-export type CatchCardGridColumns = 3 | 4;
+/**
+ * Columns on a page at least 840px wide; one column below, except entry
+ * tiles (two on phones, three between) and a rail (a sideways scroller).
+ */
+export type CatchCardGridColumns = 3 | 4 | 5 | 6;
+
+/** grid: rows of cards. rail: one row that scrolls sideways below 840px, each card about four fifths of the band (the canvas's .rail). */
+export type CatchCardGridLayout = "grid" | "rail";
 
 /** Every item carries a stable id, its React key. */
 type Keyed<T> = T & {id: string};
@@ -49,6 +59,46 @@ export interface CatchCardGridPerson {
   imageAlt?: string;
 }
 
+/**
+ * An entry tile (the homepage's "Whoever you are" tiles): a link on a colour
+ * or ink ground with an icon, a title at its foot and one line.
+ */
+export interface CatchCardGridEntry {
+  id: string;
+  title: string;
+  body: string;
+  href: string;
+  ground: Ground;
+  icon: CatchIconName;
+}
+
+/**
+ * A format card (the homepage's "Start with what you feel like doing"): a
+ * colour mat holding a real plan's photo, or the format's activity artwork
+ * without one, then a title, a line and a link label. The whole card is a link.
+ */
+export interface CatchCardGridFormat {
+  id: string;
+  title: string;
+  body: string;
+  /** The link label under the line, such as "Run clubs in Mumbai". */
+  more: string;
+  href: string;
+  /** The mat's colour. */
+  ground: Ground;
+  /** The activity artwork's format, drawn when there is no photo. */
+  format: Format;
+  photoUrl?: string | null;
+}
+
+/** A chip link under the cards, with its colour dot (the canvas's .chip2). */
+export interface CatchCardGridChip {
+  label: string;
+  href: string;
+  /** The dot's colour. */
+  dot: Ground;
+}
+
 /** What an empty grid shows instead of cards. */
 export interface CatchCardGridEmpty {
   title: string;
@@ -64,7 +114,9 @@ export type CatchCardGridItems =
   | {kind: "review"; items: readonly Keyed<CatchReviewItemProps>[]}
   | {kind: "story"; items: readonly Keyed<CatchStoryCardProps>[]}
   | {kind: "city"; items: readonly CatchCardGridCity[]}
-  | {kind: "person"; items: readonly CatchCardGridPerson[]};
+  | {kind: "person"; items: readonly CatchCardGridPerson[]}
+  | {kind: "entry"; items: readonly CatchCardGridEntry[]}
+  | {kind: "format"; items: readonly CatchCardGridFormat[]};
 
 interface CatchCardGridBaseProps extends Omit<HTMLAttributes<HTMLElement>, "children" | "className" | "color" | "style" | "title"> {
   /** The headline. Without one, give the band a label. Resolved copy. */
@@ -75,6 +127,8 @@ interface CatchCardGridBaseProps extends Omit<HTMLAttributes<HTMLElement>, "chil
   level?: 1 | 2;
   kicker?: string;
   kickerTone?: CatchTextTone;
+  /** The kicker's accent on white, paper and ink; defaults to the kit's (pink, coral on ink). A colour ground takes its secondary ink. */
+  kickerAccent?: CatchKickerAccent;
   lead?: string;
   /** Defaults to start. */
   align?: "start" | "center";
@@ -86,8 +140,14 @@ interface CatchCardGridBaseProps extends Omit<HTMLAttributes<HTMLElement>, "chil
   empty?: CatchCardGridEmpty;
   /** D20 buttons under the cards. */
   actions?: readonly CatchBandAction[];
+  /** One button across from the header, at its foot (the canvas's .hd); under it on phones. */
+  headerAction?: CatchBandAction;
+  /** Chip links under the cards, such as more formats. */
+  chips?: readonly CatchCardGridChip[];
   /** Defaults to 3. */
   columns?: CatchCardGridColumns;
+  /** Defaults to grid. */
+  layout?: CatchCardGridLayout;
   /** The band's Website v2 ground; text takes its inks, and ink the dark theme. Defaults to the plain band. */
   ground?: Ground;
 }
@@ -130,6 +190,34 @@ function PersonCard({person, heading}: {person: CatchCardGridPerson; heading: "h
   );
 }
 
+function EntryCard({entry, heading}: {entry: CatchCardGridEntry; heading: "h2" | "h3"}) {
+  return (
+    <a className={styles.entry} data-catch-theme={entry.ground === "ink" ? "dark" : "light"} data-ground={entry.ground} href={entry.href}>
+      <CatchIcon className={styles.entryIcon} name={entry.icon} size={24} />
+      <CatchText as={heading} className={styles.cardTitle} variant="title-bar">{entry.title}</CatchText>
+      <CatchText as="p" className={styles.entryBody} variant="body-meta">{entry.body}</CatchText>
+    </a>
+  );
+}
+
+function FormatCard({card, heading}: {card: CatchCardGridFormat; heading: "h2" | "h3"}) {
+  const photo = card.photoUrl?.trim();
+  return (
+    <a className={styles.format} href={card.href}>
+      <span className={styles.mat} data-ground={card.ground}>
+        <span className={styles.matInner}>
+          {photo ? <img alt="" decoding="async" loading="lazy" src={photo} /> : (
+            <EventBackdropImage activityKind={formatActivityKinds[card.format][0] as CatchActivityKind} mirrored />
+          )}
+        </span>
+      </span>
+      <CatchText as={heading} className={`${styles.cardTitle} ${styles.formatTitle}`} variant="title-bar">{card.title}</CatchText>
+      <CatchText as="p" className={styles.formatBody} tone="secondary" variant="body-small">{card.body}</CatchText>
+      <CatchText as="span" className={styles.more} variant="body-meta">{card.more}</CatchText>
+    </a>
+  );
+}
+
 function cards(props: CatchCardGridItems, heading: "h2" | "h3"): {id: string; node: ReactNode}[] {
   switch (props.kind) {
     case "plan":
@@ -144,6 +232,10 @@ function cards(props: CatchCardGridItems, heading: "h2" | "h3"): {id: string; no
       return props.items.map((city) => ({id: city.id, node: <CityCard city={city} heading={heading} />}));
     case "person":
       return props.items.map((person) => ({id: person.id, node: <PersonCard heading={heading} person={person} />}));
+    case "entry":
+      return props.items.map((entry) => ({id: entry.id, node: <EntryCard entry={entry} heading={heading} />}));
+    case "format":
+      return props.items.map((card) => ({id: card.id, node: <FormatCard card={card} heading={heading} />}));
   }
 }
 
@@ -152,6 +244,9 @@ function cards(props: CatchCardGridItems, heading: "h2" | "h3"): {id: string; no
  * CatchBandHeader, a filters slot, a row of links, then plan, organiser,
  * city, review, story or person cards, three or four across on a wide page
  * and one below 840px, an empty state when there are none, and D20 actions.
+ * Entry tiles and format cards are the homepage's (six tiles across, two on
+ * phones; five format cards in a rail), with chip links under them, and a
+ * header can carry one button across from it.
  * Plans, organisers, reviews and stories draw through their library cards
  * (CatchPlanCard, CatchOrganizerCard, CatchReviewItem, CatchStoryCard).
  * It is presentational: the page fetches and filters, and passes the items.
@@ -159,8 +254,8 @@ function cards(props: CatchCardGridItems, heading: "h2" | "h3"): {id: string; no
  */
 export function CatchCardGrid(props: CatchCardGridProps) {
   const {
-    title, label, level = 2, kicker, kickerTone, lead, align = "start", filters, links, empty, actions, columns = 3, ground,
-    kind, items, ...rest
+    title, label, level = 2, kicker, kickerTone, kickerAccent, lead, align = "start", filters, links, empty, actions, headerAction, chips,
+    columns = 3, layout = "grid", ground, kind, items, ...rest
   } = props;
   const titleId = `${useId()}-title`;
   const heading = title ? (level === 1 ? "h2" : "h3") : "h2";
@@ -175,7 +270,17 @@ export function CatchCardGrid(props: CatchCardGridProps) {
       color={catchBandColor(ground)}
       data-kind={kind}
     >
-      {title ? <CatchBandHeader align={align} kicker={kicker} kickerTone={kickerTone} lead={lead} level={level} title={title} titleId={titleId} /> : null}
+      {title ? (() => {
+        const header = <CatchBandHeader align={align} kicker={kicker} kickerAccent={catchBandKickerAccent(kickerAccent, ground, "pink")} kickerTone={kickerTone} lead={lead} level={level} size={level === 1 ? "hero" : "section"} title={title} titleId={titleId} />;
+        return headerAction ? (
+          <div className={styles.head}>
+            {header}
+            <span className={styles.headAction}>
+              <CatchButton href={headerAction.href} label={headerAction.label} newTab={headerAction.newTab} onPressed={headerAction.onPressed} variant={headerAction.variant ?? "primary"} />
+            </span>
+          </div>
+        ) : header;
+      })() : null}
       {filters != null ? <div className={styles.filters} data-align={align}>{filters}</div> : null}
       {links && links.length > 0 ? (
         <CatchStack as="ul" className={styles.links} direction="row" gap={8} justify={align === "center" ? "center" : undefined} wrap>
@@ -183,11 +288,18 @@ export function CatchCardGrid(props: CatchCardGridProps) {
         </CatchStack>
       ) : null}
       {list.length > 0 ? (
-        <ul className={styles.grid} data-columns={columns}>
+        <ul className={styles.grid} data-columns={columns} data-kind={kind} data-layout={layout}>
           {list.map((card) => <li className={styles.cell} key={card.id}>{card.node}</li>)}
         </ul>
       ) : empty ? (
         <CatchEmptyState actions={empty.actions} announce="polite" message={empty.message} surface title={empty.title} />
+      ) : null}
+      {chips && chips.length > 0 ? (
+        <ul className={styles.chips}>
+          {chips.map((chip) => (
+            <li key={chip.href}><a className={styles.chip} href={chip.href}><span aria-hidden="true" className={styles.dot} data-ground={chip.dot} />{chip.label}</a></li>
+          ))}
+        </ul>
       ) : null}
       {catchBandActions(actions)}
     </CatchSurface>

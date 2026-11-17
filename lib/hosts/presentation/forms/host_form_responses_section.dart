@@ -484,8 +484,9 @@ class _HostFormResponsesSectionState
         ),
         CatchAsyncBoundary<HostFormResponsesState>.sliver(
           value: responses,
-          onRetry: () =>
-              ref.invalidate(hostFormResponsesControllerProvider(request)),
+          onRetry: () => ref
+              .read(hostFormResponsesControllerProvider(request).notifier)
+              .retry(),
           initialLoadTimeout: null,
           loadingBuilder: (_) => CatchSection.sliverLoadingRows(
             itemCount: 6,
