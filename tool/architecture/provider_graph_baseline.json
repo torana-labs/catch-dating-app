@@ -155,48 +155,6 @@
     },
     {
       "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/inbox/host_inbox_workspace_section.dart",
-      "symbol": "HostInboxWorkspaceSection.build",
-      "detail": "invalidate:hostWhatsappThreadsProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/inbox/host_person_conversation_controller.dart",
-      "symbol": "HostPersonConversationController.reply",
-      "detail": "invalidate:hostPersonWhatsappDetailProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/inbox/host_person_conversation_controller.dart",
-      "symbol": "HostPersonConversationController.reply",
-      "detail": "invalidate:hostWhatsappThreadsProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-      "symbol": "_HostSendsPageBodySliverState._composeEventAnnouncement",
-      "detail": "invalidate:hostSendsProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-      "symbol": "_HostSendsPageBodySliverState._composeFollowerUpdate",
-      "detail": "invalidate:hostSendsProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-      "symbol": "_HostSendsPageBodySliverState._runCampaignAction",
-      "detail": "invalidate:hostSendsProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-      "symbol": "_HostSendsPageBodySliverState._showHistory",
-      "detail": "invalidate:hostSendsProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
       "path": "lib/hosts/presentation/widgets/host_event_participants_section.dart",
       "symbol": "_HostEventParticipantsSectionState.build",
       "detail": "retry-composition:attendanceSheetViewModelProvider"
