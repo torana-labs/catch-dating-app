@@ -174,7 +174,7 @@ export const IdentityWomenLed: Story = {
 
 /** Follow by phone, which production shows once CAT-253 lands. */
 export const FollowByPhone: Story = {
-  parameters: {catchComponent: {id: "organizer_identity_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["follow-by-phone"]}},
+  parameters: {catchComponent: {id: "organizer_follow_panels", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["follow-by-phone"]}},
   render: () => (
     <SectionStory backends={previewBackends} column="hero" pages={[claimedOrganizerPage]}
       render={(controller) => <IdentityWithPanels controller={controller} />} />
@@ -202,7 +202,7 @@ const followAccountStep: WebsiteAccountController = {
 };
 
 export const FollowAccountStep: Story = {
-  parameters: {catchComponent: {id: "organizer_identity_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["follow-account-step"]}},
+  parameters: {catchComponent: {id: "organizer_follow_panels", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["follow-account-step"]}},
   render: () => (
     <SectionStory column="hero" pages={[claimedOrganizerPage]}
       render={(controller) => <IdentityWithPanels controller={{...controller, follow: {...controller.follow, account: followAccountStep}}} />} />
@@ -231,7 +231,7 @@ export const Links: Story = {
 
 /** The social profiles an owner linked, as round icons under the links. */
 export const Socials: Story = {
-  parameters: {catchComponent: {id: "organizer_links_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["owner-links"]}},
+  parameters: {catchComponent: {id: "organizer_socials_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["owner-social-links"]}},
   render: () => <SectionStory column="rail" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerSocialsSection controller={controller} />} />,
 };
 
