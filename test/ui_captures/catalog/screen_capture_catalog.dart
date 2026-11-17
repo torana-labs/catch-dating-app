@@ -3497,12 +3497,7 @@ List<Object> _hostManageRouteProviderOverrides({
           'rows': const <Object?>[],
         }),
   );
-  final functions = _CaptureFirebaseFunctions({
-    'listEventStaff': <String, Object?>{
-      'eventId': effectiveEvent.id,
-      'members': const <Object?>[],
-    },
-  });
+  final functions = _CaptureFirebaseFunctions(const {});
   return [
     uidProvider.overrideWithValue(AsyncData<String?>(effectiveUid)),
     firebaseFirestoreProvider.overrideWithValue(firestore),

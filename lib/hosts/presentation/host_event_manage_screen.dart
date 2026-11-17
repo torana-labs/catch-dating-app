@@ -324,7 +324,12 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         gapH20,
         CatchSection.fieldRows(
           title: context.l10n.hostsHostEventManagePreparationTeamAccess,
-          children: [HostEventStaffSection(eventId: event.id)],
+          children: [
+            HostEventStaffSection(
+              organizerId: event.organizerId,
+              eventId: event.id,
+            ),
+          ],
         ),
         gapH20,
         CatchSection.fieldRows(

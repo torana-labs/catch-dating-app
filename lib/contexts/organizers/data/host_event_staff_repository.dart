@@ -6,12 +6,15 @@ import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_event_staff_repository.g.dart';
+
+// firestore-index: eventStaffGrants (eventId:ASCENDING,organizerId:ASCENDING,updatedAt:DESCENDING,__name__:DESCENDING)
 
 enum HostEventOperatorPermission {
   viewRoster,
@@ -274,6 +277,32 @@ class HostEventStaffMember {
         revision: _requiredInt(map, 'revision'),
       );
 
+  /// One `eventStaffGrants` document. A revoked grant stays revoked; an
+  /// active one past its expiry reads as expired.
+  factory HostEventStaffMember.fromGrant(
+    Map<String, Object?> grant, {
+    required DateTime now,
+  }) {
+    final expiresAt = grant['expiresAt'];
+    final revision = grant['revision'];
+    if (expiresAt is! Timestamp || revision is! int) {
+      throw const FormatException('Invalid event staff grant.');
+    }
+    final expiry = expiresAt.toDate();
+    return HostEventStaffMember(
+      uid: _requiredString(grant, 'uid'),
+      displayName: _requiredString(grant, 'displayName'),
+      phoneLastFour: _requiredString(grant, 'phoneLastFour'),
+      status: grant['status'] == 'revoked'
+          ? HostEventStaffStatus.revoked
+          : expiry.isAfter(now)
+          ? HostEventStaffStatus.active
+          : HostEventStaffStatus.expired,
+      expiresAt: expiry,
+      revision: revision,
+    );
+  }
+
   final String uid;
   final String displayName;
   final String phoneLastFour;
@@ -303,15 +332,33 @@ class HostEventStaffList {
     );
   }
 
+  /// The list from `eventStaffGrants` documents, in the order given.
+  factory HostEventStaffList.fromGrants(
+    String eventId,
+    Iterable<Map<String, Object?>> grants, {
+    required DateTime now,
+  }) => HostEventStaffList(
+    eventId: eventId,
+    members: [
+      for (final grant in grants)
+        HostEventStaffMember.fromGrant(grant, now: now),
+    ],
+  );
+
   final String eventId;
   final List<HostEventStaffMember> members;
 }
 
 class HostEventStaffRepository {
-  const HostEventStaffRepository(this._functions, this._db);
+  const HostEventStaffRepository(
+    this._functions,
+    this._db, [
+    this._clock = const AppClock(),
+  ]);
 
   final FirebaseFunctions _functions;
   final FirebaseFirestore _db;
+  final AppClock _clock;
 
   /// The event's operator fields. A missing document only counts once the
   /// server confirms it, so an offline open keeps loading instead of failing.
@@ -379,11 +426,32 @@ class HostEventStaffRepository {
     ),
   );
 
-  Future<HostEventStaffList> listStaff(String eventId) => _call(
-    name: 'listEventStaff',
-    payload: EventOperatorAccessCallableRequest(eventId: eventId).toJson(),
-    action: 'load event staff',
-    parse: HostEventStaffList.fromCallableData,
+  /// The event's staff grants, newest change first, read directly under the
+  /// manager rule on `eventStaffGrants`. A grant past its expiry reads as
+  /// expired, as the staff callables report it.
+  Future<HostEventStaffList> listStaff({
+    required String organizerId,
+    required String eventId,
+  }) => withBackendErrorContext(
+    () async {
+      final grants = await _db
+          .collection('eventStaffGrants')
+          .where('eventId', isEqualTo: eventId)
+          .where('organizerId', isEqualTo: organizerId)
+          .orderBy('updatedAt', descending: true)
+          .limit(ReadLimitPolicy.historyPage)
+          .get();
+      return HostEventStaffList.fromGrants(
+        eventId,
+        grants.docs.map((doc) => doc.data()),
+        now: _clock.now(),
+      );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'load event staff',
+      resource: 'eventStaffGrants',
+    ),
   );
 
   Future<HostEventStaffList> grant({
@@ -440,6 +508,7 @@ HostEventStaffRepository hostEventStaffRepository(Ref ref) =>
     HostEventStaffRepository(
       ref.watch(firebaseFunctionsProvider),
       ref.watch(firebaseFirestoreProvider),
+      ref.watch(appClockProvider),
     );
 
 @riverpod
