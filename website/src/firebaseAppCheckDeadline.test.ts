@@ -29,7 +29,16 @@ vi.mock("firebase/functions", () => ({
 vi.mock("firebase/auth", () => ({getAuth: () => ({name: "auth"})}));
 vi.mock("firebase/firestore", () => ({getFirestore: () => ({name: "firestore"})}));
 
-import {getWebsiteAppCheckToken, resolveEventInviteLanding} from "./firebase";
+import {
+  createPublicOrganizerReview,
+  getPublicOrganizerForm,
+  getWebsiteAppCheckToken,
+  listPublicOrganizerReviews,
+  recordOrganizerAnalyticsEvent,
+  registerPublicEvent,
+  requestOrganizerClaim,
+  resolveEventInviteLanding,
+} from "./firebase";
 
 const payload = {inviteToken: "v2_link_token", sessionId: "session-1"};
 
@@ -75,6 +84,25 @@ describe("website callables and App Check", () => {
     sdk.getToken.mockRejectedValue(new Error("appCheck/fetch-status-error"));
     await expect(resolveEventInviteLanding(payload)).resolves.toEqual({eventId: "event-1"});
     expect(sdk.call).toHaveBeenCalledWith(payload);
+  });
+
+  // These six once called httpsCallable directly and had the same unbounded wait.
+  it.each([
+    ["getPublicOrganizerForm", () => getPublicOrganizerForm({} as never)],
+    ["requestOrganizerClaim", () => requestOrganizerClaim({} as never)],
+    ["createPublicOrganizerReview", () => createPublicOrganizerReview({} as never)],
+    ["listPublicOrganizerReviews", () => listPublicOrganizerReviews({} as never)],
+    ["recordOrganizerAnalyticsEvent", () => recordOrganizerAnalyticsEvent({} as never)],
+    ["registerPublicEvent", () => registerPublicEvent({} as never)],
+  ])("bounds %s's App Check wait, and calls it once the token arrives", async (name, call) => {
+    sdk.getToken.mockReturnValueOnce(new Promise(() => undefined));
+    const outcome = call().then(() => "resolved", (error: unknown) => error);
+    await vi.advanceTimersByTimeAsync(15_000);
+    expect(((await outcome) as Error).name).toBe("AppCheckDeadlineError");
+    expect(sdk.call).not.toHaveBeenCalled();
+    sdk.getToken.mockResolvedValueOnce({token: "app-check-token"});
+    await expect(call()).resolves.toEqual({eventId: "event-1"});
+    expect(sdk.httpsCallable).toHaveBeenCalledWith({name: "functions"}, name);
   });
 
   it("answers no site token, rather than waiting, when App Check cannot start", async () => {
