@@ -230,6 +230,7 @@ interface PublicFirebaseRuntime {
 
 interface FirebaseRuntime {
   app: FirebaseApp;
+  appCheck: AppCheck;
   auth: Auth;
   firestore: Firestore;
   functions: Functions;
@@ -1220,10 +1221,39 @@ export async function getWebsiteAppCheckToken(): Promise<string | null> {
   try {
     const runtime = await getPublicFirebaseRuntime();
     if (!runtime) return null;
-    const {getToken} = await import("firebase/app-check");
-    return (await getToken(runtime.appCheck)).token || null;
+    return (await appCheckTokenWithinDeadline(runtime.appCheck)).token || null;
   } catch {
     return null;
+  }
+}
+
+/**
+ * How long a website call waits for its App Check token. App Check mints the
+ * token through the reCAPTCHA Enterprise script, which has no failure path:
+ * when a content blocker, a network or a firewall stops the script, the token
+ * never settles. The Functions SDK starts its own timeout only after the token,
+ * so without this a call, and the page waiting on it, would wait forever.
+ */
+const APP_CHECK_TOKEN_DEADLINE_MS = 15_000;
+
+class AppCheckDeadlineError extends Error {
+  constructor() {
+    super("App Check could not start in this browser.");
+    this.name = "AppCheckDeadlineError";
+  }
+}
+
+/** App Check's token, or an AppCheckDeadlineError once the deadline passes. */
+async function appCheckTokenWithinDeadline(appCheck: AppCheck) {
+  const {getToken} = await import("firebase/app-check");
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => reject(new AppCheckDeadlineError()), APP_CHECK_TOKEN_DEADLINE_MS);
+  });
+  try {
+    return await Promise.race([getToken(appCheck), deadline]);
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -1234,9 +1264,10 @@ async function loadFirebaseRuntime(): Promise<FirebaseRuntime | null> {
     import("firebase/firestore"),
   ]);
   if (!publicRuntime) return null;
-  const {app, functions} = publicRuntime;
+  const {app, appCheck, functions} = publicRuntime;
   return {
     app,
+    appCheck,
     auth: getAuth(app),
     firestore: getFirestore(app),
     functions,
@@ -1253,6 +1284,12 @@ async function invokeWebsiteCallable<Request, Response>(
   if (!runtime || !configured) {
     throw new Error(`${capabilityLabel} are not configured for this build.`);
   }
+  // A token that cannot be minted in time fails the call instead of holding
+  // it. A token exchange that fails outright still lets the call go without
+  // one, as the SDK does, and the function answers for itself.
+  await appCheckTokenWithinDeadline(runtime.appCheck).catch((error: unknown) => {
+    if (error instanceof AppCheckDeadlineError) throw error;
+  });
   const {httpsCallable} = await import("firebase/functions");
   const callable = httpsCallable<Request, Response>(runtime.functions, name);
   return (await callable(payload)).data;

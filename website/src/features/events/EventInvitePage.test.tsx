@@ -1,4 +1,4 @@
-import {cleanup, render, screen, waitFor} from "@testing-library/react";
+import {cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
 import {MemoryRouter, Route, Routes} from "react-router";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 
@@ -69,7 +69,7 @@ describe("EventInvitePage", () => {
   });
 
   it("fails closed for an invalid or expired token, or one with nowhere to go", async () => {
-    resolveEventInviteLanding.mockRejectedValueOnce(new Error("not found"));
+    resolveEventInviteLanding.mockRejectedValueOnce(Object.assign(new Error("not found"), {code: "functions/not-found"}));
     const rejected = renderInvite();
     expect(await screen.findByRole("heading", {name: "This invitation is unavailable"})).toBeTruthy();
     expect(screen.getByRole("link", {name: "Open help"}).getAttribute("href")).toBe("/help/");
@@ -79,5 +79,25 @@ describe("EventInvitePage", () => {
     const nowhere = renderInvite();
     expect(await screen.findByRole("heading", {name: "This invitation is unavailable"})).toBeTruthy();
     expect(nowhere).not.toHaveBeenCalled();
+    cleanup();
+    resolveEventInviteLanding.mockRejectedValueOnce(Object.assign(new Error("bad token"), {code: "functions/invalid-argument"}));
+    renderInvite();
+    expect(await screen.findByRole("heading", {name: "This invitation is unavailable"})).toBeTruthy();
+  });
+
+  // Regression: a resolve that failed for any reason but the server turning
+  // the link down (the network, or App Check unable to start because its
+  // reCAPTCHA script was blocked) called a working link unavailable, with no
+  // way to try again. It now says the check did not finish and retries.
+  it("offers a retry when the invitation could not be checked, and opens it once the retry resolves", async () => {
+    resolveEventInviteLanding.mockRejectedValueOnce(new Error("App Check could not start in this browser."));
+    const redirect = renderInvite();
+    expect(await screen.findByRole("heading", {name: "We could not open this invitation"})).toBeTruthy();
+    expect(screen.queryByRole("progressbar")).toBeNull();
+    expect(screen.getByRole("link", {name: "Open help"}).getAttribute("href")).toBe("/help/");
+    expect(redirect).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", {name: "Try again"}));
+    await waitFor(() => expect(redirect).toHaveBeenCalledWith("/events/event-1/?il=v2_link_token"));
+    expect(resolveEventInviteLanding).toHaveBeenCalledTimes(2);
   });
 });
