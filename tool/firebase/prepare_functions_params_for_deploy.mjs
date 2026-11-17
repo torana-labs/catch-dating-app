@@ -55,6 +55,10 @@ export const materializedNonSecretParams = [
   "PROGRAM_ASSISTANT_ENABLED",
   "PROGRAM_ASSISTANT_FEDERATION_RULE_ID",
   "ANTHROPIC_ORGANIZATION_ID",
+  "AD_CONVERSIONS_MODE",
+  "AD_CONVERSIONS_META_TOKEN_VERSION",
+  "AD_CONVERSIONS_META_TEST_EVENT_CODE",
+  "AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT",
 ];
 
 function option(name) {
@@ -279,6 +283,28 @@ function normalizedProviderParams(environment = process.env, projectId) {
   assert(normalizedBooleanParam(environment, "CATCH_HOST_OPERATOR_ALERTS_ENABLED") === "false" &&
     !environment.CATCH_HOST_OPERATOR_ALERTS_SINCE?.trim(),
   "Host operator alerts require a separately reviewed runtime activation");
+  // Ad conversions stay off unless an environment names a mode and both
+  // credentials (docs/ads_conversion_spec.md, Server delivery).
+  const adMode = environment.AD_CONVERSIONS_MODE?.trim() || "off";
+  const adTokenVersion =
+    environment.AD_CONVERSIONS_META_TOKEN_VERSION?.trim() || "";
+  const adTestCode = environment.AD_CONVERSIONS_META_TEST_EVENT_CODE?.trim() || "";
+  const adServiceAccount =
+    environment.AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT?.trim() || "";
+  assert(["off", "validate", "live"].includes(adMode),
+    "AD_CONVERSIONS_MODE must be off, validate or live");
+  const adTokenPrefix = `projects/${projectId}/secrets/CATCH_META_ADS_TOKEN/versions/`;
+  assert(!adTokenVersion || adTokenVersion.startsWith(adTokenPrefix) &&
+    /^[1-9][0-9]*$/.test(adTokenVersion.slice(adTokenPrefix.length)),
+  "AD_CONVERSIONS_META_TOKEN_VERSION must pin CATCH_META_ADS_TOKEN in this project");
+  assert(!adTestCode || /^TEST[A-Z0-9]{3,32}$/.test(adTestCode),
+    "AD_CONVERSIONS_META_TEST_EVENT_CODE must be a Meta test-event code");
+  assert(!adServiceAccount ||
+    new RegExp(`^[a-z][a-z0-9-]{4,28}@${projectId}\\.iam\\.gserviceaccount\\.com$`)
+      .test(adServiceAccount),
+  "AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT must be a service account in this project");
+  assert(adMode === "off" || adTokenVersion && adServiceAccount,
+    "AD_CONVERSIONS_MODE requires the Meta token version and Google service account");
   const params = {
     CATCH_HOST_OPERATOR_ALERTS_ENABLED: "false",
     CATCH_HOST_OPERATOR_ALERTS_SINCE: " ",
@@ -332,6 +358,10 @@ function normalizedProviderParams(environment = process.env, projectId) {
     PROGRAM_ASSISTANT_ENABLED: programAssistantEnabled,
     PROGRAM_ASSISTANT_FEDERATION_RULE_ID: federationRuleId || " ",
     ANTHROPIC_ORGANIZATION_ID: anthropicOrganizationId || " ",
+    AD_CONVERSIONS_MODE: adMode,
+    AD_CONVERSIONS_META_TOKEN_VERSION: adTokenVersion || " ",
+    AD_CONVERSIONS_META_TEST_EVENT_CODE: adTestCode || " ",
+    AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT: adServiceAccount || " ",
   };
   assert(
     Object.keys(params).join(",") === materializedNonSecretParams.join(","),
