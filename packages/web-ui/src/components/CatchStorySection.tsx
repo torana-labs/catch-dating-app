@@ -4,7 +4,7 @@ import {useId, type HTMLAttributes, type ReactNode} from "react";
 import {catchBandColor, catchBandFootnoteMark, catchBandKickerAccent, type CatchBandFootnote, type CatchBandLink} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
 import {CatchAvatar} from "./CatchAvatar";
-import {CatchBandKicker, type CatchKickerAccent} from "./CatchBandHeader";
+import {useCatchBandKicker, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchButton} from "./CatchButton";
 import {CatchMetricTile} from "./CatchMetricTile";
 import {CatchStack} from "./CatchStack";
@@ -66,9 +66,10 @@ export interface CatchStorySectionProps extends Omit<HTMLAttributes<HTMLElement>
  */
 export function CatchStorySection({title, level = 2, kicker, kickerTone, kickerAccent, meta, avatar, quote, metrics, media, link, ground, ...rest}: CatchStorySectionProps) {
   const titleId = `${useId()}-title`;
+  const kickerProps = useCatchBandKicker({accent: catchBandKickerAccent(kickerAccent, ground, "pink"), tone: kickerTone});
   const copy = (
     <CatchStack className={styles.copy} gap={24}>
-      {kicker ? <CatchBandKicker accent={catchBandKickerAccent(kickerAccent, ground, "pink")} tone={kickerTone}>{kicker}</CatchBandKicker> : null}
+      {kicker ? <CatchText {...kickerProps}>{kicker}</CatchText> : null}
       <div className={styles.who}>
         {avatar ? (
           avatar.image

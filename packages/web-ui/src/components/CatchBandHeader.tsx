@@ -39,38 +39,32 @@ function kickerGround(ground: Ground | undefined, context: CatchGround): KickerG
   return context === "colour" ? "colour" : "day";
 }
 
-interface CatchBandKickerProps {
-  children: string;
+interface CatchBandKickerOptions {
   /** The accent the kicker takes on white, paper and ink; leave it out for the secondary ink. */
   accent?: CatchKickerAccent;
   /** An explicit tone instead of an accent, such as success on a legal page. */
   tone?: CatchTextTone;
-  align?: "center";
   /** The Website v2 ground, when no surface tells the kicker what it sits on. */
   ground?: Ground;
 }
 
 /**
- * A section kicker in the canvas's type (13px/18px at .04em) and colour: its
- * accent on white, paper and ink, the ground's secondary ink on a colour, or
- * an explicit tone. CatchBandHeader draws one; sections whose kicker sits
- * outside a header (a price, a story) draw it directly.
+ * The CatchText props of a section kicker (variant label-kicker) in the
+ * canvas's type (13px/18px at .04em) and colour: its accent on white, paper
+ * and ink, the ground's secondary ink on a colour, or an explicit tone.
+ * CatchBandHeader draws one; sections whose kicker sits outside a header (a
+ * price, a story) spread these onto their own CatchText.
  */
-export function CatchBandKicker({children, accent, tone, align, ground}: CatchBandKickerProps) {
+export function useCatchBandKicker({accent, tone, ground}: CatchBandKickerOptions) {
   const on = kickerGround(ground, useCatch().ground);
   const accented = tone == null && accent != null && on !== "colour";
-  return (
-    <CatchText
-      align={align}
-      className={styles.kicker}
-      data-accent={accented ? accent : undefined}
-      data-on={accented ? on : undefined}
-      tone={accented ? "inherit" : tone ?? "secondary"}
-      variant="label-kicker"
-    >
-      {children}
-    </CatchText>
-  );
+  return {
+    className: styles.kicker,
+    "data-accent": accented ? accent : undefined,
+    "data-on": accented ? on : undefined,
+    tone: accented ? "inherit" : tone ?? "secondary",
+    variant: "label-kicker",
+  } as const;
 }
 
 export interface CatchBandHeaderProps extends Omit<HTMLAttributes<HTMLElement>, "children" | "className" | "color" | "style" | "title"> {
@@ -126,10 +120,11 @@ export function CatchBandHeader({
   ...rest
 }: CatchBandHeaderProps) {
   const row = direction === "row";
+  const kickerProps = useCatchBandKicker({accent: kickerAccent, tone: kickerTone, ground});
   const textAlign = !row && align === "center" ? "center" : undefined;
   const heading = (
     <>
-      {kicker ? <CatchBandKicker accent={kickerAccent} align={textAlign} ground={ground} tone={kickerTone}>{kicker}</CatchBandKicker> : null}
+      {kicker ? <CatchText {...kickerProps} align={textAlign}>{kicker}</CatchText> : null}
       <CatchText
         align={textAlign}
         as={level === 1 ? "h1" : "h2"}

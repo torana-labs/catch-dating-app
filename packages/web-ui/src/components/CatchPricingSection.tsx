@@ -3,7 +3,7 @@
 import {useId, type HTMLAttributes, type ReactNode} from "react";
 import {catchBandActions, catchBandColor, type CatchBandAction} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
-import {CatchBandHeader, CatchBandKicker, type CatchKickerAccent} from "./CatchBandHeader";
+import {CatchBandHeader, useCatchBandKicker, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchMetricTile} from "./CatchMetricTile";
 import {CatchStack} from "./CatchStack";
 import {CatchSurface} from "./CatchSurface";
@@ -76,10 +76,11 @@ export function CatchPricingSection({
   ...rest
 }: CatchPricingSectionProps) {
   const titleId = `${useId()}-title`;
+  const kickerProps = useCatchBandKicker({accent: kickerAccent, tone: kickerTone});
   const copy = (
     <CatchStack className={styles.copy} gap={24}>
       <CatchStack gap={16}>
-        {kicker ? <CatchBandKicker accent={kickerAccent} tone={kickerTone}>{kicker}</CatchBandKicker> : null}
+        {kicker ? <CatchText {...kickerProps}>{kicker}</CatchText> : null}
         <CatchText as="p" className={styles.rate} numeric variant="display-giant">{rate}</CatchText>
       </CatchStack>
       <CatchBandHeader level={level} size="small" title={title} titleId={titleId} />
