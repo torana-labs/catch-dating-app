@@ -11,11 +11,20 @@
   "header": {
     "variant": "host",
     "breadcrumbs": {
-      "links": [{"label": "For hosts", "to": {"route": "host"}}],
+      "links": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          }
+        }
+      ],
       "current": "Pricing"
     }
   },
-  "footer": {"variant": "host"},
+  "footer": {
+    "variant": "host"
+  },
   "sections": [
     {
       "type": "custom",
@@ -26,27 +35,33 @@
       "title": "Free events stay free.",
       "pageTitle": true,
       "labels": [
-        {"key": "start", "text": "Start free trial"},
-        {"key": "talk", "text": "Talk to us on WhatsApp"},
-        {"key": "talkMessage", "text": "Hi {{brand.name}}, I have a question about pricing for hosts."}
+        {
+          "key": "start",
+          "text": "Start free trial"
+        },
+        {
+          "key": "talk",
+          "text": "Talk to us on WhatsApp"
+        },
+        {
+          "key": "talkMessage",
+          "text": "Hi {{brand.name}}, I have a question about pricing for hosts."
+        }
       ]
     },
     {
-      "type": "tiles",
+      "type": "custom",
       "id": "examples",
       "ground": "white",
+      "component": "pricingExamples",
       "kicker": "What hosts like you pay",
       "title": "Worked out for your kind of night.",
-      "columns": 3,
-      "items": [
-        {"title": "Free Sunday social run, 40 runners", "figure": "₹0", "body": "Every week, as long as it’s free."},
-        {"title": "Coached run, 20 runners at ₹300", "figure": "₹300 a session", "body": "5% of ₹6,000."},
-        {"title": "Supper club, 24 seats at ₹1,800", "figure": "₹2,160 a dinner", "body": "5% of ₹43,200, paid when guests book."},
-        {"title": "Quiz night, 60 players at ₹499", "figure": "₹1,497 a night", "body": "5% of ₹29,940."},
-        {"title": "Padel social, 16 players at ₹800", "figure": "₹640 a session", "body": "5% of ₹12,800."},
-        {"title": "Pottery workshop, 12 seats at ₹2,500", "figure": "₹1,500 a class", "body": "5% of ₹30,000."}
-      ],
-      "foot": "Payment gateway fees are added by your payment provider and aren’t included above."
+      "labels": [
+        {
+          "key": "foot",
+          "text": "Payment gateway fees are added by your payment provider and aren’t included above."
+        }
+      ]
     },
     {
       "type": "custom",
@@ -66,19 +81,58 @@
       "title": "One plan, everything in it.",
       "lead": "No tiers to compare and no features held back for a bigger plan.",
       "labels": [
-        {"key": "label", "text": "What every host gets"},
-        {"key": "page", "text": "Your page"},
-        {"key": "bookings", "text": "Bookings and waitlists"},
-        {"key": "applications", "text": "Applications"},
-        {"key": "payments", "text": "Payments by UPI"},
-        {"key": "checkIn", "text": "QR and self check-in"},
-        {"key": "live", "text": "Live tools for each format"},
-        {"key": "hello", "text": "A first hello for newcomers"},
-        {"key": "guests", "text": "One record per guest"},
-        {"key": "messages", "text": "Messages and reminders"},
-        {"key": "links", "text": "Links for promoters and posts"},
-        {"key": "reports", "text": "Reports after each event"},
-        {"key": "apps", "text": "iPhone, Android and iPad apps"}
+        {
+          "key": "label",
+          "text": "What every host gets"
+        },
+        {
+          "key": "page",
+          "text": "Your page"
+        },
+        {
+          "key": "bookings",
+          "text": "Bookings and waitlists"
+        },
+        {
+          "key": "applications",
+          "text": "Applications"
+        },
+        {
+          "key": "payments",
+          "text": "Payments by UPI"
+        },
+        {
+          "key": "checkIn",
+          "text": "QR and self check-in"
+        },
+        {
+          "key": "live",
+          "text": "Live tools for each format"
+        },
+        {
+          "key": "hello",
+          "text": "A first hello for newcomers"
+        },
+        {
+          "key": "guests",
+          "text": "One record per guest"
+        },
+        {
+          "key": "messages",
+          "text": "Messages and reminders"
+        },
+        {
+          "key": "links",
+          "text": "Links for promoters and posts"
+        },
+        {
+          "key": "reports",
+          "text": "Reports after each event"
+        },
+        {
+          "key": "apps",
+          "text": "iPhone, Android and iPad apps"
+        }
       ]
     },
     {
@@ -89,23 +143,36 @@
       "title": "30 days free. 90 if you’re early.",
       "lead": "Your free days start at your first event, not when you sign up. Founding hosts get 90 days.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        }
       ]
     },
     {
-      "type": "cta",
+      "type": "custom",
       "id": "organisations",
       "ground": "white",
+      "component": "pricingOrganisations",
       "kicker": "Venues, companies and programmes",
       "title": "Running several nights a week, or buying for a team?",
       "lead": "Venues and companies pay the same 5%, with the same ₹10,000 cap per billing cycle. For venues with a weekly calendar, companies and shared spaces, and multi-day programmes, we’ll set {{brand.name}} up with you and talk through the right setup.",
-      "actions": [
+      "labels": [
         {
-          "label": "Book a 15-minute walkthrough",
-          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I'd like a walkthrough of {{brand.name}}."},
-          "emphasis": "primary"
+          "key": "walkthrough",
+          "text": "Book a 15-minute walkthrough"
         },
-        {"label": "Weddings are priced by headcount", "to": {"route": "weddings"}, "emphasis": "secondary"}
+        {
+          "key": "walkthroughMessage",
+          "text": "Hi {{brand.name}}, I'd like a walkthrough of {{brand.name}}."
+        },
+        {
+          "key": "weddings",
+          "text": "Weddings are priced by headcount"
+        }
       ]
     },
     {
@@ -142,7 +209,10 @@
       ],
       "action": {
         "label": "Ask us on WhatsApp",
-        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I have a question about pricing for hosts."}
+        "to": {
+          "kind": "whatsapp",
+          "message": "Hi {{brand.name}}, I have a question about pricing for hosts."
+        }
       }
     }
   ]

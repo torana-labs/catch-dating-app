@@ -29,7 +29,8 @@ describe("the /pricing/ page content", () => {
 
   it("opens on the fee band with the calculator, then the cap and what is included, from the custom registry", () => {
     expect(page.sections.filter((item) => item.type === "custom").map((item) => [item.id, item.component, item.ground]))
-      .toEqual([["fee", "pricingCalculator", "ink"], ["cap", "pricingCap", "paper"], ["included", "pricingIncluded", "white"]]);
+      .toEqual([["fee", "pricingCalculator", "ink"], ["examples", "pricingExamples", "white"], ["cap", "pricingCap", "paper"],
+        ["included", "pricingIncluded", "white"], ["organisations", "pricingOrganisations", "white"]]);
     expect(page.sections[0].id).toBe("fee");
   });
 
@@ -37,10 +38,12 @@ describe("the /pricing/ page content", () => {
     const cap = section("custom", "cap");
     expect(cap.lead).toContain(`${hostPricingFacts.cap} in a billing cycle, which happens at ${hostPricingFacts.capReachedAt} of ticket sales`);
     expect(cap.lead).toContain(`${hostPricingFacts.cycleDays}-day cycle`);
-    const examples = section("tiles", "examples").items.map((item) => ({title: item.title, value: item.figure, body: item.body}));
-    expect(examples).toEqual(pricingPageFeeExamples.map(hostFeeExample));
+    // The worked examples are the fee model's own (pricingPageFeeExamples); the page carries only their header and foot.
+    expect(JSON.stringify(section("custom", "examples"))).not.toMatch(/₹/u);
+    expect(pricingPageFeeExamples.map(hostFeeExample).map((example) => example.value)).toEqual(
+      ["₹0", "₹300 a session", "₹2,160 a dinner", "₹1,497 a night", "₹640 a session", "₹1,500 a class"]);
     expect(section("cta", "trial").title).toBe(`${hostPricingFacts.trialDays} days free. ${hostPricingFacts.foundingTrialDays} if you’re early.`);
-    expect(section("cta", "organisations").lead).toContain(hostPricingLines.organisations);
+    expect(section("custom", "organisations").lead).toContain(hostPricingLines.organisations);
   });
 
   it("says per billing cycle, never a month, and names no place count", () => {
@@ -49,8 +52,8 @@ describe("the /pricing/ page content", () => {
     }
   });
 
-  it("links only the host landing, its start (aliased to the start band until /host/start/ ships), weddings and WhatsApp", () => {
+  it("links only the host landing and its start (aliased to the start band until /host/start/ ships); the custom bands add WhatsApp and weddings", () => {
     const routes = new Set(JSON.stringify(pricingPage).match(/"route":\s*"[a-z_]+"/gu)?.map((match) => match.split("\"")[3]));
-    expect([...routes].sort()).toEqual(["host", "host_start", "pricing", "weddings"]);
+    expect([...routes].sort()).toEqual(["host", "host_start", "pricing"]);
   });
 });

@@ -2,7 +2,7 @@ import type {ComponentType} from "react";
 import type {PlaybookSectionOf} from "../../../content/playbook/playbookContract";
 import type {CaptureSlots} from "../../../shared/media/captureSlot";
 import {PricingFeeCalculator} from "../../marketing/PricingFeeCalculator";
-import {PricingCapBand, PricingFeeBand, PricingIncludedBand} from "../../marketing/PricingBands";
+import {PricingCapBand, PricingExamplesBand, PricingFeeBand, PricingIncludedBand, PricingOrganisationsBand} from "../../marketing/PricingBands";
 import type {PlaybookPageController} from "../usePlaybookPageController";
 import type {ReadyPlaybookCustomComponent} from "./readyCustomSections";
 
@@ -46,6 +46,22 @@ function PricingIncludedSection({section, labels}: PlaybookCustomSectionProps) {
   return <PricingIncludedBand ground={section.ground} id={section.id} items={items} kicker={section.kicker} label={labels.label ?? section.title} lead={section.lead} title={section.title} />;
 }
 
+/** /pricing/'s worked examples (pricingExamples): its header over the fee on six kinds of night, from the fee model, with the foot line from its labels. */
+function PricingExamplesSection({section, labels}: PlaybookCustomSectionProps) {
+  if (section.type !== "custom" || !section.title) return null;
+  return <PricingExamplesBand foot={labels.foot} ground={section.ground} id={section.id} kicker={section.kicker} title={section.title} />;
+}
+
+/** /pricing/'s organisations band (pricingOrganisations): its words beside a walkthrough on WhatsApp and the weddings page. */
+function PricingOrganisationsSection({section, labels, controller}: PlaybookCustomSectionProps) {
+  if (section.type !== "custom" || !section.title) return null;
+  const actions = controller.actions([
+    {label: labels.walkthrough, to: {kind: "whatsapp", message: labels.walkthroughMessage}, emphasis: "primary"},
+    {label: labels.weddings, to: {route: "weddings"}, emphasis: "secondary"},
+  ], section.id) ?? [];
+  return <PricingOrganisationsBand actions={actions} ground={section.ground} id={section.id} kicker={section.kicker} lead={section.lead} title={section.title} />;
+}
+
 /**
  * The closed registry of custom section components, by the key a page names
  * (`"component": "noShowCalculator"`, or a pricing section's
@@ -54,6 +70,8 @@ function PricingIncludedSection({section, labels}: PlaybookCustomSectionProps) {
  */
 export const playbookCustomSections: {readonly [K in ReadyPlaybookCustomComponent]: ComponentType<PlaybookCustomSectionProps>} = {
   pricingCalculator: PricingCalculatorSection,
+  pricingExamples: PricingExamplesSection,
   pricingCap: PricingCapSection,
   pricingIncluded: PricingIncludedSection,
+  pricingOrganisations: PricingOrganisationsSection,
 };

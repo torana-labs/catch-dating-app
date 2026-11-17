@@ -223,6 +223,13 @@ describe("canonical public chrome", () => {
     expect(host.queryByRole("link", {name: siteFooterCopy.helpBand.guestHelp.label})).toBeNull();
   });
 
+  it("lets a page name the help band's topic, keeping its actions", () => {
+    render(<PublicSiteFooter helpTitle="Questions about hosting? A person answers." variant="host" />);
+    expect(screen.getByRole("heading", {level: 2, name: "Questions about hosting? A person answers."})).toBeTruthy();
+    expect(screen.queryByText(siteFooterCopy.helpBand.title)).toBeNull();
+    expect(screen.getByRole("link", {name: siteFooterCopy.helpBand.whatsapp})).toBeTruthy();
+  });
+
   it("leaves the help band out of one-job flows", () => {
     render(<PublicSiteFooter helpBand={false} />);
     expect(screen.queryByText(siteFooterCopy.helpBand.title)).toBeNull();

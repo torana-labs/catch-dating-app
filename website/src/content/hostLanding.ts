@@ -205,9 +205,9 @@ export const hostLandingCopy = {
     ],
     /** Wide screens only (leak 6): the QR opens this band on the phone, where both store buttons are. */
     qrTitle: `On a laptop? Scan to get ${brand.stores.hostAppName}`,
-    qrBody: `It opens this page on your phone, with both ${brand.stores.hostAppName} store buttons.`,
+    qrBody: "Or we’ll send the link to your WhatsApp.",
     qrLabel: `QR code that opens ${brand.name} for hosts on your phone`,
-    whatsappLink: "Or WhatsApp us for the link",
+    whatsappLink: "Get the link on WhatsApp",
     personLead: "Prefer a person?",
     personWhatsapp: "WhatsApp us",
     personWalkthrough: "Book 15 minutes",
@@ -222,6 +222,8 @@ export const hostLandingCopy = {
     whatsapp: "Talk to us on WhatsApp",
   },
   footer: {
+    /** The footer's help band headline, as the PlaybookHosts board words it. */
+    helpTitle: "Questions about hosting? A person answers.",
     tagline: fill("For hosts in {cities}. Meet people in real life, through hosts who bring them together.", {cities: liveCities}),
   },
 } as const;

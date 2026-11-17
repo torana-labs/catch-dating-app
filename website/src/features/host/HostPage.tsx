@@ -16,7 +16,7 @@ import {
   CatchSectionTopBar,
   CatchSiteDock,
   CatchStack,
-  CatchStepList,
+  CatchStepCards,
   CatchText,
   CatchTimelineSection,
   useCatch,
@@ -67,17 +67,9 @@ function nightScreens(captures: CaptureSlots): Record<string, CatchAppCaptureIma
   };
 }
 
-/** The hero's laptop card (wide screens only, leak 6): a QR code that opens the start band on the phone, and a WhatsApp chat that asks for the link. */
-function LaptopHandoff() {
-  const start = copy.start;
-  return (
-    <CatchStack align="center" direction="row" gap={16}>
-      <CatchQrCode label={start.qrLabel} value={`${brand.web.origin}/host/#start`} />
-      <CatchStack align="start" gap={8}>
-        <CatchButton href={whatsappChatHref(whatsappChatCopy.hostLinkMessage)} label={start.whatsappLink} newTab size="sm" />
-      </CatchStack>
-    </CatchStack>
-  );
+/** The hero's laptop card's action (wide screens only, leak 6): a WhatsApp chat that asks for the link. */
+function LaptopLink() {
+  return <CatchButton href={whatsappChatHref(whatsappChatCopy.hostLinkMessage)} label={copy.start.whatsappLink} newTab size="sm" />;
 }
 
 /** The coral hero: the trial first, a person on WhatsApp one tap away (leak 7), the walkthrough for organisations and, on a laptop, the QR card. */
@@ -99,7 +91,13 @@ function Hero({captures}: {captures: CaptureSlots}) {
       media={today ? <CatchAppCaptureImage {...today} bezel bleed caption={undefined} size="hero" tilt="left" /> : undefined}
       note={hero.terms}
       // A phone already has the stores a tap away (the start band and the dock); the card is for a laptop.
-      notice={sizeClass === "compact" ? undefined : {title: copy.start.qrTitle, body: copy.start.qrBody, children: <LaptopHandoff />}}
+      notice={sizeClass === "compact" ? undefined : {
+        title: copy.start.qrTitle,
+        body: copy.start.qrBody,
+        // The QR code opens the start band on the phone, where both store buttons are.
+        leading: <CatchQrCode label={copy.start.qrLabel} size="s" value={`${brand.web.origin}/host/#start`} />,
+        children: <LaptopLink />,
+      }}
       title={hero.title}
     />
   );
@@ -284,7 +282,7 @@ function Start({captures}: {captures: CaptureSlots}) {
     <CatchCtaSection
       capture={(
         <CatchStack gap={20} id="apply">
-          <CatchStepList steps={start.steps} />
+          <CatchStepCards current={0} on="colour" steps={start.steps} />
           <CatchStack align="center" direction="row" gap={8} wrap>
             <CatchText variant="body-small">{start.personLead}</CatchText>
             <CatchButton href={whatsappChatHref(whatsappChatCopy.hostQuestionMessage)} label={start.personWhatsapp} newTab size="sm" variant="quiet" />
@@ -352,7 +350,7 @@ export function HostPage({captures}: {captures: CaptureSlots}) {
       <WebsitePageMain id="top">
         <HostLandingBands captures={captures} host={host} />
       </WebsitePageMain>
-      <PublicSiteFooter tagline={copy.footer.tagline} variant="host" />
+      <PublicSiteFooter helpTitle={copy.footer.helpTitle} tagline={copy.footer.tagline} variant="host" />
       <CatchSiteDock label={copy.dock.label} primary={{label: copy.dock.start, href: "#start"}}
         whatsapp={{label: copy.dock.whatsapp, href: whatsappChatHref(whatsappChatCopy.hostQuestionMessage)}} />
     </CatchRoot>

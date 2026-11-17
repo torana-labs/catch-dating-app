@@ -51,6 +51,7 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(headings.filter((heading) => bands.includes(heading))).toEqual(bands);
     expect(screen.getByRole("heading", {level: 1}).textContent).toBe(copy.hero.title);
     expect(screen.getByText(copy.footer.tagline)).toBeTruthy();
+    expect(screen.getByRole("heading", {level: 2, name: copy.footer.helpTitle})).toBeTruthy();
   });
 
   it("states the trial terms per billing cycle in the hero (no laptop QR card at phone width) and links Catch Host's App Store and Google Play listings", () => {

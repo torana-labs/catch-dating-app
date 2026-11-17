@@ -109,7 +109,7 @@ describe("playbook page indexes", () => {
     const ref = resolvePlaybookPage("/pricing/")!;
     expect(ref.match.contentKey).toBe("pricing");
     const page = (await loadPlaybookPage(ref))!;
-    expect(page.sections.flatMap((section) => section.type === "custom" ? [section.component] : [])).toEqual(["pricingCalculator", "pricingCap", "pricingIncluded"]);
+    expect(page.sections.flatMap((section) => section.type === "custom" ? [section.component] : [])).toEqual(["pricingCalculator", "pricingExamples", "pricingCap", "pricingIncluded", "pricingOrganisations"]);
     expect(pendingPlaybookBindings(page)).toEqual([]);
     expect(page.meta.noindex).toBe(true);
   });

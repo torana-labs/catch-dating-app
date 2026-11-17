@@ -1677,8 +1677,10 @@
                   "eventPageFromLink",
                   "walkthroughSlots",
                   "pricingCalculator",
+                  "pricingExamples",
                   "pricingCap",
-                  "pricingIncluded"
+                  "pricingIncluded",
+                  "pricingOrganisations"
                 ]
               },
               "kicker": {

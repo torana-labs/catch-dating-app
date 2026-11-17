@@ -1,9 +1,14 @@
 import {
+  CatchBand,
+  CatchBandHeader,
+  CatchButton,
   CatchChip,
   CatchFeeCapChart,
+  CatchFeeExamples,
   CatchFeeSection,
   CatchSplitSection,
   CatchStack,
+  CatchText,
   type CatchBandAction,
   type CatchFeeSectionExample,
   type CatchFeeSectionFoot,
@@ -13,10 +18,12 @@ import {
   hostFeeCapChartCopy,
   hostFeeCapReachedAt,
   hostFeeCycleExample,
+  hostFeeExample,
   hostFeeSalesRange,
   hostPricingFacts,
   hostPricingLines,
   pricingPageCycleExamples,
+  pricingPageFeeExamples,
 } from "@content/pricing";
 import {PricingFeeCalculator} from "./PricingFeeCalculator";
 
@@ -107,6 +114,48 @@ export function PricingIncludedBand({id, ground, kicker, title, lead, items, lab
       media={(
         <CatchStack aria-label={label} direction="row" gap={8} role="group" wrap>
           {items.map((item) => <CatchChip key={item} kind="tag" label={item} />)}
+        </CatchStack>
+      )}
+      title={title}
+    />
+  );
+}
+
+/**
+ * What hosts like you pay (PlaybookPricing's worked examples, .ex): the
+ * header, the fee on six kinds of night as white ring cards, three across,
+ * worked out by the shared fee model, and the gateway line under them.
+ */
+export function PricingExamplesBand({id, ground, kicker, title, foot}: PricingCopyBandProps & {foot?: string}) {
+  const titleId = `${id}-title`;
+  return (
+    <CatchBand aria-labelledby={titleId} as="section" ground={ground} id={id}>
+      <CatchStack gap={40}>
+        <CatchBandHeader ground={ground} kicker={kicker} kickerAccent="coral" size="section" title={title} titleId={titleId} />
+        <CatchStack gap={16}>
+          <CatchFeeExamples examples={pricingPageFeeExamples.map(hostFeeExample)} />
+          {foot ? <CatchText as="p" tone="secondary" variant="body">{foot}</CatchText> : null}
+        </CatchStack>
+      </CatchStack>
+    </CatchBand>
+  );
+}
+
+/** Venues, companies and programmes (PlaybookPricing): the words beside the walkthrough and weddings buttons, stacked at the start. */
+export function PricingOrganisationsBand({id, ground, kicker, title, lead, actions}: PricingCopyBandProps & {actions: readonly CatchBandAction[]}) {
+  return (
+    <CatchSplitSection
+      ground={ground}
+      id={id}
+      kicker={kicker}
+      kickerAccent="pink"
+      lead={lead}
+      media={(
+        <CatchStack align="start" gap={10}>
+          {actions.map((action, index) => (
+            <CatchButton href={action.href} key={action.label} label={action.label} newTab={action.newTab} onPressed={action.onPressed}
+              variant={action.variant ?? (index === 0 ? "primary" : "secondary")} />
+          ))}
         </CatchStack>
       )}
       title={title}
