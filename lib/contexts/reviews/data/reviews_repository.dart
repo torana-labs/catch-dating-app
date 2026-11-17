@@ -78,10 +78,9 @@ class ReviewsRepository {
         ),
       );
 
-  Future<CursorPage<Review, DocumentSnapshot<Review>>>
-  fetchOrganizerReviewsPage({
+  Future<CursorPage<Review, PageCursor<Review>>> fetchOrganizerReviewsPage({
     required String organizerId,
-    DocumentSnapshot<Review>? startAfter,
+    PageCursor<Review>? startAfter,
     int limit = ReadLimitPolicy.historyPage,
   }) => _fetchReviewsPage(
     _reviewsRef
@@ -92,9 +91,9 @@ class ReviewsRepository {
     action: 'fetch organizer review page',
   );
 
-  Future<CursorPage<Review, DocumentSnapshot<Review>>> fetchEventReviewsPage({
+  Future<CursorPage<Review, PageCursor<Review>>> fetchEventReviewsPage({
     required String eventId,
-    DocumentSnapshot<Review>? startAfter,
+    PageCursor<Review>? startAfter,
     int limit = ReadLimitPolicy.historyPage,
   }) => _fetchReviewsPage(
     _reviewsRef
@@ -105,9 +104,9 @@ class ReviewsRepository {
     action: 'fetch event review page',
   );
 
-  Future<CursorPage<Review, DocumentSnapshot<Review>>> fetchUserReviewsPage({
+  Future<CursorPage<Review, PageCursor<Review>>> fetchUserReviewsPage({
     required String reviewerUserId,
-    DocumentSnapshot<Review>? startAfter,
+    PageCursor<Review>? startAfter,
     int limit = ReadLimitPolicy.historyPage,
   }) => _fetchReviewsPage(
     _reviewsRef
@@ -118,9 +117,9 @@ class ReviewsRepository {
     action: 'fetch user review page',
   );
 
-  Future<CursorPage<Review, DocumentSnapshot<Review>>> _fetchReviewsPage(
+  Future<CursorPage<Review, PageCursor<Review>>> _fetchReviewsPage(
     Query<Review> query, {
-    required DocumentSnapshot<Review>? startAfter,
+    required PageCursor<Review>? startAfter,
     required int limit,
     required String action,
   }) => withBackendErrorContext(

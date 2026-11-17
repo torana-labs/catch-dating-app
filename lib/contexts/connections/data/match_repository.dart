@@ -21,8 +21,8 @@ class MatchPageCursor {
     this.user2Exhausted = false,
   });
 
-  final DocumentSnapshot<Match>? user1Cursor;
-  final DocumentSnapshot<Match>? user2Cursor;
+  final PageCursor<Match>? user1Cursor;
+  final PageCursor<Match>? user2Cursor;
   final bool user1Exhausted;
   final bool user2Exhausted;
 }
@@ -134,7 +134,7 @@ class MatchRepository {
     () async {
       final cursor = startAfter ?? const MatchPageCursor();
       final user1Future = cursor.user1Exhausted
-          ? Future.value(CursorPage.empty<Match, DocumentSnapshot<Match>>())
+          ? Future.value(CursorPage.empty<Match, PageCursor<Match>>())
           : _fetchActiveMatchesByParticipantFieldPage(
               field: 'user1Id',
               uid: uid,
@@ -142,7 +142,7 @@ class MatchRepository {
               limit: limit,
             );
       final user2Future = cursor.user2Exhausted
-          ? Future.value(CursorPage.empty<Match, DocumentSnapshot<Match>>())
+          ? Future.value(CursorPage.empty<Match, PageCursor<Match>>())
           : _fetchActiveMatchesByParticipantFieldPage(
               field: 'user2Id',
               uid: uid,
@@ -178,11 +178,11 @@ class MatchRepository {
     ),
   );
 
-  Future<CursorPage<Match, DocumentSnapshot<Match>>>
+  Future<CursorPage<Match, PageCursor<Match>>>
   _fetchActiveMatchesByParticipantFieldPage({
     required String field,
     required String uid,
-    required DocumentSnapshot<Match>? startAfter,
+    required PageCursor<Match>? startAfter,
     required int limit,
   }) async {
     final page = await _matchesRef

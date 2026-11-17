@@ -51,10 +51,9 @@ class PaymentHistoryRepository {
   Future<List<Payment>> fetchPaymentsForUser(String userId) async =>
       (await fetchPaymentsForUserPage(userId: userId)).items;
 
-  Future<CursorPage<Payment, DocumentSnapshot<Payment>>>
-  fetchPaymentsForUserPage({
+  Future<CursorPage<Payment, PageCursor<Payment>>> fetchPaymentsForUserPage({
     required String userId,
-    DocumentSnapshot<Payment>? startAfter,
+    PageCursor<Payment>? startAfter,
     int limit = ReadLimitPolicy.historyPage,
   }) => withBackendErrorContext(
     () async {

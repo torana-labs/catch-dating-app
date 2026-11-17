@@ -49,12 +49,10 @@ class ActivityNotificationRepository {
     ),
   );
 
-  Future<
-    CursorPage<ActivityNotification, DocumentSnapshot<ActivityNotification>>
-  >
+  Future<CursorPage<ActivityNotification, PageCursor<ActivityNotification>>>
   fetchActivityPage({
     required String uid,
-    DocumentSnapshot<ActivityNotification>? startAfter,
+    PageCursor<ActivityNotification>? startAfter,
     int limit = ReadLimitPolicy.historyPage,
   }) => withBackendErrorContext(
     () async {
