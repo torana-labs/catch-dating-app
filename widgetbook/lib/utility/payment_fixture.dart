@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/bookings.dart'
-    show watchOwnEventCardsByIdProvider;
+    show watchOwnEventCardsForEventsProvider;
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
@@ -77,10 +77,8 @@ class WidgetbookPaymentScope extends StatelessWidget {
           widgetbookUtilityViewerUid,
         ).overrideWith((ref) => paymentsStream ?? Stream.value(payments)),
         if (eventIds.isNotEmpty)
-          watchOwnEventCardsByIdProvider(
-            widgetbookUtilityViewerUid,
-          ).overrideWith(
-            (ref) => (eventsStream ?? Stream.value(batchedEvents)).map(
+          watchOwnEventCardsForEventsProvider.overrideWith(
+            (ref, query) => (eventsStream ?? Stream.value(batchedEvents)).map(
               (events) => {
                 for (final event in events)
                   event.id: GuestEventCard.fromEvent(event),

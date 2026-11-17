@@ -82,7 +82,7 @@ class PaymentHistoryBody extends ConsumerWidget {
       builder: (context, paymentHistory) => PaymentHistoryList(
         paymentHistory: paymentHistory,
         onRetryEventTitles: () =>
-            ref.invalidate(watchOwnEventCardsByIdProvider(userId)),
+            ref.invalidate(watchOwnEventCardsForEventsProvider),
       ),
     );
   }
