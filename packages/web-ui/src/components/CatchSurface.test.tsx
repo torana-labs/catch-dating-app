@@ -91,6 +91,17 @@ describe("CatchSurface", () => {
     expect(surfaceOf("courts").dataset.format).toBe("courts");
   });
 
+  it("draws a band with a colour as an inset panel and a plain band flush (D26)", () => {
+    for (const color of ["tile", "ink", "courts", "indigo"] as const) {
+      render(<CatchSurface block="band" color={color}><Probe id={color} /></CatchSurface>);
+      expect(surfaceOf(color).dataset.panel).toBe("");
+    }
+    render(<CatchSurface block="band"><Probe id="plain" /></CatchSurface>);
+    expect(surfaceOf("plain").hasAttribute("data-panel")).toBe(false);
+    render(<CatchSurface block="spotlight" color="courts"><Probe id="spotlight" /></CatchSurface>);
+    expect(surfaceOf("spotlight").hasAttribute("data-panel")).toBe(false);
+  });
+
   it("is a button with type button when pressable, and never submits a form", () => {
     const press = vi.fn(), submit = vi.fn((event: {preventDefault: () => void}) => event.preventDefault());
     render(<form onSubmit={submit}><CatchSurface onPress={press}><Probe /></CatchSurface></form>);

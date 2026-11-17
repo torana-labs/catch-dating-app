@@ -54,4 +54,11 @@ describe("CatchPricingSection", () => {
     render(<CatchPricingSection ground="ink" rate="[N]%" title="Headline" />);
     expect(screen.getByRole("region").dataset.band).toBe("ink");
   });
+
+  it("draws its kicker in the night accent on the ink band and the day accent on white", () => {
+    const {rerender} = render(<CatchPricingSection ground="ink" kicker="Pricing" rate="[N]%" title="Headline" />);
+    expect(screen.getByText("Pricing").dataset).toMatchObject({accent: "yellow", on: "night"});
+    rerender(<CatchPricingSection kicker="Pricing" rate="[N]%" title="Headline" />);
+    expect(screen.getByText("Pricing").dataset).toMatchObject({accent: "yellow", on: "day"});
+  });
 });

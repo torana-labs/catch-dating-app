@@ -107,3 +107,45 @@
   .inner[data-pb="regular"] { padding-bottom: var(--catch-space-s10); }
   .inner[data-pb="spacious"] { padding-bottom: var(--catch-space-s16); }
 }
+
+/*
+ * A coloured band is an inset panel (D26, the canvas's .pg .panel), as a
+ * coloured CatchSurface band is: 16px under what is above it and 24px from
+ * the page's sides, with 36px corners; its content keeps the 1200px page
+ * width with at least 72px at the sides, and the regular rhythm is 88px. On
+ * phones it is 8px from the edges with 28px corners, 20px at the sides and
+ * 40px above and below. White bands stay flush. Percentages here read the
+ * panel's width, which is already the page less its two 24px insets.
+ */
+.band:not([data-ground="white"]) {
+  width: auto;
+  margin: var(--catch-space-s4) var(--catch-website-content-gutter) 0;
+  overflow: clip;
+  border-radius: var(--catch-radius-panel);
+}
+
+.band:not([data-ground="white"]):first-child { margin-top: 0; }
+
+.band:not([data-ground="white"]) > .inner[data-width="content"] {
+  max-width: none;
+  padding-inline: max(
+    var(--catch-website-panel-pad-inline),
+    calc((100% - var(--catch-website-content-max)) / 2)
+  );
+}
+
+.band:not([data-ground="white"]) > .inner[data-pt="regular"] { padding-top: var(--catch-website-panel-pad-block); }
+.band:not([data-ground="white"]) > .inner[data-pb="regular"] { padding-bottom: var(--catch-website-panel-pad-block); }
+
+@media (max-width: 599px) {
+  .band:not([data-ground="white"]) {
+    margin: var(--catch-space-s2) var(--catch-space-s2) 0;
+    border-radius: var(--catch-radius-mat);
+  }
+
+  .band:not([data-ground="white"]):first-child { margin-top: 0; }
+
+  .band:not([data-ground="white"]) > .inner[data-width="content"] { padding-inline: var(--catch-space-s5); }
+  .band:not([data-ground="white"]) > .inner[data-pt="regular"] { padding-top: var(--catch-space-s10); }
+  .band:not([data-ground="white"]) > .inner[data-pb="regular"] { padding-bottom: var(--catch-space-s10); }
+}

@@ -131,6 +131,8 @@ The canvas owns these values (blueprint D26). `tool/design/playbook/import_kit_t
 | `.pg .body` font-size | `15px` | `typography.role.body.size` | match |
 | `.pg .body` line-height | `1.5` | `website.type.body.lineHeight` | own |
 | `.pg .k` font | `13px` | `typography.role.labelKicker.size` | match |
+| `.pg .k` font | `18px` | `website.type.kicker.lineHeight` | own |
+| `.pg .k` letter-spacing | `.04em` | `website.type.kicker.tracking` | own |
 | `.pg .wm` font-size | `26px` | `website.wordmark.bar.size` | own |
 | `.pg .wm` font-weight | `800` | `website.wordmark.weight` | own |
 | `.pg .wm` letter-spacing | `-.03em` | `website.wordmark.bar.tracking` | own |
@@ -204,8 +206,16 @@ The canvas owns these values (blueprint D26). `tool/design/playbook/import_kit_t
 | `.pg .panel` border-radius | `36px` | `radius.panel` | own |
 | `.pg .panel` padding | `88px` | `website.panel.padBlock` | own |
 | `.pg .panel` padding | `72px` | `website.panel.padInline` | own |
+| `.pg .panel` margin | `16px` | `space.s4` | match |
+| `.pg .panel` margin | `24px` | `website.content.gutter` | match |
 | `.pg .panel` border-radius (phone) | `28px` | `radius.mat` | match |
+| `.pg .panel` margin (phone) | `8px` | `space.s2` | match |
 | `.pg .panel` padding (phone) | `40px` | `space.s10` | match |
+| `.pg .panel` padding (phone) | `20px` | `space.s5` | match |
+| `.pg .heroc .htext` padding-bottom | `72px` | `website.hero.textPadBottom` | own |
+| `.pg .heroc .htext` padding-bottom (phone) | `8px` | `space.s2` | match |
+| `.pg .flush .htext` padding-bottom | `88px` | `website.panel.padBlock` | match |
+| `.pg .flush .htext` padding-bottom (phone) | `8px` | `space.s2` | match |
 | `.pg .mat` border-radius | `28px` | `radius.mat` | own |
 | `.pg .tile` border-radius | `24px` | `radius.xl` | match |
 | `.pg .tile` padding | `24px` | `space.s6` | match |
@@ -214,6 +224,21 @@ The canvas owns these values (blueprint D26). `tool/design/playbook/import_kit_t
 | `.pg .ph` border-radius | `6px` | `radius.xs` | match |
 | `.pg .in` border-radius | `14px` | `website.radius.field` | own |
 | `.pg .date` border-radius | `12px` | `website.radius.square` | own |
+| `.pg .steps` gap | `6px` | `space.micro6` | match |
+| `.pg .steps li` grid-template-columns | `40px` | `website.steps.markerWidth` | own |
+| `.pg .steps li` gap | `14px` | `space.micro14` | match |
+| `.pg .steps li` padding | `14px` | `space.micro14` | match |
+| `.pg .steps li` padding | `18px` | `space.micro18` | match |
+| `.pg .steps li` border-radius | `20px` | `radius.lg` | match |
+| `.pg .steps li.on` background | `rgba(255,255,255,.55)` | `website.color.stepOnLight` | own |
+| `.pg .ink .steps li.on` background | `rgba(255,255,255,.07)` | `website.color.stepOnInk` | own |
+| `.pg .steps .n` font | `800` | `website.type.figure.weight` | own |
+| `.pg .steps .n` font | `30px` | `typography.role.displaySection.size` | match |
+| `.pg .steps h3` font-size | `17px` | `typography.role.titleBar.size` | match |
+| `.pg .steps .body` margin-top | `4px` | `space.s1` | match |
+| `.pg .steps .body` font-size | `14px` | `typography.role.bodySmall.size` | match |
+| `.pg .in` height | `48px` | `size.controlLg` | match |
+| `.pg .in` border | `1.5px` | `stroke.control` | match |
 | `.pg .grid3` gap | `16px` | `space.s4` | match |
 | `.pg .grid3` margin-top | `40px` | `space.s10` | match |
 | `.pg .split` gap | `64px` | `space.s16` | match |

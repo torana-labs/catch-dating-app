@@ -1,9 +1,10 @@
 /*
  * The closing call to action (the playbook kit's final band): the copy and
  * the media 64px apart, stacking below 840px. The capture form is held to
- * 520px. A flush band drops its vertical padding: the columns take the band
- * rhythm at the top (64, 48 below 840px), the copy keeps it at the bottom and
- * the media meets the band's bottom edge.
+ * 520px. A flush band (the kit's .panel.flush) drops its vertical padding:
+ * the columns take the panel rhythm at the top (88px, 40px on phones), the
+ * copy keeps it at the bottom (88px, 8px on phones) and the media meets the
+ * band's bottom edge.
  */
 .copy,
 .text { min-width: 0; }
@@ -22,13 +23,13 @@
   min-width: 0;
 }
 
-.flush { padding-top: var(--catch-space-s16); }
+.flush { padding-top: var(--catch-website-panel-pad-block); }
 
-.flush .text { padding-bottom: var(--catch-space-s16); }
+.flush .text { padding-bottom: var(--catch-website-panel-pad-block); }
 
 .flush .media { align-items: flex-end; }
 
-@container catch-page (width < 840px) {
-  .flush { padding-top: var(--catch-space-s12); }
-  .flush .text { padding-bottom: 0; }
+@media (max-width: 599px) {
+  .flush { padding-top: var(--catch-space-s10); }
+  .flush .text { padding-bottom: var(--catch-space-s2); }
 }

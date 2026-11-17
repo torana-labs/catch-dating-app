@@ -93,9 +93,11 @@
 }
 
 /*
- * band: edge to edge, no radius. Its padding prop is vertical; horizontally it
- * keeps the size class's gutter and holds its content to the website's page
- * width (--catch-website-content-max, the width CatchBand uses).
+ * band: a plain band runs edge to edge with no radius, as the canvas's open
+ * section does. Its padding prop is vertical; horizontally it keeps the
+ * canvas's page gutter (24px, 16px on phones) and holds its content to the
+ * website's 1200px page width (--catch-website-content-max). A band with a
+ * colour is a panel, below.
  */
 /*
  * A band is the `catch-page` container (proposal L1): the website parts inside
@@ -113,9 +115,13 @@
   border-radius: var(--catch-radius-none);
   background: var(--catch-theme-ground);
   padding-inline: max(
-    var(--catch-gutter, var(--catch-layout-gutter-compact)),
+    var(--catch-website-content-gutter),
     calc((100% - var(--catch-website-content-max)) / 2)
   );
+}
+
+@media (max-width: 599px) {
+  .surface[data-block="band"] { padding-inline: var(--catch-website-content-compact-gutter); }
 }
 
 .surface[data-block="band"][data-pad="none"] { padding-block: 0; }
@@ -125,15 +131,16 @@
 .surface[data-block="band"][data-pad="lg"] { padding-block: var(--catch-space-s16); }
 :global([data-size="compact"]) .surface[data-block="band"][data-pad="lg"] { padding-block: var(--catch-space-s12); }
 
+/* The canvas's tint panel is paper (.pg .tint), and its ink panel the ink ground (.pg .ink). */
 .surface[data-block="band"][data-band="tile"] {
-  --catch-surface-fill: var(--catch-theme-tile);
-  background: var(--catch-theme-tile);
+  --catch-surface-fill: var(--catch-ground-paper-fill);
+  background: var(--catch-ground-paper-fill);
 }
 
 .surface[data-block="band"][data-band="ink"] {
-  --catch-surface-fill: var(--catch-color-dark-ground);
-  background: var(--catch-color-dark-ground);
-  color: var(--catch-color-dark-ink);
+  --catch-surface-fill: var(--catch-ground-ink-fill);
+  background: var(--catch-ground-ink-fill);
+  color: var(--catch-ground-ink-ink);
 }
 
 /*
@@ -178,6 +185,54 @@
   --catch-surface-fill: var(--catch-accent);
   background: var(--catch-accent);
   color: var(--catch-theme-on-format);
+}
+
+/*
+ * panel (D26, the canvas's .pg .panel): a band with a colour is an inset card,
+ * 16px under what is above it and 24px from the page's sides, with 36px
+ * corners. Its content keeps the 1200px page width, with at least 72px at the
+ * sides; its default rhythm is 88px above and below. On phones it is 8px from
+ * the edges with 28px corners, 40px above and below and 20px at the sides. A
+ * panel that opens the page sits straight under the header, as the canvas's
+ * heroes do. A flush band (padding none) keeps its own vertical rhythm.
+ */
+.surface[data-block="band"][data-panel] {
+  width: auto;
+  margin: var(--catch-space-s4) var(--catch-website-content-gutter) 0;
+  overflow: clip;
+  border-radius: var(--catch-radius-panel);
+  padding-inline: max(
+    var(--catch-website-panel-pad-inline),
+    calc((100% - var(--catch-website-content-max)) / 2 - var(--catch-website-content-gutter))
+  );
+}
+
+.surface[data-block="band"][data-panel]:first-child { margin-top: 0; }
+
+.surface[data-block="band"][data-panel][data-pad="lg"] { padding-block: var(--catch-website-panel-pad-block); }
+
+@media (max-width: 599px) {
+  .surface[data-block="band"][data-panel] {
+    margin: var(--catch-space-s2) var(--catch-space-s2) 0;
+    border-radius: var(--catch-radius-mat);
+    padding-inline: var(--catch-space-s5);
+  }
+
+  .surface[data-block="band"][data-panel]:first-child { margin-top: 0; }
+
+  .surface[data-block="band"][data-panel][data-pad="lg"] { padding-block: var(--catch-space-s10); }
+}
+
+/*
+ * Fields in a website band take the canvas's field box (.pg .in): a white
+ * fill, a 1.5px control line and 14px corners. On the ink panel they keep the
+ * quiet app field, whose ink is the night theme's.
+ */
+.surface[data-block="band"]:not([data-band="ink"]) {
+  --catch-field-rest-fill: var(--catch-palette-white);
+  --catch-field-rest-line: var(--catch-website-color-control-line);
+  --catch-field-rest-stroke: var(--catch-stroke-control);
+  --catch-field-radius: var(--catch-website-radius-field);
 }
 
 /* onPress or href: the whole block presses, as the system's .c-pressable. */

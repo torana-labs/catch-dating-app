@@ -1,4 +1,5 @@
 import type {ReactNode} from "react";
+import type {CatchKickerAccent} from "./CatchBandHeader";
 import type {CatchSurfaceColor} from "./catchCoreVocabulary";
 import {CatchButton, type CatchButtonSize, type CatchButtonVariant} from "./CatchButton";
 import {CatchStack} from "./CatchStack";
@@ -56,6 +57,15 @@ const bandColors: Readonly<Record<Ground, CatchSurfaceColor | CatchWebBandColor 
   indigo: "indigo",
   magenta: "nightsOut",
 };
+
+/**
+ * A section's kicker accent: the one asked for, else coral on the ink ground
+ * (the canvas's night panels) and the section's own kit accent elsewhere. A
+ * colour ground draws any accent in its secondary ink.
+ */
+export function catchBandKickerAccent(accent: CatchKickerAccent | undefined, ground: Ground | undefined, fallback: CatchKickerAccent): CatchKickerAccent {
+  return accent ?? (ground === "ink" ? "coral" : fallback);
+}
 
 /** The band colour of a section's ground; no ground is the plain band. */
 export function catchBandColor(ground: Ground | undefined): CatchSurfaceColor | CatchWebBandColor | undefined {

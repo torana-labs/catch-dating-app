@@ -15,9 +15,19 @@ describe("CatchHeroSection", () => {
     expect(container.querySelector("header")).toBeNull();
   });
 
-  it("takes level 2 and caps the headline at 64px on an expanded page", () => {
+  it("takes level 2 and sets the headline at the canvas's hero size at every size class (D26)", () => {
     render(<CatchRoot size="expanded" theme="day"><CatchHeroSection level={2} title="Second" /></CatchRoot>);
-    expect(screen.getByRole("heading", {level: 2, name: "Second"}).dataset.variant).toBe("display-xl");
+    const heading = screen.getByRole("heading", {level: 2, name: "Second"});
+    expect(heading.dataset).toMatchObject({variant: "display-hero", display: "hero"});
+  });
+
+  it("draws a hero on a ground as an inset panel, its kicker in the ground's secondary ink", () => {
+    render(<CatchHeroSection ground="pink" kicker="In Mumbai" title="Plans" />);
+    const band = screen.getByRole("region", {name: "Plans"});
+    expect(band.dataset).toMatchObject({block: "band", panel: ""});
+    const kicker = screen.getByText("In Mumbai");
+    expect(kicker.dataset.tone).toBe("secondary");
+    expect(kicker.dataset.accent).toBeUndefined();
   });
 
   it("draws the copy in order: kicker, headline, lead, labels, proof, actions, note, link", () => {

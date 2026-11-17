@@ -1,8 +1,9 @@
 /*
- * The opening band (the playbook kit's hero). Split: the copy and the media
- * 64px apart on an expanded page, the media on the band's bottom edge, so the
- * band drops its own vertical padding and the copy takes the band rhythm (64
- * above and below, 48 below 840px). The floating card sits over the media's
+ * The opening band (the playbook kit's hero, .pg .heroc). Split: the copy and
+ * the media 64px apart on an expanded page, the media on the band's bottom
+ * edge, so the band drops its own vertical padding: the columns start 88px
+ * down (the panel rhythm; 40px on phones) and the copy keeps 72px under it
+ * (8px on phones). On a ground the band is an inset panel. The floating card sits over the media's
  * start edge, turned slightly. Photo: a full-bleed photo at radius xl, at
  * least 620px tall (520 below 840px), the copy at its foot in the dark theme,
  * held to 860px.
@@ -19,9 +20,9 @@
 
 .link { display: flex; }
 
-.split { padding-top: var(--catch-space-s16); }
+.split { padding-top: var(--catch-website-panel-pad-block); }
 
-.text { padding-bottom: var(--catch-space-s16); }
+.text { padding-bottom: var(--catch-website-hero-text-pad-bottom); }
 
 .media {
   position: relative;
@@ -77,9 +78,12 @@
   color: var(--catch-theme-ink);
 }
 
+@media (max-width: 599px) {
+  .split { padding-top: var(--catch-space-s10); }
+  .text { padding-bottom: var(--catch-space-s2); }
+}
+
 @container catch-page (width < 840px) {
-  .split { padding-top: var(--catch-space-s12); }
-  .text { padding-bottom: 0; }
   .aside { position: static; transform: none; }
   .photo { min-height: 520px; }
   .over { padding: var(--catch-space-s7) var(--catch-space-s5); }

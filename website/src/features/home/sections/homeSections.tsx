@@ -160,6 +160,7 @@ function HomeLaunchingSoon({home}: {home: Home}) {
       ground="paper"
       id="whats-on"
       kicker={copy.soon.eyebrow}
+      kickerAccent="pink"
       lead={fill(copy.soon.lead, {coming: home.coming, city: home.city.label})}
       title={copy.soon.title}
     />
@@ -221,6 +222,7 @@ function HomeProof({home}: {home: Home}) {
       checks={copy.safety.checks}
       id="safety"
       kicker={copy.safety.eyebrow}
+      kickerAccent="pink"
       lead={copy.safety.lead}
       media={review ? (
         <CatchReviewItem badge={<CatchBadge label={copy.safety.verified} size="sm" tone="success" />} body={review.comment} meta={review.eventTitle}
@@ -294,6 +296,7 @@ function HomeAppLive({downloadUrl, media}: {downloadUrl?: string; media: ReactNo
       stores={stores.map((store) => ({badgeSrc: store.badgeSrc, comingSoon: store.comingSoon, href: store.href || undefined, label: store.accessibleLabel,
         onClick: store.onClick, size: "l", store: store.store}))}
       title={copy.app.title}
+      titleSize="feature"
     />
   );
 }
@@ -304,7 +307,7 @@ function HomeApp({captures, downloadUrl, home}: {captures: CaptureSlots; downloa
   const media = after ? <CatchAppCaptureImage {...after} caption={undefined} size="md" tilt="right" /> : undefined;
   if (guestAppLive) return <HomeAppLive downloadUrl={downloadUrl} media={media} />;
   return (
-    <CatchCtaSection capture={<AppNoticeForm home={home} />} ground="paper" id="app" kicker={copy.app.soonEyebrow} media={media} title={copy.app.soonTitle} />
+    <CatchCtaSection capture={<AppNoticeForm home={home} />} ground="paper" id="app" kicker={copy.app.soonEyebrow} media={media} title={copy.app.soonTitle} titleSize="feature" />
   );
 }
 

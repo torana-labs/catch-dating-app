@@ -342,6 +342,8 @@ abstract final class GeneratedCatchWebsiteTokens {
   static const double panelPadInline = 72.0;
   static const double radiusField = 14.0;
   static const double radiusSquare = 12.0;
+  static const double heroTextPadBottom = 72.0;
+  static const double stepsMarkerWidth = 40.0;
 }
 
 @immutable

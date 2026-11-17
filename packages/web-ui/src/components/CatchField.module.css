@@ -21,11 +21,12 @@
   padding: var(--catch-space-s3) var(--catch-space-s4);
   /*
    * Quiet at rest, as in the app. A container may give resting fields a box:
-   * CatchGroundCard sets these for the boxed inputs the Website v2 boards draw.
+   * CatchGroundCard sets these for the boxed inputs the Website v2 boards draw,
+   * and a website band for the canvas's field box (.pg .in), corners included.
    */
   border: var(--catch-field-rest-stroke, var(--catch-stroke-hairline)) solid
     var(--catch-field-rest-line, transparent);
-  border-radius: var(--catch-radius-interactive-tile);
+  border-radius: var(--catch-field-radius, var(--catch-radius-interactive-tile));
   background: var(--catch-field-rest-fill, transparent);
   /* A field reads from the start edge, whatever its container aligns. */
   text-align: start;

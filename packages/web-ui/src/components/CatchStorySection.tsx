@@ -1,9 +1,10 @@
 "use client";
 
 import {useId, type HTMLAttributes, type ReactNode} from "react";
-import {catchBandColor, catchBandFootnoteMark, type CatchBandFootnote, type CatchBandLink} from "./catchBandParts";
+import {catchBandColor, catchBandFootnoteMark, catchBandKickerAccent, type CatchBandFootnote, type CatchBandLink} from "./catchBandParts";
 import type {CatchTextTone} from "./catchCoreVocabulary";
 import {CatchAvatar} from "./CatchAvatar";
+import {useCatchBandKicker, type CatchKickerAccent} from "./CatchBandHeader";
 import {CatchButton} from "./CatchButton";
 import {CatchMetricTile} from "./CatchMetricTile";
 import {CatchStack} from "./CatchStack";
@@ -38,6 +39,8 @@ export interface CatchStorySectionProps extends Omit<HTMLAttributes<HTMLElement>
   level?: 1 | 2;
   kicker?: string;
   kickerTone?: CatchTextTone;
+  /** The kicker's accent on white, paper and ink; defaults to the kit's (pink, coral on ink). A colour ground takes its secondary ink. */
+  kickerAccent?: CatchKickerAccent;
   /** A line under the name, such as what they run and where. */
   meta?: string;
   avatar?: CatchStorySectionAvatar;
@@ -54,6 +57,15 @@ export interface CatchStorySectionProps extends Omit<HTMLAttributes<HTMLElement>
 }
 
 /**
+ * The section's kicker. It is its own component so the kicker reads the
+ * ground of the band it renders in (an ink band takes the night accent), not
+ * the ground outside the section.
+ */
+function StoryKicker({children, accent, tone}: {children: string; accent: CatchKickerAccent; tone?: CatchTextTone}) {
+  return <CatchText {...useCatchBandKicker({accent, tone})}>{children}</CatchText>;
+}
+
+/**
  * One customer story as a band (the playbook kit's story): a kicker, an
  * avatar or initials beside the storyteller's name (the band's headline) and
  * a meta line, their words as a block quote, measured results as metric
@@ -61,11 +73,11 @@ export interface CatchStorySectionProps extends Omit<HTMLAttributes<HTMLElement>
  * beside a photo slot. The columns stack below 840px. The band is a section
  * named by its headline.
  */
-export function CatchStorySection({title, level = 2, kicker, kickerTone = "secondary", meta, avatar, quote, metrics, media, link, ground, ...rest}: CatchStorySectionProps) {
+export function CatchStorySection({title, level = 2, kicker, kickerTone, kickerAccent, meta, avatar, quote, metrics, media, link, ground, ...rest}: CatchStorySectionProps) {
   const titleId = `${useId()}-title`;
   const copy = (
     <CatchStack className={styles.copy} gap={24}>
-      {kicker ? <CatchText tone={kickerTone} variant="label-kicker">{kicker}</CatchText> : null}
+      {kicker ? <StoryKicker accent={catchBandKickerAccent(kickerAccent, ground, "pink")} tone={kickerTone}>{kicker}</StoryKicker> : null}
       <div className={styles.who}>
         {avatar ? (
           avatar.image
