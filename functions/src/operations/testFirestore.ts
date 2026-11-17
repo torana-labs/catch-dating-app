@@ -233,6 +233,9 @@ class FakeCollection extends FakeQuery {
   }
 }
 
+/** A write that removes its document when the transaction commits. */
+const DELETED: FakeData = Object.freeze({}) as FakeData;
+
 class FakeTransaction {
   private readonly writes = new Map<string, FakeData>();
 
@@ -260,17 +263,25 @@ class FakeTransaction {
     this.writes.set(reference.path, structuredClone(value as FakeData));
   }
 
+  delete(reference: FakeDocReference): void {
+    this.writes.set(reference.path, DELETED);
+  }
+
   update(reference: FakeDocReference, patch: FakeData): void {
     assert.ok(Object.keys(patch).every((key) => !key.includes(".")),
       "This fake supports top-level field updates only");
-    const before = this.writes.get(reference.path) ??
+    const pending = this.writes.get(reference.path);
+    const before = pending === DELETED ? undefined : pending ??
       this.firestore.read(reference.path);
     if (!before) throw new Error("document does not exist");
     this.writes.set(reference.path, {...before, ...structuredClone(patch)});
   }
 
   commit(): void {
-    for (const [path, value] of this.writes) this.firestore.write(path, value);
+    for (const [path, value] of this.writes) {
+      if (value === DELETED) this.firestore.remove(path);
+      else this.firestore.write(path, value);
+    }
   }
 }
 

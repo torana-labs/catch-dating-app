@@ -1070,12 +1070,36 @@
       "exportedFunctions": [
         "registerPublicEvent",
         "getOrganizerCrmSummary",
-        "requestAccountDeletion"
+        "requestAccountDeletion",
+        "onGuestMessagingPermissionOrganizerPreferenceChanged"
       ],
       "migrationNotes": [
         "A roster phone number never grants marketing permission. Only an explicit participant-controlled per-channel receipt creates or advances this projection.",
         "Managed delivery requires evidenceStatus=complete and a currentReceiptId; legacy non-unknown rows without complete evidence fail closed.",
         "Catch platform marketing consent remains a separate purpose and is not represented here."
+      ]
+    },
+    {
+      "id": "guestMessagingPermissions",
+      "path": "guestMessagingPermissions/{permissionId}",
+      "rulesMatch": "/guestMessagingPermissions/{permissionId}",
+      "typescriptInterface": "GuestMessagingPermissionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/relationship_documents.rules.test.cjs",
+      "rulesTestNames": [
+        "lets guests read only their own messaging permission rows"
+      ],
+      "owner": "Guest messaging permission projector: messaging guest messaging permission triggers",
+      "read": "the guest gets and lists only rows whose uid is theirs, while their account is not deleted; a row not written yet reads as missing",
+      "write": "server only; written from the preference and the receipts it names, deleted when the preference is",
+      "exportedFunctions": [
+        "onGuestMessagingPermissionCatchPreferenceChanged",
+        "onGuestMessagingPermissionOrganizerPreferenceChanged",
+        "onGuestMessagingPermissionCatchReceiptChanged",
+        "onGuestMessagingPermissionOrganizerReceiptChanged"
+      ],
+      "migrationNotes": [
+        "preference equals what listParticipantMessagingPreferences returns for that sender. The guest-messaging-permissions copy-forward migration creates rows for preferences recorded before the triggers."
       ]
     },
     {
@@ -1090,7 +1114,8 @@
       "write": "server only and append-only by operation design",
       "exportedFunctions": [
         "registerPublicEvent",
-        "onOrganizerMessagingWebhookEventCreated"
+        "onOrganizerMessagingWebhookEventCreated",
+        "onGuestMessagingPermissionOrganizerReceiptChanged"
       ],
       "migrationNotes": [
         "Grant receipts bind the organizer, participant, channel, reviewed terms version, consent-copy hash, source identity, and identity strength.",
@@ -4294,7 +4319,8 @@
       "exportedFunctions": [
         "submitOrganizerFormResponse",
         "getOrganizerFormPayment",
-        "requestAccountDeletion"
+        "requestAccountDeletion",
+        "onGuestMessagingPermissionCatchPreferenceChanged"
       ],
       "migrationNotes": [
         "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",
@@ -4314,7 +4340,8 @@
       "exportedFunctions": [
         "submitOrganizerFormResponse",
         "getOrganizerFormPayment",
-        "requestAccountDeletion"
+        "requestAccountDeletion",
+        "onGuestMessagingPermissionCatchReceiptChanged"
       ],
       "migrationNotes": [
         "Catch WhatsApp permission is independent of organizer permission. OTP, payment and submission never infer a grant.",

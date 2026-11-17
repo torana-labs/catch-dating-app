@@ -2,6 +2,7 @@
 // in rulesHarness.cjs.
 const {
   Timestamp,
+  assert,
   assertFails,
   assertSucceeds,
   authedDb,
@@ -781,6 +782,46 @@ describe("firestore.rules", () => {
         "organizerBroadcastSummaries",
         "broadcast-2",
       ), {organizerId: "club-1"}));
+    });
+
+    it("lets guests read only their own messaging permission rows", async () => {
+      const row = (uid, scope, organizerId) => ({uid, scope, organizerId,
+        preference: {status: "optedIn", receiptId: "receipt-1", purposes: {}},
+        version: 1});
+      await seed(["guestMessagingPermissions", "catchpref_runner-1"],
+        row("runner-1", "catch", null));
+      await seed(["guestMessagingPermissions", "orgpref_a"],
+        row("runner-1", "organizer", "club-1"));
+      await seed(["guestMessagingPermissions", "orgpref_b"],
+        row("runner-2", "organizer", "club-1"));
+      const db = authedDb("runner-1");
+      await assertSucceeds(getDoc(doc(db, "guestMessagingPermissions",
+        "catchpref_runner-1")));
+      const missing = await assertSucceeds(getDoc(doc(db,
+        "guestMessagingPermissions", "catchpref_nobody")));
+      assert.equal(missing.exists(), false);
+      const own = await assertSucceeds(getDocs(query(
+        collection(db, "guestMessagingPermissions"),
+        where("uid", "==", "runner-1"), where("scope", "==", "organizer"),
+        limit(20))));
+      assert.deepEqual(own.docs.map((item) => item.id), ["orgpref_a"]);
+      await assertFails(getDoc(doc(db, "guestMessagingPermissions", "orgpref_b")));
+      await assertFails(getDocs(collection(db, "guestMessagingPermissions")));
+      await assertFails(getDocs(query(collection(db, "guestMessagingPermissions"),
+        where("uid", "==", "runner-2"))));
+      await assertFails(getDoc(doc(authedDb("host-1"),
+        "guestMessagingPermissions", "orgpref_a")));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(),
+        "guestMessagingPermissions", "orgpref_a")));
+      await assertFails(setDoc(doc(db, "guestMessagingPermissions", "orgpref_c"),
+        row("runner-1", "organizer", "club-2")));
+      await assertFails(updateDoc(doc(db, "guestMessagingPermissions",
+        "orgpref_a"), {version: 2}));
+      await assertFails(deleteDoc(doc(db, "guestMessagingPermissions",
+        "orgpref_a")));
+      await seed(["deletedUsers", "runner-1"], {deletedAt: Timestamp.now()});
+      await assertFails(getDoc(doc(db, "guestMessagingPermissions",
+        "catchpref_runner-1")));
     });
 
     it("keeps invite secrets, touches, share intents, and attribution server-only", async () => {

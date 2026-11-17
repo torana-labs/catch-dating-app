@@ -1,0 +1,69 @@
+/*
+ * One story card (the playbook kit's story card): paper at radius xl, a 4:3
+ * photo box on a Website v2 ground, then 20px by 22px of copy 8px apart. The
+ * figure sits at the foot under a hairline in the ground card's outline ink.
+ * A linked card is pressable: the title's link covers the card, and the
+ * card shows the focus ring when the link has keyboard focus.
+ */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100%;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--catch-radius-xl);
+  background: var(--catch-ground-paper-fill);
+  color: var(--catch-ground-paper-ink);
+  --catch-theme-ink: var(--catch-ground-paper-ink);
+  --catch-theme-ink2: var(--catch-ground-paper-ink-secondary);
+}
+
+.photo {
+  composes: ground from "./grounds.module.css";
+
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--catch-space-s2);
+  padding: var(--catch-space-s5) var(--catch-space-micro18) var(--catch-space-s6);
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.link::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+}
+
+.card[data-pressable]:hover .link { text-decoration: underline; }
+
+.card:has(.link:focus-visible) {
+  outline: var(--catch-stroke-focus) solid var(--catch-theme-focus);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.link:focus-visible { outline: none; }
+
+.stat {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--catch-space-s3);
+  margin-top: auto;
+  padding-top: var(--catch-space-s3);
+  border-top: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-ink)
+    calc(var(--catch-opacity-ground-card-outline) * 100%), transparent);
+}
