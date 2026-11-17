@@ -67,6 +67,15 @@ describe("CatchBadge AA small text", () => {
     expect(pairs).toBe(147);
   });
 
+  it("keeps the website's soft source tones readable on their own fills", () => {
+    for (const tone of ["coral", "indigo"]) {
+      expect(css).toContain(`--catch-badge-ink: var(--catch-website-color-tag-${tone}-ink);`);
+      expect(css).toContain(`--catch-badge-fill: var(--catch-website-color-tag-${tone});`);
+      const ink = token(`website-color-tag-${tone}-ink`);
+      expect(contrast(ink, token(`website-color-tag-${tone}`)), tone).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
   it("keeps arbitrary soft ticket pigments readable, including alpha and RGB extremes", () => {
     const weight = Number(generated.match(/--catch-opacity-badge-pigment-ink: ([\d.]+);/)?.[1]);
     expect(weight).toBe(0.75);

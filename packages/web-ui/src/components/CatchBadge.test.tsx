@@ -27,6 +27,18 @@ describe("CatchBadge", () => {
     expect(screen.getByText("Ready").textContent).toBe("Ready");
   });
 
+  it("takes the website's soft source tones", () => {
+    render(
+      <>
+        <CatchBadge label="On Catch" tone="coral" />
+        <CatchBadge label="Luma" tone="indigo" />
+      </>,
+    );
+
+    expect(badgeOf("On Catch").dataset.tone).toBe("coral");
+    expect(badgeOf("Luma").dataset.tone).toBe("indigo");
+  });
+
   it("fixes the size and tone each constructor fixes", () => {
     render(
       <>

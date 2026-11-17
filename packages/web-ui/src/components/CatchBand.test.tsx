@@ -32,6 +32,11 @@ describe("CatchBand", () => {
     expect(inner.dataset).toMatchObject({pb: "none", pt: "spacious", width: "full"});
   });
 
+  it("holds the organiser page to its own content width", () => {
+    render(<CatchBand as="div" width="profile">Coming up</CatchBand>);
+    expect(screen.getByText("Coming up").dataset.width).toBe("profile");
+  });
+
   it("takes no styling props", () => {
     expectTypeOf<"className" | "style" | "color">().extract<keyof CatchBandProps>().toEqualTypeOf<never>();
   });

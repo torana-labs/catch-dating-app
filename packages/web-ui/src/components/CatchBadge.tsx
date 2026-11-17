@@ -4,6 +4,14 @@ import styles from "./CatchBadge.module.css";
 /** Flutter `CatchBadgeTone`. */
 export type CatchBadgeTone = "neutral" | "brand" | "success" | "warning" | "danger" | "gold" | "affinity";
 
+/**
+ * Tones the website has beyond Flutter's: the canvas's soft source tags
+ * (WebOrgV2 .src), coral for an event on Catch and indigo for one sold
+ * elsewhere, such as Luma. They keep their day colours on any theme.
+ */
+export const catchWebBadgeTones = ["coral", "indigo"] as const;
+export type CatchWebBadgeTone = (typeof catchWebBadgeTones)[number];
+
 /** Flutter `CatchBadgeSize`. */
 export type CatchBadgeSize = "sm" | "md" | "action";
 
@@ -31,8 +39,8 @@ export interface CatchBadgeProps {
   /** Resolved copy; functional recipes render it in uppercase. */
   label: string;
   recipe?: CatchBadgeRecipe;
-  /** standard, functional and status recipes. */
-  tone?: CatchBadgeTone;
+  /** standard, functional and status recipes; a web tone is the website's alone. */
+  tone?: CatchBadgeTone | CatchWebBadgeTone;
   /** standard, functional, solid, solidStatus and live recipes. */
   size?: CatchBadgeSize;
   /** A leading glyph; decorative, so the label carries the meaning. */

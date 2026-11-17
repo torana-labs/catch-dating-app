@@ -2,7 +2,7 @@ import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {ReactNode} from "react";
 import {catchStackGaps} from "./catchCoreVocabulary";
 import {CatchRoot} from "./CatchRoot";
-import {CatchStack} from "./CatchStack";
+import {CatchStack, catchWebStackGaps} from "./CatchStack";
 import {CatchSurface} from "./CatchSurface";
 import {CatchText} from "./CatchText";
 
@@ -38,7 +38,7 @@ function Collapsing() {
   );
 }
 
-/** catch.stack on the web: every gap, an equal row, a wrapping row, and a row collapsing on compact. */
+/** catch.stack on the web: every gap (the website's own last), an equal row, a wrapping row, a hairline above, and a row collapsing on compact. */
 export const Contract: Story = {
   render: () => (
     <CatchRoot size="expanded" theme="day">
@@ -46,7 +46,7 @@ export const Contract: Story = {
         <CatchStack gap={32}>
           <State label="gaps">
             <CatchStack gap={12}>
-              {catchStackGaps.map((gap) => (
+              {[...catchStackGaps, ...catchWebStackGaps].map((gap) => (
                 <CatchStack align="center" direction="row" gap={16} key={gap}>
                   <CatchText tone="tertiary" variant="label-code">{String(gap)}</CatchText>
                   <CatchStack direction="row" gap={gap}><Tile>A</Tile><Tile>B</Tile><Tile>C</Tile></CatchStack>
@@ -67,6 +67,9 @@ export const Contract: Story = {
               <CatchStack direction="row" gap={24} railWidth="narrow"><Tile>The page takes the rest</Tile><Tile>A 380px booking rail</Tile></CatchStack>
               <CatchStack direction="row" gap={24} railSide="start" railWidth="wide"><Tile>A 420px organiser rail</Tile><Tile>The page takes the rest</Tile></CatchStack>
             </CatchStack>
+          </State>
+          <State label="divider above (web)">
+            <CatchStack dividerAbove direction="row" gap={12} justify="between"><Tile>Made with Catch</Tile><Tile>Make a page like this</Tile></CatchStack>
           </State>
           <State label="collapse">
             <CatchStack gap={16}>

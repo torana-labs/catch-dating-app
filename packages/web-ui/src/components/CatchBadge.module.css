@@ -194,6 +194,24 @@
   --catch-badge-border: transparent;
 }
 
+/*
+ * The website's soft source tags (WebOrgV2 .src), beyond Flutter's tones:
+ * coral for an event on Catch, indigo for one sold elsewhere. The board draws
+ * them on white, so they keep these day colours.
+ */
+
+.badge[data-tone="coral"] {
+  --catch-badge-ink: var(--catch-website-color-tag-coral-ink);
+  --catch-badge-fill: var(--catch-website-color-tag-coral);
+  --catch-badge-border: transparent;
+}
+
+.badge[data-tone="indigo"] {
+  --catch-badge-ink: var(--catch-website-color-tag-indigo-ink);
+  --catch-badge-fill: var(--catch-website-color-tag-indigo);
+  --catch-badge-border: transparent;
+}
+
 .badge[data-tone="gold"] {
   --catch-badge-ink: var(--catch-theme-deep-yellow);
   --catch-badge-fill: var(--catch-theme-tint-yellow);
