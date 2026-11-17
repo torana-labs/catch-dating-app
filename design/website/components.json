@@ -278,7 +278,10 @@
         "packages/web-ui/src/components/CatchText.module.css",
         "packages/web-ui/src/components/CatchField.module.css",
         "packages/web-ui/src/components/CatchCheckboxInput.module.css",
-        "packages/web-ui/src/components/CatchQrCode.module.css"
+        "packages/web-ui/src/components/CatchQrCode.module.css",
+        "packages/web-ui/src/components/CatchSiteDock.module.css",
+        "packages/web-ui/src/components/CatchPlanCard.module.css",
+        "packages/web-ui/src/components/CatchDateTile.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -289,7 +292,7 @@
           "phone-launching-soon"
         ]
       },
-      "notes": "The homepage's bands in the board's order, private to one assembly: the header with the city picker, the hero (CatchHeroSection), this week's or the next two weeks' plans (CatchCardGrid) or the launching-soon notice (CatchCtaSection), how a night works and the proof (CatchSplitSection), organisers (CatchCardGrid), the host band (CatchSplitSection; third in a thin or launching city, after the proof in a busy one), the app band (CatchCtaSection), the FAQ (CatchFaqSection) and the footer. Each band arranges library parts and binds the controller's view of the city (D18)."
+      "notes": "The homepage's bands in the board's order, private to one assembly: the header with the city picker; the hero (CatchHeroSection: the phone in the canvas bezel, the notify card until the app is on a store, and the soonest real plan as the floating chip); the entry tiles (CatchCardGrid entry); this week's or the next two weeks' plans as dated plan cards with the action across from the header (CatchCardGrid plan, a rail on phones) or the launching-soon notice (CatchCtaSection); the host band (CatchSplitSection; third in a thin or launching city, after the proof in a busy one); the formats (CatchCardGrid format, with chips); how a night works and the proof (CatchSplitSection); organisers (CatchCardGrid); the app band as the bento grid (CatchCtaSection tiles); the mint refer panel (CatchCtaSection, its introduction on WhatsApp); the FAQ (CatchFaqSection); the footer; and the phone action bar (CatchSiteDock). Each band arranges library parts and binds the controller's view of the city (D18)."
     },
     {
       "id": "shared_identity_display_shell",
@@ -5676,6 +5679,34 @@
         "catch.text"
       ],
       "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
+    },
+    {
+      "id": "shared_catch_site_dock",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchSiteDock.tsx",
+      "exportName": "CatchSiteDock",
+      "css": [
+        "packages/web-ui/src/components/CatchSiteDock.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchSiteDock.stories.tsx",
+        "exportName": "Contract",
+        "states": [
+          "two-actions",
+          "whatsapp",
+          "wide-hidden"
+        ]
+      },
+      "notes": "Website T4 under D26 (the playbook kit's .mbar). The phone action bar: a sticky ink pill 8px above the screen's foot with the page's main action (coral, or pink on the homepage), an optional outlined second action and an optional WhatsApp button, 44px each. It draws nothing on a wide page and sits last on the page, so it rides the screen's foot and comes to rest under the footer. First consumer: the homepage. Search aliases: MobileBar, StickyCta, PhoneBar.",
+      "comparedWith": [
+        "catch.dock"
+      ],
+      "comparisonReason": "Shares the dock role noun with catch.dock (Flutter's anchored decision and page-action docks), but it is the website's marketing phone bar: links only, no loading or disabled state, no safe-area chrome, and hidden on wide pages, so it does not implement catch.dock's recipes."
     },
     {
       "id": "shared_device_frame",
