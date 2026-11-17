@@ -73,20 +73,3 @@ class HostGroupSummaryWindow {
   final List<HostSavedAudienceSummary> audiences;
   final bool hasMore;
 }
-
-class HostGroupDirectoryState {
-  const HostGroupDirectoryState({
-    required this.audiences,
-    required this.hasMore,
-    this.loadingMore = false,
-    this.loadMoreError,
-  });
-  final List<HostSavedAudienceSummary> audiences;
-
-  /// Whether more groups follow the rows listened to.
-  final bool hasMore;
-  final bool loadingMore;
-  final Object? loadMoreError;
-
-  bool get canLoadMore => hasMore && !loadingMore;
-}
