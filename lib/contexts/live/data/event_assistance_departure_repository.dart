@@ -3,10 +3,12 @@ import 'package:catch_dating_app/contexts/live/data/event_assistance_view_identi
 import 'package:catch_dating_app/contexts/live/data/event_assistance_view_support.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_route_change.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/schema_contracts/generated/callables/change_event_assistance_route_callable_request.g.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/confirm_event_assistance_departure_callable_request.g.dart';
 import 'package:catch_platform/schema_contracts/generated/callables/get_event_assistance_departure_roster_callable_request.g.dart';
 import 'package:catch_platform/streams/clocked_listener.dart';
@@ -17,8 +19,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'event_assistance_departure_repository.g.dart';
 
 /// The group's progress through a manager listener on
-/// `hostEventGroupProgressViews`; roster review and departure confirmation
-/// stay commands. No direct progress, attendance or messaging writes.
+/// `hostEventGroupProgressViews`; roster review, departure confirmation and
+/// the event lead's route change stay commands. No direct progress, attendance or messaging writes.
 class EventAssistanceDepartureRepository {
   const EventAssistanceDepartureRepository(
     this._functions,
@@ -128,6 +130,35 @@ class EventAssistanceDepartureRepository {
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'confirm group departure',
+      resource: 'eventAssistanceGroupProgress',
+    ),
+    mapper: mapMissingCallableAsUnavailable,
+  );
+
+  /// Moves a departed group to another route alternative; the event lead
+  /// only, checked by the backend.
+  Future<EventAssistanceGroupProgressResult> changeRoute(
+    EventAssistanceRouteChange change,
+  ) => withBackendErrorContext(
+    () async {
+      final response = await _functions
+          .httpsCallable('changeEventAssistanceRoute')
+          .call<Object?>(
+            ChangeEventAssistanceRouteCallableRequest(
+              command: change.command,
+            ).toJson(),
+          );
+      final result = EventAssistanceGroupProgressResult.fromCallableData(
+        response.data,
+        expectedScope: change.snapshot.scope,
+        expectedActorUid: change.snapshot.actorUid,
+      );
+      change.requireResult(result);
+      return result;
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'change group route',
       resource: 'eventAssistanceGroupProgress',
     ),
     mapper: mapMissingCallableAsUnavailable,

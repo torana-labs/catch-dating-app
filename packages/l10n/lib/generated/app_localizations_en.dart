@@ -17396,6 +17396,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventAssistanceDepartureSaving => 'Recording departure…';
 
   @override
+  String get eventAssistanceRouteChangeTitle => 'Change route';
+
+  @override
+  String get eventAssistanceRouteChangeBody =>
+      'Send the group a different way without recording a new departure.';
+
+  @override
+  String get eventAssistanceRouteChangeConfirm => 'Change route';
+
+  @override
+  String get eventAssistanceRouteChangeSaved => 'Route changed.';
+
+  @override
   String get eventAssistanceDepartureUnknown =>
       'The result is unconfirmed. Retry to check this same departure.';
 

@@ -8,6 +8,8 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test_pump_helpers.dart';
+
 class _UnusedFunctions extends Fake implements FirebaseFunctions {}
 
 HostSavedAudienceSummary row(String id) => HostSavedAudienceSummary(
@@ -22,8 +24,9 @@ HostSavedAudienceSummary row(String id) => HostSavedAudienceSummary(
   updatedAt: DateTime(2026),
 );
 
-class _PagedGroups extends HostSavedAudienceRepository {
-  _PagedGroups()
+/// One controllable listener per window size.
+class _WindowedGroups extends HostSavedAudienceRepository {
+  _WindowedGroups()
     : super(
         _UnusedFunctions(),
         summaries: HostSummaryReader(
@@ -31,183 +34,97 @@ class _PagedGroups extends HostSavedAudienceRepository {
           actorId: () => 'host',
         ),
       );
-  int calls = 0;
-  final continuation = Completer<HostSavedAudienceSummaryPage>();
+
+  final windows = <int, StreamController<HostGroupSummaryWindow>>{};
+
+  StreamController<HostGroupSummaryWindow> window(int limit) =>
+      windows.putIfAbsent(limit, StreamController.new);
+
   @override
-  Future<HostSavedAudienceSummaryPage> listGroupSummaries(
+  Stream<HostGroupSummaryWindow> watchGroupSummaries(
     String organizerId, {
-    String? cursor,
-    int limit = ReadLimitPolicy.historyPage,
+    required int limit,
     bool byName = true,
     bool? isStatic,
-    bool Function()? isCurrent,
-  }) async {
-    calls++;
-    if (cursor != null) return continuation.future;
-    return HostSavedAudienceSummaryPage(
-      audiences: [row('a')],
-      nextCursor: 'next',
-    );
-  }
+  }) => window(limit).stream;
 }
+
+const _page = ReadLimitPolicy.directoryPage;
+
+List<String> _ids(HostGroupDirectoryState state) =>
+    state.audiences.map((item) => item.audienceId).toList();
 
 void main() {
-  test('Groups publish the first page without awaiting later pages', () async {
-    final repo = _PagedGroups();
-    final container = ProviderContainer.test(
+  late _WindowedGroups repo;
+  late ProviderContainer container;
+  final provider = hostGroupDirectoryControllerProvider('org');
+
+  setUp(() {
+    repo = _WindowedGroups();
+    container = ProviderContainer.test(
       overrides: [hostSavedAudienceRepositoryProvider.overrideWithValue(repo)],
     );
-    final provider = hostGroupDirectoryControllerProvider('org');
     container.listen(provider, (_, _) {});
-    final initial = await container.read(provider.future);
-    expect(initial.page.audiences.map((item) => item.audienceId), ['a']);
-    expect(repo.calls, 1);
-    final pending = container.read(provider.notifier).loadMore();
-    expect(container.read(provider).requireValue.loadingMore, isTrue);
-    repo.continuation.complete(
-      HostSavedAudienceSummaryPage(
-        audiences: [row('a'), row('b')],
-        nextCursor: null,
-      ),
-    );
-    await pending;
-    expect(
-      container
-          .read(provider)
-          .requireValue
-          .page
-          .audiences
-          .map((item) => item.audienceId),
-      ['a', 'b'],
-    );
-    expect(container.read(provider).requireValue.page.nextCursor, isNull);
   });
 
-  test(
-    'Disposed Group continuations cannot update or restart the directory',
-    () async {
-      final repo = _PagedGroups();
-      final container = ProviderContainer.test(
-        overrides: [
-          hostSavedAudienceRepositoryProvider.overrideWithValue(repo),
-        ],
-      );
-      final provider = hostGroupDirectoryControllerProvider('org');
-      final subscription = container.listen(provider, (_, _) {});
-      await container.read(provider.future);
-      final pending = container.read(provider.notifier).loadMore();
-      subscription.close();
-      await container.pump();
-      repo.continuation.complete(
-        HostSavedAudienceSummaryPage(
-          audiences: [row('stale')],
-          nextCursor: 'unused',
-        ),
-      );
-      await pending;
-      expect(repo.calls, 2);
-    },
-  );
-
-  test('refreshing Groups cannot page a retained old cursor', () async {
-    final repo = _RefreshingGroups();
-    final container = ProviderContainer.test(
-      overrides: [hostSavedAudienceRepositoryProvider.overrideWithValue(repo)],
-    );
-    final provider = hostGroupDirectoryControllerProvider('org');
-    container.listen(provider, (_, _) {});
-    await container.read(provider.future);
-    container.invalidate(provider);
-    final refreshed = container.read(provider.future);
-    await repo.refreshRequested.future;
-    expect(container.read(provider).isLoading, isTrue);
-    expect(
-      container.read(provider).asData?.value.page.nextCursor,
-      'old-cursor',
-    );
-
-    final pending = container.read(provider.notifier).loadMore();
-    final requestedWhileRefreshing = List<String?>.of(repo.requests);
-    repo.refresh.complete(
-      HostSavedAudienceSummaryPage(
-        audiences: [row('fresh')],
-        nextCursor: 'fresh-cursor',
-      ),
-    );
-    await refreshed;
+  Future<HostGroupDirectoryState> current() async {
+    await flushTestEventQueue();
     await container.pump();
-    repo.oldContinuation.complete(
-      HostSavedAudienceSummaryPage(audiences: [row('stale')], nextCursor: null),
-    );
-    await pending;
-    expect(requestedWhileRefreshing, [null, null]);
-    expect(
-      container
-          .read(provider)
-          .requireValue
-          .page
-          .audiences
-          .map((item) => item.audienceId),
-      ['fresh'],
-    );
-    await container.read(provider.notifier).loadMore();
-    expect(repo.requests, [null, null, 'fresh-cursor']);
-    expect(
-      container
-          .read(provider)
-          .requireValue
-          .page
-          .audiences
-          .map((item) => item.audienceId),
-      ['fresh', 'fresh-more'],
-    );
-  });
-}
-
-class _RefreshingGroups extends HostSavedAudienceRepository {
-  _RefreshingGroups()
-    : super(
-        _UnusedFunctions(),
-        summaries: HostSummaryReader(
-          FakeFirebaseFirestore(),
-          actorId: () => 'host',
-        ),
-      );
-
-  final requests = <String?>[];
-  final refreshRequested = Completer<void>();
-  final refresh = Completer<HostSavedAudienceSummaryPage>();
-  final oldContinuation = Completer<HostSavedAudienceSummaryPage>();
-
-  @override
-  Future<HostSavedAudienceSummaryPage> listGroupSummaries(
-    String organizerId, {
-    String? cursor,
-    int limit = ReadLimitPolicy.historyPage,
-    bool byName = true,
-    bool? isStatic,
-    bool Function()? isCurrent,
-  }) {
-    requests.add(cursor);
-    if (requests.length == 1) {
-      return Future.value(
-        HostSavedAudienceSummaryPage(
-          audiences: [row('old')],
-          nextCursor: 'old-cursor',
-        ),
-      );
-    }
-    if (cursor == null) {
-      refreshRequested.complete();
-      return refresh.future;
-    }
-    if (cursor == 'old-cursor') return oldContinuation.future;
-    expect(cursor, 'fresh-cursor');
-    return Future.value(
-      HostSavedAudienceSummaryPage(
-        audiences: [row('fresh-more')],
-        nextCursor: null,
-      ),
-    );
+    return container.read(provider).requireValue;
   }
+
+  test('Groups publish the first page, then a larger window', () async {
+    final initial = container.read(provider.future);
+    repo
+        .window(_page)
+        .add(HostGroupSummaryWindow(audiences: [row('a')], hasMore: true));
+    expect(_ids(await initial), ['a']);
+    expect((await initial).canLoadMore, isTrue);
+
+    container.read(provider.notifier).loadMore();
+    expect(container.read(provider).value?.loadingMore, isTrue);
+    expect(_ids(container.read(provider).value!), ['a']);
+    repo
+        .window(_page * 2)
+        .add(
+          HostGroupSummaryWindow(
+            audiences: [row('a'), row('b')],
+            hasMore: false,
+          ),
+        );
+    final grown = await current();
+    expect(_ids(grown), ['a', 'b']);
+    expect(grown.canLoadMore, isFalse);
+  });
+
+  test('a group the server adds shows in the open window', () async {
+    final initial = container.read(provider.future);
+    repo
+        .window(_page)
+        .add(HostGroupSummaryWindow(audiences: [row('a')], hasMore: false));
+    await initial;
+    repo
+        .window(_page)
+        .add(
+          HostGroupSummaryWindow(
+            audiences: [row('a'), row('c')],
+            hasMore: false,
+          ),
+        );
+    expect(_ids(await current()), ['a', 'c']);
+  });
+
+  test('a larger window that fails keeps the rows already shown', () async {
+    final initial = container.read(provider.future);
+    repo
+        .window(_page)
+        .add(HostGroupSummaryWindow(audiences: [row('a')], hasMore: true));
+    await initial;
+    container.read(provider.notifier).loadMore();
+    repo.window(_page * 2).addError(StateError('offline'));
+    final failed = await current();
+    expect(_ids(failed), ['a']);
+    expect(failed.loadMoreError, isA<StateError>());
+    expect(failed.canLoadMore, isTrue);
+  });
 }

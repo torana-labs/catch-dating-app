@@ -59,6 +59,106 @@ final class PrivateEventSetupTimelineRepositoryProvider
 String _$privateEventSetupTimelineRepositoryHash() =>
     r'6625bdf327ae68ea78e5fabd4fe31880721d8719';
 
+/// The organizer's unpublished events starting on or after [from], soonest
+/// first, as a listener: a draft saved, published or cancelled in Create or
+/// a workspace shows on return without a reread.
+
+@ProviderFor(hostEventDrafts)
+final hostEventDraftsProvider = HostEventDraftsFamily._();
+
+/// The organizer's unpublished events starting on or after [from], soonest
+/// first, as a listener: a draft saved, published or cancelled in Create or
+/// a workspace shows on return without a reread.
+
+final class HostEventDraftsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<HostEventDraftWindow>,
+          HostEventDraftWindow,
+          Stream<HostEventDraftWindow>
+        >
+    with
+        $FutureModifier<HostEventDraftWindow>,
+        $StreamProvider<HostEventDraftWindow> {
+  /// The organizer's unpublished events starting on or after [from], soonest
+  /// first, as a listener: a draft saved, published or cancelled in Create or
+  /// a workspace shows on return without a reread.
+  HostEventDraftsProvider._({
+    required HostEventDraftsFamily super.from,
+    required (String, DateTime) super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostEventDraftsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostEventDraftsHash();
+
+  @override
+  String toString() {
+    return r'hostEventDraftsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<HostEventDraftWindow> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<HostEventDraftWindow> create(Ref ref) {
+    final argument = this.argument as (String, DateTime);
+    return hostEventDrafts(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostEventDraftsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostEventDraftsHash() => r'e89a7213fa3d855b52a0f804e1c854f47c1c8caa';
+
+/// The organizer's unpublished events starting on or after [from], soonest
+/// first, as a listener: a draft saved, published or cancelled in Create or
+/// a workspace shows on return without a reread.
+
+final class HostEventDraftsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          Stream<HostEventDraftWindow>,
+          (String, DateTime)
+        > {
+  HostEventDraftsFamily._()
+    : super(
+        retry: null,
+        name: r'hostEventDraftsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The organizer's unpublished events starting on or after [from], soonest
+  /// first, as a listener: a draft saved, published or cancelled in Create or
+  /// a workspace shows on return without a reread.
+
+  HostEventDraftsProvider call(String organizerId, DateTime from) =>
+      HostEventDraftsProvider._(argument: (organizerId, from), from: this);
+
+  @override
+  String toString() => r'hostEventDraftsProvider';
+}
+
 @ProviderFor(HostEventsTimelineController)
 final hostEventsTimelineControllerProvider =
     HostEventsTimelineControllerFamily._();
@@ -107,7 +207,7 @@ final class HostEventsTimelineControllerProvider
 }
 
 String _$hostEventsTimelineControllerHash() =>
-    r'a85619f404f3b62c4a46c33add3575f39f1a8449';
+    r'd52d96aacf3d521c6e408811c3e39f2e2faf2bdb';
 
 final class HostEventsTimelineControllerFamily extends $Family
     with

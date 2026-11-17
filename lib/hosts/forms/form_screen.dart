@@ -201,7 +201,6 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
               reviewStatus: HostApplicationReviewStatus.approved,
             ),
       );
-      ref.invalidate(hostFormResponsesControllerProvider(_waiting(uid)));
       if (mounted) {
         showCatchNotice(context, context.l10n.hostFormsLetInDone);
       }
@@ -227,7 +226,6 @@ class _HostFormScreenState extends ConsumerState<HostFormScreen> {
     if (!mounted) return;
     if (published) {
       showCatchNotice(context, context.l10n.hostFormsPublished);
-      ref.invalidate(hostFormsDirectoryControllerProvider);
       return;
     }
     final error = ref

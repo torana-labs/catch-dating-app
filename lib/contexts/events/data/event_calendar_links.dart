@@ -87,13 +87,22 @@ CalendarEventPayload calendarEventPayloadForEvent(Event event) {
   );
 }
 
-String _calendarDetails(Event event) {
+String _calendarDetails(Event event) => _calendarDetailsText(
+  description: event.description,
+  activity: event.activitySummaryLabel,
+  notes: event.locationNotes,
+);
+
+String _calendarDetailsText({
+  required String? description,
+  required String activity,
+  required String? notes,
+}) {
   final details = [
     'Catch event',
-    event.description.trim(),
-    event.activitySummaryLabel,
-    if (event.locationNotes?.trim().isNotEmpty == true)
-      event.locationNotes!.trim(),
+    description?.trim() ?? '',
+    activity,
+    if (notes?.trim().isNotEmpty == true) notes!.trim(),
   ]..removeWhere((line) => line.isEmpty);
 
   return details.join('\n');
@@ -113,12 +122,11 @@ CalendarEventPayload calendarEventPayloadForCard(GuestEventCard card) {
   final notes = card.locationNotes?.trim();
   return CalendarEventPayload(
     title: card.title,
-    description: [
-      'Catch event',
-      card.description?.trim() ?? '',
-      card.activitySummaryLabel,
-      if (notes != null && notes.isNotEmpty) notes,
-    ].where((line) => line.isNotEmpty).join('\n'),
+    description: _calendarDetailsText(
+      description: card.description,
+      activity: card.activitySummaryLabel,
+      notes: card.locationNotes,
+    ),
     location: notes == null || notes.isEmpty
         ? card.locationName
         : '${card.locationName}, $notes',

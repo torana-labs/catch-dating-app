@@ -2333,7 +2333,14 @@ driven by `tool/ci/main_red_alert.mjs`) runs when main's push or nightly CI
 completes. It keeps one open issue titled "Main CI is red": opened on the
 first failure, naming the failed gating jobs (Required CI) and reporting
 jobs separately; commented on each further failure; closed with a comment on
-the next green run. A failed nightly also names its commit window: the range
+the next green run that ran every job main still owes. Each alert post records
+those jobs: the run's failures plus earlier failed jobs it did not pass. A green
+main push that skipped any of them (the lane was not selected) comments once
+naming them and leaves the issue open; a green nightly, which runs every lane,
+always closes it. An issue with no such record waits for a green nightly. While
+the issue is open the sprint floor's 7-day exit does not fire (15 Nov 2026:
+#1929 had closed on a push that never re-ran the failing Tools jobs). A failed
+nightly also names its commit window: the range
 from the last green nightly's commit, with a compare link, or "unknown" when
 none of the last 30 nightly runs was green. Opening the issue notifies repository watchers. Cancelled
 runs change nothing. Fix forward on main; never close the issue by hand

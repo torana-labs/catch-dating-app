@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_summary_reads.dart';
-import 'package:catch_dating_app/contexts/events/domain/private_event_setup_inventory.dart';
 import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_summary_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
@@ -56,15 +55,15 @@ void main() {
     final reads = HostFormSummaryReads(
       HostSummaryReader(db, actorId: () => 'host'),
     );
-    final page = await reads.list(
-      const HostFormListRequest(organizerId: 'org'),
-    );
-    expect(page.items.map((item) => item.formId), ['form']);
-    expect(page.nextCursor, isNull);
+    final window = await reads
+        .watchWindow(const HostFormListRequest(organizerId: 'org'), limit: 25)
+        .first;
+    expect(window.forms.map((item) => item.formId), ['form']);
+    expect(window.hasMore, isFalse);
   });
 
   test(
-    'Events keep unpublished upcoming and history scopes separate',
+    'Event drafts list unpublished events from the given start, soonest first',
     () async {
       final db = FakeFirebaseFirestore();
       await db.collection('hostDirectorySummaries').doc('org').set({
@@ -74,6 +73,7 @@ void main() {
       final now = DateTime.now().millisecondsSinceEpoch;
       for (final entry in {
         'past': now - 100000,
+        'later': now + 200000,
         'future': now + 100000,
       }.entries) {
         await db.collection('hostEventSummaries').doc(entry.key).set({
@@ -98,18 +98,15 @@ void main() {
       final reads = HostEventSummaryReads(
         HostSummaryReader(db, actorId: () => 'host'),
       );
-      final upcoming = await reads.list(
-        organizerId: 'org',
-        scope: PrivateEventSetupScope.upcoming,
-        limit: 20,
-      );
-      final past = await reads.list(
-        organizerId: 'org',
-        scope: PrivateEventSetupScope.past,
-        limit: 20,
-      );
-      expect(upcoming.events.map((item) => item.eventId), ['future']);
-      expect(past.events.map((item) => item.eventId), ['past']);
+      final drafts = await reads
+          .watchDrafts(
+            organizerId: 'org',
+            from: DateTime.fromMillisecondsSinceEpoch(now),
+            limit: 1,
+          )
+          .first;
+      expect(drafts.events.map((item) => item.eventId), ['future']);
+      expect(drafts.hasMore, isTrue);
     },
   );
 
@@ -126,11 +123,9 @@ void main() {
       );
 
       await expectLater(
-        reads.list(
-          organizerId: 'org',
-          scope: PrivateEventSetupScope.upcoming,
-          limit: 20,
-        ),
+        reads
+            .watchDrafts(organizerId: 'org', from: DateTime(2026), limit: 20)
+            .first,
         throwsStateError,
       );
     },

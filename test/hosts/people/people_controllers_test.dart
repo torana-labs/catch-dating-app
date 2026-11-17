@@ -146,9 +146,11 @@ void main() {
       overrides: [
         hostContactsRepositoryProvider.overrideWithValue(contacts),
         hostAllSavedAudienceSummariesProvider(_org).overrideWith(
-          (ref) async => HostSavedAudienceSummaryPage(
-            audiences: [_summary('a', 'active'), _summary('b', 'archived')],
-            nextCursor: null,
+          (ref) => Stream.value(
+            HostSavedAudienceSummaryPage(
+              audiences: [_summary('a', 'active'), _summary('b', 'archived')],
+              nextCursor: null,
+            ),
           ),
         ),
       ],
@@ -194,9 +196,8 @@ void main() {
       overrides: [
         hostContactsRepositoryProvider.overrideWithValue(contacts),
         hostAllSavedAudienceSummariesProvider(_org).overrideWith(
-          (ref) async => const HostSavedAudienceSummaryPage(
-            audiences: [],
-            nextCursor: null,
+          (ref) => Stream.value(
+            const HostSavedAudienceSummaryPage(audiences: [], nextCursor: null),
           ),
         ),
       ],

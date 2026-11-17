@@ -509,7 +509,7 @@
         },
         {
           "id": "forms_directory",
-          "file": "lib/hosts/presentation/forms/host_forms_controller.dart",
+          "file": "lib/hosts/presentation/forms/host_forms_directory_controller.dart",
           "symbol": "HostFormsDirectoryController",
           "role": "Organizer form inventory state."
         },

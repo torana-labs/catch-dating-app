@@ -17,6 +17,7 @@ class HostFormResponsesState {
     required this.responses,
     this.entries,
     required this.nextCursor,
+    this.windowHasMore = false,
     this.answerFilterOptions = const [],
     this.versionScope,
     this.loadingMore = false,
@@ -29,12 +30,15 @@ class HostFormResponsesState {
       entries ??
       responses.map(HostFormInboxEntry.fromResponse).toList(growable: false);
   final String? nextCursor;
+
+  /// Whether a live window has more rows after the ones listened to.
+  final bool windowHasMore;
   final List<HostFormResponseFilterOption> answerFilterOptions;
   final HostFormResponseVersionScope? versionScope;
   final bool loadingMore;
   final Object? loadMoreError;
 
-  bool get canLoadMore => nextCursor != null && !loadingMore;
+  bool get canLoadMore => (nextCursor != null || windowHasMore) && !loadingMore;
 
   HostFormResponsesState copyWith({
     List<HostFormResponseSummary>? responses,
@@ -49,6 +53,7 @@ class HostFormResponsesState {
     answerFilterOptions: answerFilterOptions,
     versionScope: versionScope,
     nextCursor: clearNextCursor ? null : nextCursor ?? this.nextCursor,
+    windowHasMore: windowHasMore,
     loadingMore: loadingMore ?? this.loadingMore,
     loadMoreError: clearLoadMoreError
         ? null
@@ -56,6 +61,31 @@ class HostFormResponsesState {
   );
 }
 
+/// How many rows a live response request listens to; it grows by the
+/// request's page size each time the list asks for more.
+@riverpod
+class HostFormResponsesWindow extends _$HostFormResponsesWindow {
+  @override
+  int build(HostFormResponseListRequest request) => request.limit;
+
+  void grow() => state += request.limit;
+}
+
+/// The first rows of a response request the read model serves, as a
+/// listener.
+@riverpod
+Stream<HostFormResponseWindow> hostFormResponsesListener(
+  Ref ref,
+  HostFormResponseListRequest request,
+  int limit,
+) => ref
+    .watch(hostFormsRepositoryProvider)
+    .watchResponses(request, limit: limit);
+
+/// A response list. A request the response read model serves is live: an
+/// answer submitted, reviewed or offered elsewhere shows at once, and more
+/// rows mean a larger listener. Answer, identity, contact and text filters
+/// page through the callable, their recorded search exception.
 @riverpod
 class HostFormResponsesController extends _$HostFormResponsesController {
   int _generation = 0;
@@ -64,7 +94,33 @@ class HostFormResponsesController extends _$HostFormResponsesController {
   Future<HostFormResponsesState> build(HostFormResponseListRequest request) {
     ++_generation;
     ref.onDispose(() => ++_generation);
-    return _loadInitial();
+    return HostResponseSummaryReads.supports(request)
+        ? _watchWindow()
+        : _loadInitial();
+  }
+
+  Future<HostFormResponsesState> _watchWindow() async {
+    final limit = ref.watch(hostFormResponsesWindowProvider(request));
+    final previous = state.value;
+    final HostFormResponseWindow window;
+    try {
+      window = await ref.watch(
+        hostFormResponsesListenerProvider(request, limit).future,
+      );
+    } on Object catch (error) {
+      // A larger window that fails keeps the rows already shown.
+      if (limit == request.limit || previous == null) rethrow;
+      return previous.copyWith(loadingMore: false, loadMoreError: error);
+    }
+    final page = window.page;
+    return HostFormResponsesState(
+      responses: page.items,
+      entries: page.entries,
+      answerFilterOptions: page.answerFilterOptions,
+      versionScope: page.versionScope,
+      nextCursor: null,
+      windowHasMore: window.hasMore,
+    );
   }
 
   Future<HostFormResponsesState> _loadInitial() async {
@@ -80,6 +136,20 @@ class HostFormResponsesController extends _$HostFormResponsesController {
     );
   }
 
+  /// Reads the list again after a failure. A live list opens its listener
+  /// again too, so a failed listener is not handed back as it was.
+  void retry() {
+    if (HostResponseSummaryReads.supports(request)) {
+      ref.invalidate(
+        hostFormResponsesListenerProvider(
+          request,
+          ref.read(hostFormResponsesWindowProvider(request)),
+        ),
+      );
+    }
+    ref.invalidateSelf();
+  }
+
   Future<void> loadMore() async {
     final generation = _generation;
     final current = state.asData?.value;
@@ -87,6 +157,10 @@ class HostFormResponsesController extends _$HostFormResponsesController {
     state = AsyncData(
       current.copyWith(loadingMore: true, clearLoadMoreError: true),
     );
+    if (HostResponseSummaryReads.supports(request)) {
+      ref.read(hostFormResponsesWindowProvider(request).notifier).grow();
+      return;
+    }
     try {
       final page = await ref
           .read(hostFormsRepositoryProvider)

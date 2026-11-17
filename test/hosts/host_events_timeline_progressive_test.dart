@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
-import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -118,10 +116,7 @@ void main() {
             hasMore: false,
           ),
         );
-        final container = timelineContainer(
-          repository,
-          setups: ControlledSetupRepository([old, fresh]),
-        );
+        final container = timelineContainer(repository);
         final provider = timelineProvider(container);
         final subscription = container.listen(provider, (_, _) {});
         addTearDown(subscription.close);
@@ -134,10 +129,6 @@ void main() {
         expect(refreshing.activeEvents.single.id, 'fresh-active');
         expect(refreshing.pastEvents.single.id, 'old-past');
         expect(refreshing.cancelledEvents.single.id, 'old-cancelled');
-        expect(refreshing.unpublishedHistory.map((event) => event.eventId), [
-          'old-past',
-          'old-cancelled',
-        ]);
         expect(refreshing.loadingMorePast, isTrue);
         fresh.completeHistory(
           failure: failedSource,
@@ -153,14 +144,6 @@ void main() {
           failedSource == TimelineSource.cancelled
               ? 'old-cancelled'
               : 'fresh-cancelled',
-        );
-        expect(refreshed.unpublishedHistory.map((event) => event.eventId), [
-          'fresh-past',
-          'fresh-cancelled',
-        ]);
-        expect(
-          refreshed.unpublishedCursors.values,
-          everyElement(startsWith('fresh-')),
         );
         if (failedSource != null) {
           await container.read(provider.notifier).retryPast();
@@ -181,8 +164,7 @@ void main() {
     () async {
       final reads = PendingTimelineReads('old');
       final repository = timelineRepositoryFor([reads]);
-      final setups = ControlledSetupRepository([reads]);
-      final container = timelineContainer(repository, setups: setups);
+      final container = timelineContainer(repository);
       final provider = timelineProvider(container);
       final subscription = container.listen(provider, (_, _) {});
       addTearDown(subscription.close);
@@ -193,7 +175,6 @@ void main() {
       container.updateOverrides([
         uidProvider.overrideWithValue(const AsyncData('account-b')),
         eventRepositoryProvider.overrideWithValue(repository),
-        privateEventSetupTimelineRepositoryProvider.overrideWithValue(setups),
       ]);
       await Future.wait([
         notifier.loadMoreActive(),
@@ -203,7 +184,6 @@ void main() {
       expect(repository.activeStartAfterCalls, [null]);
       expect(repository.pastStartAfterCalls, [null]);
       expect(repository.cancelledStartAfterCalls, [null]);
-      expect(setups.calls, hasLength(3));
     },
   );
 
@@ -251,15 +231,13 @@ void main() {
       final old = PendingTimelineReads('old');
       final fresh = PendingTimelineReads('fresh');
       final repository = timelineRepositoryFor([old, fresh]);
-      final setups = ControlledSetupRepository([old, fresh]);
-      final container = timelineContainer(repository, setups: setups);
+      final container = timelineContainer(repository);
       var provider = timelineProvider(container);
       var subscription = container.listen(provider, (_, _) {});
       addTearDown(() => subscription.close());
       container.updateOverrides([
         uidProvider.overrideWithValue(const AsyncData('account-b')),
         eventRepositoryProvider.overrideWithValue(repository),
-        privateEventSetupTimelineRepositoryProvider.overrideWithValue(setups),
       ]);
       await container.pump();
       provider = timelineProvider(container);
@@ -270,10 +248,7 @@ void main() {
       await settledTimeline(container, provider);
       old.completeUpcoming(
         failures: oldFails
-            ? {
-                TimelineSource.active: StateError('old active'),
-                TimelineSource.privateUpcoming: StateError('old upcoming'),
-              }
+            ? {TimelineSource.active: StateError('old active')}
             : const {},
       );
       old.completeHistory();
@@ -304,8 +279,7 @@ void main() {
             () => fresh.cancelled.future,
           ],
         );
-        final setups = ControlledSetupRepository([old, fresh]);
-        final container = timelineContainer(repository, setups: setups);
+        final container = timelineContainer(repository);
         var provider = timelineProvider(container);
         var subscription = container.listen(provider, (_, _) {});
         addTearDown(() => subscription.close());
@@ -316,7 +290,6 @@ void main() {
             hasMore: true,
           ),
         );
-        old.completePrivate(PrivateEventSetupScope.upcoming, null);
         old.completeHistory();
         await settledTimeline(container, provider);
         final continuation = container.read(provider.notifier).loadMoreActive();
@@ -328,9 +301,6 @@ void main() {
             container.updateOverrides([
               uidProvider.overrideWithValue(const AsyncData('account-b')),
               eventRepositoryProvider.overrideWithValue(repository),
-              privateEventSetupTimelineRepositoryProvider.overrideWithValue(
-                setups,
-              ),
             ]);
             provider = timelineProvider(container);
             subscription.close();
@@ -348,11 +318,6 @@ void main() {
           oldFails ? StateError('obsolete') : null,
         );
         await continuation;
-        expect(
-          setups.calls.where((call) => call.$2 != null),
-          isEmpty,
-          reason: 'A stale continuation must not start the next private read',
-        );
         if (transition != 'dispose') {
           final result = container.read(provider).requireValue;
           expect(result.activeEvents.single.id, 'fresh-active');
@@ -368,19 +333,14 @@ void main() {
       () async {
         final reads = PendingTimelineReads('initial');
         final repository = timelineRepositoryFor([reads]);
-        final setups = ControlledSetupRepository([reads]);
-        final container = timelineContainer(repository, setups: setups);
+        final container = timelineContainer(repository);
         final provider = timelineProvider(container);
         final subscription = container.listen(provider, (_, _) {});
         addTearDown(subscription.close);
-        // All six reads start before any answer is available.
+        // All three reads start before any answer is available.
         expect(repository.activeStartAfterCalls, [null]);
         expect(repository.pastStartAfterCalls, [null]);
         expect(repository.cancelledStartAfterCalls, [null]);
-        expect(
-          setups.calls.map((call) => call.$1),
-          PrivateEventSetupScope.values,
-        );
         if (historyFirst) {
           reads.completeHistory();
           await flushTimeline();
@@ -389,7 +349,6 @@ void main() {
         reads.completeUpcoming();
         final upcoming = await container.read(provider.future);
         expect(upcoming.activeEvents.single.id, 'initial-active');
-        expect(upcoming.unpublishedUpcoming.single.eventId, 'initial-upcoming');
         expect(upcoming.loadingMorePast, isTrue);
         expect(upcoming.historyInitialized, isFalse);
         expect(upcoming.canLoadMorePast, isFalse);
@@ -397,16 +356,11 @@ void main() {
           final notifier = container.read(provider.notifier);
           await Future.wait([notifier.loadMorePast(), notifier.retryPast()]);
           expect(repository.pastStartAfterCalls, [null]);
-          expect(setups.calls, hasLength(3));
           reads.completeHistory();
         }
         final result = await settledTimeline(container, provider);
         expect(result.pastEvents.single.id, 'initial-past');
         expect(result.cancelledEvents.single.id, 'initial-cancelled');
-        expect(result.unpublishedHistory.map((event) => event.eventId), [
-          'initial-past',
-          'initial-cancelled',
-        ]);
         expect(result.loadingMorePast, isFalse);
         expect(result.historyInitialized, isTrue);
       },
@@ -420,10 +374,7 @@ void main() {
         () async {
           final reads = PendingTimelineReads('initial');
           final error = StateError(source.name);
-          final container = timelineContainer(
-            timelineRepositoryFor([reads]),
-            setups: ControlledSetupRepository([reads]),
-          );
+          final container = timelineContainer(timelineRepositoryFor([reads]));
           final provider = timelineProvider(container);
           final subscription = container.listen(provider, (_, _) {});
           addTearDown(subscription.close);
@@ -433,8 +384,7 @@ void main() {
             expect(container.read(provider).isLoading, isTrue);
           }
           reads.completeUpcoming(failure: source, error: error);
-          if (source == TimelineSource.active ||
-              source == TimelineSource.privateUpcoming) {
+          if (source == TimelineSource.active) {
             await expectLater(
               container.read(provider.future),
               throwsA(same(error)),
@@ -455,7 +405,6 @@ void main() {
             expect(data.historyInitialized, isFalse);
             expect(data.loadingMorePast, isFalse);
             expect(data.activeEvents.single.id, 'initial-active');
-            expect(data.unpublishedHistory, hasLength(2));
             if (source == TimelineSource.cancelled) {
               expect(data.pastEvents.single.id, 'initial-past');
             } else {
@@ -475,10 +424,7 @@ void main() {
       'simultaneous failures use stable precedence from $firstFailure',
       () async {
         final reads = PendingTimelineReads('initial');
-        final container = timelineContainer(
-          timelineRepositoryFor([reads]),
-          setups: ControlledSetupRepository([reads]),
-        );
+        final container = timelineContainer(timelineRepositoryFor([reads]));
         final provider = timelineProvider(container);
         final subscription = container.listen(provider, (_, _) {});
         addTearDown(subscription.close);
@@ -489,7 +435,7 @@ void main() {
         // Complete in reverse precedence so response timing cannot choose errors.
         reads.completeHistory(failures: failures, reverse: true);
         reads.completeUpcoming(failures: failures);
-        if (firstFailure.index <= TimelineSource.privateUpcoming.index) {
+        if (firstFailure == TimelineSource.active) {
           await expectLater(
             container.read(provider.future),
             throwsA(same(failures[firstFailure])),
@@ -519,8 +465,7 @@ void main() {
         final old = PendingTimelineReads('old');
         final fresh = PendingTimelineReads('fresh');
         final repository = timelineRepositoryFor([old, fresh]);
-        final setups = ControlledSetupRepository([old, fresh]);
-        final container = timelineContainer(repository, setups: setups);
+        final container = timelineContainer(repository);
         var provider = timelineProvider(container);
         var subscription = container.listen(provider, (_, _) {});
         addTearDown(() => subscription.close());
@@ -534,9 +479,6 @@ void main() {
               AsyncData<String?>(transition == 'signout' ? null : 'account-b'),
             ),
             eventRepositoryProvider.overrideWithValue(repository),
-            privateEventSetupTimelineRepositoryProvider.overrideWithValue(
-              setups,
-            ),
           ]);
           await container.pump();
           provider = timelineProvider(container);
@@ -554,9 +496,6 @@ void main() {
             container.updateOverrides([
               uidProvider.overrideWithValue(const AsyncData('account-a')),
               eventRepositoryProvider.overrideWithValue(repository),
-              privateEventSetupTimelineRepositoryProvider.overrideWithValue(
-                setups,
-              ),
             ]);
             provider = timelineProvider(container);
             subscription.close();
@@ -586,10 +525,6 @@ void main() {
         old.completeHistory(
           failures: oldFails
               ? {
-                  TimelineSource.privatePast: StateError('old private history'),
-                  TimelineSource.privateCancelled: StateError(
-                    'old private cancelled',
-                  ),
                   TimelineSource.past: StateError('old past'),
                   TimelineSource.cancelled: StateError('old cancelled'),
                 }
@@ -602,11 +537,6 @@ void main() {
         expect(finalState.cancelledEvents.single.id, 'fresh-cancelled');
         expect(finalState.pastError, isNull);
         expect(finalState.pastCursor, isNull);
-        expect(
-          finalState.unpublishedCursors.values,
-          everyElement(startsWith('fresh-')),
-        );
-        expect(setups.calls, hasLength(6));
       });
     }
   }
@@ -627,9 +557,6 @@ void main() {
       container.updateOverrides([
         uidProvider.overrideWithValue(const AsyncLoading<String?>()),
         eventRepositoryProvider.overrideWithValue(repository),
-        privateEventSetupTimelineRepositoryProvider.overrideWithValue(
-          emptySetupRepository,
-        ),
       ]);
       await container.pump();
       provider = timelineProvider(container);
@@ -641,9 +568,6 @@ void main() {
       container.updateOverrides([
         uidProvider.overrideWithValue(const AsyncData('account-a')),
         eventRepositoryProvider.overrideWithValue(repository),
-        privateEventSetupTimelineRepositoryProvider.overrideWithValue(
-          emptySetupRepository,
-        ),
       ]);
       provider = timelineProvider(container);
       subscription.close();

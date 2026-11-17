@@ -85,4 +85,99 @@ void main() {
       },
     );
   }
+
+  Future<void> pumpRoute(
+    WidgetTester tester, {
+    required ValueChanged<String>? onChangeRoute,
+    List<EventAssistanceRouteOption> choices = const [],
+    bool routeChanging = false,
+  }) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: CatchSheet(
+            title: 'Departure',
+            mode: CatchSheetMode.scrollable,
+            child: EventAssistanceDepartureSection(
+              reviewIdentity: Object(),
+              destinations: const [
+                (target: departureStop, label: 'Next stop', detail: ''),
+                (target: departureMeeting, label: 'Meeting point', detail: ''),
+              ],
+              currentDestination: 'Next stop',
+              guests: const [],
+              canConfirm: true,
+              actorUid: 'host-1',
+              serverTime: departureNow,
+              checkpointUntil: departureNow + 7200000,
+              phase: EventAssistanceDeparturePhase.ready,
+              routeChoices: choices,
+              onChangeRoute: onChangeRoute,
+              routeChanging: routeChanging,
+              onConfirm: (_) {},
+              onRetry: () {},
+              onReload: () {},
+              onDone: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+  }
+
+  testWidgets('the event lead changes a departed group to another route', (
+    tester,
+  ) async {
+    final changed = <String>[];
+    await pumpRoute(
+      tester,
+      onChangeRoute: changed.add,
+      choices: [(alternativeId: departureAlternative, label: 'Meeting point')],
+    );
+    Future<void> tap(Finder finder) async {
+      await tester.ensureVisible(finder);
+      await tester.tap(finder);
+      await pumpFeatureUi(tester);
+    }
+
+    final button = find.byKey(const ValueKey('departure.changeRoute'));
+    expect(tester.widget<CatchButton>(button).onPressed, isNull);
+    await tap(
+      find.descendant(
+        of: find.byKey(const ValueKey('departure.route')),
+        matching: find.byIcon(CatchIcons.expand),
+      ),
+    );
+    await tester.tap(
+      find
+          .descendant(
+            of: find.byWidgetPredicate(
+              (widget) => widget is CatchMenu<Object?>,
+            ),
+            matching: find.text('Meeting point'),
+          )
+          .hitTestable(),
+    );
+    await pumpFeatureUi(tester);
+    await tap(button);
+    expect(changed, [departureAlternative]);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('no route control without alternatives or the lead', (
+    tester,
+  ) async {
+    await pumpRoute(tester, onChangeRoute: (_) {});
+    expect(find.byKey(const ValueKey('departure.route')), findsNothing);
+    await pumpRoute(
+      tester,
+      onChangeRoute: null,
+      choices: [(alternativeId: departureAlternative, label: 'Meeting point')],
+    );
+    expect(find.byKey(const ValueKey('departure.route')), findsNothing);
+  });
 }
