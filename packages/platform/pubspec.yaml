@@ -32,7 +32,8 @@ dependencies:
     sdk: flutter
   flutter_native_splash: ^2.4.7
   flutter_reorderable_grid_view: ^5.10.0
-  flutter_riverpod: ^3.5.0
+  # One Riverpod minor; see the root pubspec.
+  flutter_riverpod: '>=3.5.0 <3.6.0'
   freezed_annotation: ^3.0.0
   geolocator: ^14.1.2
   go_router: ^17.1.0
