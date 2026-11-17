@@ -876,6 +876,38 @@ test("adminUpdateEventDetailsHandler saves audited safe fields", async () => {
   assert.equal(h.firestore.auditLogs()[0].action, "adminUpdateEventDetails");
 });
 
+test("admins clear, release and set an event's women-led override",
+  async () => {
+    const h = harness({
+      "organizers/afterfly": organizerDoc(),
+      "events/afterfly-social-run-1": eventDoc({womenLed: {value: true,
+        setByUid: "host-1", setByRole: "manager", setAt: "EARLIER",
+        lockedByAdmin: false}}),
+    });
+    const moderate = (womenLed: string) => adminUpdateEventDetailsHandler(
+      callableRequest("admin-1", {
+        eventId: "afterfly-social-run-1", fields: {womenLed},
+        reviewNote: "Guest report reviewed.",
+      }, {admin: true}), h.deps);
+
+    assert.equal((await moderate("clear")).updatedFieldCount, 1);
+    const read = () => h.firestore.get("events/afterfly-social-run-1")
+      ?.womenLed;
+    assert.deepEqual(read(), {value: false, setByUid: "admin-1",
+      setByRole: "admin", setAt: "SERVER_TIMESTAMP", lockedByAdmin: true});
+    const [audit] = h.firestore.auditLogs();
+    assert.deepEqual((audit.after as FakeData).updatedFields, ["womenLed"]);
+    assert.equal((((audit.before as FakeData).event as FakeData)
+      .womenLed as FakeData).setByRole, "manager");
+
+    await moderate("release");
+    assert.deepEqual(read(), {value: null, setByUid: "admin-1",
+      setByRole: "admin", setAt: "SERVER_TIMESTAMP", lockedByAdmin: false});
+    await moderate("set");
+    assert.equal((read() as FakeData).value, true);
+    assert.equal(h.firestore.auditLogs().length, 3);
+  });
+
 test("adminUpdateEventDetailsHandler rejects cancelled events", async () => {
   const h = harness({
     "organizers/afterfly": organizerDoc(),

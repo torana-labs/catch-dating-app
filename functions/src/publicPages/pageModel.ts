@@ -17,6 +17,7 @@ import {pageOwnerLinks} from "../organizers/organizerLinks";
 import {projectPublicOrganizer, type HostListing} from "./publicOrganizer";
 import {publicEventAuthorized, publicEventListed} from "./publicReadPolicy";
 import {projectPublicReview, type PublicReview} from "./publicReview";
+import {eventWomenLed, organizerWomenLed} from "../organizers/womenLed";
 
 /**
  * Assembles the organizer and event public page read models from one
@@ -97,18 +98,24 @@ export function buildOrganizerScope(
   const reviewsReadable =
     listing.capabilities.publicReviews.readState === "enabled";
 
+  // Women-led is resolved here, from the organizer's default and each Catch
+  // event's override; imported events follow the organizer. The website
+  // projections it mirrors stay unchanged.
+  const womenLed = organizerWomenLed(organizer.data);
   const events: PageEvent[] = [
     ...sortById(sources.catchEvents).flatMap((doc) => {
       if (!publicEventAuthorized(doc.id, doc.data)) return [];
       const row = projectLivePublicCatchEvent(doc.id, doc.data, now);
       return row && row.organizerId === organizerId ?
-        [catchPageEvent(withoutDatingFraming(row.event))] : [];
+        [catchPageEvent(withoutDatingFraming(row.event),
+          eventWomenLed(organizer.data, doc.data))] : [];
     }),
     ...sortById(sources.externalEvents).flatMap((doc) => {
       const row = publicExternalEvent(doc.id,
         (doc.data ?? {}) as Record<string, unknown>);
       return row && row.organizerId === organizerId ?
-        [externalPageEvent(withoutExternalDatingFraming(row.event))] : [];
+        [externalPageEvent(withoutExternalDatingFraming(row.event),
+          eventWomenLed(organizer.data))] : [];
     }),
   ];
   // Link-only events keep their event page but stay off every list.
@@ -174,6 +181,7 @@ export function buildOrganizerScope(
       .slice(0, pageLimits.recommendedOrganizers),
     listing: {...listing, ...(reviewsReadable ?
       {reviewReadState: "ready" as const} : {})},
+    womenLed,
   };
 
   const card = {
@@ -189,6 +197,7 @@ export function buildOrganizerScope(
     reviewCount: reviewSummary.count,
     verifiedReviewCount: reviewSummary.verifiedCount,
     upcomingEventCount: upcoming.length,
+    womenLed,
   };
   const eventPages = events
     .filter((item) => !sources.ambiguousEventIds.has(item.eventId))
@@ -262,7 +271,8 @@ export function eventPath(eventId: string): string {
   return `/events/${encodeURIComponent(eventId)}/`;
 }
 
-function catchPageEvent(event: PublicCatchEvent): PageEvent {
+function catchPageEvent(event: PublicCatchEvent, womenLed: boolean
+): PageEvent {
   const registrationAccess = event.registrationAccess ?? "app";
   return {
     source: "catch",
@@ -275,10 +285,12 @@ function catchPageEvent(event: PublicCatchEvent): PageEvent {
       registrationAccess,
       spotsLeft: Math.max(0, event.capacityLimit - event.bookedCount),
     },
+    womenLed,
   };
 }
 
-function externalPageEvent(event: PublicExternalEvent): PageEvent {
+function externalPageEvent(event: PublicExternalEvent, womenLed: boolean
+): PageEvent {
   return {
     source: "external",
     eventId: event.id,
@@ -286,6 +298,7 @@ function externalPageEvent(event: PublicExternalEvent): PageEvent {
     event,
     booking: {kind: "external", url: event.sourceHref,
       label: event.sourceLabel},
+    womenLed,
   };
 }
 
@@ -305,6 +318,7 @@ function eventCard(item: PageEvent): EventCard {
     photoUrl: item.source === "catch" ? item.event.photoUrl ?? null : null,
     booking: item.booking.kind === "catch" ?
       {kind: "catch", path: item.booking.path} : item.booking,
+    womenLed: item.womenLed === true,
   };
 }
 

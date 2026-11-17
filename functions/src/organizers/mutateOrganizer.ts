@@ -27,6 +27,7 @@ import {
   deleteMediaStoragePaths,
   removedMediaStoragePaths,
 } from "../shared/mediaStorageLifecycle";
+import {hostOrganizerWomenLed, hostWomenLedRole} from "./womenLed";
 
 interface OrganizerLifecycleDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -105,12 +106,20 @@ export async function updateOrganizerHandler(
     }
     const patch = organizerPatch(data.fields, actorUid, timestamp);
     Object.assign(patch, publicationIdentityPatch);
+    if (data.fields.womenLed !== undefined) {
+      const womenLed = hostOrganizerWomenLed(organizer.womenLed,
+        data.fields.womenLed, {uid: actorUid,
+          role: hostWomenLedRole(isOrganizerOwner(organizer, actorUid))},
+        timestamp);
+      if (womenLed) patch.womenLed = womenLed;
+    }
     removedStoragePaths = removedMediaStoragePaths({
       before: organizer,
       after: {...organizer, ...patch},
       owner: {kind: "organizer", id: data.organizerId},
     });
-    tx.update(organizerRef, patch);
+    // A repeated women-led value alone leaves nothing to write.
+    if (Object.keys(patch).length > 0) tx.update(organizerRef, patch);
   });
   await cleanupRemovedOrganizerMedia(
     deps,
@@ -179,7 +188,9 @@ function assertCanUpdateOrganizer(
       field === "imageUrl" ||
       field === "profileImageUrl" ||
       field === "organizerPhotos" ||
-      field === "logoPhoto"
+      field === "logoPhoto" ||
+      // Managers host the plans, so they may declare them women-led.
+      field === "womenLed"
     )
   ) return organizer;
   throw new HttpsError(
@@ -241,6 +252,8 @@ function organizerPatch(
   serverTimestamp: FirebaseFirestore.FieldValue
 ): Record<string, unknown> {
   const patch: Record<string, unknown> = {...fields};
+  // Resolved against the stored declaration by the caller.
+  delete patch.womenLed;
   if (fields.publicListingEnabled !== undefined) {
     delete patch.publicListingEnabled;
     Object.assign(
