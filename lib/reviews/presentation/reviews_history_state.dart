@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 
@@ -61,7 +61,10 @@ final class ReviewsHistoryRow {
   bool get canEdit => editEventId != null;
 }
 
-String reviewHistoryContextLabel({required Review review, Event? event}) {
+String reviewHistoryContextLabel({
+  required Review review,
+  GuestEventCard? event,
+}) {
   if (event != null) {
     return '${event.longDateLabel} · ${event.timeRangeLabel}';
   }

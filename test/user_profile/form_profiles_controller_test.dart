@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/profiles/data/form_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profiles_controller.dart';
@@ -11,7 +12,7 @@ class _Repository extends Fake implements FormProfileRepository {
   final calls = <String?>[];
   final pending = <Completer<FormProfilePage>>[];
   @override
-  Future<FormProfilePage> list({String? cursor}) {
+  Future<FormProfilePage> list(String uid, {String? cursor}) {
     calls.add(cursor);
     final completer = Completer<FormProfilePage>();
     pending.add(completer);
@@ -35,6 +36,42 @@ FormProfilePage _page(String id, {String? cursor}) => FormProfilePage(
 );
 
 void main() {
+  test('rows are named from the organizer lookup', () async {
+    final repository = _Repository();
+    final container = ProviderContainer(
+      overrides: [
+        uidProvider.overrideWithValue(const AsyncData('one')),
+        formProfileRepositoryProvider.overrideWithValue(repository),
+        organizerNameLookupProvider.overrideWith(
+          (ref, query) async => {
+            for (final id in query.organizerIds) id: 'Name of $id',
+          },
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    container.listen(formProfilesControllerProvider, (_, _) {});
+    await flushTestEventQueue();
+    repository.pending.last.complete(
+      FormProfilePage(
+        items: [
+          FormProfileSummary(
+            organizerId: 'org',
+            responseId: 'one',
+            formTitle: 'Form',
+            organizerName: null,
+            submittedAt: DateTime(2026),
+            claimedAt: null,
+            cardFieldCount: 0,
+          ),
+        ],
+        nextCursor: null,
+      ),
+    );
+    final state = await container.read(formProfilesControllerProvider.future);
+    expect(state.page.items.single.organizerName, 'Name of org');
+  });
+
   test(
     'pagination rejects stale account results and preserves retry cursor',
     () async {

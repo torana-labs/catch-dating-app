@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 
 Uri directionsUriForEvent(Event event) {
   final lat = event.effectiveStartingPointLat;
@@ -6,6 +7,16 @@ Uri directionsUriForEvent(Event event) {
 
   if (lat == null || lng == null) {
     return _searchUri(query: event.locationName);
+  }
+  return _directionsUri(latitude: lat, longitude: lng);
+}
+
+/// The same directions link from a guest event card.
+Uri directionsUriForCard(GuestEventCard card) {
+  final lat = card.effectiveStartingPointLat;
+  final lng = card.effectiveStartingPointLng;
+  if (lat == null || lng == null) {
+    return _searchUri(query: card.locationName);
   }
   return _directionsUri(latitude: lat, longitude: lng);
 }

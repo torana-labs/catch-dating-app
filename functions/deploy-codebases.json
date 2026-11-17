@@ -7,10 +7,10 @@
     "offers": ["organizerEventOffers", "organizerEventOfferRecipients", "organizerFormAdmission", "organizerResponseQuery", "acquisition"],
     "organizers": ["organizers", "organizerInsights"],
     "payments": ["payments", "money", "hostMemberships", "commercialTerms", "foundingHosts", "memberships", "entitlements"],
-    "platform": ["analytics", "growth", "operations", "demoOps"],
+    "platform": ["analytics", "growth", "operations", "instantDrafts", "demoOps"],
     "programs": ["programs", "transport", "programRsvp"],
     "rehearsal": ["eventRehearsal", "doorJournal"],
-    "sales": ["salesDemo", "partners", "salesAssistant"],
+    "sales": ["salesDemo", "partners", "salesAssistant", "walkthroughs"],
     "social": ["chats", "chatSignals", "profiles", "crossPaths", "moments", "reviews", "safety", "matching", "media", "moderation", "messaging", "catchMessaging", "supportInbox"]
   }
 }

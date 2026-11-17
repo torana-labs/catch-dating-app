@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 
 enum PaymentEventTitleStatus { loading, error, ready }
@@ -26,11 +26,10 @@ class PaymentHistoryRow {
 
 PaymentHistoryViewModel buildPaymentHistoryViewModel({
   required List<Payment> payments,
-  required List<Event> events,
+  required Map<String, GuestEventCard> cardsById,
   PaymentEventTitleStatus eventTitleStatus = PaymentEventTitleStatus.ready,
   Object? eventTitleError,
 }) {
-  final eventsById = {for (final event in events) event.id: event};
   return PaymentHistoryViewModel(
     eventTitleStatus: eventTitleStatus,
     eventTitleError: eventTitleError,
@@ -38,7 +37,7 @@ PaymentHistoryViewModel buildPaymentHistoryViewModel({
       for (final payment in payments)
         PaymentHistoryRow(
           payment: payment,
-          eventTitle: eventsById[payment.eventId]?.title,
+          eventTitle: cardsById[payment.eventId]?.title,
         ),
     ],
   );

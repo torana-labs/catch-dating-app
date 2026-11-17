@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_kernel/country_markets.dart';
 import 'package:catch_l10n/l10n.dart';
 
@@ -29,6 +30,22 @@ String eventPriceLabel(
     return l10n.eventsEventPriceCopyFromPrice(price: formatted);
   }
   return formatted;
+}
+
+/// The same price copy for a guest event card, which has no quote.
+String guestEventCardPriceLabel(AppLocalizations l10n, GuestEventCard card) {
+  if (card.priceHiddenForGuests) {
+    return l10n.eventsEventPriceCopyHiddenUntilBookingOpens;
+  }
+  final priceInPaise = card.priceInPaise ?? 0;
+  if (priceInPaise <= 0) return l10n.eventsEventPriceCopyFree;
+  final formatted = EventFormatters.priceInPaise(
+    priceInPaise,
+    currencyCode: card.currency ?? defaultCurrencyCode,
+  );
+  return card.demandPricing
+      ? l10n.eventsEventPriceCopyFromPrice(price: formatted)
+      : formatted;
 }
 
 /// Localized fallback price copy for externally sourced events.

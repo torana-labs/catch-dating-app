@@ -35,11 +35,15 @@ class HostEventRequest {
   int get hashCode => Object.hash(organizerId, eventId);
 }
 
-/// The team members with access to the event's door, from the event staff
-/// read. It is read once per visit; granting access happens elsewhere.
+/// The team members with access to the event's door, read from the event's
+/// staff grants once per visit; granting access happens elsewhere.
 @riverpod
-Future<HostEventStaffList> hostEventWorkspaceStaff(Ref ref, String eventId) =>
-    ref.watch(hostEventStaffRepositoryProvider).listStaff(eventId);
+Future<HostEventStaffList> hostEventWorkspaceStaff(
+  Ref ref,
+  HostEventRequest request,
+) => ref
+    .watch(hostEventStaffRepositoryProvider)
+    .listStaff(organizerId: request.organizerId, eventId: request.eventId);
 
 /// The event workspace: the event, its roster insight view and attendees,
 /// tonight's plan through their listeners; the door team from the staff
@@ -82,7 +86,7 @@ HostEventWorkspaceState hostEventWorkspaceController(
       .value
       ?.facts;
   final staff = catchAsyncStateFromAsyncValue(
-    ref.watch(hostEventWorkspaceStaffProvider(event.id)),
+    ref.watch(hostEventWorkspaceStaffProvider(request)),
   );
   return HostEventWorkspaceState(
     status: HostEventWorkspaceStatus.ready,
@@ -151,5 +155,5 @@ num? _ticketSales(Ref ref, Event event) {
 /// Starts the workspace reads again after one failed.
 void retryHostEventWorkspaceReads(WidgetRef ref, HostEventRequest request) {
   ref.invalidate(watchEventProvider(request.eventId));
-  ref.invalidate(hostEventWorkspaceStaffProvider(request.eventId));
+  ref.invalidate(hostEventWorkspaceStaffProvider(request));
 }

@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/walkthrough_slot_holds.schema.json",
+  "title": "WalkthroughSlotHoldDocument",
+  "description": "One slot of the staff calendar and the booking holding it. The document id is the calendar and the slot start, so two bookings of one slot read and write the same document inside their transactions and only one can hold it. A cancelled or moved booking releases its hold; the document stays so a later booking reuses it.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "walkthroughSlotHolds",
+  "x-firestore-path": "walkthroughSlotHolds/{holdId}",
+  "x-document-id-field": "holdId",
+  "x-owner": "bookWalkthrough, manageWalkthroughBooking and adminUpdateWalkthroughBooking",
+  "required": ["schemaVersion", "holdId", "calendarId", "slotStartAt", "slotEndAt", "status", "bookingId", "updatedAt"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "holdId": {"type": "string", "pattern": "^default-[0-9]{8}T[0-9]{4}Z$", "description": "default-20261118T1030Z: the calendar and the slot start in UTC."},
+    "calendarId": {"const": "default"},
+    "slotStartAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slotStart"},
+    "slotEndAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/slotStart"},
+    "status": {"type": "string", "enum": ["held", "released"]},
+    "bookingId": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/bookingId", "description": "The booking that holds it, or last held it."},
+    "updatedAt": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/instant"}
+  }
+}

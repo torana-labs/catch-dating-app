@@ -41,39 +41,6 @@ Future<void> _seedEvent(FakeFirebaseFirestore firestore, Event event) {
   });
 }
 
-Future<void> _seedParticipation(
-  FakeFirebaseFirestore firestore, {
-  required Event event,
-  required String uid,
-  required EventParticipationStatus status,
-}) {
-  final now = DateTime(2026);
-  final participation = EventParticipation(
-    id: eventParticipationId(eventId: event.id, uid: uid),
-    eventId: event.id,
-    organizerId: event.organizerId,
-    uid: uid,
-    status: status,
-    createdAt: now,
-    updatedAt: now,
-  );
-  return firestore
-      .collection('eventParticipations')
-      .doc(participation.id)
-      .set(participation.toJson());
-}
-
-class _IdleBookedEventsRepository extends Fake
-    implements BookedEventsRepository {
-  _IdleBookedEventsRepository({required this.signedUpEventsStream});
-
-  final Stream<List<Event>> signedUpEventsStream;
-
-  @override
-  Stream<List<Event>> watchSignedUpEvents({required String uid}) =>
-      signedUpEventsStream;
-}
-
 class _LifecycleEventRepository extends Fake implements EventRepository {
   _LifecycleEventRepository({required this.eventStream});
 
@@ -82,5 +49,3 @@ class _LifecycleEventRepository extends Fake implements EventRepository {
   @override
   Stream<Event?> watchEvent(String id) => eventStream;
 }
-
-const _pastLegacyStreamTimeout = Duration(seconds: 11);

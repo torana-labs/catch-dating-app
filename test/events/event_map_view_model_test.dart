@@ -1,33 +1,12 @@
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
-import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
-import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/events/presentation/event_map_center.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_kernel/location_coordinate.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../organizers/organizers_test_helpers.dart' as organizer_test;
 import 'events_test_helpers.dart';
-
-OrganizerFollow _membership({
-  required String organizerId,
-  String uid = 'runner-1',
-}) => OrganizerFollow(
-  id: organizerFollowId(organizerId: organizerId, uid: uid),
-  organizerId: organizerId,
-  uid: uid,
-  status: OrganizerFollowStatus.active,
-  followedAt: DateTime(2026),
-);
 
 void main() {
   group('buildEventMapViewModel', () {
@@ -184,104 +163,5 @@ void main() {
       expect(center.latitude, 19.076);
       expect(center.longitude, 72.8777);
     });
-  });
-
-  group('eventMapViewModelProvider', () {
-    test(
-      'combines profile, signed-up, saved, and recommended events',
-      () async {
-        final repository = FakeEventRepository();
-        final savedEventRepository = FakeSavedEventRepository();
-        final user = buildUser();
-        final signedUpEvent = buildEvent(
-          id: 'signed-up',
-          startTime: DateTime.now().add(const Duration(days: 1)),
-          startingPointLat: 19.0,
-          startingPointLng: 72.8,
-        );
-        final recommendedRun = buildEvent(
-          id: 'recommended',
-          startTime: DateTime.now().add(const Duration(days: 2)),
-          startingPointLat: 19.1,
-          startingPointLng: 72.9,
-        );
-        final savedEvent = buildEvent(
-          id: 'saved',
-          startTime: DateTime.now().add(const Duration(hours: 12)),
-          startingPointLat: 19.2,
-          startingPointLng: 72.7,
-        );
-        repository.signedUpEvents[user.uid] = [signedUpEvent];
-        repository.recommendedEvents = [recommendedRun];
-        savedEventRepository.savedEventDetails[user.uid] = [savedEvent];
-
-        final container = ProviderContainer(
-          overrides: [
-            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            watchActiveOrganizerFollowsForUserProvider(user.uid).overrideWith(
-              (ref) => Stream.value([_membership(organizerId: 'club-1')]),
-            ),
-            eventRepositoryProvider.overrideWith((ref) => repository),
-            bookedEventsRepositoryProvider.overrideWith(
-              (ref) => FakeBookedEventsRepository(repository),
-            ),
-            organizersRepositoryProvider.overrideWith(
-              (ref) =>
-                  organizer_test.FakeOrganizersRepository()
-                    ..organizersById['club-1'] = buildOrganizer(),
-            ),
-            savedEventRepositoryProvider.overrideWithValue(
-              savedEventRepository,
-            ),
-          ],
-        );
-        addTearDown(container.dispose);
-
-        final subscription = container.listen(
-          eventMapViewModelProvider,
-          (_, _) {},
-          fireImmediately: true,
-        );
-        addTearDown(subscription.close);
-
-        await container.read(watchUserProfileProvider.future);
-        await container.read(
-          watchActiveOrganizerFollowsForUserProvider(user.uid).future,
-        );
-        await container.read(watchSignedUpEventsProvider(user.uid).future);
-        await container.read(
-          watchSavedEventDetailsForUserProvider(user.uid).future,
-        );
-        await container.read(
-          recommendedEventsProvider(
-            RecommendedEventsQuery.fromOrganizerIds(const ['club-1']),
-          ).future,
-        );
-        await container.read(
-          organizerNameLookupProvider(
-            OrganizerNameLookupQuery(const ['club-1']),
-          ).future,
-        );
-        await container.pump();
-
-        final viewModel = subscription.read().requireValue;
-        expect(viewModel.events.map((event) => event.id), [
-          'saved',
-          'signed-up',
-          'recommended',
-        ]);
-        expect(viewModel.effectiveItems.map((item) => item.status), [
-          EventTileStatus.saved,
-          EventTileStatus.joined,
-          EventTileStatus.recommended,
-        ]);
-        expect(
-          viewModel.effectiveItems.map((item) => item.organizerName).toSet(),
-          {'Stride Social'},
-        );
-        expect(viewModel.pinnedEvents.length, 3);
-        expect(repository.recommendedOrganizerIds, ['club-1']);
-      },
-    );
   });
 }

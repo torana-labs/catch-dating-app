@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,7 +27,7 @@ void main() {
       ],
       signedUpEventIds: {booked.id},
       attendedEvents: const [],
-      signedUpEvents: [booked],
+      signedUpEvents: guestEventCardsOf([booked]),
       now: now,
     );
     expect(recommendations.map((item) => item.event.id), ['recommended']);
@@ -76,7 +77,7 @@ void main() {
         recommendationCandidate(strongMatch, organizerName: 'Bandra Club'),
       ],
       signedUpEventIds: const {},
-      attendedEvents: [morningHistory],
+      attendedEvents: guestEventCardsOf([morningHistory]),
       signedUpEvents: const [],
       viewer: viewer,
       now: now,

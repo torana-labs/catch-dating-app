@@ -1,0 +1,3 @@
+# App Review contact and demo-account details stay in App Store Connect.
+# download_listing deletes this folder; this keeps a hand-run copy out of Git.
+metadata/*/ios/review_information/

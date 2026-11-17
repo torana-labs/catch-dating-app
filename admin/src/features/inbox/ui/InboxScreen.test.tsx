@@ -61,3 +61,25 @@ describe("a stuck nomination in the inbox", () => {
     expect(screen.getByText("Only the owner or Sales can fill this in by hand")).toBeTruthy();
   });
 });
+
+describe("a website lead in the inbox", () => {
+  afterEach(cleanup);
+
+  const lead = {...stuck, itemId: "enquiry-lead-loft", type: "lead", sourceKind: "salesInboundIntent",
+    sourceId: "lead-loft", sourcePath: "salesInboundIntents/lead-loft", title: "List a space: The Loft",
+    subtitle: "WhatsApp +91 98123 45678 · 60 standing", cameFrom: "Website /venues/",
+    state: {code: "reply_on_whatsapp", label: "Reply on WhatsApp", tone: "warning"}};
+
+  it("closes only with what staff replied on WhatsApp", () => {
+    const inbox = {...model(), items: [lead], detail: {item: lead, journey: [], canWork: true, canDecideClaim: false}} as
+      unknown as InboxScreenModel;
+    render(<InboxScreen canFillIn={false} model={inbox} onSelect={vi.fn()} selectedItemId={lead.itemId} uid="uid-1" />);
+    expect(screen.getByText(/nothing is sent for you/u)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", {name: "Close"}));
+    expect(inbox.updateItem).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByRole("textbox", {name: /What you replied/u}), {target: {value: "Sent the venue guide"}});
+    fireEvent.click(screen.getByRole("button", {name: "Close"}));
+    expect(inbox.updateItem).toHaveBeenCalledWith({itemId: lead.itemId, action: "dismiss", assigneeUid: null,
+      snoozedUntil: null, note: "Sent the venue guide"}, "Closed. It stays in Done if you need it back.");
+  });
+});

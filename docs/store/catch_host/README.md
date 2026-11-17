@@ -19,6 +19,11 @@ retired Mobile Internal Release producer. The iOS build was promoted by run
 
 ## Records in this folder
 
+The listing copy and screenshots move to `fastlane/metadata/host/`, which
+the `Store Listing` workflow downloads from and uploads to the stores (see
+`docs/release_operations.md`, "Store listings"). Once that folder holds the
+downloaded listing, it, not `metadata.md`, is the record for listing values.
+
 | Document | Contents |
 | --- | --- |
 | `metadata.md` | Live App Store and Play listing values, age rating, content rating, declarations, seller and copyright |

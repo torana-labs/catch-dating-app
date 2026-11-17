@@ -166,7 +166,7 @@ void main() {
         watchEventSuccessPlanProvider(
           tonightEvent.id,
         ).overrideWith((ref) => Stream.value(eventsPlan())),
-        hostEventWorkspaceStaffProvider(tonightEvent.id).overrideWith(
+        hostEventWorkspaceStaffProvider(eventsRequest).overrideWith(
           (ref) async => HostEventStaffList(
             eventId: tonightEvent.id,
             members: [

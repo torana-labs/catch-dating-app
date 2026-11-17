@@ -1,9 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/guest_event_cards_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/health_activity_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations_repository.dart';
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_follow.dart';
@@ -53,9 +52,9 @@ void main() {
           ).overrideWithValue(
             const AsyncError<List<OrganizerFollow>>('clubs', StackTrace.empty),
           ),
-          watchSignedUpEventsProvider(
+          watchSignedUpEventCardsProvider(
             user.uid,
-          ).overrideWithValue(const AsyncData<List<Event>>([])),
+          ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
         ],
       );
       addTearDown(container.dispose);
@@ -83,9 +82,9 @@ void main() {
           watchActiveOrganizerFollowsForUserProvider(
             user.uid,
           ).overrideWithValue(const AsyncLoading<List<OrganizerFollow>>()),
-          watchSignedUpEventsProvider(
+          watchSignedUpEventCardsProvider(
             user.uid,
-          ).overrideWithValue(const AsyncData<List<Event>>([])),
+          ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
         ],
       );
       addTearDown(profileLoading.dispose);
@@ -113,12 +112,12 @@ void main() {
           watchActiveOrganizerFollowsForUserProvider(
             user.uid,
           ).overrideWithValue(const AsyncData<List<OrganizerFollow>>([])),
-          watchSignedUpEventsProvider(
+          watchSignedUpEventCardsProvider(
             user.uid,
-          ).overrideWithValue(const AsyncData<List<Event>>([])),
-          watchAttendedEventsProvider(
+          ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
+          watchAttendedEventCardsProvider(
             user.uid,
-          ).overrideWithValue(const AsyncData<List<Event>>([])),
+          ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
           weeklyActivityProvider.overrideWith((ref) {
             healthReads++;
             throw StateError('Home must not subscribe to Health activity');
@@ -166,12 +165,12 @@ void main() {
               membership(organizerId: 'club-a', uid: user.uid),
             ]),
           ),
-          watchSignedUpEventsProvider(
+          watchSignedUpEventCardsProvider(
             user.uid,
-          ).overrideWithValue(AsyncData<List<Event>>([event])),
-          watchAttendedEventsProvider(
+          ).overrideWithValue(AsyncData(guestEventCardsOf([event]))),
+          watchAttendedEventCardsProvider(
             user.uid,
-          ).overrideWithValue(const AsyncData<List<Event>>([])),
+          ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
           weeklyActivityProvider.overrideWith((ref) {
             healthReads++;
             throw StateError('Home must not subscribe to Health activity');
@@ -197,7 +196,7 @@ void main() {
       expect(recommendationReads, 0);
       expect(state.header.title(_l10n), 'Morning, Runner');
       expect(state.followedOrganizerIds, ['club-a']);
-      expect(state.viewModel?.nextEvent?.id, event.id);
+      expect(state.viewModel?.nextEvent?.eventId, event.id);
     });
   });
 
@@ -211,13 +210,13 @@ void main() {
       );
 
       final viewModel = buildDashboardFullViewModel(
-        signedUpEvents: [later, earlier],
-        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        signedUpEvents: guestEventCardsOf([later, earlier]),
+        attendedEventsAsync: const AsyncData(<GuestEventCard>[]),
         now: now,
       );
 
-      expect(viewModel.nextEvent?.id, earlier.id);
-      expect(viewModel.upcomingEvents.map((event) => event.id), [
+      expect(viewModel.nextEvent?.eventId, earlier.id);
+      expect(viewModel.upcomingEvents.map((event) => event.eventId), [
         earlier.id,
         later.id,
       ]);
@@ -235,19 +234,21 @@ void main() {
       );
 
       final viewModel = buildDashboardFullViewModel(
-        signedUpEvents: [past, upcoming],
-        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        signedUpEvents: guestEventCardsOf([past, upcoming]),
+        attendedEventsAsync: const AsyncData(<GuestEventCard>[]),
         now: now,
       );
 
-      expect(viewModel.nextEvent?.id, 'upcoming');
-      expect(viewModel.upcomingEvents.map((event) => event.id), ['upcoming']);
+      expect(viewModel.nextEvent?.eventId, 'upcoming');
+      expect(viewModel.upcomingEvents.map((event) => event.eventId), [
+        'upcoming',
+      ]);
     });
 
     test('surfaces attended section errors and clears open windows', () {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
-        attendedEventsAsync: AsyncError<List<Event>>(
+        attendedEventsAsync: AsyncError<List<GuestEventCard>>(
           Exception('boom'),
           StackTrace.empty,
         ),
@@ -278,11 +279,11 @@ void main() {
 
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
-        attendedEventsAsync: AsyncData<List<Event>>([older, latest]),
+        attendedEventsAsync: AsyncData(guestEventCardsOf([older, latest])),
         now: now,
       );
 
-      expect(viewModel.windowedEvents.map((window) => window.event.id), [
+      expect(viewModel.windowedEvents.map((window) => window.event.eventId), [
         older.id,
         latest.id,
       ]);
@@ -307,17 +308,16 @@ void main() {
 
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
-        attendedEventsAsync: AsyncData<List<Event>>([
-          reviewedEvent,
-          pendingRun,
-        ]),
+        attendedEventsAsync: AsyncData(
+          guestEventCardsOf([reviewedEvent, pendingRun]),
+        ),
         reviewsByUserAsync: AsyncData<List<Review>>([
           buildReview(id: 'reviewed-event~runner-1', eventId: reviewedEvent.id),
         ]),
         now: now,
       );
 
-      expect(viewModel.pendingReviewEvent?.id, 'pending-event');
+      expect(viewModel.pendingReviewEvent?.eventId, 'pending-event');
     });
 
     test('surfaces unread club post notifications as a home module', () {
@@ -357,7 +357,7 @@ void main() {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
         uid: user.uid,
-        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        attendedEventsAsync: const AsyncData(<GuestEventCard>[]),
         organizerPostNotifications: posts,
         now: now,
       );
@@ -383,14 +383,13 @@ void main() {
       );
 
       final viewModel = buildDashboardFullViewModel(
-        signedUpEvents: [event],
+        signedUpEvents: guestEventCardsOf([event]),
         uid: 'runner-1',
-        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        attendedEventsAsync: const AsyncData(<GuestEventCard>[]),
         now: now,
       );
 
-      expect(viewModel.arrivalAction?.kind, EventArrivalActionKind.selfCheckIn);
-      expect(viewModel.arrivalAction?.event.id, 'check-in-event');
+      expect(viewModel.arrivalAction?.card.eventId, 'check-in-event');
     });
   });
 }

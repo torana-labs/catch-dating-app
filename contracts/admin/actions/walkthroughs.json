@@ -1,0 +1,94 @@
+{
+  "workflow": {
+    "workflowId": "walkthroughs",
+    "label": "Walkthroughs",
+    "guiPath": "/walkthroughs"
+  },
+  "actions": [
+    {
+      "actionId": "walkthroughs.list-bookings",
+      "callable": "adminListWalkthroughBookings",
+      "workflowIds": [
+        "walkthroughs"
+      ],
+      "guiPath": "/walkthroughs",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "requestSchema": "contracts/callables/admin_list_walkthrough_bookings_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_list_walkthrough_bookings_response.schema.json",
+      "summary": "Read the walkthrough staff calendar, how many slots the website offers now, and the bookings in a range of India-time days with each host's verified WhatsApp number.",
+      "example": {
+        "fromDate": "2026-11-16",
+        "days": 14,
+        "includeCancelled": false
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "walkthroughs.set-availability",
+      "callable": "adminSetWalkthroughAvailability",
+      "workflowIds": [
+        "walkthroughs"
+      ],
+      "guiPath": "/walkthroughs",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action",
+      "requestSchema": "contracts/callables/admin_set_walkthrough_availability_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_set_walkthrough_availability_response.schema.json",
+      "summary": "Save the walkthrough staff calendar: weekly windows in India time, slot length, lead time, horizon and closed dates. Existing bookings keep their slots.",
+      "example": {
+        "expectedRevision": 0,
+        "settings": {
+          "enabled": false,
+          "slotMinutes": 30,
+          "leadTimeMinutes": 120,
+          "horizonDays": 14,
+          "weeklyWindows": [
+            {
+              "weekday": 2,
+              "start": "11:00",
+              "end": "13:00"
+            }
+          ],
+          "closedDates": []
+        },
+        "note": "Fixture calendar; do not apply to production."
+      },
+      "controlPlane": true
+    },
+    {
+      "actionId": "walkthroughs.update-booking",
+      "callable": "adminUpdateWalkthroughBooking",
+      "workflowIds": [
+        "walkthroughs"
+      ],
+      "guiPath": "/walkthroughs",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "bookingId",
+      "requestSchema": "contracts/callables/admin_update_walkthrough_booking_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_update_walkthrough_booking_response.schema.json",
+      "summary": "Record that a walkthrough's slot was confirmed to the host on WhatsApp, which closes its Admin Inbox task, or cancel it for the host and free the slot.",
+      "example": {
+        "bookingId": "wt-0123456789abcdef0123456789abcdef01234567",
+        "action": "confirm",
+        "note": "Fixture confirmation; do not apply to production."
+      },
+      "controlPlane": true
+    }
+  ]
+}

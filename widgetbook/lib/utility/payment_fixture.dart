@@ -1,6 +1,9 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart'
+    show watchOwnEventCardsByIdProvider;
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
@@ -74,9 +77,16 @@ class WidgetbookPaymentScope extends StatelessWidget {
           widgetbookUtilityViewerUid,
         ).overrideWith((ref) => paymentsStream ?? Stream.value(payments)),
         if (eventIds.isNotEmpty)
-          watchEventsByIdsProvider(
-            EventsByIdQuery(eventIds),
-          ).overrideWith((ref) => eventsStream ?? Stream.value(batchedEvents)),
+          watchOwnEventCardsByIdProvider(
+            widgetbookUtilityViewerUid,
+          ).overrideWith(
+            (ref) => (eventsStream ?? Stream.value(batchedEvents)).map(
+              (events) => {
+                for (final event in events)
+                  event.id: GuestEventCard.fromEvent(event),
+              },
+            ),
+          ),
         watchOrganizerProvider(
           widgetbookUtilityEvent.organizerId,
         ).overrideWith((ref) => Stream<Organizer?>.value(null)),

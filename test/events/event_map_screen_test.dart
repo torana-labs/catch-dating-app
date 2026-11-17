@@ -107,12 +107,11 @@ void main() {
   ) async {
     await pumpEventsTestApp(
       tester,
-      const EventMap(enableNetworkTiles: false),
+      const EventMap(
+        viewModel: AsyncData(EventMapViewModel(events: [], pinnedEvents: [])),
+        enableNetworkTiles: false,
+      ),
       overrides: [
-        eventMapViewModelProvider.overrideWith(
-          (ref) =>
-              const AsyncData(EventMapViewModel(events: [], pinnedEvents: [])),
-        ),
         deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
         selectedExploreCityProvider.overrideWithValue(_mumbai),
       ],
@@ -128,16 +127,13 @@ void main() {
     await pumpEventsTestApp(
       tester,
       const EventMap(
+        viewModel: AsyncData(EventMapViewModel(events: [], pinnedEvents: [])),
         enableNetworkTiles: false,
         preserveCanvasWhenEmpty: true,
         distanceRingRadiusKm: 3,
         distanceRingLabel: 'WITHIN 3 KM',
       ),
       overrides: [
-        eventMapViewModelProvider.overrideWith(
-          (ref) =>
-              const AsyncData(EventMapViewModel(events: [], pinnedEvents: [])),
-        ),
         deviceLocationProvider.overrideWith(
           () => _FakeDeviceLocation(const LocationCoordinate(22.72, 75.86)),
         ),
@@ -168,16 +164,16 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      const EventMap(enableNetworkTiles: false),
-      overrides: [
-        eventMapViewModelProvider.overrideWith(
-          (ref) => AsyncData(
-            EventMapViewModel(
-              events: [firstRun, secondRun],
-              pinnedEvents: [firstRun, secondRun],
-            ),
+      EventMap(
+        viewModel: AsyncData(
+          EventMapViewModel(
+            events: [firstRun, secondRun],
+            pinnedEvents: [firstRun, secondRun],
           ),
         ),
+        enableNetworkTiles: false,
+      ),
+      overrides: [
         deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
         selectedExploreCityProvider.overrideWithValue(_mumbai),
       ],
@@ -266,19 +262,17 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      const EventMap(
+      EventMap(
+        viewModel: AsyncData(
+          EventMapViewModel(
+            events: [firstRun, secondRun],
+            pinnedEvents: [firstRun, secondRun],
+          ),
+        ),
         enableNetworkTiles: false,
         initialSelectedEventId: 'second-event',
       ),
       overrides: [
-        eventMapViewModelProvider.overrideWith(
-          (ref) => AsyncData(
-            EventMapViewModel(
-              events: [firstRun, secondRun],
-              pinnedEvents: [firstRun, secondRun],
-            ),
-          ),
-        ),
         deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
         selectedExploreCityProvider.overrideWithValue(_mumbai),
       ],

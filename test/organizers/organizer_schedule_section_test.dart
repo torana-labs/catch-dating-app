@@ -43,7 +43,8 @@ void main() {
       ]);
 
       final morningCard = find.byWidgetPredicate(
-        (widget) => widget is EventDateRailCard && widget.event.id == 'morning',
+        (widget) =>
+            widget is EventDateRailCard && widget.data.eventId == 'morning',
         description: 'morning event date rail card',
       );
       await tester.tap(morningCard);

@@ -47,6 +47,10 @@
         "hostDefaults": {
           "$ref": "../shared/event_common.schema.json#/definitions/organizerHostDefaults"
         },
+        "womenLed": {
+          "type": "boolean",
+          "description": "Owner or manager declaration that this organizer's plans are women-led (led or hosted by women). Informational and filterable only; it never restricts attendance. Refused while an admin lock is in place."
+        },
         "publicListingEnabled": {
           "type": "boolean",
           "description": "Owner-controlled value-ladder switch. The callable maps this intent to app visibility and governed public-page publication/index fields."

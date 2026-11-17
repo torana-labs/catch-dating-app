@@ -68,13 +68,14 @@ class CardsRepository extends Fake implements FormProfileRepository {
       FormProfilePage(items: const [], nextCursor: null);
   Future<FormProfileReview> Function(String) card = (_) async => cardFixture();
   @override
-  Future<FormProfilePage> list({String? cursor}) {
+  Future<FormProfilePage> list(String uid, {String? cursor}) {
     reads.add(cursor);
     return page(cursor);
   }
 
   @override
-  Future<FormProfileReview> review(String responseId) => card(responseId);
+  Stream<FormProfileReview> watchReview(String uid, String responseId) =>
+      Stream.fromFuture(card(responseId));
 }
 
 EventParticipantProfile miniProfile({String name = 'Sara'}) =>

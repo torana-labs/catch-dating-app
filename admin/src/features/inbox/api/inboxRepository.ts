@@ -86,7 +86,7 @@ function samplePage(query: InboxQuery): InboxPage {
         snoozed: items.filter((item) => item.status === "snoozed").length,
         working: items.filter((item) => item.status === "working").length},
       types: {all: scoped.length, listing: count("listing"), event: count("event"), claim: count("claim"),
-        enquiry: count("enquiry"), access: count("access"), stuck: count("stuck")},
+        enquiry: count("enquiry"), lead: count("lead"), access: count("access"), stuck: count("stuck")},
     },
     oldestWaitingSince: waiting.sort((left, right) => left.waitingSince.localeCompare(right.waitingSince))[0]?.waitingSince ?? null,
   };
@@ -125,7 +125,8 @@ export async function updateInboxItem(input: InboxUpdate): Promise<AdminUpdateIn
   const titles = {assign: "Assigned", unassign: "Unassigned", snooze: "Snoozed", wake: "Back in the inbox",
     dismiss: "Dismissed", reopen: "Back in the inbox"};
   sampleUpdates.set(item.itemId, [...(sampleUpdates.get(item.itemId) ?? []), {stepId: `staff-${Date.now()}`,
-    occurredAt: new Date().toISOString(), title: titles[input.action], detail: input.note, actorUid: "sample-owner", tone: "ink"}]);
+    occurredAt: new Date().toISOString(),
+    title: dismissed && before.type === "lead" ? "Closed" : titles[input.action], detail: input.note, actorUid: "sample-owner", tone: "ink"}]);
   return {item};
 }
 

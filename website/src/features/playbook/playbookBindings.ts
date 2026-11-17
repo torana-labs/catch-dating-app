@@ -33,6 +33,7 @@ export function pendingPlaybookBindings(page: PlaybookPageDocument): string[] {
     if (section.type === "tiles" && section.items.some((item) => item.kicker)) pending.add("tileKicker" satisfies PendingPlaybookFeature);
     const ready: readonly string[] = readyPlaybookCustomComponents;
     if (section.type === "custom" && !ready.includes(section.component)) pending.add(`custom:${section.component}`);
+    if (section.type === "pricing" && section.calculator && !ready.includes(section.calculator)) pending.add(`custom:${section.calculator}`);
     const media = [
       "media" in section ? section.media : undefined,
       ...(section.type === "tabs" ? section.items.map((item) => item.media) : []),

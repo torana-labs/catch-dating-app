@@ -123,21 +123,20 @@ export function buildAlgoliaExploreSearchBody(
 ) {
   const limit = payload.limit ?? defaultLimit;
   const marketId = normalizeSearchMarketId(payload.cityName);
+  const womenLedOnly = payload.womenLedOnly === true;
   return {
     requests: [
       {
         indexName: organizersIndexName(),
         query: payload.query,
         hitsPerPage: limit,
-        filters: marketId ?
-          `locationMarketId:${quoteFilterValue(marketId)}` :
-          "",
+        filters: organizerFilters(marketId, womenLedOnly),
       },
       {
         indexName: eventsIndexName(),
         query: payload.query,
         hitsPerPage: limit,
-        filters: eventFilters(marketId, now),
+        filters: eventFilters(marketId, now, womenLedOnly),
       },
     ],
     strategy: "none",
@@ -181,16 +180,38 @@ export function eventsIndexName(): string {
 }
 
 /**
+ * Builds Algolia filters for organizer search.
+ * @param {string | undefined} marketId Optional market filter.
+ * @param {boolean} womenLedOnly Whether to keep women-led organizers only.
+ * @return {string} Algolia filter expression.
+ */
+function organizerFilters(
+  marketId: string | undefined,
+  womenLedOnly: boolean
+): string {
+  const filters: string[] = [];
+  if (marketId) filters.push(`locationMarketId:${quoteFilterValue(marketId)}`);
+  if (womenLedOnly) filters.push("womenLed:true");
+  return filters.join(" AND ");
+}
+
+/**
  * Builds Algolia filters for upcoming event search.
  * @param {string | undefined} marketId Optional market filter.
  * @param {Date} now Current server time.
+ * @param {boolean} womenLedOnly Whether to keep women-led plans only.
  * @return {string} Algolia filter expression.
  */
-function eventFilters(marketId: string | undefined, now: Date): string {
+function eventFilters(
+  marketId: string | undefined,
+  now: Date,
+  womenLedOnly = false
+): string {
   const filters = [`startTimeEpoch >= ${Math.floor(now.getTime() / 1000)}`];
   if (marketId) {
     filters.unshift(`discoveryMarketId:${quoteFilterValue(marketId)}`);
   }
+  if (womenLedOnly) filters.push("womenLed:true");
   return filters.join(" AND ");
 }
 

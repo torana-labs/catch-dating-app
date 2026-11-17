@@ -904,6 +904,11 @@
                 },
                 "minItems": 1,
                 "maxItems": 3
+              },
+              "calculator": {
+                "enum": [
+                  "pricingCalculator"
+                ]
               }
             }
           },

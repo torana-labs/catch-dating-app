@@ -28,3 +28,16 @@ Event? latestEventWithOpenSwipeWindow(
     (event) => event.endTime,
   );
 }
+
+/// When a guest event card's Catch window closes, or null for a card with no
+/// valid end.
+DateTime? cardSwipeWindowClosesAt(GuestEventCard card) =>
+    card.endTime?.add(swipeWindowDuration);
+
+/// Whether a guest event card's Catch window is open at [now].
+bool hasOpenCardSwipeWindow(GuestEventCard card, {required DateTime now}) {
+  final end = card.endTime;
+  final closesAt = cardSwipeWindowClosesAt(card);
+  if (end == null || closesAt == null || end.isAfter(now)) return false;
+  return !closesAt.isBefore(now);
+}

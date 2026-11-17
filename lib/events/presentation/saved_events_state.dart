@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:flutter/material.dart';
 
@@ -6,11 +6,11 @@ class SavedEventsListState {
   const SavedEventsListState({required this.orderedEvents, required this.now});
 
   factory SavedEventsListState.from(
-    List<Event> events, {
+    List<GuestEventCard> events, {
     required DateTime now,
   }) {
-    final upcoming = <Event>[];
-    final past = <Event>[];
+    final upcoming = <GuestEventCard>[];
+    final past = <GuestEventCard>[];
     for (final event in events) {
       if (event.startTime.isBefore(now)) {
         past.add(event);
@@ -28,7 +28,7 @@ class SavedEventsListState {
     );
   }
 
-  final List<Event> orderedEvents;
+  final List<GuestEventCard> orderedEvents;
   final DateTime now;
 
   DateTime get today => DateUtils.dateOnly(now);
@@ -36,10 +36,11 @@ class SavedEventsListState {
   Iterable<String> get organizerIds =>
       orderedEvents.map((event) => event.organizerId);
 
-  String badgeLabelFor(Event event) => _isPast(event) ? 'PAST' : 'SAVED';
+  String badgeLabelFor(GuestEventCard event) =>
+      _isPast(event) ? 'PAST' : 'SAVED';
 
-  EventTileStatus statusFor(Event event) =>
+  EventTileStatus statusFor(GuestEventCard event) =>
       _isPast(event) ? EventTileStatus.past : EventTileStatus.saved;
 
-  bool _isPast(Event event) => event.startTime.isBefore(now);
+  bool _isPast(GuestEventCard event) => event.startTime.isBefore(now);
 }
