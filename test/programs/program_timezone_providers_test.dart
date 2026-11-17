@@ -10,7 +10,7 @@ import 'package:catch_dating_app/contexts/programmes/data/program_create_journal
 import 'package:catch_dating_app/contexts/programmes/data/program_inventory_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_timezone.dart';
-import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
+import 'package:catch_dating_app/programs/presentation/program_create_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_timezone_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -161,9 +161,11 @@ void main() {
             ],
           );
           addTearDown(container.dispose);
-          final provider = programCreateControllerProvider(scope);
+          final provider = programCreateProvider(scope);
           container.listen(provider, (_, _) {});
           final controller = await container.read(provider.future);
+          final notifier = container.read(provider.notifier);
+          ProgramCreateView current() => container.read(provider).requireValue;
           expect(
             controller.values.timezone,
             restored ? 'Europe/London' : 'Asia/Kolkata',
@@ -172,7 +174,7 @@ void main() {
           expect(controller.fieldsLocked, pending);
           if (restored) expect(controller.requestId, 'restored-timezone-key');
           if (!restored) {
-            controller.edit(
+            notifier.edit(
               controller.values.copyWith(title: 'In-progress draft'),
             );
             suggested = 'America/New_York';
@@ -180,9 +182,10 @@ void main() {
             await container.read(
               programTimezoneSuggestionProvider(scope).future,
             );
-            expect(await container.read(provider.future), same(controller));
-            expect(controller.values.title, 'In-progress draft');
-            expect(controller.values.timezone, 'Asia/Kolkata');
+            await container.read(provider.future);
+            expect(container.read(provider.notifier), same(notifier));
+            expect(current().values.title, 'In-progress draft');
+            expect(current().values.timezone, 'Asia/Kolkata');
           }
         },
       );

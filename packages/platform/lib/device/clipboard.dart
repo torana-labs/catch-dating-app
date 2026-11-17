@@ -1,19 +1,20 @@
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'clipboard.g.dart';
 
 typedef ClipboardSetter = Future<void> Function(ClipboardData data);
 
 // keepalive: a stateless platform facade with no account state.
-final clipboardSetterProvider = Provider<ClipboardSetter>(
-  (ref) => Clipboard.setData,
-);
+@Riverpod(keepAlive: true)
+ClipboardSetter clipboardSetter(Ref ref) => Clipboard.setData;
 
 // keepalive: a stateless platform facade with no account state.
-final clipboardControllerProvider = Provider<ClipboardController>(
-  (ref) => ClipboardController(ref.watch(clipboardSetterProvider)),
-);
+@Riverpod(keepAlive: true)
+ClipboardController clipboardController(Ref ref) =>
+    ClipboardController(ref.watch(clipboardSetterProvider));
 
 class ClipboardController {
   const ClipboardController(this._setData);
