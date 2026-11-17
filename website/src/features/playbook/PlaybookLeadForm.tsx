@@ -35,7 +35,7 @@ function PlaybookLeadForm({form, kind}: {form: PlaybookLeadFormContent; kind: Pl
   const card = fields.length > 0;
   const inputMode = lead.submitting ? "inactive" : "editable";
   const phone = (
-    <CatchField autoComplete="tel-national" errorText={lead.problem("phone")} inputHint={form.label} inputMode={inputMode} keyboardType="phone"
+    <CatchField autoComplete="tel-national" errorText={lead.problem("phone")} inputHint={card ? undefined : form.label} inputMode={inputMode} keyboardType="phone"
       labelMode={card ? "visible" : "hidden"} onChanged={lead.set("phone")} prefixText={activeMarket.dialCode} recipe="input" required
       title={form.label} value={lead.answers.phone ?? ""} />
   );
