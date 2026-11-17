@@ -138,8 +138,11 @@ export async function adminGetInboxItemHandler(request: CallableRequest<unknown>
 }
 
 /** Assign, unassign, snooze or wake one item. Audited, and a step in its journey. */
-/** The items nothing else closes: an imported event nobody will publish, intake nobody will rescue. */
-const dismissableTypes: InboxItemType[] = ["event", "stuck"];
+/**
+ * The items nothing else closes: an imported event nobody will publish, intake nobody will rescue, and a
+ * website lead staff answered on WhatsApp (its note says what they replied).
+ */
+const dismissableTypes: InboxItemType[] = ["event", "stuck", "lead"];
 
 export async function adminUpdateInboxItemHandler(request: CallableRequest<unknown>,
   deps: InboxDeps = defaultDeps): Promise<AdminUpdateInboxItemCallableResponse> {
@@ -192,7 +195,7 @@ export async function adminUpdateInboxItemHandler(request: CallableRequest<unkno
     switch (data.action) {
     case "dismiss":
       next = dismissedInboxItem(before, adminContext.uid, (data.note as string).trim(), now);
-      title = "Dismissed";
+      title = before.type === "lead" ? "Closed" : "Dismissed";
       break;
     case "reopen":
       next = reopenedInboxItem(before, now);

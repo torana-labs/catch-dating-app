@@ -272,6 +272,7 @@
         "event",
         "claim",
         "enquiry",
+        "lead",
         "access",
         "stuck"
       ],

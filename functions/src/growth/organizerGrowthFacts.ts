@@ -47,13 +47,32 @@ export interface ListingChannelInput {
   originKind: string | null;
   intent: {
     source?: unknown; partnerUid?: unknown; acquisitionAttribution?: unknown;
+    leadKind?: unknown; lead?: unknown;
   } | null;
+}
+
+/**
+ * The referrer a website referral lead can credit: only a signed-in Catch
+ * account the lead recorded. A referral sent signed out credits nobody.
+ * @param {ListingChannelInput["intent"]} intent The linked enquiry.
+ * @return {object|null} The referrer's account and role, or null.
+ */
+export function referralReferrer(intent: ListingChannelInput["intent"]):
+  {uid: string; role: "guest" | "partner"} | null {
+  if (intent?.leadKind !== "referral") return null;
+  const credit = record(record(intent.lead)?.referralCredit);
+  const uid = credit?.referrerUid;
+  const role = credit?.referrerRole;
+  return credit?.status === "referrer_account" && typeof uid === "string" &&
+    uid.length > 0 && (role === "guest" || role === "partner") ?
+    {uid, role} : null;
 }
 
 /**
  * The channel of an organizer listed through Supply Intake. The request is
  * the first touch: a nomination made before an ad click keeps the
- * nomination. A partner enquiry credits its partner.
+ * nomination. A partner enquiry credits its partner, and a website referral
+ * its signed-in referrer.
  * @param {ListingChannelInput} input The approved listing's request.
  * @return {ChannelDecision} Channel, its source and the first nominator.
  */
@@ -70,6 +89,13 @@ export function listingChannel(input: ListingChannelInput): ChannelDecision {
     const uid = typeof intent.partnerUid === "string" ?
       intent.partnerUid : input.submittedBy.uid;
     return nominated("partner", uid, "partner");
+  }
+  // A website referral is a nomination by its referrer, dated when the lead
+  // arrived, so a claim within the lapse window credits them.
+  if (intent?.leadKind === "referral") {
+    const referrer = referralReferrer(intent);
+    return referrer ? nominated(referrer.role, referrer.uid, referrer.role) :
+      nominated("guest", null, "guest");
   }
   if (input.kind === "discovery") return source("imported");
   if (input.kind === "self_submission" || intent) {

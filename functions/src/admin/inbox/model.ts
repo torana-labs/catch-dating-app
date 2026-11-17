@@ -12,7 +12,7 @@ import {marketForIdOrAlias} from "../../locations/marketConfig";
 export const INBOX_ITEMS_COLLECTION = "adminInboxItems";
 export const INBOX_JOURNEY_COLLECTION = "adminInboxJourney";
 
-export const INBOX_ITEM_TYPES = ["listing", "event", "claim", "enquiry", "access", "stuck"] as const;
+export const INBOX_ITEM_TYPES = ["listing", "event", "claim", "enquiry", "lead", "access", "stuck"] as const;
 export type InboxItemType = typeof INBOX_ITEM_TYPES[number];
 
 export const INBOX_SOURCE_KINDS = ["supplyIntakeRequest", "organizerClaimRequest", "salesInboundIntent", "accessApplication", "externalEvent"] as const;
@@ -393,6 +393,7 @@ function projectClaim(sourceId: string, data: Data, context: InboxContext): Inbo
 }
 
 function projectEnquiry(sourceId: string, data: Data): InboxProjection | null {
+  if (typeof data.leadKind === "string") return projectLead(sourceId, data);
   const createdAt = iso(data.createdAt) ?? epoch;
   const partner = data.source === "partner";
   // Optional; older intents carry no programme and read as an events Host.
@@ -427,6 +428,86 @@ function projectEnquiry(sourceId: string, data: Data): InboxProjection | null {
     nominatorUid: text(data.partnerUid),
     city: cityOf(text(data.city)),
     state: open ? {code: "new", label: "New", tone: "neutral"} :
+      status === "linked" ? {code: "linked", label: "Linked to a host", tone: "success"} :
+        {code: "dismissed", label: "Dismissed", tone: "neutral"},
+    lifecycle: open ? "open" : "closed",
+    waitingSince: createdAt,
+    closedAt: open ? null : iso(data.linkedAt) ?? iso(data.updatedAt) ?? createdAt,
+    recommendation: null,
+    journey,
+  };
+}
+
+const leadLabels: Record<string, string> = {
+  guide: "Send the setup guide", walkthrough: "Walkthrough request", demo: "Demo request", venue: "List a space",
+  story: "Put forward for a story", referral: "Host referral", org_contact: "College, team or brand",
+  city_alerts: "New plans in their city",
+};
+
+const interestLabels: Record<string, string> = {
+  runs: "Runs", courts: "Courts", dinners: "Dinners", quizzes: "Quizzes", nights_out: "Nights out", fitness: "Fitness",
+  workshops: "Workshops", books: "Book clubs",
+};
+
+/** What a lead asked for, in a line: "60 standing · Tuesdays", "Lantern Lane Social · @lanternlane". */
+function leadDetail(kind: string, lead: Data): string | null {
+  const payload = record(lead[{org_contact: "orgContact", city_alerts: "cityAlerts"}[kind] ?? kind]) ?? {};
+  const parts = (...values: unknown[]) => values.map(text).filter(Boolean).join(" · ") || null;
+  switch (kind) {
+  case "guide": return text(payload.format) ? `${humanize(text(payload.format))} guide` : null;
+  case "walkthrough": return parts(payload.preferredTime, payload.organisation, payload.whatYouRun);
+  case "demo": return parts(payload.whatYouHost, payload.currentQuestions);
+  case "venue": return parts(payload.area, payload.capacity, payload.nights);
+  case "story": return parts(payload.communityName, payload.cadence);
+  case "referral": {
+    const credit = record(lead.referralCredit);
+    return parts(payload.hostName, payload.hostLink, payload.relationship,
+      credit?.status === "referrer_account" ? "Referrer signed in" : "Referrer not signed in, no credit");
+  }
+  case "org_contact": return parts(humanize(text(payload.orgType)), payload.orgName, payload.message);
+  case "city_alerts": return strings(payload.interests).map((interest) => interestLabels[interest] ?? interest).join(", ") ||
+    "Any plans";
+  default: return null;
+  }
+}
+
+/**
+ * A website lead (joinWaitlist requestKind): a person waiting for a WhatsApp
+ * reply. Nothing is sent for staff, so it waits until someone replies and
+ * closes it with what they said. A referral closes itself when its listing
+ * is approved and links it.
+ */
+function projectLead(sourceId: string, data: Data): InboxProjection {
+  const kind = String(data.leadKind);
+  const lead = record(data.lead) ?? {};
+  const label = leadLabels[kind] ?? "Website lead";
+  const createdAt = iso(data.createdAt) ?? epoch;
+  const status = String(data.status);
+  const venue = kind === "venue" ? text(record(lead.venue)?.spaceName) : null;
+  const named = venue ?? text(data.fullName);
+  const phone = text(data.phone);
+  const journey: JourneyStep[] = [{stepId: "received", occurredAt: createdAt, title: `${label} from the website`,
+    detail: text(lead.sourcePage), actorUid: null, tone: "ink"}];
+  if (status === "linked") {
+    journey.push({stepId: "linked", occurredAt: iso(data.linkedAt) ?? iso(data.updatedAt) ?? createdAt,
+      title: "Linked to an organizer", detail: text(data.organizerId), actorUid: text(data.linkedBy), tone: "success"});
+  } else if (status === "dismissed") {
+    journey.push({stepId: "dismissed", occurredAt: iso(data.updatedAt) ?? createdAt, title: "Dismissed",
+      detail: null, actorUid: null, tone: "muted"});
+  }
+  const open = status === "needs_identity_review";
+  return {
+    itemId: inboxItemId("salesInboundIntent", sourceId),
+    type: "lead",
+    sourceKind: "salesInboundIntent",
+    sourceId,
+    sourcePath: `${sourceCollections.salesInboundIntent}/${sourceId}`,
+    title: named ? `${label}: ${named}` : label,
+    subtitle: [phone ? `WhatsApp ${phone}` : null, leadDetail(kind, lead)].filter(Boolean).join(" · ") || null,
+    cameFrom: text(lead.sourcePage) ? `Website ${text(lead.sourcePage)}` : "Website",
+    nominatorUid: null,
+    city: cityOf(text(data.city)),
+    state: open ? {code: "reply_on_whatsapp", label: "Reply on WhatsApp", tone: "warning"} :
       status === "linked" ? {code: "linked", label: "Linked to a host", tone: "success"} :
         {code: "dismissed", label: "Dismissed", tone: "neutral"},
     lifecycle: open ? "open" : "closed",
