@@ -1,5 +1,9 @@
 import 'package:catch_dating_app/contexts/events/domain/private_event_setup_inventory.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'host_event_summary_reads.g.dart';
 
 /// The first unpublished events of one live draft list, and whether more
 /// follow.
@@ -45,3 +49,12 @@ class HostEventSummaryReads {
         ),
       );
 }
+
+/// The signed-in manager's `hostEventSummaries` listener.
+@riverpod
+HostEventSummaryReads hostEventSummaryReads(Ref ref) => HostEventSummaryReads(
+  HostSummaryReader(
+    ref.watch(firebaseFirestoreProvider),
+    actorId: () => ref.read(firebaseAuthProvider).currentUser?.uid,
+  ),
+);
