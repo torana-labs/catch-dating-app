@@ -137,8 +137,6 @@ export const ownerViewCopy = {
   settings: {
     addressTitle: "Your page address",
     addressNote: "Put this in your Instagram bio.",
-    customDomain: "Your own domain",
-    customDomainNote: `A custom domain for your page is coming. Your ${brand.name} address works everywhere today.`,
     trackingTitle: "Pixel and Google Analytics",
     trackingNote: `Saved now and switched on after ${brand.name}'s advertising review.`,
     pixelField: "Meta Pixel ID",

@@ -143,7 +143,7 @@ stale in the same `Mutation.run`:
   persisted-read store (#1330), for data marked "must open offline".
 - At sign-out both apps terminate the Firestore instance and clear its
   persistence before another account can sign in
-  (`packages/platform/lib/cache/firestore_cache_wipe.dart`, called by
+  (`packages/platform/lib/firebase/firestore_cache_wipe.dart`, called by
   `AuthSessionController`). Native plugins start a fresh instance on the next
   call; on the web the terminated instance cannot restart, so the page
   reloads. A failed wipe is reported and sign-out continues.
@@ -260,6 +260,6 @@ empty, the rules gate with no list.
 | Key rules, time buckets | `packages/platform/lib/cache/cache_time_bucket.dart` |
 | Stale-while-revalidate client | `packages/platform/lib/cache/callable_read.dart` |
 | Cache tags and registry | `packages/platform/lib/cache/cache_tags.dart` |
-| Sign-out wipe | `packages/platform/lib/cache/firestore_cache_wipe.dart` |
+| Sign-out wipe | `packages/platform/lib/firebase/firestore_cache_wipe.dart` |
 | Time to content | `packages/platform/lib/cache/screen_time_to_content.dart` |
 | Tests and harness | `test/platform/cache/` |

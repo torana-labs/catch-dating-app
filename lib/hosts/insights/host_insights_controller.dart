@@ -17,6 +17,8 @@ import 'package:catch_dating_app/hosts/insights/host_event_report_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_kernel/city_catalog.dart';
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/catch_async_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show DateUtils;
@@ -59,8 +61,9 @@ HostInsightsState hostInsightsController(Ref ref, HostInsightsRequest request) {
   final read = _read(ref, request.cityName, _query(request));
   if (read == null) return HostInsightsState.loading(request.range);
   final value = ref.watch(hostAnalyticsProvider(read));
-  final report = value.value?.data;
-  if (report == null) {
+  final cached = value.value;
+  final report = cached?.data;
+  if (cached == null || report == null) {
     return switch (value) {
       AsyncValue(:final error?, :final stackTrace) => HostInsightsState(
         status: HostInsightsStatus.error,
@@ -71,10 +74,18 @@ HostInsightsState hostInsightsController(Ref ref, HostInsightsRequest request) {
       _ => HostInsightsState.loading(request.range),
     };
   }
+  // A refetch that failed or timed out keeps the report beside its error.
+  final refreshFailed = switch (catchAsyncStateFromAsyncValue(value)) {
+    CatchAsyncState(hasStaleError: true, retrying: false) => true,
+    _ => false,
+  };
   return hostInsightsStateFor(
     report,
     range: request.range,
     currencyCode: currencyCodeForCityName(request.cityName),
+    refreshFailedMinutes: refreshFailed
+        ? cached.age(ref.watch(appClockProvider).now()).inMinutes
+        : null,
   );
 }
 
@@ -90,6 +101,7 @@ HostInsightsState hostInsightsStateFor(
   HostAnalyticsReport report, {
   required HostInsightsRange range,
   required String currencyCode,
+  int? refreshFailedMinutes,
 }) {
   final cards = {for (final card in report.summaryCards) card.id: card};
   HostInsightsStat? stat(
@@ -122,6 +134,7 @@ HostInsightsState hostInsightsStateFor(
   return HostInsightsState(
     status: HostInsightsStatus.content,
     range: range,
+    refreshFailedMinutes: refreshFailedMinutes,
     stats: List.unmodifiable([
       ?stat(HostAnalyticsMetricIds.bookings, HostInsightsStatKind.bookings),
       ?stat(

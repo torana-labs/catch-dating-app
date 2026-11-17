@@ -1,16 +1,23 @@
 import {brand} from "./brand.ts";
 
-/** Copy for the organiser page (/organizers/<slug>/), a link-in-bio page. */
+/**
+ * Copy for the organiser page (/organizers/<slug>/), a link-in-bio page. It
+ * follows the owner-approved WebOrgV2 board and the playbook's event page;
+ * where they speak about one sample club (its runs), the copy stays general.
+ */
 export const organizerPageCopy = {
   generatedTag: "Built from public pages · not claimed yet",
   verifiedLabel: "Verified organiser",
   stats: {
     followers: (count: number) => (count === 1 ? "follower" : "followers"),
     waiting: "waiting for the next event",
-    reviews: (count: number) => `★ from ${count} ${count === 1 ? "review" : "reviews"}`,
-    hosted: (count: number) => (count === 1 ? "night" : "nights"),
+    /** Beside the average, which counts verified reviews only. */
+    reviews: (verified: number) => `★ · ${verified} verified ${verified === 1 ? "review" : "reviews"}`,
+    hosted: (count: number) => (count === 1 ? "night hosted" : "nights hosted"),
   },
   summarisedFrom: (names: readonly string[]) => `summarised from ${names.length ? names.join(" and ") : "public pages"}`,
+  /** Owner-set labels under the name. */
+  labels: {womenLed: "Women-led"},
   follow: "Follow",
   following: "Following",
   share: "Share",
@@ -44,11 +51,13 @@ export const organizerPageCopy = {
   countdown: (days: number) =>
     days <= 0 ? "today" : days === 1 ? "tomorrow" : days < 14 ? `in ${days} days` : `in ${Math.round(days / 7)} weeks`,
   linksLabel: "Links",
-  pinned: "Pinned",
+  socialsLabel: "Social profiles",
   pinnedUntil: (date: string) => `Pinned until ${date}`,
   eventsTitle: "Coming up",
   eventsNote: {
-    claimed: (names: readonly string[]) => (names.length ? `On ${brand.name} and elsewhere` : `On ${brand.name}`),
+    /** Where a claimed page's events are sold: on the brand, on other sites, or both in one list. */
+    claimed: (names: readonly string[], onCatch: boolean) => (!names.length ? `On ${brand.name}` :
+      onCatch ? `From ${brand.name} and ${names.join(" and ")}, in one list` : `From ${names.join(" and ")}`),
     generated: (names: readonly string[]) => `Found on their public ${names.length ? `${names.join(" and ")} pages` : "pages"}`,
   },
   eventsEmptyTitle: "Nothing on the calendar yet",
@@ -82,12 +91,17 @@ export const organizerPageCopy = {
   },
   reviewsTitle: "Reviews",
   writeReview: "Write a review",
-  reviewCount: (count: number) => `${count} ${count === 1 ? "review" : "reviews"}`,
-  starsShort: (stars: number) => `${stars}★`,
   starsRow: (stars: number, count: number) => `${stars} ${stars === 1 ? "star" : "stars"}: ${count} ${count === 1 ? "review" : "reviews"}`,
   ratingLabel: (stars: number) => `${stars} out of 5`,
+  /** The rating's count: the average covers verified reviews only. */
+  verifiedCount: (count: number) => `from ${count} verified ${count === 1 ? "review" : "reviews"}`,
+  /** Reviews with none from a booking yet, so no rating. */
+  unrated: (count: number) => `${count} ${count === 1 ? "review" : "reviews"}, none from a ${brand.name} booking yet, so no rating.`,
+  /** No reviews at all: the rating averages verified reviews only, so there is none yet. */
+  noRating: `No rating yet. The rating counts only reviews from people who booked on ${brand.name}.`,
   reviewPolicy: {
-    claimed: `Anyone can review. People who booked on ${brand.name} are marked.`,
+    /** The explanation line under the verified and Unverified review labels (playbook event page). */
+    claimed: `Booked on ${brand.name} means the reviewer booked through ${brand.name}. Unverified reviews are shown, and labelled.`,
     generated: `Anyone can review this page. Reviews stay unverified until guests book through ${brand.name}.`,
   },
   verifiedReview: `Booked on ${brand.name}`,
@@ -122,7 +136,7 @@ export const organizerPageCopy = {
     built: (names: readonly string[]) =>
       `We built this page from your public ${names.length ? `${names.join(" and ")} pages` : "pages"}. Claim it free and make it yours.`,
     points: [
-      {title: "Your Instagram link.", body: "Put it on your own domain, so it stays yours."},
+      {title: "Your Instagram link.", body: "One page for your bio, with your events, links and reviews."},
       {title: "Every event in one place.", body: `Luma, ${brand.name} or anywhere else, updated for you.`},
       {title: "Your links.", body: "WhatsApp group, shop, partners, pinned or timed."},
       {title: "Who clicks.", body: "Visits, link clicks and bookings, with Meta Pixel and Google Analytics."},

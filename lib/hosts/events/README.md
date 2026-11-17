@@ -57,7 +57,7 @@ Typed handoffs:
 | `HostEventsTimelineController` | `lib/hosts/events/presentation/host_events_timeline_controller.dart` | Actions: load_more_schedule, load_more_history, retry_event_history. |
 | `HostShellScreen` | `lib/routing/shell/host_shell_screen.dart` | Actions: switch_organizer. |
 | `HostProgrammeCreateScreen` | `lib/hosts/programmes/planner/programme_create_screen.dart` | Recoverable organizer-scoped Program creation route entered from Events. |
-| `ProgramEventsController` | `lib/programs/presentation/program_events_controller.dart` | Bounded Program inventory, exact saved-row confirmation, mutation, retry, and actor-generation fences. |
+| `ProgramCreate` | `lib/programs/presentation/program_create_controller.dart` | Generated notifier for one account and organizer's Program creation: draft recovery from the command journal, exact saved-row confirmation and actor fences. |
 | `HostEventsProgrammeTile` | `lib/contexts/programmes/parts/host_events_programme_tile.dart` | Identifiable Program date-range, function-count, and lifecycle row inside Events. |
 
 ## Shared dependencies
@@ -83,7 +83,7 @@ Typed handoffs:
 - `test/hosts/host_events_timeline_controller_test.dart`
 - `test/hosts/host_operations_screen_test.dart`
 - `test/programs/program_create_controller_test.dart`
-- `test/programs/program_events_controller_test.dart`
+- `test/programs/program_create_provider_test.dart`
 
 ## Maintenance
 
