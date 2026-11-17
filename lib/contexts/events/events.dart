@@ -13,4 +13,5 @@ export 'domain/event_meeting_location.dart';
 export 'domain/event_policy.dart';
 export 'domain/event_policy_defaults.dart';
 export 'domain/event_profile_requirements.dart';
+export 'domain/guest_event_card.dart';
 export 'domain/route_event_plan.dart';

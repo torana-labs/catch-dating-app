@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_viewer_state_provider.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
@@ -966,22 +965,6 @@ class FakeSwipeCandidateRepository extends Fake
   }
 }
 
-/// Serves a [FakeEventRepository]'s per-user booked and attended events.
-class FakeBookedEventsRepository extends Fake
-    implements BookedEventsRepository {
-  FakeBookedEventsRepository(this.events);
-
-  final FakeEventRepository events;
-
-  @override
-  Stream<List<Event>> watchAttendedEvents({required String uid}) =>
-      Stream.value(events.attendedEvents[uid] ?? const []);
-
-  @override
-  Stream<List<Event>> watchSignedUpEvents({required String uid}) =>
-      Stream.value(events.signedUpEvents[uid] ?? const []);
-}
-
 class FakeSavedEventRepository extends Fake implements SavedEventRepository {
   String? savedUid;
   String? savedEventId;
@@ -1006,10 +989,6 @@ class FakeSavedEventRepository extends Fake implements SavedEventRepository {
     unsavedUid = uid;
     unsavedEventId = eventId;
   }
-
-  @override
-  Stream<List<Event>> watchSavedEventDetailsForUser({required String uid}) =>
-      Stream.value(savedEventDetails[uid] ?? const []);
 
   @override
   Stream<List<saved_domain.SavedEvent>> watchSavedEventsForUser({

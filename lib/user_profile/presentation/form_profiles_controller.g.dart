@@ -34,7 +34,7 @@ final class FormProfilesControllerProvider
 }
 
 String _$formProfilesControllerHash() =>
-    r'e54a658e612ca03b85094fc0fe5340623347caa8';
+    r'26a31fe2cde476461bdb563da3c97bc01279febb';
 
 abstract class _$FormProfilesController
     extends $AsyncNotifier<FormProfilesState> {
@@ -56,19 +56,24 @@ abstract class _$FormProfilesController
   }
 }
 
+/// The review, kept current from the guest's read models while on screen.
+
 @ProviderFor(formProfileReview)
 final formProfileReviewProvider = FormProfileReviewFamily._();
+
+/// The review, kept current from the guest's read models while on screen.
 
 final class FormProfileReviewProvider
     extends
         $FunctionalProvider<
           AsyncValue<FormProfileReview>,
           FormProfileReview,
-          FutureOr<FormProfileReview>
+          Stream<FormProfileReview>
         >
     with
         $FutureModifier<FormProfileReview>,
-        $FutureProvider<FormProfileReview> {
+        $StreamProvider<FormProfileReview> {
+  /// The review, kept current from the guest's read models while on screen.
   FormProfileReviewProvider._({
     required FormProfileReviewFamily super.from,
     required String super.argument,
@@ -92,12 +97,12 @@ final class FormProfileReviewProvider
 
   @$internal
   @override
-  $FutureProviderElement<FormProfileReview> $createElement(
+  $StreamProviderElement<FormProfileReview> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<FormProfileReview> create(Ref ref) {
+  Stream<FormProfileReview> create(Ref ref) {
     final argument = this.argument as String;
     return formProfileReview(ref, argument);
   }
@@ -113,10 +118,12 @@ final class FormProfileReviewProvider
   }
 }
 
-String _$formProfileReviewHash() => r'd382e44fec2fb7bec8db3fee1e000ab70af566b7';
+String _$formProfileReviewHash() => r'a8d52cdcee019cc444cfebc5d12ae8c449cc1867';
+
+/// The review, kept current from the guest's read models while on screen.
 
 final class FormProfileReviewFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<FormProfileReview>, String> {
+    with $FunctionalFamilyOverride<Stream<FormProfileReview>, String> {
   FormProfileReviewFamily._()
     : super(
         retry: null,
@@ -125,6 +132,8 @@ final class FormProfileReviewFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The review, kept current from the guest's read models while on screen.
 
   FormProfileReviewProvider call(String responseId) =>
       FormProfileReviewProvider._(argument: responseId, from: this);

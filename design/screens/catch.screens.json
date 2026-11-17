@@ -5028,7 +5028,7 @@
           "id": "loading",
           "kind": "loading",
           "status": "captured",
-          "source": "dashboardHomeScreenStateProvider normalizes watchUserProfileProvider, watchActiveOrganizerMembershipsForUserProvider, and watchSignedUpEventsProvider loading waves into DashboardHomeScreenStatus.loading, rendered by DashboardScreen as a header, focus-card, stride-card, quick-action, and recommendation skeleton shell.",
+          "source": "dashboardHomeScreenStateProvider normalizes watchUserProfileProvider, watchActiveOrganizerMembershipsForUserProvider, and watchSignedUpEventCardsProvider loading waves into DashboardHomeScreenStatus.loading, rendered by DashboardScreen as a header, focus-card, stride-card, quick-action, and recommendation skeleton shell.",
           "tests": [
             "test/dashboard/dashboard_full_view_model_test.dart",
             "test/dashboard/dashboard_screen_test.dart"
@@ -5071,7 +5071,7 @@
           "id": "booked_events_error",
           "kind": "error",
           "status": "captured",
-          "source": "watchSignedUpEventsProvider errors render _DashboardErrorScreen with Unable to load your booked events copy and retry invalidation.",
+          "source": "watchSignedUpEventCardsProvider errors render _DashboardErrorScreen with Unable to load your booked events copy and retry invalidation.",
           "tests": [
             "test/dashboard/dashboard_screen_test.dart"
           ],
@@ -19241,7 +19241,7 @@
         "symbol": "CalendarScreen"
       },
       "stateController": {
-        "primary": "CalendarScreen + uidProvider + watchSignedUpEventsProvider + watchSavedEventDetailsForUserProvider + CalendarHomeState + organizerNameLookupProvider",
+        "primary": "CalendarScreen + uidProvider + watchSignedUpEventCardsProvider + watchSavedEventCardsProvider + CalendarHomeState + organizerNameLookupProvider",
         "files": [
           {
             "file": "lib/events/presentation/calendar/calendar_screen.dart",
@@ -19252,12 +19252,12 @@
             "symbol": "CalendarHomeState"
           },
           {
-            "file": "lib/contexts/bookings/data/booked_events_repository.dart",
-            "symbol": "watchSignedUpEvents"
+            "file": "lib/contexts/bookings/data/guest_event_cards_repository.dart",
+            "symbol": "watchSignedUpEventCards"
           },
           {
-            "file": "lib/contexts/discovery/data/saved_event_repository.dart",
-            "symbol": "watchSavedEventDetailsForUser"
+            "file": "lib/contexts/bookings/data/guest_event_cards_repository.dart",
+            "symbol": "watchSavedEventCards"
           },
           {
             "file": "lib/contexts/organizers/data/organizer_name_lookup.dart",
@@ -19691,7 +19691,7 @@
         "symbol": "SavedEventsScreen"
       },
       "stateController": {
-        "primary": "SavedEventsScreen + uidProvider + watchSavedEventDetailsForUserProvider + SavedEventsListState + organizerNameLookupProvider",
+        "primary": "SavedEventsScreen + uidProvider + watchSavedEventCardsProvider + SavedEventsListState + organizerNameLookupProvider",
         "files": [
           {
             "file": "lib/events/presentation/saved_events_screen.dart",
@@ -19702,8 +19702,8 @@
             "symbol": "SavedEventsListState"
           },
           {
-            "file": "lib/contexts/discovery/data/saved_event_repository.dart",
-            "symbol": "watchSavedEventDetailsForUser"
+            "file": "lib/contexts/bookings/data/guest_event_cards_repository.dart",
+            "symbol": "watchSavedEventCards"
           },
           {
             "file": "lib/contexts/organizers/data/organizer_name_lookup.dart",
@@ -19803,7 +19803,7 @@
           "id": "saved_events_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "watchSavedEventDetailsForUserProvider loading renders the Saved Events agenda/date-rail skeleton through _SavedEventsLoading.",
+          "source": "watchSavedEventCardsProvider loading renders the Saved Events agenda/date-rail skeleton through _SavedEventsLoading.",
           "previewIds": [
             "SavedEventsScreen/Saved states"
           ],

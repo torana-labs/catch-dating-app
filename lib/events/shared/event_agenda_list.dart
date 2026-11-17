@@ -1,18 +1,18 @@
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-typedef EventBadgeLabelBuilder = String? Function(Event event);
-typedef OrganizerNameBuilder = String? Function(Event event);
-typedef EventTileStatusBuilder = EventTileStatus Function(Event event);
+typedef EventBadgeLabelBuilder = String? Function(GuestEventCard event);
+typedef OrganizerNameBuilder = String? Function(GuestEventCard event);
+typedef EventTileStatusBuilder = EventTileStatus Function(GuestEventCard event);
 typedef EventAgendaDayKeyBuilder = Key? Function(DateTime date);
 
 class EventAgendaSliverList extends StatelessWidget {
   const EventAgendaSliverList({
     super.key,
-    this.events = const <Event>[],
+    this.events = const <GuestEventCard>[],
     this.agendaRows,
     this.onEventSelected,
     this.badgeLabel,
@@ -33,9 +33,9 @@ class EventAgendaSliverList extends StatelessWidget {
     this.groupGap = CatchLayout.agendaGroupGap,
   });
 
-  final List<Event> events;
+  final List<GuestEventCard> events;
   final List<EventAgendaRow>? agendaRows;
-  final ValueChanged<Event>? onEventSelected;
+  final ValueChanged<GuestEventCard>? onEventSelected;
   final String? badgeLabel;
   final EventBadgeLabelBuilder? badgeLabelBuilder;
   final OrganizerNameBuilder? organizerNameBuilder;
@@ -92,7 +92,7 @@ class EventAgendaSliverList extends StatelessWidget {
     return [for (final event in events) _agendaRowFor(event)];
   }
 
-  EventAgendaRow _agendaRowFor(Event event) {
+  EventAgendaRow _agendaRowFor(GuestEventCard event) {
     final effectiveBadgeLabel = badgeLabelBuilder?.call(event) ?? badgeLabel;
     return EventAgendaRow(
       event: event,
@@ -113,7 +113,7 @@ class EventAgendaRow {
     this.status,
   });
 
-  final Event event;
+  final GuestEventCard event;
   final String? badgeLabel;
   final String? organizerName;
   final EventTileStatus? status;
@@ -266,7 +266,7 @@ class AgendaDaySection extends StatelessWidget {
   final DateTime date;
   final List<EventAgendaRow> rows;
   final DateTime today;
-  final ValueChanged<Event>? onEventSelected;
+  final ValueChanged<GuestEventCard>? onEventSelected;
   final bool showOrganizerName;
   final double dayLabelBottomGap;
 
@@ -291,8 +291,8 @@ class AgendaDaySection extends StatelessWidget {
               final status =
                   row.status ?? eventTileStatusForBadge(row.badgeLabel);
               return EventAgendaTile(
-                data: EventTileData.fromEvent(
-                  event: event,
+                data: GuestEventTileData(
+                  card: event,
                   status: status,
                   organizerName: row.organizerName,
                 ),

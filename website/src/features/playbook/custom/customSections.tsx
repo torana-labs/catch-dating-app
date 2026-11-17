@@ -4,9 +4,13 @@ import type {CaptureSlots} from "../../../shared/media/captureSlot";
 import type {PlaybookPageController} from "../usePlaybookPageController";
 import type {ReadyPlaybookCustomComponent} from "./readyCustomSections";
 
-/** What a custom section component gets: its section, its words by key, and the page's controller and captures. */
+/**
+ * What a custom section component gets: the section it sits in (a custom
+ * section, or the pricing section whose calculator slot it fills), its words
+ * by key, and the page's controller and captures.
+ */
 export interface PlaybookCustomSectionProps {
-  readonly section: PlaybookSectionOf<"custom">;
+  readonly section: PlaybookSectionOf<"custom"> | PlaybookSectionOf<"pricing">;
   readonly labels: Readonly<Record<string, string>>;
   readonly controller: PlaybookPageController;
   readonly captures: CaptureSlots;
@@ -14,7 +18,8 @@ export interface PlaybookCustomSectionProps {
 
 /**
  * The closed registry of custom section components, by the key a page names
- * (`"component": "noShowCalculator"`): the no-show calculator, the event
+ * (`"component": "noShowCalculator"`, or a pricing section's
+ * `"calculator": "pricingCalculator"`): the no-show calculator, the event
  * page from a link form, the walkthrough time slots and the pricing
  * calculator. Each is added with its own PR, beside its key in
  * ./readyCustomSections.ts.

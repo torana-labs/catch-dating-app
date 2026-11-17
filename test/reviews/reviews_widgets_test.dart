@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart'
+    show watchOwnEventCardsByIdProvider;
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
@@ -410,9 +411,9 @@ void main() {
       user: user,
       repository: repository,
       providerOverrides: [
-        watchEventsByIdsProvider(
-          EventsByIdQuery([event.id]),
-        ).overrideWith((ref) => Stream.value([event])),
+        watchOwnEventCardsByIdProvider(user.uid).overrideWith(
+          (ref) => Stream.value({event.id: GuestEventCard.fromEvent(event)}),
+        ),
       ],
     );
 
@@ -443,9 +444,9 @@ void main() {
       user: user,
       repository: _FakeReviewsRepository(reviewsByUser: [review]),
       providerOverrides: [
-        watchEventsByIdsProvider(
-          EventsByIdQuery(['missing-event']),
-        ).overrideWith((ref) => Stream.value(<Event>[])),
+        watchOwnEventCardsByIdProvider(
+          user.uid,
+        ).overrideWith((ref) => Stream.value(const <String, GuestEventCard>{})),
       ],
     );
 

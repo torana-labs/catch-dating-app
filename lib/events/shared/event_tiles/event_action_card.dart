@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +5,10 @@ import 'package:flutter/material.dart';
 class EventActionCard extends StatelessWidget {
   const EventActionCard({
     super.key,
-    required this.event,
+    required this.title,
     required this.badges,
     required this.metaRows,
     required this.actions,
-    this.title,
     this.subtitle,
     this.indexLabel,
     this.headerAccessory,
@@ -23,11 +21,10 @@ class EventActionCard extends StatelessWidget {
     this.onTap,
   });
 
-  final Event event;
   final List<EventActionCardBadge> badges;
   final List<List<CatchMetaEntry>> metaRows;
   final List<EventActionCardAction> actions;
-  final String? title;
+  final String title;
   final String? subtitle;
   final String? indexLabel;
   final Widget? headerAccessory;
@@ -105,7 +102,7 @@ class EventActionCard extends StatelessWidget {
                 if (headerAccessory != null) ...[gapH10, headerAccessory!],
                 gapH12,
                 CatchLegacyText(
-                  title ?? event.title,
+                  title,
                   variant: CatchLegacyTextVariant.displayXs,
                   maxLines: 2,
                 ),

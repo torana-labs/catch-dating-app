@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/contexts/safety/data/messaging_permission_repository.dart';
 import 'package:catch_dating_app/contexts/safety/domain/messaging_permission.dart';
 import 'package:catch_dating_app/safety/presentation/messaging_permissions_controller.dart';
@@ -14,7 +15,7 @@ class _Repository extends Fake implements MessagingPermissionRepository {
       <(MessagingPermission, String, Completer<MessagingPermission>)>[];
   final withdrawnPurposes = <MessagingPermissionPurpose?>[];
   @override
-  Future<MessagingPermissionPage> list({String? cursor}) {
+  Future<MessagingPermissionPage> list(String uid, {String? cursor}) {
     cursors.add(cursor);
     final call = Completer<MessagingPermissionPage>();
     lists.add(call);
@@ -51,6 +52,54 @@ MessagingPermissionPage _page(String receipt, {String? cursor}) =>
     );
 
 void main() {
+  test('organizer rows are named from the organizer lookup', () async {
+    final repository = _Repository();
+    final container = ProviderContainer(
+      overrides: [
+        uidProvider.overrideWithValue(const AsyncData('one')),
+        messagingPermissionRepositoryProvider.overrideWithValue(repository),
+        organizerNameLookupProvider.overrideWith(
+          (ref, query) async => {
+            for (final id in query.organizerIds)
+              if (id != 'gone') id: 'Name of $id',
+          },
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    container.listen(messagingPermissionsControllerProvider, (_, _) {});
+    await flushTestEventQueue();
+    repository.lists.last.complete(
+      MessagingPermissionPage(
+        catchPermission: _permission('catch-grant'),
+        organizers: const [
+          MessagingPermission(
+            organizerId: 'org',
+            organizerName: null,
+            status: MessagingPermissionStatus.optedIn,
+            receiptId: 'org-grant',
+          ),
+          MessagingPermission(
+            organizerId: 'gone',
+            organizerName: null,
+            status: MessagingPermissionStatus.unknown,
+            receiptId: null,
+          ),
+        ],
+        nextCursor: null,
+      ),
+    );
+    final state = await container.read(
+      messagingPermissionsControllerProvider.future,
+    );
+
+    expect(state.page.organizers.map((row) => row.organizerName), [
+      'Name of org',
+      null,
+    ]);
+    expect(state.page.organizers.first.receiptId, 'org-grant');
+  });
+
   test(
     'withdrawal retries keep identity; in-flight results cannot cross accounts',
     () async {

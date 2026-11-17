@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
@@ -383,92 +381,6 @@ void main() {
       expect(response.recipientCount, 3);
       expect(response.pushFailedCount, 1);
     });
-
-    test(
-      'watchAttendedEvents filters by attendee id and sorts descending',
-      () async {
-        final older = buildEvent(
-          id: 'older',
-          startTime: DateTime.now().subtract(const Duration(days: 2)),
-        );
-        final newer = buildEvent(
-          id: 'newer',
-          startTime: DateTime.now().subtract(const Duration(days: 1)),
-        );
-        await _seedEvent(firestore, older);
-        await _seedEvent(firestore, newer);
-        await _seedEvent(firestore, buildEvent(id: 'not-attended'));
-        await _seedParticipation(
-          firestore,
-          event: older,
-          uid: 'runner-1',
-          status: EventParticipationStatus.attended,
-        );
-        await _seedParticipation(
-          firestore,
-          event: newer,
-          uid: 'runner-1',
-          status: EventParticipationStatus.attended,
-        );
-        await _seedParticipation(
-          firestore,
-          event: buildEvent(id: 'not-attended'),
-          uid: 'runner-1',
-          status: EventParticipationStatus.signedUp,
-        );
-
-        await expectLater(
-          BookedEventsRepository(
-            firestore,
-            repository,
-          ).watchAttendedEvents(uid: 'runner-1'),
-          emits([newer, older]),
-        );
-      },
-    );
-
-    test(
-      'watchSignedUpEvents filters by signup id and sorts ascending',
-      () async {
-        final later = buildEvent(
-          id: 'later',
-          startTime: DateTime.now().add(const Duration(hours: 5)),
-        );
-        final earlier = buildEvent(
-          id: 'earlier',
-          startTime: DateTime.now().add(const Duration(hours: 2)),
-        );
-        await _seedEvent(firestore, later);
-        await _seedEvent(firestore, earlier);
-        await _seedEvent(firestore, buildEvent(id: 'not-signed-up'));
-        await _seedParticipation(
-          firestore,
-          event: later,
-          uid: 'runner-1',
-          status: EventParticipationStatus.signedUp,
-        );
-        await _seedParticipation(
-          firestore,
-          event: earlier,
-          uid: 'runner-1',
-          status: EventParticipationStatus.signedUp,
-        );
-        await _seedParticipation(
-          firestore,
-          event: buildEvent(id: 'not-signed-up'),
-          uid: 'runner-1',
-          status: EventParticipationStatus.waitlisted,
-        );
-
-        await expectLater(
-          BookedEventsRepository(
-            firestore,
-            repository,
-          ).watchSignedUpEvents(uid: 'runner-1'),
-          emits([earlier, later]),
-        );
-      },
-    );
 
     test('watchEventsByIds chunks ids, skips missing, and sorts', () async {
       final late = buildEvent(
@@ -1033,44 +945,6 @@ void main() {
       },
     );
 
-    test('watchAttendedEventsProvider delegates to the repository', () async {
-      final event = buildEvent();
-      await _seedEvent(firestore, event);
-      await _seedParticipation(
-        firestore,
-        event: event,
-        uid: 'runner-1',
-        status: EventParticipationStatus.attended,
-      );
-
-      final provider = watchAttendedEventsProvider('runner-1');
-      final subscription = container.listen(provider, (_, _) {});
-      addTearDown(subscription.close);
-
-      final value = await container.read(provider.future);
-
-      expect(value, [event]);
-    });
-
-    test('watchSignedUpEventsProvider delegates to the repository', () async {
-      final event = buildEvent();
-      await _seedEvent(firestore, event);
-      await _seedParticipation(
-        firestore,
-        event: event,
-        uid: 'runner-1',
-        status: EventParticipationStatus.signedUp,
-      );
-
-      final provider = watchSignedUpEventsProvider('runner-1');
-      final subscription = container.listen(provider, (_, _) {});
-      addTearDown(subscription.close);
-
-      final value = await container.read(provider.future);
-
-      expect(value, [event]);
-    });
-
     test('watchEventsByIdsProvider delegates to the repository', () async {
       final event = buildEvent();
       await _seedEvent(firestore, event);
@@ -1085,40 +959,6 @@ void main() {
 
       expect(value, [event]);
     });
-
-    testWidgets(
-      'watchSignedUpEventsProvider keeps realtime streams alive while idle',
-      (tester) async {
-        final event = buildEvent(bookedCount: 1);
-        final signedUpEventsController = StreamController<List<Event>>();
-        addTearDown(signedUpEventsController.close);
-
-        final container = ProviderContainer(
-          overrides: [
-            bookedEventsRepositoryProvider.overrideWith(
-              (ref) => _IdleBookedEventsRepository(
-                signedUpEventsStream: signedUpEventsController.stream,
-              ),
-            ),
-          ],
-        );
-        addTearDown(container.dispose);
-
-        final provider = watchSignedUpEventsProvider('runner-1');
-        final subscription = container.listen(provider, (_, _) {});
-        addTearDown(subscription.close);
-
-        signedUpEventsController.add([event]);
-        await container.pump();
-        expect(subscription.read().value, [event]);
-
-        await tester.pump(_pastLegacyStreamTimeout);
-        await container.pump();
-
-        expect(subscription.read(), isA<AsyncData<List<Event>>>());
-        expect(subscription.read().value, [event]);
-      },
-    );
 
     test('recommendedEventsProvider delegates to the repository', () async {
       final event = buildEvent();

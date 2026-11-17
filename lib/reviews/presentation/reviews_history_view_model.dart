@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
@@ -10,7 +10,7 @@ ReviewsHistoryState buildReviewsHistoryState({
   required String? uid,
   required CatchAsyncState<UserProfile?> user,
   CatchAsyncState<List<Review>>? reviews,
-  CatchAsyncState<List<Event>>? events,
+  CatchAsyncState<Map<String, GuestEventCard>>? events,
 }) {
   if (uid == null) {
     return ReviewsHistoryEmpty(
@@ -49,9 +49,7 @@ ReviewsHistoryState buildReviewsHistoryState({
     );
   }
 
-  final eventsById = <String, Event>{
-    for (final event in events?.value ?? const <Event>[]) event.id: event,
-  };
+  final eventsById = events?.value ?? const <String, GuestEventCard>{};
   final rows = [
     for (final review in reviewValues)
       ReviewsHistoryRow(

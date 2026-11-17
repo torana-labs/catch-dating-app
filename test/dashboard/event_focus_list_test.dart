@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -34,7 +35,7 @@ void main() {
   EventFocusActions actions(List<String> opened) => EventFocusActions(
     onViewEvent: (_) {},
     onCheckIn: (_) {},
-    onOpenSwipe: (event) => opened.add(event.id),
+    onOpenSwipe: (event) => opened.add(event.eventId),
     onWriteReview: (_) {},
     onOpenDirections: (_) {},
     onAddToCalendar: (_) {},
@@ -47,9 +48,12 @@ void main() {
     required List<Event> booked,
     required List<String> opened,
     bool reducedMotion = false,
-    ValueChanged<Event>? onImpression,
+    ValueChanged<GuestEventCard>? onImpression,
   }) async {
-    final windowed = dashboardCatchWindowsFromEvents(attended, now: now);
+    final windowed = dashboardCatchWindowsFromEvents(
+      guestEventCardsOf(attended),
+      now: now,
+    );
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
@@ -63,7 +67,7 @@ void main() {
           body: SingleChildScrollView(
             child: EventFocusList(
               windowedEvents: windowed,
-              upcomingEvents: booked,
+              upcomingEvents: guestEventCardsOf(booked),
               actions: actions(opened),
               now: now,
               onWindowImpression: onImpression,
@@ -76,7 +80,7 @@ void main() {
   }
 
   testWidgets(
-    'renders all windows in expiry order before upcoming, with counts and CTAs',
+    'renders all windows in expiry order before upcoming, with CTAs',
     (tester) async {
       final opened = <String>[];
       final impressions = <String>[];
@@ -85,12 +89,12 @@ void main() {
         attended: [closingLater, closingFirst],
         booked: [upcoming],
         opened: opened,
-        onImpression: (event) => impressions.add(event.id),
+        onImpression: (event) => impressions.add(event.eventId),
       );
 
       expect(find.byType(EventFocusCard), findsNWidgets(3));
-      expect(find.text('3 checked in'), findsOneWidget);
-      expect(find.text('5 checked in'), findsOneWidget);
+      // Windows come from event cards, which carry no live check-in count.
+      expect(find.textContaining('checked in'), findsNothing);
       expect(impressions, ['closing-first', 'closing-later']);
       final firstY = tester.getTopLeft(find.text(closingFirst.title)).dy;
       final laterY = tester.getTopLeft(find.text(closingLater.title)).dy;

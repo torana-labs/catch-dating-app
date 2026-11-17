@@ -48,6 +48,7 @@
             "event",
             "claim",
             "enquiry",
+            "lead",
             "access",
             "stuck"
           ]
@@ -59,7 +60,8 @@
             "organizerClaimRequest",
             "salesInboundIntent",
             "accessApplication",
-            "externalEvent"
+            "externalEvent",
+            "walkthroughBooking"
           ]
         },
         "sourceId": {

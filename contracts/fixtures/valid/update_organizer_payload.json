@@ -7,6 +7,7 @@
     "area": "Race Course Road",
     "imageUrl": null,
     "profileImageUrl": null,
-    "tags": ["social", "coffee"]
+    "tags": ["social", "coffee"],
+    "womenLed": true
   }
 }

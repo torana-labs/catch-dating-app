@@ -59,7 +59,10 @@ void main() {
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 1,
     );
-    final eventRepository = event_helpers.FakeEventRepository();
+    // The dashboard lists guest event cards; after check-in it reads the one
+    // event document for the celebration, so the event must be readable.
+    final eventRepository = event_helpers.FakeEventRepository()
+      ..fetchedEvent = run;
 
     await pumpCatchAppShell(
       tester,

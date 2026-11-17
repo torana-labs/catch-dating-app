@@ -58,7 +58,7 @@ const columns: CatchTableColumn<Row>[] = [
   {key: "waiting", label: "Waiting", width: "92px", sort: "asc", align: "end"},
 ];
 
-const types: InboxType[] = ["listing", "event", "claim", "enquiry", "access", "stuck"];
+const types: InboxType[] = ["listing", "event", "claim", "enquiry", "lead", "access", "stuck"];
 const toneOf = (tone: InboxItem["state"]["tone"]) =>
   tone === "success" || tone === "warning" || tone === "danger" ? tone : undefined;
 
@@ -196,8 +196,9 @@ function timeline(item: InboxItem, journey: readonly JourneyStep[]): CatchSectio
  * decision bar. Claims are recommended by ops and decided by the owner;
  * launch access is decided here; listings and events open a sheet to review
  * and publish; stuck intake still opens the old review. Events and stuck intake
- * can be dismissed, with a reason, and come back. Every type can be picked up
- * or snoozed for a day.
+ * can be dismissed, with a reason, and come back. A website lead is answered on
+ * WhatsApp and closed with what was said. Every type can be picked up or
+ * snoozed for a day.
  */
 function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
   controller: InboxScreenModel;
@@ -272,6 +273,15 @@ function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
           onPressed: chosen ? () => void controller.linkEnquiry({intentId: item.sourceId, organizerId: chosen.organizerId}, chosen.name) : null}}
         secondary={{label: item.assigneeUid === uid ? "Snooze a day" : "Pick it up", onPressed: item.assigneeUid === uid ? snooze : pickUp}}
         next={`Linking opens their Sales work; it doesn't approve a claim · ${next.toLowerCase()}`} />;
+    } else if (item.type === "lead") {
+      // Nothing is sent automatically yet: staff reply first, then close it.
+      dock = <CatchDock recipe="pane"
+        primary={{label: "Close", isLoading: busy, onPressed: noteText ? () => void controller.updateItem({itemId: item.itemId,
+          action: "dismiss", assigneeUid: null, snoozedUntil: null, note: noteText},
+        "Closed. It stays in Done if you need it back.") : null}}
+        secondary={holdIt}
+        note={{label: "What you replied", placeholder: "Sent the guide on WhatsApp", value: note, onChanged: setNote, required: true}}
+        next={`Reply on WhatsApp first; nothing is sent for you · ${next.toLowerCase()}`} />;
     } else if (item.type === "event") {
       const ref = item.listingEvent ?? null;
       dock = <CatchDock recipe="pane"

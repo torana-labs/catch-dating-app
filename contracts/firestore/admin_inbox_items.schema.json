@@ -207,7 +207,8 @@
         "organizerClaimRequest",
         "salesInboundIntent",
         "accessApplication",
-        "externalEvent"
+        "externalEvent",
+        "walkthroughBooking"
       ],
       "type": "string",
       "x-catch-ownership": "server-only"
@@ -272,6 +273,7 @@
         "event",
         "claim",
         "enquiry",
+        "lead",
         "access",
         "stuck"
       ],

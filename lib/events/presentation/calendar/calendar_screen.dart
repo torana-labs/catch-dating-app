@@ -1,9 +1,8 @@
 // size-exemption: at the limit before its drawing exceptions moved here; split before it grows further.
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
-import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen_state.dart';
 import 'package:catch_dating_app/events/shared/event_agenda_list.dart';
@@ -79,11 +78,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     } else {
       final uid = uidState.value;
       final signedUpEventsAsync = uid == null
-          ? const AsyncData(<Event>[])
-          : ref.watch(watchSignedUpEventsProvider(uid));
+          ? const AsyncData(<GuestEventCard>[])
+          : ref.watch(watchSignedUpEventCardsProvider(uid));
       final savedEventsAsync = uid == null
-          ? const AsyncData(<Event>[])
-          : ref.watch(watchSavedEventDetailsForUserProvider(uid));
+          ? const AsyncData(<GuestEventCard>[])
+          : ref.watch(watchSavedEventCardsProvider(uid));
       final signedUpEventsState = catchAsyncStateFromAsyncValue(
         signedUpEventsAsync,
       );
@@ -98,14 +97,14 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           onRetry: uid == null
               ? null
               : () {
-                  ref.invalidate(watchSignedUpEventsProvider(uid));
-                  ref.invalidate(watchSavedEventDetailsForUserProvider(uid));
+                  ref.invalidate(watchSignedUpEventCardsProvider(uid));
+                  ref.invalidate(watchSavedEventCardsProvider(uid));
                 },
         );
       } else {
         final calendarState = CalendarHomeState.from(
-          signedUpEvents: signedUpEventsState.value ?? const <Event>[],
-          savedEvents: savedEventsState.value ?? const <Event>[],
+          signedUpEvents: signedUpEventsState.value ?? const <GuestEventCard>[],
+          savedEvents: savedEventsState.value ?? const <GuestEventCard>[],
           now: referenceNow,
           selectedDate: _selectedDate,
           expanded: _calendarExpanded,
@@ -186,11 +185,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 
-  void _openEventDetail(BuildContext context, Event event) {
+  void _openEventDetail(BuildContext context, GuestEventCard event) {
     context.pushNamed(
       Routes.calendarEventDetailScreen.name,
-      pathParameters: {'organizerId': event.organizerId, 'eventId': event.id},
-      extra: event,
+      pathParameters: {
+        'organizerId': event.organizerId,
+        'eventId': event.eventId,
+      },
     );
   }
 
@@ -302,7 +303,7 @@ class CalendarAgendaSliverSection extends StatelessWidget {
 
   final CalendarAgendaSectionState state;
   final EventAgendaDayKeyBuilder dayKeyBuilder;
-  final ValueChanged<Event> onEventSelected;
+  final ValueChanged<GuestEventCard> onEventSelected;
   final VoidCallback onRetryOrganizerNames;
 
   @override

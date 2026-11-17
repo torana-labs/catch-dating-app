@@ -736,6 +736,7 @@ The current workflows are:
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
 | `.github/workflows/mobile-beta.yml` | Nightly (when app sources changed) and on-demand fastlane test builds: builds, verifies and uploads each app to TestFlight internal testers or the Play internal track in one job, with build provenance. See Mobile releases. |
 | `.github/workflows/mobile-production.yml` | Reviewer-gated fastlane promotion of a build testers already have: App Store review submission or a Play staged rollout, with no rebuild. See Mobile releases. |
+| `.github/workflows/store-listing.yml` | Manual fastlane download of the App Store and Play store listings into a reviewable artifact, or reviewer-gated upload of the committed listing in `fastlane/metadata/<role>/`. See Store listings. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 | `.github/workflows/website-production-observability.yml` | Best-effort quarter-hour and manual production probes, offset from busy cron boundaries with a sparse checkout of the standalone probe. GitHub scheduling is not a latency SLA. |
 | `.github/workflows/branch-hygiene.yml` | Daily semantic branch audit, supervised integrated-ref candidates, and an issue plus failed run for stale code outside `main` without an open PR. |
@@ -1622,6 +1623,23 @@ How a run works:
   43617790051 after its Functions had deployed, so it never recorded the commit.
 - Firebase predeploy test hooks are skipped because required CI already ran
   them on that commit.
+- Functions CI publishes the build its tests ran: after "Functions tests"
+  passes on main or main's merge queue (a push, merge_group, schedule or
+  dispatch run, never a pull request or another branch), it uploads
+  `functions/lib` with `build.json` and a per-file `lib-digest.json` as
+  `functions-build-<hash>`, kept 14 days (about 7 MB). The hash covers what
+  `tsc` reads: `functions/src` (generated contracts included), the package
+  files, the tsconfigs and the Node and TypeScript versions
+  (`tool/firebase/functions_build_hash.mjs`), so any commit with the same
+  inputs finds it.
+- The deploy ships that build instead of compiling: after `npm ci` and
+  `prebuild` it computes the same hash, takes the newest matching artifact from
+  a successful CI run of main or main's merge queue in this repository (never a
+  pull request or a dispatch on another branch), verifies every `lib` file
+  against the digest, and installs it. The run summary names the CI run and
+  commit. Anything else (no build, expired, untrusted run, a file that does not
+  match) prints a warning and compiles as before, so the build can never fail a
+  deploy (`tool/firebase/select_functions_build.mjs`).
 - Before any change, the run summary lists the codebases whose hash changed
   against the recorded hashes, with the number of Functions in each (what the
   CLI rebuilds when the plan falls back), then the per-Function plan. Nothing
@@ -3473,9 +3491,11 @@ both from `main` only:
   staged rollout. It rebuilds nothing. It uses the `prod-mobile-release`
   environment, which requires a reviewer's approval. App Store Connect refuses
   a submission whose version carries no "What's New", so each iOS release
-  first updates `fastlane/metadata/<role>/en-US/release_notes.txt` for that
-  marketing version (the lane uploads only that file's metadata and stops if
-  it is missing).
+  first updates `fastlane/metadata/<role>/ios/en-US/release_notes.txt` for that
+  marketing version (the lane stops if it is missing). The submission also
+  carries the rest of the committed App Store listing and, when
+  `fastlane/metadata/<role>/ios_screenshots/` holds images, replaces the
+  version's screenshots with them. See Store listings below.
 
 Both environments deploy only from `main` and hold the same credentials: the
 `catch-github-mobile-prod` App Store Connect API key in the three
@@ -3521,6 +3541,43 @@ node tool/run.mjs check \
   platform:verify-ios-release-identity \
   platform:verify-android-release-identity
 ```
+
+### Store listings
+
+The App Store and Google Play listings for each app live in
+`fastlane/metadata/<role>/`, so copy, keyword and screenshot changes are
+reviewed as pull requests:
+
+| Folder | Store | Contents |
+| --- | --- | --- |
+| `ios/` | App Store | `deliver` layout: per locale `name`, `subtitle`, `description`, `keywords`, `promotional_text`, `release_notes`, URLs; category and `copyright` files at the top |
+| `ios_screenshots/` | App Store | Per locale screenshots; `deliver` reads the device class from each image's size and orders by file name |
+| `android/` | Google Play | `supply` layout: per locale `title`, `short_description`, `full_description`, `video`, and `images/` (icon, feature graphic, `phoneScreenshots/`, tablet folders) |
+
+The manual `Store Listing` workflow (`.github/workflows/store-listing.yml`)
+runs the listing lanes from `main`:
+
+- `download` reads the stores into a 14-day artifact
+  (`store-listing-<platform>-<app>-<run>`) for you to commit. On iOS it reads
+  the version being prepared, or the live version when none is. It uses
+  `prod-mobile` and changes nothing in the stores.
+- `upload` sends the committed listing in the reviewer-gated
+  `prod-mobile-release` environment. An iOS upload goes to the version being
+  prepared, making sure that version is the app's `pubspec.yaml` marketing
+  version and creating it if none is being prepared, and goes public when
+  that release is approved and released. `ios_live` sends only promotional
+  text, support URL and marketing URL to the live version, which go public
+  straight away; App Store Connect locks every other field on a live version.
+  An Android upload goes public after Google's review; `android_validate_only`
+  checks it with Play without saving.
+
+What the APIs cannot change stays in the consoles: App Review contact and
+demo-account details (the download deletes `review_information/`, and
+`fastlane/.gitignore` keeps it out of Git because this repository is
+public), age and content ratings, privacy declarations, Play category and
+tags, Play custom store listings and store listing experiments, and App
+Store product page tests. Uploads touch only screenshot and image types that
+have local files, so an empty folder never clears a store's images.
 
 ### What the beta lanes verify
 

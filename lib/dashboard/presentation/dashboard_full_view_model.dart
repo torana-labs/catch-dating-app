@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/guest_event_cards_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/contexts/connections/domain/swipe_window.dart';
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
@@ -69,41 +69,44 @@ class DashboardFullViewModel {
     required this.attendedEventsSection,
   });
 
-  final List<Event> upcomingEvents;
-  final Event? nextEvent;
+  final List<GuestEventCard> upcomingEvents;
+  final GuestEventCard? nextEvent;
   final EventArrivalAction? arrivalAction;
   final List<DashboardCatchWindow> windowedEvents;
-  final Event? pendingReviewEvent;
+  final GuestEventCard? pendingReviewEvent;
   final List<ActivityNotification> organizerPostNotifications;
-  final DashboardSectionModel<List<Event>> attendedEventsSection;
+  final DashboardSectionModel<List<GuestEventCard>> attendedEventsSection;
 }
 
 /// The Home presentation of an attended event with an open Catch window.
+/// The card carries no live counts, so the window shows no attendance tally.
 class DashboardCatchWindow {
   const DashboardCatchWindow({
     required this.event,
     required this.windowClosesAt,
   });
 
-  final Event event;
+  final GuestEventCard event;
   final DateTime windowClosesAt;
-  int get attendedCount => event.attendedCount;
 }
 
 List<DashboardCatchWindow> dashboardCatchWindowsFromEvents(
-  Iterable<Event> events, {
+  Iterable<GuestEventCard> events, {
   required DateTime now,
 }) {
   final items =
       [
-        for (final event in eventsWithOpenSwipeWindow(events, now: now))
-          DashboardCatchWindow(
-            event: event,
-            windowClosesAt: swipeWindowClosesAt(event),
-          ),
+        for (final event in events)
+          if (hasOpenCardSwipeWindow(event, now: now))
+            DashboardCatchWindow(
+              event: event,
+              windowClosesAt: cardSwipeWindowClosesAt(event)!,
+            ),
       ]..sort((a, b) {
         final expiry = a.windowClosesAt.compareTo(b.windowClosesAt);
-        return expiry != 0 ? expiry : a.event.id.compareTo(b.event.id);
+        return expiry != 0
+            ? expiry
+            : a.event.eventId.compareTo(b.event.eventId);
       });
   return List.unmodifiable(items);
 }
@@ -302,9 +305,9 @@ bool _isSameLocalDay(DateTime a, DateTime b) {
 }
 
 DashboardFullViewModel buildDashboardFullViewModel({
-  required List<Event> signedUpEvents,
+  required List<GuestEventCard> signedUpEvents,
   String? uid,
-  required AsyncValue<List<Event>> attendedEventsAsync,
+  required AsyncValue<List<GuestEventCard>> attendedEventsAsync,
   AsyncValue<List<Review>> reviewsByUserAsync = const AsyncData<List<Review>>(
     [],
   ),
@@ -324,14 +327,15 @@ DashboardFullViewModel buildDashboardFullViewModel({
   final nextEvent = upcomingEvents.firstOrNull;
 
   final attendedEventsSection = attendedEventsAsync.when(
-    loading: () => const DashboardSectionModel<List<Event>>.loading(
+    loading: () => const DashboardSectionModel<List<GuestEventCard>>.loading(
       'Loading your recent events...',
     ),
-    error: (error, stackTrace) => DashboardSectionModel<List<Event>>.error(
-      'Unable to load your recent events.',
-      error: error,
-    ),
-    data: DashboardSectionModel<List<Event>>.data,
+    error: (error, stackTrace) =>
+        DashboardSectionModel<List<GuestEventCard>>.error(
+          'Unable to load your recent events.',
+          error: error,
+        ),
+    data: DashboardSectionModel<List<GuestEventCard>>.data,
   );
   final windowedEvents = attendedEventsSection.data == null
       ? const <DashboardCatchWindow>[]
@@ -355,8 +359,6 @@ DashboardFullViewModel buildDashboardFullViewModel({
       ? null
       : selectEventArrivalAction(
           signedUpEvents: signedUpEvents,
-          hostedEvents: const [],
-          uid: uid,
           now: effectiveNow,
         );
 
@@ -371,15 +373,18 @@ DashboardFullViewModel buildDashboardFullViewModel({
   );
 }
 
-Event? _latestUnreviewedAttendedEvent(
-  List<Event> attendedEvents, {
+GuestEventCard? _latestUnreviewedAttendedEvent(
+  List<GuestEventCard> attendedEvents, {
   required Set<String> reviewedEventIds,
 }) {
   final unreviewedEvents =
       attendedEvents
-          .where((event) => !reviewedEventIds.contains(event.id))
+          .where((event) => !reviewedEventIds.contains(event.eventId))
           .toList()
-        ..sort((a, b) => b.endTime.compareTo(a.endTime));
+        ..sort(
+          (a, b) =>
+              (b.endTime ?? b.startTime).compareTo(a.endTime ?? a.startTime),
+        );
   return unreviewedEvents.firstOrNull;
 }
 
@@ -387,7 +392,7 @@ Event? _latestUnreviewedAttendedEvent(
 @riverpod
 DashboardFullViewModel dashboardFullViewModel(
   Ref ref, {
-  required List<Event> signedUpEvents,
+  required List<GuestEventCard> signedUpEvents,
   required UserProfile user,
   required String uid,
   required List<String> followedOrganizerIds,
@@ -401,7 +406,7 @@ DashboardFullViewModel dashboardFullViewModel(
   return buildDashboardFullViewModel(
     signedUpEvents: signedUpEvents,
     uid: uid,
-    attendedEventsAsync: ref.watch(watchAttendedEventsProvider(uid)),
+    attendedEventsAsync: ref.watch(watchAttendedEventCardsProvider(uid)),
     reviewsByUserAsync: ref.watch(watchReviewsByUserProvider(uid)),
     organizerPostNotifications: organizerPostNotifications,
     now: ref.watch(dashboardNowProvider),
@@ -435,7 +440,7 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
         currentUserFollowedOrganizerIdsProvider,
       );
       final signedUpEventsAsync = ref.watch(
-        watchSignedUpEventsProvider(user.uid),
+        watchSignedUpEventCardsProvider(user.uid),
       );
       final followedOrganizerIdsState = catchAsyncStateFromAsyncValue(
         followedOrganizerIdsAsync,
@@ -467,7 +472,8 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
         );
       }
 
-      final signedUpEvents = signedUpEventsState.value ?? const <Event>[];
+      final signedUpEvents =
+          signedUpEventsState.value ?? const <GuestEventCard>[];
       final followedOrganizerIds = [...?followedOrganizerIdsState.value]
         ..sort();
       final viewModel = ref.watch(

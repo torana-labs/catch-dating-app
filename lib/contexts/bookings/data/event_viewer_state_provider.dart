@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/account/account.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/guest_booking_facts_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/guest_event_cards_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_composition.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
@@ -41,7 +41,9 @@ Future<EventViewerState> eventViewerState(
   final participationFuture = ref.watch(
     watchEventParticipationProvider(eventId, uid).future,
   );
-  final scheduledFuture = ref.watch(watchScheduledEventsProvider(uid).future);
+  final scheduledFuture = ref.watch(
+    watchScheduledEventCardsProvider(uid).future,
+  );
   final membershipsFuture = ref.watch(
     watchMyHostMembershipsProvider(uid).future,
   );
@@ -114,10 +116,10 @@ Future<int> _upcomingMemberPricedBookings(
     watchMyHostMembershipBenefitUsesProvider(uid).future,
   );
   final signedUp = {
-    for (final event in await ref.watch(
-      watchSignedUpEventsProvider(uid).future,
+    for (final card in await ref.watch(
+      watchSignedUpEventCardsProvider(uid).future,
     ))
-      if (event.startTime.isAfter(now)) event.id,
+      if (card.startTime.isAfter(now)) card.eventId,
   };
   return (await usesFuture)
       .where(

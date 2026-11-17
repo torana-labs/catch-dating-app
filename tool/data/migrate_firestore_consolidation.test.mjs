@@ -336,6 +336,64 @@ test("host-form-version-filters creates each missing view once", async () => {
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("guest-messaging-permissions creates each missing row once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "guest-messaging-permissions");
+  const unknown = {status: "unknown", evidenceStatus: "none", currentReceiptId: null,
+    termsVersion: null, source: null, sourceEventId: null, updatedAt: null};
+  const db = fakeDb({
+    "catchCommunicationPreferences/u1": {uid: "u1", whatsapp: unknown},
+    "catchCommunicationPreferences/mismatch": {uid: "u2", whatsapp: unknown},
+    "catchCommunicationPreferences/u3": {uid: "u3", whatsapp: unknown},
+    "guestMessagingPermissions/catchpref_u3": {uid: "u3", scope: "catch",
+      organizerId: null, preference: {status: "unknown", receiptId: null, purposes: {}},
+      version: 1},
+  });
+  const plan = await planMigration(db, migration);
+  assert.deepEqual(plan.steps[0].scanned, 3);
+  assert.equal(plan.steps[0].toCreate.length, 1);
+  assert.equal(plan.steps[0].alreadyCopied, 1);
+  assert.equal(plan.steps[0].skipped.length, 1);
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data["guestMessagingPermissions/catchpref_u1"], {uid: "u1",
+    scope: "catch", organizerId: null,
+    preference: {status: "unknown", receiptId: null, purposes: {}}, version: 1});
+  assert.deepEqual(db.data["catchCommunicationPreferences/u1"], {uid: "u1", whatsapp: unknown});
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
+test("participant-form-profile-views creates only available rows, once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "participant-form-profile-views");
+  const db = fakeDb({
+    // Withdrawn: the projection reads it as unavailable, so no row.
+    "participantFormProfileProposals/r1": {uid: "u1", organizerId: "o1", formId: "f1",
+      versionId: "v1", responseId: "r1", fields: []},
+    "organizerFormResponses/r1": {respondentUid: "u1", status: "withdrawn"},
+    "participantFormProfileProposals/r2": {organizerId: "o1", responseId: "r2"},
+    "participantIntakeProfiles/u1": {fields: [{canonicalFieldId: "linkedinUrl",
+      value: {valueKind: "text", textValue: "https://www.linkedin.com/in/u1"}}],
+    revision: 2},
+    "participantIntakeProfiles/u2": {fields: [], revision: 1},
+    "participantIntakeProfiles/u3": {fields: [], revision: 4},
+    "deletedUsers/u3": {status: "processing"},
+    "participantIntakeProfileViews/u2": {uid: "u2", intakeRevision: 1, linkedinUrl: null,
+      version: 1},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.steps[0].scanned, 2);
+  assert.equal(plan.steps[0].toCreate.length, 0);
+  assert.equal(plan.steps[0].skipped.length, 2);
+  assert.equal(plan.steps[1].toCreate.length, 1);
+  assert.equal(plan.steps[1].alreadyCopied, 1);
+  assert.equal(plan.steps[1].skipped.length, 1);
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data["participantIntakeProfileViews/u1"], {uid: "u1",
+    intakeRevision: 2, linkedinUrl: "https://www.linkedin.com/in/u1", version: 1});
+  assert.equal(db.data["participantIntakeProfileViews/u3"], undefined);
+  assert.equal(db.data["participantFormProfileViews/r1"], undefined);
+  assert.equal(db.data["participantIntakeProfiles/u1"].revision, 2);
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
 test("unknown migration names are rejected", () => {
   assert.throws(() => migrationsByName(["nope"]), /Unknown migration "nope"/);
   assert.equal(migrationsByName(["all"]).length, MIGRATIONS.length);
@@ -347,6 +405,8 @@ function fakeDb(seed) {
     data,
     collection: (name) => collection(name),
     doc: (docPath) => docRef(docPath),
+    // Read-only transactions, as migration transforms use them.
+    runTransaction: (body) => body({get: (ref) => ref.get()}),
     batch() {
       const ops = [];
       return {

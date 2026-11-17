@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen_state.dart';
 import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +13,11 @@ void main() {
   group('CalendarHomeState', () {
     test('uses the next event date as the default selected date', () {
       final now = DateTime(2026, 6, 30, 12);
-      final nextEvent = buildEvent(
-        id: 'next-event',
-        startTime: now.add(const Duration(days: 1, hours: 3)),
+      final nextEvent = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'next-event',
+          startTime: now.add(const Duration(days: 1, hours: 3)),
+        ),
       );
 
       final state = CalendarHomeState.from(
@@ -48,9 +51,11 @@ void main() {
 
     test('derives agenda section state from club-name lookup phases', () {
       final now = DateTime(2026, 6, 30, 12);
-      final event = buildEvent(
-        id: 'calendar-event',
-        startTime: now.add(const Duration(days: 1)),
+      final event = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'calendar-event',
+          startTime: now.add(const Duration(days: 1)),
+        ),
       );
       final state = CalendarHomeState.from(signedUpEvents: [event], now: now);
 
@@ -128,35 +133,47 @@ void main() {
   group('CalendarEventSummary', () {
     test('merges joined and saved events into the calendar display policy', () {
       final now = DateTime(2026, 6, 30, 12);
-      final joinedUpcoming = buildEvent(
-        id: 'joined-upcoming',
-        startTime: now.add(const Duration(days: 2)),
+      final joinedUpcoming = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'joined-upcoming',
+          startTime: now.add(const Duration(days: 2)),
+        ),
       );
-      final joinedPast = buildEvent(
-        id: 'joined-past',
-        startTime: now.subtract(const Duration(days: 1)),
-        distanceKm: 3,
+      final joinedPast = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'joined-past',
+          startTime: now.subtract(const Duration(days: 1)),
+          distanceKm: 3,
+        ),
       );
-      final cancelledUpcoming = buildEvent(
-        id: 'cancelled-upcoming',
-        startTime: now.add(const Duration(days: 1)),
-        distanceKm: 9,
-        status: EventLifecycleStatus.cancelled,
+      final cancelledUpcoming = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'cancelled-upcoming',
+          startTime: now.add(const Duration(days: 1)),
+          distanceKm: 9,
+          status: EventLifecycleStatus.cancelled,
+        ),
       );
-      final savedUpcoming = buildEvent(
-        id: 'saved-upcoming',
-        startTime: now.add(const Duration(hours: 20)),
-        distanceKm: 7,
+      final savedUpcoming = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'saved-upcoming',
+          startTime: now.add(const Duration(hours: 20)),
+          distanceKm: 7,
+        ),
       );
-      final savedPast = buildEvent(
-        id: 'saved-past',
-        startTime: now.subtract(const Duration(hours: 2)),
-        distanceKm: 50,
+      final savedPast = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'saved-past',
+          startTime: now.subtract(const Duration(hours: 2)),
+          distanceKm: 50,
+        ),
       );
-      final savedDuplicate = buildEvent(
-        id: joinedUpcoming.id,
-        startTime: now.add(const Duration(hours: 8)),
-        distanceKm: 99,
+      final savedDuplicate = GuestEventCard.fromEvent(
+        buildEvent(
+          id: joinedUpcoming.eventId,
+          startTime: now.add(const Duration(hours: 8)),
+          distanceKm: 99,
+        ),
       );
 
       final summary = CalendarEventSummary.from(
@@ -165,13 +182,13 @@ void main() {
         now: now,
       );
 
-      expect(summary.events.map((event) => event.id), [
+      expect(summary.events.map((event) => event.eventId), [
         'joined-past',
         'saved-upcoming',
         'cancelled-upcoming',
         'joined-upcoming',
       ]);
-      expect(summary.agendaEvents.map((event) => event.id), [
+      expect(summary.agendaEvents.map((event) => event.eventId), [
         'saved-upcoming',
         'joined-upcoming',
         'cancelled-upcoming',
@@ -187,21 +204,27 @@ void main() {
 
     test('agenda rows classify saved-only and cancelled events', () {
       final now = DateTime(2026, 6, 30, 12);
-      final joined = buildEvent(
-        id: 'joined',
-        organizerId: 'joined-club',
-        startTime: now.add(const Duration(days: 2)),
+      final joined = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'joined',
+          organizerId: 'joined-club',
+          startTime: now.add(const Duration(days: 2)),
+        ),
       );
-      final saved = buildEvent(
-        id: 'saved',
-        organizerId: 'saved-club',
-        startTime: now.add(const Duration(days: 1)),
+      final saved = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'saved',
+          organizerId: 'saved-club',
+          startTime: now.add(const Duration(days: 1)),
+        ),
       );
-      final cancelled = buildEvent(
-        id: 'cancelled',
-        organizerId: 'cancelled-club',
-        startTime: now.add(const Duration(hours: 6)),
-        status: EventLifecycleStatus.cancelled,
+      final cancelled = GuestEventCard.fromEvent(
+        buildEvent(
+          id: 'cancelled',
+          organizerId: 'cancelled-club',
+          startTime: now.add(const Duration(hours: 6)),
+          status: EventLifecycleStatus.cancelled,
+        ),
       );
       final state = CalendarHomeState.from(
         signedUpEvents: [joined, cancelled],
@@ -219,7 +242,7 @@ void main() {
               )
               as CalendarAgendaReadyState;
 
-      expect(agenda.rows.map((row) => row.event.id), [
+      expect(agenda.rows.map((row) => row.event.eventId), [
         'saved',
         'joined',
         'cancelled',

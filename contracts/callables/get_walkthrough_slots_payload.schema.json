@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_walkthrough_slots_payload.schema.json",
+  "title": "GetWalkthroughSlotsCallablePayload",
+  "description": "The website's Start / Walkthrough page reads the open walkthrough slots of the next days. Public: App Check, no sign-in.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Website Start / Walkthrough page",
+  "properties": {
+    "days": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 28,
+      "description": "India-time days to read, today first. Defaults to 14 and never passes the calendar's horizon."
+    }
+  }
+}

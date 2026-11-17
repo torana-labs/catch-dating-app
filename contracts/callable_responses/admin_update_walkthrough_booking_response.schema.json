@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_update_walkthrough_booking_response.schema.json",
+  "title": "AdminUpdateWalkthroughBookingCallableResponse",
+  "description": "The booking after the action.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "adminUpdateWalkthroughBooking",
+  "required": ["booking", "changed"],
+  "properties": {
+    "booking": {"$ref": "../shared/walkthrough_common.schema.json#/definitions/adminBookingRow"},
+    "changed": {"type": "boolean"}
+  }
+}

@@ -306,6 +306,7 @@ const ScreenBinding: Binding<"screen"> = ({section, context}) => {
 const PricingBinding: Binding<"pricing"> = ({section, context}) => (
   <CatchPricingSection
     actions={context.controller.actions(section.actions, section.id)}
+    calculator={section.calculator ? <CustomSlot component={section.calculator} context={context} section={section} /> : undefined}
     cap={section.cap}
     examples={section.examples}
     ground={section.ground}
@@ -407,13 +408,16 @@ const ArticleBinding: Binding<"article"> = ({section, context}) => (
   </CatchBand>
 );
 
-/** A custom section through the closed registry; the page is checked for a missing component before it renders. */
-const CustomBinding: Binding<"custom"> = ({section, context}) => {
-  const Component = (playbookCustomSections as Partial<Record<string, ComponentType<PlaybookCustomSectionProps>>>)[section.component];
-  if (!Component) throw new Error(`Playbook custom section ${section.component} has no component yet.`);
-  const labels = Object.fromEntries((section.labels ?? []).map((label) => [label.key, label.text]));
+/** One component from the closed custom registry; the page is checked for a missing component before it renders. */
+function CustomSlot({component, section, context}: {component: string; section: PlaybookCustomSectionProps["section"]; context: PlaybookSectionContext}) {
+  const Component = (playbookCustomSections as Partial<Record<string, ComponentType<PlaybookCustomSectionProps>>>)[component];
+  if (!Component) throw new Error(`Playbook custom section ${component} has no component yet.`);
+  const labels = Object.fromEntries((section.type === "custom" ? section.labels ?? [] : []).map((label) => [label.key, label.text]));
   return <Component captures={context.captures} controller={context.controller} labels={labels} section={section} />;
-};
+}
+
+/** A custom section through the closed registry. */
+const CustomBinding: Binding<"custom"> = ({section, context}) => <CustomSlot component={section.component} context={context} section={section} />;
 
 /** One step of a one-job flow: its progress rail or its tabs, then its screens, actions and fine print. */
 const FlowBinding: Binding<"flow"> = ({section, context}) => {

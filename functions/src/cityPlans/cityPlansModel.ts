@@ -3,24 +3,51 @@ import type {CityPlansDocument} from
 import type {
   OrganizerPublicPageDocument,
 } from "../shared/generated/organizerPublicPageDocument";
-import {isUpcoming, type PageEvent} from "../publicPages/pageModel";
+import {
+  isUpcoming,
+  pageLimits,
+  type PageEvent,
+} from "../publicPages/pageModel";
 import type {HostListing} from "../publicPages/publicOrganizer";
+import {
+  discoveryFormats,
+  discoveryFormatsForEvent,
+  discoveryFormatsForText,
+  discoveryFormatSlugs,
+  formatPageIndexingFor,
+  type DiscoveryFormat,
+} from "./discoveryFormats";
 
 /**
  * Assembles one city's plans read model. Pure: the caller reads the sources
  * and writes the result. Live cities are built only from organizer page read
  * models, which already passed every publication rule, so this module adds
  * no visibility logic; it picks the plans in the window and counts them.
+ *
+ * Two windows: plans and the homepage format counts cover 14 days; the
+ * header's 30-day signal and the city-by-format page counts cover 30, and
+ * are counted before plans and organizers are capped.
  */
 export type CityPlans = Omit<CityPlansDocument, "builtAt">;
 export type CityPlan = CityPlans["plans"][number];
 export type CityOrganizer = CityPlans["organizers"][number];
 export type CityFormat = CityPlan["format"];
+export type CityFormatPages = CityPlans["formatPages"];
 
-/** The fields of an organizer page a city reads. */
+/**
+ * The fields of an organizer page a city reads. womenLed is the resolved
+ * women-led label: pages built before it shipped omit it, and so may their
+ * events; absence reads as false.
+ */
 export type CityOrganizerPage = Pick<OrganizerPublicPageDocument,
-  "organizerId" | "path" | "identity" | "upcomingEvents" | "followerCount" |
-  "claim">;
+  "organizerId" | "path" | "identity" | "followerCount" | "claim"> & {
+    upcomingEvents: readonly (PageEvent & WomenLed)[];
+    womenLed?: boolean;
+  };
+
+interface WomenLed {
+  womenLed?: boolean;
+}
 
 export interface CityMarket {
   slug: string;
@@ -42,6 +69,7 @@ export interface CityPlanSources {
 
 export const cityPlanLimits = {
   windowDays: 14,
+  monthWindowDays: 30,
   plans: 120,
   organizers: 24,
 } as const;
@@ -87,26 +115,34 @@ const day = 24 * 60 * 60 * 1000;
 export function buildCityPlans(sources: CityPlanSources): CityPlans {
   const {market, now} = sources;
   const windowEnd = now + cityPlanLimits.windowDays * day;
+  const monthWindowEnd = now + cityPlanLimits.monthWindowDays * day;
   const launched = market.launchStatus === "launched";
   const pages = launched ? [...sources.organizerPages]
     .filter((page) => page.identity.citySlug === market.slug)
     .sort((a, b) => compare(a.organizerId, b.organizerId)) : [];
+  const joining = launched ? [] : [...sources.joiningOrganizers]
+    .filter((listing) => listing.citySlug === market.slug);
 
+  const pageFormats = new Map(pages.map((page) =>
+    [page.organizerId, discoveryFormatsForText(listedFormats(page))]));
   const plans = pages.flatMap((page) => page.upcomingEvents
     .filter((item) => isUpcoming(item, now) && start(item) < windowEnd)
-    .map((item) => cityPlan(item, page)))
+    .map((item) => cityPlan(item, page,
+      pageFormats.get(page.organizerId) ?? [])))
     .sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime) ||
       compare(a.eventId, b.eventId));
 
   const formatCounts = Object.fromEntries(cityFormats.map((format) =>
     [format, 0])) as CityPlans["formatCounts"];
   for (const plan of plans) formatCounts[plan.format]++;
+  const womenLedPlanCount = plans.filter((plan) => plan.womenLed).length;
 
+  const month = monthCounts(pages, pageFormats, joining, now,
+    monthWindowEnd, launched);
   const organizers = launched ?
-    pages.map((page) => pageOrganizer(page, plans)) :
-    [...sources.joiningOrganizers]
-      .filter((listing) => listing.citySlug === market.slug)
-      .map(joiningOrganizer);
+    pages.map((page) => pageOrganizer(page, plans,
+      month.organizerFormats.get(page.organizerId) ?? [])) :
+    joining.map(joiningOrganizer);
 
   return {
     schemaVersion: 1,
@@ -120,13 +156,122 @@ export function buildCityPlans(sources: CityPlanSources): CityPlans {
     windowEnd: new Date(windowEnd).toISOString(),
     planCount: plans.length,
     formatCounts,
+    womenLedPlanCount,
+    monthWindowEnd: new Date(monthWindowEnd).toISOString(),
+    upcomingEvents30d: month.eventCount,
+    hasUpcomingMonth: month.eventCount > 0,
+    monthCountsComplete: month.complete,
+    formatPages: month.formatPages,
     plans: plans.slice(0, cityPlanLimits.plans),
     organizers: organizers.sort(byNextPlanThenFollowers)
       .slice(0, cityPlanLimits.organizers),
   };
 }
 
-function cityPlan(item: PageEvent, page: CityOrganizerPage): CityPlan {
+interface MonthCounts {
+  eventCount: number;
+  complete: boolean;
+  formatPages: CityFormatPages;
+  organizerFormats: ReadonlyMap<string, DiscoveryFormat[]>;
+}
+
+/**
+ * The 30-day signal and the city-by-format page counts. Every page in the
+ * city counts, however many organizers and plans the document lists.
+ */
+function monthCounts(
+  pages: readonly CityOrganizerPage[],
+  pageFormats: ReadonlyMap<string, readonly DiscoveryFormat[]>,
+  joining: readonly HostListing[],
+  now: number, monthWindowEnd: number, launched: boolean
+): MonthCounts {
+  const organizers = new Map<DiscoveryFormat, Set<string>>();
+  const events = new Map<DiscoveryFormat, Set<string>>();
+  const free = new Map<DiscoveryFormat, Set<string>>();
+  const add = (counts: Map<DiscoveryFormat, Set<string>>,
+    format: DiscoveryFormat, id: string) => {
+    const ids = counts.get(format) ?? new Set<string>();
+    ids.add(id);
+    counts.set(format, ids);
+  };
+  const monthEvents = new Set<string>();
+  const organizerFormats = new Map<string, DiscoveryFormat[]>();
+  let complete = true;
+
+  for (const page of pages) {
+    const listed = pageFormats.get(page.organizerId) ?? [];
+    const runs = new Set<DiscoveryFormat>(listed);
+    const upcoming = page.upcomingEvents.filter((item) =>
+      isUpcoming(item, now));
+    for (const item of upcoming) {
+      const formats = discoveryFormatsForEvent(item.event.activityKind,
+        listed);
+      for (const format of formats) runs.add(format);
+      if (start(item) >= monthWindowEnd) continue;
+      monthEvents.add(item.eventId);
+      for (const format of formats) {
+        add(events, format, item.eventId);
+        if (isFree(item)) add(free, format, item.eventId);
+      }
+    }
+    // A full list may stop short of plans still inside the window.
+    const last = page.upcomingEvents[page.upcomingEvents.length - 1];
+    if (page.upcomingEvents.length >= pageLimits.upcomingEvents && last &&
+        start(last) < monthWindowEnd) complete = false;
+    const formats = discoveryFormats.filter((format) => runs.has(format));
+    organizerFormats.set(page.organizerId, formats);
+    for (const format of formats) add(organizers, format, page.organizerId);
+  }
+  for (const listing of joining) {
+    for (const format of discoveryFormatsForText(
+      [listing.category, ...listing.formats])) {
+      add(organizers, format, listing.id);
+    }
+  }
+
+  const formatPages = Object.fromEntries(discoveryFormats.map((format) => {
+    const organizerCount = organizers.get(format)?.size ?? 0;
+    const upcomingEventCount = events.get(format)?.size ?? 0;
+    return [format, {
+      slug: discoveryFormatSlugs[format],
+      organizerCount,
+      upcomingEventCount,
+      freeEventCount: free.get(format)?.size ?? 0,
+      indexing: formatPageIndexingFor(launched, organizerCount,
+        upcomingEventCount),
+    }];
+  })) as CityFormatPages;
+  return {eventCount: monthEvents.size, complete, formatPages,
+    organizerFormats};
+}
+
+// "Free", or a zero amount in rupees: "0 INR", "INR 0", "₹0", "Rs. 0".
+const rupees = String.raw`(?:₹|rs\.?|inr)`;
+const zero = String.raw`0+(?:\.0+)?`;
+const freePriceLabel = new RegExp(
+  String.raw`^\s*(?:free|${rupees}\s*${zero}|${zero}\s*${rupees})\s*$`, "iu");
+
+/**
+ * A plan is free when a guest pays nothing to book it: a Catch plan priced
+ * at zero, unless the host hides its price until booking opens, or an
+ * imported plan whose source lists its price as Free or as zero rupees. A
+ * hidden price is never counted, so the count cannot reveal it.
+ */
+export function isFree(item: PageEvent): boolean {
+  const freeLabel = freePriceLabel.test(item.event.priceLabel);
+  if (item.source === "external") return freeLabel;
+  if (item.event.priceHidden === true) return false;
+  return typeof item.event.amountPaise === "number" ?
+    item.event.amountPaise === 0 : freeLabel;
+}
+
+/** The free text an organizer page lists its formats in. */
+function listedFormats(page: CityOrganizerPage): string[] {
+  return [page.identity.category, ...page.identity.formats];
+}
+
+function cityPlan(item: PageEvent & WomenLed, page: CityOrganizerPage,
+  organizerFormats: readonly DiscoveryFormat[]): CityPlan {
   const {event} = item;
   return {
     source: item.source,
@@ -147,11 +292,15 @@ function cityPlan(item: PageEvent, page: CityOrganizerPage): CityPlan {
       name: page.identity.name,
       path: page.path,
     },
+    discoveryFormats: discoveryFormatsForEvent(event.activityKind,
+      organizerFormats),
+    womenLed: item.womenLed === true,
   };
 }
 
 function pageOrganizer(
-  page: CityOrganizerPage, plans: readonly CityPlan[]
+  page: CityOrganizerPage, plans: readonly CityPlan[],
+  formats: DiscoveryFormat[]
 ): CityOrganizer {
   const own = plans.filter((plan) =>
     plan.organizer.organizerId === page.organizerId);
@@ -169,6 +318,8 @@ function pageOrganizer(
     upcomingPlanCount: own.length,
     nextPlan: next ? {eventId: next.eventId, path: next.path,
       title: next.title, startTime: next.startTime, date: next.date} : null,
+    discoveryFormats: formats,
+    womenLed: page.womenLed === true,
   };
 }
 
@@ -184,6 +335,11 @@ function joiningOrganizer(listing: HostListing): CityOrganizer {
     claimState: listing.authority.claimState as CityOrganizer["claimState"],
     upcomingPlanCount: 0,
     nextPlan: null,
+    discoveryFormats: discoveryFormatsForText(
+      [listing.category, ...listing.formats]),
+    // A city that has not launched lists organisers without their page, so
+    // their women-led label is not shown until it launches.
+    womenLed: false,
   };
 }
 

@@ -1401,7 +1401,7 @@ test("every selector control input routes to full validation before comparison",
 test("harness tests and release workflows validate without full fan-out", () => {
   for (const file of ["tool/harness/workflow_wiring.test.mjs",
     "tool/ci/delivery_core.test.mjs", ".github/workflows/mobile-beta.yml",
-    ".github/workflows/mobile-production.yml", "fastlane/Fastfile",
+    ".github/workflows/mobile-production.yml", ".github/workflows/store-listing.yml", "fastlane/Fastfile",
     ".github/workflows/marketing-website.yml"]) {
     for (const mode of ["pr", "merge_group", "main", "nightly"]) {
       const result = plan(file, mode);

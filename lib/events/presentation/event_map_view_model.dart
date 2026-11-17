@@ -1,19 +1,9 @@
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
-import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
-import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
-import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_kernel/location_coordinate.dart';
-import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-part 'event_map_view_model.g.dart';
 
 sealed class EventMapPinItem {
   const EventMapPinItem();
@@ -256,110 +246,3 @@ LocationCoordinate _externalEventCoordinate(ExternalEvent event) {
 
 bool isUpcomingMapRun(Event event, DateTime now) =>
     !event.isCancelled && event.startTime.isAfter(now);
-
-/// Combines the current user's booked events and recommended events for the map.
-///
-/// The screen owns map selection and tile rendering. This provider owns the
-/// feature data seam: profile lookup, event streams, recommendation fetch, merge,
-/// de-duplication, chronological sort, and pin filtering.
-@riverpod
-AsyncValue<EventMapViewModel> eventMapViewModel(Ref ref) {
-  final userProfileAsync = ref.watch(watchUserProfileProvider);
-  final userProfileState = catchAsyncStateFromAsyncValue(userProfileAsync);
-
-  if (userProfileState.isLoading) return const AsyncLoading();
-  if (userProfileState.hasError) {
-    return AsyncError(
-      userProfileState.error!,
-      userProfileState.stackTrace ?? StackTrace.current,
-    );
-  }
-
-  final user = userProfileState.value;
-  if (user == null) {
-    return const AsyncData(
-      EventMapViewModel(events: <Event>[], pinnedEvents: <Event>[]),
-    );
-  }
-
-  final signedUpAsync = ref.watch(watchSignedUpEventsProvider(user.uid));
-  final savedAsync = ref.watch(watchSavedEventDetailsForUserProvider(user.uid));
-  final membershipsAsync = ref.watch(
-    watchActiveOrganizerFollowsForUserProvider(user.uid),
-  );
-  final signedUpState = catchAsyncStateFromAsyncValue(signedUpAsync);
-  final savedState = catchAsyncStateFromAsyncValue(savedAsync);
-  final membershipsState = catchAsyncStateFromAsyncValue(membershipsAsync);
-  final followedOrganizerIds =
-      membershipsState.value
-          ?.map((membership) => membership.organizerId)
-          .toList(growable: false) ??
-      const <String>[];
-  final recommendedAsync = ref.watch(
-    recommendedEventsProvider(
-      RecommendedEventsQuery.fromOrganizerIds(followedOrganizerIds),
-    ),
-  );
-  final recommendedState = catchAsyncStateFromAsyncValue(recommendedAsync);
-
-  if (signedUpState.isLoading ||
-      savedState.isLoading ||
-      membershipsState.isLoading ||
-      recommendedState.isLoading) {
-    return const AsyncLoading();
-  }
-  if (signedUpState.hasError) {
-    return AsyncError(
-      signedUpState.error!,
-      signedUpState.stackTrace ?? StackTrace.current,
-    );
-  }
-  if (savedState.hasError) {
-    return AsyncError(
-      savedState.error!,
-      savedState.stackTrace ?? StackTrace.current,
-    );
-  }
-  if (membershipsState.hasError) {
-    return AsyncError(
-      membershipsState.error!,
-      membershipsState.stackTrace ?? StackTrace.current,
-    );
-  }
-  if (recommendedState.hasError) {
-    return AsyncError(
-      recommendedState.error!,
-      recommendedState.stackTrace ?? StackTrace.current,
-    );
-  }
-
-  final allEvents = <Event>[
-    ...?signedUpState.value,
-    ...?savedState.value,
-    ...?recommendedState.value,
-  ];
-  final organizerNamesAsync = ref.watch(
-    organizerNameLookupProvider(
-      OrganizerNameLookupQuery(allEvents.map((event) => event.organizerId)),
-    ),
-  );
-  final organizerNamesState = catchAsyncStateFromAsyncValue(
-    organizerNamesAsync,
-  );
-  if (organizerNamesState.isLoading) return const AsyncLoading();
-  if (organizerNamesState.hasError) {
-    return AsyncError(
-      organizerNamesState.error!,
-      organizerNamesState.stackTrace ?? StackTrace.current,
-    );
-  }
-
-  return AsyncData(
-    buildEventMapViewModel(
-      signedUpEvents: signedUpState.value ?? const <Event>[],
-      savedEvents: savedState.value ?? const <Event>[],
-      recommendedEvents: recommendedState.value ?? const <Event>[],
-      organizerNamesById: organizerNamesState.value ?? const <String, String>{},
-    ),
-  );
-}

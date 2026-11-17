@@ -1340,6 +1340,61 @@ test("published progressive editing requires the current setup revision",
     }
   });
 
+test("owners and managers set the women-led override with audit fields",
+  async () => {
+    const h = harness({
+      "organizers/club-1": organizer({hostUserIds: ["host-1", "manager-1"]}),
+      "events/event-1": publishedProgressiveEvent()});
+    await updateEventHandler(request("host-1", {eventId: "event-1",
+      expectedSetupRevision: 4, fields: {womenLed: true}}), h.deps);
+    let updated = h.firestore.get("events/event-1")!;
+    const declared = updated.womenLed as Record<string, unknown>;
+    assert.equal(declared.value, true);
+    assert.equal(declared.setByUid, "host-1");
+    assert.equal(declared.setByRole, "owner");
+    assert.equal(declared.lockedByAdmin, false);
+    assert.ok(declared.setAt, "setAt records when it was set");
+    // A hosting label is not a plan change guests are notified about.
+    assert.equal(updated.planChangeRevision, undefined);
+    assert.equal(h.notifications.length, 0);
+
+    await updateEventHandler(request("manager-1", {eventId: "event-1",
+      expectedSetupRevision: 5, fields: {womenLed: null}}), h.deps);
+    updated = h.firestore.get("events/event-1")!;
+    assert.deepEqual(
+      {...updated.womenLed as Record<string, unknown>, setAt: null},
+      {value: null, setByUid: "manager-1", setByRole: "manager",
+        setAt: null, lockedByAdmin: false});
+  });
+
+test("others cannot set the women-led override", async () => {
+  const h = harness({"organizers/club-1": organizer(),
+    "events/event-1": publishedProgressiveEvent()});
+  await assert.rejects(updateEventHandler(request("guest-1", {
+    eventId: "event-1", expectedSetupRevision: 4,
+    fields: {womenLed: true}}), h.deps),
+  (error) => assertHttpsCode(error, "permission-denied"));
+  assert.equal(h.firestore.get("events/event-1")?.womenLed, undefined);
+});
+
+test("an admin lock refuses a Host women-led declaration", async () => {
+  const lock = {value: false, setByUid: "admin-1", setByRole: "admin",
+    setAt: ts("2026-04-01T00:00:00.000Z"), lockedByAdmin: true};
+  for (const docs of [
+    {"organizers/club-1": organizer({womenLed: lock}),
+      "events/event-1": publishedProgressiveEvent()},
+    {"organizers/club-1": organizer(),
+      "events/event-1": publishedProgressiveEvent({womenLed: lock})},
+  ]) {
+    const h = harness(docs);
+    await assert.rejects(updateEventHandler(request("host-1", {
+      eventId: "event-1", expectedSetupRevision: 4,
+      fields: {womenLed: true}}), h.deps),
+    (error) => assertHttpsCode(error, "failed-precondition"));
+    assert.equal(h.firestore.get("events/event-1")?.setupRevision, 4);
+  }
+});
+
 test("published edits synchronize civil time and fence subsequent edits",
   async () => {
     const h = harness({"organizers/club-1": organizer(),
