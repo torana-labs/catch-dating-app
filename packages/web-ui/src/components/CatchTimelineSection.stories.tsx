@@ -30,7 +30,7 @@ export const Contract: Story = {
   render: (args) => (
     <CatchRoot theme="day">
       <Live {...args} />
-      <CatchTimelineSection {...args} selected={1} />
+      <CatchTimelineSection {...args} selected={1} title="The same night as a plain list." />
     </CatchRoot>
   ),
 };
