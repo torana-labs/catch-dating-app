@@ -245,9 +245,9 @@ outcomes.
 | `checkout_started` | `begin_checkout` | `InitiateCheckout` | Interim primary while purchase volume is low | Browser | Checkout opened for a paid public event after the server created the order; value is ticket price times seats. | Unwired |
 | `purchase` | `purchase` | `Purchase` | Primary, guest | Server, with browser twin | `finalizePublicPayment` admits a paid seat: positive INR amount, the `publicEventPayments` ID as event and transaction ID. Pending, failed, refunded and free outcomes are rejected. | Unwired |
 | `free_registration` | `sign_up` (`method: event_rsvp`) | `CompleteRegistration` | No | Server, with browser twin | A free public registration is admitted. | Unwired |
-| `organizer_signup` | `sign_up` | `CompleteRegistration` | Secondary, organizer | Server | Organizer-account-created authority with `isNewAccount: true`; ordinary sign-in/OTP is rejected. | Unwired |
+| `organizer_signup` | `sign_up` | `CompleteRegistration` | Secondary, organizer (action 7906745506) | Server | `organizerGrowthFacts.milestones.claimedAt` is first set for an owned organizer (`userCreated`, `claimed` or `transferred`), dated within the last seven days; programmatic, synthetic and demo organizers are rejected. | Wired (delivery off by default) |
 | `claim_approved` | `claim_approved` | `CatchClaimApproved` | No | Server | Canonical claim decision with `status: approved`; pending submission is rejected. | Unwired |
-| `organizer_qualified` | `organizer_qualified` | `QualifiedHost` | Primary, organizer | Server | `organizerGrowthFacts.milestones.firstEventAt` is first set for a published, non-test event; the organiser ID seeds the event ID. A draft or event-created click is rejected. | Unwired |
+| `organizer_qualified` | `organizer_qualified` | `QualifiedHost` | Primary, organizer (action 7906748544) | Server | `organizerGrowthFacts.milestones.firstEventAt` (the organizer's first event to take a booking) is first set for an owned organizer whose start is no more than 30 days past. A draft or event-created click is rejected. | Wired (delivery off by default) |
 | `organizer_activated` | `organizer_activated` | `CatchOrganizerActivated` | No | Server | First published non-test event with a successful real check-in (`hostOrganizerActivations`); a quality signal for reporting and audiences. | Unwired |
 | `organizer_first_paid_booking` | `organizer_first_paid_booking` | `FirstPaidBooking` | No | Server | `organizerGrowthFacts.milestones.firstPaidBookingAt` is first set. | Unwired |
 
@@ -285,6 +285,24 @@ the account is not deleted or restricted. Opt-out or deletion cancels pending
 deliveries; requests already accepted by a provider cannot be retracted.
 Credentials are dedicated Catch identities held in Secret Manager; shared
 business identities are unsuitable.
+
+The queue lives in `functions/src/acquisition/adConversions/`: the
+`onAdConversionGrowthFactsWritten` trigger enqueues host conversions into
+`adConversionDeliveries`, and the `sendAdConversions` worker sends them every
+five minutes. `AD_CONVERSIONS_MODE` controls both: `off` (the default, and the
+setting in dev and staging) enqueues and sends nothing; `validate` sends Meta
+test events, only when `AD_CONVERSIONS_META_TEST_EVENT_CODE` is set, and
+Google validate-only requests, and leaves records pending; `live` records real
+conversions. The Meta token is read at send time from the pinned version in
+`AD_CONVERSIONS_META_TOKEN_VERSION` (the CatchAds system user); Google uploads
+act as the service account in `AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT`, so no
+credential is bound to a deployed Function. Host milestones happen in the Host
+app and on the server, so Meta receives them as `system_generated` events
+matched on hashed phone, email and a namespaced organizer ID; Google receives
+them as enhanced conversions for leads on `UPLOAD_CLICKS` actions. Records are
+cancelled when the owner's account is deleted or the event is older than seven
+days, and retried with backoff up to five attempts, since both platforms
+deduplicate on the event ID.
 
 ## Customer lists
 
