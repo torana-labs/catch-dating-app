@@ -14,7 +14,7 @@ describe("useCityFormatPageController", () => {
       {figure: "6", title: "runs in the next 30 days"},
       {figure: "2", title: "free to join"},
     ]);
-    expect(result.current.faq.items[0].answer).toBe("Some are. 2 of the 6 runs in the next 30 days are free. Each listing shows its price before you book.");
+    expect(result.current.faq.items[0].answer).toBe("Some runs are. 2 of the 6 runs in the next 30 days are free. Each listing shows its price before you book.");
   });
 
   it("marks counts the read model calls a floor", () => {

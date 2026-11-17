@@ -58,9 +58,10 @@ export const cityFormatPageCopy = {
   faq: {
     kicker: "{format} in {city}",
     title: "{format} in {city}: common questions",
-    freeQuestion: "Are {formatLower} in {city} free?",
+    /** Worded for every format name, plural (run clubs) or not (pickleball). */
+    freeQuestion: "Is it free to join {formatLower} in {city}?",
     /** When some of the next 30 days’ plans are free. */
-    freeSome: "Some are. {free} of the {upcoming} {plans} in the next 30 days are free. Each listing shows its price before you book.",
+    freeSome: "Some {plans} are. {free} of the {upcoming} {plans} in the next 30 days are free. Each listing shows its price before you book.",
     freeNone: "Each listing shows its price before you book. Free {plans} show Free on the card.",
     soloQuestion: "Can I come on my own?",
     soloAnswer: "Yes. Book a place for yourself; the host knows to expect you and sends where to be before the day.",
