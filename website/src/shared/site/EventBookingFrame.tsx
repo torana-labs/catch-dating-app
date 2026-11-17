@@ -1,38 +1,39 @@
-import {CatchBand, CatchGap, CatchGroundCard, CatchSplit, CatchLegacyText} from "@catch/web-ui";
+import {CatchFlowLayout, CatchGroundCard} from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {PublicSiteFooter, PublicSiteHeader} from "./PublicSiteChrome";
+import {WebsitePageMain} from "./PageShell";
 
 /**
  * A booking with no event page around it (CAT-252): a payment receipt, an
- * offer, an invitation on its way to its event, or an event whose public page
- * is gone. The booking card sits where the event page puts it, beside a
- * heading that says what the booking is for. It shows no event detail beyond
- * what its steps show, and the pages that use it stay private and unstored.
- * A booking is a one-job flow: the minimal header and no help band.
+ * invitation on its way to its event, or an event whose public page is gone;
+ * and the other one-job event flows, the event update and the rehearsal.
+ * It is the playbook kit's flow (the LiveCheckout and LiveInvite boards): the
+ * kicker, headline and lead over the 640px column, and the booking card as
+ * the column's block. It shows no event detail beyond what its steps show,
+ * and the pages that use it stay private and unstored. A booking is a
+ * one-job flow: the minimal header and no help band.
  */
-export function EventBookingFrame({title, body, children}: {
+export function EventBookingFrame({kicker, title, body, banner, card = true, footer = true, children}: {
+  kicker?: string;
   title: string;
-  body?: ReactNode;
+  body?: string;
+  /** A notice above the head, such as the rehearsal's practice banner. */
+  banner?: ReactNode;
+  /** False: the children are the column's own blocks (an event update, a rehearsal). */
+  card?: boolean;
+  /** False: no site footer, for a practice phone that only holds its controls. */
+  footer?: boolean;
   children: ReactNode;
 }) {
   return (
     <>
       <PublicSiteHeader variant="minimal" />
-      <CatchBand as="main" pt="compact">
-        <CatchSplit
-          end={<CatchGroundCard ground="white" outlined>{children}</CatchGroundCard>}
-          gap="regular"
-          railSide="end"
-          ratio="narrowRail"
-          start={(
-            <CatchGap size="related">
-              <CatchLegacyText as="h1" variant="displayM">{title}</CatchLegacyText>
-              {body ? <CatchLegacyText as="p" color="ink2" variant="bodyL">{body}</CatchLegacyText> : null}
-            </CatchGap>
-          )}
-        />
-      </CatchBand>
-      <PublicSiteFooter helpBand={false} />
+      <WebsitePageMain>
+        <CatchFlowLayout banner={banner} kicker={kicker} lead={body} title={title}>
+          {card ? <CatchGroundCard ground="white" outlined>{children}</CatchGroundCard> : children}
+        </CatchFlowLayout>
+      </WebsitePageMain>
+      {footer ? <PublicSiteFooter helpBand={false} /> : null}
     </>
   );
 }

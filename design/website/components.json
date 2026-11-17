@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
   "version": 115,
-  "updated": "2026-11-16",
+  "updated": "2026-11-17",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -718,21 +718,21 @@
       "routeIds": [
         "event_booking",
         "event_offer",
-        "event_invite"
+        "event_invite",
+        "event_assistance",
+        "event_rehearsal",
+        "sales_demo"
       ],
       "owner": "shared/site",
       "source": "website/src/shared/site/EventBookingFrame.tsx",
       "exportName": "EventBookingFrame",
       "comparedWith": [
-        "catch.screen_body",
-        "catch.text"
+        "catch.pane_layout"
       ],
-      "comparisonReason": "A website page frame for private bookings: it places the booking card in a CatchSplit rail beside a CatchText heading inside a CatchBand. It lays out library parts and implements neither the screen body nor the text contract. Not a pane layout: a public booking page section, not a workspace screen of sibling panes.",
+      "comparisonReason": "A website frame for a booking with no event page: one CatchFlowLayout step (kicker, heading, lead and an optional banner) whose block is the booking card in a white outlined CatchGroundCard, between the site header and footer. It frames one public page's step and arranges no sibling workspace panes, so it implements no pane layout.",
       "css": [
-        "packages/web-ui/src/components/CatchBand.module.css",
-        "packages/web-ui/src/components/CatchSplit.module.css",
-        "packages/web-ui/src/components/CatchGroundCard.module.css",
-        "packages/web-ui/src/components/CatchText.module.css"
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -742,7 +742,7 @@
           "booking-steps"
         ]
       },
-      "notes": "A booking with no event page around it: a payment receipt, an offer, an invitation on its way to its event, or an event whose public page is gone. The event page's booking card in its rail, beside a heading that says what the booking is for, with no event detail beyond what its steps show."
+      "notes": "A booking or guest step with no event page around it: a payment receipt, an offer, an invitation on its way to its event, an event whose public page is gone, the guest's event update, a rehearsal or the private sales demo. The page's step on the flow layout: a kicker, a heading that says what the booking is for, an optional banner, and the card (or bare blocks with card={false}), with no event detail beyond what its steps show."
     },
     {
       "id": "event_booking_card",
@@ -1325,12 +1325,16 @@
       "routeIds": [
         "privacy",
         "terms",
-        "help"
+        "help",
+        "account_deletion",
+        "refunds",
+        "contact"
       ],
       "owner": "shared/ui/primitives",
       "source": "website/src/shared/ui/primitives/legal.tsx",
       "exportName": "LegalDocument",
       "css": [
+        "packages/web-ui/src/components/CatchArticleBody.module.css",
         "website/src/styles/legal.css"
       ],
       "storybook": {
@@ -1343,7 +1347,7 @@
           "contact"
         ]
       },
-      "notes": "Scanner-enforced document, header, label, sections, and contact shells for the three published legal routes."
+      "notes": "The legal, help and contact document as a CatchArticleBody with an \"On this page\" contents list; legal.css keeps only the page ground."
     },
     {
       "id": "route_legal",
@@ -1351,15 +1355,21 @@
       "routeIds": [
         "privacy",
         "terms",
-        "help"
+        "help",
+        "account_deletion",
+        "refunds",
+        "contact"
       ],
       "owner": "features/legal",
       "source": "website/src/features/legal/LegalPage.tsx",
       "exportName": "LegalPage",
       "css": [
-        "website/src/styles/site-shell.css",
         "website/src/styles/legal.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchArticleBody.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -1780,15 +1790,25 @@
       "kind": "supporting-component",
       "routeIds": [
         "host_walkthrough",
-        "host_start"
+        "host_start",
+        "account",
+        "host_billing",
+        "event_booking",
+        "event_invite",
+        "event_assistance",
+        "event_rehearsal",
+        "sales_demo",
+        "weddings_apply",
+        "claim"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchFlowLayout.tsx",
       "exportName": "CatchFlowLayout",
       "comparedWith": [
-        "catch.surface"
+        "catch.surface",
+        "catch.pane_layout"
       ],
-      "comparisonReason": "The frame of one step of a website flow: navigation (a step rail or tabs), a banner, the step's headline, its content column and fine print, in a catch.surface. It is a page frame, not a surface.",
+      "comparisonReason": "The frame of one step of a website flow: navigation (a step rail or tabs), a banner, the step's headline, its content column and fine print, in a catch.surface. It is a page frame, not a surface, and it stacks one step's blocks in a column rather than arranging sibling workspace panes, so it is not a pane layout.",
       "css": [
         "packages/web-ui/src/components/CatchFlowLayout.module.css"
       ],
@@ -1829,11 +1849,19 @@
       "routeIds": [
         "stories",
         "new_to_city",
-        "city_format"
+        "city_format",
+        "cities"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchCardGrid.tsx",
       "exportName": "CatchCardGrid",
+      "comparedWith": [
+        "catch.button",
+        "catch.empty_state",
+        "catch.stack",
+        "catch.surface"
+      ],
+      "comparisonReason": "A band of cards: a band header, filters and links, then plan, organiser, city, review, story or person cards in a three- or four-column grid, with an empty state and the band's actions. It lays out CatchButton, CatchEmptyState, CatchStack and CatchSurface and implements none of those contracts.",
       "css": [
         "packages/web-ui/src/components/CatchCardGrid.module.css"
       ],
@@ -1858,6 +1886,11 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchStoryCard.tsx",
       "exportName": "CatchStoryCard",
+      "comparedWith": [
+        "catch.detail_media",
+        "catch.text"
+      ],
+      "comparisonReason": "One story in a grid of stories: a 4:3 photo, a meta line, the title, a body and a figure at the foot. It places a CatchHeroImage and CatchText in a card and implements neither the detail media nor the text contract.",
       "css": [
         "packages/web-ui/src/components/CatchStoryCard.module.css"
       ],
@@ -2466,49 +2499,17 @@
       "notes": "Labelled pulse with role status: an inline recipe of CatchLoadingIndicator."
     },
     {
-      "id": "shared_event_runtime_notice_stack",
-      "kind": "supporting-component",
-      "routeIds": [
-        "event_assistance",
-        "household_rsvp"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
-      "exportName": "EventRuntimeNoticeStack",
-      "css": [
-        "website/src/styles/event-runtime.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "notices"
-        ]
-      },
-      "notes": "Shared website component; Vertical stack of runtime notices, not of complete sections."
-    },
-    {
       "id": "shared_event_runtime_panel",
       "kind": "supporting-component",
       "routeIds": [
         "claim",
         "claim_lookup",
-        "event_assistance",
-        "event_booking",
-        "event_invite",
         "event_offer",
-        "household_rsvp",
-        "sales_demo"
+        "household_rsvp"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
       "exportName": "EventRuntimePanel",
-      "comparedWith": [
-        "catch.section",
-        "catch.metric_strip",
-        "catch.control_shell",
-        "catch.surface"
-      ],
-      "comparisonReason": "Route main with an intro heading; page body layout, whose Flutter counterpart CatchPageBody is T3.",
       "css": [
         "website/src/styles/event-runtime.css"
       ],
@@ -2520,27 +2521,6 @@
         ]
       },
       "notes": "Shared website component; Route main with an intro heading; page body layout, whose Flutter counterpart CatchPageBody is T3."
-    },
-    {
-      "id": "shared_event_runtime_practice_banner",
-      "kind": "supporting-component",
-      "routeIds": [
-        "sales_demo"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/eventRuntime.tsx",
-      "exportName": "EventRuntimePracticeBanner",
-      "componentId": "catch.banner",
-      "css": [
-        "website/src/styles/event-runtime.css"
-      ],
-      "storybook": {
-        "status": "planned",
-        "states": [
-          "practice"
-        ]
-      },
-      "notes": "Practice-mode notice above the runtime: an informational CatchBanner."
     },
     {
       "id": "shared_host_preview_section",
@@ -3000,11 +2980,7 @@
           "live-module-shell"
         ]
       },
-      "notes": "Governed visual ownership for attendee and rehearsal runtime frames, practice banner, panels, forms, consents, live header, action grid, notices, and module cards. Since P4.6 /join and /rehearse no longer render these shells; the event assistance page and the sales demo do.",
-      "comparedWith": [
-        "catch.pane_layout"
-      ],
-      "comparisonReason": "A guest-facing event runtime page frame inside the website; it arranges one public page, not sibling workspace panes."
+      "notes": "Governed visual ownership for attendee and rehearsal runtime frames, practice banner, panels, forms, consents, live header, action grid, notices, and module cards. Since P4.6 /join and /rehearse no longer render these shells, and since the live-flows restyle the event assistance page and the sales demo draw CatchFlowLayout instead; the EventRuntimeShells story keeps the frame visible."
     },
     {
       "id": "route_event_rehearsal",
@@ -3016,21 +2992,19 @@
       "source": "website/src/features/eventRehearsal/EventRehearsalPage.tsx",
       "exportName": "EventRehearsalPage",
       "css": [
-        "packages/web-ui/src/components/CatchRoot.module.css",
-        "packages/web-ui/src/components/CatchTopBar.module.css",
-        "packages/web-ui/src/components/CatchPageBody.module.css",
-        "packages/web-ui/src/components/CatchPaneLayout.module.css",
-        "packages/web-ui/src/components/CatchStack.module.css",
-        "packages/web-ui/src/components/CatchBadge.module.css",
-        "packages/web-ui/src/components/CatchSurface.module.css",
-        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchBanner.module.css",
         "packages/web-ui/src/components/CatchSection.module.css",
         "packages/web-ui/src/components/CatchIndexRow.module.css",
-        "packages/web-ui/src/components/CatchIcon.module.css",
         "packages/web-ui/src/components/CatchNotice.module.css",
+        "packages/web-ui/src/components/CatchBadge.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
-        "website/src/styles/event-runtime.css"
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "planned",
@@ -3107,12 +3081,10 @@
       "source": "website/src/features/events/EventInvitePage.tsx",
       "exportName": "EventInvitePage",
       "css": [
-        "packages/web-ui/src/components/CatchBand.module.css",
-        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
         "packages/web-ui/src/components/CatchGroundCard.module.css",
-        "packages/web-ui/src/components/CatchText.module.css",
-        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
-        "packages/web-ui/src/components/CatchButton.module.css"
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -3237,7 +3209,12 @@
       "source": "website/src/features/eventAssistance/EventAssistancePage.tsx",
       "exportName": "EventAssistancePage",
       "css": [
-        "website/src/styles/event-runtime.css"
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "planned",
@@ -4312,13 +4289,18 @@
       "source": "website/src/features/events/PublicBookingPage.tsx",
       "exportName": "PublicBookingPage",
       "css": [
-        "packages/web-ui/src/components/CatchBand.module.css",
-        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
         "packages/web-ui/src/components/CatchGroundCard.module.css",
-        "packages/web-ui/src/components/CatchText.module.css",
-        "packages/web-ui/src/components/CatchLoadingIndicator.module.css",
+        "packages/web-ui/src/components/CatchFormStepList.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchStepper.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
         "packages/web-ui/src/components/CatchButton.module.css",
-        "packages/web-ui/src/components/CatchField.module.css"
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -4343,7 +4325,17 @@
       "source": "website/src/features/salesDemo/SalesDemoPage.tsx",
       "exportName": "SalesDemoPage",
       "css": [
-        "website/src/styles/event-runtime.css"
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchBanner.module.css",
+        "packages/web-ui/src/components/CatchFormStepList.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "planned",
@@ -4427,7 +4419,10 @@
       "source": "website/src/features/home/CitiesPage.tsx",
       "exportName": "CitiesPage",
       "css": [
-        "website/src/styles/site-shell.css"
+        "website/src/styles/site-shell.css",
+        "packages/web-ui/src/components/CatchCardGrid.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -5004,11 +4999,7 @@
           "board-reference-event"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-248). Two columns at 1:1, 7:5, or a 380px (booking) or 420px (organiser) rail on either side; they stack in source order when the page is narrower than 840px, snapped from the boards' 900px to the expanded window size. Search aliases: TwoColumn, TwoColumns, Columns, SplitLayout, SideBySide, Sidebar, SidebarLayout, RailLayout.",
-      "comparedWith": [
-        "catch.pane_layout"
-      ],
-      "comparisonReason": "A Website v2 section that places media beside copy inside a band; CatchPaneLayout arranges sibling workspace panes of an app screen."
+      "notes": "Website T4 under D18 (CAT-248). Two columns at 1:1, 7:5, or a 380px (booking) or 420px (organiser) rail on either side; they stack in source order when the page is narrower than 840px, snapped from the boards' 900px to the expanded window size. Search aliases: TwoColumn, TwoColumns, Columns, SplitLayout, SideBySide, Sidebar, SidebarLayout, RailLayout."
     },
     {
       "id": "shared_grid",
@@ -5277,11 +5268,30 @@
       "kind": "supporting-component",
       "routeIds": [
         "organizer_listing_canonical",
-        "event_detail_canonical"
+        "event_detail_canonical",
+        "account",
+        "host_billing",
+        "event_booking",
+        "event_invite",
+        "event_assistance",
+        "event_rehearsal",
+        "sales_demo",
+        "weddings_apply",
+        "privacy",
+        "terms",
+        "help",
+        "account_deletion",
+        "refunds",
+        "contact"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchGroundCard.tsx",
       "exportName": "CatchGroundCard",
+      "comparedWith": [
+        "catch.surface",
+        "catch.event_card"
+      ],
+      "comparisonReason": "A rounded card on one Website v2 palette ground that holds whatever the page arranges in it. catch.surface tones are theme surfaces, not palette grounds, and the card carries no event of its own, so it implements neither the surface nor the event card contract.",
       "css": [
         "packages/web-ui/src/components/CatchGroundCard.module.css"
       ],
@@ -5371,6 +5381,10 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchReviewItem.tsx",
       "exportName": "CatchReviewItem",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "One review as an article named by the reviewer: stars, a verification badge slot, the text, the organiser's reply and a footer slot. It sets its lines in CatchLegacyText and implements no text contract itself.",
       "css": [
         "packages/web-ui/src/components/CatchReviewItem.module.css"
       ],
@@ -6184,8 +6198,17 @@
       "source": "website/src/features/account/AccountPage.tsx",
       "exportName": "AccountPage",
       "css": [
-        "packages/web-ui/src/components/CatchPaneLayout.module.css",
-        "packages/web-ui/src/components/CatchStack.module.css"
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchPageTabBar.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchEmptyState.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "planned",
@@ -6259,8 +6282,15 @@
       "source": "website/src/features/hostBilling/HostBillingPage.tsx",
       "exportName": "HostBillingPage",
       "css": [
-        "packages/web-ui/src/components/CatchPaneLayout.module.css",
-        "packages/web-ui/src/components/CatchStack.module.css"
+        "packages/web-ui/src/components/CatchFlowLayout.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchSection.module.css",
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchEmptyState.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchLoadingIndicator.module.css"
       ],
       "storybook": {
         "status": "planned",

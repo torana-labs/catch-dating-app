@@ -13,3 +13,9 @@ export const publishedLegalContent: PublishedLegalContent = {
     grievanceOfficer: brand.operator.grievanceOfficer,
   },
 };
+
+/** The legal article's own labels (the LiveLegal board): its contents and the related pages under the contact card. */
+export const legalPageCopy = {
+  tocLabel: "On this page",
+  related: "Related pages",
+} as const;
