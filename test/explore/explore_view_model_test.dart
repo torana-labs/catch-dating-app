@@ -29,7 +29,6 @@ import 'package:catch_l10n/generated/app_localizations_en.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_ui/catch_ui.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -2302,10 +2301,9 @@ class _FakeEventDiscoveryRepository extends Fake
   }
 
   @override
-  Future<CursorPage<Event, DocumentSnapshot<Event>>>
-  fetchDiscoverableEventsPage(
+  Future<CursorPage<Event, PageCursor<Event>>> fetchDiscoverableEventsPage(
     EventDiscoveryQuery query, {
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
   }) async => CursorPage(items: events, hasMore: false);
 }
 
@@ -2323,10 +2321,10 @@ class _FakeExternalEventRepository extends Fake
   }
 
   @override
-  Future<CursorPage<ExternalEvent, DocumentSnapshot<ExternalEvent>>>
+  Future<CursorPage<ExternalEvent, PageCursor<ExternalEvent>>>
   fetchDiscoverableExternalEventsPage(
     ExternalEventDiscoveryQuery query, {
-    DocumentSnapshot<ExternalEvent>? startAfter,
+    PageCursor<ExternalEvent>? startAfter,
   }) async => CursorPage(items: events, hasMore: false);
 }
 

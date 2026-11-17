@@ -88,19 +88,16 @@ class ExternalEventRepository {
     return (await fetchDiscoverableExternalEventsPage(query)).items;
   }
 
-  Future<CursorPage<ExternalEvent, DocumentSnapshot<ExternalEvent>>>
+  Future<CursorPage<ExternalEvent, PageCursor<ExternalEvent>>>
   fetchDiscoverableExternalEventsPage(
     ExternalEventDiscoveryQuery query, {
-    DocumentSnapshot<ExternalEvent>? startAfter,
+    PageCursor<ExternalEvent>? startAfter,
   }) {
     // firestore-index: externalEvents (discovery.citySlug:ASCENDING,discovery.appVisibility:ASCENDING,publicationStatus:ASCENDING,status:ASCENDING,startTime:ASCENDING)
     return withBackendErrorContext(
       () async {
         if (query.citySlug.isEmpty) {
-          return CursorPage.empty<
-            ExternalEvent,
-            DocumentSnapshot<ExternalEvent>
-          >();
+          return CursorPage.empty<ExternalEvent, PageCursor<ExternalEvent>>();
         }
 
         // Events of an organizer hidden in the app stay on the website only.

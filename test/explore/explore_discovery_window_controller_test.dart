@@ -8,7 +8,6 @@ import 'package:catch_dating_app/explore/presentation/explore_discovery_window_c
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_platform/firebase/cursor_page.dart';
 import 'package:catch_platform/firebase/firestore_converters.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,7 +31,7 @@ void main() {
           .collection('events')
           .doc('cursor')
           .set(firstEvent.toJson());
-      final internalCursor = await cursorFirestore
+      final internalSnapshot = await cursorFirestore
           .collection('events')
           .withDocumentIdConverter<Event>(
             idField: 'id',
@@ -41,6 +40,7 @@ void main() {
           )
           .doc('cursor')
           .get();
+      final internalCursor = PageCursor.after(internalSnapshot);
       final internalRepository = _PagedEventDiscoveryRepository(
         first: CursorPage(
           items: [firstEvent],
@@ -102,7 +102,7 @@ void main() {
         .collection('events')
         .doc('cursor')
         .set(firstEvent.toJson());
-    final internalCursor = await cursorFirestore
+    final internalSnapshot = await cursorFirestore
         .collection('events')
         .withDocumentIdConverter<Event>(
           idField: 'id',
@@ -111,6 +111,7 @@ void main() {
         )
         .doc('cursor')
         .get();
+    final internalCursor = PageCursor.after(internalSnapshot);
     final internalRepository = _PagedEventDiscoveryRepository(
       first: CursorPage(
         items: [firstEvent],
@@ -167,16 +168,15 @@ class _PagedEventDiscoveryRepository extends Fake
     this.secondError,
   });
 
-  final CursorPage<Event, DocumentSnapshot<Event>> first;
-  final CursorPage<Event, DocumentSnapshot<Event>> second;
+  final CursorPage<Event, PageCursor<Event>> first;
+  final CursorPage<Event, PageCursor<Event>> second;
   final Object? secondError;
-  final List<DocumentSnapshot<Event>?> startAfterCalls = [];
+  final List<PageCursor<Event>?> startAfterCalls = [];
 
   @override
-  Future<CursorPage<Event, DocumentSnapshot<Event>>>
-  fetchDiscoverableEventsPage(
+  Future<CursorPage<Event, PageCursor<Event>>> fetchDiscoverableEventsPage(
     EventDiscoveryQuery query, {
-    DocumentSnapshot<Event>? startAfter,
+    PageCursor<Event>? startAfter,
   }) async {
     startAfterCalls.add(startAfter);
     final error = secondError;
@@ -189,14 +189,14 @@ class _PagedExternalEventRepository extends Fake
     implements ExternalEventRepository {
   _PagedExternalEventRepository(this.page);
 
-  final CursorPage<ExternalEvent, DocumentSnapshot<ExternalEvent>> page;
+  final CursorPage<ExternalEvent, PageCursor<ExternalEvent>> page;
   int calls = 0;
 
   @override
-  Future<CursorPage<ExternalEvent, DocumentSnapshot<ExternalEvent>>>
+  Future<CursorPage<ExternalEvent, PageCursor<ExternalEvent>>>
   fetchDiscoverableExternalEventsPage(
     ExternalEventDiscoveryQuery query, {
-    DocumentSnapshot<ExternalEvent>? startAfter,
+    PageCursor<ExternalEvent>? startAfter,
   }) async {
     calls += 1;
     return page;

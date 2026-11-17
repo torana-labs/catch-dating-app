@@ -90,4 +90,32 @@ describe("CatchHeroSection", () => {
     render(<CatchHeroSection id="top" title="Headline" />);
     expect(screen.getByRole("region").id).toBe("top");
   });
+
+  it("draws a white notice card under the actions, holding the page's own form", () => {
+    render(
+      <CatchHeroSection actions={[{label: "See plans", href: "#plans"}]} ground="pink"
+        notice={{title: "The app is on its way", body: "One message when it launches.", children: <form aria-label="Notify" />}} title="Plans" />,
+    );
+    const action = screen.getByRole("link", {name: "See plans"});
+    const title = screen.getByText("The app is on its way");
+    const form = screen.getByRole("form", {name: "Notify"});
+    expect(action.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(title.compareDocumentPosition(form) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByText("One message when it launches.")).toBeTruthy();
+  });
+
+  it("draws the plan chip with its date square beside the title and one line, over the media", () => {
+    const {container} = render(
+      <CatchHeroSection aside={{title: "Thursday Pub Quiz", meta: "Khar Social · 6 left", date: {weekday: "Thu", day: "20", month: "Nov", ground: "yellow"}}}
+        ground="pink" media={<img alt="Phone" src="/p.png" />} title="Plans" />,
+    );
+    const chip = container.querySelector("[data-chip]") as HTMLElement;
+    expect(chip).not.toBeNull();
+    const date = chip.querySelector("time") as HTMLElement;
+    expect(date.dataset).toMatchObject({size: "sm", ground: "yellow"});
+    expect(date.textContent).toContain("20");
+    expect(chip.textContent).toContain("Thursday Pub Quiz");
+    expect(chip.textContent).toContain("Khar Social · 6 left");
+    expect(chip.querySelector("dl")).toBeNull();
+  });
 });

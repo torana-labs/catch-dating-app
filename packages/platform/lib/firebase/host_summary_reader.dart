@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/firebase/live_paged_query.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 
@@ -165,6 +167,110 @@ class HostSummaryReader {
   }) {
     _actor();
     final boundedLimit = limit.clamp(1, maxWindow);
+    final query = _ordered(
+      collection: collection,
+      organizerId: organizerId,
+      orderField: orderField,
+      descending: descending,
+      equalities: equalities,
+      inFilters: inFilters,
+      lowerInclusive: lowerInclusive,
+      upperExclusive: upperExclusive,
+      arrayField: arrayField,
+      arrayValues: arrayValues,
+      prefix: prefix,
+    ).limit(boundedLimit + 1);
+    Stream<HostSummaryWindow> rows() => query.snapshots().map((snapshot) {
+      final docs = snapshot.docs.take(boundedLimit);
+      return HostSummaryWindow([
+        for (final doc in docs)
+          if (doc.data() case final value
+              when value['organizerId'] == organizerId && value['version'] == 1)
+            value
+          else
+            throw const FormatException('Unsupported directory summary.'),
+      ], hasMore: snapshot.docs.length > boundedLimit);
+    });
+    final window = withBackendErrorStream(
+      rows,
+      context: BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch Host list summaries',
+        resource: collection,
+      ),
+    );
+    return _afterActivation(organizerId, marker, window);
+  }
+
+  /// One directory query read [pageSize] rows at a time, every row shown
+  /// kept live: the same filters and order as [page]. Each page is its own
+  /// listener (see [LivePagedQuery]), so asking for more reads only the new
+  /// page, up to [maxWindow] rows. With a [marker], the first page opens once
+  /// the organizer's directory says that read model is active; a missing
+  /// marker is a server fault to retry.
+  LivePager<Map<String, dynamic>> watchPages({
+    required String collection,
+    required String organizerId,
+    required String orderField,
+    required bool descending,
+    required int pageSize,
+    String? marker,
+    Map<String, Object> equalities = const {},
+    Map<String, List<String>> inFilters = const {},
+    num? lowerInclusive,
+    num? upperExclusive,
+    String? arrayField,
+    List<String> arrayValues = const [],
+    String? prefix,
+  }) {
+    _actor();
+    final query = _ordered(
+      collection: collection,
+      organizerId: organizerId,
+      orderField: orderField,
+      descending: descending,
+      equalities: equalities,
+      inFilters: inFilters,
+      lowerInclusive: lowerInclusive,
+      upperExclusive: upperExclusive,
+      arrayField: arrayField,
+      arrayValues: arrayValues,
+      prefix: prefix,
+    );
+    return LivePagedQuery<Map<String, dynamic>, Map<String, dynamic>>(
+      query: query,
+      pageSize: pageSize.clamp(1, maxWindow),
+      maxRows: maxWindow,
+      beforeOpen: marker == null
+          ? null
+          : () => activatedDirectory(organizerId, marker),
+      convert: (doc) => switch (doc.data()) {
+        final value
+            when value['organizerId'] == organizerId && value['version'] == 1 =>
+          value,
+        _ => throw const FormatException('Unsupported directory summary.'),
+      },
+      errorContext: BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch Host list summaries',
+        resource: collection,
+      ),
+    );
+  }
+
+  Query<Map<String, dynamic>> _ordered({
+    required String collection,
+    required String organizerId,
+    required String orderField,
+    required bool descending,
+    required Map<String, Object> equalities,
+    required Map<String, List<String>> inFilters,
+    required num? lowerInclusive,
+    required num? upperExclusive,
+    required String? arrayField,
+    required List<String> arrayValues,
+    required String? prefix,
+  }) {
     Query<Map<String, dynamic>> query = _firestore
         .collection(collection)
         .where('organizerId', isEqualTo: organizerId);
@@ -188,30 +294,9 @@ class HostSummaryReader {
           .where(orderField, isGreaterThanOrEqualTo: prefix)
           .where(orderField, isLessThan: '$prefix\uf8ff');
     }
-    query = query
+    return query
         .orderBy(orderField, descending: descending)
-        .orderBy(FieldPath.documentId, descending: descending)
-        .limit(boundedLimit + 1);
-    Stream<HostSummaryWindow> rows() => query.snapshots().map((snapshot) {
-      final docs = snapshot.docs.take(boundedLimit);
-      return HostSummaryWindow([
-        for (final doc in docs)
-          if (doc.data() case final value
-              when value['organizerId'] == organizerId && value['version'] == 1)
-            value
-          else
-            throw const FormatException('Unsupported directory summary.'),
-      ], hasMore: snapshot.docs.length > boundedLimit);
-    });
-    final window = withBackendErrorStream(
-      rows,
-      context: BackendErrorContext(
-        service: BackendService.firestore,
-        action: 'watch Host list summaries',
-        resource: collection,
-      ),
-    );
-    return _afterActivation(organizerId, marker, window);
+        .orderBy(FieldPath.documentId, descending: descending);
   }
 
   /// One directory record while it is listened to; null while it does not
@@ -333,32 +418,19 @@ class HostSummaryReader {
     );
     final position = HostSummaryCursor.decode(cursor, scope);
     final boundedLimit = limit.clamp(1, 100);
-    Query<Map<String, dynamic>> query = _firestore
-        .collection(collection)
-        .where('organizerId', isEqualTo: organizerId);
-    for (final entry in equalities.entries) {
-      query = query.where(entry.key, isEqualTo: entry.value);
-    }
-    for (final entry in inFilters.entries) {
-      query = query.where(entry.key, whereIn: entry.value);
-    }
-    if (lowerInclusive != null) {
-      query = query.where(orderField, isGreaterThanOrEqualTo: lowerInclusive);
-    }
-    if (upperExclusive != null) {
-      query = query.where(orderField, isLessThan: upperExclusive);
-    }
-    if (arrayField != null) {
-      query = query.where(arrayField, arrayContainsAny: arrayValues);
-    }
-    if (prefix != null) {
-      query = query
-          .where(orderField, isGreaterThanOrEqualTo: prefix)
-          .where(orderField, isLessThan: '$prefix\uf8ff');
-    }
-    query = query
-        .orderBy(orderField, descending: descending)
-        .orderBy(FieldPath.documentId, descending: descending);
+    var query = _ordered(
+      collection: collection,
+      organizerId: organizerId,
+      orderField: orderField,
+      descending: descending,
+      equalities: equalities,
+      inFilters: inFilters,
+      lowerInclusive: lowerInclusive,
+      upperExclusive: upperExclusive,
+      arrayField: arrayField,
+      arrayValues: arrayValues,
+      prefix: prefix,
+    );
     if (position != null) query = query.startAfter(position);
     final snapshot = await withBackendErrorContext(
       () => query.limit(boundedLimit + 1).get(),

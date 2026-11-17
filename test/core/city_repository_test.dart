@@ -1,6 +1,7 @@
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_platform/cities/city_repository.dart';
 import 'package:catch_platform/errors/error_logger.dart';
+import 'package:catch_platform/firebase/config_documents.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -11,7 +12,7 @@ void main() {
   setUp(() {
     firestore = FakeFirebaseFirestore();
     repository = CityRepository(
-      firestore,
+      ConfigDocuments(firestore),
       ErrorLogger(shouldReportErrors: false),
     );
   });

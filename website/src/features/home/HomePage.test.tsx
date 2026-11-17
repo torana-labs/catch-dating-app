@@ -44,7 +44,7 @@ describe("homepage", {timeout: 20_000}, () => {
 
     const week = within(main.getByRole("region", {name: "This week in Mumbai"}));
     expect(week.getByText("10 plans this week")).toBeTruthy();
-    expect(week.getByText("6 of 10 plans shown. Hosts set their own prices.")).toBeTruthy();
+    expect(week.getByText("3 of 10 plans shown. Hosts set their own prices.")).toBeTruthy();
     const quiz = week.getByRole("link", {name: /Thursday Evening Pub Quiz/});
     expect(quiz.getAttribute("href")).toBe("/events/thursday-pub-quiz/");
     expect(quiz.textContent).toContain("Games and quizzes");
@@ -56,15 +56,62 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(week.getByRole("link", {name: "Plans in Indore"}).getAttribute("href")).toBe("/?city=indore");
   });
 
-  it("orders a busy city's bands as the board: plans, how a night works, proof, then the host band", () => {
+  it("orders a busy city's bands as the board: entry tiles, plans, formats, how a night works, proof, then the host band", () => {
     const {container} = render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     expect(bandTitles(container)).toEqual([
-      "Find something worth showing up for.", "This week in Mumbai", "Come on your own. Leave knowing a few more people.",
+      "Find something worth showing up for.", "Whoever you are, there’s an easy first plan.", "This week in Mumbai",
+      "Start with what you feel like doing.", "Come on your own. Leave knowing a few more people.",
       "Feel good about going on your own.", "Bring people together? Run the whole night from one screen.", "The people behind the plans.",
       ...(brand.stores.consumer.ios || brand.stores.consumer.android ? ["Your plans, your groups and your hosts, in your pocket."] :
         ["Be first in the app, and first to new plans."]),
-      "Good to know before your first plan.",
+      "Know a host who’d be great here?", "Good to know before your first plan.",
     ]);
+  });
+
+  it("opens six entry tiles to the city's plans or the band they name, the safety tile with no claim it cannot stand behind", () => {
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
+    const tiles = within(screen.getByRole("region", {name: "Whoever you are, there’s an easy first plan."}));
+    const links = tiles.getAllByRole("link");
+    expect(links).toHaveLength(6);
+    expect(tiles.getByRole("link", {name: /New to Mumbai/}).getAttribute("href")).toBe("/mumbai/");
+    expect(tiles.getByRole("link", {name: /Coming on your own/}).getAttribute("href")).toBe("#how");
+    const safety = tiles.getByRole("link", {name: /Safety first/});
+    expect(safety.getAttribute("href")).toBe("#safety");
+    expect(safety.textContent).not.toMatch(/verified|women-led/iu);
+  });
+
+  it("links each format to the city's plans in it, with an approved photo or the format's artwork, and more kinds as chips", () => {
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
+    const formats = within(screen.getByRole("region", {name: "Start with what you feel like doing."}));
+    const run = formats.getByRole("link", {name: /Runs and walks/});
+    expect(run.getAttribute("href")).toBe("/mumbai/?format=run");
+    expect(run.textContent).toContain("Run clubs in Mumbai");
+    expect(run.querySelector("img")?.getAttribute("src")).toBe("/assets/events/social-run-music-hero-960.jpg");
+    expect(formats.getByRole("link", {name: /Dinners/}).querySelector("img")?.getAttribute("src")).toBe("/assets/marketing/home-dinner.jpg");
+    // No approved photo for these yet: the activity artwork, never a placeholder photo.
+    for (const name of [/Racket sports/, /Games and quizzes/, /Nights out/]) expect(formats.getByRole("link", {name}).querySelector("img")).toBeNull();
+    expect(formats.getByRole("link", {name: "Yoga, spin and fitness"}).getAttribute("href")).toBe("/mumbai/?q=yoga");
+  });
+
+  it("floats the soonest plan over the hero's phone with its date, and draws the phone in the canvas bezel", () => {
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
+    const hero = screen.getByRole("region", {name: "Find something worth showing up for."});
+    const chip = hero.querySelector("[data-chip]") as HTMLElement;
+    expect(chip.textContent).toContain("Thursday Evening Pub Quiz");
+    expect(chip.textContent).toContain("Khar Social · 6 left");
+    expect((chip.querySelector("time") as HTMLElement).dataset).toMatchObject({ground: "yellow", size: "sm"});
+    expect(within(hero).getByRole("figure").dataset).toMatchObject({bezel: "", size: "hero"});
+    // No proof line until real data stands behind it.
+    expect(hero.textContent).not.toMatch(/verified|★/u);
+  });
+
+  it("asks for a host introduction on WhatsApp, and puts the main action in the phone bar", () => {
+    render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
+    const refer = within(screen.getByRole("region", {name: "Know a host who’d be great here?"}));
+    expect(refer.getByRole("link", {name: "Introduce them"}).getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/u);
+    expect(refer.queryByText(/on us|free ticket/iu)).toBeNull();
+    const dock = within(screen.getByRole("group", {name: "Quick actions"}));
+    expect(dock.getByRole("link", {name: "See plans"}).getAttribute("href")).toBe("#whats-on");
   });
 
   it("filters a busy week by format from the chips, and says when a format has none", () => {
@@ -75,7 +122,7 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(screen.getByText("Showing 3 of 3 this week · Games and quizzes")).toBeTruthy();
     expect(week().queryByRole("link", {name: /Strangers’ Supper/})).toBeNull();
     fireEvent.click(screen.getByRole("radio", {name: "Everything"}));
-    expect(screen.getByText("6 of 10 plans shown. Hosts set their own prices.")).toBeTruthy();
+    expect(screen.getByText("3 of 10 plans shown. Hosts set their own prices.")).toBeTruthy();
     fireEvent.click(screen.getByRole("radio", {name: "Pickleball"}));
     expect(week().getByRole("link", {name: /Doubles Ladder Night/}).textContent).toContain("Full");
   });
@@ -98,8 +145,8 @@ describe("homepage", {timeout: 20_000}, () => {
     expect((soon.getByRole("checkbox", {name: "Also send me news about new hosts and plans in Pune"}) as HTMLInputElement).checked).toBe(false);
     expect(soon.getByRole("button", {name: "Notify me"}).getAttribute("type")).toBe("submit");
     // The host band moves up to third, with the founding offer and a person on WhatsApp.
-    expect(bandTitles(container).slice(0, 3)).toEqual(["Bring people together in Pune? Be one of the first hosts.", "Here for the plans?",
-      "Bring people together? Run the whole night from one screen."]);
+    expect(bandTitles(container).slice(0, 4)).toEqual(["Bring people together in Pune? Be one of the first hosts.", "Whoever you are, there’s an easy first plan.",
+      "Here for the plans?", "Bring people together? Run the whole night from one screen."]);
     const hosts = within(main.getByRole("region", {name: "Bring people together? Run the whole night from one screen."}));
     expect(hosts.getByText(/^Founding hosts in Pune: 90 days without fees\./u)).toBeTruthy();
     expect(hosts.getByRole("link", {name: "Talk to us on WhatsApp"}).getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/u);
@@ -121,7 +168,7 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(plans.getByRole("link", {name: "See all upcoming plans"}).getAttribute("href")).toBe("/indore/");
     expect(plans.queryByRole("radiogroup")).toBeNull();
     expect(screen.queryByText(/^0 /u)).toBeNull();
-    expect(bandTitles(container)[2]).toBe("Bring people together? Run the whole night from one screen.");
+    expect(bandTitles(container)[3]).toBe("Bring people together? Run the whole night from one screen.");
     // The counter is closed: no founding offer, only the fees line.
     const hosts = within(screen.getByRole("region", {name: "Bring people together? Run the whole night from one screen."}));
     expect(hosts.queryByText(/Founding hosts/u)).toBeNull();
@@ -135,7 +182,7 @@ describe("homepage", {timeout: 20_000}, () => {
     const later = mumbaiLiveCatalog.plans.plans.slice(0, 6).map((plan) => ({...plan, startTime: shift(plan.startTime)!, endTime: shift(plan.endTime)}));
     render(<HomePage captures={captures} catalog={{...mumbaiLiveCatalog, plans: {...mumbaiLiveCatalog.plans, plans: later}}} />);
     const plans = within(screen.getByRole("region", {name: "Coming up in Mumbai"}));
-    expect(plans.getByText("Nothing on this week, so here’s everything in Mumbai over the next two weeks: 6 of 6 shown.")).toBeTruthy();
+    expect(plans.getByText("Nothing on this week, so here’s everything in Mumbai over the next two weeks: 3 of 6 shown.")).toBeTruthy();
     expect(plans.getAllByRole("link", {name: /Thursday Evening Pub Quiz/})[0].textContent).toMatch(/Fri 6 Nov, 7:30 PM/u);
   });
 
@@ -210,7 +257,11 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(screen.getByRole("banner").querySelector('a[href="#app"]')?.textContent).toBe("Get notified");
     expect(screen.queryByRole("button", {name: /Coming soon/})).toBeNull();
     expect(screen.queryByRole("link", {name: /Coming soon/})).toBeNull();
-    expect(screen.getAllByRole("link", {name: "The app is coming · Get notified"})[0].getAttribute("href")).toBe("#app");
+    // The hero's notify card takes the place of the badges: the same notice, its own form.
+    const hero = within(screen.getByRole("region", {name: "Find something worth showing up for."}));
+    expect(hero.getByText("The Catch app is on its way")).toBeTruthy();
+    expect(hero.getByRole("textbox", {name: /WhatsApp number/})).toBeTruthy();
+    expect((hero.getByRole("checkbox", {name: "Also send me new plans in Mumbai on WhatsApp, about once a week"}) as HTMLInputElement).checked).toBe(false);
     const app = within(screen.getByRole("region", {name: "Be first in the app, and first to new plans."}));
     expect(app.getByText("The Catch app · coming soon")).toBeTruthy();
     expect(app.getByRole("textbox", {name: /WhatsApp number/})).toBeTruthy();
