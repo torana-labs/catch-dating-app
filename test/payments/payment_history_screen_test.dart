@@ -378,13 +378,14 @@ Future<void> _pumpPaymentHistory(
           'runner-1',
         ).overrideWith((ref) => Stream.value(payments)),
         if (eventIds.isNotEmpty)
-          watchOwnEventCardsByIdProvider('runner-1').overrideWith(
-            (ref) => (eventStream ?? Stream.value(events.values.toList())).map(
-              (list) => {
-                for (final event in list)
-                  event.id: GuestEventCard.fromEvent(event),
-              },
-            ),
+          watchOwnEventCardsForEventsProvider.overrideWith(
+            (ref, query) =>
+                (eventStream ?? Stream.value(events.values.toList())).map(
+                  (list) => {
+                    for (final event in list)
+                      event.id: GuestEventCard.fromEvent(event),
+                  },
+                ),
           ),
       ],
       child: _wrapPhoneSized(const PaymentHistoryScreen()),

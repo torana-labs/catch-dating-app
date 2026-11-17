@@ -25,8 +25,8 @@ AsyncValue<PaymentHistoryViewModel> paymentHistoryViewModel(
   };
 }
 
-/// Names each payment's event from the guest's own event cards: one
-/// listener, never a join on `events`.
+/// Names each payment's event from the guest's own event cards for just
+/// those events, never a join on `events`.
 PaymentHistoryViewModel _paymentHistoryWithEventTitles(
   Ref ref,
   String userId,
@@ -38,7 +38,14 @@ PaymentHistoryViewModel _paymentHistoryWithEventTitles(
       cardsById: const {},
     );
   }
-  final cardsAsync = ref.watch(watchOwnEventCardsByIdProvider(userId));
+  final cardsAsync = ref.watch(
+    watchOwnEventCardsForEventsProvider(
+      OwnEventCardsQuery(
+        uid: userId,
+        eventIds: [for (final payment in payments) payment.eventId],
+      ),
+    ),
+  );
   return switch (cardsAsync) {
     AsyncData(:final value) => buildPaymentHistoryViewModel(
       payments: payments,
