@@ -65,7 +65,7 @@ export const discoveryFormatCopy = {
     lead: "Social badminton for every level. Book a place and play with a group.",
     joinAction: "List your club",
   },
-  supperClubs: {
+  supper: {
     name: "Supper clubs",
     organiserOne: "host", organiserMany: "hosts",
     planOne: "supper", planMany: "suppers",
@@ -100,7 +100,7 @@ export const discoveryFormatCopy = {
     lead: "Make something with a small group and a host who shows you how.",
     joinAction: "List your workshop",
   },
-  bookClubs: {
+  books: {
     name: "Book clubs",
     organiserOne: "club", organiserMany: "clubs",
     planOne: "meet-up", planMany: "meet-ups",

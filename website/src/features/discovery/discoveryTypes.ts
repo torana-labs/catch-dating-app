@@ -6,11 +6,11 @@ import type {HomeCityPlans, HomeOrganizer, HomePlan} from "../home/homeTypes";
  * functions/src/cityPlans/discoveryFormats.ts). The website does not decide
  * which formats exist or what their URL segment is: this mirrors the
  * contract's `discoveryFormat` and `formatPage.slug` enums, and
- * discoveryTypes.test.ts holds the two lists to the schema.
+ * discoveryModel.test.ts holds the two lists to the schema.
  */
 export const discoveryFormatKeys = [
-  "runClubs", "racketSports", "pickleball", "padel", "tennis", "badminton", "supperClubs", "quizNights",
-  "nightlife", "studios", "workshops", "bookClubs", "outdoors",
+  "runClubs", "racketSports", "pickleball", "padel", "tennis", "badminton", "supper", "quizNights",
+  "nightlife", "studios", "workshops", "books", "outdoors",
 ] as const;
 export type DiscoveryFormatKey = (typeof discoveryFormatKeys)[number];
 

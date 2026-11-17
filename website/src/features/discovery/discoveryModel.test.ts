@@ -54,7 +54,7 @@ describe("city format pages", () => {
     expect(runs.organizers.map((organizer) => organizer.organizerId)).toEqual(["carter-road-runners", "night-shift-socials"]);
     // Other indexed format pages in the city, and the busiest formats for the thin card.
     expect(runs.links.map((link) => link.href)).toEqual(["/mumbai/nightlife/"]);
-    expect(runs.popular.map((item) => item.format)).toEqual(["nightlife", "quizNights", "supperClubs", "racketSports"]);
+    expect(runs.popular.map((item) => item.format)).toEqual(["nightlife", "quizNights", "supper", "racketSports"]);
   });
 
   it("are noindex below the bar and in a city not open yet", () => {

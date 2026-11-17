@@ -1,8 +1,7 @@
 import {act, renderHook} from "@testing-library/react";
-import {brand} from "@content/brand";
 import {describe, expect, it, vi} from "vitest";
 import {mumbaiDiscoveryCatalog, mumbaiEmptyMonthCatalog, puneDiscoveryCatalog} from "./discoveryCatalogFixtures";
-import {cityFormatPageMeta, useCityFormatPageController} from "./useCityFormatPageController";
+import {useCityFormatPageController} from "./useCityFormatPageController";
 
 describe("useCityFormatPageController", () => {
   it("states the backend's counts for the format, never its own", () => {
@@ -54,20 +53,5 @@ describe("useCityFormatPageController", () => {
   it("hides What's on for a city with nothing in the next 30 days", () => {
     const {result} = renderHook(() => useCityFormatPageController(mumbaiEmptyMonthCatalog, "runClubs", vi.fn()));
     expect(result.current.showWhatsOn).toBe(false);
-  });
-});
-
-describe("cityFormatPageMeta", () => {
-  it("follows the backend's indexing decision, and is noindex without one", () => {
-    expect(cityFormatPageMeta(mumbaiDiscoveryCatalog, "runClubs")).toEqual({
-      title: `Run clubs in Mumbai | ${brand.name}`,
-      description: "Run clubs in Mumbai: upcoming runs, the clubs who run them and how to join.",
-      canonicalPath: "/mumbai/run-clubs/",
-      robots: "index, follow",
-    });
-    expect(cityFormatPageMeta(mumbaiDiscoveryCatalog, "pickleball").robots).toBe("noindex, follow");
-    expect(cityFormatPageMeta(puneDiscoveryCatalog, "runClubs").robots).toBe("noindex, follow");
-    const {formatPages: _formatPages, ...withoutPages} = mumbaiDiscoveryCatalog.plans as typeof mumbaiDiscoveryCatalog.plans & {formatPages?: unknown};
-    expect(cityFormatPageMeta({...mumbaiDiscoveryCatalog, plans: withoutPages}, "runClubs").robots).toBe("noindex, follow");
   });
 });

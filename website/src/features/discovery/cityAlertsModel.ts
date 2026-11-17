@@ -24,12 +24,12 @@ export const cityAlertInterestByFormat: Readonly<Record<DiscoveryFormatKey, City
   padel: "courts",
   tennis: "courts",
   badminton: "courts",
-  supperClubs: "dinners",
+  supper: "dinners",
   quizNights: "quizzes",
   nightlife: "nights_out",
   studios: "fitness",
   workshops: "workshops",
-  bookClubs: "books",
+  books: "books",
   outdoors: null,
 };
 

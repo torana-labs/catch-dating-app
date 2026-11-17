@@ -19,19 +19,6 @@ import type {DiscoveryFormatKey} from "./discoveryTypes";
 
 const lowerFirst = (text: string) => text.charAt(0).toLocaleLowerCase("en-IN") + text.slice(1);
 
-/** The page's title, description and robots line: the backend's indexing decision, noindex when it has none. */
-export function cityFormatPageMeta(catalog: HomeCatalog, format: DiscoveryFormatKey) {
-  const words = discoveryFormatCopy[format];
-  const city = catalog.selected.label;
-  const page = cityFormatModel(catalog, format).page;
-  return {
-    title: fill(copy.meta.title, {format: words.name, city}),
-    description: fill(copy.meta.description, {format: words.name, city, plans: words.planMany, organisers: words.organiserMany}),
-    canonicalPath: cityFormatPath(catalog.selected.slug, format),
-    robots: page?.indexing ?? "noindex, follow",
-  };
-}
-
 /**
  * The city-by-format page (/<city>/<format>/, the PlaybookCityFormat board)
  * from the selected city's cityPlans read model. Every count is the

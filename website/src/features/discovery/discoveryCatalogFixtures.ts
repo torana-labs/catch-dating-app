@@ -20,7 +20,7 @@ import {
 /** The fixture plans' discovery formats, as functions/src/cityPlans/discoveryFormats.ts tags them. */
 const planFormats: Readonly<Record<string, readonly DiscoveryFormatKey[]>> = {
   "thursday-pub-quiz": ["quizNights"],
-  "strangers-supper": ["supperClubs"],
+  "strangers-supper": ["supper"],
   "carter-road-run": ["runClubs"],
   "bandra-pub-crawl": ["nightlife"],
   "pickleball-social": ["racketSports", "pickleball"],
@@ -29,15 +29,15 @@ const planFormats: Readonly<Record<string, readonly DiscoveryFormatKey[]>> = {
   "sunday-board-games": [],
   "doubles-ladder": ["racketSports", "pickleball"],
   "rooftop-social": ["nightlife"],
-  "long-table-supper": ["supperClubs"],
+  "long-table-supper": ["supper"],
 };
 const organizerFormats: Readonly<Record<string, readonly DiscoveryFormatKey[]>> = {
   "quizzicals": ["quizNights"],
-  "khar-table": ["supperClubs"],
+  "khar-table": ["supper"],
   "carter-road-runners": ["runClubs"],
   "night-shift-socials": ["nightlife", "runClubs"],
   "dink-and-drink": ["racketSports", "pickleball"],
-  "bandra-book-swap": ["bookClubs"],
+  "bandra-book-swap": ["books"],
   "koregaon-park-runners": ["runClubs"],
   "pune-board-gamers": [],
 };
@@ -74,8 +74,8 @@ export const mumbaiDiscoveryCatalog = withDiscovery(mumbaiLiveCatalog, {
   hasUpcomingMonth: true,
   monthCountsComplete: true,
   formatPages: formatPages({
-    runClubs: [4, 6, 2], nightlife: [3, 5, 0], quizNights: [2, 4, 1], supperClubs: [2, 3, 0],
-    racketSports: [1, 2, 0], pickleball: [1, 2, 0], bookClubs: [1, 0, 0],
+    runClubs: [4, 6, 2], nightlife: [3, 5, 0], quizNights: [2, 4, 1], supper: [2, 3, 0],
+    racketSports: [1, 2, 0], pickleball: [1, 2, 0], books: [1, 0, 0],
   }, true),
 });
 

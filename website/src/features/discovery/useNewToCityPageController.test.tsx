@@ -1,7 +1,7 @@
 import {renderHook} from "@testing-library/react";
 import {describe, expect, it, vi} from "vitest";
 import {mumbaiDiscoveryCatalog, mumbaiQuietCatalog} from "./discoveryCatalogFixtures";
-import {newToCityPageMeta, useNewToCityPageController} from "./useNewToCityPageController";
+import {useNewToCityPageController} from "./useNewToCityPageController";
 
 describe("useNewToCityPageController", () => {
   it("leads with this week's newcomer plans and a real one on the card, with no came-alone line", () => {
@@ -30,11 +30,5 @@ describe("useNewToCityPageController", () => {
     expect(result.current.notify.place.sourcePage).toBe("/new-to-mumbai/");
     result.current.chooseCity("indore");
     expect(navigate).toHaveBeenCalledWith("/new-to-indore/");
-  });
-});
-
-describe("newToCityPageMeta", () => {
-  it("stays out of search until the owner approves the page", () => {
-    expect(newToCityPageMeta(mumbaiDiscoveryCatalog)).toMatchObject({canonicalPath: "/new-to-mumbai/", robots: "noindex, follow"});
   });
 });

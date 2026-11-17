@@ -36,7 +36,7 @@ describe("city alerts lead", () => {
 
   it("maps formats to the contract's interests once each, racket sports to courts", () => {
     expect(cityAlertInterests(["pickleball", "padel", "runClubs", "outdoors"])).toEqual(["runs", "courts"]);
-    expect(cityAlertInterests(["quizNights", "supperClubs", "runClubs"])).toEqual(["runs", "dinners", "quizzes"]);
+    expect(cityAlertInterests(["quizNights", "supper", "runClubs"])).toEqual(["runs", "dinners", "quizzes"]);
   });
 
   it("says where it came from without the query or fragment", () => {

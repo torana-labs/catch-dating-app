@@ -11,21 +11,6 @@ import {newcomerFormats, newcomerPlans, newToCityPath, showWhatsOnFor} from "./d
 export const newcomerPlansAnchor = "solo";
 
 /**
- * The page's title, description and robots line. The page waits for the
- * owner's approval before it enters search, as every redesign page does
- * (the playbook contract's `noindex` until approved).
- */
-export function newToCityPageMeta(catalog: HomeCatalog) {
-  const city = catalog.selected.label;
-  return {
-    title: fill(copy.meta.title, {city}),
-    description: fill(copy.meta.description, {city}),
-    canonicalPath: newToCityPath(catalog.selected.slug),
-    robots: "noindex, follow" as const,
-  };
-}
-
-/**
  * The new-to-the-city page (/new-to-<city>/, the PlaybookNewToCity board)
  * from the selected city's cityPlans read model: this week's plans in the
  * formats where the host makes the groups (or the next two weeks when this

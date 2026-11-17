@@ -1,4 +1,5 @@
 "use client";
+import type {DiscoveryRoute} from "../../features/discovery/discoveryModel";
 import type {HomeCatalog} from "../../features/home/homeTypes";
 import {publicJsonLd} from "../../shared/next/publicJsonLd";
 import dynamic from "next/dynamic";
@@ -23,6 +24,8 @@ import {brand} from "@catch/brand";
 const Home = dynamic(() => import("../../features/home/HomePage").then(m => m.HomePage));
 const Explore = dynamic(() => import("../../features/home/ExplorePage").then(m => m.ExplorePage));
 const Cities = dynamic(() => import("../../features/home/CitiesPage").then(m => m.CitiesPage));
+const CityFormat = dynamic(() => import("../../features/discovery/CityFormatPage").then(m => m.CityFormatPage));
+const NewToCity = dynamic(() => import("../../features/discovery/NewToCityPage").then(m => m.NewToCityPage));
 const Host = dynamic(() => import("../../features/host/HostPage").then(m => m.HostPage));
 const Weddings = dynamic(() => import("../../features/weddings/WeddingsPage").then(m => m.WeddingsPage));
 const WeddingsApply = dynamic(() => import("../../features/weddings/WeddingsApplicationPage").then(m => m.WeddingsApplicationPage));
@@ -32,7 +35,14 @@ const Claim = dynamic(() => import("../../features/claims/ClaimPage").then(m => 
 const Legal = dynamic(() => import("../../features/legal/LegalPage").then(m => m.LegalPage));
 const Missing = dynamic(() => import("../../features/notFound/NotFoundPage").then(m => m.NotFoundPage));
 
-export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt: number; contact?: PublicContact; home?: HomeCatalog}) {
+/**
+ * A public page on the Next render. `discovery` is the city-by-format or
+ * new-to-the-city page the server matched and read the city for (`home`);
+ * it renders whatever the page key says.
+ */
+export function PublicPage({page, readAt, contact, home, discovery}: {
+  page: PageKey; readAt: number; contact?: PublicContact; home?: HomeCatalog; discovery?: DiscoveryRoute;
+}) {
   const location = useLocation();
   const {listings, readAt: currentReadAt, organizerPage} = usePublicHostListings();
   const eventRoute = useEventPage();
@@ -46,7 +56,9 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
   useMarketingAnalytics(page, location.pathname);
   let content;
   let structured: unknown = null;
-  if (page === "home") content = home ? <Home captures={marketingCaptures} catalog={home} /> : <Missing />;
+  if (discovery) content = !home ? <Missing /> : discovery.kind === "cityFormat" ?
+    <CityFormat catalog={home} format={discovery.format} /> : <NewToCity catalog={home} />;
+  else if (page === "home") content = home ? <Home captures={marketingCaptures} catalog={home} /> : <Missing />;
   else if (page === "visitor_discovery") content = home ? <Explore catalog={home} /> : <Missing />;
   else if (page === "cities") content = home ? <Cities catalog={home} /> : <Missing />;
   else if (page === "host") content = <Host captures={marketingCaptures} />;
