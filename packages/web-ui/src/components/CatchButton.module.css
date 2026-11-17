@@ -1,10 +1,13 @@
 /*
- * Flutter CatchButton (catch_button.dart, CatchButtonTokens) drawn to D20:
- * 4px corners; lg 48px with s5 sides, md 40px with s4, both with the control
+ * Flutter CatchButton (catch_button.dart, CatchButtonTokens): a pill
+ * (radius-button, as the design canvas draws every action; D26) with the
+ * canvas's 1.5px stroke; lg 48px with s5 sides, md 40px with s4, both with the control
  * role at 600, and sm 32px with s3 and the context role at 600; a label-colour overlay of
  * 8% (filled) or 5% (outline and quiet) on hover and 14% on press; a 0.97 press
  * scale; a 2px ring 2px outside the button; 40% opacity when disabled. On a
- * phone every size keeps the 44px touch target.
+ * phone every size keeps the 44px touch target. A surface that draws a
+ * different small button, such as the site header and the footer's top band
+ * (the canvas's 38px .b.sm), sets --catch-button-sm-height, -pad and -size.
  */
 .button {
   --catch-button-height: 48px;
@@ -21,8 +24,8 @@
   min-height: var(--catch-button-height);
   margin: 0;
   padding: var(--catch-space-s2) var(--catch-button-pad);
-  border: var(--catch-stroke-hairline) solid var(--catch-button-border);
-  border-radius: var(--catch-radius-sm);
+  border: var(--catch-stroke-control) solid var(--catch-button-border);
+  border-radius: var(--catch-radius-button);
   background: var(--catch-button-bg);
   color: var(--catch-button-fg);
   font-family: var(--catch-font-function), system-ui, sans-serif;
@@ -54,9 +57,9 @@
 }
 
 .button[data-size="sm"] {
-  --catch-button-height: 32px;
-  --catch-button-pad: var(--catch-space-s3);
-  font-size: var(--catch-typography-web-context-size);
+  --catch-button-height: var(--catch-button-sm-height, 32px);
+  --catch-button-pad: var(--catch-button-sm-pad, var(--catch-space-s3));
+  font-size: var(--catch-button-sm-size, var(--catch-typography-web-context-size));
   line-height: var(--catch-typography-web-context-line-height);
 }
 

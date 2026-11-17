@@ -15,7 +15,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final organizerAsync = ref.watch(fetchOrganizerProvider(organizerId));
+    final organizerAsync = ref.watch(watchOrganizerProvider(organizerId));
     final eventAsync = ref.watch(watchEventProvider(eventId));
 
     final state = HostEventEditState.resolve(
@@ -52,7 +52,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
             state.error!,
             context: AppErrorContext.event,
             onRetry: () {
-              ref.invalidate(fetchOrganizerProvider(organizerId));
+              ref.invalidate(watchOrganizerProvider(organizerId));
               ref.invalidate(watchEventProvider(eventId));
             },
           ),

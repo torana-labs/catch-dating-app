@@ -1,8 +1,9 @@
 /*
- * catch.wordmark: the display voice of catch.text's display roles (Archivo at
- * its single 78% width, weight 760, -0.04em tracking) at the top bar's size or
- * the footer band's. The tracking is a ratio of the size, so both sizes share
- * the one letterform.
+ * catch.wordmark: Archivo at its single 78% width, at the design canvas's
+ * wordmark weight (800), in the site header (.pg .wm: 26px, -0.03em) or as
+ * the footer card's giant wordmark (.pg .bigwm: 120px to 330px with the page
+ * width, -0.05em, 0.8 leading). The footer sets --catch-wordmark-band-size
+ * to the canvas's unclamped phone size.
  */
 .wordmark {
   display: inline-block;
@@ -10,16 +11,37 @@
   font-family: var(--catch-typography-role-display-xl-family), var(--catch-font-stack-display);
   font-stretch: 78%;
   font-variation-settings: "wdth" 78;
-  font-weight: var(--catch-typography-role-display-xl-weight);
-  line-height: 1;
-  letter-spacing: var(--catch-typography-role-display-xl-tracking);
+  font-weight: var(--catch-website-wordmark-weight);
+  line-height: normal;
   word-spacing: var(--catch-font-word-spacing-voice);
   text-decoration: none;
   white-space: nowrap;
 }
 
-.wordmark[data-size="bar"] { font-size: 26px; }
-.wordmark[data-size="band"] { font-size: var(--catch-typography-role-display-xl-size); }
+.wordmark[data-size="bar"] {
+  font-size: var(--catch-website-wordmark-bar-size);
+  letter-spacing: var(--catch-website-wordmark-bar-tracking);
+}
+
+.wordmark[data-size="band"] {
+  font-size: var(
+    --catch-wordmark-band-size,
+    clamp(
+      var(--catch-website-wordmark-footer-size-min),
+      var(--catch-website-wordmark-footer-size-fluid),
+      var(--catch-website-wordmark-footer-size-max)
+    )
+  );
+  line-height: var(--catch-website-wordmark-footer-line-height);
+  letter-spacing: var(--catch-website-wordmark-footer-tracking);
+}
+
+/* A product line under the giant wordmark, so "Catch for weddings" fits the card. */
+.wordmark[data-size="band"] .sub {
+  display: block;
+  font-size: 32%;
+  letter-spacing: var(--catch-website-wordmark-bar-tracking);
+}
 
 a.wordmark:focus-visible {
   border-radius: var(--catch-radius-xs);
@@ -29,7 +51,7 @@ a.wordmark:focus-visible {
 
 /*
  * Phones: a sub-brand steps under the brand as a small second line, so
- * "Catch for weddings" and the page's primary action share one 56px bar.
+ * "Catch for weddings" and the page's primary action share one bar.
  */
 @media (max-width: 599px) {
   .wordmark[data-size="bar"] .sub {

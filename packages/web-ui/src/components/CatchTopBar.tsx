@@ -1,5 +1,6 @@
 import type {ReactNode} from "react";
 import {CatchButton} from "./CatchButton";
+import {CatchIcon} from "./CatchIcon";
 import {CatchLegacyIcon} from "./CatchLegacyIcon";
 import {CatchMenu} from "./CatchMenu";
 import {CatchWordmark} from "./CatchWordmark";
@@ -10,6 +11,22 @@ import styles from "./CatchTopBar.module.css";
 export interface CatchTopBarAction {
   label: string;
   href?: string;
+  onPressed?: () => void;
+  /**
+   * site: a dropdown drawn in this link's place among the links, such as a
+   * CatchNavMenu with the link appearance (the canvas's "For hosts ▾"). The
+   * phone menu leaves it out, so pass its pages in menuExtras.
+   */
+  menu?: ReactNode;
+}
+
+/** site: the header's contact link, such as WhatsApp: a mark with a short label the phone drops. */
+export interface CatchTopBarContact {
+  href: string;
+  /** The visible label, such as "Talk to us". */
+  label: string;
+  /** The accessible name when it says more than the label, such as "Talk to us on WhatsApp". */
+  accessibleLabel?: string;
   onPressed?: () => void;
 }
 
@@ -51,10 +68,13 @@ export interface CatchTopBarProps {
   subBrand?: ReactNode;
   /**
    * site: the visitor's account control, "Sign in" or the signed-in avatar,
-   * at the right end after the actions from 600px. Both states share this one
-   * slot, so signing in swaps the control without moving anything.
+   * before the actions from 600px, where the canvas draws Sign in. Both
+   * states share this one slot, so signing in swaps the control without
+   * moving anything.
    */
   account?: ReactNode;
+  /** site: a contact link before the account control, such as WhatsApp on host pages. */
+  contact?: CatchTopBarContact;
   /** site: entries the phone menu adds after the links, such as the account entry the bar drops under 600px. */
   menuExtras?: readonly CatchTopBarAction[];
   /**
@@ -78,14 +98,21 @@ function TextAction({action}: {action: CatchTopBarAction}) {
     : <button className={styles.textAction} onClick={action.onPressed} type="button">{action.label}</button>;
 }
 
+/** site: a page link as the canvas sets it, plain text in the header's link type. */
+function SiteLink({action}: {action: CatchTopBarAction}) {
+  return action.href
+    ? <a className={styles.siteLink} href={action.href} onClick={action.onPressed}>{action.label}</a>
+    : <button className={styles.siteLink} onClick={action.onPressed} type="button">{action.label}</button>;
+}
+
 /**
  * Flutter's CatchTopBar on the web: the top of a screen. On tablets and desktops every variant is
  * the same 56px row (back, a one-line title with its kicker as a breadcrumb, small actions) that
  * lines up with the navigation's header and every pane header. On phones the variants keep their
  * own shapes. Inside CatchViewport it gains a hairline once the body scrolls.
  */
-export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live, links, homeHref, linksLabel = "Site", menuLabel = "Menu", subBrand, account, menuExtras = [], siteMenu}: CatchTopBarProps) {
-  const menuItems = [...(links ?? []), ...menuExtras];
+export function CatchTopBar({variant = "tool", title, kicker, back, action, actions, step, live, links, homeHref, linksLabel = "Site", menuLabel = "Menu", subBrand, account, contact, menuExtras = [], siteMenu}: CatchTopBarProps) {
+  const menuItems = [...(links ?? []).filter((link) => link.menu == null), ...menuExtras];
   const {scrolled, sizeClass} = useCatchViewport();
   if (variant === "site") {
     return (
@@ -95,18 +122,30 @@ export function CatchTopBar({variant = "tool", title, kicker, back, action, acti
             <CatchWordmark href={homeHref ?? "/"} subBrand={subBrand}>{title ?? "Catch"}</CatchWordmark>
             {links && links.length > 0 ? (
               <nav aria-label={linksLabel} className={styles.links}>
-                {links.map((link) => <CatchButton href={link.href} key={link.label} label={link.label} onPressed={link.onPressed} size="sm" variant="quiet" />)}
+                {links.map((link) => link.menu != null
+                  ? <span className={styles.siteMenuLink} key={link.label}>{link.menu}</span>
+                  : <SiteLink action={link} key={link.label} />)}
               </nav>
             ) : null}
           </span>
-          <span className={styles.actions}>
-            {actions}
+          <span className={styles.siteActions}>
+            {contact ? (
+              <a aria-label={contact.accessibleLabel} className={styles.contact} href={contact.href} onClick={contact.onPressed}>
+                <CatchIcon name="chat" size={20} />
+                <span className={styles.contactLabel}>{contact.label}</span>
+              </a>
+            ) : null}
             {account ? <span className={styles.account}>{account}</span> : null}
+            {actions}
             {siteMenu != null ? <span className={styles.siteMenu}>{siteMenu}</span> : menuItems.length > 0 ? (
               <span className={styles.siteMenu}>
                 <CatchMenu
                   align="end"
-                  builder={(menu) => <CatchButton {...menu.triggerProps} label={menuLabel} onPressed={menu.toggle} size="sm" variant="secondary" />}
+                  builder={(menu) => (
+                    <button {...menu.triggerProps} aria-label={menuLabel} className={styles.menuButton} onClick={menu.toggle} type="button">
+                      <span aria-hidden="true" className={styles.menuBars}><span /><span /><span /></span>
+                    </button>
+                  )}
                   items={menuItems.map((link) => ({value: link.label, label: link.label}))}
                   label={linksLabel}
                   onSelected={(value) => {
