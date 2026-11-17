@@ -142,11 +142,7 @@ class HostPeopleContactPages extends _$HostPeopleContactPages {
   Stream<LivePages<HostAudienceContact>> build(HostPeopleRequest request) {
     _pager = ref
         .watch(hostContactsRepositoryProvider)
-        .watchContacts(
-          request.organizerId,
-          query: request.query,
-          pageSize: hostPeoplePageSize,
-        );
+        .watchContacts(request.organizerId, query: request.query);
     return _pager.pages;
   }
 

@@ -27,27 +27,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// tiebreaker (for example the document id) so anchors are exact.
 class LivePagedQuery<T, R> implements LivePager<R> {
   LivePagedQuery({
-    required Query<T> query,
-    required int pageSize,
-    required int maxRows,
-    required R Function(QueryDocumentSnapshot<T> doc) convert,
-    required BackendErrorContext errorContext,
-    Future<void> Function()? beforeOpen,
+    required this.query,
+    required this.pageSize,
+    required this.maxRows,
+    required this.convert,
+    required this.errorContext,
+    this.beforeOpen,
   }) : assert(pageSize > 0),
-       assert(maxRows >= pageSize),
-       _query = query,
-       _pageSize = pageSize,
-       _maxRows = maxRows,
-       _convert = convert,
-       _errorContext = errorContext,
-       _beforeOpen = beforeOpen;
+       assert(maxRows >= pageSize);
 
-  final Query<T> _query;
-  final int _pageSize;
-  final int _maxRows;
-  final R Function(QueryDocumentSnapshot<T> doc) _convert;
-  final BackendErrorContext _errorContext;
-  final Future<void> Function()? _beforeOpen;
+  /// The ordered query; pages add their cursors and limits.
+  final Query<T> query;
+  final int pageSize;
+
+  /// The most rows the list shows; no page opens past it.
+  final int maxRows;
+  final R Function(QueryDocumentSnapshot<T> doc) convert;
+  final BackendErrorContext errorContext;
+
+  /// Runs before the first page opens; its failure fails the list.
+  final Future<void> Function()? beforeOpen;
 
   final _pages = <_LivePage<T, R>>[];
   var _closed = false;
@@ -75,10 +74,10 @@ class LivePagedQuery<T, R> implements LivePager<R> {
       return;
     }
     final docs = last.docs;
-    if (docs == null || docs.length <= _pageSize || _shownRows >= _maxRows) {
+    if (docs == null || docs.length <= pageSize || _shownRows >= maxRows) {
       return;
     }
-    final anchor = docs[_pageSize - 1];
+    final anchor = docs[pageSize - 1];
     last.anchor = anchor;
     final next = _LivePage<T, R>(anchor);
     _pages.add(next);
@@ -89,7 +88,7 @@ class LivePagedQuery<T, R> implements LivePager<R> {
   void _start() {
     final first = _LivePage<T, R>(null);
     _pages.add(first);
-    final beforeOpen = _beforeOpen;
+    final beforeOpen = this.beforeOpen;
     if (beforeOpen == null) {
       _open(first);
       return;
@@ -110,21 +109,21 @@ class LivePagedQuery<T, R> implements LivePager<R> {
   }
 
   void _open(_LivePage<T, R> page) {
-    unawaited(page.subscription?.cancel());
+    unawaited(page.cancel());
     page
       ..error = null
       ..stackTrace = null;
-    var query = _query;
+    var query = this.query;
     final start = page.start;
     if (start != null) query = query.startAfterDocument(start);
     final anchor = page.anchor;
     query = page.bounded && anchor != null
-        ? query.endAtDocument(anchor).limit(_maxRows + 1)
-        : query.limit(_pageSize + 1);
+        ? query.endAtDocument(anchor).limit(maxRows + 1)
+        : query.limit(pageSize + 1);
     page.subscription =
         withBackendErrorStream(
           () => query.snapshots(),
-          context: _errorContext,
+          context: errorContext,
         ).listen(
           (snapshot) => _onSnapshot(page, snapshot.docs),
           onError: (Object error, StackTrace stackTrace) =>
@@ -137,7 +136,7 @@ class LivePagedQuery<T, R> implements LivePager<R> {
     final anchor = page.anchor;
     if (anchor != null &&
         !page.bounded &&
-        docs.length > _pageSize &&
+        docs.length > pageSize &&
         !docs.any((doc) => doc.id == anchor.id)) {
       // Rows moved in and pushed the anchor past this page's limit: listen
       // to exactly this page's range instead, showing these rows meanwhile.
@@ -149,7 +148,7 @@ class LivePagedQuery<T, R> implements LivePager<R> {
     final List<R> rows;
     try {
       rows = [
-        for (final doc in docs.take(_shownCount(page, docs))) _convert(doc),
+        for (final doc in docs.take(_shownCount(page, docs))) convert(doc),
       ];
     } on Object catch (error, stackTrace) {
       _onError(page, error, stackTrace);
@@ -171,7 +170,7 @@ class LivePagedQuery<T, R> implements LivePager<R> {
     // Later pages start after this one; retrying it reopens them on demand.
     final index = _pages.indexOf(page);
     for (final later in _pages.sublist(index + 1)) {
-      unawaited(later.subscription?.cancel());
+      unawaited(later.cancel());
     }
     _pages.removeRange(index + 1, _pages.length);
     page.anchor = null;
@@ -215,7 +214,7 @@ class LivePagedQuery<T, R> implements LivePager<R> {
     final hasMore =
         nextPageError != null ||
         loadingMore ||
-        ((last.docs?.length ?? 0) > _pageSize && items.length < _maxRows);
+        ((last.docs?.length ?? 0) > pageSize && items.length < maxRows);
     _controller.add(
       LivePages<R>(
         items: List.unmodifiable(items),
@@ -230,7 +229,7 @@ class LivePagedQuery<T, R> implements LivePager<R> {
   int _shownCount(_LivePage<T, R> page, List<QueryDocumentSnapshot<T>> docs) {
     final anchor = page.anchor;
     if (anchor == null) {
-      return docs.length < _pageSize ? docs.length : _pageSize;
+      return docs.length < pageSize ? docs.length : pageSize;
     }
     if (page.bounded) return docs.length;
     final index = docs.indexWhere((doc) => doc.id == anchor.id);
@@ -239,9 +238,9 @@ class LivePagedQuery<T, R> implements LivePager<R> {
 
   Future<void> _close() async {
     _closed = true;
-    final subscriptions = [for (final page in _pages) ?page.subscription];
+    final pages = List.of(_pages);
     _pages.clear();
-    await Future.wait(subscriptions.map((sub) => sub.cancel()));
+    await Future.wait(pages.map((page) => page.cancel()));
   }
 }
 
@@ -262,4 +261,10 @@ class _LivePage<T, R> {
   Object? error;
   StackTrace? stackTrace;
   StreamSubscription<QuerySnapshot<T>>? subscription;
+
+  Future<void> cancel() {
+    final cancelled = subscription?.cancel();
+    subscription = null;
+    return cancelled ?? Future<void>.value();
+  }
 }

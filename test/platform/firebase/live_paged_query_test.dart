@@ -46,6 +46,8 @@ class _Watch {
   }
 
   late final StreamSubscription<LivePages<String>> subscription;
+
+  Future<void> cancel() => subscription.cancel();
   LivePages<String>? latest;
   Object? failure;
 }
@@ -78,7 +80,7 @@ void main() {
       pager.loadMore();
       await flushTestEventQueue();
       expect(pager.openPageCount, 3);
-      await watch.subscription.cancel();
+      await watch.cancel();
     });
 
     test('a list that fits one page has no more', () async {
@@ -87,7 +89,7 @@ void main() {
       await flushTestEventQueue();
       expect(watch.latest!.items, ['r10', 'r20']);
       expect(watch.latest!.hasMore, isFalse);
-      await watch.subscription.cancel();
+      await watch.cancel();
     });
 
     test('an exact page boundary leaves no empty page behind', () async {
@@ -99,7 +101,7 @@ void main() {
       await flushTestEventQueue();
       expect(watch.latest!.items, ['r10', 'r20', 'r30', 'r40']);
       expect(watch.latest!.hasMore, isFalse);
-      await watch.subscription.cancel();
+      await watch.cancel();
     });
 
     test('every page stays live: changes and removals show at once', () async {
@@ -117,7 +119,7 @@ void main() {
       await db.collection('rows').doc('r45').set({'n': 45});
       await flushTestEventQueue();
       expect(watch.latest!.items, ['r10', 'r20', 'r40', 'r45']);
-      await watch.subscription.cancel();
+      await watch.cancel();
     });
 
     test(
@@ -170,7 +172,7 @@ void main() {
           'r60',
         ]);
         expect(watch.latest!.hasMore, isFalse);
-        await watch.subscription.cancel();
+        await watch.cancel();
       },
     );
 
@@ -202,7 +204,7 @@ void main() {
       expect(watch.latest!.items, ['r10', 'r20', 'r30', 'r40']);
       expect(watch.latest!.nextPageError, isNull);
       expect(watch.latest!.hasMore, isTrue);
-      await watch.subscription.cancel();
+      await watch.cancel();
     });
 
     test('a failed first page fails the list', () async {
@@ -212,7 +214,7 @@ void main() {
       await flushTestEventQueue();
       expect(watch.latest, isNull);
       expect(watch.failure, isFormatException);
-      await watch.subscription.cancel();
+      await watch.cancel();
     });
 
     test('the row cap ends the list', () async {
@@ -227,7 +229,7 @@ void main() {
       pager.loadMore();
       await flushTestEventQueue();
       expect(pager.openPageCount, 2);
-      await watch.subscription.cancel();
+      await watch.cancel();
     });
 
     test('opens after its precondition, and fails with it', () async {
@@ -244,7 +246,7 @@ void main() {
       await flushTestEventQueue();
       expect(watch.failure, isStateError);
       expect(failing.openPageCount, 1);
-      await watch.subscription.cancel();
+      await watch.cancel();
       expect(failing.openPageCount, 0);
     });
   });
