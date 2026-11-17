@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_insights.dart';
@@ -15,6 +17,10 @@ import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_state.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_controller.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_state.dart';
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/cache/cache_policies.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -101,6 +107,17 @@ HostAnalyticsReport _report({
   );
 }
 
+final class _FlakyRepository implements HostAnalyticsRepository {
+  _FlakyRepository(this.report);
+
+  final HostAnalyticsReport report;
+  bool hang = false;
+
+  @override
+  Future<HostAnalyticsReport> getHostAnalytics(HostAnalyticsQuery query) =>
+      hang ? Completer<HostAnalyticsReport>().future : Future.value(report);
+}
+
 final class _QueryRecordingRepository implements HostAnalyticsRepository {
   _QueryRecordingRepository(this.report);
 
@@ -117,7 +134,9 @@ final class _QueryRecordingRepository implements HostAnalyticsRepository {
 ProviderContainer _container(
   HostAnalyticsRepository repository, {
   List<Override> overrides = const [],
+  Duration? Function(int retryCount, Object error)? retry,
 }) => ProviderContainer.test(
+  retry: retry,
   overrides: [
     uidProvider.overrideWith((ref) => Stream.value(_uid)),
     hostAnalyticsRepositoryProvider.overrideWithValue(repository),
@@ -243,6 +262,50 @@ void main() {
       expect(repository.queries.single.rangePreset.wireValue, '7d');
       expect(repository.queries.single.granularity?.wireValue, 'day');
       expect(container.read(hostInsightsControllerProvider(week)).daily, true);
+    });
+
+    test('a refresh that fails keeps the report and says how old it is', () {
+      fakeAsync((async) {
+        final start = DateTime(2026, 11, 3, 9);
+        final repository = _FlakyRepository(_report());
+        final container = _container(
+          repository,
+          retry: catchProviderRetry,
+          overrides: [
+            appClockProvider.overrideWithValue(
+              AppClock.custom(() => start.add(async.elapsed)),
+            ),
+          ],
+        );
+        final screen = container.listen(
+          hostInsightsControllerProvider(request),
+          (_, _) {},
+        );
+        async
+          ..flushMicrotasks()
+          ..elapse(Duration.zero)
+          ..flushMicrotasks();
+        var state = container.read(hostInsightsControllerProvider(request));
+        expect(state.status, HostInsightsStatus.content);
+        expect(state.refreshFailedMinutes, isNull);
+
+        // Six minutes on, past its staleness, the hidden tab comes back and
+        // the background refresh hangs past the host reports deadline: the
+        // report stays, with its age.
+        async.elapse(const Duration(minutes: 6));
+        repository.hang = true;
+        screen
+          ..pause()
+          ..resume();
+        async
+          ..flushMicrotasks()
+          ..elapse(CachePolicies.hostReports.refresh)
+          ..flushMicrotasks();
+        state = container.read(hostInsightsControllerProvider(request));
+        expect(state.status, HostInsightsStatus.content);
+        expect(state.bars.map((bar) => bar.value), [82, 37]);
+        expect(state.refreshFailedMinutes, 6);
+      });
     });
 
     test('a failed report is the screen error', () async {

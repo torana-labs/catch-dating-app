@@ -151,7 +151,7 @@ final class EventAssistanceCasesForAccountProvider
     required (EventAssistanceCaseQuery, {EventAssistanceAccount account})
     super.argument,
   }) : super(
-         retry: _noCaseReadRetry,
+         retry: noAutomaticRetry,
          name: r'eventAssistanceCasesForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -199,7 +199,7 @@ final class EventAssistanceCasesForAccountProvider
 }
 
 String _$eventAssistanceCasesForAccountHash() =>
-    r'f23ace2070ceb369b70790599e5f96458e880b74';
+    r'ba65437331005cfd6ac964a1149564c43fd0fbe0';
 
 /// The help-request page read owner. It is a Firestore listener: it declares
 /// no cache tags or lifetime, and commands never invalidate it; the case view
@@ -213,7 +213,7 @@ final class EventAssistanceCasesForAccountFamily extends $Family
         > {
   EventAssistanceCasesForAccountFamily._()
     : super(
-        retry: _noCaseReadRetry,
+        retry: noAutomaticRetry,
         name: r'eventAssistanceCasesForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,

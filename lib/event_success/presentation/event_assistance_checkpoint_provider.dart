@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/account/data/authenticated_session.dar
 import 'package:catch_dating_app/contexts/live/data/event_assistance_checkpoint_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -93,7 +94,7 @@ class EventAssistanceCheckpoint extends _$EventAssistanceCheckpoint {
 /// The checkpoint view for one sign-in period. It is a Firestore listener:
 /// no cache tags or lifetime, and writes never invalidate it. Each delivery
 /// is a new session and retires the previous one.
-@Riverpod(retry: _noCheckpointReadRetry)
+@Riverpod(retry: noAutomaticRetry)
 Stream<EventAssistanceCheckpointSession> eventAssistanceCheckpointForAccount(
   Ref ref,
   EventAssistanceCheckpointScope scope, {
@@ -115,5 +116,3 @@ Stream<EventAssistanceCheckpointSession> eventAssistanceCheckpointForAccount(
         return latest = EventAssistanceCheckpointSession._(account, view);
       });
 }
-
-Duration? _noCheckpointReadRetry(int count, Object error) => null;

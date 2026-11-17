@@ -27,11 +27,17 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'package:catch_platform/cache/cache_policies.dart';
 
-/// How long a read is kept after its screen closes, and how old its data may
-/// be shown on return before one background refetch.
+/// How long a read is kept after its screen closes, how old its data may be
+/// shown on return before one background refetch, and how long a load may
+/// take before the screen says it timed out.
 @immutable
 final class CachePolicy {
-  const CachePolicy({required this.retain, required this.staleAfter});
+  const CachePolicy({
+    required this.retain,
+    required this.staleAfter,
+    this.firstLoad = CachePolicies.defaultFirstLoad,
+    this.refresh = CachePolicies.defaultRefresh,
+  });
 
   /// How long the read stays in memory after its last listener leaves. Null
   /// keeps it for the signed-in period instead, through
@@ -43,6 +49,22 @@ final class CachePolicy {
   /// on every return. Null never refetches on return, as for a Firestore
   /// listener, which delivers its own updates.
   final Duration? staleAfter;
+
+  /// How long a first load, with nothing on screen yet, may take before it
+  /// fails with a timeout and the screen offers Retry. The read's own
+  /// callable timeout stays at or below it, so the screen and the request
+  /// agree.
+  final Duration firstLoad;
+
+  /// How long a background refetch of data already on screen may take. A
+  /// refetch that runs out keeps the data and the screen says it could not
+  /// refresh.
+  final Duration refresh;
+
+  /// The deadline of a load: [refresh] when data is already showing,
+  /// otherwise [firstLoad].
+  Duration deadline({required bool refreshing}) =>
+      refreshing ? refresh : firstLoad;
 
   /// Whether this policy keeps its read for the signed-in period.
   bool get isSessionLifetime => retain == null;
@@ -58,13 +80,17 @@ final class CachePolicy {
   bool operator ==(Object other) =>
       other is CachePolicy &&
       other.retain == retain &&
-      other.staleAfter == staleAfter;
+      other.staleAfter == staleAfter &&
+      other.firstLoad == firstLoad &&
+      other.refresh == refresh;
 
   @override
-  int get hashCode => Object.hash(retain, staleAfter);
+  int get hashCode => Object.hash(retain, staleAfter, firstLoad, refresh);
 
   @override
-  String toString() => 'CachePolicy(retain: $retain, staleAfter: $staleAfter)';
+  String toString() =>
+      'CachePolicy(retain: $retain, staleAfter: $staleAfter, '
+      'firstLoad: $firstLoad, refresh: $refresh)';
 }
 
 /// One uninterrupted signed-in period. The account context's

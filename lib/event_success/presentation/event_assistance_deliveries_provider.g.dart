@@ -158,7 +158,7 @@ final class EventAssistanceDeliveriesForAccountProvider
     required (EventAssistanceDeliveryQuery, {EventAssistanceAccount account})
     super.argument,
   }) : super(
-         retry: _noDeliveryReadRetry,
+         retry: noAutomaticRetry,
          name: r'eventAssistanceDeliveriesForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -207,7 +207,7 @@ final class EventAssistanceDeliveriesForAccountProvider
 }
 
 String _$eventAssistanceDeliveriesForAccountHash() =>
-    r'81324c5249300811dde7a2f7e35b0c23db297fff';
+    r'4e27c28a3dc7dc81b2bddb2d00456363a17ae1d3';
 
 /// The delivery page read owner. It is a Firestore listener: it declares no
 /// cache tags or lifetime, and commands never invalidate it; the delivery
@@ -221,7 +221,7 @@ final class EventAssistanceDeliveriesForAccountFamily extends $Family
         > {
   EventAssistanceDeliveriesForAccountFamily._()
     : super(
-        retry: _noDeliveryReadRetry,
+        retry: noAutomaticRetry,
         name: r'eventAssistanceDeliveriesForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,

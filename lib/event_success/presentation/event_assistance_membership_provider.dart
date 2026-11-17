@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/live/data/event_assistance_membership_
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -95,7 +96,7 @@ class EventAssistanceMembership extends _$EventAssistanceMembership {
 /// it. It is a Firestore listener: no cache tags or lifetime, and writes
 /// never invalidate it. Each delivery is a new session and retires the
 /// previous one.
-@Riverpod(retry: _noMembershipReadRetry)
+@Riverpod(retry: noAutomaticRetry)
 Stream<EventAssistanceMembershipSession> eventAssistanceMembershipForAccount(
   Ref ref,
   EventAssistanceGuestScope scope, {
@@ -119,4 +120,3 @@ Stream<EventAssistanceMembershipSession> eventAssistanceMembershipForAccount(
 }
 
 // A listener error is shown with a retry; it is never retried silently.
-Duration? _noMembershipReadRetry(int count, Object error) => null;

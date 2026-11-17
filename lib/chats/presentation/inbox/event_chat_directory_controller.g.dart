@@ -36,7 +36,7 @@ final class EventChatDirectoryProvider
     : super(
         from: null,
         argument: null,
-        retry: _noDirectoryReadRetry,
+        retry: noAutomaticRetry,
         name: r'eventChatDirectoryProvider',
         isAutoDispose: true,
         dependencies: null,
@@ -59,4 +59,4 @@ final class EventChatDirectoryProvider
 }
 
 String _$eventChatDirectoryHash() =>
-    r'bd80fcd5d7c348f365ecc21f75bee9c10535164b';
+    r'f5dabb04b76b5bd7622dc080e65797d45ec9acd5';
