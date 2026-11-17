@@ -8,12 +8,12 @@ part of 'forms_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The offer gateways over the signed-in app's Functions client.
+/// The offer gateways over the signed-in app's Firebase clients.
 
 @ProviderFor(hostOfferGateways)
 final hostOfferGatewaysProvider = HostOfferGatewaysProvider._();
 
-/// The offer gateways over the signed-in app's Functions client.
+/// The offer gateways over the signed-in app's Firebase clients.
 
 final class HostOfferGatewaysProvider
     extends
@@ -23,7 +23,7 @@ final class HostOfferGatewaysProvider
           HostOfferGateways
         >
     with $Provider<HostOfferGateways> {
-  /// The offer gateways over the signed-in app's Functions client.
+  /// The offer gateways over the signed-in app's Firebase clients.
   HostOfferGatewaysProvider._()
     : super(
         from: null,
@@ -58,4 +58,4 @@ final class HostOfferGatewaysProvider
   }
 }
 
-String _$hostOfferGatewaysHash() => r'c3a8c000fed3c245f608ca84444329dcce2c9c8e';
+String _$hostOfferGatewaysHash() => r'81128b515555aaa7129e0372b6108a8452b80fac';

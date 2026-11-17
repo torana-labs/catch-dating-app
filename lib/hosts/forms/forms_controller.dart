@@ -1,7 +1,9 @@
 import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_gateway.dart';
+import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -23,21 +25,28 @@ final hostFormConversionMutation = Mutation<void>();
 /// application id.
 final hostFormMembershipMutation = Mutation<void>();
 
-/// The callable gateways an offer reads and commits through.
+/// What an offer reads and commits through: offer and event listeners and
+/// Firestore reads, and the offer commands' callables.
 typedef HostOfferGateways = ({
   CallableHostEventOfferGateway offers,
-  CallableHostOfferEventTargetsGateway targets,
+  HostEventOfferReads reads,
+  HostOfferEventTargetsGateway targets,
 });
 
-/// The offer gateways over the signed-in app's Functions client.
+/// The offer gateways over the signed-in app's Firebase clients.
 @riverpod
 HostOfferGateways hostOfferGateways(Ref ref) {
-  final functions = ref.watch(firebaseFunctionsProvider);
+  final reads = ref.watch(hostEventOfferReadsProvider);
   return (
-    offers: CallableHostEventOfferGateway(functions),
-    targets: CallableHostOfferEventTargetsGateway(
-      functions,
+    offers: CallableHostEventOfferGateway(
+      ref.watch(firebaseFunctionsProvider),
+      reads: reads,
+    ),
+    reads: reads,
+    targets: FirestoreHostOfferEventTargetsGateway(
+      ref.watch(firebaseFirestoreProvider),
       configurations: ref.watch(eventOfferConfigurationReadsProvider),
+      clock: ref.watch(appClockProvider),
     ),
   );
 }

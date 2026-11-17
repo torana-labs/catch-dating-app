@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_gateway.dart';
+import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/persistence/command_journal_provider.dart';
@@ -74,6 +75,7 @@ class HostEventOfferDependencies {
 HostEventOfferDependencies hostEventOfferDependencies(Ref ref) {
   final gateway = CallableHostEventOfferGateway(
     ref.watch(firebaseFunctionsProvider),
+    reads: ref.watch(hostEventOfferReadsProvider),
   );
   final storage = ref.watch(commandJournalStorageProvider);
   String? currentAccountId() =>

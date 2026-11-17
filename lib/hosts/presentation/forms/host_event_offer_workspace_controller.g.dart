@@ -70,7 +70,7 @@ final class HostEventOfferWorkspaceControllerProvider
 }
 
 String _$hostEventOfferWorkspaceControllerHash() =>
-    r'cf345336823898899f1978aed37206c3a2f2f8fa';
+    r'c222ce60641385a6fd6d9fdb05ab49f1faffcdee';
 
 final class HostEventOfferWorkspaceControllerFamily extends $Family
     with

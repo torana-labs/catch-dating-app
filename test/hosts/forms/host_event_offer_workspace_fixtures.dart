@@ -431,6 +431,27 @@ class _RouteFunctions extends Fake implements FirebaseFunctions {
       _RouteCallable(name);
 }
 
+/// The route's Firestore: one unpublished event the offer picker lists, and
+/// no offers yet.
+Future<FakeFirebaseFirestore> _routeFirestore() async {
+  final db = FakeFirebaseFirestore();
+  await db.collection('hostEventSummaries').doc('event-one').set({
+    'organizerId': 'org',
+    'eventId': 'event-one',
+    'startTimeMillis': 2100000000000,
+    'status': 'active',
+    'version': 1,
+    'row': {
+      'eventId': 'event-one',
+      'name': 'Sunday run',
+      'startTimeMillis': 2100000000000,
+      'timezone': 'Asia/Kolkata',
+      'setupRevision': 1,
+    },
+  });
+  return db;
+}
+
 /// The offer settings listeners, answering once [gate] completes.
 class _GatedConfigurationReads extends EventOfferConfigurationReads {
   _GatedConfigurationReads() : super(FakeFirebaseFirestore());
@@ -471,20 +492,6 @@ class _RouteCallable extends Fake implements HttpsCallable {
   @override
   Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
     final Object data = switch (name) {
-      'listOfferEventTargets' => {
-        'events': [
-          {
-            'eventId': 'event-one',
-            'name': 'Sunday run',
-            'startTimeMillis': 2100000000000,
-            'timezone': 'Asia/Kolkata',
-            'publicationState': 'private',
-            'setupRevision': 1,
-          },
-        ],
-        'nextCursor': null,
-      },
-      'listEventOffers' => {'items': <Object>[], 'nextCursor': null},
       _ => throw StateError('Unexpected callable: $name'),
     };
     return _RouteResult<T>(data as T);

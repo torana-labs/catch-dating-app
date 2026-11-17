@@ -97,6 +97,7 @@ class _HostOfferScreenState extends ConsumerState<HostOfferScreen> {
     );
     final gateways = ref.read(hostOfferGatewaysProvider);
     final gateway = gateways.offers;
+    final reads = gateways.reads;
     return _HostOfferScope(
       scope: scope,
       recipient: widget.recipientLabel,
@@ -105,8 +106,8 @@ class _HostOfferScreenState extends ConsumerState<HostOfferScreen> {
         accountId: uid,
         responseId: widget.responseId,
         offerScope: offers,
-        listOffers: gateway.listOffers,
-        getOffer: gateway.getOffer,
+        watchOffers: reads.watchOffers,
+        watchOffer: reads.watchOffer,
         prepareHandoff: gateway.prepareHandoff,
         copyMessage: (text) =>
             ref.read(clipboardControllerProvider).copyText(text),

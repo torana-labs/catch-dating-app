@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_reads.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
@@ -8,11 +9,16 @@ import 'package:catch_platform/persistence/local_command_journal.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:crypto/crypto.dart';
 
-/// Manager-only callable transport. Rollout stays gated by the Host route.
+/// Manager-only offer commands through callables. Offer reads are
+/// listeners ([reads]); after a command, the detail comes from the listener
+/// once it shows the written revision.
 class CallableHostEventOfferGateway implements HostEventOfferGateway {
-  const CallableHostEventOfferGateway(this._functions);
+  const CallableHostEventOfferGateway(this._functions, {required this.reads});
 
   final FirebaseFunctions _functions;
+
+  /// The offer listeners commands read back through.
+  final HostEventOfferReads reads;
 
   Future<T> _call<T>(
     String name,
@@ -72,6 +78,7 @@ class CallableHostEventOfferGateway implements HostEventOfferGateway {
       organizerId: offer.organizerId,
       eventId: offer.eventId,
       contactId: offer.contactId,
+      minRevision: offer.revision + 1,
     );
   }
 
@@ -113,37 +120,17 @@ class CallableHostEventOfferGateway implements HostEventOfferGateway {
     'bankReceiptChecked': bankReceiptChecked,
   });
 
+  /// The offer from its listener, once it shows at least [minRevision].
   Future<HostEventOffer> getOffer({
     required String organizerId,
     required String eventId,
     required String contactId,
-  }) => _call(
-    'getEventOffer',
-    {'organizerId': organizerId, 'eventId': eventId, 'contactId': contactId},
-    'load event offer',
-    HostEventOffer.fromCallableData,
-  );
-
-  Future<Map<String, Object?>> listOffers({
-    required String organizerId,
-    required String eventId,
-    String? afterOfferId,
-    int limit = 50,
-  }) => _call(
-    'listEventOffers',
-    {
-      'organizerId': organizerId,
-      'eventId': eventId,
-      'afterOfferId': ?afterOfferId,
-      'limit': limit,
-    },
-    'list event offers',
-    (value) {
-      if (value is! Map || value['items'] is! List) {
-        throw const FormatException('Event offer list is invalid.');
-      }
-      return value.cast<String, Object?>();
-    },
+    int minRevision = 1,
+  }) => reads.currentOffer(
+    organizerId: organizerId,
+    eventId: eventId,
+    contactId: contactId,
+    minRevision: minRevision,
   );
 
   Future<HostOfferHandoff> prepareHandoff({required HostEventOffer offer}) =>
@@ -456,19 +443,29 @@ class JournalHostOfferMutationOutbox implements HostOfferMutationOutbox {
     storage: storage,
     currentAccountId: currentAccountId,
     write: gateway.mutateWrite,
-    refresh: ({required organizerId, required eventId, required contactId}) =>
-        gateway.getOffer(
+    refresh:
+        ({
+          required organizerId,
+          required eventId,
+          required contactId,
+          required minRevision,
+        }) => gateway.getOffer(
           organizerId: organizerId,
           eventId: eventId,
           contactId: contactId,
+          minRevision: minRevision,
         ),
   );
 
   final Future<void> Function(Map<String, Object?>) write;
+
+  /// Reads the offer back once it shows at least [minRevision], the
+  /// revision the acknowledged command wrote.
   final Future<HostEventOffer> Function({
     required String organizerId,
     required String eventId,
     required String contactId,
+    required int minRevision,
   })
   refresh;
   final LocalCommandJournal<_OfferMutationCommand> _journal;
@@ -518,7 +515,15 @@ class JournalHostOfferMutationOutbox implements HostOfferMutationOutbox {
       organizerId: organizerId,
       eventId: eventId,
       contactId: entry.contactId,
+      minRevision: _writtenRevision(entry.payload),
     );
+  }
+
+  /// The revision an acknowledged command wrote: one past the revision it
+  /// expected.
+  static int _writtenRevision(Map<String, Object?> payload) {
+    final action = (payload['action']! as Map).cast<String, Object?>();
+    return (action['expectedRevision']! as int) + 1;
   }
 
   Future<void> _flushMutation(String accountId, String scope) async {
@@ -579,6 +584,7 @@ class JournalHostOfferMutationOutbox implements HostOfferMutationOutbox {
       organizerId: offer.organizerId,
       eventId: offer.eventId,
       contactId: offer.contactId,
+      minRevision: _writtenRevision(payload),
     );
   }
 }

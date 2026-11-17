@@ -118,13 +118,13 @@ class _OfferWorkspaceFixtureState extends State<_OfferWorkspaceFixture> {
                     accountId: 'manager_demo',
                     queryController: _query,
                     offerScope: previewOfferScope,
-                    listOffers:
+                    watchOffers:
                         ({
                           required organizerId,
                           required eventId,
-                          afterOfferId,
-                        }) async => {
-                          'items': widget.mode == _PreviewMode.existing
+                          required contactIds,
+                        }) => Stream.value(
+                          widget.mode == _PreviewMode.existing
                               ? [
                                   {
                                     'offerId': 'offer_demo',
@@ -133,15 +133,14 @@ class _OfferWorkspaceFixtureState extends State<_OfferWorkspaceFixture> {
                                     'effectiveStatus': 'offered',
                                   },
                                 ]
-                              : <Object>[],
-                          'nextCursor': null,
-                        },
-                    getOffer:
+                              : const <Map<String, Object?>>[],
+                        ),
+                    watchOffer:
                         ({
                           required organizerId,
                           required eventId,
                           required contactId,
-                        }) async => _previewOffer(),
+                        }) => Stream.value(_previewOffer()),
                     prepareHandoff: ({required offer}) async =>
                         const HostOfferHandoff(
                           kind: 'blocked',
