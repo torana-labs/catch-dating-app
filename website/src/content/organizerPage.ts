@@ -51,6 +51,7 @@ export const organizerPageCopy = {
   countdown: (days: number) =>
     days <= 0 ? "today" : days === 1 ? "tomorrow" : days < 14 ? `in ${days} days` : `in ${Math.round(days / 7)} weeks`,
   linksLabel: "Links",
+  socialsLabel: "Social profiles",
   pinnedUntil: (date: string) => `Pinned until ${date}`,
   eventsTitle: "Coming up",
   eventsNote: {
@@ -96,6 +97,8 @@ export const organizerPageCopy = {
   verifiedCount: (count: number) => `from ${count} verified ${count === 1 ? "review" : "reviews"}`,
   /** Reviews with none from a booking yet, so no rating. */
   unrated: (count: number) => `${count} ${count === 1 ? "review" : "reviews"}, none from a ${brand.name} booking yet, so no rating.`,
+  /** No reviews at all: the rating averages verified reviews only, so there is none yet. */
+  noRating: `No rating yet. The rating counts only reviews from people who booked on ${brand.name}.`,
   reviewPolicy: {
     /** The explanation line under the verified and Unverified review labels (playbook event page). */
     claimed: `Booked on ${brand.name} means the reviewer booked through ${brand.name}. Unverified reviews are shown, and labelled.`,
@@ -121,6 +124,7 @@ export const organizerPageCopy = {
     done: (name: string) => `Thanks, ${name}. Your review is up, marked unverified because you didn’t book this event on ${brand.name}.`,
   },
   aboutTitle: "About",
+  formatsLabel: "Formats",
   hostTitle: "Who runs it",
   claim: {
     label: "Is this your club?",
@@ -133,7 +137,7 @@ export const organizerPageCopy = {
     built: (names: readonly string[]) =>
       `We built this page from your public ${names.length ? `${names.join(" and ")} pages` : "pages"}. Claim it free and make it yours.`,
     points: [
-      {title: "Your Instagram link.", body: "Put it on your own domain, so it stays yours."},
+      {title: "Your Instagram link.", body: "One page for your bio, with your events, links and reviews."},
       {title: "Every event in one place.", body: `Luma, ${brand.name} or anywhere else, updated for you.`},
       {title: "Your links.", body: "WhatsApp group, shop, partners, pinned or timed."},
       {title: "Who clicks.", body: "Visits, link clicks and bookings, with Meta Pixel and Google Analytics."},

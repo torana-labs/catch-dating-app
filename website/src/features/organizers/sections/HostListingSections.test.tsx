@@ -58,8 +58,14 @@ describe("HostListingSections", () => {
     expect(footer.getByRole("link", {name: "Weddings"})).toBeTruthy();
     expect(footer.getByRole("button", {name: "Privacy choices"})).toBeTruthy();
     // Each proof line has data behind it; the rating counts verified reviews only and says how many.
-    const profile = container.querySelector("aside[aria-label='Lantern Lane Runners']")!;
-    for (const stat of ["2,140 followers", "4.8 ★ · 120 verified reviews", "12 nights hosted"]) expect(profile.textContent).toContain(stat);
+    // The hero carries them across the page, above the rail.
+    const rail = container.querySelector("aside[aria-label='Lantern Lane Runners']")!;
+    const hero = name.closest("main")!;
+    for (const stat of ["2,140 followers", "4.8 ★ · 120 verified reviews", "12 nights hosted"]) {
+      expect(hero.textContent).toContain(stat);
+      expect(rail.textContent).not.toContain(stat);
+    }
+    expect(within(rail as HTMLElement).getByRole("navigation", {name: "Social profiles"})).toBeTruthy();
     // The help band ends every organiser page with the WhatsApp line.
     expect(footer.getByText("We reply on WhatsApp, usually within an hour.")).toBeTruthy();
     expect(screen.getByRole("link", {name: "Make a page like this"}).getAttribute("href")).toBe("/host/");
@@ -74,8 +80,8 @@ describe("HostListingSections", () => {
     ]);
     expect(events.getByRole("heading", {name: "Coming up"})).toBeTruthy();
     expect(events.getByText("From Catch and Luma, in one list")).toBeTruthy();
-    expect(events.getAllByText(/On Catch$/u)).toHaveLength(4);
-    expect(events.getByText("Tickets on Luma")).toBeTruthy();
+    expect(events.getAllByText("On Catch")).toHaveLength(4);
+    expect(events.getByText("Luma")).toBeTruthy();
   });
 
   it("labels each review Booked on Catch or Unverified and explains the labels", () => {
@@ -106,11 +112,12 @@ describe("HostListingSections", () => {
     expect(screen.getByText("2 reviews, none from a Catch booking yet, so no rating.")).toBeTruthy();
   });
 
-  it("keeps the short footer and no site header on the organiser's own domain", () => {
-    renderPage(claimedOrganizerPage, undefined, {servedOn: "ownDomain"});
-    expect(screen.queryByRole("navigation", {name: "Primary"})).toBeNull();
-    expect(screen.getByRole("heading", {level: 1, name: "Lantern Lane Runners"})).toBeTruthy();
-    expect(within(screen.getByRole("contentinfo")).getByRole("link", {name: "Privacy"})).toBeTruthy();
+  it("says nothing about the organiser's own domain until custom domains ship", () => {
+    const {container} = renderPage(generatedOrganizerPage);
+    expect(container.textContent).not.toMatch(/own domain|custom domain/iu);
+    cleanup();
+    const claimed = renderPage(claimedOrganizerPage);
+    expect(claimed.container.textContent).not.toMatch(/own domain|custom domain/iu);
   });
 
   it("shows the women-led label when the read model says the organiser is women-led", () => {
@@ -138,6 +145,8 @@ describe("HostListingSections", () => {
     cleanup();
     renderPage(noReviewsOrganizerPage);
     expect(screen.getByText("No reviews yet")).toBeTruthy();
+    // The rating counts verified reviews only, and the page says so while there is none.
+    expect(screen.getByText("No rating yet. The rating counts only reviews from people who booked on Catch.")).toBeTruthy();
     expect(screen.queryByText(/★ ·/u)).toBeNull();
   });
 

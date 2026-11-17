@@ -48,6 +48,19 @@ describe("organizerPageView", () => {
     expect(view(claimedOrganizerPage).header.labels).toEqual([]);
   });
 
+  it("labels a women-led event in the calendar only when the organiser's own label does not already say so", () => {
+    const [first, ...rest] = claimedOrganizerPage.upcomingEvents;
+    const page = {...claimedOrganizerPage, upcomingEvents: [{...first, womenLed: true}, ...rest]};
+    expect(view(page).events.rows.map((row) => row.womenLed)).toEqual([true, false, false, false, false]);
+    expect(view({...page, womenLed: true}).events.rows.some((row) => row.womenLed)).toBe(false);
+  });
+
+  it("counts imported past events as nights hosted, as well as Catch ones", () => {
+    const imported = generatedOrganizerPage.pastMoments;
+    const page = {...claimedOrganizerPage, pastMoments: [...claimedOrganizerPage.pastMoments.slice(0, 2), ...imported]};
+    expect(view(page).header.stats.at(-1)).toEqual({value: "6", label: copy.stats.hosted(6)});
+  });
+
   it("hides proof lines that have no data behind them", () => {
     const quiet = view({...claimedOrganizerPage, followerCount: 0, pastMoments: [],
       reviewSummary: {...claimedOrganizerPage.reviewSummary, rating: null, verifiedCount: 0}});
@@ -107,6 +120,11 @@ describe("organizerPageView", () => {
       ["Club tees and caps", false, "pricing", "Ships across India"],
     ]);
     expect(links[1].analytics).toEqual({eventName: "linkClick", source: "organizer_page", linkId: "whatsapp"});
+    // Social profiles leave the tiles for the rail's round icons, each with its platform's glyph.
+    expect(view(claimedOrganizerPage).socials.map((link) => [link.title, link.icon, link.href])).toEqual([
+      ["Instagram", "photo", "https://www.instagram.com/lanternlaneruns/"],
+      ["YouTube", "play", "https://www.youtube.com/@lanternlaneruns"],
+    ]);
     const expired = organizerPageView(claimedOrganizerPage, Date.parse("2026-11-20T00:00:00Z")).links;
     expect(expired.map((link) => link.title)).not.toContain("Lantern Night · Sat 14 Nov");
   });
@@ -116,7 +134,9 @@ describe("organizerPageView", () => {
     const page = {...claimedOrganizerPage, links: roles.map((icon) =>
       ({...claimedOrganizerPage.links[3], id: icon, url: `https://example.org/${icon}`, icon}))};
     expect(view(page).links.map((link) => link.icon)).toEqual(
-      ["chat", "photo", "ticket", "event", "pricing", "partner", "play", "route", "web", "link"]);
+      ["chat", "ticket", "event", "pricing", "partner", "play", "route", "web", "link"]);
+    // A social profile whose address names no platform keeps the role's icon.
+    expect(view(page).socials.map((link) => link.icon)).toEqual(["photo"]);
   });
 
   it("falls back to the public pages a listing came from, never its seeding notes", () => {
@@ -160,7 +180,8 @@ describe("organizerPageView", () => {
     const generated = view(generatedOrganizerPage).reviews;
     expect(generated.items.every((item) => item.note === "Harbour Line Run Club hasn’t claimed this page, so they can’t reply yet.")).toBe(true);
     expect(generated.policy).toBe("Anyone can review this page. Reviews stay unverified until guests book through Catch.");
-    expect(view(noReviewsOrganizerPage).reviews).toMatchObject({readable: true, items: [], average: null, unrated: null});
+    expect(view(noReviewsOrganizerPage).reviews).toMatchObject({readable: true, items: [], average: null,
+      unrated: "No rating yet. The rating counts only reviews from people who booked on Catch."});
   });
 
   it("averages verified reviews only, paired with their count, and gives no rating before one is verified", () => {
@@ -172,7 +193,7 @@ describe("organizerPageView", () => {
 
   it("keeps intake review notes out of the about facts", () => {
     expect(view(generatedOrganizerPage).about.facts.map((fact) => fact.label)).toEqual(["Location", "Usual meeting point", "Instagram"]);
-    expect(view(claimedOrganizerPage).about).toMatchObject({formats: "Social runs · Tempo runs · Lantern Night · Half-marathon training",
+    expect(view(claimedOrganizerPage).about).toMatchObject({formats: ["Social runs", "Tempo runs", "Lantern Night", "Half-marathon training"],
       host: {name: "Kabir Rao", role: "Founder · pace lead", initials: "KR"}});
   });
 

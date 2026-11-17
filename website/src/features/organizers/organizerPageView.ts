@@ -36,6 +36,8 @@ export interface OrganizerEventView {
   note: string;
   action: string;
   actionPrimary: boolean;
+  /** The event carries the women-led label and the organiser, whose label the page already shows, does not. */
+  womenLed: boolean;
 }
 
 export interface OrganizerNextUpView extends OrganizerEventView {
@@ -51,6 +53,8 @@ export interface OrganizerLinkView {
   title: string;
   subtitle?: string;
   pinned: boolean;
+  /** An owner link with the social role: a profile, drawn as a round icon rather than a tile. */
+  social: boolean;
   /** The CatchLegacyIcon role for where the link goes. */
   icon: CatchIconName;
   /** Owner links count as link clicks against their id (CAT-254). */
@@ -105,6 +109,8 @@ export interface OrganizerPageView {
   };
   nextUp: OrganizerNextUpView | null;
   links: OrganizerLinkView[];
+  /** Owner links given the social role, drawn as the rail's round profile icons. */
+  socials: OrganizerLinkView[];
   events: {note: string; rows: OrganizerEventView[]};
   moments: {title: string; tiles: OrganizerMomentView[]};
   reviews: {
@@ -113,7 +119,10 @@ export interface OrganizerPageView {
     average: string | null;
     /** The verified count the average is paired with. */
     countLabel: string;
-    /** Said instead of a rating when there are reviews but none verified. */
+    /**
+     * Said instead of a rating while there is none: the rating averages
+     * verified reviews only, so until one exists the page says why.
+     */
     unrated: string | null;
     distribution: {stars: 1 | 2 | 3 | 4 | 5; count: number; label: string}[];
     policy: string;
@@ -121,7 +130,7 @@ export interface OrganizerPageView {
   };
   about: {
     text: string;
-    formats: string;
+    formats: string[];
     facts: {label: string; value: string}[];
     host: {name: string; role: string; initials: string} | null;
   };
@@ -160,7 +169,8 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
   const accent = organizerAccent(allEvents);
   const pageFormat = organizerFormat(allEvents);
   const sourceNames = publicSourceNames(record);
-  const rows = record.upcomingEvents.map((item, index) => eventView(item, index, kind, accent));
+  const rows = record.upcomingEvents.map((item, index) => eventView(item, index, kind, accent, record.womenLed));
+  const allLinks = linksOf(record, readAt);
   const average = averageOf(record);
   const reviewCount = record.reviewSummary.count;
   const verifiedCount = record.reviewSummary.verifiedCount;
@@ -176,6 +186,7 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
     // The rating averages verified reviews only, so it is paired with their count.
     ...(record.reviewSummary.readState === "enabled" && verifiedCount > 0 && average ?
       [{value: average, label: copy.stats.reviews(verifiedCount)}] : []),
+    // Every past event counts as a night hosted, imported ones as well as Catch ones; the read model keeps the latest 24.
     ...(!generated && pastCount > 0 ? [{value: pastCount >= 24 ? "24+" : String(pastCount), label: copy.stats.hosted(pastCount)}] : []),
   ];
 
@@ -199,7 +210,8 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
       stats,
     },
     nextUp: rows[0] ? nextUpView(rows[0], record.upcomingEvents[0], readAt) : null,
-    links: linksOf(record, readAt),
+    links: allLinks.filter((link) => !link.social),
+    socials: allLinks.filter((link) => link.social),
     events: {
       note: generated ? copy.eventsNote.generated(eventSourceNames(record)) :
         copy.eventsNote.claimed(upcomingSourceNames(record), record.upcomingEvents.some((item) => item.source === "catch")),
@@ -210,7 +222,7 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
       readable: record.reviewSummary.readState === "enabled",
       average: verifiedCount > 0 ? average : null,
       countLabel: copy.verifiedCount(verifiedCount),
-      unrated: reviewCount > 0 && !(verifiedCount > 0 && average) ? copy.unrated(reviewCount) : null,
+      unrated: verifiedCount > 0 ? null : reviewCount > 0 ? copy.unrated(reviewCount) : copy.noRating,
       distribution: ([5, 4, 3, 2, 1] as const).map((stars) => {
         const count = record.reviewSummary.distribution[String(stars) as "1"];
         return {stars, count, label: copy.starsRow(stars, count)};
@@ -221,7 +233,7 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
     },
     about: {
       text: record.identity.description,
-      formats: record.identity.formats.join(" · "),
+      formats: record.identity.formats.filter((format) => format.trim()),
       facts: record.profile.facts
         .filter((fact) => !internalFactLabels.has(fact.label.trim().toLowerCase()))
         .filter((fact) => record.reviewSummary.readState === "enabled" || !/(?:rating|review)/iu.test(`${fact.label} ${fact.value}`))
@@ -255,7 +267,8 @@ function claimHrefOf(record: OrganizerPageRecord): string {
     `/claim/?listing=${encodeURIComponent(record.organizerId)}`;
 }
 
-function eventView(item: OrganizerPageEvent, index: number, kind: OrganizerPageKind, accent: Accent): OrganizerEventView {
+function eventView(item: OrganizerPageEvent, index: number, kind: OrganizerPageKind, accent: Accent,
+  organizerWomenLed: boolean): OrganizerEventView {
   const zone = item.event.timezone ?? defaultZone;
   const start = new Date(item.event.startTime);
   const date = {
@@ -269,7 +282,7 @@ function eventView(item: OrganizerPageEvent, index: number, kind: OrganizerPageK
   const day = `${date.weekday} ${date.day} ${date.month}`;
   const shared = {key: `${item.source}-${item.eventId}`, eventId: item.eventId, source: item.source, title: item.event.title,
     date, detail, cardLabel: `${day} · ${time}`, posterLabel: day, place: item.event.location,
-    price: item.event.priceLabel, ...formatOf(item.event.activityKind)};
+    price: item.event.priceLabel, womenLed: item.womenLed === true && !organizerWomenLed, ...formatOf(item.event.activityKind)};
   if (item.source === "external") {
     const free = /^(free|₹\s*0)$/iu.test(item.event.priceLabel.trim());
     const note = free ? copy.registerOn(item.booking.label) : copy.ticketsOn(item.booking.label);
@@ -320,7 +333,8 @@ function linksOf(record: OrganizerPageRecord, readAt: number): OrganizerLinkView
       subtitle: link.subtitle ?? (link.pinned && link.showUntil ?
         copy.pinnedUntil(format(new Date(link.showUntil), defaultZone, {day: "numeric", month: "short"})) : hostOf(link.url)),
       pinned: link.pinned,
-      icon: link.icon ? ownerLinkIcons[link.icon] : iconFor(link.url),
+      social: link.icon === "social" && !link.pinned,
+      icon: link.icon ? ownerLinkIconFor(link.icon, link.url) : iconFor(link.url),
       analytics: {eventName: "linkClick", source: "organizer_page", linkId: link.id},
     }))
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
@@ -336,6 +350,7 @@ function linksOf(record: OrganizerPageRecord, readAt: number): OrganizerLinkView
       title: source.label,
       subtitle: hostOf(href),
       pinned: false,
+      social: false,
       icon: iconFor(href),
       analytics: {eventName: source.type === "socialProfile" ? "contactClick" : "outboundClick", source: `source_${source.type}`},
     }];
@@ -473,6 +488,12 @@ const ownerLinkIcons = {
   website: "web",
   link: "link",
 } as const satisfies Record<NonNullable<OrganizerPageRecord["links"][number]["icon"]>, CatchIconName>;
+
+/** A social profile shows its platform's glyph where the address names one; every other role keeps the role's icon. */
+function ownerLinkIconFor(role: keyof typeof ownerLinkIcons, url: string): CatchIconName {
+  const glyph = role === "social" ? iconFor(url) : "link";
+  return glyph === "link" ? ownerLinkIcons[role] : glyph;
+}
 
 function iconFor(url: string): CatchIconName {
   if (url.startsWith("mailto:")) return "email";

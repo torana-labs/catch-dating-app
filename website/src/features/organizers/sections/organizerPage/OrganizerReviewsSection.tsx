@@ -1,15 +1,14 @@
 import {
   CatchAvatar,
   CatchBadge,
-  CatchBand,
   CatchBandHeader,
   CatchButton,
   CatchField,
+  CatchGroundCard,
   CatchRatingSummary,
   CatchReviewItem,
   CatchStack,
   CatchStarInput,
-  CatchSurface,
   CatchText,
 } from "@catch/web-ui";
 import {useId} from "react";
@@ -18,64 +17,65 @@ import type {OrganizerPageController} from "../../useOrganizerPageController";
 import {SignInPrompt} from "../../../account/SignInSheet";
 
 /**
- * Reviews on the paper band: the average of verified reviews beside their
- * count and a bar for each star, then the latest reviews, each labelled
- * Booked on Catch or Unverified with the line that explains the labels, and
- * the organiser's reply or why a generated page has none. With reviews but
- * none verified yet, the page says so instead of showing a rating.
+ * Reviews, as the board lays them out: the average of verified reviews in
+ * display figures over a bar for each star and the line that explains the
+ * labels, beside the latest reviews, each labelled Booked on Catch or
+ * Unverified, with the organiser's reply or why a generated page has none.
+ * Until there is a verified review the page says why there is no rating
+ * instead of showing one.
  */
 export function OrganizerReviewsSection({controller}: {controller: OrganizerPageController}) {
   const {review, view} = controller;
   const {reviews} = view;
   const titleId = `${useId()}-title`;
   if (!reviews.readable) return null;
+  const summary = reviews.average ? (
+    <CatchRatingSummary average={reviews.average} countLabel={reviews.countLabel} distribution={reviews.distribution}
+      note={reviews.policy} />
+  ) : (
+    <CatchStack gap={8}>
+      {reviews.unrated ? <CatchText as="p" variant="title-row">{reviews.unrated}</CatchText> : null}
+      <CatchText as="p" tone="secondary" variant="body-small">{reviews.policy}</CatchText>
+    </CatchStack>
+  );
   return (
-    <CatchBand aria-labelledby={titleId} as="section" ground="paper" id="reviews" width="content">
-      <CatchStack gap={24}>
-        <CatchStack align="end" direction="row" gap={12} justify="between" wrap>
-          <CatchBandHeader ground="paper" title={copy.reviewsTitle} titleId={titleId} />
-          {review ? <CatchButton label={copy.writeReview} onPressed={review.toggle} size="md" variant="secondary" /> : null}
-        </CatchStack>
-        {review?.open ? <OrganizerReviewForm review={review} /> : null}
-        {reviews.items.length ? (
-          <CatchStack collapseBelow="expanded" direction="row" gap={48} railSide="start" railWidth="narrow">
-            <CatchStack gap={12}>
-              {reviews.average ? (
-                <CatchRatingSummary average={reviews.average} countLabel={reviews.countLabel} distribution={reviews.distribution}
-                  note={reviews.policy} />
-              ) : (
-                <>
-                  {reviews.unrated ? <CatchText as="p" variant="title-row">{reviews.unrated}</CatchText> : null}
-                  <CatchText as="p" tone="secondary" variant="body-small">{reviews.policy}</CatchText>
-                </>
-              )}
-            </CatchStack>
-            <CatchStack gap={0}>
-              {reviews.items.map((item) => (
-                <CatchReviewItem
-                  avatar={<CatchAvatar ground={item.ground} initials={item.initials} name={item.name} recipe="monogram" size={36} />}
-                  badge={<CatchBadge label={item.verified ? copy.verifiedReview : copy.unverifiedReview} size="sm"
-                    tone={item.verified ? "success" : "neutral"} />}
-                  body={item.body}
-                  footer={item.note ? <CatchText as="p" tone="secondary" variant="body-small">{item.note}</CatchText> : undefined}
-                  key={item.key}
-                  meta={item.meta}
-                  name={item.name}
-                  rating={item.rating}
-                  ratingLabel={item.ratingLabel}
-                  reply={item.reply}
-                />
-              ))}
-            </CatchStack>
-          </CatchStack>
-        ) : (
-          <CatchSurface>
-            <CatchText as="p" variant="title-row">{copy.reviewsEmptyTitle}</CatchText>
-            <CatchText as="p" tone="secondary" variant="body-small">{`${copy.reviewsEmptyBody} ${reviews.policy}`}</CatchText>
-          </CatchSurface>
-        )}
+    <CatchStack aria-labelledby={titleId} as="section" gap={16} id="reviews">
+      <CatchStack align="end" direction="row" gap={12} justify="between" wrap>
+        <CatchBandHeader size="feature" title={copy.reviewsTitle} titleId={titleId} />
+        {review ? <CatchButton label={copy.writeReview} onPressed={review.toggle} size="md" variant="secondary" /> : null}
       </CatchStack>
-    </CatchBand>
+      {review?.open ? <OrganizerReviewForm review={review} /> : null}
+      {reviews.items.length ? (
+        <CatchStack collapseBelow="expanded" direction="row" gap={32} railSide="start" railWidth="sidebar">
+          {summary}
+          <CatchStack gap={0}>
+            {reviews.items.map((item) => (
+              <CatchReviewItem
+                avatar={<CatchAvatar ground={item.ground} initials={item.initials} name={item.name} recipe="monogram" size={36} />}
+                badge={<CatchBadge label={item.verified ? copy.verifiedReview : copy.unverifiedReview} size="sm"
+                  tone={item.verified ? "success" : "neutral"} />}
+                body={item.body}
+                footer={item.note ? <CatchText as="p" tone="secondary" variant="body-meta">{item.note}</CatchText> : undefined}
+                key={item.key}
+                meta={item.meta}
+                name={item.name}
+                rating={item.rating}
+                ratingLabel={item.ratingLabel}
+                reply={item.reply}
+              />
+            ))}
+          </CatchStack>
+        </CatchStack>
+      ) : (
+        <CatchGroundCard>
+          <CatchStack gap={4}>
+            <CatchText as="p" variant="title-row">{copy.reviewsEmptyTitle}</CatchText>
+            <CatchText as="p" tone="secondary" variant="body-small">{copy.reviewsEmptyBody}</CatchText>
+            {reviews.unrated ? <CatchText as="p" tone="secondary" variant="body-small">{reviews.unrated}</CatchText> : null}
+          </CatchStack>
+        </CatchGroundCard>
+      )}
+    </CatchStack>
   );
 }
 
@@ -85,10 +85,11 @@ type ReviewForm = NonNullable<OrganizerPageController["review"]>;
 function OrganizerReviewForm({review}: {review: ReviewForm}) {
   const form = copy.reviewForm;
   if (review.done) {
-    return <CatchSurface role="status"><CatchText as="p" variant="body">{form.done(review.name.trim())}</CatchText></CatchSurface>;
+    return <CatchGroundCard role="status"><CatchText as="p" variant="body">{form.done(review.name.trim())}</CatchText></CatchGroundCard>;
   }
   return (
-    <CatchSurface>
+    <CatchGroundCard>
+      <CatchStack gap={12}>
       <SignInPrompt />
       <CatchStack gap={8}>
         <CatchText as="p" id="organizer-review-stars" variant="title-row">{form.starsLabel}</CatchText>
@@ -102,6 +103,7 @@ function OrganizerReviewForm({review}: {review: ReviewForm}) {
       <CatchStack align="start">
         <CatchButton label={form.submit} onPressed={review.submit} status={review.pending ? "loading" : "idle"} />
       </CatchStack>
-    </CatchSurface>
+      </CatchStack>
+    </CatchGroundCard>
   );
 }

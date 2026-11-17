@@ -9,8 +9,12 @@ import {HostListingPage} from "../features/organizers/HostListingPage";
 import type {OrganizerPageRecord} from "../features/organizers/organizerPage";
 import {OrganizerAboutSection, OrganizerClaimSection, OrganizerPageFooter} from "../features/organizers/sections/organizerPage/OrganizerAboutSections";
 import {OrganizerEventsSection, OrganizerMomentsSection} from "../features/organizers/sections/organizerPage/OrganizerEventsSections";
-import {OrganizerIdentitySection} from "../features/organizers/sections/organizerPage/OrganizerIdentitySection";
-import {OrganizerLinksSection, OrganizerNextUpSection} from "../features/organizers/sections/organizerPage/OrganizerRailSections";
+import {OrganizerFollowPanels, OrganizerIdentitySection} from "../features/organizers/sections/organizerPage/OrganizerIdentitySection";
+import {
+  OrganizerLinksSection,
+  OrganizerNextUpSection,
+  OrganizerSocialsSection,
+} from "../features/organizers/sections/organizerPage/OrganizerRailSections";
 import {OrganizerReviewsSection} from "../features/organizers/sections/organizerPage/OrganizerReviewsSection";
 import {
   organizerPageBackends,
@@ -57,16 +61,24 @@ function Providers({children, page}: {children: ReactNode; page: OrganizerPageRe
   );
 }
 
-function PageStory({backends = organizerPageBackends, page, servedOn}: {
+function PageStory({backends = organizerPageBackends, page}: {
   backends?: OrganizerPageBackends;
   page: OrganizerPageRecord;
-  servedOn?: "site" | "ownDomain";
 }) {
   return (
     <Providers page={page}>
-      <HostListingPage backends={backends} listing={organizerStoryListing(page)} page={page} readAt={organizerPageReadAt}
-        servedOn={servedOn} />
+      <HostListingPage backends={backends} listing={organizerStoryListing(page)} page={page} readAt={organizerPageReadAt} />
     </Providers>
+  );
+}
+
+/** The hero with what Follow and Share open under it, as the page's rail shows them. */
+function IdentityWithPanels({controller}: {controller: OrganizerPageController}) {
+  return (
+    <CatchStack gap={24}>
+      <OrganizerIdentitySection controller={controller} />
+      <OrganizerFollowPanels controller={controller} />
+    </CatchStack>
   );
 }
 
@@ -81,27 +93,29 @@ function SectionHarness({backends, page, render}: {
 
 /**
  * One section on the claimed page and on the generated one, in the width the
- * page gives it: the organiser rail of the profile band, or a band of its own
- * (the band sections draw their own).
+ * page gives it: the hero across the content width, the rail, or the main
+ * column beside it.
  */
 function SectionStory({backends = organizerPageBackends, column, pages = [claimedOrganizerPage, generatedOrganizerPage], render}: {
   backends?: OrganizerPageBackends;
-  column: "rail" | "band";
+  column: "hero" | "rail" | "main";
   pages?: OrganizerPageRecord[];
   render: (controller: OrganizerPageController) => ReactNode;
 }) {
   return (
     <Providers page={pages[0]}>
       <CatchRoot theme="day">
-        <CatchStack gap={40}>
+        <CatchStack gap={0}>
           {pages.map((page) => {
             const section = <SectionHarness backends={backends} page={page} render={render} />;
-            return column === "band" ? <CatchStack gap={0} key={page.organizerId}>{section}</CatchStack> : (
+            return (
               <CatchBand as="div" key={page.organizerId} pb="compact" pt="compact" width="content">
-                <CatchStack collapseBelow="expanded" direction="row" gap={48} railSide="start" railWidth="wide">
-                  {section}
-                  <CatchStack gap={0} />
-                </CatchStack>
+                {column === "hero" ? section : (
+                  <CatchStack collapseBelow="expanded" direction="row" gap={48} railSide="start" railWidth="wide">
+                    {column === "rail" ? section : <CatchStack gap={0} />}
+                    {column === "main" ? section : <CatchStack gap={0} />}
+                  </CatchStack>
+                )}
               </CatchBand>
             );
           })}
@@ -115,15 +129,6 @@ function SectionStory({backends = organizerPageBackends, column, pages = [claime
 export const Guest: Story = {
   parameters: {catchComponent: {id: "listing_sections_assembly", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["guest-page", "first-phone-screen"]}},
   render: () => <PageStory page={claimedOrganizerPage} />,
-};
-
-/**
- * The board's guest state: the claimed page on the club's own domain, with
- * no site header and the short footer. Custom domains are not served yet.
- */
-export const GuestOwnDomain: Story = {
-  parameters: {catchComponent: {id: "listing_sections_assembly", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["guest-page"]}},
-  render: () => <PageStory page={claimedOrganizerPage} servedOn="ownDomain" />,
 };
 
 /** Built from public Luma and Instagram pages before the club claims it, with the claim pitch. */
@@ -144,10 +149,10 @@ export const NoReviews: Story = {
   render: () => <PageStory page={noReviewsOrganizerPage} />,
 };
 
-/** Identity, follow and share; the share card holds the page's QR code. */
+/** The hero: identity, follow and share; the share card it opens holds the page's QR code. */
 export const Identity: Story = {
   parameters: {catchComponent: {id: "organizer_identity_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["claimed", "generated", "share-open"]}},
-  render: () => <SectionStory column="rail" render={(controller) => <OrganizerIdentitySection controller={controller} />} />,
+  render: () => <SectionStory column="hero" render={(controller) => <IdentityWithPanels controller={controller} />} />,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getAllByRole("button", {name: "Share"})[0]);
@@ -159,7 +164,7 @@ export const Identity: Story = {
 export const IdentityWomenLed: Story = {
   parameters: {catchComponent: {id: "organizer_identity_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["claimed"]}},
   render: () => (
-    <SectionStory column="rail" pages={[{...claimedOrganizerPage, womenLed: true}]}
+    <SectionStory column="hero" pages={[{...claimedOrganizerPage, womenLed: true}]}
       render={(controller) => <OrganizerIdentitySection controller={controller} />} />
   ),
   play: async ({canvasElement}) => {
@@ -171,8 +176,8 @@ export const IdentityWomenLed: Story = {
 export const FollowByPhone: Story = {
   parameters: {catchComponent: {id: "organizer_identity_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["follow-by-phone"]}},
   render: () => (
-    <SectionStory backends={previewBackends} column="rail" pages={[claimedOrganizerPage]}
-      render={(controller) => <OrganizerIdentitySection controller={controller} />} />
+    <SectionStory backends={previewBackends} column="hero" pages={[claimedOrganizerPage]}
+      render={(controller) => <IdentityWithPanels controller={controller} />} />
   ),
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
@@ -199,8 +204,8 @@ const followAccountStep: WebsiteAccountController = {
 export const FollowAccountStep: Story = {
   parameters: {catchComponent: {id: "organizer_identity_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["follow-account-step"]}},
   render: () => (
-    <SectionStory column="rail" pages={[claimedOrganizerPage]}
-      render={(controller) => <OrganizerIdentitySection controller={{...controller, follow: {...controller.follow, account: followAccountStep}}} />} />
+    <SectionStory column="hero" pages={[claimedOrganizerPage]}
+      render={(controller) => <IdentityWithPanels controller={{...controller, follow: {...controller.follow, account: followAccountStep}}} />} />
   ),
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
@@ -224,53 +229,59 @@ export const Links: Story = {
   render: () => <SectionStory column="rail" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerLinksSection controller={controller} />} />,
 };
 
+/** The social profiles an owner linked, as round icons under the links. */
+export const Socials: Story = {
+  parameters: {catchComponent: {id: "organizer_links_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["owner-links"]}},
+  render: () => <SectionStory column="rail" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerSocialsSection controller={controller} />} />,
+};
+
 /** The public pages a generated listing came from. */
 export const LinksGenerated: Story = {
   parameters: {catchComponent: {id: "organizer_links_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["source-links"]}},
   render: () => <SectionStory column="rail" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerLinksSection controller={controller} />} />,
 };
 
-/** Catch and Luma events in one card grid, each with where it is sold. */
+/** Catch and Luma events in one list, each with where it is sold. */
 export const ComingUp: Story = {
   parameters: {catchComponent: {id: "organizer_events_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["catch-and-luma"]}},
-  render: () => <SectionStory column="band" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerEventsSection controller={controller} />} />,
+  render: () => <SectionStory column="main" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerEventsSection controller={controller} />} />,
 };
 
 /** A generated page's events, all sold on Luma. */
 export const ComingUpGenerated: Story = {
   parameters: {catchComponent: {id: "organizer_events_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["luma-only"]}},
-  render: () => <SectionStory column="band" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerEventsSection controller={controller} />} />,
+  render: () => <SectionStory column="main" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerEventsSection controller={controller} />} />,
 };
 
 /** Past photos and figures. */
 export const Moments: Story = {
   parameters: {catchComponent: {id: "organizer_moments_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["photos-and-figures"]}},
-  render: () => <SectionStory column="band" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerMomentsSection controller={controller} />} />,
+  render: () => <SectionStory column="main" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerMomentsSection controller={controller} />} />,
 };
 
 /** What a generated page found. */
 export const MomentsGenerated: Story = {
   parameters: {catchComponent: {id: "organizer_moments_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["generated-figures"]}},
-  render: () => <SectionStory column="band" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerMomentsSection controller={controller} />} />,
+  render: () => <SectionStory column="main" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerMomentsSection controller={controller} />} />,
 };
 
 /** Verified and unverified reviews with replies, the labels explained, and the rating of verified reviews only. */
 export const Reviews: Story = {
   parameters: {catchComponent: {id: "organizer_reviews_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["verified-and-unverified"]}},
-  render: () => <SectionStory column="band" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerReviewsSection controller={controller} />} />,
+  render: () => <SectionStory column="main" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerReviewsSection controller={controller} />} />,
 };
 
 /** A generated page's reviews, which it cannot reply to yet. */
 export const ReviewsGenerated: Story = {
   parameters: {catchComponent: {id: "organizer_reviews_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["unclaimed-notes"]}},
-  render: () => <SectionStory column="band" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerReviewsSection controller={controller} />} />,
+  render: () => <SectionStory column="main" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerReviewsSection controller={controller} />} />,
 };
 
 /** Anyone's review, which production shows once CAT-169 lands. */
 export const ReviewForm: Story = {
   parameters: {catchComponent: {id: "organizer_reviews_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["review-form"]}},
   render: () => (
-    <SectionStory backends={previewBackends} column="band" pages={[generatedOrganizerPage]}
+    <SectionStory backends={previewBackends} column="main" pages={[generatedOrganizerPage]}
       render={(controller) => <OrganizerReviewsSection controller={controller} />} />
   ),
   play: async ({canvasElement}) => {
@@ -284,26 +295,26 @@ export const ReviewForm: Story = {
 /** The organiser's own words, formats, facts and host. */
 export const About: Story = {
   parameters: {catchComponent: {id: "organizer_about_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["claimed"]}},
-  render: () => <SectionStory column="band" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerAboutSection controller={controller} />} />,
+  render: () => <SectionStory column="main" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerAboutSection controller={controller} />} />,
 };
 
 /** What a generated page summarised from public sources. */
 export const AboutGenerated: Story = {
   parameters: {catchComponent: {id: "organizer_about_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["generated"]}},
-  render: () => <SectionStory column="band" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerAboutSection controller={controller} />} />,
+  render: () => <SectionStory column="main" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerAboutSection controller={controller} />} />,
 };
 
 /** "Made with Catch", or where a generated page came from. */
 export const Footer: Story = {
   parameters: {catchComponent: {id: "organizer_page_footer", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["claimed", "generated"]}},
-  render: () => <SectionStory column="band" render={(controller) => <OrganizerPageFooter controller={controller} />} />,
+  render: () => <SectionStory column="main" render={(controller) => <OrganizerPageFooter controller={controller} />} />,
 };
 
-/** The claim pitch alone, the band that follows a generated page's profile. */
+/** The claim pitch alone, the card that opens a generated page's main column. */
 export const ClaimPitch: Story = {
   parameters: {catchComponent: {id: "organizer_claim_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["claim-pitch"]}},
   render: () => (
-    <SectionStory column="band" pages={[generatedOrganizerPage]}
+    <SectionStory column="main" pages={[generatedOrganizerPage]}
       render={(controller) => <OrganizerClaimSection controller={controller} />} />
   ),
 };
