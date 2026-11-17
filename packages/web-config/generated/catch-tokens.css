@@ -393,6 +393,10 @@
   --catch-website-color-kicker-night-yellow: #F5C451;
   --catch-website-color-dock-secondary-line: rgba(255, 255, 255, 0.6);
   --catch-website-color-ink-on-colour: rgba(20, 17, 20, 0.78);
+  --catch-website-color-fill-on-ink: rgba(255, 255, 255, 0.06);
+  --catch-website-color-pill-on-ink: rgba(255, 255, 255, 0.08);
+  --catch-website-color-line-on-ink: rgba(246, 239, 230, 0.14);
+  --catch-website-color-timeline-line: rgba(246, 239, 230, 0.16);
   --catch-website-type-hero-compact-size: 44px;
   --catch-website-type-section-size: 56px;
   --catch-website-type-section-compact-size: 36px;
@@ -411,6 +415,11 @@
   --catch-website-type-card-title-size: 18px;
   --catch-website-type-card-title-line-height: 1.25;
   --catch-website-type-tile-line-height: 1.4;
+  --catch-website-type-price-size: 200px;
+  --catch-website-type-price-compact-size: 130px;
+  --catch-website-type-price-line-height: 0.8;
+  --catch-website-type-price-tracking: -0.05em;
+  --catch-website-type-example-size: 32px;
   --catch-website-wordmark-bar-size: 26px;
   --catch-website-wordmark-bar-tracking: -0.03em;
   --catch-website-wordmark-weight: 800;
@@ -435,6 +444,7 @@
   --catch-website-radius-square: 12px;
   --catch-website-radius-device: 44px;
   --catch-website-radius-card: 22px;
+  --catch-website-radius-tile: 18px;
   --catch-website-hero-text-pad-bottom: 72px;
   --catch-website-hero-compact-media-max: 340px;
   --catch-website-hero-phone-width: 360px;
@@ -469,6 +479,17 @@
   --catch-website-plan-media-height: 150px;
   --catch-website-badge-pad-block: 5px;
   --catch-website-chip-dot-size: 8px;
+  --catch-website-calculator-value-size: 52px;
+  --catch-website-calculator-compact-value-size: 40px;
+  --catch-website-calculator-tile-size: 34px;
+  --catch-website-cap-bar-height: 56px;
+  --catch-website-route-card-min-height: 230px;
+  --catch-website-route-card-tall-min-height: 300px;
+  --catch-website-route-card-tall-title-size: 21px;
+  --catch-website-route-card-media-height: 110px;
+  --catch-website-timeline-time-width: 84px;
+  --catch-website-timeline-compact-time-width: 64px;
+  --catch-website-timeline-on-title-size: 18px;
   --catch-typography-role-display-hero-family: "Archivo";
   --catch-typography-role-display-hero-size: 80px;
   --catch-typography-role-display-hero-line-height: 0.98;

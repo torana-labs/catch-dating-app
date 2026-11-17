@@ -104,6 +104,20 @@ export type {
   CatchPricingSectionFootnote,
   CatchPricingSectionProps,
 } from "./components/CatchPricingSection";
+export {CatchFeeSection} from "./components/CatchFeeSection";
+export type {CatchFeeSectionExample, CatchFeeSectionFoot, CatchFeeSectionProps} from "./components/CatchFeeSection";
+export {CatchFeeCalculator} from "./components/CatchFeeCalculator";
+export type {CatchFeeCalculatorProps, CatchFeeCalculatorTile} from "./components/CatchFeeCalculator";
+export {CatchFeeCapChart} from "./components/CatchFeeCapChart";
+export type {CatchFeeCapChartExample, CatchFeeCapChartPart, CatchFeeCapChartProps} from "./components/CatchFeeCapChart";
+export {CatchFeeExamples} from "./components/CatchFeeExamples";
+export type {CatchFeeExample, CatchFeeExamplesProps} from "./components/CatchFeeExamples";
+export {CatchRouteCard} from "./components/CatchRouteCard";
+export type {CatchRouteCardKind, CatchRouteCardProps} from "./components/CatchRouteCard";
+export {CatchStepCards} from "./components/CatchStepCards";
+export type {CatchStepCardsOn, CatchStepCardsProps} from "./components/CatchStepCards";
+export {CatchTimelineSection} from "./components/CatchTimelineSection";
+export type {CatchTimelineMoment, CatchTimelineSectionProps} from "./components/CatchTimelineSection";
 export {CatchStorySection} from "./components/CatchStorySection";
 export type {
   CatchStorySectionAvatar,
@@ -134,12 +148,6 @@ export type {
 export {catchFormatAccentOf, catchFormatOf} from "./components/palette";
 /** A Website v2 activity format: run, dinner, games, courts or nightsOut. */
 export type {Format as CatchFormat} from "./components/palette";
-export {CatchLayerMap} from "./components/CatchLayerMap";
-export type {CatchLayerMapLabels, CatchLayerMapNode, CatchLayerMapProps} from "./components/CatchLayerMap";
-export {CatchNightScene} from "./components/CatchNightScene";
-export type {CatchNightSceneFormat, CatchNightSceneJourney, CatchNightSceneMoment, CatchNightSceneProps} from "./components/CatchNightScene";
-export {CatchPipelineBoard} from "./components/CatchPipelineBoard";
-export type {CatchPipelineBoardGuest, CatchPipelineBoardProps, CatchPipelineBoardStep} from "./components/CatchPipelineBoard";
 export {CatchSiteHeader} from "./components/CatchSiteHeader";
 export type {CatchSiteHeaderLink, CatchSiteHeaderProps} from "./components/CatchSiteHeader";
 export {CatchSiteFooter} from "./components/CatchSiteFooter";
@@ -150,8 +158,6 @@ export {CatchDeviceFrame} from "./components/CatchDeviceFrame";
 export type {CatchDeviceFrameKind, CatchDeviceFrameOrientation, CatchDeviceFrameProps, CatchDeviceFrameTilt, CatchDeviceFrameWindowKind} from "./components/CatchDeviceFrame";
 export {CatchHeroShowcase} from "./components/CatchHeroShowcase";
 export type {CatchHeroShowcaseProps, CatchHeroShowcaseSticker} from "./components/CatchHeroShowcase";
-export {CatchFormatMatrix} from "./components/CatchFormatMatrix";
-export type {CatchFormatMatrixFormat, CatchFormatMatrixProperty, CatchFormatMatrixProps, CatchFormatMatrixSource} from "./components/CatchFormatMatrix";
 export {CatchFormatTile} from "./components/CatchFormatTile";
 export type {CatchFormatTileProps} from "./components/CatchFormatTile";
 export {CatchPlanCard} from "./components/CatchPlanCard";

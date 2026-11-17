@@ -151,7 +151,7 @@ export function PricingOrganisationsBand({id, ground, kicker, title, lead, actio
       kickerAccent="pink"
       lead={lead}
       media={(
-        <CatchStack align="start" gap={10}>
+        <CatchStack align="start" gap={12}>
           {actions.map((action, index) => (
             <CatchButton href={action.href} key={action.label} label={action.label} newTab={action.newTab} onPressed={action.onPressed}
               variant={action.variant ?? (index === 0 ? "primary" : "secondary")} />
