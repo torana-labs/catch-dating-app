@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_scop
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_cases_page.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -127,7 +128,7 @@ class EventAssistanceCases extends _$EventAssistanceCases {
 /// The help-request page read owner. It is a Firestore listener: it declares
 /// no cache tags or lifetime, and commands never invalidate it; the case view
 /// triggers deliver their result.
-@Riverpod(retry: _noCaseReadRetry)
+@Riverpod(retry: noAutomaticRetry)
 Stream<EventAssistanceCasesSession> eventAssistanceCasesForAccount(
   Ref ref,
   EventAssistanceCaseQuery query, {
@@ -151,5 +152,3 @@ Stream<EventAssistanceCasesSession> eventAssistanceCasesForAccount(
         return feed.latest = EventAssistanceCasesSession._(account, page, feed);
       });
 }
-
-Duration? _noCaseReadRetry(int retryCount, Object error) => null;

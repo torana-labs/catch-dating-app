@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_pro
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -95,7 +96,7 @@ class EventAssistanceLateJoinSetting extends _$EventAssistanceLateJoinSetting {
 /// The group's late-join setting for one sign-in period. It is a Firestore
 /// listener: no cache tags or lifetime, and writes never invalidate it. Each
 /// delivery is a new session and retires the previous one.
-@Riverpod(retry: _noSettingReadRetry)
+@Riverpod(retry: noAutomaticRetry)
 Stream<LateJoinSettingSession> eventAssistanceLateJoinSettingForAccount(
   Ref ref,
   EventAssistanceGroupScope query, {
@@ -121,4 +122,3 @@ Stream<LateJoinSettingSession> eventAssistanceLateJoinSettingForAccount(
 }
 
 // A listener error is shown with a retry; it is never retried silently.
-Duration? _noSettingReadRetry(int retryCount, Object error) => null;

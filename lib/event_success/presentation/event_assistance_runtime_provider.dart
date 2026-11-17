@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_s
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_setting.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -94,7 +95,7 @@ class EventAssistanceRuntime extends _$EventAssistanceRuntime {
 /// It is a Firestore listener: no cache tags or lifetime, and writes never
 /// invalidate it. Each delivery is a new session and retires the previous
 /// one.
-@Riverpod(retry: _noRuntimeReadRetry)
+@Riverpod(retry: noAutomaticRetry)
 Stream<AssistanceRuntimeSession> eventAssistanceRuntimeForAccount(
   Ref ref,
   EventAssistanceRuntimeScope query, {
@@ -119,4 +120,3 @@ Stream<AssistanceRuntimeSession> eventAssistanceRuntimeForAccount(
 }
 
 // A listener error is shown with a retry; it is never retried silently.
-Duration? _noRuntimeReadRetry(int retryCount, Object error) => null;

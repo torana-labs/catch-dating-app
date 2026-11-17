@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/account/data/authenticated_session.dar
 import 'package:catch_dating_app/contexts/live/data/event_assistance_departure_history_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_history.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_provider.dart';
+import 'package:catch_platform/errors/provider_retry_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -80,7 +81,7 @@ class EventAssistanceDepartureHistory
 /// One history page for one sign-in period: Firestore listeners on the
 /// group's view and the page of departure views. No cache tags or lifetime;
 /// writes never invalidate it.
-@Riverpod(retry: _noHistoryReadRetry)
+@Riverpod(retry: noAutomaticRetry)
 Stream<EventAssistanceDepartureHistorySession>
 eventAssistanceDepartureHistoryForAccount(
   Ref ref,
@@ -100,5 +101,3 @@ eventAssistanceDepartureHistoryForAccount(
         return EventAssistanceDepartureHistorySession._(account, page);
       });
 }
-
-Duration? _noHistoryReadRetry(int count, Object error) => null;

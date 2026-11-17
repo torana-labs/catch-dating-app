@@ -170,7 +170,7 @@ final class EventAssistanceMembershipForAccountProvider
     required (EventAssistanceGuestScope, {AuthenticatedSession account})
     super.argument,
   }) : super(
-         retry: _noMembershipReadRetry,
+         retry: noAutomaticRetry,
          name: r'eventAssistanceMembershipForAccountProvider',
          isAutoDispose: true,
          dependencies: null,
@@ -219,7 +219,7 @@ final class EventAssistanceMembershipForAccountProvider
 }
 
 String _$eventAssistanceMembershipForAccountHash() =>
-    r'4a94cc908c7b88fd1ab4d0f615293a6930779bb5';
+    r'2b8c63de710d6e277fbba9b8aa05fb2c2aefbde0';
 
 /// The guest's membership for one sign-in period, as this manager reviews
 /// it. It is a Firestore listener: no cache tags or lifetime, and writes
@@ -234,7 +234,7 @@ final class EventAssistanceMembershipForAccountFamily extends $Family
         > {
   EventAssistanceMembershipForAccountFamily._()
     : super(
-        retry: _noMembershipReadRetry,
+        retry: noAutomaticRetry,
         name: r'eventAssistanceMembershipForAccountProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
