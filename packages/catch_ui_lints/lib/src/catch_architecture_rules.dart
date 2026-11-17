@@ -7,6 +7,7 @@ import 'package:analyzer/error/error.dart';
 
 import 'architecture_context_map.dart';
 import 'architecture_findings.dart';
+import 'architecture_firestore_boundary.dart';
 import 'architecture_provider_free.dart';
 
 /// Dependency direction, bounded-context placement and the provider-boundary
@@ -22,7 +23,13 @@ class CatchArchitectureRules extends MultiAnalysisRule {
 
   static final Map<String, LintCode> codes = {
     for (final name in ArchitectureCodes.all)
-      name: LintCode(name, '{0}', severity: DiagnosticSeverity.WARNING),
+      name: LintCode(
+        name,
+        '{0}',
+        severity: ArchitectureCodes.errors.contains(name)
+            ? DiagnosticSeverity.ERROR
+            : DiagnosticSeverity.WARNING,
+      ),
   };
 
   @override
@@ -62,6 +69,7 @@ class _ArchitectureVisitor extends SimpleAstVisitor<void> {
         source: unit.content,
         unit: node,
       ),
+      ...firestoreBoundaryFindings(relativePath: relativePath, unit: node),
       if (map != null)
         ...contextMapFindings(relativePath: relativePath, unit: node, map: map),
     ];
