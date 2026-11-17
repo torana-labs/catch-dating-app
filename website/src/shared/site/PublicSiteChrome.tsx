@@ -19,6 +19,7 @@ import {
   publicPageChromeCopy,
   publicSiteCopy,
   siteFooterCopy,
+  siteFooterDefaultCities,
   siteFooterLegalLinks,
   siteHeaderCopy,
   whatsappChatHref,
@@ -308,8 +309,8 @@ function FooterHelpActions({variant}: {variant: SiteFooterVariant}) {
  * The one site footer on every public page: the ink band with its link
  * columns, each link flush with its column title on one row rhythm, then
  * the wordmark with the tagline on its baseline and the operator line.
- * Guest pages carry Explore, Hosts and Help and legal (and Cities where a
- * page lists them); host pages carry Product, Get started, the brand's
+ * Guest pages carry Explore, Cities (the page's own list, or every live
+ * city), Hosts and Help and legal; host pages carry Product, Get started, the brand's
  * column and Legal. The last column ends with Privacy choices. The help band
  * leads the footer unless the page turns it off (ad landing pages, one-job
  * flows). A product page may name itself ("Catch for weddings") and give
@@ -342,7 +343,7 @@ export function PublicSiteFooter({
   wordmark?: string;
 }) {
   const {brand, subBrand} = wordmarkParts(wordmark);
-  const groups = variant === "host" ? hostFooterGroups(exploreHref) : guestFooterGroups({appHref, cities, exploreHref});
+  const groups = variant === "host" ? hostFooterGroups(exploreHref) : guestFooterGroups({appHref, cities: cities ?? siteFooterDefaultCities, exploreHref});
   return (
     <CatchSiteFooter
       brandHref="/"

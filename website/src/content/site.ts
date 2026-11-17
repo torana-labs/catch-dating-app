@@ -1,3 +1,4 @@
+import {generatedWebsiteCities as websiteCities} from "./markets/generated/catalog.ts";
 import {brand} from "./brand.ts";
 import {publishedLegalContent} from "./legal.ts";
 import {marketingConsentPreferencesCopy} from "./marketingConsent.ts";
@@ -117,8 +118,8 @@ export const siteHeaderCopy = {
 
 /**
  * The one site footer on every public page (shared/site PublicSiteFooter).
- * Guest pages: Explore, Hosts and Help and legal, with the city pages and
- * the homepage adding their Cities column. Host pages: Product, Get started,
+ * Guest pages: Explore, Cities, Hosts and Help and legal; a page without its
+ * own city list shows every live city and the all-cities page. Host pages: Product, Get started,
  * the brand's column and Legal (the playbook kit's KitFooter). Help and
  * legal, and Legal, end with Privacy choices, which reopens the consent
  * banner.
@@ -195,3 +196,13 @@ export const publicPageChromeCopy = {
     {label: "Help", href: "/help/"},
   ],
 } as const;
+
+/**
+ * The Cities column a guest page shows when it doesn't list its own: every
+ * live city in the market catalog, then the all-cities page (the canvas's
+ * guest footer always carries Cities).
+ */
+export const siteFooterDefaultCities: readonly {href: string; label: string; soon: boolean}[] = [
+  ...websiteCities.filter((city) => city.status === "live").map((city) => ({href: `/${city.slug}/`, label: city.label, soon: false})),
+  {href: "/cities/", label: siteFooterCopy.moreCities, soon: false},
+];
