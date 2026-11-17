@@ -142,6 +142,7 @@ export function kitLiteral(literal, type) {
     return {colorSpace: "srgb", components: rgba.slice(1, 4).map(Number).map(component), alpha: Number(rgba[4])};
   }
   if (type === "number") return /^-?\d*\.?\d+$/.test(text) ? Number(text) : null;
+  if (type === "fontFamily") return /^['"]?[\w -]+['"]?$/.test(text) ? text.replace(/['"]/g, "").trim() : null;
   if (type === "dimension") {
     const match = /^(-?\d*\.?\d+)(px|em|rem|cqi|%)$/.exec(text);
     return match == null ? null : {value: Number(match[1]), unit: match[2]};

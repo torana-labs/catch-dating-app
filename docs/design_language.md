@@ -173,7 +173,7 @@ Two families, no competition:
 | Role | Family | Use |
 |---|---|---|
 | **Voice / display** | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | the seven `display-*` roles: brand moments, page and section titles, big numbers |
-| **Function / reading** | **Platform system font** (SF on iOS, Roboto on Android) | every other role: app bars, prose, names, buttons, labels, kickers, badges and codes |
+| **Function / reading** | **Platform system font** (SF on iOS, Roboto on Android) in the apps; **Inter** (self-hosted) on the website, as the design canvas sets it (D26) | every other role: app bars, prose, names, buttons, labels, kickers, badges and codes |
 
 IBM Plex Mono retires from UI labels. Codes use the sans with tracking
 (`label-code`).

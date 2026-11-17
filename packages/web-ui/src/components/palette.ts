@@ -16,6 +16,8 @@ export const paletteNeutrals = [
   "nightSurface",
   "nightInk",
   "nightSecondary",
+  "nightTertiary",
+  "inkGround",
 ] as const;
 
 /** Every palette colour, in token order: the neutrals, then each accent with its deep and ink. */
@@ -79,7 +81,7 @@ export function groundTextColors(ground: Ground): readonly PaletteColor[] {
     case "paper":
       return ["ink", "inkSecondary", ...paletteAccents.map((accent) => `${accent}Deep` as const)];
     case "ink":
-      return ["nightInk", "nightSecondary", ...paletteAccents];
+      return ["nightInk", "nightSecondary", "nightTertiary", ...paletteAccents];
     default:
       return ["ink", `${ground}Ink`];
   }

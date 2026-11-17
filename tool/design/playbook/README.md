@@ -95,6 +95,8 @@ other use of the same hex resolves to the same token.
 | `.pg .mbar .b.wab` | `#25D366` | `website.color.whatsapp` | own |
 | `.pg .kchat` | `#ECE5DD` | `website.color.chatGround` | own |
 | `.pg .kchat p.me` | `#D9FDD3` | `website.color.chatOwn` | own |
+| `.pg` font-family | `Inter` | `font.family.function` | own |
+| `.pg .d` font-family | `Archivo` | `font.family.voice` | match |
 | `.pg .d` font-weight | `760` | `typography.role.displayHero.weight` | match |
 | `.pg .d` line-height | `.98` | `typography.role.displayHero.lineHeight` | own |
 | `.pg .d` letter-spacing | `-.03em` | `typography.role.displayHero.tracking` | own |

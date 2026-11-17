@@ -212,13 +212,13 @@ abstract final class GeneratedCatchRadiusTokens {
 abstract final class GeneratedCatchFontFamilyTokens {
   static const String voice = 'Archivo';
   static const String head = 'Archivo';
-  static const String function = 'system-ui';
+  static const String function = 'Inter';
   @Deprecated('Alias of font.family.function; P7 deletes it.')
-  static const String data = 'system-ui';
+  static const String data = 'Inter';
   static const String serif = 'Archivo';
-  static const String sans = 'system-ui';
+  static const String sans = 'Inter';
   @Deprecated('Alias of font.family.function; P7 deletes it.')
-  static const String mono = 'system-ui';
+  static const String mono = 'Inter';
 }
 
 abstract final class GeneratedCatchActivityPigmentTokens {
@@ -249,6 +249,8 @@ abstract final class GeneratedCatchPaletteTokens {
   static const Color nightSurface = Color(0xFF231E23);
   static const Color nightInk = Color(0xFFF6EFE6);
   static const Color nightSecondary = Color(0xFFBDB3A7);
+  static const Color nightTertiary = Color(0xFF8A8079);
+  static const Color inkGround = Color(0xFF1B171B);
   static const Color coral = Color(0xFFF07A55);
   static const Color coralDeep = Color(0xFFB5451F);
   static const Color coralInk = Color(0xFF3B1F14);
@@ -267,8 +269,6 @@ abstract final class GeneratedCatchPaletteTokens {
   static const Color magenta = Color(0xFFE58AC8);
   static const Color magentaDeep = Color(0xFFA3307F);
   static const Color magentaInk = Color(0xFF46163A);
-  static const Color inkGround = Color(0xFF1B171B);
-  static const Color nightTertiary = Color(0xFF8A8079);
 }
 
 abstract final class GeneratedCatchGroundTokens {

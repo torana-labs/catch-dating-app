@@ -137,6 +137,10 @@ const match = {mode: "match"};
 const onPhone = {container: phone};
 
 export const declarationMap = [
+  // Typefaces: the first family of each stack.
+  P(".pg", "font-family", "font.family.function", {pick: {regex: "^([^,]+)"}}),
+  P(".pg .d", "font-family", "font.family.voice", {...match, pick: {regex: "^([^,]+)"}}),
+
   // Type scale.
   P(".pg .d", "font-weight", "typography.role.displayHero.weight", match),
   P(".pg .d", "line-height", "typography.role.displayHero.lineHeight"),

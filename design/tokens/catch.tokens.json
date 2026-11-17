@@ -27,6 +27,15 @@
             "format": "woff2"
           },
           {
+            "family": "Inter",
+            "style": "normal",
+            "weight": "100 900",
+            "source": "assets/fonts/Inter-Roman-VF.woff2",
+            "target": "packages/web-config/generated/assets/fonts/Inter-Roman-VF.woff2",
+            "url": "./assets/fonts/Inter-Roman-VF.woff2",
+            "format": "woff2"
+          },
+          {
             "family": "IBM Plex Mono",
             "style": "normal",
             "weight": "400",
@@ -3795,6 +3804,32 @@
         "hex": "#BDB3A7"
       }
     },
+    "nightTertiary": {
+      "$type": "color",
+      "$description": "Tertiary text on the ink ground: the footer's legal line and footnotes, and fine print. Canvas-owned.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.5411764706,
+          0.5019607843,
+          0.4745098039
+        ],
+        "hex": "#8A8079"
+      }
+    },
+    "inkGround": {
+      "$type": "color",
+      "$description": "The ink ground: dark panels, the offer strip and the footer card. Canvas-owned (Website · conversion playbook).",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1058823529,
+          0.0901960784,
+          0.1058823529
+        ],
+        "hex": "#1B171B"
+      }
+    },
     "coral": {
       "$value": {
         "colorSpace": "srgb",
@@ -4003,32 +4038,6 @@
           0.2274509804
         ],
         "hex": "#46163A"
-      }
-    },
-    "inkGround": {
-      "$type": "color",
-      "$description": "The ink ground: dark panels, the offer strip and the footer card. Canvas-owned (Website · conversion playbook).",
-      "$value": {
-        "colorSpace": "srgb",
-        "components": [
-          0.1058823529,
-          0.0901960784,
-          0.1058823529
-        ],
-        "hex": "#1B171B"
-      }
-    },
-    "nightTertiary": {
-      "$type": "color",
-      "$description": "Tertiary text on the ink ground: the footer's legal line and footnotes, and fine print. Canvas-owned.",
-      "$value": {
-        "colorSpace": "srgb",
-        "components": [
-          0.5411764706,
-          0.5019607843,
-          0.4745098039
-        ],
-        "hex": "#8A8079"
       }
     }
   },
@@ -5049,7 +5058,8 @@
         "$value": "{font.family.voice}"
       },
       "function": {
-        "$value": "system-ui"
+        "$description": "Every non-display role on the website: Inter, self-hosted, as the design canvas sets text (blueprint D26). Flutter keeps the platform's own families at runtime (CatchFonts.functionFamily).",
+        "$value": "Inter"
       },
       "data": {
         "$description": "Deprecated alias of font.family.function; IBM Plex Mono retires from UI labels (blueprint D22). P7 deletes it.",
@@ -5093,7 +5103,7 @@
         "$value": "\"Archivo\", \"Arial Narrow\", sans-serif"
       },
       "sans": {
-        "$value": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif"
+        "$value": "\"Inter\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif"
       }
     }
   },

@@ -1259,10 +1259,17 @@ their conditions are met.
 1. **Source.** The values the website playbook kit draws on the design canvas
    ("Catch directions", Website · conversion playbook) are the token values.
    Where the canvas and a library default disagree, the canvas wins.
-2. **Caps retire.** D19's 72px headline cap and D20's corners stop being caps.
-   The hero role is the canvas's 80px, and every button in every framework is
-   a pill (`radius-button`, an alias of `radius-pill`). The canvas's panel and
-   mat corners (36px and 28px) join the radius scale.
+2. **Caps retire.** D19's 72px headline cap and D20's 4px corners stop being
+   caps, and so do the values D22 moved them to (its 96px hero, 64px page
+   title and 10px button corner) wherever the canvas draws otherwise. The hero
+   role is the canvas's 80px at −0.03em; the canvas's other website display
+   steps (56px section, 44px and 36px on phones) and its giant footer wordmark
+   are `website.*` tokens. Every button in every framework is a pill
+   (`radius-button`, an alias of `radius-pill`) with the canvas's 1.5px stroke.
+   The canvas's panel and mat corners (36px and 28px) join the radius scale.
+   Website text other than display is Inter, self-hosted, as the canvas sets
+   it (`font.family.function`); the apps keep the platform's own families at
+   runtime.
 3. **Pipeline.** `tool/design/playbook/import_kit_tokens.mjs` writes the kit's
    values into `design/tokens/catch.tokens.json` through its map, and
    `tool/design_tokens.mjs` carries them to the website CSS and the Flutter
@@ -1273,7 +1280,10 @@ their conditions are met.
 builders to snap to library defaults the owner never chose for the website.
 
 **Supersedes.** D22's button corner and its standing rule that pills are for
-chips and filters, not actions. D23 point 3 for token values: the canvas is
+chips and filters, not actions; D22's display sizes and its system-sans
+function face where the canvas draws otherwise. D21's pre-approval to snap an
+off-scale value to the nearest token does not apply to a value the canvas
+draws: the canvas value becomes a token instead. D23 point 3 for token values: the canvas is
 upstream of the token file for what it draws; components and everything else
 the canvas does not draw stay as D23 says.
 
