@@ -4228,6 +4228,13 @@ replayed finalization is idempotent. Account deletion removes these preferences
 and receipts, and a deletion tombstone prevents a late payment from granting
 consent again. `listParticipantMessagingPreferences` lists only the signed-in
 UID's permissions, with at most 30 organizer rows and a document-ID cursor.
+The settings page reads the same summary from the guest-owned read model
+`guestMessagingPermissions/{permissionId}`: one row per sender (`catchpref_{uid}`
+for Catch, the `organizerCommunicationPreferences` id for an organizer), holding
+`uid`, `scope`, `organizerId` and the exact `preference` the callable computes.
+Triggers on both preference and both receipt collections keep it current; the
+guest may get and list only their own rows, and nobody writes them. Organizer
+names come from the public organizer lookup, so a rename never rewrites rows.
 Confirmed opt-in requires matching grant evidence. The exact authenticated
 `/settings/whatsapp` route remains available before profile setup.
 `withdrawParticipantMessagingPermission` stops one chosen purpose or the whole

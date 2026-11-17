@@ -58,4 +58,4 @@ final class MessagingPermissionRepositoryProvider
 }
 
 String _$messagingPermissionRepositoryHash() =>
-    r'13f7d4d73217fc92116fa48e65dde0d09d3083c8';
+    r'0da8c7453c990fbe4c3f41cd462fe633b816064d';
