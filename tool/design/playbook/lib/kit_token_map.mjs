@@ -177,6 +177,12 @@ export const declarationMap = [
     description: "Website body copy's leading. App body copy keeps typography.role.body.lineHeight.",
   }),
   P(".pg .k", "font", "typography.role.labelKicker.size", {...match, pick: {regex: "(\\d+px)/"}}),
+  P(".pg .k", "font", "website.type.kicker.lineHeight", {
+    pick: {regex: "/(\\d+px) "}, description: "A section kicker's leading on the website. App kickers keep typography.role.labelKicker.lineHeight.",
+  }),
+  P(".pg .k", "letter-spacing", "website.type.kicker.tracking", {
+    description: "A section kicker's tracking on the website. App kickers keep typography.role.labelKicker.tracking.",
+  }),
   P(".pg .wm", "font-size", "website.wordmark.bar.size", {
     description: "The wordmark in the site header.",
   }),
@@ -302,8 +308,18 @@ export const declarationMap = [
   P(".pg .panel", "padding", "website.panel.padInline", {
     pick: {regex: "max\\((\\d+px)"}, description: "A panel's smallest side padding on wide pages.",
   }),
+  P(".pg .panel", "margin", "space.s4", {...match, pick: {part: 0}}),
+  P(".pg .panel", "margin", "website.content.gutter", {...match, pick: {part: 1}}),
   P(".pg .panel", "border-radius", "radius.mat", {...match, ...onPhone}),
+  P(".pg .panel", "margin", "space.s2", {...match, ...onPhone, pick: {part: 0}}),
   P(".pg .panel", "padding", "space.s10", {...match, ...onPhone, pick: {part: 0}}),
+  P(".pg .panel", "padding", "space.s5", {...match, ...onPhone, pick: {part: 1}}),
+  P(".pg .heroc .htext", "padding-bottom", "website.hero.textPadBottom", {
+    description: "Space under a hero's copy, whose media runs to the panel's bottom edge.",
+  }),
+  P(".pg .heroc .htext", "padding-bottom", "space.s2", {...match, ...onPhone}),
+  P(".pg .flush .htext", "padding-bottom", "website.panel.padBlock", match),
+  P(".pg .flush .htext", "padding-bottom", "space.s2", {...match, ...onPhone}),
   P(".pg .mat", "border-radius", "radius.mat", {
     description: "Colour mats, mock cards and photos; panels and the footer card on phones. Canvas-owned.",
   }),
@@ -318,6 +334,33 @@ export const declarationMap = [
   K(".pg .date", "border-radius", "website.radius.square", {
     description: "A website date or icon square's corners. App squares keep radius.sm.",
   }),
+
+  // Step cards (the split's numbered steps).
+  P(".pg .steps", "gap", "space.micro6", match),
+  P(".pg .steps li", "grid-template-columns", "website.steps.markerWidth", {
+    pick: {regex: "^(\\d+px)"}, description: "The number column of a website step card.",
+  }),
+  P(".pg .steps li", "gap", "space.micro14", match),
+  P(".pg .steps li", "padding", "space.micro14", {...match, pick: {part: 0}}),
+  P(".pg .steps li", "padding", "space.micro18", {...match, pick: {part: 1}}),
+  P(".pg .steps li", "border-radius", "radius.lg", match),
+  P(".pg .steps li.on", "background", "website.color.stepOnLight", {
+    description: "A step card's fill on white, paper or a colour panel.",
+  }),
+  P(".pg .ink .steps li.on", "background", "website.color.stepOnInk", {
+    description: "A step card's fill on the ink panel.",
+  }),
+  P(".pg .steps .n", "font", "website.type.figure.weight", {
+    pick: {regex: "^(\\d+) "}, description: "The weight of the display figures the website sets in Archivo: step numbers, stats and prices.",
+  }),
+  P(".pg .steps .n", "font", "typography.role.displaySection.size", {...match, pick: {regex: " (\\d+px)/"}}),
+  P(".pg .steps h3", "font-size", "typography.role.titleBar.size", match),
+  P(".pg .steps .body", "margin-top", "space.s1", match),
+  P(".pg .steps .body", "font-size", "typography.role.bodySmall.size", match),
+
+  // Fields.
+  P(".pg .in", "height", "size.controlLg", match),
+  P(".pg .in", "border", "stroke.control", {...match, pick: {part: 0}}),
 
   // Spacing.
   P(".pg .grid3", "gap", "space.s4", match),
