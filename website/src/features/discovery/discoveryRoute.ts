@@ -2,7 +2,7 @@ import {cityFormatPageCopy} from "@content/discovery/cityFormatPage";
 import {discoveryFormatCopy} from "@content/discovery/discoveryFormats";
 import {newToCityPageCopy} from "@content/discovery/newToCityPage";
 import {interpolateContent as fill} from "@content/interpolate";
-import type {HomeCatalog, HomeCityPlans} from "../home/homeTypes";
+import type {HomeCatalog} from "../home/homeTypes";
 import {cityFormatModel, cityFormatPageStatus, cityFormatPath, newToCityPath, type DiscoveryRoute} from "./discoveryModel";
 import {discoveryFormatKeys, type DiscoveryCityPlans, type DiscoveryFormatKey} from "./discoveryTypes";
 
@@ -79,8 +79,8 @@ export function discoveryPageMeta(route: DiscoveryRoute, catalog: HomeCatalog): 
  * sitemap lists. New-to-the-city pages wait for the owner's approval, and a
  * city read without format pages lists none.
  */
-export function indexedCityFormatPaths(citySlug: string, plans: HomeCityPlans): string[] {
-  const pages = (plans as DiscoveryCityPlans).formatPages;
+export function indexedCityFormatPaths(citySlug: string, plans: Pick<DiscoveryCityPlans, "formatPages">): string[] {
+  const pages = plans.formatPages;
   return discoveryFormatKeys.filter((format) => pages?.[format]?.indexing === "index, follow")
     .map((format) => cityFormatPath(citySlug, format));
 }

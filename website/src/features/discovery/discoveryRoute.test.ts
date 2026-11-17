@@ -1,7 +1,7 @@
 import {brand} from "@content/brand";
 import {describe, expect, it} from "vitest";
 import {mumbaiDiscoveryCatalog, puneDiscoveryCatalog} from "./discoveryCatalogFixtures";
-import {matchDiscoveryRoute, type DiscoveryRoute} from "./discoveryModel";
+import {discoveryPlansOf, matchDiscoveryRoute, type DiscoveryRoute} from "./discoveryModel";
 import {
   cityFormatPageMeta,
   discoveryPageMeta,
@@ -70,8 +70,8 @@ describe("discovery routes", () => {
 
 describe("indexedCityFormatPaths", () => {
   it("lists only the format pages the backend indexes, and none without format pages", () => {
-    expect(indexedCityFormatPaths("mumbai", mumbaiDiscoveryCatalog.plans)).toEqual(["/mumbai/run-clubs/", "/mumbai/nightlife/"]);
-    expect(indexedCityFormatPaths("pune", puneDiscoveryCatalog.plans)).toEqual([]);
-    expect(indexedCityFormatPaths("mumbai", withoutPages)).toEqual([]);
+    expect(indexedCityFormatPaths("mumbai", discoveryPlansOf(mumbaiDiscoveryCatalog))).toEqual(["/mumbai/run-clubs/", "/mumbai/nightlife/"]);
+    expect(indexedCityFormatPaths("pune", discoveryPlansOf(puneDiscoveryCatalog))).toEqual([]);
+    expect(indexedCityFormatPaths("mumbai", discoveryPlansOf(mumbaiWithoutPages))).toEqual([]);
   });
 });
