@@ -203,18 +203,15 @@ class HostSummaryReader {
             throw const FormatException('Unsupported directory summary.'),
       ], hasMore: snapshot.docs.length > boundedLimit);
     });
-    return withBackendErrorStream(
-      () => marker == null
-          ? rows()
-          : Stream.fromFuture(
-              activatedDirectory(organizerId, marker),
-            ).asyncExpand((_) => rows()),
+    final window = withBackendErrorStream(
+      rows,
       context: BackendErrorContext(
         service: BackendService.firestore,
         action: 'watch Host list summaries',
         resource: collection,
       ),
     );
+    return _afterActivation(organizerId, marker, window);
   }
 
   /// One directory record while it is listened to; null while it does not
@@ -242,19 +239,28 @@ class HostSummaryReader {
           }
           return data;
         });
-    return withBackendErrorStream(
-      () => marker == null
-          ? record()
-          : Stream.fromFuture(
-              activatedDirectory(organizerId, marker),
-            ).asyncExpand((_) => record()),
+    final watched = withBackendErrorStream(
+      record,
       context: BackendErrorContext(
         service: BackendService.firestore,
         action: 'watch selected Host record',
         resource: collection,
       ),
     );
+    return _afterActivation(organizerId, marker, watched);
   }
+
+  /// [stream] once the read model behind [marker] is active, or at once
+  /// without one. An inactive marker fails as [activatedDirectory] does.
+  Stream<T> _afterActivation<T>(
+    String organizerId,
+    String? marker,
+    Stream<T> stream,
+  ) => marker == null
+      ? stream
+      : Stream.fromFuture(
+          activatedDirectory(organizerId, marker),
+        ).asyncExpand((_) => stream);
 
   Future<Map<String, dynamic>?> _loadDirectory(
     String organizerId,
