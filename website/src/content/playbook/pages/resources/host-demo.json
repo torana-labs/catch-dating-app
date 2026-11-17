@@ -1,0 +1,146 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_demo",
+  "route": "host_demo",
+  "meta": {
+    "title": "Try a demo night | {{brand.stores.hostAppName}}",
+    "description": "A private demo built around your event: your application questions, sample guests and the door on the night. Nothing is published, messaged or charged.",
+    "socialDescription": "Run a night on {{brand.name}} before you run one for real.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {"links": [{"label": "For hosts", "to": {"route": "host"}}], "current": "Try a demo night"}
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "indigo",
+      "kicker": "Try a demo night",
+      "title": "Run a night on {{brand.name}} before you run one for real.",
+      "lead": "Tell us about your event and we’ll set up a private demo built around it: your application questions, sample guests, and the door on the night. Nothing is published, messaged or charged.",
+      "actions": [
+        {"label": "Get your demo link", "to": {"anchor": "get"}, "emphasis": "primary"},
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like to try a demo night."},
+          "emphasis": "secondary"
+        }
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Your demo · Long Table Supper",
+          "subtitle": "Sample guests, your questions",
+          "label": "Practice · nothing real is sent",
+          "rows": [
+            {"title": "Review 6 applicants", "detail": "4 approved, 1 waitlisted, 1 declined"},
+            {"title": "Write the replies", "detail": "Approved and waitlist messages"},
+            {"title": "Let guests in", "detail": "8 of 12 here"},
+            {"title": "Handle a request", "detail": "Someone can’t find the venue"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "what-youll-do",
+      "ground": "white",
+      "kicker": "What you’ll do",
+      "title": "Four things, in about ten minutes.",
+      "align": "center",
+      "columns": 4,
+      "items": [
+        {"figure": "1", "title": "Review applicants", "body": "Sample applicants answer your own questions. Approve, waitlist or decline them.", "ground": "pink"},
+        {"figure": "2", "title": "Write the replies", "body": "See the message each person would get, and change it.", "ground": "yellow"},
+        {"figure": "3", "title": "Let guests in", "body": "Run the door for a sample night: who’s here, who’s late, who’s new.", "ground": "mint"},
+        {"figure": "4", "title": "Handle a request", "body": "A guest asks for help on the night. See how it reaches you.", "ground": "indigo"}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "your-night",
+      "ground": "ink",
+      "kicker": "Built around your night",
+      "title": "Not a generic tour. Your questions, your format.",
+      "lead": "Send us your current form or tell us what you ask guests. We set up the demo with your questions, and after you’ve tried it, we can turn it into a draft form in your own account, ready to publish.",
+      "ticks": [
+        "Your questions, set up for you",
+        "Sample guests only; no real names, numbers or payments",
+        "Afterwards, a draft of your form in {{brand.stores.hostAppName}}"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "How the link works",
+          "rows": [
+            {"title": "Private to you", "detail": "It opens with the phone number or email you gave us."},
+            {"title": "Up to three visits", "detail": "Open it up to three times before it expires."},
+            {"title": "Nothing real happens", "detail": "Nothing you do in the demo is published, sent to anyone or charged."}
+          ]
+        }
+      }
+    },
+    {
+      "type": "cta",
+      "id": "get",
+      "ground": "paper",
+      "kicker": "Get your demo link",
+      "title": "Tell us about your night.",
+      "lead": "Message us on WhatsApp with your name, what you host and, if you like, what you ask guests now. We’ll set up your demo and message you when it’s ready.",
+      "actions": [
+        {
+          "label": "Ask for a demo on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like a demo night. What I host:"},
+          "emphasis": "primary"
+        },
+        {
+          "label": "Rather see it with a person? Ask for a 15-minute walkthrough",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like a 15-minute walkthrough of {{brand.name}} for hosts."},
+          "emphasis": "secondary"
+        }
+      ],
+      "leadForm": {
+        "id": "demo_request",
+        "requestKind": "demo",
+        "label": "Your WhatsApp number",
+        "submitLabel": "Get my demo link",
+        "fields": [
+          {"name": "name", "label": "Your name"},
+          {"name": "whatYouHost", "label": "What you host", "placeholder": "A monthly supper club for 24"}
+        ],
+        "note": "We’ll message you on WhatsApp when your demo is ready."
+      }
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Questions",
+      "title": "About the demo.",
+      "items": [
+        {"question": "Is the demo free?", "answer": "Yes. It’s a practice run with sample guests. Nothing is charged, published or sent."},
+        {"question": "Why can’t I open a demo straight away?", "answer": "Each demo is set up around your own event and questions. We’ll message you on WhatsApp when yours is ready."},
+        {"question": "Who can open my link?", "answer": "Only you. It opens with the phone number or email you gave us."},
+        {"question": "Can I use what I set up?", "answer": "Yes. Afterwards we can turn your demo into a draft form in your own {{brand.name}} account, ready for you to publish."},
+        {"question": "Can I just start instead?", "answer": "Of course. Start the free trial and make your first event; the demo is there if you’d like to practise first."},
+        {"question": "How long does the link last?", "answer": "You can open it up to three times before it expires."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "indigo",
+      "kicker": "Ready without the demo?",
+      "title": "Start the free trial.",
+      "lead": "Free for 30 days from your first event, or 90 for founding hosts.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ],
+      "media": {"kind": "capture", "slot": "host-today"}
+    }
+  ]
+}
