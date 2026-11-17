@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "customerId": "1016806229",
+  "managedPrefix": "Catch Host | Search |",
+  "campaigns": [
+    {
+      "name": "Catch Host | Search | Organisers",
+      "status": "PAUSED",
+      "dailyBudgetInr": 700,
+      "bidding": {"strategy": "MAXIMIZE_CLICKS", "maxCpcInr": 40},
+      "note": "Maximize clicks until the Qualified host conversion (7906748544) has about 15 a month, then switch to maximize conversions.",
+      "finalUrlSuffix": "utm_source=google&utm_medium=cpc&utm_campaign=host_acquisition_2026",
+      "languages": [{"id": 1000, "name": "English"}],
+      "locations": [
+        {"id": 20456, "name": "Delhi"},
+        {"id": 1007764, "name": "Faridabad"},
+        {"id": 1007765, "name": "Gurugram"},
+        {"id": 1007768, "name": "Bengaluru"},
+        {"id": 1007785, "name": "Mumbai"},
+        {"id": 1007820, "name": "Ghaziabad"},
+        {"id": 1007826, "name": "Noida"}
+      ],
+      "negativeKeywords": ["job", "jobs", "salary", "course", "courses", "certification", "internship"],
+      "sharedHeadlines": [
+        "Catch Host for Organisers",
+        "Sell Tickets to Your Events",
+        "Free for Your First 30 Days",
+        "Paid Straight to Your Razorpay",
+        "5% Fee, Capped Every Month",
+        "Guest Lists and Payments",
+        "Get the Catch Host App",
+        "Your Link-in-Bio Event Page"
+      ],
+      "descriptions": [
+        "Sell tickets, manage guest lists and check people in from one app. Free for 30 days.",
+        "Guests pay straight into your own Razorpay account. After the trial, 5% capped monthly.",
+        "Built for run clubs, supper clubs and social events in India. Get Catch Host for free.",
+        "Your organiser page is your link in bio, with every upcoming event and booking on it."
+      ],
+      "adGroups": [
+        {
+          "name": "Ticketing",
+          "finalUrl": "https://catchdates.com/host/",
+          "maxCpcInr": 40,
+          "headlines": ["Event Ticketing for India", "Sell Event Tickets Online"],
+          "keywords": [
+            {"text": "sell event tickets online", "match": "PHRASE"},
+            {"text": "event ticketing platform", "match": "PHRASE"},
+            {"text": "event ticketing india", "match": "PHRASE"},
+            {"text": "sell tickets online india", "match": "PHRASE"},
+            {"text": "event registration software", "match": "PHRASE"},
+            {"text": "event management software", "match": "PHRASE"}
+          ]
+        },
+        {
+          "name": "Clubs and communities",
+          "finalUrl": "https://catchdates.com/host/",
+          "maxCpcInr": 40,
+          "headlines": ["Run Your Club From One App", "For Run Clubs and Supper Clubs"],
+          "keywords": [
+            {"text": "run club app", "match": "PHRASE"},
+            {"text": "manage run club", "match": "PHRASE"},
+            {"text": "community event app", "match": "PHRASE"},
+            {"text": "supper club booking", "match": "PHRASE"},
+            {"text": "app to host events", "match": "PHRASE"}
+          ]
+        },
+        {
+          "name": "Check-in and guest lists",
+          "finalUrl": "https://catchdates.com/host/",
+          "maxCpcInr": 40,
+          "headlines": ["Event Check-In by QR Code", "Know Who Has Arrived"],
+          "keywords": [
+            {"text": "event check in app", "match": "PHRASE"},
+            {"text": "qr code event check in", "match": "PHRASE"},
+            {"text": "guest list management software", "match": "PHRASE"},
+            {"text": "event check in software", "match": "EXACT"}
+          ]
+        }
+      ]
+    }
+  ]
+}
