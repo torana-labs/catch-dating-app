@@ -33,6 +33,7 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
         SendEventBroadcastCallableRequest,
         SelfCheckInAttendanceCallableRequest,
         UpdateEventCallableRequest;
+import 'package:catch_platform/streams/combine_latest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -167,19 +168,19 @@ class EventRepository with EventRepositoryActions {
         if (!event.synthetic) event,
     ];
     return withBackendErrorStream(
-      () =>
-          _combineLatestPair(
-            current.snapshots().map(events),
-            recent.snapshots().map(events),
-          ).map((pair) {
-            final byId = {
-              for (final event in [...pair.$2, ...pair.$1]) event.id: event,
-            };
-            return List<Event>.unmodifiable(
-              byId.values.toList()
-                ..sort((a, b) => a.startTime.compareTo(b.startTime)),
-            );
-          }),
+      () => combineLatest(
+        current.snapshots().map(events),
+        recent.snapshots().map(events),
+        (coming, ended) {
+          final byId = {
+            for (final event in [...ended, ...coming]) event.id: event,
+          };
+          return List<Event>.unmodifiable(
+            byId.values.toList()
+              ..sort((a, b) => a.startTime.compareTo(b.startTime)),
+          );
+        },
+      ),
       context: const BackendErrorContext(
         service: BackendService.firestore,
         action: 'watch organizer events',
@@ -470,38 +471,3 @@ Future<List<Event>> recommendedEvents(Ref ref, RecommendedEventsQuery query) =>
     ref
         .watch(eventRepositoryProvider)
         .fetchUpcomingEventsForOrganizers(query.followedOrganizerIds);
-
-/// The latest pair once both streams have emitted, then on every emission.
-/// Cancelling the result cancels both.
-Stream<(A, B)> _combineLatestPair<A, B>(Stream<A> first, Stream<B> second) {
-  late final StreamController<(A, B)> controller;
-  StreamSubscription<A>? firstSub;
-  StreamSubscription<B>? secondSub;
-  A? a;
-  B? b;
-  var hasA = false;
-  var hasB = false;
-  void emit() {
-    if (hasA && hasB) controller.add((a as A, b as B));
-  }
-
-  controller = StreamController<(A, B)>(
-    onListen: () {
-      firstSub = first.listen((value) {
-        a = value;
-        hasA = true;
-        emit();
-      }, onError: controller.addError);
-      secondSub = second.listen((value) {
-        b = value;
-        hasB = true;
-        emit();
-      }, onError: controller.addError);
-    },
-    onCancel: () async {
-      await Future.wait([?firstSub?.cancel(), ?secondSub?.cancel()]);
-      await controller.close();
-    },
-  );
-  return controller.stream;
-}
