@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
-import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart'
+    show watchSavedEventCardsProvider, watchSignedUpEventCardsProvider;
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -65,12 +65,12 @@ Future<void> _pumpCalendar(
 }) async {
   final overrides = [
     uidProvider.overrideWithValue(uid),
-    watchSignedUpEventsProvider(
+    watchSignedUpEventCardsProvider(
       'runner-1',
-    ).overrideWithValue(const AsyncData<List<Event>>([])),
-    watchSavedEventDetailsForUserProvider(
+    ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
+    watchSavedEventCardsProvider(
       'runner-1',
-    ).overrideWithValue(const AsyncData<List<Event>>([])),
+    ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
   ];
 
   await tester.pumpWidget(

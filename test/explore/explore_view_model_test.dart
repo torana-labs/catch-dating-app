@@ -2,8 +2,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/guest_event_cards_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/contexts/discovery/data/event_discovery_repository.dart';
 import 'package:catch_dating_app/contexts/discovery/data/explore_search_repository.dart';
@@ -14,6 +14,7 @@ import 'package:catch_dating_app/contexts/events/data/external_event_repository.
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -2021,15 +2022,15 @@ void main() {
                 ),
               ]),
             ),
-            watchSignedUpEventsProvider(
-              user.uid,
-            ).overrideWith((ref) => Stream.value([joinedEvent])),
+            watchSignedUpEventCardsProvider(user.uid).overrideWith(
+              (ref) => Stream.value(guestEventCardsOf([joinedEvent])),
+            ),
             watchSavedEventsForUserProvider(
               user.uid,
             ).overrideWith((ref) => Stream.value([savedEdge])),
-            watchSavedEventDetailsForUserProvider(
-              user.uid,
-            ).overrideWith((ref) => Stream.value([savedEvent])),
+            watchSavedEventCardsProvider(user.uid).overrideWith(
+              (ref) => Stream.value(guestEventCardsOf([savedEvent])),
+            ),
             watchEventsByIdsProvider(
               EventsByIdQuery([joinedEvent.id]),
             ).overrideWith((ref) => Stream.value([joinedEvent])),

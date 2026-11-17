@@ -5,7 +5,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 String eventTileKickerLabel(
-  EventTileData data, {
+  EventTileLabels data, {
   required bool showOrganizerName,
 }) {
   final organizerName = data.organizerName?.trim();
@@ -19,7 +19,7 @@ String eventTileKickerLabel(
 }
 
 String? eventTileSupportingLabel(
-  EventTileData data, {
+  EventTileLabels data, {
   required bool showOrganizerName,
 }) {
   final activity = data.activitySummaryLabel.trim();

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -13,12 +14,26 @@ class DashboardEventFocusController {
 
   Future<void> selfCheckIn(
     MutationTransaction tx,
-    Event event,
+    String eventId,
     String venueSessionToken,
   ) {
     return tx
         .get(eventBookingControllerProvider.notifier)
-        .selfCheckIn(eventId: event.id, venueSessionToken: venueSessionToken);
+        .selfCheckIn(eventId: eventId, venueSessionToken: venueSessionToken);
+  }
+
+  /// The whole event just checked in to, for the companion and the
+  /// celebration. The check-in has already succeeded, so a failed read
+  /// returns null and skips the celebration instead of failing the check-in.
+  Future<Event?> readCheckedInEvent(
+    MutationTransaction tx,
+    String eventId,
+  ) async {
+    try {
+      return await tx.get(eventRepositoryProvider).fetchEvent(eventId);
+    } on Object {
+      return null;
+    }
   }
 
   void resetSelfCheckInError() {

@@ -1,14 +1,15 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_check_in_location_service.dart';
+import 'package:catch_dating_app/contexts/bookings/data/guest_event_cards_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/health_activity_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
@@ -168,9 +169,9 @@ void main() {
             membershipsOverride(user, const []),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             activityNotificationsOverride(user),
-            watchSignedUpEventsProvider(
-              user.uid,
-            ).overrideWith((ref) => signedUpEventsController.stream),
+            watchSignedUpEventCardsProvider(user.uid).overrideWith(
+              (ref) => signedUpEventsController.stream.map(guestEventCardsOf),
+            ),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -198,8 +199,11 @@ void main() {
             membershipsOverride(user, const []),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             activityNotificationsOverride(user),
-            watchSignedUpEventsProvider(user.uid).overrideWithValue(
-              AsyncError<List<Event>>(Exception('boom'), StackTrace.empty),
+            watchSignedUpEventCardsProvider(user.uid).overrideWithValue(
+              AsyncError<List<GuestEventCard>>(
+                Exception('boom'),
+                StackTrace.empty,
+              ),
             ),
           ],
           child: MaterialApp(
@@ -269,12 +273,12 @@ void main() {
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
             activityNotificationsOverride(user),
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
-            watchAttendedEventsProvider(
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
             watchReviewsByUserProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Review>>([])),
@@ -329,12 +333,12 @@ void main() {
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
             activityNotificationsOverride(user),
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
-            watchAttendedEventsProvider(
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
             watchReviewsByUserProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Review>>([])),
@@ -399,12 +403,12 @@ void main() {
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             membershipsOverride(user, const []),
             activityNotificationsOverride(user),
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
-            watchAttendedEventsProvider(
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
             watchReviewsByUserProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Review>>([])),
@@ -452,12 +456,12 @@ void main() {
         ProviderScope(
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               user.uid,
-            ).overrideWithValue(AsyncData<List<Event>>([nextEvent])),
-            watchAttendedEventsProvider(
+            ).overrideWithValue(AsyncData(guestEventCardsOf([nextEvent]))),
+            watchAttendedEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
             exploreRecommendedEventsProvider(
               recommendationsQueryFor(user.uid, joinedOrganizerIds),
             ).overrideWithValue(noRecommendationCandidates),
@@ -505,7 +509,7 @@ void main() {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],
         uid: user.uid,
-        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        attendedEventsAsync: const AsyncData(<GuestEventCard>[]),
         now: DateTime(2026, 5, 13),
       );
 
@@ -627,9 +631,9 @@ void main() {
                 readAt: DateTime(2026, 5, 16),
               ),
             ]),
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               user.uid,
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -671,9 +675,9 @@ void main() {
             activityNotificationRepositoryProvider.overrideWithValue(
               repository,
             ),
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               'runner-1',
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -745,9 +749,9 @@ void main() {
             activityNotificationRepositoryProvider.overrideWithValue(
               _FakeActivityNotificationRepository(notifications),
             ),
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               'runner-1',
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -854,9 +858,9 @@ void main() {
                 yesterday,
               ]),
             ),
-            watchSignedUpEventsProvider(
+            watchSignedUpEventCardsProvider(
               'runner-1',
-            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            ).overrideWithValue(const AsyncData(<GuestEventCard>[])),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -933,7 +937,7 @@ class _DashboardFullTestShell extends ConsumerWidget {
     final now = ref.watch(dashboardNowProvider);
     final viewModel = ref.watch(
       dashboardFullViewModelProvider(
-        signedUpEvents: signedUpEvents,
+        signedUpEvents: guestEventCardsOf(signedUpEvents),
         user: user,
         uid: user.uid,
         followedOrganizerIds: followedOrganizerIds,

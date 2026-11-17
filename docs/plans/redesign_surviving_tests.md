@@ -3194,7 +3194,6 @@ Layout only, deleted with the screen:
 - `domain` resolveEventMapInitialCenter: uses device location while the city is auto-selected
 - `domain` resolveEventMapInitialCenter: uses selected city when device location is unavailable
 - `domain` resolveEventMapInitialCenter: uses selected city when the user overrides the city
-- `domain` eventMapViewModelProvider: combines profile, signed-up, saved, and recommended events
 
 **`test/events/events_widgets_test.dart`** — mixed (3 layout cases go with the screen) · subject `lib/events/shared/event_agenda_list.dart`, `lib/events/shared/event_tiles/event_tiles.dart` · decided by rules · also under P3.2 events/create, shared lib/pages/event
 

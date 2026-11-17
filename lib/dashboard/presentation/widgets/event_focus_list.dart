@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/bookings/domain/event_arrival_action.dart';
-import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
@@ -13,8 +13,8 @@ import 'package:catch_platform/theme/activity_palette.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-typedef EventFocusOrganizerNameBuilder = String? Function(Event event);
-typedef EventFocusEventCallback = void Function(Event event);
+typedef EventFocusOrganizerNameBuilder = String? Function(GuestEventCard event);
+typedef EventFocusEventCallback = void Function(GuestEventCard event);
 
 class EventFocusActions {
   const EventFocusActions({
@@ -63,14 +63,14 @@ class EventFocusList extends StatefulWidget {
   static Key actionKey(String actionName) =>
       ValueKey('dashboard-event-focus-action-$actionName');
 
-  final List<Event> upcomingEvents;
+  final List<GuestEventCard> upcomingEvents;
   final List<DashboardCatchWindow> windowedEvents;
   final EventFocusActions actions;
   final EventFocusCheckInState checkInState;
   final EventArrivalAction? arrivalAction;
-  final Event? pendingReviewEvent;
+  final GuestEventCard? pendingReviewEvent;
   final EventFocusOrganizerNameBuilder? organizerNameBuilder;
-  final ValueChanged<Event>? onWindowImpression;
+  final ValueChanged<GuestEventCard>? onWindowImpression;
   final DateTime? now;
 
   @override
@@ -113,7 +113,7 @@ class _EventFocusListState extends State<EventFocusList> {
   void _logWindowImpressions() {
     if (!mounted) return;
     for (final window in widget.windowedEvents) {
-      if (_impressedWindowIds.add(window.event.id)) {
+      if (_impressedWindowIds.add(window.event.eventId)) {
         widget.onWindowImpression?.call(window.event);
       }
     }
@@ -149,7 +149,7 @@ class _EventFocusListState extends State<EventFocusList> {
         for (var index = 0; index < items.length; index++) ...[
           if (index > 0) gapH10,
           EventFocusCard(
-            key: ValueKey('event-focus-${items[index].event.id}'),
+            key: ValueKey('event-focus-${items[index].event.eventId}'),
             item: items[index],
             cardIndex: index,
             cardCount: items.length,
@@ -171,25 +171,22 @@ class _EventFocusListState extends State<EventFocusList> {
   }
 
   List<EventFocusItem> _buildItems(DateTime now) {
-    final checkInEventId =
-        widget.arrivalAction?.kind == EventArrivalActionKind.selfCheckIn
-        ? widget.arrivalAction?.event.id
-        : null;
+    final checkInEventId = widget.arrivalAction?.card.eventId;
     final items = <EventFocusItem>[
       for (final window in widget.windowedEvents)
         EventFocusItem(
           event: window.event,
           kind: EventFocusKind.afterEvent,
           windowClosesAt: window.windowClosesAt,
-          attendedCount: window.attendedCount,
           canSwipe: true,
-          needsReview: widget.pendingReviewEvent?.id == window.event.id,
+          needsReview:
+              widget.pendingReviewEvent?.eventId == window.event.eventId,
           organizerName: widget.organizerNameBuilder?.call(window.event),
         ),
       for (final event in widget.upcomingEvents)
         EventFocusItem(
           event: event,
-          kind: event.id == checkInEventId
+          kind: event.eventId == checkInEventId
               ? EventFocusKind.checkIn
               : EventFocusKind.upcoming,
           isToday:
@@ -201,7 +198,8 @@ class _EventFocusListState extends State<EventFocusList> {
     ];
     if (widget.pendingReviewEvent != null &&
         !widget.windowedEvents.any(
-          (window) => window.event.id == widget.pendingReviewEvent!.id,
+          (window) =>
+              window.event.eventId == widget.pendingReviewEvent!.eventId,
         )) {
       items.add(
         EventFocusItem(
@@ -219,11 +217,15 @@ class _EventFocusListState extends State<EventFocusList> {
       if (priority != 0) return priority;
       if (a.canSwipe && b.canSwipe) {
         final expiry = a.windowClosesAt!.compareTo(b.windowClosesAt!);
-        return expiry != 0 ? expiry : a.event.id.compareTo(b.event.id);
+        return expiry != 0
+            ? expiry
+            : a.event.eventId.compareTo(b.event.eventId);
       }
       if (a.kind == EventFocusKind.afterEvent &&
           b.kind == EventFocusKind.afterEvent) {
-        return b.event.endTime.compareTo(a.event.endTime);
+        return (b.event.endTime ?? b.event.startTime).compareTo(
+          a.event.endTime ?? a.event.startTime,
+        );
       }
       return a.event.startTime.compareTo(b.event.startTime);
     });
@@ -276,7 +278,7 @@ class EventFocusCard extends StatelessWidget {
     final activity = ActivityPalette.resolve(context, item.event.activityKind);
 
     return EventActionCard(
-      event: item.event,
+      title: item.event.title,
       onTap: item.canSwipe
           ? () => onActionPressed(EventFocusAction.swipe)
           : null,
@@ -311,13 +313,6 @@ class EventFocusCard extends StatelessWidget {
                   ),
             tone: CatchBadgeTone.brand,
             icon: CatchIcons.like,
-          ),
-          EventActionCardBadge(
-            label: context.l10n.dashboardEventFocusListLabelAttendeesCheckedIn(
-              attendedCount: item.attendedCount ?? item.event.attendedCount,
-            ),
-            tone: CatchBadgeTone.neutral,
-            icon: CatchIcons.people,
           ),
         ],
         if (item.needsReview)
@@ -357,14 +352,10 @@ class EventFocusCard extends StatelessWidget {
                   icon: activityKindGlyph(item.event.activityKind),
                   label: item.event.activitySummaryLabel,
                 ),
-                CatchMetaEntry(
-                  icon: CatchIcons.people,
-                  label: context.l10n
-                      .dashboardEventFocusRailLabelSignedupcountCapacitylimit(
-                        signedUpCount: item.event.signedUpCount,
-                        capacityLimit: item.event.capacityLimit,
-                      ),
-                ),
+                // Cards carry capacity terms, not live counts.
+                if (eventCapacityTermsLabel(item.event.capacityLimit)
+                    case final capacity when capacity.isNotEmpty)
+                  CatchMetaEntry(icon: CatchIcons.people, label: capacity),
               ],
             ],
       actions: [
@@ -441,17 +432,15 @@ class EventFocusItem {
     this.needsReview = false,
     this.isToday = false,
     this.windowClosesAt,
-    this.attendedCount,
   });
 
-  final Event event;
+  final GuestEventCard event;
   final EventFocusKind kind;
   final String? organizerName;
   final bool canSwipe;
   final bool needsReview;
   final bool isToday;
   final DateTime? windowClosesAt;
-  final int? attendedCount;
 
   bool get isUrgent =>
       kind == EventFocusKind.checkIn || canSwipe || needsReview;

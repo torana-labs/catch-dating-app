@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
@@ -163,8 +164,8 @@ String? selectExploreFeaturedEventId({
   required DateTime now,
   UserProfile? viewer,
   Set<String> signedUpEventIds = const <String>{},
-  List<Event> attendedEvents = const <Event>[],
-  List<Event> signedUpEvents = const <Event>[],
+  List<GuestEventCard> attendedEvents = const <GuestEventCard>[],
+  List<GuestEventCard> signedUpEvents = const <GuestEventCard>[],
 }) {
   final candidates = items
       .where((item) => _isExploreHeroCandidate(item, now))

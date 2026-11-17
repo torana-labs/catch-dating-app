@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty_sliver_body.dart';
@@ -150,13 +151,13 @@ Widget dashboardFullSliverBodyReview(BuildContext context) {
 
 DashboardFullViewModel _dashboardFullViewModel() {
   return DashboardFullViewModel(
-    upcomingEvents: [widgetbookDashboardNextEvent],
-    nextEvent: widgetbookDashboardNextEvent,
+    upcomingEvents: [GuestEventCard.fromEvent(widgetbookDashboardNextEvent)],
+    nextEvent: GuestEventCard.fromEvent(widgetbookDashboardNextEvent),
     arrivalAction: null,
     windowedEvents: const [],
     pendingReviewEvent: null,
     attendedEventsSection: DashboardSectionModel.data([
-      DashboardSurfaceFixtures.attendedEvent,
+      GuestEventCard.fromEvent(DashboardSurfaceFixtures.attendedEvent),
     ]),
   );
 }
@@ -165,14 +166,16 @@ DashboardFullViewModel _dashboardWindowedViewModel(int count) {
   final windows = [
     for (var index = 0; index < count; index++)
       DashboardCatchWindow(
-        event: DashboardSurfaceFixtures.attendedEvent.copyWith(
-          id: 'dashboard-preview-window-$index',
-          name: 'Catch after ${index == 0 ? 'Sunday Social' : 'Coffee Run'}',
-          startTime: DashboardSurfaceFixtures.now.subtract(
-            Duration(hours: index == 0 ? 5 : 3),
-          ),
-          endTime: DashboardSurfaceFixtures.now.subtract(
-            Duration(hours: index == 0 ? 4 : 2),
+        event: GuestEventCard.fromEvent(
+          DashboardSurfaceFixtures.attendedEvent.copyWith(
+            id: 'dashboard-preview-window-$index',
+            name: 'Catch after ${index == 0 ? 'Sunday Social' : 'Coffee Run'}',
+            startTime: DashboardSurfaceFixtures.now.subtract(
+              Duration(hours: index == 0 ? 5 : 3),
+            ),
+            endTime: DashboardSurfaceFixtures.now.subtract(
+              Duration(hours: index == 0 ? 4 : 2),
+            ),
           ),
         ),
         windowClosesAt: DashboardSurfaceFixtures.now.add(
@@ -181,8 +184,8 @@ DashboardFullViewModel _dashboardWindowedViewModel(int count) {
       ),
   ];
   return DashboardFullViewModel(
-    upcomingEvents: [widgetbookDashboardNextEvent],
-    nextEvent: widgetbookDashboardNextEvent,
+    upcomingEvents: [GuestEventCard.fromEvent(widgetbookDashboardNextEvent)],
+    nextEvent: GuestEventCard.fromEvent(widgetbookDashboardNextEvent),
     arrivalAction: null,
     windowedEvents: windows,
     pendingReviewEvent: null,

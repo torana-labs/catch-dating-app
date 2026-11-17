@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart'
+    show watchSavedEventCardsProvider;
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
@@ -131,7 +133,10 @@ Widget savedEventsAgendaSliverStates(BuildContext context) {
     child: CustomScrollView(
       slivers: [
         SavedEventsAgendaList(
-          state: SavedEventsListState.from(events, now: widgetbookEventsNow),
+          state: SavedEventsListState.from(
+            guestEventCardsOf(events),
+            now: widgetbookEventsNow,
+          ),
           organizerNames: {
             for (final event in events)
               event.organizerId: widgetbookEventsOrganizer.name,
@@ -187,9 +192,9 @@ class _SavedEventsRouteFrame extends StatelessWidget {
         overrides: [
           uidProvider.overrideWithValue(AsyncData<String?>(uid)),
           if (uid != null)
-            watchSavedEventDetailsForUserProvider(
+            watchSavedEventCardsProvider(
               uid!,
-            ).overrideWithValue(effectiveSavedEvents),
+            ).overrideWithValue(_cardsAsync(effectiveSavedEvents)),
           if (events.isNotEmpty)
             organizerNameLookupProvider(query).overrideWithValue(
               organizerNames ??
@@ -211,3 +216,14 @@ List<T> _asyncDataList<T>(AsyncValue<List<T>> value) {
     _ => <T>[],
   };
 }
+
+/// The guest event cards a fixture's events would carry.
+AsyncValue<List<GuestEventCard>> _cardsAsync(AsyncValue<List<Event>> events) =>
+    switch (events) {
+      AsyncData(:final value) => AsyncData(guestEventCardsOf(value)),
+      AsyncError(:final error, :final stackTrace) => AsyncError(
+        error,
+        stackTrace,
+      ),
+      _ => const AsyncLoading(),
+    };

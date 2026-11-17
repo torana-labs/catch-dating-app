@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/discovery/domain/saved_event.dart';
-import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
@@ -27,14 +26,6 @@ class SavedEventRepository {
         toJson: (savedEvent) => savedEvent.toJson(),
       );
 
-  CollectionReference<Event> get _eventsRef => _db
-      .collection('events')
-      .withDocumentIdConverter<Event>(
-        idField: 'id',
-        fromJson: Event.fromJson,
-        toJson: (event) => event.toJson(),
-      );
-
   DocumentReference<Map<String, dynamic>> _rawSavedEventRef({
     required String uid,
     required String eventId,
@@ -55,26 +46,6 @@ class SavedEventRepository {
           resource: _collectionPath,
         ),
       );
-
-  Stream<List<Event>> watchSavedEventDetailsForUser({required String uid}) {
-    final idStream = _savedEventsRef
-        .where('uid', isEqualTo: uid)
-        .limit(ReadLimitPolicy.boundedWorkingSet)
-        .snapshots()
-        .map(
-          (snap) => snap.docs.map((doc) => doc.data().eventId).toSet().toList(),
-        );
-
-    return watchEventsByIdStream(
-      idStream: idStream,
-      eventsRef: _eventsRef,
-      context: const BackendErrorContext(
-        service: BackendService.firestore,
-        action: 'watch saved event details',
-        resource: 'events',
-      ),
-    );
-  }
 
   Stream<SavedEvent?> watchSavedEvent({
     required String uid,
@@ -130,8 +101,3 @@ Stream<List<SavedEvent>> watchSavedEventsForUser(Ref ref, String uid) =>
 Stream<SavedEvent?> watchSavedEvent(Ref ref, String uid, String eventId) => ref
     .watch(savedEventRepositoryProvider)
     .watchSavedEvent(uid: uid, eventId: eventId);
-
-@riverpod
-Stream<List<Event>> watchSavedEventDetailsForUser(Ref ref, String uid) => ref
-    .watch(savedEventRepositoryProvider)
-    .watchSavedEventDetailsForUser(uid: uid);

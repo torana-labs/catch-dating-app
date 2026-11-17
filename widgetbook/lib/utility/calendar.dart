@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
-import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/bookings.dart'
+    show watchSavedEventCardsProvider, watchSignedUpEventCardsProvider;
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_name_lookup.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
@@ -66,8 +67,8 @@ final _calendarSavedEvents = <Event>[
 ];
 
 final _calendarSummary = CalendarEventSummary.from(
-  signedUpEvents: _calendarJoinedEvents,
-  savedEvents: _calendarSavedEvents,
+  signedUpEvents: guestEventCardsOf(_calendarJoinedEvents),
+  savedEvents: guestEventCardsOf(_calendarSavedEvents),
   now: widgetbookUtilityCalendarNow,
 );
 
@@ -227,8 +228,8 @@ Widget calendarAgendaSliverSectionStates(BuildContext context) {
   );
   final emptyState = CalendarAgendaSectionState.from(
     summary: CalendarEventSummary.from(
-      signedUpEvents: const <Event>[],
-      savedEvents: const <Event>[],
+      signedUpEvents: const <GuestEventCard>[],
+      savedEvents: const <GuestEventCard>[],
       now: widgetbookUtilityCalendarNow,
     ),
     organizerNames: const CalendarOrganizerNameLookupState.ready(
@@ -542,12 +543,12 @@ class _CalendarScope extends StatelessWidget {
         uidProvider.overrideWithValue(
           uidValue ?? const AsyncData<String?>(widgetbookUtilityViewerUid),
         ),
-        watchSignedUpEventsProvider(
+        watchSignedUpEventCardsProvider(
           widgetbookUtilityViewerUid,
-        ).overrideWithValue(signedUpEvents),
-        watchSavedEventDetailsForUserProvider(
+        ).overrideWithValue(_cardsAsync(signedUpEvents)),
+        watchSavedEventCardsProvider(
           widgetbookUtilityViewerUid,
-        ).overrideWithValue(savedEvents),
+        ).overrideWithValue(_cardsAsync(savedEvents)),
         if (organizerQuery.organizerIds.isNotEmpty)
           organizerNameLookupProvider(organizerQuery).overrideWithValue(
             organizerNamesValue ??
@@ -584,3 +585,14 @@ Event _calendarEvent({
     status: status,
   );
 }
+
+/// The guest event cards a fixture's events would carry.
+AsyncValue<List<GuestEventCard>> _cardsAsync(AsyncValue<List<Event>> events) =>
+    switch (events) {
+      AsyncData(:final value) => AsyncData(guestEventCardsOf(value)),
+      AsyncError(:final error, :final stackTrace) => AsyncError(
+        error,
+        stackTrace,
+      ),
+      _ => const AsyncLoading(),
+    };

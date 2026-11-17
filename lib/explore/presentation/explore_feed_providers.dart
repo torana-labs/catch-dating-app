@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/guest_event_cards_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/contexts/discovery/data/event_discovery_repository.dart';
@@ -14,6 +14,7 @@ import 'package:catch_dating_app/contexts/events/data/external_event_repository.
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
+import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
@@ -545,8 +546,9 @@ AsyncValue<List<ExploreEventRecommendation>> exploreRecommendations(Ref ref) {
   }
 
   final userAsync = ref.watch(watchUserProfileProvider);
-  final signedUpEventsAsync = ref.watch(watchSignedUpEventsProvider(uid));
-  final attendedEventsAsync = ref.watch(watchAttendedEventsProvider(uid));
+  // The guest's own event cards are enough for the time-of-day signal.
+  final signedUpEventsAsync = ref.watch(watchSignedUpEventCardsProvider(uid));
+  final attendedEventsAsync = ref.watch(watchAttendedEventCardsProvider(uid));
   final candidatesAsync = ref.watch(
     exploreRecommendedEventsProvider(
       ExploreRecommendationsQuery(
@@ -594,14 +596,14 @@ AsyncValue<List<ExploreEventRecommendation>> exploreRecommendations(Ref ref) {
     );
   }
 
-  final signedUpEvents = signedUpEventsState.value ?? const <Event>[];
+  final signedUpEvents = signedUpEventsState.value ?? const <GuestEventCard>[];
   return AsyncData(
     rankExploreEventRecommendations(
       candidates:
           candidatesState.value ??
           const <ExploreEventRecommendationCandidate>[],
-      signedUpEventIds: signedUpEvents.map((event) => event.id).toSet(),
-      attendedEvents: attendedEventsState.value ?? const <Event>[],
+      signedUpEventIds: signedUpEvents.map((event) => event.eventId).toSet(),
+      attendedEvents: attendedEventsState.value ?? const <GuestEventCard>[],
       signedUpEvents: signedUpEvents,
       viewer: userState.value,
       now: ref.watch(exploreDiscoveryReferenceNowProvider),

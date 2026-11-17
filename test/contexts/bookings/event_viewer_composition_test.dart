@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_viewer_state_provider.dart';
 import 'package:catch_dating_app/contexts/bookings/data/guest_booking_facts_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/data/guest_event_cards_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_composition.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_viewer_state.dart';
@@ -61,7 +61,9 @@ void main() {
       membershipRules: rules,
       hostMembership: member ? testMembership() : null,
       publishedPlans: [testPlan()],
-      scheduledEvents: scheduled,
+      scheduledEvents: [
+        for (final other in scheduled) GuestEventCard.fromEvent(other),
+      ],
     ),
   );
 
@@ -216,7 +218,7 @@ void main() {
           target.id,
           'runner-1',
         ).overrideWith((ref) => Stream.value(null)),
-        watchScheduledEventsProvider(
+        watchScheduledEventCardsProvider(
           'runner-1',
         ).overrideWith((ref) => Stream.value(const [])),
         watchMyHostMembershipsProvider(
@@ -234,7 +236,7 @@ void main() {
         watchMyHostMembershipBenefitUsesProvider(
           'runner-1',
         ).overrideWith((ref) => Stream.value(const [])),
-        watchSignedUpEventsProvider(
+        watchSignedUpEventCardsProvider(
           'runner-1',
         ).overrideWith((ref) => Stream.value(const [])),
       ],

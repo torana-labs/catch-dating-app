@@ -18,7 +18,7 @@ import 'fixtures.dart';
 )
 Widget eventActionCardState(BuildContext context) {
   return EventActionCard(
-    event: widgetbookEvent,
+    title: widgetbookEvent.title,
     indexLabel: '1',
     badges: [
       EventActionCardBadge(
