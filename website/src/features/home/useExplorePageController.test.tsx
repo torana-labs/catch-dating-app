@@ -39,12 +39,14 @@ describe("useExplorePageController", () => {
     expect(state({...mumbaiLiveCatalog, phase: "unavailable"})).toBe("unavailable");
   });
 
-  it("offers the organisers as a tab, and asks for the city's new plans on WhatsApp", () => {
+  it("offers the organisers as a tab, and asks for the format filter's plans on WhatsApp", () => {
     const {result} = renderHook(() => useExplorePageController(mumbaiLiveCatalog, {pathname: "/mumbai/", search: "?format=courts"}, vi.fn()));
     expect(result.current.tabs).toEqual([
       {value: "plans", label: "Plans", href: "/mumbai/?format=courts"},
       {value: "organisers", label: "Organisers", href: "/mumbai/?format=courts&show=organisers"},
     ]);
+    expect(result.current.notify).toEqual({place: {citySlug: "mumbai", cityLabel: "Mumbai", sourcePage: "/mumbai/", entry: "ex-wa"},
+      interests: ["courts"]});
     expect(result.current.notifyMessage).toBe(`Hi ${brand.name}, please send me new plans in Mumbai.`);
   });
 });

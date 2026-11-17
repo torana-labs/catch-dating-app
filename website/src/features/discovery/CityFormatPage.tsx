@@ -138,7 +138,7 @@ function CityFormatPageSections({page}: {page: Page}) {
         </> : <CityFormatThin page={page} />}
         <CatchCardGrid items={[]} kicker={page.more.kicker} kickerAccent="coral" kind="plan" links={page.more.links} title={page.more.title} />
         <CatchFaqSection items={page.faq.items} kicker={page.faq.kicker} title={page.faq.title} />
-        <CityAlertsCapture city={page.city.label} kicker={page.notify.kicker} message={page.notify.message} title={page.notify.title} />
+        <CityAlertsCapture interests={page.notify.interests} kicker={page.notify.kicker} place={page.notify.place} title={page.notify.title} />
       </>}
     </CitySiteChrome>
   );

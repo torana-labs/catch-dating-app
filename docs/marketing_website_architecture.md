@@ -251,9 +251,9 @@ the Next sitemap (`server/discoverySitemap.ts`), only when the read model's
 stays noindex and out of the sitemap until the owner approves it. Neither has
 static output. Indexing before a city launches is the read model's decision
 too (`formatPageIndexingFor`, owner decision of 17 Nov 2026). Their closing
-"Get new plans on WhatsApp" band opens a WhatsApp chat naming the city, as
-every playbook page's actions do, until the website lead client can send a
-`city_alerts` lead with the site's App Check token.
+"Get new plans on WhatsApp" form, also on Explore, sends a `city_alerts` lead
+through the site's lead client (`createSiteLeadSubmission`), which carries the
+App Check token the lead intake requires.
 
 ### How to add a playbook page
 

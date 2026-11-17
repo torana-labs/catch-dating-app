@@ -33,8 +33,10 @@ describe("useCityFormatPageController", () => {
     expect(navigate).toHaveBeenCalledWith("/indore/run-clubs/");
   });
 
-  it("asks for the format's plans in the city on WhatsApp, and the phone bar goes to the plans", () => {
+  it("sends the format's interest from its own page, and the phone bar goes to the plans", () => {
     const {result} = renderHook(() => useCityFormatPageController(mumbaiDiscoveryCatalog, "pickleball", vi.fn()));
+    expect(result.current.notify.interests).toEqual(["courts"]);
+    expect(result.current.notify.place).toEqual({citySlug: "mumbai", cityLabel: "Mumbai", sourcePage: "/mumbai/pickleball/", entry: "cf-wa"});
     expect(result.current.notify.message).toBe(`Hi ${brand.name}, please send me new sessions in Mumbai.`);
     expect(result.current.dock).toEqual({label: "See all sessions", href: "#plans"});
   });

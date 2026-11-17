@@ -114,7 +114,7 @@ function NewToCityPageSections({page}: {page: Page}) {
         title={page.trust.title}
       />
       <CatchFaqSection items={page.faq.items} kicker={page.faq.kicker} title={page.faq.title} />
-      <CityAlertsCapture city={page.city.label} ground="pink" kicker={page.notify.kicker} message={page.notify.message} title={page.notify.title} />
+      <CityAlertsCapture ground="pink" interests={page.notify.interests} kicker={page.notify.kicker} place={page.notify.place} title={page.notify.title} />
     </CitySiteChrome>
   );
 }

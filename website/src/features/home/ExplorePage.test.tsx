@@ -9,7 +9,11 @@ import {ExplorePage} from "./ExplorePage";
 import {exploreFiltersFromSearch, exploreSearchFor, filterPlans} from "./exploreModel";
 
 vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent: vi.fn()}));
-afterEach(cleanup);
+vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => null)}));
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
 
 function Url() {
   const location = useLocation();
@@ -122,13 +126,18 @@ describe("Explore", {timeout: 20_000}, () => {
     expect(within(screen.getByRole("banner")).queryByRole("link", {name: "What’s on"})).toBeNull();
   });
 
-  it("asks for new plans in the city on WhatsApp, with no form until the lead client ships", () => {
+  it("sends the capture as a city_alerts lead from the page it is on", async () => {
+    const fetch = vi.fn(async () => new Response(JSON.stringify({ok: true, alreadyJoined: false,
+      lead: {leadId: "f".repeat(64), requestKind: "city_alerts", isNew: true}}), {status: 200}));
+    vi.stubGlobal("fetch", fetch);
     show(mumbaiQuietCatalog, "/mumbai/");
     const capture = screen.getByRole("region", {name: "Get new plans in Mumbai on WhatsApp."});
-    const chat = new URL(within(capture).getByRole("link", {name: "Message us on WhatsApp"}).getAttribute("href") ?? "");
-    expect(chat.searchParams.get("text")).toBe(`Hi ${brand.name}, please send me new plans in Mumbai.`);
-    expect(within(capture).getByText("We reply on WhatsApp, usually within an hour.")).toBeTruthy();
-    expect(within(capture).queryByRole("textbox")).toBeNull();
+    fireEvent.change(within(capture).getByRole("textbox", {name: /Your WhatsApp number/u}), {target: {value: "98000 00000"}});
+    fireEvent.click(within(capture).getByRole("button", {name: "Notify me"}));
+    expect(await within(capture).findByText("Done. We reply on WhatsApp, usually within an hour.")).toBeTruthy();
+    const body = JSON.parse(String((fetch.mock.calls[0] as unknown as [string, {body: string}])[1].body));
+    expect(body).toMatchObject({requestKind: "city_alerts", city: "Mumbai",
+      lead: {phone: "+919800000000", sourcePage: "/mumbai/", entry: "ex-wa", cityAlerts: {interests: []}}});
   });
 
   it("tags a women-led plan from the read model", () => {

@@ -1,19 +1,27 @@
 import {brand} from "../brand.ts";
 
 /**
- * The closing "Get new plans in {city} on WhatsApp" band on Explore, the
- * city pages and the discovery pages (the kit's KitFinal). Website leads
- * need App Check and the site has no lead client yet, so, as on every
- * playbook page, the band opens a WhatsApp chat that names the city and what
- * the person wants to hear about, and a person replies. The city_alerts lead
- * form replaces the button once the lead client ships.
+ * The "Get new plans in {city} on WhatsApp" capture on Explore, the city
+ * pages and the discovery pages (the kit's KitFinal). It sends a
+ * `city_alerts` website lead (contracts/http/join_waitlist_request.schema.json)
+ * through the site's lead client: the number, the city and the formats the
+ * page is about, under the cityNewPlans consent. Staff reply first; nothing
+ * is sent automatically until the WhatsApp templates are approved, so the
+ * confirmation says a person replies. The lead client words its failures
+ * (content/websiteLead.ts).
  */
 export const cityAlertsCopy = {
   kicker: "Hear about new plans first",
   title: "Get new plans in {city} on WhatsApp.",
-  lead: "Message us and we’ll send you new plans in {city} as hosts add them. Stop any time.",
-  action: "Message us on WhatsApp",
-  /** The messages the button types for the person: any plan, one format's (`{plans}`, such as runs) or a newcomer's. */
+  lead: "About once a week. Stop any time.",
+  phone: "Your WhatsApp number",
+  action: "Notify me",
+  consent: "Tapping Notify me means you agree to get new plans in {city} on WhatsApp, about once a week. You can stop any time.",
+  /** Names this wording on every stored consent; change it whenever the consent wording changes. */
+  consentVersion: "city-new-plans-whatsapp-v1",
+  privacy: "Privacy policy",
+  sent: "Done. We reply on WhatsApp, usually within an hour.",
+  /** What the phone action bar's WhatsApp button types: any plan, one format's (`{plans}`, such as runs) or a newcomer's. */
   message: `Hi ${brand.name}, please send me new plans in {city}.`,
   formatMessage: `Hi ${brand.name}, please send me new {plans} in {city}.`,
   newcomerMessage: `Hi ${brand.name}, I’m new to {city}. Please send me plans that are good for coming on my own.`,

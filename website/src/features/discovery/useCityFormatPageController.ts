@@ -8,6 +8,7 @@ import {useMemo, useState} from "react";
 import type {HomeCatalog} from "../home/homeTypes";
 import {shortWhen} from "../home/homeModel";
 import {cityPagePath} from "../home/sections/cityChrome";
+import {cityAlertInterests} from "./cityAlertsModel";
 import {discoveryOrganizerCard, discoveryPlanCard} from "./discoveryCards";
 import {
   cityFormatModel,
@@ -129,6 +130,8 @@ export function useCityFormatPageController(catalog: HomeCatalog, format: Discov
       ],
     },
     notify: {
+      place: {citySlug: city.slug, cityLabel: city.label, sourcePage: cityFormatPath(city.slug, format), entry: "cf-wa"},
+      interests: cityAlertInterests([format]),
       message: fill(cityAlertsCopy.formatMessage, {plans: words.planMany, city: city.label}),
       kicker: fill(copy.notify.kicker, {plans: words.planMany}),
       title: copy.notify.title,

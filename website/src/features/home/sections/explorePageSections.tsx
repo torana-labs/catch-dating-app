@@ -184,8 +184,8 @@ export function ExplorePageSections({captures = {}, explore}: {captures?: Captur
       <ExploreResults explore={explore} />
       <ExploreHosts explore={explore} />
       {capture ? (
-        <CityAlertsCapture city={explore.city.label} media={screen ? <CatchAppCaptureImage {...screen} bezel caption={undefined} size="md" tilt="right" /> : undefined}
-          message={explore.notifyMessage} />
+        <CityAlertsCapture interests={explore.notify.interests} place={explore.notify.place}
+          media={screen ? <CatchAppCaptureImage {...screen} bezel caption={undefined} size="md" tilt="right" /> : undefined} />
       ) : null}
     </CitySiteChrome>
   );

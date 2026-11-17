@@ -31,9 +31,7 @@ describe("City format page", {timeout: 20_000}, () => {
     // The city's other indexed format pages, and the newcomers' page.
     const more = band("Other things to do");
     expect(within(more).getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/mumbai/nightlife/", "/new-to-mumbai/"]);
-    const capture = band("Get new plans on WhatsApp.");
-    expect(new URL(within(capture).getByRole("link", {name: "Message us on WhatsApp"}).getAttribute("href") ?? "").searchParams.get("text"))
-      .toMatch(/new runs in Mumbai\.$/u);
+    expect(within(band("Get new plans on WhatsApp.")).getByRole("button", {name: "Notify me"})).toBeTruthy();
   });
 
   it("is the thin page below the bar: what is here so far and what else is on", () => {

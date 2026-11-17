@@ -149,7 +149,7 @@ export function cityFormatPageStatus(catalog: HomeCatalog, format: DiscoveryForm
 }
 
 /** The formats a newcomer can walk into alone: the host makes the groups (pace groups, quiz teams, supper tables). */
-const newcomerFormats: readonly DiscoveryFormatKey[] = ["runClubs", "quizNights", "supper"];
+export const newcomerFormats: readonly DiscoveryFormatKey[] = ["runClubs", "quizNights", "supper"];
 
 /**
  * The new-to-the-city page's plans: this week's in the newcomer formats, or,

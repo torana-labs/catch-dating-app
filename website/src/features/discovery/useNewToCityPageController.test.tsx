@@ -27,6 +27,8 @@ describe("useNewToCityPageController", () => {
   it("asks for newcomer plans on WhatsApp and keeps the page when the city changes", () => {
     const navigate = vi.fn();
     const {result} = renderHook(() => useNewToCityPageController(mumbaiDiscoveryCatalog, navigate));
+    expect(result.current.notify.interests).toEqual(["runs", "dinners", "quizzes"]);
+    expect(result.current.notify.place.sourcePage).toBe("/new-to-mumbai/");
     expect(result.current.notify.message).toBe(`Hi ${brand.name}, I’m new to Mumbai. Please send me plans that are good for coming on my own.`);
     result.current.chooseCity("indore");
     expect(navigate).toHaveBeenCalledWith("/new-to-indore/");

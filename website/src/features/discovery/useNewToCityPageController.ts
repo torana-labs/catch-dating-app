@@ -7,8 +7,9 @@ import type {HomeCatalog} from "../home/homeTypes";
 import {datedWhen} from "../home/homeModel";
 import {cityPagePath} from "../home/sections/cityChrome";
 import {cityAlertsAnchor} from "./CityAlertsCapture";
+import {cityAlertInterests} from "./cityAlertsModel";
 import {discoveryPlanCard} from "./discoveryCards";
-import {newcomerPlans, newToCityPath, showWhatsOnFor} from "./discoveryModel";
+import {newcomerFormats, newcomerPlans, newToCityPath, showWhatsOnFor} from "./discoveryModel";
 
 /** The plans band's anchor, which the hero's first action scrolls to. */
 export const newcomerPlansAnchor = "solo";
@@ -66,7 +67,8 @@ export function useNewToCityPageController(catalog: HomeCatalog, navigate: (href
       title: fill(copy.faq.title, {city: city.label}),
       items: copy.faq.items.map((item, index) => ({id: `new-to-city-${index + 1}`, ...item})),
     },
-    notify: {message: fill(cityAlertsCopy.newcomerMessage, {city: city.label}), kicker: copy.notify.kicker, title: copy.notify.title},
+    notify: {place: {citySlug: city.slug, cityLabel: city.label, sourcePage: newToCityPath(city.slug), entry: "nc-wa"},
+      interests: cityAlertInterests(newcomerFormats), message: fill(cityAlertsCopy.newcomerMessage, {city: city.label}), kicker: copy.notify.kicker, title: copy.notify.title},
     dock: {label: discoveryPagesCopy.dock.newToCity, href: `#${newcomerPlansAnchor}`},
   };
 }

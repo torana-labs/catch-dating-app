@@ -2,6 +2,7 @@ import {explorePageCopy as copy} from "@content/explorePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {useMemo} from "react";
 import {cityAlertsCopy} from "@content/discovery/cityAlerts";
+import {exploreAlertInterests} from "../discovery/cityAlertsModel";
 import {discoveryOrganizerCard, discoveryPlanCard} from "../discovery/discoveryCards";
 import {showWhatsOnFor} from "../discovery/discoveryModel";
 import {weekPlans} from "./homeModel";
@@ -86,7 +87,10 @@ export function useExplorePageController(catalog: HomeCatalog, location: {pathna
       count(matchedOrganizers.length, copy.organiserCountOne, copy.organiserCount),
     exploreHref: cityPagePath(city.slug),
     cityHref: cityPagePath,
-    /** What the WhatsApp band's button types: new plans in the city. */
+    /** The WhatsApp form's city_alerts lead: this page, and the format filter's interest. */
+    notify: {place: {citySlug: city.slug, cityLabel: city.label, sourcePage: location.pathname, entry: "ex-wa"},
+      interests: exploreAlertInterests(filters.format)},
+    /** What the phone action bar's WhatsApp button types: new plans in the city. */
     notifyMessage: fill(cityAlertsCopy.message, {city: city.label}),
     update,
     clear: () => update({query: "", format: "all", when: "any"}),
