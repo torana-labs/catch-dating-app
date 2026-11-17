@@ -138,7 +138,7 @@ export function buildCityPlans(sources: CityPlanSources): CityPlans {
   const womenLedPlanCount = plans.filter((plan) => plan.womenLed).length;
 
   const month = monthCounts(pages, pageFormats, joining, now,
-    monthWindowEnd, launched);
+    monthWindowEnd);
   const organizers = launched ?
     pages.map((page) => pageOrganizer(page, plans,
       month.organizerFormats.get(page.organizerId) ?? [])) :
@@ -177,13 +177,16 @@ interface MonthCounts {
 
 /**
  * The 30-day signal and the city-by-format page counts. Every page in the
- * city counts, however many organizers and plans the document lists.
+ * city counts, however many organizers and plans the document lists. A city
+ * that has not launched has no pages, so it counts no plans; its organisers
+ * are the published organisers joining it, each counted once per format its
+ * listing names.
  */
 function monthCounts(
   pages: readonly CityOrganizerPage[],
   pageFormats: ReadonlyMap<string, readonly DiscoveryFormat[]>,
   joining: readonly HostListing[],
-  now: number, monthWindowEnd: number, launched: boolean
+  now: number, monthWindowEnd: number
 ): MonthCounts {
   const organizers = new Map<DiscoveryFormat, Set<string>>();
   const events = new Map<DiscoveryFormat, Set<string>>();
@@ -237,8 +240,7 @@ function monthCounts(
       organizerCount,
       upcomingEventCount,
       freeEventCount: free.get(format)?.size ?? 0,
-      indexing: formatPageIndexingFor(launched, organizerCount,
-        upcomingEventCount),
+      indexing: formatPageIndexingFor(organizerCount, upcomingEventCount),
     }];
   })) as CityFormatPages;
   return {eventCount: monthEvents.size, complete, formatPages,
