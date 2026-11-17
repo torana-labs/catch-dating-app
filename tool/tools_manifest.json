@@ -106,7 +106,7 @@
     },
     {
       "id": "ads:google-campaigns",
-      "category": "ads",
+      "category": "marketing",
       "path": "tool/ads/apply_google_campaigns.mjs",
       "command": "node tool/ads/apply_google_campaigns.mjs",
       "safety": "remote-write",
