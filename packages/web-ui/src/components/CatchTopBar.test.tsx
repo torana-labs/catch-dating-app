@@ -76,6 +76,14 @@ describe("CatchTopBar site", () => {
     expect(labels).toEqual(["What’s on", "Catch for hosts"]);
   });
 
+  it("draws a divider in the phone menu above an entry that starts a section", () => {
+    render(<CatchTopBar links={[{label: "What’s on", href: "/explore/"}]}
+      menuExtras={[{href: "/one/", label: "Column page", startsSection: true}, {href: "/two/", label: "Next page"}]} title="Catch" variant="site" />);
+    fireEvent.click(screen.getByRole("button", {name: "Menu"}));
+    const sections = screen.getAllByRole("menuitem").map((item) => [item.textContent?.trim(), item.dataset.section ?? null]);
+    expect(sections).toEqual([["What’s on", null], ["Column page", "true"], ["Next page", null]]);
+  });
+
   it("draws a whole phone menu in place of the built-in one when the site passes it", () => {
     render(<CatchTopBar links={[{href: "/explore/", label: "Explore"}]} menuExtras={[{label: "Sign in", onPressed: () => undefined}]}
       account={<button type="button">Account, Asha</button>} siteMenu={<button type="button">Menu, signed in as Asha</button>} title="Catch" variant="site" />);

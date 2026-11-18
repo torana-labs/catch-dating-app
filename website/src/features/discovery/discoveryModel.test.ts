@@ -4,6 +4,7 @@ import {describe, expect, it} from "vitest";
 import {mumbaiLiveCatalog} from "../../stories/fixtures/homeCatalogs";
 import {mumbaiDiscoveryCatalog, mumbaiEmptyMonthCatalog, mumbaiQuietCatalog, puneDiscoveryCatalog} from "./discoveryCatalogFixtures";
 import {
+  cityDiscoveryLinks,
   cityFormatModel,
   cityFormatPageStatus,
   filterFormatPlans,
@@ -68,6 +69,21 @@ describe("city format pages", () => {
     // Read from the public catalog instead of its document: no counts to show, never invented ones.
     expect(cityFormatPageStatus(mumbaiLiveCatalog, "runClubs")).toBe("unavailable");
     expect(cityFormatPageStatus({...mumbaiDiscoveryCatalog, phase: "unavailable"}, "runClubs")).toBe("unavailable");
+  });
+
+  it("are linked from the city's other pages only where they render, indexed or not", () => {
+    const links = cityDiscoveryLinks(mumbaiDiscoveryCatalog);
+    expect(links.newToCity).toBe("/new-to-mumbai/");
+    expect(links.formats.map((link) => link.href)).toEqual([
+      "/mumbai/run-clubs/", "/mumbai/racket-sports/", "/mumbai/pickleball/", "/mumbai/supper-clubs/", "/mumbai/quiz-nights/", "/mumbai/nightlife/", "/mumbai/book-clubs/",
+    ]);
+    for (const link of links.formats) expect(cityFormatPageStatus(mumbaiDiscoveryCatalog, link.format)).toBe("page");
+    // Pickleball is below the indexing bar and still a page to follow.
+    expect(cityFormatModel(mumbaiDiscoveryCatalog, "pickleball").indexed).toBe(false);
+    // No format pages to read: no format link, and the new-to-the-city page still renders.
+    expect(cityDiscoveryLinks(mumbaiLiveCatalog)).toEqual({newToCity: "/new-to-mumbai/", formats: []});
+    // A city that could not be read answers 503 on both, so neither is linked.
+    expect(cityDiscoveryLinks({...mumbaiDiscoveryCatalog, phase: "unavailable"})).toEqual({formats: []});
   });
 
   it("filter free and weekend plans in the city's time zone", () => {

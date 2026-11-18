@@ -6,6 +6,7 @@ import {comingFormats, homeCityState, organizerCard, planCard, proofReview, upco
 import type {CitySource} from "./cityChoice";
 import type {HomeCatalog, HomeFormat} from "./homeTypes";
 import {cityPagePath} from "./sections/cityChrome";
+import {cityDiscoveryLinks} from "../discovery/discoveryModel";
 
 export type HomeFilter = HomeFormat | "all";
 /** Plans shown at once before "See everything": the board's rail of three. */
@@ -82,6 +83,8 @@ export function useHomePageController(catalog: HomeCatalog, navigate: (href: str
     otherCities: catalog.cities.filter((other) => other.status === "live" && other.slug !== city.slug)
       .map((other) => ({label: fill(copy.week.cityLink, {city: other.label}), href: cityHref(other.slug)})),
     exploreHref: cityPagePath(city.slug),
+    /** The city's new-to-the-city page and its format pages that exist, for the entry tile, the format cards and the chrome. */
+    discovery: cityDiscoveryLinks(catalog),
   };
 }
 

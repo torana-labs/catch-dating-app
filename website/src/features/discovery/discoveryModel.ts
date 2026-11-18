@@ -148,6 +148,30 @@ export function cityFormatPageStatus(catalog: HomeCatalog, format: DiscoveryForm
   return page.organizerCount + page.upcomingEventCount > 0 ? "page" : "notFound";
 }
 
+/** A city's discovery pages that render, for links from its other pages. */
+export interface CityDiscoveryLinks {
+  /** Its new-to-the-city page; absent when the city could not be read, as that page then answers 503, or is not a website city. */
+  newToCity?: string;
+  /** Each format page with an organiser or a plan in the city, in the taxonomy's order. */
+  formats: readonly CityFormatLink[];
+}
+
+/**
+ * The selected city's discovery pages that exist, so a link never lands on
+ * a 404: its new-to-the-city page and every format page
+ * cityFormatPageStatus calls a page. Indexing plays no part: a noindex page
+ * is still a page to follow.
+ */
+export function cityDiscoveryLinks(catalog: HomeCatalog): CityDiscoveryLinks {
+  const slug = catalog.selected.slug;
+  if (!citySlugs.has(slug)) return {formats: []};
+  return {
+    ...(catalog.phase === "unavailable" ? {} : {newToCity: newToCityPath(slug)}),
+    formats: discoveryFormatKeys.filter((format) => cityFormatPageStatus(catalog, format) === "page")
+      .map((format) => ({format, href: cityFormatPath(slug, format), label: discoveryFormatCopy[format].name})),
+  };
+}
+
 /** The formats a newcomer can walk into alone: the host makes the groups (pace groups, quiz teams, supper tables). */
 export const newcomerFormats: readonly DiscoveryFormatKey[] = ["runClubs", "quizNights", "supper"];
 

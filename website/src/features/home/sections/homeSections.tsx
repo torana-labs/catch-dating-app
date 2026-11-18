@@ -38,7 +38,8 @@ import {useLaunchNoticeController} from "../useLaunchNoticeController";
 import {useCityAlertsController} from "../leads/useCityAlertsController";
 import {useHostReferralController, type HostReferralField} from "../leads/useHostReferralController";
 import {formatGrounds} from "../homeModel";
-import {footerCities} from "./cityChrome";
+import {cityChromeLinks, footerCities} from "./cityChrome";
+import type {DiscoveryFormatKey} from "../../discovery/discoveryTypes";
 
 type Home = HomePageController;
 const filterValues: HomeFilter[] = ["all", ...homeFormats.map((item) => item.format)];
@@ -93,11 +94,11 @@ function HomeHero({captures, home, offerOpen}: {captures: CaptureSlots; home: Ho
   );
 }
 
-/** "Whoever you are": six ways in, each to the city's plans or the band it names. */
+/** "Whoever you are": six ways in, each to the city's plans, its new-to-the-city page or the band it names. */
 function HomeEntries({home}: {home: Home}) {
   const city = home.city.label;
   const targets: Record<string, Pick<CatchCardGridEntry, "href" | "ground" | "icon">> = {
-    new: {href: home.exploreHref, ground: "coral", icon: "location"},
+    new: {href: home.discovery.newToCity ?? home.exploreHref, ground: "coral", icon: "location"},
     solo: {href: "#how", ground: "pink", icon: "person"},
     level: {href: home.exploreHref, ground: "mint", icon: "trend"},
     friends: {href: home.exploreHref, ground: "yellow", icon: "people"},
@@ -118,7 +119,20 @@ function HomeEntries({home}: {home: Home}) {
   );
 }
 
-/** "Start with what you feel like doing": the formats, each to the city's plans in it, and more kinds as chips. */
+/**
+ * The city's format page for a card's format or a chip's word, where that
+ * page exists (the board: "every format links to an indexable city page").
+ */
+const cardFormatPages: Record<string, DiscoveryFormatKey> = {run: "runClubs", courts: "racketSports", dinner: "supper", games: "quizNights", nightsOut: "nightlife"};
+const chipFormatPages: Record<string, DiscoveryFormatKey> = {yoga: "studios", workshop: "workshops", "book club": "books", cycling: "outdoors"};
+const formatPageHref = (home: Home, format: DiscoveryFormatKey | undefined) =>
+  home.discovery.formats.find((link) => link.format === format)?.href;
+
+/**
+ * "Start with what you feel like doing": the formats, each to the city's
+ * page for it, and more kinds as chips. A format with no page in the city
+ * yet filters the city's plans instead (?format= and ?q= keep working).
+ */
 function HomeFormats({home}: {home: Home}) {
   const city = home.city.label;
   // Only photos approved for the live site; a format without one shows its activity artwork (website-v2 README, #875).
@@ -126,11 +140,13 @@ function HomeFormats({home}: {home: Home}) {
   const chipDots = ["indigo", "yellow", "pink", "mint"] as const;
   return (
     <CatchCardGrid
-      chips={copy.formats.chips.map((chip, index) => ({label: chip.label, href: `${home.exploreHref}?q=${encodeURIComponent(chip.search)}`, dot: chipDots[index % chipDots.length]}))}
+      chips={copy.formats.chips.map((chip, index) => ({label: chip.label, dot: chipDots[index % chipDots.length],
+        href: formatPageHref(home, chipFormatPages[chip.search]) ?? `${home.exploreHref}?q=${encodeURIComponent(chip.search)}`}))}
       columns={5}
       id="formats"
       items={copy.formats.cards.map((card) => ({
-        id: card.format, title: card.title, body: card.body, more: fill(card.more, {city}), href: `${home.exploreHref}?format=${card.format}`,
+        id: card.format, title: card.title, body: card.body, more: fill(card.more, {city}),
+        href: formatPageHref(home, cardFormatPages[card.format]) ?? `${home.exploreHref}?format=${card.format}`,
         ground: formatGrounds[card.format], format: card.format, photoUrl: photos[card.format],
       }))}
       kicker={copy.formats.eyebrow}
@@ -533,10 +549,12 @@ export function HomePageSections({captures, downloadUrl, home}: {captures: Captu
   const early = home.state !== "busy";
   // The founding offer shows only while the city's public counter reads open, never a place that is gone.
   const offerOpen = useFoundingHostOffer(early ? home.marketId : undefined);
+  const chrome = cityChromeLinks(home.city, home.discovery);
   return (
     <>
       <PublicSiteHeader
         actions={<><CityPicker cities={home.cities} onChoose={home.chooseCity} selected={home.city} /><CatchButton href="#app" label={copy.header.app} size="sm" /></>}
+        newToCity={chrome.newToCity}
         whatsOnHref={home.exploreHref}
       />
       <WebsitePageMain id="top">
@@ -553,7 +571,7 @@ export function HomePageSections({captures, downloadUrl, home}: {captures: Captu
         <HomeRefer home={home} />
         <HomeFaq />
       </WebsitePageMain>
-      <PublicSiteFooter appHref="#app" cities={footerCities(home.cities)} exploreHref={home.exploreHref} />
+      <PublicSiteFooter appHref="#app" cities={footerCities(home.cities)} cityFormats={chrome.cityFormats} exploreHref={home.exploreHref} />
       <CatchSiteDock
         label={copy.dock.label}
         primary={{label: guestAppActionLabel, href: home.live ? "#app" : "#whats-on", accent: "pink"}}
