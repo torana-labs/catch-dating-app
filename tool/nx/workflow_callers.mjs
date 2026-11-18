@@ -51,6 +51,7 @@ export const selectorEntries = ["tool/harness.mjs", "tool/harness/compare_select
 export const notCalledByCi = {
   ".github/actionlint.yaml": "actionlint finds it by convention; the ungated Lint workflows job runs on every PR",
   ".github/dependabot.yml": "GitHub Dependabot settings; no workflow runs it",
+  ".github/pull_request_template.md": "GitHub's pull request template; no workflow runs it",
   ".github/actions/find-queue-validation/action.yml": "used only by the Admin and Host website deploy workflows",
   ".github/workflows/_backend-deploy.yml": "called only by backend-deploy.yml",
   ".github/workflows/_brand-config-publish.yml": "called only by brand-config-publish.yml",
@@ -85,6 +86,7 @@ export const notCalledByCi = {
   ".github/workflows/package-golden-baselines.yml": "maintenance: dispatch only",
   ".github/workflows/play-signing-fingerprints.yml": "operations: dispatch only",
   ".github/workflows/pr-closed-cancel.yml": "its own pull_request (closed) trigger",
+  ".github/workflows/pr-text-guard.yml": "its own pull_request trigger runs it from the base commit",
   ".github/workflows/release-readiness.yml": "release: dispatch only",
   ".github/workflows/store-listing.yml": "release: dispatch only",
   ".github/workflows/ui-capture-render.yml": "maintenance: dispatch only",

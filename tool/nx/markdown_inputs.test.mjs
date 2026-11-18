@@ -30,6 +30,8 @@ export const markdownReaders = {
   "tool/audit/check_fn_readme_inventory.mjs": {"functions/README.md": ["functions"]},
   // flutter-ci.yml runs it; the migration note must keep the organizerType marker.
   "tool/check_organizer_nomenclature.mjs": {"docs/migrations/clubs_to_organizers.md": ["flutter"]},
+  // A mandatory check: the Tools lane runs it through affected-tools and it scans every tracked document.
+  "tool/check_third_party_names.mjs": {"docs/agent_operating_model.md": ["tools"]},
   // source-preflight runs the freshness check on every change; Tools runs the generator's own check.
   "tool/ci/generated_inventories.mjs": {"docs/widget_catalog.md": []},
   "tool/design/generate_widget_catalog.mjs": {"docs/widget_catalog.md": ["tools"]},
@@ -64,6 +66,7 @@ export const markdownMentions = {
   "tool/marketing/import_hosted_captures.mjs": "checks the widget catalog its own import rewrote",
   "tool/nx/catch_projects.mjs": "Nx input patterns",
   "tool/nx/shadow_plan.mjs": "selection logic that classifies Markdown paths",
+  "tool/nx/workflow_callers.mjs": "lists the pull request template as CI configuration no workflow runs",
   "tool/scaffold.mjs": "names the READMEs the generator writes",
 };
 
