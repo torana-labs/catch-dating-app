@@ -105,6 +105,32 @@
       ]
     },
     {
+      "id": "commandReceipts",
+      "path": "commandReceipts/{receiptId}",
+      "rulesMatch": "/commandReceipts/{receiptId}",
+      "typescriptInterface": "CommandReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps command receipts server-only"
+      ],
+      "owner": "every command that dedupes its retries (functions/src/shared/commandReceipts.ts)",
+      "read": "server only; a retry reads its own receipt in the command's transaction",
+      "write": "server only",
+      "exportedFunctions": [
+        "onMessageCreated",
+        "onMatchCreated",
+        "saveEventPlanStep",
+        "setEventCloseOut",
+        "changeEventCrawlStop"
+      ],
+      "migrationNotes": [
+        "One replay-receipt collection since L8 of the Firestore consolidation: commandReceipts/{command}_{id} with command, requestHash, result, createdAt and expiresAt, and expiresAt (seven days for triggers, thirty for requests and webhooks; the TTL policy is approved by the owner, 18 Nov 2026).",
+        "functionEventReceipts and eventLiveCommandReceipts stopped being written and keep their documents under the legal hold, with no client access; replay windows are short, so none were copied forward.",
+        "Consent, money, safety and audit receipts stay in their own collections."
+      ]
+    },
+    {
       "id": "programLodgingProposals",
       "path": "programLodgingProposals/{proposalId}",
       "rulesMatch": "/programLodgingProposals/{proposalId}",
@@ -2340,28 +2366,6 @@
       ]
     },
     {
-      "id": "eventLiveCommandReceipts",
-      "path": "eventLiveCommandReceipts/{receiptId}",
-      "rulesMatch": "/eventLiveCommandReceipts/{receiptId}",
-      "typescriptInterface": "EventLiveCommandReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/event_success.rules.test.cjs",
-      "rulesTestNames": [
-        "keeps close-out, live receipts and guest history server-written"
-      ],
-      "owner": "saveEventPlanStep, setEventCloseOut and changeEventCrawlStop callables",
-      "read": "server only; replay result is returned by the callable",
-      "write": "server only",
-      "exportedFunctions": [
-        "saveEventPlanStep",
-        "setEventCloseOut",
-        "changeEventCrawlStop"
-      ],
-      "migrationNotes": [
-        "Thirty-day TTL receipts keyed by command, actor, event and requestId make run-of-show, close-out and crawl retries idempotent."
-      ]
-    },
-    {
       "id": "eventCloseOuts",
       "path": "eventCloseOuts/{eventId}",
       "rulesMatch": "/eventCloseOuts/{eventId}",
@@ -3068,21 +3072,6 @@
       "write": "server only",
       "migrationNotes": [
         "Requires a Firestore TTL policy on expiresAt."
-      ]
-    },
-    {
-      "id": "functionEventReceipts",
-      "path": "functionEventReceipts/{receiptId}",
-      "rulesMatch": "/functionEventReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "idempotent Cloud Function trigger handlers",
-      "read": "server/admin only",
-      "write": "server only",
-      "exportedFunctions": [
-        "onMessageCreated"
-      ],
-      "migrationNotes": [
-        "Used to avoid duplicate unread-count increments when Firestore triggers retry."
       ]
     },
     {

@@ -265,16 +265,13 @@ describe("firestore.rules", () => {
       }
     });
 
-    it("keeps close-out, live receipts and guest history server-written", async () => {
+    it("keeps close-out and guest history server-written", async () => {
       await seed(["organizers", "club-1"], organizer());
       await seed(["events", "event-1"], event());
       await seed(["eventCloseOuts", "event-1"], {
         eventId: "event-1", organizerId: "club-1", revision: 1,
         thankYou: null, openStayInTouchPicks: true, noShowNote: false,
         updatedByUid: "host-1", updatedAtMs: 1,
-      });
-      await seed(["eventLiveCommandReceipts", "receipt-1"], {
-        eventId: "event-1", actorUid: "host-1", command: "setEventCloseOut",
       });
       await seed(["eventSuccessGuestHistory", "event-1_runner-1"], {
         eventId: "event-1", organizerId: "club-1", uid: "runner-1",
@@ -292,10 +289,6 @@ describe("firestore.rules", () => {
         noShowNote: true,
       }));
       await assertFails(getDocs(collection(host, "eventCloseOuts")));
-      await assertFails(getDoc(doc(host, "eventLiveCommandReceipts",
-        "receipt-1")));
-      await assertFails(setDoc(doc(host, "eventLiveCommandReceipts",
-        "forged"), {eventId: "event-1"}));
 
       await assertSucceeds(getDoc(doc(authedDb("runner-1"),
         "eventSuccessGuestHistory", "event-1_runner-1")));
