@@ -203,7 +203,7 @@ test("target and capability filtering selects only relevant prerequisites", () =
   );
   // The event-assistance guest keyring is read only by dormant Functions.
   // The ad conversions Meta token is an optional pinned reference.
-  assert.equal(selected("dev", ["functions"]).length, 35);
+  assert.equal(selected("dev", ["functions"]).length, 36);
   for (const environment of ["dev", "staging", "prod"]) {
     for (const [target, secrets] of [
       ["refreshProgramTravelLeg", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
@@ -1726,6 +1726,67 @@ test("flight credentials remain inactive when the separately controlled policy i
   assert.equal(result.reference, fn.serviceConfig.environmentVariables.FLIGHT_PROVIDER_CONFIG_VERSION);
 });
 
+test("an existing Function may gain a new required secret; the post-deploy check still requires the binding", () => {
+  let latestState = "ENABLED";
+  let grantedAccount = "123-compute@developer.gserviceaccount.com";
+  const liveFunction = fakeFunction("exploreSearch", "UNRELATED_SECRET");
+  const withBinding = fakeFunction("exploreSearch", "ALGOLIA_SEARCH_API_KEY", "catchdates-dev", "4");
+  const commands = [];
+  const run = (functions, {candidate, phase = "deployed"} = {}) => runEnvironmentReadiness({aliases,
+    environments: ["dev"], manifest, sourceSha: "a".repeat(40), candidate, phase,
+    targets: ["functions:exploreSearch"],
+    firstDeployIdentity: () => assert.fail("an existing Function uses its observed runtime account"),
+    runCommand: (spec) => {
+      commands.push(spec.args);
+      if (spec.args[0] === "functions") return metadata(functions);
+      if (spec.args[0] === "secrets" && spec.args[1] === "get-iam-policy") {
+        return metadata({bindings: [{members: [`serviceAccount:${grantedAccount}`],
+          role: "roles/secretmanager.secretAccessor"}]});
+      }
+      if (spec.args[0] === "secrets" && spec.args[3] === "latest" &&
+          spec.args.includes("--secret=ALGOLIA_SEARCH_API_KEY")) {
+        return metadata({name: "projects/catchdates-dev/secrets/ALGOLIA_SEARCH_API_KEY/versions/4", state: latestState});
+      }
+      return readyMetadataRunner(spec);
+    }});
+  const find = (report, suffix = "") => report.environments[0].results.find((entry) =>
+    entry.id === `functions.secret.algolia-search-api-key:exploreSearch${suffix}`);
+
+  const ready = run([liveFunction]);
+  assert.deepEqual([ready.exitCode, find(ready).status, find(ready).reason, find(ready).metadata.reference],
+    [0, "ready", "new-secret-binding-latest-version-enabled",
+      "projects/catchdates-dev/secrets/ALGOLIA_SEARCH_API_KEY/versions/4"]);
+  assert.equal(find(ready, ".runtime-access").status, "ready");
+  assert.equal(find(ready, ".runtime-access").resource,
+    "ALGOLIA_SEARCH_API_KEY:123-compute@developer.gserviceaccount.com");
+
+  grantedAccount = "456-compute@developer.gserviceaccount.com";
+  const ungranted = run([liveFunction]);
+  assert.deepEqual([ungranted.exitCode, find(ungranted, ".runtime-access").reason],
+    [1, "runtime-secret-access-unproven"]);
+  grantedAccount = "123-compute@developer.gserviceaccount.com";
+
+  latestState = "DISABLED";
+  const disabled = run([liveFunction]);
+  assert.deepEqual([disabled.exitCode, find(disabled).reason], [1, "new-secret-binding-latest-version-not-enabled"]);
+  latestState = "ENABLED";
+
+  // An already-bound secret keeps the strict observed-binding check.
+  const bound = run([withBinding]);
+  assert.deepEqual([bound.exitCode, find(bound).reason], [0, "selected-version-enabled"]);
+
+  // After the deploy the binding must exist: a candidate run is strict.
+  const candidate = {version: 1, sourceSha: "a".repeat(40), environment: "dev", projectId: "catchdates-dev",
+    paramsSha256: "c".repeat(64),
+    functions: [{consumer: "exploreSearch", serviceAccount: "123-compute@developer.gserviceaccount.com"}],
+    bindings: [{requirementId: "functions.secret.algolia-search-api-key", consumer: "exploreSearch",
+      serviceAccount: "123-compute@developer.gserviceaccount.com",
+      reference: "projects/catchdates-dev/secrets/ALGOLIA_SEARCH_API_KEY/versions/4", active: true}]};
+  const after = run([liveFunction], {candidate});
+  assert.deepEqual([after.exitCode, find(after).reason], [1, "selected-secret-binding-missing"]);
+  assert.equal(commands.some((args) => args.includes("access")), false, "no payload is read");
+});
+
 test("a new consumer may be deployed before it exists; the post-deploy check still requires it", () => {
   let latestState = "ENABLED";
   let runtimeAccount = "123-compute@developer.gserviceaccount.com";
@@ -1864,8 +1925,11 @@ test("binding an existing secret to another Function needs no manifest edit and 
   const unprovisioned = live(bound, "DISABLED");
   assert.deepEqual([unprovisioned.exitCode, reason(unprovisioned)], [1, "selected-version-not-enabled"]);
   const unbound = [{...bound[0], serviceConfig: {...bound[0].serviceConfig, secretEnvironmentVariables: []}}];
+  // The deploy adds the missing binding, so it is checked as a new secret.
   const missing = live(unbound);
-  assert.deepEqual([missing.exitCode, reason(missing)], [1, "selected-secret-binding-missing"]);
+  assert.deepEqual([missing.exitCode, reason(missing)], [0, "new-secret-binding-latest-version-enabled"]);
+  const disabled = live(unbound, "DISABLED");
+  assert.deepEqual([disabled.exitCode, reason(disabled)], [1, "new-secret-binding-latest-version-not-enabled"]);
 });
 
 test("a Function that stops binding a secret stops requiring it", (t) => {
