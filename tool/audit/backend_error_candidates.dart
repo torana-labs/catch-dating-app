@@ -332,6 +332,16 @@ CandidateDisposition _dispositionFor({
     );
   }
 
+  if (path == 'packages/platform/lib/firebase/firebase_bootstrap.dart' &&
+      rule.id == 'raw_firebase_exception_type') {
+    return const CandidateDisposition(
+      status: CandidateStatus.intentional,
+      reason:
+          'bootstrap classifiers moved from app_bootstrap inspect raw '
+          'duplicate-app and Remote Config failures',
+    );
+  }
+
   if (path == 'lib/contexts/profiles/data/image_upload_repository.dart' &&
       rule.id == 'raw_firebase_exception_type') {
     return const CandidateDisposition(
