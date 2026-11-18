@@ -26,12 +26,13 @@ import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/cache/cache_policies.dart';
 import 'package:catch_platform/cities/city_repository.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/errors/app_exception.dart';
-import 'package:catch_platform/firebase/initial_load_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
@@ -704,23 +705,43 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     ref.invalidate(exploreFeedViewModelProvider);
     ref.invalidate(exploreRecommendationsProvider);
 
-    // The feed provider is a synchronous AsyncValue composition over several
-    // async repositories, so it has no `.future` to await. Hold the refresh
-    // indicator until the recomposed feed reaches either data or error.
-    final deadline = DateTime.now().add(InitialLoadPolicy.refresh);
-    while (DateTime.now().isBefore(deadline)) {
-      await Future<void>.delayed(InitialLoadPolicy.settlementPoll);
-      if (!mounted) return;
-      if (!ref.read(exploreFeedViewModelProvider).isLoading) return;
+    await _feedSettled();
+  }
+
+  /// Completes when the recomposed feed reaches data or an error, or when the
+  /// discovery refresh deadline runs out. The feed is a synchronous
+  /// composition of its reads, so it settles the moment they do; this
+  /// listens for that instead of polling.
+  Future<void> _feedSettled() {
+    final settled = Completer<void>();
+    void settle() {
+      if (!settled.isCompleted) settled.complete();
     }
+
+    final subscription = ref.listenManual(exploreFeedViewModelProvider, (
+      _,
+      next,
+    ) {
+      if (!catchAsyncStateFromAsyncValue(next).isLoading) settle();
+    }, fireImmediately: true);
+    final deadline = ref
+        .read(appClockProvider)
+        .timer(CachePolicies.discovery.refresh, settle);
+    return settled.future.whenComplete(() {
+      deadline.cancel();
+      subscription.close();
+    });
   }
 
   void _startInitialLoadDeadline() {
     _initialLoadDeadline?.cancel();
-    _initialLoadDeadline = Timer(InitialLoadPolicy.standard, () {
-      if (!mounted) return;
-      setState(() => _initialLoadTimedOut = true);
-    });
+    _initialLoadDeadline = ref.read(appClockProvider).timer(
+      CachePolicies.discovery.firstLoad,
+      () {
+        if (!mounted) return;
+        setState(() => _initialLoadTimedOut = true);
+      },
+    );
   }
 
   void _restartInitialLoadDeadline() {

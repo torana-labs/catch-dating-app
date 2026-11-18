@@ -1,0 +1,96 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_kernel/city_data.dart';
+import 'package:catch_platform/cache/cache_policies.dart';
+import 'package:catch_platform/cities/city_repository.dart';
+import 'package:catch_platform/device/device_location.dart';
+import 'package:catch_platform/theme/app_theme.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import 'explore_device_location_fakes.dart';
+
+const _cities = [
+  CityData(name: 'mumbai', label: 'Mumbai', latitude: 19.07, longitude: 72.87),
+];
+
+/// Pumps Explore over a feed whose value [feed] decides on every build.
+Future<void> _pump(
+  WidgetTester tester,
+  AsyncValue<ExploreFeedViewModel> Function(int build) feed,
+) async {
+  var builds = 0;
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        cityListProvider.overrideWith((ref) async => _cities),
+        deviceLocationProvider.overrideWith(NoDeviceLocation.new),
+        uidProvider.overrideWith((ref) => Stream.value(null)),
+        exploreSourceOrganizersProvider.overrideWithValue(
+          const AsyncData(<Organizer>[]),
+        ),
+        exploreOrganizersViewModelProvider.overrideWithValue(
+          const AsyncData(
+            ExploreViewModel(joinedOrganizers: [], allOrganizers: []),
+          ),
+        ),
+        exploreFeedViewModelProvider.overrideWith((ref) => feed(++builds)),
+      ],
+      child: MaterialApp(theme: AppTheme.light, home: const ExploreScreen()),
+    ),
+  );
+  await tester.pump();
+}
+
+void main() {
+  testWidgets('pull-to-refresh ends when the recomposed feed settles', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      (_) => const AsyncData(ExploreFeedViewModel(items: [])),
+    );
+    var done = false;
+    unawaited(
+      tester
+          .state<RefreshIndicatorState>(find.byType(RefreshIndicator))
+          .show()
+          .then((_) => done = true),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(done, isTrue);
+  });
+
+  testWidgets('pull-to-refresh over a feed that never settles ends at the '
+      'discovery refresh deadline', (tester) async {
+    await _pump(
+      tester,
+      (build) => build == 1
+          ? const AsyncData(ExploreFeedViewModel(items: []))
+          : const AsyncLoading(),
+    );
+    var done = false;
+    unawaited(
+      tester
+          .state<RefreshIndicatorState>(find.byType(RefreshIndicator))
+          .show()
+          .then((_) => done = true),
+    );
+    await tester.pump();
+    await tester.pump(
+      CachePolicies.discovery.refresh - const Duration(seconds: 1),
+    );
+    expect(done, isFalse);
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump(const Duration(seconds: 1));
+    expect(done, isTrue);
+  });
+}
