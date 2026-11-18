@@ -2115,7 +2115,7 @@ final _hostTodayWeek = [
     bookedCount: 32,
     capacityLimit: 40,
     meetingPoint: 'Carter Road Promenade',
-  ).copyWith(name: 'Carter Road Social Run'),
+  ).copyWith(name: 'Salt Air Social Run'),
   HostOperationsFixtures.event(
     id: 'design-today-supper',
     organizer: hostTodayOrganizer,
@@ -2496,7 +2496,7 @@ HostAnalyticsReport _hostInsightsReport({
           ),
           _hostInsightsNight(
             'design-insights-run',
-            'Carter Road Social Run',
+            'Salt Air Social Run',
             DateTime(2026, 10, 18, 6, 30),
             booked: 32,
             fillRate: 80,

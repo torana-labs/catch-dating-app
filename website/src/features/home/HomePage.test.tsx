@@ -107,7 +107,7 @@ describe("homepage", {timeout: 20_000}, () => {
     const hero = screen.getByRole("region", {name: "Find something worth showing up for."});
     const chip = hero.querySelector("[data-chip]") as HTMLElement;
     expect(chip.textContent).toContain("Thursday Evening Pub Quiz");
-    expect(chip.textContent).toContain("Khar Social · 6 left");
+    expect(chip.textContent).toContain("Lantern Lane Tavern · 6 left");
     expect((chip.querySelector("time") as HTMLElement).dataset).toMatchObject({ground: "yellow", size: "sm"});
     expect(within(hero).getByRole("figure").dataset).toMatchObject({bezel: "", size: "hero"});
     // No proof line until real data stands behind it.
@@ -269,7 +269,7 @@ describe("homepage", {timeout: 20_000}, () => {
     const runners = organisers.getByRole("link", {name: /Driftwood Bay Runners/});
     expect(runners.getAttribute("href")).toBe("/organizers/driftwood-bay-runners/");
     expect(runners.textContent).toContain("212 followers");
-    expect(runners.textContent).toContain("Next: Fri 6:30 AM · Carter Road Social Run");
+    expect(runners.textContent).toContain("Next: Fri 6:30 AM · Salt Air Social Run");
     const unclaimed = organisers.getByRole("link", {name: /Bandra Book Swap/});
     expect(unclaimed.getAttribute("href")).toBe("/organizers/bandra-book-swap/#claim");
     expect(unclaimed.textContent).toContain("Is this you? Claim it");

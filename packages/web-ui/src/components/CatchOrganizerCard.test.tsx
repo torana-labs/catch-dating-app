@@ -10,12 +10,12 @@ describe("CatchOrganizerCard", () => {
   it("names the organiser in a heading that links to their page, with the next plan and the action", () => {
     render(
       <CatchOrganizerCard action={<button type="button">Follow</button>} footnote="212 followers" href="/organizers/carter/"
-        monogramGround="coral" name="Driftwood Bay Runners" next="Next: Fri 6:30 AM · Carter Road Social Run" subtitle="Sunday social runs" />,
+        monogramGround="coral" name="Driftwood Bay Runners" next="Next: Fri 6:30 AM · Salt Air Social Run" subtitle="Sunday social runs" />,
     );
     const card = screen.getByRole("article");
     expect(within(card).getByRole("heading", {level: 3, name: "Driftwood Bay Runners"})).toBeTruthy();
     expect(within(card).getByRole("link", {name: "Driftwood Bay Runners"}).getAttribute("href")).toBe("/organizers/carter/");
-    expect(card.textContent).toContain("Next: Fri 6:30 AM · Carter Road Social Run");
+    expect(card.textContent).toContain("Next: Fri 6:30 AM · Salt Air Social Run");
     expect(card.textContent).toContain("212 followers");
     expect(within(card).getByRole("button", {name: "Follow"})).toBeTruthy();
     expect(card.dataset.ground).toBe("paper");

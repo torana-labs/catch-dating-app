@@ -65,7 +65,7 @@ Widget catchListSectionContractStates(BuildContext context) {
             ),
             children: const [
               CatchIndexRow(
-                title: 'Carter Road Social Run',
+                title: 'Salt Air Social Run',
                 meta: '6:30 AM · 32 of 40 booked',
                 status: '8 left',
                 progress: CatchIndexRowProgress(

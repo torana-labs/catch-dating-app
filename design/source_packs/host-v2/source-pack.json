@@ -50,7 +50,7 @@
     },
     {
       "path": "explorations/archived-templates/host-account/HostAccount.dc.html",
-      "sha256": "b4f6f9a569160331967bc2298a5bfc5dae117d74dea3fd9f6145cbc05074b1a0"
+      "sha256": "837ed22a501651d51b7f2763b66a8959594f46d4fe7bab81df39e1731549131f"
     },
     {
       "path": "explorations/archived-templates/host-account/support.js",
@@ -66,7 +66,7 @@
     },
     {
       "path": "explorations/archived-templates/host-clubs/HostClubs.dc.html",
-      "sha256": "e9b2a377ce60eddee938ad78edc236b2b300892ff99b9e0a89e09e972ccb9319"
+      "sha256": "4b55da90366a83e15c045c3a9970f4f02c5873f1fd572dac57ab2eedf2c8326a"
     },
     {
       "path": "explorations/archived-templates/host-clubs/support.js",
@@ -106,7 +106,7 @@
     },
     {
       "path": "explorations/archived-templates/host-events/HostEvents.dc.html",
-      "sha256": "cc97044873737531834552faac81719fe96db21d4e3d75e8505da3a9e87a7ba1"
+      "sha256": "3d9a77edf8e0dc993ac7b29ed25ad7eaa6848179f18aa9faf315113da3bf4596"
     },
     {
       "path": "explorations/archived-templates/host-events/support.js",
@@ -194,7 +194,7 @@
     },
     {
       "path": "host-account/HostAccount.dc.html",
-      "sha256": "b4f6f9a569160331967bc2298a5bfc5dae117d74dea3fd9f6145cbc05074b1a0"
+      "sha256": "837ed22a501651d51b7f2763b66a8959594f46d4fe7bab81df39e1731549131f"
     },
     {
       "path": "host-account/support.js",

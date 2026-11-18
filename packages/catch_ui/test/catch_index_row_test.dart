@@ -61,7 +61,7 @@ void main() {
       children: [
         CatchIndexRow(
           key: const ValueKey('row'),
-          title: 'Carter Road Social Run',
+          title: 'Salt Air Social Run',
           density: density,
           onTap: null,
         ),

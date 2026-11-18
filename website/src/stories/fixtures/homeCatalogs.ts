@@ -14,16 +14,16 @@ const ist = (day: number, hour: number, minute = 0) =>
 
 type Seed = [id: string, format: HomeFormat, title: string, host: string, where: string, start: string, price: string, left: number | null, photo?: string];
 const organizerIds: Record<string, string> = {
-  "The Quizzicals": "quizzicals", "Khar Table": "khar-table", "Driftwood Bay Runners": "driftwood-bay-runners",
+  "The Harbour Line Quizzers": "harbour-line-quizzers", "Khar Table": "khar-table", "Driftwood Bay Runners": "driftwood-bay-runners",
   "Night Shift Socials": "night-shift-socials", "Dink and Drink": "dink-and-drink", "Evening Club": "evening-club",
   "Night Shift Runners": "night-shift-runners", "Bandra Boardroom": "bandra-boardroom",
 };
 const activity: Record<HomeFormat, string> = {run: "socialRun", dinner: "dinner", games: "pubQuiz", courts: "pickleball", nightsOut: "barCrawl", other: "openActivity"};
 
 const seeds: Seed[] = [
-  ["thursday-pub-quiz", "games", "Thursday Evening Pub Quiz", "The Quizzicals", "Khar Social", ist(0, 19, 30), "Free", 6],
+  ["thursday-pub-quiz", "games", "Thursday Evening Pub Quiz", "The Harbour Line Quizzers", "Lantern Lane Tavern", ist(0, 19, 30), "Free", 6],
   ["strangers-supper", "dinner", "Strangers’ Supper", "Khar Table", "Khar West", ist(0, 20, 30), "₹1,800", 2, "/assets/marketing/home-dinner.jpg"],
-  ["carter-road-run", "run", "Carter Road Social Run", "Driftwood Bay Runners", "Carter Road, Bandra", ist(1, 6, 30), "Free", 9, "/assets/events/social-run-music-hero-960.jpg"],
+  ["carter-road-run", "run", "Salt Air Social Run", "Driftwood Bay Runners", "Carter Road, Bandra", ist(1, 6, 30), "Free", 9, "/assets/events/social-run-music-hero-960.jpg"],
   ["bandra-pub-crawl", "nightsOut", "Friday Bandra Pub Crawl", "Night Shift Socials", "Four stops in Bandra", ist(1, 19, 30), "₹999", 11],
   ["pickleball-social", "courts", "Pickleball Social", "Dink and Drink", "Andheri West", ist(2, 17), "₹450", 8],
   ["saturday-game-night", "games", "Saturday Game Night", "Evening Club", "Harbour Room, Bandra West", ist(2, 18, 30), "₹600", 6],
@@ -64,7 +64,7 @@ export const mumbaiPlansFixture: HomeCityPlans = {
   citySlug: "mumbai", cityLabel: "Mumbai", marketStatus: "launched", status: "live", ...window,
   planCount: mumbaiPlans.length, formatCounts: counts(mumbaiPlans), plans: mumbaiPlans,
   organizers: [
-    organizer("quizzicals", "The Quizzicals", "Trivia nights and socials", ["games"], 74, "claimed", "/organizers/quizzicals/"),
+    organizer("harbour-line-quizzers", "The Harbour Line Quizzers", "Trivia nights and socials", ["games"], 74, "claimed", "/organizers/harbour-line-quizzers/"),
     organizer("khar-table", "Khar Table", "Supper clubs for strangers", ["dinner"], 58, "verified", "/organizers/khar-table/"),
     organizer("driftwood-bay-runners", "Driftwood Bay Runners", "Sunday social runs", ["run"], 212, "verified", "/organizers/driftwood-bay-runners/"),
     organizer("night-shift-socials", "Night Shift Socials", "Pub crawls and late runs", ["nightsOut", "run"], 140, "claimed", "/organizers/night-shift-socials/"),

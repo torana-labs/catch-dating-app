@@ -117,7 +117,7 @@ describe("CatchHeroSection", () => {
 
   it("draws the plan chip with its date square beside the title and one line, over the media", () => {
     const {container} = render(
-      <CatchHeroSection aside={{title: "Thursday Pub Quiz", meta: "Khar Social · 6 left", date: {weekday: "Thu", day: "20", month: "Nov", ground: "yellow"}}}
+      <CatchHeroSection aside={{title: "Thursday Pub Quiz", meta: "Lantern Lane Tavern · 6 left", date: {weekday: "Thu", day: "20", month: "Nov", ground: "yellow"}}}
         ground="pink" media={<img alt="Phone" src="/p.png" />} title="Plans" />,
     );
     const chip = container.querySelector("[data-chip]") as HTMLElement;
@@ -126,7 +126,7 @@ describe("CatchHeroSection", () => {
     expect(date.dataset).toMatchObject({size: "sm", ground: "yellow"});
     expect(date.textContent).toContain("20");
     expect(chip.textContent).toContain("Thursday Pub Quiz");
-    expect(chip.textContent).toContain("Khar Social · 6 left");
+    expect(chip.textContent).toContain("Lantern Lane Tavern · 6 left");
     expect(chip.querySelector("dl")).toBeNull();
   });
 });

@@ -90,7 +90,7 @@ void main() {
       expect(find.text('Full'), findsOneWidget);
       expect(find.text('Later in November'), findsOneWidget);
 
-      await tester.tap(find.text('Carter Road Social Run'));
+      await tester.tap(find.text('Salt Air Social Run'));
       await tester.tap(find.text('New programme'));
       expect(calls.whereType<String>(), contains('new programme'));
       expect(calls.first, comingEvents[1]);

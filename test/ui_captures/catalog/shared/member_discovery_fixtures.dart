@@ -25,8 +25,8 @@ const memberDiscoveryCities = [
 ];
 final memberDiscoveryOrganizers = [
   captureFixtures.captureOrganizer(
-    id: 'club-discovery-quizzicals',
-    name: 'The Quizzicals',
+    id: 'club-discovery-harbour-line-quizzers',
+    name: 'The Harbour Line Quizzers',
     description: 'Pub quiz nights with teams drawn at the door.',
     area: 'Khar',
     hostName: 'Aarav',
@@ -68,7 +68,7 @@ final memberDiscoveryEvents = [
     id: 'event-discovery-trivia',
     organizer: memberDiscoveryOrganizers[0],
     startTime: DateTime(2026, 6, 11, 19, 30),
-    meetingPoint: 'Khar Social',
+    meetingPoint: 'Lantern Lane Tavern',
     startingPointLat: 19.0698,
     startingPointLng: 72.8381,
     activityKind: ActivityKind.pubQuiz,
@@ -109,7 +109,7 @@ final memberDiscoveryEvents = [
     id: 'event-discovery-cocktail-round',
     organizer: memberDiscoveryOrganizers[0],
     startTime: DateTime(2026, 6, 15, 20),
-    meetingPoint: 'Khar Social',
+    meetingPoint: 'Lantern Lane Tavern',
     startingPointLat: 19.0698,
     startingPointLng: 72.8381,
     activityKind: ActivityKind.barCrawl,

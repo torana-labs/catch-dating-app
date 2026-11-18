@@ -32,7 +32,7 @@ const planFormats: Readonly<Record<string, readonly DiscoveryFormatKey[]>> = {
   "long-table-supper": ["supper"],
 };
 const organizerFormats: Readonly<Record<string, readonly DiscoveryFormatKey[]>> = {
-  "quizzicals": ["quizNights"],
+  "harbour-line-quizzers": ["quizNights"],
   "khar-table": ["supper"],
   "driftwood-bay-runners": ["runClubs"],
   "night-shift-socials": ["nightlife", "runClubs"],

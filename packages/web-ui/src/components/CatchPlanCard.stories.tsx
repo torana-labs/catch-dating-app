@@ -18,12 +18,12 @@ type Story = StoryObj<typeof meta>;
 const storyRoutes = ["home", "visitor_discovery"];
 
 const plans: CatchPlanCardProps[] = [
-  {posterLabel: "Quiz night", availability: "6 left", detail: "The Quizzicals · Khar Social", format: "games", href: "#quiz",
+  {posterLabel: "Quiz night", availability: "6 left", detail: "The Harbour Line Quizzers · Lantern Lane Tavern", format: "games", href: "#quiz",
     label: "Games and quizzes · Thu 7:30 PM", price: "Free", title: "Thursday Evening Pub Quiz"},
   {posterLabel: "Supper club", availability: "2 left", detail: "Khar Table · Khar West", format: "dinner", href: "#supper",
     label: "Dinners · Thu 8:30 PM", photoUrl: "/assets/marketing/home-dinner.jpg", price: "₹1,800", title: "Strangers’ Supper"},
   {posterLabel: "Run club", availability: "9 left", detail: "Driftwood Bay Runners · Carter Road, Bandra", format: "run", href: "#run",
-    label: "Run clubs · Fri 6:30 AM", photoUrl: "/assets/events/social-run-music-hero-960.jpg", price: "Free", title: "Carter Road Social Run"},
+    label: "Run clubs · Fri 6:30 AM", photoUrl: "/assets/events/social-run-music-hero-960.jpg", price: "Free", title: "Salt Air Social Run"},
   {posterLabel: "Pub crawl", availability: "11 left", detail: "Night Shift Socials · Four stops in Bandra", format: "nightsOut", href: "#crawl",
     label: "Nights out · Fri 7:30 PM", price: "₹999", title: "Friday Bandra Pub Crawl"},
   {posterLabel: "Pickleball", availability: "Full", detail: "Dink and Drink · Andheri West", format: "courts", href: "#courts",
@@ -56,7 +56,7 @@ const badged: CatchPlanCardProps[] = [
     label: "Pickleball · Sat 5:00 PM", price: "₹600", title: "Pickleball Social", date: {weekday: "Sat", day: "22", month: "Nov"}},
   {badge: "Women-led", posterLabel: "Supper club", availability: "2 left", detail: "Khar Table · Khar West", format: "dinner", href: "#supper-badge",
     label: "Dinners · Thu 8:30 PM", photoUrl: "/assets/marketing/home-dinner.jpg", price: "₹1,800", title: "Strangers’ Supper"},
-  {badge: "Women-led", posterLabel: "Quiz night", availability: "6 left", detail: "The Quizzicals · Khar Social", format: "games", href: "#quiz-badge",
+  {badge: "Women-led", posterLabel: "Quiz night", availability: "6 left", detail: "The Harbour Line Quizzers · Lantern Lane Tavern", format: "games", href: "#quiz-badge",
     label: "Games and quizzes · Thu 7:30 PM", price: "Free", title: "Thursday Evening Pub Quiz"},
 ];
 

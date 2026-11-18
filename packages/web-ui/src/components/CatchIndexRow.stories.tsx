@@ -151,7 +151,7 @@ export const SystemRows: Story = {
           </CatchSection>
           <CatchSection title="system-trailing">
             <CatchIndexRow density="regular" status="8 left" statusTone="warning" subtitle="Sat 6:30 PM" title="Saturday Game Night" />
-            <CatchIndexRow density="regular" progress={{value: 24, max: 40, label: "Booked"}} title="Carter Road Social Run" value="24" />
+            <CatchIndexRow density="regular" progress={{value: 24, max: 40, label: "Booked"}} title="Salt Air Social Run" value="24" />
             <CatchIndexRow action={{label: "Remind"}} density="regular" subtitle="Hasn’t paid yet" title="Asha Rao" />
             <CatchIndexRow density="regular" href="#" subtitle="Your monthly email" title="Community newsletter" />
             <CatchIndexRow density="regular" href="#" selected subtitle="A promoter who brings friends" title="Partner · Meera" />
