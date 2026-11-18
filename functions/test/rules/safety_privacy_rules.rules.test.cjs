@@ -87,12 +87,9 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("keeps reports, deletion tombstones, and event receipts server-owned", async () => {
+    it("keeps reports and deletion tombstones server-owned", async () => {
       await seed(["reports", "report-1"], {reportedUserId: "target-1"});
       await seed(["deletedUsers", "target-1"], {uid: "target-1"});
-      await seed(["functionEventReceipts", "event-1"], {
-        handler: "onMessageCreated",
-      });
 
       await assertFails(getDoc(doc(authedDb("user-1"), "reports", "report-1")));
       await assertFails(
@@ -106,13 +103,24 @@ describe("firestore.rules", () => {
       await assertFails(
         deleteDoc(doc(authedDb("target-1"), "deletedUsers", "target-1")),
       );
+    });
+
+    it("keeps command receipts server-only", async () => {
+      await seed(["commandReceipts", "onMessageCreated_event-1"], {
+        command: "onMessageCreated",
+      });
+
       await assertFails(
-        getDoc(doc(authedDb("user-1"), "functionEventReceipts", "event-1")),
+        getDoc(doc(authedDb("user-1"), "commandReceipts",
+          "onMessageCreated_event-1")),
       );
       await assertFails(
-        setDoc(doc(authedDb("user-1"), "functionEventReceipts", "event-2"), {
-          handler: "onMessageCreated",
-        }),
+        setDoc(doc(authedDb("user-1"), "commandReceipts",
+          "onMessageCreated_event-2"), {command: "onMessageCreated"}),
+      );
+      await assertFails(
+        deleteDoc(doc(authedDb("user-1"), "commandReceipts",
+          "onMessageCreated_event-1")),
       );
     });
 

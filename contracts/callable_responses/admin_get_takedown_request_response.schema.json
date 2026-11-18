@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_takedown_request_response.schema.json",
+  "title": "AdminGetTakedownRequestCallableResponse",
+  "description": "The request with its deadlines and history, the outcomes its type allows, and what the caller may do.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "adminGetTakedownRequest",
+  "required": [
+    "request",
+    "allowedOutcomes",
+    "caseOutcomes",
+    "canDecide",
+    "canDecideAppeal"
+  ],
+  "properties": {
+    "request": {
+      "$ref": "../shared/takedown_request_common.schema.json#/definitions/adminRequestRow"
+    },
+    "allowedOutcomes": {
+      "type": "array",
+      "maxItems": 11,
+      "items": {
+        "$ref": "../shared/takedown_request_common.schema.json#/definitions/outcome"
+      }
+    },
+    "caseOutcomes": {
+      "type": "array",
+      "maxItems": 11,
+      "items": {
+        "$ref": "../shared/takedown_request_common.schema.json#/definitions/outcome"
+      },
+      "description": "Outcomes that need the takedown case id."
+    },
+    "canDecide": {
+      "type": "boolean",
+      "description": "Admins and the owner action and decline; support acknowledges, asks for more and records appeals."
+    },
+    "canDecideAppeal": {
+      "type": "boolean",
+      "description": "An admin or the owner who did not make the decision."
+    }
+  }
+}

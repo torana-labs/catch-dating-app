@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "caseId": "TD-0042",
+  "reason": "removeAndDoNotList",
+  "active": true,
+  "hashScheme": "hmac-sha256/listing-suppression-v1",
+  "identityHashes": [
+    "label:lanterntrailrunners"
+  ],
+  "identityKeyCounts": {
+    "labels": 2,
+    "links": 2,
+    "organizers": 1,
+    "slugs": 1
+  },
+  "createdAtMillis": 1795000000000,
+  "updatedAtMillis": 1795000000000,
+  "reviewAtMillis": 1889608000000,
+  "createdBy": "workflow:organizer-takedown",
+  "blockedIntakeCount": 0,
+  "lastBlockedAtMillis": null,
+  "reviewFlags": []
+}

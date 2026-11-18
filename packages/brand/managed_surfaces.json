@@ -23,7 +23,6 @@
     {"path": "operations/src/workflows/supply-intake/config/acquisition_policy.json", "kind": "text"},
     {"path": "operations/test/page-fetcher.test.mjs", "kind": "text"},
     {"path": "website/index.html", "kind": "text"},
-    {"path": "website/measurement-runtime/catch-acquisition-runtime.js", "kind": "text"},
     {"path": "website/public/assets/app-screenshots/manifest.json", "kind": "text"},
     {"path": "website/scripts/probeProduction.mjs", "kind": "text"},
     {"path": "tool/marketing/app_screenshots_design_context.json", "kind": "text"},

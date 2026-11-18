@@ -31,7 +31,7 @@
       ],
       "aside": {
         "label": "Several locations? Ask for a walkthrough",
-        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run sports facilities in several locations and would like a walkthrough."}
+        "to": {"route": "host_walkthrough"}
       },
       "chip": {
         "title": "Tuesday pickleball social",
@@ -135,7 +135,7 @@
         {"question": "Can members play free?", "answer": "Yes. A membership can include sessions at 100% off, or a member price."},
         {"question": "Can coaches run sessions on {{brand.name}}?", "answer": "Yes. Add them to your team, and give each coach a link to see who they bring in."},
         {"question": "Do players need an app?", "answer": "No. They book and see their next court in their phone’s browser."},
-        {"question": "We have several locations.", "answer": "Each location can have its own page. Ask us for a walkthrough on WhatsApp and we’ll set it up."}
+        {"question": "We have several locations.", "answer": "Each location can have its own page. Ask us for a walkthrough and we’ll set it up."}
       ]
     },
     {

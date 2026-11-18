@@ -11,7 +11,7 @@ import 'forms_fixtures.dart';
 final _events = [
   HostOfferEvent(
     id: 'n8',
-    name: 'Carter Road Social Run',
+    name: 'Salt Air Social Run',
     startsAt: DateTime(2026, 11, 15, 6, 30),
   ),
   HostOfferEvent(
@@ -67,7 +67,7 @@ void main() {
     );
 
     expect(find.text('Which event'), findsOneWidget);
-    expect(find.text('Carter Road Social Run'), findsOneWidget);
+    expect(find.text('Salt Air Social Run'), findsOneWidget);
     await tester.tap(find.text('Half-marathon training: 15K'));
     expect(calls.chosen.single.id, 'n22');
   });

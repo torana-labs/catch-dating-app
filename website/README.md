@@ -264,9 +264,10 @@ The site has a first-party analytics layer in `src/analytics.ts` and records
 host-visible organizer metrics through `recordOrganizerAnalyticsEvent` in
 `src/firebase.ts`.
 
-- Production deploys use `GTM-K7KLNQXP` unless the `prod-hosting`
-  `VITE_GTM_ID` variable explicitly overrides it. The environment gate requires
-  a valid container id, and the browser loads GTM only after analytics consent.
+- No tag manager or third-party tag loads. The build takes no container id,
+  and `src/analytics.ts` never calls an external `gtag` or loads a script.
+  Events stay on the local `dataLayer` bus until the first-party transport in
+  [`docs/ads_conversion_spec.md`](../docs/ads_conversion_spec.md) ships.
 - `.github/workflows/website-production-observability.yml` probes the public
   launch routes every 15 minutes without a paid monitoring service. The same
   status, canonical-metadata, and content checks run immediately after a
@@ -284,8 +285,6 @@ host-visible organizer metrics through `recordOrganizerAnalyticsEvent` in
   phone numbers never enter them. A referral from a signed-in visitor also
   sends the account's Firebase ID token as `Authorization: Bearer`, so the
   intake credits the referrer; a signed-out referral sends none.
-- Configure GA4, Google Ads, Meta Pixel, LinkedIn Insight Tag, and other pixels in
-  GTM against the pushed `dataLayer` events.
 - Set `VITE_WEBSITE_APPCHECK_SITE_KEY` and the Firebase web config in
   production so organizer listing views, saves, contact clicks, claim clicks,
   outbound clicks, and event views can be accepted by the App Check-protected

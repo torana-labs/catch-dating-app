@@ -244,7 +244,7 @@ function retentionSeed(): Record<string, FakeData> {
     destinationLabel: null,
     vehicleClassId: "sedan",
     vendorId: "vendor-1",
-    vendorNameSnapshot: "Sharma Cabs",
+    vendorNameSnapshot: "Harbour Line Cabs",
     plateNormalized: "DL1CA1234",
     plateDisplay: "DL 1C A 1234",
     partyIds: ["party-1"],

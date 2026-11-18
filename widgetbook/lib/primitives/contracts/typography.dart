@@ -168,7 +168,7 @@ Widget catchIndexRowContractStates(BuildContext context) {
         label: 'progress',
         description: 'Meta, status and the fill meter under the text.',
         child: CatchIndexRow(
-          title: 'Carter Road Social Run',
+          title: 'Salt Air Social Run',
           meta: '6:30 AM · 32 of 40 booked',
           status: '8 left',
           progress: CatchIndexRowProgress(value: 32, max: 40, label: 'Booked'),

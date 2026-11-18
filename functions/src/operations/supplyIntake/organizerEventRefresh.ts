@@ -2,7 +2,8 @@
 import {createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptions} from "../../shared/callableOptions";
+import {appCheckCallableOptionsWithSecrets} from "../../shared/callableOptions";
+import {listingSuppressionHmacKey} from "../../listingSuppressions/registry";
 import type {AdminRefreshOrganizerEventsCallablePayload} from "../../shared/generated/adminRefreshOrganizerEventsCallablePayload";
 import type {AdminRefreshOrganizerEventsCallableResponse} from "../../shared/generated/adminRefreshOrganizerEventsCallableResponse";
 import {validateAdminRefreshOrganizerEventsCallablePayload} from "../../shared/generated/validators/adminRefreshOrganizerEventsInput";
@@ -47,7 +48,7 @@ export async function adminRefreshOrganizerEventsHandler(request: CallableReques
     maxRequests: 20, windowMs: 60 * 1000,
   });
   const now = deps.now();
-  return db.runTransaction(async (tx) => {
+  const result = await db.runTransaction(async (tx) => {
     const organizerSnap = await tx.get(db.collection("organizers").doc(data.organizerId));
     const organizer = organizerSnap.data();
     if (!organizerSnap.exists || !organizer) throw new HttpsError("not-found", "This organizer was not found.");
@@ -78,6 +79,7 @@ export async function adminRefreshOrganizerEventsHandler(request: CallableReques
       approvedByUid: context.uid, approvedAt: now.toISOString(), materialHash: hash(JSON.stringify(intake)),
       salesOwnerUid: context.uid};
     const created = await createSupplyIntakeRequest(tx, db, intake, now, {approval});
+    if (created.suppressed) return {refusedByCase: created.suppressed.caseId};
     if (created.created) {
       setAdminAuditLogInTransaction(tx, db, context, {
         action: "adminRefreshOrganizerEvents", targetPath: `supplyIntakeRequests/${created.requestId}`, request,
@@ -85,11 +87,17 @@ export async function adminRefreshOrganizerEventsHandler(request: CallableReques
         note: null, serverTimestamp: deps.serverTimestamp,
       });
     }
-    return {...created, status: "queued" as const, urls};
+    return {requestId: created.requestId, created: created.created, status: "queued" as const, urls};
   });
+  if ("refusedByCase" in result) {
+    const caseId = result.refusedByCase;
+    throw new HttpsError("failed-precondition", `This organizer is on the do-not-list registry (case ${caseId}). ` +
+      "Nothing was queued.", {reason: "listing_suppressed", caseId});
+  }
+  return result;
 }
 
-export const adminRefreshOrganizerEvents = onCall(appCheckCallableOptions,
+export const adminRefreshOrganizerEvents = onCall(appCheckCallableOptionsWithSecrets([listingSuppressionHmacKey]),
   (request) => adminRefreshOrganizerEventsHandler(request));
 
 /** The organizer page's links on platforms whose event pages an adapter reads. */

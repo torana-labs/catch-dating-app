@@ -27,20 +27,20 @@ const noop = () => undefined;
 const done = async () => true;
 const iso = (days: number) => new Date(now + days * 86_400_000).toISOString();
 
-const hosts: Array<[string, string]> = [["harbor", "Harbor Social Club"], ["seaside", "Seaside Sessions"], ["northside", "Northside Walks"],
-  ["sunday", "The Sunday Table"], ["afterfly", "Afterfly"]];
+const hosts: Array<[string, string]> = [["harbor", "Quayside Supper Club"], ["seaside", "Seaside Sessions"], ["northside", "Northside Walks"],
+  ["sunday", "The Saffron Table"], ["moonmoth", "Moonmoth"]];
 const names = new Map(hosts);
 const tasks: SalesTask[] = [
   {taskId: "t1", organizerId: "harbor", kind: "reply", title: "Reply to their enquiry", dueAt: iso(-1), ownerUid: "riya", status: "open", revision: 1},
   {taskId: "t2", organizerId: "seaside", kind: "follow_up", title: "Follow up on the demo link", dueAt: iso(0), ownerUid: "riya", status: "open", revision: 1},
   {taskId: "t3", organizerId: "northside", kind: "research", title: "Review research: 2 sources", dueAt: iso(0), ownerUid: "riya", status: "open", revision: 1},
-  {taskId: "t4", organizerId: "afterfly", kind: "follow_up", title: "Send the claim link", dueAt: iso(2), ownerUid: "riya", status: "open", revision: 1},
+  {taskId: "t4", organizerId: "moonmoth", kind: "follow_up", title: "Send the claim link", dueAt: iso(2), ownerUid: "riya", status: "open", revision: 1},
   {taskId: "t5", organizerId: "sunday", kind: "pilot", title: "Pilot check-in: week 2 of 4", dueAt: iso(3), ownerUid: "riya", status: "open", revision: 1},
 ];
 const harbor: SalesAccountDetail = {
   account: {organizerId: "harbor", revision: 2, researchStatus: "qualified",
     summary: "Board games and quiz nights for 20–40 people. Sells tickets by UPI today; wants a booking page and a waitlist."},
-  organizerSummary: {name: "Harbor Social Club", city: "Mumbai", appVisibility: "hidden", claimStatus: "unclaimed"},
+  organizerSummary: {name: "Quayside Supper Club", city: "Mumbai", appVisibility: "hidden", claimStatus: "unclaimed"},
   activities: [{activityId: "a1", type: "note", occurredAt: iso(-2), note: "Enquiry from the host website"},
     {activityId: "a2", type: "call", occurredAt: iso(-1), note: "Kavya wants a demo next week"}],
   opportunities: [{opportunityId: "o1", organizerId: "harbor", motion: "first_workflow_pilot", stage: "in_conversation", ownerUid: "riya",
@@ -67,11 +67,11 @@ const hostsModel = {query: "", setQuery: noop, validSearch: true, researchStatus
     primary: true, contactabilityStatus: "unknown" as const, sendAuthority: false as const}}],
   logActivity: async () => true, addNextStep: async () => true, completeNextStep: async () => true, saveDeal: async () => true, saveHost: async () => true, addPerson: async () => true,
   evidence: [{evidenceId: "e1", organizerId: "harbor", contactId: null, claimKey: "identity" as const, signalId: null, sourceType: "public_web" as const,
-    sourceRef: "instagram.com/harborsocial", observedAt: "2026-10-30T09:00:00.000Z", validThrough: null, confidence: "high" as const,
+    sourceRef: "instagram.com/quaysidesupper", observedAt: "2026-10-30T09:00:00.000Z", validThrough: null, confidence: "high" as const,
     normalizedValue: "Runs board games and quiz nights in Bandra", excerpt: null}],
   evidenceFailed: false, retryEvidence: noop, hasMoreEvidence: false, moreEvidence: noop, addEvidence: async () => true,
   suggestions: [{proposalId: "p1", organizerId: "harbor", revision: 1, status: "pending" as const, createdAt: "2026-10-30T09:00:00.000Z", clientId: "assistant", reviewReason: null,
-    evidence: {organizerId: "harbor", claimKey: "recurrence" as const, sourceType: "public_web" as const, sourceRef: "harborsocial.in/events",
+    evidence: {organizerId: "harbor", claimKey: "recurrence" as const, sourceType: "public_web" as const, sourceRef: "quaysidesupper.example/events",
       observedAt: "2026-10-29T09:00:00.000Z", confidence: "medium" as const, normalizedValue: "About four events a month"}}],
   suggestionsFailed: false, retrySuggestions: noop, hasMoreSuggestions: false, moreSuggestions: noop, reviewSuggestion: async () => true, setHold: async () => true,
   contactsFailed: false, retryContacts: noop, hasMoreContacts: false, moreContacts: noop, reviewContact: async () => true,
@@ -122,7 +122,7 @@ export const SalesHostCommercialStory: Story = {
 
 const deals: SalesOpportunity[] = [
   ["harbor", "new_enquiry", "Reply overdue"], ["seaside", "in_conversation", "Follow-up today"], ["northside", "demo_arranged", "Demo Wed"],
-  ["sunday", "pilot_running", "Week 2 of 4"], ["afterfly", "closed_won", "Paying since October"],
+  ["sunday", "pilot_running", "Week 2 of 4"], ["moonmoth", "closed_won", "Paying since October"],
 ].map(([organizerId, stage, nextStep], index) => ({opportunityId: `d${index}`, organizerId: organizerId!, motion: "first_workflow_pilot",
   stage: stage!, ownerUid: "riya", nextStep: nextStep!, nextStepAt: null, revision: 1}));
 
@@ -143,14 +143,14 @@ export const MyNominationsStory: Story = {
   beforeEach: pinClock,
   parameters: {catchComponent: {id: "route_sales_nominations", states: ["filter-chips", "stuck-detail"]}},
   render: () => (
-    <MyNominationsScreen onNominate={noop} onSelect={noop} selectedItemId="supply-sunday-table" model={{filter: "all", setFilter: noop,
+    <MyNominationsScreen onNominate={noop} onSelect={noop} selectedItemId="supply-saffron-table" model={{filter: "all", setFilter: noop,
       rows: sampleNominations, totals: {all: 3, published: 1, waiting: 1, stuck: 1}, hasNextPage: false, hasPreviousPage: false,
       nextPage: noop, previousPage: noop, detailError: false,
-      detail: {item: {itemId: "supply-sunday-table", type: "stuck", sourceKind: "supplyIntakeRequest", sourceId: "sunday",
-        sourcePath: "supplyIntakeRequests/sunday", title: "Sunday Table", subtitle: null, cameFrom: "You on WhatsApp", nominatorUid: "riya",
+      detail: {item: {itemId: "supply-saffron-table", type: "stuck", sourceKind: "supplyIntakeRequest", sourceId: "sunday",
+        sourcePath: "supplyIntakeRequests/sunday", title: "Saffron Table", subtitle: null, cameFrom: "You on WhatsApp", nominatorUid: "riya",
         city: "mumbai", state: {code: "needs_person", label: "Stuck: Instagram asked to sign in", tone: "danger"}, status: "waiting",
         waitingSince: iso(-0.2), doneAt: null, assigneeUid: null, snoozedUntil: null, recommendation: null, listingEvent: null},
-      journey: [{stepId: "submitted", occurredAt: iso(-0.2), title: "You sent a link on WhatsApp", detail: "instagram.com/sundaytable", actorUid: "riya", tone: "ink"},
+      journey: [{stepId: "submitted", occurredAt: iso(-0.2), title: "You sent a link on WhatsApp", detail: "instagram.com/saffrontable", actorUid: "riya", tone: "ink"},
         {stepId: "failed-1", occurredAt: iso(-0.19), title: "Could not read the page", detail: "Instagram showed a sign-in wall", actorUid: null, tone: "danger"}],
       canWork: false, canDecideClaim: false}}} />
   ),

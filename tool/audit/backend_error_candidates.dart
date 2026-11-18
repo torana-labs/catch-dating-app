@@ -332,13 +332,46 @@ CandidateDisposition _dispositionFor({
     );
   }
 
+  // #1956 moved the bootstrap failure checks here from lib/app_bootstrap.dart.
   if (path == 'packages/platform/lib/firebase/firebase_bootstrap.dart' &&
       rule.id == 'raw_firebase_exception_type') {
     return const CandidateDisposition(
       status: CandidateStatus.intentional,
+      reason: 'bootstrap duplicate-app / Remote Config failure classifiers',
+    );
+  }
+
+  // #1956 moved these Firestore calls out of their callers into thin seams.
+  // Every caller still wraps them and logs through normalizeBackendError.
+  if (path == 'packages/platform/lib/firebase/push_installation_store.dart' &&
+      rule.id == 'direct_firestore_write') {
+    return const CandidateDisposition(
+      status: CandidateStatus.verified,
       reason:
-          'bootstrap classifiers moved from app_bootstrap inspect raw '
-          'duplicate-app and Remote Config failures',
+          'FcmService calls save/delete inside try/catch or attempt(), '
+          'both logging via normalizeBackendError',
+    );
+  }
+
+  if (path == 'packages/platform/lib/firebase/config_documents.dart' &&
+      rule.id == 'direct_firestore_read') {
+    return const CandidateDisposition(
+      status: CandidateStatus.verified,
+      reason:
+          'CityRepository.fetchCities and liveBrand call read inside '
+          'try/catch that logs via normalizeBackendError',
+    );
+  }
+
+  // #1999: a FirebaseFunctions decorator that only adds the default callable
+  // timeout. It hands back the HttpsCallable without invoking it; call sites
+  // that invoke callables are audited where they call().
+  if (path ==
+          'packages/platform/lib/firebase/deadline_firebase_functions.dart' &&
+      rule.id == 'direct_functions_callable') {
+    return const CandidateDisposition(
+      status: CandidateStatus.intentional,
+      reason: 'timeout decorator over FirebaseFunctions; does not invoke',
     );
   }
 

@@ -133,6 +133,33 @@ for (const [kind, source] of Object.entries({
   });
 }
 
+test("a schema needs a top-level rules match for its root collection", t => {
+  const root = fixture(t, "export const publicName = () => {};");
+  fs.writeFileSync(path.join(root, "contracts/firestore/orphan.schema.json"), JSON.stringify({
+    "x-firestore-collection": "orphans", "x-firestore-path": "orphans/{id}",
+  }));
+  const rulesFile = path.join(root, "firestore.rules");
+  for (const rules of ["match /items/{id} {}", "match /items/{id} { match /orphans/{o} {} }"]) {
+    fs.writeFileSync(rulesFile, rules);
+    const result = check(root);
+    assert.equal(result.status, 1, result.stderr);
+    assert.match(result.stderr, /no top-level match \/orphans\//);
+  }
+  fs.writeFileSync(rulesFile, "service cloud.firestore { match /databases/{d}/documents {\n" +
+    "  // match /orphans/{id} in a comment does not count\n" +
+    "  match /items/{id} {}\n  match /orphans/{privateDocument=**} { allow read, write: if false; }\n} }");
+  accepted(check(root));
+});
+
+test("a schema without x-firestore-path is rejected", t => {
+  const root = fixture(t, "export const publicName = () => {};");
+  fs.writeFileSync(path.join(root, "contracts/firestore/orphan.schema.json"),
+    JSON.stringify({"x-firestore-collection": "orphans"}));
+  const result = check(root);
+  assert.equal(result.status, 1, result.stderr);
+  assert.match(result.stderr, /orphans needs x-firestore-path/);
+});
+
 test("default CLI checks its own repository from another working directory", () => {
   const result = spawnSync(process.execPath, [checker], {
     cwd: os.tmpdir(), encoding: "utf8", timeout: 30_000,

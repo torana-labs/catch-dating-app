@@ -9,7 +9,7 @@ import {organizerContactTraits, organizerContactEventEdge,
   organizerIdentityClaimId, organizerIdentityHash} from
   "./organizerAudienceModel";
 import {AudienceTestStore} from "./organizerAudienceTestStore";
-import {onEventAttendeeAudienceProjected,
+import {applyOrganizerAudienceSummaryDelta, onEventAttendeeAudienceProjected,
   projectEventAttendeeToOrganizerAudience, rebuildOrganizerContact} from
   "./organizerAudienceProjection";
 
@@ -155,7 +155,7 @@ test("hidden and merged contacts stay outside rebuild authority", async () => {
     await rebuildOrganizerContact("person", "inactive", deps);
     assert.deepEqual(store.docs["organizerContacts/person"], before);
     assert.equal(Object.keys(store.docs).some((key) =>
-      key.startsWith("organizerAudienceProjectionReceipts/")), false);
+      key.startsWith("commandReceipts/")), false);
   }
 });
 
@@ -255,3 +255,22 @@ test("a redelivered projection after an aborted commit lands one edge",
       path.startsWith("organizerContactEventEdges/")).length, 1);
   });
 
+
+test("a redelivered trait change moves the summary once", async () => {
+  const {store, deps} = harness();
+  const trait = {...store.docs["organizerContactTraits/person"]} as never;
+  await applyOrganizerAudienceSummaryDelta("trigger-event-1", undefined,
+    trait, deps);
+  const once = {...store.docs["organizerAudienceSummaries/org-1"]};
+  assert.equal(once.contactCount, 2);
+  await applyOrganizerAudienceSummaryDelta("trigger-event-1", undefined,
+    trait, deps);
+  assert.deepEqual(store.docs["organizerAudienceSummaries/org-1"], once);
+  await applyOrganizerAudienceSummaryDelta("trigger-event-2", undefined,
+    trait, deps);
+  assert.equal(store.docs["organizerAudienceSummaries/org-1"].contactCount, 3);
+  assert.deepEqual(Object.keys(store.docs).filter((key) =>
+    key.startsWith("commandReceipts/")).sort(), [
+    "commandReceipts/applyOrganizerAudienceSummaryDelta_trigger-event-1",
+    "commandReceipts/applyOrganizerAudienceSummaryDelta_trigger-event-2"]);
+});

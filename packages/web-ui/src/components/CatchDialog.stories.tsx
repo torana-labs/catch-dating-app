@@ -26,7 +26,7 @@ export const Contract: Story = {
 /** The content recipe: page content too big for a dropdown, under a title with a close button. */
 export const Content: Story = {
   render: () => (
-    <CatchDialog closeLabel="Close" onClose={() => undefined} open recipe="content" subtitle="Carter Road Runners" title="Sunday Social Run">
+    <CatchDialog closeLabel="Close" onClose={() => undefined} open recipe="content" subtitle="Driftwood Bay Runners" title="Sunday Social Run">
       <CatchText as="p" variant="body">Show this at the start. Sun 15 Nov · 6:15 AM, Carter Road promenade, Bandra West.</CatchText>
     </CatchDialog>
   ),

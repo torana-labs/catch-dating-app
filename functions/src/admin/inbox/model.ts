@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import {marketForIdOrAlias} from "../../locations/marketConfig";
 import {projectWalkthroughBooking} from "../../walkthroughs/inbox";
+import {projectTakedownRequest} from "../../takedownRequests/inbox";
 
 /**
  * The Admin inbox: one list of everything waiting on a person. Each source
@@ -13,10 +14,10 @@ import {projectWalkthroughBooking} from "../../walkthroughs/inbox";
 export const INBOX_ITEMS_COLLECTION = "adminInboxItems";
 export const INBOX_JOURNEY_COLLECTION = "adminInboxJourney";
 
-export const INBOX_ITEM_TYPES = ["listing", "event", "claim", "enquiry", "lead", "access", "stuck"] as const;
+export const INBOX_ITEM_TYPES = ["listing", "event", "claim", "enquiry", "lead", "access", "stuck", "takedown"] as const;
 export type InboxItemType = typeof INBOX_ITEM_TYPES[number];
 
-export const INBOX_SOURCE_KINDS = ["supplyIntakeRequest", "organizerClaimRequest", "salesInboundIntent", "accessApplication", "externalEvent", "walkthroughBooking"] as const;
+export const INBOX_SOURCE_KINDS = ["supplyIntakeRequest", "organizerClaimRequest", "salesInboundIntent", "accessApplication", "externalEvent", "walkthroughBooking", "takedownRequest"] as const;
 export type InboxSourceKind = typeof INBOX_SOURCE_KINDS[number];
 
 /** working: nobody needs to act yet. waiting/snoozed: a person does. done: decided or gone. */
@@ -126,6 +127,7 @@ export const sourceCollections: Record<InboxSourceKind, string> = {
   accessApplication: "accessApplications",
   externalEvent: "externalEvents",
   walkthroughBooking: "walkthroughBookings",
+  takedownRequest: "takedownRequests",
 };
 
 const itemPrefixes: Record<InboxSourceKind, string> = {
@@ -135,6 +137,7 @@ const itemPrefixes: Record<InboxSourceKind, string> = {
   accessApplication: "access",
   externalEvent: "event",
   walkthroughBooking: "walkthrough",
+  takedownRequest: "takedown",
 };
 
 export function inboxItemId(kind: InboxSourceKind, sourceId: string): string {
@@ -160,6 +163,7 @@ export function projectInboxSource(kind: InboxSourceKind, sourceId: string, data
   case "accessApplication": return projectAccess(sourceId, data, context);
   case "externalEvent": return projectExternalEvent(sourceId, data, context);
   case "walkthroughBooking": return projectWalkthroughBooking(sourceId, data);
+  case "takedownRequest": return projectTakedownRequest(sourceId, data);
   }
 }
 
@@ -400,14 +404,17 @@ function projectEnquiry(sourceId: string, data: Data): InboxProjection | null {
   if (typeof data.leadKind === "string") return projectLead(sourceId, data);
   const createdAt = iso(data.createdAt) ?? epoch;
   const partner = data.source === "partner";
+  // A Facebook or Instagram lead form; its host application may name the club.
+  const metaAd = data.source === "meta_lead_ad";
   // Optional; older intents carry no programme and read as an events Host.
   const weddings = data.programme === "weddings";
   const status = String(data.status);
   const journey: JourneyStep[] = [{
     stepId: "received", occurredAt: createdAt,
     title: partner ? "A partner nominated an organizer" :
-      weddings ? "Weddings pilot application from the website" :
-        "Enquiry from the host website",
+      metaAd ? "Lead from a Facebook or Instagram ad" :
+        weddings ? "Weddings pilot application from the website" :
+          "Enquiry from the host website",
     detail: text(data.fullName), actorUid: text(data.partnerUid), tone: "ink",
   }];
   if (status === "linked") {
@@ -426,9 +433,10 @@ function projectEnquiry(sourceId: string, data: Data): InboxProjection | null {
     sourcePath: `${sourceCollections.salesInboundIntent}/${sourceId}`,
     title: text(data.fullName) ?? "Host enquiry",
     subtitle: partner ? "Partner nomination" :
-      weddings ? weddingsSubtitle(data) : "Wants to run events on Catch",
-    cameFrom: partner ? "Partner" : weddings ? "Weddings website" :
-      "Host website",
+      weddings ? weddingsSubtitle(data) : metaAd ? metaLeadSubtitle(data) :
+        "Wants to run events on Catch",
+    cameFrom: partner ? "Partner" : metaAd ? "Meta lead ad" :
+      weddings ? "Weddings website" : "Host website",
     nominatorUid: text(data.partnerUid),
     city: cityOf(text(data.city)),
     state: open ? {code: "new", label: "New", tone: "neutral"} :
@@ -523,6 +531,15 @@ function projectLead(sourceId: string, data: Data): InboxProjection {
 }
 
 /** "Meher Shah Weddings · 12 Dec wedding" from the programme answers. */
+function metaLeadSubtitle(data: Data): string {
+  const application = data.hostApplication &&
+    typeof data.hostApplication === "object" ?
+    data.hostApplication as Data : {};
+  const organization = text(application.organizationName);
+  return organization ? `${organization}, wants to run events on Catch` :
+    "Wants to run events on Catch";
+}
+
 function weddingsSubtitle(data: Data): string {
   const application = data.programmeApplication &&
     typeof data.programmeApplication === "object" ?

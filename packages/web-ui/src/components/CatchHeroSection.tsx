@@ -34,7 +34,7 @@ export interface CatchHeroSectionAside {
   rows?: readonly {label: string; value: string}[];
   /** The plan chip's date square; the month is read, not shown. */
   date?: Omit<CatchDateTileProps, "size">;
-  /** One line under the title, such as "Khar Social · 6 left". */
+  /** One line under the title, such as "Lantern Lane Tavern · 6 left". */
   meta?: string;
 }
 

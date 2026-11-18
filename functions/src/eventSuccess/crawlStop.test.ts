@@ -13,7 +13,7 @@ const code = (expected: string) => (error: unknown) =>
   error instanceof HttpsError && error.code === expected;
 
 test("a stop changes once, by id", () => {
-  const first = {stopId: "stop-3", title: "Bonobo", address: null,
+  const first = {stopId: "stop-3", title: "Copperleaf", address: null,
     changedAtMs: 1};
   const second = {...first, title: "The Daily", changedAtMs: 2};
   assert.deepEqual(withCrawlStopChange([first], second), [second]);
@@ -24,7 +24,7 @@ test("changeEventCrawlStop records the stop and sends one message",
     const stamp = {_seconds: 1, _nanoseconds: 0};
     const store = new AudienceTestStore({
       "events/event-1": {organizerId: "org-1", itinerary: [
-        {id: "stop-1", kind: "stop", offsetMinutes: 0, title: "Bonobo"},
+        {id: "stop-1", kind: "stop", offsetMinutes: 0, title: "Copperleaf"},
         {id: "stop-2", kind: "stop", offsetMinutes: 45, title: "Toto's"},
       ]},
       "organizers/org-1": {hostUserId: "host-1", hostUserIds: [],
@@ -60,6 +60,10 @@ test("changeEventCrawlStop records the stop and sends one message",
       {auth: {uid: "host-1"}, data} as never, deps as never);
     assert.equal(replay.replayed, true);
     assert.equal(replay.liveControlRevision, 7);
+    await assert.rejects(changeEventCrawlStopHandler({auth: {uid: "host-1"},
+      data: {...data, stop: {title: "Elsewhere", address: null}},
+    } as never, deps as never),
+    code("already-exists"));
     assert.equal(broadcasts.length, 2, "the replay replays the broadcast");
     assert.equal(
       (broadcasts[1] as {requestId: string}).requestId,

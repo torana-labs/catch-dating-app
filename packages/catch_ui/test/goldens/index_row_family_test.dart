@@ -47,7 +47,7 @@ void main() {
                 onTap: null,
               ),
               CatchIndexRow(
-                title: 'Carter Road Social Run',
+                title: 'Salt Air Social Run',
                 meta: '6:30 AM · 32 of 40 booked',
                 status: '8 left',
                 progress: const CatchIndexRowProgress(

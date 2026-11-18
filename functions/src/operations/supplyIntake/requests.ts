@@ -1,8 +1,10 @@
 /* eslint-disable max-len */
 import {createHash} from "node:crypto";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
+import {logger} from "firebase-functions";
 import {HttpsError} from "firebase-functions/v2/https";
 import {marketForIdOrAlias} from "../../locations/marketConfig";
+import {blockedIntakePatch, checkListingSuppression, suppressionModule} from "../../listingSuppressions/registry";
 import type {SupplyIntakeRequest} from "../../shared/generated/supplyIntakeRequest";
 import {validateSupplyIntakeRequest} from "../../shared/generated/validators/supplyIntakeRequest";
 import {supplyIntakeCollections} from "./worker";
@@ -48,21 +50,57 @@ export interface SupplyIntakeInstantDraft {
   accessTokenHash: string;
 }
 
+/** A request the do-not-list registry refused: the case it matched, for staff, never the matched identity. */
+export interface SupplyIntakeSuppression {
+  caseId: string;
+  reason: string;
+}
+
+export interface SupplyIntakeRequestResult {
+  requestId: string;
+  created: boolean;
+  /** Set when a do-not-list case refused the request; nothing was written but the case's refusal count. */
+  suppressed?: SupplyIntakeSuppression;
+}
+
 /**
  * Writes one queued request. An event refresh for an organizer Catch already
  * lists is created with that organizer's approval, so it never waits for
  * listing review and its events go straight to the publication policy. A
  * website instant draft is created with its private draft state, which
  * makes any later approval save a private draft instead of publishing.
+ *
+ * Every request is first checked against the do-not-list registry
+ * (listingSuppressions): a request whose name, links, handles or target
+ * match an active case is not written; the case's blockedIntakeCount is
+ * incremented in this transaction and the result names the case so the
+ * front door can refuse. While an active case exists and the registry key
+ * is unavailable, intake fails closed with "unavailable".
  */
 export async function createSupplyIntakeRequest(tx: Transaction, db: Firestore, request: SupplyIntakeRequest, now: Date,
   {approval = null, instantDraft = null}: {approval?: SupplyIntakeRequestApproval | null;
-    instantDraft?: SupplyIntakeInstantDraft | null} = {}): Promise<{requestId: string; created: boolean}> {
+    instantDraft?: SupplyIntakeInstantDraft | null} = {}): Promise<SupplyIntakeRequestResult> {
   if (!validateSupplyIntakeRequest(request)) {
     throw new HttpsError("invalid-argument", "The intake request does not satisfy its contract.");
   }
   if ((request.origin?.kind === "web_instant_draft") !== (instantDraft !== null)) {
     throw new HttpsError("invalid-argument", "Only a website instant draft request carries instant draft state.");
+  }
+  const keys = (await suppressionModule()).suppressionKeysForIntakeRequest(request);
+  const suppression = await checkListingSuppression(tx, db, keys);
+  if (suppression.state === "unavailable") {
+    logger.error("Supply intake paused: the do-not-list registry key is unavailable.",
+      {originKind: request.origin?.kind ?? null});
+    throw new HttpsError("unavailable", "The do-not-list check is unavailable (LISTING_SUPPRESSION_HMAC_KEY), " +
+      "so Supply Intake is paused. Nothing was queued.");
+  }
+  if (suppression.state === "suppressed") {
+    const {caseId, reason} = suppression.match;
+    tx.update(suppression.match.ref, blockedIntakePatch(suppression.match, now));
+    // The case id is opaque; the request's name and links stay out of logs.
+    logger.warn("Supply intake request refused by the do-not-list registry.",
+      {caseId, originKind: request.origin?.kind ?? null, kind: request.kind});
+    return {requestId: request.requestId, created: false, suppressed: {caseId, reason}};
   }
   const ref = db.collection(supplyIntakeCollections.requests).doc(request.requestId);
   const existing = await tx.get(ref);

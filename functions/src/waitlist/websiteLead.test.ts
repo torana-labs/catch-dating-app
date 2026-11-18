@@ -497,7 +497,7 @@ test("a deleted account cannot be credited", async () => {
 test("joinWaitlist routes only requestKind requests to the lead path",
   async () => {
     const {store, deps} = harness();
-    const handler = createJoinWaitlistHandler({measurementEnabled: false,
+    const handler = createJoinWaitlistHandler({
       lead: deps});
     const respond = () => {
       const sent: {status?: number; body?: unknown;
@@ -533,7 +533,7 @@ test("joinWaitlist routes only requestKind requests to the lead path",
     }, db: () => {
       throw new Error("lead path used");
     }};
-    const hostHandler = createJoinWaitlistHandler({measurementEnabled: false,
+    const hostHandler = createJoinWaitlistHandler({
       lead: failing});
     const hostCall = respond();
     await hostHandler({...request({}, "synthetic-lead-routing") as object,

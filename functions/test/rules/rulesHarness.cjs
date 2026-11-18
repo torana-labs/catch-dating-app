@@ -113,7 +113,7 @@ function externalEvent(overrides = {}) {
   return {
     schemaVersion: 1,
     eventId: "external-event-1",
-    canonicalHostId: "host-afterfly",
+    canonicalHostId: "host-moonmoth",
     title: "External mixer",
     description: "Reviewed external supply.",
     startTime: Timestamp.fromDate(new Date("2026-06-26T14:30:00.000Z")),

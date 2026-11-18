@@ -31,7 +31,7 @@
       ],
       "aside": {
         "label": "Hosting dinners in a restaurant or for a company? Ask for a walkthrough",
-        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I host dinners in a restaurant or for a company and would like a walkthrough."}
+        "to": {"route": "host_walkthrough"}
       },
       "chip": {
         "title": "Long Table Supper",

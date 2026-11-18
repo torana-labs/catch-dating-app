@@ -13,7 +13,7 @@ import {
 
 const validateSchema = new Ajv2020({allErrors: true}).compile(schema);
 const context: PlaybookValidationContext = {
-  routeIds: new Set(["host", "host_run_clubs", "host_start", "pricing"]),
+  routeIds: new Set(["host", "host_run_clubs", "host_start", "host_walkthrough", "pricing"]),
   captureSlots: new Set(["host-formats-pods", "guest-explore"]),
 };
 

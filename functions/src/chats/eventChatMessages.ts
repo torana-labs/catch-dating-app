@@ -15,8 +15,14 @@ import {chatHash, chatIdentityReader, emptyReactionCounts, eventChatReactionId,
   type EventChatMessageDeps} from "./eventChatMessageShared";
 import type {EventChatMessageDocument as Message,
   EventChatReactionDocument as Reaction, EventChatPresenceDocument as Presence,
-  EventChatAccessReceiptDocument as Receipt, ModerationFlagDocument} from
+  ModerationFlagDocument} from
   "../shared/generated/firestoreAdminTypes";
+import {
+  eventChatReceiptRef,
+  eventChatRequestHash,
+  replayEventChatReceipt,
+  writeEventChatReceipt,
+} from "./eventChatReceipts";
 import {validateSendEventChatMessageCallablePayload} from
   "../shared/generated/validators/sendEventChatMessageInput";
 import {validateSetEventChatReactionCallablePayload} from
@@ -131,9 +137,10 @@ export async function setEventChatReactionHandler(
   await deps.rateLimit(db, uid, "setEventChatReaction", {
     maxRequests: 60, windowMs: 60 * 1000,
   });
-  const receiptRef = db.collection("eventChatAccessReceipts").doc(chatHash([
-    "reaction", uid, data.eventId, data.messageId, data.requestId]));
-  const payloadHash = chatHash([data.reaction, data.expectedRevision]);
+  const receiptRef = eventChatReceiptRef(db, "setEventChatReaction",
+    chatHash(["reaction", uid, data.eventId, data.messageId, data.requestId]));
+  const requestHash = eventChatRequestHash(uid, data.eventId,
+    chatHash([data.reaction, data.expectedRevision]));
   const messageRef = db.collection("eventChatMessages").doc(data.messageId);
   const reactionRef = db.collection("eventChatReactions")
     .doc(eventChatReactionId(data.messageId, uid));
@@ -141,16 +148,10 @@ export async function setEventChatReactionHandler(
     const access = await requireEventChatMember(db, tx, data.eventId, uid);
     if (!access.view.canPostMessages) throw messageUnavailable();
     const receiptSnap = await tx.get(receiptRef);
-    if (receiptSnap.exists) {
-      const receipt = requireDoc<Receipt>(receiptSnap,
-        "EventChatAccessReceiptDocument");
-      if (receipt.uid !== uid || receipt.eventId !== data.eventId ||
-          receipt.payloadHash !== payloadHash) {
-        throw new HttpsError("already-exists",
-          "This request was already used.");
-      }
-      return {revision: receipt.revision, replayed: true};
-    }
+    const prior = replayEventChatReceipt(receiptSnap.data(), {
+      command: "setEventChatReaction", requestHash,
+      nowMillis: deps.now().toMillis()});
+    if (prior) return {revision: prior.revision as number, replayed: true};
     const [messageSnap, reactionSnap] = await Promise.all([
       tx.get(messageRef), tx.get(reactionRef),
     ]);
@@ -178,8 +179,8 @@ export async function setEventChatReactionHandler(
       reaction: data.reaction, revision, updatedAt: now} satisfies Reaction);
     tx.update(messageRef, {reactionCounts: counts});
     bumpEventChatSignalIn(tx, db, data.eventId, "message");
-    tx.create(receiptRef, {eventId: data.eventId, uid, payloadHash, revision,
-      createdAt: now} satisfies Receipt);
+    writeEventChatReceipt(tx, receiptRef, {command: "setEventChatReaction",
+      requestHash, revision, nowMillis: now.toMillis()});
     return {revision, replayed: false};
   });
 }

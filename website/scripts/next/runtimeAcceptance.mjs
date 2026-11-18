@@ -71,7 +71,7 @@ try {
   assert.match(unpublishedCard.headers.get("location"), /^\/assets\/og\/default\.png\?v=/);
   // Event maps call the Static API only for a published event's meeting point.
   assert.equal((await fetch(origin + "/maps/events/not-published/map.png")).status, 404);
-  await check(`/events/${external.eventId}/`, 200, "Takeoff: Run + Rave");
+  await check(`/events/${external.eventId}/`, 200, "Nightfall: Run + Rave");
   await check("/missing-route-proof/", 404);
   const missingRsc = await fetch(origin + "/missing-route-proof/?_rsc", {headers: {RSC: "1"}});
   assert.equal(missingRsc.status, 404);

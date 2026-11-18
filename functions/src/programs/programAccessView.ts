@@ -5,6 +5,7 @@ import type {
   ProgramAccessViewDocument,
   ProgramStaffGrantDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {
   activeProgramDuties,
   programOwnerAuthorizationDeadline,
@@ -38,6 +39,9 @@ const emptyMaps = () => ({
   workPickup: {} as ExpiryMap,
   workHotel: {} as ExpiryMap,
   workFunction: {} as ExpiryMap,
+  arrivalRoutes: {} as ExpiryMap,
+  assignments: [] as ProgramAccessViewDocument["assignments"],
+  grantExpiresAtMillis: null as number | null,
 });
 
 /** Key standing for every pickup point, hotel or function in a work map. */
@@ -117,6 +121,13 @@ export function staffProgramAccessView(program: OrganizerProgramDocument,
     for (const assignment of held) foldAssignment(maps, duty, assignment);
   }
   foldWork(maps, duties);
+  foldArrivalRoutes(maps, duties);
+  maps.assignments = duties.map((assignment) => ({duty: assignment.duty,
+    pickupPointIds: assignment.pickupPointIds, hotelIds: assignment.hotelIds,
+    ...(assignment.functionIds === undefined ? {} :
+      {functionIds: assignment.functionIds}),
+    expiresAtMillis: assignment.expiresAtMillis}));
+  maps.grantExpiresAtMillis = staffTimestampMillis(grant.expiresAt);
   return {...base, status: "active", activeFromMillis,
     expiresAtMillis: Math.max(...duties.map((a) => a.expiresAtMillis)),
     ...maps};
@@ -137,6 +148,41 @@ function foldAssignment(maps: ReturnType<typeof emptyMaps>,
   for (const {all, scoped, ids} of dimensions) {
     if (ids.length === 0) raise(all, duty, expiry);
     for (const id of ids) raise(scoped, `${duty}__${id}`, expiry);
+  }
+}
+
+const arrivalDuties: ReadonlySet<ProgramStaffDuty> = new Set([
+  "airportGreeter", "transportDispatcher", "programCoordinator"]);
+const maxRoutesPerAssignment = 300;
+
+/**
+ * The journeys the arrivals roster shows an account: its airport greeter,
+ * transport dispatcher and coordinator assignments, each covering a pickup
+ * point and a hotel together. An empty scope list covers every one, written
+ * `*`. An assignment whose scopes would expand past the cap grants nothing,
+ * which fails closed.
+ * @param {ReturnType<typeof emptyMaps>} maps The maps to fill.
+ * @param {ProgramDutyAssignment[]} duties The live assignments.
+ */
+function foldArrivalRoutes(maps: ReturnType<typeof emptyMaps>,
+  duties: ProgramDutyAssignment[]): void {
+  for (const assignment of duties) {
+    if (!arrivalDuties.has(assignment.duty)) continue;
+    const pickups = assignment.pickupPointIds.length ?
+      assignment.pickupPointIds : [workAllKey];
+    const hotels = assignment.hotelIds.length ?
+      assignment.hotelIds : [workAllKey];
+    if (pickups.length * hotels.length > maxRoutesPerAssignment) {
+      logger.warn("Arrival routes skipped an assignment past the cap.",
+        {duty: assignment.duty});
+      continue;
+    }
+    for (const pickup of pickups) {
+      for (const hotel of hotels) {
+        raise(maps.arrivalRoutes, `${pickup}|${hotel}`,
+          assignment.expiresAtMillis);
+      }
+    }
   }
 }
 

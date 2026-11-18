@@ -78,7 +78,7 @@ void main() {
         onRetry: () {},
       ),
     );
-    expect(find.text('Durbar hall, Taj Fateh Prakash'), findsWidgets);
+    expect(find.text('Durbar hall, Lakeview Haveli'), findsWidgets);
     await tester.tap(
       find.byKey(const ValueKey('host-programme-invitation-everyone')),
     );
@@ -235,7 +235,7 @@ void main() {
       find.byKey(const ValueKey('host-programme-trip-T-041')),
       findsNothing,
     );
-    await tester.tap(find.widgetWithText(CatchChip, 'Royal Cabs'));
-    expect(filter, const HostProgrammeTripFilter.vendor('Royal Cabs'));
+    await tester.tap(find.widgetWithText(CatchChip, 'Salt Air Cabs'));
+    expect(filter, const HostProgrammeTripFilter.vendor('Salt Air Cabs'));
   });
 }

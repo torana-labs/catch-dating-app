@@ -226,7 +226,7 @@ reachable.
   in the common area". The guest also sees their evening list and "min on
   court".
 - **Phones off.** The existing passive step context, with no prompt.
-- **Crawl stop card (RbLiveCrawlArrive).** "Stop 2 of 4 · Toto's Garage",
+- **Crawl stop card (RbLiveCrawlArrive).** "Stop 2 of 4 · Gearbox Tavern",
   the group and the next move time.
 - **Skip.** Every prompt card (first hello, stage prompt, conversation cue)
   has Skip and the line "You can skip any prompt." Skipping records nothing

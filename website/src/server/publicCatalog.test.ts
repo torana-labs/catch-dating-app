@@ -26,6 +26,7 @@ import {
   assembleOrganizerDetailFromSources,
   assemblePublicCatalog,
   assembleRouteCatalog,
+  memoizeFor,
   publicReader,
 } from "./publicCatalog";
 import type {PublicCollection, PublicReader} from "./repositories/publicReader";
@@ -138,6 +139,26 @@ describe("full public catalog", () => {
     for (let index = 0; index < 401; index += 1) world.events[`bulk-${index}`] = catchEvent("alpha");
     const {reader} = fakeReader(world);
     await expect(assemblePublicCatalog(reader, readAt)).rejects.toThrow("PUBLIC_CATALOG_READ_BOUND_EXCEEDED");
+  });
+});
+
+describe("probe memo", () => {
+  it("reads once a minute, shares an in-flight read and forgets failures", async () => {
+    let clock = 0;
+    const read = vi.fn(async () => ({reads: read.mock.calls.length}));
+    const memo = memoizeFor(60_000, read, () => clock);
+    const [first, concurrent] = await Promise.all([memo(), memo()]);
+    expect(first).toBe(concurrent);
+    clock = 59_999;
+    await memo();
+    expect(read).toHaveBeenCalledTimes(1);
+    clock = 60_000;
+    expect((await memo()).reads).toBe(2);
+    const failing = vi.fn().mockRejectedValueOnce(new Error("down")).mockResolvedValue("up");
+    const retried = memoizeFor(60_000, failing, () => clock);
+    await expect(retried()).rejects.toThrow("down");
+    await expect(retried()).resolves.toBe("up");
+    expect(failing).toHaveBeenCalledTimes(2);
   });
 });
 

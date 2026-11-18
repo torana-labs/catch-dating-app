@@ -374,6 +374,43 @@ for (const [label, change] of [
   });
 }
 
+// --- Takedown preservation bucket --------------------------------------------
+
+const preservationBucket = (after = {}) => ({
+  address: 'google_storage_bucket.takedown_preservation["prod"]', mode: "managed", type: "google_storage_bucket",
+  change: {actions: ["create"], before: null, after: {name: "catch-dating-app-64e51-takedown-preservation",
+    uniform_bucket_level_access: true, public_access_prevention: "enforced", force_destroy: false,
+    retention_policy: [{retention_period: "15552000", is_locked: false}], ...after}},
+});
+const bucketGrant = (role, member) => ({
+  address: 'google_storage_bucket_iam_member.takedown_preservation_writer["prod"]', mode: "managed",
+  type: "google_storage_bucket_iam_member",
+  change: {actions: ["create"], before: null, after: {role, member}},
+});
+const deployIdentity = "serviceAccount:github-actions-deploy@catch-dating-app-64e51.iam.gserviceaccount.com";
+
+test("plan guard lets Terraform create the restricted preservation bucket and the deploy identity's object grants", (t) => {
+  const result = guard(t, planWith([preservationBucket(), bucketGrant("roles/storage.objectCreator", deployIdentity),
+    bucketGrant("roles/storage.objectViewer", deployIdentity)]));
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+});
+
+for (const [label, change] of [
+  ["a public bucket", preservationBucket({public_access_prevention: "inherited"})],
+  ["a bucket without uniform access", preservationBucket({uniform_bucket_level_access: false})],
+  ["a bucket without the 180-day retention", preservationBucket({retention_policy: []})],
+  ["a shorter retention", preservationBucket({retention_policy: [{retention_period: "86400"}]})],
+  ["a force-destroyable bucket", preservationBucket({force_destroy: true})],
+  ["a bucket delete", {...preservationBucket(), change: {...preservationBucket().change, actions: ["delete"]}}],
+  ["an object admin grant", bucketGrant("roles/storage.objectAdmin", deployIdentity)],
+  ["a grant to anyone else", bucketGrant("roles/storage.objectViewer", "allUsers")],
+]) {
+  test(`plan guard refuses ${label}`, (t) => {
+    const result = guard(t, planWith([change]));
+    assert.equal(result.status, 1, result.stdout);
+  });
+}
+
 // --- Firestore recovery -------------------------------------------------------
 
 const recovered = {delete_protection_state: "DELETE_PROTECTION_ENABLED",

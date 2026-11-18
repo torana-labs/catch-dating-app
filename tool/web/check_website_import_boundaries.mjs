@@ -153,6 +153,10 @@ function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
   // website/src, to pin that receipts, offers and invitations stay unstored.
   if (sourceRelativePath === "server/privateShellCache.test.ts" &&
     targetAbsolutePath === path.join(repoRoot, "website/proxy")) return true;
+  // Explore's headline test checks every state's lead against the release
+  // smoke's accepted leads, which run only after deploy.
+  if (sourceRelativePath === "features/home/sections/exploreSmokeContract.test.ts" &&
+    targetAbsolutePath === path.join(repoRoot, "website/scripts/next/deployedSmoke.mjs")) return true;
   // The public page read models are Functions documents; their reader
   // validates them with the generated validators and types.
   if (sourceRelativePath === "server/repositories/publicPageRepository.ts" &&
@@ -408,12 +412,12 @@ function runSelfTest() {
   assert.equal(webUiDeepImport("@catch/web-ui/artwork", {".": {}, "./artwork": {}}), false);
   assert.equal(webUiDeepImport("@catch/web-ui/src/components/CatchText", {".": {}, "./artwork": {}}), true);
   // Analytics services may share pure contracts, never UI or feature state.
-  assert.deepEqual(layerFor("analytics/hostServerConsent.ts"), {name: "service"});
-  assert.deepEqual(layerFor("shared/contracts/generated/hostAcquisitionConsentHttpRequest.ts"), {name: "contract"});
-  assert.equal(violationFor("analytics/hostServerConsent.ts", {name: "service"}, {name: "contract"}), null);
-  assert.equal(violationFor("analytics/hostServerConsent.ts", {name: "service"}, {name: "service"}), null);
+  assert.deepEqual(layerFor("analytics/adContext.ts"), {name: "service"});
+  assert.deepEqual(layerFor("shared/contracts/generated/managePublicEventCheckoutCallablePayload.ts"), {name: "contract"});
+  assert.equal(violationFor("analytics/adContext.ts", {name: "service"}, {name: "contract"}), null);
+  assert.equal(violationFor("analytics/adContext.ts", {name: "service"}, {name: "service"}), null);
   for (const layer of ["app", "feature", "shared", "content"]) {
-    assert.match(violationFor("analytics/hostServerConsent.ts", {name: "service"}, {name: layer}), /must stay independent/);
+    assert.match(violationFor("analytics/adContext.ts", {name: "service"}, {name: layer}), /must stay independent/);
   }
   for (const layer of ["app", "feature", "shared", "content", "service", "server"]) {
     assert.ok(violationFor("shared/contracts/generated/test.ts", {name: "contract"}, {name: layer}));

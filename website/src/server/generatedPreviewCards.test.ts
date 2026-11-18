@@ -18,7 +18,7 @@ import {brand} from "@catch/brand";
 
 const now = Date.parse("2026-07-24T00:00:00.000Z");
 // Fixture record text; the card must repeat these and nothing private.
-const organizerName = "Bandra Run Club";
+const organizerName = "Sandbar Run Club";
 const eventName = "Sunday Sunrise 5K";
 const when = "2 Aug 2026, 6:00 am – 7:30 am";
 const area = "Bandra Bandstand";
@@ -26,7 +26,7 @@ const area = "Bandra Bandstand";
 function listing(events: HostListingCatchEvent[] = []): HostListing {
   const base = hostListings[0];
   return {
-    ...base, name: organizerName, city: "Mumbai", path: "/organizers/mumbai/bandra-run-club/",
+    ...base, name: organizerName, city: "Mumbai", path: "/organizers/mumbai/sandbar-run-club/",
     authority: {...base.authority, claimState: "unclaimed", ownershipState: "programmatic", publishStatus: "published", verificationStatus: "sourceBacked"},
     catchEvents: events, externalEvents: [],
     reviews: [{id: "r1", eventId: "sunrise", reviewerName: "Private Reviewer", rating: 5, comment: "Loved meeting Asha there",
@@ -67,7 +67,7 @@ describe("generated link-preview cards", () => {
 
   it("draws an organiser as name, city and activity on its activity ground", () => {
     expect(generatedPreviewCardFor({listingRoute: {listing: listing([event()]), isLegacyPath: false}, event: null})).toEqual({
-      pagePath: "/organizers/mumbai/bandra-run-club/", kicker: activityMeta.socialRun.label, title: organizerName,
+      pagePath: "/organizers/mumbai/sandbar-run-club/", kicker: activityMeta.socialRun.label, title: organizerName,
       lines: ["Mumbai"], byline: null, ground: previewCards.generated.grounds["social-run"], photoUrl: null,
       alt: [organizerName, activityMeta.socialRun.label, "Mumbai"].join(", "),
     });
@@ -101,7 +101,7 @@ describe("generated link-preview cards", () => {
 
   it("serves only organiser and event pages from the image route", () => {
     expect(pagePathForGeneratedCard(["events", "sunrise", "card.png"])).toBe("/events/sunrise/");
-    expect(pagePathForGeneratedCard(["organizers", "mumbai", "bandra-run-club", "card.png"])).toBe("/organizers/mumbai/bandra-run-club/");
+    expect(pagePathForGeneratedCard(["organizers", "mumbai", "sandbar-run-club", "card.png"])).toBe("/organizers/mumbai/sandbar-run-club/");
     for (const segments of [["events", "sunrise"], ["booking", "sunrise", "card.png"], ["join", "token", "card.png"],
       ["organizers", "card.png"], ["events", "..", "card.png"], ["events", "a/b", "card.png"], ["f", "form", "card.png"]]) {
       expect(pagePathForGeneratedCard(segments), segments.join("/")).toBeNull();

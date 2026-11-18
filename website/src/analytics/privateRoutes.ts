@@ -6,5 +6,7 @@ export function isPrivateEventUpdatePath(path: string): boolean {
     ["/itinerary/", "/ids/", "/hotel/", "/trip/", "/runsheet/", "/hampers/", "/family/"].some((root) => path.startsWith(root)) ||
     path === "/offer" || path === "/offer/" ||
     path === "/account" || path === "/account/" ||
-    path === "/host/billing" || path === "/host/billing/";
+    path === "/host/billing" || path === "/host/billing/" ||
+    // Listing requests carry names and contact details: no analytics or replay.
+    path.startsWith("/listings/request");
 }

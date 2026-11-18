@@ -27,8 +27,12 @@ const count = (n: number, one: string, many: string) => n === 1 ? one : fill(man
  * - `soon`: a city not open yet, with who is joining;
  * - `filtered`: a search or filter the visitor set, with its count;
  * - `unavailable`: nothing could be read.
+ *
+ * The list is the union's one source: the release smoke's contract test
+ * walks every state, so a new one cannot lead with copy the smoke rejects.
  */
-export type ExploreState = "full" | "quiet" | "empty" | "soon" | "filtered" | "unavailable";
+export const exploreStates = ["full", "quiet", "empty", "soon", "filtered", "unavailable"] as const;
+export type ExploreState = (typeof exploreStates)[number];
 
 /** How many organisers the hosts band under the plans shows before "See all organisers". */
 const hostsBandSize = 4;

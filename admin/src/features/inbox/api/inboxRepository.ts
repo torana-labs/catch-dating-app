@@ -86,7 +86,7 @@ function samplePage(query: InboxQuery): InboxPage {
         snoozed: items.filter((item) => item.status === "snoozed").length,
         working: items.filter((item) => item.status === "working").length},
       types: {all: scoped.length, listing: count("listing"), event: count("event"), claim: count("claim"),
-        enquiry: count("enquiry"), lead: count("lead"), access: count("access"), stuck: count("stuck")},
+        enquiry: count("enquiry"), lead: count("lead"), access: count("access"), stuck: count("stuck"), takedown: count("takedown")},
     },
     oldestWaitingSince: waiting.sort((left, right) => left.waitingSince.localeCompare(right.waitingSince))[0]?.waitingSince ?? null,
   };
@@ -217,7 +217,7 @@ export async function getListingReview(requestId: string): Promise<ListingReview
     market: {slug: "mumbai", marketId: "in-mh-mumbai", label: "Mumbai · Maharashtra", open: true},
     suggestedSlug: (item?.title ?? "listing").toLowerCase().replace(/[^a-z0-9]+/gu, "-"),
     listing: {name: item?.title ?? "Listing", description: "Weekly social nights for people who would rather meet in person.",
-      categories: ["social"], links: [{platform: "luma", url: "https://lu.ma/afterfly"}], gaps: [], eventCount: 3,
+      categories: ["social"], links: [{platform: "luma", url: "https://lu.ma/moonmoth"}], gaps: [], eventCount: 3,
       researchNeeded: false, contentHash: "a".repeat(64), pageCount: 2, fetchedPageCount: 2},
     duplicateCheck: {verdict: "none", organizersCompared: 12, citySlug: "mumbai", truncated: false, candidates: []},
   }};
@@ -227,7 +227,7 @@ export async function getListingReview(requestId: string): Promise<ListingReview
 export async function approveListing(input: ListingApprovalInput, requestId: string): Promise<AdminApproveOrganizerListingCallableResponse> {
   if (dataMode() !== "sample") return call("adminApproveOrganizerListing", input);
   const approval: AdminApproveOrganizerListingCallableResponse = sampleApprovals.get(input.listingWorkItemId) ?? {
-    approvalId: `listing-${"0".repeat(40)}`, organizerId: "sample-afterfly", organizerPath: "organizers/sample-afterfly",
+    approvalId: `listing-${"0".repeat(40)}`, organizerId: "sample-moonmoth", organizerPath: "organizers/sample-moonmoth",
     created: true, publishStatus: "published", indexStatus: "noindex", appVisibility: "hidden",
     claimState: "unclaimed", salesOwnerUid: "sample-owner"};
   sampleApprovals.set(input.listingWorkItemId, approval);

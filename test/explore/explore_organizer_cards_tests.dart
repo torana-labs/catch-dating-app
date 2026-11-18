@@ -250,7 +250,7 @@ void _registerExploreOrganizerCardsTests() {
     final item = ExploreExternalEventItem(
       event: _buildExternalExploreEvent(
         id: 'external-semantic-row',
-        title: 'Afterfly Social',
+        title: 'Moonmoth Social',
       ),
     );
 
@@ -268,7 +268,7 @@ void _registerExploreOrganizerCardsTests() {
 
     expect(
       find.bySemanticsLabel(
-        RegExp('Afterfly Social.*FROM DISTRICT.*READ-ONLY SUPPLY'),
+        RegExp('Moonmoth Social.*FROM DISTRICT.*READ-ONLY SUPPLY'),
       ),
       findsOneWidget,
     );

@@ -316,9 +316,9 @@ test("a launched city with few plans stays live with its honest count", () => {
 
 test("a city that has not launched lists who is joining, with no pages", () => {
   const listing = {
-    id: "kp-runners", name: "Koregaon Park Runners", citySlug: "pune",
+    id: "kp-runners", name: "Jacaranda Park Runners", citySlug: "pune",
     category: "Run club", formats: ["Saturday social runs"],
-    logo: {mode: "monogram", text: "KP", status: "not_verified"},
+    logo: {mode: "monogram", text: "JP", status: "not_verified"},
     metrics: {followerCount: 3},
     authority: {claimState: "unclaimed"},
   } as unknown as HostListing;
@@ -330,8 +330,8 @@ test("a city that has not launched lists who is joining, with no pages", () => {
   assert.deepEqual(city.plans, []);
   assert.equal(city.planCount, 0);
   assert.deepEqual(city.organizers, [{organizerId: "kp-runners",
-    name: "Koregaon Park Runners", path: null, category: "Run club",
-    logo: {mode: "monogram", text: "KP", status: "not_verified"},
+    name: "Jacaranda Park Runners", path: null, category: "Run club",
+    logo: {mode: "monogram", text: "JP", status: "not_verified"},
     formats: ["run"], followerCount: 3, claimState: "unclaimed",
     upcomingPlanCount: 0, nextPlan: null, discoveryFormats: ["runClubs"],
     womenLed: false}]);

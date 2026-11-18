@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "id": "run-club-bandra",
-  "label": "Bandra Run Club",
+  "label": "Sandbar Run Club",
   "description": "Fictional Bandra West run club's Sunday 5K: pace preference at booking, pace pods on the morning and the invite to the next run. Draft capture input, never a seed world or an availability claim.",
   "uses": [
     "marketing-capture"

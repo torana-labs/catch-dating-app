@@ -31,7 +31,7 @@
       ],
       "aside": {
         "label": "Running treks for a company? Ask for a walkthrough",
-        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run treks for companies and would like a walkthrough."}
+        "to": {"route": "host_walkthrough"}
       },
       "chip": {
         "title": "Kalsubai sunrise",

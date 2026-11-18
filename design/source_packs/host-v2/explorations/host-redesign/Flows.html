@@ -154,7 +154,7 @@ function Onboarding({ onDone, toast }) {
   if (s === 3) return <><SB /><WizHead step={s} total={tot} onBack={back} /><div className="scroll"><div className="wbody">
     <div className="wtitle">{orgMode === 'claim' ? 'Confirm your organizer' : 'Name your organizer'}</div><div className="wsub">{orgMode === 'claim' ? 'We found this listing — tidy it up and claim it.' : 'You can change any of this later.'}</div>
     <div className="lbl">Organizer name</div>
-    <Field icon="storefront" placeholder="e.g. Bandra Social" value={name} onChange={(e) => setName(e.target.value)} />
+    <Field icon="storefront" placeholder="e.g. Harbour Line Social" value={name} onChange={(e) => setName(e.target.value)} />
     <div className="lbl">City</div>
     <Tap icon="map-pin" val={city} onClick={() => toast('City picker')} />
     <div className="lbl">What you host</div>
@@ -175,14 +175,14 @@ function Onboarding({ onDone, toast }) {
   return <><SB /><div className="cel">
     <div className="burst" style={{ background: 'var(--act-pub-quiz-accent)' }}><i className="ph-fill ph-confetti"></i></div>
     <h2>You’re an organizer.</h2>
-    <p>{name || 'Bandra Social'} is live. Create your first event whenever you’re ready — your defaults will prefill it.</p>
+    <p>{name || 'Harbour Line Social'} is live. Create your first event whenever you’re ready — your defaults will prefill it.</p>
     <button className="btn primary" style={{ width: '100%', marginTop: 26 }} onClick={onDone}>Enter Catch</button>
     <button className="btn ghost" style={{ marginTop: 8 }} onClick={onDone}>Create my first event</button>
   </div></>;
 }
 
 /* ───────── CREATE / REPEAT EVENT ───────── */
-const LAST = { act: 'pubQuiz', title: 'Tuesday Trivia Night', desc: 'Three rounds, no phones, winners buy the next one. Teams drawn at the door.', where: 'The Daily Bar, Khar', dir: 'Upstairs — ask for the Bandra Social table.', dur: 180, cap: 30, price: 0, adm: 'open', minAge: 21, maxAge: 45 };
+const LAST = { act: 'pubQuiz', title: 'Tuesday Trivia Night', desc: 'Three rounds, no phones, winners buy the next one. Teams drawn at the door.', where: 'The Salt Air Bar, Khar', dir: 'Upstairs — ask for the Harbour Line Social table.', dur: 180, cap: 30, price: 0, adm: 'open', minAge: 21, maxAge: 45 };
 
 function CreateEvent({ repeat, onDone, toast }) {
   const seed = repeat ? LAST : { act: 'socialRun', title: '', desc: '', where: '', dir: '', dur: 90, cap: 20, price: 0, adm: 'open', minAge: 24, maxAge: 40 };
@@ -208,7 +208,7 @@ function CreateEvent({ repeat, onDone, toast }) {
   if (done) return <><SB /><div className="cel">
     <div className="burst" style={{ background: acc }}><i className="ph-fill ph-confetti"></i></div>
     <h2>Your event is live.</h2>
-    <p>{title || 'Your event'} is listed on Bandra Social. Guests can discover and book it now.</p>
+    <p>{title || 'Your event'} is listed on Harbour Line Social. Guests can discover and book it now.</p>
     <button className="btn primary" style={{ width: '100%', marginTop: 26 }} onClick={onDone}>Manage event</button>
     <button className="btn ghost" style={{ marginTop: 8 }} onClick={onDone}>Share private link</button>
   </div></>;
@@ -236,7 +236,7 @@ function CreateEvent({ repeat, onDone, toast }) {
     <div className="lbl">Age range</div><div className="two"><Stepper v={cap === -1 ? 0 : 0} set={() => {}} fmt={() => seed.minAge} /><Stepper v={0} set={() => {}} fmt={() => seed.maxAge} /></div></>;else
   body = <>{repBanner}<div className="wtitle">Ready to publish</div>
     <div className="rev" style={{ marginTop: 18 }}>
-      <div className="hd catch-dark" style={{ background: '#18171A' }}><div className="glow" style={{ background: acc, filter: 'blur(34px)' }}></div><div className="k">{ACT[act][1]} · Bandra Social</div><h3>{title || 'Untitled event'}</h3></div>
+      <div className="hd catch-dark" style={{ background: '#18171A' }}><div className="glow" style={{ background: acc, filter: 'blur(34px)' }}></div><div className="k">{ACT[act][1]} · Harbour Line Social</div><h3>{title || 'Untitled event'}</h3></div>
       <div className="ln"><i className="ph ph-calendar-blank"></i><span className="k">WHEN</span><span className="v">{date} · {time} · {durFmt(dur)}</span><span className="ed" onClick={() => setS(1)}>Edit</span></div>
       <div className="ln"><i className="ph ph-map-pin"></i><span className="k">WHERE</span><span className="v">{where || '—'}</span><span className="ed" onClick={() => setS(2)}>Edit</span></div>
       <div className="ln"><i className="ph ph-users-three"></i><span className="k">WHO</span><span className="v">{cap} spots · {price ? '₹' + price : 'Free'} · {adm}</span><span className="ed" onClick={() => setS(3)}>Edit</span></div>

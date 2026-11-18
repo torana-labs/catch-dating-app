@@ -194,7 +194,7 @@ const Badge = DS.Badge || (({children}) => <span>{children}</span>);
 const ActivityChip = DS.ActivityChip || null;
 
 /* ════════ DATA — an Organizer (formerly "club"), multi-format ════════ */
-const ORG = { name: 'Bandra Social', initials: 'BS', accent: '#2E9AA0', formats: ['Social run','Pub quiz','Supper club','Padel'], members: 124, events: 37, rating: '4.8' };
+const ORG = { name: 'Harbour Line Social', initials: 'BS', accent: '#2E9AA0', formats: ['Social run','Pub quiz','Supper club','Padel'], members: 124, events: 37, rating: '4.8' };
 const PORTRAIT = '../../assets/sample-portrait.jpg';
 const PPL = [
   { n: 'Aanya Sharma', i: 'AS', img: PORTRAIT, g: 'in', m: 'Checked in · 7:58', tint: null },
@@ -213,10 +213,10 @@ const softOf = (a) => `var(${ACT[a]}-soft)`;
 const deepOf = (a) => `var(${ACT[a]}-deep)`;
 
 const EVENTS = [
-  { id: 'quiz42', act: 'pubQuiz', title: 'Tuesday Trivia Night', d: '17', mo: 'JUN', when: 'Tonight · 8:00 PM', where: 'The Daily Bar, Khar', life: 'soon', mins: 180, booked: 24, cap: 30, wait: 6, req: 2, attended: 0, price: 0 },
+  { id: 'quiz42', act: 'pubQuiz', title: 'Tuesday Trivia Night', d: '17', mo: 'JUN', when: 'Tonight · 8:00 PM', where: 'The Salt Air Bar, Khar', life: 'soon', mins: 180, booked: 24, cap: 30, wait: 6, req: 2, attended: 0, price: 0 },
   { id: 'run15', act: 'socialRun', title: 'Sundowner 5K, Bandra seafront', d: '21', mo: 'JUN', when: 'Sat · 6:30 AM', where: 'Carter Road jetty', life: 'upcoming', mins: 90, booked: 12, cap: 20, wait: 0, req: 0, attended: 0, price: 0 },
-  { id: 'supper', act: 'dinner', title: 'Long table № 24', d: '27', mo: 'JUN', when: 'Fri · 8:00 PM', where: 'Pali Village Cafe', life: 'upcoming', mins: 150, booked: 8, cap: 12, wait: 3, req: 0, attended: 0, price: 1800 },
-  { id: 'quiz41', act: 'pubQuiz', title: 'Tuesday Trivia Night', d: '10', mo: 'JUN', when: 'Last Tue', where: 'The Daily Bar, Khar', life: 'past', mins: 180, booked: 30, cap: 30, wait: 4, req: 0, attended: 26, price: 0, gross: 12000 },
+  { id: 'supper', act: 'dinner', title: 'Long table № 24', d: '27', mo: 'JUN', when: 'Fri · 8:00 PM', where: 'Lantern Lane Cafe', life: 'upcoming', mins: 150, booked: 8, cap: 12, wait: 3, req: 0, attended: 0, price: 1800 },
+  { id: 'quiz41', act: 'pubQuiz', title: 'Tuesday Trivia Night', d: '10', mo: 'JUN', when: 'Last Tue', where: 'The Salt Air Bar, Khar', life: 'past', mins: 180, booked: 30, cap: 30, wait: 4, req: 0, attended: 26, price: 0, gross: 12000 },
   { id: 'run13', act: 'socialRun', title: 'Sundowner 5K, Bandra seafront', d: '07', mo: 'JUN', when: '10 days ago', where: 'Carter Road jetty', life: 'past', mins: 90, booked: 32, cap: 32, wait: 6, req: 0, attended: 27, price: 0, gross: 0 },
 ];
 const eventById = (id) => EVENTS.find(e => e.id === id);

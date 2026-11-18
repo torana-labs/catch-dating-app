@@ -17,7 +17,10 @@ import {isDeepStrictEqual} from "node:util";
  * - `targetId` returns the target document id, or null to skip;
  * - `transform` returns the target document data, or null to skip.
  * Both also receive the Firestore handle and the source document reference,
- * so a collection-group step can read its parent ids from the path.
+ * so a collection-group step can read its parent ids from the path. A step
+ * may instead name `expand(data, id, db, ref)`, returning [{targetId, data}]:
+ * one source can then produce several targets (a guest's row at every
+ * function), and an empty list skips it.
  *
  * A fill step is {kind: "fill", collection, fill(data, id)}: `fill` returns
  * fields to add to the same document, or null. Only fields the document does
@@ -65,26 +68,37 @@ async function planStep(db, step) {
     result.scanned += 1;
     const data = doc.data();
     // Ids and transforms may be async and may read (never write) other data.
-    const targetId = await step.targetId(doc.id, data, db, doc.ref);
-    const next = targetId === null ? null :
-      await step.transform(data, doc.id, db, doc.ref);
-    if (targetId === null || next === null) {
+    // `expand` lets one source produce several targets: it returns
+    // [{targetId, data}], each planned like a single copy.
+    const entries = step.expand ?
+      await step.expand(data, doc.id, db, doc.ref) :
+      await singleEntry(step, doc, data, db);
+    if (entries.length === 0) {
       result.skipped.push({sourcePath: doc.ref.path, reason: step.skipReason ?? "not migrated"});
       continue;
     }
-    const targetRef = db.collection(step.target).doc(targetId);
-    const existing = await targetRef.get();
-    if (existing.exists) {
-      if (isDeepStrictEqual(existing.data(), next)) {
-        result.alreadyCopied += 1;
-      } else {
-        result.conflicts.push({sourcePath: doc.ref.path, targetPath: targetRef.path});
+    for (const {targetId, data: next} of entries) {
+      const targetRef = db.collection(step.target).doc(targetId);
+      const existing = await targetRef.get();
+      if (existing.exists) {
+        if (isDeepStrictEqual(existing.data(), next)) {
+          result.alreadyCopied += 1;
+        } else {
+          result.conflicts.push({sourcePath: doc.ref.path, targetPath: targetRef.path});
+        }
+        continue;
       }
-      continue;
+      result.toCreate.push({sourcePath: doc.ref.path, targetPath: targetRef.path, data: next});
     }
-    result.toCreate.push({sourcePath: doc.ref.path, targetPath: targetRef.path, data: next});
   }
   return result;
+}
+
+async function singleEntry(step, doc, data, db) {
+  const targetId = await step.targetId(doc.id, data, db, doc.ref);
+  const next = targetId === null ? null :
+    await step.transform(data, doc.id, db, doc.ref);
+  return targetId === null || next === null ? [] : [{targetId, data: next}];
 }
 
 async function planFillStep(db, step) {

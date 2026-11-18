@@ -282,7 +282,7 @@
       "path": "/events/ext-public/",
       "event": {
         "id": "ext-public",
-        "title": "Takeoff: Run + Rave",
+        "title": "Nightfall: Run + Rave",
         "activityKind": "socialRun",
         "availability": "read_only_external",
         "startTime": "2025-03-15T12:30:00.000Z",
@@ -294,13 +294,13 @@
         "summary": "Reviewed external event listing.",
         "priceLabel": "0 INR",
         "sourceLabel": "Luma",
-        "sourceHref": "https://luma.com/pxgmph3b",
+        "sourceHref": "https://luma.com/mmoth26x",
         "externalLinkCount": 2,
-        "dedupeKey": "afterfly:2025-03-15T18:00:00+05:30:takeoff-run-rave"
+        "dedupeKey": "moonmoth:2025-03-15T18:00:00+05:30:nightfall-run-rave"
       },
       "booking": {
         "kind": "external",
-        "url": "https://luma.com/pxgmph3b",
+        "url": "https://luma.com/mmoth26x",
         "label": "Luma"
       }
     }

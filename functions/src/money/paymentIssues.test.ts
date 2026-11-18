@@ -12,14 +12,14 @@ const now = 10 * 86_400_000;
 const at = (ms: number) => Timestamp.fromMillis(ms);
 
 test("a capture the sweep has not admitted in 15 minutes is an issue", () => {
-  const paid = {status: "captured", organizerId: "afterfly", eventId: "ev",
-    eventName: "Takeoff: Run + Rave", displayName: "Rhea Kapoor",
+  const paid = {status: "captured", organizerId: "moonmoth", eventId: "ev",
+    eventName: "Nightfall: Run + Rave", displayName: "Rhea Kapoor",
     amountPaise: 150_000, capturedAt: at(now - 20 * 60_000),
     admissionReceiptId: null, providerPaymentId: "pay_1", lastErrorCode: null};
   const issue = checkoutIssue("publicEvent", "pp_1", paid, now);
   assert.equal(issue?.kind, "payment");
   assert.equal(issue?.title, "₹1,500 paid, booking not confirmed");
-  assert.equal(issue?.subtitle, "Rhea Kapoor · Takeoff: Run + Rave");
+  assert.equal(issue?.subtitle, "Rhea Kapoor · Nightfall: Run + Rave");
   assert.equal(issue?.canConfirmBooking, true);
   assert.equal(issue?.issueId, "publicEvent:pp_1");
   assert.equal(checkoutIssue("publicEvent", "pp_1",

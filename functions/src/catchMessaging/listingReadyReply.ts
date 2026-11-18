@@ -8,6 +8,7 @@ import {nominationLabel, replyCopy} from "./inboundRouter";
 import {inboundRouterDeps, messageNominationsEnabled} from "./inboundRouterRuntime";
 import {CATCH_RECEIPTS, readCatchReceipt} from "./whatsappEndpointStops";
 import {configuredConsumerScope} from "./whatsappReceiptConsumer";
+import {listingSuppressionHmacKey} from "../listingSuppressions/registry";
 
 // When a listing nominated by message finishes building, publish it if a
 // registered associate sent it and it is complete (autoPublish.ts). A
@@ -46,6 +47,8 @@ export async function replyWhenListingReady(deps: {
 
 export const onMessageNominationListingReady = onDocumentUpdated({
   document: "supplyIntakeRequests/{requestId}", maxInstances: 2, retry: true,
+  // Auto-publishing approves the listing, which checks the do-not-list registry.
+  secrets: [listingSuppressionHmacKey],
 }, async (event) => {
   const scope = configuredConsumerScope();
   if (!scope || !messageNominationsEnabled.value() || !event.data) return;

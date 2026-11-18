@@ -136,6 +136,33 @@ stale in the same `Mutation.run`:
 - The tag registry is session-scoped: `AuthSessionController` replaces it at
   sign-out and after account deletion.
 
+## Writes: deadline, still working, unknown outcome
+
+The owner approved this policy on 17 November 2026. It covers commands, the
+callables that change data; reads keep the load deadlines of the table above.
+
+- **Deadline.** `firebaseFunctionsProvider` hands out `DeadlineFirebaseFunctions`
+  (`packages/platform/lib/firebase/deadline_firebase_functions.dart`), which
+  gives every callable without options of its own `HttpsCallableOptions` with
+  a 30 second timeout (`callableDefaultTimeout`; the plugin's default is 60).
+  A call that needs more or less passes its own options.
+- **Still working.** `PendingWriteObserver`, an observer on the app container,
+  watches every `Mutation`. One still pending after 8 seconds
+  (`writeStillWorkingAfter`) counts in `stillWorkingWritesProvider`, and the
+  notice overlay shows "Still working on it…" until the last such write
+  settles. The notice never cancels or retries anything.
+- **No automatic retry.** A mutation never retries, and the container retry
+  policy applies to provider reads only. A write that is safe to repeat is
+  repeated by the user (or by an idempotent flow that says so), never by the
+  client behind their back.
+- **Unknown outcome.** A write that runs out of time may still finish on the
+  server. `writeFailure` turns a timeout into the `write-outcome-unknown`
+  failure on the error banner, the notice and the message helpers, which says
+  the change could not be confirmed and may still go through. The screen then
+  confirms from its own Firestore listener, or from a read-back, before it
+  offers the action again; a command whose result no listener shows reads the
+  record back first.
+
 ## Persistence, sign-out and retries
 
 - Firestore persistence stays on for every platform.
@@ -261,5 +288,8 @@ empty, the rules gate with no list.
 | Stale-while-revalidate client | `packages/platform/lib/cache/callable_read.dart` |
 | Cache tags and registry | `packages/platform/lib/cache/cache_tags.dart` |
 | Sign-out wipe | `packages/platform/lib/firebase/firestore_cache_wipe.dart` |
+| Callable timeout | `packages/platform/lib/firebase/deadline_firebase_functions.dart` |
+| Still working, unknown write outcome | `packages/platform/lib/riverpod_ui/pending_write_observer.dart`, `packages/platform/lib/errors/write_outcome.dart` |
+| Listener first-value deadline | `packages/platform/lib/firebase/listener_first_value.dart` |
 | Time to content | `packages/platform/lib/cache/screen_time_to_content.dart` |
 | Tests and harness | `test/platform/cache/` |

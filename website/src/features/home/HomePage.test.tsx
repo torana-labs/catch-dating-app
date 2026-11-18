@@ -107,7 +107,7 @@ describe("homepage", {timeout: 20_000}, () => {
     const hero = screen.getByRole("region", {name: "Find something worth showing up for."});
     const chip = hero.querySelector("[data-chip]") as HTMLElement;
     expect(chip.textContent).toContain("Thursday Evening Pub Quiz");
-    expect(chip.textContent).toContain("Khar Social · 6 left");
+    expect(chip.textContent).toContain("Lantern Lane Tavern · 6 left");
     expect((chip.querySelector("time") as HTMLElement).dataset).toMatchObject({ground: "yellow", size: "sm"});
     expect(within(hero).getByRole("figure").dataset).toMatchObject({bezel: "", size: "hero"});
     // No proof line until real data stands behind it.
@@ -194,8 +194,8 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(hosts.getByRole("link", {name: "Talk to us on WhatsApp"}).getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/u);
     // Organisers joining a city before launch have no page to link to.
     const organisers = within(main.getByRole("region", {name: "Follow them before Catch opens."}));
-    expect(organisers.getAllByText(/Koregaon Park Runners/).length).toBeGreaterThan(0);
-    expect(organisers.queryByRole("link", {name: /Koregaon Park Runners/})).toBeNull();
+    expect(organisers.getAllByText(/Jacaranda Park Runners/).length).toBeGreaterThan(0);
+    expect(organisers.queryByRole("link", {name: /Jacaranda Park Runners/})).toBeNull();
     expect(organisers.getAllByText(/Joining at launch/).length).toBe(2);
   });
 
@@ -266,10 +266,10 @@ describe("homepage", {timeout: 20_000}, () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const organisers = within(screen.getByRole("region", {name: "The people behind the plans."}));
     expect(organisers.getByText("Organisers in Mumbai")).toBeTruthy();
-    const runners = organisers.getByRole("link", {name: /Carter Road Runners/});
-    expect(runners.getAttribute("href")).toBe("/organizers/carter-road-runners/");
+    const runners = organisers.getByRole("link", {name: /Driftwood Bay Runners/});
+    expect(runners.getAttribute("href")).toBe("/organizers/driftwood-bay-runners/");
     expect(runners.textContent).toContain("212 followers");
-    expect(runners.textContent).toContain("Next: Fri 6:30 AM · Carter Road Social Run");
+    expect(runners.textContent).toContain("Next: Fri 6:30 AM · Salt Air Social Run");
     const unclaimed = organisers.getByRole("link", {name: /Bandra Book Swap/});
     expect(unclaimed.getAttribute("href")).toBe("/organizers/bandra-book-swap/#claim");
     expect(unclaimed.textContent).toContain("Is this you? Claim it");

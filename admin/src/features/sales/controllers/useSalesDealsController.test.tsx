@@ -17,7 +17,7 @@ describe("useSalesDealsController", () => {
     repository.listSalesOpportunities.mockImplementation(async ({cursor}: {cursor?: string}) => cursor ?
       {rows: [deal("c", "pilot_running", "karan"), deal("d", "closed_lost")], nextCursor: null} :
       {rows: [deal("a", "new_enquiry"), deal("b", "demo_arranged")], nextCursor: "page-2"});
-    repository.listSalesAccounts.mockResolvedValue({rows: [{organizerId: "org-a", name: "Harbor Social Club", researchStatus: "new"}], nextCursor: null});
+    repository.listSalesAccounts.mockResolvedValue({rows: [{organizerId: "org-a", name: "Quayside Supper Club", researchStatus: "new"}], nextCursor: null});
   });
 
   it("puts every deal in its stage column, named by its host, team or mine", async () => {
@@ -25,12 +25,12 @@ describe("useSalesDealsController", () => {
     const {result} = renderHook(() => useSalesDealsController({uid: "riya"}), {wrapper});
     await waitFor(() => expect(result.current.counts.team).toBe(3));
     const cards = Object.fromEntries(result.current.columns.map((column) => [column.value, column.cards.map((card) => card.name)]));
-    expect(cards).toEqual({new: ["Harbor Social Club"], talking: [], demo: ["org-b"], pilot: ["org-c"], paying: []});
+    expect(cards).toEqual({new: ["Quayside Supper Club"], talking: [], demo: ["org-b"], pilot: ["org-c"], paying: []});
     expect(result.current.counts.mine).toBe(2);
     act(() => result.current.setScope("mine"));
     expect(result.current.columns.find((column) => column.value === "pilot")?.cards).toEqual([]);
-    act(() => result.current.setSearch("harbor"));
-    expect(result.current.columns.flatMap((column) => column.cards).map((card) => card.name)).toEqual(["Harbor Social Club"]);
+    act(() => result.current.setSearch("quayside"));
+    expect(result.current.columns.flatMap((column) => column.cards).map((card) => card.name)).toEqual(["Quayside Supper Club"]);
   });
 });
 

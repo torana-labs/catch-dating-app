@@ -21,7 +21,7 @@ part 'use_cases_overrides.dart';
 
 const _programId = 'program_kapoor_shah';
 const _pickupPointId = 'del_t3';
-const _hotelId = 'hotel_taj';
+const _hotelId = 'hotel_harbourview';
 
 final _now = DateTime(2026, 2, 14, 14, 30);
 
@@ -86,12 +86,12 @@ final _access = ProgramWorkAccess(
       terminal: 'T3',
     ),
   ],
-  hotels: const [ProgramHotel(hotelId: 'hotel_taj', name: 'Taj Palace')],
+  hotels: const [ProgramHotel(hotelId: 'hotel_harbourview', name: 'Harbourview Palace')],
   functions: [
     ProgramFunction(
       functionId: 'fn_sangeet',
       name: 'Sangeet',
-      venueName: 'The Leela Ballroom',
+      venueName: 'The Lakeshore Ballroom',
       startsAt: _now.add(const Duration(hours: 3)),
       endsAt: _now.add(const Duration(hours: 6)),
       checkInEnabled: true,
@@ -134,7 +134,7 @@ ArrivalsRosterRow _row({
     claimedByDisplay: claimedByDisplay,
     claimedByMe: claimedByDisplay != null,
     destinationHotelId: _hotelId,
-    destinationLabel: 'Taj Palace',
+    destinationLabel: 'Harbourview Palace',
     requiredCapabilities: const {},
     dedicatedVehicle: false,
     revision: 1,
@@ -185,7 +185,7 @@ final _plan = ProgramTransportPlan(
       legIds: const ['leg_rohan', 'leg_rao'],
       partyIds: const ['party_rohan', 'party_rao'],
       destinationHotelId: _hotelId,
-      destinationLabel: 'Taj Palace',
+      destinationLabel: 'Harbourview Palace',
       readiness: TransportGroupReadiness.ready,
       vehicleClassId: 'innova',
       vehicleClassLabel: 'Innova',
@@ -206,11 +206,11 @@ final _trip = ProgramTripSummary(
   tripId: 'trip_1',
   pickupPointId: _pickupPointId,
   destinationHotelId: _hotelId,
-  destinationLabel: 'Taj Palace',
+  destinationLabel: 'Harbourview Palace',
   vehicleClassId: 'innova',
   plateDisplay: 'DL-1T-4421',
   vendorId: 'vendor_meru',
-  vendorName: 'Meru Cabs',
+  vendorName: 'Driftwood Cabs',
   status: TransportTripStatus.enRoute,
   passengerCount: 5,
   departedAt: _now.subtract(const Duration(minutes: 12)),
@@ -227,7 +227,7 @@ final _inbound = ProgramHotelInbound(
   accessExpiresAt: _now.add(const Duration(hours: 8)),
   programId: _programId,
   hotelId: _hotelId,
-  hotelName: 'Taj Palace',
+  hotelName: 'Harbourview Palace',
   generatedAt: _now,
   trips: [_trip],
   expectedLegs: [
@@ -271,7 +271,7 @@ final _stakeholderCounts = ProgramStakeholderCounts(
   ],
   hotels: [
     const ProgramHotelOccupancy(
-      hotelId: 'hotel_taj',
+      hotelId: 'hotel_harbourview',
       routedGuestCount: 40,
       arrivedGuestCount: 31,
       legCount: 14,

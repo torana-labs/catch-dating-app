@@ -611,7 +611,10 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
     expect(find.byType(CatchBanner), findsOneWidget);
     expect(
-      find.text('The request timed out. Please try again.'),
+      find.text(
+        "We couldn't confirm this change. It may still go through, so check "
+        'before you try again.',
+      ),
       findsOneWidget,
     );
 

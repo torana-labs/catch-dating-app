@@ -11,6 +11,7 @@ import {eventChatMembershipId, getEventChatAccessHandler as get,
 import type {GetEventChatAccessCallableResponse} from
   "../shared/generated/getEventChatAccessCallableResponse";
 import {contractValidator} from "../shared/contractTestValidators";
+import {commandRequestHash} from "../shared/commandReceipts";
 
 const validView =
   contractValidator<GetEventChatAccessCallableResponse>(
@@ -99,10 +100,13 @@ test("Firestore room access follows current authority and explicit choices",
       const oldClose = change(host, "close", 1);
       const sha = (value: unknown) => createHash("sha256")
         .update(JSON.stringify(value)).digest("hex");
-      await ref("eventChatAccessReceipts", sha([host,
-        (oldClose.data as {requestId: string}).requestId])).set({eventId,
-        uid: host, payloadHash: sha([eventId, "close", 1, null, null, null]),
-        revision: 2, createdAt: Timestamp.now()});
+      await ref("commandReceipts", `updateEventChatAccess_${sha([host,
+        (oldClose.data as {requestId: string}).requestId])}`).set({
+        command: "updateEventChatAccess",
+        requestHash: commandRequestHash(host, eventId,
+          sha([eventId, "close", 1, null, null, null])),
+        result: {revision: 2}, createdAt: Timestamp.now(),
+        expiresAt: Timestamp.fromMillis(Date.now() + 60_000)});
       assert.deepEqual(await update(oldClose, deps),
         {revision: 2, replayed: true});
       await assert.rejects(update({...oldClose, data: {...oldClose.data as
@@ -154,9 +158,6 @@ test("Firestore room access follows current authority and explicit choices",
     } finally {
       const batch = db.batch();
       for (const path of paths) batch.delete(path);
-      const receipts = await db.collection("eventChatAccessReceipts")
-        .where("eventId", "==", eventId).limit(100).get();
-      for (const row of receipts.docs) batch.delete(row.ref);
       await batch.commit();
       await deleteApp(app);
     }

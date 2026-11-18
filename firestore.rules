@@ -271,6 +271,51 @@ service cloud.firestore {
             || programView(programId).workFunction.get(functionId, 0) > request.time.toMillis()));
     }
 
+    // Every pickup point, hotel or function, for a listing query: the work
+    // key '*' is live. A scoped account reads its named ids one by one.
+    function programWorkListsAllPickups(programId) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && programView(programId).workPickup.get('*', 0) > request.time.toMillis());
+    }
+
+    function programWorkListsAllHotels(programId) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && programView(programId).workHotel.get('*', 0) > request.time.toMillis());
+    }
+
+    function programWorkListsAllFunctions(programId) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && programView(programId).workFunction.get('*', 0) > request.time.toMillis());
+    }
+
+    // The door of one function: function check-in or function lead duty
+    // covering it, or the owner. Coordinators hold both duties in the view.
+    function programDoorCovers(programId, functionId) {
+      return programDutyCoversFunction(programId, 'functionCheckIn', functionId)
+        || programDutyCoversFunction(programId, 'functionLead', functionId);
+    }
+
+    // Full reach over programme-wide operations: coordinators and the owner.
+    function programFullReach(programId) {
+      return hasProgramDuty(programId, 'programCoordinator');
+    }
+
+    // An arrivals journey: one airport greeter, dispatcher or coordinator
+    // assignment covers its pickup point and hotel together. Each side of a
+    // route is an id or '*'; a journey with no pickup point or hotel is '~',
+    // which only '*' reaches.
+    function programArrivalRoute(programId, pickupKey, hotelKey) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && (programView(programId).arrivalRoutes.get('*|*', 0) > request.time.toMillis()
+            || programView(programId).arrivalRoutes.get(pickupKey + '|*', 0) > request.time.toMillis()
+            || programView(programId).arrivalRoutes.get('*|' + hotelKey, 0) > request.time.toMillis()
+            || programView(programId).arrivalRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
+    }
+
     function programDutyCoversFunction(programId, duty, functionId) {
       return isProgramManager(programId)
         || (hasProgramAccessView(programId)
@@ -824,8 +869,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Written exclusively by idempotent Cloud Function trigger handlers.
-    match /functionEventReceipts/{receiptId} {
+    // One replay-receipt collection for every command that dedupes its
+    // retries (callables, triggers, webhooks). Only Cloud Functions touch it;
+    // a retry reads its own receipt in the command's transaction.
+    match /commandReceipts/{receiptId} {
       allow read, write: if false;
     }
 
@@ -1043,6 +1090,16 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /bannedIdentities/{identityId} {
+      allow read, write: if false;
+    }
+    // Structured listing requests from /listings/request/: written by
+    // submitListingRequest and worked through adminUpdateTakedownRequest only.
+    match /takedownRequests/{requestId} {
+      allow read, write: if false;
+    }
+    // Do-not-list registry (keyed hashes only). Server-only: the organizer
+    // takedown tool writes cases and Functions read them with the Admin SDK.
+    match /listingSuppressions/{caseId} {
       allow read, write: if false;
     }
     match /blockedSignupAttempts/{attemptId} {
@@ -1694,12 +1751,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Mutation receipts are idempotency records for admin callables and are
-    // never client-visible.
-    match /organizerEntitlementReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
     match /organizerContactIdentityLinks/{identityLinkId} {
       allow read, write: if false;
     }
@@ -1717,10 +1768,6 @@ service cloud.firestore {
     }
 
     match /organizerAudienceSummaries/{organizerId} {
-      allow read, write: if false;
-    }
-
-    match /organizerAudienceProjectionReceipts/{eventId} {
       allow read, write: if false;
     }
 
@@ -1895,9 +1942,6 @@ service cloud.firestore {
       allow read: if isAuthed() && !isDeletedUser(request.auth.uid)
         && resource.data.uid == request.auth.uid;
       allow write: if false;
-    }
-    match /eventChatAccessReceipts/{receiptId} {
-      allow read, write: if false;
     }
 
     match /participantOrganizerCards/{responseId} {
@@ -2451,6 +2495,86 @@ service cloud.firestore {
         && accessId == programStaffGrantDocId(resource.data.programId, request.auth.uid)
         && resource.data.uid == request.auth.uid;
       allow list, write: if false;
+    }
+
+    // The work shell's programme header: any account with live access to the
+    // programme reads it by id. Never listed.
+    match /programWorkSummaries/{programId} {
+      allow get: if hasProgramAccessView(programId);
+      allow list, write: if false;
+    }
+
+    // The work shell's pickup point, hotel and function labels. A named
+    // resource is read by id when the account's work list reaches it; every
+    // resource of one kind is listed by a query naming the programme and the
+    // kind when the account's work list reaches them all.
+    match /programResourceViews/{viewId} {
+      allow get: if (resource.data.kind == 'pickupPoint'
+          && programWorkCoversPickup(resource.data.programId, resource.data.resourceId))
+        || (resource.data.kind == 'hotel'
+          && programWorkCoversHotel(resource.data.programId, resource.data.resourceId))
+        || (resource.data.kind == 'function'
+          && programWorkCoversFunction(resource.data.programId, resource.data.resourceId));
+      allow list: if (resource.data.kind == 'pickupPoint'
+          && programWorkListsAllPickups(resource.data.programId))
+        || (resource.data.kind == 'hotel'
+          && programWorkListsAllHotels(resource.data.programId))
+        || (resource.data.kind == 'function'
+          && programWorkListsAllFunctions(resource.data.programId));
+      allow write: if false;
+    }
+
+    // The door of one function (#1339): the header, the roster rows and the
+    // newest journal entries. Rows and entries are listed by a query naming
+    // the programme and the function; contacts never appear in them.
+    match /programDoorFunctions/{functionId} {
+      allow get: if programDoorCovers(resource.data.programId, functionId);
+      allow list, write: if false;
+    }
+    match /programDoorRows/{rowId} {
+      allow get, list: if programDoorCovers(resource.data.programId,
+        resource.data.functionId);
+      allow write: if false;
+    }
+    match /programDoorJournalViews/{journalId} {
+      allow get, list: if programDoorCovers(resource.data.programId,
+        resource.data.functionId);
+      allow write: if false;
+    }
+
+    // Live board alerts (#1339). A function lead reads the alerts stamped for
+    // a duty they hold, listing one duty at a time; full reach reads every
+    // alert, including travel alerts (no duty). The counts are full reach's.
+    match /programAlertViews/{alertId} {
+      allow get, list: if programFullReach(resource.data.programId)
+        || (hasProgramDuty(resource.data.programId, 'functionLead')
+          && resource.data.duty != null
+          && programView(resource.data.programId).duties.get(resource.data.duty, 0) > request.time.toMillis());
+      allow write: if false;
+    }
+    match /programTravelCountViews/{programId} {
+      allow get: if programFullReach(programId);
+      allow list, write: if false;
+    }
+
+    // Arrivals, departures and dispatchers' vendors (#1339). Arrivals rows
+    // follow the account's arrival routes; a scoped account lists one route at
+    // a time, a query naming the programme and its pickup and hotel keys.
+    // Departures follow the hotel desk duty; vendors the dispatcher duty.
+    match /programArrivalViews/{legId} {
+      allow get, list: if programArrivalRoute(resource.data.programId,
+        resource.data.pickupKey, resource.data.hotelKey);
+      allow write: if false;
+    }
+    match /programDepartureViews/{legId} {
+      allow get, list: if programDutyCoversHotel(resource.data.programId,
+        'hotelDesk', resource.data.hotelId);
+      allow write: if false;
+    }
+    match /programVendorViews/{viewId} {
+      allow get, list: if hasProgramDuty(resource.data.programId,
+        'transportDispatcher');
+      allow write: if false;
     }
 
     match /programStaffInvites/{inviteId} {
@@ -3119,12 +3243,6 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // Run-of-show edits, close-out and crawl changes replay through these
-    // receipts; only their callables touch them.
-    match /eventLiveCommandReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
     // The night's close-out, written only by setEventCloseOut. The event's
     // organizer hosts get it by listener; a night not closed out reads as
     // missing.
@@ -3683,6 +3801,129 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /salesOutreachJobs/{privateDocument=**} {
+      allow read, write: if false;
+    }
+
+    // Server-only collections the contracts describe. Functions and tools use
+    // the Admin SDK; clients, signed in or not, read and write nothing.
+    match /adConversionContexts/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /adConversionDeliveries/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /adminAuditLogs/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /adminRoleAssignments/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /catchWhatsappAppAuthorities/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /catchWhatsappAutoReplies/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /catchWhatsappClarifications/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /catchWhatsappIngressEvidence/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /catchWhatsappReadinessPublications/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /eventIntakeReviewDecisions/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /eventRosterHandoffs/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /eventSeatIdentityAliases/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /eventSeatLedgers/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /eventSeatMigrationFences/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /eventSeatMigrationPlans/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /eventSeatMigrationRuns/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /eventSeatMigrationStages/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /eventSeatRequestReceipts/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /eventSeatReservations/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /eventSeatVerifiedPhones/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /externalEventPublicationReceipts/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /formCommunicationConsentIntents/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /hostAcquisitionConsents/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /hostAcquisitionDeliveries/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /hostOrganizerActivations/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /hostPilotEventReviews/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /launchWaitlist/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /marketingConversionEvents/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /marketingOpsDashboards/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /metaLeadgenEvents/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /nativeRefundRecoveryCursors/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /organizerIntakeCurationDecisions/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /organizerIntakeFieldCorrections/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /organizerIntakeReviewDecisions/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /organizerPolicyGapReviewDecisions/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /programRoomBlocks/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /programStays/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /walkthroughAvailability/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /walkthroughBookings/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /walkthroughSlotHolds/{privateDocument=**} {
       allow read, write: if false;
     }
 

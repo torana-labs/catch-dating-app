@@ -26,6 +26,20 @@ class HostEventManageRouteScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // The rebuilt workspace and guest lists read and check access themselves.
+    if (hostEventRouteOpensWithoutEvent(initialSection)) {
+      final request = HostEventRequest(
+        organizerId: organizerId,
+        eventId: eventId,
+      );
+      return initialSection == HostEventManageSection.guests
+          ? HostEventGuestsScreen(request: request)
+          : HostEventWorkspaceScreen(
+              organizerId: organizerId,
+              eventId: eventId,
+              now: referenceNow,
+            );
+    }
     final uidAsync = ref.watch(uidProvider);
     final organizerAsync = ref.watch(watchOrganizerProvider(organizerId));
     final eventAsync = ref.watch(watchEventProvider(eventId));
@@ -129,27 +143,52 @@ class HostEventManageRouteScreen extends ConsumerWidget {
           );
         }
 
-        // After the event, its report is the rebuilt event report.
-        if (initialSection == HostEventManageSection.report &&
-            !event.endTime.isAfter(referenceNow ?? DateTime.now())) {
-          return HostEventReportScreen(
+        final now = referenceNow ?? DateTime.now();
+        final onBack =
+            CatchWorkspaceBackScope.maybeOf(context) ??
+            () => Navigator.of(context).maybePop();
+        final destination = hostEventRouteDestination(
+          section: initialSection,
+          phase: hostEventWorkspacePhaseFor(event: event, now: now),
+          liveConsoleFits: hostLiveConsoleFits(
+            event,
+            plan: ref.watch(watchEventSuccessPlanProvider(event.id)).value,
+          ),
+        );
+        return switch (destination) {
+          HostEventRouteDestination.report => HostEventReportScreen(
             organizer: organizer,
             event: event,
             onBack: CatchWorkspaceBackScope.maybeOf(context),
             now: referenceNow,
-          );
-        }
-
-        return HostEventManageScreen(
-          organizer: organizer,
-          event: event,
-          onBackToSuccess:
-              CatchWorkspaceBackScope.maybeOf(context) ??
-              () => Navigator.of(context).maybePop(),
-          initialSection: initialSection,
-          initialParticipantSearchQuery: initialParticipantSearchQuery,
-          referenceNow: referenceNow,
-        );
+          ),
+          HostEventRouteDestination.liveConsole => HostLiveScreen(
+            organizer: organizer,
+            event: event,
+            onBack: onBack,
+            onOpenGuests: () => context.pushNamed(
+              Routes.hostEventRosterScreen.name,
+              pathParameters: {
+                'organizerId': organizer.id,
+                'eventId': event.id,
+              },
+              extra: event,
+            ),
+            now: referenceNow,
+          ),
+          // Setup and guests return above; a night that moves or has a saved
+          // room layout keeps the old movement console.
+          HostEventRouteDestination.workspace ||
+          HostEventRouteDestination.guests ||
+          HostEventRouteDestination.movementConsole => HostEventManageScreen(
+            organizer: organizer,
+            event: event,
+            onBackToSuccess: onBack,
+            initialSection: initialSection,
+            initialParticipantSearchQuery: initialParticipantSearchQuery,
+            referenceNow: referenceNow,
+          ),
+        };
       },
     );
   }

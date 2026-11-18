@@ -554,7 +554,14 @@ answer within five seconds. `website/scripts/next/deployedSmoke.mjs` rejects a
 Cloudflare challenges GitHub's runners, so run that probe by hand from your own
 machine.
 
-There is no server-side cross-request or process cache. Firebase Hosting's CDN
+There is no server-side cross-request cache for browsers. The one exception is
+Cloud Monitoring's uptime check (user agent `GoogleStackdriverMonitoring-UptimeChecks`),
+which made about 1,700 of the 1,800 daily `/api/public-catalog` calls and reads
+the whole catalog each time: its calls share one read every two minutes per instance
+(`readPublicCatalogForProbe`), so the check still proves Firestore answers
+without paying for the read every 50 seconds. Every other caller, including the
+browser's live check and the release gates, reads live, and the response stays
+`private, no-store`. Firebase Hosting's CDN
 keeps the rendered HTML of home, Explore, organiser and event pages for up to
 60 seconds
 ([marketing website architecture](marketing_website_architecture.md#nextjs-public-rendering-migration)).
@@ -1167,7 +1174,7 @@ remediation table above.
      `getHostListingForPath`.
    - `website/src/App.tsx` builds hydrated listing metadata from
      `pageMetaForListing`.
-   - `website/dist/organizers/indore/afterfly-run-club/index.html` is static
+   - `website/dist/organizers/indore/moonmoth-run-club/index.html` is static
      `noindex, follow`, while `website/src/generated/hostListings.json` marks
      the canonical listing `index, follow`.
 

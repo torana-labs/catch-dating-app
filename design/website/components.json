@@ -1518,6 +1518,7 @@
       "exportName": "PlaybookPage",
       "css": [
         "packages/web-ui/src/components/CatchBandHeader.module.css",
+        "packages/web-ui/src/components/CatchCardGrid.module.css",
         "packages/web-ui/src/components/CatchCtaSection.module.css",
         "packages/web-ui/src/components/CatchFaqSection.module.css",
         "packages/web-ui/src/components/CatchFeatureTile.module.css",
@@ -1528,6 +1529,7 @@
         "packages/web-ui/src/components/CatchPricingSection.module.css",
         "packages/web-ui/src/components/CatchScreenPreview.module.css",
         "packages/web-ui/src/components/CatchSplitSection.module.css",
+        "packages/web-ui/src/components/CatchTabSection.module.css",
         "website/src/styles/site-shell.css"
       ],
       "storybook": {
@@ -1536,10 +1538,15 @@
         "exportName": "RunClubs",
         "states": [
           "pricing",
-          "run-clubs"
+          "run-clubs",
+          "about",
+          "host-start",
+          "first-event",
+          "switch",
+          "programmes"
         ]
       },
-      "notes": "Every redesign page (design/website/routes.json contentFamily routes), drawn from its content file under website/src/content/playbook/pages/ by the playbook renderer: the site header in the page's variant, each section through its kit component (features/playbook/PlaybookSections.tsx) and the site footer. A route without a page, or whose page uses a section no kit component draws yet, is a 404. The route story renders /host/run-clubs/ at 1280 and at 390."
+      "notes": "Every redesign page (design/website/routes.json contentFamily routes), drawn from its content file under website/src/content/playbook/pages/ by the playbook renderer: the site header in the page's variant, each section through its kit component (features/playbook/PlaybookSections.tsx) and the site footer. A route without a page, or whose page uses a section no kit component draws yet, is a 404. The route stories render /host/run-clubs/, /pricing/, /about/, /host/start/, /host/first-event/, /host/switch/ and /programmes/ at 1280 and at 390."
     },
     {
       "id": "shared_hero_section",
@@ -1775,7 +1782,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "product_night",
-        "host_first_event"
+        "host_first_event",
+        "host_switch"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchTabSection.tsx",
@@ -1800,7 +1808,7 @@
           "steps"
         ]
       },
-      "notes": "Website T4 under D18: KitSwitcher. Bound by the playbook renderer for the product and first-event pages. Search aliases: Switcher, Tabs, TabBand, Formats."
+      "notes": "Website T4 under D18: KitSwitcher. Bound by the playbook renderer for the product, first-event and switch pages. Search aliases: Switcher, Tabs, TabBand, Formats."
     },
     {
       "id": "shared_comparison_table",
@@ -1922,7 +1930,7 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "stories",
+        "about",
         "new_to_city",
         "city_format",
         "cities",
@@ -1951,7 +1959,7 @@
           "person"
         ]
       },
-      "notes": "Website T4 under D18: KitCards. First consumer: the homepage's plans and organisers bands. The playbook contract's data-bound cards section will bind to it once each source has its read-model adapter; until then pages with cards 404. Search aliases: CardGrid, Cards, Directory."
+      "notes": "Website T4 under D18: KitCards. First consumer: the homepage's plans and organisers bands. The playbook renderer's cards section binds it for the cities source (/about/'s where-we-are band, from the market catalog); its other sources (plans, organisers, stories, playbook guides, people) wait on their read-model adapters, and a page naming one 404s. Search aliases: CardGrid, Cards, Directory."
     },
     {
       "id": "shared_story_card",
@@ -4792,6 +4800,111 @@
         ]
       },
       "notes": "/weddings/apply/ (noindex), from the RbWebWeddingsApply board: step 1 again when the landing did not hand it over (sessionStorage, same tab), then step 2 on the tile band with the summary and next steps beside the form (every answer starts empty; who is flying, what they want and how they heard are required), then the sent state, which can reopen the answers. Send goes through the waitlist route as a programme application with applicantRole and programmeKind."
+    },
+    {
+      "id": "route_listing_request",
+      "kind": "route",
+      "routeIds": [
+        "listing_request"
+      ],
+      "owner": "features/listingRequests",
+      "source": "website/src/features/listingRequests/ListingRequestPage.tsx",
+      "exportName": "ListingRequestPage",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchChoiceTile.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchFormStepList.module.css",
+        "packages/web-ui/src/components/CatchStepList.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/ListingRequest.stories.tsx",
+        "exportName": "ChooseType",
+        "states": [
+          "type",
+          "details",
+          "declarations",
+          "sent"
+        ]
+      },
+      "notes": "/listings/request/ (noindex, no analytics): the kit's flow with its step rail. Step 1 is a radiogroup of the eight fixed request types with their timelines; step 2 the type's fixed fields as boxed fields and choice chips, with the target prefilled from the listing link; step 3 the fixed declarations as checkboxes; then the reference and the next steps. Copy in content/listingRequest.ts."
+    },
+    {
+      "id": "listing_request_flow",
+      "kind": "flow",
+      "routeIds": [
+        "listing_request"
+      ],
+      "owner": "features/listingRequests/sections",
+      "source": "website/src/features/listingRequests/sections/ListingRequestSections.tsx",
+      "exportName": "ListingRequestView",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchChoiceTile.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchFormStepList.module.css",
+        "packages/web-ui/src/components/CatchStepList.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "type",
+          "details",
+          "declarations",
+          "sent"
+        ]
+      },
+      "notes": "The form drawn from the listing request controller: the type menu, the type's fixed fields, the declarations, then the reference and next steps."
+    },
+    {
+      "id": "route_listing_policies",
+      "kind": "route",
+      "routeIds": [
+        "listing_policy",
+        "takedown_policy"
+      ],
+      "owner": "features/listingRequests",
+      "source": "website/src/features/listingRequests/ListingPolicyPage.tsx",
+      "exportName": "ListingPolicyPage",
+      "css": [
+        "website/src/styles/legal.css",
+        "packages/web-ui/src/components/CatchBanner.module.css",
+        "packages/web-ui/src/components/CatchArticleBody.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/ListingRequest.stories.tsx",
+        "exportName": "TakedownPolicyDraft",
+        "states": [
+          "draft"
+        ]
+      },
+      "notes": "DRAFT Listing Policy and Notice and Takedown Policy on the legal article template under a draft banner, for counsel review. Unlinked and noindex until approved. Copy in content/listingPolicies.json."
     },
     {
       "id": "weddings_application_flow",

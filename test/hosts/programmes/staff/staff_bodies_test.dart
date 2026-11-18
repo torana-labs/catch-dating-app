@@ -93,7 +93,7 @@ void main() {
       expect(find.text('Udaipur airport'), findsWidgets);
       expect(find.text('266 coming · you check them in'), findsOneWidget);
       await tester.tap(find.text('Open arrivals'));
-      await tester.tap(find.text('Taj Fateh Prakash'));
+      await tester.tap(find.text('Lakeview Haveli'));
       await tester.tap(find.text('Car trips'));
       expect(
         [for (final job in opened) job.kind],

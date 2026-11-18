@@ -319,6 +319,7 @@ function validatePageKey(route) {
     "home",
     "visitor_discovery",
     "cities",
+    "listing_requests",
     "host",
     "weddings",
     "organizers",
@@ -1158,6 +1159,9 @@ export const OrganizerSearch = {
         "programme_link",
         "organizers",
         "claim",
+        "listing_requests",
+        "listing_policy",
+        "takedown_policy",
         "privacy",
         "terms",
         "help",
@@ -1226,10 +1230,10 @@ export const OrganizerSearch = {
   );
   assert.equal(
     formatContentTemplate(validMeta.listing.titleTemplate, {
-      name: "AFTER FLY",
+      name: "MOON MOTH",
       city: "Indore",
     }),
-    "AFTER FLY | Indore organizer profile | Catch"
+    "MOON MOTH | Indore organizer profile | Catch"
   );
   assert.throws(
     () => formatContentTemplate("{name} in {market}", {name: "Catch"}),

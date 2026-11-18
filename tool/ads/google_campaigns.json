@@ -16,15 +16,7 @@
       "languages": [
         1000
       ],
-      "locations": [
-        20456,
-        1007764,
-        1007765,
-        1007768,
-        1007785,
-        1007820,
-        1007826
-      ],
+      "adProgramme": "host",
       "negativeKeywords": [
         "job",
         "jobs",
@@ -32,7 +24,12 @@
         "course",
         "courses",
         "certification",
-        "internship"
+        "internship",
+        "concert tickets",
+        "movie tickets",
+        "events near me",
+        "web hosting",
+        "server hosting"
       ],
       "sharedHeadlines": [
         "Catch Host for Organisers",

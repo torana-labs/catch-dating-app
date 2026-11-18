@@ -296,14 +296,14 @@ function callableRequest(
 
 function organizerDoc(overrides: FakeData = {}): FakeData {
   return {
-    name: "AFTER FLY",
+    name: "MOON MOTH",
     description: "Movement and music community in Indore.",
     location: "in-mp-indore",
     locationCityId: "in-mp-indore",
     locationMarketId: "in-mp-indore",
     area: "Indore",
     tags: ["run club"],
-    instagramHandle: "afterfly.in",
+    instagramHandle: "moonmoth.example",
     phoneNumber: null,
     email: null,
     imageUrl: null,
@@ -319,13 +319,13 @@ function organizerDoc(overrides: FakeData = {}): FakeData {
     ownership: {state: "programmatic"},
     claim: {state: "unclaimed"},
     publicPage: {
-      slug: "afterfly-run-club",
+      slug: "moonmoth-run-club",
       citySlug: "indore",
-      canonicalPath: "/organizers/indore/afterfly-run-club/",
+      canonicalPath: "/organizers/indore/moonmoth-run-club/",
       publishStatus: "qa",
       indexStatus: "noindex",
       robots: "noindex, follow",
-      seoTitle: "AFTER FLY",
+      seoTitle: "MOON MOTH",
       seoDescription: "Indore organizer profile.",
       lastRenderedAt: null,
     },
@@ -336,8 +336,8 @@ function organizerDoc(overrides: FakeData = {}): FakeData {
       lastVerifiedAt: null,
     },
     publicProfile: {
-      headline: "AFTER FLY in Indore",
-      summary: "A public event source connects AFTER FLY to Indore.",
+      headline: "MOON MOTH in Indore",
+      summary: "A public event source connects MOON MOTH to Indore.",
       sourceSummary: "Luma event page confirmed.",
       formats: ["Run and rave"],
       facts: [],
@@ -345,14 +345,14 @@ function organizerDoc(overrides: FakeData = {}): FakeData {
     },
     adminSearch: {
       tokens: [
-        "afterfly",
+        "moonmoth",
         "after",
         "run",
         "club",
         "indore",
-        "afterfly-run-club",
+        "moonmoth-run-club",
       ],
-      sortKey: "afterfly",
+      sortKey: "moonmoth",
       updatedAt: "SERVER_TIMESTAMP",
       updatedBySource: "adminUpdateOrganizerDetails",
     },
@@ -368,18 +368,18 @@ function assertHttpsCode(error: unknown, code: string): boolean {
 test("adminGetOrganizerDetailsHandler returns a review-safe club snapshot",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
     });
 
     const result = await adminGetOrganizerDetailsHandler(
       callableRequest("admin-1", {
-        organizerId: " afterfly-run-club-indore ",
+        organizerId: " moonmoth-run-club-indore ",
       }, {support: true}),
       h.deps
     );
 
-    assert.equal(result.organizer.organizerId, "afterfly-run-club-indore");
-    assert.equal(result.organizer.name, "AFTER FLY");
+    assert.equal(result.organizer.organizerId, "moonmoth-run-club-indore");
+    assert.equal(result.organizer.name, "MOON MOTH");
     assert.equal(result.organizer.publicPage.indexStatus, "noindex");
     assert.equal(result.organizer.provenance.sourceConfidence, "high");
     assert.deepEqual(result.organizer.publicProfile.formats, ["Run and rave"]);
@@ -390,9 +390,9 @@ test("adminGetOrganizerDetailsHandler returns a review-safe club snapshot",
 test("adminListOrganizerDetailsHandler returns canonical organizer rows",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
       "organizers/bandra-social-run": organizerDoc({
-        name: "Bandra Social Run",
+        name: "Harbour Line Social Run",
         location: "in-mh-mumbai",
         locationCityId: "in-mh-mumbai",
         locationMarketId: "in-mh-mumbai",
@@ -404,7 +404,7 @@ test("adminListOrganizerDetailsHandler returns canonical organizer rows",
           publishStatus: "published",
           indexStatus: "indexReady",
           robots: "index, follow",
-          seoTitle: "Bandra Social Run",
+          seoTitle: "Harbour Line Social Run",
           seoDescription: "Mumbai organizer profile.",
           lastRenderedAt: null,
         },
@@ -445,9 +445,9 @@ test(
   "adminListOrganizerDetailsHandler supports bounded launch-city filters",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
       "organizers/bandra-social-run": organizerDoc({
-        name: "Bandra Social Run",
+        name: "Harbour Line Social Run",
         location: "in-mh-mumbai",
         locationCityId: "in-mh-mumbai",
         locationMarketId: "in-mh-mumbai",
@@ -459,25 +459,25 @@ test(
           publishStatus: "published",
           indexStatus: "indexReady",
           robots: "index, follow",
-          seoTitle: "Bandra Social Run",
+          seoTitle: "Harbour Line Social Run",
           seoDescription: "Mumbai organizer profile.",
           lastRenderedAt: null,
         },
       }),
-      "organizers/delhi-run-club": organizerDoc({
-        name: "Delhi Run Club",
+      "organizers/daybreak-run-club": organizerDoc({
+        name: "Daybreak Run Club",
         location: "in-dl-delhi-ncr",
         locationCityId: "in-dl-new-delhi",
         locationMarketId: "in-dl-delhi-ncr",
         cityName: "Delhi",
         publicPage: {
-          slug: "delhi-run-club",
+          slug: "daybreak-run-club",
           citySlug: "delhi",
-          canonicalPath: "/organizers/delhi/delhi-run-club/",
+          canonicalPath: "/organizers/delhi/daybreak-run-club/",
           publishStatus: "qa",
           indexStatus: "noindex",
           robots: "noindex, follow",
-          seoTitle: "Delhi Run Club",
+          seoTitle: "Daybreak Run Club",
           seoDescription: "Delhi organizer profile.",
           lastRenderedAt: null,
         },
@@ -494,7 +494,7 @@ test(
 
     assert.deepEqual(
       result.rows.map((row) => row.organizerId).sort(),
-      ["afterfly-run-club-indore", "bandra-social-run"]
+      ["bandra-social-run", "moonmoth-run-club-indore"]
     );
   }
 );
@@ -502,25 +502,25 @@ test(
 test("adminUpdateOrganizerDetailsHandler saves allowed cleanup fields",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
     });
 
     const result = await adminUpdateOrganizerDetailsHandler(
       callableRequest("admin-1", {
-        organizerId: "afterfly-run-club-indore",
+        organizerId: "moonmoth-run-club-indore",
         fields: {
-          name: " Afterfly Run Club ",
+          name: " Moonmoth Run Club ",
           tags: [" social run ", "social run", ""],
-          email: "hello@afterfly.in ",
+          email: "hello@moonmoth.example ",
           publicPage: {
-            seoTitle: "Afterfly Run Club | Indore organizer profile",
+            seoTitle: "Moonmoth Run Club | Indore organizer profile",
           },
           provenance: {
             sourceConfidence: "high",
             verificationStatus: "sourceBacked",
           },
           publicProfile: {
-            headline: "Afterfly Run Club in Indore",
+            headline: "Moonmoth Run Club in Indore",
           },
         },
         reviewNote: "Cleaned up naming and owner contact.",
@@ -528,15 +528,15 @@ test("adminUpdateOrganizerDetailsHandler saves allowed cleanup fields",
       h.deps
     );
 
-    assert.equal(result.organizerId, "afterfly-run-club-indore");
+    assert.equal(result.organizerId, "moonmoth-run-club-indore");
     assert.equal(result.updatedFieldCount, 8);
-    const organizer = h.firestore.get("organizers/afterfly-run-club-indore");
-    assert.equal(organizer?.name, "Afterfly Run Club");
+    const organizer = h.firestore.get("organizers/moonmoth-run-club-indore");
+    assert.equal(organizer?.name, "Moonmoth Run Club");
     assert.deepEqual(organizer?.tags, ["social run"]);
-    assert.equal(organizer?.email, "hello@afterfly.in");
+    assert.equal(organizer?.email, "hello@moonmoth.example");
     assert.equal(
       (organizer?.publicPage as FakeData).seoTitle,
-      "Afterfly Run Club | Indore organizer profile"
+      "Moonmoth Run Club | Indore organizer profile"
     );
     assert.equal(
       (organizer?.provenance as FakeData).lastVerifiedAt,
@@ -545,13 +545,13 @@ test("adminUpdateOrganizerDetailsHandler saves allowed cleanup fields",
     assert.equal((organizer?.adminSearch as FakeData).updatedBySource,
       "adminUpdateOrganizerDetails");
     assert.ok(((organizer?.adminSearch as FakeData).tokens as string[])
-      .includes("afterfly"));
+      .includes("moonmoth"));
     assert.equal(h.firestore.auditLogs().length, 1);
   });
 
 test("admins set, clear and release the organizer women-led label",
   async () => {
-    const id = "afterfly-run-club-indore";
+    const id = "moonmoth-run-club-indore";
     const h = harness({[`organizers/${id}`]: organizerDoc({womenLed: {
       value: true, setByUid: "host-1", setByRole: "owner",
       setAt: "EARLIER", lockedByAdmin: false}})});
@@ -588,17 +588,17 @@ test("admins set, clear and release the organizer women-led label",
 
 test("adminUpdateOrganizerDetailsHandler replaces the organizer page links",
   async () => {
-    const h = harness({"organizers/afterfly-run-club-indore": organizerDoc()});
+    const h = harness({"organizers/moonmoth-run-club-indore": organizerDoc()});
 
     await adminUpdateOrganizerDetailsHandler(
       callableRequest("admin-1", {
-        organizerId: "afterfly-run-club-indore",
+        organizerId: "moonmoth-run-club-indore",
         fields: {ownerLinks: [
           {id: "tickets", label: " Tickets ", subtitle: " ",
-            url: " https://www.district.in/afterfly ", icon: "tickets",
+            url: " https://www.district.in/moonmoth ", icon: "tickets",
             pinned: false, showUntil: null},
           {id: "drop", label: "Diwali run kit", subtitle: "Pre-order",
-            url: "https://shop.afterfly.in/kit", icon: null, pinned: true,
+            url: "https://shop.example.com/kit", icon: null, pinned: true,
             showUntil: "2026-11-14T12:00:00.000Z"},
         ]},
         reviewNote: "Owner sent their links over WhatsApp.",
@@ -606,17 +606,17 @@ test("adminUpdateOrganizerDetailsHandler replaces the organizer page links",
       h.deps
     );
 
-    const links = h.firestore.get("organizers/afterfly-run-club-indore")
+    const links = h.firestore.get("organizers/moonmoth-run-club-indore")
       ?.ownerLinks as FakeData[];
     assert.deepEqual(links[0], {id: "tickets", label: "Tickets",
-      subtitle: null, url: "https://www.district.in/afterfly",
+      subtitle: null, url: "https://www.district.in/moonmoth",
       icon: "tickets", pinned: false, showUntil: null});
     assert.equal(links[1].id, "drop");
     assert.equal((links[1].showUntil as {_seconds: number})._seconds,
       Date.parse("2026-11-14T12:00:00.000Z") / 1000);
 
     const read = await adminGetOrganizerDetailsHandler(
-      callableRequest("admin-1", {organizerId: "afterfly-run-club-indore"},
+      callableRequest("admin-1", {organizerId: "moonmoth-run-club-indore"},
         {support: true}),
       h.deps
     );
@@ -627,20 +627,20 @@ test("adminUpdateOrganizerDetailsHandler replaces the organizer page links",
 test("adminUpdateOrganizerDetailsHandler refuses links the page may not show",
   async () => {
     const before = organizerDoc();
-    const h = harness({"organizers/afterfly-run-club-indore": before});
+    const h = harness({"organizers/moonmoth-run-club-indore": before});
     const link = {id: "short", label: "Tickets", subtitle: null,
-      url: "https://bit.ly/afterfly", icon: null, pinned: false,
+      url: "https://bit.ly/moonmoth", icon: null, pinned: false,
       showUntil: null};
     for (const [ownerLinks, code] of [
       [[link], "invalid-argument"],
-      [[{...link, url: "http://afterfly.in/"}], "invalid-argument"],
-      [[{...link, url: "https://afterfly.in/",
+      [[{...link, url: "http://moonmoth.example.com/"}], "invalid-argument"],
+      [[{...link, url: "https://moonmoth.example.com/",
         label: "Seed listing for owner review"}], "failed-precondition"],
     ] as const) {
       await assert.rejects(
         () => adminUpdateOrganizerDetailsHandler(
           callableRequest("admin-1", {
-            organizerId: "afterfly-run-club-indore",
+            organizerId: "moonmoth-run-club-indore",
             fields: {ownerLinks},
             reviewNote: "Added the owner's links.",
           }, {admin: true}),
@@ -650,7 +650,7 @@ test("adminUpdateOrganizerDetailsHandler refuses links the page may not show",
         JSON.stringify(ownerLinks)
       );
     }
-    assert.deepEqual(h.firestore.get("organizers/afterfly-run-club-indore"),
+    assert.deepEqual(h.firestore.get("organizers/moonmoth-run-club-indore"),
       before);
   });
 
@@ -658,13 +658,13 @@ test("first edit of source-seeded fields records immutable corrections",
   async () => {
     const source = {
       sourceProfileId: "organizer_discovery:officialWebsite",
-      sourceWorkItemId: "work-afterfly",
-      sourceCandidateId: "candidate-afterfly",
+      sourceWorkItemId: "work-moonmoth",
+      sourceCandidateId: "candidate-moonmoth",
       seededFields: [
         {
           field: "name",
-          extractedValue: "AFTER FLY",
-          artifactId: "artifact-afterfly",
+          extractedValue: "MOON MOTH",
+          artifactId: "artifact-moonmoth",
           contentHash: "a".repeat(64),
           locator: "candidate.title",
           extractedBy: "deterministic",
@@ -674,7 +674,7 @@ test("first edit of source-seeded fields records immutable corrections",
         {
           field: "publicProfile.formats",
           extractedValue: ["Run and rave"],
-          artifactId: "artifact-afterfly",
+          artifactId: "artifact-moonmoth",
           contentHash: "a".repeat(64),
           locator: "candidate.reviewContext.formats",
           extractedBy: "human",
@@ -685,16 +685,16 @@ test("first edit of source-seeded fields records immutable corrections",
       capturedAt: "SERVER_TIMESTAMP",
     };
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc({
+      "organizers/moonmoth-run-club-indore": organizerDoc({
         intakeLearningSource: source,
       }),
     });
 
     await adminUpdateOrganizerDetailsHandler(
       callableRequest("admin-1", {
-        organizerId: "afterfly-run-club-indore",
+        organizerId: "moonmoth-run-club-indore",
         fields: {
-          name: "Afterfly",
+          name: "Moonmoth",
           publicProfile: {formats: ["Social run", "Dance"]},
         },
         reviewNote: "Corrected the official name and current formats.",
@@ -720,8 +720,8 @@ test("first edit of source-seeded fields records immutable corrections",
 
     await adminUpdateOrganizerDetailsHandler(
       callableRequest("admin-1", {
-        organizerId: "afterfly-run-club-indore",
-        fields: {name: "Afterfly Mumbai"},
+        organizerId: "moonmoth-run-club-indore",
+        fields: {name: "Moonmoth Mumbai"},
         reviewNote: "Subsequent editorial change.",
       }, {admin: true}),
       h.deps
@@ -736,22 +736,22 @@ test("first edit of source-seeded fields records immutable corrections",
 test("adminUpdateOrganizerDetailsHandler reserves changed canonical routes",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
-      "publicRouteReservations/organizers__indore__afterfly-run-club": {
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
+      "publicRouteReservations/organizers__indore__moonmoth-run-club": {
         status: "active",
-        targetPath: "organizers/afterfly-run-club-indore",
-        routePath: "/organizers/indore/afterfly-run-club/",
+        targetPath: "organizers/moonmoth-run-club-indore",
+        routePath: "/organizers/indore/moonmoth-run-club/",
       },
     });
 
     const result = await adminUpdateOrganizerDetailsHandler(
       callableRequest("admin-1", {
-        organizerId: "afterfly-run-club-indore",
+        organizerId: "moonmoth-run-club-indore",
         fields: {
           publicPage: {
-            slug: "afterfly",
+            slug: "moonmoth",
             citySlug: "indore",
-            canonicalPath: "/organizers/indore/afterfly/",
+            canonicalPath: "/organizers/indore/moonmoth/",
           },
         },
         reviewNote: "Updated route to the simpler public slug.",
@@ -761,29 +761,29 @@ test("adminUpdateOrganizerDetailsHandler reserves changed canonical routes",
 
     assert.equal(result.updatedFieldCount, 3);
     const newReservation = h.firestore.get(
-      "publicRouteReservations/organizers__indore__afterfly"
+      "publicRouteReservations/organizers__indore__moonmoth"
     );
     assert.equal(newReservation?.status, "active");
     assert.equal(
       newReservation?.targetPath,
-      "organizers/afterfly-run-club-indore"
+      "organizers/moonmoth-run-club-indore"
     );
-    assert.equal(newReservation?.routePath, "/organizers/indore/afterfly/");
+    assert.equal(newReservation?.routePath, "/organizers/indore/moonmoth/");
     assert.deepEqual(newReservation?.routeSegments, [
       "organizers",
       "indore",
-      "afterfly",
+      "moonmoth",
     ]);
     assert.equal(newReservation?.lastVerifiedByUid, "admin-1");
     assert.equal(newReservation?.lastVerifiedSource,
       "adminUpdateOrganizerDetails");
     const previousReservation = h.firestore.get(
-      "publicRouteReservations/organizers__indore__afterfly-run-club"
+      "publicRouteReservations/organizers__indore__moonmoth-run-club"
     );
     assert.equal(previousReservation?.status, "released");
     assert.equal(
       previousReservation?.replacementRoutePath,
-      "/organizers/indore/afterfly/"
+      "/organizers/indore/moonmoth/"
     );
   }
 );
@@ -791,12 +791,12 @@ test("adminUpdateOrganizerDetailsHandler reserves changed canonical routes",
 test("adminUpdateOrganizerDetailsHandler rejects reserved route conflicts",
   async () => {
     const h = harness({
-      "organizers/duplicate-afterfly": organizerDoc({
-        name: "Duplicate Afterfly",
+      "organizers/duplicate-moonmoth": organizerDoc({
+        name: "Duplicate Moonmoth",
         publicPage: {
-          slug: "duplicate-afterfly",
+          slug: "duplicate-moonmoth",
           citySlug: "indore",
-          canonicalPath: "/organizers/indore/duplicate-afterfly/",
+          canonicalPath: "/organizers/indore/duplicate-moonmoth/",
           publishStatus: "qa",
           indexStatus: "noindex",
           robots: "noindex, follow",
@@ -815,7 +815,7 @@ test("adminUpdateOrganizerDetailsHandler rejects reserved route conflicts",
     await assert.rejects(
       () => adminUpdateOrganizerDetailsHandler(
         callableRequest("admin-1", {
-          organizerId: "duplicate-afterfly",
+          organizerId: "duplicate-moonmoth",
           fields: {
             publicPage: {
               slug: "claimed-route",
@@ -835,13 +835,13 @@ test("adminUpdateOrganizerDetailsHandler rejects reserved route conflicts",
 test("adminUpdateOrganizerDetailsHandler rejects duplicate canonical paths",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
-      "organizers/duplicate-afterfly": organizerDoc({
-        name: "Duplicate Afterfly",
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
+      "organizers/duplicate-moonmoth": organizerDoc({
+        name: "Duplicate Moonmoth",
         publicPage: {
-          slug: "duplicate-afterfly",
+          slug: "duplicate-moonmoth",
           citySlug: "indore",
-          canonicalPath: "/organizers/indore/duplicate-afterfly/",
+          canonicalPath: "/organizers/indore/duplicate-moonmoth/",
           publishStatus: "qa",
           indexStatus: "noindex",
           robots: "noindex, follow",
@@ -855,12 +855,12 @@ test("adminUpdateOrganizerDetailsHandler rejects duplicate canonical paths",
     await assert.rejects(
       () => adminUpdateOrganizerDetailsHandler(
         callableRequest("admin-1", {
-          organizerId: "duplicate-afterfly",
+          organizerId: "duplicate-moonmoth",
           fields: {
             publicPage: {
-              slug: "afterfly-run-club",
+              slug: "moonmoth-run-club",
               citySlug: "indore",
-              canonicalPath: "/organizers/indore/afterfly-run-club/",
+              canonicalPath: "/organizers/indore/moonmoth-run-club/",
             },
           },
           reviewNote: "Checked duplicate route before publish.",
@@ -875,16 +875,16 @@ test("adminUpdateOrganizerDetailsHandler rejects duplicate canonical paths",
 test("adminUpdateOrganizerDetailsHandler rejects path and slug mismatch",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
     });
 
     await assert.rejects(
       () => adminUpdateOrganizerDetailsHandler(
         callableRequest("admin-1", {
-          organizerId: "afterfly-run-club-indore",
+          organizerId: "moonmoth-run-club-indore",
           fields: {
             publicPage: {
-              slug: "afterfly-run-club",
+              slug: "moonmoth-run-club",
               canonicalPath: "/organizers/indore/wrong-slug/",
             },
           },
@@ -900,13 +900,13 @@ test("adminUpdateOrganizerDetailsHandler rejects path and slug mismatch",
 test("adminUpdateOrganizerDetailsHandler rejects protected index fields",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
     });
 
     await assert.rejects(
       () => adminUpdateOrganizerDetailsHandler(
         callableRequest("admin-1", {
-          organizerId: "afterfly-run-club-indore",
+          organizerId: "moonmoth-run-club-indore",
           fields: {
             publicPage: {
               indexStatus: "indexReady",
@@ -924,7 +924,7 @@ test(
   "adminUpdateOrganizerDetailsHandler keeps operator text out of public fields",
   async () => {
     const before = organizerDoc();
-    const h = harness({"organizers/afterfly-run-club-indore": before});
+    const h = harness({"organizers/moonmoth-run-club-indore": before});
 
     for (const fields of [
       {publicProfile: {
@@ -937,7 +937,7 @@ test(
       await assert.rejects(
         () => adminUpdateOrganizerDetailsHandler(
           callableRequest("admin-1", {
-            organizerId: "afterfly-run-club-indore",
+            organizerId: "moonmoth-run-club-indore",
             fields,
             reviewNote: "Recorded intake findings.",
           }, {admin: true}),
@@ -953,7 +953,7 @@ test(
       await assert.rejects(
         () => adminUpdateOrganizerDetailsHandler(
           callableRequest("admin-1", {
-            organizerId: "afterfly-run-club-indore",
+            organizerId: "moonmoth-run-club-indore",
             fields: {publicProfile: {[field]: ["Owner contact"]}},
             reviewNote: "Recorded intake findings.",
           }, {admin: true}),
@@ -963,7 +963,7 @@ test(
         field
       );
     }
-    assert.deepEqual(h.firestore.get("organizers/afterfly-run-club-indore"),
+    assert.deepEqual(h.firestore.get("organizers/moonmoth-run-club-indore"),
       before);
     assert.equal(h.firestore.auditLogs().length, 0);
   });
@@ -984,12 +984,12 @@ test("adminUpdateOrganizerDetailsHandler refuses to publish operator content",
         lastCheckedAt: null,
       }],
     });
-    const h = harness({"organizers/afterfly-run-club-indore": leaked});
+    const h = harness({"organizers/moonmoth-run-club-indore": leaked});
 
     await assert.rejects(
       () => adminUpdateOrganizerDetailsHandler(
         callableRequest("admin-1", {
-          organizerId: "afterfly-run-club-indore",
+          organizerId: "moonmoth-run-club-indore",
           fields: {publicPage: {publishStatus: "published"}},
           reviewNote: "Publishing after review.",
         }, {admin: true}),
@@ -1003,24 +1003,24 @@ test("adminUpdateOrganizerDetailsHandler refuses to publish operator content",
       }
     );
     assert.equal(
-      ((h.firestore.get("organizers/afterfly-run-club-indore")
+      ((h.firestore.get("organizers/moonmoth-run-club-indore")
         ?.publicPage) as FakeData).publishStatus,
       "qa"
     );
 
     const clean = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
     });
     await adminUpdateOrganizerDetailsHandler(
       callableRequest("admin-1", {
-        organizerId: "afterfly-run-club-indore",
+        organizerId: "moonmoth-run-club-indore",
         fields: {publicPage: {publishStatus: "published"}},
         reviewNote: "Publishing after review.",
       }, {admin: true}),
       clean.deps
     );
     assert.equal(
-      ((clean.firestore.get("organizers/afterfly-run-club-indore")
+      ((clean.firestore.get("organizers/moonmoth-run-club-indore")
         ?.publicPage) as FakeData).publishStatus,
       "published"
     );
@@ -1028,14 +1028,14 @@ test("adminUpdateOrganizerDetailsHandler refuses to publish operator content",
 
 test("adminUpdateOrganizerDetailsHandler requires review notes", async () => {
   const h = harness({
-    "organizers/afterfly-run-club-indore": organizerDoc(),
+    "organizers/moonmoth-run-club-indore": organizerDoc(),
   });
 
   await assert.rejects(
     () => adminUpdateOrganizerDetailsHandler(
       callableRequest("admin-1", {
-        organizerId: "afterfly-run-club-indore",
-        fields: {name: "Afterfly"},
+        organizerId: "moonmoth-run-club-indore",
+        fields: {name: "Moonmoth"},
       }, {admin: true}),
       h.deps
     ),
@@ -1046,14 +1046,14 @@ test("adminUpdateOrganizerDetailsHandler requires review notes", async () => {
 test("adminUpdateOrganizerDetailsHandler blocks viewer-only admins",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
     });
 
     await assert.rejects(
       () => adminUpdateOrganizerDetailsHandler(
         callableRequest("admin-1", {
-          organizerId: "afterfly-run-club-indore",
-          fields: {name: "Afterfly"},
+          organizerId: "moonmoth-run-club-indore",
+          fields: {name: "Moonmoth"},
         }, {salesStaff: true}),
         h.deps
       ),

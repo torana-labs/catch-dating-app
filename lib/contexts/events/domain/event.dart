@@ -66,6 +66,10 @@ enum ExternalBookingProvider {
 
 enum EventRuntimeWalkInPolicy { deny, hostApproval, autoCreate }
 
+enum EventOrganizerVisibility { discoverable, hidden }
+
+enum EventOrganizerLifecycle { active, archived }
+
 @freezed
 abstract class Event with _$Event {
   const factory Event({
@@ -117,6 +121,7 @@ abstract class Event with _$Event {
     @Default(true) bool showGuestList,
     @Default(false) bool priceHiddenUntilBookingOpens,
     @Default(true) bool planVisibleToGuests,
+    @JsonKey(includeIfNull: false) EventOrganizerSummary? organizerSummary,
     @JsonKey(includeIfNull: false) EventExternalBooking? externalBooking,
     @Default(EventConstraints()) EventConstraints constraints,
     @JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy,
@@ -155,6 +160,25 @@ abstract class EventOrigin with _$EventOrigin {
 
   factory EventOrigin.fromJson(Map<String, dynamic> json) =>
       _$EventOriginFromJson(json);
+}
+
+@freezed
+abstract class EventOrganizerSummary with _$EventOrganizerSummary {
+  const factory EventOrganizerSummary({
+    required String name,
+    required String location,
+    required String area,
+    String? hostName,
+    @Default([]) List<String> tags,
+    required double rating,
+    @Default(false) bool synthetic,
+    required EventOrganizerVisibility appVisibility,
+    required EventOrganizerLifecycle status,
+    required bool archived,
+  }) = _EventOrganizerSummary;
+
+  factory EventOrganizerSummary.fromJson(Map<String, dynamic> json) =>
+      _$EventOrganizerSummaryFromJson(json);
 }
 
 @freezed

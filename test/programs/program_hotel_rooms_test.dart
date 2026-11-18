@@ -15,7 +15,7 @@ import 'program_operations_fixture.dart';
 Map<String, Object?> _roomsData() => {
   'programId': 'program',
   'hotelId': 'hotel',
-  'hotelName': 'Taj Palace',
+  'hotelName': 'Harbourview Palace',
   'generatedAtMillis': DateTime(2026).millisecondsSinceEpoch,
   'accessExpiresAtMillis': null,
   'roomBlocks': [

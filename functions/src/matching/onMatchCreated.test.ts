@@ -1,70 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type {sendFcmNotification} from "../shared/notifications";
+import {FakeFirestore} from "../shared/testing/fakeFirestore";
 import {onMatchCreatedHandler} from "./onMatchCreated";
 
-type FakeData = Record<string, unknown>;
 type Notification = Parameters<typeof sendFcmNotification>[0];
-
-class FakeDocRef {
-  constructor(readonly firestore: FakeFirestore, readonly path: string) {}
-
-  async get(): Promise<FakeSnapshot> {
-    return new FakeSnapshot(this.firestore.get(this.path));
-  }
-
-  collection(collectionPath: string) {
-    return {
-      doc: (docId: string) => new FakeDocRef(
-        this.firestore,
-        `${this.path}/${collectionPath}/${docId}`
-      ),
-    };
-  }
-
-  async set(data: FakeData): Promise<void> {
-    this.firestore.set(this.path, data);
-  }
-
-  async create(data: FakeData): Promise<void> {
-    if (this.firestore.get(this.path) !== undefined) {
-      const error = new Error("ALREADY_EXISTS") as Error & {code: number};
-      error.code = 6;
-      throw error;
-    }
-    this.firestore.set(this.path, data);
-  }
-}
-
-class FakeSnapshot {
-  constructor(private readonly value: FakeData | undefined) {}
-
-  data(): FakeData | undefined {
-    return this.value === undefined ? undefined : structuredClone(this.value);
-  }
-}
-
-class FakeFirestore {
-  constructor(private readonly docs: Record<string, FakeData | undefined>) {}
-
-  collection(collectionPath: string) {
-    return {
-      doc: (docId: string) => new FakeDocRef(
-        this,
-        `${collectionPath}/${docId}`
-      ),
-    };
-  }
-
-  get(path: string): FakeData | undefined {
-    const data = this.docs[path];
-    return data === undefined ? undefined : structuredClone(data);
-  }
-
-  set(path: string, data: FakeData) {
-    this.docs[path] = structuredClone(data);
-  }
-}
 
 function event() {
   return {
@@ -236,5 +176,9 @@ test(
     // activity notifications re-set idempotently, but the push must not repeat.
     await onMatchCreatedHandler(event(), h.deps);
     assert.equal(h.notifications.length, 2);
+    assert.equal(
+      h.firestore.get("commandReceipts/onMatchCreated_match-1")?.command,
+      "onMatchCreated"
+    );
   }
 );

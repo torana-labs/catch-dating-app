@@ -66,7 +66,7 @@ describe("Explore", {timeout: 20_000}, () => {
   it("searches organisers in the organisers view, which the directory redirects to", () => {
     show(mumbaiLiveCatalog, "/explore/?show=organisers&q=runners");
     const results = within(screen.getByRole("region", {name: "What’s on in Mumbai"})).getAllByRole("listitem");
-    expect(results.map((card) => within(card).getByRole("link").textContent)).toEqual([expect.stringMatching(/Carter Road Runners/u)]);
+    expect(results.map((card) => within(card).getByRole("link").textContent)).toEqual([expect.stringMatching(/Driftwood Bay Runners/u)]);
     expect(screen.getByText("1 organiser")).toBeTruthy();
   });
 
@@ -140,9 +140,11 @@ describe("Explore", {timeout: 20_000}, () => {
       lead: {phone: "+919800000000", sourcePage: "/mumbai/", entry: "ex-wa", cityAlerts: {interests: []}}});
   });
 
-  it("tags a women-led plan from the read model", () => {
+  it("badges a women-led plan from the read model, on its photo rather than its host line", () => {
     show(mumbaiDiscoveryCatalog, "/mumbai/?format=courts");
-    expect(screen.getByRole("link", {name: /Pickleball Social.*Women-led/u})).toBeTruthy();
+    const card = screen.getByRole("link", {name: /Pickleball Social.*Women-led/u});
+    expect(within(card).getByText("Women-led").dataset.variant).toBe("label-badge");
+    expect(card.textContent).not.toContain("· Women-led");
   });
 
   it("says when plans could not load", () => {

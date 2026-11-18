@@ -58,7 +58,9 @@ it as a 503 with `private, no-store` and `Retry-After: 30`, never a cached 200
 signed-in, Host, legal, `/api/public-catalog`, `/api/home-catalog` and private-shell responses stay
 `no-store`. Signed-in and follow state load in the browser. React cache only
 deduplicates a render's reads; there is no server-side cross-request snapshot or
-ISR fallback. The request gate checks
+ISR fallback. The only shared read is one every two minutes per instance for the uptime
+check's `/api/public-catalog` calls (see
+[web surface architecture](web_surface_architecture.md#unavailable-public-reads)). The request gate checks
 availability, organizer aliases and missing live-route statuses before streaming
 (including RSC, where a late `notFound()` otherwise retains HTTP 200); the render independently
 reauthorizes its data. This currently costs two bounded reads for those pages.
@@ -162,12 +164,14 @@ in `guest` or `host` columns (`KitFooter`), each link flush with its column
 title on one row rhythm, then the wordmark with the tagline on its baseline and
 the operator line. Guest: Explore, Hosts (with Weddings) and Help and legal;
 the homepage and the city pages add their Cities column. Host: Product, Get
-started, the brand's column (What's on, Help, Contact) and Legal. The last
-column ends with Privacy choices. The help band leads the footer on every
-guest and host page ("We reply on WhatsApp, usually within an hour.", with
-the WhatsApp link and, on host pages, Book a walkthrough to the free-trial
-start); one-job flows (booking, invitation, the demo continuation) turn it
-off, and ad landing pages will too. It states no hours. A product page (host,
+started, the brand's column (What's on, Help, Contact) and Legal. Help and
+legal, and the brand's column, list a quiet "Report or remove a listing" link
+to the `/listings/request/` form after Contact. The last column ends with
+Privacy choices. The help band leads the footer on every guest and host page
+("We reply on WhatsApp, usually within an hour.", with the WhatsApp link and,
+on host pages, Book a walkthrough to the `/host/walkthrough/` request form);
+one-job flows (booking, invitation, the demo continuation) turn it off, and ad
+landing pages will too. It states no hours. A product page (host,
 weddings) may name itself in the wordmark and give its own line. Home, Explore
 and the city pages, the host landing, billing and application, weddings, the
 account page, legal, help, 404, the claim page, organiser pages and event
@@ -265,7 +269,7 @@ App Check token the lead intake requires.
    from its board in `design/source_packs/website-playbook/pages/`, with
    `"$schema": "../../playbookPage.schema.json"`. `id` is the content key: the
    route id, or for a family page the route id and its parameters joined with
-   `/` (`story_detail/carter-road-runners`). Resolve or remove every
+   `/` (`story_detail/driftwood-bay-runners`). Resolve or remove every
    bracketed placeholder, map kit tones to grounds, name capture slots, and
    start with `"noindex": true`.
 3. Add one entry to that section's `index.ts`:

@@ -2,7 +2,7 @@ import {productionIndexing} from "./publicEnvironment";
 import {cache} from "react";
 import {readRouteCatalog} from "./publicCatalog";
 import {readPublicContact} from "./publicContact";
-import {cityForPath, isLegalPageKey, pageMeta, pageMetaForCity, pageMetaForWeddingsPath, pageMetaForListing, pageMetaForEvent, pageMetaForPlaybook, type PageKey} from "../app/pageMeta";
+import {cityForPath, isLegalPageKey, pageMeta, pageMetaForCity, pageMetaForListingRequestsPath, pageMetaForWeddingsPath, pageMetaForListing, pageMetaForEvent, pageMetaForPlaybook, type PageKey} from "../app/pageMeta";
 import {loadPlaybookPage, resolvePlaybookPage} from "../features/playbook/playbookPages";
 import {matchDiscoveryRoute} from "../features/discovery/discoveryModel";
 import {discoveryPageMeta, discoveryPageStatus} from "../features/discovery/discoveryRoute";
@@ -25,7 +25,8 @@ export const resolvePublicRoute = cache(async (pathname: string) => {
   const event = getEventDetailForPath(pathname, buildPublicEventDetailRecords(catalog.listings, catalog.readAt));
   const routes: Record<string, PageKey> = {"/": "home", "/explore": "visitor_discovery", "/cities": "cities", "/host": "host",
     "/weddings": "weddings", "/weddings/apply": "weddings", "/organizers": "organizers", "/privacy": "privacy", "/terms": "terms", "/help": "help",
-    "/delete-account": "account_deletion", "/refunds": "refunds", "/contact": "contact", "/claim": "claim"};
+    "/delete-account": "account_deletion", "/refunds": "refunds", "/contact": "contact", "/claim": "claim",
+    "/listings/request": "listing_requests", "/listings/policy": "listing_requests", "/listings/notice-and-takedown": "listing_requests"};
   const city = cityForPath(key);
   // A city-by-format or new-to-the-city page reads its city here, before the playbook pages: whether
   // it is a page or a 404 must be known before the render streams (the proxy decides the status).
@@ -47,7 +48,7 @@ export const resolvePublicRoute = cache(async (pathname: string) => {
     discovery ? discoveryPageMeta(discovery.route, discovery.catalog) : discoveryRoute ? pageMeta.not_found :
     playbook ? pageMetaForPlaybook(playbook.page, playbook.canonicalPath) :
     city ? pageMetaForCity(city) :
-    pageMetaForWeddingsPath(pathname) ?? pageMeta[page as keyof typeof pageMeta];
+    pageMetaForWeddingsPath(pathname) ?? pageMetaForListingRequestsPath(pathname) ?? pageMeta[page as keyof typeof pageMeta];
   // Organiser and event pages draw their own card from the record they render.
   const generated = generatedPreviewCardFor({listingRoute, event});
   const ogImage = playbook?.page.meta.ogImage;

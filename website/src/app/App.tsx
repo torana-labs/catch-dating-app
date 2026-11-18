@@ -15,6 +15,7 @@ import {
   pageClassFor,
   pageMeta,
   pageMetaForEvent,
+  pageMetaForListingRequestsPath,
   pageMetaForWeddingsPath,
   pageMetaForListing,
   pageMetaForPlaybook,
@@ -84,6 +85,8 @@ const recoveryModules = import.meta.glob<Record<string, unknown>>([
   "../features/weddings/WeddingsApplicationPage.tsx",
   "../features/notFound/NotFoundPage.tsx",
   "../features/legal/LegalPage.tsx",
+  "../features/listingRequests/ListingRequestPage.tsx",
+  "../features/listingRequests/ListingPolicyPage.tsx",
   "../features/playbook/PlaybookPage.tsx",
   "../features/discovery/CityFormatPage.tsx",
   "../features/discovery/NewToCityPage.tsx",
@@ -104,6 +107,12 @@ const SalesDemoPage = route(async () => ({
   default: (await import("../features/salesDemo/SalesDemoPage")).SalesDemoPage,
 }), "../features/salesDemo/SalesDemoPage", "SalesDemoPage");
 
+const ListingRequestPage = route(async () => ({
+  default: (await import("../features/listingRequests/ListingRequestPage")).ListingRequestPage,
+}), "../features/listingRequests/ListingRequestPage", "ListingRequestPage");
+const ListingPolicyPage = route(async () => ({
+  default: (await import("../features/listingRequests/ListingPolicyPage")).ListingPolicyPage,
+}), "../features/listingRequests/ListingPolicyPage", "ListingPolicyPage");
 const ClaimPage = route(async () => ({
   default: (await import("../features/claims/ClaimPage")).ClaimPage,
 }), "../features/claims/ClaimPage", "ClaimPage");
@@ -301,7 +310,7 @@ function CanonicalMarketingRouteShell() {
     fallbackPage === "discovery" ? (discoveryRoute ? discoveryPageMeta(discoveryRoute, homeCatalog) : pageMeta.not_found) :
     fallbackPage === "playbook" ? (playbookPage && playbookRef ?
       pageMetaForPlaybook(playbookPage, playbookRef.match.canonicalPath) : pageMeta.not_found) :
-    pageMetaForWeddingsPath(location.pathname) ?? pageMeta[fallbackPage];
+    pageMetaForWeddingsPath(location.pathname) ?? pageMetaForListingRequestsPath(location.pathname) ?? pageMeta[fallbackPage];
 
   useMarketingAnalytics(page, routeKey);
   useDocumentMeta(meta);
@@ -428,6 +437,9 @@ function CanonicalMarketingRouteShell() {
             path={marketingRoutePaths.claim_lookup}
             element={<ClaimRoute />}
           />
+          <Route path={marketingRoutePaths.listing_request} element={<ListingRequestPage />} />
+          <Route path={marketingRoutePaths.listing_policy} element={<ListingPolicyPage policy="listingPolicy" />} />
+          <Route path={marketingRoutePaths.takedown_policy} element={<ListingPolicyPage policy="takedownPolicy" />} />
           <Route
             path={marketingRoutePaths.privacy}
             element={(

@@ -114,7 +114,7 @@ describe("organizerPublishingHelpers", () => {
   });
 
   it("saves the page links only when they change, as one ordered list", () => {
-    const organizer = sampleOrganizerDetails.afterfly;
+    const organizer = sampleOrganizerDetails.moonmoth;
     const form = formFromOrganizerProfile(organizer);
     expect(form.ownerLinks.map((link) => link.id))
       .toEqual(["diwali-run", "whatsapp"]);
@@ -140,7 +140,7 @@ describe("organizerPublishingHelpers", () => {
   });
 
   it("keeps each tag and format apart in the one-line fields", () => {
-    const organizer = sampleOrganizerDetails.afterfly!;
+    const organizer = sampleOrganizerDetails.moonmoth!;
     const original = formFromOrganizerProfile(organizer);
     expect(original.formatsText).toBe(organizer.publicProfile.formats.join(", "));
     expect(diffOrganizerProfile(organizer, original)).toEqual([]);
@@ -155,7 +155,7 @@ describe("organizerPublishingHelpers", () => {
   });
 
   it("keeps the show-until time when the form round-trips it", () => {
-    const organizer = sampleOrganizerDetails.afterfly;
+    const organizer = sampleOrganizerDetails.moonmoth;
     const form = formFromOrganizerProfile(organizer);
     expect(form.ownerLinks[0].showUntil).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/u);
     expect(new Date(form.ownerLinks[0].showUntil).toISOString())

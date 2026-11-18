@@ -6,9 +6,9 @@ import {
 } from "../src/workflows/supply-intake/message-nomination.mjs";
 
 test("a profile shared from Instagram becomes one nomination without its share token", () => {
-  const parsed = parseNominationMessage("https://www.instagram.com/afterfly.in?igsh=MXd4ZnB0bWZ4cGs=");
+  const parsed = parseNominationMessage("https://www.instagram.com/moonmoth.example?igsh=MXd4ZnB0bWZ4cGs=");
   assert.deepEqual(parsed, {
-    nominations: [{urls: ["https://instagram.com/afterfly.in"], notes: null}],
+    nominations: [{urls: ["https://instagram.com/moonmoth.example"], notes: null}],
     unreadable: [],
     droppedNominations: 0,
   });
@@ -16,29 +16,29 @@ test("a profile shared from Instagram becomes one nomination without its share t
 
 test("links on one line belong to one organizer and duplicates collapse", () => {
   const parsed = parseNominationMessage(
-    "Afterfly: lu.ma/afterfly, https://www.instagram.com/afterfly.in/ and @afterfly.in");
+    "Moonmoth: lu.ma/moonmoth, https://www.instagram.com/moonmoth.example/ and @moonmoth.example");
   assert.deepEqual(parsed.nominations, [{
-    urls: ["https://luma.com/afterfly", "https://instagram.com/afterfly.in"],
-    notes: "Afterfly: and",
+    urls: ["https://luma.com/moonmoth", "https://instagram.com/moonmoth.example"],
+    notes: "Moonmoth: and",
   }]);
 });
 
 test("each line with links is its own organizer and link-less lines are notes", () => {
   const parsed = parseNominationMessage([
-    "Mumbai run clubs",
-    "@bandrarunners",
+    "Run clubs in Mumbai",
+    "@sandbarrunners",
     "https://luma.com/calendar/sunday-social great Sunday crowd",
     "met them at a mixer",
   ].join("\n"));
   assert.deepEqual(parsed.nominations, [
-    {urls: ["https://instagram.com/bandrarunners"], notes: "Mumbai run clubs"},
+    {urls: ["https://instagram.com/sandbarrunners"], notes: "Run clubs in Mumbai"},
     {urls: ["https://luma.com/calendar/sunday-social"], notes: "great Sunday crowd\nmet them at a mixer"},
   ]);
 });
 
 test("a handle inside a link stays part of that link", () => {
-  const parsed = parseNominationMessage("https://medium.com/@afterfly/our-story");
-  assert.deepEqual(parsed.nominations, [{urls: ["https://medium.com/%40afterfly/our-story"], notes: null}]);
+  const parsed = parseNominationMessage("https://medium.com/@moonmoth/our-story");
+  assert.deepEqual(parsed.nominations, [{urls: ["https://medium.com/%40moonmoth/our-story"], notes: null}]);
 });
 
 test("email addresses, plain words and bare hosts without a path are not links", () => {

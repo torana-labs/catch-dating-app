@@ -141,10 +141,8 @@ export async function onMatchCreatedHandler(
   await withEventReceipt(
     db,
     {
-      receiptId: `onMatchCreated_${matchId}`,
+      id: matchId,
       handler: "onMatchCreated",
-      matchId,
-      eventId: latestEventId,
     },
     async () => {
       logger.info("Sending match notifications", {
