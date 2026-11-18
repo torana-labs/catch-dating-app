@@ -97,6 +97,12 @@ Future<HostFormResponseScope?> hostFormResponseScope(
 /// filters page through the callable, their recorded search exception.
 @riverpod
 class HostFormResponsesController extends _$HostFormResponsesController {
+  // Not replaceable by `ref.mounted` (checked in Riverpod 3.5 source): a
+  // notifier's `ref` is its element's *current* ref, and a rebuild only swaps
+  // in a new one, so `mounted` stays true across a rebuild and goes false only
+  // on dispose. A `loadMore` that began before a rebuild (new filters, an
+  // invalidation) would otherwise write its page into the new state. The
+  // generation bumps on every build and dispose, so it also catches that.
   int _generation = 0;
 
   @override
