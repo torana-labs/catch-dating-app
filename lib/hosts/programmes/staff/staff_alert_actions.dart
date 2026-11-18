@@ -10,9 +10,10 @@ final _random = Random.secure();
 String staffAlertRequestId() =>
     'alert-${DateTime.now().microsecondsSinceEpoch}-${_random.nextInt(1 << 30)}';
 
-/// Runs [action] on [alert] through `resolveProgramAlert`, then reads the
-/// live board again. Returns false when the server refused it (for
-/// example, someone else changed the alert first).
+/// Runs [action] on [alert] through `resolveProgramAlert`; the live board
+/// listener delivers the result when the alert's view follows. Returns false
+/// when the server refused it (for example, someone else changed the alert
+/// first).
 Future<bool> resolveStaffAlert(
   WidgetRef ref,
   String programId,
@@ -31,7 +32,5 @@ Future<bool> resolveStaffAlert(
     return true;
   } on Object {
     return false;
-  } finally {
-    ref.invalidate(programLiveBoardViewProvider(programId));
   }
 }

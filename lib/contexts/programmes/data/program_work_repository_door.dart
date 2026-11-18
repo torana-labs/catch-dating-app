@@ -4,25 +4,6 @@ part of 'program_work_repository.dart';
 /// walk-in creation. Split into a part file so the work repository stays
 /// under the handwritten-source size budget; `_call` remains library-private.
 extension ProgramDoorRepositoryApi on ProgramWorkRepository {
-  /// Function-scoped door roster: header, invited/walked-in guests, recent
-  /// journal entries and live counts. Contact fields never leave the server.
-  Future<ProgramDoorView> getFunctionDoorView({
-    required String programId,
-    required String functionId,
-    String? snapshotAccountId,
-  }) => _call(
-    name: 'getProgramFunctionDoorView',
-    authorityScopedRead: true,
-    payload: ProgramFunctionScopeCallableRequest(
-      programId: programId,
-      functionId: functionId,
-    ).toJson(),
-    action: 'load the door roster',
-    parse: ProgramDoorView.fromCallableData,
-    snapshotScope: programSnapshotScope('door', programId, functionId),
-    snapshotAccountId: snapshotAccountId,
-  );
-
   /// Records one batch of door journal operations. Journal ids derive
   /// server-side from the operation payload, so outbox replays of the same
   /// entry land as duplicates instead of double writes.
@@ -69,59 +50,26 @@ extension ProgramDoorRepositoryApi on ProgramWorkRepository {
   );
 }
 
+/// The door of one function, live (#1339): the function's header, roster
+/// rows and newest journal entries through listeners, gated on the account's
+/// authority. The same type as the callable read it replaces.
 @riverpod
 Future<ProgramDoorView> programFunctionDoorView(
   Ref ref,
   String programId,
   String functionId,
-) {
-  final accountId = _watchWorkAccount(ref);
-  return ref
-      .read(programWorkRepositoryProvider)
-      .getFunctionDoorView(
-        programId: programId,
-        functionId: functionId,
-        snapshotAccountId: accountId,
-      );
-}
+) => ref.watch(programDoorViewStreamProvider(programId, functionId).future);
 
+/// The door for the screen: the live door, which opens offline from the
+/// device cache while the account's duty holds.
 @riverpod
 Future<ProgramReadView<ProgramDoorView>> programFunctionDoorViewWithSnapshot(
   Ref ref,
   String programId,
   String functionId,
 ) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await _readView(
-    ref,
-    accountId,
-    programId,
-    programSnapshotScope('door', programId, functionId),
-    () => ref.watch(
-      programFunctionDoorViewProvider(programId, functionId).future,
-    ),
-    ProgramDoorView.fromCallableData,
-    allowsAccess: (access) => canReadProgramFunction(
-      access,
-      functionId,
-      now: ref.read(programProjectionClockProvider)(),
-      forSnapshot: true,
-    ),
-    onAuthorityChanged: () => ref.invalidate(
-      programFunctionDoorViewProvider(programId, functionId),
-      asReload: true,
-    ),
+  final view = await ref.watch(
+    programFunctionDoorViewProvider(programId, functionId).future,
   );
-  retainProgramProjection(
-    ref,
-    programProjectionDeadline(
-      result.value.accessExpiresAt,
-      result.snapshotExpiresAt,
-    ),
-    onExpiry: () => ref.invalidate(
-      programFunctionDoorViewProvider(programId, functionId),
-      asReload: true,
-    ),
-  );
-  return result;
+  return (value: view, snapshotAt: null, snapshotExpiresAt: null);
 }
