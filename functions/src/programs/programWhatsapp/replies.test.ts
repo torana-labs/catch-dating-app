@@ -58,6 +58,27 @@ const plannerReply = (overrides: Record<string, unknown> = {}) => ({
   ...overrides,
 });
 
+test("a planner reply carries its author's display name from the grant",
+  async () => {
+    const ctx = await setup();
+    ctx.db.docs.set("programStaffGrants/program-1__comms-1", {
+      programId: "program-1", uid: "comms-1", displayName: " Arjun "});
+    const named = await sendProgramWhatsappText(ctx.deps,
+      plannerReply({actorUid: "comms-1"}));
+    const message = (id: string) => ctx.db.getDoc(
+      `programWhatsappMessages/${id}`)!;
+    assert.equal(message(named.messageId).authorLabel, "Arjun");
+    assert.equal(message(named.messageId).authorUid, "comms-1");
+    // The owner holds no grant, so the reply names nobody.
+    const owner = await sendProgramWhatsappText(ctx.deps, plannerReply({
+      idempotencyKey: "reply-key-0002", text: "Second reply."}));
+    assert.equal(message(owner.messageId).authorLabel, null);
+    assert.equal(message(owner.messageId).authorUid, "manager-1");
+    const validateMessage = contractValidator("ProgramWhatsappMessageDocument");
+    assert.equal(validateMessage(message(named.messageId)), true,
+      JSON.stringify(validateMessage.errors));
+  });
+
 test("a planner reply is reserved, sent with a correlation and recorded",
   async () => {
     const ctx = await setup();

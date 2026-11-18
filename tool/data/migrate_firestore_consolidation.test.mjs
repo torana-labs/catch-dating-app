@@ -616,6 +616,35 @@ test("program-whatsapp-thread-views creates each thread's view once, without pho
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("program-whatsapp-author-labels fills a planner reply's author name once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-whatsapp-author-labels");
+  const message = (overrides = {}) => ({programId: "p1", threadId: "p1_h1", direction: "outbound",
+    author: "planner", authorUid: "staff-1", text: "On our way", ...overrides});
+  const db = fakeDb({
+    "programStaffGrants/p1__staff-1": {programId: "p1", uid: "staff-1", displayName: " Arjun "},
+    "programStaffGrants/p1__nameless": {programId: "p1", uid: "nameless", displayName: null},
+    "programWhatsappMessages/m1": message(),
+    "programWhatsappMessages/m2": message({authorUid: "owner-1"}),
+    "programWhatsappMessages/m3": message({authorUid: "nameless"}),
+    "programWhatsappMessages/m4": message({author: "assistant", authorUid: null}),
+    "programWhatsappMessages/m5": message({direction: "inbound", author: "guest", authorUid: null}),
+    "programWhatsappMessages/m6": message({authorLabel: "Existing"}),
+    "programWhatsappMessages/m7": message({programId: "p9"}),
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.conflicts, 0);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["programWhatsappMessages/m1"].authorLabel, "Arjun");
+  for (const id of ["m2", "m3", "m4", "m5", "m7"]) {
+    assert.equal(db.data[`programWhatsappMessages/${id}`].authorLabel, undefined, id);
+  }
+  assert.equal(db.data["programWhatsappMessages/m6"].authorLabel, "Existing");
+  assert.equal(db.data["programWhatsappMessages/m1"].text, "On our way");
+  const again = await planMigration(db, migration);
+  assert.equal(again.steps[0].toFill.length, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("organizer-program-views creates each programme's setup view once", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "organizer-program-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
