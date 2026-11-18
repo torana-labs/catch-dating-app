@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'saved_event.dart';
@@ -9,6 +9,7 @@ part of 'saved_event.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $SavedEventCopyWith<SavedEvent> get copyWith => _$SavedEventCopyWithImpl<SavedEv
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SavedEvent&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt));
+  final _this = this as SavedEvent;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SavedEvent&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.uid, _this.uid) || other.uid == _this.uid)&&(identical(other.eventId, _this.eventId) || other.eventId == _this.eventId)&&(identical(other.savedAt, _this.savedAt) || other.savedAt == _this.savedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,uid,eventId,savedAt);
+int get hashCode {
+  final _this = this as SavedEvent;
+  return Object.hash(runtimeType,_this.id,_this.uid,_this.eventId,_this.savedAt);
+}
 
 @override
 String toString() {
-  return 'SavedEvent(id: $id, uid: $uid, eventId: $eventId, savedAt: $savedAt)';
+  final _this = this as SavedEvent;
+  return 'SavedEvent(id: ${_this.id}, uid: ${_this.uid}, eventId: ${_this.eventId}, savedAt: ${_this.savedAt})';
 }
 
 
@@ -66,7 +72,7 @@ class _$SavedEventCopyWithImpl<$Res>
 /// Create a copy of SavedEvent
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? uid = null,Object? eventId = null,Object? savedAt = null,}) {
-  return _then(_self.copyWith(
+  return _then(SavedEvent(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
@@ -233,16 +239,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SavedEvent&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SavedEvent&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,uid,eventId,savedAt);
+int get hashCode {
+    return Object.hash(runtimeType,id,uid,eventId,savedAt);
+}
 
 @override
 String toString() {
-  return 'SavedEvent(id: $id, uid: $uid, eventId: $eventId, savedAt: $savedAt)';
+    return 'SavedEvent(id: $id, uid: $uid, eventId: $eventId, savedAt: $savedAt)';
 }
 
 

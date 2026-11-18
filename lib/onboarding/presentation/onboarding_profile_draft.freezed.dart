@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'onboarding_profile_draft.dart';
@@ -9,6 +9,7 @@ part of 'onboarding_profile_draft.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $OnboardingProfileDraftCopyWith<OnboardingProfileDraft> get copyWith => _$Onboar
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingProfileDraft&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other.interestedInGenders, interestedInGenders)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&const DeepCollectionEquality().equals(other.profilePrompts, profilePrompts));
+  final _this = this as OnboardingProfileDraft;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingProfileDraft&&(identical(other.firstName, _this.firstName) || other.firstName == _this.firstName)&&(identical(other.lastName, _this.lastName) || other.lastName == _this.lastName)&&(identical(other.dateOfBirth, _this.dateOfBirth) || other.dateOfBirth == _this.dateOfBirth)&&(identical(other.phoneNumber, _this.phoneNumber) || other.phoneNumber == _this.phoneNumber)&&(identical(other.countryCode, _this.countryCode) || other.countryCode == _this.countryCode)&&(identical(other.gender, _this.gender) || other.gender == _this.gender)&&const DeepCollectionEquality().equals(other.interestedInGenders, _this.interestedInGenders)&&(identical(other.instagramHandle, _this.instagramHandle) || other.instagramHandle == _this.instagramHandle)&&const DeepCollectionEquality().equals(other.profilePrompts, _this.profilePrompts));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,firstName,lastName,dateOfBirth,phoneNumber,countryCode,gender,const DeepCollectionEquality().hash(interestedInGenders),instagramHandle,const DeepCollectionEquality().hash(profilePrompts));
+int get hashCode {
+  final _this = this as OnboardingProfileDraft;
+  return Object.hash(runtimeType,_this.firstName,_this.lastName,_this.dateOfBirth,_this.phoneNumber,_this.countryCode,_this.gender,const DeepCollectionEquality().hash(_this.interestedInGenders),_this.instagramHandle,const DeepCollectionEquality().hash(_this.profilePrompts));
+}
 
 @override
 String toString() {
-  return 'OnboardingProfileDraft(firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, phoneNumber: $phoneNumber, countryCode: $countryCode, gender: $gender, interestedInGenders: $interestedInGenders, instagramHandle: $instagramHandle, profilePrompts: $profilePrompts)';
+  final _this = this as OnboardingProfileDraft;
+  return 'OnboardingProfileDraft(firstName: ${_this.firstName}, lastName: ${_this.lastName}, dateOfBirth: ${_this.dateOfBirth}, phoneNumber: ${_this.phoneNumber}, countryCode: ${_this.countryCode}, gender: ${_this.gender}, interestedInGenders: ${_this.interestedInGenders}, instagramHandle: ${_this.instagramHandle}, profilePrompts: ${_this.profilePrompts})';
 }
 
 
@@ -63,7 +69,7 @@ class _$OnboardingProfileDraftCopyWithImpl<$Res>
 /// Create a copy of OnboardingProfileDraft
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? phoneNumber = null,Object? countryCode = null,Object? gender = freezed,Object? interestedInGenders = null,Object? instagramHandle = freezed,Object? profilePrompts = null,}) {
-  return _then(_self.copyWith(
+  return _then(OnboardingProfileDraft(
 firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
 as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
 as String,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
@@ -214,7 +220,7 @@ return $default(_that.firstName,_that.lastName,_that.dateOfBirth,_that.phoneNumb
 
 
 class _OnboardingProfileDraft extends OnboardingProfileDraft {
-  const _OnboardingProfileDraft({this.firstName = '', this.lastName = '', this.dateOfBirth, this.phoneNumber = '', this.countryCode = defaultCountryDialCode, this.gender, final  List<Gender> interestedInGenders = const [], this.instagramHandle, final  List<ProfilePromptAnswer> profilePrompts = const []}): _interestedInGenders = interestedInGenders,_profilePrompts = profilePrompts,super._();
+  const _OnboardingProfileDraft({this.firstName = '', this.lastName = '', this.dateOfBirth, this.phoneNumber = '', this.countryCode = defaultCountryDialCode, this.gender,  List<Gender> interestedInGenders = const [], this.instagramHandle,  List<ProfilePromptAnswer> profilePrompts = const []}): _interestedInGenders = interestedInGenders,_profilePrompts = profilePrompts,super._();
   
 
 @override@JsonKey() final  String firstName;
@@ -249,16 +255,18 @@ _$OnboardingProfileDraftCopyWith<_OnboardingProfileDraft> get copyWith => __$Onb
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingProfileDraft&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other._interestedInGenders, _interestedInGenders)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&const DeepCollectionEquality().equals(other._profilePrompts, _profilePrompts));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingProfileDraft&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other.interestedInGenders, _interestedInGenders)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&const DeepCollectionEquality().equals(other.profilePrompts, _profilePrompts));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,firstName,lastName,dateOfBirth,phoneNumber,countryCode,gender,const DeepCollectionEquality().hash(_interestedInGenders),instagramHandle,const DeepCollectionEquality().hash(_profilePrompts));
+int get hashCode {
+    return Object.hash(runtimeType,firstName,lastName,dateOfBirth,phoneNumber,countryCode,gender,const DeepCollectionEquality().hash(_interestedInGenders),instagramHandle,const DeepCollectionEquality().hash(_profilePrompts));
+}
 
 @override
 String toString() {
-  return 'OnboardingProfileDraft(firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, phoneNumber: $phoneNumber, countryCode: $countryCode, gender: $gender, interestedInGenders: $interestedInGenders, instagramHandle: $instagramHandle, profilePrompts: $profilePrompts)';
+    return 'OnboardingProfileDraft(firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, phoneNumber: $phoneNumber, countryCode: $countryCode, gender: $gender, interestedInGenders: $interestedInGenders, instagramHandle: $instagramHandle, profilePrompts: $profilePrompts)';
 }
 
 

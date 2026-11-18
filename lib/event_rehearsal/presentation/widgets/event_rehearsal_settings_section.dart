@@ -35,7 +35,7 @@ class EventRehearsalSettingsSection extends ConsumerWidget {
         ref
             .read(eventRehearsalSettingsControllerProvider(sessionId).notifier)
             .close();
-        if (ref.exists(query)) ref.read(query.notifier).reload();
+        if (ref.read(query.exists)) ref.read(query.notifier).reload();
       }
       showCatchBottomSheet<void>(
         context: context,

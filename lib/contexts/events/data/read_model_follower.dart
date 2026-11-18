@@ -42,7 +42,7 @@ class ReadModelFollower<V> {
   void follow(Ref ref, ProviderBase<AsyncValue<V>> provider) {
     close();
     _first = Completer<void>();
-    if (ref.exists(provider) && ref.read(provider).hasError) {
+    if (ref.read(provider.exists) && ref.read(provider).hasError) {
       ref.invalidate(provider);
     }
     _subscription = ref.listen<AsyncValue<V>>(

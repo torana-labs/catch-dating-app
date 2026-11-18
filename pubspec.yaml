@@ -54,8 +54,11 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   firebase_core: ^4.15.2
-  flutter_riverpod: ^3.3.2
-  riverpod_annotation: ^4.0.3
+  # The experimental mutation API (flutter_riverpod/experimental/mutation.dart)
+  # can change in a minor release, so Riverpod stays on one minor. Moving to
+  # the next minor is a deliberate upgrade that re-runs the mutation tests.
+  flutter_riverpod: '>=3.5.0 <3.6.0'
+  riverpod_annotation: ^4.0.8
   firebase_auth: ^6.7.1
   go_router: ^17.1.0
   cloud_functions: ^6.5.1
@@ -116,14 +119,14 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
   build_runner: ^2.11.1
-  analyzer: ^12.1.0
-  riverpod_generator: ^4.0.4
-  riverpod_lint: ^3.1.4
+  analyzer: ^13.0.0
+  riverpod_generator: ^4.0.10
+  riverpod_lint: ^3.2.0
   catch_ui_lints:
     path: packages/catch_ui_lints
-  freezed: ^3.0.0
+  freezed: ^4.0.1
   json_serializable: ^6.15.2
-  riverpod: ^3.3.2
+  riverpod: '>=3.5.0 <3.6.0'
   fake_async: ^1.3.3
   fake_cloud_firestore: ^4.3.0
   firebase_auth_mocks: ^0.15.1

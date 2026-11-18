@@ -5767,6 +5767,42 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "hotelId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "guestId",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programDoorJournal",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "programId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "actorUid",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programStays",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "programId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "organizerId",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "roomBlockId",
           "order": "ASCENDING"
         }

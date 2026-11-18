@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'organizer_draft.dart';
@@ -9,6 +9,7 @@ part of 'organizer_draft.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $OrganizerDraftCopyWith<OrganizerDraft> get copyWith => _$OrganizerDraftCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrganizerDraft&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.name, name) || other.name == name)&&(identical(other.area, area) || other.area == area)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.email, email) || other.email == email)&&(identical(other.organizerType, organizerType) || other.organizerType == organizerType)&&(identical(other.hostDefaults, hostDefaults) || other.hostDefaults == hostDefaults));
+  final _this = this as OrganizerDraft;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrganizerDraft&&(identical(other.savedAt, _this.savedAt) || other.savedAt == _this.savedAt)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.area, _this.area) || other.area == _this.area)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.location, _this.location) || other.location == _this.location)&&(identical(other.instagramHandle, _this.instagramHandle) || other.instagramHandle == _this.instagramHandle)&&(identical(other.phoneNumber, _this.phoneNumber) || other.phoneNumber == _this.phoneNumber)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.organizerType, _this.organizerType) || other.organizerType == _this.organizerType)&&(identical(other.hostDefaults, _this.hostDefaults) || other.hostDefaults == _this.hostDefaults));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,savedAt,name,area,description,location,instagramHandle,phoneNumber,email,organizerType,hostDefaults);
+int get hashCode {
+  final _this = this as OrganizerDraft;
+  return Object.hash(runtimeType,_this.savedAt,_this.name,_this.area,_this.description,_this.location,_this.instagramHandle,_this.phoneNumber,_this.email,_this.organizerType,_this.hostDefaults);
+}
 
 @override
 String toString() {
-  return 'OrganizerDraft(savedAt: $savedAt, name: $name, area: $area, description: $description, location: $location, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, organizerType: $organizerType, hostDefaults: $hostDefaults)';
+  final _this = this as OrganizerDraft;
+  return 'OrganizerDraft(savedAt: ${_this.savedAt}, name: ${_this.name}, area: ${_this.area}, description: ${_this.description}, location: ${_this.location}, instagramHandle: ${_this.instagramHandle}, phoneNumber: ${_this.phoneNumber}, email: ${_this.email}, organizerType: ${_this.organizerType}, hostDefaults: ${_this.hostDefaults})';
 }
 
 
@@ -66,7 +72,7 @@ class _$OrganizerDraftCopyWithImpl<$Res>
 /// Create a copy of OrganizerDraft
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? savedAt = null,Object? name = freezed,Object? area = freezed,Object? description = freezed,Object? location = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? organizerType = null,Object? hostDefaults = null,}) {
-  return _then(_self.copyWith(
+  return _then(OrganizerDraft(
 savedAt: null == savedAt ? _self.savedAt : savedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,area: freezed == area ? _self.area : area // ignore: cast_nullable_to_non_nullable
@@ -254,16 +260,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrganizerDraft&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.name, name) || other.name == name)&&(identical(other.area, area) || other.area == area)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.email, email) || other.email == email)&&(identical(other.organizerType, organizerType) || other.organizerType == organizerType)&&(identical(other.hostDefaults, hostDefaults) || other.hostDefaults == hostDefaults));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrganizerDraft&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.name, name) || other.name == name)&&(identical(other.area, area) || other.area == area)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.email, email) || other.email == email)&&(identical(other.organizerType, organizerType) || other.organizerType == organizerType)&&(identical(other.hostDefaults, hostDefaults) || other.hostDefaults == hostDefaults));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,savedAt,name,area,description,location,instagramHandle,phoneNumber,email,organizerType,hostDefaults);
+int get hashCode {
+    return Object.hash(runtimeType,savedAt,name,area,description,location,instagramHandle,phoneNumber,email,organizerType,hostDefaults);
+}
 
 @override
 String toString() {
-  return 'OrganizerDraft(savedAt: $savedAt, name: $name, area: $area, description: $description, location: $location, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, organizerType: $organizerType, hostDefaults: $hostDefaults)';
+    return 'OrganizerDraft(savedAt: $savedAt, name: $name, area: $area, description: $description, location: $location, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, organizerType: $organizerType, hostDefaults: $hostDefaults)';
 }
 
 

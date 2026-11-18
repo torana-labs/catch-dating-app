@@ -2010,10 +2010,10 @@ String _generatedProviderName(
       continue;
     }
     for (final argument in annotation.arguments?.arguments ?? <Expression>[]) {
-      if (argument is! NamedExpression || argument.name.label.name != 'name') {
+      if (argument is! NamedArgument || argument.name.lexeme != 'name') {
         continue;
       }
-      final expression = argument.expression;
+      final expression = argument.argumentExpression;
       if (expression is NullLiteral) return inferredName;
       if (expression is StringLiteral && expression.stringValue != null) {
         return expression.stringValue!;
@@ -2800,12 +2800,11 @@ final class _ReadSiteIndex {
   }
 
   static String? _parameterTypeName(FormalParameter parameter) {
-    final normal = switch (parameter) {
-      DefaultFormalParameter(:final parameter) => parameter,
-      _ => parameter,
-    };
-    if (normal is! SimpleFormalParameter) return null;
-    final type = normal.type;
+    if (parameter is! RegularFormalParameter ||
+        parameter.functionTypedSuffix != null) {
+      return null;
+    }
+    final type = parameter.type;
     return type is NamedType ? type.name.lexeme : null;
   }
 
@@ -2896,17 +2895,19 @@ final class _ReadSiteVisitor extends RecursiveAstVisitor<void> {
   }
 
   @override
-  void visitSimpleFormalParameter(SimpleFormalParameter parameter) {
+  void visitRegularFormalParameter(RegularFormalParameter parameter) {
     final declared = parameter.type;
     final name = parameter.name?.lexeme;
-    if (name != null && declared is NamedType) {
+    if (parameter.functionTypedSuffix == null &&
+        name != null &&
+        declared is NamedType) {
       final typeKey = index.typeKeyIn(file, declared.name.lexeme);
       _locals[name] = (method) => _TypedCall(typeKey, method);
       if (const {'uid', 'userId', 'organizerId', 'session'}.contains(name)) {
         node.readsAccount = true;
       }
     }
-    super.visitSimpleFormalParameter(parameter);
+    super.visitRegularFormalParameter(parameter);
   }
 
   @override
@@ -2949,7 +2950,7 @@ final class _ReadSiteVisitor extends RecursiveAstVisitor<void> {
     super.visitMethodInvocation(invocation);
   }
 
-  void _recordRefCall(String name, NodeList<Expression> arguments) {
+  void _recordRefCall(String name, NodeList<Argument> arguments) {
     switch (name) {
       case 'retain':
         node.lifetimes.add('timed');
@@ -2963,8 +2964,8 @@ final class _ReadSiteVisitor extends RecursiveAstVisitor<void> {
         }
       case 'callableRead':
         final named = {
-          for (final argument in arguments.whereType<NamedExpression>())
-            argument.name.label.name: argument.expression.toSource(),
+          for (final argument in arguments.whereType<NamedArgument>())
+            argument.name.lexeme: argument.argumentExpression.toSource(),
         };
         node.lifetimes.add(named.containsKey('session') ? 'session' : 'timed');
         if (named['policy'] case final policy?) {
@@ -3023,13 +3024,10 @@ final class _ReadSiteVisitor extends RecursiveAstVisitor<void> {
   /// Firestore's document and query `get` take no argument or `GetOptions`;
   /// `MutationTransaction.get`, `Transaction.get` and map-like getters take
   /// one value and are not screen reads.
-  static bool _isFirestoreGet(NodeList<Expression> arguments) {
+  static bool _isFirestoreGet(NodeList<Argument> arguments) {
     if (arguments.isEmpty) return true;
     if (arguments.length != 1) return false;
-    final argument = arguments.single;
-    final source = argument is NamedExpression
-        ? argument.expression.toSource()
-        : argument.toSource();
+    final source = arguments.single.argumentExpression.toSource();
     return RegExp(r'^(?:const\s+)?GetOptions\(').hasMatch(source);
   }
 }
@@ -3174,7 +3172,7 @@ String? _namedArgumentOf(FunctionExpression closure) {
       cursor is BinaryExpression) {
     cursor = cursor!.parent;
   }
-  return cursor is NamedExpression ? cursor.name.label.name : null;
+  return cursor is NamedArgument ? cursor.name.lexeme : null;
 }
 
 /// The class, mixin or extension that declares [node].

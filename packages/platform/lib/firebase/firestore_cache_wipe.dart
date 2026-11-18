@@ -90,7 +90,7 @@ final class FirestoreCacheWipe {
 // initializes Firebase on its own.
 @Riverpod(keepAlive: true)
 FirestoreCacheWipe firestoreCacheWipe(Ref ref) => FirestoreCacheWipe(
-  firestore: () => ref.exists(firebaseFirestoreProvider)
+  firestore: () => ref.read(firebaseFirestoreProvider.exists)
       ? ref.read(firebaseFirestoreProvider)
       : null,
   logger: ref.watch(errorLoggerProvider),

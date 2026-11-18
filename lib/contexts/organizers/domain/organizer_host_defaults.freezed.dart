@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'organizer_host_defaults.dart';
@@ -9,6 +9,7 @@ part of 'organizer_host_defaults.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -31,16 +32,21 @@ $OrganizerHostDefaultsCopyWith<OrganizerHostDefaults> get copyWith => _$Organize
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrganizerHostDefaults&&(identical(other.primaryActivityKind, primaryActivityKind) || other.primaryActivityKind == primaryActivityKind)&&const DeepCollectionEquality().equals(other.supportedActivityKinds, supportedActivityKinds)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventSuccess, eventSuccess) || other.eventSuccess == eventSuccess)&&const DeepCollectionEquality().equals(other.eventSuccessByActivityKind, eventSuccessByActivityKind)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.revision, revision) || other.revision == revision));
+  final _this = this as OrganizerHostDefaults;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrganizerHostDefaults&&(identical(other.primaryActivityKind, _this.primaryActivityKind) || other.primaryActivityKind == _this.primaryActivityKind)&&const DeepCollectionEquality().equals(other.supportedActivityKinds, _this.supportedActivityKinds)&&(identical(other.eventPolicy, _this.eventPolicy) || other.eventPolicy == _this.eventPolicy)&&(identical(other.eventSuccess, _this.eventSuccess) || other.eventSuccess == _this.eventSuccess)&&const DeepCollectionEquality().equals(other.eventSuccessByActivityKind, _this.eventSuccessByActivityKind)&&(identical(other.timezone, _this.timezone) || other.timezone == _this.timezone)&&(identical(other.revision, _this.revision) || other.revision == _this.revision));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,primaryActivityKind,const DeepCollectionEquality().hash(supportedActivityKinds),eventPolicy,eventSuccess,const DeepCollectionEquality().hash(eventSuccessByActivityKind),timezone,revision);
+int get hashCode {
+  final _this = this as OrganizerHostDefaults;
+  return Object.hash(runtimeType,_this.primaryActivityKind,const DeepCollectionEquality().hash(_this.supportedActivityKinds),_this.eventPolicy,_this.eventSuccess,const DeepCollectionEquality().hash(_this.eventSuccessByActivityKind),_this.timezone,_this.revision);
+}
 
 @override
 String toString() {
-  return 'OrganizerHostDefaults(primaryActivityKind: $primaryActivityKind, supportedActivityKinds: $supportedActivityKinds, eventPolicy: $eventPolicy, eventSuccess: $eventSuccess, eventSuccessByActivityKind: $eventSuccessByActivityKind, timezone: $timezone, revision: $revision)';
+  final _this = this as OrganizerHostDefaults;
+  return 'OrganizerHostDefaults(primaryActivityKind: ${_this.primaryActivityKind}, supportedActivityKinds: ${_this.supportedActivityKinds}, eventPolicy: ${_this.eventPolicy}, eventSuccess: ${_this.eventSuccess}, eventSuccessByActivityKind: ${_this.eventSuccessByActivityKind}, timezone: ${_this.timezone}, revision: ${_this.revision})';
 }
 
 
@@ -69,7 +75,7 @@ class _$OrganizerHostDefaultsCopyWithImpl<$Res>
 /// Create a copy of OrganizerHostDefaults
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? primaryActivityKind = null,Object? supportedActivityKinds = null,Object? eventPolicy = null,Object? eventSuccess = null,Object? eventSuccessByActivityKind = null,Object? timezone = freezed,Object? revision = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(OrganizerHostDefaults(
 primaryActivityKind: null == primaryActivityKind ? _self.primaryActivityKind : primaryActivityKind // ignore: cast_nullable_to_non_nullable
 as ActivityKind,supportedActivityKinds: null == supportedActivityKinds ? _self.supportedActivityKinds : supportedActivityKinds // ignore: cast_nullable_to_non_nullable
 as List<ActivityKind>,eventPolicy: null == eventPolicy ? _self.eventPolicy : eventPolicy // ignore: cast_nullable_to_non_nullable
@@ -236,7 +242,7 @@ return $default(_that.primaryActivityKind,_that.supportedActivityKinds,_that.eve
 @JsonSerializable()
 
 class _OrganizerHostDefaults extends OrganizerHostDefaults {
-  const _OrganizerHostDefaults({this.primaryActivityKind = ActivityKind.socialRun, final  List<ActivityKind> supportedActivityKinds = const <ActivityKind>[], this.eventPolicy = const EventPolicyDefaults(), this.eventSuccess = const EventSuccessDefaults(), final  Map<String, EventSuccessDefaults> eventSuccessByActivityKind = const <String, EventSuccessDefaults>{}, @JsonKey(includeToJson: false) this.timezone, @JsonKey(includeToJson: false) this.revision}): _supportedActivityKinds = supportedActivityKinds,_eventSuccessByActivityKind = eventSuccessByActivityKind,super._();
+  const _OrganizerHostDefaults({this.primaryActivityKind = ActivityKind.socialRun,  List<ActivityKind> supportedActivityKinds = const <ActivityKind>[], this.eventPolicy = const EventPolicyDefaults(), this.eventSuccess = const EventSuccessDefaults(),  Map<String, EventSuccessDefaults> eventSuccessByActivityKind = const <String, EventSuccessDefaults>{}, @JsonKey(includeToJson: false) this.timezone, @JsonKey(includeToJson: false) this.revision}): _supportedActivityKinds = supportedActivityKinds,_eventSuccessByActivityKind = eventSuccessByActivityKind,super._();
   factory _OrganizerHostDefaults.fromJson(Map<String, dynamic> json) => _$OrganizerHostDefaultsFromJson(json);
 
 @override@JsonKey() final  ActivityKind primaryActivityKind;
@@ -275,16 +281,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrganizerHostDefaults&&(identical(other.primaryActivityKind, primaryActivityKind) || other.primaryActivityKind == primaryActivityKind)&&const DeepCollectionEquality().equals(other._supportedActivityKinds, _supportedActivityKinds)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventSuccess, eventSuccess) || other.eventSuccess == eventSuccess)&&const DeepCollectionEquality().equals(other._eventSuccessByActivityKind, _eventSuccessByActivityKind)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.revision, revision) || other.revision == revision));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrganizerHostDefaults&&(identical(other.primaryActivityKind, primaryActivityKind) || other.primaryActivityKind == primaryActivityKind)&&const DeepCollectionEquality().equals(other.supportedActivityKinds, _supportedActivityKinds)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventSuccess, eventSuccess) || other.eventSuccess == eventSuccess)&&const DeepCollectionEquality().equals(other.eventSuccessByActivityKind, _eventSuccessByActivityKind)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.revision, revision) || other.revision == revision));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,primaryActivityKind,const DeepCollectionEquality().hash(_supportedActivityKinds),eventPolicy,eventSuccess,const DeepCollectionEquality().hash(_eventSuccessByActivityKind),timezone,revision);
+int get hashCode {
+    return Object.hash(runtimeType,primaryActivityKind,const DeepCollectionEquality().hash(_supportedActivityKinds),eventPolicy,eventSuccess,const DeepCollectionEquality().hash(_eventSuccessByActivityKind),timezone,revision);
+}
 
 @override
 String toString() {
-  return 'OrganizerHostDefaults(primaryActivityKind: $primaryActivityKind, supportedActivityKinds: $supportedActivityKinds, eventPolicy: $eventPolicy, eventSuccess: $eventSuccess, eventSuccessByActivityKind: $eventSuccessByActivityKind, timezone: $timezone, revision: $revision)';
+    return 'OrganizerHostDefaults(primaryActivityKind: $primaryActivityKind, supportedActivityKinds: $supportedActivityKinds, eventPolicy: $eventPolicy, eventSuccess: $eventSuccess, eventSuccessByActivityKind: $eventSuccessByActivityKind, timezone: $timezone, revision: $revision)';
 }
 
 

@@ -40,25 +40,26 @@ class _NewRootSites extends RecursiveAstVisitor<void> {
     // Every number counts here, however small: EdgeInsets.zero and
     // SizedBox.shrink say nothing instead.
     for (final argument in node.argumentList.arguments) {
-      final isNamed = argument is NamedExpression;
-      if (isNamed &&
-          const {'key', 'child'}.contains(argument.name.label.name)) {
+      final isNamed = argument is NamedArgument;
+      if (isNamed && const {'key', 'child'}.contains(argument.name.lexeme)) {
         continue;
       }
-      _collectNumbers(isNamed ? argument.expression : argument, keepZero: true);
+      _collectNumbers(argument.argumentExpression, keepZero: true);
     }
   }
 
   @override
-  void visitNamedExpression(NamedExpression node) {
-    super.visitNamedExpression(node);
-    if (!_spacingNamedArguments.contains(node.name.label.name)) return;
+  void visitNamedArgument(NamedArgument node) {
+    super.visitNamedArgument(node);
+    if (!_spacingNamedArguments.contains(node.name.lexeme)) return;
     final owner = node.parent?.parent;
     final ownsItsNumbers =
         owner is InstanceCreationExpression &&
         (_constructorTypeName(owner) == 'SizedBox' ||
             _isNewRootInsetConstructor(_constructorTypeName(owner)));
-    if (!ownsItsNumbers) _collectNumbers(node.expression, keepZero: false);
+    if (!ownsItsNumbers) {
+      _collectNumbers(node.argumentExpression, keepZero: false);
+    }
   }
 
   void _collectNumbers(Expression expression, {required bool keepZero}) {

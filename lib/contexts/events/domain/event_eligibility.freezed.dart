@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'event_eligibility.dart';
@@ -9,6 +9,7 @@ part of 'event_eligibility.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -20,7 +21,7 @@ mixin _$EventEligibility {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventEligibility);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is EventEligibility);
 }
 
 
@@ -29,7 +30,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'EventEligibility()';
+    return 'EventEligibility()';
 }
 
 
@@ -239,7 +240,7 @@ class ProfileDetailsRequired implements EventEligibility {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileDetailsRequired);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileDetailsRequired);
 }
 
 
@@ -248,7 +249,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'EventEligibility.profileDetailsRequired()';
+    return 'EventEligibility.profileDetailsRequired()';
 }
 
 
@@ -271,7 +272,7 @@ class Eligible implements EventEligibility {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Eligible);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is Eligible);
 }
 
 
@@ -280,7 +281,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'EventEligibility.eligible()';
+    return 'EventEligibility.eligible()';
 }
 
 
@@ -303,7 +304,7 @@ class AlreadySignedUp implements EventEligibility {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AlreadySignedUp);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is AlreadySignedUp);
 }
 
 
@@ -312,7 +313,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'EventEligibility.alreadySignedUp()';
+    return 'EventEligibility.alreadySignedUp()';
 }
 
 
@@ -335,7 +336,7 @@ class OnWaitlist implements EventEligibility {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnWaitlist);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is OnWaitlist);
 }
 
 
@@ -344,7 +345,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'EventEligibility.onWaitlist()';
+    return 'EventEligibility.onWaitlist()';
 }
 
 
@@ -367,7 +368,7 @@ class Attended implements EventEligibility {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Attended);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is Attended);
 }
 
 
@@ -376,7 +377,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'EventEligibility.attended()';
+    return 'EventEligibility.attended()';
 }
 
 
@@ -399,7 +400,7 @@ class EventPast implements EventEligibility {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventPast);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is EventPast);
 }
 
 
@@ -408,7 +409,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'EventEligibility.eventPast()';
+    return 'EventEligibility.eventPast()';
 }
 
 
@@ -431,7 +432,7 @@ class EventFull implements EventEligibility {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventFull);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is EventFull);
 }
 
 
@@ -440,7 +441,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'EventEligibility.eventFull()';
+    return 'EventEligibility.eventFull()';
 }
 
 
@@ -463,7 +464,7 @@ class EventInviteRequired implements EventEligibility {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventInviteRequired);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is EventInviteRequired);
 }
 
 
@@ -472,7 +473,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'EventEligibility.inviteRequired()';
+    return 'EventEligibility.inviteRequired()';
 }
 
 
@@ -495,7 +496,7 @@ class GenderCapacityReached implements EventEligibility {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GenderCapacityReached);
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is GenderCapacityReached);
 }
 
 
@@ -504,7 +505,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'EventEligibility.genderCapacityReached()';
+    return 'EventEligibility.genderCapacityReached()';
 }
 
 
@@ -532,16 +533,18 @@ $AgeTooYoungCopyWith<AgeTooYoung> get copyWith => _$AgeTooYoungCopyWithImpl<AgeT
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AgeTooYoung&&(identical(other.minAge, minAge) || other.minAge == minAge));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is AgeTooYoung&&(identical(other.minAge, minAge) || other.minAge == minAge));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,minAge);
+int get hashCode {
+    return Object.hash(runtimeType,minAge);
+}
 
 @override
 String toString() {
-  return 'EventEligibility.ageTooYoung(minAge: $minAge)';
+    return 'EventEligibility.ageTooYoung(minAge: $minAge)';
 }
 
 
@@ -598,16 +601,18 @@ $AgeTooOldCopyWith<AgeTooOld> get copyWith => _$AgeTooOldCopyWithImpl<AgeTooOld>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AgeTooOld&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is AgeTooOld&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,maxAge);
+int get hashCode {
+    return Object.hash(runtimeType,maxAge);
+}
 
 @override
 String toString() {
-  return 'EventEligibility.ageTooOld(maxAge: $maxAge)';
+    return 'EventEligibility.ageTooOld(maxAge: $maxAge)';
 }
 
 

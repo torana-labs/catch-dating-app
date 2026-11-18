@@ -54,7 +54,7 @@ class EventAssistanceLiveSettingsSection extends ConsumerWidget {
         groupId: groupId,
       );
       final query = eventAssistanceLateJoinSettingProvider(scope);
-      if (ref.exists(query)) ref.read(query.notifier).reload();
+      if (ref.read(query.exists)) ref.read(query.notifier).reload();
       showCatchBottomSheet<void>(
         context: context,
         builder: (_) => EventAssistanceLateJoinSheet(
@@ -76,7 +76,7 @@ class EventAssistanceLiveSettingsSection extends ConsumerWidget {
           body: l10n.eventAssistanceRuntimeEntryBody,
           onTap: () {
             final query = eventAssistanceRuntimeProvider(runtimeScope);
-            if (ref.exists(query)) ref.read(query.notifier).reload();
+            if (ref.read(query.exists)) ref.read(query.notifier).reload();
             showCatchBottomSheet<void>(
               context: context,
               builder: (_) => EventAssistanceRuntimeSheet(scope: runtimeScope),

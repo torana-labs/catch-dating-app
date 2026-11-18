@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'private_event_details_controller.dart';
@@ -9,6 +9,7 @@ part of 'private_event_details_controller.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $PrivateEventDetailsStateCopyWith<PrivateEventDetailsState> get copyWith => _$Pr
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PrivateEventDetailsState&&(identical(other.event, event) || other.event == event)&&(identical(other.defaults, defaults) || other.defaults == defaults)&&(identical(other.pending, pending) || other.pending == pending)&&(identical(other.reconciliationProgress, reconciliationProgress) || other.reconciliationProgress == reconciliationProgress)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.saving, saving) || other.saving == saving)&&(identical(other.uploading, uploading) || other.uploading == uploading)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable)&&(identical(other.discardUnavailable, discardUnavailable) || other.discardUnavailable == discardUnavailable)&&(identical(other.photoUploadAvailable, photoUploadAvailable) || other.photoUploadAvailable == photoUploadAvailable)&&(identical(other.reconciliationAvailable, reconciliationAvailable) || other.reconciliationAvailable == reconciliationAvailable));
+  final _this = this as PrivateEventDetailsState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PrivateEventDetailsState&&(identical(other.event, _this.event) || other.event == _this.event)&&(identical(other.defaults, _this.defaults) || other.defaults == _this.defaults)&&(identical(other.pending, _this.pending) || other.pending == _this.pending)&&(identical(other.reconciliationProgress, _this.reconciliationProgress) || other.reconciliationProgress == _this.reconciliationProgress)&&const DeepCollectionEquality().equals(other.error, _this.error)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.saving, _this.saving) || other.saving == _this.saving)&&(identical(other.uploading, _this.uploading) || other.uploading == _this.uploading)&&(identical(other.actorAvailable, _this.actorAvailable) || other.actorAvailable == _this.actorAvailable)&&(identical(other.discardUnavailable, _this.discardUnavailable) || other.discardUnavailable == _this.discardUnavailable)&&(identical(other.photoUploadAvailable, _this.photoUploadAvailable) || other.photoUploadAvailable == _this.photoUploadAvailable)&&(identical(other.reconciliationAvailable, _this.reconciliationAvailable) || other.reconciliationAvailable == _this.reconciliationAvailable));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,event,defaults,pending,reconciliationProgress,const DeepCollectionEquality().hash(error),loading,saving,uploading,actorAvailable,discardUnavailable,photoUploadAvailable,reconciliationAvailable);
+int get hashCode {
+  final _this = this as PrivateEventDetailsState;
+  return Object.hash(runtimeType,_this.event,_this.defaults,_this.pending,_this.reconciliationProgress,const DeepCollectionEquality().hash(_this.error),_this.loading,_this.saving,_this.uploading,_this.actorAvailable,_this.discardUnavailable,_this.photoUploadAvailable,_this.reconciliationAvailable);
+}
 
 @override
 String toString() {
-  return 'PrivateEventDetailsState(event: $event, defaults: $defaults, pending: $pending, reconciliationProgress: $reconciliationProgress, error: $error, loading: $loading, saving: $saving, uploading: $uploading, actorAvailable: $actorAvailable, discardUnavailable: $discardUnavailable, photoUploadAvailable: $photoUploadAvailable, reconciliationAvailable: $reconciliationAvailable)';
+  final _this = this as PrivateEventDetailsState;
+  return 'PrivateEventDetailsState(event: ${_this.event}, defaults: ${_this.defaults}, pending: ${_this.pending}, reconciliationProgress: ${_this.reconciliationProgress}, error: ${_this.error}, loading: ${_this.loading}, saving: ${_this.saving}, uploading: ${_this.uploading}, actorAvailable: ${_this.actorAvailable}, discardUnavailable: ${_this.discardUnavailable}, photoUploadAvailable: ${_this.photoUploadAvailable}, reconciliationAvailable: ${_this.reconciliationAvailable})';
 }
 
 
@@ -63,7 +69,7 @@ class _$PrivateEventDetailsStateCopyWithImpl<$Res>
 /// Create a copy of PrivateEventDetailsState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? event = freezed,Object? defaults = freezed,Object? pending = freezed,Object? reconciliationProgress = freezed,Object? error = freezed,Object? loading = null,Object? saving = null,Object? uploading = null,Object? actorAvailable = null,Object? discardUnavailable = null,Object? photoUploadAvailable = null,Object? reconciliationAvailable = null,}) {
-  return _then(_self.copyWith(
+  return _then(PrivateEventDetailsState(
 event: freezed == event ? _self.event : event // ignore: cast_nullable_to_non_nullable
 as PrivateEventBasicSummary?,defaults: freezed == defaults ? _self.defaults : defaults // ignore: cast_nullable_to_non_nullable
 as ManagerEventSetupDefaults?,pending: freezed == pending ? _self.pending : pending // ignore: cast_nullable_to_non_nullable
@@ -242,16 +248,18 @@ _$PrivateEventDetailsStateCopyWith<_PrivateEventDetailsState> get copyWith => __
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PrivateEventDetailsState&&(identical(other.event, event) || other.event == event)&&(identical(other.defaults, defaults) || other.defaults == defaults)&&(identical(other.pending, pending) || other.pending == pending)&&(identical(other.reconciliationProgress, reconciliationProgress) || other.reconciliationProgress == reconciliationProgress)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.saving, saving) || other.saving == saving)&&(identical(other.uploading, uploading) || other.uploading == uploading)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable)&&(identical(other.discardUnavailable, discardUnavailable) || other.discardUnavailable == discardUnavailable)&&(identical(other.photoUploadAvailable, photoUploadAvailable) || other.photoUploadAvailable == photoUploadAvailable)&&(identical(other.reconciliationAvailable, reconciliationAvailable) || other.reconciliationAvailable == reconciliationAvailable));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PrivateEventDetailsState&&(identical(other.event, event) || other.event == event)&&(identical(other.defaults, defaults) || other.defaults == defaults)&&(identical(other.pending, pending) || other.pending == pending)&&(identical(other.reconciliationProgress, reconciliationProgress) || other.reconciliationProgress == reconciliationProgress)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.saving, saving) || other.saving == saving)&&(identical(other.uploading, uploading) || other.uploading == uploading)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable)&&(identical(other.discardUnavailable, discardUnavailable) || other.discardUnavailable == discardUnavailable)&&(identical(other.photoUploadAvailable, photoUploadAvailable) || other.photoUploadAvailable == photoUploadAvailable)&&(identical(other.reconciliationAvailable, reconciliationAvailable) || other.reconciliationAvailable == reconciliationAvailable));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,event,defaults,pending,reconciliationProgress,const DeepCollectionEquality().hash(error),loading,saving,uploading,actorAvailable,discardUnavailable,photoUploadAvailable,reconciliationAvailable);
+int get hashCode {
+    return Object.hash(runtimeType,event,defaults,pending,reconciliationProgress,const DeepCollectionEquality().hash(error),loading,saving,uploading,actorAvailable,discardUnavailable,photoUploadAvailable,reconciliationAvailable);
+}
 
 @override
 String toString() {
-  return 'PrivateEventDetailsState(event: $event, defaults: $defaults, pending: $pending, reconciliationProgress: $reconciliationProgress, error: $error, loading: $loading, saving: $saving, uploading: $uploading, actorAvailable: $actorAvailable, discardUnavailable: $discardUnavailable, photoUploadAvailable: $photoUploadAvailable, reconciliationAvailable: $reconciliationAvailable)';
+    return 'PrivateEventDetailsState(event: $event, defaults: $defaults, pending: $pending, reconciliationProgress: $reconciliationProgress, error: $error, loading: $loading, saving: $saving, uploading: $uploading, actorAvailable: $actorAvailable, discardUnavailable: $discardUnavailable, photoUploadAvailable: $photoUploadAvailable, reconciliationAvailable: $reconciliationAvailable)';
 }
 
 

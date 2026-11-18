@@ -52,7 +52,7 @@ class AuthSessionController extends _$AuthSessionController {
     _resetFlowState();
     // Unregister while Firestore still permits this account's installation delete.
     // Do not initialize Firebase solely to sign out on an unsupported platform.
-    if (ref.exists(fcmServiceProvider)) {
+    if (ref.read(fcmServiceProvider.exists)) {
       await ref.read(fcmServiceProvider).unregisterCurrentInstallation();
     }
     await ref.read(authRepositoryProvider).signOut();

@@ -493,8 +493,8 @@ class _MigrationCollector extends RecursiveAstVisitor<void> {
     while (true) {
       final parent = current.parent;
       if (parent == null) return null;
-      if (parent is NamedExpression) {
-        final name = parent.name.label.name;
+      if (parent is NamedArgument) {
+        final name = parent.name.lexeme;
         if (_copyArgumentNames.contains(name)) return name;
       }
       if (parent is ArgumentList) {
@@ -542,7 +542,7 @@ class _MigrationCollector extends RecursiveAstVisitor<void> {
     AstNode? current = node;
     while (current != null) {
       if (current is ConstantPattern) return true;
-      if (current is NamedExpression &&
+      if (current is NamedArgument &&
           const {
             'analyticsSource',
             'assetName',
@@ -554,7 +554,7 @@ class _MigrationCollector extends RecursiveAstVisitor<void> {
             'pathParameters',
             'queryParameters',
             'routeName',
-          }.contains(current.name.label.name)) {
+          }.contains(current.name.lexeme)) {
         return true;
       }
       if (current is ArgumentList) {

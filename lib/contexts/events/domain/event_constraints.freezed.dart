@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'event_constraints.dart';
@@ -9,6 +9,7 @@ part of 'event_constraints.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $EventConstraintsCopyWith<EventConstraints> get copyWith => _$EventConstraintsCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventConstraints&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen));
+  final _this = this as EventConstraints;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventConstraints&&(identical(other.minAge, _this.minAge) || other.minAge == _this.minAge)&&(identical(other.maxAge, _this.maxAge) || other.maxAge == _this.maxAge)&&(identical(other.maxMen, _this.maxMen) || other.maxMen == _this.maxMen)&&(identical(other.maxWomen, _this.maxWomen) || other.maxWomen == _this.maxWomen));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,minAge,maxAge,maxMen,maxWomen);
+int get hashCode {
+  final _this = this as EventConstraints;
+  return Object.hash(runtimeType,_this.minAge,_this.maxAge,_this.maxMen,_this.maxWomen);
+}
 
 @override
 String toString() {
-  return 'EventConstraints(minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen)';
+  final _this = this as EventConstraints;
+  return 'EventConstraints(minAge: ${_this.minAge}, maxAge: ${_this.maxAge}, maxMen: ${_this.maxMen}, maxWomen: ${_this.maxWomen})';
 }
 
 
@@ -66,7 +72,7 @@ class _$EventConstraintsCopyWithImpl<$Res>
 /// Create a copy of EventConstraints
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? minAge = null,Object? maxAge = null,Object? maxMen = freezed,Object? maxWomen = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(EventConstraints(
 minAge: null == minAge ? _self.minAge : minAge // ignore: cast_nullable_to_non_nullable
 as int,maxAge: null == maxAge ? _self.maxAge : maxAge // ignore: cast_nullable_to_non_nullable
 as int,maxMen: freezed == maxMen ? _self.maxMen : maxMen // ignore: cast_nullable_to_non_nullable
@@ -233,16 +239,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventConstraints&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventConstraints&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,minAge,maxAge,maxMen,maxWomen);
+int get hashCode {
+    return Object.hash(runtimeType,minAge,maxAge,maxMen,maxWomen);
+}
 
 @override
 String toString() {
-  return 'EventConstraints(minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen)';
+    return 'EventConstraints(minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen)';
 }
 
 

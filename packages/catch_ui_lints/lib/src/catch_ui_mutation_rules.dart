@@ -122,9 +122,8 @@ class _MutationErrorSurfaceVisitor extends RecursiveAstVisitor<void> {
     if (node.target?.toSource() == 'CatchLocalizedErrorBanner' &&
         node.methodName.name == 'mutation') {
       for (final argument in node.argumentList.arguments) {
-        if (argument is NamedExpression &&
-            argument.name.label.name == 'mutation') {
-          _addMutationExpression(argument.expression);
+        if (argument is NamedArgument && argument.name.lexeme == 'mutation') {
+          _addMutationExpression(argument.argumentExpression);
         }
       }
     }
@@ -132,16 +131,12 @@ class _MutationErrorSurfaceVisitor extends RecursiveAstVisitor<void> {
     if (node.methodName.name == 'mutationErrorMessage' &&
         node.argumentList.arguments.isNotEmpty) {
       final argument = node.argumentList.arguments.first;
-      final expression = argument is NamedExpression
-          ? argument.expression
-          : argument;
-      _addMutationExpression(expression);
+      _addMutationExpression(argument.argumentExpression);
     }
 
     if (node.methodName.name == 'listenToCatchMutationErrors') {
       for (final argument in node.argumentList.arguments) {
-        if (argument is NamedExpression &&
-            argument.name.label.name == 'mutations') {
+        if (argument is NamedArgument && argument.name.lexeme == 'mutations') {
           _addMutationExpressionsFromArgument(argument);
         }
       }
@@ -160,10 +155,8 @@ class _MutationErrorSurfaceVisitor extends RecursiveAstVisitor<void> {
     super.visitMethodInvocation(node);
   }
 
-  void _addMutationExpressionsFromArgument(Expression expression) {
-    final candidate = expression is NamedExpression
-        ? expression.expression
-        : expression;
+  void _addMutationExpressionsFromArgument(Argument argument) {
+    final candidate = argument.argumentExpression;
     if (candidate is ListLiteral) {
       _addMutationExpressionsFromList(candidate);
     } else {
@@ -287,8 +280,8 @@ Expression? _namedArgumentExpression(
   String name,
 ) {
   for (final argument in node.argumentList.arguments) {
-    if (argument is NamedExpression && argument.name.label.name == name) {
-      return argument.expression;
+    if (argument is NamedArgument && argument.name.lexeme == name) {
+      return argument.argumentExpression;
     }
   }
   return null;
@@ -301,7 +294,7 @@ String? _watchedMutationExpression(Expression expression) {
           expression.methodName.name == 'read') &&
       expression.argumentList.arguments.length == 1) {
     return _canonicalMutationExpression(
-      expression.argumentList.arguments.single,
+      expression.argumentList.arguments.single.argumentExpression,
     );
   }
   return null;
