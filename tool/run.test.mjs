@@ -566,6 +566,84 @@ test("manifest validation rejects unregistered scripts and duplicate ids", (cont
   assert.match(result.stderr, /Unmanaged tool script: tool\/unregistered\.mjs/u);
 });
 
+test("a retired tool stays listed with its reason, never runs, and needs no file", (context) => {
+  const fixture = createRunnerFixture(context);
+  mutateFixtureManifest(fixture, (manifest) => {
+    manifest.tools.push({
+      id: "fixture:old-codemod",
+      category: "fixture",
+      path: "tool/old_codemod.mjs",
+      status: "retired",
+      role: "generator",
+      description: "A one-shot rename.",
+      retiredOn: "2026-11-18",
+      reason: "The rename landed; fixture:check now fails on any leftover name.",
+      lastCommit: "0123456789abcdef0123456789abcdef01234567",
+    });
+  });
+  assert.equal(run(["check", "--manifest-only"], {cwd: fixture}).status, 0);
+  const active = run(["list", "--json"], {cwd: fixture});
+  assert.ok(!JSON.parse(active.stdout).some((tool) => tool.id === "fixture:old-codemod"));
+  const closed = run(["list", "--closed"], {cwd: fixture});
+  assert.equal(closed.status, 0, closed.stderr);
+  assert.match(closed.stdout, /fixture:old-codemod\s+retired 2026-11-18 \(last in 0123456789ab\)/u);
+  assert.match(closed.stdout, /fixture:check now fails on any leftover name/u);
+  const direct = run(["check", "fixture:old-codemod"], {cwd: fixture});
+  assert.equal(direct.status, 64);
+  assert.match(direct.stderr, /Unknown or inactive tool ids: fixture:old-codemod/u);
+});
+
+test("the sparse, blobless Tools preflight checks runbook paths but leaves anchors to the full checkout", (context) => {
+  const fixture = createRunnerFixture(context);
+  fs.mkdirSync(path.join(fixture, "docs"), {recursive: true});
+  fs.writeFileSync(path.join(fixture, "docs/runbook.md"), "# Runbook\n\n## Deploy Backend\n");
+  mutateFixtureManifest(fixture, (manifest) => {
+    Object.assign(fixtureCheck(manifest), {role: "operator", runbook: "docs/runbook.md#not-a-heading"});
+  });
+  runGit(fixture, ["add", "."]);
+  runGit(fixture, ["commit", "-m", "operator with a runbook"]);
+  // The full checkout reads the document and rejects the missing heading.
+  const full = run(["check", "--manifest-only"], {cwd: fixture});
+  assert.equal(full.status, 1);
+  assert.match(full.stderr, /runbook docs\/runbook\.md has no heading #not-a-heading/u);
+
+  // Like tools-ci.yml's preflight: blobless, sparse to tool/, and no way to
+  // fetch a missing blob.
+  const clone = fs.mkdtempSync(path.join(os.tmpdir(), "catch-runner-sparse-"));
+  context.after(() => fs.rmSync(clone, {recursive: true, force: true}));
+  const uploadPack = "git -c uploadpack.allowFilter=true upload-pack";
+  runGit(os.tmpdir(), ["clone", "-q", "--filter=blob:none", "--no-checkout", `--upload-pack=${uploadPack}`,
+    `file://${fixture}`, clone]);
+  runGit(clone, ["sparse-checkout", "set", "--no-cone", "/tool/"]);
+  runGit(clone, ["-c", `remote.origin.uploadpack=${uploadPack}`, "checkout", "-q", "HEAD"]);
+  runGit(clone, ["remote", "set-url", "origin", "file:///nonexistent-promisor"]);
+  assert.equal(fs.existsSync(path.join(clone, "docs/runbook.md")), false);
+
+  // affected-tools, which the preflight runs, validates through the same
+  // validateManifest as this command.
+  const sparse = run(["check", "--manifest-only"], {cwd: clone});
+  assert.equal(sparse.status, 0, sparse.stderr);
+  // A runbook path missing from the tree still fails there.
+  mutateFixtureManifest(clone, (manifest) => {
+    fixtureCheck(manifest).runbook = "docs/missing.md";
+  });
+  const missing = run(["check", "--manifest-only"], {cwd: clone});
+  assert.equal(missing.status, 1);
+  assert.match(missing.stderr, /runbook docs\/missing\.md does not exist/u);
+});
+
+test("manifest validation rejects a retired tool without its record", (context) => {
+  const fixture = createRunnerFixture(context);
+  mutateFixtureManifest(fixture, (manifest) => {
+    Object.assign(fixtureCheck(manifest), {status: "retired"});
+  });
+  const result = run(["check", "--manifest-only"], {cwd: fixture});
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /fixture:check: a retired tool needs retiredOn as YYYY-MM-DD/u);
+  assert.match(result.stderr, /tool\/check\.mjs still exists; delete it or mark it completed/u);
+  assert.match(result.stderr, /a retired tool never runs, so drop checks/u);
+});
+
 function createRunnerFixture(context) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-runner-"));
   context.after(() => fs.rmSync(root, {recursive: true, force: true}));
@@ -664,7 +742,7 @@ function fixtureManifest() {
         id: "fixture:inactive",
         category: "fixture",
         path: "tool/check.mjs",
-        status: "archived",
+        status: "internal",
         checks: ["node tool/check.mjs"],
       },
     ],
