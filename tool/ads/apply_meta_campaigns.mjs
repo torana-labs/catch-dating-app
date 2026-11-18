@@ -5,6 +5,7 @@ import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {brand} from "@catch/brand";
 import {parseCommonArgs} from "../lib/cli_args.mjs";
+import {createFunctionsRequire} from "../lib/repo_paths.mjs";
 
 // Plans, and with --apply creates, the Meta lead campaigns in
 // meta_campaigns.json: the instant lead form, then campaign, ad set, images,
@@ -195,7 +196,8 @@ export function adParams(campaign, ad, adSetId, creativeId) {
 
 /** Crops a store board to a 4:5 feed image from the top (headline and phone). */
 export async function renderFeedImage(relativePath) {
-  const {default: sharp} = await import("sharp");
+  // sharp is declared by Functions, not the root package; load it from there.
+  const sharp = createFunctionsRequire()("sharp");
   return sharp(path.join(ROOT, relativePath)).resize({width: FEED.width})
     .extract({left: 0, top: 0, ...FEED}).jpeg({quality: 90}).toBuffer();
 }
