@@ -1022,6 +1022,8 @@ export {requestInstantDraft} from "./instantDrafts/request";
 export {getInstantDraft} from "./instantDrafts/status";
 export {expireInstantDrafts} from "./instantDrafts/expiry";
 export {onInstantDraftOrganizerPublished} from "./instantDrafts/publishOnClaim";
+export {ensureTryItWorkspace} from "./commands/ensureTryItWorkspace";
+export {expireTryItWorkspaces} from "./commands/workspaceExpiry";
 
 export {
   getSalesDemoSetup, prepareSalesDemoFormDraft, getSalesDemoPreview,
