@@ -17,7 +17,7 @@
     "result": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["eventId", "fileFormat", "converter", "headers", "columnShapes", "mapping", "needsMapping", "sessionId", "revision", "reviewHash", "eligibleForApply", "counts", "rows", "skipped", "truncatedCount", "import"],
+      "required": ["eventId", "fileFormat", "converter", "headers", "columnShapes", "mapping", "needsMapping", "sessionId", "revision", "reviewHash", "eligibleForApply", "counts", "rows", "skipped", "suggestions", "truncatedCount", "import"],
       "properties": {
         "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         "fileFormat": {"type": "string", "enum": ["csv", "xlsx", "vcf"]},
@@ -96,6 +96,25 @@
             "properties": {
               "sourceRowNumber": {"type": "integer", "minimum": 2},
               "reason": {"type": "string", "enum": ["missing-name", "excluded-status"]}
+            }
+          }
+        },
+        "suggestions": {
+          "type": "array",
+          "maxItems": 250,
+          "description": "Merges and tags worth making, each with its reason. Nothing is merged or tagged by this command: merges go through the merge review in Customers after import.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["rowId", "kind", "reason", "contactId", "otherRowId", "tag", "label"],
+            "properties": {
+              "rowId": {"type": "string", "minLength": 1, "maxLength": 120},
+              "kind": {"type": "string", "enum": ["merge", "tag"]},
+              "reason": {"type": "string", "enum": ["samePhone", "sameEmail", "sameEmailInFile", "ticketType", "seenBefore"]},
+              "contactId": {"type": ["string", "null"], "maxLength": 128},
+              "otherRowId": {"type": ["string", "null"], "maxLength": 120},
+              "tag": {"type": ["string", "null"], "maxLength": 40},
+              "label": {"type": "string", "minLength": 1, "maxLength": 300}
             }
           }
         },

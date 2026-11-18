@@ -28,6 +28,10 @@ import {readGuestFile, type GuestFileRead} from "../guestImport/file";
 import {countUnrecognisedHeaderShape} from "../guestImport/headerShapes";
 import {guestIntakeInput} from "../guestImport/intakeRows";
 import {readGuestTable} from "../guestImport/registry";
+import {
+  suggestGuestMergesAndTags,
+  type GuestSuggestion,
+} from "../guestImport/suggestions";
 import {uniqueHeaders} from "../guestImport/table";
 import {
   assertConfirmMatches,
@@ -180,11 +184,13 @@ export async function importGuestListHandler(
   }
   const previewHash = commandPreviewHash(COMMAND_ID, caller.uid,
     requestInput, {reviewHash: preview.reviewHash});
+  const suggestions = review.draft.state === "review" ?
+    await suggestGuestMergesAndTags(db, organizerId, preview) : [];
 
   if (data.mode === "preview") {
     return describe({status: review.draft.state === "applied" ? "applied" :
       "previewed", previewHash, receiptId: null, file, read, shapes,
-    review, preview, eventId: input.eventId, imported: null});
+    review, preview, eventId: input.eventId, imported: null, suggestions});
   }
 
   const requestHash = commandRequestHash(COMMAND_ID, caller.uid,
@@ -208,7 +214,7 @@ export async function importGuestListHandler(
     data.idempotencyKey);
   const applied = describe({status: "applied", previewHash, receiptId, file,
     read, shapes, review, preview, eventId: input.eventId, imported,
-    receiptImportId: review.receipt?.importId ?? null});
+    receiptImportId: review.receipt?.importId ?? null, suggestions});
   return db.runTransaction(async (tx) => {
     const now = deps.now();
     const again = await replayCommand<Response>(tx, db, {
@@ -266,7 +272,8 @@ function needsInput(uid: string, requestInput: unknown, file: GuestFileRead,
       revision: null, reviewHash: null, eligibleForApply: false,
       counts: {add: 0, update: 0, unchanged: 0, excluded: 0, needsReview: 0,
         identityConflict: 0, skipped: 0},
-      rows: [], skipped: [], truncatedCount: 0, import: null},
+      rows: [], skipped: [], suggestions: [], truncatedCount: 0,
+      import: null},
   };
 }
 
@@ -282,6 +289,7 @@ function describe(params: {
   eventId: string;
   imported: EventAttendeeImportResult | null;
   receiptImportId?: string | null;
+  suggestions: GuestSuggestion[];
 }): Response {
   const {status, preview, read, review, imported} = params;
   const counts = {...preview.counts, skipped: read.skipped.length};
@@ -297,6 +305,16 @@ function describe(params: {
   if (counts.needsReview + counts.identityConflict > 0) {
     lines.push(`${guests(counts.needsReview + counts.identityConflict)} ` +
       "need a look first: fix them in the file, or leave them out.");
+  }
+  const known = new Set(params.suggestions.filter((suggestion) =>
+    suggestion.kind === "merge" && suggestion.contactId)
+    .map((suggestion) => suggestion.rowId)).size;
+  if (known > 0) {
+    lines.push(known === 1 ?
+      "1 guest looks like someone already in your contacts (same phone " +
+        "or email); you can merge them in Customers." :
+      `${known} guests look like people already in your contacts (same ` +
+        "phone or email); you can merge them in Customers.");
   }
   if (counts.unchanged > 0) {
     lines.push(`${guests(counts.unchanged)} already on the list ` +
@@ -343,6 +361,7 @@ function describe(params: {
         changedFields: [...row.changedFields]})),
       skipped: read.skipped.slice(0, 250).map((row) => ({
         sourceRowNumber: row.sourceRowNumber, reason: row.reason})),
+      suggestions: params.suggestions,
       truncatedCount: read.truncatedCount, import: importSummary},
   };
 }

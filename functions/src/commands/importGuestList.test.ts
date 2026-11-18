@@ -166,3 +166,28 @@ test("an unreadable or unsupported file gets a typed refusal", async () => {
   await assert.rejects(importGuestListHandler(call(envelope("preview", "Name\n\"Asha")), deps),
     (error: {details?: {reason?: string}}) => error.details?.reason === "roster_malformed_csv");
 });
+
+test("preview suggests merges and tags, each with its reason", async () => {
+  const {db, deps} = harness();
+  db.write("organizerContacts/oc-1", {organizerId: ORGANIZER, displayName: "Asha S.",
+    phoneE164: "+919876543210", email: null, deletedAt: null, hiddenAt: null,
+    mergedIntoContactId: null});
+  db.write("organizerContacts/oc-other", {organizerId: "organizer-2", displayName: "Someone Else",
+    phoneE164: "+919876543211", email: null, deletedAt: null, hiddenAt: null,
+    mergedIntoContactId: null});
+  const csv = "Name,Phone,Email,Ticket Type,Attendee ID\n" +
+    "Asha Sample,98765 43210,buyer@example.com,VIP,t-1\n" +
+    "Ravi Sample,98765 43211,buyer@example.com,General,t-2\n";
+  const preview = await importGuestListHandler(call(envelope("preview", csv)), deps);
+  valid(validate.response, preview, "suggestions");
+  const reasons = preview.result.suggestions.map((suggestion) =>
+    [suggestion.rowId, suggestion.kind, suggestion.reason, suggestion.contactId ?? suggestion.otherRowId ?? suggestion.tag]);
+  assert.deepEqual(reasons, [
+    ["2", "merge", "samePhone", "oc-1"],
+    ["2", "tag", "seenBefore", "oc-1"],
+    ["2", "tag", "ticketType", "VIP"],
+    ["3", "merge", "sameEmailInFile", "2"],
+    ["3", "tag", "ticketType", "General"],
+  ]);
+  assert.ok(preview.summary.lines.some((line) => line.startsWith("1 guest looks like someone already in your contacts")));
+});
