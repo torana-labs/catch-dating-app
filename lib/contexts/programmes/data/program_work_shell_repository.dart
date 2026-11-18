@@ -10,6 +10,7 @@ import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/streams/combine_latest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -132,9 +133,11 @@ class ProgramWorkShellRepository {
           .where('kind', isEqualTo: kind);
       if (activeOnly) query = query.where('active', isEqualTo: true);
       return withBackendErrorStream(
-        () => query.snapshots().map(
-          (snapshot) => [for (final doc in snapshot.docs) doc.data()],
-        ),
+        // A programme's pickup points, hotels or functions are a small set.
+        () => query
+            .limit(ReadLimitPolicy.boundedWorkingSet)
+            .snapshots()
+            .map((snapshot) => [for (final doc in snapshot.docs) doc.data()]),
         context: _context,
       );
     }
