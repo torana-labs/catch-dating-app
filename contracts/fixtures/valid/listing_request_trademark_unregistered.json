@@ -1,0 +1,32 @@
+{
+  "requestType": "trademark",
+  "clientRequestId": "0f3c2a9e5b1d4c7e8a6b2d9f1e3c5a70",
+  "target": {
+    "kind": "url",
+    "url": "https://catch.example/organizers/lantern-lane-social/"
+  },
+  "requester": {
+    "name": "Asha Verma",
+    "role": "rightsHolder",
+    "email": "asha@lanternlane.example"
+  },
+  "verification": {
+    "basis": "unregistered",
+    "firstUseYear": 2019,
+    "evidenceUrl": "https://lanternlane.example/history",
+    "preferredRemedy": "relabel"
+  },
+  "declarations": {
+    "accurate": true,
+    "authorised": true,
+    "contactConsent": true,
+    "goodFaith": true
+  },
+  "consent": {
+    "purpose": "listingRequest",
+    "version": "listing-request-v1"
+  },
+  "sourcePage": "/listings/request/",
+  "website": "",
+  "context": "We have run under this name since 2019."
+}

@@ -86,7 +86,7 @@ function samplePage(query: InboxQuery): InboxPage {
         snoozed: items.filter((item) => item.status === "snoozed").length,
         working: items.filter((item) => item.status === "working").length},
       types: {all: scoped.length, listing: count("listing"), event: count("event"), claim: count("claim"),
-        enquiry: count("enquiry"), lead: count("lead"), access: count("access"), stuck: count("stuck")},
+        enquiry: count("enquiry"), lead: count("lead"), access: count("access"), stuck: count("stuck"), takedown: count("takedown")},
     },
     oldestWaitingSince: waiting.sort((left, right) => left.waitingSince.localeCompare(right.waitingSince))[0]?.waitingSince ?? null,
   };

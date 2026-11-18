@@ -29,6 +29,9 @@
         "public_form",
         "organizers",
         "claim",
+        "listing_requests",
+        "listing_policy",
+        "takedown_policy",
         "privacy",
         "terms",
         "help",
@@ -85,6 +88,15 @@
           "$ref": "#/$defs/staticMeta"
         },
         "claim": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "listing_requests": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "listing_policy": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "takedown_policy": {
           "$ref": "#/$defs/staticMeta"
         },
         "privacy": {

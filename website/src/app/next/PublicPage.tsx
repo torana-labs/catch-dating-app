@@ -32,6 +32,8 @@ const WeddingsApply = dynamic(() => import("../../features/weddings/WeddingsAppl
 const Listing = dynamic(() => import("../../features/organizers/HostListingPage").then(m => m.HostListingPage));
 const Event = dynamic(() => import("../../features/events/EventDetailPage").then(m => m.EventDetailPage));
 const Claim = dynamic(() => import("../../features/claims/ClaimPage").then(m => m.ClaimPage));
+const ListingRequest = dynamic(() => import("../../features/listingRequests/ListingRequestPage").then(m => m.ListingRequestPage));
+const ListingPolicy = dynamic(() => import("../../features/listingRequests/ListingPolicyPage").then(m => m.ListingPolicyPage));
 const Legal = dynamic(() => import("../../features/legal/LegalPage").then(m => m.LegalPage));
 const Missing = dynamic(() => import("../../features/notFound/NotFoundPage").then(m => m.NotFoundPage));
 
@@ -87,6 +89,10 @@ export function PublicPage({page, readAt, contact, home, discovery}: {
     state.listing = listings.find(item => item.id === state.lookup || item.slug === state.lookup || item.path === state.lookup || item.legacyPaths?.includes(state.lookup ?? "")) ?? null;
     state.urlState = claimUrlStateForListing(state.listing, state.lookup);
     content = <Claim key={location.pathname + location.search} routeState={state} />;
+  } else if (page === "listing_requests") {
+    const path = location.pathname.replace(/\/$/, "");
+    content = path === "/listings/policy" ? <ListingPolicy policy="listingPolicy" /> :
+      path === "/listings/notice-and-takedown" ? <ListingPolicy policy="takedownPolicy" /> : <ListingRequest />;
   } else if (isLegalPageKey(page)) {
     content = <Legal page={publishedLegalContent.pages[page]} effectiveDate={publishedLegalContent.effectiveDate} contact={contact} />;
   } else content = <Missing />;

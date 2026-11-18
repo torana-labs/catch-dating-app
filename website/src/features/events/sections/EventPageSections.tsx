@@ -17,6 +17,7 @@ import {
 } from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {eventPageCopy as copy} from "../../../content/events";
+import {listingRequestCopy} from "../../../content/listingRequest";
 import type {EventPageGoodToKnow, EventPageView} from "../eventPageModel";
 
 // The board's Good to know kickers: what's included in info, what to bring in
@@ -73,6 +74,9 @@ export function EventPageMain({view, mapImageUrl, onOutboundClick, onShare}: {
         meta={view.organizer.summary || undefined} name={view.organizer.name} />
       {view.reviews ? <EventReviews reviews={view.reviews} /> : null}
       {view.more ? <EventMore more={view.more} /> : null}
+      <CatchStack align="start">
+        <CatchButton href={`/listings/request/?event=${encodeURIComponent(view.eventId)}`} label={listingRequestCopy.reportLink} recipe="text" tone="neutral" />
+      </CatchStack>
     </CatchStack>
   );
 }

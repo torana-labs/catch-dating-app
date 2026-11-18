@@ -37,6 +37,7 @@ export const onSalesInboundIntentWrittenSyncInbox = inboxTrigger("salesInboundIn
 export const onAccessApplicationWrittenSyncInbox = inboxTrigger("accessApplication");
 export const onExternalEventWrittenSyncInbox = inboxTrigger("externalEvent");
 export const onWalkthroughBookingWrittenSyncInbox = inboxTrigger("walkthroughBooking");
+export const onTakedownRequestWrittenSyncInbox = inboxTrigger("takedownRequest");
 
 /** Puts items back in the inbox when their snooze ends. */
 export async function wakeSnoozedInboxItems(db: FirebaseFirestore.Firestore, now: Date): Promise<number> {

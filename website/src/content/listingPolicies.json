@@ -1,0 +1,159 @@
+{
+  "$comment": "DRAFT for counsel review. Not published: the routes are noindex, out of the sitemap and unlinked, and every page shows the draft banner until counsel approves and the owner sets status to published. [counsel] marks points counsel must confirm. Based on the takedown legal memo, sections 5 and 7.3.",
+  "status": "draft",
+  "banner": {
+    "title": "Draft for legal review",
+    "body": "This policy is a draft. It is not in force and may change before it is published. Points marked [counsel] are waiting for legal review."
+  },
+  "pages": {
+    "listingPolicy": {
+      "path": "/listings/policy/",
+      "eyebrow": "Listing Policy · Draft",
+      "title": "How {{brand.name}} lists organisers and events",
+      "summary": "What we list, where the facts come from, how unclaimed pages are labelled, and how an organiser can claim, correct or remove a page.",
+      "sections": [
+        {
+          "heading": "What we list",
+          "paragraphs": [
+            "{{brand.name}} lists independent community organisers and their events in Indian cities to help people find them.",
+            "Some pages are created by {{brand.name}} from publicly available information, such as an organiser's official website, public social profile or public event pages. These pages are marked Unclaimed."
+          ]
+        },
+        {
+          "heading": "Not affiliated",
+          "paragraphs": [
+            "Unclaimed pages are not created, endorsed or sponsored by the organiser. The organiser has no affiliation with {{brand.name}} unless the page shows a Claimed badge.",
+            "Names and marks belong to their owners. We use them only to identify the organiser. [counsel: confirm the honest-use wording under Trade Marks Act s.30.]"
+          ]
+        },
+        {
+          "heading": "What an unclaimed page shows",
+          "paragraphs": [
+            "Unclaimed pages show only factual information: the name, city, what the organiser runs, official links and public event dates, written in our own words."
+          ],
+          "bullets": [
+            "We do not use an organiser's logo, photos or descriptions unless the organiser provides or licenses them.",
+            "We do not publish personal details of the people behind an organiser beyond what identifies the organiser.",
+            "Listing an organiser does not mean it takes part in, promotes or endorses any other {{brand.name}} feature."
+          ]
+        },
+        {
+          "heading": "Sources and freshness",
+          "paragraphs": [
+            "Each page names the public sources it was built from and when the facts were last checked. [counsel: confirm the per-field source labels before programmatic listings.]"
+          ]
+        },
+        {
+          "heading": "Your choices as an organiser",
+          "paragraphs": [
+            "You can claim your page, correct a fact, or ask us to remove your page and not list you again. Use the listing request form; each request has fixed fields, a fixed outcome and a fixed timeline.",
+            "Removal and do-not-list is open to any organisation that shows it controls an official channel (its Instagram, its website's email domain, or a letter on its letterhead). We take the page down within 24 hours of checking, delete it within 7 days and keep a minimal record so we do not list you again. [counsel: confirm the timelines and the do-not-list retention period.]"
+          ],
+          "links": [
+            {
+              "href": "/listings/request/",
+              "label": "Listing request form"
+            }
+          ]
+        }
+      ]
+    },
+    "takedownPolicy": {
+      "path": "/listings/notice-and-takedown/",
+      "eyebrow": "Notice and Takedown Policy · Draft",
+      "title": "Notice and takedown",
+      "summary": "How to ask {{brand.name}} to act on a listing: the request types, what each needs, our timelines, appeals, and how we handle misuse.",
+      "sections": [
+        {
+          "heading": "Scope",
+          "paragraphs": [
+            "This policy explains how to ask {{brand.name}} to act on an organiser or event listing on {{brand.name}}, and how we decide."
+          ]
+        },
+        {
+          "heading": "How to send a request",
+          "paragraphs": [
+            "To help us act quickly, please use the listing request form, which routes your request to the right team. We also accept legal notices at {{brand.support.email}} and at {{brand.operator.postalAddress}}, and route them through the same process. [counsel: confirm the form is the preferred, not the exclusive, channel for legal notices.]"
+          ],
+          "links": [
+            {
+              "href": "/listings/request/",
+              "label": "Listing request form"
+            }
+          ]
+        },
+        {
+          "heading": "Request types",
+          "paragraphs": [
+            "Each request is one of these types. Each has fixed fields, a fixed outcome and a fixed timeline."
+          ],
+          "bullets": [
+            "Claim this page. Filed by the organiser. Proof: a code sent to the official Instagram, or an email from the official domain. Outcome: the organiser manages the page. Within 2 days.",
+            "Correct a fact. Filed by the organiser or anyone, with a public link that shows the correct fact. Outcome: the fact is corrected or flagged. Within 7 days.",
+            "Remove and don't list again. Filed by the organisation. Proof: official Instagram, official email domain, or a letter on letterhead. Outcome: the page is taken down within 24 hours of checking, deleted, and a minimal record kept so it is not listed again; written confirmation. Within 7 days.",
+            "Trademark or branding. Filed by the rights holder or their agent, with the registration number, class and country, or evidence of use for an unregistered mark, and a good-faith declaration. Outcome: removed or relabelled. Within 7 days.",
+            "Copyright (photo or text). Filed by the rights holder, identifying the work, the original and the basis of ownership, with a declaration modelled on Copyright Rules 2013, Rule 75. Outcome: the material is taken down. Within 36 hours. [counsel]",
+            "Privacy or personal data. Filed by the person concerned or their nominee. We match you to what the page shows, or send a one-time code; we do not ask for identity documents by default. Outcome: personal details removed, hidden or corrected. Within 7 days. [counsel: statutory limits once the DPDP Act applies]",
+            "Impersonation. Filed by the real organiser, with official-channel proof. Outcome: the impersonating page is suspended. Within 24 hours of checking.",
+            "Court or government order. Filed by the authority. We verify the order with its issuer and act as it requires, within the time it sets. [counsel: confirm the 3-hour window for government directions]"
+          ]
+        },
+        {
+          "heading": "Declarations",
+          "paragraphs": [
+            "Every request confirms that its information is accurate and complete and that the requester is the person named or is authorised to act. Trademark, copyright and impersonation requests also confirm a good-faith belief that the use is not authorised. A false or misleading request may be refused and may lead to liability under applicable law. [counsel: wording of the declaration; we do not call it a sworn statement]"
+          ]
+        },
+        {
+          "heading": "Timelines",
+          "paragraphs": [
+            "We acknowledge every request within 24 hours and resolve it within 7 days, or within the shorter time shown for its type or required by law. [counsel: confirm against the IT Rules 2021 as amended in February 2026]"
+          ]
+        },
+        {
+          "heading": "Counter-notice and restoration",
+          "paragraphs": [
+            "When we remove content a claimed organiser supplied because of a trademark or copyright request, we tell the organiser. They may send a counter-notice that identifies the content, states their good-faith belief that it was removed by mistake, and consents to Indian jurisdiction. For copyright, content may be restored after 21 days if no court order is produced. [counsel]"
+          ]
+        },
+        {
+          "heading": "Appeals",
+          "paragraphs": [
+            "A requester or affected organiser may appeal a decision once, within 30 days, by replying with the request reference. A different reviewer decides the appeal within 7 days. Users may also appeal to the Grievance Appellate Committee where the IT Rules provide for it. [counsel]"
+          ]
+        },
+        {
+          "heading": "What we will not do",
+          "bullets": [
+            "Pay compensation or negotiate damages through the form. Legal claims go to the address above.",
+            "Disclose other people's personal data without legal process.",
+            "Act on anonymous intellectual-property complaints or on requests from people without authority.",
+            "Keep an organisation off our listings at the request of someone who cannot show they control it.",
+            "Restore a removed listing without a fresh claim by the organisation itself."
+          ],
+          "paragraphs": []
+        },
+        {
+          "heading": "Misuse and repeat abuse",
+          "paragraphs": [
+            "We may refuse false, abusive or repeated requests, and may stop accepting requests from people who misuse this process."
+          ]
+        },
+        {
+          "heading": "Records",
+          "paragraphs": [
+            "We keep records of requests and of removed content as the law requires, for example 180 days under the IT Rules, and keep a minimal do-not-list record so that removed organisers are not listed again. [counsel: retention periods]"
+          ]
+        },
+        {
+          "heading": "Grievance Officer",
+          "paragraphs": [
+            "Grievance Officer: {{brand.operator.grievanceOfficer}}, for {{brand.operator.legalName}}, which operates {{brand.name}}.",
+            "Email: {{brand.support.email}}. Address: {{brand.operator.postalAddress}}.",
+            "We acknowledge complaints within 24 hours and resolve them within 7 days, or sooner where the law requires. [counsel: confirm the details to publish under IT Rules 2021, Rule 3(2), and working hours]"
+          ]
+        }
+      ]
+    }
+  }
+}

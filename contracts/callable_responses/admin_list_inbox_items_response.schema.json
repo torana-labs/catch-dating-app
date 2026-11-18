@@ -40,7 +40,8 @@
             "enquiry",
             "lead",
             "access",
-            "stuck"
+            "stuck",
+            "takedown"
           ]
         },
         {
@@ -102,7 +103,8 @@
               "enquiry",
               "lead",
               "access",
-              "stuck"
+              "stuck",
+              "takedown"
             ]
           },
           "sourceKind": {
@@ -113,7 +115,8 @@
               "salesInboundIntent",
               "accessApplication",
               "externalEvent",
-              "walkthroughBooking"
+              "walkthroughBooking",
+              "takedownRequest"
             ]
           },
           "sourceId": {
@@ -376,7 +379,8 @@
             "claim",
             "enquiry",
             "access",
-            "stuck"
+            "stuck",
+            "takedown"
           ],
           "properties": {
             "all": {
@@ -409,6 +413,10 @@
               "minimum": 0
             },
             "stuck": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "takedown": {
               "type": "integer",
               "minimum": 0
             }

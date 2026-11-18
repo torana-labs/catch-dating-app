@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import {marketForIdOrAlias} from "../../locations/marketConfig";
 import {projectWalkthroughBooking} from "../../walkthroughs/inbox";
+import {projectTakedownRequest} from "../../takedownRequests/inbox";
 
 /**
  * The Admin inbox: one list of everything waiting on a person. Each source
@@ -13,10 +14,10 @@ import {projectWalkthroughBooking} from "../../walkthroughs/inbox";
 export const INBOX_ITEMS_COLLECTION = "adminInboxItems";
 export const INBOX_JOURNEY_COLLECTION = "adminInboxJourney";
 
-export const INBOX_ITEM_TYPES = ["listing", "event", "claim", "enquiry", "lead", "access", "stuck"] as const;
+export const INBOX_ITEM_TYPES = ["listing", "event", "claim", "enquiry", "lead", "access", "stuck", "takedown"] as const;
 export type InboxItemType = typeof INBOX_ITEM_TYPES[number];
 
-export const INBOX_SOURCE_KINDS = ["supplyIntakeRequest", "organizerClaimRequest", "salesInboundIntent", "accessApplication", "externalEvent", "walkthroughBooking"] as const;
+export const INBOX_SOURCE_KINDS = ["supplyIntakeRequest", "organizerClaimRequest", "salesInboundIntent", "accessApplication", "externalEvent", "walkthroughBooking", "takedownRequest"] as const;
 export type InboxSourceKind = typeof INBOX_SOURCE_KINDS[number];
 
 /** working: nobody needs to act yet. waiting/snoozed: a person does. done: decided or gone. */
@@ -126,6 +127,7 @@ export const sourceCollections: Record<InboxSourceKind, string> = {
   accessApplication: "accessApplications",
   externalEvent: "externalEvents",
   walkthroughBooking: "walkthroughBookings",
+  takedownRequest: "takedownRequests",
 };
 
 const itemPrefixes: Record<InboxSourceKind, string> = {
@@ -135,6 +137,7 @@ const itemPrefixes: Record<InboxSourceKind, string> = {
   accessApplication: "access",
   externalEvent: "event",
   walkthroughBooking: "walkthrough",
+  takedownRequest: "takedown",
 };
 
 export function inboxItemId(kind: InboxSourceKind, sourceId: string): string {
@@ -160,6 +163,7 @@ export function projectInboxSource(kind: InboxSourceKind, sourceId: string, data
   case "accessApplication": return projectAccess(sourceId, data, context);
   case "externalEvent": return projectExternalEvent(sourceId, data, context);
   case "walkthroughBooking": return projectWalkthroughBooking(sourceId, data);
+  case "takedownRequest": return projectTakedownRequest(sourceId, data);
   }
 }
 
