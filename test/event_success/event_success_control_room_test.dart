@@ -185,8 +185,8 @@ void main() {
         ),
       );
 
-      expect(find.textContaining('LIVE NOW'), findsOneWidget);
-      expect(find.textContaining('SYNCED'), findsOneWidget);
+      expect(find.textContaining('Live now'), findsOneWidget);
+      expect(find.textContaining('Synced'), findsOneWidget);
       expect(find.textContaining('Step 2 of 4'), findsOneWidget);
       expect(find.text('18 checked in · 24 expected'), findsOneWidget);
       expect(find.text('Guests'), findsNWidgets(2));

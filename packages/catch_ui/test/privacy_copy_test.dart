@@ -42,7 +42,7 @@ void main() {
               ),
             ),
           );
-          expect(find.text(label.toUpperCase()), findsOneWidget);
+          expect(find.text(label), findsOneWidget);
           expect(find.byIcon(icon), findsOneWidget);
           expect(
             tester.getSemantics(find.byType(CatchPrivacyBadge)).label,
