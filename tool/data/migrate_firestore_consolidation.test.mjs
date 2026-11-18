@@ -307,10 +307,10 @@ test("guest-event-cards only fills what is missing and never replaces", async ()
 
 test("event-organizer-summary fills missing and stale summaries and nothing else", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "event-organizer-summary");
-  const publicOrganizer = {name: "Bandra Run Club", description: "x", location: "mumbai",
+  const publicOrganizer = {name: "Sandbar Run Club", description: "x", location: "mumbai",
     area: "Bandra", hostName: "Asha", tags: ["running"], rating: 4.6, status: "active",
     archived: false, appVisibility: "discoverable", followerCount: 99};
-  const summary = {name: "Bandra Run Club", location: "mumbai", area: "Bandra", hostName: "Asha",
+  const summary = {name: "Sandbar Run Club", location: "mumbai", area: "Bandra", hostName: "Asha",
     tags: ["running"], rating: 4.6, synthetic: false, appVisibility: "discoverable",
     status: "active", archived: false};
   const hidden = {name: "", location: "", area: "", hostName: null, tags: [], rating: 0,
