@@ -6087,10 +6087,11 @@
           "no-format",
           "long-title",
           "compact-row",
-          "board-reference"
+          "board-reference",
+          "badge"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-260). One plan as a single link: the photo or a poster on its format accent, a label coloured by its format, the title, host and place, then the price and places left. Below 840px it becomes a row with the media at its start. Nearest concept: shared_preview_card (CatchPreviewCard), which has no media. Search aliases: EventCard, PlanTile, ListingCard, EventPreview.",
+      "notes": "Website T4 under D18 (CAT-260). One plan as a single link: the photo or a poster on its format accent, a label coloured by its format, the title, host and place, then the price and places left, with an optional badge (such as Women-led) on the media's corner, the board's plan badge. Below 840px it becomes a row with the media at its start. Nearest concept: shared_preview_card (CatchPreviewCard), which has no media. Search aliases: EventCard, PlanTile, ListingCard, EventPreview.",
       "comparedWith": [
         "catch.event_card",
         "catch.text"
