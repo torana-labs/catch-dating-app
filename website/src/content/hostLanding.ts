@@ -118,12 +118,12 @@ export const hostLandingCopy = {
       {
         ground: "coral", title: "Starting something?",
         body: `Pick a format, set the price and publish your first event from ${brand.stores.hostAppName}. Your free days start at your first event.`,
-        link: startTrial, to: {anchor: "start"},
+        link: "Plan your first event", to: {href: "/host/first-event/"},
       },
       {
         ground: "mint", title: "Running it on WhatsApp, Forms and UPI?",
         body: "Bring your guest list across in an afternoon. Nothing changes for guests until the doors open.",
-        link: "See how it compares", to: {anchor: "compare"},
+        link: "Leave the WhatsApp group behind", to: {href: "/host/switch/"},
       },
       {
         ground: "ink", title: "Several nights a week, or a team of hosts?",

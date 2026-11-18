@@ -215,7 +215,7 @@ export function CatchNavMenu({label, links, sections, current = false, align = "
         {sections ? sections.map((section, index) => (
           <div className={styles.section} key={section.title}>
             <CatchText as="p" className={styles.sectionTitle} id={`${panelId}-${index}`} tone="secondary" variant="label-kicker">{section.title}</CatchText>
-            <LinkList labelledBy={`${panelId}-${index}`} links={section.links} onFollow={follow} />
+            <LinkList labelledBy={`${panelId}-${index}`} links={section.links} onFollow={follow} variant="body" />
           </div>
         )) : <LinkList links={links ?? []} onFollow={follow} />}
       </div>
@@ -223,14 +223,20 @@ export function CatchNavMenu({label, links, sections, current = false, align = "
   );
 }
 
-/** A list of the menu's links; in a sectioned panel its column heading names it. */
-function LinkList({labelledBy, links, onFollow}: {labelledBy?: string; links: readonly CatchNavMenuLink[]; onFollow: (link: CatchNavMenuLink) => void}) {
+/**
+ * A list of the menu's links, each a row title; in a sectioned panel its
+ * column heading names it and the links take the body type, as the canvas
+ * sets a menu column.
+ */
+function LinkList({labelledBy, links, onFollow, variant = "title-row"}: {
+  labelledBy?: string; links: readonly CatchNavMenuLink[]; onFollow: (link: CatchNavMenuLink) => void; variant?: "title-row" | "body";
+}) {
   return (
     <ul aria-labelledby={labelledBy} className={styles.links}>
       {links.map((link) => (
         <li key={`${link.href}-${link.label}`}>
           <a aria-current={link.current ? "page" : undefined} className={styles.link} href={link.href} onClick={() => onFollow(link)}>
-            <CatchText variant="title-row">{link.label}</CatchText>
+            <CatchText variant={variant}>{link.label}</CatchText>
             {link.sublabel ? <>{" "}<CatchText tone="secondary" variant="body-small">{link.sublabel}</CatchText></> : null}
           </a>
         </li>

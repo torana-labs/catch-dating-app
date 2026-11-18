@@ -1524,7 +1524,8 @@ ownership without recreating duplicate marketing destinations.
 white ground: hero, find your page (the PlaybookHosts board's band: five format
 cards, chips for four more formats and a "By organisation" row, each to its
 `/host/<type>/` page, weddings or `/programmes/`; a `#night-<format>` link
-still picks that night), a night on Catch (chapters on a joined
+still picks that night), where you are today (the first event, switch and
+walkthrough pages), a night on Catch (chapters on a joined
 timeline with the phone following), the iPad, the applicant board (replayable),
 guests, growth links, layers (a segmented control over what Catch runs), pricing
 (a slider over the 5% fee capped at ₹10,000), the FAQ and the free-trial start

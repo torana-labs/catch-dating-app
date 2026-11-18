@@ -92,7 +92,8 @@ describe("playbook page indexes", () => {
   it("links the site chrome and the host landing only to pages that render, and reaches every shipped page from them", () => {
     const hostMenu = siteHeaderCopy.host.nav.flatMap((entry) => "links" in entry ? entry.links : [entry]);
     const hostFooter = siteFooterCopy.host.columns.flatMap((column) => column.links);
-    const landing = [...hostNightFormats.map((item) => ({href: item.page})), ...hostLandingCopy.ways.chips, ...hostLandingCopy.ways.organisations];
+    const landing = [...hostNightFormats.map((item) => ({href: item.page})), ...hostLandingCopy.ways.chips, ...hostLandingCopy.ways.organisations,
+      ...hostLandingCopy.ways.stages.flatMap((stage) => "href" in stage.to ? [{href: stage.to.href}] : [])];
     const hrefs = [...hostMenu, ...hostFooter, ...landing].map((link) => link.href.split("#")[0]);
     const siteRoutes = new Set<string>([...Object.values(siteRouteHrefs), "/explore/"]);
     for (const href of hrefs) expect(siteRoutes.has(href) || resolvePlaybookPage(href) !== null, `${href} has no page`).toBe(true);
