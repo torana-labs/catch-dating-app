@@ -8,13 +8,16 @@ import type {DiscoveryOrganizer, DiscoveryPlan} from "./discoveryTypes";
 /**
  * Plans and organisers as Explore, the city pages and the discovery pages
  * draw them, so each reads the same everywhere: the homepage's card views,
- * with the read model's women-led tag on the host line, then the card grid's
- * items (the canvas plan card with its date square, and the organiser card
- * the homepage's organiser band uses).
+ * with the read model's women-led tag (a plan's badge on its photo, the
+ * start of an organiser's line), then the card grid's items (the canvas plan
+ * card with its date square, and the organiser card the homepage's organiser
+ * band uses).
  */
-export function discoveryPlanCard(plan: HomePlan, timezone: string, withDate = true): PlanCardView {
+export type DiscoveryPlanCardView = PlanCardView & {badge?: string};
+
+export function discoveryPlanCard(plan: HomePlan, timezone: string, withDate = true): DiscoveryPlanCardView {
   const card = planCard(plan, timezone, withDate);
-  return (plan as DiscoveryPlan).womenLed ? {...card, detail: fill(copy.womenLedDetail, {detail: card.detail})} : card;
+  return (plan as DiscoveryPlan).womenLed ? {...card, badge: copy.womenLedBadge} : card;
 }
 
 export function discoveryOrganizerCard(organizer: HomeOrganizer, city: HomeCity): OrganizerCardView {
@@ -23,10 +26,11 @@ export function discoveryOrganizerCard(organizer: HomeOrganizer, city: HomeCity)
     {...card, meta: fill(copy.womenLedMeta, {meta: card.meta}), subtitle: fill(copy.womenLedMeta, {meta: card.subtitle})} : card;
 }
 
-export function planGridItems(cards: readonly PlanCardView[]): (CatchPlanCardProps & {id: string})[] {
+export function planGridItems(cards: readonly DiscoveryPlanCardView[]): (CatchPlanCardProps & {id: string})[] {
   return cards.map((plan) => ({
     id: plan.key, href: plan.href, title: plan.title, label: plan.label, format: plan.format, detail: plan.detail,
     price: plan.price, availability: plan.availability, photoUrl: plan.photoUrl, posterLabel: plan.posterLabel, date: plan.date,
+    ...(plan.badge ? {badge: plan.badge} : {}),
   }));
 }
 
