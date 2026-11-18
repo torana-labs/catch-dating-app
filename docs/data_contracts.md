@@ -4916,7 +4916,8 @@ instant of an assignment naming that id. `workPickup`, `workHotel` and
 `getProgramWorkAccess` resolves it (pickup points from every operational duty
 but the hotel desk, hotels from every operational duty, functions from door and
 guest-desk duties): key `*` for every one, otherwise one key per named id.
-`arrivalRoutes` holds the arrivals journeys the account's airport greeter,
+`tripRoutes` holds the trips the account's reconciliation viewer, dispatcher
+and coordinator assignments reach, in the same `pickup|hotel` form. `arrivalRoutes` holds the arrivals journeys the account's airport greeter,
 transport dispatcher and coordinator assignments reach, as `pickup|hotel` keys
 (see the arrivals views below). `assignments` repeats the live duty
 tuples with their scopes and own expiries, and `grantExpiresAtMillis` the grant's
@@ -5013,6 +5014,28 @@ vendor view is the vendor's id, name and active flag for one bound programme,
 read by dispatchers: the vendor's phone number stays in `transportVendors`, so
 the callable's reply (which never carried it) becomes a read model without
 withholding by role. None carries a phone number or other contact field.
+
+`programTripViews/{tripId}` and `programHotelInboundViews/{legId}` (#1339) are
+the transport trips and the hotel desk's expected guests, kept by triggers on
+`transportTrips`, `programTravelLegs`, `programTravelParties`, `programGuests`
+and the programme's transport settings, and created for existing sources by the
+`program-trip-views` copy-forward migration. A trip view is exactly the row
+`listProgramTrips` returns (vehicle, plate, vendor name, status, times,
+passenger count and the manifest's guest names, from the recorded dispatch
+snapshot when there is one) with `pickupKey` and `hotelKey` (`~` for a trip
+with no hotel); the trip's notes, rate, driver and account ids stay in
+`transportTrips`. Rules match the keys against `programAccessViews.tripRoutes`,
+built like `arrivalRoutes` from reconciliation viewer, transport dispatcher and
+coordinator assignments (an id or `*` per side, one assignment covering both).
+A hotel desk covering the destination hotel also reads trips still en route to
+it (a query naming `programId`, `hotelKey` and `status`), which is the hotel's
+inbound vehicle list; it therefore also sees a trip's pickup point id, vendor
+id, kind, arrival time and void reason, which `getProgramHotelInbound` did not
+return. A hotel inbound row is the expected-guest row of one expected or ready
+inbound journey (guest, party, passengers, curb time, readiness) and nothing
+about the flight, claimant or pickup point; hotel desk duty covering the hotel
+reads them by a query naming `programId` and `hotelId`. Neither holds a phone
+number or other contact field.
 
 `organizerCampaigns.recipientSource` names where recipients resolve:
 `savedAudience` (default, backed by `savedAudienceId`) or

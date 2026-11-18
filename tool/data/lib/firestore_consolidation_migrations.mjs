@@ -358,7 +358,8 @@ const programAccessViewFields = [
   "programId", "organizerId", "uid", "ownerUid", "role", "status",
   "activeFromMillis", "expiresAtMillis", "duties", "pickupAll",
   "pickupScoped", "hotelAll", "hotelScoped", "functionAll", "functionScoped",
-  "workPickup", "workHotel", "workFunction", "arrivalRoutes", "assignments",
+  "workPickup", "workHotel", "workFunction", "arrivalRoutes", "tripRoutes",
+  "assignments",
   "grantExpiresAtMillis", "revision", "version",
 ];
 
@@ -446,6 +447,32 @@ function functionsProgramArrivalViews() {
 
 /** A read model row from current sources, or null when it exists or cannot be built. */
 async function newArrivalView(db, collection, id, build) {
+  const existing = await db.collection(collection).doc(id).get();
+  if (existing.exists) return null;
+  try {
+    return await db.runTransaction(build);
+  } catch {
+    // A source that fails its contract gets no view, as in the trigger.
+    return null;
+  }
+}
+
+let programTripViewModule = null;
+function functionsProgramTripViews() {
+  try {
+    programTripViewModule ??= createFunctionsRequire()(
+      "./lib/programs/programTripViews.js");
+  } catch (error) {
+    throw new Error(
+      "The program-trip-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programTripViewModule;
+}
+
+/** A trip or hotel inbound row from current sources, or null when it exists or cannot be built. */
+async function newTripView(db, collection, id, build) {
   const existing = await db.collection(collection).doc(id).get();
   if (existing.exists) return null;
   try {
@@ -1233,6 +1260,39 @@ export const MIGRATIONS = [
           }
           return entries;
         },
+      },
+    ],
+  },
+  {
+    name: "program-trip-views",
+    description:
+      "Trips and the hotel desk's inbound read programTripViews and " +
+      "programHotelInboundViews through listeners (#1339) instead of the " +
+      "listProgramTrips and getProgramHotelInbound callables. Every trip and " +
+      "every expected or ready inbound journey to a hotel without a view " +
+      "gets one, with only the fields the callables returned (a trip's " +
+      "notes, rate, driver and account ids stay in the source) and never a " +
+      "phone number. Views the triggers have already written are left " +
+      "alone; trips and journeys are never changed. Run " +
+      "program-access-views-refresh first, so access views carry their trip " +
+      "routes. Build Functions first.",
+    steps: [
+      {
+        source: "transportTrips",
+        target: "programTripViews",
+        skipReason: "no programme, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newTripView(db, "programTripViews", id,
+          (tx) => functionsProgramTripViews().readProgramTripView(db, tx, id)),
+      },
+      {
+        source: "programTravelLegs",
+        target: "programHotelInboundViews",
+        skipReason: "not an expected or ready inbound journey to a hotel, or already viewed",
+        targetId: (id, data) => validId(id) && data.kind === "inbound" ? id : null,
+        transform: (data, id, db) => newTripView(db, "programHotelInboundViews", id,
+          (tx) => functionsProgramTripViews()
+            .readProgramHotelInboundView(db, tx, id)),
       },
     ],
   },
