@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_operations_outbox.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_projection_lifetime.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/travel_leg_revision.dart';
@@ -86,7 +87,9 @@ final _access = ProgramWorkAccess(
       terminal: 'T3',
     ),
   ],
-  hotels: const [ProgramHotel(hotelId: 'hotel_harbourview', name: 'Harbourview Palace')],
+  hotels: const [
+    ProgramHotel(hotelId: 'hotel_harbourview', name: 'Harbourview Palace'),
+  ],
   functions: [
     ProgramFunction(
       functionId: 'fn_sangeet',

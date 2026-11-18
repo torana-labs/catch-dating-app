@@ -103,9 +103,8 @@ class ProgramOperationsController extends _$ProgramOperationsController {
   }
 
   void _refreshReads() {
-    ref.invalidate(programArrivalsRosterProvider);
+    // Arrivals and trips are listeners and deliver the change themselves.
     ref.invalidate(programTransportPlanProvider);
-    ref.invalidate(programTripListProvider);
   }
 
   Future<bool> _run(

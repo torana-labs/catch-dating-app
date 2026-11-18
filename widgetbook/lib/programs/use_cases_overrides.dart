@@ -88,7 +88,7 @@ List<Override> _programOverrides() {
     programWorkEntryProvider(_programId, null).overrideWithValue(
       AsyncData((value: _access, snapshotAt: null, snapshotExpiresAt: null)),
     ),
-    programArrivalsRosterProvider(
+    programArrivalsStreamProvider(
       _programId,
       _pickupPointId,
     ).overrideWithValue(AsyncData(_roster)),
@@ -96,15 +96,15 @@ List<Override> _programOverrides() {
       _programId,
       _pickupPointId,
     ).overrideWithValue(AsyncData(_plan)),
-    programHotelInboundProvider(
+    programHotelInboundStreamProvider(
       _programId,
       _hotelId,
     ).overrideWithValue(AsyncData(_inbound)),
-    programTripListProvider(_programId).overrideWithValue(AsyncData(_trips)),
+    programTripsStreamProvider(_programId).overrideWithValue(AsyncData(_trips)),
     programStakeholderCountsProvider(
       _programId,
     ).overrideWithValue(AsyncData(_stakeholderCounts)),
-    programTransportVendorsProvider('org_1', _programId).overrideWithValue(
+    programVendorsStreamProvider(_programId).overrideWithValue(
       const AsyncData(<ProgramVendorOption>[
         ProgramVendorOption(
           vendorId: 'vendor_meru',

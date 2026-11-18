@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_commands.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_setup_body.dart';
@@ -93,14 +93,7 @@ class _HostProgrammeSetupScreenState
     final program = state.program;
     final vendors =
         widget.kind == HostProgrammeSetupKind.vendor && program != null
-        ? ref
-                  .watch(
-                    programTransportVendorsProvider(
-                      program.organizerId,
-                      widget.programId,
-                    ),
-                  )
-                  .value ??
+        ? ref.watch(programVendorsStreamProvider(widget.programId)).value ??
               const []
         : const <Never>[];
     final title = switch (widget.kind) {
@@ -198,16 +191,7 @@ class _HostProgrammeSetupScreenState
     );
     if (!mounted) return;
     setState(() => _saving = false);
-    if (saved) {
-      if (widget.kind == HostProgrammeSetupKind.vendor) {
-        ref.invalidate(
-          programTransportVendorsProvider(
-            detail.program.organizerId,
-            programId,
-          ),
-        );
-      }
-      if (context.canPop()) context.pop();
-    }
+    // The vendor list is a listener and delivers the saved vendor itself.
+    if (saved && context.canPop()) context.pop();
   }
 }

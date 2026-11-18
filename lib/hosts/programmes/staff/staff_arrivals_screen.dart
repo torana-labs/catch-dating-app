@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/programmes/data/program_projection_lifetime.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_access_policy.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
@@ -144,7 +145,7 @@ class _StaffArrivalsScreenState extends ConsumerState<StaffArrivalsScreen>
           onMove: (row, move) => unawaited(_move(operations, row, move)),
           onOpen: (row) => setState(() => _openLegId = row.legId),
           onRetry: () => ref.invalidate(
-            programArrivalsRosterProvider(
+            programArrivalsStreamProvider(
               widget.programId,
               widget.pickupPointId,
             ),

@@ -162,93 +162,12 @@ final class ProgramWorkEntryFamily extends $Family
   String toString() => r'programWorkEntryProvider';
 }
 
-@ProviderFor(programArrivalsRoster)
-final programArrivalsRosterProvider = ProgramArrivalsRosterFamily._();
-
-final class ProgramArrivalsRosterProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<ProgramArrivalsRoster>,
-          ProgramArrivalsRoster,
-          FutureOr<ProgramArrivalsRoster>
-        >
-    with
-        $FutureModifier<ProgramArrivalsRoster>,
-        $FutureProvider<ProgramArrivalsRoster> {
-  ProgramArrivalsRosterProvider._({
-    required ProgramArrivalsRosterFamily super.from,
-    required (String, String?) super.argument,
-  }) : super(
-         retry: null,
-         name: r'programArrivalsRosterProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$programArrivalsRosterHash();
-
-  @override
-  String toString() {
-    return r'programArrivalsRosterProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<ProgramArrivalsRoster> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<ProgramArrivalsRoster> create(Ref ref) {
-    final argument = this.argument as (String, String?);
-    return programArrivalsRoster(ref, argument.$1, argument.$2);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ProgramArrivalsRosterProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$programArrivalsRosterHash() =>
-    r'9143c3b11fe80a644e2361169750efb93ef3d832';
-
-final class ProgramArrivalsRosterFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<ProgramArrivalsRoster>,
-          (String, String?)
-        > {
-  ProgramArrivalsRosterFamily._()
-    : super(
-        retry: null,
-        name: r'programArrivalsRosterProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  ProgramArrivalsRosterProvider call(String programId, String? pickupPointId) =>
-      ProgramArrivalsRosterProvider._(
-        argument: (programId, pickupPointId),
-        from: this,
-      );
-
-  @override
-  String toString() => r'programArrivalsRosterProvider';
-}
+/// The arrivals roster, live from `programArrivalViews` (#1339).
 
 @ProviderFor(programArrivalsRosterView)
 final programArrivalsRosterViewProvider = ProgramArrivalsRosterViewFamily._();
+
+/// The arrivals roster, live from `programArrivalViews` (#1339).
 
 final class ProgramArrivalsRosterViewProvider
     extends
@@ -260,6 +179,7 @@ final class ProgramArrivalsRosterViewProvider
     with
         $FutureModifier<ProgramReadView<ProgramArrivalsRoster>>,
         $FutureProvider<ProgramReadView<ProgramArrivalsRoster>> {
+  /// The arrivals roster, live from `programArrivalViews` (#1339).
   ProgramArrivalsRosterViewProvider._({
     required ProgramArrivalsRosterViewFamily super.from,
     required (String, String?) super.argument,
@@ -306,7 +226,9 @@ final class ProgramArrivalsRosterViewProvider
 }
 
 String _$programArrivalsRosterViewHash() =>
-    r'f085a79621708513500c7eb57d21125c922958f0';
+    r'e1bb9d5747af86f12d28d3b55a5c8402d41ac744';
+
+/// The arrivals roster, live from `programArrivalViews` (#1339).
 
 final class ProgramArrivalsRosterViewFamily extends $Family
     with
@@ -322,6 +244,8 @@ final class ProgramArrivalsRosterViewFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The arrivals roster, live from `programArrivalViews` (#1339).
 
   ProgramArrivalsRosterViewProvider call(
     String programId,
@@ -506,88 +430,6 @@ final class ProgramTransportPlanViewFamily extends $Family
 
   @override
   String toString() => r'programTransportPlanViewProvider';
-}
-
-@ProviderFor(programTripList)
-final programTripListProvider = ProgramTripListFamily._();
-
-final class ProgramTripListProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<ProgramTripList>,
-          ProgramTripList,
-          FutureOr<ProgramTripList>
-        >
-    with $FutureModifier<ProgramTripList>, $FutureProvider<ProgramTripList> {
-  ProgramTripListProvider._({
-    required ProgramTripListFamily super.from,
-    required (String, {String? cursor}) super.argument,
-  }) : super(
-         retry: null,
-         name: r'programTripListProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$programTripListHash();
-
-  @override
-  String toString() {
-    return r'programTripListProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<ProgramTripList> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<ProgramTripList> create(Ref ref) {
-    final argument = this.argument as (String, {String? cursor});
-    return programTripList(ref, argument.$1, cursor: argument.cursor);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ProgramTripListProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$programTripListHash() => r'567c8a1f768d508f26d435ab1dc865997b20eae6';
-
-final class ProgramTripListFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<ProgramTripList>,
-          (String, {String? cursor})
-        > {
-  ProgramTripListFamily._()
-    : super(
-        retry: null,
-        name: r'programTripListProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  ProgramTripListProvider call(String programId, {String? cursor}) =>
-      ProgramTripListProvider._(
-        argument: (programId, cursor: cursor),
-        from: this,
-      );
-
-  @override
-  String toString() => r'programTripListProvider';
 }
 
 /// One vendor's bill, from the live read or a bounded offline snapshot.
@@ -1494,13 +1336,13 @@ final class ProgramFunctionDoorViewWithSnapshotFamily extends $Family
   String toString() => r'programFunctionDoorViewWithSnapshotProvider';
 }
 
-/// The departures desk, from the live read or a bounded offline snapshot.
+/// The departures desk, live from `programDepartureViews` (#1339).
 
 @ProviderFor(programDeparturesRosterView)
 final programDeparturesRosterViewProvider =
     ProgramDeparturesRosterViewFamily._();
 
-/// The departures desk, from the live read or a bounded offline snapshot.
+/// The departures desk, live from `programDepartureViews` (#1339).
 
 final class ProgramDeparturesRosterViewProvider
     extends
@@ -1512,7 +1354,7 @@ final class ProgramDeparturesRosterViewProvider
     with
         $FutureModifier<ProgramReadView<ProgramDeparturesRoster>>,
         $FutureProvider<ProgramReadView<ProgramDeparturesRoster>> {
-  /// The departures desk, from the live read or a bounded offline snapshot.
+  /// The departures desk, live from `programDepartureViews` (#1339).
   ProgramDeparturesRosterViewProvider._({
     required ProgramDeparturesRosterViewFamily super.from,
     required (String, String) super.argument,
@@ -1558,9 +1400,9 @@ final class ProgramDeparturesRosterViewProvider
 }
 
 String _$programDeparturesRosterViewHash() =>
-    r'0a5f9d9cd14f063a15521d76776f468b379ba115';
+    r'56c545cc857ea861cdcc63e14acd05b083169d48';
 
-/// The departures desk, from the live read or a bounded offline snapshot.
+/// The departures desk, live from `programDepartureViews` (#1339).
 
 final class ProgramDeparturesRosterViewFamily extends $Family
     with
@@ -1577,7 +1419,7 @@ final class ProgramDeparturesRosterViewFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The departures desk, from the live read or a bounded offline snapshot.
+  /// The departures desk, live from `programDepartureViews` (#1339).
 
   ProgramDeparturesRosterViewProvider call(String programId, String hotelId) =>
       ProgramDeparturesRosterViewProvider._(
@@ -1690,17 +1532,15 @@ final class ProgramLiveBoardViewFamily extends $Family
   String toString() => r'programLiveBoardViewProvider';
 }
 
-/// Lead-facing report and feed providers: attendance rollups, stakeholder
-/// counts, the duty-scoped attention feed and the organizer's vendor
-/// directory. Split into a part file so the work repository stays under the
+/// Lead-facing report providers: attendance rollups and stakeholder counts.
+/// Split into a part file so the work repository stays under the
 /// handwritten-source size budget.
 
 @ProviderFor(programAttendanceReport)
 final programAttendanceReportProvider = ProgramAttendanceReportFamily._();
 
-/// Lead-facing report and feed providers: attendance rollups, stakeholder
-/// counts, the duty-scoped attention feed and the organizer's vendor
-/// directory. Split into a part file so the work repository stays under the
+/// Lead-facing report providers: attendance rollups and stakeholder counts.
+/// Split into a part file so the work repository stays under the
 /// handwritten-source size budget.
 
 final class ProgramAttendanceReportProvider
@@ -1713,9 +1553,8 @@ final class ProgramAttendanceReportProvider
     with
         $FutureModifier<ProgramAttendanceReport>,
         $FutureProvider<ProgramAttendanceReport> {
-  /// Lead-facing report and feed providers: attendance rollups, stakeholder
-  /// counts, the duty-scoped attention feed and the organizer's vendor
-  /// directory. Split into a part file so the work repository stays under the
+  /// Lead-facing report providers: attendance rollups and stakeholder counts.
+  /// Split into a part file so the work repository stays under the
   /// handwritten-source size budget.
   ProgramAttendanceReportProvider._({
     required ProgramAttendanceReportFamily super.from,
@@ -1765,9 +1604,8 @@ final class ProgramAttendanceReportProvider
 String _$programAttendanceReportHash() =>
     r'ef4875bbc0e32499ac51d6f10a1a47149d57c7d1';
 
-/// Lead-facing report and feed providers: attendance rollups, stakeholder
-/// counts, the duty-scoped attention feed and the organizer's vendor
-/// directory. Split into a part file so the work repository stays under the
+/// Lead-facing report providers: attendance rollups and stakeholder counts.
+/// Split into a part file so the work repository stays under the
 /// handwritten-source size budget.
 
 final class ProgramAttendanceReportFamily extends $Family
@@ -1781,9 +1619,8 @@ final class ProgramAttendanceReportFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Lead-facing report and feed providers: attendance rollups, stakeholder
-  /// counts, the duty-scoped attention feed and the organizer's vendor
-  /// directory. Split into a part file so the work repository stays under the
+  /// Lead-facing report providers: attendance rollups and stakeholder counts.
+  /// Split into a part file so the work repository stays under the
   /// handwritten-source size budget.
 
   ProgramAttendanceReportProvider call(String programId) =>
@@ -1872,317 +1709,20 @@ final class ProgramStakeholderCountsFamily extends $Family
   String toString() => r'programStakeholderCountsProvider';
 }
 
-/// Function-lead attention feed scoped to the caller's duties.
-
-@ProviderFor(programStaffAttention)
-final programStaffAttentionProvider = ProgramStaffAttentionFamily._();
-
-/// Function-lead attention feed scoped to the caller's duties.
-
-final class ProgramStaffAttentionProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<ProgramStaffAttention>,
-          ProgramStaffAttention,
-          FutureOr<ProgramStaffAttention>
-        >
-    with
-        $FutureModifier<ProgramStaffAttention>,
-        $FutureProvider<ProgramStaffAttention> {
-  /// Function-lead attention feed scoped to the caller's duties.
-  ProgramStaffAttentionProvider._({
-    required ProgramStaffAttentionFamily super.from,
-    required String super.argument,
-  }) : super(
-         retry: null,
-         name: r'programStaffAttentionProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$programStaffAttentionHash();
-
-  @override
-  String toString() {
-    return r'programStaffAttentionProvider'
-        ''
-        '($argument)';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<ProgramStaffAttention> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<ProgramStaffAttention> create(Ref ref) {
-    final argument = this.argument as String;
-    return programStaffAttention(ref, argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ProgramStaffAttentionProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$programStaffAttentionHash() =>
-    r'7b6333c2e24450f40ddaa2abcd82b496ffda4b13';
-
-/// Function-lead attention feed scoped to the caller's duties.
-
-final class ProgramStaffAttentionFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<ProgramStaffAttention>, String> {
-  ProgramStaffAttentionFamily._()
-    : super(
-        retry: null,
-        name: r'programStaffAttentionProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// Function-lead attention feed scoped to the caller's duties.
-
-  ProgramStaffAttentionProvider call(String programId) =>
-      ProgramStaffAttentionProvider._(argument: programId, from: this);
-
-  @override
-  String toString() => r'programStaffAttentionProvider';
-}
-
-/// Organizer-scoped vendor directory for the transport planning surface.
-
-@ProviderFor(programTransportVendors)
-final programTransportVendorsProvider = ProgramTransportVendorsFamily._();
-
-/// Organizer-scoped vendor directory for the transport planning surface.
-
-final class ProgramTransportVendorsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<List<ProgramVendorOption>>,
-          List<ProgramVendorOption>,
-          FutureOr<List<ProgramVendorOption>>
-        >
-    with
-        $FutureModifier<List<ProgramVendorOption>>,
-        $FutureProvider<List<ProgramVendorOption>> {
-  /// Organizer-scoped vendor directory for the transport planning surface.
-  ProgramTransportVendorsProvider._({
-    required ProgramTransportVendorsFamily super.from,
-    required (String, String) super.argument,
-  }) : super(
-         retry: null,
-         name: r'programTransportVendorsProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$programTransportVendorsHash();
-
-  @override
-  String toString() {
-    return r'programTransportVendorsProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<List<ProgramVendorOption>> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<List<ProgramVendorOption>> create(Ref ref) {
-    final argument = this.argument as (String, String);
-    return programTransportVendors(ref, argument.$1, argument.$2);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ProgramTransportVendorsProvider &&
-        other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$programTransportVendorsHash() =>
-    r'8a888d1076d4957a61446ef6f487d86dfad14ed9';
-
-/// Organizer-scoped vendor directory for the transport planning surface.
-
-final class ProgramTransportVendorsFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<List<ProgramVendorOption>>,
-          (String, String)
-        > {
-  ProgramTransportVendorsFamily._()
-    : super(
-        retry: null,
-        name: r'programTransportVendorsProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// Organizer-scoped vendor directory for the transport planning surface.
-
-  ProgramTransportVendorsProvider call(String organizerId, String programId) =>
-      ProgramTransportVendorsProvider._(
-        argument: (organizerId, programId),
-        from: this,
-      );
-
-  @override
-  String toString() => r'programTransportVendorsProvider';
-}
-
-/// Hotel desk providers: the inbound board and the room board for one
-/// property. Split into a part file so the work repository stays under the
-/// handwritten-source size budget; providers remain top-level so tests fake
-/// them through `overrideWith`, not repository subclassing.
-
-@ProviderFor(programHotelInbound)
-final programHotelInboundProvider = ProgramHotelInboundFamily._();
-
-/// Hotel desk providers: the inbound board and the room board for one
-/// property. Split into a part file so the work repository stays under the
-/// handwritten-source size budget; providers remain top-level so tests fake
-/// them through `overrideWith`, not repository subclassing.
-
-final class ProgramHotelInboundProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<ProgramHotelInbound>,
-          ProgramHotelInbound,
-          FutureOr<ProgramHotelInbound>
-        >
-    with
-        $FutureModifier<ProgramHotelInbound>,
-        $FutureProvider<ProgramHotelInbound> {
-  /// Hotel desk providers: the inbound board and the room board for one
-  /// property. Split into a part file so the work repository stays under the
-  /// handwritten-source size budget; providers remain top-level so tests fake
-  /// them through `overrideWith`, not repository subclassing.
-  ProgramHotelInboundProvider._({
-    required ProgramHotelInboundFamily super.from,
-    required (String, String, {String? tripCursor, String? expectedCursor})
-    super.argument,
-  }) : super(
-         retry: null,
-         name: r'programHotelInboundProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$programHotelInboundHash();
-
-  @override
-  String toString() {
-    return r'programHotelInboundProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<ProgramHotelInbound> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<ProgramHotelInbound> create(Ref ref) {
-    final argument =
-        this.argument
-            as (String, String, {String? tripCursor, String? expectedCursor});
-    return programHotelInbound(
-      ref,
-      argument.$1,
-      argument.$2,
-      tripCursor: argument.tripCursor,
-      expectedCursor: argument.expectedCursor,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ProgramHotelInboundProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$programHotelInboundHash() =>
-    r'85ec7cf0b6a8c27edd1740e0792a038601c75b08';
-
-/// Hotel desk providers: the inbound board and the room board for one
-/// property. Split into a part file so the work repository stays under the
-/// handwritten-source size budget; providers remain top-level so tests fake
-/// them through `overrideWith`, not repository subclassing.
-
-final class ProgramHotelInboundFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<ProgramHotelInbound>,
-          (String, String, {String? tripCursor, String? expectedCursor})
-        > {
-  ProgramHotelInboundFamily._()
-    : super(
-        retry: null,
-        name: r'programHotelInboundProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// Hotel desk providers: the inbound board and the room board for one
-  /// property. Split into a part file so the work repository stays under the
-  /// handwritten-source size budget; providers remain top-level so tests fake
-  /// them through `overrideWith`, not repository subclassing.
-
-  ProgramHotelInboundProvider call(
-    String programId,
-    String hotelId, {
-    String? tripCursor,
-    String? expectedCursor,
-  }) => ProgramHotelInboundProvider._(
-    argument: (
-      programId,
-      hotelId,
-      tripCursor: tripCursor,
-      expectedCursor: expectedCursor,
-    ),
-    from: this,
-  );
-
-  @override
-  String toString() => r'programHotelInboundProvider';
-}
+/// Hotel desk providers: the room board for one property (the inbound board
+/// is `programHotelInboundStreamProvider`). Split into a part file so the
+/// work repository stays under the handwritten-source size budget; providers
+/// remain top-level so tests fake them through `overrideWith`, not repository
+/// subclassing.
 
 @ProviderFor(programHotelRooms)
 final programHotelRoomsProvider = ProgramHotelRoomsFamily._();
+
+/// Hotel desk providers: the room board for one property (the inbound board
+/// is `programHotelInboundStreamProvider`). Split into a part file so the
+/// work repository stays under the handwritten-source size budget; providers
+/// remain top-level so tests fake them through `overrideWith`, not repository
+/// subclassing.
 
 final class ProgramHotelRoomsProvider
     extends
@@ -2194,6 +1734,11 @@ final class ProgramHotelRoomsProvider
     with
         $FutureModifier<ProgramHotelRooms>,
         $FutureProvider<ProgramHotelRooms> {
+  /// Hotel desk providers: the room board for one property (the inbound board
+  /// is `programHotelInboundStreamProvider`). Split into a part file so the
+  /// work repository stays under the handwritten-source size budget; providers
+  /// remain top-level so tests fake them through `overrideWith`, not repository
+  /// subclassing.
   ProgramHotelRoomsProvider._({
     required ProgramHotelRoomsFamily super.from,
     required (String, String) super.argument,
@@ -2240,6 +1785,12 @@ final class ProgramHotelRoomsProvider
 
 String _$programHotelRoomsHash() => r'2e5b788b876388427eddc07237310c98aaf2f278';
 
+/// Hotel desk providers: the room board for one property (the inbound board
+/// is `programHotelInboundStreamProvider`). Split into a part file so the
+/// work repository stays under the handwritten-source size budget; providers
+/// remain top-level so tests fake them through `overrideWith`, not repository
+/// subclassing.
+
 final class ProgramHotelRoomsFamily extends $Family
     with
         $FunctionalFamilyOverride<
@@ -2254,6 +1805,12 @@ final class ProgramHotelRoomsFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// Hotel desk providers: the room board for one property (the inbound board
+  /// is `programHotelInboundStreamProvider`). Split into a part file so the
+  /// work repository stays under the handwritten-source size budget; providers
+  /// remain top-level so tests fake them through `overrideWith`, not repository
+  /// subclassing.
 
   ProgramHotelRoomsProvider call(String programId, String hotelId) =>
       ProgramHotelRoomsProvider._(argument: (programId, hotelId), from: this);
