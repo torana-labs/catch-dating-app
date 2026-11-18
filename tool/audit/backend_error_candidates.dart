@@ -363,6 +363,18 @@ CandidateDisposition _dispositionFor({
     );
   }
 
+  // #1999: a FirebaseFunctions decorator that only adds the default callable
+  // timeout. It hands back the HttpsCallable without invoking it; call sites
+  // that invoke callables are audited where they call().
+  if (path ==
+          'packages/platform/lib/firebase/deadline_firebase_functions.dart' &&
+      rule.id == 'direct_functions_callable') {
+    return const CandidateDisposition(
+      status: CandidateStatus.intentional,
+      reason: 'timeout decorator over FirebaseFunctions; does not invoke',
+    );
+  }
+
   if (path == 'lib/contexts/profiles/data/image_upload_repository.dart' &&
       rule.id == 'raw_firebase_exception_type') {
     return const CandidateDisposition(
