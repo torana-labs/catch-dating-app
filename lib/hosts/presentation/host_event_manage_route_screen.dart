@@ -187,8 +187,8 @@ class HostEventManageRouteScreen extends ConsumerWidget {
             onOpenGuests: openGuests,
             now: referenceNow,
           ),
-          // Setup and guests return above; a night with a saved room layout
-          // keeps the old console and its room map.
+          // Setup and guests return above, and every night that moves has a
+          // run or crawl board, so the old screen is a fallback only.
           HostEventRouteDestination.workspace ||
           HostEventRouteDestination.guests ||
           HostEventRouteDestination.movementConsole => HostEventManageScreen(

@@ -84,7 +84,7 @@ final class HostFormatsMixControllerProvider
 }
 
 String _$hostFormatsMixControllerHash() =>
-    r'86660e0c665520d6f17450930b6bdc39707b9c01';
+    r'd668c883008a9313d36b0c820fd01144dea06778';
 
 /// Team mixing, composed from listeners only: the plan (the step, the
 /// reveal and its fence, the first-hello switch), the new tables and the

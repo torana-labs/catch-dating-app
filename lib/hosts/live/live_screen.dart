@@ -16,6 +16,7 @@ import 'package:catch_dating_app/hosts/live/live_body.dart';
 import 'package:catch_dating_app/hosts/live/live_controller.dart';
 import 'package:catch_dating_app/hosts/live/live_needs_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_night_alerts_controller.dart';
+import 'package:catch_dating_app/hosts/live/live_room_map_controller.dart';
 import 'package:catch_dating_app/hosts/live/live_room_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_scores_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_state.dart';
@@ -167,6 +168,7 @@ class _HostLiveScreenState extends ConsumerState<HostLiveScreen> {
             alerts: ref.watch(
               hostLiveNightAlertsProvider(event, hostLiveAlertMinute(_now)),
             ),
+            seats: ref.watch(hostLiveRoomMapProvider(event)) != null,
           ),
         ),
       ),

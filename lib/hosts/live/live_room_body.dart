@@ -13,10 +13,15 @@ class HostLiveRoomBody extends StatelessWidget {
     super.key,
     required this.state,
     required this.onView,
+    this.seatMap,
   });
 
   final HostLiveState state;
   final ValueChanged<HostLiveView> onView;
+
+  /// The room's seat map with seat moves, when the night has a saved
+  /// layout; it follows the tables.
+  final Widget? seatMap;
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +83,7 @@ class HostLiveRoomBody extends StatelessWidget {
                 ),
             ],
           ),
+          ?seatMap,
         ],
       ),
     );
