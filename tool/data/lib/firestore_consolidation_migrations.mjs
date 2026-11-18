@@ -343,6 +343,43 @@ async function programAccessViewRow(db, programId, uid) {
   }
 }
 
+let programWorkViewModule = null;
+function functionsProgramWorkViews() {
+  try {
+    programWorkViewModule ??= createFunctionsRequire()(
+      "./lib/programs/programWorkViews.js");
+  } catch (error) {
+    throw new Error(
+      "The program-work-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programWorkViewModule;
+}
+
+/** A programme's work summary from its current source, read only. */
+async function programWorkSummaryRow(db, programId) {
+  const {readProgramWorkSummary} = functionsProgramWorkViews();
+  try {
+    return await db.runTransaction((tx) =>
+      readProgramWorkSummary(db, tx, programId));
+  } catch {
+    // A source that fails its contract gets no view, as in the trigger.
+    return null;
+  }
+}
+
+/** One resource label from its current source, read only. */
+async function programResourceViewRow(db, kind, resourceId) {
+  const {readProgramResourceView} = functionsProgramWorkViews();
+  try {
+    return await db.runTransaction((tx) =>
+      readProgramResourceView(db, tx, kind, resourceId));
+  } catch {
+    return null;
+  }
+}
+
 const profilePromptCatalog = JSON.parse(fs.readFileSync(
   new URL("../../../contracts/catalogs/profile_prompts.json", import.meta.url), "utf8"));
 const defaultPrompt = profilePromptCatalog.prompts.find(
@@ -872,6 +909,53 @@ export const MIGRATIONS = [
           id : null,
         transform: (data, id, db) =>
           programAccessViewRow(db, data.programId, data.uid),
+      },
+    ],
+  },
+  {
+    name: "program-work-views",
+    description:
+      "The programme work shell reads programWorkSummaries and " +
+      "programResourceViews (#1339) instead of the getProgramWorkAccess " +
+      "callable. Every programme without a summary gets one, and every " +
+      "pickup point, hotel and function without a view gets one, with only " +
+      "the fields the callable returns, as the new triggers write them. " +
+      "Existing views are never replaced; programmes and resources are " +
+      "never changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerPrograms",
+        target: "programWorkSummaries",
+        skipReason: "not a valid programme id",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => programWorkSummaryRow(db, id),
+      },
+      {
+        source: "programPickupPoints",
+        target: "programResourceViews",
+        skipReason: "no programme or organizer, or not a valid id",
+        targetId: (id, data) => validId(id) && validId(data.programId) ?
+          `${data.programId}__pickupPoint__${id}` : null,
+        transform: (data, id, db) =>
+          programResourceViewRow(db, "pickupPoint", id),
+      },
+      {
+        source: "programHotels",
+        target: "programResourceViews",
+        skipReason: "no programme or organizer, or not a valid id",
+        targetId: (id, data) => validId(id) && validId(data.programId) ?
+          `${data.programId}__hotel__${id}` : null,
+        transform: (data, id, db) =>
+          programResourceViewRow(db, "hotel", id),
+      },
+      {
+        source: "programFunctions",
+        target: "programResourceViews",
+        skipReason: "no programme or organizer, or not a valid id",
+        targetId: (id, data) => validId(id) && validId(data.programId) ?
+          `${data.programId}__function__${id}` : null,
+        transform: (data, id, db) =>
+          programResourceViewRow(db, "function", id),
       },
     ],
   },

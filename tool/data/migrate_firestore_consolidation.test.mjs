@@ -470,6 +470,41 @@ test("participant-form-profile-views creates only available rows, once", async (
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("program-work-views creates each summary and label once, without contacts", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-work-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const db = fakeDb({
+    "organizerPrograms/p1": {organizerId: "o1", kind: "wedding", title: "Wedding",
+      timezone: "Asia/Kolkata", status: "active", capabilities: [],
+      whatsappSenderConnectionId: "conn", transportSettings: {vehicleClasses: []}},
+    "programHotels/h1": {programId: "p1", organizerId: "o1", name: "The Grand",
+      receptionContact: "+919900000000", notes: "side door", active: true},
+    "programPickupPoints/pp1": {programId: "p1", organizerId: "o1", kind: "airport",
+      label: "DEL T3", iataCode: "DEL", terminal: "T3", instructions: "gate 4", active: true},
+    "programFunctions/f1": {programId: "p1", organizerId: "o1", name: "Sangeet",
+      venueName: "Lawn", venueNotes: "ring Ravi", startsAt: at(1000), endsAt: at(5000),
+      status: "scheduled"},
+    "programHotels/orphan": {name: "No programme", active: true},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 4);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["programWorkSummaries/p1"].title, "Wedding");
+  assert.equal(db.data["programWorkSummaries/p1"].whatsappSenderConnectionId, undefined);
+  assert.equal(db.data["programResourceViews/p1__hotel__h1"].label, "The Grand");
+  assert.equal(db.data["programResourceViews/p1__pickupPoint__pp1"].iataCode, "DEL");
+  assert.equal(db.data["programResourceViews/p1__function__f1"].startsAtMillis, 1000);
+  const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(
+    ([key]) => key.startsWith("programResourceViews/") || key.startsWith("programWorkSummaries/"))));
+  for (const secret of ["9900000000", "side door", "gate 4", "ring Ravi", "conn"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  assert.equal(db.data["programHotels/h1"].receptionContact, "+919900000000");
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.alreadyCopied, 4);
+});
+
 test("program-access-views creates each owner and staff view once", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-access-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});

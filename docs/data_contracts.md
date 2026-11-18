@@ -4827,6 +4827,21 @@ deletion and archive anonymization have nothing personal to scrub there. A
 phone enforces the same instants offline from the cached view and its clock.
 Commands re-check authority from the source documents.
 
+`programWorkSummaries/{programId}` and `programResourceViews/{programId}__{kind}__{resourceId}`
+(#1339) are the work shell's programme header and its pickup point, hotel and
+function labels, kept by triggers on `organizerPrograms`, `programPickupPoints`,
+`programHotels` and `programFunctions` and created for existing sources by the
+`program-work-views` copy-forward migration. Each holds exactly the fields
+`getProgramWorkAccess` returns and nothing else the source holds: no sender
+connection, entitlement or branding, no hotel reception contact or notes, no
+function venue notes, location, instructions or dress code, and no pickup point
+coordinates or instructions. Rules let any account with live access read the
+header by id, and read a resource by id when its `programAccessViews` work list
+reaches it; a query naming the programme and one kind lists every resource of
+that kind when the work list's `*` key is live (the owner always), and a scoped
+account reads its named ids one by one. With the access view they replace the
+callable, which stays deployed for older builds.
+
 `organizerCampaigns.recipientSource` names where recipients resolve:
 `savedAudience` (default, backed by `savedAudienceId`) or
 `programSelection`, which draws from programFunctionGuests/programGuests
