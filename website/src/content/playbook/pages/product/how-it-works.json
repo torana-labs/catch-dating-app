@@ -272,7 +272,7 @@
       "kicker": "How {{brand.name}} works",
       "title": "One app, from the first booking to the next one.",
       "lead": "{{brand.name}} runs the whole life of an event, including the part most tools skip: helping the people in the room actually meet. Use all of it, or start with one part.",
-      "align": "start",
+      "align": "center",
       "columns": 4,
       "actions": [
         {
