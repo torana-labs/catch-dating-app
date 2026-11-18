@@ -432,6 +432,41 @@ test("participant-form-profile-views creates only available rows, once", async (
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("program-access-views creates each owner and staff view once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-access-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const grant = (uid, overrides = {}) => ({organizerId: "o1", programId: "p1", uid,
+    displayName: "Arjun", phoneLastFour: "0001", status: "active", createdBy: "owner-1",
+    duties: [{duty: "hotelDesk", pickupPointIds: [], hotelIds: ["h1"], expiresAtMillis: later}],
+    expiresAt: at(later), revokedBy: null, revokedAt: null, revision: 2, ...overrides});
+  const db = fakeDb({
+    "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active"},
+    "organizerPrograms/p2": {organizerId: "o1", status: "active"},
+    "programStaffGrants/p1__desk-1": grant("desk-1"),
+    "programStaffGrants/p1__revoked-1": grant("revoked-1", {status: "revoked",
+      revokedBy: "owner-1", revokedAt: at(5)}),
+    "programStaffGrants/p9__orphan-1": {...grant("orphan-1"), programId: "p9"},
+    "programStaffGrants/p1__mismatch": grant("desk-1"),
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 3);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["programAccessViews/p1__owner-1"].role, "manager");
+  const desk = db.data["programAccessViews/p1__desk-1"];
+  assert.equal(desk.status, "active");
+  assert.deepEqual(desk.hotelScoped, {"hotelDesk__h1": later});
+  assert.deepEqual(desk.workHotel, {h1: later});
+  assert.equal(db.data["programAccessViews/p1__revoked-1"].status, "inactive");
+  // No identity fields travel, and nothing is created for an orphan grant.
+  assert.equal(JSON.stringify(desk).includes("Arjun"), false);
+  assert.equal(db.data["programAccessViews/p9__orphan-1"], undefined);
+  assert.equal(db.data["programStaffGrants/p1__desk-1"].revision, 2);
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.alreadyCopied, 3);
+});
+
 test("host-whatsapp-thread-views creates each retained thread's view once", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "host-whatsapp-thread-views");
   const at = (millis) => ({toMillis: () => millis});

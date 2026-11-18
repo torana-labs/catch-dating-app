@@ -748,6 +748,9 @@ export {
   grantProgramStaff,
   revokeProgramStaff,
 } from "./programs/programStaff";
+export {onProgramAccessViewGrantChanged,
+  onProgramAccessViewProgramChanged} from
+  "./programs/programAccessViewTriggers";
 export {listMyHostAssignments} from "./hostWork/listMyHostAssignments";
 export {
   inviteProgramStaff,
