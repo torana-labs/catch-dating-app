@@ -557,7 +557,7 @@ machine.
 There is no server-side cross-request cache for browsers. The one exception is
 Cloud Monitoring's uptime check (user agent `GoogleStackdriverMonitoring-UptimeChecks`),
 which made about 1,700 of the 1,800 daily `/api/public-catalog` calls and reads
-the whole catalog each time: its calls share one read a minute per instance
+the whole catalog each time: its calls share one read every two minutes per instance
 (`readPublicCatalogForProbe`), so the check still proves Firestore answers
 without paying for the read every 50 seconds. Every other caller, including the
 browser's live check and the release gates, reads live, and the response stays
