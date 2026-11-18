@@ -73,7 +73,7 @@ const seedThreads = (): Thread[] => [
     waitingSinceMillis: sampleNow - 2 * HOUR,
     links: [{kind: "payment", path: "guestPayments/sample-pay-rhea",
       label: "₹1,500 captured, no booking"}]}),
-  messages: [inbound("m1", "Hi, I paid ₹1,500 for Takeoff on Saturday but " +
+  messages: [inbound("m1", "Hi, I paid ₹1,500 for Nightfall on Saturday but " +
     "I have no ticket. Money is gone from my account.",
   sampleNow - 2 * HOUR)]},
   {conversation: conversation({conversationId: id("a2"),
