@@ -28,7 +28,7 @@ const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.k
 const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
 
     const d = this.props.d || {"variant": "host", "footnotes": ["1. Average of reviews from guests who booked on Catch, [dates]."]};
-    const host = [
+    const host = d.cols || [
       { h: 'Product', links: ['How Catch works', 'Bookings and payments', 'The door', 'Running the night', 'Messages and automations', 'Guest records', 'Forms', 'Your page'] },
       { h: 'Hosts by format', links: ['Run and walk clubs', 'Racket sports', 'Supper clubs', 'Quiz and game nights', 'Studios', 'Venues', 'Communities', 'Mixers and pub crawls', 'Teams', 'Colleges and alumni'] },
       { h: 'Get started', links: ['Start free trial', 'Pricing', 'Your first event', 'Switch to Catch', 'Try a demo night', 'Programmes'] },

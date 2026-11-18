@@ -252,3 +252,8 @@
   .pg .mbar .b{flex:1;height:44px;border-color:#F07A55;background:#F07A55;color:#141114!important}
   .pg .mbar .b.wab{flex:0 0 auto;width:44px;padding:0;background:#25D366;border-color:#25D366}
 }
+
+/* Palette extension (17 Nov, product pages v2): sky fills the mint–indigo gap; soft tiles for secondary items. Additive only. */
+.pg .m-sky{background:#5EC2E6}
+.pg .m-magenta .lead,.pg .m-magenta .body,.pg .m-sky .lead,.pg .m-sky .body{color:rgba(20,17,20,.8)}
+.pg .tile.s-yellow{background:#FFF4D6}.pg .tile.s-mint{background:#DDF3EA}.pg .tile.s-indigo{background:#E8EBFD}.pg .tile.s-pink{background:#FDE4EA}.pg .tile.s-coral{background:#FDE7DF}.pg .tile.s-sky{background:#DDF1F8}.pg .tile.s-magenta{background:#FBE4F3}
