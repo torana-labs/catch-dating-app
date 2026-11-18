@@ -431,7 +431,6 @@ class ProgramCreate extends _$ProgramCreate {
           programId: id,
         );
         if (!isCurrent()) throw const ProgramActorChangedException();
-        ref.invalidate(organizerProgramListProvider(scope.organizerId));
         return page.programs;
       },
     );

@@ -620,6 +620,14 @@ covers the trip's pickup point and hotel together, through the access view's
 and `programHotelInboundViews` (the hotel desk's expected guests). Both
 callables stay deployed for older builds, retire-later.
 
+Current Host builds read all of these (`getProgramArrivalsRoster`,
+`getProgramDeparturesRoster`, `listTransportVendors`, `listProgramTrips` and
+`getProgramHotelInbound`) through listeners gated on the account's access view
+(`ProgramTransportViewsRepository`): lists are read a page of 100 at a time up
+to 500 rows, ordered by document id, with no cursors; the trip ledger export
+shares the live ledger. The five callables stay deployed for older builds and
+are retired later.
+
 `listProgramStaff` moves to `programStaffViews` (administrators and the owner;
 the row is the callable's with its status's facts, and the revoke command keeps
 its revision fence). `listProgramStaffAttention` needs no new read model: it
@@ -669,9 +677,12 @@ rows. A thread's messages are read directly from `programWhatsappMessages`
 communications duty read both under rules; the phone hash, sender connection,
 who took the thread over and the reply reservations stay on server-only
 documents, and the views and messages go with the archived programme's
-retention sweep. A planner reply names its author by `authorUid`, which the
-phone resolves against the staff list it already reads (the callable returned
-the grant's display name). Opening a thread used to mark it read; that write is
+retention sweep. A planner reply names its author by `authorUid` and, since
+the author-label change, by `authorLabel`: the author's display name copied
+from their staff grant when the reply is written (null for the assistant and
+for the owner, who holds no grant; filled onto earlier replies by the
+`program-whatsapp-author-labels` migration), so communications staff, who
+cannot read `programStaffViews`, still see who answered. Opening a thread used to mark it read; that write is
 now `markProgramWhatsappThreadRead` (same payload, same access, a no-op on an
 archived programme or an already read thread), which answers the thread's
 handling and its new revision: use that revision as the next
@@ -680,7 +691,12 @@ thread by a trigger. `listProgramWhatsappCannedReplies` becomes a direct read of
 `programWhatsappCannedReplies` by the same duty (the phone drops archived rows
 unless asked and orders by `sortOrder`, then label); saving stays
 `upsertProgramWhatsappCannedReply`. Both read callables stay deployed for older
-builds, retire-later.
+builds, retire-later. Current Host builds read all of this through listeners
+gated on the communications duty (`ProgramInboxViewsRepository`): the thread
+rows a page of 50 at a time up to 500, a conversation's newest 200 messages
+(`truncated` when more exist), the saved replies up to 100. Opening a thread
+marks it read once per revision, and the next handling command is fenced by
+the newer of the view's revision and the one marking it read answered.
 
 **Read path decision (Nov 2026, #1339): server-trust.** The `sender` block of
 `listProgramWhatsappThreads` (the wedding's number as displayed, its
@@ -700,7 +716,11 @@ and optionally the cover) reads each named photo itself, signs only files that
 belong to this programme and returns URLs that expire within ten minutes. It
 never signs a path the phone names, and Storage rules stay closed to client
 reads (a download URL carries a token that does not expire). `listProgramPhotos`
-stays deployed for older builds, retire-later.
+stays deployed for older builds, retire-later. Current Host builds list the
+records (a page of 100 at a time up to 1,000, newest first), build the albums
+and name them from the work shell's functions (a communications account whose
+work list reaches no functions sees no function album), and sign the cover and
+the albums' first photos and the photos shown in calls of at most 60.
 
 `listOrganizerPrograms` and `getOrganizerProgram` move to
 `organizerProgramViews`: the programme object, its creator, the function count
@@ -722,7 +742,22 @@ programme, which change with each RSVP, import and flight update; stored copies
 would need a counter that every one of those writes contends on, or a recount of
 thousands of documents per write. The screens paint the listener data first and
 ask the callable (`listOrganizerPrograms` with `programId` for one row) for the
-counts.
+counts. Current Host builds read the programme and the organiser's list
+(`OrganizerProgramViewsRepository`) from `organizerProgramViews` by `organizerId`; the
+programme's detail asks `getOrganizerProgram` for its counts alongside, and shows
+without them when that fails. These reads are not gated on a programme access
+view, since an organiser manager who did not create the programme has none:
+rules end them online.
+
+**Retire-later callables (programme read batches 3 to 5, #1339).** Deployed for
+older builds, no current client calls them: `getProgramArrivalsRoster`,
+`getProgramDeparturesRoster`, `listTransportVendors`, `listProgramTrips`,
+`getProgramHotelInbound`, `listProgramStaff`, `listProgramStaffAttention`,
+`listProgramWhatsappThreads` for rows (still called with `limit: 1` for the
+header's number), `getProgramWhatsappThread`,
+`listProgramWhatsappCannedReplies` and `listProgramPhotos`. The overview and
+rollup counts of `listOrganizerPrograms` and `getOrganizerProgram` are still
+called.
 
 ## Programme WhatsApp threads, replies and the assistant settings
 
