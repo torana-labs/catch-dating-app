@@ -6989,7 +6989,7 @@
           "root-npm"
         ]
       },
-      "runbook": "docs/operations_platform.md"
+      "runbook": "docs/operations_platform.md#product-command-cli"
     },
     {
       "id": "operations:cli",
