@@ -217,6 +217,8 @@ import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
 import 'package:widgetbook_workspace/hosts/host_membership_admin_use_cases.dart'
     as _widgetbook_workspace_hosts_host_membership_admin_use_cases;
+import 'package:widgetbook_workspace/hosts/host_moving_night_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_moving_night_use_cases;
 import 'package:widgetbook_workspace/hosts/host_offer_payment_use_cases.dart'
     as _widgetbook_workspace_hosts_host_offer_payment_use_cases;
 import 'package:widgetbook_workspace/hosts/host_organizer_journey_use_cases.dart'
@@ -9704,6 +9706,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Rows',
                 children: [
                   _widgetbook.WidgetbookComponent(
+                    name: 'HostEventCloseOutOptionRow',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'On and off',
+                        builder:
+                            _widgetbook_workspace_hosts_host_moving_night_use_cases
+                                .hostEventCloseOutOptionRowUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
                     name: 'HostEventCloseOutRow',
                     useCases: [
                       _widgetbook.WidgetbookUseCase(
@@ -9921,6 +9934,61 @@ final directories = <_widgetbook.WidgetbookNode>[
                         builder:
                             _widgetbook_workspace_hosts_host_system_parts_use_cases
                                 .formatsPlayersRowUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostFormatsOutRow',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'A runner and a crawl guest',
+                        builder:
+                            _widgetbook_workspace_hosts_host_moving_night_use_cases
+                                .hostFormatsOutRowUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostFormatsRunBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'On the way back',
+                        builder:
+                            _widgetbook_workspace_hosts_host_moving_night_use_cases
+                                .hostFormatsRunBodyUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostFormatsRunScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'On the way back',
+                        builder:
+                            _widgetbook_workspace_hosts_host_moving_night_use_cases
+                                .hostFormatsRunScreenUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostFormatsSweepBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Three still out',
+                        builder:
+                            _widgetbook_workspace_hosts_host_moving_night_use_cases
+                                .hostFormatsSweepBodyUseCase,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostFormatsSweepScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Three still out',
+                        builder:
+                            _widgetbook_workspace_hosts_host_moving_night_use_cases
+                                .hostFormatsSweepScreenUseCase,
                       ),
                     ],
                   ),

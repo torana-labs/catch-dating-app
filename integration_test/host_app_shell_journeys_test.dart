@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/event_success/presentation/host_components/event_success_live_workspace_tab_bar.dart';
 import 'package:catch_dating_app/hosts/create/create_basics_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/events/events_screen.dart';
 import 'package:catch_dating_app/hosts/events/widgets/host_event_tab_bar.dart';
+import 'package:catch_dating_app/hosts/live/formats/formats_run_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
 import 'package:catch_dating_app/hosts/people/messages_screen.dart';
 import 'package:catch_dating_app/hosts/people/people_screen.dart';
@@ -183,7 +183,9 @@ void main() {
       organizers: [_neemwoodRunClub, _lodhiSocials],
     );
     final selected = _selectedOrganizerId(tester);
-    final other = selected == _neemwoodRunClub.id ? _lodhiSocials : _neemwoodRunClub;
+    final other = selected == _neemwoodRunClub.id
+        ? _lodhiSocials
+        : _neemwoodRunClub;
 
     await tester.longPress(
       find.descendant(
@@ -333,8 +335,9 @@ void main() {
 
     await tester.tap(find.byKey(ValueKey('host-events-tonight-${event.id}')));
     await pumpAppShellFrames(tester, frames: 30);
-    // The event workspace's Live view runs a night that is on now; its
-    // Guests view is the door, where guests are checked in.
+    // The event workspace's Live view runs a night that is on now; a run
+    // opens the run console, whose Guests action is the door, where guests
+    // are checked in.
     await tester.tap(
       find.descendant(
         of: find.byType(HostEventTabBar),
@@ -342,12 +345,12 @@ void main() {
       ),
     );
     await pumpAppShellFrames(tester, frames: 30);
-    await tester.tap(
-      find.descendant(
-        of: find.byType(EventSuccessLiveWorkspaceTabBar),
-        matching: find.text('Guests'),
-      ),
+    final guests = find.descendant(
+      of: find.byType(HostFormatsRunScreen),
+      matching: find.byKey(const ValueKey('formats-run-guests')),
     );
+    await tester.ensureVisible(guests);
+    await tester.tap(guests);
     await pumpAppShellFrames(tester, frames: 30);
     expect(find.byType(DoorScreen), findsOneWidget);
     expect(find.text('Asha Rao'), findsOneWidget);
@@ -470,8 +473,9 @@ const _hostTabs = <String, Type>{
 };
 
 /// A Host who already dismissed the first-run Today focus prompt.
-HostShellBackend _returningHostBackend() => HostShellBackend(uid: _hostUid)
-  ..todayPreferences.skip(accountId: _hostUid, organizerId: _neemwoodRunClub.id);
+HostShellBackend _returningHostBackend() => HostShellBackend(
+  uid: _hostUid,
+)..todayPreferences.skip(accountId: _hostUid, organizerId: _neemwoodRunClub.id);
 
 Future<void> _pumpHost(
   WidgetTester tester,

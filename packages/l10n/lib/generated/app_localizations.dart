@@ -47145,6 +47145,204 @@ abstract class AppLocalizations {
     required int index,
     required int count,
   });
+
+  /// Sweep screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'The return sweep'**
+  String get hostFormatsSweepTitle;
+
+  /// Sweep headline for a run: runners accounted for.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{{count} back}}'**
+  String hostFormatsSweepBackCount({required int count});
+
+  /// Sweep headline for a crawl: guests accounted for.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{{count} home}}'**
+  String hostFormatsSweepHomeCount({required int count});
+
+  /// Sweep headline suffix: checked in and still out.
+  ///
+  /// In en, this message translates to:
+  /// **'of {total} · {out} still out'**
+  String hostFormatsSweepOfTotal({required int total, required int out});
+
+  /// Sweep explanation on a run.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark runners back as they reach the start. Anyone not accounted for stays here until they are.'**
+  String get hostFormatsSweepExplainRun;
+
+  /// Sweep explanation on a crawl.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark everyone home as you hear from them. Anyone not accounted for stays here until they are.'**
+  String get hostFormatsSweepExplainCrawl;
+
+  /// Sweep list title: checked in, not accounted for.
+  ///
+  /// In en, this message translates to:
+  /// **'Still out'**
+  String get hostFormatsSweepStillOut;
+
+  /// Sweep list empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone is accounted for.'**
+  String get hostFormatsSweepAllAccounted;
+
+  /// Marks a runner back at the start.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get hostFormatsSweepMarkBack;
+
+  /// Marks a crawl guest home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get hostFormatsSweepMarkHome;
+
+  /// Calls a guest who is still out.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get hostFormatsSweepCall;
+
+  /// Sweep section title for the after-the-night switches.
+  ///
+  /// In en, this message translates to:
+  /// **'Then'**
+  String get hostFormatsSweepThen;
+
+  /// Sweep primary action: completes the night and saves the switches.
+  ///
+  /// In en, this message translates to:
+  /// **'Close the night'**
+  String get hostFormatsSweepClose;
+
+  /// Sweep secondary action: opens messages for the event.
+  ///
+  /// In en, this message translates to:
+  /// **'Message guests'**
+  String get hostFormatsSweepMessage;
+
+  /// Confirm closing the night with guests not accounted for.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Close with 1 still out?} other{Close with {count} still out?}}'**
+  String hostFormatsSweepCloseAnywayTitle({required int count});
+
+  /// Confirm closing body.
+  ///
+  /// In en, this message translates to:
+  /// **'They stay marked as not accounted for. Close only when you know everyone is safe.'**
+  String get hostFormatsSweepCloseAnywayBody;
+
+  /// Confirms closing with guests still out.
+  ///
+  /// In en, this message translates to:
+  /// **'Close anyway'**
+  String get hostFormatsSweepCloseAnyway;
+
+  /// Cancels closing with guests still out.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep sweeping'**
+  String get hostFormatsSweepKeepSweeping;
+
+  /// Notice after closing the night.
+  ///
+  /// In en, this message translates to:
+  /// **'The night is closed'**
+  String get hostFormatsSweepClosed;
+
+  /// Sweep note once the plan is complete.
+  ///
+  /// In en, this message translates to:
+  /// **'This night is already closed. You can still mark people and change the switches.'**
+  String get hostFormatsSweepAlreadyClosed;
+
+  /// Run console tag: the active run-of-show step.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {index} of {total}'**
+  String hostFormatsRunStep({required int index, required int total});
+
+  /// Run console spotlight kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get hostFormatsRunNow;
+
+  /// Run console spotlight progress label.
+  ///
+  /// In en, this message translates to:
+  /// **'{back} of {total} runners back'**
+  String hostFormatsRunBack({required int back, required int total});
+
+  /// Run console section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace pods'**
+  String get hostFormatsRunPods;
+
+  /// Run console pod row status.
+  ///
+  /// In en, this message translates to:
+  /// **'{back} of {total} back'**
+  String hostFormatsRunPodBack({required int back, required int total});
+
+  /// Run console row for runners with no pod.
+  ///
+  /// In en, this message translates to:
+  /// **'No pod'**
+  String get hostFormatsRunNoPod;
+
+  /// Run console sweep section title.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Still out: 1} other{Still out: {count}}}'**
+  String hostFormatsRunStillOut({required int count});
+
+  /// Run console note before anyone is back.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone is out on the route. Mark runners back as they reach the start.'**
+  String get hostFormatsRunAllOut;
+
+  /// Run console action: opens the return sweep.
+  ///
+  /// In en, this message translates to:
+  /// **'Close the route'**
+  String get hostFormatsRunClose;
+
+  /// Run console action once everyone is accounted for.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone’s back · close the route'**
+  String get hostFormatsRunCloseAllBack;
+
+  /// Run console with no plan.
+  ///
+  /// In en, this message translates to:
+  /// **'No plan for tonight'**
+  String get hostFormatsRunNoPlanTitle;
+
+  /// Run console with no plan, body.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up the plan for the night from the event to run it here.'**
+  String get hostFormatsRunNoPlanBody;
+
+  /// Crawl board action: opens the return sweep.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the return sweep'**
+  String get hostFormatsCrawlSweep;
 }
 
 class _AppLocalizationsDelegate

@@ -109,7 +109,7 @@ class HostEventCloseOutBody extends StatelessWidget {
               title: l10n.hostEventsCloseOutAfterTitle,
               children: [
                 for (final option in HostEventCloseOutOption.values)
-                  _HostEventCloseOutOptionRow(
+                  HostEventCloseOutOptionRow(
                     key: ValueKey<String>(
                       'host-event-close-out-${option.name}',
                     ),
@@ -126,8 +126,8 @@ class HostEventCloseOutBody extends StatelessWidget {
 }
 
 /// One after-closing switch as a row.
-class _HostEventCloseOutOptionRow extends StatelessWidget {
-  const _HostEventCloseOutOptionRow({
+class HostEventCloseOutOptionRow extends StatelessWidget {
+  const HostEventCloseOutOptionRow({
     super.key,
     required this.option,
     required this.on,
