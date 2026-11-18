@@ -584,6 +584,13 @@ and the phone's clock. All three callables stay deployed for older builds,
 retire-later. `getProgramHotelInbound` and `listProgramTrips` move in the next
 transport batch; `getProgramTransportPlan` stays server-trust below.
 
+`listProgramTrips` and `getProgramHotelInbound` move to `programTripViews`
+(readable where one reconciliation viewer, dispatcher or coordinator assignment
+covers the trip's pickup point and hotel together, through the access view's
+`tripRoutes`; and by the destination hotel's desk while the trip is en route)
+and `programHotelInboundViews` (the hotel desk's expected guests). Both
+callables stay deployed for older builds, retire-later.
+
 **Read path decision (Nov 2026, #1339): server-trust.** `getProgramTransportPlan`
 stays a callable: it groups waiting parties into vehicles with an algorithm
 that depends on the current time (wait overdue, dispatch-by) and on every

@@ -506,6 +506,51 @@ test("program-work-views creates each summary and label once, without contacts",
   assert.equal(again.totals.alreadyCopied, 4);
 });
 
+test("program-trip-views creates trip and hotel inbound views once, keeping notes and rates out", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-trip-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const trip = (overrides = {}) => ({programId: "p1", organizerId: "o1", kind: "guestTransfer",
+    pickupPointId: "pp1", destinationHotelId: "h1", destinationLabel: "The Grand",
+    vehicleClassId: "sedan", vendorId: "v1", vendorNameSnapshot: "City Cabs",
+    plateDisplay: "DL 1 AB 1234", legIds: ["in1"], passengerCount: 2, status: "enRoute",
+    departedAt: at(10_000), arrivedAt: null, voidReason: null, departedByUid: "disp-1",
+    rateSnapshot: {amountMinor: 777}, notes: "driver Ravi 9800000000", revision: 2,
+    dispatchSnapshot: {vehicleClass: {id: "sedan", label: "Sedan"}, manifest: [{legId: "in1",
+      guestId: "g1", guestDisplayName: "Rohan", passengers: 2, luggageUnits: 1}]}, ...overrides});
+  const leg = (overrides = {}) => ({programId: "p1", organizerId: "o1", guestId: "g1", partyId: null,
+    kind: "inbound", flightNumber: "AI1", flightStatus: "scheduled", scheduledArrivalAt: at(5_000_000),
+    readiness: "expected", pickupPointId: "pp1", destinationHotelId: "h1", passengers: 2,
+    international: false, ...overrides});
+  const db = fakeDb({
+    "organizerPrograms/p1": {organizerId: "o1", transportSettings: {bandWindowMillis: 1,
+      maxReadyWaitMillis: 1, domesticExitLagMillis: 1_800_000, internationalExitLagMillis: 3_600_000,
+      vehicleClasses: []}},
+    "programGuests/g1": {programId: "p1", organizerId: "o1", displayName: "Rohan"},
+    "transportTrips/t1": trip(),
+    "transportTrips/t2": trip({status: "arrived", destinationHotelId: null}),
+    "programTravelLegs/in1": leg(),
+    "programTravelLegs/in2": leg({readiness: "disrupted"}),
+    "programTravelLegs/in3": leg({destinationHotelId: null}),
+    "programTravelLegs/out1": leg({kind: "outbound"}),
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 2 + 1);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["programTripViews/t1"].guestNames[0], "Rohan");
+  assert.equal(db.data["programTripViews/t2"].hotelKey, "~");
+  assert.equal(db.data["programHotelInboundViews/in1"].hotelId, "h1");
+  assert.equal(db.data["programHotelInboundViews/in2"], undefined);
+  const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(
+    ([key]) => /^program(Trip|HotelInbound)Views\//.test(key))));
+  for (const secret of ["9800000000", "disp-1", "777", "AI1"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  assert.equal(db.data["transportTrips/t1"].notes, "driver Ravi 9800000000");
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("program-arrival-views creates arrivals, departures and vendor views once, without phone numbers", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-arrival-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});

@@ -1,3 +1,4 @@
+import * as admin from "firebase-admin";
 import {isDeepStrictEqual} from "node:util";
 import * as logger from "firebase-functions/logger";
 import type {
@@ -16,7 +17,8 @@ import type {StaffAttentionSend} from "./programStaffAttention";
 export const programAlertViewsCollection = "programAlertViews";
 export const programTravelCountViewsCollection = "programTravelCountViews";
 
-const LEG_SCAN_LIMIT = 500;
+const LEG_PAGE = 500;
+const LEG_SCAN_PAGES = 6;
 
 /** programAlertViews document id: programme-prefixed alert id. */
 export function programAlertViewId(programId: string,
@@ -183,11 +185,21 @@ export async function readTravelCountView(db: FirebaseFirestore.Firestore,
     db.collection("organizerPrograms").doc(programId));
   const organizerId = program.data()?.organizerId;
   if (typeof organizerId !== "string") return null;
-  const legs = await tx.get(db.collection("programTravelLegs")
-    .where("programId", "==", programId).where("kind", "==", "inbound")
-    .limit(LEG_SCAN_LIMIT));
-  return travelCountView(programId, organizerId,
-    legs.docs.map((doc) => doc.data()));
+  // The programme's journeys, a page at a time (one equality filter keeps
+  // this off the composite index list); inbound ones are counted.
+  const legs: FirebaseFirestore.DocumentData[] = [];
+  let last: FirebaseFirestore.QueryDocumentSnapshot | null = null;
+  for (let page = 0; page < LEG_SCAN_PAGES; page++) {
+    let query: FirebaseFirestore.Query = db.collection("programTravelLegs")
+      .where("programId", "==", programId)
+      .orderBy(admin.firestore.FieldPath.documentId()).limit(LEG_PAGE);
+    if (last) query = query.startAfter(last);
+    const snap = await tx.get(query);
+    legs.push(...snap.docs.map((doc) => doc.data()));
+    if (snap.docs.length < LEG_PAGE) break;
+    last = snap.docs[snap.docs.length - 1];
+  }
+  return travelCountView(programId, organizerId, legs);
 }
 
 async function write<T>(db: FirebaseFirestore.Firestore, collection: string,
