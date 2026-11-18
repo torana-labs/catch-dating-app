@@ -218,6 +218,20 @@ If the Play publisher identity gets a 403 on `generatedApks`, its Play Console
 invitation lacks access to the app bundle explorer downloads; add that
 permission for the two apps in Play Console (Users and permissions).
 
+## New required secrets on deployed Functions
+
+The deploy readiness gate checks a required Functions secret in three phases.
+Before the deploy, a Function that does not exist yet (first deploy) and an
+existing Function that gains a new required secret both have no live binding
+to compare. For both, the gate requires that the secret's latest version
+exists and is ENABLED and that the consumer's runtime service account already
+holds `roles/secretmanager.secretAccessor` on that secret (for an existing
+Function, the account it already runs as). The deploy itself adds the binding
+and cannot create the secret or grant the role, so create the secret, add its
+value and grant the runtime account before the deploy; otherwise the gate stops
+it. After the deploy the binding must exist, and the post-deploy check fails if
+it does not.
+
 ## Forms payment secrets
 
 Forms payments use Catch's Razorpay Platform Partner OAuth application
