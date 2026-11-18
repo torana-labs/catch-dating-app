@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/event_organizer_summary.schema.json",
+  "title": "EventOrganizerSummary",
+  "description": "The organizer fields Explore shows and filters on, copied onto events/{eventId}.organizerSummary from the public projection publicOrganizers/{organizerId} (never from the private organizers document) by the event and organizer triggers. Explore reads it instead of looking organizers up by id. An organizer with no public projection (missing, or hidden with no host) gets the hidden summary: empty name, location and area, appVisibility hidden, archived true. Clients never write it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "location",
+    "area",
+    "hostName",
+    "tags",
+    "rating",
+    "synthetic",
+    "appVisibility",
+    "status",
+    "archived"
+  ],
+  "properties": {
+    "name": {"type": "string", "maxLength": 120},
+    "location": {"type": "string", "maxLength": 120},
+    "area": {"type": "string", "maxLength": 120},
+    "hostName": {"type": ["string", "null"], "maxLength": 120},
+    "tags": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {"type": "string", "minLength": 1, "maxLength": 80}
+    },
+    "rating": {"type": "number", "minimum": 0, "maximum": 5},
+    "synthetic": {"type": "boolean"},
+    "appVisibility": {"type": "string", "enum": ["discoverable", "hidden"]},
+    "status": {"type": "string", "enum": ["active", "archived"]},
+    "archived": {"type": "boolean"}
+  }
+}
