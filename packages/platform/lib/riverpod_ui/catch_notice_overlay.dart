@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_controller.dart';
+import 'package:catch_platform/riverpod_ui/pending_write_observer.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -37,8 +38,31 @@ class _CatchNoticeOverlayState extends ConsumerState<CatchNoticeOverlay> {
     super.dispose();
   }
 
+  static const _stillWorkingKey = 'write-still-working';
+
+  // A write still running after eight seconds says so once; the notice goes
+  // when every slow write has settled.
+  void _listenForSlowWrites(BuildContext context) {
+    ref.listen(stillWorkingWritesProvider, (previous, next) {
+      final notices = ref.read(catchNoticeControllerProvider.notifier);
+      if (next > 0 && (previous ?? 0) == 0) {
+        notices.show(
+          CatchNoticeData(
+            id: _stillWorkingKey,
+            title: context.l10n.coreWriteStillWorking,
+            tone: CatchNoticeTone.neutral,
+            dedupeKey: _stillWorkingKey,
+          ),
+        );
+      } else if (next == 0) {
+        notices.dismissByDedupeKey(_stillWorkingKey);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    _listenForSlowWrites(context);
     final eventNotice = ref.watch(
       catchNoticeControllerProvider.select((queue) => queue.current),
     );

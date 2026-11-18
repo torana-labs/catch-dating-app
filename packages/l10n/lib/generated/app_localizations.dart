@@ -7526,6 +7526,12 @@ abstract class AppLocalizations {
   /// **'Dismiss'**
   String get coreCatchNoticeTooltipDismiss;
 
+  /// Notice shown while a save or other change has been running for more than eight seconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Still working on it…'**
+  String get coreWriteStillWorking;
+
   /// Product copy supplied by packages/platform/lib/l10n/catch_ui_copy.dart (avatar count).
   ///
   /// In en, this message translates to:
@@ -16810,6 +16816,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The request timed out. Please try again.'**
   String get coreAppErrorMessageVisiblecopyTheRequestTimedOut;
+
+  /// Error copy when a live list or record gave no first answer in time and nothing is saved on the device for it yet.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'\'re offline and nothing is saved on this device yet. Try again when you\'\'re connected.'**
+  String get coreAppErrorMessageListenerNothingSaved;
+
+  /// Error copy when a save or other change timed out: the server may still finish it, so the person should check before repeating it.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'\'t confirm this change. It may still go through, so check before you try again.'**
+  String get coreWriteOutcomeUnknown;
 
   /// Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).
   ///

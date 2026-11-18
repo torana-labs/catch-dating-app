@@ -1,5 +1,6 @@
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/errors/write_outcome.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 
 /// Returns a user-facing error message for a mutation in error state.
@@ -18,7 +19,7 @@ String mutationErrorMessage(
 }) {
   if (!mutation.hasError) return '';
   return appErrorMessage(
-    (mutation as MutationError).error,
+    writeFailure((mutation as MutationError).error),
     l10n: l10n,
     context: context,
   );
