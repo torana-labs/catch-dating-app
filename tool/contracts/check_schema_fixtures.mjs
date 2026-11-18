@@ -36,6 +36,11 @@ export const fixtureSchemaCases = Object.freeze([
   ["valid/create_private_event_series_payload.json", "createPrivateEventSeriesCallablePayloadSchema"],
   ["invalid/create_private_event_series_payload_too_many.json", "createPrivateEventSeriesCallablePayloadSchema"],
   ["valid/host_event_setup_view_facts.json", "hostEventSetupViewDocumentSchema"],
+  ["valid/listing_suppression_doc.json", "listingSuppressionDocumentSchema"],
+  ["valid/listing_suppression_doc_flagged.json", "listingSuppressionDocumentSchema"],
+  ["invalid/listing_suppression_doc_clear_identity.json", "listingSuppressionDocumentSchema"],
+  ["invalid/listing_suppression_doc_named_case.json", "listingSuppressionDocumentSchema"],
+  ["invalid/listing_suppression_doc_extra_name.json", "listingSuppressionDocumentSchema"],
 
   ["valid/activity_notification_doc.json", "activityNotificationDocumentSchema"],
   ["valid/host_membership_doc.json", "hostMembershipDocumentSchema"],

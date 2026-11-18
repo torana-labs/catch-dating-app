@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/listing_suppressions.schema.json",
+  "title": "ListingSuppressionDocument",
+  "description": "One do-not-list case: the keyed hashes of the business names, aliases, handles, links, domains, organizer ids and slugs of an organizer Catch must not list again, written by the organizer takedown tool's suppress mode. Only HMAC-SHA256 hashes under the server-held LISTING_SUPPRESSION_HMAC_KEY are stored, never a name, handle or link. Supply Intake refuses a matching request, listing approval refuses a matching listing, and a self-created organizer that matches is flagged here for review. Server-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "listingSuppressions",
+  "x-firestore-path": "listingSuppressions/{caseId}",
+  "x-document-id-field": "caseId",
+  "x-owner": "Organizer takedown tool (tool/data/organizer_takedown.mjs) and the listing suppression checks in functions/src/listingSuppressions",
+  "required": [
+    "schemaVersion",
+    "caseId",
+    "reason",
+    "active",
+    "hashScheme",
+    "identityHashes",
+    "identityKeyCounts",
+    "createdAtMillis",
+    "updatedAtMillis",
+    "reviewAtMillis",
+    "createdBy",
+    "blockedIntakeCount",
+    "lastBlockedAtMillis",
+    "reviewFlags"
+  ],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "caseId": {
+      "description": "The opaque takedown case id, which is also the document id. Never an organizer name, handle or slug.",
+      "type": "string",
+      "pattern": "^TD-[0-9]{4}$"
+    },
+    "reason": {
+      "description": "The takedown request type the case was filed as.",
+      "type": "string",
+      "enum": ["removeAndDoNotList", "trademark", "copyright", "privacy", "courtOrder", "impersonation"]
+    },
+    "active": {
+      "description": "False once the suppression is lifted (for example the organizer later claims its page on its own instruction). Inactive cases block nothing.",
+      "type": "boolean"
+    },
+    "hashScheme": {
+      "description": "How identityHashes were computed: HMAC-SHA256 under LISTING_SUPPRESSION_HMAC_KEY of 'hmac-sha256/listing-suppression-v1', a newline and the identity key (operations/src/workflows/supply-intake/organizer-matching/suppression.mjs).",
+      "const": "hmac-sha256/listing-suppression-v1"
+    },
+    "identityHashes": {
+      "description": "Sorted keyed hashes of the case's identity keys. Lookups use array-contains-any.",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
+    "identityKeyCounts": {
+      "description": "How many keys of each kind were hashed, so an operator can confirm coverage without seeing a key.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["labels", "links", "organizers", "slugs"],
+      "properties": {
+        "labels": {"type": "integer", "minimum": 0, "maximum": 500},
+        "links": {"type": "integer", "minimum": 0, "maximum": 500},
+        "organizers": {"type": "integer", "minimum": 0, "maximum": 500},
+        "slugs": {"type": "integer", "minimum": 0, "maximum": 500}
+      }
+    },
+    "createdAtMillis": {"type": "integer", "minimum": 0},
+    "updatedAtMillis": {"type": "integer", "minimum": 0},
+    "reviewAtMillis": {
+      "description": "When the suppression is next reviewed (three years after creation for a business by default).",
+      "type": "integer",
+      "minimum": 0
+    },
+    "createdBy": {
+      "description": "Who wrote the entry: the takedown workflow ('workflow:organizer-takedown') or an operator label. Never a personal name.",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9:._@-]{0,127}$"
+    },
+    "blockedIntakeCount": {
+      "description": "How many Supply Intake requests this case has refused.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "lastBlockedAtMillis": {"type": ["integer", "null"], "minimum": 0},
+    "reviewFlags": {
+      "description": "Self-created organizers that matched the case, newest last, for staff review. createOrganizer creates the private, unpublished workspace and records it here.",
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["organizerId", "source", "flaggedAtMillis"],
+        "properties": {
+          "organizerId": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"},
+          "source": {"type": "string", "enum": ["createOrganizer"]},
+          "flaggedAtMillis": {"type": "integer", "minimum": 0}
+        }
+      }
+    }
+  }
+}

@@ -958,6 +958,11 @@ service cloud.firestore {
     match /bannedIdentities/{identityId} {
       allow read, write: if false;
     }
+    // Do-not-list registry (keyed hashes only). Server-only: the organizer
+    // takedown tool writes cases and Functions read them with the Admin SDK.
+    match /listingSuppressions/{caseId} {
+      allow read, write: if false;
+    }
     match /blockedSignupAttempts/{attemptId} {
       allow read, write: if false;
     }
