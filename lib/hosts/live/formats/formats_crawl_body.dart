@@ -22,6 +22,7 @@ class HostFormatsCrawlBody extends StatelessWidget {
     required this.onRetry,
     this.onSweep,
     this.onGuests,
+    this.onTools,
   });
 
   final HostFormatsCrawlState state;
@@ -37,6 +38,10 @@ class HostFormatsCrawlBody extends StatelessWidget {
 
   /// Opens the door, where a late guest is checked in; null hides Guests.
   final VoidCallback? onGuests;
+
+  /// Opens night tools: settings, departures, pace groups and the full
+  /// help and delivery queues; null hides it.
+  final VoidCallback? onTools;
 
   /// Not here yet shows this many people; the note counts the rest.
   static const int missingShown = 5;
@@ -190,6 +195,15 @@ class HostFormatsCrawlBody extends StatelessWidget {
               ),
           ],
         ),
+        if (onTools case final onTools?)
+          CatchButton(
+            key: const ValueKey<String>('formats-crawl-tools'),
+            label: l10n.hostLiveTools,
+            variant: CatchButtonVariant.secondary,
+            leading: CatchIcon(CatchIcons.settings),
+            fullWidth: true,
+            onPressed: onTools,
+          ),
         if (onGuests case final onGuests?)
           CatchButton(
             key: const ValueKey<String>('formats-crawl-guests'),

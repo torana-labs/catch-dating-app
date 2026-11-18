@@ -32772,5 +32772,7 @@
   "hostEventsGuestSourcesTitle": "Guest sources",
   "@hostEventsGuestSourcesTitle": {"description": "Workspace row and screen title: where an event's guests come from.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
   "hostEventsGuestSourcesBody": "Catch registration, a guest file, Luma, and forwarding the list",
-  "@hostEventsGuestSourcesBody": {"description": "Workspace guest sources row subtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"}
+  "@hostEventsGuestSourcesBody": {"description": "Workspace guest sources row subtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
+  "hostLiveTools": "Night tools",
+  "@hostLiveTools": {"description": "Live console, run and crawl boards: opens the night's assistance tools (settings, departures, pace groups, help and delivery queues).", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.live"}
 }

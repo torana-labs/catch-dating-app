@@ -217,6 +217,8 @@ import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
+import 'package:widgetbook_workspace/hosts/host_live_tools_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_live_tools_use_cases;
 import 'package:widgetbook_workspace/hosts/host_membership_admin_use_cases.dart'
     as _widgetbook_workspace_hosts_host_membership_admin_use_cases;
 import 'package:widgetbook_workspace/hosts/host_moving_night_use_cases.dart'
@@ -10070,6 +10072,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                                 .hostFormatsSweepScreenUseCase,
                       ),
                     ],
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostLiveToolsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'A social run',
+                    builder:
+                        _widgetbook_workspace_hosts_host_live_tools_use_cases
+                            .hostLiveToolsScreenUseCase,
                   ),
                 ],
               ),

@@ -29705,4 +29705,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostEventsGuestSourcesBody =>
       'Catch registration, a guest file, Luma, and forwarding the list';
+
+  @override
+  String get hostLiveTools => 'Night tools';
 }
