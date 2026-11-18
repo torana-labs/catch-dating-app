@@ -161,14 +161,9 @@
       "ground": "yellow",
       "kicker": "Bring your club across in an afternoon",
       "title": "Your next run, without the thread.",
-      "lead": "Start the free trial, or message us on WhatsApp and we’ll send you the run club setup guide.",
+      "lead": "Start the free trial, or leave your number and we’ll send the run club setup guide on WhatsApp.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {
-          "label": "Get the setup guide on WhatsApp",
-          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, please send me the run club setup guide."},
-          "emphasis": "secondary"
-        }
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
       "leadForm": {
         "id": "run_club_setup_guide",

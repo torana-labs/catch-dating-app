@@ -5438,6 +5438,58 @@
           "hex": "#E3E6FC"
         }
       },
+      "tagCoral": {
+        "$type": "color",
+        "$description": "The coral soft tag's fill: where an event is sold when it is on Catch (the WebOrgV2 board's .src catch). Day only; the board draws it on white.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9921568627,
+            0.9058823529,
+            0.8745098039
+          ],
+          "hex": "#FDE7DF"
+        }
+      },
+      "tagCoralInk": {
+        "$type": "color",
+        "$description": "The coral soft tag's text (the WebOrgV2 board's .src catch).",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5411764706,
+            0.1843137255,
+            0.0705882353
+          ],
+          "hex": "#8A2F12"
+        }
+      },
+      "tagIndigo": {
+        "$type": "color",
+        "$description": "The indigo soft tag's fill: where an imported event is sold, such as Luma (the WebOrgV2 board's .src luma). Day only; the board draws it on white.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9254901961,
+            0.9215686275,
+            0.9921568627
+          ],
+          "hex": "#ECEBFD"
+        }
+      },
+      "tagIndigoInk": {
+        "$type": "color",
+        "$description": "The indigo soft tag's text (the WebOrgV2 board's .src luma).",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2274509804,
+            0.2470588235,
+            0.6196078431
+          ],
+          "hex": "#3A3F9E"
+        }
+      },
       "compareUs": {
         "$type": "color",
         "$description": "Catch's column in comparison tables.",
@@ -5804,6 +5856,24 @@
           "$description": "A feature headline on phones (the homepage board's .bento .mid h2 on phones).",
           "$value": {
             "value": 32,
+            "unit": "px"
+          }
+        }
+      },
+      "profileSection": {
+        "size": {
+          "$type": "dimension",
+          "$description": "A section title on the organiser page, such as Coming up and Reviews (the WebOrgV2 board's .h2).",
+          "$value": {
+            "value": 44,
+            "unit": "px"
+          }
+        },
+        "compactSize": {
+          "$type": "dimension",
+          "$description": "A section title on the organiser page on phones (the WebOrgV2 board's .h2 on phones).",
+          "$value": {
+            "value": 34,
             "unit": "px"
           }
         }
@@ -6527,6 +6597,30 @@
         "$description": "The organiser page's hero (owner-approved layout, 17 Nov 2026, from the WebOrgV2 board's rail parts): Follow and Share across from the copy, the width of the rail under them.",
         "$value": {
           "value": 420,
+          "unit": "px"
+        }
+      },
+      "contentMax": {
+        "$type": "dimension",
+        "$description": "The organiser page's content width (the WebOrgV2 board's .wrap: 1160px less its 40px sides), narrower than the site's page width.",
+        "$value": {
+          "value": 1080,
+          "unit": "px"
+        }
+      },
+      "sectionGap": {
+        "$type": "dimension",
+        "$description": "The space between the organiser page's sections in its main column (the WebOrgV2 board's .main).",
+        "$value": {
+          "value": 56,
+          "unit": "px"
+        }
+      },
+      "compactSectionGap": {
+        "$type": "dimension",
+        "$description": "The space between the organiser page's sections on phones (the WebOrgV2 board's .main on phones).",
+        "$value": {
+          "value": 44,
           "unit": "px"
         }
       }

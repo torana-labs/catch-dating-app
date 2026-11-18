@@ -8,8 +8,8 @@ enum HostRequestKind {
       values.firstWhere((kind) => kind.name == value);
 }
 
-/// One person waiting on one of an organizer's coming events, read through
-/// `listOrganizerRequests`.
+/// One person waiting on one of an organizer's coming events: a row of the
+/// event's `hostEventRequestViews` read model.
 class HostRequest {
   const HostRequest({
     required this.uid,
@@ -55,13 +55,15 @@ class HostRequest {
   /// Events they came to with this organizer; null when no contact is linked.
   final int? attendedEventCount;
 
-  /// When a live waitlist offer runs out.
+  /// When the active waitlist offer runs out; it may already have passed.
   final DateTime? offerExpiresAt;
 
   /// One person can wait on several events, so the pair is the identity.
   String get key => '${eventId}_$uid';
 
-  bool get hasLiveOffer => offerExpiresAt != null;
+  /// Whether a waitlist offer is still open at [now]. The read model keeps
+  /// an active offer's expiry after it passes, so the clock decides.
+  bool hasLiveOfferAt(DateTime now) => offerExpiresAt?.isAfter(now) ?? false;
 
   static DateTime? _dateOf(Object? millis) => millis == null
       ? null
@@ -72,14 +74,38 @@ class HostRequest {
 class HostRequests {
   const HostRequests({required this.rows, required this.complete});
 
-  factory HostRequests.fromJson(Map<String, Object?> json) => HostRequests(
-    rows: [
-      for (final row in json['rows']! as List<Object?>)
-        HostRequest.fromJson(Map<String, Object?>.from(row! as Map)),
-    ],
-    complete: json['complete']! as bool,
-  );
+  /// Everyone waiting across the event views [views], soonest event first and
+  /// oldest ask first, leaving out anyone in [hidden] (a block either way
+  /// with the reader). [moreEvents] says the event window left views out.
+  factory HostRequests.fromViews(
+    Iterable<Map<String, Object?>> views, {
+    required Set<String> hidden,
+    required bool moreEvents,
+  }) {
+    var complete = !moreEvents;
+    final rows = <HostRequest>[];
+    for (final view in views) {
+      if (view['complete'] != true) complete = false;
+      for (final row in view['rows']! as List<Object?>) {
+        final request = HostRequest.fromJson(
+          Map<String, Object?>.from(row! as Map),
+        );
+        if (!hidden.contains(request.uid)) rows.add(request);
+      }
+    }
+    rows.sort(_compare);
+    return HostRequests(rows: List.unmodifiable(rows), complete: complete);
+  }
 
   final List<HostRequest> rows;
   final bool complete;
+
+  static int _compare(HostRequest left, HostRequest right) {
+    final byEvent = left.eventStart.compareTo(right.eventStart);
+    if (byEvent != 0) return byEvent;
+    final byAsk = (left.askedAt?.millisecondsSinceEpoch ?? 0).compareTo(
+      right.askedAt?.millisecondsSinceEpoch ?? 0,
+    );
+    return byAsk != 0 ? byAsk : left.uid.compareTo(right.uid);
+  }
 }

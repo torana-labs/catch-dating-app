@@ -5,8 +5,9 @@
  * owns only their words. `organiser` and `plan` are the nouns the page counts
  * in ("14 clubs", "23 runs"); `lead` opens the page.
  *
- * `firstTime` and `faq` add format-specific bands where the redesign board
- * wrote them (PlaybookCityFormat: run clubs). Other formats show the shared
+ * `firstTime`, `faq` and `claimTitle` (the mint card after the organisers)
+ * add format-specific words where the redesign board wrote them
+ * (PlaybookCityFormat: run clubs). Other formats show the shared
  * questions in cityFormatPage.ts only.
  */
 export const discoveryFormatCopy = {
@@ -16,6 +17,7 @@ export const discoveryFormatCopy = {
     planOne: "run", planMany: "runs",
     lead: "Social runs for every pace. Book a place, run with a group, stay for coffee.",
     joinAction: "List your club",
+    claimTitle: "Run a club in {city}?",
     firstTime: {
       kicker: "First time?",
       title: "Joining a run club in {city}.",

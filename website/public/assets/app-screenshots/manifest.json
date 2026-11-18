@@ -59,7 +59,8 @@
       "walkthroughStep": "Get found",
       "pages": [
         "/",
-        "/host/"
+        "/host/",
+        "/mumbai/run-clubs/"
       ]
     },
     {
@@ -269,7 +270,9 @@
       "caption": "Fictional app preview. Checked in: the small group you’ll meet first.",
       "walkthroughStep": "Show up",
       "pages": [
-        "/"
+        "/",
+        "/mumbai/run-clubs/",
+        "/new-to-mumbai/"
       ]
     },
     {

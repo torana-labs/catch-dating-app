@@ -60,6 +60,17 @@
 .stack[data-gap="64"] { gap: var(--catch-space-s16); }
 .stack[data-gap="section"] { gap: var(--catch-section-gap, var(--catch-layout-section-gap-compact)); }
 
+/* The website's own gaps (catchWebStackGaps): the organiser page's rail and section rhythm. */
+.stack[data-gap="14"] { gap: var(--catch-space-micro14); }
+.stack[data-gap="profile"] { gap: var(--catch-website-profile-section-gap); }
+:global([data-size="compact"]) .stack[data-gap="profile"] { gap: var(--catch-website-profile-compact-section-gap); }
+
+/* A hairline above the stack (web only), as the organiser board's closing row. */
+.stack[data-divider-above] {
+  padding-top: var(--catch-space-s6);
+  border-top: var(--catch-stroke-hairline) solid var(--catch-theme-line);
+}
+
 .stack[data-align="start"] { align-items: flex-start; }
 .stack[data-align="center"] { align-items: center; }
 .stack[data-align="end"] { align-items: flex-end; }

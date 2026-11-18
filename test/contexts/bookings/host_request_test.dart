@@ -21,27 +21,77 @@ Map<String, Object?> _row({
 };
 
 void main() {
-  test('a response reads every row', () {
-    final requests = HostRequests.fromJson({
-      'complete': true,
-      'rows': [_row(), _row(kind: 'waitlist', position: 1)],
-    });
-    expect(requests.rows, hasLength(2));
+  test('event views read every row, soonest event and oldest ask first', () {
+    final requests = HostRequests.fromViews(
+      [
+        {
+          'complete': true,
+          'rows': [
+            {..._row(), 'eventId': 'later', 'eventStartMillis': 1763164900000},
+          ],
+        },
+        {
+          'complete': true,
+          'rows': [
+            {..._row(), 'uid': 'nikhil', 'askedAtMillis': 2},
+            {..._row(kind: 'waitlist', position: 1), 'askedAtMillis': 1},
+          ],
+        },
+      ],
+      hidden: const {},
+      moreEvents: false,
+    );
+    expect(requests.rows.map((row) => row.key), [
+      'trivia_zoya',
+      'trivia_nikhil',
+      'later_zoya',
+    ]);
     expect(requests.complete, isTrue);
+  });
+
+  test('a block either way hides the person; a cut view is incomplete', () {
+    final requests = HostRequests.fromViews(
+      [
+        {
+          'complete': false,
+          'rows': [
+            _row(),
+            {..._row(), 'uid': 'nikhil'},
+          ],
+        },
+      ],
+      hidden: const {'zoya'},
+      moreEvents: false,
+    );
+    expect(requests.rows.map((row) => row.uid), ['nikhil']);
+    expect(requests.complete, isFalse);
+    expect(
+      HostRequests.fromViews(
+        const [],
+        hidden: const {},
+        moreEvents: true,
+      ).complete,
+      isFalse,
+    );
   });
 
   test('a person waiting on two events is two rows', () {
     final row = HostRequest.fromJson(_row());
     expect(row.key, 'trivia_zoya');
     expect(row.kind, HostRequestKind.request);
-    expect(row.hasLiveOffer, isFalse);
+    expect(row.hasLiveOfferAt(DateTime(2025)), isFalse);
   });
 
-  test('a live offer is read from when it runs out', () {
+  test('an offer is live until the clock passes its expiry', () {
     final row = HostRequest.fromJson(
       _row(kind: 'waitlist', position: 1, expires: 1763100000000),
     );
-    expect(row.hasLiveOffer, isTrue);
+    final expiry = DateTime.fromMillisecondsSinceEpoch(1763100000000);
+    expect(
+      row.hasLiveOfferAt(expiry.subtract(const Duration(minutes: 1))),
+      isTrue,
+    );
+    expect(row.hasLiveOfferAt(expiry), isFalse);
     expect(row.waitlistPosition, 1);
   });
 }

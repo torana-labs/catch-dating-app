@@ -110,42 +110,120 @@ extension HostEventOfferWorkspaceExistingOfferActions
     }
   }
 
-  Future<void> refreshOffers() => _fetchOffers(append: false);
-
-  Future<void> _fetchOffers({required bool append}) async {
+  /// Listens again to the selected people's offers, after an error or when
+  /// the host asks. The list is a listener, so changes arrive on their own.
+  Future<void> refreshOffers() async {
     if (!_active) return;
     final event = _event;
     final accountId = _accountId;
     final generation = _generation;
-    if (event == null || accountId == null) {
+    if (event == null || accountId == null || _details.isEmpty) {
       return;
     }
     try {
-      final response = await _listOffers(
-        organizerId: _organizerId,
+      final items = await _listenOffers(
         eventId: event.eventId,
-        afterOfferId: append ? _nextOfferCursor : null,
+        details: _details,
+        generation: generation,
+        accountId: accountId,
       );
       if (!_current(generation, accountId) ||
           _event?.eventId != event.eventId) {
         return;
       }
-      final page = HostOfferWorkspacePolicy.offerPage(
-        response: response,
-        eventId: event.eventId,
-        previousCursor: _nextOfferCursor,
-        append: append,
-        details: _details,
-        offers: _offers,
-      );
-      _update(() {
-        _offers = page.items;
-        _nextOfferCursor = page.cursor;
-      });
+      _update(() => _offers = items);
+      _selectAwaitedOffer();
     } on Object catch (error) {
       if (_current(generation, accountId)) _update(() => _error = error);
     }
   }
+
+  /// Starts the offers listener for [eventId] and the selected people in
+  /// [details], replacing any earlier one. Completes with its first value;
+  /// later values update the list while the selection is current.
+  Future<List<Map<String, Object?>>> _listenOffers({
+    required String eventId,
+    required List<HostFormResponseDetail> details,
+    required int generation,
+    required String accountId,
+  }) {
+    _stopOffers();
+    final first = Completer<List<Map<String, Object?>>>();
+    final contactIds = {
+      for (final detail in details)
+        if (detail.contactId case final String id) id,
+    };
+    _offersSubscription =
+        _watchOffers(
+          organizerId: _organizerId,
+          eventId: eventId,
+          contactIds: contactIds,
+        ).listen(
+          (items) {
+            final List<Map<String, Object?>> visible;
+            try {
+              visible = HostOfferWorkspacePolicy.offerItems(
+                items: items,
+                eventId: eventId,
+                details: details,
+              );
+            } on Object catch (error, stackTrace) {
+              if (!first.isCompleted) {
+                first.completeError(error, stackTrace);
+              } else if (_current(generation, accountId)) {
+                _update(() => _error = error);
+              }
+              return;
+            }
+            if (!first.isCompleted) {
+              first.complete(visible);
+              return;
+            }
+            if (!_current(generation, accountId) ||
+                _event?.eventId != eventId) {
+              return;
+            }
+            _update(() => _offers = visible);
+            _selectAwaitedOffer();
+          },
+          onError: (Object error, StackTrace stackTrace) {
+            if (!first.isCompleted) {
+              first.completeError(error, stackTrace);
+            } else if (_current(generation, accountId)) {
+              _update(() => _error = error);
+            }
+          },
+        );
+    return first.future;
+  }
+
+  /// After a commit, selects the single offer once the list shows every
+  /// offer the receipt named.
+  void _selectAwaitedOffer() {
+    final awaited = _awaitedOfferIds;
+    if (awaited == null || !_active) return;
+    final shown = {for (final item in _offers) item['offerId']};
+    if (!awaited.every(shown.contains)) return;
+    _awaitedOfferIds = null;
+    if (_ids.length == 1 && _offers.length == 1) {
+      final existing = _offers.single;
+      // Select after the commit's own state update settles.
+      scheduleMicrotask(() {
+        if (_active) selectExisting(existing);
+      });
+    }
+  }
+
+  /// The selected offer as its listener shows it now.
+  Future<HostEventOffer> _currentOffer({
+    required String organizerId,
+    required String eventId,
+    required String contactId,
+  }) async => (await _watchOffer(
+    organizerId: organizerId,
+    eventId: eventId,
+    contactId: contactId,
+  ).firstWhere((offer) => offer != null))!;
 
   Future<void> selectExisting(Map<String, Object?> item) async {
     if (!_active) return;
@@ -167,20 +245,16 @@ extension HostEventOfferWorkspaceExistingOfferActions
       _error = null;
     });
     try {
-      final offer = await _getOffer(
-        organizerId: _organizerId,
+      final offer = await _listenSelected(
         eventId: event.eventId,
         contactId: contactId,
+        offerId: offerId,
+        generation: generation,
+        accountId: accountId,
       );
       if (!_current(generation, accountId) ||
           _event?.eventId != event.eventId) {
         return;
-      }
-      if (offer.organizerId != _organizerId ||
-          offer.eventId != event.eventId ||
-          offer.contactId != contactId ||
-          offer.offerId != offerId) {
-        throw const FormatException('Offer detail does not match selection.');
       }
       _update(() {
         _selectedOffer = offer;
@@ -202,6 +276,76 @@ extension HostEventOfferWorkspaceExistingOfferActions
     }
   }
 
+  /// Starts the selected offer's listener, replacing any earlier one.
+  /// Completes with its first value; a later revision (a reference the guest
+  /// sent, another manager's review) replaces the selection while it is
+  /// still this offer.
+  Future<HostEventOffer> _listenSelected({
+    required String eventId,
+    required String contactId,
+    required String offerId,
+    required int generation,
+    required String accountId,
+  }) {
+    _stopSelected();
+    final first = Completer<HostEventOffer>();
+    void check(HostEventOffer offer) {
+      if (offer.organizerId != _organizerId ||
+          offer.eventId != eventId ||
+          offer.contactId != contactId ||
+          offer.offerId != offerId) {
+        throw const FormatException('Offer detail does not match selection.');
+      }
+    }
+
+    _selectedSubscription =
+        _watchOffer(
+          organizerId: _organizerId,
+          eventId: eventId,
+          contactId: contactId,
+        ).listen(
+          (offer) {
+            if (offer == null) {
+              if (!first.isCompleted) {
+                first.completeError(
+                  const FormatException('Offer is unavailable.'),
+                );
+              }
+              return;
+            }
+            try {
+              check(offer);
+            } on Object catch (error, stackTrace) {
+              if (!first.isCompleted) {
+                first.completeError(error, stackTrace);
+              } else if (_current(generation, accountId)) {
+                _update(() => _error = error);
+              }
+              return;
+            }
+            if (!first.isCompleted) {
+              first.complete(offer);
+            } else if (_current(generation, accountId) &&
+                !_isLoading &&
+                _selectedOffer?.offerId == offer.offerId &&
+                !HostOfferWorkspacePolicy.sameOfferRevision(
+                  _selectedOffer,
+                  offer,
+                )) {
+              manualUpdated(offer);
+            }
+          },
+          onError: (Object error, StackTrace stackTrace) {
+            if (!first.isCompleted) {
+              first.completeError(error, stackTrace);
+            } else if (_current(generation, accountId)) {
+              _update(() => _error = error);
+            }
+          },
+        );
+    return first.future;
+  }
+
   void manualUpdated(HostEventOffer updated) {
     if (!_active) return;
     final previous = _selectedOffer;
@@ -219,7 +363,6 @@ extension HostEventOfferWorkspaceExistingOfferActions
       _reviewRequestId = HostOfferWorkspacePolicy.newRequestId();
       _messageCopied = false;
     });
-    refreshOffers();
   }
 
   Future<void> prepareSelectedHandoff() async {
@@ -239,7 +382,7 @@ extension HostEventOfferWorkspaceExistingOfferActions
     try {
       final prepared = await HostOfferWorkspacePolicy.verifiedHandoff(
         selected: selected,
-        getOffer: _getOffer,
+        getOffer: _currentOffer,
         prepareHandoff: _prepareHandoff,
         isCurrent: () =>
             _current(generation, accountId) && _sameSelectedOffer(selected),
@@ -321,11 +464,10 @@ extension HostEventOfferWorkspaceExistingOfferActions
   void closeExisting() {
     if (!_active) return;
     if (_isLoading) return;
+    _stopSelected();
     _update(() {
       _selectedOffer = null;
       _handoff = null;
     });
   }
-
-  Future<void> fetchMoreOffers() => _fetchOffers(append: true);
 }

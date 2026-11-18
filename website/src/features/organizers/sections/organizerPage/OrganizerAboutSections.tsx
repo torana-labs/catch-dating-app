@@ -21,7 +21,7 @@ export function OrganizerAboutSection({controller}: {controller: OrganizerPageCo
   if (!about.text && !about.facts.length && !about.host) return null;
   return (
     <CatchStack aria-labelledby={titleId} as="section" gap={16} id="about">
-      <CatchBandHeader lead={about.text || undefined} size="feature" title={copy.aboutTitle} titleId={titleId} />
+      <CatchBandHeader lead={about.text || undefined} size="profile" title={copy.aboutTitle} titleId={titleId} />
       {about.formats.length ? (
         <CatchStack direction="row" gap={8} wrap>
           {about.formats.map((format) => <CatchBadge key={format} label={format} size="md" tone="neutral" />)}
@@ -63,7 +63,7 @@ export function OrganizerClaimSection({controller}: {controller: OrganizerPageCo
     <CatchGroundCard aria-labelledby={titleId} as="section" ground="indigo" id="claim" padding="spacious">
       <CatchStack gap={16}>
         <CatchBandHeader ground="indigo" kicker={pitch.label} lead={waiting ? `${waiting}. ${claim.built}` : claim.built}
-          size="feature" title={pitch.title} titleId={titleId} />
+          size="profile" title={pitch.title} titleId={titleId} />
         <CatchGrid columns={2} compactColumns={1}>
           {pitch.points.map((point) => (
             <CatchGroundCard ground="white" key={point.title} padding="compact">
@@ -93,7 +93,7 @@ export function OrganizerPageFooter({controller}: {controller: OrganizerPageCont
   const {footer} = controller.view;
   return (
     // Not a <footer>: the site footer is the page's one contentinfo landmark.
-    <CatchStack align="center" direction="row" gap={12} justify="between" wrap>
+    <CatchStack align="center" direction="row" dividerAbove gap={12} justify="between" wrap>
       <CatchText tone="secondary" variant="body-small">{footer.line}</CatchText>
       <CatchButton href={footer.href} label={footer.link} size="sm" variant="quiet" />
     </CatchStack>

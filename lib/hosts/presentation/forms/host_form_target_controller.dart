@@ -90,10 +90,9 @@ mixin _HostFormEditorTargetMixin on _$HostFormEditorController {
     if (!editorBoundTo(_editorAccountId)) {
       return Future.error(StateError('The form editor account changed.'));
     }
-    return CallableHostOfferEventTargetsGateway(
-      ref.read(firebaseFunctionsProvider),
-      configurations: ref.read(eventOfferConfigurationReadsProvider),
-    ).list(organizerId: organizerId, cursor: cursor);
+    return ref
+        .read(hostOfferEventTargetsGatewayProvider)
+        .list(organizerId: organizerId, cursor: cursor);
   }
 
   void updateTarget({

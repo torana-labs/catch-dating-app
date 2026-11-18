@@ -1,6 +1,6 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {expect} from "storybook/test";
-import {CatchBadge, type CatchBadgeTone} from "./CatchBadge";
+import {CatchBadge, catchWebBadgeTones, type CatchBadgeTone, type CatchWebBadgeTone} from "./CatchBadge";
 import {CatchGap} from "./CatchGap";
 import {CatchPageBody} from "./CatchPageBody";
 
@@ -13,7 +13,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const tones: CatchBadgeTone[] = ["neutral", "brand", "success", "warning", "danger", "gold", "affinity"];
+// Flutter's tones, then the website's soft source tags.
+const tones: Array<CatchBadgeTone | CatchWebBadgeTone> = [
+  "neutral", "brand", "success", "warning", "danger", "gold", "affinity", ...catchWebBadgeTones,
+];
 
 function CheckGlyph() {
   return (

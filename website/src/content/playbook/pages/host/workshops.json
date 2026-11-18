@@ -171,14 +171,9 @@
       "ground": "yellow",
       "kicker": "Your next workshop",
       "title": "Fill the room. Then fill the next one.",
-      "lead": "Start the free trial, or message us on WhatsApp and we’ll send you the workshop setup guide.",
+      "lead": "Start the free trial, or leave your number and we’ll send the workshop setup guide on WhatsApp.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {
-          "label": "Get the setup guide on WhatsApp",
-          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, please send me the workshop setup guide."},
-          "emphasis": "secondary"
-        }
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
       "leadForm": {"id": "workshop_setup_guide", "requestKind": "guide", "format": "workshops", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."}
     }

@@ -56,7 +56,7 @@ final class HostEventOfferDependenciesProvider
 }
 
 String _$hostEventOfferDependenciesHash() =>
-    r'ed9932e7a40e42bd7d3d7350af6148ab5c875780';
+    r'198b5f658d5d13f269972cd70b70a6933738e239';
 
 @ProviderFor(HostEventOfferController)
 final hostEventOfferControllerProvider = HostEventOfferControllerFamily._();

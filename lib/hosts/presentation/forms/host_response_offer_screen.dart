@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_view_reads.dart';
-import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_gateway.dart';
+import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
@@ -213,9 +213,13 @@ class _HostResponseOfferScreenState
       );
       ref.watch(hostEventOfferControllerProvider(_offerScope!));
     }
+    final reads = ref.read(hostEventOfferReadsProvider);
     final gateway = available
         // provider-graph: ownership-widget-backend:_HostResponseOfferScreenState.build:read:firebaseFunctionsProvider planned CAT156 max=3 -- _HostResponseOfferScreenState.build reads the Functions SDK to construct/wire legacy Host repository or gateway business dependencies in presentation. Move this DI into the repository/controller seam with its companion construction debt; auth-currentness reads and test overrides must remain intact.
-        ? CallableHostEventOfferGateway(ref.read(firebaseFunctionsProvider))
+        ? CallableHostEventOfferGateway(
+            ref.read(firebaseFunctionsProvider),
+            reads: reads,
+          )
         : null;
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchLegacyTopBar.route(
@@ -251,20 +255,15 @@ class _HostResponseOfferScreenState
                     initiallyReviewSelection: true,
                     initialEventTarget: _created,
                     onCreateEvent: _creating ? null : _createEvent,
-                    listOffers: gateway!.listOffers,
-                    getOffer: gateway.getOffer,
-                    prepareHandoff: gateway.prepareHandoff,
+                    watchOffers: reads.watchOffers,
+                    watchOffer: reads.watchOffer,
+                    prepareHandoff: gateway!.prepareHandoff,
                     copyMessage: (text) =>
                         ref.read(clipboardControllerProvider).copyText(text),
                     openHandoff: (uri) => ref
                         .read(externalLinkControllerProvider)
                         .openExternal(uri),
-                    targets: CallableHostOfferEventTargetsGateway(
-                      ref.read(firebaseFunctionsProvider),
-                      configurations: ref.read(
-                        eventOfferConfigurationReadsProvider,
-                      ),
-                    ),
+                    targets: ref.read(hostOfferEventTargetsGatewayProvider),
                     getResponseDetail: (id) => ref.refresh(
                       hostFormResponseDetailProvider(
                         organizerId: widget.organizerId,

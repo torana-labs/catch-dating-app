@@ -143,14 +143,9 @@
       "ground": "magenta",
       "kicker": "Your next night",
       "title": "Everyone mixing. Everyone home.",
-      "lead": "Start the free trial, or message us on WhatsApp and we’ll send you the social night setup guide.",
+      "lead": "Start the free trial, or leave your number and we’ll send the social night setup guide on WhatsApp.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {
-          "label": "Get the setup guide on WhatsApp",
-          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, please send me the social night setup guide."},
-          "emphasis": "secondary"
-        }
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
       "leadForm": {"id": "social_night_setup_guide", "requestKind": "guide", "format": "nightlife", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
       "media": {"kind": "capture", "slot": "guest-explore"}
