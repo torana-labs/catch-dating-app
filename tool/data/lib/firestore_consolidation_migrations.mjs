@@ -873,6 +873,24 @@ export const MIGRATIONS = [
       },
     ],
   },
+  {
+    name: "onboarding-drafts-rename",
+    description:
+      "onboarding_drafts into onboardingDrafts (L7 naming), same ids and " +
+      "data. The app and Functions read and write only the new name; the old " +
+      "documents stay in place, unread, and account deletion still removes " +
+      "the old copy.",
+    steps: [
+      {
+        kind: "create",
+        source: "onboarding_drafts",
+        target: "onboardingDrafts",
+        skipReason: "not a usable document id",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data) => data,
+      },
+    ],
+  },
 ];
 
 /**
