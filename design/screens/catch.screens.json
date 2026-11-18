@@ -512,6 +512,32 @@
           "expression": "CatchScreen",
           "bodyGeometry": "standard",
           "topEdge": "safe-area"
+        },
+        {
+          "routes": [
+            "hostAppEventManageScreen",
+            "hostAppAttendanceSheet",
+            "hostAppEventSuccessScreen"
+          ],
+          "file": "lib/hosts/live/formats/formats_run_screen.dart",
+          "symbol": "_HostFormatsRunScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        },
+        {
+          "routes": [
+            "hostAppEventManageScreen",
+            "hostAppAttendanceSheet",
+            "hostAppEventSuccessScreen"
+          ],
+          "file": "lib/hosts/live/formats/formats_crawl_screen.dart",
+          "symbol": "_HostFormatsCrawlScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
         }
       ],
       "reason": "Host management and operator routes are governed pushed routes across route-state and loaded owners."
@@ -2094,6 +2120,19 @@
         }
       ],
       "reason": "Event defaults push the organizer defaults spoke, which owns its routed scaffold."
+    },
+    "HostFormatsSweepScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/live/formats/formats_sweep_screen.dart",
+          "symbol": "_HostFormatsSweepScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The run console and the crawl board push the return sweep as a system pushed screen."
     }
   },
   "screens": [

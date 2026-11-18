@@ -8,6 +8,7 @@ import 'package:catch_dating_app/hosts/live/formats/formats_crawl_body.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_crawl_commands_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_crawl_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_crawl_state.dart';
+import 'package:catch_dating_app/hosts/live/formats/formats_sweep_screen.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_ticker.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_top_bar.dart';
 import 'package:catch_dating_app/hosts/live/formats/widgets/formats_crawl_change_sheet.dart';
@@ -40,6 +41,7 @@ class HostFormatsCrawlScreen extends ConsumerStatefulWidget {
     required this.event,
     this.now,
     this.moving = false,
+    this.onBack,
   });
 
   final Organizer organizer;
@@ -50,6 +52,9 @@ class HostFormatsCrawlScreen extends ConsumerStatefulWidget {
 
   /// Opens with the move sheet up, for previews.
   final bool moving;
+
+  /// Null pops the nearest navigator.
+  final VoidCallback? onBack;
 
   @override
   ConsumerState<HostFormatsCrawlScreen> createState() =>
@@ -119,6 +124,7 @@ class _HostFormatsCrawlScreenState extends ConsumerState<HostFormatsCrawlScreen>
               context,
               event: event,
               now: now,
+              onBack: widget.onBack,
               kicker: l10n.hostFormatsCrawlTopKicker(
                 host: widget.organizer.name,
                 count: state.booked,
@@ -132,6 +138,16 @@ class _HostFormatsCrawlScreenState extends ConsumerState<HostFormatsCrawlScreen>
                 _requestId = null;
               }),
               onMessage: _compose,
+              onSweep: () => unawaited(
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => HostFormatsSweepScreen(
+                      organizer: widget.organizer,
+                      event: event,
+                    ),
+                  ),
+                ),
+              ),
               onRetry: () {
                 ref.invalidate(watchEventAttendeesProvider(event.id));
                 ref.invalidate(watchEventSuccessPlanProvider(event.id));

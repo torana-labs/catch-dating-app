@@ -147,13 +147,12 @@ class HostEventManageRouteScreen extends ConsumerWidget {
         final onBack =
             CatchWorkspaceBackScope.maybeOf(context) ??
             () => Navigator.of(context).maybePop();
+        final plan = ref.watch(watchEventSuccessPlanProvider(event.id)).value;
         final destination = hostEventRouteDestination(
           section: initialSection,
           phase: hostEventWorkspacePhaseFor(event: event, now: now),
-          liveConsoleFits: hostLiveConsoleFits(
-            event,
-            plan: ref.watch(watchEventSuccessPlanProvider(event.id)).value,
-          ),
+          liveConsoleFits: hostLiveConsoleFits(event, plan: plan),
+          movingNight: hostMovingNightView(event, plan: plan),
         );
         return switch (destination) {
           HostEventRouteDestination.report => HostEventReportScreen(
@@ -176,8 +175,20 @@ class HostEventManageRouteScreen extends ConsumerWidget {
             ),
             now: referenceNow,
           ),
-          // Setup and guests return above; a night that moves or has a saved
-          // room layout keeps the old movement console.
+          HostEventRouteDestination.runConsole => HostFormatsRunScreen(
+            organizer: organizer,
+            event: event,
+            onBack: onBack,
+            now: referenceNow,
+          ),
+          HostEventRouteDestination.crawlBoard => HostFormatsCrawlScreen(
+            organizer: organizer,
+            event: event,
+            onBack: onBack,
+            now: referenceNow,
+          ),
+          // Setup and guests return above; a night with a saved room layout
+          // keeps the old console and its room map.
           HostEventRouteDestination.workspace ||
           HostEventRouteDestination.guests ||
           HostEventRouteDestination.movementConsole => HostEventManageScreen(
