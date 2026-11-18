@@ -91,7 +91,7 @@ export const Pricing390: Story = {
   render: () => <PlaybookAt page={pricingPage} width={390} />,
 };
 
-/** The calculator at the cap: the fee stops at the cap for the billing cycle. */
+/** The calculator at the cap: the fee stops at the cap for the month. */
 export const PricingCapped: Story = {
   name: "/pricing/ · calculator at the cap",
   parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["pricing"], states: ["pricing"]}},

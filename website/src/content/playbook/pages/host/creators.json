@@ -6,7 +6,7 @@
     "title": "{{brand.name}} for creators | Meetups your followers book and pay for",
     "description": "A page for your bio link, meetups your audience books and pays for in a minute, a link for every post, and memberships for the people who come to everything.",
     "socialDescription": "Your followers, in one room. {{brand.name}} for creators who host meetups.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
@@ -115,7 +115,7 @@
         {"title": "Memberships", "body": "Superfans book first."},
         {"title": "Followers", "body": "Hear about every meetup."},
         {"title": "Guest records", "body": "Who came, who came back."},
-        {"title": "A cap on fees", "body": "Never more than ₹10,000 per billing cycle."}
+        {"title": "A cap on fees", "body": "Never more than ₹10,000 a month."}
       ]
     },
     {
@@ -124,11 +124,11 @@
       "ground": "ink",
       "kicker": "Pricing for creators",
       "price": "5%",
-      "title": "of tickets and memberships, never more than ₹10,000 per billing cycle.",
+      "title": "of tickets and memberships, never more than ₹10,000 a month.",
       "trial": "Free for 30 days from your first meetup, 90 for founding hosts. Payment gateway fees are separate.",
       "examples": [
         {"title": "A 25-seat food walk at ₹1,200", "value": "₹1,500 a walk", "body": "5% of ₹30,000."},
-        {"title": "60 members at ₹299 a month", "value": "₹897 a billing cycle", "body": "5% of ₹17,940 in renewals."},
+        {"title": "60 members at ₹299 a month", "value": "₹897 a month", "body": "5% of ₹17,940 in renewals."},
         {"title": "A free meet-and-greet", "value": "₹0", "body": "Free events stay free."}
       ],
       "actions": [

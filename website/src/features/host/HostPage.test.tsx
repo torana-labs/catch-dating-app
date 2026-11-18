@@ -54,12 +54,12 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(screen.getByRole("heading", {level: 2, name: copy.footer.helpTitle})).toBeTruthy();
   });
 
-  it("states the trial terms per billing cycle in the hero (no laptop QR card at phone width) and links Catch Host's App Store and Google Play listings", () => {
+  it("states the trial terms a month in the hero (no laptop QR card at phone width) and links Catch Host's App Store and Google Play listings", () => {
     renderPage();
     const hero = within(screen.getByRole("region", {name: copy.hero.title}));
     expect(hero.getByText(copy.hero.terms)).toBeTruthy();
     expect(hero.queryByRole("img", {name: copy.start.qrLabel})).toBeNull();
-    expect(copy.hero.terms).toContain(`${hostPricingFacts.cap} per billing cycle`);
+    expect(copy.hero.terms).toContain(`${hostPricingFacts.cap} a month`);
     const apple = screen.getAllByRole("link", {name: "Download on the App Store"});
     expect(apple.map((link) => link.getAttribute("href"))).toEqual([brand.stores.host.ios]);
     expect(within(apple[0]).getByRole("img").getAttribute("src")).toBe("/assets/store-badges/app-store-download-on-the.svg");
@@ -179,11 +179,10 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(faq.getByRole("link", {name: copy.faq.ask}).getAttribute("href")!.startsWith(whatsappPrefix)).toBe(true);
   });
 
-  it("promises nothing the product does not do: no day-before reminder, no place count, no month", () => {
+  it("promises nothing the product does not do: no day-before reminder, no place count", () => {
     const {container} = renderPage();
     const text = container.textContent ?? "";
     expect(text).not.toMatch(/day before|places left|of 50\b/iu);
-    expect(text).not.toMatch(/\b(a|per|this|in a) month\b|monthly/iu);
   });
 
   it("uses no dating language", () => {

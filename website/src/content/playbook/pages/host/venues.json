@@ -6,7 +6,7 @@
     "title": "{{brand.name}} for venues | Fill quiet nights with tickets paid upfront",
     "description": "Run quiz, supper and court nights at your café, bar, brewery or courts, with tickets paid upfront and a link for every promoter. 5% of tickets only, never food and drink.",
     "socialDescription": "Turn a quiet Tuesday into a night people come back for. {{brand.name}} for cafés, bars, breweries and courts.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
@@ -86,7 +86,7 @@
       "items": [
         {
           "title": "Quiz and game nights",
-          "body": "Teams formed at the door, scores on the screen.",
+          "body": "Teams planned for you, scores entered live.",
           "link": {"label": "For quiz nights", "to": {"route": "host_quiz_nights"}},
           "ground": "yellow"
         },
@@ -98,7 +98,7 @@
         },
         {
           "title": "Court socials",
-          "body": "Levels, rotations and fair court time.",
+          "body": "Levels, rotations and court time for everyone.",
           "link": {"label": "For racket sports", "to": {"route": "host_racket_sports"}},
           "ground": "mint"
         },
@@ -188,7 +188,7 @@
         {"title": "Ready-made formats", "body": "Quiz, supper, courts, run clubs."},
         {"title": "A quick door", "body": "Scan in, find your team or table."},
         {"title": "Partner hosts welcome", "body": "Nights by hosts you approve."},
-        {"title": "A cap on what you pay", "body": "Never more than ₹10,000 per billing cycle."}
+        {"title": "A cap on what you pay", "body": "Never more than ₹10,000 a month."}
       ]
     },
     {
@@ -197,11 +197,11 @@
       "ground": "ink",
       "kicker": "Pricing for venues",
       "price": "5%",
-      "title": "of ticket sales, never more than ₹10,000 per billing cycle.",
+      "title": "of ticket sales, never more than ₹10,000 a month.",
       "trial": "Free for 30 days from your first night, 90 for founding hosts. Payment gateway fees are separate.",
       "examples": [
         {"title": "A 60-seat quiz at ₹400", "value": "₹1,200 a night", "body": "5% of ₹24,000. Food and drink aren’t counted."},
-        {"title": "A quiz every Tuesday", "value": "₹4,800 to ₹6,000 a billing cycle", "body": "Four or five quizzes in 30 days, well under the ₹10,000 cap."},
+        {"title": "A quiz every Tuesday", "value": "₹4,800 to ₹6,000 a month", "body": "Four or five quizzes a month, well under the ₹10,000 cap."},
         {"title": "A night run by a partner host", "value": "₹0 to you", "body": "The host pays on their own tickets."}
       ],
       "actions": [
@@ -216,7 +216,7 @@
       "kicker": "Venue questions",
       "title": "What hosts ask us.",
       "items": [
-        {"question": "Do you take a cut of food and drink?", "answer": "No. {{brand.name}} charges 5% of ticket sales only, never more than ₹10,000 per billing cycle. What guests spend at the bar is yours."},
+        {"question": "Do you take a cut of food and drink?", "answer": "No. {{brand.name}} charges 5% of ticket sales only, never more than ₹10,000 a month. What guests spend at the bar is yours."},
         {"question": "We have no one to run the night. Can a host do it?", "answer": "Yes. List your space and we’ll introduce you to hosts as matching starts. Until then, you can invite a host you know to run a night at your venue on {{brand.name}}."},
         {"question": "Can we sell a ticket that includes food or a drink?", "answer": "Yes. Set the price and say what’s included on the page. The kitchen sees the numbers before the night."},
         {"question": "Can promoters be paid on what they bring?", "answer": "Each promoter gets their own link, and {{brand.name}} shows the bookings and revenue from it. How you pay them is up to you."},
