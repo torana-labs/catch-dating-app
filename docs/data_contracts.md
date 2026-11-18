@@ -5037,6 +5037,24 @@ about the flight, claimant or pickup point; hotel desk duty covering the hotel
 reads them by a query naming `programId` and `hotelId`. Neither holds a phone
 number or other contact field.
 
+`programStaffViews/{programId}__{uid}` (#1339) is the administrators' staff
+list, kept by triggers on `programStaffGrants` and `organizerPrograms` and
+created for existing grants by the `program-staff-views` copy-forward
+migration. A row is exactly the member row `listProgramStaff` returns (display
+name, last four phone digits, the duty assignments with scopes and expiries,
+the grant's expiry and revision), with the status the callable computed from
+the clock replaced by the facts it computes from: `revoked`, `ownerApproved`
+(the owner's approval proof is present and valid), `activeFromMillis` and
+`activeUntilMillis` (the latest expiry of an assignment the grant and the
+approval allow, null when none does). The phone derives revoked, approval
+required, expired or active from those and its clock. Rules let accounts
+holding the programme administration duty, and the owner, get or list rows with
+a query naming `programId`; a coordinator holds every duty but programAdmin and
+reads none. Display names and phone digits are personal data and are scrubbed
+with the grant by archive anonymization, which reaches the rows through the
+grant trigger. `revokeProgramStaff` and `grantProgramStaff` stay callables
+fenced by the grant's revision.
+
 `organizerCampaigns.recipientSource` names where recipients resolve:
 `savedAudience` (default, backed by `savedAudienceId`) or
 `programSelection`, which draws from programFunctionGuests/programGuests

@@ -591,6 +591,26 @@ covers the trip's pickup point and hotel together, through the access view's
 and `programHotelInboundViews` (the hotel desk's expected guests). Both
 callables stay deployed for older builds, retire-later.
 
+`listProgramStaff` moves to `programStaffViews` (administrators and the owner;
+the row is the callable's with its status's facts, and the revoke command keeps
+its revision fence). `listProgramStaffAttention` needs no new read model: it
+reads the staff attention alerts of `programAlertViews` (source
+`staffAttention`, alert id `{runId}_{duty}`), under the same duty rule. The
+callables stay deployed for older builds, retire-later.
+
+**Read path decision (Nov 2026, #1339): server-trust.** `listProgramGuests` and
+`listProgramHouseholds` stay callables: their phone numbers and emails are
+resolved from the workspace field assertions and decisions (the disclosure
+evidence a client must not hold), and the `fieldAuthority` and revisions they
+return are the write fence of `upsertProgramGuest`, `upsertProgramHousehold`
+and the field conflict choices.
+
+**Read path decision (Nov 2026, #1339): server-trust.** `getProgramStakeholderCounts`
+and `getProgramAttendanceReport` stay callables: the stakeholder viewer and the
+reconciliation viewer see counts and guest ids only, computed over every
+guest, household, function and journey row, which those roles must not hold,
+and the freshness contract is `hostReports` (five minutes), not a live view.
+
 **Read path decision (Nov 2026, #1339): server-trust.** `getProgramTransportPlan`
 stays a callable: it groups waiting parties into vehicles with an algorithm
 that depends on the current time (wait overdue, dispatch-by) and on every
