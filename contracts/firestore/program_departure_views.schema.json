@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_departure_views.schema.json",
+  "title": "ProgramDepartureViewDocument",
+  "description": "Server-maintained departures desk row of one outbound journey from a hotel: exactly the row getProgramDeparturesRoster returned (guest name, party, flight, leave-by time, the guest's room and desk state). The desk counts are computed on the phone from the rows and its clock. Written by triggers on programTravelLegs, programStays, programGuests and programTravelParties. Readable by accounts whose hotel desk duty covers the hotel, and the programme owner. Never a phone number or other contact field, and never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programDepartureViews",
+  "x-firestore-path": "programDepartureViews/{legId}",
+  "x-document-id-field": "legId",
+  "x-owner": "Programme read model projector (programArrivalViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "legId",
+    "hotelId",
+    "guestId",
+    "guestDisplayName",
+    "partyLabel",
+    "passengers",
+    "luggageUnits",
+    "flightNumber",
+    "flightAtMillis",
+    "leaveByMillis",
+    "roomLabel",
+    "state",
+    "revision",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "legId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "hotelId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "guestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "guestDisplayName": {
+      "type": "string"
+    },
+    "partyLabel": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "passengers": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "luggageUnits": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "flightNumber": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "flightAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "leaveByMillis": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "roomLabel": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "inRoom",
+        "checkedOut",
+        "left",
+        "carNotNeeded"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

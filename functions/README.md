@@ -558,6 +558,13 @@ enter previews.
 | `onProgramAlertLegChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Rewrites a journey's live board alerts and the programme's travel counts when its status changes |
 | `onProgramAlertResolutionChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Merges a taken, finished or deleted alert resolution into its live board alert |
 | `onProgramAlertSendChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Rewrites a live board alert when a staff attention send fires |
+| `onProgramArrivalGuestChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites the rows of a guest's journeys when their name changes |
+| `onProgramArrivalHotelChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites the arrivals rows heading to a hotel when its name changes |
+| `onProgramArrivalLegChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites a journey's arrivals and departures rows, and its party's rows when membership moves |
+| `onProgramArrivalPartyChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites the rows of a travel party's journeys when its label or members change |
+| `onProgramArrivalSettingsChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites every arrivals row's curb time when the programme's transport settings change |
+| `onProgramArrivalStaffLabelChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites the arrivals rows a staff member claimed when their display name changes |
+| `onProgramDepartureStayChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites a guest's departures row at a hotel when their stay's room or status changes |
 | `onProgramDoorFunctionChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites a function's door header, and its whole roster when the invitation list moves |
 | `onProgramDoorGuestChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites a guest's door rows and journal views when their name or household changes |
 | `onProgramDoorHouseholdChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites the door rows of a household's members when its label or members change |
@@ -569,6 +576,7 @@ enter previews.
 | `onProgramHotelViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a hotel's work shell label when it changes |
 | `onProgramHouseholdWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a household's primary phone changes. |
 | `onProgramPickupPointViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a pickup point's work shell label when it changes |
+| `onProgramVendorViewChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites a vendor's per-programme views when its name, active flag or bound programmes change |
 | `onProgramWhatsappInboundMessageCreated` | `src/programs/programWhatsapp/inboundTrigger.ts` | Runs the wedding assistant (handleProgramWhatsappInbound) for each stored inbound guest message; replies through sendProgramServiceReply or passes the thread to the planner. |
 | `onProgramWorkSummaryChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a programme's work shell header when the programme changes |
 | `onSavedEventCardCreated` | `src/guestEvents/triggers.ts` | Writes a new saved-event edge's list card from its event |

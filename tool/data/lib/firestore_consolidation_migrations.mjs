@@ -358,7 +358,7 @@ const programAccessViewFields = [
   "programId", "organizerId", "uid", "ownerUid", "role", "status",
   "activeFromMillis", "expiresAtMillis", "duties", "pickupAll",
   "pickupScoped", "hotelAll", "hotelScoped", "functionAll", "functionScoped",
-  "workPickup", "workHotel", "workFunction", "assignments",
+  "workPickup", "workHotel", "workFunction", "arrivalRoutes", "assignments",
   "grantExpiresAtMillis", "revision", "version",
 ];
 
@@ -420,6 +420,32 @@ const programDoorLiveNowMillis = Date.now();
 
 /** A read model row from current sources, or null when it exists or cannot be built. */
 async function newView(db, collection, id, build) {
+  const existing = await db.collection(collection).doc(id).get();
+  if (existing.exists) return null;
+  try {
+    return await db.runTransaction(build);
+  } catch {
+    // A source that fails its contract gets no view, as in the trigger.
+    return null;
+  }
+}
+
+let programArrivalViewModule = null;
+function functionsProgramArrivalViews() {
+  try {
+    programArrivalViewModule ??= createFunctionsRequire()(
+      "./lib/programs/programArrivalViews.js");
+  } catch (error) {
+    throw new Error(
+      "The program-arrival-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programArrivalViewModule;
+}
+
+/** A read model row from current sources, or null when it exists or cannot be built. */
+async function newArrivalView(db, collection, id, build) {
   const existing = await db.collection(collection).doc(id).get();
   if (existing.exists) return null;
   try {
@@ -1154,6 +1180,59 @@ export const MIGRATIONS = [
         transform: (data, id, db) => newView(db, "programTravelCountViews", id,
           (tx) => functionsProgramDoorLive().board
             .readTravelCountView(db, tx, id)),
+      },
+    ],
+  },
+  {
+    name: "program-arrival-views",
+    description:
+      "Arrivals, departures and the dispatcher's vendor list read " +
+      "programArrivalViews, programDepartureViews and programVendorViews " +
+      "through listeners (#1339) instead of the getProgramArrivalsRoster, " +
+      "getProgramDeparturesRoster and listTransportVendors callables. Every " +
+      "expected, ready or disrupted inbound journey, every outbound journey " +
+      "to a hotel and every bound vendor without a view gets one, with only " +
+      "the fields the callables returned and never a phone number. Views the " +
+      "triggers have already written are left alone; journeys, stays, guests " +
+      "and vendors are never changed. Run program-access-views-refresh " +
+      "first, so access views carry their arrival routes. Build Functions " +
+      "first.",
+    steps: [
+      {
+        source: "programTravelLegs",
+        target: "programArrivalViews",
+        skipReason: "not an expected, ready or disrupted inbound journey, or already viewed",
+        targetId: (id, data) => validId(id) && data.kind === "inbound" ? id : null,
+        transform: (data, id, db) => newArrivalView(db, "programArrivalViews", id,
+          (tx) => functionsProgramArrivalViews()
+            .readProgramArrivalView(db, tx, id)),
+      },
+      {
+        source: "programTravelLegs",
+        target: "programDepartureViews",
+        skipReason: "not an outbound journey to a hotel, or already viewed",
+        targetId: (id, data) => validId(id) && data.kind === "outbound" ? id : null,
+        transform: (data, id, db) => newArrivalView(db, "programDepartureViews", id,
+          (tx) => functionsProgramArrivalViews()
+            .readProgramDepartureView(db, tx, id)),
+      },
+      {
+        source: "transportVendors",
+        target: "programVendorViews",
+        skipReason: "bound to no programme, or already viewed",
+        expand: async (data, id, db) => {
+          if (!validId(id) || !Array.isArray(data.programIds)) return [];
+          const entries = [];
+          for (const programId of data.programIds) {
+            if (!validId(programId)) continue;
+            const viewId = `${programId}__${id}`;
+            const view = await newArrivalView(db, "programVendorViews", viewId,
+              (tx) => functionsProgramArrivalViews()
+                .readProgramVendorView(db, tx, programId, id));
+            if (view) entries.push({targetId: viewId, data: view});
+          }
+          return entries;
+        },
       },
     ],
   },

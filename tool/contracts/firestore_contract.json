@@ -3394,6 +3394,75 @@
       ]
     },
     {
+      "id": "programArrivalViews",
+      "path": "programArrivalViews/{legId}",
+      "rulesMatch": "/programArrivalViews/{legId}",
+      "typescriptInterface": "ProgramArrivalViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_arrivals.rules.test.cjs",
+      "rulesTestNames": [
+        "reads a journey only where one assignment covers its pickup and hotel",
+        "lists one route's journeys, or every journey for the all-routes key"
+      ],
+      "owner": "Programme read model projector: programArrivalViewTriggers",
+      "read": "get and list where one airport greeter, dispatcher or coordinator assignment covers the journey's pickup point and hotel together (programAccessViews arrivalRoutes), and the programme owner, while not deleted; a scoped account lists one route at a time with a query naming programId and the pickup or hotel key",
+      "write": "server only; written from programTravelLegs, programTravelParties, programGuests, programHotels, programStaffGrants and the programme's transport settings",
+      "exportedFunctions": [
+        "onProgramArrivalLegChanged",
+        "onProgramArrivalPartyChanged",
+        "onProgramArrivalGuestChanged",
+        "onProgramArrivalHotelChanged",
+        "onProgramArrivalStaffLabelChanged",
+        "onProgramArrivalSettingsChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the roster row getProgramArrivalsRoster returns, plus the claimant's account id in place of claimedByMe and the pickup and hotel keys rules match; never a phone number. Only expected, ready and disrupted inbound journeys have a view. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programDepartureViews",
+      "path": "programDepartureViews/{legId}",
+      "rulesMatch": "/programDepartureViews/{legId}",
+      "typescriptInterface": "ProgramDepartureViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_arrivals.rules.test.cjs",
+      "rulesTestNames": [
+        "reads a hotel's departures only under a hotel desk duty covering it"
+      ],
+      "owner": "Programme read model projector: programArrivalViewTriggers",
+      "read": "get and list (query naming programId and hotelId) where a hotel desk duty covers the hotel, and the programme owner, while not deleted",
+      "write": "server only; written from programTravelLegs, programStays, programGuests and programTravelParties",
+      "exportedFunctions": [
+        "onProgramArrivalLegChanged",
+        "onProgramArrivalPartyChanged",
+        "onProgramArrivalGuestChanged",
+        "onProgramDepartureStayChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the row getProgramDeparturesRoster returns; the desk counts are computed on the phone from the rows and its clock. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programVendorViews",
+      "path": "programVendorViews/{programId}__{vendorId}",
+      "rulesMatch": "/programVendorViews/{viewId}",
+      "typescriptInterface": "ProgramVendorViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_arrivals.rules.test.cjs",
+      "rulesTestNames": [
+        "gives vendors to dispatchers, with no phone number to read"
+      ],
+      "owner": "Programme read model projector: programArrivalViewTriggers",
+      "read": "get and list (query naming programId) by accounts holding the transport dispatcher duty (coordinators included) and the programme owner, while not deleted",
+      "write": "server only; written from transportVendors, one document per bound programme",
+      "exportedFunctions": [
+        "onProgramVendorViewChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the fields listTransportVendors returned: id, name and active. The vendor's phone number stays in transportVendors, so a read model is possible without withholding by role. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
       "id": "programStaffGrants",
       "path": "programStaffGrants/{grantId}",
       "rulesMatch": "/programStaffGrants/{grantId}",

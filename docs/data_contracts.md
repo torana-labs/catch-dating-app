@@ -4916,7 +4916,9 @@ instant of an assignment naming that id. `workPickup`, `workHotel` and
 `getProgramWorkAccess` resolves it (pickup points from every operational duty
 but the hotel desk, hotels from every operational duty, functions from door and
 guest-desk duties): key `*` for every one, otherwise one key per named id.
-`assignments` repeats the live duty
+`arrivalRoutes` holds the arrivals journeys the account's airport greeter,
+transport dispatcher and coordinator assignments reach, as `pickup|hotel` keys
+(see the arrivals views below). `assignments` repeats the live duty
 tuples with their scopes and own expiries, and `grantExpiresAtMillis` the grant's
 own expiry, as `getProgramWorkAccess` returns them, because a phone's policies
 need one assignment to cover both ends of a transport route, which the flattened
@@ -4985,6 +4987,32 @@ the assignee. A function lead reads the alerts stamped for a duty it holds
 (one listener per duty); full reach (coordinators and the owner) reads every
 alert and the counts. The phone computes the schedule's phases from its clock.
 `listProgramStaffAttention` reads the same alerts (source `staffAttention`).
+
+`programArrivalViews/{legId}`, `programDepartureViews/{legId}` and
+`programVendorViews/{programId}__{vendorId}` (#1339) are the transport desks'
+rows, kept by triggers on `programTravelLegs`, `programTravelParties`,
+`programGuests`, `programHotels`, `programStaffGrants`, `programStays`, the
+programme's transport settings and `transportVendors`, and created for existing
+sources by the `program-arrival-views` copy-forward migration. An arrivals row
+is one expected, ready or disrupted inbound journey with exactly the fields
+`getProgramArrivalsRoster` returns (guest name, party, flight, the curb time
+resolved from the transport settings, readiness, claimant, destination), the
+claimant's account id in place of the caller's `claimedByMe` flag, and
+`pickupKey` and `hotelKey` (the ids, or `~` when the journey has none). Rules
+match those keys against `programAccessViews.arrivalRoutes`: each key is
+`pickup|hotel`, either side an id or `*`, written from one airport greeter,
+transport dispatcher or coordinator assignment so that its pickup and hotel
+scopes cover a journey together, as the roster's query scopes do; an assignment
+whose scopes would expand past 300 routes grants none. A scoped account lists
+one route at a time with a query naming `programId` and its pickup or hotel key.
+A departures row is one outbound journey to a hotel with the callable's row
+(guest, party, flight, leave-by, the guest's room and desk state); hotel desk
+duty covering the hotel reads them by a query naming `programId` and `hotelId`,
+and the desk counts are computed on the phone from the rows and its clock. A
+vendor view is the vendor's id, name and active flag for one bound programme,
+read by dispatchers: the vendor's phone number stays in `transportVendors`, so
+the callable's reply (which never carried it) becomes a read model without
+withholding by role. None carries a phone number or other contact field.
 
 `organizerCampaigns.recipientSource` names where recipients resolve:
 `savedAudience` (default, backed by `savedAudienceId`) or
