@@ -7,6 +7,7 @@ import test from "node:test";
 import {
   MIGRATIONS, migrationsByName, preReceiptHostLeadId,
 } from "./lib/firestore_consolidation_migrations.mjs";
+import {createFunctionsRequire} from "../lib/repo_paths.mjs";
 import {applyMigrationPlan, planMigration, writePlanBackup} from "./lib/copy_forward.mjs";
 
 const scheduleLocks = MIGRATIONS.find((migration) => migration.name === "schedule-locks");
@@ -578,8 +579,8 @@ test("host-whatsapp-thread-views creates each retained thread's view once", asyn
   const migration = MIGRATIONS.find((entry) => entry.name === "host-whatsapp-thread-views");
   const at = (millis) => ({toMillis: () => millis});
   const later = Date.now() + 86_400_000;
-  const {organizerWhatsappThreadId} = await import(
-    "../../functions/lib/organizers/organizerWhatsappThreads.js");
+  const {organizerWhatsappThreadId} = createFunctionsRequire()(
+    "./lib/organizers/organizerWhatsappThreads.js");
   const live = organizerWhatsappThreadId("o1", "c1");
   const expired = organizerWhatsappThreadId("o1", "c2");
   const thread = (contactId, expiresAt) => ({organizerId: "o1", contactId,
