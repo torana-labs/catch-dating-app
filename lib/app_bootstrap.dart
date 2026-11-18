@@ -15,6 +15,7 @@ import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/l10n/catch_ui_copy.dart';
 import 'package:catch_platform/push/fcm_service.dart';
 import 'package:catch_platform/riverpod_ui/failed_reads.dart';
+import 'package:catch_platform/riverpod_ui/pending_write_observer.dart';
 import 'package:catch_platform/startup/native_splash.dart';
 import 'package:catch_platform/startup/startup_animation_scope.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -125,7 +126,11 @@ ProviderContainer createCatchAppContainer({
   List<Override> overrides = const [],
 }) => ProviderContainer(
   overrides: overrides,
-  observers: [_asyncErrorLogger(), const FailedReadRecorder()],
+  observers: [
+    _asyncErrorLogger(),
+    const FailedReadRecorder(),
+    PendingWriteObserver(),
+  ],
   retry: catchProviderRetry,
 );
 

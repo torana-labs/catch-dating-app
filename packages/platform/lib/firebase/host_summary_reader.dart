@@ -1,11 +1,17 @@
 import 'dart:convert';
 
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/cache/cache_policies.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/live_paged_query.dart';
+import 'package:catch_platform/firebase/listener_first_value.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
+
+/// How long a directory listener may wait for its first snapshot.
+final _listenerFirstValue = CachePolicies.listener.firstLoad;
 
 /// Scoped cursors never authorize access; current Firestore rules do.
 class HostSummaryCursor {
@@ -59,9 +65,14 @@ class HostSummaryWindow {
 /// lists still open. Only concurrent directory reads are shared, scoped to
 /// the current account; no repository PII cache.
 class HostSummaryReader {
-  HostSummaryReader(this._firestore, {required this.actorId});
+  HostSummaryReader(
+    this._firestore, {
+    required this.actorId,
+    AppClock clock = const AppClock(),
+  }) : _clock = clock;
   final FirebaseFirestore _firestore;
   final String? Function() actorId;
+  final AppClock _clock;
   final _directories = <String, Future<Map<String, dynamic>?>>{};
 
   String _actor() {
@@ -111,8 +122,9 @@ class HostSummaryReader {
 
   /// The organizer's directory document while it is listened to, once the
   /// read model behind [marker] is active. A missing marker is a server
-  /// fault to retry. A document the device has not cached yet stays loading
-  /// offline instead of reading as missing.
+  /// fault to retry. A document the device has not cached yet does not read
+  /// as missing offline: after the listener's first-value deadline the
+  /// stream reports [listenerNothingSaved] and stays open.
   Stream<Map<String, dynamic>> watchActivatedDirectory(
     String organizerId,
     String marker,
@@ -123,7 +135,8 @@ class HostSummaryReader {
           .collection('hostDirectorySummaries')
           .doc(organizerId)
           .snapshots()
-          .where((doc) => doc.exists || !doc.metadata.isFromCache),
+          .where((doc) => doc.exists || !doc.metadata.isFromCache)
+          .firstValueWithin(_listenerFirstValue, clock: _clock),
       context: const BackendErrorContext(
         service: BackendService.firestore,
         action: 'watch Host directory readiness',
@@ -300,8 +313,9 @@ class HostSummaryReader {
   }
 
   /// One directory record while it is listened to; null while it does not
-  /// exist. A record the device has not cached yet stays loading offline
-  /// instead of reading as missing.
+  /// exist. A record the device has not cached yet does not read as missing
+  /// offline: after the listener's first-value deadline the stream reports
+  /// [listenerNothingSaved] and stays open.
   Stream<Map<String, dynamic>?> watchDocument({
     required String collection,
     required String organizerId,
@@ -314,6 +328,7 @@ class HostSummaryReader {
         .doc(id)
         .snapshots()
         .where((doc) => doc.exists || !doc.metadata.isFromCache)
+        .firstValueWithin(_listenerFirstValue, clock: _clock)
         .map((doc) {
           final data = doc.data();
           if (data != null &&

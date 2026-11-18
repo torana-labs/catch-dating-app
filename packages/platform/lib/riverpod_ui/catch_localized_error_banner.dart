@@ -1,5 +1,6 @@
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/errors/write_outcome.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -35,7 +36,7 @@ class CatchLocalizedErrorBanner extends StatelessWidget {
     final error = mutation == null
         ? _error
         : mutation is MutationError
-        ? mutation.error
+        ? writeFailure(mutation.error)
         : null;
     if (error == null) return const SizedBox.shrink();
     final descriptor = appErrorDescriptor(
