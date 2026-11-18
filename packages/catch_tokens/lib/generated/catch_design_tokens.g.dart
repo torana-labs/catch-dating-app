@@ -269,6 +269,15 @@ abstract final class GeneratedCatchPaletteTokens {
   static const Color magenta = Color(0xFFE58AC8);
   static const Color magentaDeep = Color(0xFFA3307F);
   static const Color magentaInk = Color(0xFF46163A);
+  static const Color sky = Color(0xFF5EC2E6);
+  static const Color skyInk = Color(0xFF23343E);
+  static const Color coralSoft = Color(0xFFFDE7DF);
+  static const Color pinkSoft = Color(0xFFFDE4EA);
+  static const Color yellowSoft = Color(0xFFFFF4D6);
+  static const Color mintSoft = Color(0xFFDDF3EA);
+  static const Color indigoSoft = Color(0xFFE8EBFD);
+  static const Color magentaSoft = Color(0xFFFBE4F3);
+  static const Color skySoft = Color(0xFFDDF1F8);
 }
 
 abstract final class GeneratedCatchGroundTokens {
@@ -299,6 +308,30 @@ abstract final class GeneratedCatchGroundTokens {
   static const Color magentaFill = Color(0xFFE58AC8);
   static const Color magentaInk = Color(0xFF141114);
   static const Color magentaInkSecondary = Color(0xFF46163A);
+  static const Color skyFill = Color(0xFF5EC2E6);
+  static const Color skyInk = Color(0xFF141114);
+  static const Color skyInkSecondary = Color(0xFF23343E);
+  static const Color coralSoftFill = Color(0xFFFDE7DF);
+  static const Color coralSoftInk = Color(0xFF141114);
+  static const Color coralSoftInkSecondary = Color(0xFF5A5450);
+  static const Color pinkSoftFill = Color(0xFFFDE4EA);
+  static const Color pinkSoftInk = Color(0xFF141114);
+  static const Color pinkSoftInkSecondary = Color(0xFF5A5450);
+  static const Color yellowSoftFill = Color(0xFFFFF4D6);
+  static const Color yellowSoftInk = Color(0xFF141114);
+  static const Color yellowSoftInkSecondary = Color(0xFF5A5450);
+  static const Color mintSoftFill = Color(0xFFDDF3EA);
+  static const Color mintSoftInk = Color(0xFF141114);
+  static const Color mintSoftInkSecondary = Color(0xFF5A5450);
+  static const Color indigoSoftFill = Color(0xFFE8EBFD);
+  static const Color indigoSoftInk = Color(0xFF141114);
+  static const Color indigoSoftInkSecondary = Color(0xFF5A5450);
+  static const Color magentaSoftFill = Color(0xFFFBE4F3);
+  static const Color magentaSoftInk = Color(0xFF141114);
+  static const Color magentaSoftInkSecondary = Color(0xFF5A5450);
+  static const Color skySoftFill = Color(0xFFDDF1F8);
+  static const Color skySoftInk = Color(0xFF141114);
+  static const Color skySoftInkSecondary = Color(0xFF5A5450);
 }
 
 abstract final class GeneratedCatchFormatTokens {

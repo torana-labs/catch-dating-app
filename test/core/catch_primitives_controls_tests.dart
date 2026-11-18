@@ -927,9 +927,9 @@ void _registerCatchPrimitivesControlsTests() {
       ),
     );
 
-    expect(find.text('COMPLETE'), findsOneWidget);
-    expect(find.text('NEEDS INFORMATION'), findsOneWidget);
-    expect(find.text('OPTIONAL'), findsOneWidget);
+    expect(find.text('Complete'), findsOneWidget);
+    expect(find.text('Needs information'), findsOneWidget);
+    expect(find.text('Optional'), findsOneWidget);
     await tester.tap(find.text('Meeting location'));
     expect(selectedStep, 1);
   });

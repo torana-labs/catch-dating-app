@@ -195,6 +195,13 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink2,
       );
 
+  /// A section's link beside its title: the small button label, underlined,
+  /// as the system Section draws its action.
+  static TextStyle sectionAction(BuildContext context, {Color? color}) => bodyS(
+    context,
+    color: color,
+  ).copyWith(fontWeight: FontWeight.w600, decoration: TextDecoration.underline);
+
   /// Readable sentence-case status label (sans).
   static TextStyle statusLabel(BuildContext context, {Color? color}) =>
       _functionProfile(

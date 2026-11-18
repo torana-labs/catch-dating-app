@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import {fileURLToPath} from "node:url";
 import {describe, expect, it} from "vitest";
-import {grounds} from "./palette";
+import {groundRoles, groundVar, websiteGrounds} from "./palette";
 
 // The Website v2 layouts (CAT-248) draw only with generated tokens. These
 // tests read the stylesheets so a literal or a misspelt token cannot ship.
@@ -41,10 +41,10 @@ describe("Website v2 layout tokens", () => {
 
   it("styles every palette ground and no other", () => {
     const styled = [...sheets.CatchBand.matchAll(/\.band\[data-ground="(\w+)"\]/g)].map((match) => match[1]);
-    expect(styled).toEqual([...grounds]);
-    for (const ground of grounds) {
-      for (const role of ["fill", "ink", "ink-secondary"]) {
-        expect(sheets.CatchBand).toContain(`var(--catch-ground-${ground}-${role})`);
+    expect(styled).toEqual([...websiteGrounds]);
+    for (const ground of websiteGrounds) {
+      for (const role of groundRoles) {
+        expect(sheets.CatchBand).toContain(`var(${groundVar(ground, role)})`);
       }
     }
   });

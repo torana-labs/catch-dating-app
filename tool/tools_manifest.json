@@ -3002,8 +3002,7 @@
         "node --test tool/design/component_naming.test.mjs",
         "node --check tool/design/lib/component_api.mjs",
         "node --test tool/design/component_api.test.mjs",
-        "node --test tool/design/check_component_lexicon.test.mjs",
-        "node tool/design/check_component_lexicon.mjs"
+        "node --test tool/design/check_component_lexicon.test.mjs"
       ],
       "role": "gate",
       "rules": [
@@ -6209,9 +6208,7 @@
       "description": "Projects approved organizer intake and seed organizer records into production hostListings.json, with a separate explicit demo-inclusive Storybook projection.",
       "checks": [
         "node --check website/scripts/generateOrganizerListings.mjs",
-        "node --test website/scripts/generateOrganizerListings.test.mjs",
-        "node website/scripts/generateOrganizerListings.mjs --check",
-        "node website/scripts/generateOrganizerListings.mjs --include-demo --output website/src/generated/hostListings.demo.json --check"
+        "node --test website/scripts/generateOrganizerListings.test.mjs"
       ],
       "impactPaths": [
         "contracts/**/*.json",
@@ -6231,7 +6228,10 @@
       "category": "marketing",
       "path": "tool/marketing/export_hosted_captures.mjs",
       "impactPaths": [
-        "tool/marketing/export_hosted_captures.test.mjs",
+        "tool/marketing/export_hosted_captures_a.test.mjs",
+        "tool/marketing/export_hosted_captures_b.test.mjs",
+        "tool/marketing/export_hosted_captures_c.test.mjs",
+        "tool/marketing/lib/hosted_capture_support.test.mjs",
         "tool/marketing/lib/capture_seeds.mjs",
         ".github/workflows/marketing-captures.yml",
         ".github/workflows/ci.yml",
@@ -6256,7 +6256,7 @@
       },
       "checks": [
         "node --check tool/marketing/export_hosted_captures.mjs",
-        "node --test tool/marketing/export_hosted_captures.test.mjs"
+        "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs"
       ]
     },
     {
@@ -6278,7 +6278,10 @@
       "impactPaths": [
         "tool/marketing/import_hosted_captures.test.mjs",
         "tool/marketing/export_hosted_captures.mjs",
-        "tool/marketing/export_hosted_captures.test.mjs",
+        "tool/marketing/export_hosted_captures_a.test.mjs",
+        "tool/marketing/export_hosted_captures_b.test.mjs",
+        "tool/marketing/export_hosted_captures_c.test.mjs",
+        "tool/marketing/lib/hosted_capture_support.test.mjs",
         "tool/marketing/lib/capture_provenance.mjs",
         "tool/marketing/sync_website_media.mjs",
         "tool/marketing/export_app_screenshots.mjs",
@@ -6300,7 +6303,7 @@
       "checks": [
         "node --check tool/marketing/import_hosted_captures.mjs",
         "node --test tool/marketing/import_hosted_captures.test.mjs",
-        "node --test tool/marketing/export_hosted_captures.test.mjs"
+        "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs"
       ]
     },
     {

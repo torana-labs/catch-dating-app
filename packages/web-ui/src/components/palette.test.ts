@@ -13,7 +13,7 @@ import {
   groundRoles,
   groundTextColors,
   groundVar,
-  grounds,
+  websiteGrounds,
   nightSurfaceTextColors,
   paletteColors,
   paletteVar,
@@ -50,21 +50,21 @@ describe("palette names", () => {
   it("lists every palette, ground and format token the CSS declares, in token order", () => {
     expect(declaredVars("--catch-palette-")).toEqual(paletteColors.map(paletteVar));
     expect(declaredVars("--catch-ground-")).toEqual(
-      grounds.flatMap((ground) => groundRoles.map((role) => groundVar(ground, role))));
+      websiteGrounds.flatMap((ground) => groundRoles.map((role) => groundVar(ground, role))));
     expect(declaredVars("--catch-format-")).toEqual(
       (Object.keys(formatAccents) as Format[]).flatMap((format) => formatRoles.map((role) => formatVar(format, role))));
   });
 
   it("matches the token file's group keys", () => {
     expect(tokenKeys(tokens.palette)).toEqual([...paletteColors]);
-    expect(tokenKeys(tokens.ground)).toEqual([...grounds]);
+    expect(tokenKeys(tokens.ground)).toEqual([...websiteGrounds]);
     expect(tokenKeys(tokens.format)).toEqual(Object.keys(formatAccents));
-    for (const ground of grounds) expect(tokenKeys(tokens.ground[ground]), ground).toEqual([...groundRoles]);
+    for (const ground of websiteGrounds) expect(tokenKeys(tokens.ground[ground]), ground).toEqual([...groundRoles]);
   });
 });
 
 describe("palette contrast", () => {
-  it.each(grounds)("%s carries its text colours at WCAG AA", (ground) => {
+  it.each(websiteGrounds)("%s carries its text colours at WCAG AA", (ground) => {
     const fill = hex(groundVar(ground, "fill"));
     const textColors = groundTextColors(ground).map((color) => hex(paletteVar(color)));
     // The ground's own inks are among the colours it is meant to carry.

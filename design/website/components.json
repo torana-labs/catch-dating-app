@@ -1481,14 +1481,14 @@
         "host_colleges",
         "host_brands",
         "how_it_works",
-        "product_night",
-        "product_bookings",
         "product_your_page",
-        "product_door",
+        "product_bookings",
         "product_messages",
+        "product_room",
+        "product_event",
         "product_guests",
-        "product_forms",
         "product_reports",
+        "product_forms",
         "pricing",
         "safety",
         "about",
@@ -1543,10 +1543,19 @@
           "host-start",
           "first-event",
           "switch",
-          "programmes"
+          "programmes",
+          "product-how-it-works",
+          "product-your-page",
+          "product-bookings",
+          "product-messages",
+          "product-room",
+          "product-event",
+          "product-guests",
+          "product-reports",
+          "product-forms"
         ]
       },
-      "notes": "Every redesign page (design/website/routes.json contentFamily routes), drawn from its content file under website/src/content/playbook/pages/ by the playbook renderer: the site header in the page's variant, each section through its kit component (features/playbook/PlaybookSections.tsx) and the site footer. A route without a page, or whose page uses a section no kit component draws yet, is a 404. The route stories render /host/run-clubs/, /pricing/, /about/, /host/start/, /host/first-event/, /host/switch/ and /programmes/ at 1280 and at 390."
+      "notes": "Every redesign page (design/website/routes.json contentFamily routes), drawn from its content file under website/src/content/playbook/pages/ by the playbook renderer: the site header in the page's variant, each section through its kit component (features/playbook/PlaybookSections.tsx) and the site footer. A route without a page, or whose page uses a section no kit component draws yet, is a 404. Sections and actions whose product brief status is not built stay in the content file, hidden (show-when-live, livePlaybookPage). The route stories render /host/run-clubs/, /pricing/, /about/, /host/start/, /host/first-event/, /host/switch/, /programmes/ and the nine product pages v2 at 1280 and at 390."
     },
     {
       "id": "shared_hero_section",
@@ -1781,7 +1790,7 @@
       "id": "shared_tab_section",
       "kind": "supporting-component",
       "routeIds": [
-        "product_night",
+        "product_room",
         "host_first_event",
         "host_switch"
       ],
@@ -1814,7 +1823,6 @@
       "id": "shared_comparison_table",
       "kind": "supporting-component",
       "routeIds": [
-        "product_night",
         "compare_detail"
       ],
       "owner": "shared/parts",

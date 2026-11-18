@@ -19,7 +19,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Entering and revealing a round on the night theme. It holds the points
 /// typed for this round until they are saved, and runs the existing record
-/// and reveal commands; the scoreboard listener brings the result back.
+/// and reveal commands, and Stop the countdown cancels a running reveal
+/// countdown; the scoreboard listener brings the result back.
 class HostLiveScoresScreen extends ConsumerStatefulWidget {
   const HostLiveScoresScreen({
     super.key,
@@ -55,7 +56,10 @@ class _HostLiveScoresScreenState extends ConsumerState<HostLiveScoresScreen> {
         ref
             .watch(EventSuccessController.startRevealCountdownMutation)
             .isPending ||
-        ref.watch(EventSuccessController.revealRoundMutation).isPending;
+        ref.watch(EventSuccessController.revealRoundMutation).isPending ||
+        ref
+            .watch(EventSuccessController.cancelRevealCountdownMutation)
+            .isPending;
     listenToCatchMutationErrors(
       context,
       ref,
@@ -63,6 +67,7 @@ class _HostLiveScoresScreenState extends ConsumerState<HostLiveScoresScreen> {
         EventSuccessController.recordUnitOutcomesMutation,
         EventSuccessController.startRevealCountdownMutation,
         EventSuccessController.revealRoundMutation,
+        EventSuccessController.cancelRevealCountdownMutation,
       ],
       errorContext: AppErrorContext.event,
     );
@@ -92,6 +97,17 @@ class _HostLiveScoresScreenState extends ConsumerState<HostLiveScoresScreen> {
               setState(() => _points[unitId] = points),
           onSave: () => unawaited(_save(state)),
           onReveal: () => unawaited(_reveal(state)),
+          onStopCountdown: () => runHostLiveCommand(
+            EventSuccessController.cancelRevealCountdownMutation.run(
+              ref,
+              (tx) => tx
+                  .get(eventSuccessControllerProvider.notifier)
+                  .cancelRevealCountdown(
+                    eventId: event.id,
+                    expectedRevision: state.liveControlRevision,
+                  ),
+            ),
+          ),
           onView: actions.openView,
           onRetry: () => retryHostLiveReads(ref, event),
         ),

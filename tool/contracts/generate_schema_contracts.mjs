@@ -2415,7 +2415,7 @@ function renderToolValidators() {
     `  ${schemaConstName(spec)},`
   ).join("\n");
   const validators = schemaSpecs.map((spec) =>
-    `export const ${validatorName(spec)} = ajv.compile(${schemaConstName(spec)});`
+    `export const ${validatorName(spec)} = lazyValidator(${schemaConstName(spec)});`
   ).join("\n");
 
   return `${mjsGeneratedHeader()}import {createRequire} from "node:module";
@@ -2444,6 +2444,18 @@ const addFormats = requireContractDependency("ajv-formats");
 
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
+
+// Compile on first use, like the Functions runtime's lazyValidator: compiling
+// every validator at import cost each importing tool about 9 s.
+function lazyValidator(schema) {
+  let compiled = null;
+  const validate = (data) => {
+    compiled ??= ajv.compile(schema);
+    return compiled(data);
+  };
+  Object.defineProperty(validate, "errors", {get: () => compiled?.errors ?? null});
+  return validate;
+}
 
 ${validators}
 

@@ -11,6 +11,9 @@ import 'package:flutter/widgets.dart';
 /// The event's guests in board order: the views, four numbers, the lists
 /// with their counts, the chosen list's rows with Let in or Offer, and
 /// Message all and Download the list.
+///
+/// Tapping a guest opens them ([onGuest]); on the waitlist, Offer the next
+/// places offers every open place at once when there are two or more.
 class HostEventGuestsBody extends StatelessWidget {
   const HostEventGuestsBody({
     super.key,
@@ -25,6 +28,9 @@ class HostEventGuestsBody extends StatelessWidget {
     required this.onRetry,
     this.pending = const <String>{},
     this.downloading = false,
+    this.offeringAll = false,
+    this.onOfferAll,
+    this.onGuest,
   });
 
   final HostEventGuestsState state;
@@ -33,6 +39,12 @@ class HostEventGuestsBody extends StatelessWidget {
   final ValueChanged<HostEventGuestList> onList;
   final ValueChanged<HostEventGuest> onLetIn;
   final ValueChanged<HostEventGuest> onOffer;
+
+  /// Offers the places left to the guests first in line; null hides it.
+  final VoidCallback? onOfferAll;
+
+  /// Opens a guest who has an account; null leaves the rows still.
+  final ValueChanged<HostEventGuest>? onGuest;
   final VoidCallback onMessageAll;
   final VoidCallback onDownload;
   final VoidCallback onRetry;
@@ -40,6 +52,9 @@ class HostEventGuestsBody extends StatelessWidget {
   /// Guests whose Let in or Offer is on its way.
   final Set<String> pending;
   final bool downloading;
+
+  /// Offer the next places is on its way.
+  final bool offeringAll;
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +80,9 @@ class HostEventGuestsBody extends StatelessWidget {
         : catchFormatForActivity(event.activityKind);
     final placesLeft = state.placesLeft;
     final firstTime = state.firstTime;
+    final offerAll = list == HostEventGuestList.waitlist
+        ? state.offerAllUids.length
+        : 0;
     return CatchPageBody.screen(
       child: CatchStack(
         gap: CatchStackGap.g16,
@@ -120,6 +138,15 @@ class HostEventGuestsBody extends StatelessWidget {
                 ),
             ],
           ),
+          if (offerAll > 1 && onOfferAll != null)
+            CatchButton(
+              key: const ValueKey<String>('host-event-guests-offer-all'),
+              label: l10n.hostEventsGuestsOfferAll(count: offerAll),
+              variant: CatchButtonVariant.secondary,
+              leading: CatchIcon(CatchIcons.addPerson),
+              fullWidth: true,
+              onPressed: offeringAll ? null : onOfferAll,
+            ),
           CatchSection(
             empty: l10n.hostEventsGuestsEmpty,
             children: [
@@ -131,6 +158,9 @@ class HostEventGuestsBody extends StatelessWidget {
                   format: format,
                   insight: guest.insight,
                   action: _action(context, guest),
+                  onTap: guest.uid == null || onGuest == null
+                      ? null
+                      : () => onGuest!(guest),
                 ),
             ],
           ),
@@ -169,9 +199,12 @@ class HostEventGuestsBody extends StatelessWidget {
         variant: CatchIndexRowActionVariant.primary,
         onPressed: busy ? null : () => onLetIn(guest),
       ),
+      HostEventGuestList.waitlist when guest.offered => CatchIndexRowAction(
+        label: l10n.hostEventsGuestsOffered,
+      ),
       HostEventGuestList.waitlist => CatchIndexRowAction(
         label: l10n.hostEventsGuestsOffer,
-        onPressed: busy ? null : () => onOffer(guest),
+        onPressed: busy || offeringAll ? null : () => onOffer(guest),
       ),
       HostEventGuestList.booked || HostEventGuestList.cancelled => null,
     };

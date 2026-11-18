@@ -67,7 +67,8 @@ describe("playbook guide formats", () => {
     for (const {page, form} of forms) {
       const where = `${page.id} ${form.id}`;
       if (form.requestKind === "guide") expect(playbookGuideFormat(form.format), where).toBeDefined();
-      expect(playbookSendableLeadKind(form), where).toBe(form.requestKind);
+      // A try-it tool's form waits for its command: it never sends, so it never renders.
+      expect(playbookSendableLeadKind(form), where).toBe(form.requestKind === "tool" ? null : form.requestKind);
       expect(form.id, where).toMatch(entryPattern);
     }
   });
@@ -80,6 +81,13 @@ describe("playbookSendableLeadKind", () => {
     expect(playbookSendableLeadKind(demo)).toBe("demo");
     expect(playbookSendableLeadKind(walkthrough)).toBe("walkthrough");
     expect(playbookSendableLeadKind({...walkthrough, fields: fields("name", "preferredTime")})).toBe("walkthrough");
+  });
+
+  it("refuses a form that asks for a link or text: no backend reads one until its try-it command ships", () => {
+    expect(playbookSendableLeadKind({...walkthrough, input: "url"})).toBeNull();
+    expect(playbookSendableLeadKind({...guide, input: "text"})).toBeNull();
+    expect(playbookSendableLeadKind({...guide, requestKind: "tool", input: "url"})).toBeNull();
+    expect(playbookSendableLeadKind({...guide, input: "tel"})).toBe("guide");
   });
 
   it("refuses a kind no form sends, a guide without a known tag, a missing needed field and a field the kind does not carry", () => {

@@ -3,8 +3,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-// The three names land on the three initials tones (the sum of their runes
-// modulo 3 is 0, 1 and 2).
+// The three names land on three different palette colours, so the test
+// sees three fills.
 const _names = ['Zoya Merchant', 'Aanya Sharma', 'Dev Patel'];
 
 void main() {

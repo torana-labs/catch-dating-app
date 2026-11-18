@@ -320,3 +320,17 @@ test("generated platform Dart imports nothing from a context", () => {
       .includes("package:catch_dating_app/contexts/"));
   assert.deepEqual(upward, []);
 });
+
+test("tool validators compile on first use and keep Ajv's errors property", async () => {
+  // Compiling all of them at import cost every importing tool about 9 s.
+  const source = fs.readFileSync(new URL("./generated/schema_contract_validators.mjs", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /^export const validate\w+ = ajv\.compile\(/mu);
+  const started = performance.now();
+  const validators = await import("./generated/schema_contract_validators.mjs");
+  assert.ok(performance.now() - started < 3000, "importing the tool validators compiles nothing");
+  const validate = validators.validateOrganizerDocument;
+  assert.equal(validate.errors, null);
+  assert.equal(validate({}), false);
+  assert.ok(Array.isArray(validate.errors) && validate.errors.length > 0, JSON.stringify(validate.errors));
+  assert.ok(validators.schemaErrorMessages(validate).length > 0);
+});

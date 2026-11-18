@@ -26,8 +26,10 @@ import 'package:go_router/go_router.dart';
 /// Download the list.
 ///
 /// It watches [hostEventGuestsControllerProvider] and turns the body's
-/// callbacks into the existing join-request approval, waitlist offer and
-/// list export commands, and the event's messages.
+/// callbacks into the existing join-request approval and decline, waitlist
+/// offers (one guest, or the places left at once) and list export
+/// commands, the event's messages and the guest's profile. Tapping a guest
+/// who asked asks Let in, Decline or See profile.
 class HostEventGuestsScreen extends ConsumerStatefulWidget {
   const HostEventGuestsScreen({super.key, required this.request});
 
@@ -62,6 +64,12 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
                 userId: uid,
               ),
             ),
+            HostEventBookingController.declineJoinRequestMutation(
+              HostEventBookingController.declineJoinRequestMutationKey(
+                eventId: request.eventId,
+                userId: uid,
+              ),
+            ),
             HostEventBookingController.createWaitlistOfferMutation(
               HostEventBookingController.waitlistOfferMutationKey(
                 eventId: request.eventId,
@@ -70,12 +78,19 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
             ),
           ],
     };
+    final offerAllMutation =
+        HostEventBookingController.createWaitlistOfferMutation(
+          HostEventBookingController.bulkWaitlistOfferMutationKey(
+            eventId: request.eventId,
+          ),
+        );
     final shareMutation = HostEventManageController.shareOpsReportMutation;
     listenToCatchMutationErrors(
       context,
       ref,
       mutations: [
         ...guestMutations.values.expand((list) => list),
+        offerAllMutation,
         shareMutation,
       ],
       errorContext: AppErrorContext.event,
@@ -113,6 +128,9 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
           onList: (list) => setState(() => _list = list),
           onLetIn: _letIn,
           onOffer: _offer,
+          offeringAll: ref.watch(offerAllMutation).isPending,
+          onOfferAll: () => _offerAll(state.offerAllUids),
+          onGuest: (guest) => unawaited(_openGuest(guest)),
           onMessageAll: () => context.pushNamed(
             Routes.hostInboxScreen.name,
             queryParameters: {'eventId': request.eventId},
@@ -191,6 +209,88 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
     );
   }
 
+  void _offerAll(List<String> uids) {
+    if (uids.isEmpty) return;
+    final eventId = widget.request.eventId;
+    _quietly(
+      HostEventBookingController.createWaitlistOfferMutation(
+        HostEventBookingController.bulkWaitlistOfferMutationKey(
+          eventId: eventId,
+        ),
+      ).run(
+        ref,
+        (tx) => tx
+            .get(hostEventBookingControllerProvider.notifier)
+            .createWaitlistOffers(eventId: eventId, userIds: uids),
+      ),
+    );
+  }
+
+  void _decline(HostEventGuest guest) {
+    final uid = guest.uid;
+    if (uid == null) return;
+    final eventId = widget.request.eventId;
+    _quietly(
+      HostEventBookingController.declineJoinRequestMutation(
+        HostEventBookingController.declineJoinRequestMutationKey(
+          eventId: eventId,
+          userId: uid,
+        ),
+      ).run(
+        ref,
+        (tx) => tx
+            .get(hostEventBookingControllerProvider.notifier)
+            .declineJoinRequest(eventId: eventId, userId: uid),
+      ),
+    );
+  }
+
+  void _profile(String uid) => context.pushNamed(
+    Routes.publicProfileScreen.name,
+    pathParameters: {'uid': uid},
+  );
+
+  /// A guest who asked gets Let in, Decline or See profile; anyone else
+  /// opens their profile.
+  Future<void> _openGuest(HostEventGuest guest) async {
+    final uid = guest.uid;
+    if (uid == null) return;
+    if (_list != HostEventGuestList.asked) return _profile(uid);
+    final l10n = context.l10n;
+    final choice = await showCatchAdaptiveDialog<_AskedChoice>(
+      context: context,
+      title: l10n.hostEventsGuestsAskedTitle(name: guest.name),
+      message: l10n.hostEventsGuestsAskedBody,
+      actions: [
+        CatchDialogAction(
+          label: l10n.hostEventsGuestsLetIn,
+          value: _AskedChoice.letIn,
+          isDefault: true,
+        ),
+        CatchDialogAction(
+          label: l10n.hostEventsGuestsSeeProfile,
+          value: _AskedChoice.profile,
+        ),
+        CatchDialogAction(
+          label: l10n.hostEventsGuestsDecline,
+          value: _AskedChoice.decline,
+          isDestructive: true,
+        ),
+      ],
+    );
+    if (!mounted) return;
+    switch (choice) {
+      case _AskedChoice.letIn:
+        _letIn(guest);
+      case _AskedChoice.decline:
+        _decline(guest);
+      case _AskedChoice.profile:
+        _profile(uid);
+      case null:
+        return;
+    }
+  }
+
   /// Shares the guest list through the existing list export.
   Future<void> _download() async {
     final l10n = context.l10n;
@@ -238,3 +338,5 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
   void _quietly(Future<Object?> command) =>
       unawaited(command.then<void>((_) {}, onError: (Object _) {}));
 }
+
+enum _AskedChoice { letIn, profile, decline }

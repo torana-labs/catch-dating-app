@@ -4,29 +4,289 @@
   "route": "product_guests",
   "meta": {
     "title": "Guest records | {{brand.name}} for hosts",
-    "description": "Everyone who has booked, checked in or been imported, in one list, sorted into groups with plain rules: first-timers, regulars, lapsed regulars, advocates and more. Export any time.",
-    "socialDescription": "Know your regulars by name, not by spreadsheet. Guest records on {{brand.name}}.",
+    "description": "Everyone who has booked, checked in or been imported, in one record per guest, sorted into groups with plain rules: first-timers, regulars, lapsed regulars, advocates and more. Merges you review, and export any time.",
+    "socialDescription": "A guest list that keeps itself. Guest records on {{brand.name}}.",
     "noindex": false
   },
   "header": {
     "variant": "host",
     "breadcrumbs": {
-      "links": [{"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}}],
+      "links": [
+        {
+          "label": "How {{brand.name}} works",
+          "to": {
+            "route": "how_it_works"
+          }
+        }
+      ],
       "current": "Guest records"
     }
   },
-  "footer": {"variant": "host"},
+  "footer": {
+    "variant": "host",
+    "columns": [
+      {
+        "title": "Product",
+        "links": [
+          {
+            "label": "How {{brand.name}} works",
+            "to": {
+              "route": "how_it_works"
+            }
+          },
+          {
+            "label": "Your page",
+            "to": {
+              "route": "product_your_page"
+            }
+          },
+          {
+            "label": "Bookings and memberships",
+            "to": {
+              "route": "product_bookings"
+            }
+          },
+          {
+            "label": "Messages and growth",
+            "to": {
+              "route": "product_messages"
+            }
+          },
+          {
+            "label": "The room",
+            "to": {
+              "route": "product_room"
+            }
+          },
+          {
+            "label": "Running the event",
+            "to": {
+              "route": "product_event"
+            }
+          },
+          {
+            "label": "Guest records",
+            "to": {
+              "route": "product_guests"
+            }
+          },
+          {
+            "label": "Reports and payouts",
+            "to": {
+              "route": "product_reports"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Hosts by format",
+        "links": [
+          {
+            "label": "Run and walk clubs",
+            "to": {
+              "route": "host_run_clubs"
+            }
+          },
+          {
+            "label": "Racket sports",
+            "to": {
+              "route": "host_racket_sports"
+            }
+          },
+          {
+            "label": "Supper clubs",
+            "to": {
+              "route": "host_supper_clubs"
+            }
+          },
+          {
+            "label": "Quiz and game nights",
+            "to": {
+              "route": "host_quiz_nights"
+            }
+          },
+          {
+            "label": "Studios",
+            "to": {
+              "route": "host_studios"
+            }
+          },
+          {
+            "label": "Venues",
+            "to": {
+              "route": "host_venues"
+            }
+          },
+          {
+            "label": "Communities",
+            "to": {
+              "route": "host_communities"
+            }
+          },
+          {
+            "label": "Mixers and pub crawls",
+            "to": {
+              "route": "host_nightlife"
+            }
+          },
+          {
+            "label": "Teams",
+            "to": {
+              "route": "host_teams"
+            }
+          },
+          {
+            "label": "Colleges and alumni",
+            "to": {
+              "route": "host_colleges"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Get started",
+        "links": [
+          {
+            "label": "Start free trial",
+            "to": {
+              "route": "host_start"
+            }
+          },
+          {
+            "label": "Pricing",
+            "to": {
+              "route": "pricing"
+            }
+          },
+          {
+            "label": "Your first event",
+            "to": {
+              "route": "host_first_event"
+            }
+          },
+          {
+            "label": "Switch to {{brand.name}}",
+            "to": {
+              "route": "host_switch"
+            }
+          },
+          {
+            "label": "Try a demo night",
+            "to": {
+              "route": "host_demo"
+            }
+          },
+          {
+            "label": "Programmes",
+            "to": {
+              "route": "programmes"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Resources",
+        "links": [
+          {
+            "label": "Forms",
+            "to": {
+              "route": "product_forms"
+            }
+          },
+          {
+            "label": "Book a walkthrough",
+            "to": {
+              "route": "host_walkthrough"
+            }
+          },
+          {
+            "label": "Help",
+            "to": {
+              "route": "help"
+            }
+          }
+        ]
+      },
+      {
+        "title": "{{brand.name}}",
+        "links": [
+          {
+            "label": "What’s on",
+            "to": {
+              "route": "visitor_discovery"
+            }
+          },
+          {
+            "label": "About",
+            "to": {
+              "route": "about"
+            }
+          },
+          {
+            "label": "Safety",
+            "to": {
+              "route": "safety"
+            }
+          },
+          {
+            "label": "Contact",
+            "to": {
+              "route": "contact"
+            }
+          },
+          {
+            "label": "Report or remove a listing",
+            "to": {
+              "route": "listing_request"
+            }
+          },
+          {
+            "label": "Terms",
+            "to": {
+              "route": "terms"
+            }
+          },
+          {
+            "label": "Privacy",
+            "to": {
+              "route": "privacy"
+            }
+          },
+          {
+            "label": "Refunds",
+            "to": {
+              "route": "refunds"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "sections": [
     {
       "type": "hero",
       "id": "top",
       "ground": "pink",
+      "status": "built",
       "kicker": "Product · guest records",
-      "title": "Know your regulars by name, not by spreadsheet.",
-      "lead": "Everyone who’s booked, checked in or been imported, in one list, with every event they came to. {{brand.name}} sorts them into groups you can act on: first-timers to bring back, regulars to thank, lapsed regulars to miss.",
+      "title": "A guest list you never have to type into.",
+      "lead": "Every booking, check-in, form answer and imported list builds one record per guest, with every event they came to. Groups such as regulars and first-timers sort themselves.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {"label": "See messages", "to": {"route": "product_messages"}, "emphasis": "secondary"}
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "See who your regulars are",
+          "to": {
+            "anchor": "try"
+          },
+          "emphasis": "secondary",
+          "status": "tryIt"
+        }
       ],
       "media": {
         "kind": "excerpt",
@@ -34,11 +294,83 @@
           "title": "Guests · Long Table Supper",
           "subtitle": "412 people · from {{brand.name}} bookings and 2 imports",
           "rows": [
-            {"title": "Regulars", "detail": "3 or more dinners in 180 days"},
-            {"title": "First-timers", "detail": "Came once"},
-            {"title": "Lapsed regulars", "detail": "No dinner in 90 days"},
-            {"title": "Advocates", "detail": "Brought someone with their link"},
-            {"title": "Reachable on WhatsApp", "detail": "Opted in to hear from you"}
+            {
+              "title": "Regulars",
+              "detail": "3 or more dinners in 180 days"
+            },
+            {
+              "title": "First-timers",
+              "detail": "Came once"
+            },
+            {
+              "title": "Lapsed regulars",
+              "detail": "No dinner in 90 days"
+            },
+            {
+              "title": "Advocates",
+              "detail": "Brought someone with their link"
+            },
+            {
+              "title": "Reachable on WhatsApp",
+              "detail": "Opted in to hear from you"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "ai-import",
+      "ground": "ink",
+      "status": "new",
+      "statusNote": "Imports from CSV or Excel and reviewed merges are built. AI column mapping, clean-up and tag suggestions are not, and files must never be used for training. Show this when it ships.",
+      "kicker": "Import with AI",
+      "title": "Drop in any spreadsheet. Get a clean list back.",
+      "lead": "Export from Google Forms, Luma, Eventbrite or a WhatsApp group, or upload the list you’ve kept by hand for years. {{brand.name}} reads the columns whatever they’re called, fixes phone numbers, merges the same person across files and tags people from what’s there.",
+      "ticks": [
+        "Any CSV or Excel file, with any column names",
+        "Names and phone numbers cleaned up, and duplicates merged with the reason shown",
+        "Tags suggested from your data: pace, diet, how they heard about you, past events",
+        "You review everything before it’s saved"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Import · guest_list_FINAL(2).xlsx",
+          "stats": [
+            {
+              "value": "1,204",
+              "label": "rows"
+            },
+            {
+              "value": "1,086",
+              "label": "people"
+            },
+            {
+              "value": "118",
+              "label": "merged"
+            }
+          ],
+          "rows": [
+            {
+              "title": "Column “Ph no.”",
+              "detail": "Read as phone number, 1,201 cleaned",
+              "tag": "Matched"
+            },
+            {
+              "title": "Column “Veg?”",
+              "detail": "Becomes a Diet tag",
+              "tag": "New tag"
+            },
+            {
+              "title": "Kabir S. and Kabir Shah",
+              "detail": "Same phone number",
+              "tag": "Merge"
+            }
+          ],
+          "actions": [
+            "Save 1,086 people",
+            "Review merges"
           ]
         }
       }
@@ -52,15 +384,48 @@
       "lead": "No scores, no guesses. Each group has a plain rule, and it updates as people book and check in.",
       "columns": 4,
       "items": [
-        {"title": "First-timers", "body": "Came once. The best moment to invite them back is the week after.", "then": "Checked in at exactly one event"},
-        {"title": "Regulars", "body": "The people your nights are built on.", "then": "3 or more events in the last 180 days"},
-        {"title": "Lapsed regulars", "body": "Used to come, haven’t lately. Worth a personal message.", "then": "2 or more events, no check-in for 90 days"},
-        {"title": "Advocates", "body": "They bring people. Their link brought someone who booked or came.", "then": "At least one person through their link"},
-        {"title": "Reliable attendees", "body": "Book and show up. First in line when you have one seat.", "then": "80% or more of at least 3 bookings checked in"},
-        {"title": "Reachable on WhatsApp", "body": "Said yes to hearing from you on WhatsApp.", "then": "Opted in, with a phone number"},
-        {"title": "Frequent non-members", "body": "Come often but haven’t joined. The people to tell about your membership.", "then": "4 or more events in 60 days, not a member"},
-        {"title": "New to you", "body": "On your list, but hasn’t been to one of your events yet.", "then": "No check-ins with you yet"}
-      ]
+        {
+          "title": "First-timers",
+          "body": "Came once. The best moment to invite them back is the week after.",
+          "then": "Checked in at exactly one event"
+        },
+        {
+          "title": "Regulars",
+          "body": "The people your nights are built on.",
+          "then": "3 or more events in the last 180 days"
+        },
+        {
+          "title": "Lapsed regulars",
+          "body": "Used to come, haven’t lately. Worth a personal message.",
+          "then": "2 or more events, no check-in for 90 days"
+        },
+        {
+          "title": "Advocates",
+          "body": "They bring people. Their link brought someone who booked or came.",
+          "then": "At least one person through their link"
+        },
+        {
+          "title": "Reliable attendees",
+          "body": "Book and show up. First in line when you have one seat.",
+          "then": "80% or more of at least 3 bookings checked in"
+        },
+        {
+          "title": "Reachable on WhatsApp",
+          "body": "Said yes to hearing from you on WhatsApp.",
+          "then": "Opted in, with a phone number"
+        },
+        {
+          "title": "Frequent non-members",
+          "body": "Come often but haven’t joined. The people to tell about your membership.",
+          "then": "4 or more events in 60 days, not a member"
+        },
+        {
+          "title": "New to you",
+          "body": "On your list, but hasn’t been to one of your events yet.",
+          "then": "No check-ins with you yet"
+        }
+      ],
+      "status": "built"
     },
     {
       "type": "split",
@@ -80,17 +445,30 @@
           "title": "Aanya Mehta",
           "subtitle": "First came 12 Jul · 5 events",
           "rows": [
-            {"title": "Regular", "detail": "3 events in the last 180 days", "tag": "Group"},
-            {"title": "Advocate", "detail": "3 friends through her link", "tag": "Group"},
-            {"title": "WhatsApp", "detail": "Opted in", "tag": "Yes"}
+            {
+              "title": "Regular",
+              "detail": "3 events in the last 180 days",
+              "tag": "Group"
+            },
+            {
+              "title": "Advocate",
+              "detail": "3 friends through her link",
+              "tag": "Group"
+            },
+            {
+              "title": "WhatsApp",
+              "detail": "Opted in",
+              "tag": "Yes"
+            }
           ]
         }
-      }
+      },
+      "status": "built"
     },
     {
       "type": "split",
       "id": "every-source",
-      "ground": "white",
+      "ground": "paper",
       "kicker": "From every source",
       "title": "One list, wherever they booked.",
       "lead": "{{brand.name}} bookings, imported spreadsheets, form responses and Luma guest lists all land in the same records. When the same person turns up twice, {{brand.name}} shows you the evidence, and you decide.",
@@ -104,53 +482,195 @@
         "card": {
           "title": "Same person?",
           "rows": [
-            {"title": "Aanya M.", "detail": "Imported · Oct guest list · same phone number"},
-            {"title": "Aanya Mehta", "detail": "{{brand.name}} booking · Nov · same phone number"}
+            {
+              "title": "Aanya M.",
+              "detail": "Imported · Oct guest list · same phone number"
+            },
+            {
+              "title": "Aanya Mehta",
+              "detail": "{{brand.name}} booking · Nov · same phone number"
+            }
           ],
-          "actions": ["Merge", "Keep separate"]
+          "actions": [
+            "Merge",
+            "Keep separate"
+          ]
         }
-      }
+      },
+      "status": "built"
     },
     {
       "type": "checklist",
       "id": "yours-and-theirs",
-      "ground": "paper",
+      "ground": "white",
       "kicker": "Yours, and theirs",
       "title": "Your list belongs to you. Their data belongs to them.",
       "lead": "Export your contacts whenever you want. When a guest asks to be forgotten or to stop hearing from you, {{brand.name}} handles it and keeps a record.",
       "items": [
-        {"title": "Export any time", "body": "Your contacts, as a file."},
-        {"title": "Privacy requests handled", "body": "Access, correction and deletion."},
-        {"title": "“Don’t contact me” sticks", "body": "Suppressed across every send."},
-        {"title": "Groups stay private", "body": "Guests never see which groups they’re in."}
-      ]
+        {
+          "title": "Export any time",
+          "body": "Your contacts, as a file."
+        },
+        {
+          "title": "Privacy requests handled",
+          "body": "Access, correction and deletion."
+        },
+        {
+          "title": "“Don’t contact me” sticks",
+          "body": "Suppressed across every send."
+        },
+        {
+          "title": "Groups stay private",
+          "body": "Guests never see which groups they’re in."
+        }
+      ],
+      "status": "built"
+    },
+    {
+      "type": "split",
+      "id": "try",
+      "ground": "paper",
+      "status": "tryIt",
+      "statusNote": "Command: import a guest list (records mode), with AI clean-up; the same importer as Running the event. Show this when the command ships.",
+      "kicker": "Try it with your old list",
+      "title": "See who your regulars are.",
+      "lead": "Upload any guest list you’ve kept: a Google Sheet, a Luma download, a file you’ve added to by hand for years. {{brand.name}}’s AI cleans it, merges duplicates and shows you your regulars, the people you haven’t seen in a while, and who brings their friends.",
+      "ticks": [
+        "Any CSV or Excel file, however messy",
+        "Duplicates merged, with the reason shown",
+        "Regulars, lapsed regulars and first-timers, if your file has dates",
+        "Sign in with your phone first, and review everything before it’s saved"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "label": "Try it",
+          "title": "Upload a guest list",
+          "fields": [
+            {
+              "label": "Guest list (CSV or Excel)",
+              "placeholder": "Choose a file"
+            }
+          ],
+          "actions": [
+            "See my regulars"
+          ],
+          "note": "You’ll sign in with your phone number before uploading. Your file is never used to train AI."
+        }
+      }
     },
     {
       "type": "faq",
       "id": "questions",
       "ground": "white",
+      "status": "built",
       "kicker": "Questions",
       "title": "About guest records.",
       "items": [
-        {"question": "Does it work if guests didn’t book on {{brand.name}}?", "answer": "Yes. Import guest lists from a CSV or Excel file, or bring in a Luma guest list if you’re on Luma Plus, and check-ins at your door count the same. Groups are worked out from who actually came."},
-        {"question": "How are regulars worked out?", "answer": "Three or more events checked in over the last 180 days. Every group shows its rule, so you know why someone is in it."},
-        {"question": "Can my team see the records?", "answer": "Owners and managers on your team can. Door staff only see the list for their event."},
-        {"question": "Can I add notes about a guest?", "answer": "Yes. Notes are private to you and your team, and never shown to the guest."},
-        {"question": "Can I export my list?", "answer": "Yes, whenever you like: export your contacts as a file."}
+        {
+          "question": "Do I have to enter anyone by hand?",
+          "answer": "No. Bookings, check-ins and form answers fill records by themselves, and you can import an old list from a CSV or Excel file to bring past guests in."
+        },
+        {
+          "question": "Does it work if guests didn’t book on {{brand.name}}?",
+          "answer": "Yes. Import guest lists from a CSV or Excel file, or bring in a Luma guest list if you’re on Luma Plus, and check-ins at your door count the same."
+        },
+        {
+          "question": "How are regulars worked out?",
+          "answer": "Three or more events checked in over the last 180 days. Every group shows its rule, so you know why someone is in it."
+        },
+        {
+          "question": "Can my team see the records?",
+          "answer": "Owners and managers on your team can. Door staff only see the list for their event."
+        },
+        {
+          "question": "Can I add notes about a guest?",
+          "answer": "Yes. Notes are private to you and your team, and never shown to the guest."
+        },
+        {
+          "question": "Can I export my list?",
+          "answer": "Yes, whenever you like: export your contacts as a file."
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions-coming",
+      "ground": "white",
+      "status": "new",
+      "statusNote": "Answers about the AI import, which is not built. Show them with that section.",
+      "kicker": "Questions",
+      "title": "About the AI import.",
+      "items": [
+        {
+          "question": "What does the AI do with my file?",
+          "answer": "It works out what each column means, cleans names and numbers, suggests merges and tags, and shows you all of it before anything is saved."
+        },
+        {
+          "question": "Is my guests’ data used to train AI?",
+          "answer": "No. Your file is read to sort your list, and nothing else."
+        }
       ]
     },
     {
       "type": "cta",
       "id": "start",
       "ground": "pink",
+      "status": "built",
       "kicker": "Free for 30 days · founding hosts get 90",
       "title": "Bring your list. Meet your regulars.",
       "lead": "Import your guest lists and see your groups on day one.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}, "emphasis": "secondary"}
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "How {{brand.name}} works",
+          "to": {
+            "route": "how_it_works"
+          },
+          "emphasis": "secondary"
+        }
       ],
-      "media": {"kind": "capture", "slot": "host-today"}
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
+    },
+    {
+      "type": "cta",
+      "id": "start-try",
+      "ground": "pink",
+      "status": "tryIt",
+      "statusNote": "The closing band of the records-mode importer. Show it, in place of the band above, when the command ships.",
+      "kicker": "Free for 30 days · founding hosts get 90",
+      "title": "Bring your list. Meet your regulars.",
+      "lead": "Upload your old guest lists and see your groups in minutes.",
+      "actions": [
+        {
+          "label": "Upload a guest list",
+          "to": {
+            "anchor": "try"
+          },
+          "emphasis": "primary",
+          "status": "tryIt"
+        },
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "secondary"
+        }
+      ],
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
     }
   ]
 }
