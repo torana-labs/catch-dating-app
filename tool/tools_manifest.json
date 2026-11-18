@@ -2333,7 +2333,7 @@
       "description": "Deletes leftover documents in retired collections from a hard-coded allowlist, skipping anything tied to the Bhag Run Club notice; dry run by default, backs up before deleting.",
       "checks": [
         "node --check tool/data/cleanup_retired_collections.mjs",
-        "firebase emulators:exec --project demo-catch-cleanup --only firestore \"node --test tool/data/cleanup_retired_collections.test.mjs\""
+        "node --test tool/data/cleanup_retired_collections.test.mjs"
       ],
       "impactPaths": [
         "tool/data/cleanup_retired_collections.test.mjs",

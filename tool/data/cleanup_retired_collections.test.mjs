@@ -17,7 +17,9 @@ import {
 
 // Run with: firebase emulators:exec --project demo-catch-cleanup --only firestore \
 //   "node --test tool/data/cleanup_retired_collections.test.mjs"
-// The emulator tests are skipped when no Firestore emulator is running.
+// CI runs this file without an emulator, so only the gate tests run there; the
+// emulator tests are skipped when no Firestore emulator is running. Run the
+// command above before changing the cleanup logic.
 const emulatorHost = process.env.FIRESTORE_EMULATOR_HOST;
 const projectId = "demo-catch-cleanup";
 const requireFromFunctions = createRequire(
