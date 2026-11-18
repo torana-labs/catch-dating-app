@@ -89,13 +89,8 @@
       "ground": "paper",
       "kicker": "Get your demo link",
       "title": "Tell us about your night.",
-      "lead": "Message us on WhatsApp with your name, what you host and, if you like, what you ask guests now. We’ll set up your demo and message you when it’s ready.",
+      "lead": "We’ll set up your demo and send the link on WhatsApp.",
       "actions": [
-        {
-          "label": "Ask for a demo on WhatsApp",
-          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like a demo night. What I host:"},
-          "emphasis": "primary"
-        },
         {
           "label": "Rather see it with a person? Ask for a 15-minute walkthrough",
           "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like a 15-minute walkthrough of {{brand.name}} for hosts."},

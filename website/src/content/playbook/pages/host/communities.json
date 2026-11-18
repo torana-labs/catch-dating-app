@@ -176,14 +176,9 @@
       "ground": "indigo",
       "kicker": "Your next meetup",
       "title": "Give your community a home.",
-      "lead": "Start the free trial, or message us on WhatsApp and we’ll send you the community setup guide.",
+      "lead": "Start the free trial, or leave your number and we’ll send the community setup guide on WhatsApp.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {
-          "label": "Get the setup guide on WhatsApp",
-          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, please send me the community setup guide."},
-          "emphasis": "secondary"
-        }
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
       "leadForm": {"id": "community_setup_guide", "requestKind": "guide", "format": "communities", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
       "media": {"kind": "capture", "slot": "guest-explore"}

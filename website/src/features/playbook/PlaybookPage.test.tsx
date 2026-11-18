@@ -48,7 +48,7 @@ describe("playbook page", () => {
     expect(screen.getByText("Send the guide")).toBeTruthy();
   });
 
-  it("sends the run club setup guide request from the closing band, beside the WhatsApp action, and retries the same request", async () => {
+  it("sends the run club setup guide request from the closing band, beside the trial, and retries the same request", async () => {
     const posts: {requestKind: string; lead: {requestId: string; entry: string; guide: unknown; consent: unknown}}[] = [];
     const answers = [
       new Response(JSON.stringify({error: "Unavailable"}), {status: 503}),
@@ -60,7 +60,8 @@ describe("playbook page", () => {
     }));
     render(<PlaybookPage captures={captures} page={page} />);
     const band = within(document.getElementById("start")!);
-    expect(band.getByRole("link", {name: "Get the setup guide on WhatsApp"}).getAttribute("target")).toBe("_blank");
+    expect(band.getByText("Start the free trial, or leave your number and we’ll send the run club setup guide on WhatsApp.")).toBeTruthy();
+    expect(band.getByRole("link", {name: "Start free trial"})).toBeTruthy();
     const form = within(band.getByRole("form", {name: "Send the guide"}));
     expect(form.getByText(fill(playbookCopy.leadForm.consent, {action: "Send the guide"}))).toBeTruthy();
     expect(form.getByText("We’ll message you on WhatsApp with the guide.")).toBeTruthy();
@@ -80,6 +81,17 @@ describe("playbook page", () => {
     expect(posts[1].lead.requestId).toBe(posts[0].lead.requestId);
     expect(posts[0]).toMatchObject({requestKind: "guide", lead: {entry: "run_club_setup_guide", guide: {format: "run_club"},
       consent: {purpose: "leadFollowUp", version: playbookCopy.leadForm.consentVersion}}});
+  });
+
+  it("draws a band whose form renders without a duplicate WhatsApp action: the venues list-your-space split and closing band", async () => {
+    const venues = (await loadPlaybookPage(resolvePlaybookPage("/host/venues/")!))!;
+    render(<PlaybookPage captures={captures} page={venues} />);
+    for (const [id, submit] of [["list-your-space", "List my space"], ["start", "Send the guide"]]) {
+      const band = within(document.getElementById(id)!);
+      expect(band.getByRole("form", {name: submit})).toBeTruthy();
+      const chats = band.queryAllByRole("link").filter((link) => /^https:\/\/wa\.me\//u.test(link.getAttribute("href") ?? ""));
+      expect(chats).toEqual([]);
+    }
   });
 
   it("states its questions as FAQPage and its breadcrumb as BreadcrumbList", () => {
