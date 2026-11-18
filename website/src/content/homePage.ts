@@ -236,7 +236,7 @@ export const homePageCopy = {
   host: {
     eyebrow: "For hosts",
     title: "Bring people together? Run the whole night from one screen.",
-    body: "Bookings paid upfront, the door, groups, the first hello and the follow-up. Free for 30 days, then 5% of ticket sales, capped at ₹10,000 per billing cycle. Free events stay free.",
+    body: "Bookings paid upfront, the door, groups, the first hello and the follow-up. Free for 30 days, then 5% of ticket sales, capped at ₹10,000 a month. Free events stay free.",
     /** A thin or launching city while its founding-host counter reads open: the offer, without a places count. */
     foundingBody: "Founding hosts in {city}: 90 days without fees. Payment gateway fees are charged separately by the payment provider.",
     fees: "Payment gateway fees are charged separately by the payment provider.",

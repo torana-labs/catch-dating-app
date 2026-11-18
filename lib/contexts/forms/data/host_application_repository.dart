@@ -577,7 +577,7 @@ HostApplicationRepository hostApplicationRepository(Ref ref) =>
 Future<HostApplicationPage> hostApplications(
   Ref ref,
   HostApplicationListRequest request,
-) => ref.read(hostApplicationRepositoryProvider).listApplications(request);
+) => ref.watch(hostApplicationRepositoryProvider).listApplications(request);
 
 @riverpod
 Future<HostApplicationDetail> hostApplicationDetail(
@@ -585,7 +585,7 @@ Future<HostApplicationDetail> hostApplicationDetail(
   String organizerId,
   String applicationId,
 ) => ref
-    .read(hostApplicationRepositoryProvider)
+    .watch(hostApplicationRepositoryProvider)
     .getApplicationDetail(organizerId, applicationId);
 
 Map<Object?, Object?> _requiredMap(Object? value, String label) {

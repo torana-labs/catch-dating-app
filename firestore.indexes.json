@@ -1511,6 +1511,34 @@
       ]
     },
     {
+      "collectionGroup": "customDomains",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "target.organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "customDomains",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "lastCheckedAtMillis",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "organizerFormPaymentWebhooks",
       "queryScope": "COLLECTION",
       "fields": [

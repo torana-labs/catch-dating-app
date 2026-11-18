@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/form_operation_fields.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 
 // firestore-index: hostResponseSummaries (organizerId:ASCENDING, formId:ASCENDING, offer.status:ASCENDING, submittedAtMillis:DESCENDING, __name__:DESCENDING)
 // firestore-index: hostResponseSummaries (organizerId:ASCENDING, reviewStatus:ASCENDING, submittedAtMillis:DESCENDING, __name__:DESCENDING)
@@ -14,17 +15,6 @@ import 'package:catch_platform/firebase/host_summary_reader.dart';
 // firestore-index: hostResponseSummaries (organizerId:ASCENDING, formId:ASCENDING, row.response.versionId:ASCENDING, reviewStatus:ASCENDING, submittedAtMillis:DESCENDING, __name__:DESCENDING)
 // firestore-index: hostResponseSummaries (organizerId:ASCENDING, formId:ASCENDING, row.response.versionId:ASCENDING, reviewStatus:ASCENDING, submittedAtMillis:ASCENDING, __name__:ASCENDING)
 // firestore-index: hostResponseSummaries (organizerId:ASCENDING, formId:ASCENDING, row.response.status:ASCENDING, submittedAtMillis:DESCENDING, __name__:DESCENDING)
-
-/// The first rows of one live response request, and whether more follow.
-class HostFormResponseWindow {
-  const HostFormResponseWindow({required this.page, required this.hasMore});
-
-  /// The rows listened to, with the form page's version scope and answer
-  /// filter options. Its cursor is always null: more rows mean a larger
-  /// window.
-  final HostFormResponsePage page;
-  final bool hasMore;
-}
 
 /// Ordinary inbox pages contain metadata only. Answer filters and detail reads
 /// retain their source-authorized callable path. Offered entries are read
@@ -81,7 +71,8 @@ class HostResponseSummaryReads {
   Future<HostFormResponsePage> list(HostFormResponseListRequest request) async {
     final spec = _ResponseQuerySpec(request);
     await reader.activatedDirectory(request.organizerId, marker);
-    final scope = await _scopeFor(request, spec);
+    final key = scopeKey(request);
+    final scope = key == null ? null : await this.scope(key);
     final page = await reader.page(
       collection: 'hostResponseSummaries',
       organizerId: request.organizerId,
@@ -97,52 +88,57 @@ class HostResponseSummaryReads {
     return _page(request, page.documents, page.nextCursor, scope);
   }
 
-  /// The first [limit] rows of a request [supports] accepts while it is
-  /// listened to: an answer submitted, reviewed or offered elsewhere shows
-  /// at once. The form page's version scope and filter options are read
-  /// once, when the window opens.
-  Stream<HostFormResponseWindow> watchWindow(
+  /// The entries of a request [supports] accepts, [pageSize] at a time,
+  /// every row shown kept live: an answer submitted, reviewed or offered
+  /// elsewhere shows at once. Each page is its own listener, so asking for
+  /// more reads only the new page.
+  LivePager<HostFormInboxEntry> watchPages(
     HostFormResponseListRequest request, {
-    required int limit,
+    required int pageSize,
   }) {
     final spec = _ResponseQuerySpec(request);
-    return Stream.fromFuture(_scopeFor(request, spec)).asyncExpand(
-      (scope) => reader
-          .watchWindow(
-            collection: 'hostResponseSummaries',
-            organizerId: request.organizerId,
-            orderField: 'submittedAtMillis',
-            descending: !request.oldestFirst,
-            limit: limit,
-            marker: marker,
-            equalities: spec.equalities,
-            lowerInclusive: spec.lowerInclusive,
-            upperExclusive: spec.upperExclusive,
-          )
-          .map(
-            (window) => HostFormResponseWindow(
-              page: _page(request, window.documents, null, scope),
-              hasMore: window.hasMore,
-            ),
-          ),
-    );
+    return reader
+        .watchPages(
+          collection: 'hostResponseSummaries',
+          organizerId: request.organizerId,
+          orderField: 'submittedAtMillis',
+          descending: !request.oldestFirst,
+          pageSize: pageSize,
+          marker: marker,
+          equalities: spec.equalities,
+          lowerInclusive: spec.lowerInclusive,
+          upperExclusive: spec.upperExclusive,
+        )
+        .map(HostFormInboxEntry.fromSummary);
   }
 
-  Future<_FormScope?> _scopeFor(
+  /// Which form page [request] is (applications included), or null when it
+  /// is not one. Only a form page has a version scope and answer filter
+  /// options, and they do not depend on sort, status or dates, so this key
+  /// is what the scope read is shared by.
+  static HostFormResponseScopeKey? scopeKey(
     HostFormResponseListRequest request,
-    _ResponseQuerySpec spec,
-  ) async {
-    final formId = spec.formPageId;
+  ) {
+    final formId = _ResponseQuerySpec(request).formPageId;
     return formId == null
         ? null
-        : _formScope(request.organizerId, formId, request.versionId);
+        : (
+            organizerId: request.organizerId,
+            formId: formId,
+            versionId: request.versionId,
+          );
   }
+
+  /// The version scope and answer filter options of a form page, read once
+  /// per page, not per row.
+  Future<HostFormResponseScope?> scope(HostFormResponseScopeKey key) =>
+      _formScope(key.organizerId, key.formId, key.versionId);
 
   static HostFormResponsePage _page(
     HostFormResponseListRequest request,
     List<Map<String, dynamic>> documents,
     String? nextCursor,
-    _FormScope? scope,
+    HostFormResponseScope? scope,
   ) {
     final entries = documents
         .map(HostFormInboxEntry.fromSummary)
@@ -160,7 +156,7 @@ class HostResponseSummaryReads {
   /// A native form's version scope and the answer filter options of the
   /// selected (or else active) version. An imported application form has
   /// no form summary, so neither, as the callable returns.
-  Future<_FormScope?> _formScope(
+  Future<HostFormResponseScope?> _formScope(
     String organizerId,
     String formId,
     String? versionId,
@@ -185,7 +181,7 @@ class HostResponseSummaryReads {
     if (filters != null && filters['formId'] != formId) {
       throw const FormatException('Form version filters belong elsewhere.');
     }
-    return _FormScope(
+    return HostFormResponseScope(
       versionScope,
       formOperationMapList(
         filters?['answerFilterOptions'] ?? const [],
@@ -195,8 +191,17 @@ class HostResponseSummaryReads {
   }
 }
 
-class _FormScope {
-  const _FormScope(this.versionScope, this.answerFilterOptions);
+/// Identifies one form page's [HostFormResponseScope].
+typedef HostFormResponseScopeKey = ({
+  String organizerId,
+  String formId,
+  String? versionId,
+});
+
+/// A form page's version scope and the answer filter options of its
+/// selected (or else active) version.
+class HostFormResponseScope {
+  const HostFormResponseScope(this.versionScope, this.answerFilterOptions);
   final HostFormResponseVersionScope versionScope;
   final List<HostFormResponseFilterOption> answerFilterOptions;
 }

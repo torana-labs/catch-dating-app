@@ -114,7 +114,7 @@ final class HostApplicationsProvider
   }
 }
 
-String _$hostApplicationsHash() => r'222bbe5dbaa95c3629a350f78de6d116f3d19c82';
+String _$hostApplicationsHash() => r'63f5cbbdd882358038c8e80a40b23ae4cf9cad49';
 
 final class HostApplicationsFamily extends $Family
     with
@@ -196,7 +196,7 @@ final class HostApplicationDetailProvider
 }
 
 String _$hostApplicationDetailHash() =>
-    r'9945708dda2d460b78c558f17dcacb432401c036';
+    r'25b010fae1565f70e9f811cca7a0e883761e6ffa';
 
 final class HostApplicationDetailFamily extends $Family
     with

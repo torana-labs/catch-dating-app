@@ -6,6 +6,10 @@ import {
   organizerSearchIndexSettings,
   eventSearchIndexSettings,
   syncAlgoliaEventIndexHandler,
+  syncOrDropAlgolia,
+  isTransientSearchSyncError,
+  AlgoliaRequestError,
+  ALGOLIA_RETRY_WINDOW_MS,
 } from "./algoliaExploreIndex.js";
 import type {
   OrganizerDocument,
@@ -258,6 +262,49 @@ test("publication change during index write deletes the stale projection",
     await syncAlgoliaEventIndexHandler("event-1", event(), deps);
     assert.deepEqual(methods, ["PUT", "DELETE"]);
   });
+
+test("a rejected Algolia request is dropped instead of retried", async () => {
+  const deps = searchDeps(() => event(), async () => {
+    throw new AlgoliaRequestError(400, "Record is too big");
+  });
+  const fresh = new Date().toISOString();
+  await syncOrDropAlgolia("syncAlgoliaEventIndex", "event-1", fresh,
+    () => syncAlgoliaEventIndexHandler("event-1", event(), deps));
+});
+
+test("an unreachable Algolia retries only inside the retry window",
+  async () => {
+    const unreachable = () => Promise.reject(new TypeError("fetch failed"));
+    const written = Date.parse("2026-11-16T14:00:00Z");
+    await assert.rejects(syncOrDropAlgolia("t", "e", new Date(written)
+      .toISOString(), unreachable, () => written + 60_000), /fetch failed/u);
+    await syncOrDropAlgolia("t", "e", new Date(written).toISOString(),
+      unreachable, () => written + ALGOLIA_RETRY_WINDOW_MS + 1);
+  });
+
+test("a malformed event is permanent and a missing event time is fresh",
+  async () => {
+    await syncOrDropAlgolia("t", "e", undefined, () =>
+      Promise.reject(new TypeError("Cannot read properties of undefined")));
+    await assert.rejects(syncOrDropAlgolia("t", "e", undefined, () =>
+      Promise.reject(new AlgoliaRequestError(503, "")), () => 0));
+  });
+
+test("only failures that can pass on their own are transient", () => {
+  for (const status of [408, 429, 500, 503]) {
+    assert.equal(isTransientSearchSyncError(
+      new AlgoliaRequestError(status, "")), true, String(status));
+  }
+  for (const status of [400, 401, 403, 404, 413]) {
+    assert.equal(isTransientSearchSyncError(
+      new AlgoliaRequestError(status, "")), false, String(status));
+  }
+  assert.equal(isTransientSearchSyncError(
+    Object.assign(new Error("x"), {code: 14})), true);
+  assert.equal(isTransientSearchSyncError(
+    Object.assign(new Error("x"), {code: 7})), false);
+  assert.equal(isTransientSearchSyncError(new Error("boom")), false);
+});
 
 function searchDeps(currentEvent: () => EventDocument,
   onFetch: (init: RequestInit) => Promise<void>) {

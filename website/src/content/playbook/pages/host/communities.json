@@ -6,7 +6,7 @@
     "title": "{{brand.name}} for communities | Book clubs and hobby groups beyond the group chat",
     "description": "A page people can find and follow, meetups they book and pay for in a minute, applications when you want to choose, and memberships for the regulars. Free meetups stay free.",
     "socialDescription": "Your community is bigger than its group chat. {{brand.name}} for book clubs, hobby groups and creator communities.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
@@ -143,11 +143,11 @@
       "ground": "ink",
       "kicker": "Pricing for communities",
       "price": "5%",
-      "title": "of tickets and memberships, never more than ₹10,000 per billing cycle.",
+      "title": "of tickets and memberships, never more than ₹10,000 a month.",
       "trial": "Free for 30 days from your first meetup, 90 for founding hosts. Payment gateway fees are separate.",
       "examples": [
         {"title": "A meetup of 25 at ₹300", "value": "₹375 a meetup", "body": "5% of ₹7,500."},
-        {"title": "50 members at ₹499 a month", "value": "₹1,248 a billing cycle", "body": "5% of ₹24,950 in renewals."},
+        {"title": "50 members at ₹499 a month", "value": "₹1,248 a month", "body": "5% of ₹24,950 in renewals."},
         {"title": "A free reading hour", "value": "₹0", "body": "Free events stay free."}
       ],
       "actions": [

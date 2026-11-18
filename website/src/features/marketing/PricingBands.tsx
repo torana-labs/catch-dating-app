@@ -33,7 +33,7 @@ export interface PricingFeeBandProps {
   actions: readonly CatchBandAction[];
   /** The page headline over the rate, when the band opens its page (/pricing/). */
   title?: string;
-  /** The rate's headline; defaults to the rate and its cap per billing cycle. */
+  /** The rate's headline; defaults to the rate and its monthly cap. */
   rateTitle?: string;
   labels?: readonly string[];
   examples?: readonly CatchFeeSectionExample[];

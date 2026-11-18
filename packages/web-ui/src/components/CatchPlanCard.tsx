@@ -23,6 +23,11 @@ export interface CatchPlanCardProps {
   price: string;
   /** Places left or the booking state, such as "6 left" or "Full". */
   availability?: string;
+  /**
+   * A short tag on the photo's corner, such as "Women-led": the canvas plan
+   * card's white pill (.plan .badge). It is read after the host line.
+   */
+  badge?: string;
   /** The plan's photo. Without one, or when it fails to load, the card shows its poster. */
   photoUrl?: string | null;
   /** The poster's short name in display type, such as "Quiz night". */
@@ -42,12 +47,15 @@ export interface CatchPlanCardProps {
  * A Website v2 plan card: the plan's photo, or a poster in its format's
  * accent, above its label, title, host and place, with the price and places
  * left at the foot. Below 840px it becomes a row with the media at its start.
- * The whole card is one link.
+ * A badge sits on the media's top corner. The whole card is one link.
  */
-export function CatchPlanCard({availability, date, detail, format, href, label, onClick, photoUrl, posterLabel, price, title}: CatchPlanCardProps) {
+export function CatchPlanCard({availability, badge, date, detail, format, href, label, onClick, photoUrl, posterLabel, price, title}: CatchPlanCardProps) {
   const photo = photoUrl?.trim();
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
   const ground = format ? formatAccents[format] : "paper";
+  const tag = badge?.trim() ? (
+    <>{" "}<CatchText as="span" className={styles.badge} variant="label-badge">{badge.trim()}</CatchText>{" "}</>
+  ) : null;
   if (date) {
     return (
       <a className={styles.card} data-layout="kit" href={href} onClick={onClick}>
@@ -65,7 +73,7 @@ export function CatchPlanCard({availability, date, detail, format, href, label, 
             <CatchText as="span" className={styles.label}>{label}</CatchText>{" "}
             <CatchText as="span" tone="secondary" variant="body-meta">{detail}</CatchText>
           </span>
-        </span>{" "}
+        </span>{tag ?? " "}
         <span className={styles.meta}>
           <CatchText as="span" className={styles.metaText} variant="body-meta">{price}</CatchText>
           {availability ? <>{" "}<CatchText as="span" className={`${styles.metaText} ${styles.availability}`} variant="body-meta">{availability}</CatchText></> : null}
@@ -85,7 +93,7 @@ export function CatchPlanCard({availability, date, detail, format, href, label, 
       <span className={styles.body}>
         <CatchLegacyText as="span" color={format ? formatAccents[format] : "ink2"} variant="statusLabel">{label}</CatchLegacyText>{" "}
         <CatchLegacyText as="span" maxLines={2} variant="titleS">{title}</CatchLegacyText>{" "}
-        <CatchLegacyText as="span" color="ink2" maxLines={2} variant="bodyS">{detail}</CatchLegacyText>{" "}
+        <CatchLegacyText as="span" color="ink2" maxLines={2} variant="bodyS">{detail}</CatchLegacyText>{tag ?? " "}
         <span className={styles.foot}>
           <CatchLegacyText as="span" variant="supportingStrong">{price}</CatchLegacyText>
           {availability ? <>{" "}<CatchLegacyText as="span" color="ink2" variant="supportingStrong">{availability}</CatchLegacyText></> : null}

@@ -248,8 +248,8 @@ streams; a city that cannot be read, or has no format pages yet, renders the
 page's unavailable state with a 503. A format page is indexed, and listed in
 the Next sitemap (`server/discoverySitemap.ts`), only when the read model's
 `formatPages[format].indexing` says `index, follow`; a new-to-the-city page
-stays noindex and out of the sitemap until the owner approves it. Neither has
-static output. Indexing before a city launches is the read model's decision
+is indexed and listed for every website city, since the owner approved it
+(18 Nov 2026). Neither has static output. Indexing before a city launches is the read model's decision
 too (`formatPageIndexingFor`, owner decision of 17 Nov 2026). Their closing
 "Get new plans on WhatsApp" form, also on Explore, sends a `city_alerts` lead
 through the site's lead client (`createSiteLeadSubmission`), which carries the

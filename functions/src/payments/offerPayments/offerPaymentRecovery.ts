@@ -32,6 +32,7 @@ export async function reconcileOfferPayments(
   return reconcileEventPaymentQueue(input, {
     ...ops,
     collection: OFFER_PAYMENT_COLLECTION,
+    purpose: "offer",
     settle: ops.settle ?? reconcileOfferSettlement,
   });
 }
@@ -52,7 +53,13 @@ export const reconcileOrganizerEventOfferPayments = onSchedule(
       if (summary.processed || summary.failed || summary.deferred) {
         logger.info("Offer payment reconciliation", summary);
       }
-    } catch {
+    } catch (error) {
+      // The thrown message stays generic for the scheduler; the cause (such as
+      // a missing index) must reach the logs or the job fails unexplained.
+      logger.error("Offer payment reconciliation failed", {
+        code: (error as {code?: unknown}).code,
+        message: error instanceof Error ? error.message : String(error),
+      });
       throw new Error("Offer payment recovery is unavailable.");
     }
   },

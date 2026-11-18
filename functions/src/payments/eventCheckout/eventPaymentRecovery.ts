@@ -1,7 +1,11 @@
 import {Timestamp} from "firebase-admin/firestore";
+import type {GuestPaymentPurpose} from "../guestPayments";
 
 export interface EventPaymentRecoveryOperations {
   collection: string;
+  /** The ledger holds every guest checkout, so each queue names its own
+   * purpose. The purpose-led indexes only serve queries that filter on it. */
+  purpose: GuestPaymentPurpose;
   execution: (input: {
     db: FirebaseFirestore.Firestore;
     paymentId: string;
@@ -29,7 +33,9 @@ export async function reconcileEventPaymentQueue(
 ) {
   const {db, nowMillis} = input;
   const deadline = ops.clock() + 8 * 60_000;
-  const collection = db.collection(ops.collection);
+  const collection = db
+    .collection(ops.collection)
+    .where("purpose", "==", ops.purpose);
   const [pending, completed] = await Promise.all([
     collection
       .where("status", "in", [

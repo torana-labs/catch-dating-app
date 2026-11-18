@@ -1,6 +1,6 @@
 import {beforeEach, expect, test, vi} from "vitest";
 import {initializeMarketingAnalytics, setMarketingConsent, createMarketingEventId, shouldShowMarketingConsentBanner, trackAcceptedMarketingLead,
-  getMarketingConsent, trackClientErrorSignal, trackMarketingEvent, trackPageView, waitlistAnalyticsPayload} from "./analytics";
+  getMarketingConsent, trackClientErrorSignal, trackMarketingEvent, trackPageView, trackWebsiteLeadFormEvent, waitlistAnalyticsPayload} from "./analytics";
 
 beforeEach(() => {
   localStorage.clear();
@@ -30,6 +30,17 @@ test("marketing listeners stop emitting after navigation to a private demo", () 
   trackPageView("sales_demo");
   expect(window.dataLayer).toEqual([]);
   expect(localStorage.getItem("catch_marketing_attribution_v1")).toEqual(before);
+});
+
+test("lead form events stay out of private pages even with analytics consent", () => {
+  setMarketingConsent("analytics");
+  window.history.replaceState(null, "", "/demo/synthetic-invite/#grant=synthetic");
+  window.dataLayer = [];
+  expect(trackWebsiteLeadFormEvent("viewed", {kind: "guide", formId: "rc-wa"})).toBe(false);
+  window.history.replaceState(null, "", "/run-clubs/?utm_source=ig#form");
+  expect(trackWebsiteLeadFormEvent("viewed", {kind: "guide", formId: "rc-wa"})).toBe(true);
+  expect(window.dataLayer).toEqual([{event: "lead_form_viewed", content_version: "website_copy_v2", lead_kind: "guide", form_id: "rc-wa",
+    page_path: "/run-clubs/"}]);
 });
 
 const legacyKey = "catch_marketing_attribution_v1";

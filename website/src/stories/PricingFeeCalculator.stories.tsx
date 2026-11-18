@@ -25,7 +25,7 @@ type Story = StoryObj<typeof meta>;
 // catchComponent names the website registry's entry (design/website/components.json).
 const storyRoutes = ["host", "pricing"];
 
-/** Below the cap at the shared starting sales, then at the cap: 5% stops at the cap for the billing cycle. The calculator is drawn for the ink ground. */
+/** Below the cap at the shared starting sales, then at the cap: 5% stops at the cap for the month. The calculator is drawn for the ink ground. */
 export const FeeCalculator: Story = {
   name: "Pricing fee calculator",
   parameters: {catchComponent: {id: "pricing_fee_calculator", routeIds: storyRoutes, states: ["below-cap", "capped"]}},
