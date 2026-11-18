@@ -1457,6 +1457,30 @@
       "role": "gate"
     },
     {
+      "id": "ci:organizer-takedown-workflow",
+      "category": "ci",
+      "path": "tool/ci/organizer_takedown_workflow.test.mjs",
+      "command": "node --test tool/ci/organizer_takedown_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/organizer-takedown.yml",
+        "tool/ci/organizer_takedown_workflow.test.mjs"
+      ],
+      "description": "Keeps the organiser takedown workflow dispatch-only from main, keyless and least-privileged, with only environment, mode and an opaque TD case id as inputs, no artifacts, a counts-only summary, and --allow-prod only for prod writes.",
+      "checks": [
+        "node --check tool/ci/organizer_takedown_workflow.test.mjs",
+        "node --test tool/ci/organizer_takedown_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:required-ci-floor",
       "category": "ci",
       "path": "tool/ci/required_ci_floor.mjs",
