@@ -1726,12 +1726,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Mutation receipts are idempotency records for admin callables and are
-    // never client-visible.
-    match /organizerEntitlementReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
     match /organizerContactIdentityLinks/{identityLinkId} {
       allow read, write: if false;
     }
@@ -1749,10 +1743,6 @@ service cloud.firestore {
     }
 
     match /organizerAudienceSummaries/{organizerId} {
-      allow read, write: if false;
-    }
-
-    match /organizerAudienceProjectionReceipts/{eventId} {
       allow read, write: if false;
     }
 

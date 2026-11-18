@@ -38,10 +38,6 @@
         "reason": "Server-only collection; no test yet proves client reads and writes are denied."
       },
       {
-        "id": "organizerAudienceProjectionReceipts",
-        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
-      },
-      {
         "id": "eventWaitlistOffers",
         "reason": "Client access (offered attendee or club host) has no rules test yet."
       },
@@ -127,11 +123,16 @@
         "actOnEventChatMessage",
         "setEventChatReaction",
         "updateEventChatProfileSharing",
-        "manageEventChatMember"
+        "manageEventChatMember",
+        "adminGrantOrganizerEntitlement",
+        "adminRevokeOrganizerEntitlementGrant",
+        "onEventAttendeeAudienceProjected",
+        "onHostMembershipAudienceProjected",
+        "onOrganizerCommunicationPreferenceAudienceProjected"
       ],
       "migrationNotes": [
         "One replay-receipt collection since L8 of the Firestore consolidation: commandReceipts/{command}_{id} with command, requestHash, result, createdAt and expiresAt, and expiresAt (seven days for triggers, thirty for requests and webhooks; the TTL policy is approved by the owner, 18 Nov 2026).",
-        "functionEventReceipts, eventLiveCommandReceipts and eventChatAccessReceipts stopped being written and keep their documents under the legal hold, with no client access; replay windows are short, so none were copied forward.",
+        "functionEventReceipts, eventLiveCommandReceipts, eventChatAccessReceipts, organizerAudienceProjectionReceipts and organizerEntitlementReceipts stopped being written and keep their documents under the legal hold, with no client access; replay windows are short, so none were copied forward.",
         "Consent, money, safety and audit receipts stay in their own collections."
       ]
     },
@@ -1826,24 +1827,6 @@
       ]
     },
     {
-      "id": "organizerEntitlementReceipts",
-      "path": "organizerEntitlementReceipts/{receiptId}",
-      "rulesMatch": "/organizerEntitlementReceipts/{receiptId}",
-      "typescriptInterface": "OrganizerEntitlementReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
-      "rulesTestNames": [
-        "keeps organizer entitlement state server-only"
-      ],
-      "owner": "admin organizer entitlement grant/revoke callables",
-      "read": "server only",
-      "write": "server only; idempotency receipts for admin entitlement mutations",
-      "migrationNotes": [
-        "receiptId is organizerId_operationId; a matching contentHash replays the stored result and a different hash fails closed.",
-        "expiresAt is a TTL tombstone thirty days after creation."
-      ]
-    },
-    {
       "id": "organizerForms",
       "path": "organizerForms/{formId}",
       "rulesMatch": "/organizerForms/{formId}",
@@ -2179,24 +2162,6 @@
       ],
       "rulesTestNames": [
         "lets current managers read WhatsApp thread views and one thread's messages"
-      ]
-    },
-    {
-      "id": "organizerAudienceProjectionReceipts",
-      "path": "organizerAudienceProjectionReceipts/{eventId}",
-      "rulesMatch": "/organizerAudienceProjectionReceipts/{eventId}",
-      "typescriptInterface": "OrganizerAudienceProjectionReceiptDocument",
-      "dartModel": null,
-      "owner": "organizer audience summary projection",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "onEventAttendeeAudienceProjected",
-        "onOrganizerCommunicationPreferenceAudienceProjected"
-      ],
-      "migrationNotes": [
-        "Receipts make summary deltas exactly once across trigger retries.",
-        "Requires a Firestore TTL policy on expiresAt."
       ]
     },
     {
