@@ -122,6 +122,13 @@
   },
   "allowedDifferences": [
     {
+      "switch": "AD_CONVERSIONS_MODE",
+      "owner": "Suvrat Garg",
+      "reason": "Ad conversions go only from prod, where real hosts sign up; Meta and Google take one Catch dataset and one Ads account. Prod runs validate (Meta test events, Google validate-only) from 2026-11-18 and then live; dev and staging stay off and never send.",
+      "ticket": "CAT-183",
+      "expires": "2027-02-28"
+    },
+    {
       "switch": "CATCH_INSTAGRAM_CLAIMS_ENABLED",
       "owner": "Suvrat Garg",
       "reason": "Instagram claim verification runs only in prod. A Meta app sends webhooks to one callback URL, and @catch_dates is a real account, so its messages go to prod. Dev and staging name no Instagram account, and their webhooks answer 503.",
