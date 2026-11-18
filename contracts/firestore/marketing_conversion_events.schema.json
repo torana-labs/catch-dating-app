@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/marketing_conversion_events.schema.json",
+  "title": "MarketingConversionEventDocument",
+  "description": "One website conversion (a waitlist submission) queued for analytics and ad measurement review. Core fields are typed; analytics and attribution carry the submitted payloads.",
+  "type": "object",
+  "additionalProperties": true,
+  "x-firestore-collection": "marketingConversionEvents",
+  "x-firestore-path": "marketingConversionEvents/{leadId}",
+  "x-document-id-field": "id",
+  "x-owner": "joinWaitlist",
+  "required": [
+    "eventId",
+    "eventName",
+    "leadId",
+    "leadPath",
+    "status",
+    "createdAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "eventName": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "leadId": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "leadPath": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "role": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "city": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "source": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "status": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "standardEvent": {
+      "type": "string",
+      "x-catch-ownership": "server-only"
+    },
+    "consent": {
+      "x-catch-ownership": "server-only"
+    },
+    "analytics": {
+      "x-catch-ownership": "server-only"
+    },
+    "attribution": {
+      "x-catch-ownership": "server-only"
+    },
+    "hostApplication": {
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}
