@@ -1,0 +1,210 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_whatsapp_thread_views.schema.json",
+  "title": "ProgramWhatsappThreadViewDocument",
+  "description": "Server-maintained inbox row of one programme WhatsApp thread, at programWhatsappThreadViews/{threadId} (the thread's own id): exactly the summary listProgramWhatsappThreads returned, without the clock-dependent service-window flag (the phone derives it from lastInboundAtMillis), plus the household's label, primary contact name and guest count that getProgramWhatsappThread returned in its header. Written by triggers on programWhatsappThreads, programHouseholds and organizerPrograms (the side labels). Holds the latest message preview and household names, which are personal data: the programme's managers and the communications duty read it. Never the phone number, its hash, the sender connection, who took the thread over or provider evidence, and never identity, permission or mutation authority. Deleted with its thread by the archive retention sweep.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programWhatsappThreadViews",
+  "x-firestore-path": "programWhatsappThreadViews/{threadId}",
+  "x-document-id-field": "threadId",
+  "x-owner": "Programme read model projector (programWhatsappThreadViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "threadId",
+    "householdId",
+    "guestId",
+    "displayName",
+    "sideLabel",
+    "unknownSender",
+    "handledBy",
+    "state",
+    "language",
+    "escalationReason",
+    "lastMessagePreview",
+    "lastMessageDirection",
+    "lastMessageAuthor",
+    "lastMessageAtMillis",
+    "lastInboundAtMillis",
+    "serviceWindowExpiresAtMillis",
+    "unreadCount",
+    "householdLabel",
+    "primaryContactName",
+    "guestCount",
+    "revision",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "threadId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 260,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "householdId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "description": "Null for an unknown sender."
+    },
+    "guestId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "description": "The guest whose own phone wrote in, when known."
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "The household's label, else Unknown number or Guest, as the callable named the thread."
+    },
+    "sideLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80,
+      "description": "The programme's label for the household's side, when it has one."
+    },
+    "unknownSender": {
+      "type": "boolean"
+    },
+    "handledBy": {
+      "type": "string",
+      "enum": [
+        "assistant",
+        "planner"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "needsYou",
+        "handled"
+      ]
+    },
+    "language": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "en",
+        "hi",
+        "gu",
+        "mr",
+        "ta",
+        null
+      ],
+      "description": "The guest's language when known (set by the assistant)."
+    },
+    "escalationReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "assistantOff",
+        "plannerHandling",
+        "outsideWindow",
+        "media",
+        "askedForPerson",
+        "distress",
+        "giftsOrMoney",
+        "changeRequest",
+        "notInFacts",
+        "budgetExhausted",
+        "providerError",
+        "unsafeAnswer",
+        "factsUnavailable",
+        "uncertainRetry",
+        "unknownSender",
+        null
+      ],
+      "description": "Why the thread was passed to the planner: the assistant's reasons (functions/src/programs/assistant/policy.ts ESCALATION_REASONS) plus unknownSender."
+    },
+    "lastMessagePreview": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "lastMessageDirection": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound"
+      ]
+    },
+    "lastMessageAuthor": {
+      "type": "string",
+      "enum": [
+        "guest",
+        "assistant",
+        "planner",
+        "system"
+      ]
+    },
+    "lastMessageAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "lastInboundAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "serviceWindowExpiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "unreadCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "householdLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200,
+      "description": "The household's own label; null for an unknown sender or a household that no longer exists."
+    },
+    "primaryContactName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    },
+    "guestCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000,
+      "description": "Guests in the household; 0 with no household."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "The thread's revision: the fence setProgramWhatsappThreadHandling checks."
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}
