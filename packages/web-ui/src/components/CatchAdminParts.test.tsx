@@ -48,19 +48,19 @@ describe("Admin T4 parts", () => {
       <CatchAdminIntakeDecisionState role="status">
         <div>
           <strong>approved</strong>
-          <span>reviewDecisions/afterfly</span>
+          <span>reviewDecisions/moonmoth</span>
         </div>
       </CatchAdminIntakeDecisionState>,
     );
-    expect(screen.getByRole("status").textContent).toBe("approvedreviewDecisions/afterfly");
+    expect(screen.getByRole("status").textContent).toBe("approvedreviewDecisions/moonmoth");
   });
 
   it("renders a section title, a source list and a header element", () => {
     render(
       <>
         <CatchAdminIntakeSectionTitle>Blocked actions</CatchAdminIntakeSectionTitle>
-        <CatchAdminSearchCandidateHeader aria-label="Afterfly Social">
-          <h3>Afterfly Social</h3>
+        <CatchAdminSearchCandidateHeader aria-label="Moonmoth Social">
+          <h3>Moonmoth Social</h3>
         </CatchAdminSearchCandidateHeader>
         <CatchAdminIntakeSourceList aria-label="Sources">
           <p>Instagram</p>
@@ -69,7 +69,7 @@ describe("Admin T4 parts", () => {
       </>,
     );
     expect(screen.getByText("Blocked actions").tagName).toBe("DIV");
-    expect(screen.getByLabelText("Afterfly Social").tagName).toBe("HEADER");
+    expect(screen.getByLabelText("Moonmoth Social").tagName).toBe("HEADER");
     expect(screen.getByLabelText("Sources").children).toHaveLength(2);
   });
 

@@ -151,20 +151,20 @@ describe("App live deep-link ownership", () => {
     mocks.getIdTokenResult.mockReturnValue(new Promise((resolve) => {
       resolveClaims = resolve;
     }));
-    window.history.replaceState({}, "", "/organizers/afterfly");
+    window.history.replaceState({}, "", "/organizers/moonmoth");
 
     render(<App />);
 
     expect(await screen.findByRole("heading", {name: "Checking admin access"}))
       .not.toBeNull();
-    expect(window.location.pathname).toBe("/organizers/afterfly");
+    expect(window.location.pathname).toBe("/organizers/moonmoth");
 
     await act(async () => {
       resolveClaims?.({claims: {}});
     });
     expect(await screen.findByRole("heading", {name: "Admin claim required"}))
       .not.toBeNull();
-    expect(window.location.pathname).toBe("/organizers/afterfly");
+    expect(window.location.pathname).toBe("/organizers/moonmoth");
   });
 
   it("sends an old address where its redirect names", async () => {

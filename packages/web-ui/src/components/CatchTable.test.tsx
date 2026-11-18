@@ -14,8 +14,8 @@ interface Row {
 }
 
 const rows: Row[] = [
-  {key: "afterfly", item: {title: "Afterfly", subtitle: "Weekly social nights"}, type: {label: "Listing"}, reply: {label: "Replied", tone: "success"}, waiting: {text: "3 days", tone: "danger"}},
-  {key: "harbor", item: {title: "Harbor Social", subtitle: "Enquiry"}, type: {label: "Enquiry"}, reply: {label: "Replied", tone: "success"}, waiting: "1 day"},
+  {key: "moonmoth", item: {title: "Moonmoth", subtitle: "Weekly social nights"}, type: {label: "Listing"}, reply: {label: "Replied", tone: "success"}, waiting: {text: "3 days", tone: "danger"}},
+  {key: "harbor", item: {title: "Quayside Supper", subtitle: "Enquiry"}, type: {label: "Enquiry"}, reply: {label: "Replied", tone: "success"}, waiting: "1 day"},
 ];
 const columns: CatchTableColumn<Row>[] = [
   {key: "item", label: "Item", kind: "title"},
@@ -27,7 +27,7 @@ const columns: CatchTableColumn<Row>[] = [
 describe("CatchTable", () => {
   it("draws title, badge, marker and toned cells with a sort arrow and the selected row", () => {
     const onRowPressed = vi.fn();
-    render(<CatchTable columns={columns} label="Inbox" onRowPressed={onRowPressed} rows={rows} selectedKey="afterfly" />);
+    render(<CatchTable columns={columns} label="Inbox" onRowPressed={onRowPressed} rows={rows} selectedKey="moonmoth" />);
     const table = screen.getByRole("table", {name: "Inbox"});
     expect(within(table).getByRole("columnheader", {name: /Waiting/u}).getAttribute("aria-sort")).toBe("descending");
     expect(within(table).getByText("Weekly social nights")).toBeTruthy();
@@ -49,7 +49,7 @@ describe("CatchTable", () => {
     );
     expect(screen.queryByRole("toolbar")).toBeNull();
     fireEvent.click(screen.getByRole("checkbox", {name: "Select all"}));
-    expect(onChecked).toHaveBeenLastCalledWith(["afterfly", "harbor"]);
+    expect(onChecked).toHaveBeenLastCalledWith(["moonmoth", "harbor"]);
     rerender(
       <CatchTable bulk={[{label: "Approve", onPressed: approve, variant: "primary"}]} checked={["harbor"]} columns={columns} label="Inbox" onChecked={onChecked} rows={rows} selectable />,
     );
@@ -66,7 +66,7 @@ describe("CatchTable", () => {
     expect(screen.queryByRole("table")).toBeNull();
     const list = screen.getByRole("list", {name: "Inbox"});
     expect(within(list).getAllByRole("listitem")).toHaveLength(2);
-    expect(within(list).getByText("Afterfly")).toBeTruthy();
+    expect(within(list).getByText("Moonmoth")).toBeTruthy();
     expect(within(list).getByText("Weekly social nights")).toBeTruthy();
   });
 });

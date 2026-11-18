@@ -1,0 +1,371 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_first_event",
+  "route": "host_first_event",
+  "meta": {
+    "title": "Your first event | {{brand.stores.hostAppName}}",
+    "description": "Seven steps from downloading {{brand.stores.hostAppName}} to the morning after your first event, with a person on WhatsApp if you get stuck.",
+    "socialDescription": "Your first event, step by step.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          }
+        }
+      ],
+      "current": "Your first event"
+    }
+  },
+  "footer": {
+    "variant": "host"
+  },
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "yellow",
+      "kicker": "Your first event on {{brand.name}}",
+      "title": "Your first event, step by step.",
+      "lead": "Seven steps and a person on WhatsApp if you get stuck. Here’s everything between downloading {{brand.stores.hostAppName}} and the morning after your first event.",
+      "actions": [
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Set it up with us on WhatsApp",
+          "to": {
+            "kind": "whatsapp",
+            "message": "Hi {{brand.name}}, I’d like help setting up my first event."
+          },
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {
+        "label": "Moving an existing group from WhatsApp? Read the switching guide",
+        "to": {
+          "route": "host_switch"
+        }
+      },
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Your first event",
+          "subtitle": "4 of 7 done",
+          "bars": [
+            {
+              "label": "Progress",
+              "value": "4 of 7",
+              "share": 57
+            }
+          ],
+          "rows": [
+            {
+              "title": "Download {{brand.stores.hostAppName}}",
+              "tag": "Done"
+            },
+            {
+              "title": "Make your page",
+              "tag": "Done"
+            },
+            {
+              "title": "Create the event",
+              "tag": "Done"
+            },
+            {
+              "title": "Connect payments",
+              "tag": "Done"
+            },
+            {
+              "title": "Share your link"
+            },
+            {
+              "title": "Run the door",
+              "detail": "On the night"
+            },
+            {
+              "title": "Follow up",
+              "detail": "Next morning"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "tabs",
+      "id": "steps",
+      "ground": "white",
+      "layout": "steps",
+      "kicker": "Seven steps",
+      "title": "What to do, and when.",
+      "items": [
+        {
+          "label": "Download {{brand.stores.hostAppName}}",
+          "time": "First",
+          "body": "{{brand.stores.hostAppName}} is the app you run everything from, on iPhone, Android or iPad.",
+          "tips": [
+            "Sign in with your phone number",
+            "Add co-hosts and managers to your team later"
+          ]
+        },
+        {
+          "label": "Make your page",
+          "time": "Before the event",
+          "body": "Your page is where people find you, follow you and book. Give it your name, a photo and a line about what you do.",
+          "tips": [
+            "Use the photo people already know you by",
+            "Already listed on {{brand.name}}? Claim your page instead"
+          ]
+        },
+        {
+          "label": "Create your first event",
+          "time": "Before the event",
+          "body": "Pick the format closest to your night, then add the date, place, price and capacity.",
+          "tips": [
+            "Set a cancellation policy now, not after the first request",
+            "Turn on applications if you want to approve each guest",
+            "When the event is full, new bookings join the waitlist"
+          ]
+        },
+        {
+          "label": "Connect payments",
+          "time": "Early",
+          "body": "Connect a Razorpay account so guests can pay by UPI or card, and the money is paid into your own account. Razorpay’s KYC check usually takes 1 to 2 working days, so do this early.",
+          "tips": [
+            "Free events don’t need payments set up",
+            "Payment gateway fees are separate from {{brand.name}}’s 5%"
+          ]
+        },
+        {
+          "label": "Share your link",
+          "time": "Two weeks out",
+          "body": "Put the event’s link in your bio and in each WhatsApp group you already run.",
+          "tips": [
+            "Ask the friends who’ll bring people to share it too"
+          ]
+        },
+        {
+          "label": "Run the door",
+          "time": "On the night",
+          "body": "Open the door in {{brand.stores.hostAppName}}. Guests scan in on their own phones; you see who’s in, who’s late and who’s new.",
+          "tips": [
+            "Decide how many walk-ins you’ll take",
+            "Give a helper door access for the event, on their own phone"
+          ]
+        },
+        {
+          "label": "Follow up",
+          "time": "Next morning",
+          "body": "Send a thank-you, ask for a review and put the next event up while people still want it.",
+          "tips": [
+            "Reviews from people who booked show on your page",
+            "People who came can follow you for the next one"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "timeline",
+      "id": "countdown",
+      "ground": "ink",
+      "kicker": "The countdown",
+      "title": "When to do what.",
+      "steps": [
+        {
+          "time": "2 weeks out",
+          "title": "Tickets on sale",
+          "body": "Open bookings early so people can plan, and share the link with the friends who’ll bring others."
+        },
+        {
+          "time": "1 week out",
+          "title": "Share it everywhere you already are",
+          "body": "Your bio, each WhatsApp group, and each friend who promised to bring people."
+        },
+        {
+          "time": "Day before",
+          "title": "Check your door list",
+          "body": "See who’s booked and how many walk-ins you can take, and message everyone where to be and what to bring from the app."
+        },
+        {
+          "time": "On the night",
+          "title": "Open the door on your phone",
+          "body": "Guests scan in. You see who’s in, who’s late and who’s new, then put the phone away and host."
+        },
+        {
+          "time": "Next morning",
+          "title": "Thank them and set the next event",
+          "body": "Send a thank-you and ask for a review. People who came can follow you for the next one."
+        }
+      ],
+      "media": {
+        "kind": "capture",
+        "slot": "host-live-tablet"
+      }
+    },
+    {
+      "type": "split",
+      "id": "whatsapp-help",
+      "ground": "mint",
+      "kicker": "A person, not a help centre",
+      "title": "Set up your first event with us on WhatsApp.",
+      "lead": "Send us a message and someone from {{brand.name}} will help you set it up: the format, the price, the page and the payments.",
+      "ticks": [
+        "Free, for every new host",
+        "Tell us about your night and we’ll suggest a format"
+      ],
+      "actions": [
+        {
+          "label": "Chat on WhatsApp",
+          "to": {
+            "kind": "whatsapp",
+            "message": "Hi {{brand.name}}, I’d like help setting up my first event."
+          },
+          "emphasis": "primary"
+        }
+      ]
+    },
+    {
+      "type": "tiles",
+      "id": "formats",
+      "ground": "white",
+      "kicker": "Start from a format",
+      "title": "Pick the night closest to yours.",
+      "lead": "Each format comes with its own live tools. Running something else? Pick an open format and choose the tools you want.",
+      "columns": 3,
+      "items": [
+        {
+          "title": "Run or walk",
+          "body": "Pace groups and a first hello at the start line.",
+          "ground": "coral"
+        },
+        {
+          "title": "Supper",
+          "body": "Applications and a seating plan.",
+          "ground": "pink"
+        },
+        {
+          "title": "Quiz or game night",
+          "body": "Teams at the door, scores on the screen.",
+          "ground": "yellow"
+        },
+        {
+          "title": "Courts",
+          "body": "Levels and court rotations.",
+          "ground": "mint"
+        },
+        {
+          "title": "Crawl",
+          "body": "A route between venues, with groups that move together.",
+          "ground": "magenta"
+        },
+        {
+          "title": "Open format",
+          "body": "Check-in, groups, prompts and announcements for any kind of night.",
+          "ground": "indigo"
+        }
+      ],
+      "actions": [
+        {
+          "label": "See the night, format by format",
+          "to": {
+            "route": "product_night"
+          },
+          "emphasis": "secondary"
+        }
+      ]
+    },
+    {
+      "type": "tiles",
+      "id": "mistakes",
+      "ground": "paper",
+      "kicker": "Worth avoiding",
+      "title": "Four first-event mistakes.",
+      "columns": 4,
+      "items": [
+        {
+          "title": "Opening too late",
+          "body": "A few days isn’t much time for people to plan. Give it two weeks."
+        },
+        {
+          "title": "No cancellation policy",
+          "body": "Set one before the first request, so every booking has the same terms."
+        },
+        {
+          "title": "No plan for walk-ins",
+          "body": "Decide how many you’ll take before the night, not at the door."
+        },
+        {
+          "title": "No next event",
+          "body": "The morning after is when people want to book again. Have one ready."
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "First-event questions",
+      "title": "What new hosts ask us.",
+      "items": [
+        {
+          "question": "How long until I can sell tickets?",
+          "answer": "Free events can go live as soon as you publish. Paid tickets go on sale once Razorpay’s KYC check is done, which usually takes 1 to 2 working days."
+        },
+        {
+          "question": "What does it cost?",
+          "answer": "Nothing for 30 days from your first event, or 90 for founding hosts. Then 5% of ticket sales, never more than ₹10,000 a month. Free events stay free."
+        },
+        {
+          "question": "Do my guests need the app?",
+          "answer": "No. Guests book, pay and check in on your page in their phone’s browser."
+        },
+        {
+          "question": "Can I do it from a laptop?",
+          "answer": "You set up in {{brand.stores.hostAppName}} on your phone or iPad. On a laptop, the start page has a code to scan with your phone."
+        },
+        {
+          "question": "What if I’m not sure which format fits?",
+          "answer": "Message us on WhatsApp and tell us about your night. We’ll suggest one and help you set it up."
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "yellow",
+      "kicker": "Your first event",
+      "title": "Put your first event on sale.",
+      "lead": "Free for 30 days from your first event, or 90 for founding hosts.",
+      "actions": [
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Chat on WhatsApp",
+          "to": {
+            "kind": "whatsapp",
+            "message": "Hi {{brand.name}}, I have a question about my first event."
+          },
+          "emphasis": "secondary"
+        }
+      ],
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
+    }
+  ]
+}

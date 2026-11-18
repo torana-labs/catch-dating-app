@@ -52,18 +52,18 @@ const nominators: Growth["nominators"] = [
     creditOwedMinor: rupees(1_400), creditApprovedMinor: 0,
     creditPaidMinor: rupees(560),
     firstNominatedAtMillis: ist("2026-08-04T10:00:00"), organizers: [
-      organizer("Afterfly", "sample-afterfly", true,
+      organizer("Moonmoth", "sample-moonmoth", true,
         ["2026-10", 10_000, "paid", 1_000], 1),
       organizer("Lantern Lane Social", "sample-lantern", true,
         ["2026-10", 6_400, "sent", null], 2),
-      organizer("Small World", "sample-small-world", true,
+      organizer("Tiny Orbit", "sample-tiny-orbit", true,
         ["2026-10", 4_000, "paid", 400], 1),
-      organizer("Sunday Table", "sample-sunday-table", true, null, null)]},
+      organizer("Saffron Table", "sample-saffron-table", true, null, null)]},
   {uid: "sample-riya", name: "Riya Sharma", role: "associate", nominated: 61,
     claimed: 22, paying: 5, paidToCatchMinor: rupees(41_200),
     creditOwedMinor: 0, creditApprovedMinor: 0, creditPaidMinor: 0,
     firstNominatedAtMillis: ist("2026-06-02T10:00:00"), organizers: [
-      organizer("Bhag Club", "sample-bhag", true,
+      organizer("Brindle Club", "sample-brindle", true,
         ["2026-10", 2_900, "paid", null], null)]},
   {uid: "sample-karan", name: "Karan Mehta", role: "associate", nominated: 35,
     claimed: 12, paying: 2, paidToCatchMinor: rupees(12_400),
@@ -80,15 +80,15 @@ const nominators: Growth["nominators"] = [
 ];
 
 const best: Growth["best"] = [
-  ["sample-afterfly", "Afterfly", "mumbai", 390_000, 19_500, 11, 61, "partner",
+  ["sample-moonmoth", "Moonmoth", "mumbai", 390_000, 19_500, 11, 61, "partner",
     "2026-10", false, false],
   ["sample-lantern", "Lantern Lane Social", "mumbai", 480_000, 19_200, 27, 24,
     "sales_associate", "2026-08", false, true],
   ["sample-padel", "Mumbai Padel Social", "mumbai", 310_000, 15_500, 19, 0,
     "imported", "2026-09", false, false],
-  ["sample-bhag", "Bhag Club", "mumbai", 160_000, 8_000, 14, 12,
+  ["sample-brindle", "Brindle Club", "mumbai", 160_000, 8_000, 14, 12,
     "sales_associate", "2026-09", false, false],
-  ["sample-harbor", "Harbor Social Club", "mumbai", 90_000, 4_500, 6, -38,
+  ["sample-harbor", "Quayside Supper Club", "mumbai", 90_000, 4_500, 6, -38,
     "came_to_us", "2026-08", false, false],
   ["sample-seaside", "Seaside Sessions", "mumbai", 30_000, 0, 3, null, "ads",
     null, true, false],
@@ -139,8 +139,8 @@ export function sampleGrowth(payload: AdminGetGrowthCallablePayload): Growth {
 }
 
 let credits: Credits["credits"] = [
-  ["sample-afterfly", "Afterfly", 10_000, 1_000, 1],
-  ["sample-small-world", "Small World", 4_000, 400, 1],
+  ["sample-moonmoth", "Moonmoth", 10_000, 1_000, 1],
+  ["sample-tiny-orbit", "Tiny Orbit", 4_000, 400, 1],
 ].map(([organizerId, organizerName, paid, credit, monthIndex]) => ({
   schemaVersion: 1 as const, creditId: `${organizerId}_2026-10`,
   billId: `${organizerId}_2026-10`, organizerId: String(organizerId),

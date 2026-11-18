@@ -82,7 +82,7 @@ function harness() {
     ({auth, data, rawRequest: {headers: {"x-forwarded-for": "198.51.100.7"}, ip: "198.51.100.7"}}) as unknown as CallableRequest<unknown>;
   const submit = (overrides: Record<string, unknown> = {}, auth: unknown = VERIFIED) => requestInstantDraftHandler(callable({
     requestId: "web-0f3c2a9e-5b1d-4c7e", requestKind: "event_link", entry: "event_page_tool",
-    link: "https://lu.ma/afterfly", accessToken: TOKEN,
+    link: "https://lu.ma/moonmoth", accessToken: TOKEN,
     whatsapp: {phone: PHONE, consentVersion: "instant-draft-whatsapp-v1", followUpConsent: true},
     city: "Mumbai", ...overrides}, auth), deps);
   const status = (draftId: string, accessToken = TOKEN, extra: Record<string, unknown> = {}) =>
@@ -106,17 +106,17 @@ async function build(h: ReturnType<typeof harness>, draftId: string,
   assert.equal(outcome, "completed", JSON.stringify(stored.failure));
   const workItem = structuredClone(writer.items.get(stored.result.listingWorkItemId)!);
   const listing = (workItem.normalizedPayload.intake as {listing: Record<string, any>}).listing; // eslint-disable-line @typescript-eslint/no-explicit-any
-  listing.organizer.name = "Afterfly";
+  listing.organizer.name = "Moonmoth";
   listing.organizer.description = "Weekly social nights for people who would rather meet in person.";
-  listing.organizer.links = [{platform: "luma", surfaceKind: "calendar", url: "https://lu.ma/afterfly",
-    normalizedKey: "lu.ma/afterfly", evidenceUrl: "https://lu.ma/afterfly"}];
+  listing.organizer.links = [{platform: "luma", surfaceKind: "calendar", url: "https://lu.ma/moonmoth",
+    normalizedKey: "lu.ma/moonmoth", evidenceUrl: "https://lu.ma/moonmoth"}];
   h.db.write(`operationWorkItems/${workItem.workItemId}`, workItem as unknown as Record<string, unknown>);
   const eventWorkItemIds = Array.from({length: events}, (_, index) => `wi-draft-event-${index + 1}`);
   for (const [index, id] of eventWorkItemIds.entries()) {
     h.db.write(`operationWorkItems/${id}`, {workItemId: id, normalizedPayload: {intake: {recordType: "listing_event_candidate",
-      event: {title: `Afterfly social ${index + 1}`, startAt: `2026-12-0${index + 1}T19:00:00+05:30`,
+      event: {title: `Moonmoth social ${index + 1}`, startAt: `2026-12-0${index + 1}T19:00:00+05:30`,
         endAt: `2026-12-0${index + 1}T22:00:00+05:30`, venue: "Bandra", locality, address,
-        sourceUrl: `https://lu.ma/afterfly-${index + 1}`}}}});
+        sourceUrl: `https://lu.ma/moonmoth-${index + 1}`}}}});
   }
   h.db.write(path, {...stored, result: {...stored.result, eventCount: events, eventWorkItemIds,
     duplicateCheck: stored.result.duplicateCheck ? {...stored.result.duplicateCheck, verdict} :
@@ -238,8 +238,8 @@ test("a finished build is saved as a private draft for claim: unpublished, uncla
   valid(validators.statusResponse, ready, "GetInstantDraftCallableResponse");
   assert.equal(ready.status, "draft_ready");
   assert.deepEqual([ready.draft?.organizerId, ready.draft?.name, ready.draft?.visibility, ready.draft?.claimState,
-    ready.draft?.eventCount, ready.draft?.events[0]?.title], [organizerId, "Afterfly", "private_until_claimed", "unclaimed", 1,
-    "Afterfly social 1"]);
+    ready.draft?.eventCount, ready.draft?.events[0]?.title], [organizerId, "Moonmoth", "private_until_claimed", "unclaimed", 1,
+    "Moonmoth social 1"]);
   assert.equal(h.db.entries().filter(([key]) => key.startsWith("organizers/")).length, 1, "one draft, saved once");
 });
 
@@ -386,7 +386,7 @@ test("an unclaimed draft is removed 30 days after it was saved, freeing its page
   // Staff cannot bring the expired draft back by approving its old listing.
   await assert.rejects(adminApproveOrganizerListingHandler({auth: {uid: "admin-1", token: {admin: true}},
     rawRequest: {headers: {}}, data: {requestId: "approve-expired-1", listingWorkItemId: built.workItem.workItemId,
-      contentHash: built.listing.contentHash, name: "Afterfly", publicSlug: "afterfly", marketId: "in-mh-mumbai",
+      contentHash: built.listing.contentHash, name: "Moonmoth", publicSlug: "moonmoth", marketId: "in-mh-mumbai",
       organizerType: "community", note: "Approving it late.", checklist: {identityReviewed: true, surfaceInventoryReviewed: true,
         ownerSafeCopyReviewed: true, marketScopeReviewed: true, mediaRightsReviewed: true, crawlDisabledReviewed: true,
         claimTargetReviewed: true, takedownPathReviewed: true, impersonationReviewed: true}}} as unknown as CallableRequest<unknown>,
@@ -445,7 +445,7 @@ test("staff approving an instant draft's listing also save it unpublished", asyn
   const {workItem, listing} = await build(h, draftId);
   const response = await adminApproveOrganizerListingHandler({auth: {uid: "admin-1", token: {admin: true}},
     rawRequest: {headers: {}}, data: {requestId: "approve-draft-1", listingWorkItemId: workItem.workItemId,
-      contentHash: listing.contentHash, name: "Afterfly", publicSlug: "afterfly", marketId: "in-mh-mumbai",
+      contentHash: listing.contentHash, name: "Moonmoth", publicSlug: "moonmoth", marketId: "in-mh-mumbai",
       organizerType: "community", note: "Checked the Luma page.",
       checklist: {identityReviewed: true, surfaceInventoryReviewed: true, ownerSafeCopyReviewed: true,
         marketScopeReviewed: true, mediaRightsReviewed: true, crawlDisabledReviewed: true,

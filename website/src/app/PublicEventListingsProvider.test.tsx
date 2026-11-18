@@ -10,7 +10,7 @@ vi.mock("../features/organizers/usePublicEventListingsController", () => ({
 import {PublicEventListingsProvider} from "./PublicEventListingsProvider";
 afterEach(cleanup);
 describe("public discovery feed", () => {
-  it.each(["/", "/explore", "/explore/", "/organizers/", "/organizers/afterfly/", "/events/event-id"])("enables live events for %s", (route) => {
+  it.each(["/", "/explore", "/explore/", "/organizers/", "/organizers/moonmoth/", "/events/event-id"])("enables live events for %s", (route) => {
     render(<MemoryRouter initialEntries={[route]}><PublicEventListingsProvider><span /></PublicEventListingsProvider></MemoryRouter>);
     expect(feed).toHaveBeenLastCalledWith(true);
   });

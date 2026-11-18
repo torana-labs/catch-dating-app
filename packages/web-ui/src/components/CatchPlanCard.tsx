@@ -17,7 +17,7 @@ export interface CatchPlanCardProps {
    * a plan with no format keeps the ink and a paper poster.
    */
   format?: Format | null;
-  /** Who hosts and where, such as "The Quizzicals · Khar Social". */
+  /** Who hosts and where, such as "The Harbour Line Quizzers · Lantern Lane Tavern". */
   detail: string;
   /** The price, such as "Free" or "₹600". */
   price: string;

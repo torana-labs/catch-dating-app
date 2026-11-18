@@ -39,7 +39,7 @@ export function organizerPlaceholderCoverLayout({name, city, activityKind}: Orga
   };
 }
 
-/** "AFTER FLY" → "AF", "Evening Club" → "EC", "Pickle" → "PI". */
+/** "MOON MOTH" → "MM", "Evening Club" → "EC", "Pickle" → "PI". */
 export function organizerMonogram(name: string): string {
   const [first = "", second] = name.match(/[\p{L}\p{N}]+/gu) ?? [];
   const letters = second ? [[...first][0], [...second][0]] : [...first].slice(0, 2);

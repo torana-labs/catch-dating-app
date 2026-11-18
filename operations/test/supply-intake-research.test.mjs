@@ -27,7 +27,7 @@ const request = {
 const website = `<html><head><title>Sunday Striders</title>
   <meta property="og:image" content="https://striders.example/logo.png"></head>
   <body><h1>Sunday Striders</h1><p>Sunday Striders is a free 5K social run club that meets every Sunday at Cubbon Park, Bengaluru.</p>
-  <a href="https://lu.ma/striders">Our calendar</a></body></html>`;
+  <a href="https://lu.ma/longstep">Our calendar</a></body></html>`;
 const decision = {schemaVersion: 1, decisionId: "decision-agent-1", gapId: "agent_research_policy", decision: "accept",
   decisionStatus: "accepted", requiredInputsReviewed: ["budget"], checklist: {requiredInputsReviewed: true,
     costAndSafetyReviewed: true, implementationOwnerReviewed: true, behaviorStillDisabledAcknowledged: true},
@@ -87,7 +87,7 @@ test("research fills gaps only with quotes from pages it fetched, and never inve
         quote: "meets every Sunday at Cubbon Park, Bengaluru"}),
       use("toolu_5", "record_finding", {field: "imageUrl", value: "https://striders.example/logo.png",
         sourceUrl: "https://striders.example/", quote: "Sunday Striders is a free 5K"}),
-      use("toolu_6", "record_finding", {field: "link", value: "https://lu.ma/striders",
+      use("toolu_6", "record_finding", {field: "link", value: "https://lu.ma/longstep",
         sourceUrl: "https://striders.example/", quote: "Sunday Striders is a free 5K social run club"}),
     ],
     [use("toolu_7", "finish", {note: "Found the club's site and Luma calendar.", identityConfident: true})],
@@ -110,7 +110,7 @@ test("research fills gaps only with quotes from pages it fetched, and never inve
   assert.equal(listing.organizer.description, quote);
   assert.deepEqual(listing.fieldEvidence.find((entry) => entry.field === "description"),
     {field: "description", sourceUrl: "https://striders.example/", method: "agent", adapterId: null});
-  assert.ok(listing.organizer.links.some((link) => link.normalizedKey === "luma:calendar:striders"));
+  assert.ok(listing.organizer.links.some((link) => link.normalizedKey === "luma:calendar:longstep"));
   assert.equal(listing.researchNeeded, false);
   assert.equal(listing.research.findings, 3);
   assert.ok(listing.research.costMicros > 0);
@@ -141,11 +141,11 @@ test("adapter-read facts outrank research findings, and doubt about identity bec
   await recordFinding.handler({field: "name", value: "Sunday Striders", sourceUrl: "https://striders.example/",
     quote: "Sunday Striders is a free 5K"});
   const {gathered, findings} = session.result();
-  const withAdapterName = {...gathered, organizers: [{name: "Striders Running Club", pageUrl: "https://lu.ma/striders",
+  const withAdapterName = {...gathered, organizers: [{name: "Longstep Running Club", pageUrl: "https://lu.ma/longstep",
     adapterId: "luma", pageKind: "organizer_page", sameAs: []}]};
   const listing = buildIntakeListing({request, gathered: withAdapterName, now: NOW, findings,
     research: {stopReason: "finished", note: "Two clubs share this name.", identityConfident: false, costMicros: 10}});
-  assert.equal(listing.organizer.name, "Striders Running Club");
+  assert.equal(listing.organizer.name, "Longstep Running Club");
   assert.ok(listing.gaps.includes("identity_unconfirmed"));
 });
 

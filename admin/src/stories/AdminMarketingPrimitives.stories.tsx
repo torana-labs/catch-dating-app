@@ -707,7 +707,7 @@ export const AdminMarketingLibraryCardStory: Story = {
         action={<AdminMarketingCardLink href="#library-card">Use asset</AdminMarketingCardLink>}
         description="Source-backed organizer profile for launch copy."
         eyebrow="Organizer"
-        title="Afterfly Social"
+        title="Moonmoth Social"
       >
         <CatchGap direction="horizontal" size="inline" wrap>
           <CatchBadge label="claim ready" />

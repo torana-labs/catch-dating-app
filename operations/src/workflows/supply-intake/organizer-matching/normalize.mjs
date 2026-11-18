@@ -66,7 +66,7 @@ export function nameTokens(value) {
   return text ? text.split(" ").filter((token) => !STOP_WORDS.has(token)) : [];
 }
 
-/** Letters and digits only: "Mumbai-Run Club" and "MumbaiRunClub" agree. */
+/** Letters and digits only: "Moonrise-Run Club" and "MoonriseRunClub" agree. */
 export function compactText(value) {
   return normalizeText(value).replace(/ /g, "");
 }
@@ -179,8 +179,8 @@ export function keyNamespace(key) {
 }
 
 /**
- * The handle a key carries ("instagram:mumbairunclub" -> "mumbairunclub",
- * "domain:mumbairunclub.in" -> "mumbairunclub"), compacted for comparison
+ * The handle a key carries ("instagram:moonriserunclub" -> "moonriserunclub",
+ * "domain:moonriserunclub.example" -> "moonriserunclub"), compacted for comparison
  * with a name. Shared-host URLs carry no handle.
  */
 export function handleForKey(key) {

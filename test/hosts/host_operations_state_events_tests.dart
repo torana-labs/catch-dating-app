@@ -6,7 +6,7 @@ void _registerHostOperationsStateEventsTests() {
     () {
       final ownedOrganizer = buildOrganizer(
         id: 'owned-club',
-        name: 'Saket Run Club',
+        name: 'Neemwood Run Club',
         ownerUserId: _hostUid,
         hostProfiles: const [
           OrganizerHostProfile(

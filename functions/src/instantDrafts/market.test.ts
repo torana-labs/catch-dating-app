@@ -7,7 +7,7 @@ test("an event's locality, address, venue or coordinates name its market", () =>
   assert.equal(eventMarket({locality: "Mumbai"})?.marketId, "in-mh-mumbai");
   assert.equal(eventMarket({locality: "Bombay"})?.marketId, "in-mh-mumbai", "a catalog alias counts");
   assert.equal(eventMarket({address: "12 MG Road, Indore, Madhya Pradesh 452001"})?.marketId, "in-mp-indore");
-  assert.equal(eventMarket({venue: "Hitchin | Bandra, Mumbai"})?.marketId, "in-mh-mumbai");
+  assert.equal(eventMarket({venue: "Giggle Yard | Bandra, Mumbai"})?.marketId, "in-mh-mumbai");
   assert.equal(eventMarket({latitude: 19.06, longitude: 72.83})?.marketId, "in-mh-mumbai", "Bandra is within Mumbai's radius");
   assert.equal(eventMarket({latitude: 18.52, longitude: 73.85})?.marketId, "in-mh-pune", "Pune is its own market");
   assert.equal(eventMarket({venue: "Bandra", latitude: null, longitude: null}), null);

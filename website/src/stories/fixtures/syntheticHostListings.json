@@ -1,0 +1,164 @@
+[
+  {
+    "id": "moonmoth",
+    "listingVariant": "unclaimedScraped",
+    "dataOrigin": "organizerIntake",
+    "name": "MOON MOTH",
+    "slug": "moonmoth",
+    "city": "Indore",
+    "citySlug": "indore",
+    "region": "Madhya Pradesh",
+    "country": "India",
+    "path": "/organizers/moonmoth/",
+    "legacyPaths": [
+      "/organizers/indore/moonmoth-run-club/"
+    ],
+    "category": "Progressive techno run club",
+    "status": "unclaimed",
+    "indexing": "index, follow",
+    "sourceConfidence": "high",
+    "headline": "MOON MOTH run club in Indore",
+    "description": "MOON MOTH is a fictional Indore run-and-rave organizer used in Catch test fixtures. This unclaimed profile stands in for a page built from public sources and stays out of search until cadence, contact, and claim details are confirmed.",
+    "sourceSummary": "A synthetic Luma event page says MOON MOTH hosted MOONMOTH NIGHTFALL RUN & RAVE in Indore on 2025-03-16. The page describes a movement-and-music community and lists the fictional Instagram handle moonmoth.example.",
+    "logo": {
+      "mode": "monogram",
+      "text": "MM",
+      "status": "not_verified"
+    },
+    "formats": [
+      "Social runs",
+      "Run-and-rave",
+      "Fitness/wellness community",
+      "Techno afters"
+    ],
+    "facts": [
+      {
+        "label": "Location",
+        "value": "Indore, Madhya Pradesh"
+      },
+      {
+        "label": "Official source name",
+        "value": "MOON MOTH"
+      },
+      {
+        "label": "Instagram",
+        "value": "moonmoth.example"
+      },
+      {
+        "label": "Format",
+        "value": "Run club plus post-run music social"
+      },
+      {
+        "label": "Verified event",
+        "value": "MOONMOTH NIGHTFALL RUN & RAVE, 16 Mar 2025"
+      },
+      {
+        "label": "Categories",
+        "value": "Fitness, Wellness"
+      },
+      {
+        "label": "Claim state",
+        "value": "Unclaimed seed listing"
+      },
+      {
+        "label": "Indexing",
+        "value": "Noindex until verified"
+      }
+    ],
+    "eventEvidence": [
+      {
+        "date": "16 Mar 2025, 7:00 AM-11:00 AM IST",
+        "facts": [
+          "Hosted by MOON MOTH",
+          "Listed under Fitness and Wellness",
+          "Run segment described as 2 km and optional for walkers",
+          "Page copy states INR 499 per person",
+          "Luma registration is closed on the public page"
+        ],
+        "location": "Indore, Madhya Pradesh",
+        "sourceHref": "https://luma.com/mmoth26x",
+        "sourceLabel": "Luma event page",
+        "summary": "The synthetic Luma page lists a Sunday social run from a city park followed by a post-run music social at a nearby cafe.",
+        "title": "MOONMOTH NIGHTFALL RUN & RAVE"
+      }
+    ],
+    "reviews": [],
+    "fitNotes": [
+      "Repeatable run-club programming is a strong Catch organizer category because guests already share a live activity.",
+      "Indore gives the first test outside the largest metros, which helps validate city coverage and source sparsity.",
+      "Run-and-rave programming is a useful adjacency test because it blends low-pressure activity, curated crowd energy, and a post-event social setting."
+    ],
+    "missingEvidence": [
+      "Owner verification or claim",
+      "Logo or profile image permission",
+      "Current event cadence after March 2025",
+      "Owner or host contact outside platform relay",
+      "Current booking or attendance process",
+      "Whether the public Instagram handle is the preferred owner contact"
+    ],
+    "sources": [
+      {
+        "type": "user_supplied",
+        "label": "User seed input",
+        "detail": "Synthetic seed input for the fictional Moonmoth Run Club in Indore.",
+        "confidence": "medium"
+      },
+      {
+        "type": "public_event_page",
+        "label": "Luma event page",
+        "detail": "MOONMOTH NIGHTFALL RUN & RAVE is a public event page hosted by MOON MOTH in Indore, with Fitness and Wellness categories, registration closed, and source copy describing a run plus post-run techno social.",
+        "confidence": "high",
+        "href": "https://luma.com/mmoth26x"
+      },
+      {
+        "type": "embedded_event_data",
+        "label": "Luma structured event data",
+        "detail": "The event page's structured data confirms the Indore location and 2025-03-16 timing; embedded page data lists instagram_handle moonmoth.example.",
+        "confidence": "high",
+        "href": "https://luma.com/mmoth26x"
+      }
+    ],
+    "claim": {
+      "href": "/organizers/moonmoth/#claim",
+      "label": "Claim this listing"
+    },
+    "publicApi": {
+      "state": "disabled",
+      "reason": "Claiming is not available until target readiness is verified against Firestore.",
+      "claimTargetSyncStatus": "unknown"
+    },
+    "authority": {
+      "ownershipState": "programmatic",
+      "claimState": "unclaimed",
+      "provenanceOrigin": "import",
+      "sourceConfidence": "high",
+      "verificationStatus": "sourceBacked",
+      "appVisibility": "hidden",
+      "publishStatus": "published",
+      "indexStatus": "indexed"
+    },
+    "capabilities": {
+      "claimRequest": {
+        "state": "disabled",
+        "reason": "Claiming is not available until target readiness is verified against Firestore."
+      },
+      "publicReviews": {
+        "targetState": "disabled",
+        "readState": "disabled",
+        "writeState": "disabled",
+        "reason": "Public reviews are unavailable until canonical target readiness is verified."
+      },
+      "supply": {
+        "mode": "unclaimed_read_only",
+        "bookable": false,
+        "paymentsEnabled": false,
+        "waitlistEnabled": false,
+        "hostContactEnabled": false,
+        "claimable": true,
+        "reviewPolicy": "after_event_end"
+      }
+    },
+    "lastVerifiedAt": "2026-06-10",
+    "searchText": "moon moth indore indore club progressive techno run club progressive techno run club moonmoth.example social runs run-and-rave fitness/wellness techno afters social runs run-and-rave fitness/wellness community techno afters"
+  }
+]

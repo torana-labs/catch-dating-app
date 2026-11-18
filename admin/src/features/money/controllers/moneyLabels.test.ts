@@ -38,9 +38,9 @@ describe("Money labels", () => {
   it("says where each bill is, as drawn", () => {
     expect(billState(bill("sample-lantern"), now)).toEqual({text: "Overdue 2 days", tone: "danger"});
     expect(billState(bill("sample-padel"), now)).toEqual({text: "To send", tone: "warning"});
-    expect(billState(bill("sample-afterfly"), now)).toEqual({text: "Paid 3 Nov", tone: "success"});
+    expect(billState(bill("sample-moonmoth"), now)).toEqual({text: "Paid 3 Nov", tone: "success"});
     expect(billState(bill("sample-seaside"), now)).toEqual({text: "Free until 12 Nov", tone: "secondary"});
-    expect(billSummary(bill("sample-afterfly"))).toBe("October · 4 events · capped");
+    expect(billSummary(bill("sample-moonmoth"))).toBe("October · 4 events · capped");
     expect(billPeriod(bill("sample-lantern"))).toBe("1–31 October");
     expect(billDue(bill("sample-lantern"), now)).toEqual({text: "15 Nov · 2 days late", tone: "danger"});
   });
@@ -50,7 +50,7 @@ describe("Money labels", () => {
     expect(steps.map((step) => step.title)).toEqual([
       "Bill made from October's bookings", "Issued with a payment link", "Overdue 2 days"]);
     expect(steps.at(-1)).toMatchObject({state: "current", tone: "danger"});
-    expect(billJourney(bill("sample-afterfly"), now).every((step) => step.state === "done")).toBe(true);
+    expect(billJourney(bill("sample-moonmoth"), now).every((step) => step.state === "done")).toBe(true);
   });
 
   it("names a rolling cycle bill by its days and number", () => {

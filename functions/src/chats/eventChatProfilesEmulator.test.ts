@@ -559,14 +559,9 @@ test(
       // A proposal remains a private answer pointer, not a public profile copy.
       assert.ok((await proposal.get()).exists);
     } finally {
-      const rows = await db
-        .collection("eventChatAccessReceipts")
-        .where("eventId", "==", eventId)
-        .get();
       const batch = db.batch();
       for (const doc of [
         ...refs,
-        ...rows.docs.map((row) => row.ref),
         ref("eventChatProfileShares", eventChatMembershipId(eventId, person)),
       ]) {
         batch.delete(doc);

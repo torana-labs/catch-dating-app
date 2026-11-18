@@ -24,7 +24,7 @@ execFileSync(process.execPath, [path.join(__dirname, "../../scripts/copy-operati
 
 const NOW = "2026-10-20T08:00:00.000Z";
 const SERVER_TIME = {_seconds: 1792483200, _nanoseconds: 0};
-const CALENDAR = "https://luma.com/blrdroid";
+const CALENDAR = "https://luma.com/bytebanyan";
 const PAGES = path.resolve(__dirname, "../../../operations/src/workflows/supply-intake/fixtures/pages");
 const OWNER = "owner-1";
 
@@ -65,7 +65,7 @@ async function savedDraft() {
     checkRateLimit: (async () => undefined) as never, reserveCanonicalRoute: async () => undefined,
     loadEventPublicationPolicy: async () => autoPublish};
   const {draftId} = await requestInstantDraftHandler({auth: {uid: "submitter-1", token: {phone_number: "+919000000001"}},
-    data: {requestId: "web-blrdroid-00000001", requestKind: "event_link", entry: "event_page_tool", link: CALENDAR,
+    data: {requestId: "web-bytebanyan-00000001", requestKind: "event_link", entry: "event_page_tool", link: CALENDAR,
       accessToken: "t".repeat(43), whatsapp: {consentVersion: "instant-draft-whatsapp-v1", followUpConsent: true},
       city: "Mumbai"}, rawRequest: {headers: {}, ip: "198.51.100.7"}} as unknown as CallableRequest<unknown>, deps);
   const requestPath = `${supplyIntakeCollections.requests}/${draftId}`;

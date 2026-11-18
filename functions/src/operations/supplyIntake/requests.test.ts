@@ -28,8 +28,8 @@ function nominationRequest(uid: string | null, data: Record<string, unknown>,
 }
 
 const payload = (overrides: Record<string, unknown> = {}) => ({
-  requestId: "nomination-001", name: "Afterfly", market: "Mumbai",
-  urls: ["https://lu.ma/afterfly"], notes: "Weekly socials in Bandra.", categories: ["social"], ...overrides,
+  requestId: "nomination-001", name: "Moonmoth", market: "Mumbai",
+  urls: ["https://lu.ma/moonmoth"], notes: "Weekly socials in Bandra.", categories: ["social"], ...overrides,
 });
 
 function deps(db: FakeFirestore) {
@@ -78,17 +78,17 @@ test("nominations need a sales or admin role and a name or a link", async () => 
 test("website host applications and partner nominations become intake requests", () => {
   const createdAt = {toDate: () => new Date("2026-10-23T10:00:00.000Z")};
   const website = requestFromSalesInboundIntent("intent-web", {source: "website", city: "Bengaluru", createdAt,
-    hostApplication: {organizationName: " The Bhag ", communityLink: "https://thebhag.in",
+    hostApplication: {organizationName: " The Brindle ", communityLink: "https://thebrindle.example",
       operatingCity: "Bengaluru", operatingNotes: "Sunday long runs"}}, NOW);
   assert.deepEqual(website && {kind: website.kind, market: website.market, seed: website.seed,
     submittedBy: website.submittedBy, submittedAt: website.submittedAt, origin: website.origin}, {
     kind: "self_submission", market: intakeMarket("Bengaluru"),
-    seed: {name: "The Bhag", urls: ["https://thebhag.in"], notes: "Sunday long runs", categories: []},
+    seed: {name: "The Brindle", urls: ["https://thebrindle.example"], notes: "Sunday long runs", categories: []},
     submittedBy: {role: "organizer", uid: null, partnerId: null},
     submittedAt: "2026-10-23T10:00:00.000Z", origin: {kind: "sales_inbound_intent", id: "intent-web"},
   });
   const partner = requestFromSalesInboundIntent("intent-partner", {source: "partner", partnerUid: "partner-9",
-    hostApplication: {organizationName: "Afterfly", communityLink: "https://lu.ma/afterfly", operatingCity: "Bombay"}},
+    hostApplication: {organizationName: "Moonmoth", communityLink: "https://lu.ma/moonmoth", operatingCity: "Bombay"}},
   NOW);
   assert.deepEqual([partner?.kind, partner?.submittedBy], ["nomination",
     {role: "partner", uid: "partner-9", partnerId: "partner-9"}]);
@@ -103,7 +103,7 @@ test("website host applications and partner nominations become intake requests",
 
 test("the shared service refuses invalid requests and replays identical ones", async () => {
   const db = new FakeFirestore();
-  const intake = requestFromSalesInboundIntent("intent-1", {hostApplication: {organizationName: "Afterfly"}}, NOW)!;
+  const intake = requestFromSalesInboundIntent("intent-1", {hostApplication: {organizationName: "Moonmoth"}}, NOW)!;
   const store = db as unknown as Firestore;
   const first = await store.runTransaction((tx) => createSupplyIntakeRequest(tx, store, intake, NOW));
   const again = await store.runTransaction((tx) => createSupplyIntakeRequest(tx, store, intake, NOW));

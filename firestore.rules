@@ -1926,9 +1926,6 @@ service cloud.firestore {
         && resource.data.uid == request.auth.uid;
       allow write: if false;
     }
-    match /eventChatAccessReceipts/{receiptId} {
-      allow read, write: if false;
-    }
 
     match /participantOrganizerCards/{responseId} {
       allow read, write: if false;

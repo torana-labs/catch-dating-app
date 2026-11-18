@@ -20,7 +20,7 @@ const {projectEventAttendeeToOrganizerAudience} = from('organizers/organizerAudi
  const organizerId='demo-saket', eventId='rsvp-demo-mumbai';
  let clock = Date.parse('2026-09-21T10:00:00Z');
  const store = new AudienceTestStore({[`organizers/${organizerId}`]: {
-  ownerUserId:'demo-host',hostUserIds:['demo-host'],hostProfiles:[],name:'Saket Run Club',imageUrl:null,
+  ownerUserId:'demo-host',hostUserIds:['demo-host'],hostProfiles:[],name:'Neemwood Run Club',imageUrl:null,
  },[`events/${eventId}`]: {organizerId,status:'active',name:'RSVP Escape — Mumbai demo',eventFormat:{activityKind:'singlesMixer'}}});
  const deps = {firestore:()=>store.asFirestore(),timestamp:()=>Timestamp.fromMillis(clock),
   checkRateLimit:async()=>{}, identitySecret:()=> 'LOCAL-SYNTHETIC-ONLY-'.repeat(4),

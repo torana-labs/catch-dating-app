@@ -66,7 +66,7 @@ describe("Explore", {timeout: 20_000}, () => {
   it("searches organisers in the organisers view, which the directory redirects to", () => {
     show(mumbaiLiveCatalog, "/explore/?show=organisers&q=runners");
     const results = within(screen.getByRole("region", {name: "What’s on in Mumbai"})).getAllByRole("listitem");
-    expect(results.map((card) => within(card).getByRole("link").textContent)).toEqual([expect.stringMatching(/Carter Road Runners/u)]);
+    expect(results.map((card) => within(card).getByRole("link").textContent)).toEqual([expect.stringMatching(/Driftwood Bay Runners/u)]);
     expect(screen.getByText("1 organiser")).toBeTruthy();
   });
 

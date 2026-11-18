@@ -68,7 +68,7 @@ void main() {
     test('cards read the organizer from the event, never by id', () async {
       final organizer = buildOrganizer(
         id: 'club-summary',
-        name: 'Bandra Run Club',
+        name: 'Sandbar Run Club',
         hostName: 'Asha',
       );
       final items = await feed(
@@ -78,10 +78,10 @@ void main() {
       expect(items.map((item) => item.event.id), ['listed']);
       final shown = items.single.organizer;
       expect(shown.id, 'club-summary');
-      expect(shown.name, 'Bandra Run Club');
+      expect(shown.name, 'Sandbar Run Club');
       expect(shown.area, 'Bandra');
       expect(shown.displayHostName, 'Asha');
-      expect(items.single.tileData.organizerName, 'Bandra Run Club');
+      expect(items.single.tileData.organizerName, 'Sandbar Run Club');
     });
 
     test('an event without a summary reads as a hidden organizer', () async {
@@ -148,7 +148,7 @@ void main() {
     test('the organizer is built from the summary and nothing private', () {
       final organizer = buildOrganizer(
         id: 'club-9',
-        name: 'Bandra Run Club',
+        name: 'Sandbar Run Club',
         hostName: 'Asha',
         tags: const ['running', 'social'],
         rating: 4.6,
@@ -160,7 +160,7 @@ void main() {
       final built = exploreOrganizerOf(event)!;
 
       expect(built.id, 'club-9');
-      expect(built.name, 'Bandra Run Club');
+      expect(built.name, 'Sandbar Run Club');
       expect(built.location, organizer.location);
       expect(built.area, 'Bandra');
       expect(built.displayHostName, 'Asha');

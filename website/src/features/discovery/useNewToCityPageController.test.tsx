@@ -12,7 +12,7 @@ describe("useNewToCityPageController", () => {
     expect(result.current.plans.cards.map((plan) => plan.key)).toEqual(
       ["thursday-pub-quiz", "strangers-supper", "carter-road-run", "saturday-game-night", "run-and-rave"]);
     expect(result.current.hero.card).toEqual({
-      label: "New to Mumbai", title: "Thursday Evening Pub Quiz", subtitle: "The Quizzicals · Khar Social · Thu 29 Oct, 7:30 PM",
+      label: "New to Mumbai", title: "Thursday Evening Pub Quiz", subtitle: "The Harbour Line Quizzers · Lantern Lane Tavern · Thu 29 Oct, 7:30 PM",
       photo: null, price: "Free",
     });
     expect(JSON.stringify(result.current)).not.toMatch(/came alone/iu);

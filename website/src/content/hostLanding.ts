@@ -235,7 +235,7 @@ export const hostLandingCopy = {
 export const hostNightFormats: readonly HostNightFormat[] = [
   {
     format: "run", accent: "coral", title: "Run clubs", tileTitle: "Run and walk clubs", tile: "Pace pods, a first hello, free runs stay free.", photo: "/assets/events/social-run-music-hero-960.jpg",
-    event: "Sunday Social Run", where: "Carter Road Runners · Carter Road, Bandra",
+    event: "Sunday Social Run", where: "Driftwood Bay Runners · Carter Road, Bandra",
     lead: `People are moving, so phones stay in pockets. ${brand.name} does its work before the start and after the finish.`,
     badges: {phones: "Phones away while running", groups: "Grouped by pace", rhythm: "One route, start to finish", tracks: "Counts who’s back", ends: "Ends with the finish sweep"},
     moments: [

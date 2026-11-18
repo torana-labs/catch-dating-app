@@ -26,11 +26,11 @@ const follow = (name: string, following = false) => (
 const organizers: CatchOrganizerCardProps[] = [
   {action: follow("Evening Club"), footnote: "74 followers", href: "#evening", monogramGround: "yellow", name: "Evening Club",
     next: "Next: Sat 6:30 PM · Saturday Game Night", subtitle: "Trivia nights and socials"},
-  {action: follow("Carter Road Runners", true), footnote: "213 followers", href: "#carter", monogramGround: "coral", name: "Carter Road Runners",
-    next: "Next: Fri 6:30 AM · Carter Road Social Run", subtitle: "Sunday social runs"},
+  {action: follow("Driftwood Bay Runners", true), footnote: "213 followers", href: "#carter", monogramGround: "coral", name: "Driftwood Bay Runners",
+    next: "Next: Fri 6:30 AM · Salt Air Social Run", subtitle: "Sunday social runs"},
   {action: <a href="#claim">Is this you? Claim it</a>, footnote: "Not claimed yet", href: "#swap", monogramGround: "paper", name: "Bandra Book Swap",
     next: "Next: first Sunday of the month · listed from their Instagram", subtitle: "Monthly book swaps"},
-  {footnote: "Joining at launch", monogramGround: "mint", name: "Koregaon Park Runners",
+  {footnote: "Joining at launch", monogramGround: "mint", name: "Jacaranda Park Runners",
     next: "Next: first plan announced when Catch opens", subtitle: "Saturday social runs"},
 ];
 
@@ -74,11 +74,11 @@ export const KitFollow: Story = {
     <StoryPage>
       <CatchBand aria-label="Follow cards" ground="paper" pb="compact" pt="compact">
         <CatchGrid columns={3} compactColumns={1}>
-          <CatchOrganizerCard action={kitFollow("Carter Road Runners", "#carter")} ground="white" href="#carter" monogramGround="coral"
-            name="Carter Road Runners" next="Next: Sun 23 · Carter Road Social Run" subtitle="Sunday social runs" />
+          <CatchOrganizerCard action={kitFollow("Driftwood Bay Runners", "#carter")} ground="white" href="#carter" monogramGround="coral"
+            name="Driftwood Bay Runners" next="Next: Sun 23 · Salt Air Social Run" subtitle="Sunday social runs" />
           <CatchOrganizerCard action={kitFollow("Evening Club", "#evening")} ground="white" href="#evening" monogramGround="yellow"
             name="Evening Club" next="Next: Sat 22 · Saturday Game Night" subtitle="Women-led · Trivia nights and socials" />
-          <CatchOrganizerCard ground="white" monogramGround="mint" name="Koregaon Park Runners" next="Next: first plan announced when Catch opens"
+          <CatchOrganizerCard ground="white" monogramGround="mint" name="Jacaranda Park Runners" next="Next: first plan announced when Catch opens"
             subtitle="Saturday social runs" />
         </CatchGrid>
       </CatchBand>

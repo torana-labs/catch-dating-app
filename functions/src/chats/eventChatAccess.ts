@@ -14,9 +14,14 @@ import {requireVerifiedParticipant} from "../profiles/claimFormProfile";
 import type {EventDocument, UserProfileDocument,
   EventParticipationDocument, EventAttendeeDocument,
   EventChatRoomDocument as Room, EventChatMembershipDocument as Membership,
-  EventChatProfileShareDocument as ProfileShare,
-  EventChatAccessReceiptDocument as Receipt} from
+  EventChatProfileShareDocument as ProfileShare} from
   "../shared/generated/firestoreAdminTypes";
+import {
+  eventChatReceiptRef,
+  eventChatRequestHash,
+  replayEventChatReceipt,
+  writeEventChatReceipt,
+} from "./eventChatReceipts";
 import type {GetEventChatAccessCallableResponse as View} from
   "../shared/generated/getEventChatAccessCallableResponse";
 import type {UpdateEventChatAccessCallableResponse as Result} from
@@ -191,24 +196,21 @@ export async function updateEventChatAccessHandler(
   await deps.rateLimit(db, uid, "updateEventChatAccess", {
     maxRequests: 30, windowMs: 60 * 1000,
   });
-  const receiptRef = db.collection("eventChatAccessReceipts")
-    .doc(hash([uid, data.requestId]));
-  const payloadHash = hash([data.eventId, data.action, data.expectedRevision,
-    data.termsVersion, data.opensAtMillis ?? null,
-    data.closesAtMillis ?? null]);
+  const receiptRef = eventChatReceiptRef(db, "updateEventChatAccess",
+    hash([uid, data.requestId]));
+  const requestHash = eventChatRequestHash(uid, data.eventId,
+    hash([data.eventId, data.action, data.expectedRevision,
+      data.termsVersion, data.opensAtMillis ?? null,
+      data.closesAtMillis ?? null]));
   return db.runTransaction(async (tx) => {
     await readEventChatAccount(db, tx, uid);
     const receiptSnap = await tx.get(receiptRef);
-    if (receiptSnap.exists) {
-      const receipt = requireDoc<Receipt>(receiptSnap,
-        "EventChatAccessReceiptDocument");
-      if (receipt.uid !== uid || receipt.eventId !== data.eventId ||
-          receipt.payloadHash !== payloadHash) {
-        throw new HttpsError("already-exists",
-          "This request was already used.");
-      }
+    const prior = replayEventChatReceipt(receiptSnap.data(), {
+      command: "updateEventChatAccess", requestHash,
+      nowMillis: deps.now().toMillis()});
+    if (prior) {
       // A replay reports the old applied revision, not present access.
-      return {revision: receipt.revision, replayed: true};
+      return {revision: prior.revision as number, replayed: true};
     }
     const memberRef = db.collection("eventChatMemberships")
       .doc(eventChatMembershipId(data.eventId, uid));
@@ -304,8 +306,8 @@ export async function updateEventChatAccessHandler(
         } satisfies Room);
       }
     }
-    tx.create(receiptRef, {eventId: data.eventId, uid, payloadHash, revision,
-      createdAt: now} satisfies Receipt);
+    writeEventChatReceipt(tx, receiptRef, {command: "updateEventChatAccess",
+      requestHash, revision, nowMillis: now.toMillis()});
     return {revision, replayed: false};
   });
 }

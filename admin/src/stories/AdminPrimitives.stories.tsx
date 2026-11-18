@@ -447,7 +447,7 @@ export const AdminFormStory: Story = {
             recipe="input"
             title="Organizer"
             onChanged={() => undefined}
-            value="Afterfly Social"
+            value="Moonmoth Social"
           />
           <CatchField
             recipe="input"
@@ -480,7 +480,7 @@ export const AdminFieldGridStory: Story = {
           recipe="input"
           title="Name"
           onChanged={() => undefined}
-          value="Afterfly Social"
+          value="Moonmoth Social"
         />
         <CatchField
           recipe="input"
@@ -598,7 +598,7 @@ export const AdminStateRowStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminStateRow label="Canonical route" value="/organizers/afterfly/" />
+      <AdminStateRow label="Canonical route" value="/organizers/moonmoth/" />
       <AdminStateRow label="Risk" value={<CatchBadge recipe="status" tone="success" label="Low" />} />
     </AdminWorkspace>
   ),

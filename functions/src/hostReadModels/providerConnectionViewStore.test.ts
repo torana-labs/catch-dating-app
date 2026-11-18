@@ -22,7 +22,7 @@ const validateConnection =
   contractValidator("OrganizerProviderConnectionDocument");
 
 function organizer(): Data {
-  return {name: "Saket Run Club", hostUserId: "owner-1",
+  return {name: "Neemwood Run Club", hostUserId: "owner-1",
     ownerUserId: "owner-1", hostUserIds: ["owner-1"], hostProfiles: []};
 }
 

@@ -88,8 +88,7 @@ test("scheduled, announcement-only, paused and archived room authority",
         ref("eventParticipations", `${eventId}_${person}`),
         ref("eventChatRooms", eventId),
         ref("users", host), ref("users", person)]) batch.delete(path);
-      for (const collection of ["eventChatAccessReceipts",
-        "eventChatMemberships", "eventChatMessages"]) {
+      for (const collection of ["eventChatMemberships", "eventChatMessages"]) {
         const rows = await db.collection(collection)
           .where("eventId", "==", eventId).limit(100).get();
         for (const row of rows.docs) batch.delete(row.ref);

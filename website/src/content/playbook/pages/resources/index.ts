@@ -12,4 +12,5 @@ import type {PlaybookPageIndex} from "../../playbookContract.ts";
 export const resourcesPlaybookPages: PlaybookPageIndex = {
   safety: {file: "safety.json", load: () => import("./safety.json")},
   host_demo: {file: "host-demo.json", load: () => import("./host-demo.json")},
+  about: {file: "about.json", load: () => import("./about.json")},
 };

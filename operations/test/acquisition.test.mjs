@@ -24,7 +24,7 @@ import {
 const NOW = "2026-07-26T12:00:00.000Z";
 const RAW_SEARCH_FIXTURE = fileURLToPath(new URL(
   "../src/workflows/supply-intake/fixtures/search/" +
-    "afterfly.serpapi.raw.json",
+    "moonmoth.serpapi.raw.json",
   import.meta.url
 ));
 
@@ -82,8 +82,8 @@ test("manual file acquisition preserves today's normalized capture bytes",
       policy,
     });
     const runKey =
-      "web_search|after fly luma|indore|" +
-      "social_run_club|afterfly-run-club-indore";
+      "web_search|moon moth luma|indore|" +
+      "social_run_club|moonmoth-run-club-indore";
     const result = await port.acquire({
       runKey,
       input: {
@@ -97,9 +97,9 @@ test("manual file acquisition preserves today's normalized capture bytes",
     );
     const planEntry = {
       runKey,
-      renderedQuery: "\"After Fly\" Luma",
-      candidateName: "After Fly",
-      candidateId: "afterfly-run-club-indore",
+      renderedQuery: "\"Moon Moth\" Luma",
+      candidateName: "Moon Moth",
+      candidateId: "moonmoth-run-club-indore",
       categoryId: "social_run_club",
       city: "Indore",
       citySlug: "indore",

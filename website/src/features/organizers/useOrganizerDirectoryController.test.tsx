@@ -39,27 +39,27 @@ describe("useOrganizerDirectoryController", () => {
 
   it("hydrates filters from the URL and composes functional updates", async () => {
     const {result} = renderHook(() => useOrganizerDirectoryController(), {
-      wrapper: wrapper("/organizers/?status=unclaimed&q=after"),
+      wrapper: wrapper("/organizers/?status=unclaimed&q=moon"),
     });
 
     expect(result.current.statusFilter).toBe("unclaimed");
-    expect(result.current.query).toBe("after");
+    expect(result.current.query).toBe("moon");
     expect(result.current.results.length).toBeGreaterThan(0);
-    act(() => result.current.setQuery((current) => `${current} fly`));
-    await waitFor(() => expect(result.current.query).toBe("after fly"));
+    act(() => result.current.setQuery((current) => `${current} moth`));
+    await waitFor(() => expect(result.current.query).toBe("moon moth"));
     expect(result.current.results.every((listing) => listing.status.toLowerCase() === "unclaimed"))
       .toBe(true);
   });
 
   it("tracks submitted result appearances and resets the URL-owned filters", async () => {
     const {result} = renderHook(() => useOrganizerDirectoryController(), {
-      wrapper: wrapper("/organizers/?status=unclaimed&q=after"),
+      wrapper: wrapper("/organizers/?status=unclaimed&q=moon"),
     });
 
     act(() => result.current.handleSearch({preventDefault: vi.fn()} as never));
     expect(trackMarketingEvent).toHaveBeenCalledWith(
       "organizer_search_submitted",
-      expect.objectContaining({query: "after", status_filter: "unclaimed"})
+      expect.objectContaining({query: "moon", status_filter: "unclaimed"})
     );
     expect(trackOrganizerSearchAppearance).toHaveBeenCalled();
 

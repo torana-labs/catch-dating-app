@@ -90,7 +90,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
   ) async {
     final ownedOrganizer = buildOrganizer(
       id: 'owned-club',
-      name: 'Saket Run Club',
+      name: 'Neemwood Run Club',
       description: 'Morning runs, plenty of sunshine and energy.',
       area: 'Saket',
       location: 'in-mp-indore',
@@ -186,7 +186,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     final loadedHeader = tester.widget<CatchLegacyTopBar>(
       find.byWidgetPredicate(
         (widget) =>
-            widget is CatchLegacyTopBar && widget.title == 'Saket Run Club',
+            widget is CatchLegacyTopBar && widget.title == 'Neemwood Run Club',
       ),
     );
     expect(loadedHeader.subtitle, isNull);

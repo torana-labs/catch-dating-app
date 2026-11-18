@@ -24,12 +24,13 @@ const seed = (): Record<string, FakeData> => {
   const base = baseSeed();
   return {
     ...base,
-    "transportVendors/shree": {organizerId: "org-1", name: "Shree Travels",
+    "transportVendors/shree": {organizerId: "org-1",
+      name: "Lantern Lane Travels",
       contactName: "Mahesh", phoneE164: "+919999911111",
       programIds: ["program-1"], active: true},
     "transportTrips/trip-1": {programId: "program-1", organizerId: "org-1",
       kind: "pickup", pickupPointId: null, destinationHotelId: null,
-      destinationLabel: "Taj Fateh Prakash", vehicleClassId: "innova",
+      destinationLabel: "Lakeview Haveli", vehicleClassId: "innova",
       vendorId: "shree", plateDisplay: "RJ 27 TA 4471", legIds: [],
       passengerCount: 0, status: "enRoute",
       departedAt: admin.firestore.Timestamp.fromMillis(now.toMillis())},
@@ -68,14 +69,14 @@ test("a manager mints both links; the reads return no contact data",
     const trip = await getProgramDriverTripHandler(
       request({token: driver.token}, "anyone"), linkDeps(db));
     assert.equal(trip.plateDisplay, "RJ 27 TA 4471");
-    assert.equal(trip.destinationLabel, "Taj Fateh Prakash");
+    assert.equal(trip.destinationLabel, "Lakeview Haveli");
 
     const vendor = await issueProgramWebLinkHandler(request({
       programId: "program-1", kind: "vendorRunSheet", subjectId: "shree",
     }, "manager-1"), linkDeps(db));
     const sheet = await getProgramVendorRunSheetHandler(
       request({token: vendor.token}, "anyone"), linkDeps(db));
-    assert.equal(sheet.vendorName, "Shree Travels");
+    assert.equal(sheet.vendorName, "Lantern Lane Travels");
     assert.deepEqual(sheet.functions.map((fn) => fn.name), ["Sangeet"]);
     assert.deepEqual(sheet.trips.map((t) => t.tripId), ["trip-1"]);
     assert.equal(JSON.stringify(sheet).includes("+91"), false);

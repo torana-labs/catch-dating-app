@@ -192,7 +192,12 @@ class _HostEventWorkspaceActions {
   };
 
   void back() {
-    if (context.canPop()) {
+    // Opened beside Today or in the wide split view, Back returns to that
+    // list rather than switching tabs.
+    final workspaceBack = CatchWorkspaceBackScope.maybeOf(context);
+    if (workspaceBack != null) {
+      workspaceBack();
+    } else if (context.canPop()) {
       context.pop();
     } else {
       context.goNamed(Routes.hostEventsScreen.name);

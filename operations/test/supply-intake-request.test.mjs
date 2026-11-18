@@ -31,10 +31,10 @@ const page = (name) => fs.readFileSync(path.join(PAGES, `${name}.html`), "utf8")
 function request(overrides = {}) {
   return {
     schemaVersion: 1,
-    requestId: "nom-blrdroid-1",
+    requestId: "nom-bytebanyan-1",
     kind: "nomination",
     market: "bengaluru",
-    seed: {name: "BlrDroid", urls: ["https://lu.ma/1dfd73wq?utm_source=wa"], notes: null, categories: ["tech_meetup"]},
+    seed: {name: "ByteBanyan", urls: ["https://lu.ma/bbany133?utm_source=wa"], notes: null, categories: ["tech_meetup"]},
     submittedBy: {role: "associate", uid: "associate-1", partnerId: null},
     submittedAt: NOW,
     origin: null,
@@ -47,7 +47,7 @@ async function staticSource(pages) {
 }
 
 test("intake requests follow their contract for every front door", () => {
-  assert.equal(assertSupplyIntakeRequest(request()).requestId, "nom-blrdroid-1");
+  assert.equal(assertSupplyIntakeRequest(request()).requestId, "nom-bytebanyan-1");
   assertSupplyIntakeRequest(request({kind: "self_submission",
     submittedBy: {role: "organizer", uid: "host-1", partnerId: null}}));
   assertSupplyIntakeRequest(request({kind: "discovery", seed: {name: "Some Crew", urls: [], notes: null, categories: []},
@@ -69,31 +69,31 @@ test("intake requests follow their contract for every front door", () => {
 
 test("a nominated event page yields the organizer's calendar, listing fields with sources, and its events", async () => {
   const source = await staticSource({
-    "https://luma.com/1dfd73wq": page("luma-event"),
-    "https://luma.com/blrdroid": page("luma-organizer"),
+    "https://luma.com/bbany133": page("luma-event"),
+    "https://luma.com/bytebanyan": page("luma-organizer"),
   });
   const gathered = await gatherIntakeEvidence({request: request(), pageSource: source, now: NOW});
   assert.deepEqual(gathered.pages.map((entry) => [entry.url, entry.via, entry.pageKind]), [
-    ["https://luma.com/1dfd73wq", "seed", "event_page"],
-    ["https://luma.com/blrdroid", "https://luma.com/1dfd73wq", "organizer_page"],
+    ["https://luma.com/bbany133", "seed", "event_page"],
+    ["https://luma.com/bytebanyan", "https://luma.com/bbany133", "organizer_page"],
   ]);
-  assert.equal(gathered.pages[1].normalizedKey, "luma:calendar:blrdroid");
+  assert.equal(gathered.pages[1].normalizedKey, "luma:calendar:bytebanyan");
 
   const listing = buildIntakeListing({request: request(), gathered, now: NOW});
-  assert.equal(listing.organizer.name, "BlrDroid Community");
+  assert.equal(listing.organizer.name, "ByteBanyan Community");
   assert.match(listing.organizer.description, /android developers/u);
   assert.equal(listing.organizer.locality, "Bengaluru");
   assert.deepEqual(listing.organizer.links.map((link) => [link.normalizedKey, link.surfaceKind]),
-    [["luma:calendar:blrdroid", "eventCalendar"]]);
-  assert.deepEqual(listing.organizer.identityKeys, ["luma:calendar:blrdroid"]);
+    [["luma:calendar:bytebanyan", "eventCalendar"]]);
+  assert.deepEqual(listing.organizer.identityKeys, ["luma:calendar:bytebanyan"]);
   assert.deepEqual(listing.fieldEvidence.map((entry) => [entry.field, entry.sourceUrl, entry.method]), [
-    ["name", "https://luma.com/blrdroid", "adapter"],
-    ["description", "https://luma.com/blrdroid", "adapter"],
-    ["imageUrl", "https://luma.com/blrdroid", "adapter"],
-    ["locality", "https://luma.com/blrdroid", "adapter"],
+    ["name", "https://luma.com/bytebanyan", "adapter"],
+    ["description", "https://luma.com/bytebanyan", "adapter"],
+    ["imageUrl", "https://luma.com/bytebanyan", "adapter"],
+    ["locality", "https://luma.com/bytebanyan", "adapter"],
   ]);
   // The event is on both pages; it is listed once, upcoming as of NOW.
-  assert.deepEqual(listing.events.map((event) => event.eventKey), ["luma:1dfd73wq"]);
+  assert.deepEqual(listing.events.map((event) => event.eventKey), ["luma:bbany133"]);
   assert.deepEqual(listing.gaps, ["name_differs_from_nomination"]);
   assert.equal(listing.researchNeeded, false);
   assert.match(listing.contentHash, /^[0-9a-f]{64}$/u);
@@ -101,9 +101,9 @@ test("a nominated event page yields the organizer's calendar, listing fields wit
 });
 
 test("unreadable seeds, missing pages and template drift become gaps for research, not errors", async () => {
-  const source = await staticSource({"https://urbanaut.app/spot/ballard-estate-photowalk": "<html><title>x</title></html>"});
+  const source = await staticSource({"https://urbanaut.app/spot/dockyard-lane-photowalk": "<html><title>x</title></html>"});
   const nominated = request({requestId: "nom-gaps", seed: {name: "Photowalks", notes: null, categories: [],
-    urls: ["https://urbanaut.app/spot/ballard-estate-photowalk", "https://district.in/events/missing"]}});
+    urls: ["https://urbanaut.app/spot/dockyard-lane-photowalk", "https://district.in/events/missing"]}});
   const gathered = await gatherIntakeEvidence({request: nominated, pageSource: source, now: NOW});
   assert.deepEqual(gathered.pages.map((entry) => [entry.platform, entry.abstainReason]),
     [["urbanaut", "template_drift"], ["district", "not_captured"]]);
@@ -118,41 +118,41 @@ test("unreadable seeds, missing pages and template drift become gaps for researc
 test("District sessions and an Urbanaut host page become one listing per request", async () => {
   const urbanaut = await gatherIntakeEvidence({
     request: request({requestId: "nom-urbanaut", market: "mumbai",
-      seed: {name: null, urls: ["https://urbanaut.app/spot/ballard-estate-photowalk"], notes: null, categories: []}}),
-    pageSource: await staticSource({"https://urbanaut.app/spot/ballard-estate-photowalk": page("urbanaut-spot")}),
+      seed: {name: null, urls: ["https://urbanaut.app/spot/dockyard-lane-photowalk"], notes: null, categories: []}}),
+    pageSource: await staticSource({"https://urbanaut.app/spot/dockyard-lane-photowalk": page("urbanaut-spot")}),
     now: NOW,
   });
   assert.deepEqual(urbanaut.pages.map((entry) => entry.url),
-    ["https://urbanaut.app/spot/ballard-estate-photowalk", "https://urbanaut.app/mayanksoni"]);
+    ["https://urbanaut.app/spot/dockyard-lane-photowalk", "https://urbanaut.app/noorkapadia"]);
   const listing = buildIntakeListing({request: request({requestId: "nom-urbanaut", market: "mumbai",
-    seed: {name: null, urls: ["https://urbanaut.app/spot/ballard-estate-photowalk"], notes: null, categories: []}}),
+    seed: {name: null, urls: ["https://urbanaut.app/spot/dockyard-lane-photowalk"], notes: null, categories: []}}),
   gathered: urbanaut, now: NOW});
-  assert.equal(listing.organizer.name, "Mayank Soni");
-  assert.ok(listing.organizer.identityKeys.includes("urbanaut:profile:mayanksoni"));
+  assert.equal(listing.organizer.name, "Noor Kapadia");
+  assert.ok(listing.organizer.identityKeys.includes("urbanaut:profile:noorkapadia"));
   assert.equal(listing.events.length, 1);
   assert.ok(listing.gaps.includes("seed_page_unreadable") === false);
 
   const district = await gatherIntakeEvidence({
     request: request({requestId: "nom-district", market: "delhi-ncr",
-      seed: {name: "Noida Comedy Bar", urls: ["https://www.district.in/events/noida-comedy-bar-jan7-2026-buy-tickets"],
+      seed: {name: "Giggle Yard Open Mic", urls: ["https://www.district.in/events/giggle-yard-open-mic-jan7-2026-buy-tickets"],
         notes: null, categories: ["comedy"]}}),
     pageSource: await staticSource({
-      "https://district.in/events/noida-comedy-bar-jan7-2026-buy-tickets": page("district-event")}),
+      "https://district.in/events/giggle-yard-open-mic-jan7-2026-buy-tickets": page("district-event")}),
     now: NOW,
   });
   const districtListing = buildIntakeListing({request: request({requestId: "nom-district", market: "delhi-ncr",
-    seed: {name: "Noida Comedy Bar", urls: ["https://www.district.in/events/noida-comedy-bar-jan7-2026-buy-tickets"],
+    seed: {name: "Giggle Yard Open Mic", urls: ["https://www.district.in/events/giggle-yard-open-mic-jan7-2026-buy-tickets"],
       notes: null, categories: ["comedy"]}}), gathered: district, now: "2026-10-24T16:15:00.000Z"});
   assert.equal(districtListing.events.length, 2, "the session that already ended is not upcoming");
   assert.equal(districtListing.pastEventCount, 1);
-  assert.equal(districtListing.organizer.name, "TRIBAL SIERRA CAFE LLP");
+  assert.equal(districtListing.organizer.name, "EXAMPLE HOSPITALITY LLP");
   assert.ok(districtListing.gaps.includes("name_differs_from_nomination"));
 });
 
 test("listings run through the workflow as review-only work items that satisfy the contracts", async () => {
   const source = await staticSource({
-    "https://luma.com/1dfd73wq": page("luma-event"),
-    "https://luma.com/blrdroid": page("luma-organizer"),
+    "https://luma.com/bbany133": page("luma-event"),
+    "https://luma.com/bytebanyan": page("luma-organizer"),
   });
   const gathered = await gatherIntakeEvidence({request: request(), pageSource: source, now: NOW});
   const listing = buildIntakeListing({request: request(), gathered, now: NOW});
@@ -187,10 +187,10 @@ test("listings run through the workflow as review-only work items that satisfy t
   assert.deepEqual(canonicalListing.fieldProvenance
     .filter((entry) => entry.field.startsWith("intake.listing."))
     .map((entry) => [entry.field, entry.locator, entry.extractedBy, entry.extractorVersion]), [
-    ["intake.listing.organizer.name", "https://luma.com/blrdroid", "deterministic", "luma"],
-    ["intake.listing.organizer.description", "https://luma.com/blrdroid", "deterministic", "luma"],
-    ["intake.listing.organizer.imageUrl", "https://luma.com/blrdroid", "deterministic", "luma"],
-    ["intake.listing.organizer.locality", "https://luma.com/blrdroid", "deterministic", "luma"],
+    ["intake.listing.organizer.name", "https://luma.com/bytebanyan", "deterministic", "luma"],
+    ["intake.listing.organizer.description", "https://luma.com/bytebanyan", "deterministic", "luma"],
+    ["intake.listing.organizer.imageUrl", "https://luma.com/bytebanyan", "deterministic", "luma"],
+    ["intake.listing.organizer.locality", "https://luma.com/bytebanyan", "deterministic", "luma"],
   ]);
   await validateCanonicalProjection({repoRoot: REPO_ROOT, projection, requireContracts: true});
   const tampered = structuredClone(projection);
@@ -202,8 +202,8 @@ test("listings run through the workflow as review-only work items that satisfy t
 
 test("a listing that duplicates a listed organizer is flagged for the reviewer, never blocked", async () => {
   const source = await staticSource({
-    "https://luma.com/1dfd73wq": page("luma-event"),
-    "https://luma.com/blrdroid": page("luma-organizer"),
+    "https://luma.com/bbany133": page("luma-event"),
+    "https://luma.com/bytebanyan": page("luma-organizer"),
   });
   const gathered = await gatherIntakeEvidence({request: request(), pageSource: source, now: NOW});
   const unchecked = buildIntakeListing({request: request(), gathered, now: NOW});
@@ -215,12 +215,12 @@ test("a listing that duplicates a listed organizer is flagged for the reviewer, 
   assert.equal(fresh.gaps.includes("possible_duplicate_organizer"), false);
 
   const listing = buildIntakeListing({request: request(), gathered, now: NOW, existingOrganizers: [
-    {organizerId: "org-blrdroid", name: "BLR Droid", markets: ["bengaluru"], links: ["https://lu.ma/calendar/blrdroid"]},
+    {organizerId: "org-bytebanyan", name: "BYTE Banyan", markets: ["bengaluru"], links: ["https://lu.ma/calendar/bytebanyan"]},
     {organizerId: "org-other", name: "Pune Photowalks", markets: ["pune"]},
   ]});
   assert.equal(listing.duplicateCheck.verdict, "match");
   assert.equal(listing.duplicateCheck.authority, "advisory");
-  assert.deepEqual(listing.duplicateCheck.candidates.map((candidate) => candidate.organizerId), ["org-blrdroid"]);
+  assert.deepEqual(listing.duplicateCheck.candidates.map((candidate) => candidate.organizerId), ["org-bytebanyan"]);
   assert.ok(listing.duplicateCheck.candidates[0].signals.includes("shared_identity_key"));
   assert.ok(listing.gaps.includes("possible_duplicate_organizer"));
   assert.equal(listing.researchNeeded, false, "research cannot close a duplicate question");
@@ -276,7 +276,7 @@ test("live page fetching stays off until policy, an accepted decision and ledger
     {status: 404, location: null, contentType: "text/plain", body: Buffer.alloc(0)} :
     {status: 200, location: null, contentType: "text/html", body: Buffer.from(page("luma-event"))};
   const port = new GuardedPageFetchPort({policy: enabled, policyDecision: decision, budgets, transport, clock});
-  const first = await port.capture({runKey: "nom-1|page-1", url: "https://luma.com/1dfd73wq"});
+  const first = await port.capture({runKey: "nom-1|page-1", url: "https://luma.com/bbany133"});
   assert.equal(first.receipt.outcome, "fetched");
   assert.equal(first.receipt.networkRequestsConsumed, 2, "robots.txt counts against the budget");
   assert.equal(first.receipt.policyDecisionId, "decision-pages-1");
@@ -285,7 +285,7 @@ test("live page fetching stays off until policy, an accepted decision and ledger
   assert.equal("html" in first.snapshot, false);
   // Robots is cached for the origin, so the next page costs one request; the
   // one after that would exceed the per-intake cap of three.
-  await port.capture({runKey: "nom-1|page-2", url: "https://luma.com/blrdroid"});
+  await port.capture({runKey: "nom-1|page-2", url: "https://luma.com/bytebanyan"});
   await assert.rejects(port.capture({runKey: "nom-1|page-3", url: "https://luma.com/other"}),
     {code: "BUDGET_EXCEEDED"});
   assert.equal(budgets.month.snapshot().consumed.networkRequests, 3);
@@ -297,10 +297,10 @@ test("live page fetching stays off until policy, an accepted decision and ledger
   assert.deepEqual([drafts.allowance, drafts.month.snapshot().limits.networkRequests], ["web_instant_draft", 4]);
   const draftPolicy = {...enabled, pageFetch: {...enabled.pageFetch, maxInstantDraftRequestsPerMonth: 4}};
   const draftPort = new GuardedPageFetchPort({policy: draftPolicy, policyDecision: decision, budgets: drafts, transport, clock});
-  const draftPage = await draftPort.capture({runKey: "draft-1|page-1", url: "https://luma.com/1dfd73wq"});
+  const draftPage = await draftPort.capture({runKey: "draft-1|page-1", url: "https://luma.com/bbany133"});
   assert.equal(draftPage.receipt.outcome, "fetched");
   assert.deepEqual([draftPage.receipt.budgetWindow.monthConsumed, draftPage.receipt.budgetWindow.monthLimit], [4, 4]);
-  await assert.rejects(draftPort.capture({runKey: "draft-1|page-2", url: "https://luma.com/blrdroid"}),
+  await assert.rejects(draftPort.capture({runKey: "draft-1|page-2", url: "https://luma.com/bytebanyan"}),
     {code: "BUDGET_EXCEEDED"}, "the draft allowance is spent while the shared one is not");
   assert.throws(() => new GuardedPageFetchPort({policy: draftPolicy, policyDecision: decision,
     budgets: {...drafts, allowance: "shared"}}), {code: "ACQUISITION_BUDGET_MISMATCH"});
@@ -309,8 +309,8 @@ test("live page fetching stays off until policy, an accepted decision and ledger
 
   // Gathering turns the refusal into a recorded gap and keeps what it read.
   const gathered = await gatherIntakeEvidence({
-    request: request({requestId: "nom-budget", seed: {name: "BlrDroid", notes: null, categories: [],
-      urls: ["https://luma.com/1dfd73wq"]}}),
+    request: request({requestId: "nom-budget", seed: {name: "ByteBanyan", notes: null, categories: [],
+      urls: ["https://luma.com/bbany133"]}}),
     pageSource: port,
     now: NOW,
   });
@@ -338,24 +338,24 @@ test("events without a start time are not listed, and listed events sort by inst
 });
 
 test("an Instagram-only nomination searches the handle once and reads only calendars that name it", async () => {
-  const pages = {"https://luma.com/blrdroid": page("luma-organizer")};
+  const pages = {"https://luma.com/bytebanyan": page("luma-organizer")};
   const nominated = (handle) => request({requestId: `nom-ig-${handle}`, seed: {name: null, notes: null, categories: [],
     urls: [`https://www.instagram.com/${handle}/`]}});
   const searches = [];
   const linkSearch = {search: async (input) => {
     searches.push(input);
-    return [{url: "https://lu.ma/blrdroid"}, {url: "https://www.instagram.com/blrdroid/"}, {url: "https://example.org/x"}];
+    return [{url: "https://lu.ma/bytebanyan"}, {url: "https://www.instagram.com/bytebanyan/"}, {url: "https://example.org/x"}];
   }};
 
-  const gathered = await gatherIntakeEvidence({request: nominated("blrdroid"), pageSource: await staticSource(pages),
+  const gathered = await gatherIntakeEvidence({request: nominated("bytebanyan"), pageSource: await staticSource(pages),
     now: NOW, linkSearch});
-  assert.deepEqual(searches, [{runKey: "nom-ig-blrdroid|search-1", query: "\"blrdroid\""}]);
-  assert.deepEqual(gathered.search, {query: "\"blrdroid\"", outcome: "searched", resultCount: 3,
-    candidateUrls: ["https://lu.ma/blrdroid"]});
+  assert.deepEqual(searches, [{runKey: "nom-ig-bytebanyan|search-1", query: "\"bytebanyan\""}]);
+  assert.deepEqual(gathered.search, {query: "\"bytebanyan\"", outcome: "searched", resultCount: 3,
+    candidateUrls: ["https://lu.ma/bytebanyan"]});
   assert.deepEqual(gathered.pages.map((entry) => [entry.via, entry.platform, entry.abstainReason]),
     [["seed", "instagram", "not_captured"], ["search", "luma", null]]);
   assert.ok(gathered.events.length > 0, "the calendar's events come with it");
-  const listing = buildIntakeListing({request: nominated("blrdroid"), gathered, now: NOW});
+  const listing = buildIntakeListing({request: nominated("bytebanyan"), gathered, now: NOW});
   assert.ok(listing.gaps.includes("found_by_search") && listing.gaps.includes("seed_page_unreadable"));
   assert.equal(listing.researchNeeded, true, "a person checks what search found");
 
@@ -372,13 +372,13 @@ test("an Instagram-only nomination searches the handle once and reads only calen
 
 test("a nominated Instagram account stays a listing link though nothing can read it", async () => {
   const nominated = request({requestId: "nom-ig-personal", seed: {name: null, notes: null, categories: [],
-    urls: ["https://instagram.com/suvratgarg?igsh=abc", "https://district.in/events/missing"]}});
+    urls: ["https://instagram.com/asha.personal.example?igsh=abc", "https://district.in/events/missing"]}});
   const gathered = await gatherIntakeEvidence({request: nominated, pageSource: await staticSource({}), now: NOW});
   const listing = buildIntakeListing({request: nominated, gathered, now: NOW});
   assert.deepEqual(listing.organizer.links.map((link) => [link.platform, link.surfaceKind, link.url]),
-    [["instagram", "socialProfile", "https://instagram.com/suvratgarg"]],
+    [["instagram", "socialProfile", "https://instagram.com/asha.personal.example"]],
     "the claim check and the duplicate check both need the account; an unread event page is still not a link");
-  assert.ok(listing.organizer.identityKeys.includes("instagram:suvratgarg"));
+  assert.ok(listing.organizer.identityKeys.includes("instagram:asha.personal.example"));
   assert.ok(listing.gaps.includes("seed_page_unreadable"));
 });
 
@@ -389,12 +389,12 @@ test("handle search stays out of the way when a seed reads, when it is off, and 
     return [];
   }};
   const luma = request({seed: {name: null, notes: null, categories: [],
-    urls: ["https://lu.ma/blrdroid", "https://instagram.com/blrdroid"]}});
+    urls: ["https://lu.ma/bytebanyan", "https://instagram.com/bytebanyan"]}});
   const read = await gatherIntakeEvidence({request: luma, now: NOW, linkSearch: counting,
-    pageSource: await staticSource({"https://luma.com/blrdroid": page("luma-organizer")})});
+    pageSource: await staticSource({"https://luma.com/bytebanyan": page("luma-organizer")})});
   assert.deepEqual([calls, read.search], [0, null]);
 
-  const instagramOnly = request({seed: {name: null, notes: null, categories: [], urls: ["https://instagram.com/blrdroid"]}});
+  const instagramOnly = request({seed: {name: null, notes: null, categories: [], urls: ["https://instagram.com/bytebanyan"]}});
   const off = await gatherIntakeEvidence({request: instagramOnly, now: NOW, pageSource: await staticSource({}),
     linkSearch: {search: async () => null}});
   assert.equal(off.search, null);
@@ -405,6 +405,6 @@ test("handle search stays out of the way when a seed reads, when it is off, and 
   assert.equal(spent.search.outcome, "budget_exhausted");
   assert.equal(spent.stoppedReason, null, "a spent search budget is not a gathering failure");
   const linktree = await gatherIntakeEvidence({request: request({seed: {name: null, notes: null, categories: [],
-    urls: ["https://linktr.ee/blrdroid"]}}), now: NOW, pageSource: await staticSource({}), linkSearch: counting});
-  assert.equal(linktree.search.query, "\"blrdroid\"", "Linktree and Beacons handles are searched too");
+    urls: ["https://linktr.ee/bytebanyan"]}}), now: NOW, pageSource: await staticSource({}), linkSearch: counting});
+  assert.equal(linktree.search.query, "\"bytebanyan\"", "Linktree and Beacons handles are searched too");
 });

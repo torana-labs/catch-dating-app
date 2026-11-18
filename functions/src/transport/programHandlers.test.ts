@@ -352,7 +352,7 @@ test("dispatch writes trip, assignments and receipt atomically", async () => {
   assert.equal(dispatched.passengerCount, 2);
   const trip = firestore.getDoc(`transportTrips/${dispatched.tripId}`);
   assert.equal(trip?.plateNormalized, "DL1T4471");
-  assert.equal(trip?.vendorNameSnapshot, "Sharma Cabs");
+  assert.equal(trip?.vendorNameSnapshot, "Harbour Line Cabs");
   assert.equal(trip?.status, "enRoute");
   assert.equal(
     firestore.getDoc("programTravelLegs/leg-1")?.readiness, "dispatched");

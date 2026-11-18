@@ -242,7 +242,7 @@
         "id": "claude.host-event-manage",
         "path": "design/source_packs/host-v2/templates/hosts-manage/Manage.dc.html",
         "packManifest": "design/source_packs/host-v2/source-pack.json",
-        "sha256": "b694fb2515a696733ac627cc3f855bc96461443ef5a536473c0bd157e3bca1ba",
+        "sha256": "3f0fd7c454734790058a1babb27a393ed53ca10d9805eb45195b0e37fea1eb60",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + sips crop",
         "viewport": {
@@ -284,7 +284,7 @@
         "id": "claude.host-event-manage-full-waitlist",
         "path": "design/source_packs/host-v2/templates/hosts-manage/Manage.dc.html",
         "packManifest": "design/source_packs/host-v2/source-pack.json",
-        "sha256": "b694fb2515a696733ac627cc3f855bc96461443ef5a536473c0bd157e3bca1ba",
+        "sha256": "3f0fd7c454734790058a1babb27a393ed53ca10d9805eb45195b0e37fea1eb60",
         "exportedAt": "2026-06-25",
         "exportTool": "Google Chrome headless screenshot + temp full/waitlist apron patch + sips crop",
         "viewport": {
@@ -329,7 +329,7 @@
         "id": "claude.host-event-manage",
         "path": "design/source_packs/host-v2/templates/hosts-manage/Manage.dc.html",
         "packManifest": "design/source_packs/host-v2/source-pack.json",
-        "sha256": "b694fb2515a696733ac627cc3f855bc96461443ef5a536473c0bd157e3bca1ba",
+        "sha256": "3f0fd7c454734790058a1babb27a393ed53ca10d9805eb45195b0e37fea1eb60",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + temp guests-mode patch + sips crop",
         "viewport": {
@@ -606,7 +606,7 @@
         "id": "claude.host-inbox",
         "path": "design/source_packs/host-v2/templates/hosts-inbox/Inbox.dc.html",
         "packManifest": "design/source_packs/host-v2/source-pack.json",
-        "sha256": "7ac0e7f09ac388e7713dd79674a61b88a2143112db0695e6c82f08f93d7d41e8",
+        "sha256": "32022ed35f81c70f736c27937118a14a4a482cb7c72a798d037fd7f0f014e3f9",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + sips crop",
         "viewport": {
@@ -694,7 +694,7 @@
         "id": "claude.host-home",
         "path": "design/source_packs/host-v2/templates/hosts-today/Today.dc.html",
         "packManifest": "design/source_packs/host-v2/source-pack.json",
-        "sha256": "78a437895a79cc4c63f47a0a8643c627c95a145afa8b4385178a02634b53efcf",
+        "sha256": "b7031f2e2c7e6e8b4074bb64d97184bc167b452c23aec13bb30636f3c2eaa80e",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + sips crop",
         "viewport": {
@@ -718,7 +718,7 @@
         "maxMismatchRatio": 0.29,
         "maxMeanDelta": 38
       },
-      "notes": "Canonical Claude Host Today reference. The 2026-07-10 full-shell capture renders the production HostAppShell and deterministic Bandra Social fixture. A truthful Today pass added a minute-refreshing countdown, event-identified cross-event waitlist work routed to the exact event Guests section, lifecycle-aware live run-of-show routing, and real later-event rows while removing the unconditional setup task, synthetic review count, and fake attendee stack. The comparison improved from 29.22% / 38.22 to mismatch 28.48%, meanDelta 37.31, maxDelta 243, masked 127864. It remains above the canonical threshold because pending approvals, waitlist offers, drafts, and guest-inquiry task sources are not yet composed. HOST-V2-TODAY-FUNCTIONAL-PARITY-001 records that functional remainder; the tightened regression ceiling prevents backsliding without claiming parity."
+      "notes": "Canonical Claude Host Today reference. The 2026-07-10 full-shell capture renders the production HostAppShell and deterministic Harbour Line Social fixture. A truthful Today pass added a minute-refreshing countdown, event-identified cross-event waitlist work routed to the exact event Guests section, lifecycle-aware live run-of-show routing, and real later-event rows while removing the unconditional setup task, synthetic review count, and fake attendee stack. The comparison improved from 29.22% / 38.22 to mismatch 28.48%, meanDelta 37.31, maxDelta 243, masked 127864. It remains above the canonical threshold because pending approvals, waitlist offers, drafts, and guest-inquiry task sources are not yet composed. HOST-V2-TODAY-FUNCTIONAL-PARITY-001 records that functional remainder; the tightened regression ceiling prevents backsliding without claiming parity."
     },
     {
       "id": "screen.host.home.events_list",
@@ -794,7 +794,7 @@
         "id": "claude.host-clubs",
         "path": "design/source_packs/host-v2/templates/hosts-organizer/Organizer.dc.html",
         "packManifest": "design/source_packs/host-v2/source-pack.json",
-        "sha256": "0be99934278aa816beefe84f5e82809af4e26346e944294708f025e4718da0a8",
+        "sha256": "ba8c5ffcd708df646484b415b7aa966a4d5e96e92cad505b5d13a29c04ecc5b5",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + sips crop",
         "viewport": {
@@ -1093,7 +1093,7 @@
         "id": "claude.host-event-manage",
         "path": "design/source_packs/host-v2/templates/hosts-manage/Manage.dc.html",
         "packManifest": "design/source_packs/host-v2/source-pack.json",
-        "sha256": "b694fb2515a696733ac627cc3f855bc96461443ef5a536473c0bd157e3bca1ba",
+        "sha256": "3f0fd7c454734790058a1babb27a393ed53ca10d9805eb45195b0e37fea1eb60",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + CDP clip",
         "viewport": {
@@ -1135,7 +1135,7 @@
         "id": "claude.host-event-manage",
         "path": "design/source_packs/host-v2/templates/hosts-manage/Manage.dc.html",
         "packManifest": "design/source_packs/host-v2/source-pack.json",
-        "sha256": "b694fb2515a696733ac627cc3f855bc96461443ef5a536473c0bd157e3bca1ba",
+        "sha256": "3f0fd7c454734790058a1babb27a393ed53ca10d9805eb45195b0e37fea1eb60",
         "exportedAt": "2026-06-22",
         "exportTool": "Google Chrome headless screenshot + CDP clip",
         "viewport": {

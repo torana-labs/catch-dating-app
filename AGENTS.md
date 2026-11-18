@@ -97,6 +97,17 @@ repository ledger.
 - Do not run multiple Flutter analyzer/test processes concurrently.
 - Do not add a new tracked evidence registry or generated history snapshot to
   replace the removed evidence.
+- Use fictional names only. Real organisers, venues and brands live only in
+  the production database: never put their names, social handles, URLs or
+  scraped records in code, fixtures, stories, tests, docs, design packs,
+  generated data, issues, PR text or commit messages. This repository is
+  public. Use the fictional set in `tool/third_party_names_allowlist.json` and
+  reserved domains (`.example`, `.test`, `example.com`); refer to a real
+  organiser generically ("the Indore organiser") or by an opaque case id. Never
+  write a bare `@name` in GitHub text, because it notifies that account; put
+  code and placeholders in backticks. `meta:third-party-names` and the PR text
+  guard enforce this
+  ([details](docs/agent_operating_model.md#third-party-names)).
 
 ## Measure, Don't Assume
 

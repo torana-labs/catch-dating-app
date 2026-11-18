@@ -1175,7 +1175,7 @@ remediation table above.
      `getHostListingForPath`.
    - `website/src/App.tsx` builds hydrated listing metadata from
      `pageMetaForListing`.
-   - `website/dist/organizers/indore/afterfly-run-club/index.html` is static
+   - `website/dist/organizers/indore/moonmoth-run-club/index.html` is static
      `noindex, follow`, while `website/src/generated/hostListings.json` marks
      the canonical listing `index, follow`.
 

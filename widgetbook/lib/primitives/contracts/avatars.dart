@@ -147,8 +147,8 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
         label: 'monogram-display',
         child: CatchAvatar.monogram(
           size: 88,
-          name: 'Carter Road Runners',
-          initials: 'CR',
+          name: 'Driftwood Bay Runners',
+          initials: 'DB',
           ground: CatchBandGround.coral,
           borderWidth: 4,
           borderColor: CatchTokens.editorialWhite,

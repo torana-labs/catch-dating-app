@@ -17,13 +17,13 @@ import {temporaryDirectory} from "./helpers.mjs";
 const NOW = "2026-10-29T00:00:00.000Z";
 
 const INVENTORY = Object.freeze([
-  {organizerId: "org-mumbai-run-club", name: "Mumbai Run Club", markets: ["mumbai"],
-    links: ["https://www.instagram.com/mumbairunclub/"]},
-  {organizerId: "org-bombay-board-gamers", name: "Bombay Board Gamers", markets: ["mumbai"],
-    links: ["https://lu.ma/calendar/bombay-board-gamers", "https://bombayboardgamers.in"]},
-  {organizerId: "org-bandra-run-club", name: "Bandra Run Club", markets: ["mumbai"],
-    links: ["https://instagram.com/bandrarunclub"]},
-  {organizerId: "org-delhi-run-club", name: "Delhi Run Club", markets: ["delhi-ncr"]},
+  {organizerId: "org-mumbai-moonrise-run-club", name: "Mumbai Moonrise Run Club", markets: ["mumbai"],
+    links: ["https://www.instagram.com/mumbaimoonriserunclub/"]},
+  {organizerId: "org-meeple-board-gamers", name: "Meeple Board Gamers", markets: ["mumbai"],
+    links: ["https://lu.ma/calendar/meeple-board-gamers", "https://meepleboardgamers.example"]},
+  {organizerId: "org-sandbar-run-club", name: "Sandbar Run Club", markets: ["mumbai"],
+    links: ["https://instagram.com/sandbarrunclub"]},
+  {organizerId: "org-daybreak-run-club", name: "Daybreak Run Club", markets: ["delhi-ncr"]},
   {organizerId: "org-linktree-crew", name: "Supper Crew", markets: ["mumbai"], links: ["https://linktr.ee/suppercrew"]},
 ]);
 
@@ -42,35 +42,35 @@ function match(input, organizers = INVENTORY) {
 
 test("an exact Instagram handle matches across URL variants", () => {
   for (const url of [
-    "https://instagram.com/mumbairunclub",
-    "https://m.instagram.com/MumbaiRunClub?igshid=abc123",
-    "http://www.instagram.com/mumbairunclub/?utm_source=ig_web_copy_link",
-    "instagram.com/@mumbairunclub",
+    "https://instagram.com/mumbaimoonriserunclub",
+    "https://m.instagram.com/MumbaiMoonriseRunClub?igshid=abc123",
+    "http://www.instagram.com/mumbaimoonriserunclub/?utm_source=ig_web_copy_link",
+    "instagram.com/@mumbaimoonriserunclub",
   ]) {
     const result = match({name: "MRC", links: [url]});
     assert.equal(result.verdict, "match", url);
     assert.deepEqual(result.reasons, ["unique_strong_candidate"]);
-    assert.equal(result.candidates[0].organizerId, "org-mumbai-run-club");
-    assert.deepEqual(result.candidates[0].sharedIdentityKeys, ["instagram:mumbairunclub"]);
+    assert.equal(result.candidates[0].organizerId, "org-mumbai-moonrise-run-club");
+    assert.deepEqual(result.candidates[0].sharedIdentityKeys, ["instagram:mumbaimoonriserunclub"]);
     assert.equal(result.candidates[0].band, "match");
-    assert.match(result.candidates[0].rationale, /same page instagram:mumbairunclub/);
+    assert.match(result.candidates[0].rationale, /same page instagram:mumbaimoonriserunclub/);
   }
 });
 
 test("Luma calendar and website URL variants resolve to the same identity key", () => {
-  const luma = match({links: ["https://luma.com/bombay-board-gamers?utm_campaign=share"]});
+  const luma = match({links: ["https://luma.com/meeple-board-gamers?utm_campaign=share"]});
   assert.equal(luma.verdict, "match");
-  assert.deepEqual(luma.candidates[0].sharedIdentityKeys, ["luma:calendar:bombay-board-gamers"]);
+  assert.deepEqual(luma.candidates[0].sharedIdentityKeys, ["luma:calendar:meeple-board-gamers"]);
 
-  const site = match({name: "BBG", links: ["http://www.bombayboardgamers.in/events/#next"]});
+  const site = match({name: "BBG", links: ["http://www.meepleboardgamers.example/events/#next"]});
   assert.equal(site.verdict, "match");
-  assert.deepEqual(site.candidates[0].sharedIdentityKeys, ["domain:bombayboardgamers.in"]);
+  assert.deepEqual(site.candidates[0].sharedIdentityKeys, ["domain:meepleboardgamers.example"]);
 
   // An unread seed URL still names the organizer.
-  const seeded = match({seedUrls: ["https://lu.ma/calendar/Bombay-Board-Gamers"]});
+  const seeded = match({seedUrls: ["https://lu.ma/calendar/Meeple-Board-Gamers"]});
   assert.equal(seeded.verdict, "match");
   // A seeded single-segment Luma URL may be an event page, so it is no identity.
-  assert.equal(match({seedUrls: ["https://lu.ma/bombay-board-gamers"]}).verdict, "none");
+  assert.equal(match({seedUrls: ["https://lu.ma/meeple-board-gamers"]}).verdict, "none");
 });
 
 test("a shared host matches only the exact page, never the domain", () => {
@@ -84,38 +84,38 @@ test("a shared host matches only the exact page, never the domain", () => {
 });
 
 test("an exact name in the same market matches; punctuation, case and articles do not matter", () => {
-  for (const name of ["Mumbai Run Club", "MUMBAI RUN-CLUB", "The Mumbai Run Club", "MumbaiRunClub"]) {
+  for (const name of ["Mumbai Moonrise Run Club", "MUMBAI MOONRISE RUN-CLUB", "The Mumbai Moonrise Run Club", "MumbaiMoonriseRunClub"]) {
     const result = match({name});
     assert.equal(result.verdict, "match", name);
-    assert.equal(result.candidates[0].organizerId, "org-mumbai-run-club");
+    assert.equal(result.candidates[0].organizerId, "org-mumbai-moonrise-run-club");
     assert.equal(result.candidates[0].score, 0.94);
     assert.deepEqual(result.candidates[0].signals.map((signal) => signal.code), ["exact_name", "same_market"]);
   }
 });
 
 test("near-name collisions flag for review but never match", () => {
-  const spelling = match({name: "Mumbai Running Club"});
+  const spelling = match({name: "Mumbai Moonrise Running Club"});
   assert.equal(spelling.verdict, "ambiguous");
   assert.deepEqual(spelling.reasons, ["review_candidate"]);
-  assert.equal(spelling.candidates[0].organizerId, "org-mumbai-run-club");
+  assert.equal(spelling.candidates[0].organizerId, "org-mumbai-moonrise-run-club");
   assert.equal(spelling.candidates[0].signals[0].code, "similar_name");
   assert.ok(spelling.candidates[0].score < ORGANIZER_MATCHING_POLICY.thresholds.probable);
 
-  const reordered = match({name: "Run Club Mumbai"});
+  const reordered = match({name: "Moonrise Run Club Mumbai"});
   assert.equal(reordered.verdict, "ambiguous");
   assert.deepEqual(reordered.reasons, ["probable_candidate"]);
   assert.equal(reordered.candidates[0].signals[0].code, "same_name_tokens");
 
-  const withoutMarket = match({name: "Bombay Board Gamers Mumbai"});
+  const withoutMarket = match({name: "Meeple Board Gamers Mumbai"});
   assert.equal(withoutMarket.verdict, "ambiguous");
   assert.equal(withoutMarket.candidates[0].signals[0].code, "same_name_without_market");
 
-  const handleAsName = match({name: "Game Nights", links: ["https://instagram.com/bombayboardgamers"]});
+  const handleAsName = match({name: "Game Nights", links: ["https://instagram.com/meepleboardgamers"]});
   assert.equal(handleAsName.verdict, "ambiguous");
   assert.equal(handleAsName.candidates[0].signals[0].code, "handle_matches_name");
 
   // A different handle on the same platform counts against a near name.
-  const distinct = match({name: "Mumbai Running Club", links: ["https://instagram.com/mumbairunningclub"]});
+  const distinct = match({name: "Mumbai Moonrise Running Club", links: ["https://instagram.com/mumbaimoonriserunningclub"]});
   assert.equal(distinct.verdict, "none");
 
   // Neighbourhood clubs that share only the generic words stay apart.
@@ -124,18 +124,18 @@ test("near-name collisions flag for review but never match", () => {
 
 test("ambiguity: several strong candidates, conflicts, or a name in another market", () => {
   const duplicatedInventory = [...INVENTORY, {organizerId: "org-mrc-copy", name: "MRC",
-    markets: ["mumbai"], identityKeys: ["instagram:mumbairunclub"]}];
-  const several = match({links: ["https://instagram.com/mumbairunclub"]}, duplicatedInventory);
+    markets: ["mumbai"], identityKeys: ["instagram:mumbaimoonriserunclub"]}];
+  const several = match({links: ["https://instagram.com/mumbaimoonriserunclub"]}, duplicatedInventory);
   assert.equal(several.verdict, "ambiguous");
   assert.deepEqual(several.reasons, ["multiple_strong_candidates"]);
   assert.deepEqual(several.candidates.slice(0, 2).map((candidate) => candidate.organizerId),
-    ["org-mrc-copy", "org-mumbai-run-club"]);
+    ["org-mrc-copy", "org-mumbai-moonrise-run-club"]);
 
-  const elsewhere = match({name: "Mumbai Run Club", market: "pune"});
+  const elsewhere = match({name: "Mumbai Moonrise Run Club", market: "pune"});
   assert.equal(elsewhere.verdict, "ambiguous");
   assert.deepEqual(elsewhere.candidates[0].conflicts.map((conflict) => conflict.code), ["different_market"]);
 
-  const expanding = match({name: "Mumbai Run Club", links: ["https://instagram.com/mumbairunclub"], market: "pune"});
+  const expanding = match({name: "Mumbai Moonrise Run Club", links: ["https://instagram.com/mumbaimoonriserunclub"], market: "pune"});
   assert.equal(expanding.verdict, "ambiguous");
   assert.deepEqual(expanding.reasons, ["strong_candidate_with_conflicts"]);
   assert.equal(expanding.identityScorecard.resolution, "ambiguous");
@@ -148,7 +148,7 @@ test("no match: unrelated organizers, empty inventory, and a listing with no ide
   assert.equal(unrelated.flag, null);
   assert.equal(unrelated.identityScorecard.resolution, "unmatched");
 
-  assert.equal(match({name: "Mumbai Run Club"}, []).verdict, "none");
+  assert.equal(match({name: "Mumbai Moonrise Run Club"}, []).verdict, "none");
   const anonymous = match({});
   assert.equal(anonymous.verdict, "none");
   assert.deepEqual(anonymous.reasons, ["listing_has_no_identity"]);
@@ -163,8 +163,8 @@ test("the verdict is advisory and deterministic, and inputs are not mutated", ()
   const inventory = structuredClone(INVENTORY);
   const before = structuredClone(inventory);
   const reversed = [...inventory].reverse();
-  const first = matchListingToOrganizers({listing: listing({name: "Mumbai Run Club"}), organizers: inventory});
-  const second = matchListingToOrganizers({listing: listing({name: "Mumbai Run Club"}), organizers: reversed});
+  const first = matchListingToOrganizers({listing: listing({name: "Mumbai Moonrise Run Club"}), organizers: inventory});
+  const second = matchListingToOrganizers({listing: listing({name: "Mumbai Moonrise Run Club"}), organizers: reversed});
   assert.deepEqual(first, second);
   assert.deepEqual(inventory, before);
   assert.equal(first.authority, "advisory");
@@ -176,8 +176,8 @@ test("the verdict is advisory and deterministic, and inputs are not mutated", ()
 
   const matcher = createOrganizerMatcher({organizers: inventory});
   assert.equal(matcher.size, inventory.length);
-  assert.deepEqual(matcher.matchListing(listing({name: "Mumbai Run Club"})), first);
-  assert.equal(matcher.matchCandidate({name: "Bandra Run Club", markets: ["mumbai"]}).verdict, "match");
+  assert.deepEqual(matcher.matchListing(listing({name: "Mumbai Moonrise Run Club"})), first);
+  assert.equal(matcher.matchCandidate({name: "Sandbar Run Club", markets: ["mumbai"]}).verdict, "match");
 });
 
 test("the inventory is validated and bounded", () => {
@@ -193,15 +193,15 @@ test("the inventory is validated and bounded", () => {
 
 test("an organizers document maps to a reference without contact fields", () => {
   const reference = organizerReferenceFromDocument("org-42", {
-    name: "Bombay Board Gamers", instagramHandle: "@BombayBoardGamers", email: "host@example.com",
-    phoneNumber: "+910000000000", publicPage: {slug: "bombay-board-gamers", citySlug: "mumbai"},
-    publicSources: [{href: "https://lu.ma/calendar/bombay-board-gamers"}, {href: null}],
+    name: "Meeple Board Gamers", instagramHandle: "@MeepleBoardGamers", email: "host@example.com",
+    phoneNumber: "+910000000000", publicPage: {slug: "meeple-board-gamers", citySlug: "mumbai"},
+    publicSources: [{href: "https://lu.ma/calendar/meeple-board-gamers"}, {href: null}],
   });
-  assert.deepEqual(reference, {organizerId: "org-42", name: "Bombay Board Gamers", slug: "bombay-board-gamers",
-    markets: ["mumbai"], instagramHandle: "@BombayBoardGamers", links: ["https://lu.ma/calendar/bombay-board-gamers"]});
-  const result = match({name: "Board Game Nights", links: ["https://instagram.com/bombayboardgamers"]}, [reference]);
+  assert.deepEqual(reference, {organizerId: "org-42", name: "Meeple Board Gamers", slug: "meeple-board-gamers",
+    markets: ["mumbai"], instagramHandle: "@MeepleBoardGamers", links: ["https://lu.ma/calendar/meeple-board-gamers"]});
+  const result = match({name: "Board Game Nights", links: ["https://instagram.com/meepleboardgamers"]}, [reference]);
   assert.equal(result.verdict, "match");
-  assert.deepEqual(result.candidates[0].sharedIdentityKeys, ["instagram:bombayboardgamers"]);
+  assert.deepEqual(result.candidates[0].sharedIdentityKeys, ["instagram:meepleboardgamers"]);
 });
 
 test("model adjudication is refused by the shipped disabled policy", async () => {
@@ -209,19 +209,19 @@ test("model adjudication is refused by the shipped disabled policy", async () =>
   assert.equal(policy.provider.enabled, false);
   const store = await new FileOperationsStore(await temporaryDirectory()).initialize();
   const router = createSupplyModelFallback({policy, store, clock: () => new Date(NOW)});
-  const ambiguous = match({name: "Run Club Mumbai"});
+  const ambiguous = match({name: "Moonrise Run Club Mumbai"});
   await assert.rejects(adjudicateOrganizerMatch({result: ambiguous, router, observedAt: NOW}),
     {code: "MODEL_DISABLED"});
   assert.equal((await store.listModelRuleCandidates()).length, 0);
 });
 
 test("only an ambiguous verdict is eligible, and a proposal never changes the verdict", async () => {
-  assert.throws(() => organizerAdjudicationRequest({result: match({name: "Mumbai Run Club"}), observedAt: NOW}),
+  assert.throws(() => organizerAdjudicationRequest({result: match({name: "Mumbai Moonrise Run Club"}), observedAt: NOW}),
     {code: "ORGANIZER_ADJUDICATION_NOT_ELIGIBLE"});
   assert.throws(() => organizerAdjudicationRequest({result: match({name: "Nobody"}), observedAt: NOW}),
     {code: "ORGANIZER_ADJUDICATION_NOT_ELIGIBLE"});
 
-  const ambiguous = match({name: "Run Club Mumbai"});
+  const ambiguous = match({name: "Moonrise Run Club Mumbai"});
   const request = organizerAdjudicationRequest({result: ambiguous, observedAt: NOW});
   assert.equal(request.reason, "ambiguous_identity");
   assert.equal(request.deterministic.identityScorecard.resolution, "ambiguous");
@@ -229,7 +229,7 @@ test("only an ambiguous verdict is eligible, and a proposal never changes the ve
   assert.doesNotMatch(request.input.excerpt, /submittedBy|uid|email|phone/);
 
   const proposals = [
-    {status: "resolved", candidateKey: "org-mumbai-run-club", rationale: "Same club."},
+    {status: "resolved", candidateKey: "org-mumbai-moonrise-run-club", rationale: "Same club."},
     {status: "resolved", candidateKey: "org-invented", rationale: "Hallucinated."},
   ];
   const results = [];
@@ -242,7 +242,7 @@ test("only an ambiguous verdict is eligible, and a proposal never changes the ve
     results.push(await adjudicateOrganizerMatch({result: ambiguous, router, observedAt: NOW}));
   }
   assert.deepEqual(results[0], {authority: "proposal_only", reviewRequired: true, verdict: "ambiguous",
-    route: "model_cache", proposal: {status: "resolved", organizerId: "org-mumbai-run-club", rationale: "Same club."},
+    route: "model_cache", proposal: {status: "resolved", organizerId: "org-mumbai-moonrise-run-club", rationale: "Same club."},
     proposalRejected: null});
   assert.equal(results[1].proposal, null);
   assert.equal(results[1].proposalRejected, "candidate_not_in_scorecard");

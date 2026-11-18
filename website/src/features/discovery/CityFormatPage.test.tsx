@@ -33,8 +33,8 @@ describe("City format page", {timeout: 20_000}, () => {
     expect(within(plans).getAllByRole("link", {name: /Run/u})).toHaveLength(1);
     // Each organiser as the kit's Follow card: Follow opens their page, where following happens; then the mint card for a club not listed.
     const organisers = band("Who runs them");
-    expect(within(organisers).getByRole("link", {name: "Carter Road Runners"}).getAttribute("href")).toBe("/organizers/carter-road-runners/");
-    expect(within(organisers).getByRole("link", {name: "Follow Carter Road Runners"}).getAttribute("href")).toBe("/organizers/carter-road-runners/");
+    expect(within(organisers).getByRole("link", {name: "Driftwood Bay Runners"}).getAttribute("href")).toBe("/organizers/driftwood-bay-runners/");
+    expect(within(organisers).getByRole("link", {name: "Follow Driftwood Bay Runners"}).getAttribute("href")).toBe("/organizers/driftwood-bay-runners/");
     expect(within(organisers).getByRole("heading", {name: "Run a club in Mumbai?"})).toBeTruthy();
     expect(within(organisers).getByRole("link", {name: "List your club"}).getAttribute("href")).toBe("/host/");
     expect(within(band("Joining a run club in Mumbai.")).getByText(/Stay for coffee/u)).toBeTruthy();

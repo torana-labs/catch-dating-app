@@ -76,27 +76,27 @@
     },
     {
       "path": "boards/GuestAfter.dc.html",
-      "sha256": "1f406ecd908992162e9df4ed058f3bd2dd110370c12e51bb277b545485566e5d"
+      "sha256": "527c054577303048369b1e2290112a777f69e5309000eb460cb79c6fdec9c654"
     },
     {
       "path": "boards/GuestLive.dc.html",
-      "sha256": "82e2137be8dc531aa310f25ae4bcb5b4fe36de4c3a33bd79e668832ade74caac"
+      "sha256": "0e2b138225938fb9cb048cb1e80e12546d1fb61d52c0ba40bb5600ec67d1142b"
     },
     {
       "path": "boards/WebEventV2.dc.html",
-      "sha256": "addc0d3a0a7e0e7511eb38ac3df48dd1cfd1a053972b03dcb4a4023d515db17e"
+      "sha256": "33e66f1101d95e99174632260256e1de9d1b9e07ab6357397cb5479f7811c2df"
     },
     {
       "path": "boards/WebHomeV2.dc.html",
-      "sha256": "47c5e950062dc693ca54969a522235ae1be09b6add13c7e302d5ceaf3059fb6b"
+      "sha256": "9430afedb37a924dda7b0ed939364b1592220b0409c938f34f7168d5ad8f0677"
     },
     {
       "path": "boards/WebHostV2.dc.html",
-      "sha256": "ed43ddf82a505d5e2cfd33ea585430cfa1725eb23c9079c1976b964c398b9f04"
+      "sha256": "c706bfdf098cc1381c9ef8c0f41b2206b331ecc49f91c307ea5b0b7c45f4161f"
     },
     {
       "path": "boards/WebOrgV2.dc.html",
-      "sha256": "e3ec310cbbcd33473d4a5404db520869799f2c02303b9e746ed31537e0aa7af8"
+      "sha256": "ad890b2456ce4dfb948d9539054cdb5046ce7c232871df0bec5b3b61a602f488"
     }
   ]
 }

@@ -19,7 +19,7 @@ function overview(): AdminOverviewResponse {
       moderationFlags: [],
       eventSafetyReports: [],
       accessApplications: [item("a1", "Launch access", null)],
-      organizerClaimRequests: [item("c1", "Bhag Club", hoursAgo(80))],
+      organizerClaimRequests: [item("c1", "Brindle Club", hoursAgo(80))],
       organizerIndexReviews: [],
       paymentIssues: [item("p1", "Payment failed", hoursAgo(50))],
     },
@@ -32,7 +32,7 @@ describe("useNowController", () => {
 
   it("lists every queue item oldest first, with undated items last and age tones", () => {
     const model = buildNowModel(overview(), now);
-    expect(model.items.map((item) => item.title)).toEqual(["Bhag Club", "Payment failed", "Harassment in chat", "Launch access"]);
+    expect(model.items.map((item) => item.title)).toEqual(["Brindle Club", "Payment failed", "Harassment in chat", "Launch access"]);
     expect(model.items.map((item) => item.tone)).toEqual(["danger", "warning", "neutral", "neutral"]);
     expect(model.items[0]).toMatchObject({destination: "organizers", targetPath: "path/c1", subtitle: "Claim · detail", waiting: "3 days"});
     expect(model.waiting).toBe(4);

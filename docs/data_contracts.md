@@ -2032,9 +2032,10 @@ conversion proofs other commands read (`organizerFormAdmissionReceipts`,
 (`organizerContactMergeReceipts`, `externalEventPublicationReceipts`), and
 provider-delivery evidence (`organizerCampaignWebhookReceipts`).
 
-Moved so far: `functionEventReceipts` and `eventLiveCommandReceipts`. They are no
-longer written or declared;
-their documents stay under the legal hold. Replay windows are short and an
+Moved so far: `functionEventReceipts`, `eventLiveCommandReceipts` and
+`eventChatAccessReceipts` (the five event-room commands). They are no longer
+written or declared; their documents stay under the legal hold, and account
+deletion still removes old chat receipts by uid. Replay windows are short and an
 in-flight retry across the deploy only re-runs a revision-fenced or idempotent
 command, so nothing was copied forward.
 
@@ -4624,8 +4625,8 @@ Mutations bind `expectedUid` to the authenticated account before any reads or
 writes. A token/account change during an outgoing request cannot send a previous
 account's draft, reaction, typing state or join decision as the new account.
 Mutations also use a reviewed revision and UID-bound request ID.
-`eventChatAccessReceipts` prevents an old join or open retry from reversing a
-later leave or close. Replay results report the originally applied revision;
+Its `commandReceipts` entry (see Command Receipts) prevents an old join or
+open retry from reversing a later leave or close. Replay results report the originally applied revision;
 clients must refresh current access, not interpret replay as current permission.
 `sendEventChatMessage`, `listEventChatMessages`, `setEventChatReaction` and
 `setEventChatTyping` read that same current authority on every active operation.
@@ -4672,7 +4673,7 @@ event admission or removes another participant from the event.
 
 `eventChatReactions/{sha256([messageId,uid])}` stores one optional reaction per
 person; the message stores six anonymous aggregate counts. Revision checks and
-namespaced payload-bound `eventChatAccessReceipts` prevent retries or late edits
+payload-bound `commandReceipts` entries prevent retries or late edits
 from double-counting or restoring a replaced reaction. Deletion removes the
 person's reaction record; anonymous historical counts on other people's
 messages remain. Their own removed messages expose neither text nor counts.
@@ -5580,7 +5581,7 @@ event-accuracy, and unclaimed-affordance review. The shared Functions policy
 derives effective event visibility as the minimum of the event request and
 organizer ceiling on every surface and refuses a request above that ceiling.
 Before this contract shipped, the guarded visibility-decision backfill repaired
-the two production legacy approvals (`afterfly` and `bhag`) to their exact prior
+the two production legacy approvals to their exact prior
 `published` + `indexed` semantics; the post-apply dry run reported two current
 documents and zero remaining repairs.
 

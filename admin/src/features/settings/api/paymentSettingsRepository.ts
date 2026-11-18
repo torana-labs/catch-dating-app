@@ -56,7 +56,7 @@ export async function exportMoneyLedger(month: string): Promise<LedgerExport> {
     return {month, fileName: `catch-ledger-${month}.csv`, rowCount: 2,
       csv: "date,type,reference,party,amount_inr\n" +
         "2026-11-01,invoice,2026-27/031,Lantern Lane Social,6400.00\n" +
-        "2026-11-03,payment,2026-27/029,Afterfly,10000.00\n"};
+        "2026-11-03,payment,2026-27/029,Moonmoth,10000.00\n"};
   }
   const {validateAdminCallableRequest, validateAdminCallableResponse} =
     await loadAdminCallableValidators("adminExportMoneyLedger");

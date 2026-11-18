@@ -30,9 +30,9 @@ import 'support/host_app_shell_test_harness.dart';
 
 const _hostUid = 'host-journey-user';
 
-final _saketRunClub = organizer_helpers.buildOrganizer(
+final _neemwoodRunClub = organizer_helpers.buildOrganizer(
   id: 'host-journey-saket',
-  name: 'Saket Run Club',
+  name: 'Neemwood Run Club',
   hostUserId: _hostUid,
   ownerUserId: _hostUid,
 );
@@ -50,7 +50,7 @@ void main() {
 
   testWidgets('signed-in Host boots the Host shell on Today', (tester) async {
     final backend = _returningHostBackend();
-    await _pumpHost(tester, backend, organizers: [_saketRunClub]);
+    await _pumpHost(tester, backend, organizers: [_neemwoodRunClub]);
 
     expect(find.byType(HostShellScreen), findsOneWidget);
     expect(find.byType(HostTodayScreen), findsOneWidget);
@@ -64,7 +64,7 @@ void main() {
         reason: 'Host navigation must expose $label.',
       );
     }
-    expect(_navigation(tester).items.last.semanticValue, _saketRunClub.name);
+    expect(_navigation(tester).items.last.semanticValue, _neemwoodRunClub.name);
     // Today listens to its attention queue in Firestore; booting the shell
     // makes no attention callable.
     expect(
@@ -81,7 +81,7 @@ void main() {
     tester,
   ) async {
     final backend = HostShellBackend(uid: _hostUid);
-    await _pumpHost(tester, backend, organizers: [_saketRunClub]);
+    await _pumpHost(tester, backend, organizers: [_neemwoodRunClub]);
 
     expect(find.byType(HostTodayScreen, skipOffstage: false), findsOneWidget);
     expect(find.text('Needs you'), findsOneWidget);
@@ -94,7 +94,7 @@ void main() {
 
   testWidgets('every Host tab loads without an error state', (tester) async {
     final backend = _returningHostBackend();
-    await _pumpHost(tester, backend, organizers: [_saketRunClub]);
+    await _pumpHost(tester, backend, organizers: [_neemwoodRunClub]);
 
     for (final MapEntry(key: label, value: screen) in _hostTabs.entries) {
       await openHostTab(tester, label);
@@ -116,7 +116,7 @@ void main() {
     await _pumpHost(
       tester,
       backend,
-      organizers: [_saketRunClub],
+      organizers: [_neemwoodRunClub],
       initialRoute: '/host/inbox',
     );
 
@@ -180,10 +180,10 @@ void main() {
     await _pumpHost(
       tester,
       backend,
-      organizers: [_saketRunClub, _lodhiSocials],
+      organizers: [_neemwoodRunClub, _lodhiSocials],
     );
     final selected = _selectedOrganizerId(tester);
-    final other = selected == _saketRunClub.id ? _lodhiSocials : _saketRunClub;
+    final other = selected == _neemwoodRunClub.id ? _lodhiSocials : _neemwoodRunClub;
 
     await tester.longPress(
       find.descendant(
@@ -215,7 +215,7 @@ void main() {
 
   testWidgets('Host creates a private event and reopens it', (tester) async {
     final backend = HostShellBackend(uid: _hostUid);
-    await _pumpHost(tester, backend, organizers: [_saketRunClub]);
+    await _pumpHost(tester, backend, organizers: [_neemwoodRunClub]);
 
     await openHostTab(tester, 'Events');
     await pumpAppShellFrames(tester, frames: 20);
@@ -285,7 +285,7 @@ void main() {
       backend.functions.calls.skip(reopenFrom).map((call) => call.input),
       isNot(
         anyElement(
-          equals({'organizerId': _saketRunClub.id, 'eventId': eventId}),
+          equals({'organizerId': _neemwoodRunClub.id, 'eventId': eventId}),
         ),
       ),
     );
@@ -300,7 +300,7 @@ void main() {
     final now = DateTime.now();
     final event = event_helpers.buildEvent(
       id: 'host-journey-live-event',
-      organizerId: _saketRunClub.id,
+      organizerId: _neemwoodRunClub.id,
       name: 'Sunset social run',
       startTime: now.subtract(const Duration(minutes: 10)),
       endTime: now.add(const Duration(hours: 2)),
@@ -314,7 +314,7 @@ void main() {
         EventAttendee(
           id: id,
           eventId: event.id,
-          organizerId: _saketRunClub.id,
+          organizerId: _neemwoodRunClub.id,
           displayName: name,
           searchName: name.toLowerCase(),
           source: EventAttendeeSource.hostImport,
@@ -327,7 +327,7 @@ void main() {
     await _pumpHost(
       tester,
       backend,
-      organizers: [_saketRunClub],
+      organizers: [_neemwoodRunClub],
       initialRoute: '/host/events',
     );
 
@@ -383,7 +383,7 @@ void main() {
     final now = DateTime.now();
     final event = event_helpers.buildEvent(
       id: 'host-journey-door-event',
-      organizerId: _saketRunClub.id,
+      organizerId: _neemwoodRunClub.id,
       name: 'Door social run',
       startTime: now.subtract(const Duration(minutes: 10)),
       endTime: now.add(const Duration(hours: 2)),
@@ -397,7 +397,7 @@ void main() {
         EventAttendee(
           id: id,
           eventId: event.id,
-          organizerId: _saketRunClub.id,
+          organizerId: _neemwoodRunClub.id,
           displayName: name,
           searchName: name.toLowerCase(),
           source: EventAttendeeSource.hostImport,
@@ -410,9 +410,9 @@ void main() {
     await _pumpHost(
       tester,
       backend,
-      organizers: [_saketRunClub],
+      organizers: [_neemwoodRunClub],
       initialRoute:
-          '/host/organizers/${_saketRunClub.id}/events/${event.id}/guests',
+          '/host/organizers/${_neemwoodRunClub.id}/events/${event.id}/guests',
     );
     await pumpAppShellFrames(tester, frames: 30);
 
@@ -441,7 +441,7 @@ void main() {
 
   testWidgets('Host settings offer Delete your account', (tester) async {
     final backend = HostShellBackend(uid: _hostUid);
-    await _pumpHost(tester, backend, organizers: [_saketRunClub]);
+    await _pumpHost(tester, backend, organizers: [_neemwoodRunClub]);
 
     await openHostTab(tester, 'Organizer');
     await pumpAppShellFrames(tester, frames: 20);
@@ -471,7 +471,7 @@ const _hostTabs = <String, Type>{
 
 /// A Host who already dismissed the first-run Today focus prompt.
 HostShellBackend _returningHostBackend() => HostShellBackend(uid: _hostUid)
-  ..todayPreferences.skip(accountId: _hostUid, organizerId: _saketRunClub.id);
+  ..todayPreferences.skip(accountId: _hostUid, organizerId: _neemwoodRunClub.id);
 
 Future<void> _pumpHost(
   WidgetTester tester,

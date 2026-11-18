@@ -84,7 +84,7 @@
     },
     {
       "path": "kit/KitCards.dc.html",
-      "sha256": "65f0079d65cc2a75f92dfd071d9b46a3c8e498d6ab2669232e952dc089ea9c6d"
+      "sha256": "471cf36109f3cb9457817567171db7f223a7b37804377072383fbc04cb12d501"
     },
     {
       "path": "kit/KitChecklist.dc.html",
@@ -120,7 +120,7 @@
     },
     {
       "path": "kit/KitPhotoHero.dc.html",
-      "sha256": "883c1c7c897e370e1e8a1f5829268db70d656c95b3ada775799c6da9dc523083"
+      "sha256": "8b842f43e06e8b3c3bd4b1d99698aeffc5d103a1bdb67c0d405e5fcc7eb24ba7"
     },
     {
       "path": "kit/KitPricing.dc.html",
@@ -136,7 +136,7 @@
     },
     {
       "path": "kit/KitSwitcher.dc.html",
-      "sha256": "9d4e66bf102bc6c5ee78128cc3047305c281c65fd732432c53e857e4d921ffb6"
+      "sha256": "8e2c1aed1a364e085013fb012cca70c1c57aa017f7c40f739d57b15ef5d28d06"
     },
     {
       "path": "kit/KitTable.dc.html",
@@ -176,7 +176,7 @@
     },
     {
       "path": "oneoff/PlaybookEvent.dc.html",
-      "sha256": "1fb4d610a3ea0c42ad6af3d8d01ea8511eb39148a60beb283d14274e689a7608"
+      "sha256": "43247561e85aa91a8388aad9e5c9fa979f7a20e0c566a015204761110311f847"
     },
     {
       "path": "oneoff/PlaybookEvent390.dc.html",
@@ -184,7 +184,7 @@
     },
     {
       "path": "oneoff/PlaybookHome.dc.html",
-      "sha256": "b1fa7d01d94eeb63b79d56f097f55a35095cc2c6fe63553a54d9a41e8cb27847"
+      "sha256": "ef0d65ac323a4ed3681dfdc3fa2fe3749e8db1d29ff2c6e9099d2349af1c8300"
     },
     {
       "path": "oneoff/PlaybookHome390.dc.html",
@@ -192,7 +192,7 @@
     },
     {
       "path": "oneoff/PlaybookHosts.dc.html",
-      "sha256": "3a4eac5431282a8808560dc68b7bed5f1e465954baaa6ea44a6c2dcf118477cc"
+      "sha256": "14a1b1e6f8353616427261bb11c3620a673d53b1d431832e872d2d17d5cc808c"
     },
     {
       "path": "oneoff/PlaybookHosts390.dc.html",
@@ -224,7 +224,7 @@
     },
     {
       "path": "pages/LiveAccount.json",
-      "sha256": "5d2bd8d4383e4bfe44eade79481b7439ccad10cc83d8b6e98d239e2082d75ba5"
+      "sha256": "5ce36d7dc89d25c2906eca082bc4c86f48b28a3356fc897a10daaaf45120e257"
     },
     {
       "path": "pages/LiveBilling.json",
@@ -272,11 +272,11 @@
     },
     {
       "path": "pages/PlaybookBrands.json",
-      "sha256": "1d0eb068a4cd7d213fc60c16aab6684606773d004e39d1128866632f9e977158"
+      "sha256": "264e2c604fce5aaf168c92b0f4b6a647083d219af4f5c3752aa34f07159485f9"
     },
     {
       "path": "pages/PlaybookCityFormat.json",
-      "sha256": "7a1b1769aa79375521dc2fa0794eaeba28cb4548a2c1d33238c0efec809e4d43"
+      "sha256": "01e0a7772feb32dfbc5eb67894fce1ca877fe607f75baf4f0285d51ac2c51d66"
     },
     {
       "path": "pages/PlaybookColleges.json",
@@ -296,11 +296,11 @@
     },
     {
       "path": "pages/PlaybookDoor.json",
-      "sha256": "7032864803b2007ae6f87c3d8205173f8a9f1330369630f58ec7faac7b2193b0"
+      "sha256": "33d9da63f35762da04c60fe609ef7d9364aba30313b9a8e9897fe25dec857628"
     },
     {
       "path": "pages/PlaybookExplore.json",
-      "sha256": "273bbc2fe8030e586876c39a745044006b21c8740f008028293c944a704c11fd"
+      "sha256": "2215c33d034515c7a89cc463d188a1379b05bf12e941928b8152ffdcd452078c"
     },
     {
       "path": "pages/PlaybookFacilities.json",
@@ -320,7 +320,7 @@
     },
     {
       "path": "pages/PlaybookHowItWorks.json",
-      "sha256": "749bad00bdbc948507010c6797f13deea58a435c18469d10fcd100d67dab1be5"
+      "sha256": "8cd73c25119c992eae3e872ab2b894ed202a4320f3ec0cf91f9b1f2b70d6bab5"
     },
     {
       "path": "pages/PlaybookLinkTool.json",
@@ -340,11 +340,11 @@
     },
     {
       "path": "pages/PlaybookNewToCity.json",
-      "sha256": "7e3dc2fc812e2d957a8cad2fd28d43239495fd177509f7a8b853774bbc4c8599"
+      "sha256": "6d9f0228f830c11fcaa7130ad1217cf0dd27b588525a8848242b9ae8e32e79f8"
     },
     {
       "path": "pages/PlaybookNight.json",
-      "sha256": "c801fb2a7d6d1d31ad10085060dca01bc23f196ead3fee4b6655f89859e3071a"
+      "sha256": "dac60223247edd9203b2d6f7314a851a050c93f23d8a311c292202fb3b38d36a"
     },
     {
       "path": "pages/PlaybookOutdoors.json",
@@ -360,7 +360,7 @@
     },
     {
       "path": "pages/PlaybookQuizNights.json",
-      "sha256": "fd7a3796dd76b2a3c2fa3cfb87638d24348a6db11b824276372e6fa98a2741de"
+      "sha256": "ebedd430c152d584210f92a435e38652d7c1adfbaf9ab1154c1a46d21e2ef72e"
     },
     {
       "path": "pages/PlaybookRacketSports.json",
@@ -380,7 +380,7 @@
     },
     {
       "path": "pages/PlaybookRunClubs.json",
-      "sha256": "cb24dfe74c0ce81d4fdc5725868860568a82af54cf141c108889f04190cfdc1c"
+      "sha256": "baa5d4ae55b9008ba6b5a141b5d7224f37628d74f936960f765fe321ca262561"
     },
     {
       "path": "pages/PlaybookSafety.json",
@@ -392,11 +392,11 @@
     },
     {
       "path": "pages/PlaybookStories.json",
-      "sha256": "fa882c681a06c12865c63683e85f756dc8b4b39e34523d27e2a1697c1594d352"
+      "sha256": "d444416159c5207411b8486f0216cad1815aceb61a9759f858376475e59093e6"
     },
     {
       "path": "pages/PlaybookStory.json",
-      "sha256": "b3475e30ff07bb8aef041afe50b8ffd5f73f2afc626a2c679f2b619cfa31763e"
+      "sha256": "942c20df135ebd5ab10515e86889ad798bb8f50ac1a21aeffa7df1a1878df9d9"
     },
     {
       "path": "pages/PlaybookStudios.json",
@@ -424,7 +424,7 @@
     },
     {
       "path": "pages/PlaybookYourPage.json",
-      "sha256": "db82b8077ba0b53b666ed8c7071bc1eeba54e5ba2a277d8ce6dbef0b926053b6"
+      "sha256": "56d5643e97808ffc4a0d4255d46d72e151fb55e7ade6e6308675015071233f0d"
     },
     {
       "path": "schema/page.schema.json",

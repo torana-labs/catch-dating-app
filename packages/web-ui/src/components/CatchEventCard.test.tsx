@@ -15,9 +15,9 @@ describe("CatchEventCard", () => {
   });
 
   it("puts the title on the format colour when a compact card has no photo", () => {
-    render(<CatchEventCard format="run" formatLabel="Run clubs" href="/e/2" place="Carter Road" price="Free · 9 left" title="Carter Road Social Run" variant="compact" when="Fri 6:30 AM" />);
+    render(<CatchEventCard format="run" formatLabel="Run clubs" href="/e/2" place="Carter Road" price="Free · 9 left" title="Salt Air Social Run" variant="compact" when="Fri 6:30 AM" />);
     expect(screen.getByRole("link").dataset.variant).toBe("compact");
-    expect(screen.getAllByText("Carter Road Social Run")).toHaveLength(1);
+    expect(screen.getAllByText("Salt Air Social Run")).toHaveLength(1);
     expect(document.querySelector('[data-format="run"]')).not.toBeNull();
     expect(screen.getByText("Free · 9 left")).toBeTruthy();
   });
