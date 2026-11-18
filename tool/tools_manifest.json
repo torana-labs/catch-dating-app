@@ -6974,6 +6974,7 @@
       "impactPaths": [
         "operations/src/catch-cli/**",
         "operations/src/command-client/**",
+        "operations/src/command-tools/**",
         "operations/src/platform/canonical-json.mjs",
         "operations/src/platform/errors.mjs",
         "operations/src/platform/schema-dependencies.mjs",
