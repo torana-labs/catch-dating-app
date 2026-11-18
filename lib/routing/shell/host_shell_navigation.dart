@@ -18,12 +18,12 @@ List<CatchTabBarItem<HostShellDestination>> hostShellDestinations({
 }) => [
   CatchTabBarItem(
     id: HostShellDestination.today,
-    icon: CatchIcons.home,
+    icon: CatchIcons.tonight,
     label: l10n.hostNavigationToday,
   ),
   CatchTabBarItem(
     id: HostShellDestination.events,
-    icon: CatchIcons.ticket,
+    icon: CatchIcons.event,
     label: l10n.hostNavigationEvents,
   ),
   CatchTabBarItem(

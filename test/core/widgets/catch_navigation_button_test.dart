@@ -43,7 +43,8 @@ void main() {
             find.byIcon(visual ? Icons.chat_bubble : Icons.chat_bubble_outline),
             findsOneWidget,
           );
-          expect(find.text('Inbox'), findsNothing);
+          // The bottom bar labels every destination.
+          expect(find.text('Inbox'), findsOneWidget);
         }
       } finally {
         semantics.dispose();

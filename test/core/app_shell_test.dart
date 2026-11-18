@@ -393,8 +393,9 @@ void main() {
         BorderRadius.circular(CatchRadius.pill),
       );
       expect(find.byType(CupertinoTabBar), findsNothing);
-      expect(find.text('Home'), findsNothing);
-      expect(find.text('Explore'), findsNothing);
+      // Every destination is labelled under its icon.
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Explore'), findsOneWidget);
       expect(find.bySemanticsLabel('Home'), findsOneWidget);
       expect(find.bySemanticsLabel('Explore'), findsOneWidget);
       expect(find.bySemanticsLabel('Catches'), findsNothing);
@@ -408,7 +409,7 @@ void main() {
     }
   });
 
-  testWidgets('large-text navigation stays icon-only inside floating chrome', (
+  testWidgets('large-text navigation keeps its labels inside floating chrome', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -451,7 +452,7 @@ void main() {
       'Messaging',
       'Organizer',
     ]) {
-      expect(find.text(label), findsNothing);
+      expect(find.text(label), findsOneWidget);
       expect(find.bySemanticsLabel(label), findsOneWidget);
     }
 
@@ -552,9 +553,9 @@ void main() {
     expect(find.byType(NavigationBar), findsNothing);
     expect(find.text('HOME'), findsNothing);
     expect(find.text('Today'), findsNothing);
-    expect(find.text('Events'), findsNothing);
+    expect(find.text('Events'), findsOneWidget);
     expect(find.text('Inbox'), findsOneWidget);
-    expect(find.text('Organizer'), findsNothing);
+    expect(find.text('Organizer'), findsOneWidget);
     expect(find.text('4'), findsOneWidget);
 
     await tester.tap(find.bySemanticsLabel('Organizer'));
