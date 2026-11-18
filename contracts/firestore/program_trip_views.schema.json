@@ -1,0 +1,148 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_trip_views.schema.json",
+  "title": "ProgramTripViewDocument",
+  "description": "Server-maintained transport trip: exactly the row listProgramTrips returned for it (vehicle, plate, vendor name, status, times, passenger count and the manifest's guest names, from the recorded dispatch snapshot when there is one), plus the pickup and hotel keys rules match. Written by triggers on transportTrips, programGuests and programTravelLegs. Readable by accounts whose reconciliation viewer, transport dispatcher or coordinator assignments cover the trip's pickup point and hotel together (programAccessViews tripRoutes), by a hotel desk duty covering the hotel for trips still en route (the hotel's inbound vehicles), and the programme owner. Never the trip's notes, rate, driver or account ids, and never contact details, identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programTripViews",
+  "x-firestore-path": "programTripViews/{tripId}",
+  "x-document-id-field": "tripId",
+  "x-owner": "Programme read model projector (programTripViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "tripId",
+    "pickupPointId",
+    "destinationHotelId",
+    "pickupKey",
+    "hotelKey",
+    "destinationLabel",
+    "vehicleClassId",
+    "plateDisplay",
+    "vendorId",
+    "vendorName",
+    "kind",
+    "status",
+    "passengerCount",
+    "departedAtMillis",
+    "arrivedAtMillis",
+    "voidReason",
+    "manifestSource",
+    "vehicleClassLabel",
+    "guestNames",
+    "revision",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "tripId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "pickupPointId": {
+      "type": "string"
+    },
+    "destinationHotelId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "pickupKey": {
+      "type": "string",
+      "description": "The pickup point id; rules match it against the account's trip routes."
+    },
+    "hotelKey": {
+      "type": "string",
+      "description": "The destination hotel id, or ~ when the trip has none."
+    },
+    "destinationLabel": {
+      "type": "string"
+    },
+    "vehicleClassId": {
+      "type": "string"
+    },
+    "plateDisplay": {
+      "type": "string"
+    },
+    "vendorId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "vendorName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "guestTransfer",
+        "repositioning"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "enRoute",
+        "arrived",
+        "cancelled",
+        "voided"
+      ]
+    },
+    "passengerCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "departedAtMillis": {
+      "type": "integer"
+    },
+    "arrivedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "voidReason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "manifestSource": {
+      "type": "string",
+      "enum": [
+        "dispatchSnapshot",
+        "currentRecords"
+      ]
+    },
+    "vehicleClassLabel": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "guestNames": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 50
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

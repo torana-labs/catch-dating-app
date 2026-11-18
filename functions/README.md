@@ -573,9 +573,14 @@ enter previews.
 | `onProgramDoorStaffLabelChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites a staff member's door journal views when their display name changes |
 | `onProgramFunctionViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a function's work shell label and counts when it changes |
 | `onProgramGuestWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a guest's phone or household changes. |
+| `onProgramHotelInboundLegChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites a journey's hotel desk inbound row when its readiness, hotel or timing changes |
+| `onProgramHotelInboundPartyChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites the hotel inbound rows of a travel party's journeys when its label or members change |
+| `onProgramHotelInboundSettingsChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites every hotel inbound row's curb time when the programme's transport settings change |
 | `onProgramHotelViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a hotel's work shell label when it changes |
 | `onProgramHouseholdWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a household's primary phone changes. |
 | `onProgramPickupPointViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a pickup point's work shell label when it changes |
+| `onProgramTripGuestChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites a guest's hotel inbound rows and legacy trip manifests when their name changes |
+| `onProgramTripViewChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites a transport trip's view when it is created, arrives, is cancelled or voided |
 | `onProgramVendorViewChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites a vendor's per-programme views when its name, active flag or bound programmes change |
 | `onProgramWhatsappInboundMessageCreated` | `src/programs/programWhatsapp/inboundTrigger.ts` | Runs the wedding assistant (handleProgramWhatsappInbound) for each stored inbound guest message; replies through sendProgramServiceReply or passes the thread to the planner. |
 | `onProgramWorkSummaryChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a programme's work shell header when the programme changes |

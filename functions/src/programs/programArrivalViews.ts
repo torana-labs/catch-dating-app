@@ -226,11 +226,11 @@ export async function readProgramDepartureView(
     tx.get(db.collection("programGuests").doc(String(leg.guestId))),
     leg.partyId ? tx.get(db.collection("programTravelParties")
       .doc(leg.partyId)) : Promise.resolve(null),
+    // One equality filter keeps this off the composite index list; a
+    // guest's stays are few, and the programme, organizer and hotel are
+    // checked below.
     tx.get(db.collection("programStays")
-      .where("programId", "==", leg.programId)
-      .where("organizerId", "==", leg.organizerId)
-      .where("hotelId", "==", leg.destinationHotelId)
-      .where("guestId", "==", leg.guestId).limit(20)),
+      .where("guestId", "==", leg.guestId).limit(100)),
   ]);
   // The latest stay at this hotel carries the room and status.
   let room: string | null = null;
@@ -238,7 +238,10 @@ export async function readProgramDepartureView(
   let latestEnd = -1;
   for (const doc of stays.docs) {
     const stay = doc.data();
-    if (stay.status === "cancelled") continue;
+    if (stay.programId !== leg.programId ||
+        stay.organizerId !== leg.organizerId ||
+        stay.hotelId !== leg.destinationHotelId ||
+        stay.status === "cancelled") continue;
     const endsAt = staffTimestampMillis(stay.endsAt);
     if (endsAt <= latestEnd) continue;
     latestEnd = endsAt;

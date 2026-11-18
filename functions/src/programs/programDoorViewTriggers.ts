@@ -145,10 +145,12 @@ export const onProgramDoorStaffLabelChanged = onDocumentWritten({
   if (!programId || typeof uid !== "string") return;
   if (before && after && before.displayName === after.displayName) return;
   const db = admin.firestore();
+  // One equality filter keeps this off the composite index list; the
+  // programme is checked on each entry.
   const entries = await db.collection("programDoorJournal")
-    .where("programId", "==", programId).where("actorUid", "==", uid)
-    .limit(fanoutLimit).get();
+    .where("actorUid", "==", uid).limit(fanoutLimit).get();
   for (const doc of entries.docs) {
+    if (doc.data().programId !== programId) continue;
     await reconcileProgramDoorJournalView(db, doc.id);
   }
 });

@@ -31,6 +31,7 @@
     "assignments",
     "grantExpiresAtMillis",
     "arrivalRoutes",
+    "tripRoutes",
     "revision",
     "version"
   ],
@@ -127,6 +128,10 @@
     "arrivalRoutes": {
       "$ref": "#/definitions/expiryMap",
       "description": "The arrivals journeys the account's airport greeter, transport dispatcher and coordinator assignments reach, as the arrivals roster resolves them: key pickup|hotel, where either side is an id or * for every one, so one assignment's pickup and hotel scopes cover a journey together; the value is the latest exclusive expiry of an assignment reaching it. A journey with no pickup point or hotel is ~ on that side, which only * reaches. An assignment whose scopes would expand past 300 routes grants none."
+    },
+    "tripRoutes": {
+      "$ref": "#/definitions/expiryMap",
+      "description": "The transport trips the account's reconciliation viewer, transport dispatcher and coordinator assignments reach, as listProgramTrips resolves them: key pickup|hotel with the same meaning as arrivalRoutes (an id or * on each side; a trip with no hotel is ~ on that side, which only * reaches). Capped at 300 routes per assignment, failing closed."
     },
     "assignments": {
       "type": "array",

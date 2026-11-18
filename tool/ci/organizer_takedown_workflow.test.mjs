@@ -52,6 +52,16 @@ test("runs in the target's GitHub environment with keyless Workload Identity and
   }
 });
 
+test("every prod mode waits for the owner in prod-takedown, a credential-free gate, so prod stays approval-free", () => {
+  const approve = workflow.match(/\n {2}approve:\n([\s\S]*?)\n\n {2}takedown:\n/u);
+  assert.ok(approve, "an approve job runs before the takedown job");
+  assert.match(approve[1], /\n {4}if: \$\{\{ github\.ref == 'refs\/heads\/main' \}\}\n/u);
+  assert.match(approve[1], /\n {4}permissions: \{\}\n/u, "the gate gets no token permissions");
+  assert.match(approve[1], /\n {4}environment: \$\{\{ inputs\.environment == 'prod' && 'prod-takedown' \|\| 'dev' \}\}\n/u);
+  assert.doesNotMatch(approve[1], /id-token|google-github-actions|vars\.|secrets\./u, "the gate never signs in");
+  assert.match(workflow, /\n {2}takedown:\n {4}name: [^\n]+\n {4}needs: approve\n/u);
+});
+
 test("uploads no artifact: manifests and snapshots stay in the preservation bucket", () => {
   assert.doesNotMatch(workflow, /upload-artifact|download-artifact/u);
   assert.doesNotMatch(workflow, /--json|--debug/u, "the tool runs counts-only, never with full errors");
