@@ -80,7 +80,8 @@
   grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
   gap: var(--catch-space-s4) var(--catch-space-s2);
   box-sizing: border-box;
-  width: min(calc(100vw - 32px), calc(var(--catch-nav-menu-sections) * 216px + 2 * var(--catch-space-s4)));
+  /* 32px: the panel's padding on both sides (border-box). */
+  width: min(calc(100vw - 32px), calc(var(--catch-nav-menu-sections) * 216px + 32px));
   padding: var(--catch-space-s4);
 }
 
