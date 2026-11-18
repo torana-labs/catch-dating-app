@@ -67,25 +67,31 @@ export async function queueMessageNominations(deps: MessageNominationDeps, {mess
   receivedAtMillis: number;
   nominator: NominatorAuthority;
   parsed: ParsedNominationMessage;
-}): Promise<{outcome: "queued" | "rate_limited"; requests: SupplyIntakeRequest[]}> {
+}): Promise<{outcome: "queued" | "rate_limited"; requests: SupplyIntakeRequest[]; suppressed: number}> {
   try {
     await deps.checkRateLimit(deps.db, nominator.nominatorId, "messageNomination",
       {maxRequests: MESSAGE_NOMINATIONS_PER_HOUR, windowMs: 60 * 60 * 1000});
   } catch (error) {
-    if ((error as {code?: unknown})?.code === "resource-exhausted") return {outcome: "rate_limited", requests: []};
+    if ((error as {code?: unknown})?.code === "resource-exhausted") return {outcome: "rate_limited", requests: [], suppressed: 0};
     throw error;
   }
   const now = deps.now();
   const requests = requestsFromNominationMessage({messageKey, parsed, nominator,
     receivedAt: new Date(receivedAtMillis)});
   // One transaction per request: each reads its id before creating it, and
-  // ids are stable, so a retry after a partial failure only adds the rest.
+  // ids are stable, so a retry after a partial failure only adds the rest. A
+  // nomination the do-not-list registry refuses is dropped (the service logs
+  // its case); the others still queue.
+  const queued: SupplyIntakeRequest[] = [];
+  let suppressed = 0;
   for (const request of requests) {
-    await deps.db.runTransaction((tx) => createSupplyIntakeRequest(tx, deps.db, request, now));
+    const result = await deps.db.runTransaction((tx) => createSupplyIntakeRequest(tx, deps.db, request, now));
+    if (result.suppressed) suppressed += 1;
+    else queued.push(request);
   }
-  logger.info("Message nomination queued.", {nominatorId: nominator.nominatorId, requests: requests.length,
+  logger.info("Message nomination queued.", {nominatorId: nominator.nominatorId, requests: queued.length, suppressed,
     droppedNominations: parsed.droppedNominations, unreadable: parsed.unreadable.length});
-  return {outcome: "queued", requests};
+  return {outcome: "queued", requests: queued, suppressed};
 }
 
 export function defaultMessageNominationDeps(db: Firestore, getUser: NominatorDeps["getUser"]): MessageNominationDeps {

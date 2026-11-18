@@ -1457,6 +1457,30 @@
       "role": "gate"
     },
     {
+      "id": "ci:organizer-takedown-workflow",
+      "category": "ci",
+      "path": "tool/ci/organizer_takedown_workflow.test.mjs",
+      "command": "node --test tool/ci/organizer_takedown_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/organizer-takedown.yml",
+        "tool/ci/organizer_takedown_workflow.test.mjs"
+      ],
+      "description": "Keeps the organiser takedown workflow dispatch-only from main, keyless and least-privileged, with only environment, mode and an opaque TD case id as inputs, no artifacts, a counts-only summary, and --allow-prod only for prod writes.",
+      "checks": [
+        "node --check tool/ci/organizer_takedown_workflow.test.mjs",
+        "node --test tool/ci/organizer_takedown_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
       "id": "ci:required-ci-floor",
       "category": "ci",
       "path": "tool/ci/required_ci_floor.mjs",
@@ -2364,6 +2388,34 @@
         "tool/data/lib/firestore_consolidation_migrations.mjs",
         "tool/data/lib/copy_forward.mjs",
         "functions/src/events/eventPolicy.ts"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "data:organizer-takedown",
+      "category": "data",
+      "path": "tool/data/organizer_takedown.mjs",
+      "command": "node tool/data/organizer_takedown.mjs --env <dev|prod> --case-id TD-nnnn --mode <plan|preserve|apply|suppress|verify|bigquery>",
+      "safety": "remote-destructive-apply-guarded",
+      "status": "active",
+      "description": "Preserve-then-delete takedown of one organiser case read from the restricted preservation bucket: counts-only plan, SHA-256 preservation export, deletion across every store with audit-log redaction, do-not-list suppression entry, verification and BigQuery cleanup.",
+      "checks": [
+        "node --check tool/data/organizer_takedown.mjs",
+        "npm --prefix functions run build && node --test tool/data/organizer_takedown.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/organizer_takedown.test.mjs",
+        "tool/data/lib/organizer_takedown/actions.mjs",
+        "tool/data/lib/organizer_takedown/bigquery.mjs",
+        "tool/data/lib/organizer_takedown/inventory.mjs",
+        "tool/data/lib/organizer_takedown/plan.mjs",
+        "tool/data/lib/organizer_takedown/suppression.mjs",
+        "functions/src/listingSuppressions/registry.ts",
+        "tool/data/fixtures/organizer_takedown/fakes.mjs",
+        "tool/data/fixtures/organizer_takedown/world.mjs",
+        "operations/src/workflows/supply-intake/organizer-matching/suppression.mjs",
+        "operations/src/workflows/supply-intake/organizer-matching/normalize.mjs",
+        "contracts/firestore/listing_suppressions.schema.json"
       ],
       "role": "generator"
     },

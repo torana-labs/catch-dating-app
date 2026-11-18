@@ -16,6 +16,8 @@ import type {CatchReceipt} from "./whatsappEndpointStops";
 import {routeCatchWhatsappInbound} from "./inboundRouter";
 import {inboundRouterDeps, messageNominationsEnabled} from
   "./inboundRouterRuntime";
+import {listingSuppressionHmacKey} from
+  "../listingSuppressions/registry";
 
 export interface CatchReceiptScope {wabaId: string; phoneNumberId: string}
 function inScope(scope: CatchReceiptScope,
@@ -192,6 +194,8 @@ export function needsCatchStatusReconciliation(
 export const onCatchWhatsappWebhookEventCreated = onDocumentCreated({
   document: CATCH_RECEIPTS + "/{eventId}",
   maxInstances: 2, concurrency: 10, retry: true,
+  // Message nominations reach the do-not-list check in Supply Intake.
+  secrets: [listingSuppressionHmacKey],
 }, async (event) => {
   const scope = configuredConsumerScope();
   if (!scope || !event.data) return;

@@ -5551,6 +5551,55 @@ host locks:
 | `organizers/{organizerId}.publicPage.indexReview` | admin organizer indexing | Audit evidence for source quality, media rights, cadence, and owner/contact verification before a page becomes indexable. |
 | `reviews/{reviewId}.ownerResponse` | `setReviewResponse` | Server-owned owner response rendered by app and website review surfaces. |
 
+## Listing Suppressions
+
+`listingSuppressions/{caseId}` is the do-not-list registry: one document per
+takedown case (`caseId` is the opaque `TD-nnnn` id, never a name or slug),
+written by the organiser takedown tool's `suppress` mode
+(`tool/data/organizer_takedown.mjs`; operator runbook in
+`docs/release_operations.md`, "Organiser takedown"). It is server-only: rules
+deny every client, including Admin claims, because even a keyed hash confirms
+whether a guessed organiser is suppressed.
+
+- **What it stores.** `identityHashes` are HMAC-SHA256 hashes, under the
+  Secret Manager key `LISTING_SUPPRESSION_HMAC_KEY`, of identity keys derived by
+  `operations/src/workflows/supply-intake/organizer-matching/suppression.mjs`:
+  `label:` keys for business names, aliases and handles (lowercase letters and
+  digits, with and without stop words, so a name, an `@handle` and a domain's
+  first label agree), the organizer-matching identity keys of links
+  (`instagram:`, `luma:calendar:`, `domain:`, `url:` for shared hosts),
+  `organizer:` ids and `slug:` slugs. No name, handle, link or domain is stored
+  in clear, and `identityKeyCounts` gives only how many of each kind. The key is
+  never in the repository; Functions bind it with `defineSecret` and the tool
+  reads it from Secret Manager. Rotating it invalidates every stored hash, so a
+  rotation must rehash every case from its case file while the case files are
+  still held.
+- **Other fields.** `reason` is the takedown request type
+  (`removeAndDoNotList`, `trademark`, `copyright`, `privacy`, `courtOrder`,
+  `impersonation`); `active` (false lifts the suppression);
+  `createdAtMillis`, `reviewAtMillis` (three years for a business by default),
+  `createdBy`; `blockedIntakeCount`/`lastBlockedAtMillis`; and `reviewFlags`
+  (self-created organizers that matched, newest 50).
+- **Enforcement.** `createSupplyIntakeRequest`, the one entry point for every
+  nomination, host application, message nomination, event refresh and
+  instant draft, hashes the request's seed name, links, `@handles` and links
+  in its notes, and refresh target, and looks them up with
+  `array-contains-any`. A match writes nothing but the case's
+  `blockedIntakeCount`; staff front doors (`adminNominateOrganizer`,
+  `adminRefreshOrganizerEvents`) refuse with `failed-precondition` naming the
+  case id, the website instant draft refuses without naming anything, and
+  triggers drop the request and log the case id (never the identity).
+  `approveListing` repeats the check on the approved name, slug, built links
+  and the request (a backstop for identity the worker found after intake and
+  for cases written after intake). `createOrganizer` does not block a host's
+  own workspace (it starts private and unpublished, and the real organiser may
+  be the one signing up); it records a `reviewFlags` entry on the case for
+  staff review.
+- **Failure policy.** With no active case nothing can match and no key is read.
+  While an active case exists, a missing or short key fails intake and listing
+  approval closed (`unavailable`, nothing queued or published); organizer
+  creation proceeds and logs an error, since it only flags.
+
 ## Organizer Growth Facts
 
 `organizerGrowthFacts/{organizerId}` is server-only. `adminApproveOrganizerListing`
