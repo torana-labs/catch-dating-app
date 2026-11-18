@@ -11,7 +11,8 @@ import {
   summarizeCoverage,
   validateComponentGraph,
 } from "./lib/component_graph.mjs";
-import {collectLocalReadonlyCheckIds, planAffectedToolChecks} from "../lib/tool_impact.mjs";
+import {collectLocalReadonlyCheckIds, planAffectedToolChecks, supportedToolSetupRequirements}
+  from "../lib/tool_impact.mjs";
 import {planPreCommitActions} from "../git/pre_commit_generated_artifacts.mjs";
 import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
 
@@ -405,7 +406,15 @@ test("Hosting promotion control routing preserves mixed Host and Functions owner
         const tools = planAffectedToolChecks({changedPaths: [control, companion],
           manifest: toolsManifest, componentGraph: graph, mode});
         assert.equal(tools.mode, "affected");
-        assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
+        // The companion's own readers run too (#2041: a Dart or Functions edit
+        // beside a Tools-lane edit still selects the checks that read it), so
+        // the setup is the control's plus the companion's, nothing more.
+        const alone = (paths) => planAffectedToolChecks({changedPaths: paths,
+          manifest: toolsManifest, componentGraph: graph, mode}).setupRequirements;
+        const needed = new Set([...alone([control]), ...alone([companion])]);
+        assert.deepEqual(alone([control]), ["node", "root-npm"]);
+        assert.deepEqual(tools.setupRequirements,
+          supportedToolSetupRequirements.filter((requirement) => needed.has(requirement)));
         assert.ok(tools.toolIds.includes("ci:web-hosting-freshness"));
         assert.ok(tools.toolIds.includes("ci:web-hosting-delivery-workflow"));
         if (companion.startsWith("apps/host/") && ["pr", "merge_group"].includes(mode)) {

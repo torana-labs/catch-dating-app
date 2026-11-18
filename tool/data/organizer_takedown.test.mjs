@@ -289,6 +289,9 @@ test("verify fails until everything is gone and suppressed, then passes with the
   await assert.rejects(cli(w, "verify"), /Verification found/u);
 });
 
+// bq's global flags; everything else (--max_rows, --parameter, --dry_run...) belongs after the command.
+const GLOBAL_BQ_FLAG = /^--(quiet|headless|project_id=|location=|format=)/u;
+
 // A stand-in for bq: answers show, count, select, dry-run and delete, and logs each call with its @ids.
 function fakeBq(w, {rowsRemain = false, deleteError = null, show = "{}"} = {}) {
   const deleted = new Set();
@@ -297,6 +300,10 @@ function fakeBq(w, {rowsRemain = false, deleteError = null, show = "{}"} = {}) {
     const ids = parameter ? JSON.parse(fs.readFileSync(parameter.slice(12), "utf8"))[0].parameterValue.arrayValues
       .map((value) => value.value) : null;
     const sql = args.at(-1);
+    // Like bq, refuse a command flag placed before the command (bq: "Unknown command line flag").
+    const command = args.findIndex((arg) => !arg.startsWith("--"));
+    const misplaced = args.slice(0, command).find((arg) => !GLOBAL_BQ_FLAG.test(arg));
+    if (misplaced) throw Object.assign(new Error(`bq: unknown command line flag ${misplaced}`), {code: 1});
     w.bqCalls.push({args, ids});
     if (args.includes("show")) return show;
     const table = /`([^`]+)`/u.exec(sql)?.[1];

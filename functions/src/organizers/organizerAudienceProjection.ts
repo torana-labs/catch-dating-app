@@ -1,4 +1,3 @@
-import {createHash} from "crypto";
 import * as admin from "firebase-admin";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {
@@ -9,7 +8,6 @@ import {
 import type {
   EventAttendeeDocument,
   EventDocument,
-  OrganizerAudienceProjectionReceiptDocument,
   OrganizerAudienceSummaryDocument,
   OrganizerCommunicationPreferenceDocument,
   OrganizerContactDocument,
@@ -31,6 +29,11 @@ import {
   organizerIdentityClaimId,
   organizerIdentityEvidenceId,
 } from "./organizerAudienceModel";
+import {
+  classifyCommandReceipt,
+  commandReceiptRef,
+  writeCommandReceipt,
+} from "../shared/commandReceipts";
 import {eventTitleLabel} from "../shared/eventLabels";
 import {organizerContactIdentityKey} from "./organizerAudienceSecrets";
 import {
@@ -45,7 +48,6 @@ import {validateHostMembershipDocument} from
 import {membershipIsEntitled} from "../hostMemberships/entitlement";
 import {hostMembershipId} from "../hostMemberships/ids";
 
-const projectionReceiptTtlMillis = 30 * 24 * 60 * 60 * 1000;
 
 export interface AudienceProjectionDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -393,9 +395,8 @@ export async function rebuildOrganizerContact(
       recentAttendanceReversal.data().count
   );
   const now = deps.timestamp();
-  const receiptRef = db.collection("organizerAudienceProjectionReceipts")
-    .doc(`oapr_${createHash("sha256").update(summaryEventId)
-      .digest("hex").slice(0, 48)}`);
+  const receiptRef = commandReceiptRef(db, "rebuildOrganizerContact",
+    summaryEventId);
   const summaryRef = db.collection("organizerAudienceSummaries")
     .doc(contact.organizerId);
   await db.runTransaction(async (tx) => {
@@ -411,7 +412,9 @@ export async function rebuildOrganizerContact(
     ]);
     const current = currentContactSnap.data() as
       OrganizerContactDocument | undefined;
-    if (receiptSnap.exists || !current ||
+    if (classifyCommandReceipt(receiptSnap, {
+      command: "rebuildOrganizerContact", nowMillis: now.toMillis(),
+    }).kind !== "none" || !current ||
         current.organizerId !== contact.organizerId ||
         current.hiddenAt != null || current.identityState === "merged") return;
     const edges = edgesSnap.docs.map((doc) =>
@@ -477,13 +480,10 @@ export async function rebuildOrganizerContact(
     if (afterTrait) tx.set(traitRef, afterTrait);
     else tx.delete(traitRef);
     tx.set(summaryRef, summary);
-    tx.create(receiptRef, {
-      organizerId: current.organizerId, eventId: summaryEventId,
-      createdAt: now,
-      expiresAt: admin.firestore.Timestamp.fromMillis(
-        now.toMillis() + projectionReceiptTtlMillis
-      ),
-    } satisfies OrganizerAudienceProjectionReceiptDocument);
+    writeCommandReceipt(tx, receiptRef, {
+      command: "rebuildOrganizerContact", retention: "trigger",
+      nowMillis: now.toMillis(),
+    });
   });
 }
 
@@ -537,10 +537,8 @@ export async function applyOrganizerAudienceSummaryDelta(
   if (!organizerId) return;
   const db = deps.firestore();
   const now = deps.timestamp();
-  const receiptId = `oapr_${createHash("sha256")
-    .update(eventId).digest("hex").slice(0, 48)}`;
-  const receiptRef = db.collection("organizerAudienceProjectionReceipts")
-    .doc(receiptId);
+  const receiptRef = commandReceiptRef(db, "applyOrganizerAudienceSummaryDelta",
+    eventId);
   const summaryRef = db.collection("organizerAudienceSummaries")
     .doc(organizerId);
   const beforeContribution = organizerAudienceContribution(before);
@@ -550,7 +548,10 @@ export async function applyOrganizerAudienceSummaryDelta(
       tx.get(receiptRef),
       tx.get(summaryRef),
     ]);
-    if (receiptSnap.exists) return;
+    if (classifyCommandReceipt(receiptSnap, {
+      command: "applyOrganizerAudienceSummaryDelta",
+      nowMillis: now.toMillis(),
+    }).kind !== "none") return;
     const existing = summarySnap.data() as
       OrganizerAudienceSummaryDocument | undefined;
     const summary = audienceSummaryAfterDelta({
@@ -560,16 +561,11 @@ export async function applyOrganizerAudienceSummaryDelta(
       after: afterContribution,
       now,
     });
-    const receipt: OrganizerAudienceProjectionReceiptDocument = {
-      organizerId,
-      eventId,
-      createdAt: now,
-      expiresAt: admin.firestore.Timestamp.fromMillis(
-        now.toMillis() + projectionReceiptTtlMillis
-      ),
-    };
     tx.set(summaryRef, summary);
-    tx.create(receiptRef, receipt);
+    writeCommandReceipt(tx, receiptRef, {
+      command: "applyOrganizerAudienceSummaryDelta", retention: "trigger",
+      nowMillis: now.toMillis(),
+    });
   });
 }
 

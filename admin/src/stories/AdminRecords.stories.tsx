@@ -62,7 +62,7 @@ function organizerBills(): OrganizerBillsController {
 }
 
 const organizerLinks: OrganizerPageLinks = {
-  eventsTab: <OrganizerEventsWorkspace controller={eventDirectory("afterfly")} onOpenEvent={noop} />,
+  eventsTab: <OrganizerEventsWorkspace controller={eventDirectory("moonmoth")} onOpenEvent={noop} />,
   moneyBills: <OrganizerBillsWorkspace controller={organizerBills()} nowMillis={moneySampleNowMillis} onOpenBill={noop} />,
   onCheckForEvents: noop,
   isCheckingForEvents: false,
@@ -101,7 +101,7 @@ export const OrganizerPageRouteStory: Story = {
     <OrganizerPageScreen
       links={organizerLinks}
       loadError={null}
-      overview={sampleGetOrganizerOverview({organizerId: "afterfly"})}
+      overview={sampleGetOrganizerOverview({organizerId: "moonmoth"})}
       editor={null}
       tab="overview"
     />
@@ -137,7 +137,7 @@ export const EventDirectoryRouteStory: Story = {
 export const OrganizerEventsWorkspaceStory: Story = {
   name: "Organizer events",
   parameters: {catchComponent: {id: "workspace_organizer_events", states: ["upcoming"]}},
-  render: () => <OrganizerEventsWorkspace controller={eventDirectory("afterfly")} onOpenEvent={noop} />,
+  render: () => <OrganizerEventsWorkspace controller={eventDirectory("moonmoth")} onOpenEvent={noop} />,
 };
 
 export const EventPageRouteStory: Story = {
@@ -179,7 +179,7 @@ export const OrganizerPageEditorStory: Story = {
   name: "Organizer page, Page tab",
   parameters: {catchComponent: {id: "route_organizer_page", states: ["page-tab"]}},
   render: () => {
-    const editor = sampleOrganizerEditor(sampleOrganizerDetails.afterfly!);
+    const editor = sampleOrganizerEditor(sampleOrganizerDetails.moonmoth!);
     return (
       <OrganizerPageScreen
         editor={{
@@ -189,7 +189,7 @@ export const OrganizerPageEditorStory: Story = {
         }}
         links={organizerLinks}
         loadError={null}
-        overview={sampleGetOrganizerOverview({organizerId: "afterfly"})}
+        overview={sampleGetOrganizerOverview({organizerId: "moonmoth"})}
         tab="page"
       />
     );

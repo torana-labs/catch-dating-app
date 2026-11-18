@@ -358,7 +358,8 @@ const programAccessViewFields = [
   "programId", "organizerId", "uid", "ownerUid", "role", "status",
   "activeFromMillis", "expiresAtMillis", "duties", "pickupAll",
   "pickupScoped", "hotelAll", "hotelScoped", "functionAll", "functionScoped",
-  "workPickup", "workHotel", "workFunction", "assignments",
+  "workPickup", "workHotel", "workFunction", "arrivalRoutes", "tripRoutes",
+  "assignments",
   "grantExpiresAtMillis", "revision", "version",
 ];
 
@@ -395,6 +396,89 @@ async function programResourceViewRow(db, kind, resourceId) {
     return await db.runTransaction((tx) =>
       readProgramResourceView(db, tx, kind, resourceId));
   } catch {
+    return null;
+  }
+}
+
+let programDoorLiveModules = null;
+function functionsProgramDoorLive() {
+  try {
+    const load = createFunctionsRequire();
+    programDoorLiveModules ??= {
+      door: load("./lib/programs/programDoorViews.js"),
+      board: load("./lib/programs/programLiveBoardViews.js"),
+    };
+  } catch (error) {
+    throw new Error(
+      "The program-door-views and program-live-board-views migrations need " +
+      `compiled Functions; run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programDoorLiveModules;
+}
+
+const programDoorLiveNowMillis = Date.now();
+
+/** A read model row from current sources, or null when it exists or cannot be built. */
+async function newView(db, collection, id, build) {
+  const existing = await db.collection(collection).doc(id).get();
+  if (existing.exists) return null;
+  try {
+    return await db.runTransaction(build);
+  } catch {
+    // A source that fails its contract gets no view, as in the trigger.
+    return null;
+  }
+}
+
+let programArrivalViewModule = null;
+function functionsProgramArrivalViews() {
+  try {
+    programArrivalViewModule ??= createFunctionsRequire()(
+      "./lib/programs/programArrivalViews.js");
+  } catch (error) {
+    throw new Error(
+      "The program-arrival-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programArrivalViewModule;
+}
+
+/** A read model row from current sources, or null when it exists or cannot be built. */
+async function newArrivalView(db, collection, id, build) {
+  const existing = await db.collection(collection).doc(id).get();
+  if (existing.exists) return null;
+  try {
+    return await db.runTransaction(build);
+  } catch {
+    // A source that fails its contract gets no view, as in the trigger.
+    return null;
+  }
+}
+
+let programTripViewModule = null;
+function functionsProgramTripViews() {
+  try {
+    programTripViewModule ??= createFunctionsRequire()(
+      "./lib/programs/programTripViews.js");
+  } catch (error) {
+    throw new Error(
+      "The program-trip-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programTripViewModule;
+}
+
+/** A trip or hotel inbound row from current sources, or null when it exists or cannot be built. */
+async function newTripView(db, collection, id, build) {
+  const existing = await db.collection(collection).doc(id).get();
+  if (existing.exists) return null;
+  try {
+    return await db.runTransaction(build);
+  } catch {
+    // A source that fails its contract gets no view, as in the trigger.
     return null;
   }
 }
@@ -1000,6 +1084,215 @@ export const MIGRATIONS = [
           `${data.programId}__function__${id}` : null,
         transform: (data, id, db) =>
           programResourceViewRow(db, "function", id),
+      },
+    ],
+  },
+  {
+    name: "program-door-views",
+    description:
+      "The programme door reads programDoorFunctions, programDoorRows and " +
+      "programDoorJournalViews through listeners (#1339) instead of the " +
+      "getProgramFunctionDoorView callable. Every function without a header, " +
+      "every guest-at-function roster row (an allGuests function lists every " +
+      "programme guest; a selectedGuests function its join rows) and every " +
+      "door journal entry without a view gets one, with only the fields the " +
+      "callable returned and never a contact field. Views the triggers have " +
+      "already written are left alone; programmes, guests and journals are " +
+      "never changed. Build Functions first.",
+    steps: [
+      {
+        source: "programFunctions",
+        target: "programDoorFunctions",
+        skipReason: "no programme or organizer, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "programDoorFunctions", id,
+          (tx) => functionsProgramDoorLive().door
+            .readProgramDoorFunction(db, tx, id)),
+      },
+      {
+        source: "programGuests",
+        target: "programDoorRows",
+        skipReason: "no programme, no function lists the guest, or already viewed",
+        expand: async (data, id, db) => {
+          if (!validId(id) || !validId(data.programId)) return [];
+          const functions = await db.collection("programFunctions")
+            .where("programId", "==", data.programId).limit(60).get();
+          const entries = [];
+          for (const fn of functions.docs) {
+            const rowId = `${fn.id}__${id}`;
+            const row = await newView(db, "programDoorRows", rowId,
+              (tx) => functionsProgramDoorLive().door
+                .readProgramDoorRow(db, tx, fn.id, id));
+            if (row) entries.push({targetId: rowId, data: row});
+          }
+          return entries;
+        },
+      },
+      {
+        source: "programDoorJournal",
+        target: "programDoorJournalViews",
+        skipReason: "no programme, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "programDoorJournalViews", id,
+          (tx) => functionsProgramDoorLive().door
+            .readProgramDoorJournalView(db, tx, id)),
+      },
+    ],
+  },
+  {
+    name: "program-live-board-views",
+    description:
+      "The live board reads programAlertViews and programTravelCountViews " +
+      "through listeners (#1339) instead of the getProgramLiveBoard and " +
+      "listProgramStaffAttention callables. Every staff attention alert still " +
+      "inside its 24 hour window (one per run and duty), every disrupted " +
+      "inbound journey's alert, and every programme's travel counts without " +
+      "a view gets one, merged with its resolution, as the triggers write " +
+      "them. Views the triggers have written are left alone; sends, legs " +
+      "and resolutions are never changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerMomentSends",
+        target: "programAlertViews",
+        skipReason: "not a live programme staff attention send, not the " +
+          "run's first send, or already viewed",
+        expand: async (data, id, db) => {
+          if (data.actionKind !== "staffAttention" ||
+              data.scopeKind !== "program" || !validId(data.scopeId) ||
+              typeof data.runId !== "string" || typeof data.duty !== "string") {
+            return [];
+          }
+          const {board} = functionsProgramDoorLive();
+          let found = null;
+          try {
+            found = await db.runTransaction((tx) =>
+              board.readStaffAttentionAlertView(db, tx, data.scopeId,
+                data.runId, data.duty, programDoorLiveNowMillis));
+          } catch {
+            return [];
+          }
+          // Fanout sends of one run and duty share an alert: the earliest
+          // send owns it.
+          if (!found || found.sourceId !== id) return [];
+          const viewId = board.programAlertViewId(data.scopeId,
+            found.view.alertId);
+          const existing = await db.collection("programAlertViews")
+            .doc(viewId).get();
+          return existing.exists ? [] : [{targetId: viewId, data: found.view}];
+        },
+      },
+      {
+        source: "programTravelLegs",
+        target: "programAlertViews",
+        skipReason: "not a disrupted inbound journey, or already viewed",
+        expand: async (data, id, db) => {
+          if (!validId(id) || !validId(data.programId)) return [];
+          const {board} = functionsProgramDoorLive();
+          const entries = [];
+          for (const alertId of [`flight_${id}`, `readiness_${id}`]) {
+            const viewId = board.programAlertViewId(data.programId, alertId);
+            const view = await newView(db, "programAlertViews", viewId,
+              (tx) => board.readTravelAlertView(db, tx, data.programId,
+                alertId, id, programDoorLiveNowMillis));
+            if (view) entries.push({targetId: viewId, data: view});
+          }
+          return entries;
+        },
+      },
+      {
+        source: "organizerPrograms",
+        target: "programTravelCountViews",
+        skipReason: "no organizer, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newView(db, "programTravelCountViews", id,
+          (tx) => functionsProgramDoorLive().board
+            .readTravelCountView(db, tx, id)),
+      },
+    ],
+  },
+  {
+    name: "program-arrival-views",
+    description:
+      "Arrivals, departures and the dispatcher's vendor list read " +
+      "programArrivalViews, programDepartureViews and programVendorViews " +
+      "through listeners (#1339) instead of the getProgramArrivalsRoster, " +
+      "getProgramDeparturesRoster and listTransportVendors callables. Every " +
+      "expected, ready or disrupted inbound journey, every outbound journey " +
+      "to a hotel and every bound vendor without a view gets one, with only " +
+      "the fields the callables returned and never a phone number. Views the " +
+      "triggers have already written are left alone; journeys, stays, guests " +
+      "and vendors are never changed. Run program-access-views-refresh " +
+      "first, so access views carry their arrival routes. Build Functions " +
+      "first.",
+    steps: [
+      {
+        source: "programTravelLegs",
+        target: "programArrivalViews",
+        skipReason: "not an expected, ready or disrupted inbound journey, or already viewed",
+        targetId: (id, data) => validId(id) && data.kind === "inbound" ? id : null,
+        transform: (data, id, db) => newArrivalView(db, "programArrivalViews", id,
+          (tx) => functionsProgramArrivalViews()
+            .readProgramArrivalView(db, tx, id)),
+      },
+      {
+        source: "programTravelLegs",
+        target: "programDepartureViews",
+        skipReason: "not an outbound journey to a hotel, or already viewed",
+        targetId: (id, data) => validId(id) && data.kind === "outbound" ? id : null,
+        transform: (data, id, db) => newArrivalView(db, "programDepartureViews", id,
+          (tx) => functionsProgramArrivalViews()
+            .readProgramDepartureView(db, tx, id)),
+      },
+      {
+        source: "transportVendors",
+        target: "programVendorViews",
+        skipReason: "bound to no programme, or already viewed",
+        expand: async (data, id, db) => {
+          if (!validId(id) || !Array.isArray(data.programIds)) return [];
+          const entries = [];
+          for (const programId of data.programIds) {
+            if (!validId(programId)) continue;
+            const viewId = `${programId}__${id}`;
+            const view = await newArrivalView(db, "programVendorViews", viewId,
+              (tx) => functionsProgramArrivalViews()
+                .readProgramVendorView(db, tx, programId, id));
+            if (view) entries.push({targetId: viewId, data: view});
+          }
+          return entries;
+        },
+      },
+    ],
+  },
+  {
+    name: "program-trip-views",
+    description:
+      "Trips and the hotel desk's inbound read programTripViews and " +
+      "programHotelInboundViews through listeners (#1339) instead of the " +
+      "listProgramTrips and getProgramHotelInbound callables. Every trip and " +
+      "every expected or ready inbound journey to a hotel without a view " +
+      "gets one, with only the fields the callables returned (a trip's " +
+      "notes, rate, driver and account ids stay in the source) and never a " +
+      "phone number. Views the triggers have already written are left " +
+      "alone; trips and journeys are never changed. Run " +
+      "program-access-views-refresh first, so access views carry their trip " +
+      "routes. Build Functions first.",
+    steps: [
+      {
+        source: "transportTrips",
+        target: "programTripViews",
+        skipReason: "no programme, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newTripView(db, "programTripViews", id,
+          (tx) => functionsProgramTripViews().readProgramTripView(db, tx, id)),
+      },
+      {
+        source: "programTravelLegs",
+        target: "programHotelInboundViews",
+        skipReason: "not an expected or ready inbound journey to a hotel, or already viewed",
+        targetId: (id, data) => validId(id) && data.kind === "inbound" ? id : null,
+        transform: (data, id, db) => newTripView(db, "programHotelInboundViews", id,
+          (tx) => functionsProgramTripViews()
+            .readProgramHotelInboundView(db, tx, id)),
       },
     ],
   },

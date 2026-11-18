@@ -208,7 +208,7 @@ export const programmeFixtures = {
   hotelHandover: {
     programId: "fixture-program",
     hotelId: "fixture-hotel",
-    hotelName: "Taj Fateh Prakash",
+    hotelName: "Lakeview Haveli",
     programTitle: "Aditi and Kabir's wedding",
     organizerName: "Meher Shah Weddings",
     counts: {rooms: 3, guests: 5, idsAccepted: 3, idsMissing: 1},
@@ -236,7 +236,7 @@ export const programmeFixtures = {
     vehicleClassLabel: "Innova",
     plateDisplay: "RJ 27 TA 4471",
     pickupLabel: "Udaipur airport, gate 2",
-    destinationLabel: "Taj Fateh Prakash, main porch",
+    destinationLabel: "Lakeview Haveli, main porch",
     departedAtMillis: base,
     passengerCount: 6,
     passengers: [
@@ -248,7 +248,7 @@ export const programmeFixtures = {
   runSheet: {
     programId: "fixture-program",
     vendorId: "fixture-vendor",
-    vendorName: "Shree Travels",
+    vendorName: "Lantern Lane Travels",
     programTitle: "Aditi & Kabir",
     timezone: "Asia/Kolkata",
     functions: [
@@ -257,8 +257,8 @@ export const programmeFixtures = {
       {functionId: "f-wedding", name: "Wedding", venueName: "Lakeside", startsAtMillis: base + 27 * hour, endsAtMillis: base + 31 * hour},
     ],
     trips: [
-      {tripId: "t-1", status: "arrived" as const, plateDisplay: "RJ 27 TA 4471", pickupLabel: "Udaipur airport", destinationLabel: "Taj Fateh Prakash", departedAtMillis: base - 2 * hour, arrivedAtMillis: base - hour, passengerCount: 6},
-      {tripId: "t-2", status: "enRoute" as const, plateDisplay: "RJ 27 TB 1102", pickupLabel: "Taj Fateh Prakash", destinationLabel: "Durbar hall", departedAtMillis: base + 3.5 * hour, arrivedAtMillis: null, passengerCount: 5},
+      {tripId: "t-1", status: "arrived" as const, plateDisplay: "RJ 27 TA 4471", pickupLabel: "Udaipur airport", destinationLabel: "Lakeview Haveli", departedAtMillis: base - 2 * hour, arrivedAtMillis: base - hour, passengerCount: 6},
+      {tripId: "t-2", status: "enRoute" as const, plateDisplay: "RJ 27 TB 1102", pickupLabel: "Lakeview Haveli", destinationLabel: "Durbar hall", departedAtMillis: base + 3.5 * hour, arrivedAtMillis: null, passengerCount: 5},
     ],
     expiresAtMillis: base + 168 * hour,
   },
@@ -285,7 +285,7 @@ export const programmeFixtures = {
   hampers: {
     programId: "fixture-program",
     hotelId: "fixture-hotel",
-    hotelName: "Taj Fateh Prakash",
+    hotelName: "Lakeview Haveli",
     programTitle: "Aditi & Kabir",
     counts: {rooms: 4, placed: 2},
     rooms: [

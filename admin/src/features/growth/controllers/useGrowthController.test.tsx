@@ -31,6 +31,6 @@ describe("useGrowthController", () => {
     await waitFor(() => expect(result.current.loadState).toBe("ready"));
     act(() => result.current.setBestFilter("quiet"));
     expect(result.current.best.map((row) => row.name))
-      .toEqual(["Harbor Social Club"]);
+      .toEqual(["Quayside Supper Club"]);
   });
 });

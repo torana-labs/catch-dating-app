@@ -9,27 +9,27 @@ import {
 // Ported from the retired organizer-intake platform adapter tests, plus
 // Urbanaut and the adapter binding that replaced the retired crawl block.
 test("normalizes Luma event URLs", () => {
-  const result = normalizeOrganizerSurfaceUrl("https://lu.ma/pxgmph3b?utm_source=google");
-  assert.equal(result.canonicalUrl, "https://luma.com/pxgmph3b");
+  const result = normalizeOrganizerSurfaceUrl("https://lu.ma/mmoth26x?utm_source=google");
+  assert.equal(result.canonicalUrl, "https://luma.com/mmoth26x");
   assert.equal(result.platform, "luma");
   assert.equal(result.surfaceKind, "eventListing");
-  assert.equal(result.normalizedKey, "luma:event:pxgmph3b");
+  assert.equal(result.normalizedKey, "luma:event:mmoth26x");
   assert.deepEqual(result.extraction, {supportsEventExtraction: true, adapterId: "luma"});
 });
 
 test("normalizes Luma calendar URLs", () => {
-  const result = normalizeOrganizerSurfaceUrl("https://luma.com/calendar/afterfly");
+  const result = normalizeOrganizerSurfaceUrl("https://luma.com/calendar/moonmoth");
   assert.equal(result.platform, "luma");
   assert.equal(result.surfaceKind, "eventCalendar");
-  assert.equal(result.normalizedKey, "luma:calendar:afterfly");
+  assert.equal(result.normalizedKey, "luma:calendar:moonmoth");
 });
 
 test("normalizes Instagram profile URLs without using query tokens", () => {
-  const result = normalizeOrganizerSurfaceUrl("https://www.instagram.com/AfterFly.In/?igshid=abc");
-  assert.equal(result.canonicalUrl, "https://instagram.com/AfterFly.In");
+  const result = normalizeOrganizerSurfaceUrl("https://www.instagram.com/MoonMoth.Example/?igshid=abc");
+  assert.equal(result.canonicalUrl, "https://instagram.com/MoonMoth.Example");
   assert.equal(result.platform, "instagram");
   assert.equal(result.surfaceKind, "socialProfile");
-  assert.equal(result.normalizedKey, "instagram:afterfly.in");
+  assert.equal(result.normalizedKey, "instagram:moonmoth.example");
   assert.deepEqual(result.extraction, {supportsEventExtraction: false, adapterId: null});
 });
 
@@ -58,15 +58,15 @@ test("normalizes District event URLs", () => {
 });
 
 test("normalizes Urbanaut experience and host URLs", () => {
-  const spot = normalizeOrganizerSurfaceUrl("https://urbanaut.app/spot/ballard-estate-photowalk?ref=share");
-  assert.equal(spot.canonicalUrl, "https://urbanaut.app/spot/ballard-estate-photowalk");
+  const spot = normalizeOrganizerSurfaceUrl("https://urbanaut.app/spot/dockyard-lane-photowalk?ref=share");
+  assert.equal(spot.canonicalUrl, "https://urbanaut.app/spot/dockyard-lane-photowalk");
   assert.equal(spot.platform, "urbanaut");
   assert.equal(spot.surfaceKind, "eventListing");
-  assert.equal(spot.normalizedKey, "urbanaut:event:ballard-estate-photowalk");
+  assert.equal(spot.normalizedKey, "urbanaut:event:dockyard-lane-photowalk");
   assert.equal(spot.extraction.adapterId, "urbanaut");
-  const host = normalizeOrganizerSurfaceUrl("https://www.urbanaut.app/MayankSoni");
+  const host = normalizeOrganizerSurfaceUrl("https://www.urbanaut.app/NoorKapadia");
   assert.equal(host.surfaceKind, "organizerProfile");
-  assert.equal(host.normalizedKey, "urbanaut:profile:mayanksoni");
+  assert.equal(host.normalizedKey, "urbanaut:profile:noorkapadia");
 });
 
 test("normalizes BookMyShow India event URLs", () => {
@@ -84,34 +84,34 @@ test("normalizes BookMyShow artist URLs as person profiles", () => {
 });
 
 test("normalizes Sort My Scene organizer URLs", () => {
-  const result = normalizeOrganizerSurfaceUrl("https://sortmyscene.com/organizers/afterfly");
+  const result = normalizeOrganizerSurfaceUrl("https://sortmyscene.com/organizers/moonmoth");
   assert.equal(result.platform, "sortMyScene");
   assert.equal(result.surfaceKind, "organizerProfile");
-  assert.equal(result.normalizedKey, "sortMyScene:profile:afterfly");
+  assert.equal(result.normalizedKey, "sortMyScene:profile:moonmoth");
 });
 
 test("normalizes LinkedIn company and person surfaces", () => {
-  const company = normalizeOrganizerSurfaceUrl("https://www.linkedin.com/company/afterfly/");
+  const company = normalizeOrganizerSurfaceUrl("https://www.linkedin.com/company/moonmoth/");
   const person = normalizeOrganizerSurfaceUrl("https://linkedin.com/in/sample-founder/");
   assert.equal(company.surfaceKind, "organizerProfile");
-  assert.equal(company.normalizedKey, "linkedin:company:afterfly");
+  assert.equal(company.normalizedKey, "linkedin:company:moonmoth");
   assert.equal(person.surfaceKind, "personProfile");
   assert.equal(person.normalizedKey, "linkedin:person:sample-founder");
 });
 
 test("classifies known publication domains as press without identity keys", () => {
-  const result = normalizeOrganizerSurfaceUrl("https://lbb.in/mumbai/afterfly-profile/");
+  const result = normalizeOrganizerSurfaceUrl("https://lbb.in/mumbai/moonmoth-profile/");
   assert.equal(result.platform, "news");
   assert.equal(result.surfaceKind, "press");
   assert.equal(result.normalizedKey, null);
 });
 
 test("falls back to an official website candidate for unknown domains", () => {
-  const result = normalizeOrganizerSurfaceUrl("https://www.thebhag.in/?utm_campaign=launch");
-  assert.equal(result.canonicalUrl, "https://thebhag.in/");
+  const result = normalizeOrganizerSurfaceUrl("https://www.thebrindle.example/?utm_campaign=launch");
+  assert.equal(result.canonicalUrl, "https://thebrindle.example/");
   assert.equal(result.platform, "officialWebsite");
   assert.equal(result.surfaceKind, "website");
-  assert.equal(result.normalizedKey, "domain:thebhag.in");
+  assert.equal(result.normalizedKey, "domain:thebrindle.example");
 });
 
 test("rejects missing and non-web URLs", () => {
@@ -121,8 +121,8 @@ test("rejects missing and non-web URLs", () => {
 });
 
 test("creates surfaces with a stable id and adapter binding", () => {
-  const surface = surfaceFromUrl("https://luma.com/pxgmph3b", {
-    surfaceId: "afterfly-luma-event",
+  const surface = surfaceFromUrl("https://luma.com/mmoth26x", {
+    surfaceId: "moonmoth-luma-event",
   });
   assert.deepEqual(Object.keys(surface).sort(), [
     "confidence",
@@ -137,13 +137,13 @@ test("creates surfaces with a stable id and adapter binding", () => {
     "surfaceKind",
     "url",
   ]);
-  assert.equal(surface.surfaceId, "afterfly-luma-event");
-  assert.equal(surface.normalizedKey, "luma:event:pxgmph3b");
+  assert.equal(surface.surfaceId, "moonmoth-luma-event");
+  assert.equal(surface.normalizedKey, "luma:event:mmoth26x");
 });
 
 test("generates deterministic surface ids from normalized keys", () => {
   assert.equal(
-    surfaceIdFromNormalizedKey("instagram:afterfly.in", null),
-    surfaceIdFromNormalizedKey("instagram:afterfly.in", null)
+    surfaceIdFromNormalizedKey("instagram:moonmoth.example", null),
+    surfaceIdFromNormalizedKey("instagram:moonmoth.example", null)
   );
 });

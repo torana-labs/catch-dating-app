@@ -23,12 +23,12 @@ const claim = (uid: string, status: string, millis: number) => ({
 const view = (overrides: Record<string, unknown> = {}) =>
   organizerJourneyView({
     organizerId: "org",
-    organizer: {name: "Afterfly", createdAt: at(100)} as never,
+    organizer: {name: "Moonmoth", createdAt: at(100)} as never,
     nomination: {
       request: {
         submittedAt: at(50),
         submittedBy: {uid: "nominator"},
-        seed: {urls: ["https://luma.com/afterfly"]},
+        seed: {urls: ["https://luma.com/moonmoth"]},
       },
       result: {eventCount: 3},
       approval: {approvedAt: at(60), approvedByUid: "staff"},
@@ -45,7 +45,7 @@ test("the organizer sees steps that mean something to them, and no names",
     const journey = view();
     assert.deepEqual(journey.steps.map((step) => step.kind),
       ["nominated", "listed"]);
-    assert.equal(journey.steps[0].detail, "https://luma.com/afterfly");
+    assert.equal(journey.steps[0].detail, "https://luma.com/moonmoth");
     const json = JSON.stringify(journey);
     for (const hidden of ["nominator", "staff", "Staff"]) {
       assert.ok(!json.includes(hidden), hidden);
@@ -75,7 +75,7 @@ test("a rejection of my claim shows, without the reason", () => {
 });
 
 test("a claimed page moves on to its first event, then to nothing", () => {
-  const claimed = {name: "Afterfly", createdAt: at(100),
+  const claimed = {name: "Moonmoth", createdAt: at(100),
     ownership: {claimedAt: at(300)}};
   assert.equal(view({organizer: claimed}).next, "firstEvent");
   const ran = view({organizer: claimed,
@@ -112,22 +112,22 @@ const request = (uid: string, organizerId: string | null) =>
   ({auth: {uid}, data: {organizerId}}) as unknown as CallableRequest<unknown>;
 
 test("only an organizer's hosts can read its journey", async () => {
-  const world = {organizer: {name: "Afterfly", ownerUserId: "owner",
+  const world = {organizer: {name: "Moonmoth", ownerUserId: "owner",
     hostUserIds: ["owner"]} as Partial<OrganizerDocument>};
   await assert.rejects(listMyOrganizerJourneysHandler(
     request("stranger", "org"), deps(world)), {code: "permission-denied"});
   const result = await listMyOrganizerJourneysHandler(
     request("owner", "org"), deps(world));
-  assert.equal(result.journeys[0].organizerName, "Afterfly");
+  assert.equal(result.journeys[0].organizerName, "Moonmoth");
 });
 
 test("with no organizer, the caller gets the pages they wait to claim",
   async () => {
     const result = await listMyOrganizerJourneysHandler(request("me", null),
-      deps({organizer: {name: "Afterfly"},
+      deps({organizer: {name: "Moonmoth"},
         waiting: [claim("me", "pending", 200)]}));
     assert.deepEqual(result.journeys.map((item) => item.organizerName),
-      ["Afterfly"]);
+      ["Moonmoth"]);
     const none = await listMyOrganizerJourneysHandler(request("me", null),
       deps({}));
     assert.deepEqual(none.journeys, []);

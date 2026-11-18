@@ -10,7 +10,7 @@ test("buildEventAdminSearchRepairPlan detects missing and stale search", async (
   const firestore = fakeFirestore({
     organizers: {
       "club-1": {
-        name: "AFTER FLY",
+        name: "MOON MOTH",
         location: "in-mp-indore",
         locationMarketId: "in-mp-indore",
       },

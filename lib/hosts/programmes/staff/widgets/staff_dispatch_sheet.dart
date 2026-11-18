@@ -45,7 +45,7 @@ class StaffDispatchSheet extends StatelessWidget {
   /// The suggested vehicle, for the title.
   final String vehicle;
 
-  /// Vendor, people and destination: "Shree Travels · 6 guests to the Taj".
+  /// Vendor, people and destination: "Lantern Lane Travels · 6 guests to the Haveli".
   final String summary;
   final TextEditingController plate;
   final ValueChanged<String> onPlateChanged;

@@ -506,9 +506,6 @@ export {
   generateOrganizerMediaThumbnails,
 } from "./media/generateAttachedMediaThumbnails";
 export {joinWaitlist} from "./waitlist/joinWaitlist";
-export {
-  hostAcquisitionConsent, expireHostAcquisitionConsent,
-} from "./acquisition/consentHttp";
 export {blockUser, unblockUser, onBlockCreated} from "./safety/blocking";
 export {requestAccountDeletion} from "./safety/accountDeletion";
 export {
@@ -758,6 +755,22 @@ export {onProgramAccessViewGrantChanged,
 export {onProgramWorkSummaryChanged, onProgramPickupPointViewChanged,
   onProgramHotelViewChanged, onProgramFunctionViewChanged} from
   "./programs/programWorkViewTriggers";
+export {onProgramDoorFunctionChanged, onProgramDoorJoinChanged,
+  onProgramDoorGuestChanged, onProgramDoorHouseholdChanged,
+  onProgramDoorJournalChanged, onProgramDoorStaffLabelChanged} from
+  "./programs/programDoorViewTriggers";
+export {onProgramAlertSendChanged, onProgramAlertLegChanged,
+  onProgramAlertResolutionChanged} from
+  "./programs/programLiveBoardViewTriggers";
+export {onProgramArrivalLegChanged, onProgramArrivalPartyChanged,
+  onProgramArrivalGuestChanged, onProgramArrivalHotelChanged,
+  onProgramArrivalStaffLabelChanged, onProgramDepartureStayChanged,
+  onProgramArrivalSettingsChanged, onProgramVendorViewChanged} from
+  "./programs/programArrivalViewTriggers";
+export {onProgramTripViewChanged, onProgramHotelInboundLegChanged,
+  onProgramHotelInboundPartyChanged, onProgramTripGuestChanged,
+  onProgramHotelInboundSettingsChanged} from
+  "./programs/programTripViewTriggers";
 export {listMyHostAssignments} from "./hostWork/listMyHostAssignments";
 export {
   inviteProgramStaff,

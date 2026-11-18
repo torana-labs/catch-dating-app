@@ -5,13 +5,18 @@ import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {brand} from "@catch/brand";
 import {parseCommonArgs} from "../lib/cli_args.mjs";
+import {adProgrammes, adTargetingFromCatalog, readMarketCatalog} from "../lib/market_catalog.mjs";
 
 // Plans, and with --apply creates, the Google Ads campaigns in
 // google_campaigns.json. Every campaign is created PAUSED: switching one on,
 // and any budget change after launch, is the owner's call in the console.
 // The default run reads the account and asks Google to validate the create
-// request without making anything. Campaigns that already exist are left
-// exactly as they are; only names under the managed prefix are considered.
+// request without making anything. Locations come from the city catalog
+// (contracts/catalogs/markets.json, each city's `ads` block), never from this
+// file. A campaign that already exists keeps its ads, budget and bidding; only
+// its locations and negative keywords are brought in line with the catalog and
+// this file, shown in the plan and changed with --apply. Only names under the
+// managed prefix are considered.
 // The access token comes from GOOGLE_ADS_ACCESS_TOKEN or from gcloud
 // impersonating the ads service account; it is never logged.
 
@@ -23,7 +28,7 @@ const SERVICE_ACCOUNT =
 const MATCH_TYPES = new Set(["EXACT", "PHRASE", "BROAD"]);
 const micros = (inr) => String(Math.round(inr * 1_000_000));
 
-export function loadGoogleCampaigns(file = POLICY_PATH) {
+export function loadGoogleCampaigns(file = POLICY_PATH, catalog = readMarketCatalog()) {
   const policy = JSON.parse(fs.readFileSync(file, "utf8"));
   if (policy.version !== 1 || !/^\d{10}$/.test(policy.customerId ?? "") ||
       typeof policy.managedPrefix !== "string") {
@@ -40,10 +45,20 @@ export function loadGoogleCampaigns(file = POLICY_PATH) {
     if (!(campaign.dailyBudgetInr > 0 && campaign.dailyBudgetInr <= 5000)) {
       throw new Error(`${where} daily budget must be between 1 and 5000 INR.`);
     }
-    for (const list of ["locations", "languages"]) {
-      if (!campaign[list]?.length || !campaign[list].every((id) => Number.isSafeInteger(id) && id > 0)) {
-        throw new Error(`${where} ${list} must be a non-empty list of Google IDs.`);
-      }
+    if ("locations" in campaign) {
+      throw new Error(`${where} lists its own locations; set adProgramme and switch cities on in the city catalog.`);
+    }
+    if (!adProgrammes.includes(campaign.adProgramme)) {
+      throw new Error(`${where} adProgramme must be one of ${adProgrammes.join(", ")}.`);
+    }
+    const targeting = adTargetingFromCatalog(catalog, campaign.adProgramme);
+    if (!targeting.googleGeoTargetIds.length) {
+      throw new Error(`${where} has no city with ${campaign.adProgramme} ads on in the city catalog.`);
+    }
+    campaign.locations = targeting.googleGeoTargetIds;
+    campaign.markets = targeting.labels;
+    if (!campaign.languages?.length || !campaign.languages.every((id) => Number.isSafeInteger(id) && id > 0)) {
+      throw new Error(`${where} languages must be a non-empty list of Google IDs.`);
     }
     if (campaign.bidding?.strategy !== "MAXIMIZE_CLICKS" &&
         campaign.bidding?.strategy !== "MAXIMIZE_CONVERSIONS") {
@@ -152,11 +167,38 @@ export function googleAdsApi({customerId, token, fetch = globalThis.fetch}) {
   };
 }
 
-/** Reads existing campaigns and validates every create. Never writes. */
+/**
+ * The criteria an existing campaign needs added or removed so its locations
+ * match the catalog and its negative keywords match this file.
+ */
+export function targetingSyncOperations(customerId, campaign, campaignId, criteria) {
+  const resource = `customers/${customerId}/campaigns/${campaignId}`;
+  const want = new Set(campaign.locations.map(Number));
+  const have = new Map();
+  const negatives = new Set();
+  for (const {campaignCriterion: criterion} of criteria) {
+    const geo = criterion.location?.geoTargetConstant;
+    if (geo && !criterion.negative) have.set(Number(geo.split("/").pop()), criterion.resourceName);
+    if (criterion.keyword?.text && criterion.negative) negatives.add(criterion.keyword.text.toLowerCase());
+  }
+  const addLocations = [...want].filter((id) => !have.has(id));
+  const removeLocations = [...have.keys()].filter((id) => !want.has(id));
+  const addNegatives = (campaign.negativeKeywords ?? []).filter((text) => !negatives.has(text.toLowerCase()));
+  const operations = [
+    ...addLocations.map((id) => ({campaignCriterionOperation: {create: {
+      campaign: resource, location: {geoTargetConstant: `geoTargetConstants/${id}`}}}})),
+    ...removeLocations.map((id) => ({campaignCriterionOperation: {remove: have.get(id)}})),
+    ...addNegatives.map((text) => ({campaignCriterionOperation: {create: {
+      campaign: resource, negative: true, keyword: {text, matchType: "BROAD"}}}})),
+  ];
+  return {operations, addLocations, removeLocations, addNegatives};
+}
+
+/** Reads existing campaigns and validates every create and sync. Never writes. */
 export async function planGoogleCampaigns({policy, api}) {
-  const rows = await api.search("SELECT campaign.name, campaign.status FROM campaign " +
+  const rows = await api.search("SELECT campaign.id, campaign.name, campaign.status FROM campaign " +
     "WHERE campaign.status != 'REMOVED'");
-  const existing = new Map(rows.map((row) => [row.campaign.name, row.campaign.status]));
+  const existing = new Map(rows.map((row) => [row.campaign.name, row.campaign]));
   const ids = [...new Set(policy.campaigns.flatMap((campaign) => campaign.locations))];
   const places = await api.search("SELECT geo_target_constant.id, geo_target_constant.name " +
     `FROM geo_target_constant WHERE geo_target_constant.id IN (${ids.join(",")})`);
@@ -167,25 +209,38 @@ export async function planGoogleCampaigns({policy, api}) {
     const missing = campaign.locations.filter((id) => !placeNames.has(id));
     if (missing.length) throw new Error(`Unknown Google location IDs: ${missing.join(", ")}.`);
     if (existing.has(campaign.name)) {
-      changes.push({kind: "keep", target: campaign.name, status: existing.get(campaign.name)});
+      const row = existing.get(campaign.name);
+      const criteria = await api.search("SELECT campaign_criterion.resource_name, " +
+        "campaign_criterion.negative, campaign_criterion.location.geo_target_constant, " +
+        `campaign_criterion.keyword.text FROM campaign_criterion WHERE campaign.id = ${row.id}`);
+      const sync = targetingSyncOperations(policy.customerId, campaign, row.id, criteria);
+      if (!sync.operations.length) {
+        changes.push({kind: "keep", target: campaign.name, status: row.status});
+        continue;
+      }
+      await api.mutate(sync.operations, true);
+      changes.push({kind: "sync", target: campaign.name, status: row.status, operations: sync.operations,
+        addLocations: sync.addLocations.map((id) => placeNames.get(id) ?? String(id)),
+        removeLocations: sync.removeLocations.map(String), addNegatives: sync.addNegatives});
       continue;
     }
     const operations = createCampaignOperations(policy.customerId, campaign);
     await api.mutate(operations, true);
     changes.push({kind: "create", target: campaign.name, operations,
-      locations: campaign.locations.map((id) => placeNames.get(id))});
+      locations: campaign.locations.map((id) => placeNames.get(id)), markets: campaign.markets});
   }
   return {customerId: policy.customerId, changes};
 }
 
+/** Creates new campaigns and syncs existing ones; returns how many of each. */
 export async function applyGoogleCampaigns({plan, api}) {
-  let created = 0;
+  const done = {created: 0, synced: 0};
   for (const change of plan.changes) {
-    if (change.kind !== "create") continue;
+    if (change.kind !== "create" && change.kind !== "sync") continue;
     await api.mutate(change.operations, false);
-    created += 1;
+    done[change.kind === "create" ? "created" : "synced"] += 1;
   }
-  return created;
+  return done;
 }
 
 function accessToken() {
@@ -205,26 +260,34 @@ async function main() {
   const policy = loadGoogleCampaigns();
   const api = googleAdsApi({customerId: policy.customerId, token: accessToken()});
   const plan = await planGoogleCampaigns({policy, api});
-  const summary = plan.changes.map(({kind, target, status, operations, locations}) =>
-    ({kind, target, ...(status ? {status} : {}), ...(operations ? {operations: operations.length} : {}),
-      ...(locations ? {locations} : {})}));
+  const summary = plan.changes.map(({operations, ...change}) =>
+    ({...change, ...(operations ? {operations: operations.length} : {})}));
   if (args.json) console.log(JSON.stringify(summary, null, 2));
   else {
     console.log(`Google Ads plan for ${plan.customerId}:`);
     for (const change of summary) {
-      console.log(change.kind === "create" ?
-        `- create ${change.target} (PAUSED, ${change.operations} operations, validated) in ${change.locations.join(", ")}` :
-        `- keep ${change.target} (exists, ${change.status}; left unchanged)`);
+      if (change.kind === "create") {
+        console.log(`- create ${change.target} (PAUSED, ${change.operations} operations, validated) in ${change.locations.join(", ")}`);
+      } else if (change.kind === "sync") {
+        const parts = [
+          change.addLocations.length ? `add ${change.addLocations.join(", ")}` : "",
+          change.removeLocations.length ? `remove locations ${change.removeLocations.join(", ")}` : "",
+          change.addNegatives.length ? `add negatives ${change.addNegatives.join(", ")}` : "",
+        ].filter(Boolean);
+        console.log(`- sync ${change.target} (exists, ${change.status}; validated): ${parts.join("; ")}`);
+      } else {
+        console.log(`- keep ${change.target} (exists, ${change.status}; matches the catalog)`);
+      }
     }
   }
   if (!args.apply) {
-    if (summary.some((change) => change.kind === "create")) {
-      console.log("Nothing was changed. Re-run with --apply to create these campaigns, paused.");
+    if (summary.some((change) => change.kind !== "keep")) {
+      console.log("Nothing was changed. Re-run with --apply to make these changes; new campaigns start paused.");
     }
     return;
   }
-  const created = await applyGoogleCampaigns({plan, api});
-  console.log(`Created ${created} campaign(s), all paused. Review and enable them in Google Ads.`);
+  const done = await applyGoogleCampaigns({plan, api});
+  console.log(`Created ${done.created} campaign(s), all paused, and synced ${done.synced}. Review them in Google Ads.`);
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {

@@ -41,12 +41,13 @@ test("the owner is a manager with no expiry and no identity fields", () => {
   assert.equal(view.uid, "manager-1");
   assert.equal(view.expiresAtMillis, null);
   assert.deepEqual(Object.keys(view).sort(), [
-    "activeFromMillis", "assignments", "duties", "expiresAtMillis",
-    "functionAll",
+    "activeFromMillis", "arrivalRoutes", "assignments", "duties",
+    "expiresAtMillis", "functionAll",
     "functionScoped", "grantExpiresAtMillis", "hotelAll", "hotelScoped",
     "organizerId", "ownerUid",
     "pickupAll", "pickupScoped", "programId", "revision", "role", "status",
-    "uid", "version", "workFunction", "workHotel", "workPickup"]);
+    "tripRoutes", "uid", "version", "workFunction", "workHotel",
+    "workPickup"]);
 });
 
 test("a station-scoped duty lists its station and no all-station key", () => {
@@ -89,6 +90,41 @@ test("the work lists follow the work-access callable's scope rules", () => {
   assert.deepEqual(desk.workPickup, {});
   assert.deepEqual(desk.workHotel, {"h-1": now + hour});
   assert.deepEqual(desk.workFunction, {});
+});
+
+test("arrival routes pair one assignment's pickup and hotel scopes", () => {
+  const view = staffProgramAccessView(program, "program-1", grant({
+    duties: [
+      {duty: "airportGreeter", pickupPointIds: ["pp-1", "pp-2"],
+        hotelIds: [], expiresAtMillis: now + hour},
+      {duty: "transportDispatcher", pickupPointIds: ["pp-3"],
+        hotelIds: ["h-1"], expiresAtMillis: now + hour},
+      {duty: "hotelDesk", pickupPointIds: [], hotelIds: ["h-9"],
+        expiresAtMillis: now + hour},
+    ]}), now)!;
+  assert.deepEqual(view.arrivalRoutes, {"pp-1|*": now + hour,
+    "pp-2|*": now + hour, "pp-3|h-1": now + hour});
+  // A coordinator reaches every journey.
+  const coordinator = staffProgramAccessView(program, "program-1", grant({
+    duties: [{duty: "programCoordinator", pickupPointIds: [],
+      hotelIds: [], expiresAtMillis: now + hour}]}), now)!;
+  assert.deepEqual(coordinator.arrivalRoutes, {"*|*": now + hour});
+});
+
+test("trip routes follow the reconciliation and dispatcher duties", () => {
+  const view = staffProgramAccessView(program, "program-1", grant({
+    duties: [
+      {duty: "reconciliationViewer", pickupPointIds: ["pp-1"], hotelIds: [],
+        expiresAtMillis: now + hour},
+      {duty: "transportDispatcher", pickupPointIds: ["pp-2"],
+        hotelIds: ["h-1"], expiresAtMillis: now + hour},
+      {duty: "airportGreeter", pickupPointIds: ["pp-3"], hotelIds: [],
+        expiresAtMillis: now + hour},
+    ]}), now)!;
+  assert.deepEqual(view.tripRoutes, {"pp-1|*": now + hour,
+    "pp-2|h-1": now + hour});
+  // The greeter reaches arrivals, never trips.
+  assert.equal(view.arrivalRoutes["pp-3|*"], now + hour);
 });
 
 test("a coordinator holds every duty but programAdmin, program-wide", () => {

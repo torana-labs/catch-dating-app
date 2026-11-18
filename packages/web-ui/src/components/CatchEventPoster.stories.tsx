@@ -44,8 +44,8 @@ export const Reference: Story = {
       label="Event poster"
       phone={{capture: "event/luma_import/390", height: 270, width: 360, x: 15, y: 212}}
       render={(width) => width === 390 ?
-        <CatchEventPoster date="Sat 15 Nov" ground="indigo" kicker="Carter Road Runners" place="Worli Sea Face, Mumbai" title="Run & Rave" /> :
-        <CatchEventPoster {...args} kicker="Carter Road Runners" place="Carter Road jetty, Bandra West" date="Sun 23 Nov" />}
+        <CatchEventPoster date="Sat 15 Nov" ground="indigo" kicker="Driftwood Bay Runners" place="Worli Sea Face, Mumbai" title="Run & Rave" /> :
+        <CatchEventPoster {...args} kicker="Driftwood Bay Runners" place="Carter Road jetty, Bandra West" date="Sun 23 Nov" />}
     />
   ),
 };

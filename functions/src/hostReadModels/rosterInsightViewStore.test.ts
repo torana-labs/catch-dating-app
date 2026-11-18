@@ -25,7 +25,7 @@ const attendeeId = (index: number) =>
 const contactId = (index: number) => `oc_${String(index).padStart(48, "c")}`;
 
 function organizer(): Data {
-  return {name: "Saket Run Club", hostUserId: "owner-1",
+  return {name: "Neemwood Run Club", hostUserId: "owner-1",
     ownerUserId: "owner-1", hostUserIds: ["owner-1"], hostProfiles: []};
 }
 

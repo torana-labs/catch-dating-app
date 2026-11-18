@@ -74,7 +74,7 @@ const neha: CatchReviewItemProps = {
 };
 
 const unclaimedNote = (
-  <CatchLegacyText as="p" color="ink2" variant="bodyS">Carter Road Runners hasn't claimed this page, so they can't reply yet.</CatchLegacyText>
+  <CatchLegacyText as="p" color="ink2" variant="bodyS">Driftwood Bay Runners hasn't claimed this page, so they can't reply yet.</CatchLegacyText>
 );
 
 /** The organiser page's list: verified with a reply, unverified, and the owner's Reply action. */

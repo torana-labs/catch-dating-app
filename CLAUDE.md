@@ -7,6 +7,9 @@ an older primary checkout may not contain current lifecycle enforcement.
 Claude-specific notes:
 
 - Preserve unrelated dirty work and inspect the current source of truth before editing.
+- Use fictional names only: no real organiser, venue or brand names, handles,
+  URLs or scraped records in the repo, issues, PR text or commits, and no bare
+  `@name` in GitHub text (AGENTS.md, Non-Negotiable Rules).
 - Keep machine-specific settings under ignored `.claude/`. Create task
   worktrees and close them out with the worktree guard exactly as
   [docs/agent_operating_model.md](docs/agent_operating_model.md) describes

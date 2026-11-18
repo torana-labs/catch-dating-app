@@ -28,7 +28,7 @@ describe("useOrganizerDirectoryController", () => {
     expect(result.current.views).toEqual(
       {all: 4, live: 3, unclaimed: 2, hidden: 0});
     expect(result.current.rows.map((row) => row.organizerId)).toEqual(
-      ["afterfly", "bhag", "bandra-runners", "mumbai-padel-social"]);
+      ["moonmoth", "brindle", "sandbar-runners", "mumbai-padel-social"]);
     expect(result.current.rows[0].upcomingEventCount).toBe(2);
 
     act(() => result.current.toggleCity("in-mh-mumbai"));
@@ -47,7 +47,7 @@ describe("useOrganizerOverviewController", () => {
   it("loads an organizer's journey and next step", async () => {
     const {wrapper} = createQueryHarness();
     const {result} = renderHook(
-      () => useOrganizerOverviewController("afterfly", {onError: vi.fn(), onNotice: vi.fn()}), {wrapper});
+      () => useOrganizerOverviewController("moonmoth", {onError: vi.fn(), onNotice: vi.fn()}), {wrapper});
 
     await waitFor(() => expect(result.current.loadState).toBe("ready"));
     expect(result.current.overview?.journey.map((step) => step.kind))
@@ -60,7 +60,7 @@ describe("useOrganizerOverviewController", () => {
     const onError = vi.fn();
     const onNotice = vi.fn();
     const {result} = renderHook(
-      () => useOrganizerOverviewController("afterfly", {onError, onNotice}), {wrapper});
+      () => useOrganizerOverviewController("moonmoth", {onError, onNotice}), {wrapper});
     await act(async () => { await result.current.checkForEvents(); });
     expect(onError).toHaveBeenCalledWith(null);
     expect(onNotice).toHaveBeenCalledWith(expect.stringContaining("Reading 1 page for new events."));
@@ -99,11 +99,11 @@ describe("organizer record labels", () => {
 
   it("writes journey steps as sentences", () => {
     expect(journeyStepCopy({kind: "nominated", at: null,
-      actorName: "Riya Sharma", detail: "https://luma.com/afterfly"},
-    "Afterfly")).toEqual({title: "Riya Sharma nominated it",
-      subtitle: "luma.com/afterfly"});
+      actorName: "Riya Sharma", detail: "https://luma.com/moonmoth"},
+    "Moonmoth")).toEqual({title: "Riya Sharma nominated it",
+      subtitle: "luma.com/moonmoth"});
     expect(journeyStepCopy({kind: "listingBuilt", at: null, actorName: null,
-      detail: "3"}, "Afterfly").subtitle).toBe("3 events found");
+      detail: "3"}, "Moonmoth").subtitle).toBe("3 events found");
     expect(nextStepCopy("claim", "Riya")?.subtitle)
       .toBe("Send them the claim link, or Riya will on the follow-up");
     expect(nextStepCopy(null, null)).toBeNull();

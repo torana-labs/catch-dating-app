@@ -124,7 +124,7 @@ function deps(firestore: FakeFirestore) {
 function pendingClaim(overrides: FakeData = {}): FakeData {
   return {
     requestId: "claim-1",
-    organizerId: "afterfly",
+    organizerId: "moonmoth",
     requesterUid: "host-1",
     requesterName: "Asha Host",
     requesterRole: "owner",
@@ -162,12 +162,12 @@ test("adminGetOrganizerClaimRequestDetailsHandler returns review-safe evidence",
   async () => {
     const firestore = new FakeFirestore({
       "organizerClaimRequests/claim-1": pendingClaim(),
-      "organizers/afterfly": {
-        name: "AFTER FLY",
+      "organizers/moonmoth": {
+        name: "MOON MOTH",
         claim: {state: "claimPending"},
         ownership: {state: "programmatic"},
         ownerUserId: null,
-        publicPage: {canonicalPath: "/organizers/afterfly/"},
+        publicPage: {canonicalPath: "/organizers/moonmoth/"},
       },
       "users/host-1": {profileComplete: false},
     });
@@ -177,7 +177,7 @@ test("adminGetOrganizerClaimRequestDetailsHandler returns review-safe evidence",
       deps(firestore)
     );
 
-    assert.equal(result.request.organizer.name, "AFTER FLY");
+    assert.equal(result.request.organizer.name, "MOON MOTH");
     assert.equal(result.request.organizer.claimState, "claimPending");
     assert.equal(result.request.requesterProfile.exists, true);
     assert.equal(result.request.requesterProfile.profileComplete, false);

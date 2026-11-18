@@ -25,7 +25,7 @@ function setup({accepted = true, used = 0, status = 200} = {}) {
     },
     fetch: (async (url: URL) => {
       requests.push(url);
-      return new Response(JSON.stringify({organic_results: [{link: "https://lu.ma/blrdroid", title: "BlrDroid"},
+      return new Response(JSON.stringify({organic_results: [{link: "https://lu.ma/bytebanyan", title: "ByteBanyan"},
         {link: "javascript:alert(1)"}, {title: "no link"}]}), {status});
     }) as unknown as typeof fetch};
   return {db, deps, requests, reads: () => secretReads};
@@ -35,12 +35,12 @@ test("a configured, accepted search sends one Google query for the handle and co
   const t = setup();
   const port = await linkSearchFor(t.deps, policy);
   assert.ok(port);
-  assert.deepEqual(await port.search({runKey: "nom-1|search-1", query: "\"blrdroid\""}),
-    [{url: "https://lu.ma/blrdroid", title: "BlrDroid"}]);
+  assert.deepEqual(await port.search({runKey: "nom-1|search-1", query: "\"bytebanyan\""}),
+    [{url: "https://lu.ma/bytebanyan", title: "ByteBanyan"}]);
   const sent = t.requests[0];
   assert.deepEqual([sent.origin + sent.pathname, sent.searchParams.get("engine"), sent.searchParams.get("q"),
     sent.searchParams.get("api_key"), sent.searchParams.get("num")],
-  ["https://serpapi.com/search.json", "google", "\"blrdroid\"", "secret-key", "10"]);
+  ["https://serpapi.com/search.json", "google", "\"bytebanyan\"", "secret-key", "10"]);
   assert.equal(t.db.read("supplyIntakeUsage/web-search-2026-10")?.networkRequests, 1);
   // One query per intake run.
   await assert.rejects(port.search({runKey: "nom-1|search-2", query: "x"}), {code: "BUDGET_EXCEEDED"});

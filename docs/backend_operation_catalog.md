@@ -459,8 +459,6 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `adminGetMarketplace` | Admin callable (owner) | Admin Marketplace | Read only | Four parameterised BigQuery queries over `organizers_raw_latest`, `events_raw_latest` and `event_participations_raw_latest` in `catch_analytics`, India time; no-shows count only events that checked anyone in; a return window not yet over reads as unknown. When the warehouse cannot be read it answers `available: false` instead of failing. Sales owners of quiet organizers come from `organizerSalesAccounts`. |
 | `onHostApplicationAccepted` | Firestore create trigger (runtime export pending) | New website `salesInboundIntents` receipt | Private `hostOperatorAlerts/{eventId}` | Default-off, explicit activation cutoff, one durable notice per new Host receipt. Excludes attendee/honeypot paths, legacy/repeated acquisitions, internal_qa_ submission IDs, [QA] names and reserved test email domains. Never delays intake. |
 | `dispatchHostApplicationAlerts` | Scheduled function (runtime export pending) | Every minute, at most 20 sequential notices | Private `hostOperatorAlerts/{eventId}` | Rechecks live intake, sends only an Admin link to the fixed operator via the scoped Resend adapter. Five bounded throttle retries within 24h; unknown/interrupted sends never auto-retry. Terminal receipts remain for deduplication without contact/answer snapshots. Secret, runtime identity and activation require a reviewed release; no advertising consent is required for this operational staff notification. |
-| `hostAcquisitionConsent` | HTTP function | Host website privacy choice at `/api/host-acquisition-consent` | Private `hostAcquisitionConsents/{capabilityHash}` | Default-disabled grants; versioned purpose, bounded request, exact-origin CORS and separate grant/withdrawal rate limits. Transactional replay preserves expiry, and withdrawal tombstones prevent delayed grants from restoring permission. No raw capability or contact data is stored or logged. |
-| `expireHostAcquisitionConsent` | Scheduled function | Every 15 minutes | Expired private `hostAcquisitionConsents` and optional Host intake attribution | At most 500 records per collection per invocation. Attribution withdrawal/expiry removes only the optional snapshot, preserving operational intake. Each transaction rechecks current expiry so concurrent withdrawal extensions are retained. Does not depend on a separately configured TTL policy. |
 
 ## Direct Client Firestore Writes
 
@@ -562,6 +560,36 @@ checks (`phone_import_adapter` before the import commit, and the import route's
 access refresh) keep calling `getProgramWorkAccess` live: each is the review
 before a write, and the current wedding-wide guest grant it confirms must come
 from the server, never a cache.
+`getProgramFunctionDoorView` moves to the door read models
+(`programDoorFunctions`, `programDoorRows`, `programDoorJournalViews`):
+function-scoped, readable when the account's function check-in or function
+lead duty covers the function, with no contact fields; the door's offline
+outbox and journal writes are unchanged. `getProgramLiveBoard` and
+`listProgramStaffAttention` move to `programAlertViews` (duty-tagged alerts
+with their resolution, readable by duty, travel alerts by full reach only),
+`programTravelCountViews` and the function labels of `programResourceViews`;
+the phone computes the schedule phases from its clock. `resolveProgramAlert`,
+`recordProgramDoorJournal` and `createProgramWalkIn` stay commands with their
+revision and request-id fences. All three callables stay deployed for older
+builds, retire-later.
+
+`getProgramArrivalsRoster`, `getProgramDeparturesRoster` and
+`listTransportVendors` move to read models: `programArrivalViews` (readable
+where one greeter, dispatcher or coordinator assignment covers the journey's
+pickup point and hotel together, through the access view's `arrivalRoutes`),
+`programDepartureViews` (hotel desk duty covering the hotel) and
+`programVendorViews` (dispatchers; the callable never returned the vendor's
+phone number, and the view cannot hold it). The desk counts come from the rows
+and the phone's clock. All three callables stay deployed for older builds,
+retire-later. `getProgramHotelInbound` and `listProgramTrips` move in the next
+transport batch; `getProgramTransportPlan` stays server-trust below.
+
+`listProgramTrips` and `getProgramHotelInbound` move to `programTripViews`
+(readable where one reconciliation viewer, dispatcher or coordinator assignment
+covers the trip's pickup point and hotel together, through the access view's
+`tripRoutes`; and by the destination hotel's desk while the trip is en route)
+and `programHotelInboundViews` (the hotel desk's expected guests). Both
+callables stay deployed for older builds, retire-later.
 
 **Read path decision (Nov 2026, #1339): server-trust.** `getProgramTransportPlan`
 stays a callable: it groups waiting parties into vehicles with an algorithm
@@ -745,7 +773,7 @@ collections by owner decision (12 Nov 2026).
 | `eventSuccessUnitOutcomes/{eventId}` | `recordEventSuccessUnitOutcomes` callable | Event Host get only. Lists, attendee reads, and every direct client write are denied. |
 | `eventSuccessStandings/{eventId}` | `recordEventSuccessUnitOutcomes` callable | Authorized Host, active participant, or ready external runtime identity may get the event projection. Lists and every direct client write are denied. |
 | `eventInviteLinkSecrets`, `eventInviteTouches`, `eventShareIntents`, `eventInviteAttributions` | Invite bearer-token, measurement and verified-fact attribution callables/triggers | Server-only. Touch and intent evidence use TTL; raw tokens and immutable attribution facts are never directly exposed. |
-| `organizerAudienceSummaries/{organizerId}` / `organizerAudienceProjectionReceipts/{receiptId}` | Audience projection and CRM summary callable | Server-only. Receipts require TTL on `expiresAt`; summaries expose only authorized aggregate responses. |
+| `organizerAudienceSummaries/{organizerId}` | Audience projection and CRM summary callable | Server-only. Summaries expose only authorized aggregate responses; the projection's redelivery receipts are `commandReceipts` entries. |
 | `organizerClaimRequests/{requestId}` / `scheduleLocks/{lockId}` | Organizer claim callables; event publication, schedule edit, booking and waitlist callables (organizer locks `organizer_{organizerId}_{slot}`, user locks `user_{uid}_{slot}`) | Server-only; direct client reads/writes denied. |
 | `organizers/{organizerId}` writes | Organizer create/update/archive/delete, admin publishing, and projection triggers | Public read; direct client writes denied. |
 | `organizers/{organizerId}/posts/{postId}` | `createOrganizerPost` callable | Authenticated clients can read; direct writes denied. |

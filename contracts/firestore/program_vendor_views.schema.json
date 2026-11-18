@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_vendor_views.schema.json",
+  "title": "ProgramVendorViewDocument",
+  "description": "Server-maintained transport vendor of one programme as dispatchers see it: exactly the vendor fields listTransportVendors returned (id, name, active). The vendor's phone number, bound programmes and every other field stay in transportVendors. Written by a trigger on transportVendors, one document per programme the vendor is bound to. Readable by accounts holding the transport dispatcher duty (coordinators included) and the programme owner.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programVendorViews",
+  "x-firestore-path": "programVendorViews/{programId}__{vendorId}",
+  "x-document-id-field": "viewId",
+  "x-owner": "Programme read model projector (programArrivalViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "vendorId",
+    "name",
+    "active",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "vendorId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "name": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

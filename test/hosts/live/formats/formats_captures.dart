@@ -41,7 +41,7 @@ DateTime get hostFormatsCourtsNow =>
 final Event podsEvent = buildEvent(
   id: 'run-1',
   organizerId: 'organizer-1',
-  name: 'Carter Road Social Run',
+  name: 'Salt Air Social Run',
   startTime: DateTime(2026, 11, 8, 6, 30),
   endTime: DateTime(2026, 11, 8, 7, 45),
 );

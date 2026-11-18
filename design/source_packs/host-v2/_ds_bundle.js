@@ -136,14 +136,14 @@ function App() {
   }), /*#__PURE__*/React.createElement(TweakSection, {
     label: "Jump to"
   }), /*#__PURE__*/React.createElement(TweakButton, {
-    label: "Unclaimed listing (AFTER FLY)",
-    onClick: () => go('listing', 'afterfly')
+    label: "Unclaimed listing (MOON MOTH)",
+    onClick: () => go('listing', 'moonmoth')
   }), /*#__PURE__*/React.createElement(TweakButton, {
     label: "Verified listing (Run Collective)",
     onClick: () => go('listing', 'indore-run-collective')
   }), /*#__PURE__*/React.createElement(TweakButton, {
     label: "Claim flow",
-    onClick: () => go('claim', 'afterfly')
+    onClick: () => go('claim', 'moonmoth')
   })));
 }
 ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
@@ -603,7 +603,7 @@ window.ClaimPage = ClaimPage;
 // catch-website/site/data.js
 try { (() => {
 // Catch website prototype — Indore demo dataset.
-// Mix of one REAL scraped seed (AFTER FLY, from website/src/generated/hostListings.json)
+// Mix of one REAL scraped seed (MOON MOTH, from website/src/generated/hostListings.json)
 // and fabricated-but-plausible Indore organizers to make the directory feel alive.
 
 window.SITE_CITY = {
@@ -636,11 +636,11 @@ window.SITE_CITIES = [{
 
 // status: 'verified' (claimed + verified on Catch) | 'claimed' (claimed, verification pending) | 'unclaimed'
 window.ORGS = [{
-  id: 'afterfly',
-  name: 'AFTER FLY',
-  monogram: 'AF',
+  id: 'moonmoth',
+  name: 'MOON MOTH',
+  monogram: 'MM',
   act: 'socialRun',
-  area: 'Daly College area',
+  area: 'Riverside area',
   category: 'Progressive techno run club',
   formats: ['Social runs', 'Run-and-rave', 'Techno afters'],
   status: 'unclaimed',
@@ -649,7 +649,7 @@ window.ORGS = [{
   upcoming: 0,
   nextEvent: null,
   cadence: 'Last verified event · Mar 2025',
-  blurb: 'Run-and-rave organizer discovered through a public Luma event page. Sunday social run from Traffic Park, post-run techno social at Tropico Cafe.',
+  blurb: 'Run-and-rave organizer discovered through a public Luma event page. Sunday social run from Riverside Park, post-run techno social at Example Cafe.',
   seeded: true
 }, {
   id: 'indore-run-collective',
@@ -949,23 +949,23 @@ window.SITE_EVENTS = [{
 
 // ---- Listing-page deep data --------------------------------------------------
 
-// Real scraped seed (AFTER FLY) — unclaimed listing
-window.LISTING_AFTERFLY = {
-  orgId: 'afterfly',
-  headline: 'AFTER FLY run club in Indore',
-  description: 'AFTER FLY is an Indore run-and-rave organizer discovered through a public Luma event page. This unclaimed profile summarizes verified public facts for owner review and stays out of search until cadence, contact, and claim details are confirmed.',
+// Real scraped seed (MOON MOTH) — unclaimed listing
+window.LISTING_MOONMOTH = {
+  orgId: 'moonmoth',
+  headline: 'MOON MOTH run club in Indore',
+  description: 'MOON MOTH is an Indore run-and-rave organizer discovered through a public Luma event page. This unclaimed profile summarizes verified public facts for owner review and stays out of search until cadence, contact, and claim details are confirmed.',
   facts: [{
     label: 'Location',
     value: 'Indore, Madhya Pradesh'
   }, {
     label: 'Instagram',
-    value: 'afterfly.in'
+    value: 'moonmoth.example'
   }, {
     label: 'Format',
     value: 'Run club + post-run music social'
   }, {
     label: 'Verified event',
-    value: 'AFTERFLY TAKEOFF RUN & RAVE · 16 Mar 2025'
+    value: 'MOONMOTH NIGHTFALL RUN & RAVE · 16 Mar 2025'
   }, {
     label: 'Claim state',
     value: 'Unclaimed seed listing'
@@ -974,11 +974,11 @@ window.LISTING_AFTERFLY = {
     value: 'Noindex until verified'
   }],
   evidence: [{
-    title: 'AFTERFLY TAKEOFF RUN & RAVE',
+    title: 'MOONMOTH NIGHTFALL RUN & RAVE',
     date: '16 Mar 2025 · 7:00–11:00 AM IST',
-    location: 'Traffic Park → Tropico Cafe, Indore',
-    summary: 'Public Luma page lists a Sunday social run from Traffic Park near Daly College followed by a post-run techno social at Tropico Cafe.',
-    facts: ['Hosted by AFTER FLY', 'Listed under Fitness & Wellness', '2.2 km run segment, optional for walkers', '₹499 per person, payment by Instagram DM', 'Registration closed on the public page'],
+    location: 'Riverside Park → Example Cafe, Indore',
+    summary: 'Public Luma page lists a Sunday social run from Riverside Park followed by a post-run techno social at Example Cafe.',
+    facts: ['Hosted by MOON MOTH', 'Listed under Fitness & Wellness', '2.2 km run segment, optional for walkers', '₹499 per person, payment by Instagram DM', 'Registration closed on the public page'],
     sourceLabel: 'Luma event page'
   }],
   sources: [{
@@ -989,12 +989,12 @@ window.LISTING_AFTERFLY = {
   }, {
     type: 'Embedded event data',
     label: 'Luma structured data',
-    detail: 'Structured data confirms 2025-03-16 timing and lists instagram handle afterfly.in.',
+    detail: 'Structured data confirms 2025-03-16 timing and lists instagram handle moonmoth.example.',
     confidence: 'high'
   }, {
     type: 'User seed',
     label: 'Seed request',
-    detail: 'A user requested an initial listing for Afterfly Run Club in Indore.',
+    detail: 'A user requested an initial listing for Moonmoth Run Club in Indore.',
     confidence: 'medium'
   }],
   missing: ['Owner verification or claim', 'Logo / profile image permission', 'Event cadence after Mar 2025', 'Owner contact outside platform relay', 'Current booking process'],
@@ -1005,7 +1005,7 @@ window.LISTING_AFTERFLY = {
     verified: false,
     date: 'Apr 2025',
     source: 'Public listing',
-    text: 'Takeoff run was chaotic in the best way. The post-run set at Tropico went two hours longer than planned.',
+    text: 'Nightfall run was chaotic in the best way. The post-run set at the cafe went two hours longer than planned.',
     response: null
   }, {
     id: 'r2',
@@ -4137,7 +4137,7 @@ function synthUnclaimed(org) {
       confidence: 'medium'
     }],
     missing: ['Owner verification or claim', 'Logo / profile image permission', 'Current event cadence', 'Owner contact', 'Booking process'],
-    reviews: (window.LISTING_AFTERFLY.reviews || []).slice(0, 1).map(r => ({
+    reviews: (window.LISTING_MOONMOTH.reviews || []).slice(0, 1).map(r => ({
       ...r,
       text: 'Joined once via a public invite — good crowd, hard to find out when the next one is.',
       name: 'Anonymous'
@@ -4347,11 +4347,11 @@ function ListingPage({
   orgId,
   t
 }) {
-  const org = orgById(orgId) || orgById('afterfly');
+  const org = orgById(orgId) || orgById('moonmoth');
   const variant = t.listingState === 'auto' ? org.status === 'verified' ? 'verified' : 'unclaimed' : t.listingState;
   const data = useLiMemo(() => {
     if (variant === 'verified') return org.id === 'indore-run-collective' ? window.LISTING_IRC : synthVerified(org);
-    return org.id === 'afterfly' ? window.LISTING_AFTERFLY : synthUnclaimed(org);
+    return org.id === 'moonmoth' ? window.LISTING_MOONMOTH : synthUnclaimed(org);
   }, [org.id, variant]);
   const a = actOf(org.act);
   const strength = variant === 'verified' ? t.strengthVerified : t.strengthUnclaimed;
@@ -4899,10 +4899,10 @@ function NotesPage({
   go
 }) {
   const sampleOrg = orgById('indore-run-collective');
-  const sampleUnclaimed = orgById('afterfly');
+  const sampleUnclaimed = orgById('moonmoth');
   const sampleEv = window.SITE_EVENTS[0];
   const verifiedReview = window.LISTING_IRC.reviews[0];
-  const publicReview = window.LISTING_AFTERFLY.reviews[0];
+  const publicReview = window.LISTING_MOONMOTH.reviews[0];
   const Spec = ({
     rows
   }) => /*#__PURE__*/React.createElement("div", {
@@ -4953,7 +4953,7 @@ function NotesPage({
   }, /*#__PURE__*/React.createElement("div", {
     className: "note-block"
   }, /*#__PURE__*/React.createElement("h3", null, "Assumptions & context"), /*#__PURE__*/React.createElement(Spec, {
-    rows: [['Demo city', 'Indore only (per your answer). One real scraped seed — AFTER FLY, from hostListings.json — plus 13 fabricated-but-plausible organizers across real Indore areas.'], ['Imagery', 'Activity art only (gradient + pattern + Phosphor glyph), per the DS\u2019s art-first/photo-optional rule. No photos anywhere.'], ['Registers', 'Light is the shell. Dark is reserved for wow moments: host-page hero, app section, final CTA. Homepage hero register is a Tweak.'], ['Mobile', 'Container-query responsive. Toggle the 390px device frame in Tweaks — same code, same breakpoints as a real phone.'], ['Claim flow', 'Full multi-step (find → role → verify → pending), since claiming is the core conversion. Verification methods mirror the real site\u2019s evidence model (Instagram DM, official email, venue phone).'], ['Voice', 'Archivo for voice, system font for function, Plex Mono for data. No emoji, no hearts, no dating gradients.']]
+    rows: [['Demo city', 'Indore only (per your answer). One real scraped seed — MOON MOTH, from hostListings.json — plus 13 fabricated-but-plausible organizers across real Indore areas.'], ['Imagery', 'Activity art only (gradient + pattern + Phosphor glyph), per the DS\u2019s art-first/photo-optional rule. No photos anywhere.'], ['Registers', 'Light is the shell. Dark is reserved for wow moments: host-page hero, app section, final CTA. Homepage hero register is a Tweak.'], ['Mobile', 'Container-query responsive. Toggle the 390px device frame in Tweaks — same code, same breakpoints as a real phone.'], ['Claim flow', 'Full multi-step (find → role → verify → pending), since claiming is the core conversion. Verification methods mirror the real site\u2019s evidence model (Instagram DM, official email, venue phone).'], ['Voice', 'Archivo for voice, system font for function, Plex Mono for data. No emoji, no hearts, no dating gradients.']]
   })), /*#__PURE__*/React.createElement("div", {
     className: "note-block"
   }, /*#__PURE__*/React.createElement("h3", null, "Listing card (directory unit)"), /*#__PURE__*/React.createElement("div", {

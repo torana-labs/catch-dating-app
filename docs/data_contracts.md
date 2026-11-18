@@ -2032,10 +2032,14 @@ conversion proofs other commands read (`organizerFormAdmissionReceipts`,
 (`organizerContactMergeReceipts`, `externalEventPublicationReceipts`), and
 provider-delivery evidence (`organizerCampaignWebhookReceipts`).
 
-Moved so far: `functionEventReceipts`, `eventLiveCommandReceipts` and
-`eventChatAccessReceipts` (the five event-room commands). They are no longer
+Moved so far: `functionEventReceipts`, `eventLiveCommandReceipts`,
+`eventChatAccessReceipts` (the five event-room commands),
+`organizerAudienceProjectionReceipts` (the audience projection's trigger dedupe)
+and `organizerEntitlementReceipts` (admin grant and revoke, one command name so
+an operation id reused across the two still conflicts). They are no longer
 written or declared; their documents stay under the legal hold, and account
-deletion still removes old chat receipts by uid. Replay windows are short and an
+deletion still removes old chat receipts by uid. An entitlement grant keeps its
+own operation hash and result revision, so its identity outlives the receipt. Replay windows are short and an
 in-flight retry across the deploy only re-runs a revision-fenced or idempotent
 command, so nothing was copied forward.
 
@@ -4912,7 +4916,10 @@ instant of an assignment naming that id. `workPickup`, `workHotel` and
 `getProgramWorkAccess` resolves it (pickup points from every operational duty
 but the hotel desk, hotels from every operational duty, functions from door and
 guest-desk duties): key `*` for every one, otherwise one key per named id.
-`assignments` repeats the live duty
+`tripRoutes` holds the trips the account's reconciliation viewer, dispatcher
+and coordinator assignments reach, in the same `pickup|hotel` form. `arrivalRoutes` holds the arrivals journeys the account's airport greeter,
+transport dispatcher and coordinator assignments reach, as `pickup|hotel` keys
+(see the arrivals views below). `assignments` repeats the live duty
 tuples with their scopes and own expiries, and `grantExpiresAtMillis` the grant's
 own expiry, as `getProgramWorkAccess` returns them, because a phone's policies
 need one assignment to cover both ends of a transport route, which the flattened
@@ -4941,6 +4948,94 @@ reaches it; a query naming the programme and one kind lists every resource of
 that kind when the work list's `*` key is live (the owner always), and a scoped
 account reads its named ids one by one. With the access view they replace the
 callable, which stays deployed for older builds.
+`programDoorFunctions/{functionId}`, `programDoorRows/{functionId}__{guestId}`
+and `programDoorJournalViews/{journalId}` (#1339) are the door of one function,
+kept by triggers on `programFunctions`, `programFunctionGuests`,
+`programGuests`, `programHouseholds`, `programDoorJournal` and
+`programStaffGrants`, and created for existing sources by the
+`program-door-views` copy-forward migration. The header holds exactly the
+function fields `getProgramFunctionDoorView` returned (venue notes, dress code
+and instructions included, since only door duty holders read it). A row is one
+guest at one function with the callable's roster fields: display name, whether
+invited, RSVP and attendance state, party size, household label and the
+response note, and never a phone number, email or other contact field. An
+`allGuests` function has a row for every programme guest, a `selectedGuests`
+function for each guest with a join row, and a guest neither invited nor
+checked in has none. A journal view is one door activity entry with the guest's
+name, the action, time, party size, note and the acting staff member's label,
+without the actor's account id or the device id; once the source is
+anonymized its view drops the name, note and label. The phone computes the
+header counts (heads expected and checked in, parties, no-shows, walk-ins) from
+the rows it lists and reads the newest 60 journal views by an ordered query.
+Rules let accounts whose function check-in or function lead duty covers the
+function, and the programme owner, get these by id or list them with a query
+naming `programId` and `functionId`; coordinators hold both duties in their
+`programAccessViews` document. The door's offline outbox and journal writes are
+unchanged: only the read moves.
+
+`programAlertViews/{programId}__{alertId}` and
+`programTravelCountViews/{programId}` (#1339) are the live board's alerts and
+travel counts, kept by triggers on `organizerMomentSends`,
+`programTravelLegs` and `programAlerts` and created by the
+`program-live-board-views` migration. An alert is one document: a staff
+attention send stamped for a duty (one per run and duty, from the earliest
+send, ending 24 hours after it) or a cancelled or diverted flight or disrupted
+inbound journey (no duty, no end), merged with who took or finished it. It
+carries `duty`, `expiresAtMillis`, the resolution state and the assignee's
+account id, so a phone can tell its own alerts; clients hide an alert past
+`expiresAtMillis`, and the retention sweep's delete of the resolutions clears
+the assignee. A function lead reads the alerts stamped for a duty it holds
+(one listener per duty); full reach (coordinators and the owner) reads every
+alert and the counts. The phone computes the schedule's phases from its clock.
+`listProgramStaffAttention` reads the same alerts (source `staffAttention`).
+
+`programArrivalViews/{legId}`, `programDepartureViews/{legId}` and
+`programVendorViews/{programId}__{vendorId}` (#1339) are the transport desks'
+rows, kept by triggers on `programTravelLegs`, `programTravelParties`,
+`programGuests`, `programHotels`, `programStaffGrants`, `programStays`, the
+programme's transport settings and `transportVendors`, and created for existing
+sources by the `program-arrival-views` copy-forward migration. An arrivals row
+is one expected, ready or disrupted inbound journey with exactly the fields
+`getProgramArrivalsRoster` returns (guest name, party, flight, the curb time
+resolved from the transport settings, readiness, claimant, destination), the
+claimant's account id in place of the caller's `claimedByMe` flag, and
+`pickupKey` and `hotelKey` (the ids, or `~` when the journey has none). Rules
+match those keys against `programAccessViews.arrivalRoutes`: each key is
+`pickup|hotel`, either side an id or `*`, written from one airport greeter,
+transport dispatcher or coordinator assignment so that its pickup and hotel
+scopes cover a journey together, as the roster's query scopes do; an assignment
+whose scopes would expand past 300 routes grants none. A scoped account lists
+one route at a time with a query naming `programId` and its pickup or hotel key.
+A departures row is one outbound journey to a hotel with the callable's row
+(guest, party, flight, leave-by, the guest's room and desk state); hotel desk
+duty covering the hotel reads them by a query naming `programId` and `hotelId`,
+and the desk counts are computed on the phone from the rows and its clock. A
+vendor view is the vendor's id, name and active flag for one bound programme,
+read by dispatchers: the vendor's phone number stays in `transportVendors`, so
+the callable's reply (which never carried it) becomes a read model without
+withholding by role. None carries a phone number or other contact field.
+
+`programTripViews/{tripId}` and `programHotelInboundViews/{legId}` (#1339) are
+the transport trips and the hotel desk's expected guests, kept by triggers on
+`transportTrips`, `programTravelLegs`, `programTravelParties`, `programGuests`
+and the programme's transport settings, and created for existing sources by the
+`program-trip-views` copy-forward migration. A trip view is exactly the row
+`listProgramTrips` returns (vehicle, plate, vendor name, status, times,
+passenger count and the manifest's guest names, from the recorded dispatch
+snapshot when there is one) with `pickupKey` and `hotelKey` (`~` for a trip
+with no hotel); the trip's notes, rate, driver and account ids stay in
+`transportTrips`. Rules match the keys against `programAccessViews.tripRoutes`,
+built like `arrivalRoutes` from reconciliation viewer, transport dispatcher and
+coordinator assignments (an id or `*` per side, one assignment covering both).
+A hotel desk covering the destination hotel also reads trips still en route to
+it (a query naming `programId`, `hotelKey` and `status`), which is the hotel's
+inbound vehicle list; it therefore also sees a trip's pickup point id, vendor
+id, kind, arrival time and void reason, which `getProgramHotelInbound` did not
+return. A hotel inbound row is the expected-guest row of one expected or ready
+inbound journey (guest, party, passengers, curb time, readiness) and nothing
+about the flight, claimant or pickup point; hotel desk duty covering the hotel
+reads them by a query naming `programId` and `hotelId`. Neither holds a phone
+number or other contact field.
 
 `organizerCampaigns.recipientSource` names where recipients resolve:
 `savedAudience` (default, backed by `savedAudienceId`) or
@@ -5581,7 +5676,7 @@ event-accuracy, and unclaimed-affordance review. The shared Functions policy
 derives effective event visibility as the minimum of the event request and
 organizer ceiling on every surface and refuses a request above that ceiling.
 Before this contract shipped, the guarded visibility-decision backfill repaired
-the two production legacy approvals (`afterfly` and `bhag`) to their exact prior
+the two production legacy approvals to their exact prior
 `published` + `indexed` semantics; the post-apply dry run reported two current
 documents and zero remaining repairs.
 

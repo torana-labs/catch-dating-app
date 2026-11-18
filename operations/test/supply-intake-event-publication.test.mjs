@@ -12,9 +12,9 @@ import {
 } from "../src/workflows/supply-intake/event-publication.mjs";
 
 const NOW = "2026-10-25T08:00:00.000Z";
-const organizer = {name: "BlrDroid Community", links: ["https://luma.com/blrdroid", "https://instagram.com/blrdroid"]};
+const organizer = {name: "ByteBanyan Community", links: ["https://luma.com/bytebanyan", "https://instagram.com/bytebanyan"]};
 const event = (overrides = {}) => ({title: "Android Dev Meetup", description: "Talks and demos on Compose.",
-  organizerName: "BlrDroid Community", organizerUrl: "https://luma.com/blrdroid",
+  organizerName: "ByteBanyan Community", organizerUrl: "https://luma.com/bytebanyan",
   price: {min: 0, max: 0, currency: "INR"}, ...overrides});
 
 test("the shipped policy records the owner's pause: every imported event waits for staff until the rebrand", async () => {
@@ -80,9 +80,9 @@ test("an event whose page states no price waits for a person; a free one does no
 test("an event naming another organizer waits for a person", () => {
   assert.deepEqual(attributionFindings(event({organizerName: "Someone Else", organizerUrl: "https://luma.com/other"}),
     organizer).map((finding) => finding.check), ["organizer_attribution"]);
-  assert.deepEqual(attributionFindings(event({organizerName: "BLRDROID community!"}), organizer), [],
+  assert.deepEqual(attributionFindings(event({organizerName: "BYTEBANYAN community!"}), organizer), [],
     "names compare case- and punctuation-insensitively");
-  assert.deepEqual(attributionFindings(event({organizerName: "BlrDroid", organizerUrl: "https://lu.ma/blrdroid?x=1"}),
+  assert.deepEqual(attributionFindings(event({organizerName: "ByteBanyan", organizerUrl: "https://lu.ma/bytebanyan?x=1"}),
     organizer), [], "a matching organizer link is enough");
   assert.deepEqual(attributionFindings(event({organizerName: null, organizerUrl: null}), organizer), [],
     "a calendar event that names no organizer is the calendar owner's");

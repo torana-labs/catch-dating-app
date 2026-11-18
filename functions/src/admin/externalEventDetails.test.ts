@@ -226,9 +226,9 @@ function callableRequest(
 function externalEventDoc(overrides: FakeData = {}): FakeData {
   return {
     schemaVersion: 1,
-    eventId: "ext-afterfly-future-run",
-    canonicalHostId: "afterfly",
-    title: "Takeoff run",
+    eventId: "ext-moonmoth-future-run",
+    canonicalHostId: "moonmoth",
+    title: "Nightfall run",
     description: "Read-only external run.",
     startTime: new Date("2099-01-01T12:30:00.000Z"),
     endTime: new Date("2099-01-01T14:30:00.000Z"),
@@ -265,9 +265,9 @@ function externalEventDoc(overrides: FakeData = {}): FakeData {
       catchWaitlistEnabled: false,
       externalLinks: [{
         platform: "luma",
-        url: "https://luma.com/pxgmph3b",
+        url: "https://luma.com/mmoth26x",
         linkType: "booking_or_event_page",
-        sourceEventKey: "luma:event:pxgmph3b",
+        sourceEventKey: "luma:event:mmoth26x",
         candidateId: "candidate-1",
         primary: true,
       }],
@@ -279,21 +279,21 @@ function externalEventDoc(overrides: FakeData = {}): FakeData {
       manualApprovalRequired: true,
     },
     dedupe: {
-      normalizedEventKey: "afterfly:2099-01-01:takeoff-run",
+      normalizedEventKey: "moonmoth:2099-01-01:nightfall-run",
       primaryCandidateId: "candidate-1",
       duplicateCandidateIds: [],
       conflictPolicy: "single_read_only_event_with_multiple_outbound_links",
     },
     externalSource: {
       candidateId: "candidate-1",
-      sourceEventKey: "luma:event:pxgmph3b",
-      sourceEventId: "pxgmph3b",
+      sourceEventKey: "luma:event:mmoth26x",
+      sourceEventId: "mmoth26x",
       platform: "luma",
-      eventUrl: "https://luma.com/pxgmph3b",
-      sourceUrl: "https://luma.com/pxgmph3b",
+      eventUrl: "https://luma.com/mmoth26x",
+      sourceUrl: "https://luma.com/mmoth26x",
     },
     review: {
-      eventReviewBatchId: "2026-06-17-afterfly-luma-events",
+      eventReviewBatchId: "2026-06-17-moonmoth-luma-events",
       reviewer: "admin-1",
       decidedAt: "2026-06-18",
       note: "Approved external read-only event.",
@@ -315,10 +315,10 @@ test(
   "adminListExternalEventDetailsHandler returns launch-city rows",
   async () => {
     const h = harness({
-      "externalEvents/ext-afterfly-future-run": externalEventDoc(),
+      "externalEvents/ext-moonmoth-future-run": externalEventDoc(),
       "externalEvents/ext-bandra-future-run": externalEventDoc({
         eventId: "ext-bandra-future-run",
-        canonicalHostId: "bandra-runners",
+        canonicalHostId: "sandbar-runners",
         title: "Bandra sunset run",
         startTime: new Date("2099-01-02T12:30:00.000Z"),
         discovery: {
@@ -354,16 +354,16 @@ test(
 
     assert.deepEqual(
       result.rows.map((row) => row.eventId),
-      ["ext-afterfly-future-run", "ext-bandra-future-run"]
+      ["ext-moonmoth-future-run", "ext-bandra-future-run"]
     );
     assert.equal(
       result.rows[0].targetPath,
-      "externalEvents/ext-afterfly-future-run"
+      "externalEvents/ext-moonmoth-future-run"
     );
     assert.equal(result.rows[0].availability, "read_only_external");
     assert.equal(
       result.rows[0].primaryExternalUrl,
-      "https://luma.com/pxgmph3b"
+      "https://luma.com/mmoth26x"
     );
     assert.deepEqual(
       h.rateLimitCalls,
@@ -377,18 +377,18 @@ test(
   "adminListExternalEventDetailsHandler searches source and dedupe text",
   async () => {
     const h = harness({
-      "externalEvents/ext-afterfly-future-run": externalEventDoc(),
+      "externalEvents/ext-moonmoth-future-run": externalEventDoc(),
       "externalEvents/ext-bandra-future-run": externalEventDoc({
         eventId: "ext-bandra-future-run",
         title: "Bandra sunset run",
-        canonicalHostId: "bandra-runners",
+        canonicalHostId: "sandbar-runners",
         externalSource: {
           candidateId: "candidate-2",
           sourceEventKey: "luma:event:bandra",
           sourceEventId: "bandra",
           platform: "luma",
-          eventUrl: "https://luma.com/bandra",
-          sourceUrl: "https://luma.com/bandra",
+          eventUrl: "https://luma.com/sandbar-sunsets",
+          sourceUrl: "https://luma.com/sandbar-sunsets",
         },
         dedupe: {
           normalizedEventKey: "bandra:2099-01-02:sunset-run",
@@ -418,7 +418,7 @@ test(
   "adminListExternalEventDetailsHandler denies viewer-only admins",
   async () => {
     const h = harness({
-      "externalEvents/ext-afterfly-future-run": externalEventDoc(),
+      "externalEvents/ext-moonmoth-future-run": externalEventDoc(),
     });
 
     await assert.rejects(

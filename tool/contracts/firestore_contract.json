@@ -38,10 +38,6 @@
         "reason": "Server-only collection; no test yet proves client reads and writes are denied."
       },
       {
-        "id": "organizerAudienceProjectionReceipts",
-        "reason": "Server-only collection; no test yet proves client reads and writes are denied."
-      },
-      {
         "id": "eventWaitlistOffers",
         "reason": "Client access (offered attendee or club host) has no rules test yet."
       },
@@ -127,11 +123,16 @@
         "actOnEventChatMessage",
         "setEventChatReaction",
         "updateEventChatProfileSharing",
-        "manageEventChatMember"
+        "manageEventChatMember",
+        "adminGrantOrganizerEntitlement",
+        "adminRevokeOrganizerEntitlementGrant",
+        "onEventAttendeeAudienceProjected",
+        "onHostMembershipAudienceProjected",
+        "onOrganizerCommunicationPreferenceAudienceProjected"
       ],
       "migrationNotes": [
         "One replay-receipt collection since L8 of the Firestore consolidation: commandReceipts/{command}_{id} with command, requestHash, result, createdAt and expiresAt, and expiresAt (seven days for triggers, thirty for requests and webhooks; the TTL policy is approved by the owner, 18 Nov 2026).",
-        "functionEventReceipts, eventLiveCommandReceipts and eventChatAccessReceipts stopped being written and keep their documents under the legal hold, with no client access; replay windows are short, so none were copied forward.",
+        "functionEventReceipts, eventLiveCommandReceipts, eventChatAccessReceipts, organizerAudienceProjectionReceipts and organizerEntitlementReceipts stopped being written and keep their documents under the legal hold, with no client access; replay windows are short, so none were copied forward.",
         "Consent, money, safety and audit receipts stay in their own collections."
       ]
     },
@@ -1826,24 +1827,6 @@
       ]
     },
     {
-      "id": "organizerEntitlementReceipts",
-      "path": "organizerEntitlementReceipts/{receiptId}",
-      "rulesMatch": "/organizerEntitlementReceipts/{receiptId}",
-      "typescriptInterface": "OrganizerEntitlementReceiptDocument",
-      "dartModel": null,
-      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
-      "rulesTestNames": [
-        "keeps organizer entitlement state server-only"
-      ],
-      "owner": "admin organizer entitlement grant/revoke callables",
-      "read": "server only",
-      "write": "server only; idempotency receipts for admin entitlement mutations",
-      "migrationNotes": [
-        "receiptId is organizerId_operationId; a matching contentHash replays the stored result and a different hash fails closed.",
-        "expiresAt is a TTL tombstone thirty days after creation."
-      ]
-    },
-    {
       "id": "organizerForms",
       "path": "organizerForms/{formId}",
       "rulesMatch": "/organizerForms/{formId}",
@@ -2193,24 +2176,6 @@
       ],
       "rulesTestNames": [
         "lets current managers read WhatsApp thread views and one thread's messages"
-      ]
-    },
-    {
-      "id": "organizerAudienceProjectionReceipts",
-      "path": "organizerAudienceProjectionReceipts/{eventId}",
-      "rulesMatch": "/organizerAudienceProjectionReceipts/{eventId}",
-      "typescriptInterface": "OrganizerAudienceProjectionReceiptDocument",
-      "dartModel": null,
-      "owner": "organizer audience summary projection",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "onEventAttendeeAudienceProjected",
-        "onOrganizerCommunicationPreferenceAudienceProjected"
-      ],
-      "migrationNotes": [
-        "Receipts make summary deltas exactly once across trigger retries.",
-        "Requires a Firestore TTL policy on expiresAt."
       ]
     },
     {
@@ -3317,6 +3282,229 @@
       "migrationNotes": [
         "Labels only, as getProgramWorkAccess returns them. A hotel's reception contact and notes, a function's venue notes, location, instructions and dress code, and a pickup point's coordinates and instructions are never copied. The program-work-views copy-forward migration creates views for resources that predate the triggers.",
         "No personal data: nothing for account deletion to scrub; archive anonymization reaches the views through the source triggers."
+      ]
+    },
+    {
+      "id": "programDoorFunctions",
+      "path": "programDoorFunctions/{functionId}",
+      "rulesMatch": "/programDoorFunctions/{functionId}",
+      "typescriptInterface": "ProgramDoorFunctionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+      "rulesTestNames": [
+        "reads a function's door only where a door duty covers it"
+      ],
+      "owner": "Programme read model projector: programDoorViewTriggers",
+      "read": "get by id where the account's function check-in or function lead duty covers the function (programAccessViews), and the programme owner, while not deleted; never listed",
+      "write": "server only; written from programFunctions",
+      "exportedFunctions": [
+        "onProgramDoorFunctionChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the function fields getProgramFunctionDoorView returned, venue notes, dress code and instructions included, for door duty holders only. The program-door-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programDoorRows",
+      "path": "programDoorRows/{functionId}__{guestId}",
+      "rulesMatch": "/programDoorRows/{rowId}",
+      "typescriptInterface": "ProgramDoorRowDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+      "rulesTestNames": [
+        "lists door rows and journal entries for one covered function"
+      ],
+      "owner": "Programme read model projector: programDoorViewTriggers",
+      "read": "get and list (query naming programId and functionId) where a door duty covers the function, and the programme owner, while not deleted",
+      "write": "server only; written from programFunctionGuests, programGuests, programHouseholds and programFunctions",
+      "exportedFunctions": [
+        "onProgramDoorFunctionChanged",
+        "onProgramDoorJoinChanged",
+        "onProgramDoorGuestChanged",
+        "onProgramDoorHouseholdChanged"
+      ],
+      "migrationNotes": [
+        "Display name, RSVP and attendance state, party size, household label and response note only; never a phone number, email or other contact field. An allGuests function has a row for every programme guest. The program-door-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone.",
+        "Guest and household anonymization reaches the rows through their source triggers."
+      ]
+    },
+    {
+      "id": "programDoorJournalViews",
+      "path": "programDoorJournalViews/{journalId}",
+      "rulesMatch": "/programDoorJournalViews/{journalId}",
+      "typescriptInterface": "ProgramDoorJournalViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+      "rulesTestNames": [
+        "lists door rows and journal entries for one covered function"
+      ],
+      "owner": "Programme read model projector: programDoorViewTriggers",
+      "read": "get and list (query naming programId and functionId) where a door duty covers the function, and the programme owner, while not deleted",
+      "write": "server only; written from programDoorJournal, programGuests and programStaffGrants",
+      "exportedFunctions": [
+        "onProgramDoorJournalChanged",
+        "onProgramDoorGuestChanged",
+        "onProgramDoorStaffLabelChanged"
+      ],
+      "migrationNotes": [
+        "The newest entries are read by an ordered query with a limit of 60. No actor account id and no device id: only the actor's label. An anonymized entry's view drops the name, note and label. The program-door-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programAlertViews",
+      "path": "programAlertViews/{programId}__{alertId}",
+      "rulesMatch": "/programAlertViews/{alertId}",
+      "typescriptInterface": "ProgramAlertViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+      "rulesTestNames": [
+        "shows an alert to the lead holding its duty, never another duty's",
+        "lists alerts per duty for a lead and all of them for full reach"
+      ],
+      "owner": "Programme read model projector: programLiveBoardViewTriggers",
+      "read": "get and list by an account with the function lead duty for an alert stamped for a duty it holds (a lead lists one duty at a time), and by full reach (coordinators and the owner) for every alert, travel alerts included, while not deleted",
+      "write": "server only; written from organizerMomentSends, programTravelLegs and programAlerts",
+      "exportedFunctions": [
+        "onProgramAlertSendChanged",
+        "onProgramAlertLegChanged",
+        "onProgramAlertResolutionChanged"
+      ],
+      "migrationNotes": [
+        "One document per alert; a staff attention alert per run and duty from the earliest send, ending 24 hours after it (clients hide it past expiresAtMillis; documents are not removed by a TTL yet). Carries the assignee's account id so a phone can tell its own alerts; the retention sweep deletes the resolutions, which clears the assignee. The program-live-board-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programTravelCountViews",
+      "path": "programTravelCountViews/{programId}",
+      "rulesMatch": "/programTravelCountViews/{programId}",
+      "typescriptInterface": "ProgramTravelCountViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+      "rulesTestNames": [
+        "gives travel counts to full reach only"
+      ],
+      "owner": "Programme read model projector: programLiveBoardViewTriggers",
+      "read": "get by id by full reach (coordinators and the owner) while not deleted; never listed",
+      "write": "server only; written from programTravelLegs",
+      "exportedFunctions": [
+        "onProgramAlertLegChanged"
+      ],
+      "migrationNotes": [
+        "Readiness counts of inbound journeys. The program-live-board-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programArrivalViews",
+      "path": "programArrivalViews/{legId}",
+      "rulesMatch": "/programArrivalViews/{legId}",
+      "typescriptInterface": "ProgramArrivalViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_arrivals.rules.test.cjs",
+      "rulesTestNames": [
+        "reads a journey only where one assignment covers its pickup and hotel",
+        "lists one route's journeys, or every journey for the all-routes key"
+      ],
+      "owner": "Programme read model projector: programArrivalViewTriggers",
+      "read": "get and list where one airport greeter, dispatcher or coordinator assignment covers the journey's pickup point and hotel together (programAccessViews arrivalRoutes), and the programme owner, while not deleted; a scoped account lists one route at a time with a query naming programId and the pickup or hotel key",
+      "write": "server only; written from programTravelLegs, programTravelParties, programGuests, programHotels, programStaffGrants and the programme's transport settings",
+      "exportedFunctions": [
+        "onProgramArrivalLegChanged",
+        "onProgramArrivalPartyChanged",
+        "onProgramArrivalGuestChanged",
+        "onProgramArrivalHotelChanged",
+        "onProgramArrivalStaffLabelChanged",
+        "onProgramArrivalSettingsChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the roster row getProgramArrivalsRoster returns, plus the claimant's account id in place of claimedByMe and the pickup and hotel keys rules match; never a phone number. Only expected, ready and disrupted inbound journeys have a view. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programDepartureViews",
+      "path": "programDepartureViews/{legId}",
+      "rulesMatch": "/programDepartureViews/{legId}",
+      "typescriptInterface": "ProgramDepartureViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_arrivals.rules.test.cjs",
+      "rulesTestNames": [
+        "reads a hotel's departures only under a hotel desk duty covering it"
+      ],
+      "owner": "Programme read model projector: programArrivalViewTriggers",
+      "read": "get and list (query naming programId and hotelId) where a hotel desk duty covers the hotel, and the programme owner, while not deleted",
+      "write": "server only; written from programTravelLegs, programStays, programGuests and programTravelParties",
+      "exportedFunctions": [
+        "onProgramArrivalLegChanged",
+        "onProgramArrivalPartyChanged",
+        "onProgramArrivalGuestChanged",
+        "onProgramDepartureStayChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the row getProgramDeparturesRoster returns; the desk counts are computed on the phone from the rows and its clock. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programVendorViews",
+      "path": "programVendorViews/{programId}__{vendorId}",
+      "rulesMatch": "/programVendorViews/{viewId}",
+      "typescriptInterface": "ProgramVendorViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_arrivals.rules.test.cjs",
+      "rulesTestNames": [
+        "gives vendors to dispatchers, with no phone number to read"
+      ],
+      "owner": "Programme read model projector: programArrivalViewTriggers",
+      "read": "get and list (query naming programId) by accounts holding the transport dispatcher duty (coordinators included) and the programme owner, while not deleted",
+      "write": "server only; written from transportVendors, one document per bound programme",
+      "exportedFunctions": [
+        "onProgramVendorViewChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the fields listTransportVendors returned: id, name and active. The vendor's phone number stays in transportVendors, so a read model is possible without withholding by role. The program-arrival-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programTripViews",
+      "path": "programTripViews/{tripId}",
+      "rulesMatch": "/programTripViews/{tripId}",
+      "typescriptInterface": "ProgramTripViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_trips.rules.test.cjs",
+      "rulesTestNames": [
+        "reads a trip only where one assignment covers its pickup and hotel",
+        "lets a hotel desk read only trips still en route to its hotel"
+      ],
+      "owner": "Programme read model projector: programTripViewTriggers",
+      "read": "get and list where one reconciliation viewer, dispatcher or coordinator assignment covers the trip's pickup point and hotel together (programAccessViews tripRoutes), and the programme owner; the hotel desk covering the destination hotel reads trips still en route (a query naming programId, hotelKey and status); never while deleted",
+      "write": "server only; written from transportTrips, programGuests and programTravelLegs",
+      "exportedFunctions": [
+        "onProgramTripViewChanged",
+        "onProgramTripGuestChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the row listProgramTrips returns, with the manifest's guest names from the recorded dispatch snapshot; the trip's notes, rate, driver and account ids stay in transportTrips. Hotel desks also read a trip's pickup point id, vendor id, kind, arrival time and void reason, which getProgramHotelInbound did not return. The program-trip-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programHotelInboundViews",
+      "path": "programHotelInboundViews/{legId}",
+      "rulesMatch": "/programHotelInboundViews/{legId}",
+      "typescriptInterface": "ProgramHotelInboundViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_trips.rules.test.cjs",
+      "rulesTestNames": [
+        "gives the hotel desk its inbound guests, and no other duty"
+      ],
+      "owner": "Programme read model projector: programTripViewTriggers",
+      "read": "get and list (query naming programId and hotelId) where a hotel desk duty covers the hotel, and the programme owner, while not deleted",
+      "write": "server only; written from programTravelLegs, programTravelParties, programGuests and the programme's transport settings",
+      "exportedFunctions": [
+        "onProgramHotelInboundLegChanged",
+        "onProgramHotelInboundPartyChanged",
+        "onProgramTripGuestChanged",
+        "onProgramHotelInboundSettingsChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the expected-guest row getProgramHotelInbound returned; nothing about the flight, claimant or pickup point. The program-trip-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
       ]
     },
     {

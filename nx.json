@@ -19,6 +19,31 @@
       "!{projectRoot}/test/**/*",
       "!{projectRoot}/tests/**/*",
       "!{projectRoot}/vitest.config.*"
+    ],
+    "toolImpactPaths": [
+      "{workspaceRoot}/**/analysis_options.yaml",
+      "{workspaceRoot}/**/pubspec.yaml",
+      "{workspaceRoot}/.firebaserc",
+      "{workspaceRoot}/apps/**/*.dart",
+      "{workspaceRoot}/apps/consumer/build.yaml",
+      "{workspaceRoot}/apps/host/build.yaml",
+      "{workspaceRoot}/docs/migrations/clubs_to_organizers.md",
+      "{workspaceRoot}/extensions/**/*",
+      "{workspaceRoot}/firebase.json",
+      "{workspaceRoot}/firebase/remote_config.template.json",
+      "{workspaceRoot}/firestore.rules",
+      "{workspaceRoot}/functions/**/*.cjs",
+      "{workspaceRoot}/functions/**/*.json",
+      "{workspaceRoot}/integration_test/**/*.dart",
+      "{workspaceRoot}/lib/**/*.dart",
+      "{workspaceRoot}/nx.json",
+      "{workspaceRoot}/packages/**/*.dart",
+      "{workspaceRoot}/packages/catch_ui/**/*",
+      "{workspaceRoot}/packages/l10n/lib/app_en.arb",
+      "{workspaceRoot}/packages/web-ui-react18/**/*",
+      "{workspaceRoot}/storage.rules",
+      "{workspaceRoot}/test/**/*.dart",
+      "{workspaceRoot}/test/tool/host_section_composition_test.mjs"
     ]
   },
   "targetDefaults": {
@@ -262,6 +287,7 @@
                 "inputs": [
                   "{workspaceRoot}/tool/**/*",
                   "{workspaceRoot}/design/**/*",
+                  "toolImpactPaths",
                   "{workspaceRoot}/design_context_pack/**/*",
                   "{workspaceRoot}/analytics/**/*",
                   "{workspaceRoot}/infra/**/*",

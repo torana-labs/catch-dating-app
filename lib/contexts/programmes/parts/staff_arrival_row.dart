@@ -40,7 +40,7 @@ String staffArrivalMoveLabel(AppLocalizations l10n, StaffArrivalMove move) =>
     };
 
 /// The party, how many and where they go, who has them and how they reach
-/// the curb: "4 people · for Taj Fateh Prakash · yours".
+/// the curb: "4 people · for Lakeview Haveli · yours".
 String staffArrivalSummary(AppLocalizations l10n, ArrivalsRosterRow row) => [
   l10n.hostStaffArrivalsPeople(count: row.passengers),
   l10n.hostStaffArrivalsFor(destination: row.destinationLabel),

@@ -27,7 +27,7 @@ const grant = (uid: string, hotelIds: string[]): FakeData => ({
 
 const leg = (id: string, guestId: string, patch: FakeData = {}): FakeData => ({
   programId: "program-1", organizerId: "org-1", guestId, partyId: null,
-  kind: "outbound", destinationHotelId: "taj", flightNumber: "AI 472",
+  kind: "outbound", destinationHotelId: "haveli", flightNumber: "AI 472",
   scheduledArrivalAt: at(now.toMillis() + 5 * HOUR), manualCurbAt: null,
   readiness: "expected", pickupPointId: "udr", passengers: 1,
   luggageUnits: 2, revision: 1, ...patch,
@@ -45,10 +45,10 @@ const seed = (): Record<string, FakeData> => ({
     startsAt: at(now.toMillis() - HOUR), endsAt: at(FUTURE),
     createdBy: "manager-1", createdAt: now, updatedAt: now, revision: 1,
   },
-  "programStaffGrants/program-1__desk-taj": grant("desk-taj", ["taj"]),
+  "programStaffGrants/program-1__desk-haveli": grant("desk-haveli", ["haveli"]),
   "programStaffGrants/program-1__desk-leela": grant("desk-leela", ["leela"]),
-  "programHotels/taj": {programId: "program-1", organizerId: "org-1",
-    name: "Taj Fateh Prakash"},
+  "programHotels/haveli": {programId: "program-1", organizerId: "org-1",
+    name: "Lakeview Haveli"},
   "programGuests/kamla": {programId: "program-1", organizerId: "org-1",
     displayName: "Kamla Mehra"},
   "programGuests/neha": {programId: "program-1", organizerId: "org-1",
@@ -63,10 +63,10 @@ const seed = (): Record<string, FakeData> => ({
     readiness: "dispatched"}),
   "programTravelLegs/l-in": leg("l-in", "kamla", {kind: "inbound"}),
   "programStays/s-kamla": {programId: "program-1", organizerId: "org-1",
-    guestId: "kamla", hotelId: "taj", roomLabel: "214",
+    guestId: "kamla", hotelId: "haveli", roomLabel: "214",
     status: "checkedOut", endsAt: at(now.toMillis())},
   "programStays/s-neha": {programId: "program-1", organizerId: "org-1",
-    guestId: "neha", hotelId: "taj", roomLabel: "216",
+    guestId: "neha", hotelId: "haveli", roomLabel: "216",
     status: "checkedIn", endsAt: at(now.toMillis())},
 });
 
@@ -104,9 +104,9 @@ test("late checkouts are still in their room after leave-by", () => {
 
 test("the hotel desk reads its departures soonest first", async () => {
   const roster = await getProgramDeparturesRosterHandler(
-    request({programId: "program-1", hotelId: "taj"}, "desk-taj"),
+    request({programId: "program-1", hotelId: "haveli"}, "desk-haveli"),
     deps(new FakeFirestore(seed())));
-  assert.equal(roster.hotelName, "Taj Fateh Prakash");
+  assert.equal(roster.hotelName, "Lakeview Haveli");
   assert.deepEqual(roster.rows.map((row) =>
     [row.guestDisplayName, row.state, row.roomLabel]), [
     ["Neha Mehra", "inRoom", "216"],
@@ -120,7 +120,7 @@ test("the hotel desk reads its departures soonest first", async () => {
 
 test("another hotel's desk is refused", async () => {
   await assert.rejects(getProgramDeparturesRosterHandler(
-    request({programId: "program-1", hotelId: "taj"}, "desk-leela"),
+    request({programId: "program-1", hotelId: "haveli"}, "desk-leela"),
     deps(new FakeFirestore(seed()))),
   (err: unknown) => (err as {code?: string}).code === "permission-denied");
 });

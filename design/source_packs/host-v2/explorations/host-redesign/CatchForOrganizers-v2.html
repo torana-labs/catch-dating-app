@@ -189,7 +189,7 @@ const { useState, useEffect, useRef } = React;
 const DS = window.CatchDesignSystem_3a44f2 || {};
 const Badge = DS.Badge || (({children}) => <span>{children}</span>);
 
-const ORG = { name: 'Bandra Social', initials: 'BS', accent: '#2E9AA0', formats: ['Social run','Pub quiz','Supper club','Padel'], members: 124, events: 37, rating: '4.8' };
+const ORG = { name: 'Harbour Line Social', initials: 'BS', accent: '#2E9AA0', formats: ['Social run','Pub quiz','Supper club','Padel'], members: 124, events: 37, rating: '4.8' };
 const PORTRAIT = '../../assets/sample-portrait.jpg';
 const ACT = { socialRun:'--act-social-run', pubQuiz:'--act-pub-quiz', dinner:'--act-dinner', padel:'--act-padel' };
 const accentOf = a => `var(${ACT[a]}-accent)`, softOf = a => `var(${ACT[a]}-soft)`, deepOf = a => `var(${ACT[a]}-deep)`;
@@ -205,11 +205,11 @@ const P0 = [
   { id:'nikhil', n:'Nikhil Rao', i:'NR', g:'wait', m:'Waitlisted', tint:'oklch(0.9 0.03 280)' },
 ];
 const EVENTS = [
-  { id:'quiz42', act:'pubQuiz', title:'Tuesday Trivia Night', d:'17', mo:'JUN', month:'June', when:'Tonight · 8:00 PM', where:'The Daily Bar, Khar', cap:30, price:0 },
+  { id:'quiz42', act:'pubQuiz', title:'Tuesday Trivia Night', d:'17', mo:'JUN', month:'June', when:'Tonight · 8:00 PM', where:'The Salt Air Bar, Khar', cap:30, price:0 },
   { id:'run15', act:'socialRun', title:'Sundowner 5K, Bandra seafront', d:'21', mo:'JUN', month:'June', when:'Sat · 6:30 AM', where:'Carter Road jetty', cap:20, price:0 },
-  { id:'supper', act:'dinner', title:'Long table № 24', d:'27', mo:'JUN', month:'June', when:'Fri · 8:00 PM', where:'Pali Village Cafe', cap:12, price:1800 },
+  { id:'supper', act:'dinner', title:'Long table № 24', d:'27', mo:'JUN', month:'June', when:'Fri · 8:00 PM', where:'Lantern Lane Cafe', cap:12, price:1800 },
   { id:'padel1', act:'padel', title:'Sunday doubles social', d:'06', mo:'JUL', month:'July', when:'Sun · 9:00 AM', where:'Khar Gymkhana', cap:16, price:600 },
-  { id:'quiz41', act:'pubQuiz', title:'Tuesday Trivia Night', d:'10', mo:'JUN', month:'June', when:'Last Tue', where:'The Daily Bar, Khar', cap:30, price:0, past:{att:26, gross:0, fill:100, caught:3} },
+  { id:'quiz41', act:'pubQuiz', title:'Tuesday Trivia Night', d:'10', mo:'JUN', month:'June', when:'Last Tue', where:'The Salt Air Bar, Khar', cap:30, price:0, past:{att:26, gross:0, fill:100, caught:3} },
   { id:'run13', act:'socialRun', title:'Sundowner 5K, Bandra seafront', d:'07', mo:'JUN', month:'June', when:'10 days ago', where:'Carter Road jetty', cap:32, price:0, past:{att:27, gross:0, fill:100, caught:5} },
 ];
 const byId = id => EVENTS.find(e => e.id === id);
@@ -602,7 +602,7 @@ function Insights({ onClose, toast }) {
 function BlastSheet({ seg, onClose, toast }) {
   const [aud, setAud] = useState(seg==='prospective'?'wait':'booked');
   const [tpl, setTpl] = useState(null);
-  const TPL = [['Reminder','See you tonight at 8 — The Daily Bar, Khar. Doors at 7:45.'],['Meeting point','We’re upstairs at The Daily Bar. Ask for the Bandra Social table.'],['Change','Heads up: start pushed to 8:15. Same place.']];
+  const TPL = [['Reminder','See you tonight at 8 — The Salt Air Bar, Khar. Doors at 7:45.'],['Meeting point','We’re upstairs at The Salt Air Bar. Ask for the Harbour Line Social table.'],['Change','Heads up: start pushed to 8:15. Same place.']];
   return (<>
     <div className="scrim on" onClick={onClose}></div>
     <div className="sheet" style={{transform:'translateY(0)',zIndex:60}}>

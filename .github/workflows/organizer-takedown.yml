@@ -36,8 +36,27 @@ permissions:
   contents: read
 
 jobs:
+  # Every prod mode waits here for the owner. `prod-takedown` holds no
+  # credentials and requires a reviewer; the takedown job below signs in
+  # through `prod`, which stays approval-free so website releases and backend
+  # deploys are not held. Dev runs pass through the approval-free `dev`.
+  approve:
+    name: Approve the ${{ inputs.mode }} run in ${{ inputs.environment }}
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions: {}
+    timeout-minutes: 5
+    environment: ${{ inputs.environment == 'prod' && 'prod-takedown' || 'dev' }}
+    steps:
+      - name: Record the approval
+        shell: bash
+        run: echo "Approved for ${TARGET_ENV}."
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+
   takedown:
     name: Organiser takedown in ${{ inputs.environment }} (${{ inputs.mode }})
+    needs: approve
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     permissions:

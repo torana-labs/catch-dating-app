@@ -101,13 +101,13 @@ void main() {
         LocationPickerScreen(
           loadMapTiles: false,
           usePlatformMapView: false,
-          initialSearchQuery: 'Bandra Social',
+          initialSearchQuery: 'Harbour Line Social',
           initialSearchError: obviousOfflineException(),
         ),
       );
 
       expect(find.byType(gmaps.GoogleMap), findsNothing);
-      expect(find.text('Bandra Social'), findsOneWidget);
+      expect(find.text('Harbour Line Social'), findsOneWidget);
       expect(
         find.text(
           'We are having trouble connecting. Please check your internet and try again.',

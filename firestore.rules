@@ -291,6 +291,43 @@ service cloud.firestore {
           && programView(programId).workFunction.get('*', 0) > request.time.toMillis());
     }
 
+    // The door of one function: function check-in or function lead duty
+    // covering it, or the owner. Coordinators hold both duties in the view.
+    function programDoorCovers(programId, functionId) {
+      return programDutyCoversFunction(programId, 'functionCheckIn', functionId)
+        || programDutyCoversFunction(programId, 'functionLead', functionId);
+    }
+
+    // Full reach over programme-wide operations: coordinators and the owner.
+    function programFullReach(programId) {
+      return hasProgramDuty(programId, 'programCoordinator');
+    }
+
+    // An arrivals journey: one airport greeter, dispatcher or coordinator
+    // assignment covers its pickup point and hotel together. Each side of a
+    // route is an id or '*'; a journey with no pickup point or hotel is '~',
+    // which only '*' reaches.
+    function programArrivalRoute(programId, pickupKey, hotelKey) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && (programView(programId).arrivalRoutes.get('*|*', 0) > request.time.toMillis()
+            || programView(programId).arrivalRoutes.get(pickupKey + '|*', 0) > request.time.toMillis()
+            || programView(programId).arrivalRoutes.get('*|' + hotelKey, 0) > request.time.toMillis()
+            || programView(programId).arrivalRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
+    }
+
+    // A transport trip: one reconciliation viewer, dispatcher or coordinator
+    // assignment covers its pickup point and hotel together (the keys are an
+    // id or '*' per side; a trip with no hotel is '~').
+    function programTripRoute(programId, pickupKey, hotelKey) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && (programView(programId).tripRoutes.get('*|*', 0) > request.time.toMillis()
+            || programView(programId).tripRoutes.get(pickupKey + '|*', 0) > request.time.toMillis()
+            || programView(programId).tripRoutes.get('*|' + hotelKey, 0) > request.time.toMillis()
+            || programView(programId).tripRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
+    }
+
     function programDutyCoversFunction(programId, duty, functionId) {
       return isProgramManager(programId)
         || (hasProgramAccessView(programId)
@@ -1726,12 +1763,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Mutation receipts are idempotency records for admin callables and are
-    // never client-visible.
-    match /organizerEntitlementReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
     match /organizerContactIdentityLinks/{identityLinkId} {
       allow read, write: if false;
     }
@@ -1749,10 +1780,6 @@ service cloud.firestore {
     }
 
     match /organizerAudienceSummaries/{organizerId} {
-      allow read, write: if false;
-    }
-
-    match /organizerAudienceProjectionReceipts/{eventId} {
       allow read, write: if false;
     }
 
@@ -2506,6 +2533,77 @@ service cloud.firestore {
           && programWorkListsAllHotels(resource.data.programId))
         || (resource.data.kind == 'function'
           && programWorkListsAllFunctions(resource.data.programId));
+      allow write: if false;
+    }
+
+    // The door of one function (#1339): the header, the roster rows and the
+    // newest journal entries. Rows and entries are listed by a query naming
+    // the programme and the function; contacts never appear in them.
+    match /programDoorFunctions/{functionId} {
+      allow get: if programDoorCovers(resource.data.programId, functionId);
+      allow list, write: if false;
+    }
+    match /programDoorRows/{rowId} {
+      allow get, list: if programDoorCovers(resource.data.programId,
+        resource.data.functionId);
+      allow write: if false;
+    }
+    match /programDoorJournalViews/{journalId} {
+      allow get, list: if programDoorCovers(resource.data.programId,
+        resource.data.functionId);
+      allow write: if false;
+    }
+
+    // Live board alerts (#1339). A function lead reads the alerts stamped for
+    // a duty they hold, listing one duty at a time; full reach reads every
+    // alert, including travel alerts (no duty). The counts are full reach's.
+    match /programAlertViews/{alertId} {
+      allow get, list: if programFullReach(resource.data.programId)
+        || (hasProgramDuty(resource.data.programId, 'functionLead')
+          && resource.data.duty != null
+          && programView(resource.data.programId).duties.get(resource.data.duty, 0) > request.time.toMillis());
+      allow write: if false;
+    }
+    match /programTravelCountViews/{programId} {
+      allow get: if programFullReach(programId);
+      allow list, write: if false;
+    }
+
+    // Arrivals, departures and dispatchers' vendors (#1339). Arrivals rows
+    // follow the account's arrival routes; a scoped account lists one route at
+    // a time, a query naming the programme and its pickup and hotel keys.
+    // Departures follow the hotel desk duty; vendors the dispatcher duty.
+    match /programArrivalViews/{legId} {
+      allow get, list: if programArrivalRoute(resource.data.programId,
+        resource.data.pickupKey, resource.data.hotelKey);
+      allow write: if false;
+    }
+    match /programDepartureViews/{legId} {
+      allow get, list: if programDutyCoversHotel(resource.data.programId,
+        'hotelDesk', resource.data.hotelId);
+      allow write: if false;
+    }
+    match /programVendorViews/{viewId} {
+      allow get, list: if hasProgramDuty(resource.data.programId,
+        'transportDispatcher');
+      allow write: if false;
+    }
+
+    // Transport trips and the hotel desk's inbound guests (#1339). A trip is
+    // read by the accounts whose assignments cover its route, and, while it is
+    // still en route, by the hotel desk of its destination hotel (the hotel's
+    // inbound vehicles: a query naming programId, hotelKey and status).
+    match /programTripViews/{tripId} {
+      allow get, list: if programTripRoute(resource.data.programId,
+          resource.data.pickupKey, resource.data.hotelKey)
+        || (resource.data.status == 'enRoute'
+          && programDutyCoversHotel(resource.data.programId, 'hotelDesk',
+            resource.data.hotelKey));
+      allow write: if false;
+    }
+    match /programHotelInboundViews/{legId} {
+      allow get, list: if programDutyCoversHotel(resource.data.programId,
+        'hotelDesk', resource.data.hotelId);
       allow write: if false;
     }
 

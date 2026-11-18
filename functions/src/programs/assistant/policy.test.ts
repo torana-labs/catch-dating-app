@@ -43,7 +43,7 @@ test("media, asking for a person, distress, money and changes never reach the mo
 
 test("an answer with invented contact details or links is never sent", () => {
   const facts = "Pickup at UDR arrivals, Gate 2. Hotel desk 0294 2528016.";
-  assert.ok(answerIsSafe("Cars leave the Taj porch at 6:15 PM.", facts));
+  assert.ok(answerIsSafe("Cars leave the Haveli porch at 6:15 PM.", facts));
   assert.ok(answerIsSafe("The desk number is 0294 2528016.", facts));
   assert.ok(!answerIsSafe("Call Meher on +91 98765 01234.", facts));
   assert.ok(!answerIsSafe("See https://example.com/map", facts));

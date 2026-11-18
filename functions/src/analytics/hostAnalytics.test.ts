@@ -233,7 +233,7 @@ test("buildHostAnalyticsFromRecords aggregates host-safe metrics", () => {
     "2026-06-18T12:00:00.000Z"
   ));
 
-  assert.equal(response.scope.organizerName, "Saket Run Club");
+  assert.equal(response.scope.organizerName, "Neemwood Run Club");
   assert.deepEqual(response.scope.organizerIds, ["club-1"]);
   assert.deepEqual(response.scope.eventIds, ["event-1"]);
   assert.equal(metric(response, "listingViews").value, 12);
@@ -366,7 +366,7 @@ test("buildHostAnalyticsFromRecords totals beyond the top event slice", () => {
   const response = buildHostAnalyticsFromRecords({
     organizers: [{
       id: "club-1",
-      data: {name: "Saket Run Club"},
+      data: {name: "Neemwood Run Club"},
     }],
     events,
     martRows: [...eventRows, organizerReviewRow],
@@ -425,7 +425,7 @@ function records(): AnalyticsRecords {
     organizers: [{
       id: "club-1",
       data: {
-        name: "Saket Run Club",
+        name: "Neemwood Run Club",
       },
     }],
     events: [{
@@ -448,7 +448,7 @@ function records(): AnalyticsRecords {
     martRows: [{
       date: "2026-06-12",
       organizerId: "club-1",
-      organizerName: "Saket Run Club",
+      organizerName: "Neemwood Run Club",
       eventId: "event-1",
       eventTitle: "Social run · 2026-06-12",
       eventStartTime: "2026-06-12T01:30:00.000Z",
@@ -520,7 +520,7 @@ function martRow(overrides: Record<string, unknown> = {}) {
   return {
     date: "2026-06-12",
     organizerId: "club-1",
-    organizerName: "Saket Run Club",
+    organizerName: "Neemwood Run Club",
     eventId: "event-1",
     eventTitle: "Social run · 2026-06-12",
     eventStartTime: "2026-06-12T01:30:00.000Z",

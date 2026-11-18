@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   canonicalMarketsFromCatalog,
   launchStatusForLifecycle,
+  adTargetingFromCatalog,
   marketCatalogErrors,
   readMarketCatalog,
   repoRoot,
@@ -82,6 +83,31 @@ test("cross-record rules catch collisions and lifecycle misuse", () => {
   assert.match(errors, /np-p3-kathmandu: a hidden city cannot be websiteListed/);
   assert.match(errors, /in-tg-hyderabad: launchDate is only for a launching city/);
   assert.match(errors, /IN: defaultMarketId np-p3-kathmandu is in another country/);
+});
+
+test("ad blocks need location IDs when on, live cities for guest ads, and no shared IDs", () => {
+  const value = clone();
+  city(value, "in-mp-indore").ads = {host: "on", guest: "off"};
+  city(value, "in-ka-bengaluru").ads.guest = "on";
+  city(value, "np-p3-kathmandu").ads = {host: "on", guest: "off", metaCityKeys: ["1"], googleGeoTargetIds: [2]};
+  city(value, "in-tg-hyderabad").ads = {host: "on", guest: "off", metaCityKeys: ["1035921"], googleGeoTargetIds: [3]};
+  const errors = marketCatalogErrors(value).join("\n");
+  assert.match(errors, /in-mp-indore: ads switched on need metaCityKeys and googleGeoTargetIds/);
+  assert.match(errors, /in-ka-bengaluru: guest ads need lifecycle live, not waitlist/);
+  assert.match(errors, /np-p3-kathmandu: a hidden city cannot run host ads/);
+  assert.match(errors, /Meta city key "meta:1035921" of in-tg-hyderabad already names in-mh-mumbai/);
+  const bad = clone();
+  city(bad, "in-mh-mumbai").ads.host = "yes";
+  assert.match(schemaErrors(bad).join("\n"), /host/);
+});
+
+test("ad targeting is read per programme from the catalog", () => {
+  const host = adTargetingFromCatalog(catalog, "host");
+  assert.ok(host.marketIds.includes("in-mh-mumbai"));
+  assert.ok(!host.marketIds.includes("in-mp-indore"));
+  assert.equal(host.metaCityKeys.length, new Set(host.metaCityKeys).size);
+  assert.deepEqual(adTargetingFromCatalog(catalog, "guest").marketIds, []);
+  assert.throws(() => adTargetingFromCatalog(catalog, "everyone"), /Unknown ad programme/);
 });
 
 test("a launching city may carry a real launch date", () => {

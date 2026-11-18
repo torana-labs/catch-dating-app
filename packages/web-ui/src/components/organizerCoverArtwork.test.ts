@@ -4,7 +4,7 @@ import {organizerMonogram, organizerPlaceholderCover, organizerPlaceholderCoverL
 
 describe("organizerMonogram", () => {
   it("takes the first letters of the first two words", () => {
-    expect(organizerMonogram("AFTER FLY")).toBe("AF");
+    expect(organizerMonogram("MOON MOTH")).toBe("MM");
     expect(organizerMonogram("Evening Club")).toBe("EC");
     expect(organizerMonogram("the 5K crew")).toBe("T5");
   });
@@ -18,9 +18,9 @@ describe("organizerMonogram", () => {
 
 describe("organizerPlaceholderCoverLayout", () => {
   it("is deterministic per organiser", () => {
-    const input = {name: " AFTER FLY ", city: "Mumbai", activityKind: "social_run"};
+    const input = {name: " MOON MOTH ", city: "Mumbai", activityKind: "social_run"};
     expect(organizerPlaceholderCoverLayout(input)).toEqual(organizerPlaceholderCoverLayout(input));
-    expect(organizerPlaceholderCoverLayout(input)).toEqual({activityKind: "socialRun", name: "AFTER FLY", city: "Mumbai", monogram: "AF"});
+    expect(organizerPlaceholderCoverLayout(input)).toEqual({activityKind: "socialRun", name: "MOON MOTH", city: "Mumbai", monogram: "MM"});
   });
 
   it("leaves out a blank city", () => {

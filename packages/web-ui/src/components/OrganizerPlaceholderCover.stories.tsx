@@ -4,7 +4,7 @@ import {OrganizerPlaceholderCover} from "./OrganizerPlaceholderCover";
 const meta = {
   title: "Web UI/Club placeholder cover",
   component: OrganizerPlaceholderCover,
-  args: {name: "AFTER FLY", city: "Mumbai", activityKind: "socialRun"},
+  args: {name: "MOON MOTH", city: "Mumbai", activityKind: "socialRun"},
   decorators: [Story => <div style={{inlineSize: 400, aspectRatio: 1.85}}><Story /></div>],
 } satisfies Meta<typeof OrganizerPlaceholderCover>;
 

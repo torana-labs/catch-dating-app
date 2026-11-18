@@ -33,7 +33,7 @@ class CatchMapPin {
   final double x;
   final double y;
 
-  /// A short name beside the dot: "The Bombay Canteen", "Start".
+  /// A short name beside the dot: "The Harbour Canteen", "Start".
   final String? label;
   final CatchFormat format;
   final CatchMapPinStatus status;

@@ -38,7 +38,7 @@ export interface CatchOrganizerCardLegacyProps {
   initials?: string;
   /** The organiser's page; the name links to it when given. */
   href?: string;
-  /** The next plan, such as "Next: Fri 6:30 AM · Carter Road Social Run". */
+  /** The next plan, such as "Next: Fri 6:30 AM · Salt Air Social Run". */
   next: string;
   /** The quiet line at the foot, such as "212 followers" or "Joining at launch". */
   footnote?: string;

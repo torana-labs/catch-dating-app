@@ -11,12 +11,14 @@
 // lanes fails.
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
+import {createRequire} from "node:module";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
 
+import {matchesGlobPath} from "../lib/path_glob.mjs";
 import {callerGraph, compare, targets} from "./shadow_plan.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -30,6 +32,8 @@ export const markdownReaders = {
   "tool/audit/check_fn_readme_inventory.mjs": {"functions/README.md": ["functions"]},
   // flutter-ci.yml runs it; the migration note must keep the organizerType marker.
   "tool/check_organizer_nomenclature.mjs": {"docs/migrations/clubs_to_organizers.md": ["flutter"]},
+  // A mandatory check: the Tools lane runs it through affected-tools and it scans every tracked document.
+  "tool/check_third_party_names.mjs": {"docs/agent_operating_model.md": ["tools"]},
   // source-preflight runs the freshness check on every change; Tools runs the generator's own check.
   "tool/ci/generated_inventories.mjs": {"docs/widget_catalog.md": []},
   "tool/design/generate_widget_catalog.mjs": {"docs/widget_catalog.md": ["tools"]},
@@ -64,6 +68,7 @@ export const markdownMentions = {
   "tool/marketing/import_hosted_captures.mjs": "checks the widget catalog its own import rewrote",
   "tool/nx/catch_projects.mjs": "Nx input patterns",
   "tool/nx/shadow_plan.mjs": "selection logic that classifies Markdown paths",
+  "tool/nx/workflow_callers.mjs": "lists the pull request template as CI configuration no workflow runs",
   "tool/scaffold.mjs": "names the READMEs the generator writes",
 };
 
@@ -94,14 +99,18 @@ export function manifestMarkdown(manifest = readJson("tool/tools_manifest.json")
   return byPath;
 }
 
-const globToRegExp = (glob) => new RegExp(`^${glob.replace(/[.+^${}()|[\]\\]/gu, "\\$&")
-  .replace(/\*\*\//gu, "\u0000").replace(/\*/gu, "[^/]*").replace(/\u0000/gu, "(?:.*/)?")}$`, "u");
+// Nx reads input globs with minimatch; lane_key.mjs matches them the same way.
+const minimatchRe = createRequire(path.join(workspaceRoot, "package.json"))("minimatch").makeRe;
+const globToRegExp = (glob) => minimatchRe(glob, {dot: true});
 
-/** The lane-tools inputs that name a document (file or glob), with the negations applied. */
+/** The lane-tools inputs, named inputs expanded, that name a file (file or glob), with the negations applied. */
 export function laneToolsCovers(nxJson, file) {
   const options = nxJson.plugins.find((entry) => entry.plugin === "./tool/nx/catch_projects.mjs").options;
-  const inputs = options.sourceProjects.find((project) => project.name === "lane-tools").targets.lane.inputs
-    .filter((input) => input.startsWith("{workspaceRoot}/") || input.startsWith("!{workspaceRoot}/"));
+  const expand = (inputs) => inputs.flatMap((input) =>
+    typeof input === "string" && nxJson.namedInputs?.[input] ? expand(nxJson.namedInputs[input]) : [input]);
+  const inputs = expand(options.sourceProjects.find((project) => project.name === "lane-tools").targets.lane.inputs)
+    .filter((input) => typeof input === "string" &&
+      (input.startsWith("{workspaceRoot}/") || input.startsWith("!{workspaceRoot}/")));
   const strip = (input) => input.replace(/^!?\{workspaceRoot\}\//u, "");
   const included = inputs.filter((input) => !input.startsWith("!")).some((input) => globToRegExp(strip(input)).test(file));
   const excluded = inputs.filter((input) => input.startsWith("!")).some((input) => globToRegExp(strip(input)).test(file));
@@ -142,6 +151,45 @@ test("every Markdown impactPath in the tools manifest is a lane-tools input", ()
   const nxJson = readJson("nx.json");
   const missing = [...manifestMarkdown().keys()].filter((file) => !laneToolsCovers(nxJson, file));
   assert.deepEqual(missing, [], "add each to lane-tools inputs in nx.json: affected-tools runs its entries in the Tools lane");
+});
+
+// affected-tools runs a check when a changed file matches its impactPaths, but
+// only once Nx has selected the Tools lane. A file a check declares that no
+// lane-tools input covers never selects the lane, so the PR that breaks the
+// check passes and main finds it (the l10n, provider-graph and backend-error
+// reds of 16-18 Nov). Markdown has its own test above.
+// Deliberately outside lane-tools for now. Admin selects Tools only for the
+// pending-operations scanner's files (#1751, guarded in lane_inputs.test.mjs),
+// and website changes run their own lint and build lanes. The 16-18 Nov reds
+// came from Dart, ARB and Firebase files; widen this only with that evidence.
+const laneToolsExceptions = ["admin/", "website/"];
+
+function uncoveredImpactFiles(nxJson, manifest = readJson("tool/tools_manifest.json")) {
+  // Nx never hashes a tracked symlink (mode 120000), so one cannot select the lane.
+  const files = execFileSync("git", ["ls-files", "-s"], {cwd: workspaceRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024})
+    .trim().split("\n").filter((entry) => !entry.startsWith("120000 ")).map((entry) => entry.slice(entry.indexOf("\t") + 1))
+    .filter((file) => !file.endsWith(".md") && !laneToolsCovers(nxJson, file) &&
+      !laneToolsExceptions.some((prefix) => file.startsWith(prefix)));
+  const missing = [];
+  for (const tool of manifest.tools.filter((entry) => entry.status === "active")) {
+    for (const impact of tool.impactPaths ?? []) {
+      const file = files.find((candidate) => matchesGlobPath(candidate, impact));
+      if (file) missing.push(`${tool.id}: ${impact} (e.g. ${file})`);
+    }
+  }
+  return missing;
+}
+
+test("every file a tool's impactPaths name is a lane-tools input", () => {
+  assert.deepEqual(uncoveredImpactFiles(readJson("nx.json")), [],
+    "add a covering glob to lane-tools inputs in nx.json: affected-tools only runs these checks in the Tools lane");
+});
+
+test("negative control: dropping Dart sources from lane-tools is caught", () => {
+  const nxJson = readJson("nx.json");
+  nxJson.namedInputs.toolImpactPaths = nxJson.namedInputs.toolImpactPaths
+    .filter((input) => input !== "{workspaceRoot}/lib/**/*.dart");
+  assert.ok(uncoveredImpactFiles(nxJson).some((line) => line.startsWith("audit:provider-graph: lib/**/*.dart")));
 });
 
 test("negative control: dropping a document from lane-tools is caught", () => {

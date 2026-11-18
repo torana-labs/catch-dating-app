@@ -82,7 +82,7 @@
             "day": "Thu",
             "num": "20",
             "t": "Thursday Evening Pub Quiz",
-            "s": "The Quizzicals · Khar",
+            "s": "The Harbour Line Quizzers · Khar",
             "price": "₹499",
             "left": "6 left"
           },
@@ -105,8 +105,8 @@
             "badge": "All paces",
             "day": "Sun",
             "num": "23",
-            "t": "Carter Road Social Run",
-            "s": "Carter Road Runners · Bandra",
+            "t": "Salt Air Social Run",
+            "s": "Driftwood Bay Runners · Bandra",
             "price": "Free",
             "left": "18 going"
           },
@@ -175,10 +175,10 @@
             "next": "Next: Fri 21 · Long Table Supper"
           },
           {
-            "initials": "CR",
+            "initials": "DB",
             "tone": "m-coral",
             "ink": "#3B1F14",
-            "t": "Carter Road Runners",
+            "t": "Driftwood Bay Runners",
             "s": "Run club · Bandra · ★ [4.9]",
             "next": "Next: Sun 23 · Social run"
           },
@@ -186,7 +186,7 @@
             "initials": "Q",
             "tone": "m-yellow",
             "ink": "#4A3608",
-            "t": "The Quizzicals",
+            "t": "The Harbour Line Quizzers",
             "s": "Pub quiz · Khar · ★ [4.8]",
             "next": "Next: Thu 20 · Pub quiz"
           },
@@ -231,8 +231,8 @@
             "badge": "All paces",
             "day": "Sun",
             "num": "23",
-            "t": "Carter Road Social Run",
-            "s": "Carter Road Runners · Bandra",
+            "t": "Salt Air Social Run",
+            "s": "Driftwood Bay Runners · Bandra",
             "price": "Free",
             "left": "18 going"
           },
@@ -273,10 +273,10 @@
             "next": "Next: Fri 21 · Long Table Supper"
           },
           {
-            "initials": "CR",
+            "initials": "DB",
             "tone": "m-coral",
             "ink": "#3B1F14",
-            "t": "Carter Road Runners",
+            "t": "Driftwood Bay Runners",
             "s": "Run club · Bandra · ★ [4.9]",
             "next": "Next: Sun 23 · Social run"
           },
@@ -284,7 +284,7 @@
             "initials": "Q",
             "tone": "m-yellow",
             "ink": "#4A3608",
-            "t": "The Quizzicals",
+            "t": "The Harbour Line Quizzers",
             "s": "Pub quiz · Khar · ★ [4.8]",
             "next": "Next: Thu 20 · Pub quiz"
           },
@@ -358,10 +358,10 @@
             "next": "Next: Fri 21 · Long Table Supper"
           },
           {
-            "initials": "CR",
+            "initials": "DB",
             "tone": "m-coral",
             "ink": "#3B1F14",
-            "t": "Carter Road Runners",
+            "t": "Driftwood Bay Runners",
             "s": "Run club · Bandra · ★ [4.9]",
             "next": "Next: Sun 23 · Social run"
           },
@@ -369,7 +369,7 @@
             "initials": "Q",
             "tone": "m-yellow",
             "ink": "#4A3608",
-            "t": "The Quizzicals",
+            "t": "The Harbour Line Quizzers",
             "s": "Pub quiz · Khar · ★ [4.8]",
             "next": "Next: Thu 20 · Pub quiz"
           },
@@ -416,7 +416,7 @@
             "initials": "PR",
             "tone": "m-coral",
             "ink": "#3B1F14",
-            "t": "[Pune run club]",
+            "t": "[Run club in Pune]",
             "s": "Joining · first plan soon",
             "cta": "Follow"
           },
@@ -454,7 +454,7 @@
             "day": "Thu",
             "num": "20",
             "t": "Thursday Evening Pub Quiz",
-            "s": "The Quizzicals · Khar",
+            "s": "The Harbour Line Quizzers · Khar",
             "price": "₹499",
             "left": "6 left"
           },
@@ -477,8 +477,8 @@
             "badge": "All paces",
             "day": "Sun",
             "num": "23",
-            "t": "Carter Road Social Run",
-            "s": "Carter Road Runners · Bandra",
+            "t": "Salt Air Social Run",
+            "s": "Driftwood Bay Runners · Bandra",
             "price": "Free",
             "left": "18 going"
           }

@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_alert_views.schema.json",
+  "title": "ProgramAlertViewDocument",
+  "description": "Server-maintained live board alert, one document per alert: a staff attention send stamped for a duty (one per run and duty), or a cancelled or diverted flight or disrupted journey, merged with who took or finished it from programAlerts. Written by triggers on organizerMomentSends, programTravelLegs and programAlerts. A staff attention alert is readable by function leads holding that duty; a travel alert only by full reach (coordinators and the owner). The owner's account id is the only identity carried, so a phone can tell which alerts are its own. Never message recipients, contact details or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programAlertViews",
+  "x-firestore-path": "programAlertViews/{programId}__{alertId}",
+  "x-document-id-field": "alertId",
+  "x-owner": "Programme read model projector (programLiveBoardViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "alertId",
+    "source",
+    "severity",
+    "title",
+    "subjectId",
+    "createdAtMillis",
+    "expiresAtMillis",
+    "duty",
+    "state",
+    "assigneeUid",
+    "assigneeName",
+    "revision",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "alertId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "staffAttention",
+        "flight",
+        "readiness"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "urgent"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "subjectId": {
+      "type": "string"
+    },
+    "createdAtMillis": {
+      "type": "integer"
+    },
+    "expiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "A staff attention alert ends 24 hours after its send; a travel alert lasts while its journey is disrupted."
+    },
+    "duty": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The duty a staff attention alert is stamped for; null for travel alerts."
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "open",
+        "done"
+      ]
+    },
+    "assigneeUid": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "assigneeName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

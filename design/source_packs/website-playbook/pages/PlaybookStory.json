@@ -23,13 +23,13 @@
       "component": "KitPhotoHero",
       "data": {
         "img": "/_blob/8294b5d46800331739b8ee58199a7d53",
-        "alt": "Carter Road Runners at the start of a Sunday run",
+        "alt": "Driftwood Bay Runners at the start of a Sunday run",
         "tags": [
           "Run club",
           "Bandra, Mumbai",
           "On Catch since [month year]"
         ],
-        "title": "How Carter Road Runners [the outcome, in a few words].",
+        "title": "How Driftwood Bay Runners [the outcome, in a few words].",
         "lead": "[One sentence: who they are, what was hard, what changed.]",
         "note": "Story template, now on the kit: every [bracket] is filled from a design partner’s real story, numbers and photos, with their consent."
       }
@@ -40,7 +40,7 @@
         "top": true,
         "kicker": "The club",
         "kc": "#B23A5A",
-        "title": "Carter Road Runners",
+        "title": "Driftwood Bay Runners",
         "ticks": [
           "City: Mumbai",
           "Format: weekly social run, paid coached sessions",
@@ -89,7 +89,7 @@
             "paras": [
               "[Which parts moved to Catch first, and what stayed on WhatsApp. Name the features: pace pods, check-in, reminders, paid sessions.]"
             ],
-            "tip": "[The strongest line from the interview.] — [Name], founder, Carter Road Runners",
+            "tip": "[The strongest line from the interview.] — [Name], founder, Driftwood Bay Runners",
             "tipLabel": "In their words:"
           },
           {
@@ -113,7 +113,7 @@
         "panel": "tint",
         "center": false,
         "kicker": "Their setup",
-        "title": "What Carter Road Runners use on Catch.",
+        "title": "What Driftwood Bay Runners use on Catch.",
         "items": [],
         "chips": [
           "Pace pods",
@@ -168,7 +168,7 @@
             "ink": "#4A3608",
             "meta": "Quiz night · Khar",
             "t": "[Quiz night story title]",
-            "s": "The Quizzicals",
+            "s": "The Harbour Line Quizzers",
             "statLabel": "Nights sold out",
             "stat": "[N]"
           },

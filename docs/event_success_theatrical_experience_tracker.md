@@ -29,7 +29,7 @@ ceremony rather than only a host utility. Fold durable decisions back into
 - Headspace: guide mood and pacing without overwhelming the user.
 - Spotify Wrapped: turn personal data into a story, mostly in-app for Catch.
 - Apple Activity rings: make progress easy to understand at a glance.
-- Nike Run Club guided runs: use the phone as a coach during a live activity.
+- Guided-run coaching apps: use the phone as a coach during a live activity.
 - BeReal: synchronized cues make a shared moment feel live.
 - Partiful: the invite starts the party before the event starts.
 - Punchdrunk immersive theatre: choreograph discovery instead of exposing every

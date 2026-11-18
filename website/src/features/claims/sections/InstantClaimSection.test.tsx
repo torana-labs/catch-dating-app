@@ -41,9 +41,9 @@ function renderSection(pendingReview = false) {
 
 function options(instagram: boolean, luma: boolean) {
   return {organizerId: listing.id, catchInstagramHandle: brand.social.instagramHandle, methods: [
-    {method: "instagramMessage", available: instagram, proofTarget: instagram ? "carterroadrunners" : null,
+    {method: "instagramMessage", available: instagram, proofTarget: instagram ? "driftwoodbayrunners" : null,
       unavailableReason: instagram ? null : "noSourceOnListing"},
-    {method: "lumaDescription", available: luma, proofTarget: luma ? "https://lu.ma/carter" : null,
+    {method: "lumaDescription", available: luma, proofTarget: luma ? "https://lu.ma/driftwood" : null,
       unavailableReason: luma ? null : "turnedOff"},
   ]};
 }
@@ -70,24 +70,24 @@ describe("InstantClaimPanel", () => {
   it("shows the Instagram code and follows the attempt to verified", async () => {
     firebase.getOrganizerClaimVerificationOptions.mockResolvedValue(options(true, true));
     firebase.startOrganizerClaimVerification.mockResolvedValue({attemptId: "a1", organizerId: listing.id,
-      method: "instagramMessage", code: "482173", proofText: "482173", proofTarget: "carterroadrunners",
+      method: "instagramMessage", code: "482173", proofText: "482173", proofTarget: "driftwoodbayrunners",
       catchInstagramHandle: brand.social.instagramHandle, expiresAt: inAnHour});
     let push: (state: unknown) => void = () => undefined;
     firebase.watchOrganizerClaimAttempt.mockImplementation(async (_id, onValue) => {push = onValue; return vi.fn();});
     renderSection();
 
-    expect(await screen.findByText(`Send a code from @carterroadrunners to @${brand.social.instagramHandle}`)).toBeTruthy();
+    expect(await screen.findByText(`Send a code from @driftwoodbayrunners to @${brand.social.instagramHandle}`)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", {name: "Show my code"}));
     expect(await screen.findByText("482 173")).toBeTruthy();
     expect(firebase.startOrganizerClaimVerification).toHaveBeenCalledWith({organizerId: listing.id, method: "instagramMessage"});
-    expect(screen.getByText("Open Instagram as @carterroadrunners.")).toBeTruthy();
+    expect(screen.getByText("Open Instagram as @driftwoodbayrunners.")).toBeTruthy();
     expect(screen.getByText("Waiting for your message…")).toBeTruthy();
     expect(screen.getByRole("heading", {level: 1, name: "Send us this code"})).toBeTruthy();
     expect(screen.getByRole("link", {name: "Open Instagram"}).getAttribute("href")).toBe(`https://ig.me/m/${brand.social.instagramHandle}`);
 
     await vi.waitFor(() => expect(firebase.watchOrganizerClaimAttempt).toHaveBeenCalled());
     act(() => push({status: "awaitingProof", expiresAtMillis: Date.parse(inAnHour), rejection: "wrongSender"}));
-    expect(screen.getByText("That message came from a different Instagram account. Send the code from @carterroadrunners.")).toBeTruthy();
+    expect(screen.getByText("That message came from a different Instagram account. Send the code from @driftwoodbayrunners.")).toBeTruthy();
     act(() => push({status: "verified", expiresAtMillis: Date.parse(inAnHour), rejection: null}));
     expect(await screen.findByRole("heading", {level: 1, name: "It’s yours, Asha."})).toBeTruthy();
     expect(screen.getByRole("link", {name: "Open your page"}).getAttribute("href")).toBe(listing.path);
@@ -96,7 +96,7 @@ describe("InstantClaimPanel", () => {
   it("checks the Luma calendar and says when the code is not there yet", async () => {
     firebase.getOrganizerClaimVerificationOptions.mockResolvedValue(options(false, true));
     firebase.startOrganizerClaimVerification.mockResolvedValue({attemptId: "a2", organizerId: listing.id,
-      method: "lumaDescription", code: "482173", proofText: "catch-482173", proofTarget: "https://lu.ma/carter",
+      method: "lumaDescription", code: "482173", proofText: "catch-482173", proofTarget: "https://lu.ma/driftwood",
       catchInstagramHandle: null, expiresAt: inAnHour});
     firebase.confirmOrganizerClaimVerification
       .mockResolvedValueOnce({attemptId: "a2", status: "awaitingProof", claimRequestId: null, lastRejection: null})
@@ -129,14 +129,14 @@ describe("InstantClaimPanel", () => {
     expect(await screen.findByText("Add at least one link that shows the page is yours.")).toBeTruthy();
     expect(firebase.requestOrganizerClaim).not.toHaveBeenCalled();
 
-    fireEvent.change(screen.getByLabelText("Links that show it’s yours"), {target: {value: "carterroadrunners.in"}});
+    fireEvent.change(screen.getByLabelText("Links that show it’s yours"), {target: {value: "driftwoodbayrunners.example"}});
     fireEvent.click(screen.getByRole("button", {name: "Ask for a review"}));
     expect(await screen.findByRole("heading", {level: 1, name: "Thanks, we’ve got it."})).toBeTruthy();
     expect(screen.getByText("We’ll check it")).toBeTruthy();
     expect(screen.getByRole("link", {name: "Use a code instead"}).getAttribute("href")).toBe(`/claim/${listing.slug}/`);
     expect(firebase.requestOrganizerClaim).toHaveBeenCalledWith({organizerId: listing.id, requesterName: "Asha Rao",
       requesterRole: "owner", businessEmail: null, businessPhone: "+919800000000",
-      proofUrls: ["https://carterroadrunners.in"], message: null});
+      proofUrls: ["https://driftwoodbayrunners.example"], message: null});
   });
 
   it("still offers a code after a review request is pending", async () => {
@@ -149,7 +149,7 @@ describe("InstantClaimPanel", () => {
   it("offers a new code once the attempt expires", async () => {
     firebase.getOrganizerClaimVerificationOptions.mockResolvedValue(options(true, false));
     firebase.startOrganizerClaimVerification.mockResolvedValue({attemptId: "a3", organizerId: listing.id,
-      method: "instagramMessage", code: "111222", proofText: "111222", proofTarget: "carterroadrunners",
+      method: "instagramMessage", code: "111222", proofText: "111222", proofTarget: "driftwoodbayrunners",
       catchInstagramHandle: brand.social.instagramHandle, expiresAt: new Date(Date.now() - 1000).toISOString()});
     firebase.watchOrganizerClaimAttempt.mockResolvedValue(vi.fn());
     renderSection();

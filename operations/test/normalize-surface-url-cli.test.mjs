@@ -4,9 +4,9 @@ import {normalizeSurfaceUrl} from "../src/cli/normalize-surface-url.mjs";
 
 test("surface URL normalization emits a CLI envelope and enforces expectations", () => {
   const envelope = normalizeSurfaceUrl([
-    "https://www.instagram.com/afterfly.in/?hl=en",
+    "https://www.instagram.com/moonmoth.example/?hl=en",
     "--expect-platform", "instagram",
-    "--expect-key", "instagram:afterfly.in",
+    "--expect-key", "instagram:moonmoth.example",
     "--role", "primary",
   ]);
   assert.equal(envelope.program, "catch-operations");
@@ -14,7 +14,7 @@ test("surface URL normalization emits a CLI envelope and enforces expectations",
   assert.equal(envelope.data.surface.surfaceKind, "socialProfile");
   assert.equal(envelope.data.surface.role, "primary");
 
-  assert.throws(() => normalizeSurfaceUrl(["https://lu.ma/pxgmph3b",
+  assert.throws(() => normalizeSurfaceUrl(["https://lu.ma/mmoth26x",
     "--expect-kind", "socialProfile"]), {code: "SURFACE_MISMATCH"});
   assert.throws(() => normalizeSurfaceUrl([]), {code: "MISSING_ARGUMENT"});
   assert.throws(() => normalizeSurfaceUrl(["https://lu.ma/x", "--write"]),
