@@ -459,10 +459,30 @@ node tool/run.mjs check agent:context-pack
 
 ## Storage Discipline
 
+`node tool/git/sweep_merged_worktrees.mjs --apply` is the routine cleanup and
+runs at the start of every session (AGENTS.md Starting Loop). It removes a
+linked worktree only when all of these hold: its HEAD is in `origin/main` or is
+the exact head of a merged PR, it has no modified or untracked files, it is not
+locked, no process runs inside it, its branch has no open PR, and it has been
+idle for six hours. It releases any guard claim with `finish --abandon`, then
+runs non-forced `git worktree remove`; ignored dependency and build folders go
+with the checkout, and branches, refs and stashes stay. Without `--apply` it
+only reports. Merged work meeting those conditions needs no further retirement
+evidence; the owner approved this cleanup standing.
+
+Two things leave worktrees behind if nothing sweeps them. First, a desktop-app
+session gets its own `claude/<name>` worktree, and `worktree_guard start` then
+adds a second one for the task; the unused session worktree sits at a commit
+already in main. Second, sessions usually end once their PR is queued, before
+it merges, so their own closeout never runs. The sweep handles both. The app's
+"Auto-archive sessions when their pull request closes" setting also removes
+session worktrees once their PR merges.
+
 Retire accepted disposable worktrees while their context is fresh. Retained
 worktrees need an exact path, owner, reason and next action in the existing task
-handoff. Age, a merged PR, an unclaimed checkout, or a green hygiene audit does
-not replace preservation/ownership checks. Keep lightweight Git recovery refs
+handoff. Outside the sweep's conditions, age, a merged PR name, an unclaimed
+checkout, or a green hygiene audit does not replace preservation/ownership
+checks. Keep lightweight Git recovery refs
 instead of repeated full source clones when they provide the required recovery.
 Do not copy installed dependencies into backup/source handoffs.
 
@@ -518,7 +538,11 @@ and connected task tooling, only within the user's authorized scope:
    not defer routine closeout to a separate cleanup task. No tracked harness
    evidence is required.
 
-Retirement is part of closeout, using existing Git and the guard:
+Retirement is part of closeout, using existing Git and the guard. When the PR
+has merged and the worktree is clean, the short path is enough: run
+`node tool/git/sweep_merged_worktrees.mjs --apply --min-idle-hours 0` from the
+primary checkout (see Storage Discipline). Use the full checklist below for
+unmerged, dirty, squash-divergent or shared worktrees:
 
 1. Fetch and prove the task's accepted source is equivalent on `origin/main`,
    including after squash or batch integration. Check required CI and release
