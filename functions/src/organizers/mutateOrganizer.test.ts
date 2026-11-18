@@ -179,7 +179,7 @@ test("an imported page publishes only once its identity is verified",
     const provenance = (verification: string) => ({importProvenance: {
       requestId: "tryit-0123456789abcdef0123", listingId: "listing-1",
       contentHash: "b".repeat(64), sourceUrls: [],
-      identities: [{platform: "luma", url: "https://luma.com/neemwood"}],
+      identities: [{platform: "luma", url: "https://luma.com/driftwood-bay-runners"}],
       verification, importedAt: "EARLIER"}});
     const store = organizerStore({"organizers/club-1":
       teamOrganizer(provenance("unverified"))});

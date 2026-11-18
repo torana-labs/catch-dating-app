@@ -457,7 +457,7 @@ function importedWorkspace(options: {verification?: string} = {}) {
     instagramHandle: "someoneelse",
     publicSources: [{type: "instagram", label: "instagram page",
       detail: "Public instagram page.",
-      href: "https://www.instagram.com/someoneelse/", confidence: "medium",
+      href: "https://www.instagram.com/driftwoodbay/", confidence: "medium",
       lastCheckedAt: null}],
     importProvenance: {requestId: "tryit-0123456789abcdef0123",
       listingId: "listing-1", contentHash: "b".repeat(64),
