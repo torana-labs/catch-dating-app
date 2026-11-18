@@ -5,7 +5,11 @@ import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_rep
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'host_offer_event_targets_gateway.g.dart';
 
 /// A manager-only offer target. This is a picker projection, never authority
 /// to issue an offer; preview and commit recheck the current event and terms.
@@ -401,3 +405,13 @@ class _TargetCursor {
     ),
   );
 }
+
+/// The offer picker's event reads, built in the data layer so no screen or
+/// controller holds Firestore.
+@riverpod
+HostOfferEventTargetsGateway hostOfferEventTargetsGateway(Ref ref) =>
+    FirestoreHostOfferEventTargetsGateway(
+      ref.watch(firebaseFirestoreProvider),
+      configurations: ref.watch(eventOfferConfigurationReadsProvider),
+      clock: ref.watch(appClockProvider),
+    );

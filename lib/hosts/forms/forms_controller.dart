@@ -1,9 +1,7 @@
-import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
-import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -43,10 +41,6 @@ HostOfferGateways hostOfferGateways(Ref ref) {
       reads: reads,
     ),
     reads: reads,
-    targets: FirestoreHostOfferEventTargetsGateway(
-      ref.watch(firebaseFirestoreProvider),
-      configurations: ref.watch(eventOfferConfigurationReadsProvider),
-      clock: ref.watch(appClockProvider),
-    ),
+    targets: ref.watch(hostOfferEventTargetsGatewayProvider),
   );
 }

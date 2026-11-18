@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_setup_view_reads.dart';
-import 'package:catch_dating_app/contexts/forms/data/event_offer_configuration_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
@@ -16,7 +15,6 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_c
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_query_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_capability.dart';
 import 'package:catch_l10n/l10n.dart';
-import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/device/clipboard.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -265,13 +263,7 @@ class _HostResponseOfferScreenState
                     openHandoff: (uri) => ref
                         .read(externalLinkControllerProvider)
                         .openExternal(uri),
-                    targets: FirestoreHostOfferEventTargetsGateway(
-                      ref.read(firebaseFirestoreProvider),
-                      configurations: ref.read(
-                        eventOfferConfigurationReadsProvider,
-                      ),
-                      clock: ref.read(appClockProvider),
-                    ),
+                    targets: ref.read(hostOfferEventTargetsGatewayProvider),
                     getResponseDetail: (id) => ref.refresh(
                       hostFormResponseDetailProvider(
                         organizerId: widget.organizerId,
