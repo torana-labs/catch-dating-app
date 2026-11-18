@@ -88,7 +88,7 @@ describe("host landing", {timeout: 20_000}, () => {
       window.dispatchEvent(new HashChangeEvent("hashchange"));
     });
     const courts = within(screen.getByRole("list", {name: "Pickleball Social, moment by moment"}));
-    expect(courts.getByRole("button", {name: /Levels in, courts balanced/u}).getAttribute("aria-current")).toBe("step");
+    expect(courts.getByRole("button", {name: /Levels in, courts planned/u}).getAttribute("aria-current")).toBe("step");
     expect(screen.getByRole("radio", {name: "Pickleball"}).getAttribute("aria-checked")).toBe("true");
   });
 

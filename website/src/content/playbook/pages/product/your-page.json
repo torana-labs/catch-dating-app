@@ -1,0 +1,149 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "product_your_page",
+  "route": "product_your_page",
+  "meta": {
+    "title": "Your page | {{brand.name}} for hosts",
+    "description": "A free organiser page that replaces the link in your bio: your next event, your links, everything coming up, reviews with your replies, and followers. Claim it with Instagram or Luma.",
+    "socialDescription": "A page that replaces the link in your bio. Make yours, or claim it if it’s already on {{brand.name}}.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [{"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}}],
+      "current": "Your page"
+    }
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "coral",
+      "kicker": "Product · your page",
+      "title": "A page that replaces the link in your bio.",
+      "lead": "Your next event, your links, everything coming up (including events you run elsewhere), reviews with your replies, and people who follow you for the next one.",
+      "actions": [
+        {"label": "Make your page in {{brand.stores.hostAppName}}", "to": {"anchor": "start"}, "emphasis": "primary"},
+        {"label": "Claim your page", "to": {"anchor": "claim"}, "emphasis": "secondary"}
+      ],
+      "note": "Free to set up · Made and edited in {{brand.stores.hostAppName}}",
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Carter Road Runners",
+          "subtitle": "Run club · Bandra · 212 followers",
+          "label": "Verified",
+          "rows": [
+            {"title": "Carter Road Social Run", "detail": "Next up · Sun 23 Nov · 6:30 AM", "tag": "Book"},
+            {"title": "WhatsApp community", "tag": "Link"},
+            {"title": "Strava club", "tag": "Link"},
+            {"title": "Bandra 10K", "detail": "On another site", "tag": "Links out"}
+          ],
+          "actions": ["Follow", "Share"]
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "whats-on-it",
+      "ground": "white",
+      "kicker": "What’s on your page",
+      "title": "Everything someone from Instagram is looking for.",
+      "columns": 3,
+      "items": [
+        {"title": "Next up", "body": "Your next event straight under your name, with a Book button."},
+        {"title": "Your links", "body": "WhatsApp community, Strava, merch, perks: the links your bio used to hold."},
+        {"title": "Everything coming up", "body": "Events on {{brand.name}}, and events you run on other sites as tiles that link out."},
+        {"title": "Reviews, with replies", "body": "Reviews from people who booked are marked “Booked on {{brand.name}}”. Reply in public to show you care."},
+        {"title": "Followers", "body": "People follow you with their phone number, and you can send them an update about your next event."},
+        {"title": "About and team", "body": "Who runs it, when and where, and who it suits, with a verified mark once you’ve claimed it."}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "reviews",
+      "ground": "paper",
+      "kicker": "Reviews",
+      "title": "Let people who came do the selling.",
+      "lead": "Reviews from booked guests carry a badge, and the rating counts only those. Your replies sit under them.",
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Reviews",
+          "subtitle": "Carter Road Runners",
+          "rows": [
+            {"title": "A review from a guest who booked", "detail": "Sunday Social Run", "tag": "Booked on {{brand.name}}"},
+            {"title": "Your reply", "detail": "Shown under the review"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "claim",
+      "ground": "white",
+      "kicker": "Claim your page",
+      "title": "Your page may already be here.",
+      "lead": "{{brand.name}} builds organiser pages from public sources so guests can find them. If yours is listed, claim it and it’s yours to edit.",
+      "align": "start",
+      "columns": 4,
+      "items": [
+        {"figure": "1", "title": "Find your page and tap Claim."},
+        {"figure": "2", "title": "Sign in with your phone number."},
+        {"figure": "3", "title": "Prove it’s yours with a code on your Instagram or your Luma calendar."},
+        {"figure": "4", "title": "Finish in {{brand.stores.hostAppName}}: add events and links. Events go live when you publish them."}
+      ],
+      "actions": [
+        {"label": "Find your page", "to": {"route": "claim"}, "emphasis": "primary"}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "for-owners",
+      "ground": "ink",
+      "kicker": "For owners",
+      "title": "See what your page is doing.",
+      "lead": "Signed in as the owner, your page shows the last 30 days: visits, new followers, link clicks and taps on Book.",
+      "body": "Every page carries “Made with {{brand.name}}”, so the next organiser can make one too.",
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Your page · last 30 days",
+          "stats": [
+            {"value": "1,840", "label": "Visits"},
+            {"value": "64", "label": "New followers"},
+            {"value": "212", "label": "Taps on Book"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Questions",
+      "title": "About your page.",
+      "items": [
+        {"question": "How much does a page cost?", "answer": "Nothing. Pages are free; {{brand.name}} only takes a fee on paid tickets sold through it."},
+        {"question": "Why is my club already listed?", "answer": "{{brand.name}} builds organiser pages from public sources so guests can find them. Claim the page and it’s yours to edit, or tell us if something is wrong."},
+        {"question": "How do I prove the page is mine?", "answer": "Sign in with your phone number, then add a code we give you to your Instagram or your Luma calendar. When we find it, the page is yours."},
+        {"question": "When do my events appear?", "answer": "When you publish them. Nothing you set up in {{brand.stores.hostAppName}} goes live until you do."},
+        {"question": "Can I show events I run on other sites?", "answer": "Yes. They appear on your page as tiles that link out to where people book them."},
+        {"question": "Can I reply to reviews?", "answer": "Yes, once the page is yours. Your reply shows under the review."},
+        {"question": "Where do I edit my page?", "answer": "In the {{brand.stores.hostAppName}} app, on iPhone, Android or iPad."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "yellow",
+      "kicker": "Free to set up",
+      "title": "Make your page tonight.",
+      "lead": "Download {{brand.stores.hostAppName}}, set up your page and first event, and put the link in your bio.",
+      "storeBadges": "host",
+      "media": {"kind": "capture", "slot": "host-today"}
+    }
+  ]
+}

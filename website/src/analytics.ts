@@ -245,6 +245,59 @@ export function trackAcceptedMarketingLead(eventId: string | undefined,
     receipt: {ok: true, alreadyJoined: false}});
 }
 
+/**
+ * The website lead forms' event names, one per step of a form's life: shown,
+ * sent, accepted, refused. The forms are the short WhatsApp lead forms that
+ * post a typed lead to /api/join-waitlist (city alerts, "Know a host"
+ * referrals and the playbook pages' forms). See "Primary web events" in
+ * website/README.md; `npm run check:analytics-contract` pins the payloads.
+ */
+const websiteLeadFormEvents = {
+  viewed: "lead_form_viewed",
+  submitted: "lead_form_submitted",
+  succeeded: "lead_form_succeeded",
+  failed: "lead_form_failed",
+} as const;
+type WebsiteLeadFormStage = keyof typeof websiteLeadFormEvents;
+type WebsiteLeadFormKind = NonNullable<JoinWaitlistHTTPRequest["requestKind"]>;
+// Exactly the contract's kinds: a kind added to or dropped from the contract fails typecheck here.
+const websiteLeadFormKinds: ReadonlySet<string> = new Set(Object.keys({
+  guide: true, walkthrough: true, demo: true, venue: true, story: true, referral: true, org_contact: true, city_alerts: true,
+} satisfies Record<WebsiteLeadFormKind, true>));
+/** Why a lead was not accepted, as the lead client names it; never the server's words. */
+type WebsiteLeadFormProblem = "invalid_phone" | "invalid" | "refresh" | "changed" | "busy" | "failed";
+const websiteLeadFormProblems: readonly WebsiteLeadFormProblem[] = ["invalid_phone", "invalid", "refresh", "changed", "busy", "failed"];
+/** The lead contract's form id (`lead.entry`), such as rc-wa or home-refer. */
+const websiteLeadFormIdPattern = /^[a-z0-9][a-z0-9_-]{0,39}$/u;
+
+export interface WebsiteLeadFormIdentity {
+  /** The lead kind the form sends. */
+  kind: WebsiteLeadFormKind;
+  /** Which form on the page: the lead's `entry`. */
+  formId: string;
+}
+
+/**
+ * Records one step of a website lead form after analytics consent, as a
+ * closed payload: the lead kind, the form id, the page path without its query
+ * and, for a refusal, the lead client's problem. Answers, names, numbers,
+ * hosts and request ids never enter it; anything outside the vocabulary
+ * records nothing. Returns whether the event was recorded.
+ */
+export function trackWebsiteLeadFormEvent(stage: WebsiteLeadFormStage, form: WebsiteLeadFormIdentity,
+  problem?: WebsiteLeadFormProblem): boolean {
+  if (isPrivateEventUpdate() || getMarketingConsent()?.analytics !== true) return false;
+  if (!Object.hasOwn(websiteLeadFormEvents, stage) || !websiteLeadFormKinds.has(form?.kind) ||
+      typeof form.formId !== "string" || !websiteLeadFormIdPattern.test(form.formId)) return false;
+  const parameters: Record<string, string> = {lead_kind: form.kind, form_id: form.formId, page_path: window.location.pathname};
+  if (stage === "failed") {
+    if (!problem || !websiteLeadFormProblems.includes(problem)) return false;
+    parameters.problem = problem;
+  }
+  trackMarketingEvent(websiteLeadFormEvents[stage], parameters);
+  return true;
+}
+
 export function trackMarketingEvent(
   eventName: string,
   parameters: Record<string, unknown> = {}

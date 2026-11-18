@@ -1,0 +1,177 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "product_forms",
+  "route": "product_forms",
+  "meta": {
+    "title": "Forms | {{brand.name}} for hosts",
+    "description": "Applications, registrations, signed waivers, guest details, feedback and surveys, built from a template. Conditional questions, file uploads and optional fees paid into your own Razorpay.",
+    "socialDescription": "Ask anything. Do something with the answer. Forms on {{brand.name}}.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [{"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}}],
+      "current": "Forms"
+    }
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "indigo",
+      "kicker": "Product · forms",
+      "title": "Ask anything. Do something with the answer.",
+      "lead": "Applications, registrations, waivers, guest details and feedback, built from a template in minutes. People fill them in on their phone with no app. Every answer lands on the right person’s record, and an approved applicant can be offered a place at your event.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See bookings and payments", "to": {"route": "product_bookings"}, "emphasis": "secondary"}
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Application · Long Table Supper",
+          "subtitle": "Answered on the phone, no app",
+          "rows": [
+            {"title": "New to Mumbai, want to meet people who like food.", "detail": "What brings you to a supper club?"},
+            {"title": "Vegetarian", "detail": "What do you eat? Everything, vegetarian, vegan or Jain"},
+            {"title": "Anything else the kitchen should know?", "detail": "Shown because they chose vegetarian"},
+            {"title": "₹200, refunded if you’re not chosen", "detail": "Application fee"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "kinds",
+      "ground": "white",
+      "kicker": "Six kinds of form",
+      "title": "Each one knows what happens next.",
+      "columns": 3,
+      "items": [
+        {"title": "Applications", "body": "Ask who they are and why they want to come, then approve each one.", "then": "Then: offer approved people a place", "ground": "pink"},
+        {"title": "Registrations", "body": "A place request with the questions your event needs.", "then": "Then: add them to the event’s guest list", "ground": "mint"},
+        {"title": "Guest details", "body": "Dietary needs, pace, level, team name, accessibility.", "then": "Then: it’s on their record for the night", "ground": "yellow"},
+        {"title": "Waivers", "body": "Terms they read and sign before a run, a climb or a session.", "then": "Then: a signed receipt for that event", "ground": "coral"},
+        {"title": "Feedback", "body": "Ratings and a private note after the event.", "then": "Then: it rolls into your event feedback", "ground": "indigo"},
+        {"title": "Surveys", "body": "What time, what format, what next. Ask your community.", "then": "Then: answers and charts, ready to export", "ground": "magenta"}
+      ]
+    },
+    {
+      "type": "tiles",
+      "id": "templates",
+      "ground": "ink",
+      "kicker": "Templates",
+      "title": "Start from one made for your night.",
+      "lead": "Pick a template, change any question, and publish. Updating a template later never changes a form you’ve already made.",
+      "align": "start",
+      "columns": 3,
+      "items": [
+        {"title": "Event application", "ground": "ink", "body": "Who, why, when they’re free"},
+        {"title": "Event registration", "ground": "ink", "body": "Contact and ticket questions"},
+        {"title": "Dinner guest details", "ground": "ink", "body": "Diet, seating, access"},
+        {"title": "Run or walk", "ground": "ink", "body": "Pace, distance, route needs"},
+        {"title": "Racket session", "ground": "ink", "body": "Level, side, pairing"},
+        {"title": "Quiz night", "ground": "ink", "body": "Team name, table"},
+        {"title": "Event waiver", "ground": "ink", "body": "Terms, acknowledgement, signature"},
+        {"title": "Post-event feedback", "ground": "ink", "body": "Rating and a private note"},
+        {"title": "Blank form", "ground": "ink", "body": "Start from nothing"}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "questions-that-adapt",
+      "ground": "paper",
+      "kicker": "Questions that fit the answer",
+      "title": "Ask only what matters, and collect what you need.",
+      "lead": "Show a question only when an earlier answer calls for it, ask for a file when you need one, and collect a signature on a waiver.",
+      "ticks": [
+        "Conditional questions, shown only when an earlier answer calls for them",
+        "File uploads, such as a photo or a certificate",
+        "Signed waivers, kept as a receipt for that event"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Waiver · Sunrise Trek",
+          "fields": [
+            {"label": "I have read the terms", "placeholder": "Tick to agree"},
+            {"label": "Medical certificate", "placeholder": "Upload a file"},
+            {"label": "Signature", "placeholder": "Sign here"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "responses",
+      "ground": "white",
+      "kicker": "Responses",
+      "title": "Review, decide, and offer them a place.",
+      "lead": "Every response in one inbox. Mark applications in review, waitlisted or declined, leave private notes for your team, and when you accept someone, offer them a place at the event you choose.",
+      "ticks": [
+        "Answers attached to the person’s record",
+        "Charts of how everyone answered",
+        "Export responses as a file",
+        "Import past applications from a CSV or Excel file, such as a Google Forms or Typeform export"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Responses",
+          "rows": [
+            {"title": "Ira Desai", "detail": "Application · 2 hours ago · “New to Mumbai…”", "tag": "In review"},
+            {"title": "Kabir Shah", "detail": "Application · yesterday", "tag": "Accepted · offered a place"},
+            {"title": "Tara Nair", "detail": "Application · yesterday", "tag": "Waitlisted"},
+            {"title": "Dev Malhotra", "detail": "Waiver · signed 9:12 AM", "tag": "Signed"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "checklist",
+      "id": "form-fees",
+      "ground": "paper",
+      "kicker": "Form fees",
+      "title": "Charge to apply, if you want to.",
+      "lead": "Add a fee to a form, separate from the ticket. It’s paid by UPI or card into your own Razorpay account.",
+      "items": [
+        {"title": "Separate from the ticket", "body": "A fee to apply, a ticket to attend."},
+        {"title": "Refund policy shown first", "body": "Before anyone pays."},
+        {"title": "Paid into your own Razorpay", "body": "Counts toward the same 5% fee and its cap per billing cycle."},
+        {"title": "Its own checkout", "body": "A governed payment step, never a question in the form."}
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "faq",
+      "ground": "white",
+      "kicker": "Questions",
+      "title": "About forms.",
+      "items": [
+        {"question": "Do people need an app to fill in a form?", "answer": "No. Forms open in the phone’s browser, from a link, a QR code or an embed on your site."},
+        {"question": "Can I use a form without a {{brand.name}} event?", "answer": "Yes. A survey or an application works on its own. You can offer people a place at an event later."},
+        {"question": "Can questions depend on earlier answers?", "answer": "Yes. Show a question only when an earlier answer calls for it."},
+        {"question": "Can people upload a file?", "answer": "Yes. Add an upload question, and the file is kept with their answers."},
+        {"question": "Can I collect a signature?", "answer": "Yes, with a waiver form: the terms, the acknowledgement and a signature, kept as a receipt for that event."},
+        {"question": "Can I bring in my Google Forms applications?", "answer": "Yes. Export the answers as a CSV or Excel file and import them, matching your columns to the questions. Import brings in answers; new forms are built in {{brand.name}}."},
+        {"question": "Where do form fees go?", "answer": "Into your own Razorpay account, by UPI or card."},
+        {"question": "Does filling in a form sign people up for marketing?", "answer": "No. Hearing from you later is a separate yes, which you can ask for on the form."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "indigo",
+      "kicker": "Free for 30 days · founding hosts get 90",
+      "title": "Put your next application on {{brand.name}}.",
+      "lead": "Start from a template and publish it tonight.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}, "emphasis": "secondary"}
+      ],
+      "media": {"kind": "capture", "slot": "host-today"}
+    }
+  ]
+}

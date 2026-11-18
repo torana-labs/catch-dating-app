@@ -1,9 +1,10 @@
 import {act, renderHook} from "@testing-library/react";
 import type {FormEvent} from "react";
-import {describe, expect, it, vi} from "vitest";
+import {afterEach, describe, expect, it, vi} from "vitest";
 import {playbookCopy} from "@content/playbook/playbookCopy";
 import {websiteLeadCopy} from "@content/websiteLead";
 import type {PlaybookLeadForm} from "../../content/playbook/playbookContract";
+import {setMarketingConsent} from "../../analytics";
 import {createWebsiteLeadSubmission} from "../../shared/api/websiteLead";
 import {usePlaybookLeadFormController} from "./usePlaybookLeadFormController";
 
@@ -29,6 +30,11 @@ function leadClient(...answers: (() => Response | Promise<Response>)[]) {
 }
 
 const submitEvent = () => ({preventDefault: vi.fn()}) as unknown as FormEvent<HTMLFormElement>;
+
+afterEach(() => {
+  localStorage.clear();
+  window.dataLayer = [];
+});
 
 describe("usePlaybookLeadFormController", () => {
   it("puts a line under each empty field and a short number, sends nothing, and clears a line when its field changes", async () => {
@@ -77,5 +83,15 @@ describe("usePlaybookLeadFormController", () => {
     await act(() => result.current.handleSubmit(submitEvent()));
     expect(bodies()[2].lead.requestId).not.toBe(bodies()[0].lead.requestId);
     expect(result.current.sent).toBe(true);
+  });
+
+  it("records the form as viewed after analytics consent with its lead kind and form id, and nothing without consent", () => {
+    const viewed = () => (window.dataLayer ?? []).filter((entry) => !Array.isArray(entry) && entry.event === "lead_form_viewed");
+    renderHook(() => usePlaybookLeadFormController(guide, "guide", leadClient().submission));
+    expect(viewed()).toEqual([]);
+    setMarketingConsent("analytics");
+    renderHook(() => usePlaybookLeadFormController(venue, "venue", leadClient().submission));
+    expect(viewed()).toEqual([{event: "lead_form_viewed", content_version: "website_copy_v2", lead_kind: "venue",
+      form_id: "venue_list_space", page_path: "/"}]);
   });
 });
