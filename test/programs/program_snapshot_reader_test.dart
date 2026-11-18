@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late SharedPreferencesProgramReadSnapshotStore store;
-  final scope = programSnapshotScope('arrivals', 'p1', 't3');
+  final scope = programSnapshotScope('plan', 'p1', 't3');
   Map<String, Object?> access({bool expired = false}) => {
     'programId': 'p1',
     'organizerId': 'org',
@@ -178,17 +178,14 @@ void main() {
   test('concurrent scope saves do not overwrite one another', () async {
     await Future.wait([
       for (var i = 0; i < 10; i++)
-        store.save('account', programSnapshotScope('arrivals', 'p1', 't$i'), {
+        store.save('account', programSnapshotScope('plan', 'p1', 't$i'), {
           'programId': 'p1',
           'station': i,
         }),
     ]);
     for (var i = 0; i < 10; i++) {
       expect(
-        await store.load(
-          'account',
-          programSnapshotScope('arrivals', 'p1', 't$i'),
-        ),
+        await store.load('account', programSnapshotScope('plan', 'p1', 't$i')),
         isNotNull,
       );
     }

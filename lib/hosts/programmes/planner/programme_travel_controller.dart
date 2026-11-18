@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_travel_state.dart';
@@ -7,16 +8,17 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'programme_travel_controller.g.dart';
 
 /// Travel across every pickup point: the programme, the arrivals roster,
-/// the transport plan and the trips, all callables.
+/// the transport plan (a callable) and the trips, the arrivals and trips
+/// through listeners.
 @riverpod
 HostProgrammeTravelState hostProgrammeTravelController(
   Ref ref,
   String programId,
 ) {
   final programme = ref.watch(hostProgrammeControllerProvider(programId));
-  final roster = ref.watch(programArrivalsRosterProvider(programId, null));
+  final roster = ref.watch(programArrivalsStreamProvider(programId, null));
   final plan = ref.watch(programTransportPlanProvider(programId, null));
-  final trips = ref.watch(programTripListProvider(programId));
+  final trips = ref.watch(programTripsStreamProvider(programId));
   return HostProgrammeTravelState(
     programme: programme,
     roster: roster.value,
@@ -29,7 +31,7 @@ HostProgrammeTravelState hostProgrammeTravelController(
 /// Reads travel again.
 void refreshHostProgrammeTravel(WidgetRef ref, String programId) {
   refreshHostProgramme(ref, programId);
-  ref.invalidate(programArrivalsRosterProvider(programId, null));
+  ref.invalidate(programArrivalsStreamProvider(programId, null));
   ref.invalidate(programTransportPlanProvider(programId, null));
-  ref.invalidate(programTripListProvider(programId));
+  ref.invalidate(programTripsStreamProvider(programId));
 }

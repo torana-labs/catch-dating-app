@@ -18,9 +18,6 @@ class StaffHotelDeskBody extends StatelessWidget {
     required this.onArrived,
     required this.onGiveKeys,
     required this.onRooms,
-    required this.onMoreCars,
-    required this.onMoreExpected,
-    required this.onFirstPage,
     required this.onRetry,
     this.error,
   });
@@ -33,9 +30,6 @@ class StaffHotelDeskBody extends StatelessWidget {
   final ValueChanged<ProgramTripSummary> onArrived;
   final ValueChanged<ProgramStay> onGiveKeys;
   final VoidCallback onRooms;
-  final VoidCallback onMoreCars;
-  final VoidCallback onMoreExpected;
-  final VoidCallback onFirstPage;
   final VoidCallback onRetry;
 
   /// The last command's failure.
@@ -90,23 +84,10 @@ class StaffHotelDeskBody extends StatelessWidget {
         ),
         if (error case final message?)
           CatchNotice.inline(tone: CatchNoticeTone.danger, body: message),
-        if (state.paged)
-          CatchButton(
-            label: l10n.hostStaffHotelFirstPage,
-            variant: CatchButtonVariant.quiet,
-            size: CatchButtonSize.md,
-            onPressed: onFirstPage,
-          ),
         CatchSection(
           title: l10n.hostStaffHotelOnTheWayTitle,
           dividers: CatchSectionPlacement.none,
           empty: l10n.hostStaffHotelOnTheWayEmpty,
-          action: state.moreCars
-              ? CatchSectionAction(
-                  label: l10n.hostStaffHotelMore,
-                  onPressed: onMoreCars,
-                )
-              : null,
           children: [
             for (final trip in state.onTheWay)
               StaffHotelTripCard(
@@ -150,12 +131,6 @@ class StaffHotelDeskBody extends StatelessWidget {
         CatchSection(
           title: l10n.hostStaffHotelStillTitle,
           empty: l10n.hostStaffHotelStillEmpty,
-          action: state.moreExpected
-              ? CatchSectionAction(
-                  label: l10n.hostStaffHotelMore,
-                  onPressed: onMoreExpected,
-                )
-              : null,
           children: [
             for (final leg in state.stillToLeave)
               CatchIndexRow(

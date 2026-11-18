@@ -18,9 +18,6 @@ class StaffHotelDeskState {
     this.checkedIn,
     this.roomsFree,
     this.generatedAt,
-    this.moreCars = false,
-    this.moreExpected = false,
-    this.paged = false,
   });
 
   const StaffHotelDeskState.loading()
@@ -33,7 +30,6 @@ class StaffHotelDeskState {
   factory StaffHotelDeskState.fromInbound(
     ProgramHotelInbound inbound, {
     ProgramHotelRooms? rooms,
-    bool paged = false,
   }) {
     final stays = rooms?.stays ?? const <ProgramStay>[];
     return StaffHotelDeskState(
@@ -62,9 +58,6 @@ class StaffHotelDeskState {
         (sum, block) => sum + block.remainingRooms,
       ),
       generatedAt: inbound.generatedAt,
-      moreCars: inbound.nextTripCursor != null,
-      moreExpected: inbound.nextExpectedCursor != null,
-      paged: paged,
     );
   }
 
@@ -84,13 +77,6 @@ class StaffHotelDeskState {
   /// loaded.
   final int? roomsFree;
   final DateTime? generatedAt;
-
-  /// The server holds more cars or expected parties than this page shows.
-  final bool moreCars;
-  final bool moreExpected;
-
-  /// The desk shows a later page; Back to the first returns.
-  final bool paged;
 
   /// People in cars on the way and still at the airport.
   int get stillToCome =>

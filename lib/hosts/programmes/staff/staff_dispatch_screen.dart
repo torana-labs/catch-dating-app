@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_projection_lifetime.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_access_policy.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
@@ -103,9 +104,7 @@ class _StaffDispatchScreenState extends ConsumerState<StaffDispatchScreen>
       ref.watch(programWorkEntryProvider(widget.programId, null)),
     ).value?.value;
     final vehicleClasses = [
-      ...(roster?.vehicleClasses ??
-          access?.vehicleClasses ??
-          const <ProgramVehicleClass>[]),
+      ...(access?.vehicleClasses ?? const <ProgramVehicleClass>[]),
     ]..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     final state = switch (plan) {
       CatchAsyncState(hasData: true, :final value?) =>
@@ -131,9 +130,7 @@ class _StaffDispatchScreenState extends ConsumerState<StaffDispatchScreen>
     StaffDispatchSheet? sheet;
     if (sending != null && access != null) {
       final vendors = catchAsyncStateFromAsyncValue(
-        ref.watch(
-          programTransportVendorsProvider(access.organizerId, widget.programId),
-        ),
+        ref.watch(programVendorsStreamProvider(widget.programId)),
       );
       final active = [
         for (final vendor in vendors.value ?? const <ProgramVendorOption>[])

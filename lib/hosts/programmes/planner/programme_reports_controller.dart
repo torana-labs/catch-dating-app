@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
@@ -21,13 +22,13 @@ HostProgrammeReport<ProgramAttendanceReport> hostProgrammeAttendanceController(
   );
 }
 
-/// The trip ledger: the programme and the first page of `listProgramTrips`.
+/// The trip ledger: the programme and the live trips.
 @riverpod
 HostProgrammeReport<ProgramTripList> hostProgrammeTripsController(
   Ref ref,
   String programId,
 ) {
-  final trips = ref.watch(programTripListProvider(programId));
+  final trips = ref.watch(programTripsStreamProvider(programId));
   return HostProgrammeReport(
     programme: ref.watch(hostProgrammeControllerProvider(programId)),
     value: trips.value,
@@ -59,7 +60,7 @@ void refreshHostProgrammeAttendance(WidgetRef ref, String programId) {
 
 void refreshHostProgrammeTrips(WidgetRef ref, String programId) {
   refreshHostProgramme(ref, programId);
-  ref.invalidate(programTripListProvider(programId));
+  ref.invalidate(programTripsStreamProvider(programId));
 }
 
 void refreshHostProgrammeShare(WidgetRef ref, String programId) {

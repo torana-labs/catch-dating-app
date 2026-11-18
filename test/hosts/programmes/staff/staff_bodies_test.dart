@@ -197,9 +197,6 @@ void main() {
           onArrived: (trip) => arrived.add(trip.tripId),
           onGiveKeys: (stay) => keys.add(stay.stayId),
           onRooms: () {},
-          onMoreCars: () {},
-          onMoreExpected: () {},
-          onFirstPage: () {},
           onRetry: () {},
         ),
       );

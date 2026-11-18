@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_hotel_desk_body.dart';
@@ -24,7 +25,7 @@ import 'package:go_router/go_router.dart';
 /// parties still at the airport. Deliberately narrow: no contact fields and
 /// no other hotels.
 ///
-/// It reads the hotel's inbound board, paged by cursor, and its room board.
+/// It reads the hotel's inbound board live, and its room board.
 /// Arrived records a car reaching the hotel (`markProgramTripArrived`);
 /// Give keys checks the guest in (`upsertProgramStay`).
 class StaffHotelDeskScreen extends ConsumerStatefulWidget {
@@ -47,27 +48,11 @@ class StaffHotelDeskScreen extends ConsumerStatefulWidget {
 }
 
 class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
-  final List<String> _tripCursors = [];
-  final List<String> _expectedCursors = [];
   final Set<String> _busy = {};
   Object? _error;
 
-  ProgramHotelInboundProvider get _inbound => programHotelInboundProvider(
-    widget.programId,
-    widget.hotelId,
-    tripCursor: _tripCursors.lastOrNull,
-    expectedCursor: _expectedCursors.lastOrNull,
-  );
-
-  @override
-  void didUpdateWidget(StaffHotelDeskScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.programId != widget.programId ||
-        oldWidget.hotelId != widget.hotelId) {
-      _tripCursors.clear();
-      _expectedCursors.clear();
-    }
-  }
+  ProgramHotelInboundStreamProvider get _inbound =>
+      programHotelInboundStreamProvider(widget.programId, widget.hotelId);
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +64,7 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
     ).value;
     final state = switch (inbound) {
       CatchAsyncState(hasData: true, :final value?) =>
-        StaffHotelDeskState.fromInbound(
-          value,
-          rooms: rooms,
-          paged: _tripCursors.isNotEmpty || _expectedCursors.isNotEmpty,
-        ),
+        StaffHotelDeskState.fromInbound(value, rooms: rooms),
       CatchAsyncState(hasError: true) => const StaffHotelDeskState.error(),
       _ => const StaffHotelDeskState.loading(),
     };
@@ -143,25 +124,7 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
               'hotelId': widget.hotelId,
             },
           ),
-          onMoreCars: () {
-            final cursor = inbound.value?.nextTripCursor;
-            if (cursor != null) setState(() => _tripCursors.add(cursor));
-          },
-          onMoreExpected: () {
-            final cursor = inbound.value?.nextExpectedCursor;
-            if (cursor != null) setState(() => _expectedCursors.add(cursor));
-          },
-          onFirstPage: () => setState(() {
-            _tripCursors.clear();
-            _expectedCursors.clear();
-          }),
-          onRetry: () {
-            setState(() {
-              _tripCursors.clear();
-              _expectedCursors.clear();
-            });
-            ref.invalidate(_inbound);
-          },
+          onRetry: () => ref.invalidate(_inbound),
         ),
       ),
     );
@@ -195,7 +158,7 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
         ),
   );
 
-  /// Runs one desk command for [id], then reads both boards again.
+  /// Runs one desk command for [id], then reads the room board again.
   Future<void> _run(String id, Future<Object?> Function() command) async {
     if (_busy.contains(id)) return;
     setState(() {
@@ -206,11 +169,10 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
       // provider-graph: ownership-widget-async-callback:_StaffHotelDeskScreenState._run:await:command watch CAT156 -- Each desk command is a programme operations controller call passed in by the row; the widget tracks which row is busy and the last error for display only. Lift busy/error into the operations controller in the CAT156 migration.
       await command();
       if (!mounted) return;
-      ref
-        ..invalidate(_inbound)
-        ..invalidate(
-          programHotelRoomsProvider(widget.programId, widget.hotelId),
-        );
+      // The inbound board is a listener and delivers the change itself.
+      ref.invalidate(
+        programHotelRoomsProvider(widget.programId, widget.hotelId),
+      );
     } on Object catch (error) {
       if (mounted) setState(() => _error = error);
     } finally {

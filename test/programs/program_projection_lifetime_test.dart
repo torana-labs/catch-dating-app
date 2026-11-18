@@ -13,13 +13,13 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
-  ProgramArrivalsRoster roster(DateTime expiry) => ProgramArrivalsRoster(
+  ProgramTransportPlan roster(DateTime expiry) => ProgramTransportPlan(
     programId: 'p',
     pickupPointId: 'station',
     generatedAt: DateTime(2026),
     accessExpiresAt: expiry,
-    rows: const [],
-    vehicleClasses: const [],
+    groups: const [],
+    unassigned: const [],
   );
 
   testWidgets('expiry clears visible data during a narrower server refresh', (
@@ -27,14 +27,14 @@ void main() {
   ) async {
     var now = DateTime(2026);
     final initialExpiry = now.add(const Duration(seconds: 1));
-    final fresh = Completer<ProgramArrivalsRoster>();
+    final fresh = Completer<ProgramTransportPlan>();
     var calls = 0;
     final container = ProviderContainer(
       retry: (_, _) => null,
       overrides: [
         uidProvider.overrideWithValue(const AsyncData('account')),
         programProjectionClockProvider.overrideWithValue(() => now),
-        programArrivalsRosterProvider('p', 'station').overrideWith((ref) async {
+        programTransportPlanProvider('p', 'station').overrideWith((ref) async {
           calls++;
           return calls == 1 ? roster(initialExpiry) : fresh.future;
         }),
@@ -49,7 +49,7 @@ void main() {
             builder: (context, ref, _) {
               return CatchAsyncBoundary(
                 value: ref.watch(
-                  programArrivalsRosterViewProvider('p', 'station'),
+                  programTransportPlanViewProvider('p', 'station'),
                 ),
                 retainDataOn: const {},
                 loadingBuilder: (_) => const Text('Refreshing access'),
@@ -86,13 +86,13 @@ void main() {
   ) async {
     var now = DateTime(2026);
     final expiry = now.add(const Duration(seconds: 1));
-    final pending = Completer<ProgramArrivalsRoster>();
+    final pending = Completer<ProgramTransportPlan>();
     final container = ProviderContainer(
       retry: (_, _) => null,
       overrides: [
         uidProvider.overrideWithValue(const AsyncData('account')),
         programProjectionClockProvider.overrideWithValue(() => now),
-        programArrivalsRosterProvider(
+        programTransportPlanProvider(
           'p',
           'station',
         ).overrideWith((ref) => pending.future),
@@ -100,12 +100,12 @@ void main() {
     );
     addTearDown(container.dispose);
     final subscription = container.listen(
-      programArrivalsRosterViewProvider('p', 'station'),
+      programTransportPlanViewProvider('p', 'station'),
       (_, _) {},
     );
     addTearDown(subscription.close);
     final read = container.read(
-      programArrivalsRosterViewProvider('p', 'station').future,
+      programTransportPlanViewProvider('p', 'station').future,
     );
     final rejected = expectLater(read, throwsA(isA<PermissionException>()));
     now = expiry;

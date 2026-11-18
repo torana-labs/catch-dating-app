@@ -42,11 +42,14 @@ class ProgramAccessView {
     this.workPickup = const {},
     this.workHotel = const {},
     this.workFunction = const {},
+    this.arrivalRoutes = const {},
+    this.tripRoutes = const {},
   });
 
   factory ProgramAccessView.fromMap(Map<Object?, Object?> map) {
-    Map<String, DateTime> instants(String field) {
+    Map<String, DateTime> instants(String field, {bool optional = false}) {
       final raw = map[field];
+      if (raw == null && optional) return const {};
       if (raw is! Map) {
         throw FormatException('Program access view has no $field map.');
       }
@@ -84,6 +87,9 @@ class ProgramAccessView {
       workPickup: instants('workPickup'),
       workHotel: instants('workHotel'),
       workFunction: instants('workFunction'),
+      // Views written before the transport read models carry no routes.
+      arrivalRoutes: instants('arrivalRoutes', optional: true),
+      tripRoutes: instants('tripRoutes', optional: true),
     );
   }
 
@@ -119,6 +125,15 @@ class ProgramAccessView {
   final Map<String, DateTime> workPickup;
   final Map<String, DateTime> workHotel;
   final Map<String, DateTime> workFunction;
+
+  /// `pickup|hotel` keys (an id or `*` per side, `~` for none) of the
+  /// arrivals journeys the airport greeter, transport dispatcher and
+  /// coordinator assignments reach, each with its latest instant.
+  final Map<String, DateTime> arrivalRoutes;
+
+  /// The same form for the trips the reconciliation viewer, transport
+  /// dispatcher and coordinator assignments reach.
+  final Map<String, DateTime> tripRoutes;
 
   bool get isManager => role == ProgramActorRole.manager;
 
@@ -195,6 +210,8 @@ class ProgramAccessView {
       workPickup,
       workHotel,
       workFunction,
+      arrivalRoutes,
+      tripRoutes,
     ]) {
       yield* map.entries;
     }
@@ -229,6 +246,29 @@ class ProgramAccessView {
     return latest;
   }
 
+  /// The live arrival routes at [now] as `(pickup, hotel)` pairs; the owner
+  /// reaches every route.
+  List<ProgramRoute> liveArrivalRoutes(DateTime now) =>
+      _liveRoutes(arrivalRoutes, now);
+
+  /// The live trip routes at [now] as `(pickup, hotel)` pairs.
+  List<ProgramRoute> liveTripRoutes(DateTime now) =>
+      _liveRoutes(tripRoutes, now);
+
+  List<ProgramRoute> _liveRoutes(Map<String, DateTime> routes, DateTime now) {
+    if (!isLiveAt(now)) return const [];
+    if (isManager) return const [(pickup: allKey, hotel: allKey)];
+    final keys = [
+      for (final entry in routes.entries)
+        if (entry.value.isAfter(now)) entry.key,
+    ]..sort();
+    return [
+      for (final key in keys)
+        if (key.split('|') case [final pickup, final hotel])
+          (pickup: pickup, hotel: hotel),
+    ];
+  }
+
   /// Names of the duties held at [now], for reading the alerts stamped for
   /// each. The owner holds every duty and has none to name.
   Set<String> liveDutyNames(DateTime now) => {
@@ -259,6 +299,8 @@ class ProgramAccessView {
         'workPickup': workPickup,
         'workHotel': workHotel,
         'workFunction': workFunction,
+        'arrivalRoute': arrivalRoutes,
+        'tripRoute': tripRoutes,
       }.entries)
         for (final entry in map.value.entries)
           if (entry.value.isAfter(now)) '${map.key}:${entry.key}',
@@ -285,6 +327,10 @@ class ProgramAccessView {
     return next;
   }
 }
+
+/// One side-by-side scope of a transport route: a pickup point id and a hotel
+/// id, either of which may be [ProgramAccessView.allKey] for every one.
+typedef ProgramRoute = ({String pickup, String hotel});
 
 /// A view of the signed-in account's authority at one instant, with the
 /// epoch that tells captured rows apart. The epoch rises whenever authority
