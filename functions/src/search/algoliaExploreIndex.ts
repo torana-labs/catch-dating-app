@@ -1,6 +1,7 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {defineSecret} from "firebase-functions/params";
 import * as admin from "firebase-admin";
+import * as logger from "firebase-functions/logger";
 import type {
   OrganizerDocument,
   EventDocument,
@@ -306,7 +307,7 @@ async function syncEventFromCurrentState(eventId: string,
   if (JSON.stringify(after) !== JSON.stringify(record)) {
     await deleteAlgoliaObject(eventsIndexName(), eventId, deps);
     if (after) {
-      throw new Error("Event search source changed; retry current state.");
+      throw new SearchSourceChangedError();
     }
   }
 }
@@ -384,9 +385,95 @@ async function algoliaFetch(
   }
 
   const body = await response.text().catch(() => "");
-  throw new Error(
-    `Algolia request failed with ${response.status}: ${body.slice(0, 500)}`
-  );
+  throw new AlgoliaRequestError(response.status, body.slice(0, 500));
+}
+
+/** An Algolia answer that was not a success; the status decides the retry. */
+export class AlgoliaRequestError extends Error {
+  constructor(readonly status: number, body: string) {
+    super(`Algolia request failed with ${status}: ${body}`);
+    this.name = "AlgoliaRequestError";
+  }
+}
+
+/** Thrown when the source changed under a write; the next attempt reads the
+ * current state, so it always retries. */
+export class SearchSourceChangedError extends Error {
+  constructor() {
+    super("Event search source changed; retry current state.");
+    this.name = "SearchSourceChangedError";
+  }
+}
+
+/** How long a failing trigger delivery keeps retrying. Eventarc would retry
+ * for a day, which turned one unreachable Algolia app into tens of thousands
+ * of attempts and Firestore reads. The index is a projection: the next write
+ * or the backfill tool repairs a dropped one. */
+export const ALGOLIA_RETRY_WINDOW_MS = 30 * 60_000;
+
+// gRPC codes worth another attempt: aborted, deadline, exhausted, unavailable.
+const transientFirestoreCodes: ReadonlySet<unknown> =
+  new Set([4, 8, 10, 14, "aborted", "deadline-exceeded",
+    "resource-exhausted", "unavailable"]);
+
+/**
+ * Whether another delivery could succeed. Only failures that can pass on
+ * their own are transient: a network error reaching Algolia, a 5xx, 408 or
+ * 429 from it, a transient Firestore error, or a source change mid-write.
+ * Everything else (a rejected request, a malformed event) fails the same way
+ * every time.
+ * @param {unknown} error The failure.
+ * @return {boolean} True when a retry could help.
+ */
+export function isTransientSearchSyncError(error: unknown): boolean {
+  if (error instanceof SearchSourceChangedError) return true;
+  if (error instanceof AlgoliaRequestError) {
+    return error.status >= 500 || error.status === 408 ||
+      error.status === 429;
+  }
+  // fetch() rejects with a TypeError when the host cannot be reached.
+  if (error instanceof TypeError && error.message === "fetch failed") {
+    return true;
+  }
+  return transientFirestoreCodes.has((error as {code?: unknown})?.code);
+}
+
+/**
+ * Runs one index sync so a failure cannot retry forever. A permanent error is
+ * logged and dropped; a transient one is rethrown (so the trigger retries)
+ * only while the delivery is younger than ALGOLIA_RETRY_WINDOW_MS.
+ * @param {string} trigger Trigger name for the log.
+ * @param {string} documentId Id of the document that was written.
+ * @param {string | undefined} eventTime CloudEvent time of the write.
+ * @param {Function} work The sync.
+ * @param {Function} now Clock.
+ * @return {Promise<void>}
+ */
+export async function syncOrDropAlgolia(
+  trigger: string,
+  documentId: string,
+  eventTime: string | undefined,
+  work: () => Promise<void>,
+  now: () => number = Date.now
+): Promise<void> {
+  try {
+    await work();
+  } catch (error) {
+    const written = eventTime ? Date.parse(eventTime) : NaN;
+    const expired = Number.isFinite(written) &&
+      now() - written > ALGOLIA_RETRY_WINDOW_MS;
+    const transient = isTransientSearchSyncError(error);
+    if (transient && !expired) throw error;
+    logger.error("Search index sync dropped", {
+      trigger,
+      documentId,
+      reason: transient ? "retry window expired" : "permanent error",
+      name: error instanceof Error ? error.name : typeof error,
+      status: (error as {status?: unknown})?.status,
+      message: error instanceof Error ? error.message.slice(0, 500) :
+        String(error).slice(0, 500),
+    });
+  }
 }
 
 /**
@@ -440,9 +527,12 @@ export const syncAlgoliaOrganizerIndex = onDocumentWritten(
   async (event) => {
     const organizer = event.data?.after.data() as
       OrganizerDocument | undefined;
-    await syncAlgoliaOrganizerIndexHandler(
-      event.params.organizerId,
-      organizer
+    await syncOrDropAlgolia(
+      "syncAlgoliaOrganizerIndex", event.params.organizerId, event.time,
+      () => syncAlgoliaOrganizerIndexHandler(
+        event.params.organizerId,
+        organizer
+      )
     );
   }
 );
@@ -455,6 +545,9 @@ export const syncAlgoliaEventIndex = onDocumentWritten(
   },
   async (event) => {
     const eventDoc = event.data?.after.data() as EventDocument | undefined;
-    await syncAlgoliaEventIndexHandler(event.params.eventId, eventDoc);
+    await syncOrDropAlgolia(
+      "syncAlgoliaEventIndex", event.params.eventId, event.time,
+      () => syncAlgoliaEventIndexHandler(event.params.eventId, eventDoc)
+    );
   }
 );
