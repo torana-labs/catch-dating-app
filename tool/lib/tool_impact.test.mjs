@@ -84,6 +84,20 @@ test("Admin pending inputs select the registered scanner without a full Tools fa
   }
 });
 
+// #1881 removed a Dart use of an ARB key beside Widgetbook edits. Only the
+// Widgetbook paths could select checks then, so the orphaned key reached main.
+test("a Dart edit beside a Tools-lane edit still selects the checks that read Dart", () => {
+  const changedPaths = ["widgetbook/lib/dashboard/catalog/home.dart", "lib/contexts/events/domain/event_formatters.dart"];
+  assert.deepEqual(planAffected({changedPaths: [changedPaths[0]], graph: productionGraph, mode: "pr"})
+    .operations.ciTargets.includes("tools"), true, "the Widgetbook path is a Tools-lane path");
+  const plan = planAffectedToolChecks({changedPaths, manifest: productionManifest, componentGraph: productionGraph});
+  assert.equal(plan.mode, "affected");
+  for (const id of ["copy:l10n-key-usage", "audit:provider-graph", "audit:backend-errors"]) {
+    assert.ok(plan.toolIds.includes(id), id);
+  }
+  assert.deepEqual(plan.ownersByPath[changedPaths[1]].includes("copy:l10n-key-usage"), true);
+});
+
 test("removing all Admin source readers fails closed and unrelated Admin changes stay narrow", () => {
   const broken = structuredClone(productionManifest);
   // Remove every declared reader, including the shared ESLint preset. This

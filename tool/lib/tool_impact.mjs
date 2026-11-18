@@ -89,11 +89,17 @@ export function planAffectedToolChecks({
   }
   // Nx can add the Tools lane through a Tools input the per-path planner does
   // not assign to it (design/**, a website path). Those paths still select the
-  // checks that declare them. One that no check declares stays ignored, as it
-  // was before Nx: it never selected Tools. A Tools-lane path that no check
-  // declares is an ownership gap and stays unmapped (full).
+  // checks that declare them. In a change that also has Tools-lane paths, a
+  // non-Tools Admin or website path keeps its scanners in the React lanes, but
+  // any other path (Dart, ARB, Firebase config) still selects its readers: no
+  // other lane runs the l10n, provider-graph or backend-error checks, and #1881
+  // orphaned ARB keys beside a Widgetbook edit. One that no check declares
+  // stays ignored, as it was before Nx: it never selected Tools. A Tools-lane
+  // path that no check declares is an ownership gap and stays unmapped (full).
   const toolLanePathSet = new Set(toolLanePaths);
-  const ownerCandidates = toolLanePaths.length > 0 ? toolLanePaths : paths;
+  const ownerCandidates = toolLanePaths.length > 0 ?
+    paths.filter((changedPath) => toolLanePathSet.has(changedPath) ||
+      !reactLaneScannerRoots.some((root) => changedPath.startsWith(root))) : paths;
   for (const changedPath of controlPlanePaths) {
     fullReasons.push(`control-plane path changed: ${changedPath}`);
   }
@@ -196,6 +202,8 @@ export function planAffectedToolChecks({
 }
 
 const toolsManifestPath = "tool/tools_manifest.json";
+// Admin and website changes run their own React lint and build lanes.
+const reactLaneScannerRoots = ["admin/", "website/"];
 
 /** Ids of tools whose manifest entry was added or changed, and whether ciImpact policy changed. */
 export function changedManifestToolIds({baseManifest, manifest}) {
