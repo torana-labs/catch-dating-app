@@ -294,8 +294,7 @@ test("event messages fence retries, protect replies and expire typing",
     } finally {
       const batch = db.batch();
       for (const path of paths) batch.delete(path);
-      for (const collection of ["eventChatAccessReceipts",
-        "eventChatMemberships",
+      for (const collection of ["eventChatMemberships",
         "eventChatMessages", "eventChatReactions", "eventChatPresence"]) {
         const rows = await db.collection(collection)
           .where("eventId", "==", eventId).limit(100).get();
