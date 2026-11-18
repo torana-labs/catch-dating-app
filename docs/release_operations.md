@@ -1666,7 +1666,8 @@ What a deploy costs (measured 13 Nov 2026):
 
 When it runs:
 
-- **Daily, dev then prod:** at 03:00 IST the workflow deploys the newest `main`
+- **Daily, dev then prod:** at 02:43 IST (21:13 UTC; GitHub can start a
+  scheduled run hours late) the workflow deploys the newest `main`
   commit whose CI run succeeded (not `main`'s head, which may still be under
   test) to dev, then to prod once dev succeeds. It skips when prod already has
   that commit. It also skips until prod's last delivered deploy recorded
