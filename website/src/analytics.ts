@@ -6,8 +6,6 @@ import {isPrivateEventUpdatePath} from "./analytics/privateRoutes.ts";
 import type {JoinWaitlistHTTPRequest} from "./shared/contracts/generated/joinWaitlistHttpRequest";
 import {brand} from "@catch/brand";
 
-export type {CatchProviderSession, SafeAcquisitionEvent} from "./analytics/catchMeasurement.ts";
-
 type ConsentChoice = "accepted" | "analytics" | "essential";
 type FormVariant = "member" | "host";
 
