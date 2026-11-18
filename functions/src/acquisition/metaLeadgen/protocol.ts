@@ -144,10 +144,11 @@ export function metaLeadIntent(input: {
     ?.slice(0, 140) ?? null;
   const communityLink = httpsLink(first(answers, ["instagram_handle",
     "instagram", "community_link", "website"]));
+  const eventCadence = first(answers, ["event_cadence"])?.slice(0, 80) ?? null;
   const created = Date.parse(lead.createdTime);
   const intentId = metaLeadIntentId(change.leadgenId);
   const fields = {fullName, email: contact.email, phone: contact.phone, city,
-    organizationName, communityLink};
+    organizationName, communityLink, eventCadence};
   const now = input.timestamp(input.nowMillis);
   return {
     schemaVersion: 1,
@@ -173,6 +174,7 @@ export function metaLeadIntent(input: {
       ...(organizationName ? {organizationName} : {}),
       ...(city ? {operatingCity: city} : {}),
       ...(communityLink ? {communityLink} : {}),
+      ...(eventCadence ? {eventCadence} : {}),
     },
     metaLead: {
       leadgenId: change.leadgenId,
