@@ -6,8 +6,8 @@
   "managedPrefix": "Catch Host | Leads |",
   "leadForms": [
     {
-      "name": "Catch Host | Organisers | v1",
-      "note": "Meta forms cannot be edited once created. Change a question or line by adding a v2 form and pointing the campaign at it.",
+      "name": "Catch Host | Organisers | v2",
+      "note": "Meta forms cannot be edited or renamed, and archived names stay taken (v1 was an archived test form). Change a question or line by adding the next version and pointing the campaign at it.",
       "introTitle": "Run your events on Catch Host",
       "introBullets": [
         "Sell tickets and take bookings in one app",
@@ -42,7 +42,7 @@
       "status": "PAUSED",
       "dailyBudgetInr": 1000,
       "note": "Optimise for leads until Catch reports qualified hosts back as conversion leads (about 15 a month), then switch the ad set to conversion leads in Ads Manager.",
-      "leadForm": "Catch Host | Organisers | v1",
+      "leadForm": "Catch Host | Organisers | v2",
       "landingPath": "/host/",
       "targeting": {
         "cities": ["1017930", "1023040", "1024627", "1025436", "1026297", "1035921", "2678292"],

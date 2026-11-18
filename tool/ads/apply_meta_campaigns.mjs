@@ -132,7 +132,9 @@ export function leadFormParams(form) {
       button_text: "Continue"},
     questions: form.questions.map((question) => question.type !== "CUSTOM" ? {type: question.type} : {
       type: "CUSTOM", key: question.key, label: question.label,
-      ...(question.options ? {options: question.options.map((value) => ({value}))} : {}),
+      // Meta answers an unkeyed option with an unexplained 500.
+      ...(question.options ? {options: question.options.map((value) => ({value,
+        key: value.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "")}))} : {}),
     }),
     privacy_policy: {url: site(form.privacyPath), link_text: `${brand.name} privacy policy`},
     thank_you_page: {title: form.thankYouTitle, body: form.thankYouBody,
@@ -249,7 +251,9 @@ export async function planMetaCampaigns({policy, api, render = renderFeedImage})
   } else {
     const forms = await api.get(`${policy.pageId}/leadgen_forms`, {fields: "id,name,status",
       limit: "200"}, pageAccess);
-    formIds = new Map((forms.data ?? []).map((form) => [form.name, form.id]));
+    // An archived form can't take leads, so it never counts as existing.
+    formIds = new Map((forms.data ?? []).filter((form) => form.status === "ACTIVE")
+      .map((form) => [form.name, form.id]));
   }
   const changes = [];
   for (const form of policy.leadForms) {
@@ -280,6 +284,7 @@ export async function planMetaCampaigns({policy, api, render = renderFeedImage})
 async function createCampaign({policy, api, campaign, leadFormId, render}) {
   const act = `act_${policy.adAccountId}`;
   const {id: campaignId} = await api.post(`${act}/campaigns`, campaignParams(campaign));
+  const creatives = [];
   try {
     const {id: adSetId} = await api.post(`${act}/adsets`, adSetParams(policy, campaign, campaignId));
     for (const ad of campaign.ads) {
@@ -289,12 +294,15 @@ async function createCampaign({policy, api, campaign, leadFormId, render}) {
       if (!imageHash) throw new Error(`Meta returned no image hash for ${ad.image}.`);
       const {id: creativeId} = await api.post(`${act}/adcreatives`,
         creativeParams(policy, campaign, ad, {imageHash, leadFormId}));
+      creatives.push(creativeId);
       await api.post(`${act}/ads`, adParams(campaign, ad, adSetId, creativeId));
     }
     return campaignId;
   } catch (error) {
-    // Leave nothing half-built: deleting the campaign removes its ad set and ads.
+    // Leave nothing half-built: deleting the campaign removes its ad set and
+    // ads; creatives live on the account, so they go one by one.
     await api.remove(campaignId).catch(() => {});
+    for (const creativeId of creatives) await api.remove(creativeId).catch(() => {});
     throw new Error(`${error.message} (the partly created campaign was deleted)`);
   }
 }

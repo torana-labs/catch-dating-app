@@ -72,6 +72,9 @@ test("payloads: paused, lead objective, on-ad leads, Catch links", () => {
   assert.equal(new URL(form.privacy_policy.url).origin, brand.web.origin);
   const keys = form.questions.filter((q) => q.type === "CUSTOM").map((q) => q.key);
   assert.deepEqual(keys, ["club_name", "instagram_handle", "event_cadence"]);
+  const cadence = form.questions.find((q) => q.key === "event_cadence");
+  assert.deepEqual(cadence.options[0], {value: "Every week", key: "every_week"});
+  assert.ok(cadence.options.every((option) => /^[a-z0-9_]+$/.test(option.key)));
 });
 
 function fakeApi({pages = [], forms = [], campaigns = [], failOn = null} = {}) {
@@ -115,9 +118,12 @@ test("without Page access the plan is blocked and apply refuses", async () => {
 test("existing forms and campaigns are kept; new ones are created paused", async () => {
   const pages = [{id: policy.pageId, access_token: "page-token"}];
   const kept = await planMetaCampaigns({policy, render, api: fakeApi({pages,
-    forms: [{id: "555", name: policy.leadForms[0].name}],
+    forms: [{id: "555", name: policy.leadForms[0].name, status: "ACTIVE"}],
     campaigns: [{id: "1", name: campaign.name, status: "PAUSED"}]})});
   assert.deepEqual(kept.changes.map((c) => c.kind), ["keep", "keep"]);
+  const archived = await planMetaCampaigns({policy, render, api: fakeApi({pages,
+    forms: [{id: "556", name: policy.leadForms[0].name, status: "ARCHIVED"}]})});
+  assert.equal(archived.changes[0].kind, "create");
   const api = fakeApi({pages});
   const plan = await planMetaCampaigns({policy, api, render});
   const created = await applyMetaCampaigns({policy, plan, api, render});
@@ -128,10 +134,11 @@ test("existing forms and campaigns are kept; new ones are created paused", async
 });
 
 test("a failure part-way deletes the campaign made in that run", async () => {
-  const api = fakeApi({pages: [{id: policy.pageId, access_token: "page-token"}], failOn: "/adcreatives"});
+  const api = fakeApi({pages: [{id: policy.pageId, access_token: "page-token"}], failOn: "/ads"});
   const plan = await planMetaCampaigns({policy, api, render});
   await assert.rejects(applyMetaCampaigns({policy, plan, api, render}), /partly created campaign was deleted/);
-  assert.equal(api.calls.filter(([m]) => m === "DELETE").length, 1);
+  // The campaign, then the one creative made before the first ad failed.
+  assert.equal(api.calls.filter(([m]) => m === "DELETE").length, 2);
 });
 
 test("Graph errors name the call, never the token", async () => {
