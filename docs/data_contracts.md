@@ -6858,6 +6858,48 @@ validate generated payloads and responses; the role comes from the organiser's
 own authority fields. Both collections deny all client access. Every field is
 new; no existing document or command changes shape.
 
+### Organizer custom domains (#1110)
+
+`custom_domains.schema.json` owns `customDomains/{hostname}`, the one registry
+of exact hostnames Catch serves for an organiser. `target` binds the host to the
+organiser page (`organizerPage`) or to one public form (`form`, the shape that
+replaces `organizerFormDomains`). The hostname is the document id, so a record
+that is not `removed` or `expired` blocks every other organiser, and a new owner
+must pass a fresh `ownershipChallenge` in a new `generation`; a dangling CNAME
+never transfers a domain. Shared hostname, status, DNS-instruction and
+apex-redirect definitions live in `contracts/shared/custom_domain_common.schema.json`.
+
+- `status` runs `pendingDns -> verified -> provisioning -> active <-> lapsed ->
+  removed`. Any state can move to `suspended` (Admin) or `failed` (provider
+  error, retryable to `pendingDns`); a `pendingDns` lease that ends becomes
+  `expired`. `removed` and `expired` end a generation. Only `active` serves; a
+  `lapsed` record removes itself after 14 days unless DNS recovers first.
+- The schema enforces launch policy: served hosts have at least one label below
+  the registrable domain (the apex reaches `www` by a registrar redirect, or a
+  `flattened` second hostname), punycode labels are rejected, `pendingDns`
+  carries its lease, `active` carries its activation time and provider
+  hostname id and is never held for review, and `suspension` is set exactly
+  while `suspended`. `history` keeps the latest 30 transitions.
+- `providerStatus` copies the provider's hostname and certificate tokens as
+  bounded strings, not enums, so a new provider state cannot break reads.
+- The collection is server-only: `firestore.rules` denies every client read and
+  write. Indexes cover `target.organizerId, status` (owner lookups and the
+  one-domain-per-organiser check) and `status, lastCheckedAtMillis` (the
+  reconciler).
+- `requestOrganizerDomain`, `getOrganizerDomain`, `checkOrganizerDomain` and
+  `removeOrganizerDomain` share `OrganizerDomainCallableResponse`: the caller's
+  role, whether they may manage the domain (owners of claimed or verified
+  organisers while the switch is on) and a bounded view without provider ids,
+  review reasons, suspension actors or history. Check and remove name the exact
+  `hostname` and `generation` they act on.
+- `organizerPublicPage.customDomain` is `{hostname, origin}` while a record is
+  active and null otherwise; pages built before it omit it and readers treat
+  absence as null.
+
+The contracts land before their writers: no function writes `customDomains`
+yet, the four callables are not exported, and `organizerFormDomains` stays the
+live form registry until the forms code moves onto `customDomains`.
+
 
 ## Catch-owned controlled support reply (CAT16)
 

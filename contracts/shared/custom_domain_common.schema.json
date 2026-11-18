@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/custom_domain_common.schema.json",
+  "title": "CustomDomainCommon",
+  "description": "Shared definitions for the customDomains registry (#1110) and the owner domain callables: hostnames, the lifecycle status, DNS instructions and the apex redirect. Launch policy: subdomains only, the apex forwarded by the registrar, IDN and punycode labels rejected.",
+  "definitions": {
+    "millis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "nullableMillis": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "servedHostname": {
+      "type": "string",
+      "description": "The exact normalised host Catch serves: lowercase LDH labels, no trailing dot, port, wildcard or IP address, and at least one label below the registrable domain (launch serves subdomains only, such as www.example-club.test). Punycode (xn--) labels are rejected at launch.",
+      "minLength": 5,
+      "maxLength": 253,
+      "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.){2,}[a-z]{2,63}$",
+      "not": {"pattern": "(?:^|\\.)xn--"}
+    },
+    "registrableDomain": {
+      "type": "string",
+      "description": "The registrable domain (public suffix plus one label, from the Public Suffix List, for example example-club.test, or a name under a multi-label public suffix such as co.in) that the served host belongs to. Also the apex a registrar redirect forwards from.",
+      "minLength": 4,
+      "maxLength": 253,
+      "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$",
+      "not": {"pattern": "(?:^|\\.)xn--"}
+    },
+    "cnameTarget": {
+      "type": "string",
+      "description": "The Catch SaaS target the served host must CNAME to, on the dedicated neutral Cloudflare zone.",
+      "minLength": 4,
+      "maxLength": 253,
+      "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$"
+    },
+    "ownershipChallenge": {
+      "type": "string",
+      "description": "The TXT value at _catch-verify.<hostname>. Fresh for every generation, kept published while the domain is live and rechecked by the reconciler.",
+      "pattern": "^catch-verification=[A-Za-z0-9_-]{32}$"
+    },
+    "status": {
+      "type": "string",
+      "description": "pendingDns -> verified -> provisioning -> active <-> lapsed -> removed. Any state can move to suspended (admin) or failed (provider error, retryable to pendingDns). A pendingDns record whose lease ends becomes expired. removed and expired are terminal for a generation and do not block another reservation of the hostname.",
+      "enum": ["pendingDns", "verified", "provisioning", "active", "lapsed", "suspended", "failed", "expired", "removed"]
+    },
+    "generation": {
+      "type": "integer",
+      "description": "Increments on every new reservation of the hostname, so a stale probe, provider callback or client request cannot act on a newer lease.",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "dnsInstruction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "name", "value", "purpose"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "CNAME and TXT are DNS records. redirect is a registrar URL-forwarding rule (apex to https://<served host>).",
+          "enum": ["CNAME", "TXT", "redirect"]
+        },
+        "name": {
+          "type": "string",
+          "description": "The record name, or the apex for a redirect.",
+          "minLength": 1,
+          "maxLength": 253,
+          "pattern": "^[a-z0-9_](?:[a-z0-9_.-]{0,251}[a-z0-9])?$"
+        },
+        "value": {
+          "type": "string",
+          "description": "The CNAME target, the TXT value or the https redirect destination.",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "purpose": {
+          "type": "string",
+          "description": "routing points the served host at Catch; ownership is Catch's TXT challenge; certificate pre-validates the provider certificate before the CNAME flips; apexRedirect forwards the bare domain.",
+          "enum": ["routing", "ownership", "certificate", "apexRedirect"]
+        }
+      }
+    },
+    "dnsInstructions": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {"$ref": "#/definitions/dnsInstruction"}
+    },
+    "apexRedirect": {
+      "description": "How the bare domain reaches the served host: a registrar redirect at launch, or a CNAME-flattened second custom hostname that the edge 301s. Null when the served host is not www-style or the owner declined.",
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["hostname", "mode"],
+          "properties": {
+            "hostname": {"$ref": "#/definitions/registrableDomain"},
+            "mode": {"type": "string", "enum": ["registrar", "flattened"]}
+          }
+        }
+      ]
+    },
+    "reviewState": {
+      "type": "string",
+      "description": "none: auto-approved. held: a blocklist or lookalike near-match waits for Admin review and never serves. approved: an admin cleared a hold.",
+      "enum": ["none", "held", "approved"]
+    }
+  }
+}
