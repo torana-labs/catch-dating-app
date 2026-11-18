@@ -75,10 +75,9 @@ describe("the host fee model", () => {
 
 describe("pricing copy", () => {
   const pricingCopy = [hostFeeCalculatorCopy, hostPricingLines, hostLandingCopy];
-  const feeCopy = [hostFeeCalculatorCopy, hostPricingLines];
 
   it("says a month, never per billing cycle (owner, 18 Nov 2026)", () => {
-    for (const text of strings(feeCopy)) {
+    for (const text of strings(pricingCopy)) {
       expect(text, text).not.toMatch(/billing cycle|\bcycle\b/iu);
     }
     expect(hostPricingLines.rateTitle).toBe("of ticket sales. Never more than ₹10,000 a month.");

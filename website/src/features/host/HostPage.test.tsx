@@ -116,7 +116,7 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(stages.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(copy.ways.stages.map((stage) => hostLandingHref(stage.to)));
   });
 
-  it("prices a billing cycle on the shared calculator: 5% after the trial, capped at ₹10,000, with worked examples", () => {
+  it("prices a month on the shared calculator: 5% after the trial, capped at ₹10,000, with worked examples", () => {
     renderPage();
     const pricing = within(screen.getByRole("region", {name: copy.pricing.title}));
     expect(pricing.getAllByText(copy.pricing.rate).length).toBeGreaterThan(0);
@@ -133,13 +133,13 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(pricing.getByRole("link", {name: copy.pricing.full}).getAttribute("href")).toBe("/pricing/");
   });
 
-  it("compares only the tools the owner allows, with the fee per billing cycle", () => {
+  it("compares only the tools the owner allows, with the fee a month", () => {
     renderPage();
     const table = within(screen.getByRole("table"));
     expect(table.getAllByRole("columnheader").map((cell) => cell.textContent)).toEqual([copy.compare.rowHeader, ...copy.compare.columns]);
     const allowed = /^(WhatsApp, Forms and UPI|Luma|District|Meetup)$/u;
     for (const column of copy.compare.columns.slice(1)) expect(column).toMatch(allowed);
-    expect(table.getByText(`${hostPricingFacts.rate}, never more than ${hostPricingFacts.cap} per billing cycle`)).toBeTruthy();
+    expect(table.getByText(`${hostPricingFacts.rate}, never more than ${hostPricingFacts.cap} a month`)).toBeTruthy();
   });
 
   it("sends the walkthrough and every person to WhatsApp, with the message already typed", () => {
@@ -179,10 +179,11 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(faq.getByRole("link", {name: copy.faq.ask}).getAttribute("href")!.startsWith(whatsappPrefix)).toBe(true);
   });
 
-  it("promises nothing the product does not do: no day-before reminder, no place count", () => {
+  it("promises nothing the product does not do: no day-before reminder, no place count, no billing cycle (the owner's \"a month\")", () => {
     const {container} = renderPage();
     const text = container.textContent ?? "";
     expect(text).not.toMatch(/day before|places left|of 50\b/iu);
+    expect(text).not.toMatch(/billing cycle|\bcycle\b/iu);
   });
 
   it("uses no dating language", () => {
