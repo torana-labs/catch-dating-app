@@ -59,6 +59,8 @@ export const materializedNonSecretParams = [
   "AD_CONVERSIONS_META_TOKEN_VERSION",
   "AD_CONVERSIONS_META_TEST_EVENT_CODE",
   "AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT",
+  "META_LEADGEN_CREDENTIAL_VERSION",
+  "META_LEADGEN_PAGE_IDS",
 ];
 
 function option(name) {
@@ -308,6 +310,15 @@ function normalizedProviderParams(environment = process.env, projectId) {
   "AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT must be a service account in this project");
   assert(adMode === "off" || adTokenVersion && adServiceAccount,
     "AD_CONVERSIONS_MODE requires the Meta token version and Google service account");
+  // Meta host lead forms: one pinned webhook credential and numeric page IDs.
+  const leadgenCredential = environment.META_LEADGEN_CREDENTIAL_VERSION?.trim() || "";
+  const leadgenPages = environment.META_LEADGEN_PAGE_IDS?.trim() || "";
+  const leadgenPrefix = `projects/${projectId}/secrets/CATCH_META_LEADGEN_WEBHOOK/versions/`;
+  assert(!leadgenCredential || leadgenCredential.startsWith(leadgenPrefix) &&
+    /^[1-9][0-9]*$/.test(leadgenCredential.slice(leadgenPrefix.length)),
+  "META_LEADGEN_CREDENTIAL_VERSION must pin CATCH_META_LEADGEN_WEBHOOK in this project");
+  assert(!leadgenPages || /^[0-9]{5,20}(,[0-9]{5,20})*$/.test(leadgenPages.replace(/\s+/g, "")),
+    "META_LEADGEN_PAGE_IDS must be comma-separated Facebook page IDs");
   const params = {
     CATCH_HOST_OPERATOR_ALERTS_ENABLED: "false",
     CATCH_HOST_OPERATOR_ALERTS_SINCE: " ",
@@ -365,6 +376,8 @@ function normalizedProviderParams(environment = process.env, projectId) {
     AD_CONVERSIONS_META_TOKEN_VERSION: adTokenVersion || " ",
     AD_CONVERSIONS_META_TEST_EVENT_CODE: adTestCode || " ",
     AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT: adServiceAccount || " ",
+    META_LEADGEN_CREDENTIAL_VERSION: leadgenCredential || " ",
+    META_LEADGEN_PAGE_IDS: leadgenPages.replace(/\s+/g, "") || " ",
   };
   assert(
     Object.keys(params).join(",") === materializedNonSecretParams.join(","),

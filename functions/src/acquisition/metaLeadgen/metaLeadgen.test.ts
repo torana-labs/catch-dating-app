@@ -8,7 +8,8 @@ import {
   metaLeadIntentId,
   parseMetaLead,
 } from "./protocol";
-import {fileLeadgenReceipt, processLeadgenReceipt} from "./worker";
+import {fileLeadgenReceipt, parseWebhookCredential} from "./webhook";
+import {processLeadgenReceipt} from "./processing";
 import {matchingMetaLead, hostDeliveryRecords} from
   "../adConversions/deliveries";
 import {metaEvent} from "../adConversions/platforms";
@@ -160,4 +161,12 @@ test("a qualified host carries its Meta lead as a CRM stage", async () => {
     owner, nowMillis: now});
   assert.equal("lead_id" in metaEvent(plain).user_data, false);
   assert.equal("event_source" in metaEvent(plain).custom_data, false);
+});
+
+test("the webhook secret needs both a real app secret and verify token", () => {
+  const good = {appSecret: "a".repeat(32), verifyToken: "v".repeat(40)};
+  assert.deepEqual(parseWebhookCredential(JSON.stringify(good)), good);
+  assert.throws(() => parseWebhookCredential(JSON.stringify(
+    {...good, verifyToken: "short"})), /malformed/);
+  assert.throws(() => parseWebhookCredential("{"));
 });

@@ -51,7 +51,7 @@
         "partner",
         "meta_lead_ad"
       ],
-      "description": "website: a catchdates.com form; partner: a partner nomination; meta_lead_ad: a Facebook or Instagram lead form (metaLead names it)."
+      "description": "website: a form on the Catch website; partner: a partner nomination; meta_lead_ad: a Facebook or Instagram lead form (metaLead names it)."
     },
     "submissionId": {
       "type": "string",

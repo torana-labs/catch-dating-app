@@ -1159,10 +1159,9 @@ export {
   onAdConversionGrowthFactsWritten,
   sendAdConversions,
 } from "./acquisition/adConversions/worker";
-export {
-  metaLeadgenWebhook,
-  onMetaLeadgenEventCreated,
-} from "./acquisition/metaLeadgen/worker";
+export {metaLeadgenWebhook} from "./acquisition/metaLeadgen/webhook";
+export {onMetaLeadgenEventCreated} from
+  "./acquisition/metaLeadgen/processing";
 export {
   onOrganizerGrowthOrganizerWritten,
   onOrganizerGrowthClaimRequestCreated,
