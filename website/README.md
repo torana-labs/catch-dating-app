@@ -264,10 +264,17 @@ The site has a first-party analytics layer in `src/analytics.ts` and records
 host-visible organizer metrics through `recordOrganizerAnalyticsEvent` in
 `src/firebase.ts`.
 
-- No tag manager or third-party tag loads. The build takes no container id,
-  and `src/analytics.ts` never calls an external `gtag` or loads a script.
-  Events stay on the local `dataLayer` bus until the first-party transport in
-  [`docs/ads_conversion_spec.md`](../docs/ads_conversion_spec.md) ships.
+- No tag manager loads, and the build takes no container id. The diagnostic
+  events in this list stay on the local `dataLayer` bus; no tag reads it.
+- The first-party Google tag (GA4 and Google Ads) and Meta Pixel load only
+  after the visitor picks "Allow analytics and marketing", only on public pages
+  of the production site, through `src/analytics/adTags.ts`. It sends
+  `page_view`, `view_item` on public event pages, `begin_checkout` and
+  `purchase` for live paid checkouts, and the host website-lead conversion
+  (Meta `Lead`) for accepted host lead forms, each with an `event_id`.
+  Withdrawing the choice revokes both tags. The contract, including what each
+  event carries, is "First-party browser transport" in
+  [`docs/ads_conversion_spec.md`](../docs/ads_conversion_spec.md).
 - `.github/workflows/website-production-observability.yml` probes the public
   launch routes every 15 minutes without a paid monitoring service. The same
   status, canonical-metadata, and content checks run immediately after a
