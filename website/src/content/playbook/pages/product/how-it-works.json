@@ -6,7 +6,7 @@
     "title": "How {{brand.name}} works | From the first booking to the next one",
     "description": "Your page, bookings and memberships, messages and growth, the room, running the event, guest records, and reports and payouts, in one app for hosts. Use all of it, or start with one part.",
     "socialDescription": "One app, from the first booking to the next one. See how {{brand.name}} runs the whole life of an event.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

@@ -6,7 +6,7 @@
     "title": "Forms | {{brand.name}} for hosts",
     "description": "Applications, registrations, signed waivers, guest details, feedback and surveys, built from a template. Every answer on the right person’s record, and optional fees paid into your own Razorpay.",
     "socialDescription": "Ask anything. Do something with the answer. Forms on {{brand.name}}.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

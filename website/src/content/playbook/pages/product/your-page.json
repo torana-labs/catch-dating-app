@@ -6,7 +6,7 @@
     "title": "Your page | {{brand.name}} for hosts",
     "description": "A free organiser page for your bio: your next event, your links, everything coming up, reviews with your replies and followers, with the owner’s numbers. Claim it if it’s already listed.",
     "socialDescription": "One page for everything you run. Make yours on {{brand.name}}, or claim it if it’s already listed.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

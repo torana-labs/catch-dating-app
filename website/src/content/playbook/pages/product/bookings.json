@@ -6,7 +6,7 @@
     "title": "Bookings and memberships | {{brand.name}} for hosts",
     "description": "Open booking, applications, invite-only links and private offers, places for women and for men and an age range, memberships with member prices and early access, and every UPI or card payment next to the right name.",
     "socialDescription": "Decide who comes. Reward the ones who keep coming. Bookings and memberships on {{brand.name}}.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

@@ -6,7 +6,7 @@
     "title": "Messages and growth | {{brand.name}} for hosts",
     "description": "Event messages for every booking, a push reminder before the start, announcements, follower updates and WhatsApp campaigns, plus tracked links and guest invite links that show what fills your events.",
     "socialDescription": "Fill the next one from the last one. Messages and growth on {{brand.name}}.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

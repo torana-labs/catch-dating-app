@@ -6,7 +6,7 @@
     "title": "Reports and payouts | {{brand.name}} for hosts",
     "description": "A report after every event, payouts into your own Razorpay account by default, and one bill a month: 5% of net sales, never more than ₹10,000 a month.",
     "socialDescription": "Know what worked. Get paid. Reports and payouts on {{brand.name}}.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
