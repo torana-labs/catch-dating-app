@@ -7,7 +7,10 @@ import {describe, expect, it} from "vitest";
 // read its sources so the web button cannot drift from its sizes, feedback or
 // variants.
 const read = (relative: string) => fs.readFileSync(fileURLToPath(new URL(relative, import.meta.url)), "utf8");
-const button = read("../../../catch_ui/lib/src/components/catch_button.dart");
+// The button library and its part with the size and colour tables.
+const button =
+  read("../../../catch_ui/lib/src/components/catch_button.dart") +
+  read("../../../catch_ui/lib/src/components/catch_button_specs.dart");
 const tokens = read("../../../catch_tokens/lib/src/components/catch_button_tokens.dart");
 const css = read("./CatchButton.module.css");
 const border = read("../../../catch_tokens/lib/src/semantic/catch_border.dart");
