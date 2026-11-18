@@ -578,8 +578,10 @@ test("host-whatsapp-thread-views creates each retained thread's view once", asyn
   const migration = MIGRATIONS.find((entry) => entry.name === "host-whatsapp-thread-views");
   const at = (millis) => ({toMillis: () => millis});
   const later = Date.now() + 86_400_000;
-  const {organizerWhatsappThreadId} = await import(
-    "../../functions/lib/organizers/organizerWhatsappThreads.js");
+  // Built Functions output; a variable keeps Knip from resolving it where
+  // functions/lib is not built.
+  const threadsModule = "../../functions/lib/organizers/organizerWhatsappThreads.js";
+  const {organizerWhatsappThreadId} = await import(threadsModule);
   const live = organizerWhatsappThreadId("o1", "c1");
   const expired = organizerWhatsappThreadId("o1", "c2");
   const thread = (contactId, expiresAt) => ({organizerId: "o1", contactId,
