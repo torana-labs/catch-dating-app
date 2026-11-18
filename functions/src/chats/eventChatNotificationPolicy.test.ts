@@ -145,9 +145,6 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
       batch.delete(receipt);
       batch.delete(ref("users", person).collection("pushInstallations")
         .doc("synthetic"));
-      const receipts = await db.collection("eventChatAccessReceipts")
-        .where("eventId", "==", eventId).limit(100).get();
-      for (const row of receipts.docs) batch.delete(row.ref);
       await batch.commit();
       await deleteApp(app);
     }

@@ -153,8 +153,7 @@ test("message safety actions enforce authority and replay boundaries",
       });
     } finally {
       const batch = db.batch();
-      for (const collection of ["eventChatMemberships", "eventChatMessages",
-        "eventChatAccessReceipts"]) {
+      for (const collection of ["eventChatMemberships", "eventChatMessages"]) {
         const docs = await db.collection(collection)
           .where("eventId", "==", eventId).get();
         for (const doc of docs.docs) batch.delete(doc.ref);

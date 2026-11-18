@@ -122,11 +122,16 @@
         "onMatchCreated",
         "saveEventPlanStep",
         "setEventCloseOut",
-        "changeEventCrawlStop"
+        "changeEventCrawlStop",
+        "updateEventChatAccess",
+        "actOnEventChatMessage",
+        "setEventChatReaction",
+        "updateEventChatProfileSharing",
+        "manageEventChatMember"
       ],
       "migrationNotes": [
         "One replay-receipt collection since L8 of the Firestore consolidation: commandReceipts/{command}_{id} with command, requestHash, result, createdAt and expiresAt, and expiresAt (seven days for triggers, thirty for requests and webhooks; the TTL policy is approved by the owner, 18 Nov 2026).",
-        "functionEventReceipts and eventLiveCommandReceipts stopped being written and keep their documents under the legal hold, with no client access; replay windows are short, so none were copied forward.",
+        "functionEventReceipts, eventLiveCommandReceipts and eventChatAccessReceipts stopped being written and keep their documents under the legal hold, with no client access; replay windows are short, so none were copied forward.",
         "Consent, money, safety and audit receipts stay in their own collections."
       ]
     },

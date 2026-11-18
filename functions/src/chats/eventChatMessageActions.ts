@@ -11,8 +11,14 @@ import {chatHash, chatIdentityReader, messageDefaults, messageUnavailable,
   readableChatMessage, type EventChatMessageDeps} from
   "./eventChatMessageShared";
 import type {EventChatMessageDocument as Message,
-  EventChatAccessReceiptDocument as Receipt, ReportDocument, BlockDocument} from
+  ReportDocument, BlockDocument} from
   "../shared/generated/firestoreAdminTypes";
+import {
+  eventChatReceiptRef,
+  eventChatRequestHash,
+  replayEventChatReceipt,
+  writeEventChatReceipt,
+} from "./eventChatReceipts";
 import {validateActOnEventChatMessageCallablePayload} from
   "../shared/generated/validators/actOnEventChatMessageInput";
 import type {ActOnEventChatMessageCallableResponse as Result} from
@@ -35,21 +41,19 @@ export async function actOnEventChatMessageHandler(
   await deps.rateLimit(db, uid, "actOnEventChatMessage", {
     maxRequests: 20, windowMs: 60 * 1000,
   });
-  const receiptRef = db.collection("eventChatAccessReceipts")
-    .doc(chatHash(["messageAction", uid, data.requestId]));
-  const payloadHash = chatHash([data.eventId, data.messageId,
-    data.action, data.reasonCode]);
+  // The same hash names the report a "report" action files, so a retry past
+  // the receipt's retention hits that report and fails rather than duplicating.
+  const requestKey = chatHash(["messageAction", uid, data.requestId]);
+  const receiptRef = eventChatReceiptRef(db, "actOnEventChatMessage",
+    requestKey);
+  const requestHash = eventChatRequestHash(uid, data.eventId,
+    chatHash([data.eventId, data.messageId, data.action, data.reasonCode]));
   return db.runTransaction(async (tx) => {
     await readEventChatAccount(db, tx, uid);
     const receiptSnap = await tx.get(receiptRef);
-    if (receiptSnap.exists) {
-      const receipt = requireDoc<Receipt>(receiptSnap,
-        "EventChatAccessReceiptDocument");
-      if (receipt.uid !== uid || receipt.eventId !== data.eventId ||
-          receipt.payloadHash !== payloadHash) {
-        throw new HttpsError("already-exists",
-          "This request was already used.");
-      }
+    if (replayEventChatReceipt(receiptSnap.data(), {
+      command: "actOnEventChatMessage", requestHash,
+      nowMillis: deps.now().toMillis()})) {
       return {applied: true, replayed: true};
     }
     const access = await requireEventChatMember(db, tx, data.eventId, uid);
@@ -71,7 +75,7 @@ export async function actOnEventChatMessageHandler(
       await tx.get(blockRef) : null;
     const now = deps.now();
     if (data.action === "report") {
-      tx.create(db.collection("reports").doc(receiptRef.id), {
+      tx.create(db.collection("reports").doc(requestKey), {
         reporterUserId: uid, targetUserId: targetUid,
         createdAt: now, source: "chat", status: "open",
         reasonCode: data.reasonCode!, contextId: messageRef.path,
@@ -89,8 +93,8 @@ export async function actOnEventChatMessageHandler(
       tx.update(messageRef, {status: "removed", removedAt: now});
       bumpEventChatSignalIn(tx, db, data.eventId, "message");
     }
-    tx.create(receiptRef, {eventId: data.eventId, uid, payloadHash, revision: 1,
-      createdAt: now} satisfies Receipt);
+    writeEventChatReceipt(tx, receiptRef, {command: "actOnEventChatMessage",
+      requestHash, revision: 1, nowMillis: now.toMillis()});
     return {applied: true, replayed: false};
   });
 }

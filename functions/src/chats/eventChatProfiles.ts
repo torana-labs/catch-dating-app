@@ -12,11 +12,16 @@ import {readParticipantFormProfileProposal} from
   "../organizers/organizerFormProfileProposals";
 import type {
   EventChatProfileShareDocument as Share,
-  EventChatAccessReceiptDocument as Receipt,
   ParticipantOrganizerCardDocument as Card,
   OrganizerFormResponseDocument as FormResponse,
   OrganizerFormVersionDocument as FormVersion,
 } from "../shared/generated/firestoreAdminTypes";
+import {
+  eventChatReceiptRef,
+  eventChatRequestHash,
+  replayEventChatReceipt,
+  writeEventChatReceipt,
+} from "./eventChatReceipts";
 import type {GetEventChatProfileSharingCallableResponse as Settings} from
   "../shared/generated/getEventChatProfileSharingCallableResponse";
 import type {GetEventChatProfileCallableResponse as Profile} from
@@ -357,34 +362,25 @@ export async function updateEventChatProfileSharingHandler(
   await deps.rateLimit(db, uid, "updateEventChatProfileSharing", {
     maxRequests: 30, windowMs: 60 * 1000,
   });
-  const receiptRef = db
-    .collection("eventChatAccessReceipts")
-    .doc(chatHash(["profileSharing", uid, data.requestId]));
-  const payloadHash = chatHash([
+  const receiptRef = eventChatReceiptRef(
+    db,
+    "updateEventChatProfileSharing",
+    chatHash(["profileSharing", uid, data.requestId]),
+  );
+  const requestHash = eventChatRequestHash(uid, data.eventId, chatHash([
     data.eventId,
     data.expectedRevision,
     selection,
-  ]);
+  ]));
   return db.runTransaction(async (tx) => {
     await readEventChatAccount(db, tx, uid);
     const receiptSnap = await tx.get(receiptRef);
-    if (receiptSnap.exists) {
-      const receipt = requireDoc<Receipt>(
-        receiptSnap,
-        "EventChatAccessReceiptDocument",
-      );
-      if (
-        receipt.uid !== uid ||
-        receipt.eventId !== data.eventId ||
-        receipt.payloadHash !== payloadHash
-      ) {
-        throw new HttpsError(
-          "already-exists",
-          "This request was already used.",
-        );
-      }
-      return {revision: receipt.revision, replayed: true};
-    }
+    const prior = replayEventChatReceipt(receiptSnap.data(), {
+      command: "updateEventChatProfileSharing",
+      requestHash,
+      nowMillis: deps.now().toMillis(),
+    });
+    if (prior) return {revision: prior.revision as number, replayed: true};
     const previous = await readShare(db, tx, data.eventId, uid);
     const revision = nextChatRevision(
       previous?.revision ?? 0,
@@ -417,13 +413,12 @@ export async function updateEventChatProfileSharingHandler(
       createdAt: previous?.createdAt ?? now,
       updatedAt: now,
     } satisfies Share);
-    tx.create(receiptRef, {
-      eventId: data.eventId,
-      uid,
-      payloadHash,
+    writeEventChatReceipt(tx, receiptRef, {
+      command: "updateEventChatProfileSharing",
+      requestHash,
       revision,
-      createdAt: now,
-    } satisfies Receipt);
+      nowMillis: now.toMillis(),
+    });
     return {revision, replayed: false};
   });
 }
