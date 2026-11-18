@@ -581,7 +581,7 @@ test("program-door-views creates headers, roster rows and journal views once, wi
     venueName: "Lawn", venueNotes: "ring Ravi", startsAt: at(1000), endsAt: at(5000),
     status: "scheduled", ...overrides});
   const guest = (name, overrides = {}) => ({programId: "p1", organizerId: "o1",
-    displayName: name, householdId: null, phoneE164: "+919900000000", email: "g@example.com",
+    displayName: name, householdId: null, phoneE164: "+919900000000", email: "private-email-marker",
     ...overrides});
   const db = fakeDb({
     "programFunctions/f1": fn(),
@@ -606,7 +606,7 @@ test("program-door-views creates headers, roster rows and journal views once, wi
   assert.equal(db.data["programDoorJournalViews/j1"].actorLabel, "Arjun");
   const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(
     ([key]) => key.startsWith("programDoor") && !key.startsWith("programDoorJournal/"))));
-  for (const secret of ["9900000000", "g@example.com", "staff-1"]) {
+  for (const secret of ["9900000000", "private-email-marker", "staff-1"]) {
     assert.equal(copied.includes(secret), false, secret);
   }
   assert.equal(db.data["programGuests/g1"].phoneE164, "+919900000000");

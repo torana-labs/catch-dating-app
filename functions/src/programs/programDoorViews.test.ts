@@ -23,7 +23,7 @@ const fn = (overrides: Record<string, unknown> = {}) => ({
   checkedInCount: 3, ...overrides});
 const guest = (overrides: Record<string, unknown> = {}) => ({
   programId: "program-1", organizerId: "org-1", displayName: "Rohan",
-  householdId: null, phoneE164: "+919999900001", email: "r@example.com",
+  householdId: null, phoneE164: "+919999900001", email: "private-email-marker",
   ...overrides});
 const join = (overrides: Record<string, unknown> = {}) => ({
   programId: "program-1", functionId: "f1", guestId: "g1", invited: true,
@@ -50,7 +50,7 @@ test("a row never carries a contact field", () => {
     householdLabel: "Sharma", responseNote: "vegan", version: 1});
   const text = JSON.stringify(row);
   assert.equal(text.includes("9999900001"), false);
-  assert.equal(text.includes("example.com"), false);
+  assert.equal(text.includes("private-email-marker"), false);
 });
 
 test("allGuests invites everyone; selectedGuests lists only join rows", () => {
