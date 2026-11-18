@@ -23,13 +23,12 @@ const [trialAction, whatsappAction] = hero.actions as readonly PlaybookAction[];
 const form = cta.type === "cta" ? cta.leadForm! : undefined!;
 
 describe("usePlaybookPageController", () => {
-  it("links site routes, aliased pages, family pages and anchors, and tags each press with the page and section", () => {
+  it("links site routes, playbook pages, family pages and anchors, and tags each press with the page and section", () => {
     const {result} = renderHook(() => usePlaybookPageController(page));
     const controller = result.current;
     expect(controller.href({route: "host"})).toBe("/host/");
     expect(controller.href({route: "host", anchor: "faq"})).toBe("/host/#faq");
-    // /host/start/ has no content yet, so its alias stands in.
-    expect(controller.href({route: "host_start"})).toBe("/host/#start");
+    expect(controller.href({route: "host_start"})).toBe("/host/start/");
     expect(controller.href({route: "host_run_clubs"})).toBe("/host/run-clubs/");
     expect(controller.href({page: "story_detail/carter-road", anchor: "quote"})).toBe("/stories/carter-road/#quote");
     expect(controller.href({anchor: "pricing"})).toBe("#pricing");
@@ -37,9 +36,9 @@ describe("usePlaybookPageController", () => {
 
     expect(trialAction.to).toEqual({route: "host_start"});
     const trial = controller.action(trialAction, "top");
-    expect(trial).toMatchObject({label: trialAction.label, href: "/host/#start", newTab: false, variant: "primary"});
+    expect(trial).toMatchObject({label: trialAction.label, href: "/host/start/", newTab: false, variant: "primary"});
     trial.onPressed?.();
-    expect(tracked).toEqual([{label: playbookCtaLabel(page.id, "top", trialAction.label), href: "/host/#start"}]);
+    expect(tracked).toEqual([{label: playbookCtaLabel(page.id, "top", trialAction.label), href: "/host/start/"}]);
     expect(tracked[0].label).toMatch(/^playbook_host_run_clubs_top_[a-z_]+$/u);
   });
 

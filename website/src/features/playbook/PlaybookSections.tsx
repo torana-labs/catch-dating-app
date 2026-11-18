@@ -3,6 +3,7 @@ import {
   CatchBand,
   CatchBandHeader,
   CatchButton,
+  CatchCardGrid,
   CatchComparisonTable,
   CatchCtaSection,
   CatchFaqSection,
@@ -21,6 +22,7 @@ import {
   CatchText,
   type CatchBandAction,
   type CatchBandGround,
+  type CatchCardGridCity,
   type CatchScreenPreviewProps,
 } from "@catch/web-ui";
 import type {ComponentType, ReactNode} from "react";
@@ -38,6 +40,9 @@ import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
 import type {BoundPlaybookSectionType} from "./playbookBindings";
 import {playbookCustomSections, type PlaybookCustomSectionProps} from "./custom/customSections";
 import {brand} from "../../content/brand";
+import {citiesPageCopy} from "../../content/citiesPage";
+import {websiteCities} from "../../content/markets";
+import {cityPagePath} from "../home/sections/cityChrome";
 import {playbookHref} from "./playbookHrefs";
 import type {PlaybookPageController} from "./usePlaybookPageController";
 
@@ -408,6 +413,46 @@ const ArticleBinding: Binding<"article"> = ({section, context}) => (
   </CatchBand>
 );
 
+/**
+ * The market's cities as the cities page draws them, in catalog order: an
+ * open city links its page, a city not open yet the homepage's launch
+ * notice. A paused city is left out, as it is from the city picker.
+ */
+function playbookCityCards(): CatchCardGridCity[] {
+  return websiteCities.filter((city) => city.status !== "paused").map((city) => {
+    const live = city.status === "live";
+    return {
+      id: city.slug,
+      title: city.label,
+      live,
+      status: live ? citiesPageCopy.open : citiesPageCopy.soon,
+      action: live ?
+        {href: cityPagePath(city.slug), label: citiesPageCopy.seeWhatsOn} :
+        {href: `/?${new URLSearchParams({city: city.slug})}#whats-on`, label: citiesPageCopy.getNotified},
+    };
+  });
+}
+
+/**
+ * A cards band through CatchCardGrid. Its one bound source is the market's
+ * cities; a page naming any other source is held back (./playbookBindings).
+ */
+const CardsBinding: Binding<"cards"> = ({section, context}) => (
+  <CatchCardGrid
+    actions={context.controller.actions(section.actions, section.id)}
+    columns={section.columns === 4 ? 4 : 3}
+    empty={section.empty ? {title: section.empty.title, message: section.empty.body} : undefined}
+    ground={section.ground}
+    id={section.id}
+    items={playbookCityCards()}
+    kicker={section.kicker}
+    kind="city"
+    lead={section.lead}
+    level={section.pageTitle ? 1 : 2}
+    title={section.title}
+  />
+);
+
 /** One component from the closed custom registry; the page is checked for a missing component before it renders. */
 function CustomSlot({component, section, context}: {component: string; section: PlaybookCustomSectionProps["section"]; context: PlaybookSectionContext}) {
   const Component = (playbookCustomSections as Partial<Record<string, ComponentType<PlaybookCustomSectionProps>>>)[component];
@@ -477,6 +522,7 @@ export const playbookSectionBindings: {readonly [T in BoundPlaybookSectionType]:
   table: TableBinding,
   article: ArticleBinding,
   custom: CustomBinding,
+  cards: CardsBinding,
 };
 
 /** One section through its binding. The page is checked for pending bindings before it renders. */
