@@ -1,4 +1,5 @@
 import type {SupportInboxController} from "../features/support/controllers/useSupportInboxController";
+import type {AdMatchingOptOutController} from "../features/support/controllers/useAdMatchingOptOutController";
 import {SupportScreen} from "../features/support/ui/SupportScreen";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {noop} from "./adminRouteStoryKit";
@@ -47,13 +48,18 @@ const storySupportInbox: SupportInboxController = {
   assign: async () => true, setStatus: async () => true, setLinks: async () => true, saveReply: async () => true,
 };
 
+const storyAdMatching: AdMatchingOptOutController = {
+  result: null, isSaving: false,
+  check: async () => true, record: async () => true, remove: async () => true, clear: noop,
+};
+
 export const SupportRouteStory: Story = {
   name: "Support",
   parameters: {
     catchComponent: {id: "route_support", states: ["open-conversations", "conversation"]},
   },
   render: () => (
-    <SupportScreen detailOpen inbox={storySupportInbox} nowMs={Date.parse("2026-11-01T12:00:00Z")}
+    <SupportScreen adMatching={storyAdMatching} detailOpen inbox={storySupportInbox} nowMs={Date.parse("2026-11-01T12:00:00Z")}
       onOpenTrial={noop} onSelect={noop} userUid="sample-owner" />
   ),
 };

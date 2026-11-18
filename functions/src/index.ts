@@ -1196,6 +1196,9 @@ export {
   onAdConversionGrowthFactsWritten,
   sendAdConversions,
 } from "./acquisition/adConversions/worker";
+export {adminManageAdMatchingOptOut} from
+  "./acquisition/adMatching/adminOptOuts";
+export {syncMetaHostAudience} from "./acquisition/adAudiences/hostAudience";
 export {metaLeadgenWebhook} from "./acquisition/metaLeadgen/webhook";
 export {onMetaLeadgenEventCreated} from
   "./acquisition/metaLeadgen/processing";

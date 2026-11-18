@@ -1124,7 +1124,8 @@
       "credentialClass": "provider-token",
       "consumers": [
         "sendAdConversions",
-        "onMetaLeadgenEventCreated"
+        "onMetaLeadgenEventCreated",
+        "syncMetaHostAudience"
       ],
       "binding": {
         "kind": "parameter",

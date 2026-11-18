@@ -5070,9 +5070,11 @@ they list `programWhatsappMessages` (a query naming `programId` and `threadId`;
 the existing composite index serves it), `programWhatsappCannedReplies` and
 `programPhotos` (a query naming `programId`). Messages, views and photo records
 go with the archived programme's retention sweep (the view follows its thread's
-deletion through the trigger). A phone listing the inbox newest first needs a
-composite index on `programWhatsappThreadViews` (`programId`, `lastMessageAtMillis`
-descending), to be added to `firestore.indexes.json` with the client batch.
+deletion through the trigger). A phone listing the inbox newest first uses the composite
+index on `programWhatsappThreadViews` (`programId`, `lastMessageAtMillis`
+descending), with `programPhotos` (`programId`, `createdAtMillis` descending) and
+`organizerProgramViews` (`organizerId`, `startsAtMillis` descending), in
+`firestore.indexes.json`.
 
 `organizerProgramViews/{programId}` is the planner's setup view of one
 programme, kept by triggers on `organizerPrograms`, `programFunctions`,
@@ -5127,7 +5129,9 @@ senders: `{programId}_u-{hash}`) carries the 24-hour window, `handledBy`
 (`assistant` | `planner`), `state` (`needsYou` | `handled`), the guest's
 language, the last message preview and the escalation reason.
 `programWhatsappMessages/{messageId}` holds one message (text up to 4096
-characters; media by reference only), its author and delivery status.
+characters; media by reference only), its author (`authorUid` and, for a
+planner reply, `authorLabel`, the author's display name copied from their grant
+when the reply is written) and delivery status.
 `programWhatsappReplyOperations` reserve each free-text reply before the
 Meta call. `programWhatsappCannedReplies` hold saved replies per language
 and `programAssistantSettings/{programId}` the assistant settings (absent

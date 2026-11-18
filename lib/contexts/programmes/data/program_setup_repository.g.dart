@@ -57,8 +57,12 @@ final class ProgramSetupRepositoryProvider
 String _$programSetupRepositoryHash() =>
     r'9f9eece111a504886873fa3950d5ef2f08769e35';
 
+/// The organiser's programmes, live from `organizerProgramViews` (#1339).
+
 @ProviderFor(organizerProgramList)
 final organizerProgramListProvider = OrganizerProgramListFamily._();
+
+/// The organiser's programmes, live from `organizerProgramViews` (#1339).
 
 final class OrganizerProgramListProvider
     extends
@@ -70,6 +74,7 @@ final class OrganizerProgramListProvider
     with
         $FutureModifier<List<OrganizerProgramSummary>>,
         $FutureProvider<List<OrganizerProgramSummary>> {
+  /// The organiser's programmes, live from `organizerProgramViews` (#1339).
   OrganizerProgramListProvider._({
     required OrganizerProgramListFamily super.from,
     required String super.argument,
@@ -115,7 +120,9 @@ final class OrganizerProgramListProvider
 }
 
 String _$organizerProgramListHash() =>
-    r'd97aa1efc68b9abd0231849940af89736fd5317f';
+    r'1e9206a587b88896a92eed9792f7b5a50be5f49a';
+
+/// The organiser's programmes, live from `organizerProgramViews` (#1339).
 
 final class OrganizerProgramListFamily extends $Family
     with
@@ -132,6 +139,8 @@ final class OrganizerProgramListFamily extends $Family
         isAutoDispose: true,
       );
 
+  /// The organiser's programmes, live from `organizerProgramViews` (#1339).
+
   OrganizerProgramListProvider call(String organizerId) =>
       OrganizerProgramListProvider._(argument: organizerId, from: this);
 
@@ -139,8 +148,18 @@ final class OrganizerProgramListFamily extends $Family
   String toString() => r'organizerProgramListProvider';
 }
 
+/// One programme's settings, schedule and setup lists live from
+/// `organizerProgramViews` (#1339), with the guest, household, journey and
+/// staff counts the server rolls up. Without the counts (offline, or the
+/// callable failing) the programme still shows, with none.
+
 @ProviderFor(organizerProgramDetail)
 final organizerProgramDetailProvider = OrganizerProgramDetailFamily._();
+
+/// One programme's settings, schedule and setup lists live from
+/// `organizerProgramViews` (#1339), with the guest, household, journey and
+/// staff counts the server rolls up. Without the counts (offline, or the
+/// callable failing) the programme still shows, with none.
 
 final class OrganizerProgramDetailProvider
     extends
@@ -152,6 +171,10 @@ final class OrganizerProgramDetailProvider
     with
         $FutureModifier<OrganizerProgramDetail>,
         $FutureProvider<OrganizerProgramDetail> {
+  /// One programme's settings, schedule and setup lists live from
+  /// `organizerProgramViews` (#1339), with the guest, household, journey and
+  /// staff counts the server rolls up. Without the counts (offline, or the
+  /// callable failing) the programme still shows, with none.
   OrganizerProgramDetailProvider._({
     required OrganizerProgramDetailFamily super.from,
     required String super.argument,
@@ -198,7 +221,12 @@ final class OrganizerProgramDetailProvider
 }
 
 String _$organizerProgramDetailHash() =>
-    r'8d8f44f65d61c0a77d1e68212b68929ee0fac026';
+    r'3366b38133236c69426440e1d527ea7d04a467a4';
+
+/// One programme's settings, schedule and setup lists live from
+/// `organizerProgramViews` (#1339), with the guest, household, journey and
+/// staff counts the server rolls up. Without the counts (offline, or the
+/// callable failing) the programme still shows, with none.
 
 final class OrganizerProgramDetailFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<OrganizerProgramDetail>, String> {
@@ -210,6 +238,11 @@ final class OrganizerProgramDetailFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// One programme's settings, schedule and setup lists live from
+  /// `organizerProgramViews` (#1339), with the guest, household, journey and
+  /// staff counts the server rolls up. Without the counts (offline, or the
+  /// callable failing) the programme still shows, with none.
 
   OrganizerProgramDetailProvider call(String programId) =>
       OrganizerProgramDetailProvider._(argument: programId, from: this);

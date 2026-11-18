@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/contexts/programmes/data/organizer_program_views_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/organizer_program_views.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
@@ -608,35 +610,35 @@ class ProgramSetupRepository {
 ProgramSetupRepository programSetupRepository(Ref ref) =>
     ProgramSetupRepository(ref.watch(firebaseFunctionsProvider));
 
+/// The organiser's programmes, live from `organizerProgramViews` (#1339).
 @riverpod
 Future<List<OrganizerProgramSummary>> organizerProgramList(
   Ref ref,
   String organizerId,
-) async {
-  final rows = await ref
-      .watch(programSetupRepositoryProvider)
-      .listPrograms(organizerId);
-  return rows
-      .map(
-        (row) => OrganizerProgramSummary(
-          programId: row.programId,
-          title: row.title,
-          kind: ProgramKind.values.byName(row.kind),
-          status: ProgramStatus.values.byName(row.status),
-          revision: row.revision,
-          archivedAt: row.archivedAt,
-          anonymizeAt: row.anonymizeAt,
-          anonymizedAt: row.anonymizedAt,
-        ),
-      )
-      .toList(growable: false);
-}
+) => ref.watch(organizerProgramSummariesStreamProvider(organizerId).future);
 
+/// One programme's settings, schedule and setup lists live from
+/// `organizerProgramViews` (#1339), with the guest, household, journey and
+/// staff counts the server rolls up. Without the counts (offline, or the
+/// callable failing) the programme still shows, with none.
 @riverpod
 Future<OrganizerProgramDetail> organizerProgramDetail(
   Ref ref,
   String programId,
-) => ref.watch(programSetupRepositoryProvider).getProgram(programId);
+) async {
+  final view = await ref.watch(
+    organizerProgramViewStreamProvider(programId).future,
+  );
+  Map<String, int> counts;
+  try {
+    counts =
+        (await ref.read(programSetupRepositoryProvider).getProgram(programId))
+            .counts;
+  } on AppException {
+    counts = const {};
+  }
+  return organizerProgramDetailFromView(view, counts);
+}
 
 @riverpod
 Future<ProgramGuestListPage> programGuestList(Ref ref, String programId) =>
