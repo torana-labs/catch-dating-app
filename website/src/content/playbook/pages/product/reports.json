@@ -34,9 +34,9 @@
           "title": "Report · Sunday social run, 24 Nov",
           "subtitle": "Ready in {{brand.stores.hostAppName}} after the event",
           "stats": [
-            {"value": "46", "label": "came, of 52 booked"},
-            {"value": "11", "label": "first time with you"},
-            {"value": "4.8", "label": "rating, from 21 guests"}
+            {"value": "46/52", "label": "came"},
+            {"value": "11", "label": "new to you"},
+            {"value": "4.8", "label": "rating"}
           ],
           "rows": [
             {"title": "Ticket sales", "detail": "From 46 payments", "value": "₹13,800"},
@@ -71,10 +71,10 @@
       "align": "start",
       "columns": 4,
       "items": [
-        {"figure": "1", "figureNote": "Booking", "title": "Guest pays by UPI or card", "body": "Straight into your Razorpay account."},
-        {"figure": "2", "figureNote": "Settlement", "title": "Razorpay pays your bank", "body": "On Razorpay’s usual schedule for your account."},
-        {"figure": "3", "figureNote": "Refunds", "title": "By your policy", "body": "Refunds follow the cancellation policy you set."},
-        {"figure": "4", "figureNote": "{{brand.name}}’s fee", "title": "Billed afterwards", "body": "5% of net sales, never more than ₹10,000, in one bill per 30-day billing cycle."}
+        {"figure": "1", "figureNote": "Booking", "title": "Guest pays by UPI or card", "ground": "ink", "body": "Straight into your Razorpay account."},
+        {"figure": "2", "figureNote": "Settlement", "title": "Razorpay pays your bank", "ground": "ink", "body": "On Razorpay’s usual schedule for your account."},
+        {"figure": "3", "figureNote": "Refunds", "title": "By your policy", "ground": "ink", "body": "Refunds follow the cancellation policy you set."},
+        {"figure": "4", "figureNote": "{{brand.name}}’s fee", "title": "Billed afterwards", "ground": "ink", "body": "5% of net sales, never more than ₹10,000, in one bill per 30-day billing cycle."}
       ]
     },
     {

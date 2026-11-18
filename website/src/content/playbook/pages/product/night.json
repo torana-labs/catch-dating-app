@@ -227,14 +227,14 @@
       "align": "start",
       "columns": 4,
       "items": [
-        {"title": "The live console", "body": "Run of show, the room and what needs you, on your phone or an iPad at the host stand."},
-        {"title": "Change anything live", "body": "Move a guest, adjust a group or override an assignment, and the rest of the plan still holds."},
-        {"title": "A first hello", "body": "A group, a team or a prompt so nobody stands alone. Introductions and prompts are optional."},
-        {"title": "Help me say hi", "body": "A guest asks you for an introduction, privately, and you decide who follows up."},
-        {"title": "Guest requests", "body": "Practical asks from guests during the night arrive on your screen, not in your DMs."},
-        {"title": "Announcements", "body": "One message to everyone booked: the next round, the next stop, last orders."},
-        {"title": "No app for guests", "body": "Guests join live moments in their phone’s browser after a quick phone check, and can always skip."},
-        {"title": "Reports after", "body": "Who came, who’s new and who came back, ready in {{brand.stores.hostAppName}} after the event."}
+        {"title": "The live console", "ground": "ink", "body": "Run of show, the room and what needs you, on your phone or an iPad at the host stand."},
+        {"title": "Change anything live", "ground": "ink", "body": "Move a guest, adjust a group or override an assignment, and the rest of the plan still holds."},
+        {"title": "A first hello", "ground": "ink", "body": "A group, a team or a prompt so nobody stands alone. Introductions and prompts are optional."},
+        {"title": "Help me say hi", "ground": "ink", "body": "A guest asks you for an introduction, privately, and you decide who follows up."},
+        {"title": "Guest requests", "ground": "ink", "body": "Practical asks from guests during the night arrive on your screen, not in your DMs."},
+        {"title": "Announcements", "ground": "ink", "body": "One message to everyone booked: the next round, the next stop, last orders."},
+        {"title": "No app for guests", "ground": "ink", "body": "Guests join live moments in their phone’s browser after a quick phone check, and can always skip."},
+        {"title": "Reports after", "ground": "ink", "body": "Who came, who’s new and who came back, ready in {{brand.stores.hostAppName}} after the event."}
       ]
     },
     {

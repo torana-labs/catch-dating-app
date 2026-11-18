@@ -25,6 +25,7 @@
       "kicker": "How {{brand.name}} works",
       "title": "One app, from the first booking to the next one.",
       "lead": "{{brand.name}} runs the whole life of an event: your page, bookings and payments, the door, the night itself and the follow-up. Use all of it, or start with one part.",
+      "align": "center",
       "columns": 6,
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
@@ -36,7 +37,7 @@
         {"figure": "3", "title": "Messages", "body": "Confirmations, reminders and updates for everyone booked.", "ground": "yellow", "link": {"label": "Messages", "to": {"route": "product_messages"}}},
         {"figure": "4", "title": "The door", "body": "QR or self check-in on a phone or iPad.", "ground": "mint", "link": {"label": "The door", "to": {"route": "product_door"}}},
         {"figure": "5", "title": "The night", "body": "Groups, teams, seating and rotations, by format.", "ground": "indigo", "link": {"label": "Running the night", "to": {"route": "product_night"}}},
-        {"figure": "6", "title": "After", "body": "Reviews, reports, payouts and who to invite back.", "ground": "ink", "link": {"label": "Reports and payouts", "to": {"route": "product_reports"}}}
+        {"figure": "6", "title": "After", "body": "Reviews, reports, payouts and who to invite back.", "ground": "magenta", "link": {"label": "Reports and payouts", "to": {"route": "product_reports"}}}
       ]
     },
     {
@@ -174,6 +175,7 @@
       "ground": "white",
       "kicker": "Start where you are",
       "title": "Hand {{brand.name}} as much of the evening as you want.",
+      "align": "center",
       "columns": 3,
       "items": [
         {"figure": "1", "title": "Keep your tools", "body": "Import your guest list and use {{brand.name}} for the door and the night. Nothing changes for guests until doors open."},

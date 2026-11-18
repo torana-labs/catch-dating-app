@@ -53,6 +53,7 @@
       "ground": "white",
       "kicker": "Four ways through the door",
       "title": "However they arrive, they’re on the list.",
+      "align": "center",
       "columns": 4,
       "items": [
         {"title": "Most guests scan in", "body": "A code at the door opens your event in their phone’s browser. They confirm with their number and they’re in.", "ground": "mint"},

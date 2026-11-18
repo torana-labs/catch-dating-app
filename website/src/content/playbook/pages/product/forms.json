@@ -68,15 +68,15 @@
       "align": "start",
       "columns": 3,
       "items": [
-        {"title": "Event application", "body": "Who, why, when they’re free"},
-        {"title": "Event registration", "body": "Contact and ticket questions"},
-        {"title": "Dinner guest details", "body": "Diet, seating, access"},
-        {"title": "Run or walk", "body": "Pace, distance, route needs"},
-        {"title": "Racket session", "body": "Level, side, pairing"},
-        {"title": "Quiz night", "body": "Team name, table"},
-        {"title": "Event waiver", "body": "Terms, acknowledgement, signature"},
-        {"title": "Post-event feedback", "body": "Rating and a private note"},
-        {"title": "Blank form", "body": "Start from nothing"}
+        {"title": "Event application", "ground": "ink", "body": "Who, why, when they’re free"},
+        {"title": "Event registration", "ground": "ink", "body": "Contact and ticket questions"},
+        {"title": "Dinner guest details", "ground": "ink", "body": "Diet, seating, access"},
+        {"title": "Run or walk", "ground": "ink", "body": "Pace, distance, route needs"},
+        {"title": "Racket session", "ground": "ink", "body": "Level, side, pairing"},
+        {"title": "Quiz night", "ground": "ink", "body": "Team name, table"},
+        {"title": "Event waiver", "ground": "ink", "body": "Terms, acknowledgement, signature"},
+        {"title": "Post-event feedback", "ground": "ink", "body": "Rating and a private note"},
+        {"title": "Blank form", "ground": "ink", "body": "Start from nothing"}
       ]
     },
     {

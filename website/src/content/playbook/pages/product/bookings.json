@@ -53,7 +53,7 @@
         {"title": "Open", "body": "Anyone can book. A page with spots left. Book and pay in a couple of taps.", "ground": "coral"},
         {"title": "Applications", "body": "They apply, you choose. Ask the questions you want answered: who they are, who they’re bringing, what they’re hoping for. Approve with a tap.", "ground": "yellow"},
         {"title": "Invite-only", "body": "Only people with your invite link or code can book.", "ground": "mint"},
-        {"title": "Private offer", "body": "A place for one person. Send someone their own checkout link, checked against their phone number.", "ground": "ink"}
+        {"title": "Private offer", "body": "A place for one person. Send someone their own checkout link, checked against their phone number.", "ground": "magenta"}
       ]
     },
     {
