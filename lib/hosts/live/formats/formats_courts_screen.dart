@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
+import 'package:catch_dating_app/event_success/presentation/assignments/event_success_assignment_profiles.dart';
+import 'package:catch_dating_app/event_success/presentation/assignments/event_success_rotation_override_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_courts_body.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_courts_controller.dart';
@@ -56,7 +60,10 @@ class _HostFormatsCourtsScreenState
     listenToCatchMutationErrors(
       context,
       ref,
-      mutations: [EventSuccessController.publishRotationRoundMutation],
+      mutations: [
+        EventSuccessController.publishRotationRoundMutation,
+        EventSuccessController.overrideGuidedRotationsMutation,
+      ],
       errorContext: AppErrorContext.event,
     );
     return CatchRoot(
@@ -87,6 +94,7 @@ class _HostFormatsCourtsScreenState
             now: now,
             rotating: rotating,
             onRotate: () => unawaited(_rotate(state)),
+            onEditRotations: () => unawaited(_editRotations(state)),
             onSetUp: _openSetup,
             onRetry: () =>
                 ref.invalidate(watchEventSuccessPlanProvider(event.id)),
@@ -103,6 +111,62 @@ class _HostFormatsCourtsScreenState
       ),
     ),
   );
+
+  /// Opens the rotation editor the old console used on tonight's rounds,
+  /// for players who have not opted out, saving through the existing
+  /// rotation override.
+  Future<void> _editRotations(HostFormatsCourtsState state) async {
+    final event = widget.event;
+    final List<EventSuccessAssignment> assignments;
+    final List<PublicProfile> profiles;
+    try {
+      final rotations = await ref.read(
+        watchEventSuccessRotationAssignmentsProvider(event.id).future,
+      );
+      final preferences = await ref.read(
+        watchEventSuccessPreferencesProvider(event.id).future,
+      );
+      final optedOut = {
+        for (final preference in preferences)
+          if (preference.guidedRotationsOptedOut) preference.uid,
+      };
+      assignments = [
+        for (final assignment in rotations)
+          if (!optedOut.contains(assignment.uid)) assignment,
+      ];
+      final key = eventSuccessPeerUidsKey(
+        eventSuccessAssignmentParticipantUids(assignments),
+      );
+      profiles = key.isEmpty
+          ? const <PublicProfile>[]
+          : await ref.read(
+              eventSuccessAssignmentPeerProfilesProvider(key).future,
+            );
+    } on Object catch (error) {
+      if (mounted) showCatchNoticeError(context, error);
+      return;
+    }
+    if (!mounted || assignments.isEmpty) return;
+    await showCatchBottomSheet<void>(
+      context: context,
+      builder: (_) => EventSuccessRotationOverrideSheet(
+        event: event,
+        assignments: assignments,
+        participantProfiles: profiles,
+        onOverride: (rounds) =>
+            EventSuccessController.overrideGuidedRotationsMutation.run(
+              ref,
+              (tx) => tx
+                  .get(eventSuccessControllerProvider.notifier)
+                  .overrideGuidedRotations(
+                    eventId: event.id,
+                    expectedRevision: state.liveControlRevision,
+                    rounds: rounds,
+                  ),
+            ),
+      ),
+    );
+  }
 
   Future<void> _rotate(HostFormatsCourtsState state) async {
     final l10n = context.l10n;

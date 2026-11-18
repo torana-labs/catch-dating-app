@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:flutter/foundation.dart';
 
@@ -29,6 +30,8 @@ class HostFormatsMixState {
     this.revealed = false,
     this.countdownSeconds = 10,
     this.openers = true,
+    this.editable = const <EventSuccessAssignment>[],
+    this.compatibility = false,
     this.error,
   });
 
@@ -59,6 +62,13 @@ class HostFormatsMixState {
 
   /// A first hello shows on every phone.
   final bool openers;
+
+  /// Tonight's table assignments a host can move people between: those of
+  /// guests who have not opted out of tables.
+  final List<EventSuccessAssignment> editable;
+
+  /// The night asks the compatibility questions.
+  final bool compatibility;
   final Object? error;
 
   /// Everyone with a seat at a new table.
