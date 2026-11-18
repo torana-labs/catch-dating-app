@@ -31,8 +31,14 @@ const formatLabel = (value: ExploreFilters["format"]) =>
 /** The results band's anchor: the phone action bar and the empty window's hosts link scroll to it. */
 const resultsAnchor = "explore-results";
 
-/** The page's headline, by what it leads with: what's on, the next two weeks, nothing yet, or launching soon. */
-function exploreHeading(explore: Explore): {kicker: string; title: string; lead: string} {
+/**
+ * The page's headline, by what it leads with: what's on, the next two weeks, nothing yet, or launching soon.
+ * It reads only these fields, so the release smoke's contract test can drive every state and view.
+ */
+export function exploreHeading(explore: {
+  state: Explore["state"]; city: Pick<Explore["city"], "label">; filters: Pick<Explore["filters"], "view">;
+  liveCity: Pick<NonNullable<Explore["liveCity"]>, "label"> | null;
+}): {kicker: string; title: string; lead: string} {
   const city = explore.city.label;
   const plansView = explore.filters.view === "plans";
   if (explore.state === "soon") {
