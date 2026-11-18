@@ -116,7 +116,7 @@ final class ProgramPlannedMessagesProvider
 }
 
 String _$programPlannedMessagesHash() =>
-    r'99080c8808bb20bd9dcacc6bababbb9fef65b3f5';
+    r'2b831ebb8a2fc3e17615cdc0300cb8db3abe45bb';
 
 final class ProgramPlannedMessagesFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ProgramPlannedMessages>, String> {
@@ -202,7 +202,7 @@ final class ProgrammesOverviewProvider
 }
 
 String _$programmesOverviewHash() =>
-    r'3f54b4dbeb5ae527efd37e956d4fd3c537dd53e1';
+    r'fddbc0427727cfb0525807395282f7a9967068f2';
 
 /// The planner home: the organiser's programmes with their overview
 /// numbers, from the first `listOrganizerPrograms` page.
