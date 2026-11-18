@@ -11,6 +11,7 @@
 // lanes fails.
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
+import {createRequire} from "node:module";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -95,16 +96,18 @@ export function manifestMarkdown(manifest = readJson("tool/tools_manifest.json")
   return byPath;
 }
 
-// Nx's glob reading: `**/` spans directories, a trailing `**` matches everything below.
-const globToRegExp = (glob) => new RegExp(`^${glob.replace(/[.+^${}()|[\]\\]/gu, "\\$&")
-  .replace(/\*\*\//gu, "\u0000").replace(/\*\*$/u, "\u0001").replace(/\*/gu, "[^/]*")
-  .replace(/\u0000/gu, "(?:.*/)?").replace(/\u0001/u, ".*")}$`, "u");
+// Nx reads input globs with minimatch; lane_key.mjs matches them the same way.
+const minimatchRe = createRequire(path.join(workspaceRoot, "package.json"))("minimatch").makeRe;
+const globToRegExp = (glob) => minimatchRe(glob, {dot: true});
 
-/** The lane-tools inputs that name a document (file or glob), with the negations applied. */
+/** The lane-tools inputs, named inputs expanded, that name a file (file or glob), with the negations applied. */
 export function laneToolsCovers(nxJson, file) {
   const options = nxJson.plugins.find((entry) => entry.plugin === "./tool/nx/catch_projects.mjs").options;
-  const inputs = options.sourceProjects.find((project) => project.name === "lane-tools").targets.lane.inputs
-    .filter((input) => input.startsWith("{workspaceRoot}/") || input.startsWith("!{workspaceRoot}/"));
+  const expand = (inputs) => inputs.flatMap((input) =>
+    typeof input === "string" && nxJson.namedInputs?.[input] ? expand(nxJson.namedInputs[input]) : [input]);
+  const inputs = expand(options.sourceProjects.find((project) => project.name === "lane-tools").targets.lane.inputs)
+    .filter((input) => typeof input === "string" &&
+      (input.startsWith("{workspaceRoot}/") || input.startsWith("!{workspaceRoot}/")));
   const strip = (input) => input.replace(/^!?\{workspaceRoot\}\//u, "");
   const included = inputs.filter((input) => !input.startsWith("!")).some((input) => globToRegExp(strip(input)).test(file));
   const excluded = inputs.filter((input) => input.startsWith("!")).some((input) => globToRegExp(strip(input)).test(file));
@@ -159,7 +162,7 @@ test("every Markdown impactPath in the tools manifest is a lane-tools input", ()
 const laneToolsExceptions = ["admin/", "website/"];
 
 function uncoveredImpactFiles(nxJson, manifest = readJson("tool/tools_manifest.json")) {
-  const files = execFileSync("git", ["ls-files"], {cwd: workspaceRoot, encoding: "utf8", maxBuffer: 256 * 1024 * 1024})
+  const files = execFileSync("git", ["ls-files"], {cwd: workspaceRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024})
     .trim().split("\n").filter((file) => !file.endsWith(".md") && !laneToolsCovers(nxJson, file) &&
       !laneToolsExceptions.some((prefix) => file.startsWith(prefix)));
   const missing = [];
@@ -179,9 +182,8 @@ test("every file a tool's impactPaths name is a lane-tools input", () => {
 
 test("negative control: dropping Dart sources from lane-tools is caught", () => {
   const nxJson = readJson("nx.json");
-  const tools = nxJson.plugins.find((entry) => entry.plugin === "./tool/nx/catch_projects.mjs").options.sourceProjects
-    .find((project) => project.name === "lane-tools").targets.lane;
-  tools.inputs = tools.inputs.filter((input) => input !== "{workspaceRoot}/lib/**/*.dart");
+  nxJson.namedInputs.toolImpactPaths = nxJson.namedInputs.toolImpactPaths
+    .filter((input) => input !== "{workspaceRoot}/lib/**/*.dart");
   assert.ok(uncoveredImpactFiles(nxJson).some((line) => line.startsWith("audit:provider-graph: lib/**/*.dart")));
 });
 
