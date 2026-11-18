@@ -47155,13 +47155,13 @@ abstract class AppLocalizations {
   /// Sweep headline for a run: runners accounted for.
   ///
   /// In en, this message translates to:
-  /// **'{count} back'**
+  /// **'{count, plural, other{{count} back}}'**
   String hostFormatsSweepBackCount({required int count});
 
   /// Sweep headline for a crawl: guests accounted for.
   ///
   /// In en, this message translates to:
-  /// **'{count} home'**
+  /// **'{count, plural, other{{count} home}}'**
   String hostFormatsSweepHomeCount({required int count});
 
   /// Sweep headline suffix: checked in and still out.

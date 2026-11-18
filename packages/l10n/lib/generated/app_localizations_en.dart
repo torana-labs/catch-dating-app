@@ -29395,12 +29395,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostFormatsSweepBackCount({required int count}) {
-    return '$count back';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count back',
+    );
+    return '$_temp0';
   }
 
   @override
   String hostFormatsSweepHomeCount({required int count}) {
-    return '$count home';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count home',
+    );
+    return '$_temp0';
   }
 
   @override
