@@ -25,7 +25,8 @@ import 'package:go_router/go_router.dart';
 /// parties still at the airport. Deliberately narrow: no contact fields and
 /// no other hotels.
 ///
-/// It reads the hotel's inbound board live, and its room board.
+/// It reads the hotel's inbound board live (long lists open 25 rows at a
+/// time) and its room board.
 /// Arrived records a car reaching the hotel (`markProgramTripArrived`);
 /// Give keys checks the guest in (`upsertProgramStay`).
 class StaffHotelDeskScreen extends ConsumerStatefulWidget {
@@ -48,11 +49,26 @@ class StaffHotelDeskScreen extends ConsumerStatefulWidget {
 }
 
 class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
+  /// The desk shows this many rows of a long list, and this many more each
+  /// time More is pressed.
+  static const _step = 25;
+  int _carsShown = _step;
+  int _expectedShown = _step;
   final Set<String> _busy = {};
   Object? _error;
 
   ProgramHotelInboundStreamProvider get _inbound =>
       programHotelInboundStreamProvider(widget.programId, widget.hotelId);
+
+  @override
+  void didUpdateWidget(StaffHotelDeskScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.programId != widget.programId ||
+        oldWidget.hotelId != widget.hotelId) {
+      _carsShown = _step;
+      _expectedShown = _step;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +80,13 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
     ).value;
     final state = switch (inbound) {
       CatchAsyncState(hasData: true, :final value?) =>
-        StaffHotelDeskState.fromInbound(value, rooms: rooms),
+        StaffHotelDeskState.fromInbound(
+          value,
+          rooms: rooms,
+          carsShown: _carsShown,
+          expectedShown: _expectedShown,
+          paged: _carsShown > _step || _expectedShown > _step,
+        ),
       CatchAsyncState(hasError: true) => const StaffHotelDeskState.error(),
       _ => const StaffHotelDeskState.loading(),
     };
@@ -124,6 +146,12 @@ class _StaffHotelDeskScreenState extends ConsumerState<StaffHotelDeskScreen> {
               'hotelId': widget.hotelId,
             },
           ),
+          onMoreCars: () => setState(() => _carsShown += _step),
+          onMoreExpected: () => setState(() => _expectedShown += _step),
+          onFirstPage: () => setState(() {
+            _carsShown = _step;
+            _expectedShown = _step;
+          }),
           onRetry: () => ref.invalidate(_inbound),
         ),
       ),
