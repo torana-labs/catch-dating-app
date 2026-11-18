@@ -2895,6 +2895,28 @@
           "mode": "ASCENDING"
         },
         {
+          "fieldPath": "threadId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "occurredAt",
+          "mode": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "mode": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "organizerWhatsappMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "organizerId",
+          "mode": "ASCENDING"
+        },
+        {
           "fieldPath": "contactId",
           "mode": "ASCENDING"
         },

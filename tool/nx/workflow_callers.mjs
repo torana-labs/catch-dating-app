@@ -75,6 +75,7 @@ export const notCalledByCi = {
   ".github/workflows/infra-drift.yml": "operations: schedule and dispatch",
   ".github/workflows/infra-plan.yml": "its own pull_request trigger validates it",
   ".github/workflows/main-red-alert.yml": "runs after main CI (workflow_run)",
+  ".github/workflows/organizer-takedown.yml": "operations: dispatch only",
   ".github/workflows/marketing-captures-drift.yml": "maintenance: weekly schedule and dispatch, compare-only",
   ".github/workflows/marketing-website.yml": "deploy: push to main and dispatch",
   ".github/workflows/mobile-beta.yml": "release: schedule and dispatch",

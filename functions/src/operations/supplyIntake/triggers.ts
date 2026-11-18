@@ -7,6 +7,7 @@ import {FirestoreShadowProjectionWriter} from "../projectionImporter";
 import {defaultListingApprovalDeps} from "../../admin/organizerListingApproval";
 import {materializeInstantDraft} from "../../instantDrafts/materialize";
 import {instagramDiscoveryConfig} from "./instagramDiscovery";
+import {listingSuppressionHmacKey} from "../../listingSuppressions/registry";
 import {
   processSupplyIntakeRequest,
   supplyIntakeCollections,
@@ -56,6 +57,8 @@ async function saveInstantDraft(requestId: string, outcome: string): Promise<voi
 export const onSupplyIntakeRequestCreated = onDocumentCreated({
   document: `${supplyIntakeCollections.requests}/{requestId}`,
   retry: true, timeoutSeconds: 540, memory: "1GiB", maxInstances: 3,
+  // Saving an instant draft approves its listing, which checks the do-not-list registry.
+  secrets: [listingSuppressionHmacKey],
 }, async (event) => {
   const outcome = await processSupplyIntakeRequest(deps(), event.params.requestId);
   logger.info("Supply intake request processed.", {requestId: event.params.requestId, outcome});
@@ -68,6 +71,7 @@ export const onSupplyIntakeRequestCreated = onDocumentCreated({
 /** Recovers requests whose event was lost or whose worker stopped mid-lease. */
 export const recoverSupplyIntakeRequests = onSchedule({
   schedule: "every 60 minutes", timeoutSeconds: 540, memory: "1GiB", maxInstances: 1,
+  secrets: [listingSuppressionHmacKey],
 }, async () => {
   const worker = deps();
   const now = worker.now().toISOString();

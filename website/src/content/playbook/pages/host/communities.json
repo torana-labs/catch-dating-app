@@ -31,7 +31,7 @@
       ],
       "aside": {
         "label": "Running chapters in several cities? Ask for a walkthrough",
-        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run community chapters in several cities and would like a walkthrough."}
+        "to": {"route": "host_walkthrough"}
       },
       "chip": {
         "title": "Monthly meetup",
@@ -167,7 +167,7 @@
         {"question": "Can I keep some evenings small?", "answer": "Yes. Turn on applications, ask your own questions and approve each person."},
         {"question": "How do memberships work?", "answer": "Make a plan with a monthly or yearly price. Members renew by UPI Autopay or card, and get the benefits you choose: a member price, free entry, or booking first."},
         {"question": "Do members need an app?", "answer": "No. People follow, book, pay and check in on your page in their phone’s browser."},
-        {"question": "We run chapters in a few cities.", "answer": "Each chapter can have its own events on your page. Ask us for a walkthrough on WhatsApp and we’ll help you set it up."}
+        {"question": "We run chapters in a few cities.", "answer": "Each chapter can have its own events on your page. Ask us for a walkthrough and we’ll help you set it up."}
       ]
     },
     {

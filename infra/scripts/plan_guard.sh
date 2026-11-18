@@ -18,10 +18,10 @@ plan_json="${1:?usage: plan_guard.sh <plan.json>}"
 # Resource types under management. Extending IaC to a new type is a reviewed
 # change to these lists and to docs/infrastructure_as_code.md. Secret
 # versions are deliberately absent: a secret value must never enter state.
-allowed_types='["google_firebase_android_app","google_firebase_app_check_play_integrity_config","google_secret_manager_secret","google_secret_manager_secret_iam_member","google_firestore_database","google_firestore_backup_schedule","google_monitoring_alert_policy","google_monitoring_uptime_check_config"]'
+allowed_types='["google_firebase_android_app","google_firebase_app_check_play_integrity_config","google_secret_manager_secret","google_secret_manager_secret_iam_member","google_firestore_database","google_firestore_backup_schedule","google_monitoring_alert_policy","google_monitoring_uptime_check_config","google_storage_bucket","google_storage_bucket_iam_member"]'
 # Types Terraform may create. Firebase apps, their App Check configs and
 # Firestore databases are only ever imported.
-creatable_types='["google_secret_manager_secret","google_secret_manager_secret_iam_member","google_firestore_backup_schedule","google_monitoring_alert_policy","google_monitoring_uptime_check_config"]'
+creatable_types='["google_secret_manager_secret","google_secret_manager_secret_iam_member","google_firestore_backup_schedule","google_monitoring_alert_policy","google_monitoring_uptime_check_config","google_storage_bucket","google_storage_bucket_iam_member"]'
 
 jq -r --argjson allowed "$allowed_types" --argjson creatable "$creatable_types" '
   def changes: [.resource_changes[]? | select(.mode == "managed")];
@@ -52,6 +52,16 @@ jq -r --argjson allowed "$allowed_types" --argjson creatable "$creatable_types" 
      or (c.change.after.point_in_time_recovery_enablement // "") != "POINT_IN_TIME_RECOVERY_ENABLED");
   def muted_alert(c):
     c.type == "google_monitoring_alert_policy" and (c.change.after != null) and (c.change.after.enabled != true);
+  def weak_bucket(c):
+    c.type == "google_storage_bucket" and (c.change.after != null) and
+    ((c.change.after.uniform_bucket_level_access != true)
+     or ((c.change.after.public_access_prevention // "") != "enforced")
+     or ((c.change.after.retention_policy // [] | map((.retention_period // 0) | tonumber) | max // 0) < 15552000)
+     or (c.change.after.force_destroy == true));
+  def bad_bucket_grant(c):
+    c.type == "google_storage_bucket_iam_member" and (c.change.after != null) and
+    (((c.change.after.role // "") | test("^roles/storage\\.(objectCreator|objectViewer)$") | not)
+     or ((c.change.after.member // "") | test("^serviceAccount:github-actions-deploy@") | not));
   def problems:
     changes | map(
       if (.type as $t | $allowed | index($t)) == null then "\(.address): resource type \(.type) is outside the allowlist"
@@ -60,6 +70,8 @@ jq -r --argjson allowed "$allowed_types" --argjson creatable "$creatable_types" 
       elif bad_secret_grant(.) then "\(.address): secret IAM may grant only roles/secretmanager.secretAccessor or catchFormCredentialVault, and never to a github-actions identity"
       elif weakened_recovery(.) then "\(.address): delete protection and point-in-time recovery must stay enabled"
       elif muted_alert(.) then "\(.address): an alert policy must stay enabled"
+      elif weak_bucket(.) then "\(.address): a bucket must keep uniform access, enforced public access prevention, a retention policy of at least 180 days and no force_destroy"
+      elif bad_bucket_grant(.) then "\(.address): bucket IAM may grant only objectCreator or objectViewer, and only to a github-actions-deploy identity"
       else empty end);
 
   (changes | map(select(act(.) != "no-op"))) as $shown
@@ -88,13 +100,25 @@ problem_count="$(jq --argjson allowed "$allowed_types" --argjson creatable "$cre
      or (c.change.after.point_in_time_recovery_enablement // "") != "POINT_IN_TIME_RECOVERY_ENABLED");
   def muted_alert(c):
     c.type == "google_monitoring_alert_policy" and (c.change.after != null) and (c.change.after.enabled != true);
+  def weak_bucket(c):
+    c.type == "google_storage_bucket" and (c.change.after != null) and
+    ((c.change.after.uniform_bucket_level_access != true)
+     or ((c.change.after.public_access_prevention // "") != "enforced")
+     or ((c.change.after.retention_policy // [] | map((.retention_period // 0) | tonumber) | max // 0) < 15552000)
+     or (c.change.after.force_destroy == true));
+  def bad_bucket_grant(c):
+    c.type == "google_storage_bucket_iam_member" and (c.change.after != null) and
+    (((c.change.after.role // "") | test("^roles/storage\\.(objectCreator|objectViewer)$") | not)
+     or ((c.change.after.member // "") | test("^serviceAccount:github-actions-deploy@") | not));
   [.resource_changes[]? | select(.mode == "managed")
    | select(((.type as $t | $allowed | index($t)) == null)
             or (.change.actions | index("delete"))
             or ((.change.actions | index("create")) and ((.type as $t | $creatable | index($t)) == null))
             or bad_secret_grant(.)
             or weakened_recovery(.)
-            or muted_alert(.))] | length
+            or muted_alert(.)
+            or weak_bucket(.)
+            or bad_bucket_grant(.))] | length
 ' "$plan_json")"
 
 if [[ "$problem_count" != "0" ]]; then

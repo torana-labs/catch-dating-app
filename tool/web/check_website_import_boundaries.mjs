@@ -153,6 +153,10 @@ function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
   // website/src, to pin that receipts, offers and invitations stay unstored.
   if (sourceRelativePath === "server/privateShellCache.test.ts" &&
     targetAbsolutePath === path.join(repoRoot, "website/proxy")) return true;
+  // Explore's headline test checks every state's lead against the release
+  // smoke's accepted leads, which run only after deploy.
+  if (sourceRelativePath === "features/home/sections/exploreSmokeContract.test.ts" &&
+    targetAbsolutePath === path.join(repoRoot, "website/scripts/next/deployedSmoke.mjs")) return true;
   // The public page read models are Functions documents; their reader
   // validates them with the generated validators and types.
   if (sourceRelativePath === "server/repositories/publicPageRepository.ts" &&

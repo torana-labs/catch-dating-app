@@ -90,6 +90,7 @@ validateCallableAliases();
 validateDartCallableRoutes();
 
 validateRulesTestCoverage();
+validateRulesIntentForSchemas();
 
 if (errors.length > 0) {
   console.error("Firestore contract check failed:");
@@ -749,6 +750,52 @@ function hasNamedExport(functionName) {
 // Every collection either names the rules test that covers it or appears in
 // collectionsWithoutRulesTests with a reason and the issue tracking its tests,
 // so a new collection cannot go untested without anyone noticing.
+/**
+ * Every Firestore schema's root collection needs a top-level match in
+ * firestore.rules, so each collection states its client access. A
+ * server-only collection says so with `allow read, write: if false`.
+ */
+function validateRulesIntentForSchemas() {
+  const roots = topLevelRulesCollections();
+  for (const [id, {schema, filePath}] of schemaByCollectionId) {
+    const label = path.relative(repoRoot, filePath);
+    const documentPath = schema["x-firestore-path"];
+    if (typeof documentPath !== "string" || documentPath.length === 0) {
+      errors.push(`${label}: ${id} needs x-firestore-path`);
+      continue;
+    }
+    const root = documentPath.split("/")[0];
+    if (!roots.has(root)) {
+      errors.push(
+        `${label}: ${id} lives at ${documentPath} but firestore.rules has no ` +
+        `top-level match /${root}/; add one (server-only: allow read, write: if false)`
+      );
+    }
+  }
+}
+
+/** Collection ids matched directly under the documents block of the rules. */
+function topLevelRulesCollections() {
+  const text = rules.replace(/\/\/[^\n]*/g, "");
+  const marker = text.search(/\/documents\s*\{/);
+  const start = marker === -1 ? 0 : text.indexOf("{", marker) + 1;
+  const roots = new Set();
+  let depth = 0;
+  for (let index = start; index < text.length; index += 1) {
+    const char = text[index];
+    if (char === "{") depth += 1;
+    else if (char === "}") {
+      if (depth === 0) break;
+      depth -= 1;
+    } else if (depth === 0 && text.startsWith("match", index) &&
+        /\s/.test(text[index - 1] ?? " ")) {
+      const found = /^match\s+\/([A-Za-z_]\w*)\//.exec(text.slice(index));
+      if (found) roots.add(found[1]);
+    }
+  }
+  return roots;
+}
+
 function validateRulesTestCoverage() {
   const gap = contract.collectionsWithoutRulesTests ?? {collections: []};
   const label = "collectionsWithoutRulesTests";

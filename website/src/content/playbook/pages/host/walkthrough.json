@@ -1,0 +1,46 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_walkthrough",
+  "route": "host_walkthrough",
+  "meta": {
+    "title": "Book a 15-minute walkthrough | {{brand.stores.hostAppName}}",
+    "description": "For venues, studios, companies and programmes: we’ll look at how you run your nights today and set {{brand.name}} up with you, guest list and all.",
+    "socialDescription": "A 15-minute walkthrough of {{brand.name}} for venues, studios, companies and programmes.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "minimal",
+    "action": {"label": "WhatsApp us", "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like a 15-minute walkthrough of {{brand.name}} for hosts."}}
+  },
+  "footer": {"variant": "minimal"},
+  "sections": [
+    {
+      "type": "split",
+      "id": "book",
+      "ground": "indigo",
+      "pageTitle": true,
+      "kicker": "For venues, studios, companies and programmes",
+      "title": "Book a 15-minute walkthrough.",
+      "lead": "We’ll look at how you run your nights today and set {{brand.name}} up with you, guest list and all.",
+      "ticks": [
+        "Your formats, and how one night runs on {{brand.name}}",
+        "Moving your guest list and bookings across",
+        "Pricing for several nights a week or several venues",
+        "Team roles, and reports across chapters or venues"
+      ],
+      "leadForm": {
+        "id": "walkthrough_request",
+        "requestKind": "walkthrough",
+        "label": "WhatsApp number",
+        "submitLabel": "Book my walkthrough",
+        "fields": [
+          {"name": "name", "label": "Your name"},
+          {"name": "orgName", "label": "Organisation"},
+          {"name": "whatYouHost", "label": "What you run", "placeholder": "A café, studio, courts, company events…"},
+          {"name": "preferredTime", "label": "A weekday time, 10am to 6pm", "placeholder": "Such as Tue 4pm"}
+        ],
+        "note": "We’ll confirm the time on WhatsApp. Times are in India Standard Time."
+      }
+    }
+  ]
+}

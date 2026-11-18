@@ -81,6 +81,7 @@ import '../../test/onboarding/onboarding_test_helpers.dart'
 import '../../test/organizers/organizers_test_helpers.dart'
     as organizer_helpers;
 import '../../test/support/empty_event_chat_repository.dart';
+import '../../test/support/event_organizer_summary_fixture.dart';
 
 const testShellCity = CityData(
   name: 'mumbai',
@@ -412,7 +413,15 @@ List<Object> appShellTestOverrides({
       FakeShellPublicProfileRepository(publicProfiles),
     ),
     eventDiscoveryRepositoryProvider.overrideWithValue(
-      FakeShellEventDiscoveryRepository(knownEventsById.values.toList()),
+      // Discovery returns events as the triggers leave them: each carries
+      // its organizer's summary, which Explore reads instead of the organizer.
+      FakeShellEventDiscoveryRepository([
+        for (final event in knownEventsById.values)
+          if (organizersById[event.organizerId] case final organizer?)
+            ...eventsCarrying(organizer, [event])
+          else
+            event,
+      ]),
     ),
     eventSuccessRepositoryProvider.overrideWithValue(
       EventSuccessRepository(FakeFirebaseFirestore()),

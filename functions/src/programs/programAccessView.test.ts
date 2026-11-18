@@ -41,8 +41,10 @@ test("the owner is a manager with no expiry and no identity fields", () => {
   assert.equal(view.uid, "manager-1");
   assert.equal(view.expiresAtMillis, null);
   assert.deepEqual(Object.keys(view).sort(), [
-    "activeFromMillis", "duties", "expiresAtMillis", "functionAll",
-    "functionScoped", "hotelAll", "hotelScoped", "organizerId", "ownerUid",
+    "activeFromMillis", "assignments", "duties", "expiresAtMillis",
+    "functionAll",
+    "functionScoped", "grantExpiresAtMillis", "hotelAll", "hotelScoped",
+    "organizerId", "ownerUid",
     "pickupAll", "pickupScoped", "programId", "revision", "role", "status",
     "uid", "version", "workFunction", "workHotel", "workPickup"]);
 });
@@ -56,6 +58,10 @@ test("a station-scoped duty lists its station and no all-station key", () => {
   assert.deepEqual(view.hotelAll, {airportGreeter: now + hour});
   assert.equal(view.expiresAtMillis, now + hour);
   assert.equal(view.revision, 4);
+  // The tuples and the grant's own expiry travel for the phone's policies.
+  assert.deepEqual(view.assignments, [{duty: "airportGreeter",
+    pickupPointIds: ["pp-1"], hotelIds: [], expiresAtMillis: now + hour}]);
+  assert.equal(view.grantExpiresAtMillis, now + hour);
 });
 
 test("the work lists follow the work-access callable's scope rules", () => {

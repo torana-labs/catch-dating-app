@@ -1,6 +1,8 @@
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
+import 'package:catch_platform/errors/write_outcome.dart';
+import 'package:catch_platform/firebase/listener_first_value.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -155,6 +157,8 @@ String _localizedExceptionMessage(
     'connection-failed' ||
     'offline' => l10n.coreAppErrorMessageVisiblecopyWeAreHavingTrouble,
     'timeout' => l10n.coreAppErrorMessageVisiblecopyTheRequestTimedOut,
+    listenerNothingSavedCode => l10n.coreAppErrorMessageListenerNothingSaved,
+    writeOutcomeUnknownCode => l10n.coreWriteOutcomeUnknown,
     'too-many-requests' =>
       l10n.coreAppErrorMessageVisiblecopyTooManyAttemptsPlease,
     'permission-denied' ||
@@ -374,6 +378,7 @@ bool _isRetryable(Object error, AppException? appException) {
 
 bool _isNetworkError(Object error, AppException? appException) {
   if (appException is NetworkException) return true;
+  if (appException?.code == listenerNothingSavedCode) return true;
   if (error is FirebaseException) {
     return switch (error.code) {
       'unavailable' ||

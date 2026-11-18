@@ -92,3 +92,30 @@ variable "form_payment_environments" {
     error_message = "functions_runtime_service_account must be a service account email."
   }
 }
+
+variable "takedown_preservation_environments" {
+  description = <<-EOT
+    Environments that run the organiser takedown workflow, keyed by GitHub
+    environment (dev, prod). Each gets a restricted preservation bucket named
+    <project>-takedown-preservation. deploy_service_account is the identity
+    the workflow signs in as through Workload Identity (the environment's
+    GCP_SERVICE_ACCOUNT_EMAIL); it may create and read objects only.
+  EOT
+  type = map(object({
+    project                = string
+    deploy_service_account = string
+  }))
+  default = {}
+
+  validation {
+    condition     = alltrue([for key in keys(var.takedown_preservation_environments) : contains(["dev", "prod"], key)])
+    error_message = "takedown_preservation_environments keys must be dev or prod."
+  }
+
+  validation {
+    condition = alltrue([for settings in values(var.takedown_preservation_environments) :
+      can(regex("^github-actions-deploy@[a-z0-9-]+\\.iam\\.gserviceaccount\\.com$", settings.deploy_service_account))
+    ])
+    error_message = "deploy_service_account must be the environment's github-actions-deploy service account."
+  }
+}

@@ -755,6 +755,9 @@ export {
 export {onProgramAccessViewGrantChanged,
   onProgramAccessViewProgramChanged} from
   "./programs/programAccessViewTriggers";
+export {onProgramWorkSummaryChanged, onProgramPickupPointViewChanged,
+  onProgramHotelViewChanged, onProgramFunctionViewChanged} from
+  "./programs/programWorkViewTriggers";
 export {listMyHostAssignments} from "./hostWork/listMyHostAssignments";
 export {
   inviteProgramStaff,

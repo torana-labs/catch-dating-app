@@ -1,0 +1,178 @@
+name: Organiser takedown
+
+# Runs tool/data/organizer_takedown.mjs against one Firebase environment with
+# that environment's deploy identity: preserve, then delete, then block one
+# organiser takedown case. This repository's Actions inputs, logs and
+# summaries are public, so the only inputs are the environment, the mode and
+# an opaque case id (TD-nnnn). Which organisers the case covers is read from
+# the case file in the restricted preservation bucket
+# (gs://<project>-takedown-preservation/cases/<case_id>/case.json), the tool
+# prints counts only, and manifests and snapshots go to that bucket, never to
+# an artifact. Modes, in order: plan (dry run), preserve, apply, suppress,
+# verify, and bigquery at least 90 minutes after apply. Dispatch only, from
+# main only. Operator guide: docs/release_operations.md, "Organiser takedown".
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Firebase environment.
+        required: true
+        type: choice
+        options: [dev, prod]
+        default: dev
+      mode:
+        description: plan is a dry run; then preserve, apply, suppress, verify, and bigquery 90 minutes after apply.
+        required: true
+        type: choice
+        options: [plan, preserve, apply, suppress, verify, bigquery]
+        default: plan
+      case_id:
+        description: The opaque takedown case id, TD- and four digits. Never a name, handle or slug.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  takedown:
+    name: Organiser takedown in ${{ inputs.environment }} (${{ inputs.mode }})
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    timeout-minutes: 120
+    environment: ${{ inputs.environment }}
+    # One takedown run per environment at a time; a second waits.
+    concurrency:
+      group: organizer-takedown-${{ inputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Run only from main
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "::error::The organiser takedown runs only from main, not $GITHUB_REF."
+            exit 1
+          fi
+
+      # The case id is the only free-text input. It must be the opaque form
+      # so no name, handle or slug can reach a public log through it.
+      - name: Check the inputs
+        shell: bash
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+          MODE: ${{ inputs.mode }}
+          CASE_ID: ${{ inputs.case_id }}
+        run: |
+          set -euo pipefail
+          case "$TARGET_ENV" in
+            dev|prod) ;;
+            *)
+              echo "::error::Unknown environment."
+              exit 1
+              ;;
+          esac
+          case "$MODE" in
+            plan|preserve|apply|suppress|verify|bigquery) ;;
+            *)
+              echo "::error::Unknown mode."
+              exit 1
+              ;;
+          esac
+          if [[ ! "$CASE_ID" =~ ^TD-[0-9]{4}$ ]]; then
+            echo "::error::case_id must be TD- and four digits, such as TD-0001."
+            exit 1
+          fi
+
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      # The tool reads Firestore, Storage and Secret Manager through the
+      # Functions dependencies and loads the do-not-list key derivation from
+      # the Functions build, so it hashes exactly as the intake checks do.
+      - name: Install the Functions dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash tool/git/bootstrap_worktree.sh --target functions
+
+      - name: Build Functions
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix functions run build
+          test -f functions/lib/listingSuppressions/registry.js
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      # bigquery mode runs bq for its fixed, parameterised SQL.
+      - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+        if: ${{ inputs.mode == 'bigquery' }}
+
+      - name: Run the takedown
+        shell: bash
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+          MODE: ${{ inputs.mode }}
+          CASE_ID: ${{ inputs.case_id }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$CASE_ID" =~ ^TD-[0-9]{4}$ ]]; then
+            echo "::error::case_id must be TD- and four digits."
+            exit 1
+          fi
+          args=(--env "$TARGET_ENV" --case-id "$CASE_ID" --mode "$MODE")
+          case "$MODE" in
+            plan|preserve|verify) ;;
+            apply|suppress|bigquery)
+              if [[ "$TARGET_ENV" == "prod" ]]; then args+=(--allow-prod); fi
+              ;;
+            *)
+              echo "::error::Unknown mode."
+              exit 1
+              ;;
+          esac
+          status=0
+          node tool/data/organizer_takedown.mjs "${args[@]}" > takedown-report.txt 2>&1 || status=$?
+          cat takedown-report.txt
+          {
+            echo "## Organiser takedown $CASE_ID: $TARGET_ENV ($MODE)"
+            echo
+            echo '```text'
+            cat takedown-report.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
+
+      # The host marts count organisers and their events from the export
+      # tables, so refresh them now rather than waiting for the nightly run.
+      - name: Refresh the host analytics marts
+        if: ${{ inputs.mode == 'bigquery' }}
+        shell: bash
+        env:
+          TARGET_ENV: ${{ inputs.environment }}
+        run: |
+          set -euo pipefail
+          bash tool/analytics/deploy_host_analytics_bigquery.sh "$TARGET_ENV" --refresh-only
+          {
+            echo
+            echo "Refreshed the host analytics marts."
+          } >> "$GITHUB_STEP_SUMMARY"

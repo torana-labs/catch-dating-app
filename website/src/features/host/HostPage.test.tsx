@@ -142,14 +142,16 @@ describe("host landing", {timeout: 20_000}, () => {
     expect(table.getByText(`${hostPricingFacts.rate}, never more than ${hostPricingFacts.cap} a month`)).toBeTruthy();
   });
 
-  it("sends the walkthrough and every person to WhatsApp, with the message already typed", () => {
+  it("sends every person to WhatsApp, with the message already typed, and the walkthrough to its request page", () => {
     renderPage();
     const hero = within(screen.getByRole("region", {name: copy.hero.title}));
     const talk = hero.getByRole("link", {name: copy.hero.talk});
     expect(talk.getAttribute("href")!.startsWith(whatsappPrefix)).toBe(true);
     expect(talk.getAttribute("target")).toBe("_blank");
     expect(typed(talk.getAttribute("href"))).toContain("question about hosting");
-    expect(typed(hero.getByRole("link", {name: copy.hero.walkthrough}).getAttribute("href"))).toContain("walkthrough");
+    const walkthrough = hero.getByRole("link", {name: copy.hero.walkthrough});
+    expect(walkthrough.getAttribute("href")).toBe("/host/walkthrough/");
+    expect(walkthrough.getAttribute("target")).toBeNull();
     const ways = within(screen.getByRole("region", {name: copy.talk.title}));
     expect(ways.getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(copy.talk.paths.map((path) => hostLandingHref(path.to)));
     expect(ways.getByText(/usually within an hour/u)).toBeTruthy();

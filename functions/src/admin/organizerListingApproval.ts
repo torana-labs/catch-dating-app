@@ -2,7 +2,7 @@
 import crypto from "node:crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import type {AdminApproveOrganizerListingCallablePayload} from "../shared/generated/adminApproveOrganizerListingCallablePayload";
 import type {AdminApproveOrganizerListingCallableResponse} from "../shared/generated/adminApproveOrganizerListingCallableResponse";
 import type {
@@ -28,6 +28,7 @@ import {newSalesAccount} from "./sales/account";
 import type {SalesActivity, SalesOpportunity, SalesTask} from "./sales/types";
 import {growthFactsCollection, listingChannel, newGrowthFacts} from "../growth/organizerGrowthFacts";
 import {DRAFT_TTL_DAYS} from "../instantDrafts/model";
+import {checkListingSuppression, listingSuppressionHmacKey, suppressionModule} from "../listingSuppressions/registry";
 
 // Ops approve listings and events; claims stay the owner's (one of Admin's
 // three jobs: owner, sales associate, ops and support). Approving also opens
@@ -66,7 +67,7 @@ interface ReviewedListing {
 interface StoredRequest {
   status: string;
   approval: unknown;
-  request: {origin: {kind: string; id: string} | null; submittedAt?: string};
+  request: {origin: {kind: string; id: string} | null; submittedAt?: string; seed?: unknown; target?: unknown};
   /** Present only on a website instant draft request (supplyIntakeRequests.instantDraft). */
   instantDraft?: unknown;
 }
@@ -140,7 +141,7 @@ export async function adminApproveOrganizerListingHandler(
     checklist: data.checklist, activityLead: "Listing approved"}, data);
 }
 
-export const adminApproveOrganizerListing = onCall(appCheckCallableOptions,
+export const adminApproveOrganizerListing = onCall(appCheckCallableOptionsWithSecrets([listingSuppressionHmacKey]),
   (request) => adminApproveOrganizerListingHandler(request));
 
 /** The market a listing can be published in, or null when it is not open for organizers. */
@@ -199,6 +200,9 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
     if (!stored || stored.status !== "completed" || stored.approval !== null) {
       throw new HttpsError("failed-precondition", "The intake request for this listing is not ready for approval.");
     }
+    // Backstop for the do-not-list registry: the built listing can name a
+    // handle or link the nomination did not, and a case may postdate intake.
+    await assertListingNotSuppressed(tx, db, {data, listing, request: stored.request});
     const origin = stored.request.origin;
     const intentRef = origin?.kind === "sales_inbound_intent" ?
       db.collection("salesInboundIntents").doc(origin.id) : null;
@@ -280,6 +284,31 @@ export async function approveListing(deps: ListingApprovalDeps, approver: Listin
 
   return {approvalId, organizerId, organizerPath: `organizers/${organizerId}`, created,
     publishStatus, indexStatus: "noindex", appVisibility: "hidden", claimState: "unclaimed", salesOwnerUid};
+}
+
+/**
+ * Refuses a listing whose approved name, slug, links or intake request match
+ * an active do-not-list case, and fails closed while a case exists but the
+ * registry key is unavailable. Reads only, inside the approval transaction.
+ */
+async function assertListingNotSuppressed(tx: FirebaseFirestore.Transaction, db: FirebaseFirestore.Firestore,
+  {data, listing, request}: {data: ListingApprovalInput; listing: ReviewedListing; request: StoredRequest["request"]}): Promise<void> {
+  const module = await suppressionModule();
+  const keys = [...new Set([
+    ...module.suppressionKeysForIdentity({names: data.name, slugs: data.publicSlug,
+      urls: listing.links.map((link) => link.url)}),
+    ...listing.links.map((link) => link.normalizedKey).filter((key) => typeof key === "string" && key.length > 0),
+    ...module.suppressionKeysForIntakeRequest(request),
+  ])];
+  const suppression = await checkListingSuppression(tx, db, keys);
+  if (suppression.state === "unavailable") {
+    throw new HttpsError("unavailable", "The do-not-list check is unavailable (LISTING_SUPPRESSION_HMAC_KEY), " +
+      "so listings cannot be approved. Nothing was published.");
+  }
+  if (suppression.state === "suppressed") {
+    throw new HttpsError("failed-precondition", `This listing matches do-not-list case ${suppression.match.caseId} ` +
+      "and cannot be approved.", {reason: "listing_suppressed", caseId: suppression.match.caseId});
+  }
 }
 
 type SalesOrigin = "admin_nomination" | "sales_inbound_intent" | "message_nomination" | "discovery_run" | "none";
