@@ -6278,7 +6278,10 @@
       "impactPaths": [
         "tool/marketing/import_hosted_captures.test.mjs",
         "tool/marketing/export_hosted_captures.mjs",
-        "tool/marketing/export_hosted_captures.test.mjs",
+        "tool/marketing/export_hosted_captures_a.test.mjs",
+        "tool/marketing/export_hosted_captures_b.test.mjs",
+        "tool/marketing/export_hosted_captures_c.test.mjs",
+        "tool/marketing/lib/hosted_capture_support.test.mjs",
         "tool/marketing/lib/capture_provenance.mjs",
         "tool/marketing/sync_website_media.mjs",
         "tool/marketing/export_app_screenshots.mjs",
@@ -6300,7 +6303,7 @@
       "checks": [
         "node --check tool/marketing/import_hosted_captures.mjs",
         "node --test tool/marketing/import_hosted_captures.test.mjs",
-        "node --test tool/marketing/export_hosted_captures.test.mjs"
+        "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs"
       ]
     },
     {
