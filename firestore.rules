@@ -2607,6 +2607,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // The administrators' staff list (#1339): one row per grant, readable by
+    // accounts holding the programme administration duty (the owner too),
+    // listed by a query naming the programme. Staff names and the last four
+    // phone digits are personal data and never reach any other duty.
+    match /programStaffViews/{viewId} {
+      allow get, list: if hasProgramDuty(resource.data.programId,
+        'programAdmin');
+      allow write: if false;
+    }
+
     match /programStaffInvites/{inviteId} {
       allow read, write: if false;
     }

@@ -579,6 +579,8 @@ enter previews.
 | `onProgramHotelViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a hotel's work shell label when it changes |
 | `onProgramHouseholdWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a household's primary phone changes. |
 | `onProgramPickupPointViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a pickup point's work shell label when it changes |
+| `onProgramStaffViewGrantChanged` | `src/programs/programStaffViewTriggers.ts` | Rewrites a staff member's row of the administrators' staff list when their grant changes |
+| `onProgramStaffViewProgramChanged` | `src/programs/programStaffViewTriggers.ts` | Rewrites every staff row when a programme's creator or organizer changes |
 | `onProgramTripGuestChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites a guest's hotel inbound rows and legacy trip manifests when their name changes |
 | `onProgramTripViewChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites a transport trip's view when it is created, arrives, is cancelled or voided |
 | `onProgramVendorViewChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites a vendor's per-programme views when its name, active flag or bound programmes change |

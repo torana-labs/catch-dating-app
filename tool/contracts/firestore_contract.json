@@ -3508,6 +3508,28 @@
       ]
     },
     {
+      "id": "programStaffViews",
+      "path": "programStaffViews/{programId}__{uid}",
+      "rulesMatch": "/programStaffViews/{viewId}",
+      "typescriptInterface": "ProgramStaffViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_staff_views.rules.test.cjs",
+      "rulesTestNames": [
+        "lets administrators and the owner read the list, and no other duty",
+        "lists by a query naming the programme, and denies writes"
+      ],
+      "owner": "Programme read model projector: programStaffViewTriggers",
+      "read": "get and list (query naming programId) by accounts holding the programme administration duty and the programme owner, while not deleted; coordinators hold every duty but programAdmin and read nothing here",
+      "write": "server only; written from programStaffGrants and organizerPrograms",
+      "exportedFunctions": [
+        "onProgramStaffViewGrantChanged",
+        "onProgramStaffViewProgramChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the member row listProgramStaff returns, with its clock-dependent status replaced by the facts it derives from (revoked, owner approval, when live duties start and end). Display names and the last four phone digits are personal data scrubbed with the grant by archive anonymization, which reaches the rows through the grant trigger. The program-staff-views copy-forward migration creates rows for grants that predate the triggers and leaves rows the triggers wrote alone."
+      ]
+    },
+    {
       "id": "programStaffGrants",
       "path": "programStaffGrants/{grantId}",
       "rulesMatch": "/programStaffGrants/{grantId}",

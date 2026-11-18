@@ -551,6 +551,34 @@ test("program-trip-views creates trip and hotel inbound views once, keeping note
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("program-staff-views creates each staff row once, without the full phone number", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-staff-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const grant = (uid, overrides = {}) => ({organizerId: "o1", programId: "p1", uid,
+    displayName: "Arjun", phoneLastFour: "0001", status: "active", createdBy: "owner-1",
+    duties: [{duty: "hotelDesk", pickupPointIds: [], hotelIds: ["h1"], expiresAtMillis: later}],
+    expiresAt: at(later), revokedBy: null, revokedAt: null, revision: 2, ...overrides});
+  const db = fakeDb({
+    "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active"},
+    "programStaffGrants/p1__desk-1": grant("desk-1"),
+    "programStaffGrants/p1__gone-1": grant("gone-1", {status: "revoked", revokedBy: "owner-1", revokedAt: at(5)}),
+    "programStaffGrants/p9__orphan-1": {...grant("orphan-1"), programId: "p9"},
+    "programStaffGrants/p1__mismatch": grant("desk-1"),
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 2);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["programStaffViews/p1__desk-1"].activeUntilMillis, later);
+  assert.equal(db.data["programStaffViews/p1__desk-1"].ownerApproved, true);
+  assert.equal(db.data["programStaffViews/p1__gone-1"].revoked, true);
+  assert.equal(db.data["programStaffViews/p9__orphan-1"], undefined);
+  assert.equal(db.data["programStaffGrants/p1__desk-1"].revision, 2);
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("program-arrival-views creates arrivals, departures and vendor views once, without phone numbers", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-arrival-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
