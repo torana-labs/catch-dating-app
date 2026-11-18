@@ -3924,8 +3924,11 @@ both from `main` only:
   approval-free `prod-mobile` environment.
 - `Mobile Production` (`.github/workflows/mobile-production.yml`) ships a
   build testers already have. On iOS it submits that TestFlight build for App
-  Store review as a phased release, which is released by hand after approval.
-  On Android it promotes that internal-track version code to production as a
+  Store review as a phased release that goes public automatically once Apple
+  approves it (since 2026-11-18; before that it waited to be released by
+  hand). Running it again for a version already submitted switches that
+  version to release on approval, or releases it at once if Apple has approved
+  it and it waits for a developer release. On Android it promotes that internal-track version code to production as a
   staged rollout. It rebuilds nothing. It uses the `prod-mobile-release`
   environment, which requires a reviewer's approval. App Store Connect refuses
   a submission whose version carries no "What's New", so each iOS release
