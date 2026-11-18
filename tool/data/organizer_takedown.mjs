@@ -27,7 +27,8 @@ import {cleanBigQuery} from "./lib/organizer_takedown/bigquery.mjs";
  * "Organiser takedown"). The only inputs are an environment, a mode and an
  * opaque case id (TD-nnnn). Which organisers the case covers comes from the
  * case file in the restricted preservation bucket,
- * gs://<project>-takedown-preservation/cases/<caseId>/case.json, never from the
+ * gs://<project>-takedown-preservation/cases/<caseId>/case.json (or a later
+ * correction, case-NN.json), never from the
  * command line, because GitHub shows workflow inputs and logs publicly.
  * Output is counts only: no ids, paths, names, handles or URLs.
  *
@@ -136,11 +137,18 @@ export async function main(argv = process.argv.slice(2), injected = null) {
   }
 }
 
-async function readCase(store, caseId) {
-  const file = store.file(`${caseRoot(caseId)}case.json`);
-  const [exists] = await file.exists();
-  if (!exists) throw new TakedownError("No case file in the preservation bucket for this case. Write it first (runbook).");
-  const [bytes] = await file.download();
+/**
+ * The case file: cases/<caseId>/case.json, or the highest-numbered correction
+ * case-NN.json. The bucket's retention policy forbids overwriting, so a
+ * correction is a new file.
+ */
+export async function readCase(store, caseId) {
+  const [files] = await store.getFiles({prefix: `${caseRoot(caseId)}case`});
+  const names = files.map((file) => file.name.slice(caseRoot(caseId).length))
+    .filter((name) => /^case(?:-[0-9]{2})?\.json$/u.test(name));
+  if (names.length === 0) throw new TakedownError("No case file in the preservation bucket for this case. Write it first (runbook).");
+  const latest = names.filter((name) => name !== "case.json").sort().at(-1) ?? "case.json";
+  const [bytes] = await store.file(`${caseRoot(caseId)}${latest}`).download();
   return parseCaseFile(bytes.toString("utf8"), caseId);
 }
 

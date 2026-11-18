@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import {createRequire} from "node:module";
 import {fileURLToPath} from "node:url";
-import {main, parseTakedownArgs, preservationBucketName} from "./organizer_takedown.mjs";
+import {main, parseTakedownArgs, preservationBucketName, readCase} from "./organizer_takedown.mjs";
 import {dispositionFor, readSchemaInventory} from "./lib/organizer_takedown/inventory.mjs";
 import {parseCaseFile} from "./lib/organizer_takedown/plan.mjs";
 import {statements} from "./lib/organizer_takedown/bigquery.mjs";
@@ -114,6 +114,16 @@ test("the inventory scans every organizerId collection and keeps money, safety a
 test("a missing case file stops every mode before reading anything else", async () => {
   const w = world({withCase: false});
   await assert.rejects(cli(w, "plan"), /No case file/u);
+});
+
+test("a correction is a new numbered case file, since the bucket refuses overwrites", async () => {
+  const w = world();
+  await w.store.file(`cases/${CASE_ID}/case-01.json`).save(JSON.stringify({...caseFile,
+    targets: {...caseFile.targets, organizerIds: [UNRELATED_ORGANIZER]}}));
+  await w.store.file(`cases/${CASE_ID}/case-02.json`).save(JSON.stringify(caseFile));
+  await w.store.file(`cases/${CASE_ID}/case-notes.txt`).save("ignored");
+  assert.deepEqual((await readCase(w.store, CASE_ID)).targets.organizerIds, [CASE_ORGANIZER]);
+  await assert.rejects(w.store.file(`cases/${CASE_ID}/case.json`).save("{}"), /retention/u);
 });
 
 test("plan counts every store and prints counts only", async () => {
