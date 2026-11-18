@@ -21,6 +21,7 @@ class DoorBody extends StatelessWidget {
     required this.onScan,
     required this.onRetrySync,
     required this.onDiscardRefused,
+    this.claims,
     this.format,
   });
 
@@ -35,6 +36,10 @@ class DoorBody extends StatelessWidget {
 
   /// Drops the changes the server refused.
   final VoidCallback onDiscardRefused;
+
+  /// Web guests asking to be matched to a name on the list, to approve or
+  /// reject; null when nobody is waiting.
+  final Widget? claims;
 
   /// The event's format, for the "New" badges.
   final CatchFormat? format;
@@ -166,6 +171,7 @@ class DoorBody extends StatelessWidget {
               ],
             ),
             ?refused,
+            ?claims,
             filters,
             guests,
           ],
@@ -196,6 +202,7 @@ class DoorBody extends StatelessWidget {
                 meter,
                 search,
                 ?refused,
+                ?claims,
                 filters,
                 guests,
               ],
