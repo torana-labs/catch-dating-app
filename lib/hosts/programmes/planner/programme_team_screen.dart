@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_commands.dart';
+import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_routes.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_team_body.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_team_controller.dart';
@@ -101,7 +102,7 @@ class HostProgrammeTeamScreen extends ConsumerWidget {
         ],
       ),
     );
-    if (ok) refreshHostProgrammeTeam(ref, programId);
+    if (ok) refreshHostProgramme(ref, programId);
   }
 
   Future<void> _remove(
@@ -127,6 +128,6 @@ class HostProgrammeTeamScreen extends ConsumerWidget {
       run: (controller) =>
           controller.revokeStaff(programId: programId, member: member),
     );
-    if (ok) refreshHostProgrammeTeam(ref, programId);
+    if (ok) refreshHostProgramme(ref, programId);
   }
 }

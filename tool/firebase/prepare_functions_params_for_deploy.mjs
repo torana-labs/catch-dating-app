@@ -59,6 +59,7 @@ export const materializedNonSecretParams = [
   "AD_CONVERSIONS_META_TOKEN_VERSION",
   "AD_CONVERSIONS_META_TEST_EVENT_CODE",
   "AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT",
+  "AD_AUDIENCES_MODE",
   "META_LEADGEN_CREDENTIAL_VERSION",
   "META_LEADGEN_PAGE_IDS",
 ];
@@ -310,6 +311,14 @@ function normalizedProviderParams(environment = process.env, projectId) {
   "AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT must be a service account in this project");
   assert(adMode === "off" || adTokenVersion && adServiceAccount,
     "AD_CONVERSIONS_MODE requires the Meta token version and Google service account");
+  // The host customer list stays off unless an environment turns it on; it
+  // uploads with the same pinned CatchAds token (docs/ads_conversion_spec.md,
+  // Customer lists).
+  const audiencesMode = environment.AD_AUDIENCES_MODE?.trim() || "off";
+  assert(["off", "live"].includes(audiencesMode),
+    "AD_AUDIENCES_MODE must be off or live");
+  assert(audiencesMode === "off" || adTokenVersion,
+    "AD_AUDIENCES_MODE live requires AD_CONVERSIONS_META_TOKEN_VERSION");
   // Meta host lead forms: one pinned webhook credential and numeric page IDs.
   const leadgenCredential = environment.META_LEADGEN_CREDENTIAL_VERSION?.trim() || "";
   const leadgenPages = environment.META_LEADGEN_PAGE_IDS?.trim() || "";
@@ -376,6 +385,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
     AD_CONVERSIONS_META_TOKEN_VERSION: adTokenVersion || " ",
     AD_CONVERSIONS_META_TEST_EVENT_CODE: adTestCode || " ",
     AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT: adServiceAccount || " ",
+    AD_AUDIENCES_MODE: audiencesMode,
     META_LEADGEN_CREDENTIAL_VERSION: leadgenCredential || " ",
     META_LEADGEN_PAGE_IDS: leadgenPages.replace(/\s+/g, "") || " ",
   };

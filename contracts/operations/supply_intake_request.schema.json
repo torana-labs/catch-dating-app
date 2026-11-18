@@ -59,7 +59,7 @@
     },
     "submittedAt": {"type": "string", "format": "date-time"},
     "origin": {
-      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a message a registered nominator forwarded to Catch (id is the message's receipt id), a discovery run, staff refreshing a listed organizer's events, or a link sent through the website's instant draft tool (id is the website's idempotency key; the stored request carries the draft's private state in instantDraft). Null for requests made by hand.",
+      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a message a registered nominator forwarded to Catch (id is the message's receipt id), a discovery run, staff refreshing a listed organizer's events, or a link sent through the website's instant draft tool (id is the website's idempotency key; the stored request carries the draft's private state in instantDraft). A try_it_import request is a link a phone-verified visitor sent to fill their own try-it workspace (command organizer.import-from-link; id is the command receipt key); the stored request carries the private tryItImport state, and its listing is never approved into a new organizer. Null for requests made by hand.",
       "anyOf": [
         {"type": "null"},
         {
@@ -67,7 +67,7 @@
           "additionalProperties": false,
           "required": ["kind", "id"],
           "properties": {
-            "kind": {"type": "string", "enum": ["admin_nomination", "sales_inbound_intent", "message_nomination", "discovery_run", "admin_event_refresh", "web_instant_draft"]},
+            "kind": {"type": "string", "enum": ["admin_nomination", "sales_inbound_intent", "message_nomination", "discovery_run", "admin_event_refresh", "web_instant_draft", "try_it_import"]},
             "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"}
           }
         }
@@ -93,7 +93,7 @@
       "then": {"properties": {"submittedBy": {"properties": {"role": {"enum": ["associate", "partner"]}, "uid": {"type": "string"}}}}}
     },
     {
-      "if": {"required": ["origin"], "properties": {"origin": {"type": "object", "required": ["kind"], "properties": {"kind": {"const": "web_instant_draft"}}}}},
+      "if": {"required": ["origin"], "properties": {"origin": {"type": "object", "required": ["kind"], "properties": {"kind": {"enum": ["web_instant_draft", "try_it_import"]}}}}},
       "then": {"properties": {"kind": {"const": "self_submission"}}}
     },
     {

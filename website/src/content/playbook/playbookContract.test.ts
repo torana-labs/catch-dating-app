@@ -4,10 +4,13 @@ import {brand} from "../brand";
 import runClubs from "./pages/host/run-clubs.json";
 import schema from "./playbookPage.schema.json";
 import {
+  livePlaybookPage,
+  playbookIsLive,
   playbookPageJsonSchema,
   playbookSectionTypes,
   validatePlaybookPage,
   validatedPlaybookPage,
+  type PlaybookPageDocument,
   type PlaybookValidationContext,
 } from "./playbookContract";
 
@@ -93,6 +96,13 @@ describe("playbook page contract", () => {
       page.sections.push({type: "table", id: "compare", ground: "white", title: "Compare", columns: ["Us", "Them"], rows: [["Price", "Free", "Paid"]]});
     })],
     ["unknown header variant", fixture((page) => {(page.header as Mutable).variant = "lp";})],
+    ["unknown feature status", fixture((page) => {page.sections[1].status = "soon";})],
+    ["an action with an unknown status", fixture((page) => {(section(page, "hero").actions as Mutable[])[0].status = "later";})],
+    ["a lead form input outside tel, url and text", fixture((page) => {(section(page, "cta").leadForm as Mutable).input = "email";})],
+    ["a footer column without links", fixture((page) => {(page.footer as Mutable).columns = [{title: "Product", links: []}];})],
+    ["a footer link to a URL", fixture((page) => {
+      (page.footer as Mutable).columns = [{title: "Product", links: [{label: "Help", to: {href: "https://example.com"}}]}];
+    })],
     ["too many hero actions", fixture((page) => {
       const actions = section(page, "hero").actions as Mutable[];
       section(page, "hero").actions = [...actions, ...actions];
@@ -154,6 +164,66 @@ describe("playbook page contract", () => {
     expect(validatePlaybookPage(orphan).join("\n")).toMatch(/not cited/u);
     const anchor = fixture((page) => {(section(page, "hero").actions as Mutable[])[0].to = {anchor: "nowhere"};});
     expect(validatePlaybookPage(anchor).join("\n")).toMatch(/not a section on this page/u);
+  });
+
+  it("shows only built sections and actions, keeping the rest in the content (show-when-live)", () => {
+    const page = fixture((draft) => {
+      draft.sections[1].status = "partly";
+      draft.sections[1].statusNote = "The core exists; the copy describes more.";
+      (section(draft, "hero").actions as Mutable[])[1].status = "tryIt";
+    });
+    expect(validateSchema(page), JSON.stringify(validateSchema.errors)).toBe(true);
+    expect(validatePlaybookPage(page)).toEqual([]);
+    const live = livePlaybookPage(page as unknown as PlaybookPageDocument);
+    expect(live.sections.map((item) => item.id)).toEqual(runClubs.sections.filter((_item, index) => index !== 1).map((item) => item.id));
+    const hero = live.sections.find((item) => item.type === "hero");
+    expect(hero?.type === "hero" ? hero.actions.map((item) => item.label) : []).toEqual([runClubs.sections[0].actions![0].label]);
+    expect(live.sections.every(playbookIsLive)).toBe(true);
+    expect(playbookIsLive({})).toBe(true);
+    expect(playbookIsLive({status: "new"})).toBe(false);
+  });
+
+  it("refuses a live link to a hidden section, and counts the page title among live sections only", () => {
+    const hiddenTarget = fixture((page) => {
+      page.sections[1].status = "tryIt";
+      (section(page, "hero").actions as Mutable[])[1].to = {anchor: page.sections[1].id as string};
+    });
+    expect(validatePlaybookPage(hiddenTarget).join("\n")).toMatch(/hidden until its feature is built/u);
+    const hiddenLink = fixture((page) => {
+      page.sections[1].status = "tryIt";
+      const actions = section(page, "hero").actions as Mutable[];
+      actions[1].to = {anchor: page.sections[1].id as string};
+      actions[1].status = "tryIt";
+    });
+    expect(validatePlaybookPage(hiddenLink)).toEqual([]);
+    expect(validatePlaybookPage(fixture((page) => {section(page, "hero").status = "new";})).join("\n")).toMatch(/exactly one page title/u);
+  });
+
+  it("asks for a link or text only on a tool form, and keeps soft tints to tiles", () => {
+    const tool = (input: string | undefined, requestKind: string) => fixture((page) => {
+      const form = section(page, "cta").leadForm as Mutable;
+      form.requestKind = requestKind;
+      if (input) form.input = input; else delete form.input;
+      delete form.format;
+    });
+    expect(validatePlaybookPage(tool("url", "tool"))).toEqual([]);
+    expect(validatePlaybookPage(tool(undefined, "tool")).join("\n")).toMatch(/only a tool form/u);
+    expect(validatePlaybookPage(tool("url", "demo")).join("\n")).toMatch(/only a tool form/u);
+    expect(validatePlaybookPage(fixture((page) => {page.sections[1].ground = "skySoft";})).join("\n")).toMatch(/soft tint, for a tile only/u);
+    expect(validatePlaybookPage(fixture((page) => {page.sections[1].ground = "sky";}))).toEqual([]);
+    const softTile = fixture((page) => {
+      const tiles = page.sections.find((item) => item.type === "tiles")!;
+      (tiles.items as Mutable[])[0].ground = "coralSoft";
+    });
+    expect(validatePlaybookPage(softTile)).toEqual([]);
+  });
+
+  it("checks the footer's own columns like any other link", () => {
+    const columns = fixture((page) => {
+      (page.footer as Mutable).columns = [{title: "Product", links: [{label: "Pricing", to: {route: "pricing"}}]}, {title: "More", links: [{label: "Gone", to: {route: "host_mixers"}}]}];
+    });
+    expect(validateSchema(columns), JSON.stringify(validateSchema.errors)).toBe(true);
+    expect(validatePlaybookPage(columns, context).join("\n")).toMatch(/footer\.columns\[1\]\.links\[0\] links unknown route host_mixers/u);
   });
 
   it("needs exactly one page title and unique section ids", () => {

@@ -3,6 +3,7 @@ import 'package:catch_ui/src/components/catch_baseline_overhang_layout.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_index_row.dart';
 import 'package:catch_ui/src/foundations/catch_root.dart';
+import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:catch_ui/src/primitives/catch_text.dart';
 import 'package:catch_ui/src/primitives/catch_text_variant.dart';
@@ -103,13 +104,18 @@ class CatchListSection extends StatelessWidget {
         header: true,
         child: CatchText(title, variant: CatchTextVariant.sectionTitle),
       );
+      // The section's link reads underlined, as the system Section draws
+      // it, at the small button's size and padding.
       final button = action == null
           ? null
-          : CatchButton(
+          : CatchButton.text(
               label: action.label,
               onPressed: action.onPressed,
-              variant: CatchButtonVariant.quiet,
-              size: CatchButtonSize.sm,
+              textStyle: CatchTextStyles.sectionAction(context),
+              padding: const EdgeInsets.symmetric(
+                horizontal: CatchButtonTokens.smallPaddingX,
+              ),
+              minimumSize: const Size(0, CatchButtonTokens.smallHeight),
             );
       final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
       final Widget? trailing = button != null

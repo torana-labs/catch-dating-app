@@ -3883,10 +3883,16 @@ service cloud.firestore {
 
     // Server-only collections the contracts describe. Functions and tools use
     // the Admin SDK; clients, signed in or not, read and write nothing.
+    match /adAudienceRuns/{privateDocument=**} {
+      allow read, write: if false;
+    }
     match /adConversionContexts/{privateDocument=**} {
       allow read, write: if false;
     }
     match /adConversionDeliveries/{privateDocument=**} {
+      allow read, write: if false;
+    }
+    match /adMatchingOptOuts/{privateDocument=**} {
       allow read, write: if false;
     }
     match /adminAuditLogs/{privateDocument=**} {

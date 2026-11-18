@@ -1924,44 +1924,12 @@
       "source": "website/src/features/playbook/playbookRoutes.ts",
       "content": {
         "group": "product",
-        "board": "PlaybookHowItWorks"
+        "board": "ProductHowItWorks"
       },
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "The whole product on one page; every step links to its capability page.",
-      "review": {
-        "priority": "p1",
-        "status": "planned",
-        "viewports": [
-          "desktop",
-          "mobile"
-        ],
-        "states": [
-          "page"
-        ],
-        "stateCoverage": {
-          "storybook": [],
-          "manual": [
-            "page"
-          ]
-        }
-      }
-    },
-    {
-      "id": "product_night",
-      "kind": "contentFamily",
-      "path": "/product/night/",
-      "pageKey": "playbook",
-      "source": "website/src/features/playbook/playbookRoutes.ts",
-      "content": {
-        "group": "product",
-        "board": "PlaybookNight"
-      },
-      "staticOutput": "content-postbuild",
-      "indexing": "owner-approval",
-      "sitemap": "owner-approval",
-      "notes": "Every format's live tools, the live console, the tablet host stand and dress rehearsals.",
+      "notes": "How Catch works (product pages v2): the seven feature groups and Forms, before, on and after the night; every group links to its page. Sections whose feature is not built yet stay in the content, hidden (show-when-live).",
       "review": {
         "priority": "p1",
         "status": "planned",
@@ -1983,17 +1951,17 @@
     {
       "id": "product_bookings",
       "kind": "contentFamily",
-      "path": "/product/bookings/",
+      "path": "/product/bookings-and-memberships/",
       "pageKey": "playbook",
       "source": "website/src/features/playbook/playbookRoutes.ts",
       "content": {
         "group": "product",
-        "board": "PlaybookBookings"
+        "board": "ProductBookings"
       },
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "Applications, approvals, waitlists, private offers, UPI payments and refunds.",
+      "notes": "Bookings and memberships (product pages v2): ways in, a balanced room, memberships, waitlists, UPI payments and refunds. Approvals that carry over and the try-it tool stay hidden until they ship.",
       "review": {
         "priority": "p1",
         "status": "planned",
@@ -2020,12 +1988,12 @@
       "source": "website/src/features/playbook/playbookRoutes.ts",
       "content": {
         "group": "product",
-        "board": "PlaybookYourPage"
+        "board": "ProductYourPage"
       },
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "The organiser page as link-in-bio.",
+      "notes": "Your page (product pages v2): the organiser page as link-in-bio, the owner view and claiming. Custom domains, the events embed, host pixels and the try-it tool stay hidden until they ship.",
       "review": {
         "priority": "p1",
         "status": "planned",
@@ -2045,19 +2013,19 @@
       }
     },
     {
-      "id": "product_door",
+      "id": "product_messages",
       "kind": "contentFamily",
-      "path": "/product/door/",
+      "path": "/product/messages-and-growth/",
       "pageKey": "playbook",
       "source": "website/src/features/playbook/playbookRoutes.ts",
       "content": {
         "group": "product",
-        "board": "PlaybookDoor"
+        "board": "ProductGrowth"
       },
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "QR and self check-in, arrivals and the door on a tablet.",
+      "notes": "Messages and growth (product pages v2): event messages, announcements, follower updates, WhatsApp campaigns, tracked links and guest invite links. Promoter commission, ambassador spend, rewards and the try-it tool stay hidden until they ship.",
       "review": {
         "priority": "p2",
         "status": "planned",
@@ -2077,19 +2045,51 @@
       }
     },
     {
-      "id": "product_messages",
+      "id": "product_room",
       "kind": "contentFamily",
-      "path": "/product/messages/",
+      "path": "/product/the-room/",
       "pageKey": "playbook",
       "source": "website/src/features/playbook/playbookRoutes.ts",
       "content": {
         "group": "product",
-        "board": "PlaybookMessages"
+        "board": "ProductRoom"
       },
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "Reminders, audiences and automated messages.",
+      "notes": "The room (product pages v2): First Hello, groups that mix by format, Help me say hi and the consent rules. Replaces /product/night/ (301). No dating or matching wording; the try-it tool stays hidden until it ships.",
+      "review": {
+        "priority": "p1",
+        "status": "planned",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "page"
+        ],
+        "stateCoverage": {
+          "storybook": [],
+          "manual": [
+            "page"
+          ]
+        }
+      }
+    },
+    {
+      "id": "product_event",
+      "kind": "contentFamily",
+      "path": "/product/running-the-event/",
+      "pageKey": "playbook",
+      "source": "website/src/features/playbook/playbookRoutes.ts",
+      "content": {
+        "group": "product",
+        "board": "ProductEvent"
+      },
+      "staticOutput": "content-postbuild",
+      "indexing": "owner-approval",
+      "sitemap": "owner-approval",
+      "notes": "Running the event (product pages v2): the door, the live console, dress rehearsal, attendance and door staff. Replaces /product/door/ (301). The host safety view, the finance role and the try-it tool stay hidden until they ship.",
       "review": {
         "priority": "p2",
         "status": "planned",
@@ -2111,17 +2111,17 @@
     {
       "id": "product_guests",
       "kind": "contentFamily",
-      "path": "/product/guests/",
+      "path": "/product/guest-records/",
       "pageKey": "playbook",
       "source": "website/src/features/playbook/playbookRoutes.ts",
       "content": {
         "group": "product",
-        "board": "PlaybookRecords"
+        "board": "ProductRecords"
       },
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "One record per guest across events.",
+      "notes": "Guest records (product pages v2): one record per guest across events, groups with plain rules, merges, export and privacy. AI import and the try-it tool stay hidden until they ship.",
       "review": {
         "priority": "p2",
         "status": "planned",
@@ -2148,12 +2148,12 @@
       "source": "website/src/features/playbook/playbookRoutes.ts",
       "content": {
         "group": "product",
-        "board": "PlaybookForms"
+        "board": "ProductForms"
       },
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "Forms, their links and responses beside guest records.",
+      "notes": "Forms (product pages v2), the supporting page linked from the host footer's Resources column: kinds of form, templates, responses and form fees. Importing a form from a link stays hidden until it ships.",
       "review": {
         "priority": "p2",
         "status": "planned",
@@ -2175,17 +2175,17 @@
     {
       "id": "product_reports",
       "kind": "contentFamily",
-      "path": "/product/reports/",
+      "path": "/product/reports-and-payouts/",
       "pageKey": "playbook",
       "source": "website/src/features/playbook/playbookRoutes.ts",
       "content": {
         "group": "product",
-        "board": "PlaybookReports"
+        "board": "ProductReports"
       },
       "staticOutput": "content-postbuild",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "Reports, payouts and team roles.",
+      "notes": "Reports and payouts (product pages v2): the event report, payouts into the host's own Razorpay account and the monthly bill. Team roles moved to Running the event; the feedback summary and the try-it tool stay hidden until they ship.",
       "review": {
         "priority": "p2",
         "status": "planned",
@@ -3066,6 +3066,78 @@
     {
       "source": "/host/claim/**",
       "destination": "/claim/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/product/bookings",
+      "destination": "/product/bookings-and-memberships/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/product/bookings/**",
+      "destination": "/product/bookings-and-memberships/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/product/messages",
+      "destination": "/product/messages-and-growth/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/product/messages/**",
+      "destination": "/product/messages-and-growth/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/product/guests",
+      "destination": "/product/guest-records/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/product/guests/**",
+      "destination": "/product/guest-records/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/product/reports",
+      "destination": "/product/reports-and-payouts/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/product/reports/**",
+      "destination": "/product/reports-and-payouts/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/product/night",
+      "destination": "/product/the-room/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/product/night/**",
+      "destination": "/product/the-room/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/product/door",
+      "destination": "/product/running-the-event/",
+      "status": 301,
+      "preserveQuery": true
+    },
+    {
+      "source": "/product/door/**",
+      "destination": "/product/running-the-event/",
       "status": 301,
       "preserveQuery": true
     }

@@ -8,15 +8,18 @@ import {approvedCampaignLabels, currentConsentVersion, publicAdPage, type Measur
  * the page lifecycle and calls it; nothing else reads the diagnostic
  * `dataLayer` bus, and there is no tag manager.
  *
- * - Both tags load only under a current marketing choice, on a public page
- *   (`publicAdPage`) of the production site. Essential and analytics-only
- *   choices load nothing.
- * - Google Consent Mode grants ad storage, analytics storage and ad user data
- *   under that choice; ad personalisation stays denied. Meta gets
- *   `fbq('consent', 'grant')`.
- * - A withdrawn or downgraded choice revokes both (Consent Mode denied,
- *   `fbq('consent', 'revoke')`), stops every send and removes the tags'
- *   first-party cookies. Requests already sent cannot be recalled.
+ * - Tags load only on a public page (`publicAdPage`) of the production site,
+ *   and only under a current choice. Essential loads nothing.
+ * - Analytics only: Google Analytics alone, with Consent Mode granting
+ *   analytics storage and denying ad storage, ad user data and ad
+ *   personalisation. No Google Ads tag, no Meta Pixel, no contact data.
+ * - Analytics and marketing: the Google Ads tag and the Meta Pixel join it;
+ *   Consent Mode grants ad storage and ad user data, ad personalisation stays
+ *   denied, and Meta gets `fbq('consent', 'grant')`.
+ * - Downgrading to analytics revokes the ad tags (Consent Mode ad signals
+ *   denied, `fbq('consent', 'revoke')`) and removes their cookies; withdrawing
+ *   everything also revokes Google Analytics and removes its cookies.
+ *   Requests already sent cannot be recalled.
  * - Every event carries an `event_id` the server delivery can share. Events
  *   carry only the closed parameters below: never answers, gender, age,
  *   orientation, matching or dating data, or who someone met.
@@ -46,6 +49,7 @@ const checkoutsKey = "catch_ad_checkouts_v1";
 const hostLeadKinds: ReadonlySet<string> = new Set(["guide", "walkthrough", "demo", "venue", "story", "org_contact"]);
 
 const deniedConsent = {ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied"};
+const analyticsConsent = {ad_storage: "denied", analytics_storage: "granted", ad_user_data: "denied", ad_personalization: "denied"};
 const grantedConsent = {ad_storage: "granted", analytics_storage: "granted", ad_user_data: "granted", ad_personalization: "denied"};
 /** The only query keys a page may carry while a tag sends: the ad platforms' own. */
 const adQueryKey = /^(?:utm_(?:source|medium|campaign|content|term|id)|gclid|gbraid|wbraid|fbclid|gad_source|gad_campaignid)$/u;
@@ -141,11 +145,14 @@ function appendScript(source: string) {
   document.head.appendChild(script);
 }
 
-/** The tags' own first-party cookies on this site. */
-function clearTagCookies() {
+const adCookie = /^(?:_fbp|_fbc|_gcl_[a-z]+)$/u;
+const anyTagCookie = /^(?:_fbp|_fbc|_ga(?:_[A-Z0-9]+)?|_gcl_[a-z]+)$/u;
+
+/** The tags' own first-party cookies on this site: the ad tags' only, or every tag's. */
+function clearTagCookies(pattern: RegExp = anyTagCookie) {
   try {
     const names = String(document.cookie ?? "").split(";").map((part) => part.trim().split("=")[0])
-      .filter((name) => /^(?:_fbp|_fbc|_ga(?:_[A-Z0-9]+)?|_gcl_[a-z]+)$/u.test(name));
+      .filter((name) => pattern.test(name));
     const domains = ["", window.location.hostname, `.${brand.web.domain}`];
     for (const name of names) {
       for (const domain of domains) document.cookie = `${name}=; Max-Age=0; Path=/${domain ? `; Domain=${domain}` : ""}`;
@@ -200,12 +207,16 @@ export function createAdTags(options: AdTagOptions = {}) {
   const hostAllowed = options.hostAllowed ?? productionHost;
   const newId = options.newId ?? (() => `catch_${Date.now()}_${crypto.randomUUID()}`);
   let consent: MeasurementConsent | null = null;
-  let loaded = false;
-  let granted = false;
+  let googleLoaded = false;
+  let adsConfigured = false;
+  let metaLoaded = false;
+  /** What the tags are granted right now. */
+  let level: "none" | "analytics" | "marketing" = "none";
   const sent = new Set<string>();
 
-  const marketing = (value: MeasurementConsent | null) =>
-    value?.version === currentConsentVersion && value.analytics === true && value.marketing === true;
+  const choiceLevel = (value: MeasurementConsent | null): "none" | "analytics" | "marketing" =>
+    value?.version !== currentConsentVersion || value.analytics !== true ? "none" :
+      value.marketing === true ? "marketing" : "analytics";
 
   /** The current page when it may load or send: production host, public path, only ad query keys. */
   function currentPage(): {location: string} | null {
@@ -218,63 +229,93 @@ export function createAdTags(options: AdTagOptions = {}) {
     return {location: pageLocation(path, search)};
   }
 
-  function load() {
+  /** Google Analytics: always first, and the only tag an analytics-only choice loads. */
+  function loadGoogle(granted: Record<string, string>) {
     gtag("consent", "default", deniedConsent);
-    gtag("consent", "update", grantedConsent);
+    gtag("consent", "update", granted);
     gtag("js", new Date());
     gtag("config", catchAdDestinations.googleAnalytics, {send_page_view: false, allow_google_signals: false,
       allow_ad_personalization_signals: false, ...googleCookieOptions});
-    gtag("config", catchAdDestinations.googleAds, {send_page_view: false, allow_enhanced_conversions: true,
-      ...googleCookieOptions});
-    const pixel = installPixelStub();
-    pixel.disablePushState = true;
-    fbq("set", "autoConfig", false, catchAdDestinations.metaPixel);
-    fbq("consent", "grant");
-    fbq("init", catchAdDestinations.metaPixel);
     appendScript(googleTagSource);
-    appendScript(metaPixelSource);
-    loaded = true;
+    googleLoaded = true;
   }
 
-  function revoke() {
-    if (loaded && granted) {
-      gtag("consent", "update", deniedConsent);
-      fbq("consent", "revoke");
+  /** The Google Ads tag and the Meta Pixel, under the marketing choice only. */
+  function grantMarketing() {
+    gtag("consent", "update", grantedConsent);
+    if (!adsConfigured) {
+      gtag("config", catchAdDestinations.googleAds, {send_page_view: false, allow_enhanced_conversions: true,
+        ...googleCookieOptions});
+      adsConfigured = true;
     }
-    granted = false;
+    if (!metaLoaded) {
+      const pixel = installPixelStub();
+      pixel.disablePushState = true;
+      fbq("set", "autoConfig", false, catchAdDestinations.metaPixel);
+      fbq("consent", "grant");
+      fbq("init", catchAdDestinations.metaPixel);
+      appendScript(metaPixelSource);
+      metaLoaded = true;
+    } else {
+      fbq("consent", "grant");
+    }
+  }
+
+  /** Back to analytics only: ad signals denied, the Pixel revoked, ad cookies and checkout ids gone. */
+  function revokeMarketing() {
+    if (googleLoaded) gtag("consent", "update", analyticsConsent);
+    if (metaLoaded) fbq("consent", "revoke");
+    clearTagCookies(adCookie);
+  }
+
+  /** Nothing granted: every tag revoked and every tag cookie removed. */
+  function revokeAll() {
+    if (level !== "none") {
+      if (googleLoaded) gtag("consent", "update", deniedConsent);
+      if (metaLoaded && level === "marketing") fbq("consent", "revoke");
+    }
+    level = "none";
     sent.clear();
     writeCheckouts([]);
     clearTagCookies();
   }
 
   /**
-   * Applies the current choice. Marketing loads (once) and grants both tags on
-   * a public page; anything else revokes them. Private pages leave loaded
-   * tags idle: nothing sends there.
+   * Applies the current choice. Analytics loads Google Analytics; marketing
+   * adds the ad tags; anything else revokes them. A downgrade keeps only what
+   * the new choice allows. Private pages leave loaded tags idle.
    */
   function sync(next: MeasurementConsent | null) {
     consent = next;
     if (typeof window === "undefined") return;
-    if (!marketing(next)) {
-      revoke();
+    const wanted = choiceLevel(next);
+    if (wanted === "none") {
+      revokeAll();
       return;
     }
-    if (granted || !currentPage()) return;
-    if (!loaded) load();
-    else {
-      gtag("consent", "update", grantedConsent);
-      fbq("consent", "grant");
+    if (wanted === level) return;
+    if (wanted === "analytics" && level === "marketing") {
+      revokeMarketing();
+      level = "analytics";
+      return;
     }
-    granted = true;
+    if (!currentPage()) return;
+    if (!googleLoaded) loadGoogle(wanted === "marketing" ? grantedConsent : analyticsConsent);
+    else if (wanted === "analytics") gtag("consent", "update", analyticsConsent);
+    if (wanted === "marketing") grantMarketing();
+    level = wanted;
   }
 
-  /** The page to send from, when both tags may send now. */
+  /** The page to send from while Google Analytics may send (analytics or marketing). */
   function sending() {
-    if (!loaded || !granted || !marketing(consent)) return null;
+    if (!googleLoaded || level === "none" || choiceLevel(consent) === "none") return null;
     const page = currentPage();
     if (page) gtag("set", {page_location: page.location, page_title: brand.name});
     return page;
   }
+
+  /** Whether the ad tags may send now, on top of `sending()`. */
+  const marketingNow = () => level === "marketing" && choiceLevel(consent) === "marketing";
 
   function once(key: string) {
     if (sent.has(key) || sent.size >= 1000) return false;
@@ -285,12 +326,17 @@ export function createAdTags(options: AdTagOptions = {}) {
   return {
     sync,
 
-    /** `page_view` / `PageView` for the current public page. */
-    pageView(): boolean {
+    /**
+     * `page_view` (Google Analytics) and, under marketing, `PageView` (Meta)
+     * for the current public page. `"meta"` sends only the Pixel's view, for an
+     * analytics-to-marketing upgrade whose page Google Analytics already saw.
+     */
+    pageView(scope: "all" | "meta" = "all"): boolean {
       if (!sending()) return false;
+      if (scope === "meta" && !marketingNow()) return false;
       const id = newId();
-      gtag("event", "page_view", {send_to: catchAdDestinations.googleAnalytics, event_id: id});
-      fbq("track", "PageView", {}, {eventID: id});
+      if (scope === "all") gtag("event", "page_view", {send_to: catchAdDestinations.googleAnalytics, event_id: id});
+      if (marketingNow()) fbq("track", "PageView", {}, {eventID: id});
       return true;
     },
 
@@ -304,7 +350,7 @@ export function createAdTags(options: AdTagOptions = {}) {
       gtag("event", "view_item", {send_to: catchAdDestinations.googleAnalytics, event_id: id,
         content_category: "guest", ...(city ? {city} : {}), ...value,
         items: [{item_id: facts.eventId, ...(activity ? {item_category: activity} : {})}]});
-      fbq("track", "ViewContent", {content_ids: [facts.eventId], content_type: "product", content_category: "guest",
+      if (marketingNow()) fbq("track", "ViewContent", {content_ids: [facts.eventId], content_type: "product", content_category: "guest",
         ...(activity ? {activity_kind: activity} : {}), ...(city ? {city} : {}), ...value}, {eventID: id});
       return true;
     },
@@ -317,7 +363,7 @@ export function createAdTags(options: AdTagOptions = {}) {
       const value = rupees(booking.amountPaise);
       gtag("event", "begin_checkout", {send_to: catchAdDestinations.googleAnalytics, event_id: id,
         content_category: "guest", value, currency: "INR", items: [{item_id: booking.eventId, quantity: booking.places}]});
-      fbq("track", "InitiateCheckout", {content_ids: [booking.eventId], content_type: "product", content_category: "guest",
+      if (marketingNow()) fbq("track", "InitiateCheckout", {content_ids: [booking.eventId], content_type: "product", content_category: "guest",
         num_items: booking.places, value, currency: "INR"}, {eventID: id});
       writeCheckouts([...readCheckouts().filter((paymentId) => paymentId !== booking.paymentId), booking.paymentId]);
       return true;
@@ -335,7 +381,7 @@ export function createAdTags(options: AdTagOptions = {}) {
       gtag("event", "purchase", {send_to: catchAdDestinations.googleAnalytics, event_id: booking.paymentId,
         transaction_id: booking.paymentId, content_category: "guest", value, currency: "INR",
         items: [{item_id: booking.eventId, quantity: booking.places}]});
-      fbq("track", "Purchase", {content_ids: [booking.eventId], content_type: "product", content_category: "guest",
+      if (marketingNow()) fbq("track", "Purchase", {content_ids: [booking.eventId], content_type: "product", content_category: "guest",
         num_items: booking.places, value, currency: "INR"}, {eventID: booking.paymentId});
       writeCheckouts(readCheckouts().filter((paymentId) => paymentId !== booking.paymentId));
       return true;
@@ -355,11 +401,13 @@ export function createAdTags(options: AdTagOptions = {}) {
       const phone = lead.phone && /^\+[1-9][0-9]{7,14}$/u.test(lead.phone) ? lead.phone : null;
       const email = lead.email && /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,24}$/u.test(lead.email.trim()) ?
         lead.email.trim().toLowerCase() : null;
+      gtag("event", "generate_lead", {send_to: catchAdDestinations.googleAnalytics, event_id: id,
+        content_category: "host", audience: "organizer", lead_kind: lead.kind});
+      // Contact data and the ad conversions go only with the marketing choice.
+      if (!marketingNow()) return true;
       const googleUser = {...(phone ? {phone_number: phone} : {}), ...(email ? {email} : {})};
       if (phone || email) gtag("set", "user_data", googleUser);
       gtag("event", "conversion", {send_to: catchAdDestinations.hostLeadConversion, transaction_id: id, event_id: id});
-      gtag("event", "generate_lead", {send_to: catchAdDestinations.googleAnalytics, event_id: id,
-        content_category: "host", audience: "organizer", lead_kind: lead.kind});
       if (phone || email) {
         fbq("init", catchAdDestinations.metaPixel, {...(phone ? {ph: phone.slice(1)} : {}), ...(email ? {em: email} : {})});
       }

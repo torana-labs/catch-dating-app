@@ -77,6 +77,14 @@ The canvas owns these values (blueprint D26). `tool/design/playbook/import_kit_t
 | `.pg .m-mint` | `#5CCB9F` | `palette.mint` (also `ground.mint.fill`) | own |
 | `.pg .m-indigo` | `#8C9BF2` | `palette.indigo` (also `ground.indigo.fill`) | own |
 | `.pg .m-magenta` | `#E58AC8` | `palette.magenta` (also `ground.magenta.fill`) | own |
+| `.pg .m-sky` | `#5EC2E6` | `palette.sky` (also `ground.sky.fill`) | own |
+| `.pg .tile.s-coral` | `#FDE7DF` | `palette.coralSoft` (also `ground.coralSoft.fill`) | own |
+| `.pg .tile.s-pink` | `#FDE4EA` | `palette.pinkSoft` (also `ground.pinkSoft.fill`) | own |
+| `.pg .tile.s-yellow` | `#FFF4D6` | `palette.yellowSoft` (also `ground.yellowSoft.fill`) | own |
+| `.pg .tile.s-mint` | `#DDF3EA` | `palette.mintSoft` (also `ground.mintSoft.fill`) | own |
+| `.pg .tile.s-indigo` | `#E8EBFD` | `palette.indigoSoft` (also `ground.indigoSoft.fill`) | own |
+| `.pg .tile.s-magenta` | `#FBE4F3` | `palette.magentaSoft` (also `ground.magentaSoft.fill`) | own |
+| `.pg .tile.s-sky` | `#DDF1F8` | `palette.skySoft` (also `ground.skySoft.fill`) | own |
 | `.pg .ink, .pg .foot, .pg .offer` | `#1B171B` | `palette.inkGround` (also `ground.ink.fill`) | own |
 | `.pg .ink, .pg .foot` | `#F6EFE6` | `palette.nightInk` (also `ground.ink.ink`) | own |
 | `.pg .foot a` | `#BDB3A7` | `palette.nightSecondary` (also `ground.ink.inkSecondary`) | own |

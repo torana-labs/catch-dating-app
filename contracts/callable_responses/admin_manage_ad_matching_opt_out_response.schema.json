@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_manage_ad_matching_opt_out_response.schema.json",
+  "title": "AdminManageAdMatchingOptOutCallableResponse",
+  "description": "Which identifier kinds the request named, which this call changed, and which are now opted out. Never the phone number or email.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action",
+    "kinds",
+    "changed",
+    "optedOut"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "check",
+        "record",
+        "remove"
+      ]
+    },
+    "kinds": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 2,
+      "items": {
+        "enum": [
+          "phone",
+          "email"
+        ]
+      },
+      "description": "Identifier kinds the request named."
+    },
+    "changed": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 2,
+      "items": {
+        "enum": [
+          "phone",
+          "email"
+        ]
+      },
+      "description": "Kinds this call newly recorded or removed."
+    },
+    "optedOut": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 2,
+      "items": {
+        "enum": [
+          "phone",
+          "email"
+        ]
+      },
+      "description": "Kinds opted out after this call."
+    }
+  }
+}

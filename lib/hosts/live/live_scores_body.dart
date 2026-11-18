@@ -18,6 +18,7 @@ class HostLiveScoresBody extends StatelessWidget {
     required this.onPoints,
     required this.onSave,
     required this.onReveal,
+    this.onStopCountdown,
     required this.onView,
     required this.onRetry,
     this.saving = false,
@@ -31,6 +32,10 @@ class HostLiveScoresBody extends StatelessWidget {
   final void Function(String unitId, int points) onPoints;
   final VoidCallback onSave;
   final VoidCallback onReveal;
+
+  /// Stops a running reveal countdown so the round can be revealed again;
+  /// null hides the button.
+  final VoidCallback? onStopCountdown;
   final ValueChanged<HostLiveView> onView;
   final VoidCallback onRetry;
   final bool saving;
@@ -197,6 +202,14 @@ class HostLiveScoresBody extends StatelessWidget {
                     ? null
                     : onReveal,
               ),
+              if (state.countingDown && onStopCountdown != null)
+                CatchButton(
+                  key: const ValueKey<String>('host-live-scores-stop'),
+                  label: l10n.hostLiveScoresStopCountdown,
+                  variant: CatchButtonVariant.secondary,
+                  fullWidth: true,
+                  onPressed: busy ? null : onStopCountdown,
+                ),
             ],
           ),
           CatchText(

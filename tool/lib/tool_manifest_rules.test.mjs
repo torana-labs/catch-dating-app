@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  checkPathArguments,
   markdownAnchors,
   sourceRulesFromManifest,
   validateToolLifecycle,
   validateToolOrder,
+  validateToolPaths,
   validateToolRoles,
   validateToolRules,
 } from "./tool_manifest_rules.mjs";
@@ -181,4 +183,40 @@ test("markdown anchors follow GitHub's heading slugs", () => {
 
 test("a retired gate's deleted tests need no active runner", () => {
   assert.deepEqual(validateToolRoles([retired({role: "gate", checks: undefined})]), []);
+});
+
+const tree = new Set(["tool/check_fixture.mjs", "tool/check_fixture.test.mjs", "functions/test/a.test.cjs",
+  "functions/src/index.ts"]);
+const paths = (tools) => validateToolPaths(tools, {
+  exists: (file) => tree.has(file),
+  isTrackedFolder: (directory) => [...tree].some((file) => file.startsWith(`${directory}/`)),
+});
+
+test("check arguments resolve node --test and node --check paths, following cd", () => {
+  assert.deepEqual(checkPathArguments([
+    "node --check tool/a.mjs",
+    "node --test tool/a.test.mjs tool/b.test.mjs",
+    "node --test --test-concurrency=1 tool/c.test.mjs",
+    "(cd functions && node --test lib/x.test.js)",
+    "npm --prefix functions run build && node --test functions/test/a.test.cjs",
+    "node tool/a.mjs --check",
+    "node --test tool/**/*.test.mjs",
+  ]), ["tool/a.mjs", "tool/a.test.mjs", "tool/b.test.mjs", "tool/c.test.mjs", "functions/lib/x.test.js",
+    "functions/test/a.test.cjs"]);
+});
+
+test("a check or impactPath that names a missing file fails; build outputs and globs do not", () => {
+  assert.deepEqual(paths([gate({impactPaths: ["tool/check_fixture.test.mjs", "lib/**/*.dart", "functions/src"]})]), []);
+  // functions/lib is a build output an earlier check creates: its directory is not tracked.
+  assert.deepEqual(paths([gate({checks: ["npm --prefix functions run build", "node --test functions/lib/x.test.js",
+    "node tool/check_fixture.mjs"]})]), []);
+  assert.deepEqual(paths([gate({
+    checks: ["node --test tool/renamed.test.mjs", "node tool/check_fixture.mjs"],
+    impactPaths: ["tool/gone.mjs", "functions/test/missing.test.cjs"],
+  })]), [
+    "fixture:gate: check names tool/renamed.test.mjs, which does not exist.",
+    "fixture:gate: impactPath tool/gone.mjs does not exist.",
+    "fixture:gate: impactPath functions/test/missing.test.cjs does not exist.",
+  ]);
+  assert.deepEqual(paths([retired({checks: undefined})]), []);
 });

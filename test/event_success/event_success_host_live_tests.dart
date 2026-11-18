@@ -50,7 +50,7 @@ void _registerEventSuccessHostLiveTests() {
     await tester.pump();
 
     expect(find.byType(EventSuccessHostTabBar), findsNothing);
-    expect(find.textContaining('LIVE NOW'), findsOneWidget);
+    expect(find.textContaining('Live now'), findsOneWidget);
   });
 
   testWidgets(
@@ -156,7 +156,7 @@ void _registerEventSuccessHostLiveTests() {
     );
 
     expect(find.text('Guest roster unavailable'), findsOneWidget);
-    expect(find.textContaining('LIVE NOW'), findsOneWidget);
+    expect(find.textContaining('Live now'), findsOneWidget);
 
     await tester.tap(find.text('Reload event'));
     expect(retries, [EventSuccessHostRetryIntent.roster]);
@@ -823,13 +823,13 @@ void _registerEventSuccessHostLiveTests() {
     );
 
     await tester.scrollUntilVisible(
-      find.text('SYNCHRONIZED PARTNER REVEAL'),
+      find.text('Synchronized partner reveal'),
       700,
       scrollable: verticalScroll(EventSuccessHostKeys.scrollView),
     );
-    expect(find.text('SYNCHRONIZED PARTNER REVEAL'), findsOneWidget);
-    expect(find.text('ROTATION REVEAL'), findsOneWidget);
-    expect(find.textContaining('LIVE NOW'), findsOneWidget);
+    expect(find.text('Synchronized partner reveal'), findsOneWidget);
+    expect(find.text('Rotation reveal'), findsOneWidget);
+    expect(find.textContaining('Live now'), findsOneWidget);
     expect(find.text('Controls for this step'), findsOneWidget);
     expect(find.textContaining('Attendees at'), findsOneWidget);
     expect(find.text('Create the next room-wide beat'), findsOneWidget);

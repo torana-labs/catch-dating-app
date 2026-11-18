@@ -1,3 +1,5 @@
+import path from "node:path";
+
 // What the tool manifest must say about each tool beyond its id and path: its
 // role, a check that executes it, and the rules it enforces. A rule's text lives
 // on one active tool's `rules`; other tools that help enforce it name its id in
@@ -244,4 +246,56 @@ function isIsoDate(value) {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/u.test(value)) return false;
   const date = new Date(`${value}T00:00:00Z`);
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
+// Paths a tool names must exist: every file argument of a `node --test` or
+// `node --check` check, and every literal (non-glob) impactPath. A renamed or
+// deleted test file otherwise passes the manifest check and fails only when CI
+// runs the tool. A `cd <dir>` earlier in the same command makes later paths
+// relative to it. A path whose directory is not in the repository at all is a
+// build output an earlier check creates (functions/lib), so only paths under
+// a tracked directory are required.
+const globCharacters = /[*?[\]{}]/u;
+
+export function validateToolPaths(tools, {exists, isTrackedFolder}) {
+  const errors = [];
+  const required = (file) => {
+    const directory = path.posix.dirname(file);
+    return directory === "." || isTrackedFolder(directory);
+  };
+  for (const tool of tools) {
+    if (closedToolStatuses.includes(tool.status)) continue;
+    const id = tool.id ?? "<missing>";
+    for (const file of checkPathArguments(tool.checks ?? [])) {
+      if (required(file) && !exists(file)) errors.push(`${id}: check names ${file}, which does not exist.`);
+    }
+    for (const entry of tool.impactPaths ?? []) {
+      if (globCharacters.test(entry) || entry.endsWith("/")) continue;
+      if (!exists(entry) && !isTrackedFolder(entry) && required(entry)) {
+        errors.push(`${id}: impactPath ${entry} does not exist.`);
+      }
+    }
+  }
+  return errors;
+}
+
+/** File arguments of `node --test` and `node --check` in check commands, relative to the repository root. */
+export function checkPathArguments(checks) {
+  const files = [];
+  for (const check of checks) {
+    let cwd = "";
+    for (const segment of check.replace(/[()]/gu, " ").split(/&&|\|\||;/u)) {
+      const words = segment.trim().split(/\s+/u).filter(Boolean);
+      if (words[0] === "cd" && words[1]) {
+        cwd = path.posix.normalize(path.posix.join(cwd, words[1]));
+        continue;
+      }
+      if (words[0] !== "node" || (words[1] !== "--test" && words[1] !== "--check")) continue;
+      for (const word of words.slice(2)) {
+        if (word.startsWith("-") || globCharacters.test(word)) continue;
+        files.push(path.posix.normalize(path.posix.join(cwd, word)));
+      }
+    }
+  }
+  return files;
 }

@@ -1,6 +1,8 @@
 import {useEffect} from "react";
 import {useSupportInboxController} from
   "../controllers/useSupportInboxController";
+import {useAdMatchingOptOutController} from
+  "../controllers/useAdMatchingOptOutController";
 import {SupportScreen} from "./SupportScreen";
 
 /** Wires Support to the URL: /support and /support/:conversationId. */
@@ -18,12 +20,16 @@ export function SupportRouteScreen({
   userUid: string | null;
 }) {
   const inbox = useSupportInboxController({onError, onNotice});
+  const adMatching = useAdMatchingOptOutController({onError, onNotice});
   const {select} = inbox;
+  const {clear} = adMatching;
   useEffect(() => {
     if (conversationId) select(conversationId);
-  }, [conversationId, select]);
+    clear();
+  }, [clear, conversationId, select]);
   return (
     <SupportScreen
+      adMatching={adMatching}
       detailOpen={conversationId !== null}
       inbox={inbox}
       nowMs={Date.now()}

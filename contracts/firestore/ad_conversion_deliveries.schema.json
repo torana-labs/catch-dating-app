@@ -85,7 +85,18 @@
               "type": "null"
             }
           ],
-          "description": "SHA-256 of the owner's verified E.164 phone."
+          "description": "SHA-256 of the owner's verified E.164 phone, as Google's Data Manager takes it. Null on a record cancelled for an ad-matching opt-out."
+        },
+        "metaPhoneSha256": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "SHA-256 of the same phone as digits only with its country code and no plus sign, as Meta normalises phone numbers. Records queued before 19 November 2026 lack it and send Meta no phone."
         },
         "emailSha256": {
           "anyOf": [
@@ -96,7 +107,7 @@
               "type": "null"
             }
           ],
-          "description": "SHA-256 of the trimmed, lowercased email, when one is on file."
+          "description": "SHA-256 of the trimmed, lowercased email, when one is on file. Null on a record cancelled for an ad-matching opt-out."
         },
         "externalIdSha256": {
           "$ref": "#/definitions/sha256",
@@ -163,7 +174,7 @@
           "type": "null"
         }
       ],
-      "description": "Short outcome code; provider response bodies are never stored."
+      "description": "Short outcome code; provider response bodies are never stored. `opted_out` marks a record cancelled because the owner's phone or email, or its matched lead's, is opted out of ad matching."
     },
     "createdAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp"

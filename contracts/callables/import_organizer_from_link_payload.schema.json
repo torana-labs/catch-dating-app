@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/import_organizer_from_link_payload.schema.json",
+  "title": "ImportOrganizerFromLinkCallablePayload",
+  "description": "Command organizer.import-from-link (contracts/commands/catalog.json). A phone-verified caller with a try-it workspace sends one public link: an Instagram profile, a Luma calendar, a Linktree page or their own website. The first preview with an idempotency key starts reading the link and answers running; previewing again with the same key answers what would change in the workspace, or that the link belongs to an organizer Catch already lists. Apply writes the reviewed fields into the workspace.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mode", "idempotencyKey", "surface", "input"],
+  "properties": {
+    "mode": {"$ref": "../shared/command_envelope.schema.json#/definitions/mode"},
+    "idempotencyKey": {"$ref": "../shared/command_envelope.schema.json#/definitions/idempotencyKey"},
+    "surface": {"$ref": "../shared/command_envelope.schema.json#/definitions/surface"},
+    "confirm": {"$ref": "../shared/command_envelope.schema.json#/definitions/confirm"},
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["link"],
+      "properties": {
+        "link": {"type": "string", "minLength": 8, "maxLength": 2000, "pattern": "^https?://",
+          "description": "One public page: an Instagram profile, a Luma calendar, a Linktree page or the organizer's website."},
+        "useImportedName": {"type": "boolean",
+          "description": "Replace the workspace's name with the name found on the page. Default false: the workspace keeps its name."}
+      }
+    }
+  }
+}

@@ -1,7 +1,8 @@
 import type {PlaybookPageIndex} from "../../playbookContract.ts";
 
 /**
- * How it works, the product pages under /product/, and /pricing/.
+ * How it works, the product pages under /product/ (product pages v2,
+ * 18 Nov 2026) and /pricing/.
  *
  * This section's page index: one entry per page, keyed by its content key
  * (the route id, or for a family page the route id and its parameters joined
@@ -11,13 +12,13 @@ import type {PlaybookPageIndex} from "../../playbookContract.ts";
  */
 export const productPlaybookPages: PlaybookPageIndex = {
   how_it_works: {file: "how-it-works.json", load: () => import("./how-it-works.json")},
-  product_night: {file: "night.json", load: () => import("./night.json")},
-  product_bookings: {file: "bookings.json", load: () => import("./bookings.json")},
   product_your_page: {file: "your-page.json", load: () => import("./your-page.json")},
-  product_door: {file: "door.json", load: () => import("./door.json")},
+  product_bookings: {file: "bookings.json", load: () => import("./bookings.json")},
   product_messages: {file: "messages.json", load: () => import("./messages.json")},
+  product_room: {file: "room.json", load: () => import("./room.json")},
+  product_event: {file: "event.json", load: () => import("./event.json")},
   product_guests: {file: "guests.json", load: () => import("./guests.json")},
-  product_forms: {file: "forms.json", load: () => import("./forms.json")},
   product_reports: {file: "reports.json", load: () => import("./reports.json")},
+  product_forms: {file: "forms.json", load: () => import("./forms.json")},
   pricing: {file: "pricing.json", load: () => import("./pricing.json")},
 };

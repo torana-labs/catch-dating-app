@@ -1,14 +1,15 @@
 import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, it} from "vitest";
 import {catchBandActions, catchBandColor, catchBandFootnoteMark} from "./catchBandParts";
-import {grounds} from "./palette";
+import {websiteGrounds} from "./palette";
 
 afterEach(cleanup);
 
 describe("catchBandParts", () => {
   it("maps every Website v2 ground onto a band colour", () => {
-    expect(grounds.map((ground) => catchBandColor(ground))).toEqual([
+    expect(websiteGrounds.map((ground) => catchBandColor(ground))).toEqual([
       undefined, "tile", "ink", "run", "dinner", "games", "courts", "indigo", "nightsOut",
+      "sky", "tile", "tile", "tile", "tile", "tile", "tile", "tile",
     ]);
     expect(catchBandColor(undefined)).toBeUndefined();
   });

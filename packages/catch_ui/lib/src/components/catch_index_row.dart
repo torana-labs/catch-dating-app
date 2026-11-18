@@ -234,7 +234,9 @@ class CatchIndexRow extends StatelessWidget {
     final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
     final titleLines = largeText && titleMaxLines < 2 ? 2 : titleMaxLines;
     final Widget titleText;
-    if (titleStyle == null && system) {
+    // Every row title reads at the system row size, 16 px semibold, as the
+    // system ListRow draws it; a caller's titleStyle still wins.
+    if (titleStyle == null) {
       final base = CatchTextVariant.titleRow.style(sizeClass);
       titleText = Text(
         title,
@@ -256,7 +258,7 @@ class CatchIndexRow extends StatelessWidget {
         title,
         maxLines: titleLines,
         overflow: TextOverflow.ellipsis,
-        style: titleStyle ?? CatchTextStyles.titleL(context, color: t.ink),
+        style: titleStyle,
       );
     }
     final status = this.status;
