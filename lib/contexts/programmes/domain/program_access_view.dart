@@ -30,6 +30,8 @@ class ProgramAccessView {
     required this.activeFrom,
     required this.expiresAt,
     required this.revision,
+    this.assignments = const [],
+    this.grantExpiresAt,
     this.duties = const {},
     this.pickupAll = const {},
     this.pickupScoped = const {},
@@ -67,6 +69,11 @@ class ProgramAccessView {
       ),
       expiresAt: nullableDateTime(map['expiresAtMillis']),
       revision: requiredInt(map, 'revision'),
+      assignments: mapList(
+        map['assignments'],
+        'assignments',
+      ).map(ProgramDutyAssignment.fromMap).toList(growable: false),
+      grantExpiresAt: nullableDateTime(map['grantExpiresAtMillis']),
       duties: instants('duties'),
       pickupAll: instants('pickupAll'),
       pickupScoped: instants('pickupScoped'),
@@ -95,6 +102,13 @@ class ProgramAccessView {
   /// The grant's revision; 0 for the owner.
   final int revision;
 
+  /// The live duty tuples with their scopes and own expiries, as the
+  /// work-access callable returned them; empty for the owner.
+  final List<ProgramDutyAssignment> assignments;
+
+  /// The grant's own expiry; null for the owner.
+  final DateTime? grantExpiresAt;
+
   final Map<String, DateTime> duties;
   final Map<String, DateTime> pickupAll;
   final Map<String, DateTime> pickupScoped;
@@ -107,6 +121,15 @@ class ProgramAccessView {
   final Map<String, DateTime> workFunction;
 
   bool get isManager => role == ProgramActorRole.manager;
+
+  /// Identifies which resources the work lists reach, ignoring when they
+  /// expire, so a data listener scoped to them reopens only when the set
+  /// changes.
+  String get workScopeKey => [
+    isManager ? 'manager' : 'staff',
+    for (final map in [workPickup, workHotel, workFunction])
+      ([...map.keys]..sort()).join(','),
+  ].join('|');
 
   /// Null when the account holds authority at [now], otherwise the reason.
   ProgramAccessDenial? denialAt(DateTime now) {

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/account/account.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_projection_lifetime.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_work_shell_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_access_policy.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_bill_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_departures_models.dart';
@@ -18,12 +19,12 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'program_work_repository.g.dart';
 part 'program_bills_repository.dart';
 part 'program_hampers_repository.dart';
 part 'program_ids_repository.dart';
 part 'program_photos_repository.dart';
 part 'program_whatsapp_repository.dart';
+part 'program_work_repository.g.dart';
 part 'program_work_repository_door.dart';
 part 'program_work_repository_live.dart';
 part 'program_work_repository_reports.dart';
@@ -625,8 +626,10 @@ Future<ProgramReadView<T>> _readView<T>(
   onAuthorityChanged: onAuthorityChanged,
 );
 
-/// An invitation must be claimed online; an existing program may reopen from
-/// a bounded snapshot of its previously verified access.
+/// The work shell's access through listeners (#1339), gated on the account's
+/// authority; an invitation is still claimed online. Callable-reading screens
+/// keep their offline cold start: each delivery refreshes the saved work
+/// access they bound a snapshot by, and a denial clears it.
 @riverpod
 Future<ProgramReadView<ProgramWorkAccess>> programWorkEntry(
   Ref ref,
@@ -634,32 +637,22 @@ Future<ProgramReadView<ProgramWorkAccess>> programWorkEntry(
   String? inviteId,
 ) async {
   final accountId = _watchWorkAccount(ref);
-  final repository = ref.read(programWorkRepositoryProvider);
   final resolvedProgramId = inviteId == null || inviteId.isEmpty
       ? programId
-      : await repository.claimStaffInvite(inviteId);
+      : await ref
+            .read(programWorkRepositoryProvider)
+            .claimStaffInvite(inviteId);
   if (!ref.mounted) throw const SignInRequiredException('view program work');
-  final result = await _readView(
+  final access = await readWorkAccessSavingSnapshot(
     ref,
     accountId,
     resolvedProgramId,
-    programSnapshotScope('work', resolvedProgramId),
-    () => repository.getWorkAccess(
-      resolvedProgramId,
-      snapshotAccountId: accountId,
-    ),
-    ProgramWorkAccess.fromCallableData,
   );
   retainProgramProjection(
     ref,
-    programProjectionDeadline(
-      result.value.nextAccessChangeAt(
-        ref.read(programProjectionClockProvider)(),
-      ),
-      result.snapshotExpiresAt,
-    ),
+    access.nextAccessChangeAt(ref.read(programProjectionClockProvider)()),
   );
-  return result;
+  return (value: access, snapshotAt: null, snapshotExpiresAt: null);
 }
 
 @riverpod

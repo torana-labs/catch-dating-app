@@ -15,12 +15,20 @@ import 'package:catch_platform/errors/app_exception.dart';
 /// delivered under the epoch it is shown in. Authority that only widens keeps
 /// the running listener.
 ///
+/// [data] receives the state that authorized it, so it can open only the
+/// sources the account's scopes reach.
+///
+/// [scopeOf] names what the data listener was opened for (for example the
+/// resources an account's scopes reach); when it changes the listener is
+/// reopened, because widening can add sources to read.
+///
 /// [needs] are keys of [ProgramAccessView.liveKeys], or `'manager'`, which
 /// satisfies any need.
 Stream<T> gateByProgramAccess<T>({
   required Stream<ProgramAccessState> access,
-  required Stream<T> Function() data,
+  required Stream<T> Function(ProgramAccessState state) data,
   required Set<String> needs,
+  Object? Function(ProgramAccessState state)? scopeOf,
 }) {
   late final StreamController<T> controller;
   // ignore: cancel_subscriptions
@@ -29,6 +37,7 @@ Stream<T> gateByProgramAccess<T>({
   // ignore: cancel_subscriptions
   StreamSubscription<T>? dataSubscription;
   int? openEpoch;
+  Object? openScope;
   var denied = false;
 
   bool allows(ProgramAccessState state) =>
@@ -58,13 +67,18 @@ Stream<T> gateByProgramAccess<T>({
 
   void open(ProgramAccessState state) {
     denied = false;
-    if (dataSubscription != null && openEpoch == state.epoch) return;
+    final scope = scopeOf?.call(state);
+    if (dataSubscription != null &&
+        openEpoch == state.epoch &&
+        openScope == scope) {
+      return;
+    }
     unawaited(closeData());
     openEpoch = state.epoch;
-    dataSubscription = data().listen(
-      controller.add,
-      onError: controller.addError,
-    );
+    openScope = scope;
+    dataSubscription = data(
+      state,
+    ).listen(controller.add, onError: controller.addError);
   }
 
   controller = StreamController<T>(

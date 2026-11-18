@@ -57,14 +57,18 @@ final class ProgramWorkRepositoryProvider
 String _$programWorkRepositoryHash() =>
     r'1afd99f8840d6c75a4c222e78cf1b1ab9211f42b';
 
-/// An invitation must be claimed online; an existing program may reopen from
-/// a bounded snapshot of its previously verified access.
+/// The work shell's access through listeners (#1339), gated on the account's
+/// authority; an invitation is still claimed online. Callable-reading screens
+/// keep their offline cold start: each delivery refreshes the saved work
+/// access they bound a snapshot by, and a denial clears it.
 
 @ProviderFor(programWorkEntry)
 final programWorkEntryProvider = ProgramWorkEntryFamily._();
 
-/// An invitation must be claimed online; an existing program may reopen from
-/// a bounded snapshot of its previously verified access.
+/// The work shell's access through listeners (#1339), gated on the account's
+/// authority; an invitation is still claimed online. Callable-reading screens
+/// keep their offline cold start: each delivery refreshes the saved work
+/// access they bound a snapshot by, and a denial clears it.
 
 final class ProgramWorkEntryProvider
     extends
@@ -76,8 +80,10 @@ final class ProgramWorkEntryProvider
     with
         $FutureModifier<ProgramReadView<ProgramWorkAccess>>,
         $FutureProvider<ProgramReadView<ProgramWorkAccess>> {
-  /// An invitation must be claimed online; an existing program may reopen from
-  /// a bounded snapshot of its previously verified access.
+  /// The work shell's access through listeners (#1339), gated on the account's
+  /// authority; an invitation is still claimed online. Callable-reading screens
+  /// keep their offline cold start: each delivery refreshes the saved work
+  /// access they bound a snapshot by, and a denial clears it.
   ProgramWorkEntryProvider._({
     required ProgramWorkEntryFamily super.from,
     required (String, String?) super.argument,
@@ -122,10 +128,12 @@ final class ProgramWorkEntryProvider
   }
 }
 
-String _$programWorkEntryHash() => r'50b7414a9ad3e95964a784acc5674c5edca7c87f';
+String _$programWorkEntryHash() => r'1517d312d676f6aca053b96e4cc20e42d076d236';
 
-/// An invitation must be claimed online; an existing program may reopen from
-/// a bounded snapshot of its previously verified access.
+/// The work shell's access through listeners (#1339), gated on the account's
+/// authority; an invitation is still claimed online. Callable-reading screens
+/// keep their offline cold start: each delivery refreshes the saved work
+/// access they bound a snapshot by, and a denial clears it.
 
 final class ProgramWorkEntryFamily extends $Family
     with
@@ -142,8 +150,10 @@ final class ProgramWorkEntryFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// An invitation must be claimed online; an existing program may reopen from
-  /// a bounded snapshot of its previously verified access.
+  /// The work shell's access through listeners (#1339), gated on the account's
+  /// authority; an invitation is still claimed online. Callable-reading screens
+  /// keep their offline cold start: each delivery refreshes the saved work
+  /// access they bound a snapshot by, and a denial clears it.
 
   ProgramWorkEntryProvider call(String programId, String? inviteId) =>
       ProgramWorkEntryProvider._(argument: (programId, inviteId), from: this);

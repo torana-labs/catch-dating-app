@@ -35,6 +35,8 @@ void main() {
     'workPickup': {'pp1': ms(at(60))},
     'workHotel': <String, int>{},
     'workFunction': workFunction ?? <String, int>{},
+    'assignments': <Map<String, Object?>>[],
+    'grantExpiresAtMillis': null,
     'revision': 3,
     'version': 1,
   };

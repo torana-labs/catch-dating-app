@@ -37,6 +37,8 @@ void main() {
     'workPickup': <String, int>{},
     'workHotel': <String, int>{},
     'workFunction': {ProgramAccessView.allKey: dutyEnds},
+    'assignments': <Map<String, Object?>>[],
+    'grantExpiresAtMillis': null,
     'revision': 1,
     'version': 1,
   };
@@ -76,7 +78,7 @@ void main() {
         var opened = 0;
         gateByProgramAccess<String>(
           access: access0.state,
-          data: () {
+          data: (_) {
             opened++;
             return rows.stream;
           },
@@ -110,7 +112,7 @@ void main() {
         var opened = 0;
         gateByProgramAccess<String>(
           access: access0.state,
-          data: () => Stream.value('roster ${++opened}'),
+          data: (_) => Stream.value('roster ${++opened}'),
           needs: needs,
         ).listen(seen.add, onError: seen.add);
 
@@ -140,7 +142,7 @@ void main() {
         var opened = 0;
         gateByProgramAccess<String>(
           access: access0.state,
-          data: () {
+          data: (_) {
             opened++;
             return const Stream<String>.empty();
           },
@@ -175,7 +177,7 @@ void main() {
         var opened = 0;
         gateByProgramAccess<String>(
           access: access0.state,
-          data: () {
+          data: (_) {
             opened++;
             return Stream.value('row');
           },
@@ -199,7 +201,7 @@ void main() {
         final seen = <Object>[];
         gateByProgramAccess<String>(
           access: access0.state,
-          data: () => Stream.value('row'),
+          data: (_) => Stream.value('row'),
           needs: {'duty:programAdmin', 'hotel:hotelDesk__h1'},
         ).listen(seen.add, onError: seen.add);
         access0.views.add(
@@ -219,7 +221,7 @@ void main() {
         final rows = StreamController<String>.broadcast();
         final subscription = gateByProgramAccess<String>(
           access: access0.state,
-          data: () => rows.stream,
+          data: (_) => rows.stream,
           needs: needs,
         ).listen((_) {});
         access0.views.add(ProgramAccessView.fromMap(raw(dutyEnds: ms(at(90)))));

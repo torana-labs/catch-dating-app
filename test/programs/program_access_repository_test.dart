@@ -26,6 +26,8 @@ void main() {
     'workPickup': <String, int>{},
     'workHotel': <String, int>{},
     'workFunction': {'*': dutyEnds.millisecondsSinceEpoch},
+    'assignments': <Map<String, Object?>>[],
+    'grantExpiresAtMillis': null,
     'revision': 2,
     'version': 1,
   };

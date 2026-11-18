@@ -60,11 +60,13 @@ class ProgramAccessRepository {
     String programId,
     String uid, {
     required Set<String> needs,
-    required Stream<T> Function() data,
+    required Stream<T> Function(ProgramAccessState state) data,
+    Object? Function(ProgramAccessState state)? scopeOf,
   }) => gateByProgramAccess(
     access: watchState(programId, uid),
     data: data,
     needs: needs,
+    scopeOf: scopeOf,
   );
 }
 
