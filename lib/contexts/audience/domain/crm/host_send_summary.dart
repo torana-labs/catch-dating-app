@@ -176,30 +176,6 @@ final class HostFollowerUpdateSendSummary extends HostSendSummary {
   String get id => postId;
 }
 
-class HostSendsPage {
-  const HostSendsPage({
-    required this.organizerId,
-    required this.sends,
-    required this.nextCursor,
-  });
-
-  factory HostSendsPage.fromCallableData(Object? data) {
-    final map = crmRequiredMap(data, 'organizer Sends response');
-    return HostSendsPage(
-      organizerId: crmRequiredString(map, 'organizerId'),
-      sends: crmMapList(
-        map['sends'],
-        'organizer Sends rows',
-      ).map(HostSendSummary.fromMap).toList(growable: false),
-      nextCursor: crmNullableString(map['nextCursor']),
-    );
-  }
-
-  final String organizerId;
-  final List<HostSendSummary> sends;
-  final String? nextCursor;
-}
-
 /// A follower update's WhatsApp leg (route organizerFollowerWhatsapp).
 final class HostFollowerUpdateWhatsapp {
   const HostFollowerUpdateWhatsapp({

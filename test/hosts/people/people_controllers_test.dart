@@ -383,20 +383,16 @@ void main() {
           ),
         ),
         hostWhatsappThreadsProvider(_org).overrideWith(
-          (ref) async => HostWhatsappThreadPage(
-            organizerId: _org,
-            threads: [
-              _whatsapp('a', at: DateTime(2026, 10, 27, 9)),
-              _whatsapp(
-                'b',
-                linkedUid: 'uid-b',
-                eventIds: ['tonight'],
-                direction: HostWhatsappMessageDirection.outbound,
-                at: DateTime(2026, 10, 27, 11),
-              ),
-            ],
-            nextCursor: null,
-          ),
+          (ref) async => [
+            _whatsapp('a', at: DateTime(2026, 10, 27, 9)),
+            _whatsapp(
+              'b',
+              linkedUid: 'uid-b',
+              eventIds: ['tonight'],
+              direction: HostWhatsappMessageDirection.outbound,
+              at: DateTime(2026, 10, 27, 11),
+            ),
+          ],
         ),
         watchEventsForOrganizerProvider(
           _org,

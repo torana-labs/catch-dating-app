@@ -36,6 +36,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_list.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
 import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -445,7 +446,7 @@ void main() {
         previews: [preview],
         participations: const [],
         whatsappThreadsValue: AsyncError(
-          StateError('listOrganizerWhatsappThreads is not deployed'),
+          StateError('WhatsApp threads are unavailable'),
           StackTrace.empty,
         ),
         now: now,
@@ -644,7 +645,7 @@ Widget _app({
   List<HostSendSummary> sends = const [],
   List<HostWhatsappThreadSummary> whatsappThreads = const [],
   List<HostManualSendTask> manualSendTasks = const [],
-  AsyncValue<HostWhatsappThreadPage>? whatsappThreadsValue,
+  AsyncValue<LivePages<HostWhatsappThreadSummary>>? whatsappThreadsValue,
   ProgramSetupRepository? programRepository,
   String? initialThreadId,
   Stream<String?>? accountStream,
@@ -707,14 +708,9 @@ Widget _app({
       hostCrmSummaryProvider(
         organizer.id,
       ).overrideWithValue(AsyncData(_crmSummary(organizer.id))),
-      hostSendsProvider(organizer.id).overrideWithValue(
-        AsyncData(
-          HostSendsPage(
-            organizerId: organizer.id,
-            sends: sends,
-            nextCursor: null,
-          ),
-        ),
+      hostSendPagesProvider(organizer.id).overrideWithBuild(
+        (ref, notifier) =>
+            Stream.value(LivePages(items: sends, hasMore: false)),
       ),
       hostManualSendTasksProvider(organizer.id).overrideWithValue(
         AsyncData(
@@ -728,15 +724,15 @@ Widget _app({
       watchOrganizerPostRemainingWeeklyQuotaProvider(
         organizer.id,
       ).overrideWith((ref) => Stream.value(remainingFollowerQuota)),
-      hostWhatsappThreadsProvider(organizer.id).overrideWithValue(
-        whatsappThreadsValue ??
-            AsyncData(
-              HostWhatsappThreadPage(
-                organizerId: organizer.id,
-                threads: whatsappThreads,
-                nextCursor: null,
-              ),
-            ),
+      hostWhatsappThreadPagesProvider(organizer.id).overrideWithBuild(
+        (ref, notifier) => switch (whatsappThreadsValue) {
+          AsyncError(:final error, :final stackTrace) => Stream.error(
+            error,
+            stackTrace,
+          ),
+          AsyncData(:final value) => Stream.value(value),
+          _ => Stream.value(LivePages(items: whatsappThreads, hasMore: false)),
+        },
       ),
       hostCustomerSegmentCountProvider.overrideWith(
         (ref, request) async => const HostCustomerSegmentCount(

@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_analytics
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_conversion.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -478,75 +479,46 @@ class HostFormAutomationsController extends _$HostFormAutomationsController {
 class HostAutomationMessagesState {
   const HostAutomationMessagesState({
     required this.messages,
-    this.nextCursor,
+    this.hasMore = false,
     this.loadingMore = false,
     this.error,
   });
   final List<HostCampaignSendSummary> messages;
-  final String? nextCursor;
+
+  /// Whether more drafts follow; true after a failed page so asking again
+  /// retries it.
+  final bool hasMore;
   final bool loadingMore;
+
+  /// Why the next page failed; the drafts shown stay.
   final Object? error;
 }
 
+/// The draft campaigns an automation can hand off to, a page at a time and
+/// live, so a draft saved in Sends shows here at once. A draft that is
+/// already scheduled is left out.
 @riverpod
 class HostAutomationMessagesController
     extends _$HostAutomationMessagesController {
-  @override
-  Future<HostAutomationMessagesState> build(String organizerId) async {
-    final page = await ref
-        .read(hostCampaignRepositoryProvider)
-        .listCampaigns(organizerId);
-    return HostAutomationMessagesState(
-      messages: _draftMessages(page),
-      nextCursor: page.nextCursor,
-    );
-  }
+  late LivePager<HostCampaignSendSummary> _pager;
 
-  Future<void> loadMore() async {
-    final current = state.asData?.value;
-    if (current == null || current.nextCursor == null || current.loadingMore) {
-      return;
-    }
-    state = AsyncData(
-      HostAutomationMessagesState(
-        messages: current.messages,
-        nextCursor: current.nextCursor,
-        loadingMore: true,
+  @override
+  Stream<HostAutomationMessagesState> build(String organizerId) {
+    _pager = ref
+        .watch(hostCampaignRepositoryProvider)
+        .watchDraftCampaigns(organizerId);
+    return _pager.pages.map(
+      (pages) => HostAutomationMessagesState(
+        messages: List.unmodifiable(
+          pages.items.where((campaign) => campaign.scheduledAt == null),
+        ),
+        hasMore: pages.hasMore,
+        loadingMore: pages.loadingMore,
+        error: pages.nextPageError,
       ),
     );
-    try {
-      final page = await ref
-          .read(hostCampaignRepositoryProvider)
-          .listCampaigns(organizerId, cursor: current.nextCursor);
-      state = AsyncData(
-        HostAutomationMessagesState(
-          messages: {
-            for (final message in [
-              ...current.messages,
-              ..._draftMessages(page),
-            ])
-              message.campaignId: message,
-          }.values.toList(growable: false),
-          nextCursor: page.nextCursor,
-        ),
-      );
-    } on Object catch (error) {
-      state = AsyncData(
-        HostAutomationMessagesState(
-          messages: current.messages,
-          nextCursor: current.nextCursor,
-          error: error,
-        ),
-      );
-    }
   }
-}
 
-List<HostCampaignSendSummary> _draftMessages(HostSendsPage page) => page.sends
-    .whereType<HostCampaignSendSummary>()
-    .where(
-      (send) =>
-          (send.status == 'draft' || send.status == 'previewed') &&
-          send.scheduledAt == null,
-    )
-    .toList(growable: false);
+  /// Opens the next page, or retries the one that failed.
+  void loadMore() => _pager.loadMore();
+}

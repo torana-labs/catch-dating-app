@@ -2,6 +2,16 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/crm_response_field
 
 enum HostWhatsappMessageDirection { inbound, outbound }
 
+/// How long WhatsApp lets a business reply freely after the customer's last
+/// message: the customer-service window.
+const hostWhatsappServiceWindow = Duration(hours: 24);
+
+/// Whether a free-form reply is allowed at [now], given the customer's last
+/// message at [lastInboundAt]. The reply callable checks this again.
+bool hostWhatsappServiceWindowOpen(DateTime lastInboundAt, DateTime now) =>
+    !now.isBefore(lastInboundAt) &&
+    now.isBefore(lastInboundAt.add(hostWhatsappServiceWindow));
+
 class HostWhatsappThreadSummary {
   const HostWhatsappThreadSummary({
     required this.threadId,
@@ -15,30 +25,42 @@ class HostWhatsappThreadSummary {
     required this.lastInboundAt,
     required this.serviceWindowExpiresAt,
     required this.serviceWindowOpen,
+    this.retainedUntil,
   });
 
-  factory HostWhatsappThreadSummary.fromMap(
-    Map<Object?, Object?> map,
-  ) => HostWhatsappThreadSummary(
-    threadId: crmRequiredString(map, 'threadId'),
-    contactId: crmRequiredString(map, 'contactId'),
-    linkedUid: crmNullableString(map['linkedUid']),
-    displayName: crmRequiredString(map, 'displayName'),
-    eventIds: crmStringList(map['eventIds']),
-    lastMessageBody: crmRequiredString(map, 'lastMessageBody'),
-    lastMessageDirection: crmEnumByName(
-      HostWhatsappMessageDirection.values,
-      crmRequiredString(map, 'lastMessageDirection'),
-      'WhatsApp message direction',
-    ),
-    lastMessageAt: crmRequiredDateTimeFromMillis(map, 'lastMessageAtMillis'),
-    lastInboundAt: crmRequiredDateTimeFromMillis(map, 'lastInboundAtMillis'),
-    serviceWindowExpiresAt: crmRequiredDateTimeFromMillis(
+  /// One `hostWhatsappThreadViews` document, read at [now]. The view holds
+  /// the summary the server keeps; the service window depends on the
+  /// reader's clock, so it is worked out here.
+  factory HostWhatsappThreadSummary.fromView(
+    Map<Object?, Object?> map, {
+    required DateTime now,
+  }) {
+    final lastInboundAt = crmRequiredDateTimeFromMillis(
       map,
-      'serviceWindowExpiresAtMillis',
-    ),
-    serviceWindowOpen: crmRequiredBool(map, 'serviceWindowOpen'),
-  );
+      'lastInboundAtMillis',
+    );
+    return HostWhatsappThreadSummary(
+      threadId: crmRequiredString(map, 'threadId'),
+      contactId: crmRequiredString(map, 'contactId'),
+      linkedUid: crmNullableString(map['linkedUid']),
+      displayName: crmRequiredString(map, 'displayName'),
+      eventIds: crmStringList(map['eventIds']),
+      lastMessageBody: crmRequiredString(map, 'lastMessageBody'),
+      lastMessageDirection: crmEnumByName(
+        HostWhatsappMessageDirection.values,
+        crmRequiredString(map, 'lastMessageDirection'),
+        'WhatsApp message direction',
+      ),
+      lastMessageAt: crmRequiredDateTimeFromMillis(map, 'lastMessageAtMillis'),
+      lastInboundAt: lastInboundAt,
+      serviceWindowExpiresAt: crmRequiredDateTimeFromMillis(
+        map,
+        'serviceWindowExpiresAtMillis',
+      ),
+      serviceWindowOpen: hostWhatsappServiceWindowOpen(lastInboundAt, now),
+      retainedUntil: crmRequiredDateTimeFromMillis(map, 'expiresAtMillis'),
+    );
+  }
 
   final String threadId;
   final String contactId;
@@ -51,30 +73,13 @@ class HostWhatsappThreadSummary {
   final DateTime lastInboundAt;
   final DateTime serviceWindowExpiresAt;
   final bool serviceWindowOpen;
-}
 
-class HostWhatsappThreadPage {
-  const HostWhatsappThreadPage({
-    required this.organizerId,
-    required this.threads,
-    required this.nextCursor,
-  });
+  /// When the thread's 12-month retention ends. A thread past it is hidden
+  /// until the server deletes it.
+  final DateTime? retainedUntil;
 
-  factory HostWhatsappThreadPage.fromCallableData(Object? data) {
-    final map = crmRequiredMap(data, 'organizer WhatsApp threads');
-    return HostWhatsappThreadPage(
-      organizerId: crmRequiredString(map, 'organizerId'),
-      threads: crmMapList(
-        map['threads'],
-        'organizer WhatsApp threads',
-      ).map(HostWhatsappThreadSummary.fromMap).toList(growable: false),
-      nextCursor: crmNullableString(map['nextCursor']),
-    );
-  }
-
-  final String organizerId;
-  final List<HostWhatsappThreadSummary> threads;
-  final String? nextCursor;
+  bool isRetainedAt(DateTime now) =>
+      retainedUntil == null || retainedUntil!.isAfter(now);
 }
 
 class HostWhatsappMessage {
@@ -117,25 +122,35 @@ class HostWhatsappThreadDetail {
     required this.messagesTruncated,
   });
 
-  factory HostWhatsappThreadDetail.fromCallableData(Object? data) {
-    final map = crmRequiredMap(data, 'organizer WhatsApp thread');
+  /// One thread from its view and its newest [messages], oldest first, read
+  /// at [now]. A customer message the view has not caught up with yet still
+  /// opens the reply window: the reply is fenced on the latest inbound time,
+  /// which the server checks again.
+  factory HostWhatsappThreadDetail.fromView({
+    required String organizerId,
+    required HostWhatsappThreadSummary summary,
+    required List<HostWhatsappMessage> messages,
+    required bool messagesTruncated,
+    required DateTime now,
+  }) {
+    var lastInboundAt = summary.lastInboundAt;
+    for (final message in messages) {
+      if (message.direction == HostWhatsappMessageDirection.inbound &&
+          message.occurredAt.isAfter(lastInboundAt)) {
+        lastInboundAt = message.occurredAt;
+      }
+    }
     return HostWhatsappThreadDetail(
-      organizerId: crmRequiredString(map, 'organizerId'),
-      threadId: crmRequiredString(map, 'threadId'),
-      contactId: crmRequiredString(map, 'contactId'),
-      linkedUid: crmNullableString(map['linkedUid']),
-      displayName: crmRequiredString(map, 'displayName'),
-      lastInboundAt: crmRequiredDateTimeFromMillis(map, 'lastInboundAtMillis'),
-      serviceWindowExpiresAt: crmRequiredDateTimeFromMillis(
-        map,
-        'serviceWindowExpiresAtMillis',
-      ),
-      serviceWindowOpen: crmRequiredBool(map, 'serviceWindowOpen'),
-      messages: crmMapList(
-        map['messages'],
-        'organizer WhatsApp messages',
-      ).map(HostWhatsappMessage.fromMap).toList(growable: false),
-      messagesTruncated: crmRequiredBool(map, 'messagesTruncated'),
+      organizerId: organizerId,
+      threadId: summary.threadId,
+      contactId: summary.contactId,
+      linkedUid: summary.linkedUid,
+      displayName: summary.displayName,
+      lastInboundAt: lastInboundAt,
+      serviceWindowExpiresAt: lastInboundAt.add(hostWhatsappServiceWindow),
+      serviceWindowOpen: hostWhatsappServiceWindowOpen(lastInboundAt, now),
+      messages: List.unmodifiable(messages),
+      messagesTruncated: messagesTruncated,
     );
   }
 

@@ -306,11 +306,6 @@ class HostShellBackend {
         'runs': const <Object?>[],
         'nextCursor': null,
       },
-      'listOrganizerWhatsappThreads' => {
-        'organizerId': organizerId,
-        'threads': const <Object?>[],
-        'nextCursor': null,
-      },
       // Plan step edits, pause/resume, close-out and the crawl stop change
       // answer as applied; their listeners keep what the journey seeded.
       'saveEventPlanStep' => {

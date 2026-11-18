@@ -11,6 +11,7 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automatio
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -184,7 +185,7 @@ void main() {
       await _choose(tester, 'Message draft', 'Follow up · Thanks · Attendees');
       await tester.tap(find.byKey(const ValueKey('automation-save')));
       await pumpFeatureUi(tester);
-      expect(crm.cursors, [null, 'older']);
+      expect(crm.pager.loadMoreCalls, 1);
       expect(forms.last!.delayMinutes, 90);
       expect(forms.last!.trigger, HostFormAutomationTrigger.eventAttended);
       expect(forms.actions!.single['campaignId'], 'draft');
@@ -354,39 +355,13 @@ class _Forms extends HostFormsRepository {
 }
 
 class _Crm extends HostCampaignRepository {
-  _Crm() : super(_UnusedFunctions());
-  final cursors = <String?>[];
+  _Crm() : super(_UnusedFunctions(), summaries: _reader());
+  final pager = _DraftPager();
   @override
-  Future<HostSendsPage> listCampaigns(
+  LivePager<HostCampaignSendSummary> watchDraftCampaigns(
     String organizerId, {
-    String? cursor,
-    int limit = 50,
-  }) async {
-    cursors.add(cursor);
-    return HostSendsPage(
-      organizerId: organizerId,
-      sends: cursor == null
-          ? []
-          : [
-              HostCampaignSendSummary(
-                campaignId: 'draft',
-                name: 'Follow up',
-                status: 'draft',
-                savedAudienceId: 'audience',
-                savedAudienceName: 'Attendees',
-                segments: const {},
-                templateId: 'template',
-                templateName: 'Thanks',
-                audienceCounts: const HostCampaignCounts({}),
-                deliveryCounts: const HostCampaignCounts({}),
-                scheduledAt: null,
-                dispatchedAt: null,
-                activityAt: DateTime(2026),
-              ),
-            ],
-      nextCursor: cursor == null ? 'older' : null,
-    );
-  }
+    int pageSize = 50,
+  }) => pager;
 
   @override
   Future<HostCampaign> getCampaignReport(
@@ -442,6 +417,45 @@ Finder _namedInput(String title) => find.descendant(
   of: find.byWidgetPredicate((w) => w is CatchField && w.title == title),
   matching: find.byType(EditableText),
 );
+
+/// No drafts on the first page; the second page holds one.
+class _DraftPager implements LivePager<HostCampaignSendSummary> {
+  final _controller = StreamController<LivePages<HostCampaignSendSummary>>();
+  var loadMoreCalls = 0;
+
+  @override
+  Stream<LivePages<HostCampaignSendSummary>> get pages {
+    _controller.add(const LivePages(items: [], hasMore: true));
+    return _controller.stream;
+  }
+
+  @override
+  void loadMore() {
+    loadMoreCalls++;
+    _controller.add(
+      LivePages(
+        items: [
+          HostCampaignSendSummary(
+            campaignId: 'draft',
+            name: 'Follow up',
+            status: 'draft',
+            savedAudienceId: 'audience',
+            savedAudienceName: 'Attendees',
+            segments: const {},
+            templateId: 'template',
+            templateName: 'Thanks',
+            audienceCounts: const HostCampaignCounts({}),
+            deliveryCounts: const HostCampaignCounts({}),
+            scheduledAt: null,
+            dispatchedAt: null,
+            activityAt: DateTime(2026),
+          ),
+        ],
+        hasMore: false,
+      ),
+    );
+  }
+}
 
 HostSummaryReader _reader() =>
     HostSummaryReader(FakeFirebaseFirestore(), actorId: () => 'host');

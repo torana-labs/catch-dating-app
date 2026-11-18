@@ -25,8 +25,6 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_event_roster_
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_task.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
@@ -248,6 +246,7 @@ import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/media/ordered_photo_picker.dart';
 import 'package:catch_platform/media/uploaded_photo.dart';
 import 'package:catch_platform/persistence/command_journal_provider.dart';
@@ -4696,14 +4695,11 @@ List<Object> _hostInboxProviderOverrides({
         _hostMessagingCaptureSetup(HostInboxSurfaceFixtures.organizer.id),
       ),
     ),
-    hostSendsProvider(HostInboxSurfaceFixtures.organizer.id).overrideWithValue(
-      AsyncData(
-        HostSendsPage(
-          organizerId: HostInboxSurfaceFixtures.organizer.id,
-          sends: const [],
-          nextCursor: null,
-        ),
-      ),
+    hostSendPagesProvider(
+      HostInboxSurfaceFixtures.organizer.id,
+    ).overrideWithBuild(
+      (ref, notifier) =>
+          Stream.value(const LivePages(items: [], hasMore: false)),
     ),
     hostManualSendTasksProvider(
       HostInboxSurfaceFixtures.organizer.id,
@@ -4716,16 +4712,11 @@ List<Object> _hostInboxProviderOverrides({
         ),
       ),
     ),
-    hostWhatsappThreadsProvider(
+    hostWhatsappThreadPagesProvider(
       HostInboxSurfaceFixtures.organizer.id,
-    ).overrideWithValue(
-      AsyncData(
-        HostWhatsappThreadPage(
-          organizerId: HostInboxSurfaceFixtures.organizer.id,
-          threads: const [],
-          nextCursor: null,
-        ),
-      ),
+    ).overrideWithBuild(
+      (ref, notifier) =>
+          Stream.value(const LivePages(items: [], hasMore: false)),
     ),
     watchEventParticipationsForEventProvider(
       HostInboxSurfaceFixtures.eventId,

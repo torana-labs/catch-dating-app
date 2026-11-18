@@ -40,7 +40,7 @@ class HostMessagesRequest {
 }
 
 /// Messages, composed from the Catch conversations listener, the WhatsApp
-/// threads read, the organizer's events (for Tonight) and Automatic
+/// threads listener, the organizer's events (for Tonight) and Automatic
 /// messages (for its row).
 @riverpod
 HostMessagesState hostMessagesController(Ref ref, HostMessagesRequest request) {
@@ -87,7 +87,7 @@ HostMessagesState hostMessagesController(Ref ref, HostMessagesRequest request) {
   final all = composeHostMessageThreads(
     organizerId: organizerId,
     catchThreads: [...catchView.newMatches, ...catchView.conversations],
-    whatsappThreads: whatsapp.threads,
+    whatsappThreads: whatsapp,
     tonightEventIds: tonight,
   );
   return HostMessagesState(
@@ -211,6 +211,6 @@ bool _sameDay(DateTime a, DateTime b) =>
 /// Reads Messages again after a failure.
 void retryHostMessagesReads(WidgetRef ref, String organizerId) => ref
   ..invalidate(chatsListViewModelProvider)
-  ..invalidate(hostWhatsappThreadsProvider(organizerId))
+  ..invalidate(hostWhatsappThreadPagesProvider(organizerId))
   ..invalidate(watchEventsForOrganizerProvider(organizerId))
   ..invalidate(hostPeopleAutomationsProvider(organizerId));
