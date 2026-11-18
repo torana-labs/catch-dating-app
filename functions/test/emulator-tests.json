@@ -14,6 +14,7 @@
   "test/rules/private_workspace_relationship_authority.rules.test.cjs",
   "test/rules/program_access.rules.test.cjs",
   "test/rules/program_arrivals.rules.test.cjs",
+  "test/rules/program_batch5_reads.rules.test.cjs",
   "test/rules/program_door_live.rules.test.cjs",
   "test/rules/program_operations.rules.test.cjs",
   "test/rules/program_staff_views.rules.test.cjs",
