@@ -6997,9 +6997,35 @@ apex-redirect definitions live in `contracts/shared/custom_domain_common.schema.
   active and null otherwise; pages built before it omit it and readers treat
   absence as null.
 
-The contracts land before their writers: no function writes `customDomains`
-yet, the four callables are not exported, and `organizerFormDomains` stays the
-live form registry until the forms code moves onto `customDomains`.
+`functions/src/customDomains/` owns the rules the schema cannot express.
+`domainPolicy.ts` computes the registrable domain from the Public Suffix List
+(the pinned `tldts` package, never a label count, so `club.co.in` is an apex),
+rejects hosts under a private suffix such as a hosting provider's, non-ICANN
+names other than the reserved `.test` and `.example`, IDN and Catch or
+provider hosts, and requires `apexRedirect.hostname` to equal
+`registrableDomain`. It screens every reservation against
+`contracts/catalogs/custom_domain_blocklist.json` plus Catch's own brand label:
+an exact hit is refused, a lookalike or credential/payment term is reserved
+with `review.state: held` and cannot activate until Admin approves. Its
+transition table is the only way `status` changes; each write bumps
+`revision` and appends bounded `history`. `domainRegistry.ts` applies it in
+transactions fenced by `generation` (and the whole binding for operator
+flows): one non-removed domain per organiser across hostnames (an ended
+`pendingDns` lease no longer counts), a 7-day lease that becomes `expired`,
+activation only on fresh DNS proof plus fresh provider evidence for the exact
+`providerHostnameId`, `lapsed` back to `active` within 14 days or `removed`
+after, and suspension that returns to the interrupted status. No provider is
+called there; callers pass trusted evidence.
+
+Organiser form domains now live here as `target.kind: "form"` records on the
+`firebaseHosting` provider: `resolvePublicFormDomain` and
+`tool/firebase/form_domain_operator.mjs` read and write `customDomains`, and
+the operator's revoke is a `removed` transition. The `organizerFormDomains`
+schema, rules match and contract entry are retired; the path stays denied by
+default. `tool/data/migrate_form_domains_to_custom_domains.mjs` folds any
+remaining legacy documents (`pending` to `pendingDns`, `revoked` to `removed`)
+as described in `contracts/migrations/organizer_form_domains_to_custom_domains.json`.
+The owner callables are not exported yet.
 
 
 ## Catch-owned controlled support reply (CAT16)
