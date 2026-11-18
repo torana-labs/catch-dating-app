@@ -6969,7 +6969,7 @@
       "checks": [
         "node --check operations/src/catch-cli/main.mjs",
         "node operations/scripts/check-command-catalog.mjs",
-        "node --test operations/test/catch-cli.test.mjs operations/test/command-catalog.test.mjs operations/test/command-client.test.mjs"
+        "node --test operations/test/catch-cli.test.mjs operations/test/command-catalog.test.mjs operations/test/command-client.test.mjs operations/test/command-tools.test.mjs"
       ],
       "impactPaths": [
         "operations/src/**",
@@ -6980,7 +6980,8 @@
         "contracts/commands/**",
         "contracts/shared/command_envelope.schema.json",
         "contracts/callables/**",
-        "contracts/callable_responses/**"
+        "contracts/callable_responses/**",
+        "operations/test/command-tools.test.mjs"
       ],
       "ciRequirements": {
         "repositoryView": "full",
