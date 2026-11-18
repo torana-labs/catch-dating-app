@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/ensure_try_it_workspace_payload.schema.json",
+  "title": "EnsureTryItWorkspaceCallablePayload",
+  "description": "Command workspace.ensure (contracts/commands/catalog.json). A phone-verified caller gets their one try-it workspace: a private, unpublished organizer they own, the same record createOrganizer makes. The website's phone step sends the brand name and city; every try-it tool then writes into this organizer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mode", "idempotencyKey", "surface", "input"],
+  "properties": {
+    "mode": {"$ref": "../shared/command_envelope.schema.json#/definitions/mode"},
+    "idempotencyKey": {"$ref": "../shared/command_envelope.schema.json#/definitions/idempotencyKey"},
+    "surface": {"$ref": "../shared/command_envelope.schema.json#/definitions/surface"},
+    "confirm": {"$ref": "../shared/command_envelope.schema.json#/definitions/confirm"},
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["organizerName", "marketId"],
+      "properties": {
+        "organizerName": {"type": "string", "minLength": 1, "maxLength": 120,
+          "description": "The organizer's brand name. Used only when the workspace is created; an existing workspace keeps its name."},
+        "marketId": {"$ref": "../shared/event_common.schema.json#/definitions/marketId"}
+      }
+    }
+  }
+}

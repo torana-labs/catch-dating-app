@@ -814,7 +814,8 @@
     "ProgramWhatsappThreadHandlingCallableResponse",
     "ProgramWhatsappCannedRepliesCallableResponse",
     "ProgramWhatsappCannedReplyCallableResponse",
-    "ProgramAssistantSettingsCallableResponse"
+    "ProgramAssistantSettingsCallableResponse",
+    "EnsureTryItWorkspaceCallablePayload"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",
@@ -1044,6 +1045,7 @@
     "UpsertOrganizerEventVenueCallableResponse",
     "ValidateOrganizerFormDraftCallableResponse",
     "WithdrawOrganizerFormResponseCallableResponse",
-    "WithdrawParticipantMessagingPermissionCallableResponse"
+    "WithdrawParticipantMessagingPermissionCallableResponse",
+    "EnsureTryItWorkspaceCallableResponse"
   ]
 }
