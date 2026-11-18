@@ -6,9 +6,18 @@ import firstEvent from "@content/playbook/pages/host/first-event.json";
 import programmes from "@content/playbook/pages/host/programmes.json";
 import start from "@content/playbook/pages/host/start.json";
 import switchPage from "@content/playbook/pages/host/switch.json";
+import bookings from "@content/playbook/pages/product/bookings.json";
+import event from "@content/playbook/pages/product/event.json";
+import forms from "@content/playbook/pages/product/forms.json";
+import guests from "@content/playbook/pages/product/guests.json";
+import howItWorks from "@content/playbook/pages/product/how-it-works.json";
+import messages from "@content/playbook/pages/product/messages.json";
 import pricing from "@content/playbook/pages/product/pricing.json";
+import reports from "@content/playbook/pages/product/reports.json";
+import room from "@content/playbook/pages/product/room.json";
+import yourPage from "@content/playbook/pages/product/your-page.json";
 import about from "@content/playbook/pages/resources/about.json";
-import {validatedPlaybookPage, type PlaybookPageDocument} from "@content/playbook/playbookContract";
+import {livePlaybookPage, validatedPlaybookPage, type PlaybookPageDocument} from "@content/playbook/playbookContract";
 import {hostFeeCalculatorCopy} from "@content/pricing";
 import {marketingCaptures} from "../app/marketingCaptures";
 import {PlaybookPage} from "../features/playbook/PlaybookPage";
@@ -38,6 +47,16 @@ const startPage = applyBrand(validatedPlaybookPage(start));
 const firstEventPage = applyBrand(validatedPlaybookPage(firstEvent));
 const switchPlaybookPage = applyBrand(validatedPlaybookPage(switchPage));
 const programmesPage = applyBrand(validatedPlaybookPage(programmes));
+// The product pages v2 as visitors get them: their live bands only (show-when-live).
+const howItWorksPage = livePlaybookPage(applyBrand(validatedPlaybookPage(howItWorks)));
+const yourPagePage = livePlaybookPage(applyBrand(validatedPlaybookPage(yourPage)));
+const bookingsPage = livePlaybookPage(applyBrand(validatedPlaybookPage(bookings)));
+const messagesPage = livePlaybookPage(applyBrand(validatedPlaybookPage(messages)));
+const roomPage = livePlaybookPage(applyBrand(validatedPlaybookPage(room)));
+const eventPage = livePlaybookPage(applyBrand(validatedPlaybookPage(event)));
+const guestsPage = livePlaybookPage(applyBrand(validatedPlaybookPage(guests)));
+const reportsPage = livePlaybookPage(applyBrand(validatedPlaybookPage(reports)));
+const formsPage = livePlaybookPage(applyBrand(validatedPlaybookPage(forms)));
 
 /** A playbook page at one of its board's widths: the bands' container queries read the frame. */
 function PlaybookAt({width, page = runClubsPage}: {width: 390 | 1280; page?: PlaybookPageDocument}) {
@@ -196,4 +215,157 @@ export const Programmes390: Story = {
   name: "/programmes/ · 390",
   parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["programmes"], states: ["programmes"]}},
   render: () => <PlaybookAt page={programmesPage} width={390} />,
+};
+
+/** The ProductHowItWorks board: the seven feature groups and Forms, before, on and after the night, the loop and where to start. */
+export const ProductHowItWorks: Story = {
+  name: "/how-it-works/ · 1280",
+  parameters: {
+    catchRoute: {id: "how_it_works", path: "/how-it-works/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchComponent: {id: "route_playbook_page", routeIds: ["how_it_works"], states: ["product-how-it-works"]},
+  },
+  render: () => <PlaybookAt page={howItWorksPage} width={1280} />,
+};
+
+/** The phone board: every band stacks. */
+export const ProductHowItWorks390: Story = {
+  name: "/how-it-works/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["how_it_works"], states: ["product-how-it-works"]}},
+  render: () => <PlaybookAt page={howItWorksPage} width={390} />,
+};
+
+/** The ProductYourPage board's live bands: the page, the owner's numbers, what's on it and claiming. */
+export const ProductYourPage: Story = {
+  name: "/product/your-page/ · 1280",
+  parameters: {
+    catchRoute: {id: "product_your_page", path: "/product/your-page/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchComponent: {id: "route_playbook_page", routeIds: ["product_your_page"], states: ["product-your-page"]},
+  },
+  render: () => <PlaybookAt page={yourPagePage} width={1280} />,
+};
+
+/** The phone board: every band stacks. */
+export const ProductYourPage390: Story = {
+  name: "/product/your-page/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_your_page"], states: ["product-your-page"]}},
+  render: () => <PlaybookAt page={yourPagePage} width={390} />,
+};
+
+/** The ProductBookings board's live bands: ways in, a balanced room, memberships and the checkout. */
+export const ProductBookings: Story = {
+  name: "/product/bookings/ · 1280",
+  parameters: {
+    catchRoute: {id: "product_bookings", path: "/product/bookings/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchComponent: {id: "route_playbook_page", routeIds: ["product_bookings"], states: ["product-bookings"]},
+  },
+  render: () => <PlaybookAt page={bookingsPage} width={1280} />,
+};
+
+/** The phone board: every band stacks. */
+export const ProductBookings390: Story = {
+  name: "/product/bookings/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_bookings"], states: ["product-bookings"]}},
+  render: () => <PlaybookAt page={bookingsPage} width={390} />,
+};
+
+/** The ProductGrowth board's live bands: four ways to reach people, tracked links, invite links, messages and WhatsApp campaigns. */
+export const ProductMessages: Story = {
+  name: "/product/messages/ · 1280",
+  parameters: {
+    catchRoute: {id: "product_messages", path: "/product/messages/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchComponent: {id: "route_playbook_page", routeIds: ["product_messages"], states: ["product-messages"]},
+  },
+  render: () => <PlaybookAt page={messagesPage} width={1280} />,
+};
+
+/** The phone board: every band stacks. */
+export const ProductMessages390: Story = {
+  name: "/product/messages/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_messages"], states: ["product-messages"]}},
+  render: () => <PlaybookAt page={messagesPage} width={390} />,
+};
+
+/** The ProductRoom board's live bands: First Hello, groups by format, Help me say hi and the permission rules. */
+export const ProductRoom: Story = {
+  name: "/product/room/ · 1280",
+  parameters: {
+    catchRoute: {id: "product_room", path: "/product/room/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchComponent: {id: "route_playbook_page", routeIds: ["product_room"], states: ["product-room"]},
+  },
+  render: () => <PlaybookAt page={roomPage} width={1280} />,
+};
+
+/** The phone board: every band stacks. */
+export const ProductRoom390: Story = {
+  name: "/product/room/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_room"], states: ["product-room"]}},
+  render: () => <PlaybookAt page={roomPage} width={390} />,
+};
+
+/** The ProductEvent board's live bands: the door, the live console, rehearsal, attendance and your team. */
+export const ProductEvent: Story = {
+  name: "/product/event/ · 1280",
+  parameters: {
+    catchRoute: {id: "product_event", path: "/product/event/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchComponent: {id: "route_playbook_page", routeIds: ["product_event"], states: ["product-event"]},
+  },
+  render: () => <PlaybookAt page={eventPage} width={1280} />,
+};
+
+/** The phone board: every band stacks. */
+export const ProductEvent390: Story = {
+  name: "/product/event/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_event"], states: ["product-event"]}},
+  render: () => <PlaybookAt page={eventPage} width={390} />,
+};
+
+/** The ProductRecords board's live bands: groups with plain rules, one person's history, merges and privacy. */
+export const ProductGuests: Story = {
+  name: "/product/guests/ · 1280",
+  parameters: {
+    catchRoute: {id: "product_guests", path: "/product/guests/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchComponent: {id: "route_playbook_page", routeIds: ["product_guests"], states: ["product-guests"]},
+  },
+  render: () => <PlaybookAt page={guestsPage} width={1280} />,
+};
+
+/** The phone board: every band stacks. */
+export const ProductGuests390: Story = {
+  name: "/product/guests/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_guests"], states: ["product-guests"]}},
+  render: () => <PlaybookAt page={guestsPage} width={390} />,
+};
+
+/** The ProductReports board's live bands: the report, payouts and the monthly bill. */
+export const ProductReports: Story = {
+  name: "/product/reports/ · 1280",
+  parameters: {
+    catchRoute: {id: "product_reports", path: "/product/reports/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchComponent: {id: "route_playbook_page", routeIds: ["product_reports"], states: ["product-reports"]},
+  },
+  render: () => <PlaybookAt page={reportsPage} width={1280} />,
+};
+
+/** The phone board: every band stacks. */
+export const ProductReports390: Story = {
+  name: "/product/reports/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_reports"], states: ["product-reports"]}},
+  render: () => <PlaybookAt page={reportsPage} width={390} />,
+};
+
+/** The ProductForms board's live bands: kinds of form, templates, responses and form fees. */
+export const ProductForms: Story = {
+  name: "/product/forms/ · 1280",
+  parameters: {
+    catchRoute: {id: "product_forms", path: "/product/forms/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchComponent: {id: "route_playbook_page", routeIds: ["product_forms"], states: ["product-forms"]},
+  },
+  render: () => <PlaybookAt page={formsPage} width={1280} />,
+};
+
+/** The phone board: every band stacks. */
+export const ProductForms390: Story = {
+  name: "/product/forms/ · 390",
+  parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_forms"], states: ["product-forms"]}},
+  render: () => <PlaybookAt page={formsPage} width={390} />,
 };

@@ -59,6 +59,17 @@ describe("consolidated public sitemap", () => {
     expect(retiredMarketingDestination({pathname: "/host/", search: "?utm_source=partner", hash: "#features"})).toBeNull();
     expect(getPageKey("/host/unknown/")).toBe("not_found");
   });
+  it("sends the product pages v2 replaced to their new pages, as Hosting does, keeping the query", () => {
+    for (const [slug, destination] of [["night", "/product/room/"], ["door", "/product/event/"]]) {
+      for (const suffix of ["", "/", "/old-section"]) {
+        expect(retiredMarketingDestination({pathname: `/product/${slug}${suffix}`, search: "?utm_source=partner", hash: "#rehearsal"}))
+          .toBe(`${destination}?utm_source=partner`);
+      }
+    }
+    for (const pathname of ["/product/room/", "/product/event/", "/product/bookings/", "/product/constructor/"]) {
+      expect(retiredMarketingDestination({pathname, search: "", hash: ""}), pathname).toBeNull();
+    }
+  });
   it("routes the programme's token links under one noindex page key", () => {
     for (const pathname of ["/itinerary/t.s/", "/ids/t.s/", "/hotel/t.s/", "/trip/t.s/", "/runsheet/t.s/", "/hampers/t.s/", "/family/t.s/"]) {
       expect(getPageKey(pathname)).toBe("programme_link");

@@ -158,6 +158,33 @@ describe("playbook page", () => {
     expect(band.getByRole("link", {name: "Book a 15-minute walkthrough"}).getAttribute("href")).toBe("/host/walkthrough/");
   });
 
+  it("draws a product page's live bands only: no try-it band or button, and the footer's own columns", async () => {
+    const room = (await loadPlaybookPage(resolvePlaybookPage("/product/room/")!))!;
+    render(<PlaybookPage captures={captures} page={room} />);
+    expect(screen.getByRole("heading", {level: 1}).textContent).toBe("Nobody comes to stand by the wall.");
+    expect(document.getElementById("try")).toBeNull();
+    expect(document.getElementById("start-try")).toBeNull();
+    expect(document.getElementById("first-hello-missions")).toBeNull();
+    expect(screen.queryByRole("link", {name: "Plan your first hello"})).toBeNull();
+    expect(screen.queryByText(/mutual/iu)).toBeNull();
+    const footer = within(screen.getByRole("contentinfo"));
+    expect(footer.getByRole("link", {name: "The room"}).getAttribute("href")).toBe("/product/room/");
+    expect(footer.getByRole("link", {name: "Running the event"}).getAttribute("href")).toBe("/product/event/");
+    expect(footer.getByRole("link", {name: "Forms"}).getAttribute("href")).toBe("/product/forms/");
+    expect(footer.getByRole("link", {name: "Report or remove a listing"}).getAttribute("href")).toBe("/listings/request/");
+    expect(footer.getByRole("button", {name: /privacy choices/iu})).toBeTruthy();
+    const faq = (playbookStructuredData(room, "/product/room/", "https://example.test") as {"@graph": {"@type": string; mainEntity?: unknown[]}[]})["@graph"]
+      .find((node) => node["@type"] === "FAQPage")!;
+    expect(faq.mainEntity).toHaveLength(4);
+  });
+
+  it("keeps the host footer's own columns on pages that pass none", () => {
+    render(<PlaybookPage captures={captures} page={page} />);
+    const footer = within(screen.getByRole("contentinfo"));
+    expect(footer.queryByRole("link", {name: "The room"})).toBeNull();
+    expect(footer.getByRole("button", {name: /privacy choices/iu})).toBeTruthy();
+  });
+
   it("states its questions as FAQPage and its breadcrumb as BreadcrumbList", () => {
     const data = playbookStructuredData(page, "/host/run-clubs/", "https://example.test") as {"@graph": {"@type": string; mainEntity?: unknown[]; itemListElement?: {item: string}[]}[]};
     const faq = data["@graph"].find((node) => node["@type"] === "FAQPage")!;

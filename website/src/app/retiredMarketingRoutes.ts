@@ -12,6 +12,16 @@ const retiredDestinations: Readonly<Record<string, string>> = {
 };
 
 /**
+ * Product pages the product pages v2 replaced (owner-approved design, 18 Nov
+ * 2026): Running the night became The room, and The door became Running the
+ * event. Hosting answers the same 301s (design/website/routes.json redirects).
+ */
+const retiredProductDestinations: Readonly<Record<string, string>> = {
+  night: "/product/room/",
+  door: "/product/event/",
+};
+
+/**
  * The organiser directory became Explore's organisers view (CAT-261). Its
  * query comes along unchanged, so search, city and attribution survive.
  */
@@ -31,7 +41,9 @@ export function retiredMarketingDestination(location: {pathname: string; search:
     return `/host/?${query.toString()}#${misplacedQuery[1]}`;
   }
   const slug = /^\/host\/([^/]+)(?:\/|$)/.exec(location.pathname)?.[1];
-  let destination = slug ? retiredDestinations[slug] : undefined;
+  const productSlug = /^\/product\/([^/]+)(?:\/|$)/.exec(location.pathname)?.[1];
+  let destination = slug ? retiredDestinations[slug] :
+    productSlug && Object.hasOwn(retiredProductDestinations, productSlug) ? retiredProductDestinations[productSlug] : undefined;
   if (/^\/host\/?$/.test(location.pathname)) {
     if (location.hash === "#founding-hosts") destination = "/host/#start";
     if (location.hash === "#workflow") destination = "/host/#how-it-works";

@@ -4,7 +4,14 @@ import {describe, expect, it} from "vitest";
 import {citiesPageCopy} from "@content/citiesPage";
 import {websiteCities} from "@content/markets";
 import {hostPricingFacts} from "@content/pricing";
-import {validatePlaybookPage, type PlaybookDestination, type PlaybookPageDocument} from "@content/playbook/playbookContract";
+import {
+  forEachAction,
+  livePlaybookPage,
+  playbookIsLive,
+  validatePlaybookPage,
+  type PlaybookDestination,
+  type PlaybookPageDocument,
+} from "@content/playbook/playbookContract";
 import {pendingPlaybookBindings} from "./playbookBindings";
 import {playbookRouteAliases} from "./playbookHrefs";
 import {
@@ -126,14 +133,76 @@ describe("playbook page indexes", () => {
     expect(page.meta.noindex).toBe(true);
   });
 
-  it("indexes only the pages the owner approved for search (18 Nov 2026); /pricing/ is not ready yet", async () => {
+  it("indexes only the pages the owner approved for search (18 Nov 2026); /pricing/ and the product pages v2 are not ready yet", async () => {
     expect((await approvedPlaybookPaths()).sort()).toEqual([
       "/host/brands/", "/host/colleges/", "/host/communities/", "/host/creators/", "/host/demo/", "/host/facilities/",
       "/host/nightlife/", "/host/outdoors/", "/host/quiz-nights/", "/host/racket-sports/", "/host/studios/",
-      "/host/supper-clubs/", "/host/teams/", "/host/venues/", "/host/workshops/", "/how-it-works/",
-      "/product/bookings/", "/product/door/", "/product/forms/", "/product/guests/", "/product/messages/",
-      "/product/night/", "/product/reports/", "/product/your-page/", "/safety/",
+      "/host/supper-clubs/", "/host/teams/", "/host/venues/", "/host/workshops/", "/safety/",
     ]);
+  });
+
+  const productV2 = loaded.filter(({ref}) => ref.match.route.group === "product" && ref.match.contentKey !== "pricing");
+
+  it("hides every try-it band and button until its command ships, on every product page", () => {
+    expect(productV2.map(({ref}) => ref.match.contentKey).sort()).toEqual([
+      "how_it_works", "product_bookings", "product_event", "product_forms", "product_guests", "product_messages",
+      "product_reports", "product_room", "product_your_page",
+    ]);
+    for (const {ref, raw} of productV2) {
+      const key = ref.match.contentKey;
+      expect(raw.sections.find((section) => section.id === "try")?.status, `${key} #try`).toBe("tryIt");
+      for (const section of raw.sections) {
+        if (section.type === "cta" && section.leadForm?.input && section.leadForm.input !== "tel") expect(section.status, `${key} ${section.id}`).toBe("tryIt");
+        if (!playbookIsLive(section)) expect(section.statusNote, `${key} ${section.id} says why it is hidden`).toBeTruthy();
+        forEachAction(section, (item, at) => {
+          if ("anchor" in item.to && item.to.anchor === "try") expect(playbookIsLive(item), `${key} ${section.id}.${at}`).toBe(false);
+        });
+      }
+      const live = livePlaybookPage(raw);
+      expect(JSON.stringify(live), key).not.toMatch(/"anchor":"try"|"requestKind":"tool"/u);
+    }
+  });
+
+  it("never links a live page to a hidden section of another page", () => {
+    const liveAnchors = new Map(loaded.filter(({ref}) => "path" in ref.match.route)
+      .map(({ref, raw}) => [ref.match.route.id, new Set(livePlaybookPage(raw).sections.map((section) => section.id))]));
+    for (const {ref, raw} of loaded) {
+      for (const to of destinations(livePlaybookPage(raw))) {
+        if ("route" in to && to.anchor && liveAnchors.has(to.route)) {
+          expect(liveAnchors.get(to.route)!.has(to.anchor), `${ref.match.contentKey} links ${to.route}#${to.anchor}`).toBe(true);
+        }
+      }
+    }
+  });
+
+  it("uses no dating or matching wording on the product pages, and leaves out the mutual-only line (owner, 18 Nov 2026)", () => {
+    for (const {ref, raw} of productV2) {
+      const text = JSON.stringify(raw);
+      expect(text, ref.match.contentKey).not.toMatch(/\b(dating|date night|matchmak\w*|matches|matching people|soulmates?|romance|romantic|singles|mutual\w*|chemistry|compatib\w*)\b/iu);
+    }
+  });
+
+  it("states the fee cap with its month, from pricing.ts, wherever a product page names it", () => {
+    for (const {ref, raw} of productV2) {
+      const visit = (value: unknown) => {
+        if (typeof value === "string" && value.includes("₹10,000")) {
+          expect(hostPricingFacts.cap, value).toBe("₹10,000");
+          expect(value, ref.match.contentKey).toMatch(/a month/u);
+        } else if (Array.isArray(value)) value.forEach(visit);
+        else if (value && typeof value === "object") Object.values(value).forEach(visit);
+      };
+      visit(livePlaybookPage(raw).sections);
+      expect(JSON.stringify(raw), ref.match.contentKey).not.toMatch(/\b(?!5%)\d+% of/u);
+    }
+  });
+
+  it("keeps the product pages v2 out of search until the owner approves them", async () => {
+    for (const path of ["/how-it-works/", "/product/your-page/", "/product/bookings/", "/product/messages/", "/product/room/",
+      "/product/event/", "/product/guests/", "/product/reports/", "/product/forms/"]) {
+      const page = (await loadPlaybookPage(resolvePlaybookPage(path)!))!;
+      expect(page, path).not.toBeNull();
+      expect(page.meta.noindex, path).toBe(true);
+    }
   });
 
   it.each(["/about/", "/host/start/", "/host/first-event/", "/host/switch/", "/programmes/"])("renders %s: every section bound, brand resolved, noindex until approved", async (path) => {

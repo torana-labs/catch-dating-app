@@ -4,137 +4,545 @@
   "route": "how_it_works",
   "meta": {
     "title": "How {{brand.name}} works | From the first booking to the next one",
-    "description": "Your page, bookings and payments, messages, the door, the night itself and the follow-up, in one app for hosts. Use all of it, or start with one part.",
+    "description": "Your page, bookings and memberships, messages and growth, the room, running the event, guest records, and reports and payouts, in one app for hosts. Use all of it, or start with one part.",
     "socialDescription": "One app, from the first booking to the next one. See how {{brand.name}} runs the whole life of an event.",
-    "noindex": false
+    "noindex": true
   },
   "header": {
     "variant": "host",
     "breadcrumbs": {
-      "links": [{"label": "For hosts", "to": {"route": "host"}}],
+      "links": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          }
+        }
+      ],
       "current": "How {{brand.name}} works"
     }
   },
-  "footer": {"variant": "host"},
+  "footer": {
+    "variant": "host",
+    "columns": [
+      {
+        "title": "Product",
+        "links": [
+          {
+            "label": "How {{brand.name}} works",
+            "to": {
+              "route": "how_it_works"
+            }
+          },
+          {
+            "label": "Your page",
+            "to": {
+              "route": "product_your_page"
+            }
+          },
+          {
+            "label": "Bookings and memberships",
+            "to": {
+              "route": "product_bookings"
+            }
+          },
+          {
+            "label": "Messages and growth",
+            "to": {
+              "route": "product_messages"
+            }
+          },
+          {
+            "label": "The room",
+            "to": {
+              "route": "product_room"
+            }
+          },
+          {
+            "label": "Running the event",
+            "to": {
+              "route": "product_event"
+            }
+          },
+          {
+            "label": "Guest records",
+            "to": {
+              "route": "product_guests"
+            }
+          },
+          {
+            "label": "Reports and payouts",
+            "to": {
+              "route": "product_reports"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Hosts by format",
+        "links": [
+          {
+            "label": "Run and walk clubs",
+            "to": {
+              "route": "host_run_clubs"
+            }
+          },
+          {
+            "label": "Racket sports",
+            "to": {
+              "route": "host_racket_sports"
+            }
+          },
+          {
+            "label": "Supper clubs",
+            "to": {
+              "route": "host_supper_clubs"
+            }
+          },
+          {
+            "label": "Quiz and game nights",
+            "to": {
+              "route": "host_quiz_nights"
+            }
+          },
+          {
+            "label": "Studios",
+            "to": {
+              "route": "host_studios"
+            }
+          },
+          {
+            "label": "Venues",
+            "to": {
+              "route": "host_venues"
+            }
+          },
+          {
+            "label": "Communities",
+            "to": {
+              "route": "host_communities"
+            }
+          },
+          {
+            "label": "Mixers and pub crawls",
+            "to": {
+              "route": "host_nightlife"
+            }
+          },
+          {
+            "label": "Teams",
+            "to": {
+              "route": "host_teams"
+            }
+          },
+          {
+            "label": "Colleges and alumni",
+            "to": {
+              "route": "host_colleges"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Get started",
+        "links": [
+          {
+            "label": "Start free trial",
+            "to": {
+              "route": "host_start"
+            }
+          },
+          {
+            "label": "Pricing",
+            "to": {
+              "route": "pricing"
+            }
+          },
+          {
+            "label": "Your first event",
+            "to": {
+              "route": "host_first_event"
+            }
+          },
+          {
+            "label": "Switch to {{brand.name}}",
+            "to": {
+              "route": "host_switch"
+            }
+          },
+          {
+            "label": "Try a demo night",
+            "to": {
+              "route": "host_demo"
+            }
+          },
+          {
+            "label": "Programmes",
+            "to": {
+              "route": "programmes"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Resources",
+        "links": [
+          {
+            "label": "Forms",
+            "to": {
+              "route": "product_forms"
+            }
+          },
+          {
+            "label": "Book a walkthrough",
+            "to": {
+              "route": "host_walkthrough"
+            }
+          },
+          {
+            "label": "Help",
+            "to": {
+              "route": "help"
+            }
+          }
+        ]
+      },
+      {
+        "title": "{{brand.name}}",
+        "links": [
+          {
+            "label": "What’s on",
+            "to": {
+              "route": "visitor_discovery"
+            }
+          },
+          {
+            "label": "About",
+            "to": {
+              "route": "about"
+            }
+          },
+          {
+            "label": "Safety",
+            "to": {
+              "route": "safety"
+            }
+          },
+          {
+            "label": "Contact",
+            "to": {
+              "route": "contact"
+            }
+          },
+          {
+            "label": "Report or remove a listing",
+            "to": {
+              "route": "listing_request"
+            }
+          },
+          {
+            "label": "Terms",
+            "to": {
+              "route": "terms"
+            }
+          },
+          {
+            "label": "Privacy",
+            "to": {
+              "route": "privacy"
+            }
+          },
+          {
+            "label": "Refunds",
+            "to": {
+              "route": "refunds"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "sections": [
     {
       "type": "tiles",
       "id": "top",
       "ground": "white",
+      "status": "built",
       "pageTitle": true,
       "kicker": "How {{brand.name}} works",
       "title": "One app, from the first booking to the next one.",
-      "lead": "{{brand.name}} runs the whole life of an event: your page, bookings and payments, the door, the night itself and the follow-up. Use all of it, or start with one part.",
-      "align": "center",
-      "columns": 6,
+      "lead": "{{brand.name}} runs the whole life of an event, including the part most tools skip: helping the people in the room actually meet. Use all of it, or start with one part.",
+      "align": "start",
+      "columns": 4,
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {"label": "See a night on {{brand.name}}", "to": {"route": "product_night"}, "emphasis": "secondary"}
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Try a demo night",
+          "to": {
+            "route": "host_demo"
+          },
+          "emphasis": "secondary"
+        }
       ],
       "items": [
-        {"figure": "1", "title": "Your page", "body": "A page that replaces the link in your bio.", "ground": "coral", "link": {"label": "Your page", "to": {"route": "product_your_page"}}},
-        {"figure": "2", "title": "Bookings and payments", "body": "Applications, waitlists, and UPI or card.", "ground": "pink", "link": {"label": "Bookings and payments", "to": {"route": "product_bookings"}}},
-        {"figure": "3", "title": "Messages", "body": "Confirmations, reminders and updates for everyone booked.", "ground": "yellow", "link": {"label": "Messages", "to": {"route": "product_messages"}}},
-        {"figure": "4", "title": "The door", "body": "QR or self check-in on a phone or iPad.", "ground": "mint", "link": {"label": "The door", "to": {"route": "product_door"}}},
-        {"figure": "5", "title": "The night", "body": "Groups, teams, seating and rotations, by format.", "ground": "indigo", "link": {"label": "Running the night", "to": {"route": "product_night"}}},
-        {"figure": "6", "title": "After", "body": "Reviews, reports, payouts and who to invite back.", "ground": "magenta", "link": {"label": "Reports and payouts", "to": {"route": "product_reports"}}}
+        {
+          "figure": "1",
+          "title": "Your page",
+          "body": "Your events, links and reviews on one page, for your bio.",
+          "ground": "coral",
+          "link": {
+            "label": "Your page",
+            "to": {
+              "route": "product_your_page"
+            }
+          }
+        },
+        {
+          "figure": "2",
+          "title": "Bookings and memberships",
+          "body": "Who gets in, what they pay, and members who pay less.",
+          "ground": "indigo",
+          "link": {
+            "label": "Bookings and memberships",
+            "to": {
+              "route": "product_bookings"
+            }
+          }
+        },
+        {
+          "figure": "3",
+          "title": "Messages and growth",
+          "body": "Event messages that send themselves, and links that show what sold.",
+          "ground": "yellow",
+          "link": {
+            "label": "Messages and growth",
+            "to": {
+              "route": "product_messages"
+            }
+          }
+        },
+        {
+          "figure": "4",
+          "title": "The room",
+          "body": "A first hello, groups that mix, and introductions when a guest asks.",
+          "ground": "magenta",
+          "link": {
+            "label": "The room",
+            "to": {
+              "route": "product_room"
+            }
+          }
+        },
+        {
+          "figure": "5",
+          "title": "Running the event",
+          "body": "The door, the live console, a dress rehearsal and your team.",
+          "ground": "mint",
+          "link": {
+            "label": "Running the event",
+            "to": {
+              "route": "product_event"
+            }
+          }
+        },
+        {
+          "figure": "6",
+          "title": "Guest records",
+          "body": "One record per guest, from every booking and every list you bring.",
+          "ground": "pink",
+          "link": {
+            "label": "Guest records",
+            "to": {
+              "route": "product_guests"
+            }
+          }
+        },
+        {
+          "figure": "7",
+          "title": "Reports and payouts",
+          "body": "What worked, what guests said, and your money in your own account.",
+          "ground": "sky",
+          "link": {
+            "label": "Reports and payouts",
+            "to": {
+              "route": "product_reports"
+            }
+          }
+        },
+        {
+          "title": "Forms, in every step",
+          "body": "Applications, waivers and feedback, with every answer on the guest’s record.",
+          "ground": "yellowSoft",
+          "link": {
+            "label": "Forms",
+            "to": {
+              "route": "product_forms"
+            }
+          }
+        }
       ]
     },
     {
       "type": "split",
       "id": "before",
       "ground": "paper",
+      "status": "built",
       "kicker": "Before the night",
-      "title": "Get found, fill it, and tell people where to be.",
+      "title": "Get found, decide who comes, and fill it.",
       "groups": [
         {
           "label": "1",
           "title": "Your page",
           "list": [
-            "Your links, upcoming events and reviews in one place, for your Instagram bio",
+            "Upcoming events, links and reviews in one place",
             "Events you run elsewhere appear as tiles that link out",
-            "Reviews from people who booked, with your replies, and followers you can tell about your next event",
-            "It may already exist: claim it free"
+            "Visits, new followers and where they came from, for the owner"
           ],
-          "links": [{"label": "Your page", "to": {"route": "product_your_page"}}]
+          "links": [
+            {
+              "label": "Your page",
+              "to": {
+                "route": "product_your_page"
+              }
+            }
+          ]
         },
         {
           "label": "2",
-          "title": "Bookings and payments",
+          "title": "Bookings and memberships",
           "list": [
-            "Applications with the questions you ask, approved with a tap",
-            "Waitlists, with offers that stay open for as long as you choose",
-            "Private offers and invite-only events",
-            "Up to four places on one booking, with a name for each guest",
-            "UPI or card, every payment next to the right name, refunds by your policy"
+            "Open booking, applications, invite-only links and private offers",
+            "Places for women and for men, and an age range for the night",
+            "Memberships with member prices, early access and members-only nights"
           ],
-          "links": [{"label": "Bookings and payments", "to": {"route": "product_bookings"}}]
+          "links": [
+            {
+              "label": "Bookings and memberships",
+              "to": {
+                "route": "product_bookings"
+              }
+            }
+          ]
         },
         {
           "label": "3",
-          "title": "Messages",
+          "title": "Messages and growth",
           "list": [
-            "Confirmations and changes for everyone booked, and a push reminder 15 minutes before the start for guests on the {{brand.name}} app",
-            "Announcements to everyone booked, and WhatsApp campaigns from your own WhatsApp Business number"
+            "Confirmations, changes and a push reminder, sent for you",
+            "A tracked link for every promoter, venue and post",
+            "A personal invite link for every guest, so you see who brings friends"
           ],
-          "links": [{"label": "Messages", "to": {"route": "product_messages"}}]
+          "links": [
+            {
+              "label": "Messages and growth",
+              "to": {
+                "route": "product_messages"
+              }
+            }
+          ]
         }
       ],
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "media": {
+        "kind": "capture",
+        "slot": "guest-explore"
+      }
     },
     {
       "type": "split",
       "id": "night",
       "ground": "ink",
+      "status": "built",
       "kicker": "On the night",
-      "title": "Open the door, then run the room.",
+      "title": "Help people meet, and keep the night running.",
       "groups": [
         {
           "label": "4",
-          "title": "The door",
+          "title": "The room",
           "list": [
-            "QR or self check-in, on your phone or an iPad at the door",
-            "Arrivals, late-comers and walk-ins, live",
-            "Check-ins made without signal sync when you’re back online"
+            "A first hello with a mission when guests check in",
+            "Groups, tables, teams and rotations built for each format",
+            "Help me say hi: a guest asks you for an introduction, privately"
           ],
-          "links": [{"label": "The door", "to": {"route": "product_door"}}]
+          "links": [
+            {
+              "label": "The room",
+              "to": {
+                "route": "product_room"
+              }
+            }
+          ]
         },
         {
           "label": "5",
-          "title": "The night",
+          "title": "Running the event",
           "list": [
-            "Pace groups, tables, teams, court rotations or a route between venues, built for each format",
-            "A first hello, and Help me say hi for private introductions",
-            "Guests join live moments in their phone’s browser, no app needed",
-            "A dress rehearsal with your team before doors open"
+            "Check-in on a phone or iPad, no app for guests",
+            "A live console and a dress rehearsal with your team",
+            "Door staff whose access ends with the night"
           ],
-          "links": [{"label": "Running the night", "to": {"route": "product_night"}}]
+          "links": [
+            {
+              "label": "Running the event",
+              "to": {
+                "route": "product_event"
+              }
+            }
+          ]
         }
       ],
-      "media": {"kind": "capture", "slot": "host-live-tablet"}
+      "media": {
+        "kind": "capture",
+        "slot": "host-live-tablet"
+      }
     },
     {
       "type": "split",
       "id": "after",
       "ground": "white",
+      "status": "built",
       "kicker": "After the night",
-      "title": "Know what worked, and who to invite back.",
+      "title": "Know your guests, and know what worked.",
       "groups": [
         {
           "label": "6",
-          "title": "After",
+          "title": "Guest records",
           "list": [
-            "One record per guest across every event you run",
-            "Reviews and private feedback, with replies",
-            "A report in {{brand.stores.hostAppName}} after every event, and insights across them",
-            "Payouts to your own Razorpay account, and roles for your team",
-            "Groups such as first-timers, regulars and lapsed regulars, so you know who to invite back"
+            "One record per guest across every event, built as they book and arrive",
+            "Bring in any old guest list from a CSV or Excel file",
+            "Groups that sort themselves, and privacy handled"
           ],
-          "links": [{"label": "Guest records", "to": {"route": "product_guests"}}]
+          "links": [
+            {
+              "label": "Guest records",
+              "to": {
+                "route": "product_guests"
+              }
+            }
+          ]
+        },
+        {
+          "label": "7",
+          "title": "Reports and payouts",
+          "list": [
+            "A report in {{brand.stores.hostAppName}} after every event, with ratings and reviews",
+            "Payments straight into your own Razorpay account",
+            "One bill from {{brand.name}}, after the month"
+          ],
+          "links": [
+            {
+              "label": "Reports and payouts",
+              "to": {
+                "route": "product_reports"
+              }
+            }
+          ]
         }
-      ],
-      "actions": [
-        {"label": "Reports, payouts and team", "to": {"route": "product_reports"}, "emphasis": "secondary"}
       ],
       "media": {
         "kind": "excerpt",
@@ -142,63 +550,242 @@
           "title": "Sunday Social Run · report",
           "subtitle": "Driftwood Bay Runners · Sun 8 Nov",
           "stats": [
-            {"value": "34", "label": "Booked"},
-            {"value": "31", "label": "Came"},
-            {"value": "9", "label": "First time with you"}
+            {
+              "value": "34",
+              "label": "Booked"
+            },
+            {
+              "value": "31",
+              "label": "Checked in"
+            },
+            {
+              "value": "9",
+              "label": "First-timers"
+            }
           ],
           "rows": [
-            {"title": "Rating", "detail": "From 18 guests", "value": "4.7"},
-            {"title": "New followers", "value": "11"},
-            {"title": "Booked through the café’s link", "value": "6"}
+            {
+              "title": "Rating",
+              "detail": "From 18 guests",
+              "value": "4.7"
+            },
+            {
+              "title": "New followers",
+              "value": "11"
+            },
+            {
+              "title": "Booked through the café’s link",
+              "value": "6"
+            }
           ]
         }
       }
     },
     {
       "type": "tiles",
-      "id": "tools",
+      "id": "loop",
       "ground": "paper",
-      "kicker": "Also in every plan",
-      "title": "The tools around the edges.",
+      "status": "built",
+      "kicker": "The loop",
+      "title": "Every night makes the next one easier to fill.",
       "align": "start",
       "columns": 4,
       "items": [
-        {"title": "Forms", "body": "Build a form, share the link, and see answers next to each guest.", "ground": "white", "link": {"label": "Forms", "to": {"route": "product_forms"}}},
-        {"title": "Links for promoters", "body": "A link for every promoter, venue and post, with its opens, bookings and check-ins.", "ground": "white", "link": {"label": "Bookings and payments", "to": {"route": "product_bookings", "anchor": "links"}}},
-        {"title": "Bring your list", "body": "Import guests from a CSV or Excel file. Nothing changes for them until the doors open.", "ground": "white", "link": {"label": "Guest records", "to": {"route": "product_guests"}}},
-        {"title": "Weddings and programmes", "body": "Guests, travel, rooms and run sheets for multi-day events.", "ground": "white", "link": {"label": "Weddings", "to": {"route": "weddings"}}}
+        {
+          "title": "Who came",
+          "body": "Goes into your records: every check-in and booking lands on the guest’s record.",
+          "ground": "white"
+        },
+        {
+          "title": "Your records",
+          "body": "Pick the audience: first-timers to bring back, regulars to thank, lapsed regulars to miss.",
+          "ground": "white"
+        },
+        {
+          "title": "Your audience",
+          "body": "Gets the next invitation, by follower update or a WhatsApp campaign from your own number.",
+          "ground": "white"
+        },
+        {
+          "title": "Their friends",
+          "body": "Arrive through their invite links, counted to the guest who sent them, so you know who to thank.",
+          "ground": "white"
+        }
+      ]
+    },
+    {
+      "type": "tiles",
+      "id": "try",
+      "ground": "white",
+      "status": "tryIt",
+      "statusNote": "Each tile opens its part’s try-it tool, a real command run in an unclaimed draft. Show it when the commands ship.",
+      "kicker": "Try it with what you have",
+      "title": "Bring something you already have. See it on {{brand.name}} in a minute.",
+      "lead": "Every part of {{brand.name}} has a way to try it with your own club, event or list. Nothing goes live until you claim it with your phone number.",
+      "align": "start",
+      "columns": 4,
+      "items": [
+        {
+          "title": "Paste your Instagram or Luma",
+          "body": "Your page: get your page with photos, links and upcoming events.",
+          "ground": "coralSoft",
+          "link": {
+            "label": "Build my page",
+            "to": {
+              "route": "product_your_page",
+              "anchor": "try"
+            },
+            "status": "tryIt"
+          }
+        },
+        {
+          "title": "Paste an event link",
+          "body": "Bookings and memberships: get a bookable page, access rules and a membership plan.",
+          "ground": "indigoSoft",
+          "link": {
+            "label": "Build my event page",
+            "to": {
+              "route": "product_bookings",
+              "anchor": "try"
+            },
+            "status": "tryIt"
+          }
+        },
+        {
+          "title": "List where you promote",
+          "body": "Messages and growth: get a tracked link and QR code for each, and your reminders.",
+          "ground": "yellowSoft",
+          "link": {
+            "label": "Make my links",
+            "to": {
+              "route": "product_messages",
+              "anchor": "try"
+            },
+            "status": "tryIt"
+          }
+        },
+        {
+          "title": "Pick your format",
+          "body": "The room: get groups and missions, then try a first hello with a friend.",
+          "ground": "magentaSoft",
+          "link": {
+            "label": "Plan my night",
+            "to": {
+              "route": "product_room",
+              "anchor": "try"
+            },
+            "status": "tryIt"
+          }
+        },
+        {
+          "title": "Upload tonight’s list",
+          "body": "Running the event: get a door list with QR check-in and a poster.",
+          "ground": "mintSoft",
+          "link": {
+            "label": "Get my door ready",
+            "to": {
+              "route": "product_event",
+              "anchor": "try"
+            },
+            "status": "tryIt"
+          }
+        },
+        {
+          "title": "Upload an old list",
+          "body": "Guest records: get a clean list, your regulars and who brings friends.",
+          "ground": "pinkSoft",
+          "link": {
+            "label": "See my regulars",
+            "to": {
+              "route": "product_guests",
+              "anchor": "try"
+            },
+            "status": "tryIt"
+          }
+        },
+        {
+          "title": "Enter your last event",
+          "body": "Reports and payouts: get a report, and {{brand.name}}’s fee next to what you paid.",
+          "ground": "skySoft",
+          "link": {
+            "label": "Build my report",
+            "to": {
+              "route": "product_reports",
+              "anchor": "try"
+            },
+            "status": "tryIt"
+          }
+        },
+        {
+          "title": "Paste a Google Form",
+          "body": "Forms: get the same form on {{brand.name}}, with every answer on a guest record.",
+          "ground": "paper",
+          "link": {
+            "label": "Bring my form",
+            "to": {
+              "route": "product_forms",
+              "anchor": "try"
+            },
+            "status": "tryIt"
+          }
+        }
       ]
     },
     {
       "type": "tiles",
       "id": "start-where-you-are",
       "ground": "white",
+      "status": "built",
       "kicker": "Start where you are",
       "title": "Hand {{brand.name}} as much of the evening as you want.",
-      "align": "center",
+      "align": "start",
       "columns": 3,
       "items": [
-        {"figure": "1", "title": "Keep your tools", "body": "Import your guest list and use {{brand.name}} for the door and the night. Nothing changes for guests until doors open."},
-        {"figure": "2", "title": "Take bookings on {{brand.name}}", "body": "Applications, payments and reminders, with one record for every guest."},
-        {"figure": "3", "title": "Get found on {{brand.name}}", "body": "Your events appear where people in your city look for something to do."}
+        {
+          "figure": "1",
+          "title": "Keep your tools",
+          "body": "Import your guest list and use {{brand.name}} for the door and the room. Nothing changes for guests until doors open."
+        },
+        {
+          "figure": "2",
+          "title": "Take bookings on {{brand.name}}",
+          "body": "Applications, payments, memberships and reminders, with one record for every guest."
+        },
+        {
+          "figure": "3",
+          "title": "Make it yours",
+          "body": "Put your page in your bio, invite your followers back, and grow from there."
+        }
       ]
     },
     {
       "type": "cta",
       "id": "start",
       "ground": "coral",
+      "status": "built",
       "kicker": "Free for 30 days",
       "title": "See it on your next event.",
       "lead": "Everything is included in the trial. Free events stay free after it.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
         {
-          "label": "Ask for a walkthrough",
-          "to": {"route": "host_walkthrough"},
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Book a 15-minute walkthrough",
+          "to": {
+            "route": "host_walkthrough"
+          },
           "emphasis": "secondary"
         }
       ],
-      "media": {"kind": "capture", "slot": "host-today"}
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
     }
   ]
 }

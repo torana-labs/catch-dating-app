@@ -4,44 +4,461 @@
   "route": "product_your_page",
   "meta": {
     "title": "Your page | {{brand.name}} for hosts",
-    "description": "A free organiser page that replaces the link in your bio: your next event, your links, everything coming up, reviews with your replies, and followers. Claim it with Instagram or Luma.",
-    "socialDescription": "A page that replaces the link in your bio. Make yours, or claim it if it’s already on {{brand.name}}.",
-    "noindex": false
+    "description": "A free organiser page for your bio: your next event, your links, everything coming up, reviews with your replies and followers, with the owner’s numbers. Claim it if it’s already listed.",
+    "socialDescription": "One page for everything you run. Make yours on {{brand.name}}, or claim it if it’s already listed.",
+    "noindex": true
   },
   "header": {
     "variant": "host",
     "breadcrumbs": {
-      "links": [{"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}}],
+      "links": [
+        {
+          "label": "How {{brand.name}} works",
+          "to": {
+            "route": "how_it_works"
+          }
+        }
+      ],
       "current": "Your page"
     }
   },
-  "footer": {"variant": "host"},
+  "footer": {
+    "variant": "host",
+    "columns": [
+      {
+        "title": "Product",
+        "links": [
+          {
+            "label": "How {{brand.name}} works",
+            "to": {
+              "route": "how_it_works"
+            }
+          },
+          {
+            "label": "Your page",
+            "to": {
+              "route": "product_your_page"
+            }
+          },
+          {
+            "label": "Bookings and memberships",
+            "to": {
+              "route": "product_bookings"
+            }
+          },
+          {
+            "label": "Messages and growth",
+            "to": {
+              "route": "product_messages"
+            }
+          },
+          {
+            "label": "The room",
+            "to": {
+              "route": "product_room"
+            }
+          },
+          {
+            "label": "Running the event",
+            "to": {
+              "route": "product_event"
+            }
+          },
+          {
+            "label": "Guest records",
+            "to": {
+              "route": "product_guests"
+            }
+          },
+          {
+            "label": "Reports and payouts",
+            "to": {
+              "route": "product_reports"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Hosts by format",
+        "links": [
+          {
+            "label": "Run and walk clubs",
+            "to": {
+              "route": "host_run_clubs"
+            }
+          },
+          {
+            "label": "Racket sports",
+            "to": {
+              "route": "host_racket_sports"
+            }
+          },
+          {
+            "label": "Supper clubs",
+            "to": {
+              "route": "host_supper_clubs"
+            }
+          },
+          {
+            "label": "Quiz and game nights",
+            "to": {
+              "route": "host_quiz_nights"
+            }
+          },
+          {
+            "label": "Studios",
+            "to": {
+              "route": "host_studios"
+            }
+          },
+          {
+            "label": "Venues",
+            "to": {
+              "route": "host_venues"
+            }
+          },
+          {
+            "label": "Communities",
+            "to": {
+              "route": "host_communities"
+            }
+          },
+          {
+            "label": "Mixers and pub crawls",
+            "to": {
+              "route": "host_nightlife"
+            }
+          },
+          {
+            "label": "Teams",
+            "to": {
+              "route": "host_teams"
+            }
+          },
+          {
+            "label": "Colleges and alumni",
+            "to": {
+              "route": "host_colleges"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Get started",
+        "links": [
+          {
+            "label": "Start free trial",
+            "to": {
+              "route": "host_start"
+            }
+          },
+          {
+            "label": "Pricing",
+            "to": {
+              "route": "pricing"
+            }
+          },
+          {
+            "label": "Your first event",
+            "to": {
+              "route": "host_first_event"
+            }
+          },
+          {
+            "label": "Switch to {{brand.name}}",
+            "to": {
+              "route": "host_switch"
+            }
+          },
+          {
+            "label": "Try a demo night",
+            "to": {
+              "route": "host_demo"
+            }
+          },
+          {
+            "label": "Programmes",
+            "to": {
+              "route": "programmes"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Resources",
+        "links": [
+          {
+            "label": "Forms",
+            "to": {
+              "route": "product_forms"
+            }
+          },
+          {
+            "label": "Book a walkthrough",
+            "to": {
+              "route": "host_walkthrough"
+            }
+          },
+          {
+            "label": "Help",
+            "to": {
+              "route": "help"
+            }
+          }
+        ]
+      },
+      {
+        "title": "{{brand.name}}",
+        "links": [
+          {
+            "label": "What’s on",
+            "to": {
+              "route": "visitor_discovery"
+            }
+          },
+          {
+            "label": "About",
+            "to": {
+              "route": "about"
+            }
+          },
+          {
+            "label": "Safety",
+            "to": {
+              "route": "safety"
+            }
+          },
+          {
+            "label": "Contact",
+            "to": {
+              "route": "contact"
+            }
+          },
+          {
+            "label": "Report or remove a listing",
+            "to": {
+              "route": "listing_request"
+            }
+          },
+          {
+            "label": "Terms",
+            "to": {
+              "route": "terms"
+            }
+          },
+          {
+            "label": "Privacy",
+            "to": {
+              "route": "privacy"
+            }
+          },
+          {
+            "label": "Refunds",
+            "to": {
+              "route": "refunds"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "sections": [
     {
       "type": "hero",
       "id": "top",
       "ground": "coral",
+      "status": "built",
       "kicker": "Product · your page",
-      "title": "A page that replaces the link in your bio.",
-      "lead": "Your next event, your links, everything coming up (including events you run elsewhere), reviews with your replies, and people who follow you for the next one.",
+      "title": "Your page. Your events. Your followers.",
+      "lead": "One page for everything you run: upcoming events, links and reviews. Put it in your bio, and every visitor can follow you for the next one.",
       "actions": [
-        {"label": "Make your page in {{brand.stores.hostAppName}}", "to": {"anchor": "start"}, "emphasis": "primary"},
-        {"label": "Claim your page", "to": {"anchor": "claim"}, "emphasis": "secondary"}
+        {
+          "label": "Make your page in {{brand.stores.hostAppName}}",
+          "to": {
+            "anchor": "start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Build it from your Instagram",
+          "to": {
+            "anchor": "try"
+          },
+          "emphasis": "secondary",
+          "status": "tryIt"
+        },
+        {
+          "label": "Claim your page",
+          "to": {
+            "anchor": "claim"
+          },
+          "emphasis": "secondary"
+        }
       ],
-      "note": "Free to set up · Made and edited in {{brand.stores.hostAppName}}",
+      "note": "Free to set up. Your page is made and edited in the {{brand.stores.hostAppName}} app.",
       "media": {
         "kind": "excerpt",
         "card": {
           "title": "Driftwood Bay Runners",
           "subtitle": "Run club · Bandra · 212 followers",
           "label": "Verified",
+          "cover": "/assets/marketing/catch-hero-event-1680.jpg",
           "rows": [
-            {"title": "Salt Air Social Run", "detail": "Next up · Sun 23 Nov · 6:30 AM", "tag": "Book"},
-            {"title": "WhatsApp community", "tag": "Link"},
-            {"title": "Strava club", "tag": "Link"},
-            {"title": "Bandra 10K", "detail": "On another site", "tag": "Links out"}
+            {
+              "title": "Salt Air Social Run",
+              "detail": "Next up · Sun 23 Nov · 6:30 AM",
+              "tag": "Book"
+            },
+            {
+              "title": "Route video · the sea face 5K",
+              "detail": "YouTube",
+              "tag": "Link"
+            },
+            {
+              "title": "WhatsApp community",
+              "tag": "Link"
+            },
+            {
+              "title": "Sandbar 10K",
+              "detail": "On another site",
+              "tag": "Links out"
+            }
           ],
-          "actions": ["Follow", "Share"]
+          "actions": [
+            "Follow",
+            "Share"
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "own-domain",
+      "ground": "ink",
+      "status": "new",
+      "statusNote": "Custom domains for organiser pages and an events embed are not built: they need domain verification, certificates, hosting and an owner settings screen. Show this when they ship.",
+      "kicker": "On your own website",
+      "title": "Put your page on your own domain.",
+      "lead": "Point events.yourclub.example at your page, or add your events to the website you already have. Same bookings, same reviews, your address in the browser bar.",
+      "ticks": [
+        "Your own domain or subdomain, with the security certificate handled for you",
+        "Or embed your events on any website with one line of code",
+        "Bookings and payments still run on {{brand.name}}, so nothing breaks",
+        "Your name up front. “Made with {{brand.name}}” stays small"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Your domain",
+          "subtitle": "events.driftwoodbayrunners.example",
+          "rows": [
+            {
+              "title": "Domain connected",
+              "detail": "Checked 2 minutes ago",
+              "tag": "Live"
+            },
+            {
+              "title": "Security certificate",
+              "detail": "Renews by itself",
+              "tag": "Issued"
+            },
+            {
+              "title": "Events embed",
+              "detail": "On driftwoodbayrunners.example/runs",
+              "tag": "Showing 4 events"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "pixel",
+      "ground": "white",
+      "status": "partly",
+      "statusNote": "Host Meta Pixel and GA4 settings exist but are switched off. The command-layer thread owns the technical checklist and the owner signs off the policy. Show this when they are on.",
+      "kicker": "Your pixel, your audiences",
+      "title": "Every visitor, back in your own ads.",
+      "lead": "Add your Meta Pixel and Google tag once. Visits, event views and bookings on your page report to your own ad accounts, so you can show ads to people who looked but didn’t book, and find more people like the ones who did.",
+      "ticks": [
+        "Meta Pixel and Google Analytics 4, in two fields",
+        "Page views, event views, booking starts and purchases, with the ticket value",
+        "Sent only for visitors who accept marketing cookies",
+        "Audiences you own, instead of paying to reach strangers every time"
+      ],
+      "body": "Why it matters: someone who has already visited your page costs far less to win back than someone who’s never heard of you.",
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Tracking · Driftwood Bay Runners",
+          "rows": [
+            {
+              "title": "Meta Pixel",
+              "detail": "ID ending 3456",
+              "tag": "Receiving events"
+            },
+            {
+              "title": "Google tag",
+              "detail": "G-•••• 8KX2",
+              "tag": "Receiving events"
+            },
+            {
+              "title": "Last purchase sent",
+              "detail": "Sunday Social Run · ₹400 · 7:12 AM",
+              "tag": "Both"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "for-owners",
+      "ground": "paper",
+      "status": "built",
+      "kicker": "For owners",
+      "title": "See what your page is doing.",
+      "lead": "Signed in as the owner, your page shows the last 30 days: visits, new followers, link clicks and taps on Book, and where the clicks came from.",
+      "ticks": [
+        "Visits, new followers, link clicks and taps on Book",
+        "Where clicks came from: Instagram, WhatsApp, a QR code and more",
+        "Every page carries “Made with {{brand.name}}”, so the next organiser can make one too"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Your page · last 30 days",
+          "stats": [
+            {
+              "value": "1,840",
+              "label": "Visits"
+            },
+            {
+              "value": "64",
+              "label": "New followers"
+            },
+            {
+              "value": "212",
+              "label": "Taps on Book"
+            }
+          ],
+          "bars": [
+            {
+              "label": "Instagram",
+              "value": "820",
+              "share": 100
+            },
+            {
+              "label": "WhatsApp",
+              "value": "310",
+              "share": 38
+            },
+            {
+              "label": "QR code",
+              "value": "170",
+              "share": 21
+            }
+          ]
         }
       }
     },
@@ -49,73 +466,106 @@
       "type": "tiles",
       "id": "whats-on-it",
       "ground": "white",
+      "status": "built",
       "kicker": "What’s on your page",
       "title": "Everything someone from Instagram is looking for.",
       "columns": 3,
       "items": [
-        {"title": "Next up", "body": "Your next event straight under your name, with a Book button."},
-        {"title": "Your links", "body": "WhatsApp community, Strava, merch, perks: the links your bio used to hold."},
-        {"title": "Everything coming up", "body": "Events on {{brand.name}}, and events you run on other sites as tiles that link out."},
-        {"title": "Reviews, with replies", "body": "Reviews from people who booked are marked “Booked on {{brand.name}}”. Reply in public to show you care."},
-        {"title": "Followers", "body": "People follow you with their phone number, and you can send them an update about your next event."},
-        {"title": "About and team", "body": "Who runs it, when and where, and who it suits, with a verified mark once you’ve claimed it."}
-      ]
-    },
-    {
-      "type": "split",
-      "id": "reviews",
-      "ground": "paper",
-      "kicker": "Reviews",
-      "title": "Let people who came do the selling.",
-      "lead": "Reviews from booked guests carry a badge, and the rating counts only those. Your replies sit under them.",
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Reviews",
-          "subtitle": "Driftwood Bay Runners",
-          "rows": [
-            {"title": "A review from a guest who booked", "detail": "Sunday Social Run", "tag": "Booked on {{brand.name}}"},
-            {"title": "Your reply", "detail": "Shown under the review"}
-          ]
+        {
+          "title": "Next up",
+          "body": "Your next event straight under your name, with a Book button."
+        },
+        {
+          "title": "Your links",
+          "body": "WhatsApp community, Strava, merch, videos: the links your bio used to hold."
+        },
+        {
+          "title": "Everything coming up",
+          "body": "Events on {{brand.name}}, and events you run on other sites as tiles that link out."
+        },
+        {
+          "title": "Reviews, with replies",
+          "body": "From people who booked, marked “Booked on {{brand.name}}”, with your public replies."
+        },
+        {
+          "title": "Followers",
+          "body": "People follow you with their phone number, and you can send them an update about your next event."
+        },
+        {
+          "title": "About and team",
+          "body": "Who runs it, when and where, and who it suits, with a verified mark once you’ve claimed it."
         }
-      }
+      ]
     },
     {
       "type": "tiles",
       "id": "claim",
-      "ground": "white",
+      "ground": "paper",
+      "status": "built",
       "kicker": "Claim your page",
       "title": "Your page may already be here.",
-      "lead": "{{brand.name}} builds organiser pages from public sources so guests can find them. If yours is listed, claim it and it’s yours to edit.",
+      "lead": "{{brand.name}} lists organisers from public sources so guests can find them. If yours is listed, claim it and it’s yours to edit.",
       "align": "start",
       "columns": 4,
       "items": [
-        {"figure": "1", "title": "Find your page and tap Claim."},
-        {"figure": "2", "title": "Sign in with your phone number."},
-        {"figure": "3", "title": "Prove it’s yours with a code on your Instagram or your Luma calendar."},
-        {"figure": "4", "title": "Finish in {{brand.stores.hostAppName}}: add events and links. Events go live when you publish them."}
+        {
+          "figure": "1",
+          "title": "Find your page and tap Claim."
+        },
+        {
+          "figure": "2",
+          "title": "Sign in with your phone number."
+        },
+        {
+          "figure": "3",
+          "title": "Prove it’s yours with a code on your Instagram or your Luma calendar."
+        },
+        {
+          "figure": "4",
+          "title": "Finish in {{brand.stores.hostAppName}}: add events and links. Events go live when you publish them."
+        }
       ],
       "actions": [
-        {"label": "Find your page", "to": {"route": "claim"}, "emphasis": "primary"}
+        {
+          "label": "Find your page",
+          "to": {
+            "route": "claim"
+          },
+          "emphasis": "primary"
+        }
       ]
     },
     {
       "type": "split",
-      "id": "for-owners",
-      "ground": "ink",
-      "kicker": "For owners",
-      "title": "See what your page is doing.",
-      "lead": "Signed in as the owner, your page shows the last 30 days: visits, new followers, link clicks and taps on Book.",
-      "body": "Every page carries “Made with {{brand.name}}”, so the next organiser can make one too.",
+      "id": "try",
+      "ground": "paper",
+      "status": "tryIt",
+      "statusNote": "Command: import an organiser from a link, in an unclaimed draft. Show this when the command ships.",
+      "kicker": "Try it with your page",
+      "title": "See your page on {{brand.name}} before you sign up.",
+      "lead": "Paste your Instagram handle, Luma calendar, Linktree or website. {{brand.name}} builds your page with your photos, bio, links and upcoming events in about a minute. Like it? Claim it with your phone number and it’s yours to edit in {{brand.stores.hostAppName}}.",
+      "ticks": [
+        "Works from Instagram, Luma, Linktree or your own website",
+        "Your upcoming events come in as drafts, ready to open for booking",
+        "Already listed on {{brand.name}}? We take you straight to claiming it",
+        "Nothing goes live until you claim it"
+      ],
       "media": {
         "kind": "excerpt",
         "card": {
-          "title": "Your page · last 30 days",
-          "stats": [
-            {"value": "1,840", "label": "Visits"},
-            {"value": "64", "label": "New followers"},
-            {"value": "212", "label": "Taps on Book"}
-          ]
+          "label": "Try it",
+          "title": "Build your page from a link",
+          "fields": [
+            {
+              "label": "Your Instagram, Luma or website",
+              "placeholder": "instagram.com/driftwoodbayrunners"
+            }
+          ],
+          "actions": [
+            "Build my page",
+            "Send it to my WhatsApp"
+          ],
+          "note": "Private until you claim it. Takes about a minute."
         }
       }
     },
@@ -123,27 +573,93 @@
       "type": "faq",
       "id": "questions",
       "ground": "white",
+      "status": "built",
       "kicker": "Questions",
       "title": "About your page.",
       "items": [
-        {"question": "How much does a page cost?", "answer": "Nothing. Pages are free; {{brand.name}} only takes a fee on paid tickets sold through it."},
-        {"question": "Why is my club already listed?", "answer": "{{brand.name}} builds organiser pages from public sources so guests can find them. Claim the page and it’s yours to edit, or tell us if something is wrong."},
-        {"question": "How do I prove the page is mine?", "answer": "Sign in with your phone number, then add a code we give you to your Instagram or your Luma calendar. When we find it, the page is yours."},
-        {"question": "When do my events appear?", "answer": "When you publish them. Nothing you set up in {{brand.stores.hostAppName}} goes live until you do."},
-        {"question": "Can I show events I run on other sites?", "answer": "Yes. They appear on your page as tiles that link out to where people book them."},
-        {"question": "Can I reply to reviews?", "answer": "Yes, once the page is yours. Your reply shows under the review."},
-        {"question": "Where do I edit my page?", "answer": "In the {{brand.stores.hostAppName}} app, on iPhone, Android or iPad."}
+        {
+          "question": "How much does a page cost?",
+          "answer": "Nothing. Pages are free; {{brand.name}} only takes a fee on paid tickets and memberships sold through it."
+        },
+        {
+          "question": "Why is my club already listed?",
+          "answer": "{{brand.name}} lists organisers from public sources so guests can find them. Claim the page and it’s yours to edit, or ask us to remove it."
+        },
+        {
+          "question": "How do I prove the page is mine?",
+          "answer": "Sign in with your phone number, then add a code we give you to your Instagram or your Luma calendar. When we find it, the page is yours."
+        },
+        {
+          "question": "When do my events appear?",
+          "answer": "When you publish them. Nothing you set up in {{brand.stores.hostAppName}} goes live until you do."
+        },
+        {
+          "question": "Can I show events I run on other sites?",
+          "answer": "Yes. They appear on your page as tiles that link out to where people book them."
+        },
+        {
+          "question": "Where do I edit my page?",
+          "answer": "In the {{brand.stores.hostAppName}} app, on iPhone, Android or iPad."
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions-coming",
+      "ground": "white",
+      "status": "new",
+      "statusNote": "Answers about custom domains and host pixels, which are not live yet. Show them with those sections.",
+      "kicker": "Questions",
+      "title": "About domains and pixels.",
+      "items": [
+        {
+          "question": "Can I use my own domain?",
+          "answer": "Yes. Connect a domain or subdomain you own, like events.yourclub.example, and {{brand.name}} handles the certificate. Or embed your events on the website you already have."
+        },
+        {
+          "question": "Which tracking tools work?",
+          "answer": "Meta Pixel and Google Analytics 4. Add the IDs in {{brand.stores.hostAppName}} and your page sends page views, event views, booking starts and purchases to your own accounts."
+        },
+        {
+          "question": "What do my pixels learn about guests?",
+          "answer": "That someone visited, looked at an event or booked, with the ticket value, and only if they accepted marketing cookies. Never anything from profiles, applications or private answers."
+        }
       ]
     },
     {
       "type": "cta",
       "id": "start",
-      "ground": "yellow",
+      "ground": "coral",
+      "status": "built",
       "kicker": "Free to set up",
       "title": "Make your page tonight.",
       "lead": "Download {{brand.stores.hostAppName}}, set up your page and first event, and put the link in your bio.",
       "storeBadges": "host",
-      "media": {"kind": "capture", "slot": "host-today"}
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
+    },
+    {
+      "type": "cta",
+      "id": "start-try",
+      "ground": "coral",
+      "status": "tryIt",
+      "statusNote": "The closing band of the import-an-organiser tool. Show it, in place of the band above, when the command ships.",
+      "kicker": "Free to set up",
+      "title": "See your page in a minute.",
+      "lead": "Paste a link to your Instagram, Luma or website. We’ll build your page and you can claim it with your phone number.",
+      "leadForm": {
+        "id": "final_page",
+        "requestKind": "tool",
+        "input": "url",
+        "label": "Your Instagram, Luma or website link",
+        "submitLabel": "Build my page"
+      },
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
     }
   ]
 }

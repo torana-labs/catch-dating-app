@@ -4,29 +4,295 @@
   "route": "product_forms",
   "meta": {
     "title": "Forms | {{brand.name}} for hosts",
-    "description": "Applications, registrations, signed waivers, guest details, feedback and surveys, built from a template. Conditional questions, file uploads and optional fees paid into your own Razorpay.",
+    "description": "Applications, registrations, signed waivers, guest details, feedback and surveys, built from a template. Every answer on the right person’s record, and optional fees paid into your own Razorpay.",
     "socialDescription": "Ask anything. Do something with the answer. Forms on {{brand.name}}.",
-    "noindex": false
+    "noindex": true
   },
   "header": {
     "variant": "host",
     "breadcrumbs": {
-      "links": [{"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}}],
+      "links": [
+        {
+          "label": "How {{brand.name}} works",
+          "to": {
+            "route": "how_it_works"
+          }
+        }
+      ],
       "current": "Forms"
     }
   },
-  "footer": {"variant": "host"},
+  "footer": {
+    "variant": "host",
+    "columns": [
+      {
+        "title": "Product",
+        "links": [
+          {
+            "label": "How {{brand.name}} works",
+            "to": {
+              "route": "how_it_works"
+            }
+          },
+          {
+            "label": "Your page",
+            "to": {
+              "route": "product_your_page"
+            }
+          },
+          {
+            "label": "Bookings and memberships",
+            "to": {
+              "route": "product_bookings"
+            }
+          },
+          {
+            "label": "Messages and growth",
+            "to": {
+              "route": "product_messages"
+            }
+          },
+          {
+            "label": "The room",
+            "to": {
+              "route": "product_room"
+            }
+          },
+          {
+            "label": "Running the event",
+            "to": {
+              "route": "product_event"
+            }
+          },
+          {
+            "label": "Guest records",
+            "to": {
+              "route": "product_guests"
+            }
+          },
+          {
+            "label": "Reports and payouts",
+            "to": {
+              "route": "product_reports"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Hosts by format",
+        "links": [
+          {
+            "label": "Run and walk clubs",
+            "to": {
+              "route": "host_run_clubs"
+            }
+          },
+          {
+            "label": "Racket sports",
+            "to": {
+              "route": "host_racket_sports"
+            }
+          },
+          {
+            "label": "Supper clubs",
+            "to": {
+              "route": "host_supper_clubs"
+            }
+          },
+          {
+            "label": "Quiz and game nights",
+            "to": {
+              "route": "host_quiz_nights"
+            }
+          },
+          {
+            "label": "Studios",
+            "to": {
+              "route": "host_studios"
+            }
+          },
+          {
+            "label": "Venues",
+            "to": {
+              "route": "host_venues"
+            }
+          },
+          {
+            "label": "Communities",
+            "to": {
+              "route": "host_communities"
+            }
+          },
+          {
+            "label": "Mixers and pub crawls",
+            "to": {
+              "route": "host_nightlife"
+            }
+          },
+          {
+            "label": "Teams",
+            "to": {
+              "route": "host_teams"
+            }
+          },
+          {
+            "label": "Colleges and alumni",
+            "to": {
+              "route": "host_colleges"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Get started",
+        "links": [
+          {
+            "label": "Start free trial",
+            "to": {
+              "route": "host_start"
+            }
+          },
+          {
+            "label": "Pricing",
+            "to": {
+              "route": "pricing"
+            }
+          },
+          {
+            "label": "Your first event",
+            "to": {
+              "route": "host_first_event"
+            }
+          },
+          {
+            "label": "Switch to {{brand.name}}",
+            "to": {
+              "route": "host_switch"
+            }
+          },
+          {
+            "label": "Try a demo night",
+            "to": {
+              "route": "host_demo"
+            }
+          },
+          {
+            "label": "Programmes",
+            "to": {
+              "route": "programmes"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Resources",
+        "links": [
+          {
+            "label": "Forms",
+            "to": {
+              "route": "product_forms"
+            }
+          },
+          {
+            "label": "Book a walkthrough",
+            "to": {
+              "route": "host_walkthrough"
+            }
+          },
+          {
+            "label": "Help",
+            "to": {
+              "route": "help"
+            }
+          }
+        ]
+      },
+      {
+        "title": "{{brand.name}}",
+        "links": [
+          {
+            "label": "What’s on",
+            "to": {
+              "route": "visitor_discovery"
+            }
+          },
+          {
+            "label": "About",
+            "to": {
+              "route": "about"
+            }
+          },
+          {
+            "label": "Safety",
+            "to": {
+              "route": "safety"
+            }
+          },
+          {
+            "label": "Contact",
+            "to": {
+              "route": "contact"
+            }
+          },
+          {
+            "label": "Report or remove a listing",
+            "to": {
+              "route": "listing_request"
+            }
+          },
+          {
+            "label": "Terms",
+            "to": {
+              "route": "terms"
+            }
+          },
+          {
+            "label": "Privacy",
+            "to": {
+              "route": "privacy"
+            }
+          },
+          {
+            "label": "Refunds",
+            "to": {
+              "route": "refunds"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "sections": [
     {
       "type": "hero",
       "id": "top",
-      "ground": "indigo",
+      "ground": "paper",
       "kicker": "Product · forms",
       "title": "Ask anything. Do something with the answer.",
       "lead": "Applications, registrations, waivers, guest details and feedback, built from a template in minutes. People fill them in on their phone with no app. Every answer lands on the right person’s record, and an approved applicant can be offered a place at your event.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {"label": "See bookings and payments", "to": {"route": "product_bookings"}, "emphasis": "secondary"}
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Bring your Google Form",
+          "to": {
+            "anchor": "try"
+          },
+          "emphasis": "secondary",
+          "status": "tryIt"
+        },
+        {
+          "label": "See bookings and memberships",
+          "to": {
+            "route": "product_bookings"
+          },
+          "emphasis": "secondary"
+        }
       ],
       "media": {
         "kind": "excerpt",
@@ -34,13 +300,26 @@
           "title": "Application · Long Table Supper",
           "subtitle": "Answered on the phone, no app",
           "rows": [
-            {"title": "New to Mumbai, want to meet people who like food.", "detail": "What brings you to a supper club?"},
-            {"title": "Vegetarian", "detail": "What do you eat? Everything, vegetarian, vegan or Jain"},
-            {"title": "Anything else the kitchen should know?", "detail": "Shown because they chose vegetarian"},
-            {"title": "₹200, refunded if you’re not chosen", "detail": "Application fee"}
+            {
+              "title": "New to Mumbai, want to meet people who like food.",
+              "detail": "What brings you to a supper club?"
+            },
+            {
+              "title": "Vegetarian",
+              "detail": "What do you eat? Everything, vegetarian, vegan or Jain"
+            },
+            {
+              "title": "Anything else the kitchen should know?",
+              "detail": "Shown because they chose vegetarian"
+            },
+            {
+              "title": "₹200, refunded if you’re not chosen",
+              "detail": "Application fee"
+            }
           ]
         }
-      }
+      },
+      "status": "built"
     },
     {
       "type": "tiles",
@@ -50,13 +329,81 @@
       "title": "Each one knows what happens next.",
       "columns": 3,
       "items": [
-        {"title": "Applications", "body": "Ask who they are and why they want to come, then approve each one.", "then": "Then: offer approved people a place", "ground": "pink"},
-        {"title": "Registrations", "body": "A place request with the questions your event needs.", "then": "Then: add them to the event’s guest list", "ground": "mint"},
-        {"title": "Guest details", "body": "Dietary needs, pace, level, team name, accessibility.", "then": "Then: it’s on their record for the night", "ground": "yellow"},
-        {"title": "Waivers", "body": "Terms they read and sign before a run, a climb or a session.", "then": "Then: a signed receipt for that event", "ground": "coral"},
-        {"title": "Feedback", "body": "Ratings and a private note after the event.", "then": "Then: it rolls into your event feedback", "ground": "indigo"},
-        {"title": "Surveys", "body": "What time, what format, what next. Ask your community.", "then": "Then: answers and charts, ready to export", "ground": "magenta"}
-      ]
+        {
+          "title": "Applications",
+          "body": "Ask who they are and why they want to come, then approve each one.",
+          "then": "Then: offer approved people a place",
+          "ground": "indigoSoft",
+          "link": {
+            "label": "Bookings and memberships",
+            "to": {
+              "route": "product_bookings"
+            }
+          }
+        },
+        {
+          "title": "Registrations",
+          "body": "A place request with the questions your event needs.",
+          "then": "Then: add them to the event’s guest list",
+          "ground": "indigoSoft",
+          "link": {
+            "label": "Bookings and memberships",
+            "to": {
+              "route": "product_bookings"
+            }
+          }
+        },
+        {
+          "title": "Guest details",
+          "body": "Dietary needs, pace, level, team name, accessibility.",
+          "then": "Then: it’s on their record for the night",
+          "ground": "mintSoft",
+          "link": {
+            "label": "Running the event",
+            "to": {
+              "route": "product_event"
+            }
+          }
+        },
+        {
+          "title": "Waivers",
+          "body": "Terms they read and sign before a run, a climb or a session.",
+          "then": "Then: a signed receipt for that event",
+          "ground": "mintSoft",
+          "link": {
+            "label": "Running the event",
+            "to": {
+              "route": "product_event"
+            }
+          }
+        },
+        {
+          "title": "Feedback",
+          "body": "Ratings and a private note after the event.",
+          "then": "Then: it rolls into your event feedback",
+          "ground": "skySoft",
+          "link": {
+            "label": "Reports and payouts",
+            "to": {
+              "route": "product_reports"
+            }
+          }
+        },
+        {
+          "title": "Surveys",
+          "body": "What time, what format, what next. Ask your community.",
+          "then": "Then: answers and charts, ready to export",
+          "ground": "pinkSoft",
+          "link": {
+            "label": "Guest records",
+            "to": {
+              "route": "product_guests"
+            }
+          }
+        }
+      ],
+      "status": "built",
+      "lead": "Each kind of form belongs to a part of {{brand.name}}, and its answers go where that part needs them."
     },
     {
       "type": "tiles",
@@ -68,40 +415,53 @@
       "align": "start",
       "columns": 3,
       "items": [
-        {"title": "Event application", "ground": "ink", "body": "Who, why, when they’re free"},
-        {"title": "Event registration", "ground": "ink", "body": "Contact and ticket questions"},
-        {"title": "Dinner guest details", "ground": "ink", "body": "Diet, seating, access"},
-        {"title": "Run or walk", "ground": "ink", "body": "Pace, distance, route needs"},
-        {"title": "Racket session", "ground": "ink", "body": "Level, side, pairing"},
-        {"title": "Quiz night", "ground": "ink", "body": "Team name, table"},
-        {"title": "Event waiver", "ground": "ink", "body": "Terms, acknowledgement, signature"},
-        {"title": "Post-event feedback", "ground": "ink", "body": "Rating and a private note"},
-        {"title": "Blank form", "ground": "ink", "body": "Start from nothing"}
-      ]
-    },
-    {
-      "type": "split",
-      "id": "questions-that-adapt",
-      "ground": "paper",
-      "kicker": "Questions that fit the answer",
-      "title": "Ask only what matters, and collect what you need.",
-      "lead": "Show a question only when an earlier answer calls for it, ask for a file when you need one, and collect a signature on a waiver.",
-      "ticks": [
-        "Conditional questions, shown only when an earlier answer calls for them",
-        "File uploads, such as a photo or a certificate",
-        "Signed waivers, kept as a receipt for that event"
-      ],
-      "media": {
-        "kind": "excerpt",
-        "card": {
-          "title": "Waiver · Sunrise Trek",
-          "fields": [
-            {"label": "I have read the terms", "placeholder": "Tick to agree"},
-            {"label": "Medical certificate", "placeholder": "Upload a file"},
-            {"label": "Signature", "placeholder": "Sign here"}
-          ]
+        {
+          "title": "Event application",
+          "ground": "ink",
+          "body": "Who, why, when they’re free"
+        },
+        {
+          "title": "Event registration",
+          "ground": "ink",
+          "body": "Contact and ticket questions"
+        },
+        {
+          "title": "Dinner guest details",
+          "ground": "ink",
+          "body": "Diet, seating, access"
+        },
+        {
+          "title": "Run or walk",
+          "ground": "ink",
+          "body": "Pace, distance, route needs"
+        },
+        {
+          "title": "Racket session",
+          "ground": "ink",
+          "body": "Level, side, pairing"
+        },
+        {
+          "title": "Quiz night",
+          "ground": "ink",
+          "body": "Team name, table"
+        },
+        {
+          "title": "Event waiver",
+          "ground": "ink",
+          "body": "Terms, acknowledgement, signature"
+        },
+        {
+          "title": "Post-event feedback",
+          "ground": "ink",
+          "body": "Rating and a private note"
+        },
+        {
+          "title": "Blank form",
+          "ground": "ink",
+          "body": "Start from nothing"
         }
-      }
+      ],
+      "status": "built"
     },
     {
       "type": "split",
@@ -121,13 +481,30 @@
         "card": {
           "title": "Responses",
           "rows": [
-            {"title": "Ira Desai", "detail": "Application · 2 hours ago · “New to Mumbai…”", "tag": "In review"},
-            {"title": "Kabir Shah", "detail": "Application · yesterday", "tag": "Accepted · offered a place"},
-            {"title": "Tara Nair", "detail": "Application · yesterday", "tag": "Waitlisted"},
-            {"title": "Dev Malhotra", "detail": "Waiver · signed 9:12 AM", "tag": "Signed"}
+            {
+              "title": "Ira Desai",
+              "detail": "Application · 2 hours ago · “New to Mumbai…”",
+              "tag": "In review"
+            },
+            {
+              "title": "Kabir Shah",
+              "detail": "Application · yesterday",
+              "tag": "Accepted · offered a place"
+            },
+            {
+              "title": "Tara Nair",
+              "detail": "Application · yesterday",
+              "tag": "Waitlisted"
+            },
+            {
+              "title": "Dev Malhotra",
+              "detail": "Waiver · signed 9:12 AM",
+              "tag": "Signed"
+            }
           ]
         }
-      }
+      },
+      "status": "built"
     },
     {
       "type": "checklist",
@@ -137,27 +514,122 @@
       "title": "Charge to apply, if you want to.",
       "lead": "Add a fee to a form, separate from the ticket. It’s paid by UPI or card into your own Razorpay account.",
       "items": [
-        {"title": "Separate from the ticket", "body": "A fee to apply, a ticket to attend."},
-        {"title": "Refund policy shown first", "body": "Before anyone pays."},
-        {"title": "Paid into your own Razorpay", "body": "Counts toward the same 5% fee and its monthly cap."},
-        {"title": "Its own checkout", "body": "A governed payment step, never a question in the form."}
-      ]
+        {
+          "title": "Separate from the ticket",
+          "body": "A fee to apply, a ticket to attend."
+        },
+        {
+          "title": "Refund policy shown first",
+          "body": "Before anyone pays."
+        },
+        {
+          "title": "Paid into your own Razorpay",
+          "body": "Counts toward the same 5% fee and its monthly cap."
+        },
+        {
+          "title": "Its own checkout",
+          "body": "A governed payment step, never a question in the form."
+        }
+      ],
+      "status": "built"
+    },
+    {
+      "type": "split",
+      "id": "try",
+      "ground": "paper",
+      "status": "tryIt",
+      "statusNote": "Command: import a form from a link (Google Form, Typeform), optionally with its responses sheet. Show this when the command ships.",
+      "kicker": "Try it with your form",
+      "title": "Bring your Google Form. Keep every question.",
+      "lead": "Paste a link to a Google Form or Typeform. {{brand.name}} rebuilds it as a {{brand.name}} form, with the same questions, the same choices and the questions that only show after certain answers, ready to share. Add the responses sheet and past answers become guest records too.",
+      "ticks": [
+        "Google Forms and Typeform, from the link you already share",
+        "Questions, choices and conditional questions carried over",
+        "Past responses from the sheet land on guest records",
+        "Publish it when you claim it, and keep your old link running until then"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "label": "Try it",
+          "title": "Bring a form from a link",
+          "fields": [
+            {
+              "label": "Link to a Google Form or Typeform",
+              "placeholder": "forms.gle/…"
+            },
+            {
+              "label": "Responses sheet (optional)",
+              "placeholder": "docs.google.com/spreadsheets/…"
+            }
+          ],
+          "actions": [
+            "Bring my form",
+            "Send it to my WhatsApp"
+          ],
+          "note": "Questions alone need no sign-in. Responses with names need your phone number first."
+        }
+      }
     },
     {
       "type": "faq",
-      "id": "faq",
+      "id": "questions",
       "ground": "white",
       "kicker": "Questions",
       "title": "About forms.",
       "items": [
-        {"question": "Do people need an app to fill in a form?", "answer": "No. Forms open in the phone’s browser, from a link, a QR code or an embed on your site."},
-        {"question": "Can I use a form without a {{brand.name}} event?", "answer": "Yes. A survey or an application works on its own. You can offer people a place at an event later."},
-        {"question": "Can questions depend on earlier answers?", "answer": "Yes. Show a question only when an earlier answer calls for it."},
-        {"question": "Can people upload a file?", "answer": "Yes. Add an upload question, and the file is kept with their answers."},
-        {"question": "Can I collect a signature?", "answer": "Yes, with a waiver form: the terms, the acknowledgement and a signature, kept as a receipt for that event."},
-        {"question": "Can I bring in my Google Forms applications?", "answer": "Yes. Export the answers as a CSV or Excel file and import them, matching your columns to the questions. Import brings in answers; new forms are built in {{brand.name}}."},
-        {"question": "Where do form fees go?", "answer": "Into your own Razorpay account, by UPI or card."},
-        {"question": "Does filling in a form sign people up for marketing?", "answer": "No. Hearing from you later is a separate yes, which you can ask for on the form."}
+        {
+          "question": "Do people need an app to fill in a form?",
+          "answer": "No. Forms open in the phone’s browser, from a link, a QR code or an embed on your site."
+        },
+        {
+          "question": "Can I use a form without a {{brand.name}} event?",
+          "answer": "Yes. A survey or an application works on its own. You can offer people a place at an event later."
+        },
+        {
+          "question": "Can questions depend on earlier answers?",
+          "answer": "Yes. Show a question only when an earlier answer calls for it."
+        },
+        {
+          "question": "Can people upload a file?",
+          "answer": "Yes. Add an upload question, and the file is kept with their answers."
+        },
+        {
+          "question": "Can I collect a signature?",
+          "answer": "Yes, with a waiver form: the terms, the acknowledgement and a signature, kept as a receipt for that event."
+        },
+        {
+          "question": "Can I bring in my Google Forms applications?",
+          "answer": "Yes. Export the answers as a CSV or Excel file and import them, matching your columns to the questions. Import brings in answers; new forms are built in {{brand.name}}."
+        },
+        {
+          "question": "Where do form fees go?",
+          "answer": "Into your own Razorpay account, by UPI or card."
+        },
+        {
+          "question": "Does filling in a form sign people up for marketing?",
+          "answer": "No. Hearing from you later is a separate yes, which you can ask for on the form."
+        }
+      ],
+      "status": "built"
+    },
+    {
+      "type": "faq",
+      "id": "questions-coming",
+      "ground": "white",
+      "status": "new",
+      "statusNote": "Answers about importing a form from its link, which is not built. Show them with the try-it band.",
+      "kicker": "Questions",
+      "title": "About bringing a form over.",
+      "items": [
+        {
+          "question": "Can I bring my Google Form over?",
+          "answer": "Yes. Paste its link and {{brand.name}} rebuilds it with the same questions and choices. Add the responses sheet to bring past answers in as guest records."
+        },
+        {
+          "question": "What about Typeform?",
+          "answer": "Typeform works the same way: paste the link you share with people."
+        }
       ]
     },
     {
@@ -168,10 +640,47 @@
       "title": "Put your next application on {{brand.name}}.",
       "lead": "Start from a template and publish it tonight.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}, "emphasis": "secondary"}
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "How {{brand.name}} works",
+          "to": {
+            "route": "how_it_works"
+          },
+          "emphasis": "secondary"
+        }
       ],
-      "media": {"kind": "capture", "slot": "host-today"}
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      },
+      "status": "built"
+    },
+    {
+      "type": "cta",
+      "id": "start-try",
+      "ground": "indigo",
+      "status": "tryIt",
+      "statusNote": "The closing band of the import-a-form tool. Show it, in place of the band above, when the command ships.",
+      "kicker": "Free for 30 days · founding hosts get 90",
+      "title": "Bring your form over in a minute.",
+      "lead": "Paste a link to a Google Form or Typeform. We’ll rebuild it on {{brand.name}}, ready to share.",
+      "leadForm": {
+        "id": "final_form",
+        "requestKind": "tool",
+        "input": "url",
+        "label": "Link to a Google Form or Typeform",
+        "submitLabel": "Bring my form"
+      },
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
     }
   ]
 }
