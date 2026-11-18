@@ -88,7 +88,6 @@
     "unlisted functions/src/payments/formPayments/formPaymentTriggers.ts express",
     "unlisted functions/src/salesAssistant/gateway.test.ts express",
     "unlisted functions/src/salesAssistant/gateway.ts express",
-    "unlisted functions/src/waitlist/joinWaitlist.ts express",
-    "unlisted tool/demo/rsvp_escape/vite.config.mjs vite"
+    "unlisted functions/src/waitlist/joinWaitlist.ts express"
   ]
 }

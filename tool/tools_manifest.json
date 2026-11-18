@@ -2799,76 +2799,67 @@
       "category": "demo",
       "path": "tool/demo/rsvp_escape/build_fixture.cjs",
       "safety": "local-writes-build-artifacts",
-      "status": "internal",
+      "status": "retired",
       "description": "Internal synthetic RSVP fixture builder dispatched and checked by the active demo:rsvp-preview owner.",
-      "checks": [
-        "node --check tool/demo/rsvp_escape/build_fixture.cjs"
-      ]
+      "retiredOn": "2026-11-18",
+      "reason": "The owner retired the RSVP proof of concept on 18 Nov 2026. It was a local demo with synthetic data, touched no live system, and nothing outside its own README ran it.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "demo:rsvp-host-ui",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/main.dart",
-      "command": "flutter build web --target=tool/demo/rsvp_escape/main.dart --output=build/rsvp-demo-web",
       "safety": "local-writes-build-artifacts",
-      "status": "internal",
+      "status": "retired",
       "description": "Renders production Host widgets with localhost synthetic repository adapters.",
-      "checks": [
-        "dart format --output=none --set-exit-if-changed tool/demo/rsvp_escape/main.dart"
-      ]
+      "retiredOn": "2026-11-18",
+      "reason": "The owner retired the RSVP proof of concept on 18 Nov 2026. It was a local demo with synthetic data, touched no live system, and nothing outside its own README ran it.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "demo:rsvp-import-api",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/import_server.cjs",
-      "command": "node tool/demo/rsvp_escape/import_server.cjs --verify",
       "safety": "local-writes-build-artifacts",
-      "status": "internal",
+      "status": "retired",
       "description": "Runs normal roster import and CRM projection against an isolated synthetic store; never initializes Firebase Admin.",
-      "checks": [
-        "node --check tool/demo/rsvp_escape/import_server.cjs"
-      ]
+      "retiredOn": "2026-11-18",
+      "reason": "The owner retired the RSVP proof of concept on 18 Nov 2026. It was a local demo with synthetic data, touched no live system, and nothing outside its own README ran it.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "demo:rsvp-import-ui",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/import_main.dart",
-      "command": "flutter build web --target=tool/demo/rsvp_escape/import_main.dart --output=build/rsvp-import-web",
       "safety": "local-writes-build-artifacts",
-      "status": "internal",
+      "status": "retired",
       "description": "Renders the production spreadsheet parser and mapping sheet for a local synthetic XLSX fixture.",
-      "checks": [
-        "dart format --output=none --set-exit-if-changed tool/demo/rsvp_escape/import_main.dart"
-      ]
+      "retiredOn": "2026-11-18",
+      "reason": "The owner retired the RSVP proof of concept on 18 Nov 2026. It was a local demo with synthetic data, touched no live system, and nothing outside its own README ran it.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "demo:rsvp-preview",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/form_definition.mjs",
-      "command": "node tool/demo/rsvp_escape/build_fixture.cjs",
       "safety": "local-writes-build-artifacts",
-      "status": "active",
-      "role": "generator",
+      "status": "retired",
       "description": "Builds an isolated synthetic RSVP form and review fixture; does not initialize Firebase or send messages.",
-      "impactPaths": [
-        "tool/demo/rsvp_escape/**"
-      ],
-      "checks": [
-        "node --check tool/demo/rsvp_escape/build_fixture.cjs",
-        "node --test tool/demo/rsvp_escape/form_definition.test.mjs"
-      ]
+      "role": "generator",
+      "retiredOn": "2026-11-18",
+      "reason": "The owner retired the RSVP proof of concept on 18 Nov 2026. It was a local demo with synthetic data, touched no live system, and nothing outside its own README ran it.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "demo:rsvp-public-ui",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/vite.config.mjs",
-      "command": "node website/node_modules/vite/bin/vite.js --config tool/demo/rsvp_escape/vite.config.mjs",
       "safety": "local",
-      "status": "internal",
+      "status": "retired",
       "description": "Serves the production public form renderer with synthetic in-memory submission adapters.",
-      "checks": [
-        "node --check tool/demo/rsvp_escape/vite.config.mjs"
-      ]
+      "retiredOn": "2026-11-18",
+      "reason": "The owner retired the RSVP proof of concept on 18 Nov 2026. It was a local demo with synthetic data, touched no live system, and nothing outside its own README ran it.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "demo:schedule-policy",
@@ -3532,33 +3523,13 @@
       "id": "design:loading-composition",
       "category": "design",
       "path": "tool/design/check_loading_composition.mjs",
-      "command": "node tool/design/check_loading_composition.mjs",
       "safety": "local",
-      "status": "active",
+      "status": "retired",
       "description": "Rejects removed generic row and collection skeleton recipes in app source and screen-local root title typography overrides.",
-      "impactPaths": [
-        "tool/design/check_loading_composition.test.mjs",
-        "lib/**",
-        "packages/platform/lib/**",
-        "apps/*/lib/**",
-        "packages/catch_ui/lib/src/patterns/catch_skeleton.dart"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "checks": [
-        "node --check tool/design/check_loading_composition.mjs",
-        "node --test tool/design/check_loading_composition.test.mjs",
-        "node tool/design/check_loading_composition.mjs"
-      ],
       "role": "gate",
-      "alsoEnforces": [
-        "UI-LINT-001",
-        "ASYNC-LOADING-PRESENTATION-001"
-      ]
+      "retiredOn": "2026-11-18",
+      "reason": "Covered by ci:flutter-workspace-analysis. It banned CatchSkeleton.rows, mediaRows, iconRows, cards, boxes and chips, and titleStyle on CatchLegacyTopBar.primaryRail. None of these exist in catch_ui any more, so any use is a compile error that analysis with --fatal-infos fails. Its allowances had been zero everywhere.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "design:new-widget-inventory",
@@ -4332,7 +4303,8 @@
         "design/components/catch.components.json",
         "packages/catch_ui/lib/**",
         "packages/platform/lib/riverpod_ui/**",
-        "widgetbook/lib/main.directories.g.dart"
+        "widgetbook/lib/main.directories.g.dart",
+        "tool/design/check_widget_classification.mjs"
       ],
       "command": "node tool/design/check_widget_classification.mjs",
       "safety": "local-readonly",
@@ -4342,7 +4314,9 @@
         "node --check tool/design/check_widget_classification.mjs",
         "node --test tool/design/check_widget_classification.test.mjs",
         "node --test tool/design/component_concepts.test.mjs",
-        "node tool/design/check_widget_classification.mjs"
+        "node tool/design/check_widget_classification.mjs",
+        "node --check tool/design/generate_widget_classification.mjs",
+        "node tool/design/generate_widget_classification.mjs --check"
       ],
       "role": "gate",
       "alsoEnforces": [
@@ -4359,29 +4333,16 @@
       "id": "design:widget-classification-generate",
       "category": "design",
       "path": "tool/design/generate_widget_classification.mjs",
-      "impactPaths": [
-        "tool/design/check_widget_classification.mjs",
-        "tool/design/check_widget_classification.test.mjs",
-        "tool/design/lib/new_widget_inventory_declarations.mjs",
-        "tool/design/lib/production_widget_roots.mjs",
-        "widgetbook/lib/main.directories.g.dart"
-      ],
       "command": "node tool/design/generate_widget_classification.mjs --check",
       "safety": "local-readonly",
-      "status": "active",
+      "status": "internal",
       "role": "generator",
-      "description": "Builds the exhaustive widget role, ownership, catalog, and consolidation classification from current Dart source, component contracts, and Widgetbook; explicit generation writes only an ignored build report.",
+      "description": "Checked by design:widget-classification-check. Builds the exhaustive widget role, ownership, catalog, and consolidation classification from current Dart source, component contracts, and Widgetbook; explicit generation writes only an ignored build report.",
       "checks": [
         "node --check tool/design/generate_widget_classification.mjs",
         "node --test tool/design/check_widget_classification.test.mjs",
         "node tool/design/generate_widget_classification.mjs --check"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      ]
     },
     {
       "id": "design:widget-dedupe-fingerprint-tests",
@@ -5925,13 +5886,12 @@
       "command": "bash tool/check_catch_ui_lint_drift.sh",
       "safety": "local",
       "status": "active",
-      "description": "Projects focused Catch UI analyzer reports and rejects every Catch diagnostic at the aggregate zero gate.",
+      "description": "Projects focused Catch UI analyzer reports (--summary, --count, --json, --code). The zero-diagnostic rule itself is enforced by ci:flutter-workspace-analysis, whose dart analyze --fatal-infos fails on any catch_* diagnostic; Flutter CI also runs --check on that analysis output.",
       "checks": [
         "bash -n tool/check_catch_ui_lint_drift.sh",
-        "bash tool/check_catch_ui_lint_drift.sh --self-test",
-        "bash tool/check_catch_ui_lint_drift.sh --check"
+        "bash tool/check_catch_ui_lint_drift.sh --self-test"
       ],
-      "role": "gate",
+      "role": "finder",
       "rules": [
         {
           "id": "DESIGN-TOKENS-001",
@@ -5979,7 +5939,8 @@
         "tool/design/generated/enforcement_expectations.json",
         "widgetbook/lib/primitives/catalog/feedback.dart",
         "widgetbook/lib/primitives/contracts/feedback.dart",
-        "tool/architecture/context_map.json"
+        "tool/architecture/context_map.json",
+        "tool/check_catch_ui_lints.sh"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -5989,13 +5950,12 @@
           "flutter-pub"
         ]
       },
-      "alsoCheckIds": [
-        "lint:probe-batch-protocol"
-      ],
       "checks": [
         "bash -n tool/check_catch_ui_lints.sh",
         "node tool/design/build_lint_enforcement_tables.mjs --check",
-        "bash tool/check_catch_ui_lints.sh"
+        "bash tool/check_catch_ui_lints.sh",
+        "node --check tool/lib/lint_probe_batch.mjs",
+        "node --test tool/lib/lint_probe_batch.test.mjs"
       ],
       "role": "gate",
       "rules": [
@@ -6133,18 +6093,8 @@
       "path": "tool/lib/lint_probe_batch.mjs",
       "command": "node --test tool/lib/lint_probe_batch.test.mjs",
       "safety": "local-test",
-      "status": "active",
-      "description": "Checks per-file lint fixture assertions and analyzer output attribution, refusing plugin crashes, malformed output, missing fixtures, and diagnostics from the wrong file.",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/lib/lint_probe_batch.test.mjs",
-        "tool/check_catch_ui_lints.sh"
-      ],
+      "status": "internal",
+      "description": "Checked by lint:catch-ui-plugin-smoke. Checks per-file lint fixture assertions and analyzer output attribution, refusing plugin crashes, malformed output, missing fixtures, and diagnostics from the wrong file.",
       "checks": [
         "node --check tool/lib/lint_probe_batch.mjs",
         "node --test tool/lib/lint_probe_batch.test.mjs"
@@ -7870,24 +7820,11 @@
       "status": "active",
       "description": "Builds the Storybook workbench for registry-linked admin shared primitives and future admin route/workspace review states.",
       "checks": [
-        "npm --workspace catch-admin run build:storybook"
-      ],
-      "role": "generator"
-    },
-    {
-      "id": "web:admin-storybook-bundle-budget",
-      "category": "test",
-      "path": "admin/scripts/checkStorybookBundleBudget.mjs",
-      "command": "node admin/scripts/checkStorybookBundleBudget.mjs --check",
-      "safety": "local-readonly",
-      "status": "active",
-      "description": "Ratchets Catch-authored admin Storybook route and feature chunks while excluding framework and accessibility-vendor runtime chunks.",
-      "checks": [
+        "npm --workspace catch-admin run build:storybook",
         "node --check admin/scripts/checkStorybookBundleBudget.mjs",
-        "node admin/scripts/checkStorybookBundleBudget.mjs --self-test",
-        "node admin/scripts/checkStorybookBundleBudget.mjs --check"
+        "node admin/scripts/checkStorybookBundleBudget.mjs --self-test"
       ],
-      "role": "ratchet",
+      "role": "generator",
       "rules": [
         {
           "id": "WEB-STORYBOOK-BUNDLE-001",
@@ -7903,6 +7840,21 @@
           "instruction": "Keep Catch-authored admin feature and route-story chunks within the reviewed Storybook budgets. Split feature code and large generated datasets with named Rollup boundaries; do not hide regressions by raising the general Vite warning limit."
         }
       ]
+    },
+    {
+      "id": "web:admin-storybook-bundle-budget",
+      "category": "test",
+      "path": "admin/scripts/checkStorybookBundleBudget.mjs",
+      "command": "node admin/scripts/checkStorybookBundleBudget.mjs --check",
+      "safety": "local-readonly",
+      "status": "internal",
+      "description": "Checked by web:admin-storybook. Ratchets Catch-authored admin Storybook route and feature chunks while excluding framework and accessibility-vendor runtime chunks.",
+      "checks": [
+        "node --check admin/scripts/checkStorybookBundleBudget.mjs",
+        "node admin/scripts/checkStorybookBundleBudget.mjs --self-test",
+        "node admin/scripts/checkStorybookBundleBudget.mjs --check"
+      ],
+      "role": "ratchet"
     },
     {
       "id": "web:react-architecture-boundaries",

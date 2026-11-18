@@ -151,13 +151,13 @@ test("import-derived owners select only the tools that reach a changed file", ()
   assert.ok(declaredOnly.fullReasons.some((reason) => reason.includes("tool/data/lib/new_import_only_helper.mjs")));
   const importOwners = new Map([
     ["tool/data/lib/new_import_only_helper.mjs", new Set(["docs:metadata"])],
-    ["tool/lib/cli_args.mjs", new Set(["tool:runner", "lint:probe-batch-protocol"])],
+    ["tool/lib/cli_args.mjs", new Set(["tool:runner", "copy:l10n-key-usage"])],
   ]);
   const derived = plan(importOwners);
   assert.equal(derived.mode, "affected", derived.fullReasons.join("; "));
   assert.deepEqual(derived.importOwnedPaths, changedPaths.slice().sort());
   const expected = new Set([...manifest.ciImpact.mandatoryCheckIds, ...manifest.ciImpact.importOwnerCheckIds,
-    "docs:metadata", "tool:runner", "lint:probe-batch-protocol"]);
+    "docs:metadata", "tool:runner", "copy:l10n-key-usage"]);
   for (const id of expected) assert.ok(derived.toolIds.includes(id), id);
   assert.ok(derived.toolIds.length < 20, `selected ${derived.toolIds.length} tools`);
   assert.equal(derived.toolIds.includes("agent:context-pack"), false);
@@ -170,17 +170,17 @@ test("a manifest edit runs the edited tools and the validator unless selection p
   const edited = structuredClone(manifest);
   const target = edited.tools.find((tool) => tool.id === "docs:metadata");
   target.description = `${target.description} Edited.`;
-  edited.tools.push({...structuredClone(manifest.tools.find((tool) => tool.id === "lint:probe-batch-protocol")),
-    id: "lint:probe-batch-protocol-copy"});
+  edited.tools.push({...structuredClone(manifest.tools.find((tool) => tool.id === "copy:l10n-key-usage")),
+    id: "copy:l10n-key-usage-copy"});
   assert.deepEqual(changedManifestToolIds({baseManifest: manifest, manifest}), {policyChanged: false, toolIds: []});
   assert.deepEqual(changedManifestToolIds({baseManifest: manifest, manifest: edited}),
-    {policyChanged: false, toolIds: ["docs:metadata", "lint:probe-batch-protocol-copy"]});
+    {policyChanged: false, toolIds: ["copy:l10n-key-usage-copy", "docs:metadata"]});
   const changedPaths = ["tool/tools_manifest.json"];
   const plan = (baseManifest, head = edited) =>
     planAffectedToolChecks({changedPaths, manifest: head, componentGraph, baseManifest});
   const narrowed = plan(manifest);
   assert.equal(narrowed.mode, "affected", narrowed.fullReasons.join("; "));
-  for (const id of ["docs:metadata", "lint:probe-batch-protocol-copy", ...manifest.ciImpact.manifestCheckIds]) {
+  for (const id of ["docs:metadata", "copy:l10n-key-usage-copy", ...manifest.ciImpact.manifestCheckIds]) {
     assert.ok(narrowed.toolIds.includes(id), id);
   }
   assert.equal(narrowed.toolIds.includes("agent:context-pack"), false);
@@ -897,24 +897,37 @@ for (const [id, sourcePath] of nativeGenerators) {
   });
 }
 
-test("RSVP CJS helper requires exact registration while retaining its active owner", context => {
-  const manifest = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "tool/tools_manifest.json")));
-  const owner = manifest.tools.find(tool => tool.id === "demo:rsvp-preview");
-  const helperPath = "tool/demo/rsvp_escape/build_fixture.cjs";
-  const helper = manifest.tools.find(tool => tool.path === helperPath);
-  assert.equal(helper?.status, "internal");
-  assert.equal(owner.command, `node ${helperPath}`);
-  assert.deepEqual(owner.checks, [`node --check ${helperPath}`, "node --test tool/demo/rsvp_escape/form_definition.test.mjs"]);
-  const affected = run(["affected-tools", "--paths", helperPath, "--json"]);
-  assert.equal(affected.status, 0, affected.stderr);
-  assert.deepEqual(JSON.parse(affected.stdout).ownersByPath[helperPath], [owner.id]);
+test("a CJS helper requires exact registration while its active owner checks it", context => {
+  const helperPath = "tool/demo/fixture_demo/build_fixture.cjs";
+  const owner = {
+    id: "demo:fixture-preview",
+    category: "demo",
+    path: "tool/demo/fixture_demo/form_definition.mjs",
+    command: `node ${helperPath}`,
+    safety: "local-writes-build-artifacts",
+    status: "active",
+    role: "generator",
+    description: "Builds a synthetic fixture.",
+    checks: [`node --check ${helperPath}`],
+    ciRequirements: {repositoryView: "index", setup: ["node"]},
+  };
+  const helper = {
+    id: "demo:fixture-builder",
+    category: "demo",
+    path: helperPath,
+    safety: "local-writes-build-artifacts",
+    status: "internal",
+    description: "Internal fixture builder checked by demo:fixture-preview.",
+    checks: [`node --check ${helperPath}`],
+  };
   const fixture = createRunnerFixture(context);
   for (const file of [owner.path, helperPath]) {
     fs.mkdirSync(path.dirname(path.join(fixture, file)), {recursive: true});
     fs.writeFileSync(path.join(fixture, file), "// inert\n");
   }
   mutateFixtureManifest(fixture, doc => doc.tools.push(owner, helper));
-  assert.equal(run(["check", "--manifest-only"], {cwd: fixture}).status, 0);
+  const registered = run(["check", "--manifest-only"], {cwd: fixture});
+  assert.equal(registered.status, 0, registered.stderr);
   mutateFixtureManifest(fixture, doc => {
     doc.tools = doc.tools.filter(tool => tool.path !== helperPath);
   });

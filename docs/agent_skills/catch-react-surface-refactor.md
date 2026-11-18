@@ -85,7 +85,6 @@ node tool/run.mjs check web:react-component-governance
 node tool/run.mjs check web:shared-ui-adoption
 node tool/run.mjs check web:react-controller-test-targets
 node tool/run.mjs check web:admin-bundle-budget
-node tool/run.mjs check web:admin-storybook-bundle-budget
 node tool/run.mjs check web:admin-feature-exports
 node tool/run.mjs check web:admin-feature-ui-size
 node tool/run.mjs check web:admin-components
