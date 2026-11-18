@@ -3,7 +3,10 @@ import {act, cleanup, renderHook, waitFor, render, screen, fireEvent} from "@tes
 import {StrictMode, type PropsWithChildren} from "react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
 import type {User} from "../../firebase";
-const api = vi.hoisted(() => ({call: vi.fn(), watch: vi.fn(), otp: vi.fn(), open: vi.fn(), signOut: vi.fn()}));
+const api = vi.hoisted(() => ({call: vi.fn(), watch: vi.fn(), otp: vi.fn(), open: vi.fn(), signOut: vi.fn(),
+  checkoutOpened: vi.fn(), bookingConfirmed: vi.fn()}));
+vi.mock("../../analytics", async (importOriginal) => ({...await importOriginal<typeof import("../../analytics")>(),
+  trackCheckoutOpened: api.checkoutOpened, trackBookingConfirmed: api.bookingConfirmed}));
 vi.mock("../../firebase", () => ({managePublicEventCheckout: api.call, watchPublicFormAuthState: api.watch, beginPublicEventPhoneVerification: api.otp, signOutGuestUser: api.signOut}));
 vi.mock("../../shared/payments/razorpayCheckout", () => ({openRazorpayCheckout: api.open}));
 vi.mock("../eventMessaging/EventSmsPreferencePanel", () => ({EventSmsPreferencePanel: () => null}));
@@ -59,6 +62,18 @@ it("reviews exact terms before a hold, then uses only server admission", async (
   expect(api.open).toHaveBeenCalledOnce();
   expect(result.current.admission).toEqual(admission);
   expect(window.sessionStorage.length).toBe(0);
+});
+it("tells the ad tags when the paid checkout opens and when that booking is confirmed", async () => {
+  const {result} = renderHook(() => usePublicCheckoutController("event1", null), {wrapper});
+  await waitFor(() => expect(result.current.quote).toEqual(quote));
+  expect(api.checkoutOpened).not.toHaveBeenCalled();
+  act(() => result.current.setName("Maya"));
+  await act(async () => {await result.current.pay();});
+  const booking = {eventId: "event1", paymentId: ready.paymentId, amountPaise: 10000, places: 1, mode: "test"};
+  expect(api.checkoutOpened).toHaveBeenCalledExactlyOnceWith(booking);
+  expect(api.checkoutOpened.mock.invocationCallOrder[0]).toBeLessThan(api.open.mock.invocationCallOrder[0]);
+  await waitFor(() => expect(api.bookingConfirmed).toHaveBeenCalledWith(booking));
+  expect(JSON.stringify(api.bookingConfirmed.mock.calls)).not.toMatch(/Maya|attendee1|9999999999/u);
 });
 // Multi-place booking (PR #1887): a quote for N places, N - 1 guest names on prepare.
 const partyQuote = (places: number, member = false) => member ?

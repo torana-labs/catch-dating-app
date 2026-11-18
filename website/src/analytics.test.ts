@@ -1,6 +1,8 @@
 import {beforeEach, expect, test, vi} from "vitest";
 import {initializeMarketingAnalytics, setMarketingConsent, createMarketingEventId, shouldShowMarketingConsentBanner, trackAcceptedMarketingLead,
   getMarketingConsent, trackClientErrorSignal, trackMarketingEvent, trackPageView, trackWebsiteLeadFormEvent, waitlistAnalyticsPayload} from "./analytics";
+import {currentCheckoutAdContext} from "./analytics/adContext";
+import {catchAttributionKey} from "./analytics/catchMeasurement";
 
 beforeEach(() => {
   localStorage.clear();
@@ -76,21 +78,73 @@ test("analytics consent captures only campaign labels in 30-day public marketing
   expect(attribution()).toBeNull();
 });
 
-test.each(["/events/social-event/", "/organizers/dating-host/", "/f/private-form/", "/offer/", "/booking/private-booking/", "/demo/private-demo/"])(
-  "never captures campaign attribution on %s even after accepted consent", (path) => {
+test.each(["/organizers/dating-host/", "/f/private-form/", "/offer/", "/booking/private-booking/", "/demo/private-demo/",
+  "/invite/private-token/", "/rsvp/private-token/", "/join/private-runtime/", "/claim/private-listing/"])(
+  "never captures campaign or click attribution on %s even after accepted consent", (path) => {
+    window.history.replaceState(null, "", "/demo/start/");
     setMarketingConsent("accepted");
-    window.history.replaceState(null, "", `${path}?utm_campaign=private_campaign#secret`);
+    window.history.replaceState(null, "", `${path}?utm_campaign=launch&gclid=SyntheticGoogle123#secret`);
     initializeMarketingAnalytics();
     expect(attribution()).toBeNull();
     expect(localStorage.getItem(ephemeralKey)).toBeNull();
+    expect(localStorage.getItem(catchAttributionKey)).toBeNull();
   });
+
+test("public event pages capture approved labels like any other public page", () => {
+  window.history.replaceState(null, "", "/events/social-event/?utm_source=meta&utm_medium=paid_social&utm_term=private");
+  setMarketingConsent("analytics");
+  expect(attribution()?.firstTouch).toMatchObject({landingPath: "/events/social-event/",
+    values: {utm_source: "meta", utm_medium: "paid_social"}});
+});
+
+test("ad click identifiers survive navigation to checkout, private pages included", () => {
+  window.history.replaceState(null, "", "/?gclid=SyntheticGoogle123&fbclid=SyntheticMeta123&utm_source=google");
+  setMarketingConsent("accepted");
+  initializeMarketingAnalytics();
+  for (const path of ["/explore/", "/organizers/synthetic-club/", "/booking/synthetic-event/", "/account/", "/events/synthetic-run/"]) {
+    window.history.replaceState(null, "", path);
+    initializeMarketingAnalytics();
+    trackPageView("event_detail", path);
+  }
+  expect(currentCheckoutAdContext()).toMatchObject({gclid: "SyntheticGoogle123", fbclid: "SyntheticMeta123"});
+  expect(attribution()?.lastTouch.values).toEqual({utm_source: "google"});
+});
+
+test.each(["analytics", "essential"] as const)("downgrading to %s clears the stored ad clicks", (choice) => {
+  window.history.replaceState(null, "", "/host/?gclid=SyntheticGoogle123&fbclid=SyntheticMeta123");
+  setMarketingConsent("accepted");
+  expect(currentCheckoutAdContext()).toMatchObject({gclid: "SyntheticGoogle123"});
+  setMarketingConsent(choice);
+  expect(localStorage.getItem(catchAttributionKey) ?? "").not.toMatch(/Synthetic/u);
+  window.history.replaceState(null, "", "/host/");
+  setMarketingConsent("accepted");
+  expect(currentCheckoutAdContext()).toBeUndefined();
+});
+
+test("ad clicks expire 30 days after the latest click", () => {
+  vi.useFakeTimers({toFake: ["Date"]});
+  try {
+    vi.setSystemTime(new Date("2026-11-18T10:00:00Z"));
+    window.history.replaceState(null, "", "/host/?gclid=SyntheticGoogle123");
+    setMarketingConsent("accepted");
+    vi.setSystemTime(new Date("2026-12-17T09:00:00Z"));
+    window.history.replaceState(null, "", "/events/synthetic-run/");
+    initializeMarketingAnalytics();
+    expect(currentCheckoutAdContext()).toMatchObject({gclid: "SyntheticGoogle123"});
+    vi.setSystemTime(new Date("2026-12-18T11:00:00Z"));
+    initializeMarketingAnalytics();
+    expect(currentCheckoutAdContext()).toBeUndefined();
+  } finally {
+    vi.useRealTimers();
+  }
+});
 
 test("invalid consent flags fail closed and delete previous attribution", () => {
   setMarketingConsent("analytics");
-  localStorage.setItem("catch_marketing_consent_v4", JSON.stringify({version: 4, choice: "essential", analytics: true, marketing: true, updatedAt: new Date().toISOString()}));
+  localStorage.setItem("catch_marketing_consent_v5", JSON.stringify({version: 5, choice: "essential", analytics: true, marketing: true, updatedAt: new Date().toISOString()}));
   expect(getMarketingConsent()).toBeNull();
   expect(localStorage.getItem(ephemeralKey)).toBeNull();
-  localStorage.setItem("catch_marketing_consent_v4", JSON.stringify({version: 4, choice: "unknown", analytics: true, marketing: true, updatedAt: "bad"}));
+  localStorage.setItem("catch_marketing_consent_v5", JSON.stringify({version: 5, choice: "unknown", analytics: true, marketing: true, updatedAt: "bad"}));
   expect(getMarketingConsent()).toBeNull();
 });
 
@@ -106,7 +160,7 @@ test("legacy raw attribution is discarded, expired touches are not reused", () =
   expect(localStorage.getItem(ephemeralKey)).toBeNull();
 });
 
-test("analytics never loads a tag script or calls an external global gtag", () => {
+test("outside the production site no tag loads, even after the marketing choice, and no external gtag is called", () => {
   const external = vi.fn();
   window.gtag = external;
   const append = vi.spyOn(document.head, "appendChild");
@@ -126,9 +180,24 @@ test("legacy analytics-only UI choices cannot authorize marketing and request a 
   expect(getMarketingConsent()).toMatchObject({version: 1, choice: "analytics", analytics: true, marketing: false});
   expect(shouldShowMarketingConsentBanner()).toBe(true);
   setMarketingConsent("accepted");
-  expect(getMarketingConsent()).toMatchObject({version: 4, analytics: true, marketing: true});
+  expect(getMarketingConsent()).toMatchObject({version: 5, analytics: true, marketing: true});
   expect(shouldShowMarketingConsentBanner()).toBe(false);
   expect(localStorage.getItem("catch_marketing_consent_v1")).toBeNull();
+});
+
+test("a version 4 choice, made while advertising was disabled, keeps analytics but asks again before any tag", () => {
+  window.history.replaceState(null, "", "/host/?gclid=SyntheticGoogle123");
+  localStorage.setItem("catch_marketing_consent_v4", JSON.stringify({version: 4, measurementMode: "disabled",
+    choice: "accepted", analytics: true, marketing: true, updatedAt: new Date().toISOString()}));
+  localStorage.setItem(catchAttributionKey, JSON.stringify({clientId: "1.1800000000", sessionId: 1800000000, gclid: "OldGoogleClick123"}));
+  expect(getMarketingConsent()).toMatchObject({choice: "analytics", analytics: true, marketing: false});
+  expect(shouldShowMarketingConsentBanner()).toBe(true);
+  expect(localStorage.getItem(catchAttributionKey)).toBeNull();
+  expect(currentCheckoutAdContext()).toBeUndefined();
+  setMarketingConsent("accepted");
+  expect(getMarketingConsent()).toMatchObject({version: 5, measurementMode: "first_party_tags", marketing: true});
+  expect(localStorage.getItem("catch_marketing_consent_v4")).toBeNull();
+  expect(shouldShowMarketingConsentBanner()).toBe(false);
 });
 
 test.each(["/claim", "/claim/"])("approved labels survive host to actual CTA %s", (claimPath) => {
@@ -181,8 +250,8 @@ test("SPA views deduplicate a lifecycle render and count a real return visit wit
 });
 
 
-test("the disabled-provider notice cannot authorise a later live transport", () => {
-  localStorage.setItem("catch_marketing_consent_v4", JSON.stringify({version: 4,
+test("a choice made under another measurement mode cannot authorise the tags", () => {
+  localStorage.setItem("catch_marketing_consent_v5", JSON.stringify({version: 5,
     measurementMode: "google-live-v1", choice: "accepted", analytics: true, marketing: true,
     updatedAt: new Date().toISOString()}));
   expect(getMarketingConsent()).toMatchObject({version: 2, marketing: false});
@@ -196,7 +265,7 @@ test("version two choices require fresh consent and cannot inherit marketing per
   expect(shouldShowMarketingConsentBanner()).toBe(true);
   setMarketingConsent("accepted");
   expect(localStorage.getItem("catch_marketing_consent_v2")).toBeNull();
-  expect(getMarketingConsent()).toMatchObject({version: 4, measurementMode: "disabled"});
+  expect(getMarketingConsent()).toMatchObject({version: 5, measurementMode: "first_party_tags"});
 });
 
 
