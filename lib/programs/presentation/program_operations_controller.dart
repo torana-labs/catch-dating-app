@@ -106,7 +106,6 @@ class ProgramOperationsController extends _$ProgramOperationsController {
     ref.invalidate(programArrivalsRosterProvider);
     ref.invalidate(programTransportPlanProvider);
     ref.invalidate(programTripListProvider);
-    ref.invalidate(programFunctionDoorViewProvider);
   }
 
   Future<bool> _run(

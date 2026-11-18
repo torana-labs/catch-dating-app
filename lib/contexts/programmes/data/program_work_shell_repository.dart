@@ -57,7 +57,7 @@ class ProgramWorkShellRepository {
             combineLatest(
               combineLatest(
                 _summary(programId),
-                _resources(
+                watchResources(
                   programId,
                   'pickupPoint',
                   access.workPickup,
@@ -66,7 +66,7 @@ class ProgramWorkShellRepository {
                 ),
                 (summary, pickups) => (summary: summary, pickups: pickups),
               ),
-              _resources(
+              watchResources(
                 programId,
                 'hotel',
                 access.workHotel,
@@ -79,7 +79,7 @@ class ProgramWorkShellRepository {
                 hotels: hotels,
               ),
             ),
-            _resources(
+            watchResources(
               programId,
               'function',
               access.workFunction,
@@ -114,7 +114,7 @@ class ProgramWorkShellRepository {
   /// One kind of resource label: a query for all of them when the account's
   /// work list reaches every one (the `*` key, or the owner), otherwise one
   /// listener per named id, since a scoped account may read only those.
-  Stream<List<Map<Object?, Object?>>> _resources(
+  Stream<List<Map<Object?, Object?>>> watchResources(
     String programId,
     String kind,
     Map<String, DateTime> workList,

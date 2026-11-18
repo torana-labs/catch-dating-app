@@ -18,6 +18,9 @@ import 'package:catch_platform/errors/app_exception.dart';
 /// [data] receives the state that authorized it, so it can open only the
 /// sources the account's scopes reach.
 ///
+/// [allows] adds a condition the keys cannot say, such as one of several
+/// duties covering a function; it sees the state at the instant evaluated.
+///
 /// [scopeOf] names what the data listener was opened for (for example the
 /// resources an account's scopes reach); when it changes the listener is
 /// reopened, because widening can add sources to read.
@@ -29,6 +32,7 @@ Stream<T> gateByProgramAccess<T>({
   required Stream<T> Function(ProgramAccessState state) data,
   required Set<String> needs,
   Object? Function(ProgramAccessState state)? scopeOf,
+  bool Function(ProgramAccessState state)? allows,
 }) {
   late final StreamController<T> controller;
   // ignore: cancel_subscriptions
@@ -40,9 +44,11 @@ Stream<T> gateByProgramAccess<T>({
   Object? openScope;
   var denied = false;
 
-  bool allows(ProgramAccessState state) =>
+  bool permits(ProgramAccessState state) =>
       state.isLive &&
-      (state.liveKeys.contains('manager') || state.liveKeys.containsAll(needs));
+      (state.liveKeys.contains('manager') ||
+          state.liveKeys.containsAll(needs)) &&
+      (allows?.call(state) ?? true);
 
   Future<void> closeData() async {
     final subscription = dataSubscription;
@@ -84,7 +90,7 @@ Stream<T> gateByProgramAccess<T>({
   controller = StreamController<T>(
     onListen: () {
       accessSubscription = access.listen(
-        (state) => allows(state) ? open(state) : deny(state),
+        (state) => permits(state) ? open(state) : deny(state),
         onError: controller.addError,
         onDone: () {
           unawaited(closeData());

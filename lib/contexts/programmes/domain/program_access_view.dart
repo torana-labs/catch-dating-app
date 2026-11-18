@@ -200,6 +200,47 @@ class ProgramAccessView {
     }
   }
 
+  /// Whether a door duty (function check-in or function lead) covers
+  /// [functionId] at [now].
+  bool coversDoor(String functionId, DateTime now) =>
+      coversFunction(ProgramStaffDuty.functionCheckIn, functionId, now) ||
+      coversFunction(ProgramStaffDuty.functionLead, functionId, now);
+
+  /// The latest instant a door duty covering [functionId] is still held, or
+  /// null for the owner (no end) or when none is live.
+  DateTime? doorAccessEndsAt(String functionId, DateTime now) {
+    if (isManager) return null;
+    DateTime? latest;
+    for (final duty in [
+      ProgramStaffDuty.functionCheckIn,
+      ProgramStaffDuty.functionLead,
+    ]) {
+      for (final instant in [
+        functionAll[duty.name],
+        functionScoped['${duty.name}__$functionId'],
+      ]) {
+        if (instant != null &&
+            instant.isAfter(now) &&
+            (latest == null || instant.isAfter(latest))) {
+          latest = instant;
+        }
+      }
+    }
+    return latest;
+  }
+
+  /// Names of the duties held at [now], for reading the alerts stamped for
+  /// each. The owner holds every duty and has none to name.
+  Set<String> liveDutyNames(DateTime now) => {
+    for (final entry in duties.entries)
+      if (entry.value.isAfter(now)) entry.key,
+  };
+
+  /// Whether full reach over programme-wide operations is held (the
+  /// coordinator duty, or the owner).
+  bool hasFullReach(DateTime now) =>
+      holdsDuty(ProgramStaffDuty.programCoordinator, now);
+
   /// The grants that are live at [now], as stable keys. Two instants of the
   /// same view give a narrower authority exactly when keys disappear, so
   /// this is what the narrowing check compares.
