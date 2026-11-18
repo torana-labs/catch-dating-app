@@ -88,7 +88,7 @@ describe("consolidated public sitemap", () => {
     expect(pageMeta.host_billing.robots).toBe("noindex, follow");
   });
   it("leaves credential-bearing transactional paths and canonical profiles untouched", () => {
-    for (const pathname of ["/booking/event", "/offer", "/invite/token", "/f/form", "/rsvp/token", "/join/runtime", "/event-update/link", "/demo/invitation", "/rehearse/id", "/organizers/afterfly/", "/events/id", "/claim/real-id"]) {
+    for (const pathname of ["/booking/event", "/offer", "/invite/token", "/f/form", "/rsvp/token", "/join/runtime", "/event-update/link", "/demo/invitation", "/rehearse/id", "/organizers/moonmoth/", "/events/id", "/claim/real-id"]) {
       expect(retiredMarketingDestination({pathname, search: "?token=private", hash: "#credential"})).toBeNull();
     }
   });

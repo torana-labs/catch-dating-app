@@ -32,7 +32,7 @@ const account: WebsiteAccount = {
       startsAt: "2026-11-21T14:00:00.000Z", endsAt: "2026-11-21T17:00:00.000Z", venue: "Bandra West", status: "waitlisted",
       timing: "upcoming", passAvailable: false},
     {eventId: "quiz-night", eventName: "Thursday quiz night", organizerId: "quiz-collective", organizerName: "Quiz Collective",
-      startsAt: "2026-10-30T14:30:00.000Z", endsAt: "2026-10-30T17:00:00.000Z", venue: "Khar Social", status: "attended",
+      startsAt: "2026-10-30T14:30:00.000Z", endsAt: "2026-10-30T17:00:00.000Z", venue: "Lantern Lane Tavern", status: "attended",
       timing: "past", passAvailable: false},
     {eventId: "padel-social", eventName: "Beginners padel social", organizerId: "court-club", organizerName: "Court Club",
       startsAt: "2026-10-12T03:00:00.000Z", endsAt: "2026-10-12T05:00:00.000Z", venue: null, status: "cancelled",

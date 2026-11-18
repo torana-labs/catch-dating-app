@@ -1,0 +1,29 @@
+{
+  "search_metadata": {
+    "id": "fixture-moonmoth",
+    "status": "Success"
+  },
+  "search_parameters": {
+    "q": "\"MOON MOTH\" Luma"
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "title": "NIGHTFALL Run & Rave by MOON MOTH",
+      "link": "https://luma.com/mmoth26x?utm_source=google",
+      "snippet": "Public Luma event page for MOON MOTH in Indore."
+    },
+    {
+      "position": 2,
+      "title": "MOON MOTH on Instagram",
+      "link": "https://www.instagram.com/moonmoth.example/?igshid=fixture",
+      "snippet": "Primary Instagram profile surfaced in search."
+    },
+    {
+      "position": 3,
+      "title": "Moonmoth on Sort My Scene",
+      "link": "https://sortmyscene.com/organizers/moonmoth",
+      "snippet": "Candidate organizer profile on Sort My Scene."
+    }
+  ]
+}

@@ -94,7 +94,7 @@ export const AdminIntakeDecisionStateStory: Story = {
         <CheckCircle2 size={16} />
         <div>
           <strong>approved for public listing</strong>
-          <span>reviewDecisions/afterfly</span>
+          <span>reviewDecisions/moonmoth</span>
         </div>
       </CatchAdminIntakeDecisionState>
     </AdminWorkspace>
@@ -132,7 +132,7 @@ export const AdminSearchCandidateHeaderStory: Story = {
     <AdminWorkspace>
       <AdminCard variant="searchCandidate">
         <CatchAdminSearchCandidateHeader>
-          <strong>Afterfly Social</strong>
+          <strong>Moonmoth Social</strong>
           <CatchBadge recipe="status" tone="success" label="96% match" />
         </CatchAdminSearchCandidateHeader>
       </AdminCard>

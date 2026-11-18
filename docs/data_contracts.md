@@ -2032,10 +2032,14 @@ conversion proofs other commands read (`organizerFormAdmissionReceipts`,
 (`organizerContactMergeReceipts`, `externalEventPublicationReceipts`), and
 provider-delivery evidence (`organizerCampaignWebhookReceipts`).
 
-Moved so far: `functionEventReceipts`, `eventLiveCommandReceipts` and
-`eventChatAccessReceipts` (the five event-room commands). They are no longer
+Moved so far: `functionEventReceipts`, `eventLiveCommandReceipts`,
+`eventChatAccessReceipts` (the five event-room commands),
+`organizerAudienceProjectionReceipts` (the audience projection's trigger dedupe)
+and `organizerEntitlementReceipts` (admin grant and revoke, one command name so
+an operation id reused across the two still conflicts). They are no longer
 written or declared; their documents stay under the legal hold, and account
-deletion still removes old chat receipts by uid. Replay windows are short and an
+deletion still removes old chat receipts by uid. An entitlement grant keeps its
+own operation hash and result revision, so its identity outlives the receipt. Replay windows are short and an
 in-flight retry across the deploy only re-runs a revision-fenced or idempotent
 command, so nothing was copied forward.
 
@@ -5581,7 +5585,7 @@ event-accuracy, and unclaimed-affordance review. The shared Functions policy
 derives effective event visibility as the minimum of the event request and
 organizer ceiling on every surface and refuses a request above that ceiling.
 Before this contract shipped, the guarded visibility-decision backfill repaired
-the two production legacy approvals (`afterfly` and `bhag`) to their exact prior
+the two production legacy approvals to their exact prior
 `published` + `indexed` semantics; the post-apply dry run reported two current
 documents and zero remaining repairs.
 

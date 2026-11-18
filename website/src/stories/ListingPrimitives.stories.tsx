@@ -57,10 +57,10 @@ export const IdentityDisplayShellStory: Story = {
       <article>
         <ActivityMark
           activity={runActivity}
-          listing={{logo: {text: "AF"}, status: "unclaimed"}}
+          listing={{logo: {text: "MM"}, status: "unclaimed"}}
           size="lg"
         />
-        <h3>Afterfly</h3>
+        <h3>Moonmoth</h3>
         <BadgeRow>
           <CatchBadge recipe="functional" label="Claimable" />
         </BadgeRow>
@@ -85,10 +85,10 @@ export const OrganizerResultShellStory: Story = {
         <OrganizerResultCardTopline>
           <ActivityMark
             activity={runActivity}
-            listing={{logo: {text: "AF"}, status: "unclaimed"}}
+            listing={{logo: {text: "MM"}, status: "unclaimed"}}
           />
           <div>
-            <h3>Afterfly</h3>
+            <h3>Moonmoth</h3>
             <BadgeRow>
               <CatchBadge recipe="functional" label="Claimable" />
             </BadgeRow>
@@ -96,19 +96,19 @@ export const OrganizerResultShellStory: Story = {
         </OrganizerResultCardTopline>
         <p>Run club profile with public event evidence and open owner claim.</p>
         <OrganizerEventHighlights
-          ariaLabel="Afterfly event highlights"
+          ariaLabel="Moonmoth event highlights"
           items={[
             {
               activityToken: "var(--activity-run)",
               detail: "Mumbai",
-              id: "afterfly-run",
+              id: "moonmoth-run",
               kind: "Run club",
               title: "Twilight run social",
             },
             {
               activityToken: "var(--activity-social)",
               detail: "Open RSVP",
-              id: "afterfly-social",
+              id: "moonmoth-social",
               kind: "Social",
               title: "Post-run mixer",
             },
@@ -116,7 +116,7 @@ export const OrganizerResultShellStory: Story = {
         />
       </OrganizerResultCardBody>
       <OrganizerResultCardFooter>
-        <ButtonLink href="/organizers/afterfly/" size="small">
+        <ButtonLink href="/organizers/moonmoth/" size="small">
           View listing
         </ButtonLink>
       </OrganizerResultCardFooter>

@@ -12,8 +12,8 @@ function source(type: string, href: string | null) {
 }
 
 test("usernames are compared lower-case without @", () => {
-  assert.equal(normalizeInstagramUsername("@CarterRoad.Runners"),
-    "carterroad.runners");
+  assert.equal(normalizeInstagramUsername("@DriftwoodBay.Runners"),
+    "driftwoodbay.runners");
   assert.equal(normalizeInstagramUsername("has space"), null);
   assert.equal(normalizeInstagramUsername("explore"), null);
   assert.equal(normalizeInstagramUsername(""), null);
@@ -30,8 +30,8 @@ test("generated listings use their first Instagram profile source", () => {
     publicSources: [
       source("luma", "https://luma.com/calendar/cal-1"),
       source("instagram", "https://www.instagram.com/p/C0ffee/"),
-      source("instagram", "https://m.instagram.com/Carter_Runs/?hl=en"),
-    ]}), "carter_runs");
+      source("instagram", "https://m.instagram.com/Driftwood_Runs/?hl=en"),
+    ]}), "driftwood_runs");
   assert.equal(listingInstagramUsername({instagramHandle: null,
     publicSources: [source("instagram", "https://instagram.evil.com/x")]}),
   null);
@@ -42,8 +42,8 @@ test("Luma sources resolve to the calendar page", () => {
     publicSources: [source("luma", "https://lu.ma/calendar/cal-AbC123")]}),
   "https://luma.com/calendar/cal-AbC123");
   assert.equal(listingLumaCalendarUrl({instagramHandle: null,
-    publicSources: [source("luma", "https://luma.com/carter-runs")]}),
-  "https://luma.com/carter-runs");
+    publicSources: [source("luma", "https://luma.com/driftwood-runs")]}),
+  "https://luma.com/driftwood-runs");
   assert.equal(listingLumaCalendarUrl({instagramHandle: null,
     publicSources: [source("luma", "https://luma.com/")]}), null);
 });

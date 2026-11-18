@@ -354,7 +354,7 @@ function callableRequest(
 
 function organizerDoc(overrides: FakeData = {}): FakeData {
   return {
-    name: "AFTER FLY",
+    name: "MOON MOTH",
     location: "in-mp-indore",
     locationCityId: "in-mp-indore",
     locationMarketId: "in-mp-indore",
@@ -367,7 +367,7 @@ function eventDoc(overrides: FakeData = {}): FakeData {
   const startTime = overrides.startTime instanceof Date ?
     overrides.startTime : new Date("2026-07-04T01:30:00.000Z");
   return withStoredEventPolicy({
-    organizerId: "afterfly",
+    organizerId: "moonmoth",
     startTime,
     endTime: new Date(startTime.getTime() + 2 * 60 * 60 * 1000),
     meetingPoint: "Nehru Park gate",
@@ -409,7 +409,7 @@ function eventDoc(overrides: FakeData = {}): FakeData {
     discoveryActivityKind: "socialRun",
     discoveryAvailability: "open",
     adminSearch: {
-      tokens: ["afterfly", "social", "run", "indore", "nehru"],
+      tokens: ["moonmoth", "social", "run", "indore", "nehru"],
       sortKey: "social",
       updatedAt: "SERVER_TIMESTAMP",
       updatedBySource: "adminEventSearchBackfill",
@@ -425,10 +425,10 @@ function assertHttpsCode(error: unknown, code: string): boolean {
 
 test("adminListEventDetailsHandler returns canonical event rows", async () => {
   const h = harness({
-    "organizers/afterfly": organizerDoc(),
-    "events/afterfly-social-run-1": eventDoc(),
+    "organizers/moonmoth": organizerDoc(),
+    "events/moonmoth-social-run-1": eventDoc(),
     "events/bandra-run-1": eventDoc({
-      organizerId: "bandra-runners",
+      organizerId: "sandbar-runners",
       meetingPoint: "Bandra Bandstand",
       discoveryCityName: "mumbai",
       discoveryMarketId: "in-mh-mumbai",
@@ -439,8 +439,8 @@ test("adminListEventDetailsHandler returns canonical event rows", async () => {
         updatedBySource: "adminEventSearchBackfill",
       },
     }),
-    "organizers/bandra-runners": organizerDoc({
-      name: "Bandra Runners",
+    "organizers/sandbar-runners": organizerDoc({
+      name: "Sandbar Runners",
       location: "in-mh-mumbai",
       locationCityId: "in-mh-mumbai",
       locationMarketId: "in-mh-mumbai",
@@ -451,15 +451,15 @@ test("adminListEventDetailsHandler returns canonical event rows", async () => {
   const result = await adminListEventDetailsHandler(
     callableRequest("admin-1", {
       citySlug: "in-mp-indore",
-      query: "afterfly",
+      query: "moonmoth",
       limit: 10,
     }, {support: true}),
     h.deps
   );
 
   assert.equal(result.rows.length, 1);
-  assert.equal(result.rows[0].eventId, "afterfly-social-run-1");
-  assert.equal(result.rows[0].organizerName, "AFTER FLY");
+  assert.equal(result.rows[0].eventId, "moonmoth-social-run-1");
+  assert.equal(result.rows[0].organizerName, "MOON MOTH");
   assert.equal(result.rows[0].citySlug, "in-mp-indore");
   assert.equal(result.rows[0].searchIndexStatus, "indexed");
   assert.equal(result.generatedAt, "2026-06-25T08:30:00.000Z");
@@ -469,10 +469,10 @@ test(
   "adminListEventDetailsHandler supports bounded launch-city filters",
   async () => {
     const h = harness({
-      "organizers/afterfly": organizerDoc(),
-      "events/afterfly-social-run-1": eventDoc(),
+      "organizers/moonmoth": organizerDoc(),
+      "events/moonmoth-social-run-1": eventDoc(),
       "events/bandra-run-1": eventDoc({
-        organizerId: "bandra-runners",
+        organizerId: "sandbar-runners",
         meetingPoint: "Bandra Bandstand",
         discoveryCityName: "mumbai",
         discoveryMarketId: "in-mh-mumbai",
@@ -495,8 +495,8 @@ test(
           updatedBySource: "adminEventSearchBackfill",
         },
       }),
-      "organizers/bandra-runners": organizerDoc({
-        name: "Bandra Runners",
+      "organizers/sandbar-runners": organizerDoc({
+        name: "Sandbar Runners",
         location: "in-mh-mumbai",
         locationCityId: "in-mh-mumbai",
         locationMarketId: "in-mh-mumbai",
@@ -514,38 +514,38 @@ test(
 
     assert.deepEqual(
       result.rows.map((row) => row.eventId).sort(),
-      ["afterfly-social-run-1", "bandra-run-1"]
+      ["bandra-run-1", "moonmoth-social-run-1"]
     );
   }
 );
 
 test("adminListEventDetailsHandler applies upcoming time windows", async () => {
   const h = harness({
-    "organizers/afterfly": organizerDoc(),
-    "events/afterfly-old-run-1": eventDoc({
+    "organizers/moonmoth": organizerDoc(),
+    "events/moonmoth-old-run-1": eventDoc({
       startTime: new Date("2020-01-01T01:30:00.000Z"),
       discoveryCityName: "indore",
       discoveryMarketId: "in-mp-indore",
       adminSearch: {
-        tokens: ["afterfly", "old", "indore"],
+        tokens: ["moonmoth", "old", "indore"],
         sortKey: "old",
         updatedAt: "SERVER_TIMESTAMP",
         updatedBySource: "adminEventSearchBackfill",
       },
     }),
-    "events/afterfly-future-run-1": eventDoc({
+    "events/moonmoth-future-run-1": eventDoc({
       startTime: new Date("2099-01-01T01:30:00.000Z"),
       discoveryCityName: "indore",
       discoveryMarketId: "in-mp-indore",
       adminSearch: {
-        tokens: ["afterfly", "future", "indore"],
+        tokens: ["moonmoth", "future", "indore"],
         sortKey: "future",
         updatedAt: "SERVER_TIMESTAMP",
         updatedBySource: "adminEventSearchBackfill",
       },
     }),
     "events/bandra-future-run-1": eventDoc({
-      organizerId: "bandra-runners",
+      organizerId: "sandbar-runners",
       startTime: new Date("2099-01-02T01:30:00.000Z"),
       discoveryCityName: "mumbai",
       discoveryMarketId: "in-mh-mumbai",
@@ -580,25 +580,25 @@ test("adminListEventDetailsHandler applies upcoming time windows", async () => {
 
   assert.deepEqual(
     result.rows.map((row) => row.eventId),
-    ["afterfly-future-run-1", "bandra-future-run-1"]
+    ["moonmoth-future-run-1", "bandra-future-run-1"]
   );
 });
 
 test("adminGetEventDetailsHandler returns editable event details", async () => {
   const h = harness({
-    "organizers/afterfly": organizerDoc(),
-    "events/afterfly-social-run-1": eventDoc(),
+    "organizers/moonmoth": organizerDoc(),
+    "events/moonmoth-social-run-1": eventDoc(),
   });
 
   const result = await adminGetEventDetailsHandler(
     callableRequest("admin-1", {
-      eventId: " afterfly-social-run-1 ",
+      eventId: " moonmoth-social-run-1 ",
     }, {support: true}),
     h.deps
   );
 
-  assert.equal(result.event.eventId, "afterfly-social-run-1");
-  assert.equal(result.event.organizerName, "AFTER FLY");
+  assert.equal(result.event.eventId, "moonmoth-social-run-1");
+  assert.equal(result.event.organizerName, "MOON MOTH");
   assert.equal(result.event.description, "Source-backed social run.");
   assert.equal(result.event.eventFormat.activityKind, "socialRun");
   assert.equal(result.event.discovery.citySlug, "in-mp-indore");
@@ -607,7 +607,7 @@ test("adminGetEventDetailsHandler returns editable event details", async () => {
 
 test("rich admin details skip incomplete private basics", async () => {
   const h = harness({
-    "organizers/afterfly": organizerDoc(),
+    "organizers/moonmoth": organizerDoc(),
     "events/private-1": eventDoc({
       name: "September meetup",
       publicationState: "private",
@@ -631,15 +631,15 @@ test(
   "admin owners can select a bounded upcoming Mumbai pilot event",
   async () => {
     const h = harness({
-      "organizers/bandra-runners": organizerDoc({
-        name: "Bandra Runners",
+      "organizers/sandbar-runners": organizerDoc({
+        name: "Sandbar Runners",
         location: "in-mh-mumbai",
         locationCityId: "in-mh-mumbai",
         locationMarketId: "in-mh-mumbai",
         cityName: "Mumbai",
       }),
       "events/bandra-run-1": eventDoc({
-        organizerId: "bandra-runners",
+        organizerId: "sandbar-runners",
         discoveryCityName: "mumbai",
         discoveryMarketId: "in-mh-mumbai",
       }),
@@ -667,15 +667,15 @@ test(
   "admin owners can select a Mumbai event with bounded pair inventory",
   async () => {
     const h = harness({
-      "organizers/bandra-runners": organizerDoc({
-        name: "Bandra Runners",
+      "organizers/sandbar-runners": organizerDoc({
+        name: "Sandbar Runners",
         location: "in-mh-mumbai",
         locationCityId: "in-mh-mumbai",
         locationMarketId: "in-mh-mumbai",
         cityName: "Mumbai",
       }),
       "events/bandra-run-1": eventDoc({
-        organizerId: "bandra-runners",
+        organizerId: "sandbar-runners",
         discoveryCityName: "mumbai",
         discoveryMarketId: "in-mh-mumbai",
         eventPolicy: {
@@ -730,7 +730,7 @@ test(
 
 test("support cannot change the Cross Paths selected-event gate", async () => {
   const h = harness({
-    "organizers/bandra-runners": organizerDoc(),
+    "organizers/sandbar-runners": organizerDoc(),
     "events/bandra-run-1": eventDoc({
       discoveryMarketId: "in-mh-mumbai",
     }),
@@ -761,7 +761,7 @@ test(
       }),
     ]));
     const overBroad = harness({
-      "organizers/bandra-runners": organizerDoc(),
+      "organizers/sandbar-runners": organizerDoc(),
       ...selected,
       "events/bandra-run-1": eventDoc({
         discoveryMarketId: "in-mh-mumbai",
@@ -780,13 +780,13 @@ test(
     );
 
     const nonMumbai = harness({
-      "organizers/afterfly": organizerDoc(),
-      "events/afterfly-social-run-1": eventDoc(),
+      "organizers/moonmoth": organizerDoc(),
+      "events/moonmoth-social-run-1": eventDoc(),
     });
     await assert.rejects(
       () => adminUpdateEventDetailsHandler(
         callableRequest("admin-1", {
-          eventId: "afterfly-social-run-1",
+          eventId: "moonmoth-social-run-1",
           fields: {crossPathsDiscoveryEnabled: true},
           reviewNote: "Wrong market.",
         }, {admin: true}),
@@ -799,8 +799,8 @@ test(
 
 test("adminUpdateEventDetailsHandler saves audited safe fields", async () => {
   const h = harness({
-    "organizers/afterfly": organizerDoc(),
-    "events/afterfly-social-run-1": eventDoc({
+    "organizers/moonmoth": organizerDoc(),
+    "events/moonmoth-social-run-1": eventDoc({
       eventFormat: {
         version: 1,
         activityKind: "socialRun",
@@ -819,7 +819,7 @@ test("adminUpdateEventDetailsHandler saves audited safe fields", async () => {
 
   const result = await adminUpdateEventDetailsHandler(
     callableRequest("admin-1", {
-      eventId: "afterfly-social-run-1",
+      eventId: "moonmoth-social-run-1",
       fields: {
         description: "Updated app-facing event copy.",
         distanceKm: 4.5,
@@ -836,9 +836,9 @@ test("adminUpdateEventDetailsHandler saves audited safe fields", async () => {
     h.deps
   );
 
-  assert.equal(result.eventId, "afterfly-social-run-1");
+  assert.equal(result.eventId, "moonmoth-social-run-1");
   assert.equal(result.updatedFieldCount, 4);
-  const updated = h.firestore.get("events/afterfly-social-run-1");
+  const updated = h.firestore.get("events/moonmoth-social-run-1");
   assert.equal(updated?.description, "Updated app-facing event copy.");
   assert.equal(updated?.distanceKm, 4.5);
   assert.equal(updated?.pace, "moderate");
@@ -870,7 +870,7 @@ test("adminUpdateEventDetailsHandler saves audited safe fields", async () => {
   );
   const tokens = getPath(updated ?? {}, ["adminSearch", "tokens"]);
   assert.ok(Array.isArray(tokens));
-  assert.ok(tokens.includes("afterfly"));
+  assert.ok(tokens.includes("moonmoth"));
   assert.ok(tokens.includes("sunset"));
   assert.equal(h.firestore.auditLogs().length, 1);
   assert.equal(h.firestore.auditLogs()[0].action, "adminUpdateEventDetails");
@@ -879,19 +879,19 @@ test("adminUpdateEventDetailsHandler saves audited safe fields", async () => {
 test("admins clear, release and set an event's women-led override",
   async () => {
     const h = harness({
-      "organizers/afterfly": organizerDoc(),
-      "events/afterfly-social-run-1": eventDoc({womenLed: {value: true,
+      "organizers/moonmoth": organizerDoc(),
+      "events/moonmoth-social-run-1": eventDoc({womenLed: {value: true,
         setByUid: "host-1", setByRole: "manager", setAt: "EARLIER",
         lockedByAdmin: false}}),
     });
     const moderate = (womenLed: string) => adminUpdateEventDetailsHandler(
       callableRequest("admin-1", {
-        eventId: "afterfly-social-run-1", fields: {womenLed},
+        eventId: "moonmoth-social-run-1", fields: {womenLed},
         reviewNote: "Guest report reviewed.",
       }, {admin: true}), h.deps);
 
     assert.equal((await moderate("clear")).updatedFieldCount, 1);
-    const read = () => h.firestore.get("events/afterfly-social-run-1")
+    const read = () => h.firestore.get("events/moonmoth-social-run-1")
       ?.womenLed;
     assert.deepEqual(read(), {value: false, setByUid: "admin-1",
       setByRole: "admin", setAt: "SERVER_TIMESTAMP", lockedByAdmin: true});
@@ -910,14 +910,14 @@ test("admins clear, release and set an event's women-led override",
 
 test("adminUpdateEventDetailsHandler rejects cancelled events", async () => {
   const h = harness({
-    "organizers/afterfly": organizerDoc(),
-    "events/afterfly-social-run-1": eventDoc({status: "cancelled"}),
+    "organizers/moonmoth": organizerDoc(),
+    "events/moonmoth-social-run-1": eventDoc({status: "cancelled"}),
   });
 
   await assert.rejects(
     () => adminUpdateEventDetailsHandler(
       callableRequest("admin-1", {
-        eventId: "afterfly-social-run-1",
+        eventId: "moonmoth-social-run-1",
         fields: {description: "Cannot update"},
         reviewNote: "Cancelled event guard.",
       }, {support: true}),
@@ -929,14 +929,14 @@ test("adminUpdateEventDetailsHandler rejects cancelled events", async () => {
 
 test("adminUpdateEventDetailsHandler requires review notes", async () => {
   const h = harness({
-    "organizers/afterfly": organizerDoc(),
-    "events/afterfly-social-run-1": eventDoc(),
+    "organizers/moonmoth": organizerDoc(),
+    "events/moonmoth-social-run-1": eventDoc(),
   });
 
   await assert.rejects(
     () => adminUpdateEventDetailsHandler(
       callableRequest("admin-1", {
-        eventId: "afterfly-social-run-1",
+        eventId: "moonmoth-social-run-1",
         fields: {description: "Missing audit context."},
       }, {support: true}),
       h.deps
@@ -947,14 +947,14 @@ test("adminUpdateEventDetailsHandler requires review notes", async () => {
 
 test("adminGetEventDetailsHandler denies viewer-only admins", async () => {
   const h = harness({
-    "organizers/afterfly": organizerDoc(),
-    "events/afterfly-social-run-1": eventDoc(),
+    "organizers/moonmoth": organizerDoc(),
+    "events/moonmoth-social-run-1": eventDoc(),
   });
 
   await assert.rejects(
     () => adminGetEventDetailsHandler(
       callableRequest("admin-1", {
-        eventId: "afterfly-social-run-1",
+        eventId: "moonmoth-social-run-1",
       }, {salesStaff: true}),
       h.deps
     ),
@@ -964,9 +964,9 @@ test("adminGetEventDetailsHandler denies viewer-only admins", async () => {
 
 test("real pilot review is private, audited and rejects stale staff decisions",
   async () => {
-    const h = harness({"organizers/afterfly": organizerDoc(),
-      "events/afterfly-social-run-1": eventDoc()});
-    const data = {eventId: "afterfly-social-run-1", reviewNote: "Real pilot",
+    const h = harness({"organizers/moonmoth": organizerDoc(),
+      "events/moonmoth-social-run-1": eventDoc()});
+    const data = {eventId: "moonmoth-social-run-1", reviewNote: "Real pilot",
       fields: {hostPilotReview: {realEvent: true, expectedRevision: 0}}};
     await assert.rejects(adminUpdateEventDetailsHandler(
       callableRequest("staff", data, {support: true}), h.deps),
@@ -984,11 +984,11 @@ test("real pilot review is private, audited and rejects stale staff decisions",
 
 test("pilot review cannot recreate data after a Sales privacy restriction",
   async () => {
-    const h = harness({"organizers/afterfly": organizerDoc(),
-      "events/afterfly-social-run-1": eventDoc(),
-      "salesPrivacyRestrictions/afterfly": {}});
+    const h = harness({"organizers/moonmoth": organizerDoc(),
+      "events/moonmoth-social-run-1": eventDoc(),
+      "salesPrivacyRestrictions/moonmoth": {}});
     await assert.rejects(adminUpdateEventDetailsHandler(
-      callableRequest("staff", {eventId: "afterfly-social-run-1",
+      callableRequest("staff", {eventId: "moonmoth-social-run-1",
         reviewNote: "Synthetic restricted organiser",
         fields: {hostPilotReview: {realEvent: true, expectedRevision: 0}}},
       {admin: true}), h.deps),

@@ -19,7 +19,7 @@ test("trip ledger does not expose another dispatch station's passengers",
     ]) {
       seed[`transportTrips/${id}`] = {
         programId: "program-1", organizerId: "org-1", pickupPointId,
-        destinationHotelId: "hotel-1", destinationLabel: "Taj Palace",
+        destinationHotelId: "hotel-1", destinationLabel: "Harbourview Palace",
         vehicleClassId: "suv", plateDisplay: "DL1T4471", vendorId: null,
         vendorNameSnapshot: null, kind: "guestTransfer", status: "enRoute",
         passengerCount: 1, departedAt: now, arrivedAt: null, voidReason: null,
@@ -88,7 +88,7 @@ test("a busy unassigned station cannot crowd assigned trips out of the page",
 function trip(legIds: string[] = ["leg-1"]) {
   return {
     programId: "program-1", organizerId: "org-1", pickupPointId: "pp-t3",
-    destinationHotelId: "hotel-1", destinationLabel: "Taj Palace",
+    destinationHotelId: "hotel-1", destinationLabel: "Harbourview Palace",
     vehicleClassId: "suv", plateDisplay: "DL1T4471", vendorId: null,
     vendorNameSnapshot: null, kind: "guestTransfer", status: "enRoute",
     passengerCount: 1, departedAt: now, arrivedAt: null, voidReason: null,

@@ -24,10 +24,10 @@ describe("CatchPageTabBar", () => {
   it("renders views that open other screens as links and slides one pill when filled", () => {
     const onChanged = vi.fn();
     const {container} = render(
-      <CatchPageTabBar selected="overview" fill options={[{value: "overview", label: "Overview"}, {value: "events", label: "Events", href: "/organizers/afterfly/events"}]} label="Organizer" onChanged={onChanged} />,
+      <CatchPageTabBar selected="overview" fill options={[{value: "overview", label: "Overview"}, {value: "events", label: "Events", href: "/organizers/moonmoth/events"}]} label="Organizer" onChanged={onChanged} />,
     );
     const link = screen.getByRole("tab", {name: "Events"});
-    expect(link.getAttribute("href")).toBe("/organizers/afterfly/events");
+    expect(link.getAttribute("href")).toBe("/organizers/moonmoth/events");
     expect(fireEvent.click(link)).toBe(false);
     expect(onChanged).toHaveBeenCalledWith("events");
     expect(container.querySelector("[aria-hidden='true']")).not.toBeNull();

@@ -157,24 +157,24 @@ test("normalizeQueueItem builds readable club claim request rows", () => {
   assert.deepEqual(
     normalizeQueueItem("organizerClaimRequest",
       "organizerClaimRequests/request-1", {
-        organizerId: "afterfly-run-club-indore",
+        organizerId: "moonmoth-run-club-indore",
         requesterUid: "user-1",
-        requesterName: "Afterfly Ops",
+        requesterName: "Moonmoth Ops",
         requesterRole: "founder",
-        businessEmail: "hello@afterfly.example",
+        businessEmail: "hello@moonmoth.example",
         proofUrls: [
-          "https://example.com/afterfly",
-          "https://instagram.com/afterfly",
+          "https://example.com/moonmoth",
+          "https://instagram.com/moonmoth",
         ],
         status: "pending",
         createdAt: new Date("2026-06-01T11:30:00.000Z"),
       }),
     {
       id: "organizerClaimRequests/request-1",
-      title: "Afterfly Ops",
+      title: "Moonmoth Ops",
       detail:
-        "club afterfly-run-club-indore - founder - " +
-        "hello@afterfly.example - 2 proof links",
+        "club moonmoth-run-club-indore - founder - " +
+        "hello@moonmoth.example - 2 proof links",
       status: "pending",
       createdAt: "2026-06-01T11:30:00.000Z",
       targetPath: "organizerClaimRequests/request-1",
@@ -185,10 +185,10 @@ test("normalizeQueueItem builds readable club claim request rows", () => {
 test("normalizeQueueItem builds readable club index review rows", () => {
   assert.deepEqual(
     normalizeQueueItem("organizerIndexReview",
-      "clubs/afterfly-run-club-indore", {
-        name: "AFTER FLY",
+      "clubs/moonmoth-run-club-indore", {
+        name: "MOON MOTH",
         publicPage: {
-          canonicalPath: "/organizers/indore/afterfly-run-club/",
+          canonicalPath: "/organizers/indore/moonmoth-run-club/",
           indexStatus: "noindex",
         },
         provenance: {
@@ -198,13 +198,13 @@ test("normalizeQueueItem builds readable club index review rows", () => {
         },
       }),
     {
-      id: "clubs/afterfly-run-club-indore",
-      title: "AFTER FLY",
+      id: "clubs/moonmoth-run-club-indore",
+      title: "MOON MOTH",
       detail:
-        "/organizers/indore/afterfly-run-club/ - high - sourceBacked",
+        "/organizers/indore/moonmoth-run-club/ - high - sourceBacked",
       status: "noindex",
       createdAt: "2026-06-01T12:00:00.000Z",
-      targetPath: "clubs/afterfly-run-club-indore",
+      targetPath: "clubs/moonmoth-run-club-indore",
     }
   );
 });

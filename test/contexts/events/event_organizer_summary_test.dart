@@ -8,7 +8,7 @@ import '../../events/events_test_helpers.dart' as event_test;
 
 void main() {
   const summary = EventOrganizerSummary(
-    name: 'Bandra Run Club',
+    name: 'Sandbar Run Club',
     location: 'in-mh-mumbai',
     area: 'Bandra',
     hostName: 'Asha',
@@ -25,7 +25,7 @@ void main() {
 
       final json = event.toJson();
       expect(json['organizerSummary'], {
-        'name': 'Bandra Run Club',
+        'name': 'Sandbar Run Club',
         'location': 'in-mh-mumbai',
         'area': 'Bandra',
         'hostName': 'Asha',

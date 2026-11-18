@@ -30,7 +30,7 @@ void main() {
       description: 'A hosted team trivia night.',
       priceInPaise: 125000,
       meetingLocation: const EventMeetingLocation(
-        name: 'The Daily Bar',
+        name: 'The Salt Air Bar',
         address: 'Bandra West, Mumbai',
         placeId: 'place-7',
         latitude: 19.06,
@@ -62,7 +62,7 @@ void main() {
     expect(values.description, event.description);
     expect(values.accessibility, 'Step-free');
     expect(values.included, 'Dinner');
-    expect(values.meetingPoint, 'The Daily Bar');
+    expect(values.meetingPoint, 'The Salt Air Bar');
     expect(values.meetingLocationAddress, 'Bandra West, Mumbai');
     expect(values.sourceVenueId, isNull);
     expect(values.selectedDateMillis, isNull);

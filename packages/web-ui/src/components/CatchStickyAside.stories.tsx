@@ -62,7 +62,7 @@ function EventPage() {
         railSide="end"
         start={
           <CatchGap size="section">
-            {["The plan for the morning", "Where", "Good to know", "What people say", "More from Carter Road Runners"].map((title) => (
+            {["The plan for the morning", "Where", "Good to know", "What people say", "More from Driftwood Bay Runners"].map((title) => (
               <StoryTile body="Section content scrolls past while the booking card stays in view." key={title} minHeight={320} title={title} />
             ))}
           </CatchGap>

@@ -79,17 +79,17 @@ function fakeFirestore() {
   return {docs, db: db as unknown as FirebaseFirestore.Firestore};
 }
 
-const handle = "carterroadrunners";
-const organizerId = "carter-road-runners";
+const handle = "driftwoodbayrunners";
+const organizerId = "driftwood-bay-runners";
 const requesterUid = "organiser-one";
 const startMillis = Date.UTC(2026, 9, 26, 9, 0, 0);
 
-const lumaUrl = "https://luma.com/carter-road-runners";
+const lumaUrl = "https://luma.com/driftwood-bay-runners";
 
 function fixture(options: {enabled?: boolean; lumaEnabled?: boolean} = {}) {
   const {docs, db} = fakeFirestore();
   docs.set(`organizers/${organizerId}`, {
-    name: "Carter Road Runners", instagramHandle: null,
+    name: "Driftwood Bay Runners", instagramHandle: null,
     ownership: {state: "programmatic"},
     claim: {state: "unclaimed", claimHref: null, lastClaimRequestId: null},
     provenance: {origin: "import"},
@@ -97,7 +97,7 @@ function fixture(options: {enabled?: boolean; lumaEnabled?: boolean} = {}) {
       detail: "Public instagram page.",
       href: `https://www.instagram.com/${handle}/`, confidence: "medium",
       lastCheckedAt: null}, {type: "luma", label: "luma page",
-      detail: "Public luma page.", href: "https://lu.ma/carter-road-runners",
+      detail: "Public luma page.", href: "https://lu.ma/driftwood-bay-runners",
       confidence: "medium", lastCheckedAt: null}],
   });
   docs.set(`users/${requesterUid}`, {name: "Asha Rao",

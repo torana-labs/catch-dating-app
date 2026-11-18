@@ -12,7 +12,7 @@ const surface = (container: HTMLElement) => container.querySelector("[data-varia
 describe("catchAvatarInitialsOf", () => {
   it("takes two letters of one word, else the first letters of the first two", () => {
     expect(catchAvatarInitialsOf("Riya")).toBe("RI");
-    expect(catchAvatarInitialsOf("  Carter Road Runners ")).toBe("CR");
+    expect(catchAvatarInitialsOf("  Driftwood Bay Runners ")).toBe("DB");
     expect(catchAvatarInitialsOf("anne-marie_lee")).toBe("AM");
     expect(catchAvatarInitialsOf("")).toBe("");
   });

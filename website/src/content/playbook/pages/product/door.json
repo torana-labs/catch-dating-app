@@ -32,7 +32,7 @@
         "kind": "excerpt",
         "card": {
           "title": "Door · Friday Bandra Pub Crawl",
-          "subtitle": "Stop 1 · The Bombay Tap · 7:42 PM",
+          "subtitle": "Stop 1 · The Harbour Tap · 7:42 PM",
           "stats": [
             {"value": "31", "label": "checked in"},
             {"value": "9", "label": "still to come"},
@@ -95,7 +95,7 @@
           "rows": [
             {"title": "Meera · door", "tag": "Until 11 PM tonight"},
             {"title": "Arjun · door", "tag": "Until 11 PM tonight"},
-            {"title": "Venue staff · The Bombay Tap", "tag": "Removed 9:10 PM"}
+            {"title": "Venue staff · The Harbour Tap", "tag": "Removed 9:10 PM"}
           ]
         }
       }

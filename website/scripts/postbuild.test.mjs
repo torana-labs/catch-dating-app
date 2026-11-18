@@ -44,44 +44,44 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
     assert.equal(fs.existsSync(path.join(distRoot, "host", slug)), false, `retired ${slug} must not survive a rebuild`);
   }
   const listingHtml = fs.readFileSync(
-    path.join(distRoot, "organizers", "afterfly", "index.html"),
+    path.join(distRoot, "organizers", "moonmoth", "index.html"),
     "utf8"
   );
-  assert.match(listingHtml, /<title>AFTER FLY \| Indore events &amp; reviews \| Catch<\/title>/);
+  assert.match(listingHtml, /<title>MOON MOTH \| Indore events &amp; reviews \| Catch<\/title>/);
   assert.match(
     listingHtml,
-    /<link rel="canonical" href="https:\/\/example\.test\/organizers\/afterfly\/" \/>/
+    /<link rel="canonical" href="https:\/\/example\.test\/organizers\/moonmoth\/" \/>/
   );
   assert.match(listingHtml, /<meta name="robots" content="index, follow" \/>/);
   assert.match(listingHtml, /data-static-organizer-profile="true"/);
-  assert.match(listingHtml, /<h1>AFTER FLY<\/h1>/);
+  assert.match(listingHtml, /<h1>MOON MOTH<\/h1>/);
   assert.match(listingHtml, /<h2>Public sources<\/h2>/);
   assert.match(listingHtml, /type="application\/ld\+json"/);
   assert.match(listingHtml, /"@type":"Organization"/);
   assert.match(listingHtml, /"@type":"BreadcrumbList"/);
 
-  assert.equal(fs.existsSync(path.join(distRoot, "events", "afterfly-catch-event", "index.html")), false);
+  assert.equal(fs.existsSync(path.join(distRoot, "events", "moonmoth-catch-event", "index.html")), false);
   assert.equal(fs.existsSync(path.join(distRoot, "events", "stale-private-event")), false);
   const eventShell = fs.readFileSync(path.join(distRoot, "events", "index.html"), "utf8");
-  assert.doesNotMatch(eventShell, /Afterfly Catch social run|application\/ld\+json/);
+  assert.doesNotMatch(eventShell, /Moonmoth Catch social run|application\/ld\+json/);
   assert.match(eventShell, /noindex, follow/);
 
   const externalEventHtml = fs.readFileSync(
-    path.join(distRoot, "events", "afterfly-external-event", "index.html"),
+    path.join(distRoot, "events", "moonmoth-external-event", "index.html"),
     "utf8"
   );
-  assert.match(externalEventHtml, /Afterfly external social run/);
-  assert.match(externalEventHtml, /https:\/\/luma\.com\/afterfly-external/);
-  assert.match(externalEventHtml, /"sameAs":"https:\/\/luma\.com\/afterfly-external"/);
+  assert.match(externalEventHtml, /Moonmoth external social run/);
+  assert.match(externalEventHtml, /https:\/\/luma\.com\/moonmoth-external/);
+  assert.match(externalEventHtml, /"sameAs":"https:\/\/luma\.com\/moonmoth-external"/);
 
   const legacyHtml = fs.readFileSync(
-    path.join(distRoot, "organizers", "indore", "afterfly-run-club", "index.html"),
+    path.join(distRoot, "organizers", "indore", "moonmoth-run-club", "index.html"),
     "utf8"
   );
   assert.match(legacyHtml, /<meta name="robots" content="noindex, follow" \/>/);
   assert.match(
     legacyHtml,
-    /<link rel="canonical" href="https:\/\/example\.test\/organizers\/afterfly\/" \/>/
+    /<link rel="canonical" href="https:\/\/example\.test\/organizers\/moonmoth\/" \/>/
   );
 
   const claimHtml = fs.readFileSync(
@@ -161,18 +161,18 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   assert.match(sitemap, /<loc>https:\/\/example\.test\/privacy\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/terms\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/example\.test\/help\/<\/loc>/);
-  assert.match(sitemap, /<loc>https:\/\/example\.test\/organizers\/afterfly\/<\/loc>/);
-  assert.doesNotMatch(sitemap, /afterfly-catch-event/);
-  assert.match(sitemap, /<loc>https:\/\/example\.test\/events\/afterfly-external-event\/<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/example\.test\/organizers\/moonmoth\/<\/loc>/);
+  assert.doesNotMatch(sitemap, /moonmoth-catch-event/);
+  assert.match(sitemap, /<loc>https:\/\/example\.test\/events\/moonmoth-external-event\/<\/loc>/);
   assert.match(
     sitemap,
-    /<loc>https:\/\/example\.test\/organizers\/afterfly\/<\/loc><lastmod>2026-06-18<\/lastmod>/
+    /<loc>https:\/\/example\.test\/organizers\/moonmoth\/<\/loc><lastmod>2026-06-18<\/lastmod>/
   );
   assert.doesNotMatch(sitemap, /event-update/u);
   assert.doesNotMatch(sitemap, /claim\/<\/loc>/);
   assert.doesNotMatch(sitemap, /404\/<\/loc>/);
   assert.doesNotMatch(sitemap, /organizers\/$/);
-  assert.doesNotMatch(sitemap, /afterfly-run-club/);
+  assert.doesNotMatch(sitemap, /moonmoth-run-club/);
   assert.doesNotMatch(sitemap, /noindex-sample/);
   assert.doesNotMatch(sitemap, /published-suppressed/);
   // Discovery pages have no static output; only the Next sitemap lists the indexed format pages.
@@ -219,11 +219,11 @@ test("postbuild reads static and listing metadata from the validated content sou
 
   const claimHtml = fs.readFileSync(path.join(distRoot, "claim", "index.html"), "utf8");
   const listingHtml = fs.readFileSync(
-    path.join(distRoot, "organizers", "afterfly", "index.html"),
+    path.join(distRoot, "organizers", "moonmoth", "index.html"),
     "utf8"
   );
   assert.match(claimHtml, /<title>Custom claim metadata<\/title>/u);
-  assert.match(listingHtml, /<title>AFTER FLY in Indore \| Custom profile<\/title>/u);
+  assert.match(listingHtml, /<title>MOON MOTH in Indore \| Custom profile<\/title>/u);
   assert.match(listingHtml, /<h2>Verified links<\/h2>/u);
 });
 
@@ -286,19 +286,19 @@ function hostListings() {
       facts: [{label: "Market", value: "Indore"}],
       indexing: "index, follow",
       lastVerifiedAt: "2026-06-18",
-      legacyPaths: ["/organizers/indore/afterfly-run-club/"],
-      name: "AFTER FLY",
-      path: "/organizers/afterfly/",
+      legacyPaths: ["/organizers/indore/moonmoth-run-club/"],
+      name: "MOON MOTH",
+      path: "/organizers/moonmoth/",
       sourceSummary: "Admin-reviewed public source summary.",
       sources: [{
         detail: "Reviewed public source.",
-        href: "https://example.test/afterfly",
+        href: "https://example.test/moonmoth",
         label: "Official website",
       }],
       catchEvents: [{
-        id: "afterfly-catch-event",
+        id: "moonmoth-catch-event",
         role: "hostEventSetup",
-        title: "Afterfly Catch social run",
+        title: "Moonmoth Catch social run",
         activityKind: "socialRun",
         timeline: "upcoming",
         startTime: "2026-08-01T01:30:00.000Z",
@@ -313,8 +313,8 @@ function hostListings() {
         priceLabel: "Free",
       }],
       externalEvents: [{
-        id: "afterfly-external-event",
-        title: "Afterfly external social run",
+        id: "moonmoth-external-event",
+        title: "Moonmoth external social run",
         activityKind: "socialRun",
         availability: "read_only_external",
         startTime: "2026-08-02T01:30:00.000Z",
@@ -324,13 +324,13 @@ function hostListings() {
         summary: "A source-attributed external social run.",
         priceLabel: "Free RSVP",
         sourceLabel: "Luma",
-        sourceHref: "https://luma.com/afterfly-external",
+        sourceHref: "https://luma.com/moonmoth-external",
         externalLinkCount: 1,
-        dedupeKey: "afterfly-external-event",
+        dedupeKey: "moonmoth-external-event",
       }],
       reviews: [{
-        id: "afterfly-event-review",
-        eventId: "afterfly-catch-event",
+        id: "moonmoth-event-review",
+        eventId: "moonmoth-catch-event",
         reviewerName: "Verified attendee",
         rating: 5,
         comment: "Clear pace groups and a welcoming finish.",

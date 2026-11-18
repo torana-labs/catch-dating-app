@@ -27,8 +27,8 @@ describe("listingEventPublishRequest", () => {
   });
 
   it("a location clears its own blockers and the rest are resolved with the note", () => {
-    const request = listingEventPublishRequest(event(), "req", filled({mapLocation: "19.0596, 72.8227", venueName: " Bonobo "}));
-    expect(request?.eventLocations).toEqual([{eventWorkItemId: "work-call", name: "Bonobo", address: null, placeId: null,
+    const request = listingEventPublishRequest(event(), "req", filled({mapLocation: "19.0596, 72.8227", venueName: " Copperleaf "}));
+    expect(request?.eventLocations).toEqual([{eventWorkItemId: "work-call", name: "Copperleaf", address: null, placeId: null,
       latitude: 19.0596, longitude: 72.8227}]);
     expect(request?.blockerResolutions).toEqual([{eventWorkItemId: "work-call", blockerCode: "missing_end_time",
       outcome: "resolved", policyGapDecisionId: null, note: "Checked it on Luma."}]);

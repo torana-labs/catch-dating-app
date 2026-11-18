@@ -13,12 +13,12 @@ function source(finalUrl: string | null, snapshot: unknown): IntakePageSource {
   };
 }
 
-const input = {url: "https://luma.com/carter-runs",
+const input = {url: "https://luma.com/driftwood-runs",
   marker: lumaClaimMarker("482173"), runKey: "organizer-claim:test"};
 
 test("the marker is found in the page's embedded calendar data", async () => {
   const reading = await readLumaClaimMarker(source(input.url, {
-    text: "Carter Road Runners",
+    text: "Driftwood Bay Runners",
     embeddedJson: [{id: "__NEXT_DATA__", value: {calendar: {
       description_mirror: {content: [{text: "Join us. CATCH-482173"}]}}}}],
   }), input);

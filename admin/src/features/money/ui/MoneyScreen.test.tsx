@@ -108,7 +108,7 @@ describe("Money", () => {
   });
 
   it("offers no decision on a paid bill", () => {
-    renderMoney("bills", billsController("sample-afterfly"), issuesController(0));
+    renderMoney("bills", billsController("sample-moonmoth"), issuesController(0));
     expect(screen.queryByRole("button", {name: "Record a reminder"})).toBeNull();
     expect(screen.queryByRole("button", {name: "Write off"})).toBeNull();
   });

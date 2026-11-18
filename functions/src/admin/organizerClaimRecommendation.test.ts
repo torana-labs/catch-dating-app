@@ -8,7 +8,7 @@ import {adminRecommendOrganizerClaimHandler} from "./organizerClaimRecommendatio
 
 function harness(status = "pending") {
   const db = new FakeFirestore();
-  db.write("organizerClaimRequests/claim-1", {requestId: "claim-1", organizerId: "bhag", requesterUid: "arjun", status});
+  db.write("organizerClaimRequests/claim-1", {requestId: "claim-1", organizerId: "brindle", requesterUid: "arjun", status});
   const deps = {firestore: () => db as unknown as FirebaseFirestore.Firestore,
     serverTimestamp: () => "SERVER_TIMESTAMP" as never, now: () => new Date("2026-10-30T09:00:00.000Z")};
   const request = (data: Record<string, unknown>, token: Record<string, unknown> = {support: true}) =>

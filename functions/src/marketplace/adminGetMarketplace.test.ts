@@ -37,7 +37,7 @@ test("rows become cities, guest cohorts, weeks and quiet organizers", () => {
       eventsThisWeek: "48", eventsLastWeek: "39"},
     {weekStart: "2026-11-03", bookings: "96", partial: true,
       eventsThisWeek: "48", eventsLastWeek: "39"}],
-    quiet: [{organizerId: "harbor", name: "Harbor Social Club",
+    quiet: [{organizerId: "harbor", name: "Quayside Supper Club",
       marketId: "mumbai", daysSinceLastEvent: "36",
       eventsPerMonthBefore: "4"}],
     owners: new Map([["harbor", {uid: "riya", name: "Riya Sharma"}]])});

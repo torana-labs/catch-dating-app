@@ -26,9 +26,9 @@ Widget catchRecordRowContractStates(
       child: CatchField.navigate(
         onActivate: widgetbookNoop,
         content: CatchRecordLayout(
-          title: 'Friday Evening Trivia Night at The Daily Bar',
+          title: 'Friday Evening Trivia Night at The Salt Air Bar',
           icon: CatchIcons.eventConfirmed,
-          facts: const ['8:00 PM · The Daily Bar', '24 of 30 registered'],
+          facts: const ['8:00 PM · The Salt Air Bar', '24 of 30 registered'],
         ),
       ),
     ),

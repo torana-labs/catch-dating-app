@@ -23,10 +23,10 @@ const fixture = (name, url) => snapshotFromHtml({
   html: fs.readFileSync(path.join(pages, `${name}.html`), "utf8"),
   fetchedAt: "2026-10-24T08:00:00.000Z",
 });
-const lumaEvent = () => fixture("luma-event", "https://lu.ma/1dfd73wq");
-const lumaOrganizer = () => fixture("luma-organizer", "https://luma.com/blrdroid");
-const districtEvent = () => fixture("district-event", "https://www.district.in/events/noida-comedy-bar-jan7-2026-buy-tickets");
-const urbanautSpot = () => fixture("urbanaut-spot", "https://urbanaut.app/spot/ballard-estate-photowalk");
+const lumaEvent = () => fixture("luma-event", "https://lu.ma/bbany133");
+const lumaOrganizer = () => fixture("luma-organizer", "https://luma.com/bytebanyan");
+const districtEvent = () => fixture("district-event", "https://www.district.in/events/giggle-yard-open-mic-jan7-2026-buy-tickets");
+const urbanautSpot = () => fixture("urbanaut-spot", "https://urbanaut.app/spot/dockyard-lane-photowalk");
 
 test("page snapshots keep structured data and bounded text, never raw HTML", () => {
   const snapshot = snapshotFromHtml({
@@ -59,14 +59,14 @@ test("Luma event pages yield the event and its organizer's calendar link", () =>
   const result = extractWithAdapters({snapshot: lumaEvent()});
   assert.equal(result.adapterId, "luma");
   assert.equal(result.pageKind, "event_page");
-  assert.equal(result.surface.normalizedKey, "luma:event:1dfd73wq");
+  assert.equal(result.surface.normalizedKey, "luma:event:bbany133");
   assert.equal(result.events.length, 1);
   const [event] = result.events;
-  assert.equal(event.sourceEntityId, "1dfd73wq");
-  assert.equal(event.title, "BlrDroid + Blrkotlin October 2026 Meetup #133");
+  assert.equal(event.sourceEntityId, "bbany133");
+  assert.equal(event.title, "ByteBanyan + Lambdalagoon October 2026 Meetup #133");
   assert.equal(event.startAt, "2026-10-24T09:30:00.000+05:30");
   assert.equal(event.locality, "Bengaluru");
-  assert.equal(event.organizerUrl, "https://luma.com/blrdroid");
+  assert.equal(event.organizerUrl, "https://luma.com/bytebanyan");
   assert.equal(event.attendanceMode, "offline");
   assert.ok(event.evidenceFields.includes("startAt") && event.evidenceFields.includes("sourceUrl"));
 });
@@ -76,12 +76,12 @@ test("Luma organizer calendars yield a listing and its upcoming events", () => {
   assert.equal(result.pageKind, "organizer_page");
   assert.equal(result.organizers.length, 1);
   const [organizer] = result.organizers;
-  assert.equal(organizer.name, "BlrDroid Community");
-  assert.equal(organizer.url, "https://luma.com/blrdroid");
+  assert.equal(organizer.name, "ByteBanyan Community");
+  assert.equal(organizer.url, "https://luma.com/bytebanyan");
   assert.equal(organizer.locality, "Bengaluru");
   assert.match(organizer.description, /android developers/u);
   assert.ok(organizer.imageUrl.startsWith("https://images.lumacdn.com/"));
-  assert.deepEqual(result.events.map((event) => event.sourceEntityId), ["1dfd73wq"]);
+  assert.deepEqual(result.events.map((event) => event.sourceEntityId), ["bbany133"]);
 });
 
 test("District sessions of one show become separate occurrences with the organizer name", () => {
@@ -89,12 +89,12 @@ test("District sessions of one show become separate occurrences with the organiz
   assert.equal(result.adapterId, "district");
   assert.equal(result.events.length, 3);
   assert.equal(new Set(result.events.map((event) => event.sourceEntityId)).size, 3);
-  assert.ok(result.events.every((event) => event.title === "Noida Comedy Bar" &&
-    event.price?.currency === "INR" && event.latitude === 28.5399));
+  assert.ok(result.events.every((event) => event.title === "Giggle Yard Open Mic" &&
+    event.price?.currency === "INR" && event.latitude === 28.5700));
   assert.deepEqual(result.events.map((event) => event.startAt), [
     "2026-10-24T14:30:00.000Z", "2026-10-24T16:30:00.000Z", "2026-10-25T08:30:00.000Z"]);
   assert.deepEqual(result.organizers.map((organizer) => [organizer.name, organizer.locality, organizer.url]),
-    [["TRIBAL SIERRA CAFE LLP", "Noida", null]]);
+    [["EXAMPLE HOSPITALITY LLP", "Noida", null]]);
 });
 
 test("Urbanaut experiences read embedded state but never its contacts", () => {
@@ -102,14 +102,14 @@ test("Urbanaut experiences read embedded state but never its contacts", () => {
   const result = extractWithAdapters({snapshot});
   assert.equal(result.adapterId, "urbanaut");
   const [event] = result.events;
-  assert.equal(event.title, "BALLARD ESTATE PHOTOWALK");
+  assert.equal(event.title, "DOCKYARD LANE PHOTOWALK");
   assert.equal(event.startAt, "2026-10-25T02:00:00.000Z");
   assert.equal(event.locality, "Mumbai");
   assert.equal(event.price.currency, "INR");
-  assert.equal(event.organizerUrl, "https://urbanaut.app/mayanksoni");
+  assert.equal(event.organizerUrl, "https://urbanaut.app/noorkapadia");
   const [organizer] = result.organizers;
-  assert.equal(organizer.name, "Mayank Soni");
-  assert.equal(organizer.sourceEntityId, "urbanaut:profile:mayanksoni");
+  assert.equal(organizer.name, "Noor Kapadia");
+  assert.equal(organizer.sourceEntityId, "urbanaut:profile:noorkapadia");
   // Contacts in a live page's state are never copied into candidates.
   const spot = Object.values(snapshot.embeddedJson[0].value)[0];
   const withContacts = structuredClone(snapshot);
@@ -135,16 +135,16 @@ test("a platform page whose template drifted abstains for the agent instead of g
 });
 
 test("organizer websites fall back to schema.org markup, then to metadata only", () => {
-  const marked = snapshotFromHtml({url: "https://thebhag.in/events", html: `<script type="application/ld+json">
+  const marked = snapshotFromHtml({url: "https://thebrindle.example/events", html: `<script type="application/ld+json">
     {"@context":"https://schema.org","@graph":[
-      {"@type":"SportsOrganizer","name":"The Bhag","url":"https://thebhag.in","sameAs":["https://instagram.com/thebhag"]},
+      {"@type":"SportsOrganizer","name":"The Brindle","url":"https://thebrindle.example","sameAs":["https://instagram.com/thebrindle"]},
       {"@type":"Event","name":"Sunday Long Run","startDate":"2026-11-01T06:00:00+05:30",
        "location":{"@type":"Place","name":"Cubbon Park","address":{"addressLocality":"Bengaluru"}}}]}</script>`});
   const result = extractWithAdapters({snapshot: marked});
   assert.equal(result.adapterId, "schema-org-event");
   assert.equal(result.platform, "officialWebsite");
   assert.deepEqual(result.organizers.map((organizer) => [organizer.name, organizer.sameAs]),
-    [["The Bhag", ["https://instagram.com/thebhag"]]]);
+    [["The Brindle", ["https://instagram.com/thebrindle"]]]);
   assert.equal(result.events[0].venue, "Cubbon Park");
 
   const bare = snapshotFromHtml({url: "https://linktr.ee/somecrew", html: `<meta property="og:title" content="Some Crew">

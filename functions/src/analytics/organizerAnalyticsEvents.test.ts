@@ -82,7 +82,7 @@ test("recordOrganizerAnalyticsEvent writes a BigQuery row", async () => {
       organizerId: "club-1",
       eventName: "eventView",
       eventId: "event-1",
-      pagePath: "/organizers/saket-run-club/",
+      pagePath: "/organizers/neemwood-run-club/",
       source: "catch_event_card",
       sessionId: "browser-session-1",
       platform: "web",
@@ -104,7 +104,7 @@ test("recordOrganizerAnalyticsEvent writes a BigQuery row", async () => {
       event_name: "eventView",
       organizer_id: "club-1",
       target_event_id: "event-1",
-      page_path: "/organizers/saket-run-club/",
+      page_path: "/organizers/neemwood-run-club/",
       source: "catch_event_card",
       session_hash:
         "a72e68b65309f769c0fb5d5ddc58c7b8be63dde169a26211745881ec1710b3eb",
@@ -121,7 +121,7 @@ test("link clicks record the owner link and a bounded traffic source",
     const bigQuery = new FakeBigQuery();
     await recordOrganizerAnalyticsEventHandler(callableRequest({
       organizerId: "club-1", eventName: "linkClick", linkId: " tickets ",
-      trafficSource: "instagram", pagePath: "/organizers/saket-run-club/",
+      trafficSource: "instagram", pagePath: "/organizers/neemwood-run-club/",
       source: "organizer_page",
     }), deps(new FakeFirestore(linkDocs()), bigQuery));
     const row = bigQuery.inserted[0].rows[0].json;
@@ -145,7 +145,7 @@ for (const [name, payload] of [
     const bigQuery = new FakeBigQuery();
     await assert.rejects(() => recordOrganizerAnalyticsEventHandler(
       callableRequest({organizerId: "club-1",
-        pagePath: "/organizers/saket-run-club/", ...payload}),
+        pagePath: "/organizers/neemwood-run-club/", ...payload}),
       deps(new FakeFirestore(linkDocs()), bigQuery)
     ), {code: "invalid-argument"});
     assert.equal(bigQuery.inserted.length, 0);
@@ -159,7 +159,7 @@ test("recordOrganizerAnalyticsEvent rejects mismatched scope", async () => {
         organizerId: "club-1",
         eventId: "event-2",
         eventName: "eventView",
-        pagePath: "/organizers/saket-run-club/",
+        pagePath: "/organizers/neemwood-run-club/",
       }),
       deps(new FakeFirestore({
         ...baseDocs(),
@@ -180,7 +180,7 @@ test("recordOrganizerAnalyticsEvent rejects unpublished pages", async () => {
       callableRequest({
         organizerId: "club-1",
         eventName: "listingView",
-        pagePath: "/organizers/saket-run-club/",
+        pagePath: "/organizers/neemwood-run-club/",
       }),
       deps(new FakeFirestore({
         ...baseDocs(),
@@ -237,7 +237,7 @@ test("recordOrganizerAnalyticsEvent rejects rate-limited clients", async () => {
       callableRequest({
         organizerId: "club-1",
         eventName: "listingView",
-        pagePath: "/organizers/saket-run-club/",
+        pagePath: "/organizers/neemwood-run-club/",
       }),
       deps(new FakeFirestore(baseDocs()), new FakeBigQuery(), false)
     ),
@@ -303,7 +303,7 @@ for (const external of [
 test("organizer preview excludes visitor metrics", async () => {
   const bigQuery = new FakeBigQuery();
   const request = callableRequest({organizerId: "club-1",
-    eventName: "listingView", pagePath: "/organizers/saket-run-club/"});
+    eventName: "listingView", pagePath: "/organizers/neemwood-run-club/"});
   request.auth = {uid: "owner-1", token: {}} as CallableRequest["auth"];
   assert.deepEqual(await recordOrganizerAnalyticsEventHandler(request,
     deps(new FakeFirestore({...baseDocs(), "organizers/club-1": {
@@ -315,7 +315,7 @@ test("organizer preview excludes visitor metrics", async () => {
 test("event activity needs event identity", async () => {
   await assert.rejects(() => recordOrganizerAnalyticsEventHandler(
     callableRequest({organizerId: "club-1", eventName: "eventView",
-      pagePath: "/organizers/saket-run-club/"}),
+      pagePath: "/organizers/neemwood-run-club/"}),
     deps(new FakeFirestore(baseDocs()), new FakeBigQuery())
   ), {code: "invalid-argument"});
 });
@@ -341,7 +341,7 @@ for (const status of ["active", "removed"]) {
     const bigQuery = new FakeBigQuery();
     const request = callableRequest({organizerId: "club-1",
       eventName: "listingView",
-      pagePath: "/organizers/saket-run-club/"});
+      pagePath: "/organizers/neemwood-run-club/"});
     request.auth = {uid: "manager-1", token: {}} as CallableRequest["auth"];
     await recordOrganizerAnalyticsEventHandler(request,
       deps(new FakeFirestore({...baseDocs(),
@@ -360,7 +360,7 @@ for (const payload of [
   test(`rejects invalid scope ${JSON.stringify(payload)}`, async () => {
     await assert.rejects(() => recordOrganizerAnalyticsEventHandler(
       callableRequest({...payload, eventName: "listingView",
-        pagePath: "/organizers/saket-run-club/"}),
+        pagePath: "/organizers/neemwood-run-club/"}),
       deps(new FakeFirestore(baseDocs()), new FakeBigQuery())
     ), {code: "invalid-argument"});
   });
@@ -371,7 +371,7 @@ for (const source of ["listing_page", "external_event_source"]) {
     const bigQuery = new FakeBigQuery();
     await recordOrganizerAnalyticsEventHandler(callableRequest({
       organizerId: "club-1", eventName: "listingView", source,
-      pagePath: "/organizers/saket-run-club/",
+      pagePath: "/organizers/neemwood-run-club/",
     }), deps(new FakeFirestore(baseDocs()), bigQuery));
     assert.equal(bigQuery.inserted[0].rows[0].json.source, source);
   });
@@ -411,7 +411,7 @@ function linkDocs(): Record<string, FakeData> {
 
 function organizerDoc(publicPageOverrides: FakeData = {}): FakeData {
   return {
-    name: "Saket Run Club",
+    name: "Neemwood Run Club",
     status: "active",
     archived: false,
     claim: {
@@ -420,9 +420,9 @@ function organizerDoc(publicPageOverrides: FakeData = {}): FakeData {
       lastClaimRequestId: null,
     },
     publicPage: {
-      slug: "saket-run-club",
+      slug: "neemwood-run-club",
       citySlug: "delhi",
-      canonicalPath: "/organizers/saket-run-club/",
+      canonicalPath: "/organizers/neemwood-run-club/",
       publishStatus: "published",
       indexStatus: "indexReady",
       robots: "index, follow",

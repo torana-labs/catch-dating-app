@@ -108,7 +108,7 @@ List<Override> _programOverrides() {
       const AsyncData(<ProgramVendorOption>[
         ProgramVendorOption(
           vendorId: 'vendor_meru',
-          name: 'Meru Cabs',
+          name: 'Driftwood Cabs',
           active: true,
           boundToProgram: true,
         ),

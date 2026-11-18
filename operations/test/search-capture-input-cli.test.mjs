@@ -15,18 +15,18 @@ const run = promisify(execFile);
 const operationsRoot = fileURLToPath(new URL("../", import.meta.url));
 const scriptPath = path.join(operationsRoot, "src/cli/search-capture-input.mjs");
 const SERPAPI_FIXTURE = path.join(operationsRoot,
-  "src/workflows/supply-intake/fixtures/search/afterfly.serpapi.raw.json");
+  "src/workflows/supply-intake/fixtures/search/moonmoth.serpapi.raw.json");
 
 const planEntry = {
-  candidateId: "afterfly-run-club-indore",
-  candidateName: "AFTER FLY",
+  candidateId: "moonmoth-run-club-indore",
+  candidateName: "MOON MOTH",
   categoryId: "social_run_club",
   city: "Indore",
   citySlug: "indore",
   planKind: "candidate_verification",
-  renderedQuery: "\"AFTER FLY\" Luma",
+  renderedQuery: "\"MOON MOTH\" Luma",
   resultFingerprint: "c383931a89d36db6",
-  runKey: "web_search|\"after fly\" luma|indore|social_run_club|afterfly-run-club-indore",
+  runKey: "web_search|\"moon moth\" luma|indore|social_run_club|moonmoth-run-club-indore",
   source: "web_search",
 };
 
@@ -72,9 +72,9 @@ test("a saved SerpAPI capture becomes an ingestable search snapshot", async () =
   assert.equal(envelope.data.market, "indore");
   assert.equal(envelope.data.observedAt, "2026-06-17T00:00:00.000Z");
   assert.equal(envelope.data.batchId,
-    "2026-06-17-afterfly-run-club-indore-c383931a89d36db6");
+    "2026-06-17-moonmoth-run-club-indore-c383931a89d36db6");
   assert.equal(envelope.data.snapshotId,
-    "search-2026-06-17-afterfly-run-club-indore-c383931a89d36db6");
+    "search-2026-06-17-moonmoth-run-club-indore-c383931a89d36db6");
   assert.equal(envelope.data.queue.candidates, 3);
   assert.deepEqual(envelope.data.queue.warnings, []);
 
@@ -84,9 +84,9 @@ test("a saved SerpAPI capture becomes an ingestable search snapshot", async () =
   assert.equal(snapshot.provenance.source, "operations_batch_web_search");
   assert.deepEqual(snapshot.organizerSearchCandidates.map((candidate) =>
     candidate.normalizedKey), [
-    "luma:event:pxgmph3b",
-    "instagram:afterfly.in",
-    "sortMyScene:profile:afterfly",
+    "luma:event:mmoth26x",
+    "instagram:moonmoth.example",
+    "sortMyScene:profile:moonmoth",
   ]);
   assert.ok(snapshot.organizerSearchCandidates.every((candidate) =>
     candidate.query === planEntry.renderedQuery));

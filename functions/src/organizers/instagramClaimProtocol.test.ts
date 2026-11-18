@@ -124,9 +124,9 @@ test("shares keep their type, any instagram.com page link and field names",
         {...inbound("m1", "901", ""), message: {mid: "m1", attachments: [
           {type: "ig_post", payload: {url: cdn, title: "x"}},
           {type: "share",
-            payload: {url: "https://instagram.com/afterfly.in/?igsh=1"}},
+            payload: {url: "https://instagram.com/moonmoth.example/?igsh=1"}},
           {type: "share",
-            payload: {url: "http://www.instagram.com/afterfly.in/"}},
+            payload: {url: "http://www.instagram.com/moonmoth.example/"}},
         ]}},
         {...inbound("m2", "902", ""),
           message: {mid: "m2", is_unsupported: true}},
@@ -135,7 +135,7 @@ test("shares keep their type, any instagram.com page link and field names",
       Buffer.from(JSON.stringify(body)), config.accountId);
     assert.deepEqual(shared.attachments, [
       {type: "ig_post", pageUrl: null, payloadKeys: ["url", "title"]},
-      {type: "share", pageUrl: "https://www.instagram.com/afterfly.in/",
+      {type: "share", pageUrl: "https://www.instagram.com/moonmoth.example/",
         payloadKeys: ["url"]},
       {type: "share", pageUrl: null, payloadKeys: ["url"]},
     ]);

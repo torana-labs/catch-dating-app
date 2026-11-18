@@ -541,7 +541,6 @@
     "OrganizerDocument",
     "OrganizerEntitlementCallableResponse",
     "OrganizerEntitlementMutationCallableResponse",
-    "OrganizerEntitlementReceiptDocument",
     "OrganizerEntitlementsDocument",
     "OrganizerEventOfferPaymentDocument",
     "OrganizerEventOfferRecipientDocument",

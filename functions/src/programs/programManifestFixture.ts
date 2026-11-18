@@ -20,7 +20,7 @@ export function seed(): Record<string, FakeData> {
       hostProfiles: [],
     },
     "programHotels/hotel-1": {
-      programId: "program-1", organizerId: "org-1", name: "Taj Palace",
+      programId: "program-1", organizerId: "org-1", name: "Harbourview Palace",
       active: true,
     },
     "programPickupPoints/pickup-1": {
@@ -52,7 +52,7 @@ export const row = {
   destinationIata: "DEL",
   scheduledArrivalAtMillis: NOW + 2 * 3600_000,
   pickupPointLabel: "DEL T3 Arrivals",
-  destinationHotelName: "Taj Palace",
+  destinationHotelName: "Harbourview Palace",
   passengers: 2,
   luggageUnits: 3,
 };

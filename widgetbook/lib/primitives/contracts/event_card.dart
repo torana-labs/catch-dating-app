@@ -59,7 +59,7 @@ Widget catchEventCardContractStates(BuildContext context) {
             format: CatchFormat.run,
             formatLabel: 'Social run',
             when: 'Sun 1 Nov · 6:30 AM',
-            title: 'Carter Road Social Run',
+            title: 'Salt Air Social Run',
             place: 'Carter Road promenade',
             counts: [
               CatchMetricValue(value: '0', label: 'Booked'),

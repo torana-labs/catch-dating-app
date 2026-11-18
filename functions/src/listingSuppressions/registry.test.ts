@@ -139,7 +139,7 @@ test("website applications are dropped and message nominations queue only the un
     checkRateLimit: async () => undefined} as never, {messageKey: "msg-1", receivedAtMillis: NOW.getTime(),
     nominator: {nominatorId: "nominator-1", role: "associate", uid: "associate-1", partnerId: null, defaultMarket: "mumbai"},
     parsed: {nominations: [{urls: ["https://www.instagram.com/lanterntrailrunners/"], notes: null},
-      {urls: ["https://www.instagram.com/harbourswimcollective/"], notes: null}], unreadable: [], droppedNominations: 0}});
+      {urls: ["https://www.instagram.com/driftwood.swim/"], notes: null}], unreadable: [], droppedNominations: 0}});
   assert.deepEqual([queued.outcome, queued.requests.length, queued.suppressed], ["queued", 1, 1]);
   assert.equal(requests(db).length, 1);
   assert.equal(caseDoc(db).blockedIntakeCount, 2);

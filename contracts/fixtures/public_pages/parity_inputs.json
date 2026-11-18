@@ -886,7 +886,7 @@
             "schemaVersion": 1,
             "eventId": "ext-public",
             "canonicalHostId": "next-proof",
-            "title": "Takeoff: Run + Rave",
+            "title": "Nightfall: Run + Rave",
             "description": "Reviewed external event listing.",
             "startTime": {
               "_seconds": 1742041800,
@@ -901,13 +901,13 @@
             "meetingLocation": {
               "name": "Nehru Stadium",
               "address": "Nehru Stadium, Indore, Madhya Pradesh",
-              "placeId": "ChIJ-afterfly-indore",
+              "placeId": "ChIJ-moonmoth-indore",
               "latitude": 22.7196,
               "longitude": 75.8577,
               "notes": "Matched to source listing and map result."
             },
             "locationDetails": "Nehru Stadium, Indore, Madhya Pradesh",
-            "photoUrl": "https://images.lumacdn.com/event-afterfly.jpg",
+            "photoUrl": "https://images.lumacdn.com/event-moonmoth.jpg",
             "activity": {
               "version": 1,
               "activityKind": "socialRun",
@@ -939,10 +939,10 @@
               "externalLinks": [
                 {
                   "platform": "luma",
-                  "url": "https://luma.com/pxgmph3b",
+                  "url": "https://luma.com/mmoth26x",
                   "linkType": "booking_or_event_page",
-                  "sourceEventKey": "luma:event:pxgmph3b",
-                  "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+                  "sourceEventKey": "luma:event:mmoth26x",
+                  "candidateId": "2026-06-17-moonmoth-luma-events:mmoth26x",
                   "primary": true
                 },
                 {
@@ -950,7 +950,7 @@
                   "url": "https://partiful.com/e/run-rave",
                   "linkType": "booking_or_event_page",
                   "sourceEventKey": "partiful:event:run-rave",
-                  "candidateId": "2026-06-17-afterfly-partiful-events:run-rave",
+                  "candidateId": "2026-06-17-moonmoth-partiful-events:run-rave",
                   "primary": false
                 }
               ]
@@ -963,23 +963,23 @@
               "appVisibility": "discoverable"
             },
             "dedupe": {
-              "normalizedEventKey": "afterfly:2025-03-15T18:00:00+05:30:takeoff-run-rave",
-              "primaryCandidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+              "normalizedEventKey": "moonmoth:2025-03-15T18:00:00+05:30:nightfall-run-rave",
+              "primaryCandidateId": "2026-06-17-moonmoth-luma-events:mmoth26x",
               "duplicateCandidateIds": [
-                "2026-06-17-afterfly-partiful-events:run-rave"
+                "2026-06-17-moonmoth-partiful-events:run-rave"
               ],
               "conflictPolicy": "single_read_only_event_with_multiple_outbound_links"
             },
             "externalSource": {
-              "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
-              "sourceEventKey": "luma:event:pxgmph3b",
-              "sourceEventId": "pxgmph3b",
+              "candidateId": "2026-06-17-moonmoth-luma-events:mmoth26x",
+              "sourceEventKey": "luma:event:mmoth26x",
+              "sourceEventId": "mmoth26x",
               "platform": "luma",
-              "eventUrl": "https://luma.com/pxgmph3b",
-              "sourceUrl": "https://luma.com/pxgmph3b"
+              "eventUrl": "https://luma.com/mmoth26x",
+              "sourceUrl": "https://luma.com/mmoth26x"
             },
             "review": {
-              "eventReviewBatchId": "2026-06-17-afterfly-event-review",
+              "eventReviewBatchId": "2026-06-17-moonmoth-event-review",
               "reviewer": "admin@example.com",
               "decidedAt": "2026-06-17",
               "note": "Reviewed for future import.",
@@ -1003,7 +1003,7 @@
             "schemaVersion": 1,
             "eventId": "ext-taken-down",
             "canonicalHostId": "next-proof",
-            "title": "Takeoff: Run + Rave",
+            "title": "Nightfall: Run + Rave",
             "description": "Reviewed external event listing.",
             "startTime": {
               "_seconds": 1742041800,
@@ -1018,13 +1018,13 @@
             "meetingLocation": {
               "name": "Nehru Stadium",
               "address": "Nehru Stadium, Indore, Madhya Pradesh",
-              "placeId": "ChIJ-afterfly-indore",
+              "placeId": "ChIJ-moonmoth-indore",
               "latitude": 22.7196,
               "longitude": 75.8577,
               "notes": "Matched to source listing and map result."
             },
             "locationDetails": "Nehru Stadium, Indore, Madhya Pradesh",
-            "photoUrl": "https://images.lumacdn.com/event-afterfly.jpg",
+            "photoUrl": "https://images.lumacdn.com/event-moonmoth.jpg",
             "activity": {
               "version": 1,
               "activityKind": "socialRun",
@@ -1056,10 +1056,10 @@
               "externalLinks": [
                 {
                   "platform": "luma",
-                  "url": "https://luma.com/pxgmph3b",
+                  "url": "https://luma.com/mmoth26x",
                   "linkType": "booking_or_event_page",
-                  "sourceEventKey": "luma:event:pxgmph3b",
-                  "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+                  "sourceEventKey": "luma:event:mmoth26x",
+                  "candidateId": "2026-06-17-moonmoth-luma-events:mmoth26x",
                   "primary": true
                 },
                 {
@@ -1067,7 +1067,7 @@
                   "url": "https://partiful.com/e/run-rave",
                   "linkType": "booking_or_event_page",
                   "sourceEventKey": "partiful:event:run-rave",
-                  "candidateId": "2026-06-17-afterfly-partiful-events:run-rave",
+                  "candidateId": "2026-06-17-moonmoth-partiful-events:run-rave",
                   "primary": false
                 }
               ]
@@ -1080,23 +1080,23 @@
               "appVisibility": "discoverable"
             },
             "dedupe": {
-              "normalizedEventKey": "afterfly:2025-03-15T18:00:00+05:30:takeoff-run-rave",
-              "primaryCandidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+              "normalizedEventKey": "moonmoth:2025-03-15T18:00:00+05:30:nightfall-run-rave",
+              "primaryCandidateId": "2026-06-17-moonmoth-luma-events:mmoth26x",
               "duplicateCandidateIds": [
-                "2026-06-17-afterfly-partiful-events:run-rave"
+                "2026-06-17-moonmoth-partiful-events:run-rave"
               ],
               "conflictPolicy": "single_read_only_event_with_multiple_outbound_links"
             },
             "externalSource": {
-              "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
-              "sourceEventKey": "luma:event:pxgmph3b",
-              "sourceEventId": "pxgmph3b",
+              "candidateId": "2026-06-17-moonmoth-luma-events:mmoth26x",
+              "sourceEventKey": "luma:event:mmoth26x",
+              "sourceEventId": "mmoth26x",
               "platform": "luma",
-              "eventUrl": "https://luma.com/pxgmph3b",
-              "sourceUrl": "https://luma.com/pxgmph3b"
+              "eventUrl": "https://luma.com/mmoth26x",
+              "sourceUrl": "https://luma.com/mmoth26x"
             },
             "review": {
-              "eventReviewBatchId": "2026-06-17-afterfly-event-review",
+              "eventReviewBatchId": "2026-06-17-moonmoth-event-review",
               "reviewer": "admin@example.com",
               "decidedAt": "2026-06-17",
               "note": "Reviewed for future import.",
@@ -1120,7 +1120,7 @@
             "schemaVersion": 1,
             "eventId": "ext-synthetic",
             "canonicalHostId": "next-proof",
-            "title": "Takeoff: Run + Rave",
+            "title": "Nightfall: Run + Rave",
             "description": "Reviewed external event listing.",
             "startTime": {
               "_seconds": 1742041800,
@@ -1135,13 +1135,13 @@
             "meetingLocation": {
               "name": "Nehru Stadium",
               "address": "Nehru Stadium, Indore, Madhya Pradesh",
-              "placeId": "ChIJ-afterfly-indore",
+              "placeId": "ChIJ-moonmoth-indore",
               "latitude": 22.7196,
               "longitude": 75.8577,
               "notes": "Matched to source listing and map result."
             },
             "locationDetails": "Nehru Stadium, Indore, Madhya Pradesh",
-            "photoUrl": "https://images.lumacdn.com/event-afterfly.jpg",
+            "photoUrl": "https://images.lumacdn.com/event-moonmoth.jpg",
             "activity": {
               "version": 1,
               "activityKind": "socialRun",
@@ -1173,10 +1173,10 @@
               "externalLinks": [
                 {
                   "platform": "luma",
-                  "url": "https://luma.com/pxgmph3b",
+                  "url": "https://luma.com/mmoth26x",
                   "linkType": "booking_or_event_page",
-                  "sourceEventKey": "luma:event:pxgmph3b",
-                  "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+                  "sourceEventKey": "luma:event:mmoth26x",
+                  "candidateId": "2026-06-17-moonmoth-luma-events:mmoth26x",
                   "primary": true
                 },
                 {
@@ -1184,7 +1184,7 @@
                   "url": "https://partiful.com/e/run-rave",
                   "linkType": "booking_or_event_page",
                   "sourceEventKey": "partiful:event:run-rave",
-                  "candidateId": "2026-06-17-afterfly-partiful-events:run-rave",
+                  "candidateId": "2026-06-17-moonmoth-partiful-events:run-rave",
                   "primary": false
                 }
               ]
@@ -1197,23 +1197,23 @@
               "appVisibility": "discoverable"
             },
             "dedupe": {
-              "normalizedEventKey": "afterfly:2025-03-15T18:00:00+05:30:takeoff-run-rave",
-              "primaryCandidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+              "normalizedEventKey": "moonmoth:2025-03-15T18:00:00+05:30:nightfall-run-rave",
+              "primaryCandidateId": "2026-06-17-moonmoth-luma-events:mmoth26x",
               "duplicateCandidateIds": [
-                "2026-06-17-afterfly-partiful-events:run-rave"
+                "2026-06-17-moonmoth-partiful-events:run-rave"
               ],
               "conflictPolicy": "single_read_only_event_with_multiple_outbound_links"
             },
             "externalSource": {
-              "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
-              "sourceEventKey": "luma:event:pxgmph3b",
-              "sourceEventId": "pxgmph3b",
+              "candidateId": "2026-06-17-moonmoth-luma-events:mmoth26x",
+              "sourceEventKey": "luma:event:mmoth26x",
+              "sourceEventId": "mmoth26x",
               "platform": "luma",
-              "eventUrl": "https://luma.com/pxgmph3b",
-              "sourceUrl": "https://luma.com/pxgmph3b"
+              "eventUrl": "https://luma.com/mmoth26x",
+              "sourceUrl": "https://luma.com/mmoth26x"
             },
             "review": {
-              "eventReviewBatchId": "2026-06-17-afterfly-event-review",
+              "eventReviewBatchId": "2026-06-17-moonmoth-event-review",
               "reviewer": "admin@example.com",
               "decidedAt": "2026-06-17",
               "note": "Reviewed for future import.",
@@ -1238,7 +1238,7 @@
             "schemaVersion": 1,
             "eventId": "ext-catch-booking",
             "canonicalHostId": "next-proof",
-            "title": "Takeoff: Run + Rave",
+            "title": "Nightfall: Run + Rave",
             "description": "Reviewed external event listing.",
             "startTime": {
               "_seconds": 1742041800,
@@ -1253,13 +1253,13 @@
             "meetingLocation": {
               "name": "Nehru Stadium",
               "address": "Nehru Stadium, Indore, Madhya Pradesh",
-              "placeId": "ChIJ-afterfly-indore",
+              "placeId": "ChIJ-moonmoth-indore",
               "latitude": 22.7196,
               "longitude": 75.8577,
               "notes": "Matched to source listing and map result."
             },
             "locationDetails": "Nehru Stadium, Indore, Madhya Pradesh",
-            "photoUrl": "https://images.lumacdn.com/event-afterfly.jpg",
+            "photoUrl": "https://images.lumacdn.com/event-moonmoth.jpg",
             "activity": {
               "version": 1,
               "activityKind": "socialRun",
@@ -1291,10 +1291,10 @@
               "externalLinks": [
                 {
                   "platform": "luma",
-                  "url": "https://luma.com/pxgmph3b",
+                  "url": "https://luma.com/mmoth26x",
                   "linkType": "booking_or_event_page",
-                  "sourceEventKey": "luma:event:pxgmph3b",
-                  "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+                  "sourceEventKey": "luma:event:mmoth26x",
+                  "candidateId": "2026-06-17-moonmoth-luma-events:mmoth26x",
                   "primary": true
                 },
                 {
@@ -1302,7 +1302,7 @@
                   "url": "https://partiful.com/e/run-rave",
                   "linkType": "booking_or_event_page",
                   "sourceEventKey": "partiful:event:run-rave",
-                  "candidateId": "2026-06-17-afterfly-partiful-events:run-rave",
+                  "candidateId": "2026-06-17-moonmoth-partiful-events:run-rave",
                   "primary": false
                 }
               ]
@@ -1315,23 +1315,23 @@
               "appVisibility": "discoverable"
             },
             "dedupe": {
-              "normalizedEventKey": "afterfly:2025-03-15T18:00:00+05:30:takeoff-run-rave",
-              "primaryCandidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+              "normalizedEventKey": "moonmoth:2025-03-15T18:00:00+05:30:nightfall-run-rave",
+              "primaryCandidateId": "2026-06-17-moonmoth-luma-events:mmoth26x",
               "duplicateCandidateIds": [
-                "2026-06-17-afterfly-partiful-events:run-rave"
+                "2026-06-17-moonmoth-partiful-events:run-rave"
               ],
               "conflictPolicy": "single_read_only_event_with_multiple_outbound_links"
             },
             "externalSource": {
-              "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
-              "sourceEventKey": "luma:event:pxgmph3b",
-              "sourceEventId": "pxgmph3b",
+              "candidateId": "2026-06-17-moonmoth-luma-events:mmoth26x",
+              "sourceEventKey": "luma:event:mmoth26x",
+              "sourceEventId": "mmoth26x",
               "platform": "luma",
-              "eventUrl": "https://luma.com/pxgmph3b",
-              "sourceUrl": "https://luma.com/pxgmph3b"
+              "eventUrl": "https://luma.com/mmoth26x",
+              "sourceUrl": "https://luma.com/mmoth26x"
             },
             "review": {
-              "eventReviewBatchId": "2026-06-17-afterfly-event-review",
+              "eventReviewBatchId": "2026-06-17-moonmoth-event-review",
               "reviewer": "admin@example.com",
               "decidedAt": "2026-06-17",
               "note": "Reviewed for future import.",

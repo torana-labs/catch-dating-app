@@ -1,0 +1,57 @@
+name: PR text guard
+run-name: PR text guard for PR #${{ github.event.pull_request.number }}
+
+# This repository is public and real organisers live only in the production
+# database. A bare @name in a pull request's title, body or commits notifies
+# that account, and a social URL names a real page. This job fails when the
+# title, body or commit messages @-mention an account that is not a
+# collaborator or name a social account outside the fictional allowlist.
+#
+# It runs tool/ci/pr_text_guard.mjs from the base commit, never the pull
+# request's code, with the pull_request event's read-only token: no secrets and
+# no pull_request_target. It reads the event payload and the GitHub API, and
+# its log names places, never the matched text. "edited" reruns it when the
+# title or body changes.
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: pr-text-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  guard:
+    name: PR text mentions no outside accounts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out the guard from the base commit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            tool/ci/pr_text_guard.mjs
+            tool/check_third_party_names.mjs
+            tool/third_party_names_allowlist.json
+            packages/brand/brand.json
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+
+      - name: Check the title, body and commit messages
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          if [ ! -f tool/ci/pr_text_guard.mjs ]; then
+            echo "The base commit predates the guard; it runs once the guard is on main."
+            exit 0
+          fi
+          node tool/ci/pr_text_guard.mjs

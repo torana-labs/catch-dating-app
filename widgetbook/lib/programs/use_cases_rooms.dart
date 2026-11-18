@@ -14,7 +14,7 @@ import '../support/widgetbook_harness.dart';
 import '../utility/preview.dart';
 
 const _programId = 'program_kapoor_shah';
-const _hotelId = 'hotel_taj';
+const _hotelId = 'hotel_harbourview';
 
 final _now = DateTime(2026, 2, 14, 14, 30);
 
@@ -60,7 +60,7 @@ final _stay = ProgramStay(
 final _rooms = ProgramHotelRooms(
   programId: _programId,
   hotelId: _hotelId,
-  hotelName: 'Taj Palace',
+  hotelName: 'Harbourview Palace',
   accessExpiresAt: _now.add(const Duration(hours: 8)),
   generatedAt: _now,
   roomBlocks: _roomBlocks,

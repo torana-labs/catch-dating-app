@@ -272,7 +272,7 @@ class _ShellRouteScopeState extends State<_ShellRouteScope> {
             AsyncData([
               Organizer(
                 id: 'widgetbook-organizer',
-                name: 'Saket Run Club',
+                name: 'Neemwood Run Club',
                 location: 'Delhi',
                 area: 'Saket',
                 description: '',

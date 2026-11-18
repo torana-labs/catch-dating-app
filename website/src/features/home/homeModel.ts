@@ -109,7 +109,7 @@ export interface PlanCardView {
   formatLabel: string;
   format: CatchFormat | null;
   detail: string;
-  /** Where the plan meets, such as "Khar Social". */
+  /** Where the plan meets, such as "Lantern Lane Tavern". */
   place: string;
   /** The date square's parts in the city's time zone. */
   date: PlanDateParts;

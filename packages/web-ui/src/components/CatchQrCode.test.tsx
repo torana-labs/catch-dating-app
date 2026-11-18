@@ -16,7 +16,7 @@ function modulesFromPath(path: string, extent: number) {
 
 describe("CatchQrCode", () => {
   it("draws exactly the encoder's dark modules inside a two-module quiet zone", () => {
-    const value = "https://carterroadrunners.club";
+    const value = "https://driftwoodbayrunners.example";
     const {extent, path} = qrModulePath(value);
     const code = qrcode(0, "M");
     code.addData(value, "Byte");
@@ -60,8 +60,8 @@ describe("CatchQrCode", () => {
   });
 
   it("reads as one labelled image at the requested size", () => {
-    render(<CatchQrCode label="QR code for carterroadrunners.club" size="l" value="https://carterroadrunners.club" />);
-    const image = screen.getByRole("img", {name: "QR code for carterroadrunners.club"});
+    render(<CatchQrCode label="QR code for driftwoodbayrunners.example" size="l" value="https://driftwoodbayrunners.example" />);
+    const image = screen.getByRole("img", {name: "QR code for driftwoodbayrunners.example"});
     expect(image.dataset.size).toBe("l");
     expect(image.getAttribute("viewBox")).toMatch(/^0 0 \d+ \d+$/);
   });

@@ -31,7 +31,7 @@ function attentionStore(docs: Record<string, Data>): AudienceTestStore {
 }
 
 function organizer(): Data {
-  return {name: "Saket Run Club", hostUserId: "owner-1",
+  return {name: "Neemwood Run Club", hostUserId: "owner-1",
     ownerUserId: "owner-1", hostUserIds: ["owner-1", "manager-1"],
     hostProfiles: []};
 }

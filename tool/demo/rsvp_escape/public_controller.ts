@@ -4,7 +4,7 @@ import {visiblePublicFormSections,validatePublicFormAnswers} from '../../../webs
 // This adapter is only aliased by the local Vite config. Production auth and
 // submission are unchanged. Public rendering and visibility use shipped code.
 export function usePublicFormController() {
- const form={definition:fixture.editor.definition,organizer:{name:'Saket Run Club',logoUrl:null}};
+ const form={definition:fixture.editor.definition,organizer:{name:'Neemwood Run Club',logoUrl:null}};
  const [answers,setAnswers]=useState({...fixture.records[0].answers});
  const [stage,setStage]=useState('form');
  const [receipt,setReceipt]=useState(null);

@@ -10,8 +10,6 @@ import type {OrganizerEntitlementMutationCallableResponse} from
   "../shared/generated/organizerEntitlementMutationCallableResponse";
 import type {OrganizerEntitlementsDocument} from
   "../shared/generated/organizerEntitlementsDocument";
-import type {OrganizerEntitlementReceiptDocument} from
-  "../shared/generated/organizerEntitlementReceiptDocument";
 import {
   validateAdminGrantOrganizerEntitlementCallablePayload,
 } from
@@ -26,8 +24,11 @@ import {
   "../shared/generated/validators/organizerEntitlementMutationOutput";
 import {validateOrganizerEntitlementsDocument} from
   "../shared/generated/validators/organizerEntitlementsDocument";
-import {validateOrganizerEntitlementReceiptDocument} from
-  "../shared/generated/validators/organizerEntitlementReceiptDocument";
+import {
+  classifyCommandReceiptData,
+  commandReceiptRef,
+  writeCommandReceipt,
+} from "../shared/commandReceipts";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {operationContentHash} from "../operations/durableActions";
@@ -37,10 +38,9 @@ import {organizerEntitlementSkuCatalog} from
   "../shared/generated/catalogs/organizerEntitlementSkuCatalog";
 
 const entitlementCollection = "organizerEntitlements";
-const receiptCollection = "organizerEntitlementReceipts";
+const receiptCommand = "adminOrganizerEntitlement";
 const allowedRoles = ["adminOwner"] as const;
 const maxGrantsPerOrganizer = 50;
-const receiptRetentionMillis = 30 * 24 * 60 * 60 * 1000;
 
 interface OrganizerEntitlementDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -97,15 +97,15 @@ export async function adminGrantOrganizerEntitlementHandler(
     {maxRequests: 30, windowMs: 60 * 1000}
   );
   const docRef = db.collection(entitlementCollection).doc(data.organizerId);
-  const receiptId = `${data.organizerId}_${data.operationId}`;
-  const receiptRef = db.collection(receiptCollection).doc(receiptId);
+  const receiptRef = commandReceiptRef(db, receiptCommand,
+    `${data.organizerId}_${data.operationId}`);
   const contentHash = operationContentHash([adminContext.uid, data]);
   const grantId = `grant_${data.operationId}`;
 
   return db.runTransaction(async (tx) => {
     const [docSnap, receiptSnap] = await tx.getAll(docRef, receiptRef);
     const replayed = replayIfMatching(
-      receiptSnap, contentHash, data.organizerId);
+      receiptSnap, contentHash, data.organizerId, deps.now());
     if (replayed) return replayed;
 
     const before = docSnap.exists ?
@@ -186,12 +186,11 @@ export async function adminGrantOrganizerEntitlementHandler(
     if (!validateOrganizerEntitlementsDocument(next)) {
       throw new Error("Invalid organizer entitlements document");
     }
-    const receipt = buildReceipt(receiptId, data.operationId,
-      data.organizerId, adminContext.uid, "grant", contentHash,
-      next.revision, grantId, timestamp, deps.timestampFromMillis(
-        now + receiptRetentionMillis));
     tx.set(docRef, next);
-    tx.create(receiptRef, receipt);
+    writeCommandReceipt(tx, receiptRef, {
+      command: receiptCommand, retention: "request", requestHash: contentHash,
+      result: {resultRevision: next.revision, grantId}, nowMillis: now,
+    });
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminGrantOrganizerEntitlement",
       targetPath: docRef.path,
@@ -238,14 +237,14 @@ export async function adminRevokeOrganizerEntitlementGrantHandler(
     {maxRequests: 30, windowMs: 60 * 1000}
   );
   const docRef = db.collection(entitlementCollection).doc(data.organizerId);
-  const receiptId = `${data.organizerId}_${data.operationId}`;
-  const receiptRef = db.collection(receiptCollection).doc(receiptId);
+  const receiptRef = commandReceiptRef(db, receiptCommand,
+    `${data.organizerId}_${data.operationId}`);
   const contentHash = operationContentHash([adminContext.uid, data]);
 
   return db.runTransaction(async (tx) => {
     const [docSnap, receiptSnap] = await tx.getAll(docRef, receiptRef);
     const replayed = replayIfMatching(
-      receiptSnap, contentHash, data.organizerId);
+      receiptSnap, contentHash, data.organizerId, deps.now());
     if (replayed) return replayed;
     if (!docSnap.exists) {
       throw new HttpsError(
@@ -290,12 +289,12 @@ export async function adminRevokeOrganizerEntitlementGrantHandler(
     if (!validateOrganizerEntitlementsDocument(next)) {
       throw new Error("Invalid organizer entitlements document");
     }
-    const receipt = buildReceipt(receiptId, data.operationId,
-      data.organizerId, adminContext.uid, "revoke", contentHash,
-      next.revision, data.grantId, timestamp, deps.timestampFromMillis(
-        now + receiptRetentionMillis));
     tx.set(docRef, next);
-    tx.create(receiptRef, receipt);
+    writeCommandReceipt(tx, receiptRef, {
+      command: receiptCommand, retention: "request", requestHash: contentHash,
+      result: {resultRevision: next.revision, grantId: data.grantId},
+      nowMillis: now,
+    });
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminRevokeOrganizerEntitlementGrant",
       targetPath: docRef.path,
@@ -314,51 +313,26 @@ export async function adminRevokeOrganizerEntitlementGrantHandler(
 function replayIfMatching(
   receiptSnap: FirebaseFirestore.DocumentSnapshot,
   contentHash: string,
-  organizerId: string
+  organizerId: string,
+  nowMillis: number
 ): OrganizerEntitlementMutationCallableResponse | null {
-  if (!receiptSnap.exists) return null;
-  const receipt = parseReceipt(receiptSnap.data());
-  if (receipt.contentHash !== contentHash) {
+  const lookup = classifyCommandReceiptData<{
+    resultRevision?: number;
+    grantId?: string;
+  }>(receiptSnap.data(), {
+    command: receiptCommand, requestHash: contentHash, nowMillis,
+  });
+  if (lookup.kind === "none") return null;
+  const result = lookup.kind === "replay" ? lookup.result : undefined;
+  if (typeof result?.resultRevision !== "number" ||
+      typeof result.grantId !== "string") {
     throw new HttpsError(
       "failed-precondition",
       "This operation id was already used with a different payload."
     );
   }
   return mutationResponse(
-    organizerId, receipt.resultRevision, receipt.grantId, true);
-}
-
-function buildReceipt(
-  receiptId: string,
-  operationId: string,
-  organizerId: string,
-  actorUid: string,
-  action: "grant" | "revoke",
-  contentHash: string,
-  resultRevision: number,
-  grantId: string,
-  timestamp: FirebaseFirestore.FieldValue,
-  expiresAt: FirebaseFirestore.Timestamp
-): OrganizerEntitlementReceiptDocument {
-  const receipt: OrganizerEntitlementReceiptDocument = {
-    schemaVersion: 1,
-    receiptId,
-    operationId,
-    organizerId,
-    actorUid,
-    action,
-    contentHash,
-    resultRevision,
-    grantId,
-    createdAt: timestamp as unknown as
-      OrganizerEntitlementReceiptDocument["createdAt"],
-    expiresAt: expiresAt as unknown as
-      OrganizerEntitlementReceiptDocument["expiresAt"],
-  };
-  if (!validateOrganizerEntitlementReceiptDocument(receipt)) {
-    throw new Error("Invalid organizer entitlement receipt document");
-  }
-  return receipt;
+    organizerId, result.resultRevision, result.grantId, true);
 }
 
 function mutationResponse(
@@ -385,18 +359,6 @@ function parseEntitlements(value: unknown): OrganizerEntitlementsDocument {
     throw new HttpsError(
       "failed-precondition",
       "The existing organizer entitlements document is invalid."
-    );
-  }
-  return value;
-}
-
-function parseReceipt(
-  value: unknown
-): OrganizerEntitlementReceiptDocument {
-  if (!validateOrganizerEntitlementReceiptDocument(value)) {
-    throw new HttpsError(
-      "failed-precondition",
-      "The existing organizer entitlement receipt is invalid."
     );
   }
   return value;

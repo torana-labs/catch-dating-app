@@ -118,9 +118,9 @@ function fakeTransport(routes) {
 test("the fetcher honours robots.txt, revalidates redirects and returns outcomes instead of throwing", async () => {
   const {transport, calls} = fakeTransport({
     "https://lu.ma/robots.txt": {body: "User-agent: *\nDisallow: /admin"},
-    "https://lu.ma/afterfly": {body: "<title>Afterfly</title>"},
+    "https://lu.ma/moonmoth": {body: "<title>Moonmoth</title>"},
     "https://lu.ma/admin": {body: "secret"},
-    "https://lu.ma/old": {status: 301, location: "/afterfly"},
+    "https://lu.ma/old": {status: 301, location: "/moonmoth"},
     "https://lu.ma/to-private": {status: 302, location: "http://169.254.169.254/latest"},
     "https://lu.ma/loop": {status: 302, location: "https://lu.ma/loop"},
     "https://lu.ma/feed": {body: "{}", contentType: "application/json"},
@@ -131,15 +131,15 @@ test("the fetcher honours robots.txt, revalidates redirects and returns outcomes
     "https://slow.example/": {throw: "CATCH_TIMEOUT"},
   });
   const fetcher = new PageFetcher({...AGENT, transport, clock: NOW, maxRedirects: 2});
-  const page = await fetcher.fetchPage("https://lu.ma/afterfly");
+  const page = await fetcher.fetchPage("https://lu.ma/moonmoth");
   assert.equal(page.outcome, "fetched");
-  assert.equal(page.html, "<title>Afterfly</title>");
+  assert.equal(page.html, "<title>Moonmoth</title>");
   assert.equal(page.fetchedAt, "2026-10-24T08:00:00.000Z");
   assert.equal(calls[0].userAgent, AGENT.userAgent);
 
   const redirected = await fetcher.fetchPage("https://lu.ma/old");
   assert.deepEqual([redirected.outcome, redirected.finalUrl, redirected.redirects],
-    ["fetched", "https://lu.ma/afterfly", ["https://lu.ma/afterfly"]]);
+    ["fetched", "https://lu.ma/moonmoth", ["https://lu.ma/moonmoth"]]);
   for (const [url, outcome] of [
     ["https://lu.ma/admin", "robots_disallowed"],
     ["https://lu.ma/to-private", "blocked_address"],

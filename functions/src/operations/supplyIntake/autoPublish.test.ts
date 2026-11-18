@@ -70,11 +70,11 @@ const valid = (validate: ((value: unknown) => boolean) & {errors?: unknown}, val
 async function harness({role = "associate", nominatorActive = true, claims = {salesStaff: true} as Record<string, unknown>,
   channel = "whatsapp" as "whatsapp" | "instagram"} = {}) {
   const db = new FakeFirestore();
-  const requestId = "msg-afterfly-1";
+  const requestId = "msg-moonmoth-1";
   const submittedBy = {role, uid: "associate-1", partnerId: role === "partner" ? "associate-1" : null};
   db.write(`${supplyIntakeCollections.requests}/${requestId}`, {schemaVersion: 1, requestId,
     request: {schemaVersion: 1, requestId, kind: "nomination", market: "mumbai",
-      seed: {name: null, urls: ["https://lu.ma/afterfly"], notes: null, categories: []},
+      seed: {name: null, urls: ["https://lu.ma/moonmoth"], notes: null, categories: []},
       submittedBy, submittedAt: NOW, origin: {kind: "message_nomination", id: EVENT_ID}},
     status: "queued", attempts: 0, leaseUntil: null, result: null, failure: null, approval: null,
     createdAt: NOW, updatedAt: NOW});
@@ -90,7 +90,7 @@ async function harness({role = "associate", nominatorActive = true, claims = {sa
     db.write(`${CATCH_RECEIPTS}/${EVENT_ID}`, {schema: "catch.whatsapp-webhook-event/v1", eventId: EVENT_ID,
       wabaId: "1", phoneNumberId: "2", payloadHash: "b".repeat(64), eventKind: "inbound", messageId: "wamid.1",
       providerTimestampSeconds: String(Date.parse(NOW) / 1000), participantId: SENDER, messageType: "text",
-      text: "https://lu.ma/afterfly", textTruncated: false, deliveryStatus: null, errorCodes: [],
+      text: "https://lu.ma/moonmoth", textTruncated: false, deliveryStatus: null, errorCodes: [],
       receivedAtMillis: Date.parse(NOW), expiresAt: Timestamp.fromMillis(Date.parse(NOW) + 1000)});
   }
   db.write(`${SUPPLY_NOMINATORS}/${whatsappNominatorId(ENDPOINT)}`, {schemaVersion: 1,
@@ -105,10 +105,10 @@ async function harness({role = "associate", nominatorActive = true, claims = {sa
   const stored = db.read(`${supplyIntakeCollections.requests}/${requestId}`) as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   const workItem = structuredClone(writer.items.get(stored.result.listingWorkItemId)!);
   const listing = (workItem.normalizedPayload.intake as {listing: Record<string, any>}).listing; // eslint-disable-line @typescript-eslint/no-explicit-any
-  Object.assign(listing.organizer, {name: "Afterfly",
+  Object.assign(listing.organizer, {name: "Moonmoth",
     description: "Weekly social nights for people who would rather meet in person.",
-    links: [{platform: "luma", surfaceKind: "calendar", url: "https://lu.ma/afterfly",
-      normalizedKey: "lu.ma/afterfly", evidenceUrl: "https://lu.ma/afterfly"}]});
+    links: [{platform: "luma", surfaceKind: "calendar", url: "https://lu.ma/moonmoth",
+      normalizedKey: "lu.ma/moonmoth", evidenceUrl: "https://lu.ma/moonmoth"}]});
   db.write(`operationWorkItems/${workItem.workItemId}`, workItem as unknown as Record<string, unknown>);
   // As the worker records a complete listing with no likely duplicate.
   stored.result = {...stored.result, gaps: ["image_missing"], researchNeeded: false, eventCount: 2,
@@ -144,7 +144,7 @@ test("a registered associate's complete WhatsApp nomination publishes without st
   const outcome = await h.publish();
   assert.equal(outcome.outcome, "published", JSON.stringify(outcome));
   if (outcome.outcome !== "published") return;
-  assert.equal(outcome.canonicalPath, "/organizers/afterfly/");
+  assert.equal(outcome.canonicalPath, "/organizers/moonmoth/");
   const organizer = h.db.read(`organizers/${outcome.organizerId}`)!;
   valid(validateOrganizerDocument, organizer, "OrganizerDocument");
   assert.deepEqual([(organizer.publicPage as {indexStatus: string}).indexStatus, organizer.appVisibility,
