@@ -43,4 +43,21 @@ describe("CatchPlanCard", () => {
     expect(card.textContent).toContain("Run clubs · Sun 6:30 AM");
     expect(card.textContent).toContain("18 left");
   });
+
+  it("shows a badge on the media, read after the host line, in either layout", () => {
+    const {rerender} = render(<CatchPlanCard badge=" Women-led " date={{weekday: "Tue", day: "25", month: "Nov"}} detail="Her Pace · Bandra" format="run"
+      href="/events/her-pace/" label="Run clubs · Tue 6:30 AM" posterLabel="Run club" price="Free" title="Women’s Evening Run" />);
+    const badge = screen.getByText("Women-led");
+    expect(badge.dataset.variant).toBe("label-badge");
+    expect(screen.getByRole("link", {name: /Women’s Evening Run Run clubs · Tue 6:30 AM Her Pace · Bandra Women-led Free$/u})).toBeTruthy();
+    rerender(<CatchPlanCard badge="Women-led" detail="Her Pace · Bandra" href="/events/her-pace/" label="Tue 6:30 AM" posterLabel="Run club" price="Free"
+      title="Women’s Evening Run" />);
+    expect(screen.getByRole("link", {name: "Tue 6:30 AM Women’s Evening Run Her Pace · Bandra Women-led Free"})).toBeTruthy();
+  });
+
+  it("draws no badge when there is none, or only spaces", () => {
+    render(<CatchPlanCard badge="  " detail="Her Pace · Bandra" href="/events/her-pace/" label="Tue 6:30 AM" posterLabel="Run club" price="Free"
+      title="Women’s Evening Run" />);
+    expect(screen.getByRole("link", {name: "Tue 6:30 AM Women’s Evening Run Her Pace · Bandra Free"}).querySelector("[data-variant='label-badge']")).toBeNull();
+  });
 });
