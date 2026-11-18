@@ -27,21 +27,21 @@ it("lets a sales associate nominate, trimming and de-duplicating links, and sear
   const nominate = screen.getByRole("button", {name: "Nominate"});
   expect(nominate).toHaveProperty("disabled", true);
   fireEvent.change(screen.getByLabelText(/^City/u), {target: {value: " Bengaluru "}});
-  fireEvent.change(screen.getByLabelText(/^Links, one per line/u), {target: {value: "https://lu.ma/thebhag\n\n lu.ma/thebhag \nhttps://lu.ma/thebhag"}});
-  expect(screen.getByRole("status").textContent).toContain('Check "lu.ma/thebhag"');
-  fireEvent.change(screen.getByLabelText(/^Links, one per line/u), {target: {value: "https://lu.ma/thebhag\n https://thebhag.in \nhttps://lu.ma/thebhag"}});
+  fireEvent.change(screen.getByLabelText(/^Links, one per line/u), {target: {value: "https://lu.ma/riversiderunclub\n\n lu.ma/riversiderunclub \nhttps://lu.ma/riversiderunclub"}});
+  expect(screen.getByRole("status").textContent).toContain('Check "lu.ma/riversiderunclub"');
+  fireEvent.change(screen.getByLabelText(/^Links, one per line/u), {target: {value: "https://lu.ma/riversiderunclub\n https://riversiderunclub.in \nhttps://lu.ma/riversiderunclub"}});
   fireEvent.change(screen.getByLabelText(/^What should the reviewer know/u), {target: {value: "  Sunday long runs  "}});
   fireEvent.click(nominate);
   await waitFor(() => expect(props.onClose).toHaveBeenCalled());
   expect(repository.nominateSalesOrganizer.mock.calls[0]?.[0]).toMatchObject({
-    name: null, market: "Bengaluru", urls: ["https://lu.ma/thebhag", "https://thebhag.in"], notes: "Sunday long runs", categories: []});
+    name: null, market: "Bengaluru", urls: ["https://lu.ma/riversiderunclub", "https://riversiderunclub.in"], notes: "Sunday long runs", categories: []});
   expect(repository.searchCanonicalOrganizers).not.toHaveBeenCalled();
 });
 
 it("retries a failed nomination under the same request id, so the server replays it", async () => {
   repository.nominateSalesOrganizer.mockRejectedValueOnce(new Error("offline")).mockResolvedValue({});
   const props = draw(false);
-  fireEvent.change(screen.getByLabelText(/^Organizer name/u), {target: {value: "Bhag"}});
+  fireEvent.change(screen.getByLabelText(/^Organizer name/u), {target: {value: "Riverside"}});
   fireEvent.change(screen.getByLabelText(/^City/u), {target: {value: "Mumbai"}});
   fireEvent.click(screen.getByRole("button", {name: "Nominate"}));
   await waitFor(() => expect(props.onError).toHaveBeenLastCalledWith("offline"));

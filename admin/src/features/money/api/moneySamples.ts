@@ -83,7 +83,7 @@ let bills: Bill[] = [
   bill({id: "sample-afterfly", name: "Afterfly", events: 4,
     gross: 22_400_000, refunded: 0, rate: 500, capped: true, status: "paid",
     total: 1_000_000, invoice: 29, paidOn: "2026-11-03", fee: 528_640}),
-  bill({id: "sample-bhag", name: "Bhag Club", events: 6, gross: 5_800_000,
+  bill({id: "sample-riverside", name: "Riverside Run Club", events: 6, gross: 5_800_000,
     refunded: 0, rate: 500, status: "paid", total: 290_000, invoice: 30,
     paidOn: "2026-11-02", fee: 136_880}),
   bill({id: "sample-seaside", name: "Seaside Sessions", events: 2,
@@ -138,7 +138,7 @@ const heldOrganizers = new Map<string, {atMillis: number; byUid: string | null; 
 /** The organizer records' ids, so an organizer page opens the same organizer's bills. */
 const organizerRecordBills: Record<string, string> = {
   "afterfly": "sample-afterfly",
-  "bhag": "sample-bhag",
+  "riverside": "sample-riverside",
   "mumbai-padel-social": "sample-padel",
 };
 

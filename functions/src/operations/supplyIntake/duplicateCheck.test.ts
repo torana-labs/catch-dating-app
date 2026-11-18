@@ -127,7 +127,7 @@ test("a new organizer is compared but not flagged", async () => {
 });
 
 test("a nominated organizer still in QA, under another name for its city, is flagged", async () => {
-  // Bhag Club in prod: a QA page in "delhi", a record in "in-dl-delhi-ncr" and
+  // A nominated organiser in prod: a QA page in "delhi", a record in "in-dl-delhi-ncr" and
   // a nomination filed under "delhi-ncr" are all the same city.
   const {db, run} = setup({request: request({market: "delhi-ncr"})});
   db.write("organizers/org-afterfly-qa", organizer("Afterfly", {citySlug: "delhi", publishStatus: "qa",

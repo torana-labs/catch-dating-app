@@ -84,7 +84,7 @@ function seed(): FakeFirestore {
       approvedAt: "2026-10-31T07:50:00.000Z"},
   });
   db.write("organizerClaimRequests/claim-1", {organizerId: "indore",
-    requesterName: "Arjun Bhagat", requesterRole: "manager",
+    requesterName: "Arjun Rao", requesterRole: "manager",
     status: "pending", createdAt: at("2026-10-30T08:00:00Z")});
   db.write("organizerGrowthFacts/lantern", {organizerId: "lantern",
     channel: "partner", nominator: {uid: "neha", role: "partner",
@@ -247,7 +247,7 @@ test("organizer overview shows a waiting claim and a host", async () => {
     request({organizerId: "indore"}), deps(db));
   assert.equal(indore.nextStep, "decideClaim");
   assert.deepEqual(indore.pendingClaim, {requestId: "claim-1",
-    requesterName: "Arjun Bhagat", requesterRole: "manager",
+    requesterName: "Arjun Rao", requesterRole: "manager",
     createdAt: "2026-10-30T08:00:00.000Z"});
   assert.deepEqual(indore.journey.map((step) => step.kind),
     ["listed", "claimRequested"]);

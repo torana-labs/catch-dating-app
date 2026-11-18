@@ -22,8 +22,8 @@ function fixture() {
   const store = new FormPaymentTestStore();
   const set = (path: string, data: Record<string, unknown>) =>
     store.records.set(path, data);
-  set("organizers/run", {name: "Bhag Run Club", publicPage: {
-    publishStatus: "published", canonicalPath: "/organizers/bhag-run-club/"}});
+  set("organizers/run", {name: "Riverside Run Club", publicPage: {
+    publishStatus: "published", canonicalPath: "/organizers/riverside-run-club/"}});
   set("organizers/quiz", {name: "Quiz Night", publicPage: {
     publishStatus: "draft", canonicalPath: "/organizers/quiz-night/"}});
   set("events/soon", {name: "Sunday 10K", organizerId: "run",
@@ -96,12 +96,12 @@ test("sections read only the signed-in UID's own records", async () => {
   assert.equal(validateResponse(result), true, JSON.stringify(result));
   assert.deepEqual(result.plans?.map((plan) => [plan.eventId, plan.status,
     plan.timing, plan.passAvailable, plan.organizerName]), [
-    ["soon", "signedUp", "upcoming", true, "Bhag Run Club"],
+    ["soon", "signedUp", "upcoming", true, "Riverside Run Club"],
     ["done", "attended", "past", false, "Quiz Night"],
   ]);
   assert.equal(result.plans?.[0].venue, "Cubbon Park gate");
   assert.deepEqual(result.follows, [{organizerId: "run",
-    organizerName: "Bhag Run Club", path: "/organizers/bhag-run-club/",
+    organizerName: "Riverside Run Club", path: "/organizers/riverside-run-club/",
     followedAt: "2026-10-02T00:00:00.000Z"}]);
   assert.deepEqual(result.reviews?.map((review) => [review.reviewId,
     review.verified, review.moderationStatus, review.ownerResponse]), [
@@ -109,10 +109,10 @@ test("sections read only the signed-in UID's own records", async () => {
     ["r1", true, "published", "Thanks Ada"],
   ]);
   assert.deepEqual(result.messages, [
-    {organizerId: "run", organizerName: "Bhag Run Club", whatsapp: "optedIn",
-      sms: "unknown", whatsappReceiptId: "receipt1"},
     {organizerId: "quiz", organizerName: "Quiz Night", whatsapp: "optedOut",
       sms: "unknown", whatsappReceiptId: "receipt2"},
+    {organizerId: "run", organizerName: "Riverside Run Club", whatsapp: "optedIn",
+      sms: "unknown", whatsappReceiptId: "receipt1"},
   ]);
 });
 

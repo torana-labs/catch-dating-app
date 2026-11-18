@@ -26,7 +26,7 @@ export const Contract: Story = {
       <div style={{display: "grid", gap: 32, maxWidth: 720, padding: 24}}>
         <CatchSection action={{label: "All 14", onPressed: noop}} count={14} title="Oldest first">
           <CatchIndexRow onTap={noop} subtitle="Listing · nominated by Riya" title="Afterfly" />
-          <CatchIndexRow onTap={noop} subtitle="Claim · Dev recommends approval" title="Bhag Club" />
+          <CatchIndexRow onTap={noop} subtitle="Claim · Dev recommends approval" title="Riverside Run Club" />
         </CatchSection>
         <CatchSection title="Settings">
           <CatchIndexRow onTap={noop} title="Intake" />

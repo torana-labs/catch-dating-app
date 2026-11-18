@@ -78,12 +78,12 @@ test("nominations need a sales or admin role and a name or a link", async () => 
 test("website host applications and partner nominations become intake requests", () => {
   const createdAt = {toDate: () => new Date("2026-10-23T10:00:00.000Z")};
   const website = requestFromSalesInboundIntent("intent-web", {source: "website", city: "Bengaluru", createdAt,
-    hostApplication: {organizationName: " The Bhag ", communityLink: "https://thebhag.in",
+    hostApplication: {organizationName: " Riverside Run Club ", communityLink: "https://riversiderunclub.in",
       operatingCity: "Bengaluru", operatingNotes: "Sunday long runs"}}, NOW);
   assert.deepEqual(website && {kind: website.kind, market: website.market, seed: website.seed,
     submittedBy: website.submittedBy, submittedAt: website.submittedAt, origin: website.origin}, {
     kind: "self_submission", market: intakeMarket("Bengaluru"),
-    seed: {name: "The Bhag", urls: ["https://thebhag.in"], notes: "Sunday long runs", categories: []},
+    seed: {name: "Riverside Run Club", urls: ["https://riversiderunclub.in"], notes: "Sunday long runs", categories: []},
     submittedBy: {role: "organizer", uid: null, partnerId: null},
     submittedAt: "2026-10-23T10:00:00.000Z", origin: {kind: "sales_inbound_intent", id: "intent-web"},
   });

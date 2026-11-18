@@ -107,11 +107,11 @@ test("classifies known publication domains as press without identity keys", () =
 });
 
 test("falls back to an official website candidate for unknown domains", () => {
-  const result = normalizeOrganizerSurfaceUrl("https://www.thebhag.in/?utm_campaign=launch");
-  assert.equal(result.canonicalUrl, "https://thebhag.in/");
+  const result = normalizeOrganizerSurfaceUrl("https://www.riversiderunclub.in/?utm_campaign=launch");
+  assert.equal(result.canonicalUrl, "https://riversiderunclub.in/");
   assert.equal(result.platform, "officialWebsite");
   assert.equal(result.surfaceKind, "website");
-  assert.equal(result.normalizedKey, "domain:thebhag.in");
+  assert.equal(result.normalizedKey, "domain:riversiderunclub.in");
 });
 
 test("rejects missing and non-web URLs", () => {

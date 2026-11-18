@@ -47,7 +47,7 @@ async function harness({organizers = {} as Record<string, Record<string, unknown
   acceptPageFetch(db);
   for (const [organizerId, organizer] of Object.entries(organizers)) db.write(`organizers/${organizerId}`, organizer);
   const writer = new MemoryWriter();
-  const names = ["Afterfly", "The Bhag", "Sunday Sketchers"];
+  const names = ["Afterfly", "Riverside Run Club", "Sunday Sketchers"];
   for (const [index, name] of names.entries()) {
     const requestId = `nom-listing-${index}`;
     const at = `2026-10-24T${String(8 + index).padStart(2, "0")}:00:00.000Z`;
@@ -97,7 +97,7 @@ test("a listing shows how it compares with the organizers Catch already lists", 
   const h = await harness({organizers: {"org-afterfly": listed}});
   const reviews = await Promise.all(["nom-listing-2", "nom-listing-1", "nom-listing-0"].map((requestId) => h.get(requestId)));
   reviews.forEach(valid);
-  const [sketchers, bhag, afterfly] = reviews.map((response) => response.review);
+  const [sketchers, riverside, afterfly] = reviews.map((response) => response.review);
   assert.ok(afterfly.listing.gaps.includes("possible_duplicate_organizer"));
   assert.equal(afterfly.duplicateCheck?.verdict, "match");
   assert.deepEqual([afterfly.duplicateCheck?.citySlug, afterfly.duplicateCheck?.truncated,
@@ -105,8 +105,8 @@ test("a listing shows how it compares with the organizers Catch already lists", 
   assert.deepEqual(afterfly.duplicateCheck?.candidates.map((candidate) => [candidate.organizerId, candidate.name, candidate.band]),
     [["org-afterfly", "Afterfly", "match"]]);
   assert.match(afterfly.duplicateCheck?.candidates[0].rationale ?? "", /exact_name/);
-  assert.equal(bhag.duplicateCheck?.verdict, "none");
-  assert.ok(!bhag.listing.gaps.includes("possible_duplicate_organizer"));
+  assert.equal(riverside.duplicateCheck?.verdict, "none");
+  assert.ok(!riverside.listing.gaps.includes("possible_duplicate_organizer"));
   // Every city is compared: the Bengaluru listing meets Afterfly in Mumbai and is not alike.
   assert.deepEqual([sketchers.duplicateCheck?.verdict, sketchers.duplicateCheck?.organizersCompared], ["none", 1]);
 
@@ -162,7 +162,7 @@ test("one listing can be read by its request for the inbox's approval sheet", as
 });
 
 test("suggested slugs are route-safe", () => {
-  assert.equal(publicSlugFor("The Bhag — Sunday Runs!"), "the-bhag-sunday-runs");
+  assert.equal(publicSlugFor("Riverside Run Club — Sunday Runs!"), "riverside-run-club-sunday-runs");
   assert.equal(publicSlugFor("Ö"), "organizer-o");
   assert.match(publicSlugFor("x".repeat(90)), /^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$/);
 });

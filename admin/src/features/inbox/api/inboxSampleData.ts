@@ -15,8 +15,8 @@ export const sampleInboxItems: InboxItem[] = [
   sampleItem({itemId: "supply-afterfly", type: "listing", title: "Afterfly", subtitle: "https://luma.com/afterfly",
     cameFrom: "Sales associate on WhatsApp", nominatorUid: "sample-riya",
     state: {code: "gaps", label: "1 check left", tone: "warning"}}, 74),
-  sampleItem({itemId: "claim-bhag", type: "claim", sourceKind: "organizerClaimRequest", sourceId: "bhag",
-    sourcePath: "organizerClaimRequests/bhag", title: "Bhag Club", subtitle: "Claim by Arjun Bhagat, manager",
+  sampleItem({itemId: "claim-riverside", type: "claim", sourceKind: "organizerClaimRequest", sourceId: "riverside",
+    sourcePath: "organizerClaimRequests/riverside", title: "Riverside Run Club", subtitle: "Claim by Arjun Rao, manager",
     cameFrom: "Host app", state: {code: "recommended", label: "Recommended: approve", tone: "success"},
     recommendation: {decision: "approve", byUid: "sample-dev", at: hoursAgo(20), note: "Phone verified; the proof link is their Instagram."}}, 50),
   sampleItem({itemId: "event-rooftop", type: "event", sourceKind: "externalEvent", sourceId: "rooftop",
@@ -46,8 +46,8 @@ export const sampleInboxJourneys: Record<string, JourneyStep[]> = {
     {stepId: "page-2", occurredAt: hoursAgo(74), title: "Read instagram.com", detail: "https://instagram.com/afterfly.run", actorUid: null, tone: "ink"},
     {stepId: "listing-built", occurredAt: hoursAgo(74), title: "Built a listing", detail: "3 upcoming events · 1 to check", actorUid: null, tone: "ink"},
   ],
-  "claim-bhag": [
-    {stepId: "asked", occurredAt: hoursAgo(50), title: "Asked to claim Bhag Club", detail: "Arjun Bhagat, manager · 1 proof link", actorUid: "sample-arjun", tone: "ink"},
+  "claim-riverside": [
+    {stepId: "asked", occurredAt: hoursAgo(50), title: "Asked to claim Riverside Run Club", detail: "Arjun Rao, manager · 1 proof link", actorUid: "sample-arjun", tone: "ink"},
     {stepId: "recommended", occurredAt: hoursAgo(20), title: "Recommended approval", detail: "Phone verified; the proof link is their Instagram.", actorUid: "sample-dev", tone: "ink"},
   ],
   "enquiry-harbor": [
@@ -76,12 +76,12 @@ export const sampleEventReviews: Record<string, ListingEventReview> = {
 
 /** The claim sample mode opens, with its evidence. */
 export const sampleClaimEvidence: Record<string, ClaimEvidence> = {
-  bhag: {requestId: "bhag", targetPath: "organizerClaimRequests/bhag", organizerId: "bhag", requesterUid: "sample-arjun",
-    requesterName: "Arjun Bhagat", requesterRole: "manager", contact: "arjun@example.com", proofCount: 1, status: "pending",
+  riverside: {requestId: "riverside", targetPath: "organizerClaimRequests/riverside", organizerId: "riverside", requesterUid: "sample-arjun",
+    requesterName: "Arjun Rao", requesterRole: "manager", contact: "arjun@example.com", proofCount: 1, status: "pending",
     createdAt: hoursAgo(50), updatedAt: hoursAgo(50), businessEmail: "arjun@example.com", businessPhone: "+91 98200 00000",
-    proofUrls: ["https://www.instagram.com/bhag.club/"],
-    message: "I run Bhag Club with two friends. Instagram is @bhag.club; I can post a code there if you need.",
+    proofUrls: ["https://www.instagram.com/riverside.runs/"],
+    message: "I run Riverside Run Club with two friends. Instagram is @riverside.runs; I can post a code there if you need.",
     requesterProfile: {exists: true, profileComplete: true},
-    organizer: {exists: true, name: "Bhag Club", claimState: "claimPending", ownershipState: "programmatic", ownerUserId: null,
-      canonicalPath: "/organizers/bhag/"}},
+    organizer: {exists: true, name: "Riverside Run Club", claimState: "claimPending", ownershipState: "programmatic", ownerUserId: null,
+      canonicalPath: "/organizers/riverside/"}},
 };

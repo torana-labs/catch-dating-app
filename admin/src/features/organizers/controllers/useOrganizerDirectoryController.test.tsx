@@ -28,7 +28,7 @@ describe("useOrganizerDirectoryController", () => {
     expect(result.current.views).toEqual(
       {all: 4, live: 3, unclaimed: 2, hidden: 0});
     expect(result.current.rows.map((row) => row.organizerId)).toEqual(
-      ["afterfly", "bhag", "bandra-runners", "mumbai-padel-social"]);
+      ["afterfly", "riverside", "bandra-runners", "mumbai-padel-social"]);
     expect(result.current.rows[0].upcomingEventCount).toBe(2);
 
     act(() => result.current.toggleCity("in-mh-mumbai"));

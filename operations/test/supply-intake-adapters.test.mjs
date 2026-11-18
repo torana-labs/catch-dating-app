@@ -135,16 +135,16 @@ test("a platform page whose template drifted abstains for the agent instead of g
 });
 
 test("organizer websites fall back to schema.org markup, then to metadata only", () => {
-  const marked = snapshotFromHtml({url: "https://thebhag.in/events", html: `<script type="application/ld+json">
+  const marked = snapshotFromHtml({url: "https://riversiderunclub.in/events", html: `<script type="application/ld+json">
     {"@context":"https://schema.org","@graph":[
-      {"@type":"SportsOrganizer","name":"The Bhag","url":"https://thebhag.in","sameAs":["https://instagram.com/thebhag"]},
+      {"@type":"SportsOrganizer","name":"Riverside Run Club","url":"https://riversiderunclub.in","sameAs":["https://instagram.com/riversiderunclub"]},
       {"@type":"Event","name":"Sunday Long Run","startDate":"2026-11-01T06:00:00+05:30",
        "location":{"@type":"Place","name":"Cubbon Park","address":{"addressLocality":"Bengaluru"}}}]}</script>`});
   const result = extractWithAdapters({snapshot: marked});
   assert.equal(result.adapterId, "schema-org-event");
   assert.equal(result.platform, "officialWebsite");
   assert.deepEqual(result.organizers.map((organizer) => [organizer.name, organizer.sameAs]),
-    [["The Bhag", ["https://instagram.com/thebhag"]]]);
+    [["Riverside Run Club", ["https://instagram.com/riversiderunclub"]]]);
   assert.equal(result.events[0].venue, "Cubbon Park");
 
   const bare = snapshotFromHtml({url: "https://linktr.ee/somecrew", html: `<meta property="og:title" content="Some Crew">

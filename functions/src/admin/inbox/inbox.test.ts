@@ -49,7 +49,7 @@ function harness() {
   const request = (data: unknown, token: Record<string, unknown> = {support: true}, uid = "dev") =>
     ({auth: {uid, token}, data, rawRequest: {headers: {}}}) as unknown as CallableRequest<unknown>;
   const sync = (kind: Parameters<typeof syncInboxSource>[1], id: string, data: Record<string, unknown> | undefined, at = now) =>
-    syncInboxSource(firestore, kind, id, data, at, async () => ({organizerName: "Bhag Club", organizerCity: "in-mh-mumbai", personName: "Meher"}));
+    syncInboxSource(firestore, kind, id, data, at, async () => ({organizerName: "Riverside Run Club", organizerCity: "in-mh-mumbai", personName: "Meher"}));
   const list = (data: Record<string, unknown>, token?: Record<string, unknown>, uid?: string) =>
     adminListInboxItemsHandler(request({scope: "waiting", type: null, city: null, limit: 25, cursor: null, ...data}, token, uid), deps);
   return {db, firestore, deps, request, sync, list};
@@ -90,13 +90,13 @@ test("a failed request is stuck, an approved one is done, an event refresh is no
 });
 
 test("claims, enquiries, access and imported events project to their own types", () => {
-  const claim = projectInboxSource("organizerClaimRequest", "claim-1", {requestId: "claim-1", organizerId: "bhag", requesterUid: "arjun",
-    requesterName: "Arjun Bhagat", requesterRole: "manager", proofUrls: ["https://instagram.com/bhag.club"], status: "pending",
+  const claim = projectInboxSource("organizerClaimRequest", "claim-1", {requestId: "claim-1", organizerId: "riverside", requesterUid: "arjun",
+    requesterName: "Arjun Rao", requesterRole: "manager", proofUrls: ["https://instagram.com/riverside.runs"], status: "pending",
     createdAt: {_seconds: 1761838320, _nanoseconds: 0}, updatedAt: {_seconds: 1761838320, _nanoseconds: 0},
     recommendation: {decision: "approve", byUid: "dev", at: "2026-10-30T09:00:00.000Z", note: "Phone verified."}},
-  {organizerName: "Bhag Club", organizerCity: "in-mh-mumbai"});
-  assert.equal(claim?.title, "Bhag Club");
-  assert.equal(claim?.subtitle, "Claim by Arjun Bhagat, manager");
+  {organizerName: "Riverside Run Club", organizerCity: "in-mh-mumbai"});
+  assert.equal(claim?.title, "Riverside Run Club");
+  assert.equal(claim?.subtitle, "Claim by Arjun Rao, manager");
   assert.equal(claim?.city, "mumbai");
   assert.deepEqual(claim?.state, {code: "recommended", label: "Recommended: approve", tone: "success"});
   assert.deepEqual(claim?.journey.map((step) => step.stepId), ["asked", "recommended"]);

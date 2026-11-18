@@ -17,7 +17,7 @@ describe("CatchSection", () => {
     const {container} = render(
       <CatchSection action={{label: "All 14", onPressed: onAll}} count={14} title="Oldest first">
         <CatchIndexRow onTap={() => undefined} title="Afterfly" />
-        <CatchIndexRow onTap={() => undefined} selected title="Bhag Club" />
+        <CatchIndexRow onTap={() => undefined} selected title="Riverside Run Club" />
       </CatchSection>,
     );
     expect(screen.getByRole("heading", {level: 2}).textContent).toBe("Oldest first 14");

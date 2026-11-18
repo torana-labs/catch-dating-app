@@ -43,7 +43,7 @@ function model(selectedItemId: string | null, canDecideClaim = false, eventSheet
     previousItem: index > 0 ? items[index - 1] ?? null : null,
     selectNext: noop, selectPrevious: noop,
     openListingReview: noop, listingReview: null, listingReviewFailed: false, approveListing: done, isApproving: false,
-    claimEvidence: selectedItemId === "claim-bhag" ? sampleClaimEvidence.bhag : null, claimEvidenceFailed: false,
+    claimEvidence: selectedItemId === "claim-riverside" ? sampleClaimEvidence.riverside : null, claimEvidenceFailed: false,
     openEventReview: noop, eventReview: eventSheet ? sampleEventReviews["work-rooftop"] : null, eventReviewFailed: false,
     publishEvent: done, isPublishingEvent: false,
     fillInByHand: done, isFillingIn: false,
@@ -76,13 +76,13 @@ export const InboxRouteStory: Story = {
 export const InboxClaimStory: Story = {
   name: "Inbox · a claim, as ops sees it",
   beforeEach: pinClock,
-  render: () => screen("claim-bhag"),
+  render: () => screen("claim-riverside"),
 };
 
 export const InboxClaimOwnerStory: Story = {
   name: "Inbox · a claim, as the owner decides it",
   beforeEach: pinClock,
-  render: () => screen("claim-bhag", true),
+  render: () => screen("claim-riverside", true),
 };
 
 export const InboxStuckStory: Story = {

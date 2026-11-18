@@ -54,7 +54,7 @@ const organizerExtras: Record<string, {
     listedAt: "2026-06-20T07:50:00.000Z", growth: {channel: "sales_associate",
       nominator: {uid: sampleUid, name: "Riya Sharma", role: "associate"},
       firstPaidBookingAt: null}},
-  "bhag": {claimState: "claimPending", claimedByName: null, salesOwner: riya,
+  "riverside": {claimState: "claimPending", claimedByName: null, salesOwner: riya,
     listedAt: "2026-06-12T09:00:00.000Z", growth: {channel: "imported",
       nominator: null, firstPaidBookingAt: null}},
   "bandra-runners": {claimState: "unclaimed", claimedByName: null,
@@ -317,7 +317,7 @@ export function sampleGetOrganizerOverview(
       detail: null}] : []),
     {kind: "listed", at: row.listedAt, actorName: null, detail: null},
     ...(row.claimState === "claimPending" ? [{kind: "claimRequested" as const,
-      at: "2026-06-23T08:00:00.000Z", actorName: "Arjun Bhagat",
+      at: "2026-06-23T08:00:00.000Z", actorName: "Arjun Rao",
       detail: "manager"}] : []),
     ...(row.claimedByName ? [{kind: "claimed" as const,
       at: "2026-05-10T09:00:00.000Z", actorName: row.claimedByName,
@@ -355,7 +355,7 @@ export function sampleGetOrganizerOverview(
       {state: "connected", webhookVerified: true} :
       {state: "notConnected", webhookVerified: false},
     pendingClaim: row.claimState === "claimPending" ? {requestId:
-      "sample-claim", requesterName: "Arjun Bhagat", requesterRole: "manager",
+      "sample-claim", requesterName: "Arjun Rao", requesterRole: "manager",
     createdAt: "2026-06-23T08:00:00.000Z"} : null,
     growth: extras?.growth ?? null,
     journey: [...journey].sort((a, b) => (a.at ?? "").localeCompare(b.at ?? "")),

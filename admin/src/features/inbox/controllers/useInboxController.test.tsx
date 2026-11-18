@@ -35,12 +35,12 @@ describe("useInboxController", () => {
     Object.values(repository).forEach((mock) => mock.mockReset());
     repository.listInboxItems.mockImplementation(async ({cursor}: {cursor: string | null}) => ({
       generatedAt: "2026-10-31T12:00:00.000Z", scope: "waiting", type: null, city: null, totals,
-      items: cursor ? [item("older")] : [item("afterfly"), item("bhag", "claim")],
+      items: cursor ? [item("older")] : [item("afterfly"), item("riverside", "claim")],
       nextCursor: cursor ? null : "page-2", oldestWaitingSince: "2026-10-28T10:00:00.000Z"}));
     repository.getInboxItem.mockImplementation(async (itemId: string) => ({item: item(itemId), journey: [],
       canWork: true, canDecideClaim: false}));
     repository.updateInboxItem.mockResolvedValue({item: item("afterfly")});
-    repository.recommendOrganizerClaim.mockResolvedValue({requestId: "bhag", status: "pending",
+    repository.recommendOrganizerClaim.mockResolvedValue({requestId: "riverside", status: "pending",
       recommendation: {decision: "approve", byUid: "dev", at: "2026-10-31T12:00:00.000Z", note: "Checked."}});
   });
 
@@ -48,7 +48,7 @@ describe("useInboxController", () => {
     const {wrapper} = createQueryHarness();
     const {result} = renderHook(() => useInboxController({onError: vi.fn(), onNotice: vi.fn(),
       selectedItemId: null, onSelect: vi.fn()}), {wrapper});
-    await waitFor(() => expect(result.current.items.map((entry) => entry.itemId)).toEqual(["afterfly", "bhag"]));
+    await waitFor(() => expect(result.current.items.map((entry) => entry.itemId)).toEqual(["afterfly", "riverside"]));
     expect(result.current.totals?.types.claim).toBe(1);
     act(() => result.current.nextPage());
     await waitFor(() => expect(result.current.items.map((entry) => entry.itemId)).toEqual(["older"]));
@@ -67,16 +67,16 @@ describe("useInboxController", () => {
       selectedItemId: "afterfly", onSelect}), {wrapper});
     await waitFor(() => expect(result.current.detail.data?.item.itemId).toBe("afterfly"));
     expect(result.current.position).toEqual({index: 1, of: 3});
-    expect(result.current.nextItem?.itemId).toBe("bhag");
+    expect(result.current.nextItem?.itemId).toBe("riverside");
     await act(async () => {
-      expect(await result.current.recommendClaim({requestId: "bhag", decision: "approve", note: "Checked."})).toBe(true);
+      expect(await result.current.recommendClaim({requestId: "riverside", decision: "approve", note: "Checked."})).toBe(true);
     });
     expect(onNotice).toHaveBeenCalledWith("Recommended for approval. The owner decides.");
-    expect(onSelect).toHaveBeenCalledWith("bhag");
+    expect(onSelect).toHaveBeenCalledWith("riverside");
   });
 
   it("the owner's claim decision moves on to the next item", async () => {
-    repository.decideClaim.mockResolvedValue({requestId: "bhag", organizerId: "bhag", decision: "approve", status: "approved"});
+    repository.decideClaim.mockResolvedValue({requestId: "riverside", organizerId: "riverside", decision: "approve", status: "approved"});
     const {wrapper} = createQueryHarness();
     const onSelect = vi.fn();
     const onNotice = vi.fn();
@@ -84,10 +84,10 @@ describe("useInboxController", () => {
       selectedItemId: "afterfly", onSelect}), {wrapper});
     await waitFor(() => expect(result.current.items).toHaveLength(2));
     await act(async () => {
-      expect(await result.current.decideClaim({requestId: "bhag", decision: "approve", decisionReason: null})).toBe(true);
+      expect(await result.current.decideClaim({requestId: "riverside", decision: "approve", decisionReason: null})).toBe(true);
     });
     expect(onNotice).toHaveBeenCalledWith("Claim approved. They run the page now.");
-    expect(onSelect).toHaveBeenCalledWith("bhag");
+    expect(onSelect).toHaveBeenCalledWith("riverside");
   });
 
   it("searches organizers to link an enquiry, and links it", async () => {
@@ -127,7 +127,7 @@ describe("useInboxController", () => {
     await act(async () => { expect(await result.current.approveListing(input, "req-1")).toBe(true); });
     const [first, second] = repository.approveListing.mock.calls.map((call) => (call[0] as {requestId: string}).requestId);
     expect(second).toBe(first);
-    expect(onSelect).toHaveBeenCalledWith("bhag");
+    expect(onSelect).toHaveBeenCalledWith("riverside");
     expect(result.current.listingReview).toBeNull();
   });
 
@@ -144,7 +144,7 @@ describe("useInboxController", () => {
       .mockResolvedValueOnce(outcome({outcome: "blocked", blockers: ["missing_end_time"]}))
       .mockResolvedValueOnce(outcome({outcome: "published"}));
     const {result} = renderHook(() => useInboxController({onError, onNotice, selectedItemId: "afterfly", onSelect}), {wrapper});
-    await waitFor(() => expect(result.current.nextItem?.itemId).toBe("bhag"));
+    await waitFor(() => expect(result.current.nextItem?.itemId).toBe("riverside"));
     act(() => result.current.openEventReview({intakeRequestId: "req", eventWorkItemId: "work-1"}));
     await waitFor(() => expect(result.current.eventReview).toEqual(review));
 
@@ -158,24 +158,24 @@ describe("useInboxController", () => {
     expect(new Set(keys).size).toBe(1);
     expect(repository.publishListingEvent.mock.calls[0][0].executionMode).toBe("apply");
     expect(onNotice).toHaveBeenLastCalledWith("Mixer is published on the organizer's page.");
-    expect(onSelect).toHaveBeenLastCalledWith("bhag");
+    expect(onSelect).toHaveBeenLastCalledWith("riverside");
     await waitFor(() => expect(result.current.eventReview).toBeNull());
   });
 
   it("loads a claim's evidence only for a claim", async () => {
     const {wrapper} = createQueryHarness();
-    const evidence = {requestId: "bhag", proofUrls: []};
+    const evidence = {requestId: "riverside", proofUrls: []};
     repository.getClaimEvidence.mockResolvedValue(evidence);
-    repository.getInboxItem.mockImplementation(async (itemId: string) => ({item: item(itemId, itemId === "bhag" ? "claim" : "listing"), journey: [],
+    repository.getInboxItem.mockImplementation(async (itemId: string) => ({item: item(itemId, itemId === "riverside" ? "claim" : "listing"), journey: [],
       canWork: true, canDecideClaim: true}));
     const {result, rerender} = renderHook(({selected}) => useInboxController({onError: vi.fn(), onNotice: vi.fn(), selectedItemId: selected, onSelect: vi.fn()}),
       {wrapper, initialProps: {selected: "afterfly"}});
     await waitFor(() => expect(result.current.detail.data?.item.itemId).toBe("afterfly"));
     expect(repository.getClaimEvidence).not.toHaveBeenCalled();
     expect(result.current.claimEvidence).toBeNull();
-    rerender({selected: "bhag"});
+    rerender({selected: "riverside"});
     await waitFor(() => expect(result.current.claimEvidence).toEqual(evidence));
-    expect(repository.getClaimEvidence).toHaveBeenCalledWith("bhag");
+    expect(repository.getClaimEvidence).toHaveBeenCalledWith("riverside");
   });
 
   it("fills in a stuck nomination, and a retry after a failed close keeps the same request", async () => {

@@ -54,7 +54,7 @@ test("production output excludes demo listings while explicit story output inclu
     false
   );
   assert.equal(
-    productionListings.some((listing) => listing.id === "bhag"),
+    productionListings.some((listing) => listing.id === "riverside-run-club"),
     false,
     "waitlist-market organizer listings must not enter the deployable projection"
   );

@@ -13,7 +13,7 @@ interface Row {
 
 const rows: Row[] = [
   {key: "afterfly", item: {title: "Afterfly", subtitle: "Weekly social nights · luma.com/afterfly"}, type: {label: "Listing"}, reply: {label: "Replied", tone: "success"}, waiting: {text: "3 days", tone: "danger"}},
-  {key: "bhag", item: {title: "Bhag Club", subtitle: "Claim by Arjun Bhagat, manager"}, type: {label: "Claim"}, reply: {label: "Waiting for a reply", tone: "warning"}, waiting: {text: "2 days", tone: "warning"}},
+  {key: "riverside", item: {title: "Riverside Run Club", subtitle: "Claim by Arjun Rao, manager"}, type: {label: "Claim"}, reply: {label: "Waiting for a reply", tone: "warning"}, waiting: {text: "2 days", tone: "warning"}},
   {key: "harbor", item: {title: "Harbor Social Club", subtitle: "Enquiry: We run 4 events a month"}, type: {label: "Enquiry"}, reply: {label: "Replied", tone: "success"}, waiting: "1 day"},
 ];
 
@@ -34,7 +34,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 function Queue({size}: {size: "compact" | "expanded"}) {
-  const [checked, setChecked] = useState<string[]>(["bhag"]);
+  const [checked, setChecked] = useState<string[]>(["riverside"]);
   return (
     <section aria-label={`Queue, ${size}`} style={{border: "var(--catch-stroke-hairline) solid var(--catch-theme-line2)", height: 320, width: size === "compact" ? 390 : 900}}>
       <CatchViewport fill="parent" register="quiet" sizeClass={size}>
