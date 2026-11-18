@@ -564,6 +564,35 @@
       },
       "x-catch-ownership": "server-only"
     },
+    "importProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Set when the owner filled this organizer from a public page with the command organizer.import-from-link. An imported Instagram or Luma identity stays unverified until the owner proves it with the existing Instagram code or Luma marker; the page cannot be published while verification is unverified (owner decision, 18 Nov 2026).",
+      "required": ["requestId", "listingId", "contentHash", "sourceUrls", "identities", "verification", "importedAt"],
+      "properties": {
+        "requestId": {"type": "string", "pattern": "^tryit-[a-f0-9]{40}$"},
+        "listingId": {"type": "string", "minLength": 1, "maxLength": 200},
+        "contentHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "sourceUrls": {"type": "array", "maxItems": 12, "items": {"type": "string", "minLength": 8, "maxLength": 2000}},
+        "identities": {
+          "type": "array",
+          "maxItems": 8,
+          "description": "Imported identities that need proof before publishing: the Instagram account or Luma calendar the page came from.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["platform", "url"],
+            "properties": {
+              "platform": {"type": "string", "enum": ["instagram", "luma"]},
+              "url": {"type": "string", "minLength": 8, "maxLength": 2000}
+            }
+          }
+        },
+        "verification": {"type": "string", "enum": ["not_needed", "unverified", "verified"]},
+        "importedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+      },
+      "x-catch-ownership": "server-only"
+    },
     "intakeLearningSource": {
       "type": "object",
       "additionalProperties": false,

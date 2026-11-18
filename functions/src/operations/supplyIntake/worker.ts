@@ -147,7 +147,11 @@ export type PageAllowance = "shared" | "web_instant_draft";
  * every other front door shares the main one.
  */
 export function pageAllowanceFor(request: {origin?: {kind?: unknown} | null}): PageAllowance {
-  return request.origin?.kind === "web_instant_draft" ? "web_instant_draft" : "shared";
+  // A try-it import is the same website visitor reading their own page, so
+  // it reads from the same allowance (owner decision, 18 Nov 2026; command
+  // catalog linkAllowance), which can be split out later.
+  const kind = request.origin?.kind;
+  return kind === "web_instant_draft" || kind === "try_it_import" ? "web_instant_draft" : "shared";
 }
 
 /** The usage document that counts one allowance's month: {monthKey}, or instant-draft-pages-{monthKey}. */
