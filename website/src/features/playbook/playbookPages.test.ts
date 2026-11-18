@@ -128,7 +128,9 @@ describe("playbook page indexes", () => {
     expect((await approvedPlaybookPaths()).sort()).toEqual([
       "/host/brands/", "/host/colleges/", "/host/communities/", "/host/creators/", "/host/demo/", "/host/facilities/",
       "/host/nightlife/", "/host/outdoors/", "/host/quiz-nights/", "/host/racket-sports/", "/host/studios/",
-      "/host/supper-clubs/", "/host/teams/", "/host/venues/", "/host/workshops/", "/safety/",
+      "/host/supper-clubs/", "/host/teams/", "/host/venues/", "/host/workshops/", "/how-it-works/",
+      "/product/bookings/", "/product/door/", "/product/forms/", "/product/guests/", "/product/messages/",
+      "/product/night/", "/product/reports/", "/product/your-page/", "/safety/",
     ]);
   });
 
