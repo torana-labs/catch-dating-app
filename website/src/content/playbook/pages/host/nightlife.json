@@ -31,7 +31,7 @@
       ],
       "aside": {
         "label": "Running nights in several cities or for a brand? Ask for a walkthrough",
-        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run nights in several cities or for a brand and would like a walkthrough."}
+        "to": {"route": "host_walkthrough"}
       },
       "chip": {
         "title": "Friday Bandra Pub Crawl",

@@ -166,10 +166,6 @@
           "text": "Book a 15-minute walkthrough"
         },
         {
-          "key": "walkthroughMessage",
-          "text": "Hi {{brand.name}}, I'd like a walkthrough of {{brand.name}}."
-        },
-        {
           "key": "weddings",
           "text": "Weddings are priced by headcount"
         }
