@@ -542,7 +542,10 @@ shows provider receipt (Meta Test Events, Google conversion diagnostics),
 consent changes, URL/title/referrer isolation, SPA shutdown, dedupe and the exact
 network payloads. GTM stays out; nothing may consume the existing bus
 wholesale. Organizer pixels require their own publication and policy approval
-and stay disabled.
+and stay disabled: the versioned publication policy record
+(`organizerTrackingPublicationPolicy.ts`, version 1) cites the owner's
+18 Nov 2026 decision on #2063 and keeps publication off until the owner's
+policy sign-off.
 
 Authorities each server event needs: admitted payment (`finalizePublicPayment`),
 admitted free registration, organizer creation receipt, approved claim receipt,
@@ -557,3 +560,128 @@ Property 559735544 defines `host_lead_accepted` from `generate_lead` with
 without a default monetary value. The source suppresses repeated Host acquisitions using server receipts. This Analytics key event is not imported as a second Ads
 conversion: the prepared direct Ads action remains the sole candidate to avoid
 double-counting. Sales qualification and pilot activation are later outcomes.
+
+## Organiser-owned tags
+
+An organiser who owns a page can save its own Meta Pixel ID and GA4
+measurement ID (`organizerTrackingSettings`, see the backend operation catalog
+entry "Organizer advertising settings"). **Publication is off.** The
+versioned publication policy record
+(`functions/src/analytics/organizerTrackingPublicationPolicy.ts`) decides it.
+Version 1 cites the owner's 18 Nov 2026 decision on #2063 and admits only
+`publicationAllowed: false`. Every `enabled` field and the public projection
+read the record, and the public projection never returns IDs. Only a reviewed
+new version can widen it, and that version must cite the owner's policy
+sign-off and change the public response contract in the same change.
+
+The technical checklist on #2063 governs switching on. Each item needs a test or
+a recorded receipt.
+
+| Item | State | Where |
+| --- | --- | --- |
+| Separation | Blocked: transport choice open on #2063 | `adTags.ts` cannot host an isolated set as it stands (see below) |
+| Consent gate | Blocked with separation | One v5 receipt (`catch_marketing_consent_v5`), via `adTags.sync` |
+| Eligible routes | Route class proposed (#2102); lifecycle wiring waits on separation | `organizerAdPage` beside `publicAdPage`; server projection checks publication |
+| Event map | Builders and payload tests proposed (#2102) | `website/src/analytics/organizerTagEvents.ts` |
+| Publication policy | Built, disabled | `organizerTrackingPublicationPolicy.ts` |
+| Owner settings | Saved IDs shown; live state and reason pending | Catch Host tracking section; website owner view settings |
+| Test receipts | Plan below; not run | [Staging test plan](#organiser-tag-staging-test-plan) |
+| Owner policy sign-off | Owner only | #2063 |
+
+### Rules the adapter must keep
+
+- **Separation.** Organiser destinations are a separate, frozen destination set
+  inside the existing first-party transport. They are not a new loader, a GTM
+  container or an organiser-supplied script. They never read Catch's
+  diagnostic `dataLayer`, `catchTagLayer`, campaign labels, click identifiers or
+  acquisition context. Catch events never reach an organiser destination, and
+  organiser events never reach Catch's destinations.
+  - Today Catch's Meta calls use `fbq("track", …)`, which reaches every
+    initialised pixel, and Catch's `gtag("set", …)` applies to every tag on its
+    layer. The proposal on #2063 moves Catch to `trackSingle` and gives the
+    organiser GA4 its own layer and `cookie_prefix`.
+  - `_fbp` stays shared on the Catch domain whichever option is chosen. The
+    owner sign-off decides whether that is acceptable.
+  - The existing sandboxed iframe runtime (`website/public/organizer-tracking-runtime.*`,
+    `trackingProviders.ts`) is a second loader that predates this rule. It stays
+    inert behind the disabled policy until the owner chooses.
+- **Consent.** The only basis is a current version-5 *marketing* choice. An
+  analytics-only choice loads nothing for organiser destinations. Legacy,
+  downgraded and unknown receipts fail closed. Withdrawal revokes and stops
+  organiser tags in the same page view, as it does for Catch's. Before
+  publication, the banner must name the organiser's own tags.
+- **Routes.** Only the organiser's published public page
+  (`/organizers/:slug/`, `/organizers/:citySlug/:slug/`) and its published,
+  active, non-dating-classified events (`/events/:eventId/`), as decided by the
+  server's public projection.
+  - Never claim, `/f/` forms, offers, OTP, booking receipts, account, demo or
+    token links. Never while the owner view is open on the organiser page.
+  - Any query string or non-anchor hash fails closed, because the Pixel reports
+    the page address itself.
+  - Single-page navigation to any other page stops sending.
+- **Event map.** The table shows the event pairs. Every page field is the fixed
+  Catch origin plus path, with a fixed title and an empty referrer. Catch
+  payment, request and organiser ids, guest data, answers, dating words, campaign
+  labels and click ids are never parameters. Each organiser event has its own
+  opaque `org_…` id, never shared with a Catch event.
+
+| Builder | GA4 | Meta | Parameters | Authority |
+| --- | --- | --- | --- | --- |
+| `organizerPageView` | `page_view` | `PageView` | page fields | Eligible page view |
+| `organizerViewContent` | `view_item` | `ViewContent` | event id, activity kind, city, price (INR) | The event's own public page |
+| `organizerBeginCheckout` | `begin_checkout` | `InitiateCheckout` | event id, places, value (INR) | A live checkout the server admitted |
+| `organizerPurchase` | `purchase` | `Purchase` | event id, places, value (INR) | That admitted booking, confirmed |
+
+- **Publication policy.** The organiser must be first-party or have a verified
+  claim (`trackingConfigurationEligible`). Its public page must be published and
+  indexable (`assertPublicOrganizerPageEligible`). Canonical social,
+  singles/mixer and unknown event classifications stay excluded (the record's
+  exclusion lists). External listings have no canonical classification and stay
+  excluded.
+
+### Organiser tag staging test plan
+
+This is a plan, not a receipt. Nothing here has run. Run it only on staging,
+after the transport choice and with a staging-only policy version. **Never run
+it against production, a live organiser or real IDs.**
+
+1. **Synthetic organiser.**
+   - Seed a first-party staging organiser `synthetic-organiser-2063` with a
+     published, indexable page.
+   - Give it two published, active events: `synthetic-run-2063` (`running` /
+     `pacePods`) and `synthetic-mixer-2063` (`singlesMixer`).
+   - Save fictional IDs: a Meta test dataset created for this run and a GA4
+     test property's `G-` ID. Record them only in the run notes, never in
+     the repository.
+2. **Meta Test Events.** Open the dataset's Test Events tab with its test code
+   on the staging build. Expect:
+   - `PageView` on the organiser page.
+   - `PageView` and `ViewContent` on `synthetic-run-2063`.
+   - `InitiateCheckout` and `Purchase` for a staging live-mode booking.
+   - Every payload matches the event map snapshot exactly.
+   - No Catch event reaches the organiser dataset, and the organiser dataset
+     receives nothing on `synthetic-mixer-2063`.
+3. **GA4 DebugView.** Use `debug_mode` on the staging build only. Expect the
+   matching GA4 events, with:
+   - `page_location` set to the Catch origin plus path,
+   - `page_referrer` empty,
+   - the fixed title,
+   - no `user_data`,
+   - no Catch campaign labels.
+4. **Consent.** Check each case:
+   - Deny: nothing loads.
+   - Analytics only: nothing loads.
+   - Accept: the tags load.
+   - Revoke in the same page view: Consent Mode is denied, `fbq('consent', 'revoke')`
+     runs, and nothing more is sent.
+   - A legacy v4 receipt: nothing loads.
+5. **Route shutdown.**
+   - Navigate in-app from the organiser page to `/claim/`, an `/f/` form,
+     `/offer/`, `/account/`, `/demo/…`, a `/booking/` receipt, a token link and
+     the open owner view. Each must send nothing.
+   - The same page with `?fbclid=…` or `?utm_source=…` must send nothing.
+6. **Dedupe and separation.** On the same page view, Catch's own events reach
+   only Catch's destinations with their own ids. Organiser events use `org_…`
+   ids. A reload does not repeat `Purchase`.
+7. **Network capture.** Save the HAR and provider receipts to the run's expiring
+   CI artifact, then tick **Test receipts** on #2063 with the link.
