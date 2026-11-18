@@ -1023,6 +1023,7 @@ export {getInstantDraft} from "./instantDrafts/status";
 export {expireInstantDrafts} from "./instantDrafts/expiry";
 export {onInstantDraftOrganizerPublished} from "./instantDrafts/publishOnClaim";
 export {ensureTryItWorkspace} from "./commands/ensureTryItWorkspace";
+export {importOrganizerFromLink} from "./commands/importOrganizerFromLink";
 export {expireTryItWorkspaces} from "./commands/workspaceExpiry";
 
 export {

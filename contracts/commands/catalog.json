@@ -19,6 +19,18 @@
       "surfaces": ["website", "catch_host", "cli"],
       "linkAllowance": null,
       "summary": "Give a phone-verified caller their one try-it workspace: a private organizer they own, which every try-it tool writes into."
+    },
+    {
+      "commandId": "organizer.import-from-link",
+      "version": 1,
+      "callable": "importOrganizerFromLink",
+      "payloadSchema": "contracts/callables/import_organizer_from_link_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/import_organizer_from_link_response.schema.json",
+      "effect": "draft",
+      "caller": "phone_verified",
+      "surfaces": ["website", "catch_host", "cli"],
+      "linkAllowance": "web_instant_draft",
+      "summary": "Read one public page (Instagram, Luma, Linktree or a website) and fill the caller's try-it workspace from it, or route them to claim the organizer Catch already lists."
     }
   ]
 }
