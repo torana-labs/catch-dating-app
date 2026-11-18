@@ -12,6 +12,8 @@
     "AD_CONVERSIONS_META_TEST_EVENT_CODE": {"class": "identity"},
     "AD_CONVERSIONS_META_TOKEN_VERSION": {"class": "identity"},
     "AD_CONVERSIONS_MODE": {"class": "feature-gate", "note": "Ad conversion delivery (docs/ads_conversion_spec.md). Off everywhere until prod is switched to validate or live; that difference then needs an allowedDifferences entry, since dev and staging never send."},
+    "META_LEADGEN_CREDENTIAL_VERSION": {"class": "identity"},
+    "META_LEADGEN_PAGE_IDS": {"class": "identity", "note": "The Facebook page IDs whose lead forms Catch takes; prod names Catch's page, dev and staging none."},
     "ALGOLIA_APPLICATION_ID": {"class": "identity"},
     "ANTHROPIC_ORGANIZATION_ID": {"class": "feature-gate", "note": "The Anthropic organization UUID. One organization serves every environment, so a difference is a misconfiguration; each environment differs only in its PROGRAM_ASSISTANT_FEDERATION_RULE_ID."},
     "APP_ENV": {"class": "identity"},

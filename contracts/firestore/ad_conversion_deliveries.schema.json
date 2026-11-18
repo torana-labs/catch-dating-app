@@ -19,6 +19,7 @@
     "uid",
     "occurredAt",
     "matching",
+    "metaLeadId",
     "valueMinor",
     "currency",
     "status",
@@ -102,6 +103,18 @@
           "description": "SHA-256 of a namespaced organizer ID; never the raw ID."
         }
       }
+    },
+    "metaLeadId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9]{10,20}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The Meta lead-form lead this host came from, matched on hashed phone or email. When present the Meta event is a conversion-leads CRM stage carrying it as lead_id."
     },
     "valueMinor": {
       "anyOf": [
