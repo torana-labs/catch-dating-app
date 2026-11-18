@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/meta_leadgen_events.schema.json",
+  "title": "MetaLeadgenEventDocument",
+  "description": "Server-only receipt for one Facebook or Instagram lead-form lead, keyed by its Meta lead ID so a redelivered webhook is a no-op. The lead's answers live only on the sales intent it creates; this record keeps hashed contact keys so a later qualified host can be reported against the lead (docs/ads_conversion_spec.md, Meta host lead forms).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "metaLeadgenEvents",
+  "x-firestore-path": "metaLeadgenEvents/{leadgenId}",
+  "x-document-id-field": "leadgenId",
+  "x-owner": "Meta lead-form intake",
+  "required": [
+    "schemaVersion",
+    "leadgenId",
+    "pageId",
+    "formId",
+    "adId",
+    "receivedAt",
+    "status",
+    "attempts",
+    "lastOutcome",
+    "intentId",
+    "phoneSha256",
+    "emailSha256",
+    "updatedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "leadgenId": {
+      "type": "string",
+      "pattern": "^[0-9]{10,20}$"
+    },
+    "pageId": {
+      "type": "string",
+      "pattern": "^[0-9]{5,20}$"
+    },
+    "formId": {
+      "type": "string",
+      "pattern": "^[0-9]{5,20}$"
+    },
+    "adId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9]{5,20}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "receivedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "processed",
+        "ignored",
+        "failed"
+      ],
+      "description": "pending until the lead is fetched; processed once its sales intent exists; ignored for a page or form Catch does not take leads from; failed after the retry window."
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 20
+    },
+    "lastOutcome": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z_]{1,40}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "intentId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "phoneSha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "emailSha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "180 days after receipt: long enough to report a host who qualifies months after the lead."
+    }
+  }
+}

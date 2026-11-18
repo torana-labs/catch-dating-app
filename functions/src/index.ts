@@ -1160,6 +1160,10 @@ export {
   sendAdConversions,
 } from "./acquisition/adConversions/worker";
 export {
+  metaLeadgenWebhook,
+  onMetaLeadgenEventCreated,
+} from "./acquisition/metaLeadgen/worker";
+export {
   onOrganizerGrowthOrganizerWritten,
   onOrganizerGrowthClaimRequestCreated,
   onOrganizerGrowthParticipationWritten,

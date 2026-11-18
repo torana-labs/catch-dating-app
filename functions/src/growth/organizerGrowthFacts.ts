@@ -90,6 +90,8 @@ export function listingChannel(input: ListingChannelInput): ChannelDecision {
       intent.partnerUid : input.submittedBy.uid;
     return nominated("partner", uid, "partner");
   }
+  // A Facebook or Instagram lead form is a paid ad by construction.
+  if (intent?.source === "meta_lead_ad") return source("ads", "meta_lead_ads");
   // A website referral is a nomination by its referrer, dated when the lead
   // arrived, so a claim within the lapse window credits them.
   if (intent?.leadKind === "referral") {
