@@ -18,7 +18,13 @@ import {
   validateToolCheckSafety,
   validateToolCiRequirements,
 } from "./lib/tool_impact.mjs";
-import {validateToolOrder, validateToolRoles, validateToolRules} from "./lib/tool_manifest_rules.mjs";
+import {
+  closedToolStatuses,
+  validateToolLifecycle,
+  validateToolOrder,
+  validateToolRoles,
+  validateToolRules,
+} from "./lib/tool_manifest_rules.mjs";
 
 const manifestPath = "tool/tools_manifest.json";
 const componentGraphPath = "tool/harness/component_graph.json";
@@ -52,7 +58,11 @@ function loadManifest() {
 }
 
 function listTools(args) {
-  const {category, json} = parseListArgs(args);
+  const {category, json, closed} = parseListArgs(args);
+  if (closed) {
+    listClosedTools(loadManifest(), {category, json});
+    return;
+  }
   const tools = selectTools(loadManifest(), {category});
   requireSelection(tools, {category});
 
@@ -72,6 +82,24 @@ function listTools(args) {
     for (const tool of entries.sort((a, b) => a.id.localeCompare(b.id))) {
       console.log(`  ${tool.id.padEnd(42)} ${tool.path}`);
     }
+  }
+}
+
+// Completed and retired tools: what existed, when it closed and why.
+function listClosedTools(manifest, {category, json}) {
+  const tools = manifest.tools.filter((tool) => closedToolStatuses.includes(tool.status) &&
+    (!category || tool.category === category));
+  if (json) {
+    console.log(JSON.stringify(tools, null, 2));
+    return;
+  }
+  if (tools.length === 0) {
+    console.log("No completed or retired tools.");
+    return;
+  }
+  for (const tool of [...tools].sort((a, b) => a.id.localeCompare(b.id))) {
+    const commit = tool.lastCommit ? ` (last in ${tool.lastCommit.slice(0, 12)})` : "";
+    console.log(`${tool.id.padEnd(42)} ${tool.status} ${tool.retiredOn}${commit}\n  ${tool.reason}`);
   }
 }
 
@@ -413,7 +441,8 @@ function validateManifest(manifest, componentGraph) {
     if (tool.id) ids.add(tool.id);
     if (tool.path) {
       paths.add(tool.path);
-      if (!repositorySnapshot().exists(tool.path)) {
+      // A retired tool's file is deleted; validateToolLifecycle checks that instead.
+      if (tool.status !== "retired" && !repositorySnapshot().exists(tool.path)) {
         errors.push(`${tool.id}: missing path ${tool.path}`);
       }
     }
@@ -471,6 +500,11 @@ function validateManifest(manifest, componentGraph) {
   } catch (error) {
     errors.push(error.message);
   }
+
+  errors.push(...validateToolLifecycle(manifest.tools, {
+    exists: (file) => repositorySnapshot().exists(file),
+    read: (file) => repositorySnapshot().readText(file),
+  }));
 
   const activeById = new Map(
     manifest.tools
@@ -562,6 +596,7 @@ function parseListArgs(args) {
   return {
     category: valueAfter(args, "--category"),
     json: args.includes("--json"),
+    closed: args.includes("--closed"),
   };
 }
 
@@ -619,7 +654,8 @@ function printHelp() {
   console.log(`Usage: node tool/run.mjs <command>
 
 Commands:
-  list [--category name] [--json]
+  list [--category name] [--json] [--closed]
+    --closed lists completed and retired tools with their date and reason instead.
   check [--category name] [--manifest-only] [tool-id ...]
     Repeat --category to validate several categories in one deduplicated run.
   affected-tools [--base ref [--head ref] [--commit-window] | --paths a,b] [--mode mode] [--full] [--json] [--check]

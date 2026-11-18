@@ -128,7 +128,8 @@
         "setup": [
           "node"
         ]
-      }
+      },
+      "runbook": "docs/ads_conversion_spec.md"
     },
     {
       "id": "ads:meta-campaigns",
@@ -153,7 +154,8 @@
         "setup": [
           "node"
         ]
-      }
+      },
+      "runbook": "docs/ads_conversion_spec.md"
     },
     {
       "id": "agent:context-pack",
@@ -1738,7 +1740,8 @@
         "setup": [
           "node"
         ]
-      }
+      },
+      "runbook": "docs/release_operations.md#cloudflare-edge-for-catchdatescom"
     },
     {
       "id": "contracts:check-all",
@@ -3424,7 +3427,8 @@
           "node"
         ]
       },
-      "role": "operator"
+      "role": "operator",
+      "runbook": "docs/app_architecture.md#icon-roles"
     },
     {
       "id": "design:import-ds-props",
@@ -4849,7 +4853,8 @@
         "node --test tool/ci/install_pinned_node.test.mjs",
         "bash tool/ci/install_pinned_node.sh --help"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "tool/README.md"
     },
     {
       "id": "env:use-firebase",
@@ -5336,7 +5341,8 @@
         "node --check tool/firebase/prepare_functions_params_for_deploy.mjs",
         "node --test tool/firebase/prepare_functions_params_for_deploy.test.mjs"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "docs/release_operations.md#deploy-backend"
     },
     {
       "id": "firebase:functions-environment-wrapper",
@@ -5349,7 +5355,8 @@
       "description": "Requires an explicit Firebase environment for Functions deploy and log commands.",
       "checks": [
         "node --test tool/firebase_functions.test.mjs"
-      ]
+      ],
+      "runbook": "docs/release_operations.md#deploy-backend"
     },
     {
       "id": "firebase:functions-source-closure",
@@ -5402,7 +5409,8 @@
         "node --check tool/firebase/sanitize_firestore_indexes_for_deploy.mjs",
         "node --test tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "docs/release_operations.md#deploy-backend"
     },
     {
       "id": "firebase:index-readiness-waiter",
@@ -5427,7 +5435,8 @@
         "node --test tool/firebase/wait_firestore_indexes_ready.test.mjs",
         "node tool/firebase/wait_firestore_indexes_ready.mjs --self-test"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "docs/release_operations.md#deploy-backend"
     },
     {
       "id": "firebase:maps-config",
@@ -5695,7 +5704,8 @@
         "node --check tool/firebase/synthetic_backend_probe.mjs",
         "node --test tool/firebase/synthetic_backend_probe.test.mjs"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "tool/README.md"
     },
     {
       "id": "functions:emulator-test-selection",
@@ -5923,7 +5933,8 @@
         "node --test tool/git/sweep_merged_worktrees.test.mjs",
         "node tool/git/sweep_merged_worktrees.mjs --help"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "docs/agent_operating_model.md#parallel-worktrees"
     },
     {
       "id": "git:worktree-bootstrap",
@@ -5951,7 +5962,8 @@
         "node --test tool/git/bootstrap_worktree.test.mjs",
         "bash tool/git/bootstrap_worktree.sh --help"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "docs/agent_operating_model.md#parallel-worktrees"
     },
     {
       "id": "git:worktree-guard",
@@ -6942,7 +6954,8 @@
         "node --check tool/repository_hygiene.mjs",
         "node --test tool/repository_hygiene.test.mjs",
         "node tool/repository_hygiene.mjs --json"
-      ]
+      ],
+      "runbook": "tool/README.md#repository-hygiene"
     },
     {
       "id": "meta:repository-root-hygiene",
@@ -7087,7 +7100,8 @@
           "node",
           "root-npm"
         ]
-      }
+      },
+      "runbook": "docs/operations_platform.md"
     },
     {
       "id": "operations:boundaries",
@@ -7156,7 +7170,8 @@
           "node",
           "root-npm"
         ]
-      }
+      },
+      "runbook": "docs/operations_platform.md"
     },
     {
       "id": "operations:import-admin-projection",
@@ -7178,7 +7193,8 @@
       ],
       "impactPaths": [
         "functions/src/operations/projectionImporter.test.ts"
-      ]
+      ],
+      "runbook": "functions/README.md"
     },
     {
       "id": "operations:review-event-messaging",
@@ -7200,7 +7216,8 @@
       ],
       "impactPaths": [
         "functions/src/eventSuccess/operations/messageSetupReview.test.ts"
-      ]
+      ],
+      "runbook": "docs/operations_platform.md#read-only-event-messaging-setup-review"
     },
     {
       "id": "operations:workflow-manifest",
