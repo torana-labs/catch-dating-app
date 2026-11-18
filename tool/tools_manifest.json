@@ -6972,7 +6972,11 @@
         "node --test operations/test/catch-cli.test.mjs operations/test/command-catalog.test.mjs operations/test/command-client.test.mjs operations/test/command-tools.test.mjs"
       ],
       "impactPaths": [
-        "operations/src/**",
+        "operations/src/catch-cli/**",
+        "operations/src/command-client/**",
+        "operations/src/platform/canonical-json.mjs",
+        "operations/src/platform/errors.mjs",
+        "operations/src/platform/schema-dependencies.mjs",
         "operations/scripts/check-command-catalog.mjs",
         "operations/test/catch-cli.test.mjs",
         "operations/test/command-catalog.test.mjs",
