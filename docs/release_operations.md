@@ -3889,7 +3889,9 @@ analysis in the same run did not, and a runner cancellation on 2 Nov failed a
 merge-queue group on its own. A nightly smoke failure fails the scheduled run
 like any other nightly job, so the Main CI alert and the nightly issue still
 report it. Goldens and the Headless journeys keep running wherever the lane is
-selected. Golden pixel comparisons are report
+selected. Pull requests also run the Headless journeys in the Flutter lane
+(`flutter-ci.yml`, Linux), so a broken app-shell journey fails the PR instead
+of ejecting it from the merge queue. Golden pixel comparisons are report
 only: the job summary lists goldens beyond the 0.30% hosted-macOS raster
 tolerance (0.60% for the Widgetbook corpus) or without a baseline, and their
 images are retained as artifacts, while the comparator's known-good/known-bad

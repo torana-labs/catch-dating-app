@@ -645,6 +645,7 @@ jobs:
       - app-package-tests
       - flutter-coverage
       - flutter-test-shards
+      - pr-headless-journeys
     if: ${{ !cancelled() }}
     timeout-minutes: 5
 
@@ -656,6 +657,7 @@ jobs:
           APP_PACKAGES_RESULT: ${{ needs['app-package-tests'].result }}
           COVERAGE_RESULT: ${{ needs['flutter-coverage'].result }}
           TESTS_RESULT: ${{ needs['flutter-test-shards'].result }}
+          JOURNEYS_RESULT: ${{ needs['pr-headless-journeys'].result }}
           EVENT_NAME: ${{ github.event_name }}
         run: |
           # Coverage is visibility-only and skipped for pull requests and queue groups.
@@ -668,6 +670,33 @@ jobs:
           echo "app package tests and Widgetbook: ${APP_PACKAGES_RESULT}"
           echo "coverage visibility: ${COVERAGE_RESULT}"
           echo "test shards: ${TESTS_RESULT}"
-          if [[ "${TEST_PLAN_RESULT}" != "success" || "${GATES_RESULT}" != "success" || "${APP_PACKAGES_RESULT}" != "success" || "${coverage_ok}" != "true" || "${TESTS_RESULT}" != "success" ]]; then
+          # Pull requests run the app-shell journeys here; queue groups and main
+          # run them in the visual lane.
+          journeys_ok=false
+          if [[ "${JOURNEYS_RESULT}" == "success" ]] ||
+            [[ "${JOURNEYS_RESULT}" == "skipped" && "${EVENT_NAME}" != "pull_request" ]]; then
+            journeys_ok=true
+          fi
+          echo "app-shell journeys (pull request): ${JOURNEYS_RESULT}"
+          if [[ "${TEST_PLAN_RESULT}" != "success" || "${GATES_RESULT}" != "success" || "${APP_PACKAGES_RESULT}" != "success" || "${coverage_ok}" != "true" || "${TESTS_RESULT}" != "success" || "${journeys_ok}" != "true" ]]; then
             exit 1
           fi
+
+  # The app-shell journeys also run in the queue-only visual lane, beside the
+  # macOS goldens. On a pull request they run here, on Linux (~2.5 min), so a
+  # broken journey fails the PR instead of ejecting it from the merge queue
+  # (4 of 10 queue ejections, 16-18 Nov). Queue groups skip this job.
+  pr-headless-journeys:
+    name: Headless app journeys (pull request)
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/generate-contracts
+      - uses: ./.github/actions/setup-flutter
+      - run: flutter pub get
+      - name: Deterministic app-shell integration suites
+        run: bash tool/test_app_shell_integration.sh
