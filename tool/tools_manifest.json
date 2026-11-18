@@ -599,6 +599,19 @@
       "safety": "local",
       "status": "active",
       "description": "Scans backend error handling migration candidates.",
+      "impactPaths": [
+        "tool/audit/backend_error_candidates.dart",
+        "lib/**/*.dart",
+        "packages/platform/lib/**/*.dart",
+        "test/**/*.dart"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter"
+        ]
+      },
       "checks": [
         "dart analyze tool/audit/backend_error_candidates.dart",
         "dart tool/audit/backend_error_candidates.dart --check"
@@ -877,7 +890,8 @@
         "test/tool/provider_graph_test.dart",
         "tool/architecture/provider_graph_baseline.json",
         "lib/**/*.dart",
-        "apps/*/lib/**/*.dart"
+        "apps/*/lib/**/*.dart",
+        "packages/platform/lib/**/*.dart"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -1360,32 +1374,6 @@
       ]
     },
     {
-      "id": "ci:host-measurement-preview",
-      "category": "ci",
-      "path": "tool/ci/host_measurement_preview.mjs",
-      "command": "node --test tool/ci/host_measurement_preview.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/host_measurement_preview.test.mjs",
-        ".github/workflows/host-measurement-preview.yml",
-        "website/measurement-hosting.json",
-        "website/measurement-runtime/**"
-      ],
-      "description": "Verifies the fixed preview-only measurement runtime, accepted main CI, exact static bytes and serving privacy headers; production tracking remains disabled.",
-      "checks": [
-        "node --check tool/ci/host_measurement_preview.mjs",
-        "node --test tool/ci/host_measurement_preview.test.mjs website/scripts/next/measurementRuntime.test.mjs"
-      ],
-      "role": "gate"
-    },
-    {
       "id": "ci:ios-build-inputs",
       "category": "ci",
       "path": "tool/ci/ios_build_inputs.mjs",
@@ -1783,6 +1771,19 @@
       "safety": "local-readonly",
       "status": "active",
       "description": "Checks repository-owned composite Firestore query contracts against firestore.indexes.json, rejects uncontracted composite query builders, and blocks duplicate composite definitions and non-deployable single-field plus __name__ pseudo-composites.",
+      "impactPaths": [
+        "firestore.indexes.json",
+        "lib/**/data/**/*repository*.dart",
+        "packages/platform/lib/**/data/**/*repository*.dart",
+        "functions/src/programs/**/*.ts",
+        "functions/src/transport/**/*.ts"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "checks": [
         "node --check tool/contracts/check_firestore_query_indexes.mjs",
         "node --test tool/contracts/check_firestore_query_indexes.test.mjs",
@@ -2026,6 +2027,24 @@
       "safety": "local",
       "status": "active",
       "description": "Keeps organizers canonical across contracts, Flutter, React, Functions, routes, media, and product copy while club remains a subtype. Flutter Dart file names, identifiers and localization keys must say organizer: what tool/architecture/rename_to_organizer.mjs would still rename fails, apart from the club subtype and names the generated schema contracts declare. Contract names, TypeScript identifiers and file names must say organizer too: what tool/architecture/rename_wire_to_organizer.mjs would still rename fails, apart from the club subtype and BigQuery columns.",
+      "impactPaths": [
+        "docs/migrations/clubs_to_organizers.md",
+        "firebase.json",
+        "lib/**/*.dart",
+        "test/**/*.dart",
+        "integration_test/**/*.dart",
+        "apps/**/*.dart",
+        "packages/**/*.dart",
+        "functions/src/**/*.ts",
+        "contracts/**/*.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
       "checks": [
         "node --check tool/check_organizer_nomenclature.mjs",
         "node --test tool/check_organizer_nomenclature.test.mjs",
@@ -2184,7 +2203,12 @@
       "path": "tool/copy/check_l10n_key_usage.mjs",
       "impactPaths": [
         "tool/copy/check_l10n_key_usage.test.mjs",
-        "tool/copy/fixtures/l10n_key_usage/**"
+        "tool/copy/fixtures/l10n_key_usage/**",
+        "packages/l10n/lib/app_en.arb",
+        "lib/**/*.dart",
+        "packages/platform/lib/**/*.dart",
+        "apps/*/lib/**/*.dart",
+        "tool/lib/flutter_source_roots.mjs"
       ],
       "command": "node tool/copy/check_l10n_key_usage.mjs --check",
       "safety": "local-readonly",

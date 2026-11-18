@@ -506,6 +506,51 @@ test("program-work-views creates each summary and label once, without contacts",
   assert.equal(again.totals.alreadyCopied, 4);
 });
 
+test("program-arrival-views creates arrivals, departures and vendor views once, without phone numbers", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-arrival-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const leg = (overrides = {}) => ({programId: "p1", organizerId: "o1", guestId: "g1", partyId: null,
+    kind: "inbound", flightNumber: "AI1", originIata: "BOM", flightStatus: "scheduled",
+    scheduledArrivalAt: at(5_000_000), readiness: "expected", pickupPointId: "pp1",
+    destinationHotelId: "h1", destinationLabel: null, passengers: 2, luggageUnits: 1,
+    requiredCapabilities: [], dedicatedVehicle: false, revision: 1, international: false,
+    claimedByUid: null, ...overrides});
+  const db = fakeDb({
+    "organizerPrograms/p1": {organizerId: "o1", transportSettings: {bandWindowMillis: 1,
+      maxReadyWaitMillis: 1, domesticExitLagMillis: 1_800_000, internationalExitLagMillis: 3_600_000,
+      vehicleClasses: []}},
+    "programGuests/g1": {programId: "p1", organizerId: "o1", displayName: "Rohan", phoneE164: "+919900000000"},
+    "programHotels/h1": {programId: "p1", organizerId: "o1", name: "The Grand", receptionContact: "+919911111111"},
+    "programTravelLegs/in1": leg(),
+    "programTravelLegs/in2": leg({readiness: "dispatched"}),
+    "programTravelLegs/out1": leg({kind: "outbound", pickupPointId: "pp1"}),
+    "programStays/s1": {programId: "p1", organizerId: "o1", guestId: "g1", hotelId: "h1",
+      roomLabel: "412", status: "checkedIn", endsAt: at(9_000_000)},
+    "transportVendors/v1": {organizerId: "o1", name: "City Cabs", phoneE164: "+919922222222",
+      programIds: ["p1", "p2"], active: true},
+  });
+  const plan = await planMigration(db, migration);
+  // One arrivals row (the dispatched journey is off the roster), one
+  // departures row and two vendor views.
+  assert.equal(plan.totals.toCreate, 1 + 1 + 2);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["programArrivalViews/in1"].guestDisplayName, "Rohan");
+  assert.equal(db.data["programArrivalViews/in1"].destinationLabel, "The Grand");
+  assert.equal(db.data["programArrivalViews/in2"], undefined);
+  assert.equal(db.data["programDepartureViews/out1"].roomLabel, "412");
+  assert.equal(db.data["programVendorViews/p1__v1"].name, "City Cabs");
+  assert.equal(db.data["programVendorViews/p2__v1"].programId, "p2");
+  const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(
+    ([key]) => /^program(Arrival|Departure|Vendor)Views\//.test(key))));
+  for (const secret of ["9900000000", "9911111111", "9922222222"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  assert.equal(db.data["transportVendors/v1"].phoneE164, "+919922222222");
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("program-access-views creates each owner and staff view once", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-access-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
@@ -572,6 +617,86 @@ test("program-access-views-refresh repairs a stale view once and then writes not
   assert.equal(db.data["programStaffGrants/p1__desk-1"].revision, 2);
   const again = await planMigration(db, refresh);
   assert.equal(again.totals.toCreate, 0, "a rerun writes nothing");
+  assert.equal(again.totals.conflicts, 0);
+});
+
+test("program-door-views creates headers, roster rows and journal views once, without contacts", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-door-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const fn = (overrides = {}) => ({programId: "p1", organizerId: "o1", name: "Sangeet",
+    venueName: "Lawn", venueNotes: "ring Ravi", startsAt: at(1000), endsAt: at(5000),
+    status: "scheduled", ...overrides});
+  const guest = (name, overrides = {}) => ({programId: "p1", organizerId: "o1",
+    displayName: name, householdId: null, phoneE164: "+919900000000", email: "private-email-marker",
+    ...overrides});
+  const db = fakeDb({
+    "programFunctions/f1": fn(),
+    "programFunctions/f2": fn({name: "Wedding", invitationMode: "selectedGuests"}),
+    "programHouseholds/hh1": {programId: "p1", label: "Sharma"},
+    "programGuests/g1": guest("Rohan", {householdId: "hh1"}),
+    "programGuests/g2": guest("Meera"),
+    "programFunctionGuests/f2_g1": {programId: "p1", functionId: "f2", guestId: "g1",
+      invited: true, rsvpStatus: "attending", attendanceStatus: "expected", partySize: 2},
+    "programDoorJournal/j1": {programId: "p1", organizerId: "o1", functionId: "f1",
+      guestId: "g1", actorUid: "staff-1", action: "checkIn", occurredAtMillis: 9, partySize: 1},
+    "programStaffGrants/p1__staff-1": {displayName: "Arjun"},
+  });
+  const plan = await planMigration(db, migration);
+  // 2 headers, f1 lists both guests, f2 lists only its join row, 1 journal view.
+  assert.equal(plan.totals.toCreate, 2 + 3 + 1);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["programDoorFunctions/f1"].venueNotes, "ring Ravi");
+  assert.equal(db.data["programDoorRows/f1__g1"].householdLabel, "Sharma");
+  assert.equal(db.data["programDoorRows/f2__g1"].partySize, 2);
+  assert.equal(db.data["programDoorRows/f2__g2"], undefined);
+  assert.equal(db.data["programDoorJournalViews/j1"].actorLabel, "Arjun");
+  const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(
+    ([key]) => key.startsWith("programDoor") && !key.startsWith("programDoorJournal/"))));
+  for (const secret of ["9900000000", "private-email-marker", "staff-1"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  assert.equal(db.data["programGuests/g1"].phoneE164, "+919900000000");
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
+test("program-live-board-views creates each alert and count once, one per run and duty", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-live-board-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const now = Date.now();
+  const send = (overrides = {}) => ({runId: "run-1", momentId: "m1", scopeKind: "program",
+    scopeId: "p1", organizerId: "o1", actionKind: "staffAttention", duty: "functionLead",
+    severity: "warning", title: "Late", createdAtMillis: now - 1000, ...overrides});
+  const leg = (overrides = {}) => ({kind: "inbound", programId: "p1", organizerId: "o1",
+    flightNumber: "AI1", flightStatus: "scheduled", readiness: "expected",
+    updatedAt: at(now), ...overrides});
+  const db = fakeDb({
+    "organizerPrograms/p1": {organizerId: "o1"},
+    "organizerMomentSends/s1": send(),
+    "organizerMomentSends/s2": send({createdAtMillis: now - 500}),
+    "organizerMomentSends/s3": send({actionKind: "other"}),
+    "organizerMomentSends/old": send({runId: "run-0", createdAtMillis: now - 90_000_000}),
+    "programTravelLegs/l1": leg({flightStatus: "cancelled"}),
+    "programTravelLegs/l2": leg({readiness: "disrupted"}),
+    "programTravelLegs/l3": leg(),
+    "programAlerts/p1_run-1_functionLead": {programId: "p1", alertId: "run-1_functionLead",
+      state: "done", assigneeUid: "u1", assigneeName: "Dev", revision: 2},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 1 + 2 + 1);
+  await applyMigrationPlan(db, plan);
+  const alert = db.data["programAlertViews/p1_run-1_functionLead"];
+  assert.equal(alert.createdAtMillis, now - 1000);
+  assert.equal(alert.state, "done");
+  assert.equal(alert.assigneeName, "Dev");
+  assert.equal(db.data["programAlertViews/p1_flight_l1"].duty, null);
+  assert.equal(db.data["programAlertViews/p1_readiness_l2"].source, "readiness");
+  assert.deepEqual(db.data["programTravelCountViews/p1"],
+    {programId: "p1", organizerId: "o1", expected: 2, atCurb: 0, disrupted: 1, version: 1});
+  assert.equal(db.data["organizerMomentSends/s1"].title, "Late");
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
   assert.equal(again.totals.conflicts, 0);
 });
 

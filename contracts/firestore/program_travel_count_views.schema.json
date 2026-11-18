@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_travel_count_views.schema.json",
+  "title": "ProgramTravelCountViewDocument",
+  "description": "Server-maintained inbound travel counts of one programme for the live board: how many journeys are expected, at the curb and disrupted, exactly the counts getProgramLiveBoard returned to full reach. Written by a trigger on programTravelLegs. Readable by coordinators and the programme owner. Counts only; never names, contacts or flight details.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programTravelCountViews",
+  "x-firestore-path": "programTravelCountViews/{programId}",
+  "x-document-id-field": "programId",
+  "x-owner": "Programme read model projector (programLiveBoardViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "expected",
+    "atCurb",
+    "disrupted",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "expected": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "atCurb": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "disrupted": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

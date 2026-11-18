@@ -154,7 +154,7 @@ describe("canonical public chrome", () => {
     expect(screen.queryByRole("button", {name: /dismiss|close/iu})).toBeNull();
   });
 
-  it("renders the one site footer: Explore, Cities, Hosts with Weddings, Help and legal ending in Privacy choices, the operator line once", () => {
+  it("renders the one site footer: Explore, Cities, Hosts with Weddings, Help and legal with the listing request ending in Privacy choices, the operator line once", () => {
     render(<PublicSiteFooter />);
     const footer = within(screen.getByRole("contentinfo"));
     const nav = within(footer.getByRole("navigation", {name: "Footer"}));
@@ -163,9 +163,10 @@ describe("canonical public chrome", () => {
       "What’s on", guestAppActionLabel,
       ...siteFooterDefaultCities.map((city) => city.label),
       "Catch for hosts", "Pricing", "Start free trial", "Weddings", "Claim your page",
-      "Help", "Privacy", "Terms", "Refunds", "Contact",
+      "Help", "Privacy", "Terms", "Refunds", "Contact", "Report or remove a listing",
     ]);
     expect(nav.getByRole("link", {name: "Start free trial"}).getAttribute("href")).toBe("/host/#start");
+    expect(nav.getByRole("link", {name: "Report or remove a listing"}).getAttribute("href")).toBe("/listings/request/");
     expect(nav.getByRole("link", {name: "Weddings"}).getAttribute("href")).toBe("/weddings/");
     expect(nav.getByRole("button", {name: publicSiteCopy.privacyChoices})).toBeTruthy();
     expect(footer.getByRole("link", {name: publicSiteCopy.wordmark}).getAttribute("href")).toBe("/");
@@ -243,7 +244,7 @@ describe("canonical public chrome", () => {
     expect(nav.getAllByRole("link").map((link) => [link.textContent, link.getAttribute("href")])).toEqual([
       ["Catch for hosts", "/host/"], ["How Catch works", "/host/#night"], ["Ways to use Catch", "/host/#ways"], ["Weddings", "/weddings/"],
       ["Start free trial", "/host/#start"], ["Pricing", "/pricing/"], ["Claim your page", "/claim/"],
-      ["What’s on", "/explore/"], ["Help", "/help/"], ["Contact", "/contact/"],
+      ["What’s on", "/explore/"], ["Help", "/help/"], ["Contact", "/contact/"], ["Report or remove a listing", "/listings/request/"],
       ["Privacy", "/privacy/"], ["Terms", "/terms/"], ["Refunds", "/refunds/"],
     ]);
     expect(nav.getByRole("button", {name: publicSiteCopy.privacyChoices})).toBeTruthy();

@@ -14,16 +14,19 @@ import {
   metaGraph,
   planMetaCampaigns,
 } from "./apply_meta_campaigns.mjs";
+import {adTargetingFromCatalog, readMarketCatalog} from "../lib/market_catalog.mjs";
 
 const policy = loadMetaCampaigns();
 const campaign = policy.campaigns[0];
 
-function withPolicy(change) {
+function withPolicy(change, catalog) {
   const copy = structuredClone(policy);
+  // The loader fills these in from the city catalog; the file never has them.
+  for (const declared of copy.campaigns) { delete declared.targeting.cities; delete declared.targeting.markets; }
   change(copy);
   const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "meta-ads-")), "p.json");
   fs.writeFileSync(file, JSON.stringify(copy));
-  return () => loadMetaCampaigns(file);
+  return () => loadMetaCampaigns(file, catalog);
 }
 
 test("the committed policy is valid and every campaign starts paused", () => {
@@ -40,7 +43,8 @@ test("policy guards: paused, prefix, budget, copy limits, mapped questions", () 
   assert.throws(withPolicy((p) => { p.campaigns[0].dailyBudgetInr = 50000; }), /between 100 and 5000/);
   assert.throws(withPolicy((p) => { p.campaigns[0].ads[0].headline = "x".repeat(41); }), /headline over 40/);
   assert.throws(withPolicy((p) => { p.campaigns[0].leadForm = "Catch Host | Missing"; }), /undeclared lead form/);
-  assert.throws(withPolicy((p) => { p.campaigns[0].targeting.cities = ["Mumbai"]; }), /Meta city keys/);
+  assert.throws(withPolicy((p) => { p.campaigns[0].targeting.cities = ["1035921"]; }), /lists its own cities/);
+  assert.throws(withPolicy((p) => { p.campaigns[0].targeting.adProgramme = "all"; }), /adProgramme must be/);
   assert.throws(withPolicy((p) => { p.campaigns[0].ads[0].image = "/tmp/x.png"; }), /store listing board/);
   assert.throws(withPolicy((p) => { p.campaigns[0].landingPath = "https://example.com/"; }), /site landing path/);
   assert.throws(withPolicy((p) => {
@@ -49,6 +53,14 @@ test("policy guards: paused, prefix, budget, copy limits, mapped questions", () 
   assert.throws(withPolicy((p) => {
     p.leadForms[0].questions = p.leadForms[0].questions.filter((q) => q.type !== "PHONE");
   }), /must ask for PHONE/);
+});
+
+test("cities come only from the city catalog", () => {
+  const host = adTargetingFromCatalog(readMarketCatalog(), "host");
+  assert.deepEqual(campaign.targeting.cities, host.metaCityKeys);
+  const quiet = structuredClone(readMarketCatalog());
+  for (const city of quiet.cities) if (city.ads) city.ads.host = "off";
+  assert.throws(withPolicy(() => {}, quiet), /no city with host ads on/);
 });
 
 test("payloads: paused, lead objective, on-ad leads, Catch links", () => {
@@ -77,7 +89,7 @@ test("payloads: paused, lead objective, on-ad leads, Catch links", () => {
   assert.ok(cadence.options.every((option) => /^[a-z0-9_]+$/.test(option.key)));
 });
 
-function fakeApi({pages = [], forms = [], campaigns = [], failOn = null} = {}) {
+function fakeApi({pages = [], forms = [], campaigns = [], adSets = [], failOn = null} = {}) {
   const calls = [];
   let next = 100;
   return {
@@ -87,6 +99,7 @@ function fakeApi({pages = [], forms = [], campaigns = [], failOn = null} = {}) {
       if (route === "me/accounts") return {data: pages};
       if (route.endsWith("/leadgen_forms")) return {data: forms};
       if (route.endsWith("/campaigns")) return {data: campaigns};
+      if (route.endsWith("/adsets")) return {data: adSets};
       if (route === "search") {
         return {data: {cities: Object.fromEntries(JSON.parse(JSON.stringify(params.cities))
           .map((key) => [key, {name: `City ${key}`}]))}};
@@ -131,6 +144,27 @@ test("existing forms and campaigns are kept; new ones are created paused", async
   const form = api.calls.find(([, route]) => route.endsWith("/leadgen_forms") && route.startsWith(policy.pageId));
   assert.equal(form[2], "page-token");
   assert.equal(api.calls.filter(([m, r]) => m === "POST" && r.endsWith("/ads")).length, campaign.ads.length);
+});
+
+test("an existing campaign's cities follow the catalog", async () => {
+  const pages = [{id: policy.pageId, access_token: "page-token"}];
+  const forms = [{id: "555", name: policy.leadForms[0].name, status: "ACTIVE"}];
+  const campaigns = [{id: "1", name: campaign.name, status: "PAUSED"}];
+  const adSet = (keys) => [{id: "9", name: `${campaign.name} | All cities`,
+    targeting: {age_min: 21, geo_locations: {cities: keys.map((key) => ({key, name: "x"})), location_types: ["home"]}}}];
+  const matching = await planMetaCampaigns({policy, render, api: fakeApi({pages, forms, campaigns,
+    adSets: adSet(campaign.targeting.cities)})});
+  assert.deepEqual(matching.changes.map((c) => c.kind), ["keep", "keep"]);
+  const api = fakeApi({pages, forms, campaigns, adSets: adSet([...campaign.targeting.cities.slice(1), "111111"])});
+  const drifted = await planMetaCampaigns({policy, render, api});
+  const sync = drifted.changes.find((c) => c.kind === "sync");
+  assert.equal(sync.addCities.length, 1);
+  assert.deepEqual(sync.removeCities, ["111111"]);
+  assert.deepEqual(sync.targeting.geo_locations.location_types, ["home"]);
+  assert.equal(sync.targeting.age_min, 21);
+  assert.ok(api.calls.some(([m, r, mode]) => m === "POST" && r === "9" && mode === "validate"));
+  await applyMetaCampaigns({policy, plan: drifted, api, render});
+  assert.ok(api.calls.some(([m, r, mode]) => m === "POST" && r === "9" && mode !== "validate"));
 });
 
 test("a failure part-way deletes the campaign made in that run", async () => {

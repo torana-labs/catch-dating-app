@@ -10,11 +10,19 @@ export interface MeasurementConsent {
   updatedAt: string;
 }
 
+/** The live transport a stored consent choice was made under. No browser
+ * transport is wired yet, so every origin is "disabled". The first-party
+ * transport adds its mode here; a choice made under another mode asks again. */
+export type CatchMeasurementMode = "disabled";
+export function catchMeasurementMode(): CatchMeasurementMode {
+  return "disabled";
+}
+
 const routes = {
   "/": "home", "/host/": "host", "/host/overview/": "host_overview",
   "/host/platform/": "host_platform", "/host/planners/": "host_planners",
   "/host/clubs/": "host_clubs", "/host/directory/": "host_directory",
-  "/claim/": "claim", "/host/claim/": "claim", "/host/apply/": "host_application",
+  "/claim/": "claim", "/host/claim/": "claim",
   "/host/stack/": "host_stack", "/host/workflows/": "host_workflows",
 } as const;
 export type AcquisitionRoute = keyof typeof routes;

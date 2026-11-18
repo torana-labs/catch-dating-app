@@ -5,6 +5,7 @@ import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {brand} from "@catch/brand";
 import {parseCommonArgs} from "../lib/cli_args.mjs";
+import {adProgrammes, adTargetingFromCatalog, readMarketCatalog} from "../lib/market_catalog.mjs";
 import {createFunctionsRequire} from "../lib/repo_paths.mjs";
 
 // Plans, and with --apply creates, the Meta lead campaigns in
@@ -12,9 +13,12 @@ import {createFunctionsRequire} from "../lib/repo_paths.mjs";
 // creatives and ads. Everything is created PAUSED; switching a campaign on and
 // any budget change after launch is the owner's call in Ads Manager. The
 // default run reads the account, checks Page access, renders the images and
-// asks Meta to validate each new campaign without making anything. Campaigns
-// and forms that already exist are left exactly as they are; only names under
-// the managed prefix are considered. If a create fails part-way, the
+// asks Meta to validate each new campaign without making anything. Cities come
+// from the city catalog (contracts/catalogs/markets.json, each city's `ads`
+// block), never from this file. Forms and campaigns that already exist are
+// left as they are, except that a campaign's ad set cities are brought in line
+// with the catalog, shown in the plan and changed with --apply. Only names
+// under the managed prefix are considered. If a create fails part-way, the
 // campaign made in that run is deleted again. The token comes from
 // META_ADS_ACCESS_TOKEN or Secret Manager (the CatchAds system user) and is
 // never logged.
@@ -38,7 +42,7 @@ function limit(where, label, text, max) {
   if (text.length > max) throw new Error(`${where} ${label} over ${max} characters: ${text}`);
 }
 
-export function loadMetaCampaigns(file = POLICY_PATH) {
+export function loadMetaCampaigns(file = POLICY_PATH, catalog = readMarketCatalog()) {
   const policy = JSON.parse(fs.readFileSync(file, "utf8"));
   if (policy.version !== 1 || !metaId(policy.adAccountId) || !metaId(policy.pageId) ||
       typeof policy.managedPrefix !== "string" ||
@@ -95,9 +99,18 @@ export function loadMetaCampaigns(file = POLICY_PATH) {
     if (!forms.has(campaign.leadForm)) throw new Error(`${where} names an undeclared lead form.`);
     if (!sitePath(campaign.landingPath)) throw new Error(`${where} needs a site landing path such as /host/.`);
     const targeting = campaign.targeting ?? {};
-    if (!targeting.cities?.length || !targeting.cities.every(metaId)) {
-      throw new Error(`${where} cities must be a non-empty list of Meta city keys.`);
+    if ("cities" in targeting) {
+      throw new Error(`${where} lists its own cities; set targeting.adProgramme and switch cities on in the city catalog.`);
     }
+    if (!adProgrammes.includes(targeting.adProgramme)) {
+      throw new Error(`${where} targeting.adProgramme must be one of ${adProgrammes.join(", ")}.`);
+    }
+    const fromCatalog = adTargetingFromCatalog(catalog, targeting.adProgramme);
+    if (!fromCatalog.metaCityKeys.length || !fromCatalog.metaCityKeys.every(metaId)) {
+      throw new Error(`${where} has no city with ${targeting.adProgramme} ads on in the city catalog.`);
+    }
+    targeting.cities = fromCatalog.metaCityKeys;
+    targeting.markets = fromCatalog.labels;
     if (!(Number.isInteger(targeting.ageMin) && targeting.ageMin >= 18 && targeting.ageMin <= 25)) {
       throw new Error(`${where} ageMin must be between 18 and 25.`);
     }
@@ -268,7 +281,22 @@ export async function planMetaCampaigns({policy, api, render = renderFeedImage})
     if (missing.length) throw new Error(`Unknown Meta city keys: ${missing.join(", ")}.`);
     if (campaigns.has(campaign.name)) {
       const row = campaigns.get(campaign.name);
-      changes.push({kind: "keep", target: campaign.name, what: "campaign", id: row.id, status: row.status});
+      const adSets = await api.get(`${row.id}/adsets`, {fields: "id,name,targeting", limit: "50"});
+      const adSet = (adSets.data ?? []).find((set) => set.name === `${campaign.name} | All cities`);
+      const have = new Set((adSet?.targeting?.geo_locations?.cities ?? []).map((city) => String(city.key)));
+      const want = new Set(campaign.targeting.cities);
+      const add = [...want].filter((key) => !have.has(key));
+      const remove = [...have].filter((key) => !want.has(key));
+      if (!adSet || (!add.length && !remove.length)) {
+        changes.push({kind: "keep", target: campaign.name, what: "campaign", id: row.id, status: row.status});
+        continue;
+      }
+      // Keep the ad set's own targeting (age, automation) and replace only its cities.
+      const targeting = {...adSet.targeting,
+        geo_locations: {...adSet.targeting.geo_locations, cities: campaign.targeting.cities.map((key) => ({key}))}};
+      await api.post(adSet.id, {targeting, execution_options: ["validate_only"]});
+      changes.push({kind: "sync", target: campaign.name, what: "campaign", id: row.id, status: row.status,
+        adSetId: adSet.id, targeting, addCities: add.map((key) => cityNames.get(key) ?? key), removeCities: remove});
       continue;
     }
     for (const ad of campaign.ads) {
@@ -327,6 +355,11 @@ export async function applyMetaCampaigns({policy, plan, api, render = renderFeed
     await createCampaign({policy, api, campaign: change.campaign, leadFormId, render});
     created.push(`campaign ${change.target}`);
   }
+  for (const change of plan.changes) {
+    if (change.kind !== "sync") continue;
+    await api.post(change.adSetId, {targeting: change.targeting});
+    created.push(`cities synced on ${change.target}`);
+  }
   return created;
 }
 
@@ -346,15 +379,20 @@ async function main() {
   const policy = loadMetaCampaigns();
   const api = metaGraph({token: accessToken()});
   const plan = await planMetaCampaigns({policy, api});
-  const summary = plan.changes.map(({kind, target, what, id, status, cities, campaign}) =>
+  const summary = plan.changes.map(({kind, target, what, id, status, cities, campaign, addCities, removeCities}) =>
     ({kind, what, target, ...(id ? {id} : {}), ...(status ? {status} : {}),
-      ...(cities ? {cities, ads: campaign.ads.length, dailyBudgetInr: campaign.dailyBudgetInr} : {})}));
+      ...(cities ? {cities, ads: campaign.ads.length, dailyBudgetInr: campaign.dailyBudgetInr} : {}),
+      ...(addCities ? {addCities, removeCities} : {})}));
   if (args.json) console.log(JSON.stringify({blockers: plan.blockers, changes: summary}, null, 2));
   else {
     console.log(`Meta plan for act_${plan.adAccountId} (Page ${plan.pageId}):`);
     for (const change of summary) {
       if (change.kind === "keep") {
-        console.log(`- keep ${change.what} ${change.target} (exists${change.status ? `, ${change.status}` : ""}; left unchanged)`);
+        console.log(`- keep ${change.what} ${change.target} (exists${change.status ? `, ${change.status}` : ""}; matches)`);
+      } else if (change.kind === "sync") {
+        const parts = [change.addCities.length ? `add ${change.addCities.join(", ")}` : "",
+          change.removeCities.length ? `remove city keys ${change.removeCities.join(", ")}` : ""].filter(Boolean);
+        console.log(`- sync campaign ${change.target} (exists, ${change.status}; validated): ${parts.join("; ")}`);
       } else if (change.what === "campaign") {
         console.log(`- create campaign ${change.target} (PAUSED, ₹${change.dailyBudgetInr}/day, ` +
           `${change.ads} ads, validated) in ${change.cities.join(", ")}`);
@@ -365,14 +403,14 @@ async function main() {
     for (const blocker of plan.blockers) console.log(`Blocked: ${blocker}`);
   }
   if (!args.apply) {
-    if (summary.some((change) => change.kind === "create")) {
-      console.log("Nothing was changed. Re-run with --apply to create these, paused.");
+    if (summary.some((change) => change.kind !== "keep")) {
+      console.log("Nothing was changed. Re-run with --apply to make these changes; new campaigns start paused.");
     }
     return;
   }
   const created = await applyMetaCampaigns({policy, plan, api});
-  console.log(`Created ${created.length ? created.join("; ") : "nothing"}. ` +
-    "Everything is paused. Review and enable it in Ads Manager.");
+  console.log(`Done: ${created.length ? created.join("; ") : "nothing"}. ` +
+    "New campaigns are paused. Review them in Ads Manager.");
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {

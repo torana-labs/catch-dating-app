@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_door_journal_views.schema.json",
+  "title": "ProgramDoorJournalViewDocument",
+  "description": "Server-maintained door activity entry: exactly the journal tail row getProgramFunctionDoorView returned (guest display name, action, time, party size, note and the acting staff member's label), without the actor's account id or the device id. Written by triggers on programDoorJournal, programGuests and programStaffGrants. Names and the note are removed when the source is anonymized. Readable by accounts whose function check-in or function lead duty covers the function, and by the programme owner. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programDoorJournalViews",
+  "x-firestore-path": "programDoorJournalViews/{journalId}",
+  "x-document-id-field": "journalId",
+  "x-owner": "Programme read model projector (programDoorViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "functionId",
+    "guestId",
+    "displayName",
+    "action",
+    "occurredAtMillis",
+    "partySize",
+    "note",
+    "actorLabel",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "functionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "guestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "displayName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "action": {
+      "type": "string"
+    },
+    "occurredAtMillis": {
+      "type": "integer"
+    },
+    "partySize": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "actorLabel": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

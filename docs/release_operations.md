@@ -2331,9 +2331,9 @@ any of these console or DNS gates.
 
 `Deploy backend` never deploys Hosting or forwards Vite variables. The
 marketing, Host, and admin workflows own their production Hosting builds and the
-`prod-hosting` environment described above. `VITE_GTM_ID` remains optional
-until the production GTM container exists; paid-acquisition readiness still
-requires setting it and validating consent-aware tags. Marketing store links
+`prod-hosting` environment described above. The marketing build takes no tag
+manager container id; paid-acquisition tags follow
+[`ads_conversion_spec.md`](ads_conversion_spec.md). Marketing store links
 go live through a `brand.json` edit and a normal website release, not a GitHub
 Environment variable.
 

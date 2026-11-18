@@ -4916,7 +4916,9 @@ instant of an assignment naming that id. `workPickup`, `workHotel` and
 `getProgramWorkAccess` resolves it (pickup points from every operational duty
 but the hotel desk, hotels from every operational duty, functions from door and
 guest-desk duties): key `*` for every one, otherwise one key per named id.
-`assignments` repeats the live duty
+`arrivalRoutes` holds the arrivals journeys the account's airport greeter,
+transport dispatcher and coordinator assignments reach, as `pickup|hotel` keys
+(see the arrivals views below). `assignments` repeats the live duty
 tuples with their scopes and own expiries, and `grantExpiresAtMillis` the grant's
 own expiry, as `getProgramWorkAccess` returns them, because a phone's policies
 need one assignment to cover both ends of a transport route, which the flattened
@@ -4945,6 +4947,72 @@ reaches it; a query naming the programme and one kind lists every resource of
 that kind when the work list's `*` key is live (the owner always), and a scoped
 account reads its named ids one by one. With the access view they replace the
 callable, which stays deployed for older builds.
+`programDoorFunctions/{functionId}`, `programDoorRows/{functionId}__{guestId}`
+and `programDoorJournalViews/{journalId}` (#1339) are the door of one function,
+kept by triggers on `programFunctions`, `programFunctionGuests`,
+`programGuests`, `programHouseholds`, `programDoorJournal` and
+`programStaffGrants`, and created for existing sources by the
+`program-door-views` copy-forward migration. The header holds exactly the
+function fields `getProgramFunctionDoorView` returned (venue notes, dress code
+and instructions included, since only door duty holders read it). A row is one
+guest at one function with the callable's roster fields: display name, whether
+invited, RSVP and attendance state, party size, household label and the
+response note, and never a phone number, email or other contact field. An
+`allGuests` function has a row for every programme guest, a `selectedGuests`
+function for each guest with a join row, and a guest neither invited nor
+checked in has none. A journal view is one door activity entry with the guest's
+name, the action, time, party size, note and the acting staff member's label,
+without the actor's account id or the device id; once the source is
+anonymized its view drops the name, note and label. The phone computes the
+header counts (heads expected and checked in, parties, no-shows, walk-ins) from
+the rows it lists and reads the newest 60 journal views by an ordered query.
+Rules let accounts whose function check-in or function lead duty covers the
+function, and the programme owner, get these by id or list them with a query
+naming `programId` and `functionId`; coordinators hold both duties in their
+`programAccessViews` document. The door's offline outbox and journal writes are
+unchanged: only the read moves.
+
+`programAlertViews/{programId}__{alertId}` and
+`programTravelCountViews/{programId}` (#1339) are the live board's alerts and
+travel counts, kept by triggers on `organizerMomentSends`,
+`programTravelLegs` and `programAlerts` and created by the
+`program-live-board-views` migration. An alert is one document: a staff
+attention send stamped for a duty (one per run and duty, from the earliest
+send, ending 24 hours after it) or a cancelled or diverted flight or disrupted
+inbound journey (no duty, no end), merged with who took or finished it. It
+carries `duty`, `expiresAtMillis`, the resolution state and the assignee's
+account id, so a phone can tell its own alerts; clients hide an alert past
+`expiresAtMillis`, and the retention sweep's delete of the resolutions clears
+the assignee. A function lead reads the alerts stamped for a duty it holds
+(one listener per duty); full reach (coordinators and the owner) reads every
+alert and the counts. The phone computes the schedule's phases from its clock.
+`listProgramStaffAttention` reads the same alerts (source `staffAttention`).
+
+`programArrivalViews/{legId}`, `programDepartureViews/{legId}` and
+`programVendorViews/{programId}__{vendorId}` (#1339) are the transport desks'
+rows, kept by triggers on `programTravelLegs`, `programTravelParties`,
+`programGuests`, `programHotels`, `programStaffGrants`, `programStays`, the
+programme's transport settings and `transportVendors`, and created for existing
+sources by the `program-arrival-views` copy-forward migration. An arrivals row
+is one expected, ready or disrupted inbound journey with exactly the fields
+`getProgramArrivalsRoster` returns (guest name, party, flight, the curb time
+resolved from the transport settings, readiness, claimant, destination), the
+claimant's account id in place of the caller's `claimedByMe` flag, and
+`pickupKey` and `hotelKey` (the ids, or `~` when the journey has none). Rules
+match those keys against `programAccessViews.arrivalRoutes`: each key is
+`pickup|hotel`, either side an id or `*`, written from one airport greeter,
+transport dispatcher or coordinator assignment so that its pickup and hotel
+scopes cover a journey together, as the roster's query scopes do; an assignment
+whose scopes would expand past 300 routes grants none. A scoped account lists
+one route at a time with a query naming `programId` and its pickup or hotel key.
+A departures row is one outbound journey to a hotel with the callable's row
+(guest, party, flight, leave-by, the guest's room and desk state); hotel desk
+duty covering the hotel reads them by a query naming `programId` and `hotelId`,
+and the desk counts are computed on the phone from the rows and its clock. A
+vendor view is the vendor's id, name and active flag for one bound programme,
+read by dispatchers: the vendor's phone number stays in `transportVendors`, so
+the callable's reply (which never carried it) becomes a read model without
+withholding by role. None carries a phone number or other contact field.
 
 `organizerCampaigns.recipientSource` names where recipients resolve:
 `savedAudience` (default, backed by `savedAudienceId`) or

@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_door_functions.schema.json",
+  "title": "ProgramDoorFunctionDocument",
+  "description": "Server-maintained door header of one programme function: exactly the function fields getProgramFunctionDoorView returned (name, invitation mode, check-in flag, status, times, venue, venue notes, dress code, instructions and the two rollup counts). Written by a trigger on programFunctions. Readable only by accounts whose function check-in or function lead duty covers the function, and by the programme owner. Never contact details, never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programDoorFunctions",
+  "x-firestore-path": "programDoorFunctions/{functionId}",
+  "x-document-id-field": "functionId",
+  "x-owner": "Programme read model projector (programDoorViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "functionId",
+    "name",
+    "invitationMode",
+    "checkInEnabled",
+    "status",
+    "startsAtMillis",
+    "endsAtMillis",
+    "venueName",
+    "venueNotes",
+    "dressCode",
+    "instructions",
+    "expectedCount",
+    "checkedInCount",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "functionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "invitationMode": {
+      "type": "string",
+      "enum": [
+        "allGuests",
+        "selectedGuests"
+      ]
+    },
+    "checkInEnabled": {
+      "type": "boolean"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "startsAtMillis": {
+      "type": "integer"
+    },
+    "endsAtMillis": {
+      "type": "integer"
+    },
+    "venueName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "venueNotes": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "dressCode": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "instructions": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "expectedCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "checkedInCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

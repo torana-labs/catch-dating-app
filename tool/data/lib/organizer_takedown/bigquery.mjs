@@ -85,7 +85,7 @@ export async function cleanBigQuery({applyManifest, projectId, store, runBq, now
         `--parameter=${params}`, sql.count]))[0]?.row_count ?? NaN);
       const before = await count();
       // Preserve the rows before deleting them.
-      const selected = await bq(["--format=json", "--max_rows=1000000", "query", "--use_legacy_sql=false",
+      const selected = await bq(["--format=json", "query", "--max_rows=1000000", "--use_legacy_sql=false",
         `--parameter=${params}`, sql.select]);
       const preserved = JSON.parse(selected || "[]").length;
       const bytes = Buffer.from(selected || "[]");

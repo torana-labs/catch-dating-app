@@ -18,7 +18,6 @@
     ],
     "capabilities": [
       "cross-paths",
-      "host-acquisition-meta",
       "host-operator-alerts"
     ]
   },
@@ -711,36 +710,6 @@
       "owner": "organizer-claims",
       "sourcePaths": [
         "functions/src/organizers/instagramClaimWebhook.ts"
-      ],
-      "credentialClass": "provider-secret",
-      "binding": {
-        "kind": "firebase-secret-param",
-        "exactReference": "observed-numeric-version",
-        "identity": "observed-function-service-account"
-      },
-      "activationPolicy": "required-by-selected-consumer",
-      "rotationCompatibility": "provider-overlap"
-    },
-    {
-      "id": "functions.secret.catch-host-meta-conversions-token",
-      "kind": "secret-version",
-      "name": "CATCH_HOST_META_CONVERSIONS_TOKEN",
-      "environments": [
-        "dev",
-        "staging",
-        "prod"
-      ],
-      "requiredWhen": {
-        "anyCapability": [
-          "host-acquisition-meta"
-        ]
-      },
-      "acceptedStates": [
-        "ENABLED"
-      ],
-      "owner": "host-acquisition",
-      "sourcePaths": [
-        "functions/src/acquisition/metaDispatcher.ts"
       ],
       "credentialClass": "provider-secret",
       "binding": {
