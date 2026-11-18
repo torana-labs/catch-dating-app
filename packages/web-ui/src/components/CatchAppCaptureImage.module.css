@@ -12,9 +12,14 @@
   margin: 0;
 }
 
-.capture[data-size="sm"] { width: min(100%, 280px); }
-.capture[data-size="md"] { width: min(100%, 330px); }
-.capture[data-size="lg"] { width: min(100%, 380px); }
+/*
+ * A fixed width held to the container, not min(100%, …): a band that stacks on
+ * a phone sizes its media column to its content, and a percentage of that is
+ * nothing, so the phone collapsed to its rim.
+ */
+.capture[data-size="sm"] { width: 280px; max-width: 100%; }
+.capture[data-size="md"] { width: 330px; max-width: 100%; }
+.capture[data-size="lg"] { width: 380px; max-width: 100%; }
 .capture[data-size] { justify-self: center; margin-inline: auto; }
 /* A fixed size keeps its width beside other content in a row instead of shrinking away. */
 .capture:is([data-size="sm"], [data-size="md"], [data-size="lg"]) { flex: none; }

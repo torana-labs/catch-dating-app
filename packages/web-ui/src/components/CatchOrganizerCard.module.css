@@ -52,6 +52,31 @@
   margin-top: auto;
 }
 
+.next > * {
+  margin: 0;
+}
+
+/*
+ * The playbook kit's Follow card (KitCards org, .korg) for a tint band: a
+ * white raised card, the next plan on a paper inset, and the footnote over
+ * the action, which spans the card.
+ */
+.card[data-ground="white"] {
+  box-shadow: var(--catch-elevation-card);
+}
+
+.card[data-ground="white"] .next {
+  padding: var(--catch-space-micro10) var(--catch-space-s3);
+  border-radius: var(--catch-radius-sm);
+  background: var(--catch-ground-paper-fill);
+}
+
+.card[data-ground="white"] .foot {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--catch-space-s2);
+}
+
 /*
  * The system OrganiserCard (.c-org-card): a tile row, 12px apart, with a 48px
  * logo square in the format colour (10px corners) and two one-line texts; the

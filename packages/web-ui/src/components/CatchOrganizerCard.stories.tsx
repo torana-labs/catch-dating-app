@@ -62,3 +62,26 @@ export const BoardReference: Story = {
     />
   ),
 };
+
+const kitFollow = (name: string, href: string) => (
+  <CatchButton fullWidth href={href} label="Follow" semanticsLabel={`Follow ${name}`} size="sm" variant="secondary" />
+);
+
+/** The playbook kit's Follow cards (KitCards org) on the tint band: white cards, the next plan on a paper inset, Follow across the foot. */
+export const KitFollow: Story = {
+  parameters: {catchComponent: {id: "shared_organizer_card", routeIds: ["visitor_discovery", "city_format"], states: ["kit-follow"]}},
+  render: () => (
+    <StoryPage>
+      <CatchBand aria-label="Follow cards" ground="paper" pb="compact" pt="compact">
+        <CatchGrid columns={3} compactColumns={1}>
+          <CatchOrganizerCard action={kitFollow("Carter Road Runners", "#carter")} ground="white" href="#carter" monogramGround="coral"
+            name="Carter Road Runners" next="Next: Sun 23 · Carter Road Social Run" subtitle="Sunday social runs" />
+          <CatchOrganizerCard action={kitFollow("Evening Club", "#evening")} ground="white" href="#evening" monogramGround="yellow"
+            name="Evening Club" next="Next: Sat 22 · Saturday Game Night" subtitle="Women-led · Trivia nights and socials" />
+          <CatchOrganizerCard ground="white" monogramGround="mint" name="Koregaon Park Runners" next="Next: first plan announced when Catch opens"
+            subtitle="Saturday social runs" />
+        </CatchGrid>
+      </CatchBand>
+    </StoryPage>
+  ),
+};
