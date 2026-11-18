@@ -1619,8 +1619,48 @@ describe("firestore.rules", () => {
       }
     });
 
-    it("keeps event offers and evidence server-only", async () => {
-      for (const collectionName of ["organizerEventOffers",
+    it("lets current managers read their organizer's event offers only", async () => {
+      await seed(["organizers", "organizer-1"], organizer({
+        ownerUserId: "owner-1", hostUserIds: ["owner-1"],
+      }));
+      await seed(["organizers", "organizer-2"], organizer({
+        ownerUserId: "owner-2", hostUserId: "owner-2",
+      }));
+      await seed(["organizerEventOffers", "offer-1"], {
+        organizerId: "organizer-1", eventId: "event-1", contactId: "contact-1",
+        revision: 1, manualPayment: {status: "none"},
+      });
+      await seed(["organizerEventOffers", "offer-2"], {
+        organizerId: "organizer-2", eventId: "event-2", contactId: "contact-1",
+        revision: 1, manualPayment: {status: "none"},
+      });
+      const db = authedDb("owner-1");
+      await assertSucceeds(getDoc(doc(db, "organizerEventOffers", "offer-1")));
+      const missing = await assertSucceeds(getDoc(doc(db,
+        "organizerEventOffers", "offer-9")));
+      assert.equal(missing.exists(), false);
+      const listed = await assertSucceeds(getDocs(query(
+        collection(db, "organizerEventOffers"),
+        where("organizerId", "==", "organizer-1"),
+        where("eventId", "==", "event-1"),
+        where("contactId", "in", ["contact-1"]))));
+      assert.deepEqual(listed.docs.map((row) => row.id), ["offer-1"]);
+      await assertFails(getDoc(doc(db, "organizerEventOffers", "offer-2")));
+      await assertFails(getDocs(collection(db, "organizerEventOffers")));
+      await assertFails(getDoc(doc(authedDb("owner-2"), "organizerEventOffers",
+        "offer-1")));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(),
+        "organizerEventOffers", "offer-1")));
+      await assertFails(updateDoc(doc(db, "organizerEventOffers", "offer-1"),
+        {revision: 2}));
+      await assertFails(deleteDoc(doc(db, "organizerEventOffers", "offer-1")));
+      await assertFails(setDoc(doc(db, "organizerEventOffers", "forged"), {
+        organizerId: "organizer-1", revision: 1,
+      }));
+    });
+
+    it("keeps event offer receipts and audits server-only", async () => {
+      for (const collectionName of [
         "organizerEventOfferActionReceipts", "organizerEventOfferBatchReceipts",
         "organizerEventOfferAudits"]) {
         await seed([collectionName, "offer-1"], {
@@ -1758,11 +1798,11 @@ describe("firestore.rules", () => {
       await assertFails(updateDoc(decisionRef, {state: "reopened"}));
     });
 
-    it("keeps retained WhatsApp thread bodies callable-only", async () => {
+    it("keeps WhatsApp threads and reply reservations server-only", async () => {
+      // Messages are manager-readable; host_summary_reads covers them.
       const db = authedDb("owner-1");
       for (const [collectionName, documentId] of [
         ["organizerWhatsappThreads", "thread-1"],
-        ["organizerWhatsappMessages", "message-1"],
         ["organizerWhatsappReplyOperations", "operation-1"],
       ]) {
         await seed([collectionName, documentId], {

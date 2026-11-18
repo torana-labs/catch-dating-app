@@ -9,6 +9,7 @@ import {
   CatchDeviceFrame,
   CatchFaqSection,
   CatchField,
+  CatchGroundCard,
   CatchHeroSection,
   CatchQrCode,
   CatchReviewItem,
@@ -34,6 +35,8 @@ import {CityPicker} from "./CityPicker";
 import type {HomeFilter, HomePageController} from "../useHomePageController";
 import {useAppNoticeController} from "../useAppNoticeController";
 import {useLaunchNoticeController} from "../useLaunchNoticeController";
+import {useCityAlertsController} from "../leads/useCityAlertsController";
+import {useHostReferralController, type HostReferralField} from "../leads/useHostReferralController";
 import {formatGrounds} from "../homeModel";
 import {footerCities} from "./cityChrome";
 
@@ -171,6 +174,8 @@ function HomePlans({home}: {home: Home}) {
     <CatchCardGrid
       empty={{title: home.note}}
       filters={<PlanFilters home={home} />}
+      // A thin week offers new plans on WhatsApp under the cards (the board's .inline bar).
+      footer={thin && !home.unavailable ? <CityAlertsBar home={home} /> : undefined}
       ground="paper"
       headerAction={{label: thin ? copy.week.thinAction : fill(copy.week.action, {city}), href: home.exploreHref}}
       id="whats-on"
@@ -187,6 +192,62 @@ function HomePlans({home}: {home: Home}) {
       links={home.otherCities}
       title={fill(home.upcoming ? copy.week.upcomingTitle : copy.week.title, {city})}
     />
+  );
+}
+
+/** The privacy policy beside a form's consent line, as the canvas's fine print. */
+function ConsentLine({privacy, text}: {privacy: string; text: string}) {
+  return (
+    <CatchStack direction="row" gap={8} railWidth="fit">
+      <CatchText tone="secondary" variant="body-meta">{text}</CatchText>
+      <CatchButton href="/privacy/" label={privacy} size="sm" variant="quiet" />
+    </CatchStack>
+  );
+}
+
+/**
+ * A lead form's outcome: its confirmation, or why the send did not go
+ * through, announced either way. It keeps the ground's ink (the danger red
+ * does not hold its contrast on the mint panel); the button beside it offers
+ * to try again.
+ */
+function LeadStatus({problem, sent}: {problem: string | null; sent: string | null}) {
+  return <CatchText aria-live="polite" as="p" role="status" variant="body">{sent ?? problem ?? ""}</CatchText>;
+}
+
+/**
+ * A thin week's "Want to hear first?" bar (the board's .inline): a WhatsApp
+ * number for new plans in the city, sent as a city alerts lead. The words sit
+ * beside the number and the button; they stack on a phone. After a failed
+ * send the button offers to try again with the same request.
+ */
+function CityAlertsBar({home}: {home: Home}) {
+  const city = home.city.label;
+  const alerts = useCityAlertsController({label: city, slug: home.city.slug, source: home.citySource});
+  const words = copy.alerts;
+  return (
+    <CatchGroundCard ground="white">
+      <CatchStack gap={8}>
+        {alerts.sent ? null : (
+          <Form aria-label={words.title} noValidate onSubmit={alerts.handleSubmit} pending={alerts.submitting}>
+            <CatchStack gap={8}>
+              <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={12}>
+                <CatchText as="p" variant="body"><CatchText as="span" variant="label-action">{words.title}</CatchText> {fill(words.body, {city})}</CatchText>
+                <CatchStack align="center" collapseBelow="medium" direction="row" gap={8} railWidth="fit">
+                  <CatchField autoComplete="tel-national" errorText={alerts.phoneProblem} inputHint={words.phone}
+                    inputMode={alerts.submitting ? "inactive" : "editable"} keyboardType="phone" labelMode="hidden" onChanged={alerts.setPhone}
+                    prefixText={activeMarket.dialCode} recipe="input" required title={words.phone} value={alerts.phone} />
+                  <CatchButton label={alerts.sendProblem ? words.retry : words.action} onPressed={() => undefined} size="sm"
+                    status={alerts.submitting ? "loading" : "idle"} type="submit" />
+                </CatchStack>
+              </CatchStack>
+              <ConsentLine privacy={words.privacy} text={fill(words.consent, {city})} />
+            </CatchStack>
+          </Form>
+        )}
+        <LeadStatus problem={alerts.sendProblem} sent={alerts.sent ? fill(words.sent, {city}) : null} />
+      </CatchStack>
+    </CatchGroundCard>
   );
 }
 
@@ -400,14 +461,45 @@ function HomeApp({downloadUrl, home}: {downloadUrl?: string; home: Home}) {
 }
 
 /**
- * "Know a host": a guest introduces a host. The website has no lead form
- * that can reach the referral intake yet (website leads need App Check, and
- * the playbook's lead forms wait for it), so the introduction goes on WhatsApp.
+ * "Know a host": the canvas's referral form beside the panel's copy. The
+ * person's name and WhatsApp number, then the host's name, their Instagram or
+ * website and how the person knows them, sent as a referral lead with the
+ * page's city; staff follow up on WhatsApp. After a failed send the button
+ * offers to try again with the same request.
  */
-function HomeRefer() {
+function HostReferralForm({home}: {home: Home}) {
+  const refer = useHostReferralController({label: home.city.label, slug: home.city.slug, source: home.citySource});
+  const words = copy.refer;
+  const field = (name: HostReferralField, title: string, autoComplete?: string) => (
+    <CatchField autoComplete={autoComplete} errorText={refer.problem(name)} inputHint={title} inputMode={refer.submitting ? "inactive" : "editable"}
+      labelMode="hidden" onChanged={refer.set(name)} recipe="input" required title={title}
+      keyboardType={name === "phone" ? "phone" : undefined} prefixText={name === "phone" ? activeMarket.dialCode : undefined} value={refer.answers[name]} />
+  );
+  return (
+    <CatchStack gap={12}>
+      {refer.sent ? null : (
+        <Form aria-label={words.title} noValidate onSubmit={refer.handleSubmit} pending={refer.submitting}>
+          <CatchStack gap={12}>
+            <CatchStack collapseBelow="medium" direction="row" equal gap={8}>{field("fullName", words.name, "name")}{field("phone", words.phone, "tel-national")}</CatchStack>
+            <CatchStack collapseBelow="medium" direction="row" equal gap={8}>{field("hostName", words.hostName, "off")}{field("hostLink", words.hostLink, "off")}</CatchStack>
+            {field("relationship", words.relationship, "off")}
+            <CatchStack align="start">
+              <CatchButton label={refer.sendProblem ? words.retry : words.action} onPressed={() => undefined} status={refer.submitting ? "loading" : "idle"} type="submit" />
+            </CatchStack>
+            <ConsentLine privacy={words.privacy} text={words.consent} />
+          </CatchStack>
+        </Form>
+      )}
+      <LeadStatus problem={refer.sendProblem} sent={refer.sent ? refer.sentMessage : null} />
+    </CatchStack>
+  );
+}
+
+/** The mint refer panel: a guest introduces a host through the referral form. */
+function HomeRefer({home}: {home: Home}) {
   return (
     <CatchCtaSection
-      actions={[{label: copy.refer.action, href: whatsappChatHref(copy.refer.message), newTab: true}]}
+      form={<HostReferralForm home={home} />}
       ground="mint"
       id="refer"
       kicker={copy.refer.eyebrow}
@@ -458,7 +550,7 @@ export function HomePageSections({captures, downloadUrl, home}: {captures: Captu
         {early ? null : <HomeHosts captures={captures} home={home} offerOpen={offerOpen} />}
         <HomeOrganisers home={home} />
         <HomeApp downloadUrl={downloadUrl} home={home} />
-        <HomeRefer />
+        <HomeRefer home={home} />
         <HomeFaq />
       </WebsitePageMain>
       <PublicSiteFooter appHref="#app" cities={footerCities(home.cities)} exploreHref={home.exploreHref} />

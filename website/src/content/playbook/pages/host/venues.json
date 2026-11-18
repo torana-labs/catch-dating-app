@@ -1,0 +1,253 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_venues",
+  "route": "host_venues",
+  "meta": {
+    "title": "{{brand.name}} for venues | Fill quiet nights with tickets paid upfront",
+    "description": "Run quiz, supper and court nights at your café, bar, brewery or courts, with tickets paid upfront and a link for every promoter. 5% of tickets only, never food and drink.",
+    "socialDescription": "Turn a quiet Tuesday into a night people come back for. {{brand.name}} for cafés, bars, breweries and courts.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {"links": [{"label": "For hosts", "to": {"route": "host"}}], "current": "Venues"}
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "indigo",
+      "kicker": "{{brand.name}} for cafés, bars, breweries and courts",
+      "title": "Turn a quiet Tuesday into a night people come back for.",
+      "lead": "Run your own quiz, supper or court nights with tickets paid upfront, see which promoter or post filled the room, and get listed for hosts looking for a space like yours.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run a venue and have a question about hosting nights on {{brand.name}}."},
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {
+        "label": "Running nights at several outlets? Ask for a walkthrough",
+        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run nights at several outlets and would like a walkthrough."}
+      },
+      "chip": {
+        "title": "Tuesday pub quiz",
+        "rows": [
+          {"label": "Booked", "value": "48"},
+          {"label": "Back from last week", "value": "19"},
+          {"label": "Waitlist", "value": "6"}
+        ]
+      },
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "This week",
+          "subtitle": "Hopline Brewing · Lower Parel",
+          "stats": [
+            {"value": "3", "label": "nights"},
+            {"value": "112", "label": "booked"},
+            {"value": "₹46k", "label": "paid"}
+          ],
+          "rows": [
+            {"title": "Tue · Pub quiz", "detail": "Your night · 12 teams", "tag": "48 of 60"},
+            {"title": "Thu · Supper on the deck", "detail": "Hosted by Long Table Supper", "tag": "24 of 24"},
+            {"title": "Sun · Run and brunch", "detail": "Hosted by Sunday Striders", "tag": "40 booked"}
+          ],
+          "note": "Tuesday quiz: 31 bookings came from your Instagram link"
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "sound-familiar",
+      "ground": "white",
+      "kicker": "Sound familiar?",
+      "title": "The space is the easy part.",
+      "align": "center",
+      "columns": 3,
+      "items": [
+        {"title": "Tuesdays that don’t pay the rent", "body": "The kitchen’s staffed and the bar is stocked, and twelve people come in.", "fix": "A regular night that sells tickets ahead, so you know who’s coming."},
+        {"title": "Promoters you can’t measure", "body": "Three promoters each say they filled the room, and you pay all three.", "fix": "A link for each promoter and post, followed through to paid bookings."},
+        {"title": "One-off events, no regulars", "body": "A great night once, then a new crowd to find from scratch every time.", "fix": "Followers hear about your next night first, and you see who came back."}
+      ]
+    },
+    {
+      "type": "tiles",
+      "id": "formats",
+      "ground": "white",
+      "kicker": "Run your own nights",
+      "title": "Pick a format that suits the room.",
+      "align": "center",
+      "lead": "Each one comes with a run of show, from bookings to the follow-up.",
+      "columns": 4,
+      "items": [
+        {
+          "title": "Quiz and game nights",
+          "body": "Teams formed at the door, scores on the screen.",
+          "link": {"label": "For quiz nights", "to": {"route": "host_quiz_nights"}},
+          "ground": "yellow"
+        },
+        {
+          "title": "Supper clubs",
+          "body": "Long tables, applications and seats planned for you.",
+          "link": {"label": "For supper clubs", "to": {"route": "host_supper_clubs"}},
+          "ground": "pink"
+        },
+        {
+          "title": "Court socials",
+          "body": "Levels, rotations and fair court time.",
+          "link": {"label": "For racket sports", "to": {"route": "host_racket_sports"}},
+          "ground": "mint"
+        },
+        {
+          "title": "Run and brunch",
+          "body": "A club starts and finishes at your door.",
+          "link": {"label": "For run clubs", "to": {"route": "host_run_clubs"}},
+          "ground": "coral"
+        }
+      ]
+    },
+    {
+      "type": "split",
+      "id": "links",
+      "ground": "white",
+      "kicker": "Links for every promoter",
+      "title": "Know who filled the room.",
+      "lead": "Give every promoter, partner and post its own link. {{brand.name}} follows each one from the first visit to a paid booking, so you pay for what works.",
+      "ticks": ["A link per promoter, poster or post", "Visits, bookings and revenue for each", "Followers and repeat guests by night"],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Links · Tuesday pub quiz",
+          "rows": [
+            {"title": "Instagram bio", "detail": "240 visits · 31 bookings · ₹12,400"},
+            {"title": "Promoter · Meera", "detail": "120 visits · 18 bookings · ₹7,200"},
+            {"title": "Table cards at the bar", "detail": "64 visits · 11 bookings · ₹4,400"},
+            {"title": "Partner · Long Table Supper list", "detail": "52 visits · 6 bookings · ₹2,400"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "timeline",
+      "id": "venue-night",
+      "ground": "ink",
+      "kicker": "A night at your venue on {{brand.name}}",
+      "title": "A Tuesday quiz, start to finish.",
+      "steps": [
+        {"time": "Last week", "title": "Tickets on sale, paid upfront", "body": "Your night goes on your venue page and in What’s on. Followers hear first; promoters share their links."},
+        {"time": "Monday", "title": "Plan the bar for the bookings", "body": "Sixty booked, twelve teams, six on the waitlist. Staff the floor for the room you’ll actually have."},
+        {"time": "7:45 PM", "title": "Check in at the door", "body": "Guests scan in and find their team. Walk-ins fill the gaps you have."},
+        {"time": "8:00 PM", "title": "The night runs itself", "body": "Your quizmaster runs rounds and scores from a tablet. Your team runs the bar."},
+        {"time": "Next morning", "title": "See who’ll come back", "body": "Photos and results go out, guests follow your venue, and you see which link filled the room."}
+      ],
+      "media": {"kind": "capture", "slot": "host-live-tablet"}
+    },
+    {
+      "type": "split",
+      "id": "list-your-space",
+      "ground": "yellow",
+      "kicker": "Coming soon · Hosts looking for a space",
+      "title": "Put your empty nights in front of hosts.",
+      "lead": "Supper clubs, quiz hosts and run clubs on {{brand.name}} often need a room. Tell us about your space and the nights you’d like to fill, and we’ll introduce you as we start matching hosts with venues.",
+      "ticks": [
+        "No fee to be listed",
+        "You approve every host and every night",
+        "The host sells the tickets on {{brand.name}}; you sell the food and drink"
+      ],
+      "body": "Matching isn’t live yet. We’ll message you on WhatsApp when it is, and won’t share your details with hosts before you agree.",
+      "actions": [
+        {
+          "label": "List your space on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like to list my venue for hosts. Venue name, area, how many people fit and the nights I’d like to fill:"},
+          "emphasis": "primary"
+        }
+      ],
+      "leadForm": {
+        "id": "venue_list_space",
+        "requestKind": "venue",
+        "label": "Your WhatsApp number",
+        "submitLabel": "List my space",
+        "fields": [
+          {"name": "orgName", "label": "Venue name"},
+          {"name": "area", "label": "Area and city", "placeholder": "Lower Parel, Mumbai"},
+          {"name": "capacity", "label": "How many people fit", "placeholder": "60 standing, 30 seated"},
+          {"name": "nights", "label": "Nights you’d like to fill", "placeholder": "Tuesdays and Wednesdays"}
+        ],
+        "note": "We’ll message you on WhatsApp."
+      }
+    },
+    {
+      "type": "checklist",
+      "id": "checklist",
+      "ground": "paper",
+      "kicker": "Buyer’s checklist",
+      "title": "What to look for in event software for a venue.",
+      "lead": "Check these eight things, whichever tool you choose. {{brand.name}} does all of them.",
+      "items": [
+        {"title": "Tickets paid upfront", "body": "UPI or card, before the night."},
+        {"title": "A page for your venue", "body": "Every night you run, and your reviews."},
+        {"title": "A link for each promoter", "body": "Bookings and revenue for each."},
+        {"title": "Followers and repeat guests", "body": "See who comes back."},
+        {"title": "Ready-made formats", "body": "Quiz, supper, courts, run clubs."},
+        {"title": "A quick door", "body": "Scan in, find your team or table."},
+        {"title": "Partner hosts welcome", "body": "Nights by hosts you approve."},
+        {"title": "A cap on what you pay", "body": "Never more than ₹10,000 per billing cycle."}
+      ]
+    },
+    {
+      "type": "pricing",
+      "id": "pricing",
+      "ground": "ink",
+      "kicker": "Pricing for venues",
+      "price": "5%",
+      "title": "of ticket sales, never more than ₹10,000 per billing cycle.",
+      "trial": "Free for 30 days from your first night, 90 for founding hosts. Payment gateway fees are separate.",
+      "examples": [
+        {"title": "A 60-seat quiz at ₹400", "value": "₹1,200 a night", "body": "5% of ₹24,000. Food and drink aren’t counted."},
+        {"title": "A quiz every Tuesday", "value": "₹4,800 to ₹6,000 a billing cycle", "body": "Four or five quizzes in 30 days, well under the ₹10,000 cap."},
+        {"title": "A night run by a partner host", "value": "₹0 to you", "body": "The host pays on their own tickets."}
+      ],
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Venue questions",
+      "title": "What hosts ask us.",
+      "items": [
+        {"question": "Do you take a cut of food and drink?", "answer": "No. {{brand.name}} charges 5% of ticket sales only, never more than ₹10,000 per billing cycle. What guests spend at the bar is yours."},
+        {"question": "We have no one to run the night. Can a host do it?", "answer": "Yes. List your space and we’ll introduce you to hosts as matching starts. Until then, you can invite a host you know to run a night at your venue on {{brand.name}}."},
+        {"question": "Can we sell a ticket that includes food or a drink?", "answer": "Yes. Set the price and say what’s included on the page. The kitchen sees the numbers before the night."},
+        {"question": "Can promoters be paid on what they bring?", "answer": "Each promoter gets their own link, and {{brand.name}} shows the bookings and revenue from it. How you pay them is up to you."},
+        {"question": "We have more than one outlet.", "answer": "Each outlet can have its own page. Ask us for a walkthrough on WhatsApp and we’ll set up the team for you."},
+        {"question": "Do guests need an app?", "answer": "No. Guests book, pay and check in on your page in their phone’s browser."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "indigo",
+      "kicker": "Your quiet night",
+      "title": "Pick the night. We’ll help you fill it.",
+      "lead": "Start the free trial, or message us on WhatsApp and we’ll send you the venue setup guide.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Get the setup guide on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, please send me the venue setup guide."},
+          "emphasis": "secondary"
+        }
+      ],
+      "leadForm": {"id": "venue_setup_guide", "requestKind": "guide", "format": "venues", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
+      "media": {"kind": "capture", "slot": "guest-explore"}
+    }
+  ]
+}

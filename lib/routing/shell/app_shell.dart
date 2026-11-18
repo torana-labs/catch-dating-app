@@ -89,21 +89,23 @@ class AppShell extends ConsumerWidget {
           ),
         );
       });
+      // Listens only to open bookings; a booking that leaves them is read
+      // once by id, and launches the companion when it became attended.
       ref.listen(watchEventParticipationsForUserProvider(uid), (_, next) {
-        final participations = next.asData?.value;
-        if (participations == null) return;
+        final openBookings = next.asData?.value;
+        if (openBookings == null) return;
         final registry = ref.read(eventSuccessCompanionLaunchRegistryProvider);
-        final transitions = registry.attendedTransitionsForUser(
+        final departed = registry.departedEventIdsForUser(
           uid: uid,
-          participations: participations,
+          openBookings: openBookings,
         );
-        for (final participation in transitions) {
+        for (final eventId in departed) {
           unawaited(
-            launchEventSuccessCompanionForParticipation(
+            launchEventSuccessCompanionIfAttended(
               context: context,
               ref: ref,
               uid: uid,
-              participation: participation,
+              eventId: eventId,
             ),
           );
         }

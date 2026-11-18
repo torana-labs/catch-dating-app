@@ -48,7 +48,8 @@ interface SendCursor {
   sendId: string;
 }
 
-type SendRow = ListOrganizerCampaignsCallableResponse["sends"][number];
+export type SendRow =
+  ListOrganizerCampaignsCallableResponse["sends"][number];
 
 /** Lists one reverse-chronological page across every Host Sends route. */
 export async function listOrganizerCampaignsHandler(
@@ -113,8 +114,7 @@ export async function listOrganizerCampaignsHandler(
     id: snapshot.id,
     data: snapshot.data() as OrganizerCampaignDocument,
   })).filter((row) => row.data.organizerId === data.organizerId &&
-    // A follower update's WhatsApp leg is shown on its follower update row.
-    row.data.recipientSource?.kind !== "organizerFollowers");
+    !isFollowerUpdateLeg(row.data));
   const templateIds = [...new Set(campaigns.map((row) => row.data.templateId))];
   const savedAudienceIds = [...new Set(campaigns.flatMap((row) =>
     row.data.savedAudienceId ? [row.data.savedAudienceId] : [],
@@ -149,68 +149,25 @@ export async function listOrganizerCampaignsHandler(
       snapshot.data() as OrganizerPostDeliveryOperationDocument,
     ]));
   const sends = sortOrganizerSendRows([
-    ...campaigns.map(({id, data: campaign}): SendRow => ({
-      kind: "campaign",
-      campaignId: id,
-      name: campaign.name,
-      status: campaign.status,
-      savedAudienceId: campaign.savedAudienceId ?? null,
-      savedAudienceName: campaign.savedAudienceId ?
-        savedAudienceNames.get(campaign.savedAudienceId) ?? null : null,
-      segmentIds: campaign.segmentIds,
-      templateId: campaign.templateId,
-      templateName: templateNames.get(campaign.templateId) ?? null,
-      audienceCounts: campaign.audienceCounts,
-      deliveryCounts: campaign.deliveryCounts,
-      scheduledAtMillis: campaign.scheduledAt?.toMillis() ?? null,
-      dispatchedAtMillis: campaign.dispatchedAt?.toMillis() ?? null,
-      activityAtMillis: campaign.createdAt.toMillis(),
-    })),
+    ...campaigns.flatMap(({id, data: campaign}) => {
+      const row = campaignSendRow(id, campaign, {
+        templateName: templateNames.get(campaign.templateId) ?? null,
+        savedAudienceName: campaign.savedAudienceId ?
+          savedAudienceNames.get(campaign.savedAudienceId) ?? null : null,
+      });
+      return row ? [row] : [];
+    }),
     ...announcementSnapshot.docs
       .map((snapshot) => snapshot.data() as
         OrganizerBroadcastSummaryDocument)
       .filter((announcement) =>
         announcement.organizerId === data.organizerId)
-      .map((announcement): SendRow => ({
-        kind: "announcement",
-        broadcastId: announcement.broadcastId,
-        eventId: announcement.eventId,
-        eventName: announcement.eventName,
-        audience: announcement.audience,
-        recipientCount: announcement.recipientCount,
-        sentAtMillis: announcement.sentAt.toMillis(),
-        partialFailure: announcement.partialFailure,
-        activityAtMillis: announcement.sentAt.toMillis(),
-      })),
-    ...followerUpdateSnapshot.docs
-      .map((snapshot) => ({
-        id: snapshot.id,
-        data: snapshot.data() as OrganizerPostDocument,
-      }))
-      .map(({id, data: post}): SendRow => {
-        const operation = followerOperations.get(id);
-        const deliveryStatus = operation?.status === "processing" ?
-          "pending" : operation?.status ?? "unknown";
-        return {
-          kind: "followerUpdate",
-          postId: id,
-          eventId: post.eventId ?? null,
-          audience: post.audience,
-          status: post.status,
-          deliveryStatus,
-          recipientCount: operation?.recipientCount ?? 0,
-          excludedCount: operation?.excludedCount ?? 0,
-          activityAvailableCount: operation?.activityAvailableCount ?? 0,
-          pushAttemptedCount: operation?.pushAttemptedCount ?? 0,
-          pushAcceptedCount: operation?.pushAcceptedCount ?? 0,
-          pushFailedCount: operation?.pushFailedCount ?? 0,
-          pushUnknownCount: operation?.pushUnknownCount ?? 0,
-          createdAtMillis: post.createdAt.toMillis(),
-          activityAtMillis: post.createdAt.toMillis(),
-          ...(operation?.whatsapp ?
-            {whatsapp: followerWhatsappResponse(operation.whatsapp)} : {}),
-        };
-      }),
+      .map(announcementSendRow),
+    ...followerUpdateSnapshot.docs.map((snapshot) => followerUpdateSendRow(
+      snapshot.id,
+      snapshot.data() as OrganizerPostDocument,
+      followerOperations.get(snapshot.id),
+    )),
   ]);
   const page = sends.slice(0, limit);
   return {
@@ -218,6 +175,109 @@ export async function listOrganizerCampaignsHandler(
     sends: page,
     nextCursor: sends.length > limit && page.length > 0 ?
       encodeOrganizerSendCursor(page[page.length - 1]) : null,
+  };
+}
+
+/**
+ * Whether a campaign is a follower update's WhatsApp leg, which is shown on
+ * its follower update row rather than as a row of its own.
+ * @param {OrganizerCampaignDocument} campaign The campaign.
+ * @return {boolean} True for a follower update leg.
+ */
+export function isFollowerUpdateLeg(
+  campaign: OrganizerCampaignDocument,
+): boolean {
+  return campaign.recipientSource?.kind === "organizerFollowers";
+}
+
+/**
+ * One campaign's Sends row, or null for a follower update's WhatsApp leg.
+ * The callable and the hostSendSummaries read model both use it.
+ * @param {string} campaignId The campaign document id.
+ * @param {OrganizerCampaignDocument} campaign The campaign.
+ * @param {object} names The template and saved audience names, if known.
+ * @return {SendRow|null} The row, or null.
+ */
+export function campaignSendRow(
+  campaignId: string,
+  campaign: OrganizerCampaignDocument,
+  names: {templateName: string | null; savedAudienceName: string | null},
+): SendRow | null {
+  if (isFollowerUpdateLeg(campaign)) return null;
+  return {
+    kind: "campaign",
+    campaignId,
+    name: campaign.name,
+    status: campaign.status,
+    savedAudienceId: campaign.savedAudienceId ?? null,
+    savedAudienceName: campaign.savedAudienceId ?
+      names.savedAudienceName : null,
+    segmentIds: campaign.segmentIds,
+    templateId: campaign.templateId,
+    templateName: names.templateName,
+    audienceCounts: campaign.audienceCounts,
+    deliveryCounts: campaign.deliveryCounts,
+    scheduledAtMillis: campaign.scheduledAt?.toMillis() ?? null,
+    dispatchedAtMillis: campaign.dispatchedAt?.toMillis() ?? null,
+    activityAtMillis: campaign.createdAt.toMillis(),
+  };
+}
+
+/**
+ * One event announcement's Sends row.
+ * @param {OrganizerBroadcastSummaryDocument} announcement The summary.
+ * @return {SendRow} The row.
+ */
+export function announcementSendRow(
+  announcement: OrganizerBroadcastSummaryDocument,
+): SendRow {
+  return {
+    kind: "announcement",
+    broadcastId: announcement.broadcastId,
+    eventId: announcement.eventId,
+    eventName: announcement.eventName,
+    audience: announcement.audience,
+    recipientCount: announcement.recipientCount,
+    sentAtMillis: announcement.sentAt.toMillis(),
+    partialFailure: announcement.partialFailure,
+    activityAtMillis: announcement.sentAt.toMillis(),
+  };
+}
+
+/**
+ * One follower update's Sends row, with its delivery operation's counts when
+ * the operation exists.
+ * @param {string} postId The post document id.
+ * @param {OrganizerPostDocument} post The post.
+ * @param {OrganizerPostDeliveryOperationDocument|undefined} operation Its
+ *   delivery operation, if any.
+ * @return {SendRow} The row.
+ */
+export function followerUpdateSendRow(
+  postId: string,
+  post: OrganizerPostDocument,
+  operation: OrganizerPostDeliveryOperationDocument | undefined,
+): SendRow {
+  const deliveryStatus = operation?.status === "processing" ?
+    "pending" : operation?.status ?? "unknown";
+  return {
+    kind: "followerUpdate",
+    postId,
+    eventId: post.eventId ?? null,
+    audience: post.audience,
+    status: post.status,
+    deliveryStatus,
+    recipientCount: operation?.recipientCount ?? 0,
+    excludedCount: operation?.excludedCount ?? 0,
+    activityAvailableCount: operation?.activityAvailableCount ?? 0,
+    pushAttemptedCount: operation?.pushAttemptedCount ?? 0,
+    pushAcceptedCount: operation?.pushAcceptedCount ?? 0,
+    pushFailedCount: operation?.pushFailedCount ?? 0,
+    pushUnknownCount: operation?.pushUnknownCount ?? 0,
+    createdAtMillis: post.createdAt.toMillis(),
+    activityAtMillis: post.createdAt.toMillis(),
+    ...(operation?.whatsapp ?
+      {whatsapp: followerWhatsappResponse(operation.whatsapp)} : {}),
   };
 }
 

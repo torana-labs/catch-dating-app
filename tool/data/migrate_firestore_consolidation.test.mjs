@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -336,6 +337,43 @@ test("host-form-version-filters creates each missing view once", async () => {
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("host-event-request-views creates each coming event's view once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-event-request-views");
+  const requireFunctions = createRequire(new URL("../../functions/package.json", import.meta.url));
+  const {AudienceTestStore} = requireFunctions("./lib/organizers/organizerAudienceTestStore.js");
+  const {Timestamp} = requireFunctions("firebase-admin/firestore");
+  const start = Date.now() + 86_400_000;
+  const event = (extra = {}) => ({organizerId: "o1", status: "active", name: "Supper",
+    startTime: Timestamp.fromMillis(start), endTime: Timestamp.fromMillis(start + 3_600_000),
+    capacityLimit: 10, priceInPaise: 0, bookedCount: 10,
+    eventPolicy: {admission: {manualApprovalRequired: false}}, ...extra});
+  const store = new AudienceTestStore({
+    "events/e1": event(),
+    "events/e2": event(),
+    "events/e3": event({status: "cancelled"}),
+    "eventParticipations/e1_u1": {eventId: "e1", organizerId: "o1", uid: "u1",
+      status: "waitlisted", waitlistedAt: Timestamp.fromMillis(100),
+      createdAt: Timestamp.fromMillis(100)},
+    "eventParticipations/e3_u1": {eventId: "e3", organizerId: "o1", uid: "u1",
+      status: "waitlisted", waitlistedAt: Timestamp.fromMillis(100),
+      createdAt: Timestamp.fromMillis(100)},
+    "publicProfiles/u1": {name: "Zoya"},
+  });
+  const db = store.asFirestore();
+  db.doc = (docPath) => store.collection(docPath.split("/")[0]).doc(docPath.split("/")[1]);
+  const plan = await planMigration(db, migration);
+  // e2 has nobody waiting and e3 is cancelled.
+  assert.deepEqual(plan.totals, {scanned: 3, toCreate: 1, alreadyCopied: 0, conflicts: 0, skipped: 2});
+  await applyMigrationPlan(db, plan);
+  const view = store.docs["hostEventRequestViews/e1"];
+  assert.deepEqual(view.rows.map((row) => [row.uid, row.kind, row.waitlistPosition, row.name]),
+    [["u1", "waitlist", 1, "Zoya"]]);
+  // Sources are untouched and a second run is a no-op.
+  assert.equal(store.docs["eventParticipations/e1_u1"].status, "waitlisted");
+  const again = await planMigration(db, migration);
+  assert.deepEqual(again.totals, {scanned: 3, toCreate: 0, alreadyCopied: 1, conflicts: 0, skipped: 2});
+});
+
 test("guest-messaging-permissions creates each missing row once", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "guest-messaging-permissions");
   const unknown = {status: "unknown", evidenceStatus: "none", currentReceiptId: null,
@@ -394,16 +432,100 @@ test("participant-form-profile-views creates only available rows, once", async (
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
 });
 
+test("host-whatsapp-thread-views creates each retained thread's view once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-whatsapp-thread-views");
+  const at = (millis) => ({toMillis: () => millis});
+  const later = Date.now() + 86_400_000;
+  const {organizerWhatsappThreadId} = await import(
+    "../../functions/lib/organizers/organizerWhatsappThreads.js");
+  const live = organizerWhatsappThreadId("o1", "c1");
+  const expired = organizerWhatsappThreadId("o1", "c2");
+  const thread = (contactId, expiresAt) => ({organizerId: "o1", contactId,
+    connectionId: "conn", endpointHash: "a".repeat(64), eventIds: [],
+    lastMessageBody: "Running late", lastMessageDirection: "inbound",
+    lastMessageAt: at(5), lastInboundAt: at(5), serviceWindowExpiresAt: at(9),
+    messageCount: 1, expiresAt: at(expiresAt)});
+  const db = fakeDb({
+    [`organizerWhatsappThreads/${live}`]: thread("c1", later),
+    [`organizerWhatsappThreads/${expired}`]: thread("c2", 10),
+    "organizerWhatsappThreads/owt_mismatch": thread("c1", later),
+    "organizerContacts/c1": {organizerId: "o1", displayName: "Riya",
+      displayNameOverride: null, linkedUid: null, identityState: "proposed"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.deepEqual(plan.totals, {scanned: 3, toCreate: 1, alreadyCopied: 0, conflicts: 0, skipped: 2});
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data[`hostWhatsappThreadViews/${live}`], {organizerId: "o1",
+    threadId: live, contactId: "c1", linkedUid: null, displayName: "Riya",
+    eventIds: [], lastMessageBody: "Running late", lastMessageDirection: "inbound",
+    lastMessageAtMillis: 5, lastInboundAtMillis: 5, serviceWindowExpiresAtMillis: 9,
+    expiresAtMillis: later, version: 1});
+  // Threads are untouched and a second run is a no-op.
+  assert.equal(db.data[`organizerWhatsappThreads/${live}`].messageCount, 1);
+  const again = await planMigration(db, migration);
+  assert.deepEqual(again.totals, {scanned: 3, toCreate: 0, alreadyCopied: 1, conflicts: 0, skipped: 2});
+});
+
+test("host-send-summaries creates one row per Send once, including posts", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "host-send-summaries");
+  const at = (millis) => ({toMillis: () => millis});
+  const counts = {total: 1};
+  const db = fakeDb({
+    "organizerCampaigns/c1": {organizerId: "o1", name: "Regulars", status: "draft",
+      savedAudienceId: null, segmentIds: [], templateId: "t1", audienceCounts: counts,
+      deliveryCounts: counts, scheduledAt: null, dispatchedAt: null, createdAt: at(3)},
+    "organizerCampaigns/leg": {organizerId: "o1", name: "Leg", status: "sending",
+      recipientSource: {kind: "organizerFollowers"}, segmentIds: [], templateId: "t1",
+      audienceCounts: counts, deliveryCounts: counts, createdAt: at(2)},
+    "organizerMessageTemplates/t1": {organizerId: "o1", name: "Invite"},
+    "organizerBroadcastSummaries/b1": {organizerId: "o1", broadcastId: "b1",
+      eventId: "e1", eventName: "Friday run", audience: "booked", recipientCount: 2,
+      recipientContactIds: ["c1"], sentAt: at(2), partialFailure: false},
+    "organizers/o1/posts/p1": {authorUid: "host", text: "Hello", eventId: null,
+      audience: "followers", createdAt: at(1), status: "active"},
+    "events/e1/posts/other": {text: "Not an organizer post"},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.steps[0].toCreate.length, 1);
+  assert.equal(plan.steps[0].skipped.length, 1);
+  assert.equal(plan.steps[1].toCreate.length, 1);
+  assert.equal(plan.steps[2].scanned, 2);
+  assert.equal(plan.steps[2].toCreate.length, 1);
+  assert.equal(plan.steps[2].skipped.length, 1);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["hostSendSummaries/campaign_c1"].row.templateName, "Invite");
+  assert.equal(db.data["hostSendSummaries/announcement_b1"].row.recipientCount, 2);
+  assert.deepEqual(db.data["hostSendSummaries/followerUpdate_p1"], {organizerId: "o1",
+    sendId: "followerUpdate_p1", kind: "followerUpdate", activityAtMillis: 1, version: 1,
+    row: {kind: "followerUpdate", postId: "p1", eventId: null, audience: "followers",
+      status: "active", deliveryStatus: "unknown", recipientCount: 0, excludedCount: 0,
+      activityAvailableCount: 0, pushAttemptedCount: 0, pushAcceptedCount: 0,
+      pushFailedCount: 0, pushUnknownCount: 0, createdAtMillis: 1, activityAtMillis: 1}});
+  assert.equal(db.data["hostSendSummaries/campaign_leg"], undefined);
+  // Sources are untouched and a second run is a no-op.
+  assert.equal(db.data["organizers/o1/posts/p1"].text, "Hello");
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
 test("unknown migration names are rejected", () => {
   assert.throws(() => migrationsByName(["nope"]), /Unknown migration "nope"/);
   assert.equal(migrationsByName(["all"]).length, MIGRATIONS.length);
 });
 
+// structuredClone, keeping timestamp-like values (anything with toMillis).
+function clone(value) {
+  if (value === null || typeof value !== "object") return value;
+  if (typeof value.toMillis === "function") return value;
+  if (Array.isArray(value)) return value.map(clone);
+  return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, clone(item)]));
+}
+
 function fakeDb(seed) {
-  const data = structuredClone(seed);
+  const data = clone(seed);
   const db = {
     data,
     collection: (name) => collection(name),
+    collectionGroup: (name) => collectionGroup(name),
     doc: (docPath) => docRef(docPath),
     // Read-only transactions, as migration transforms use them.
     runTransaction: (body) => body({get: (ref) => ref.get()}),
@@ -420,22 +542,44 @@ function fakeDb(seed) {
             if (kind === "update" && data[docPath] === undefined) throw new Error(`NOT_FOUND ${docPath}`);
           }
           for (const [kind, docPath, value] of ops) {
-            data[docPath] = kind === "create" ? structuredClone(value) :
-              {...data[docPath], ...structuredClone(value)};
+            data[docPath] = kind === "create" ? clone(value) :
+              {...data[docPath], ...clone(value)};
           }
         },
       };
     },
   };
   function docRef(docPath) {
+    const segments = docPath.split("/");
+    const collectionOf = (end) => end < 1 ? null : {
+      id: segments[end - 1],
+      parent: end < 2 ? null : {id: segments[end - 2], parent: collectionOf(end - 2)},
+    };
     return {
       path: docPath,
-      id: docPath.split("/").at(-1),
+      id: segments.at(-1),
+      parent: collectionOf(segments.length - 1),
       async get() {
         const value = data[docPath];
-        return {exists: value !== undefined, data: () => structuredClone(value)};
+        return {exists: value !== undefined, data: () => clone(value)};
       },
     };
+  }
+  function collectionGroup(name) {
+    const query = (after) => ({
+      orderBy: () => query(after),
+      limit: () => query(after),
+      startAfter: (doc) => query(doc.ref.path),
+      async get() {
+        const docs = Object.keys(data)
+          .filter((key) => key.split("/").length % 2 === 0 && key.split("/").at(-2) === name)
+          .sort()
+          .filter((key) => after === undefined || key > after)
+          .map((key) => ({id: key.split("/").at(-1), ref: docRef(key), data: () => clone(data[key])}));
+        return {docs, empty: docs.length === 0};
+      },
+    });
+    return query(undefined);
   }
   function collection(name) {
     const query = (after, limit, filters = []) => ({
@@ -450,7 +594,7 @@ function fakeDb(seed) {
         const docs = Object.keys(data)
           .filter((key) => key.startsWith(`${name}/`) && key.split("/").length === 2)
           .sort()
-          .map((key) => ({id: key.split("/")[1], ref: docRef(key), data: () => structuredClone(data[key])}))
+          .map((key) => ({id: key.split("/")[1], ref: docRef(key), data: () => clone(data[key])}))
           .filter((doc) => after === undefined || doc.id > after)
           .filter((doc) => filters.every(([field, value]) => doc.data()[field] === value))
           .slice(0, limit ?? Infinity);

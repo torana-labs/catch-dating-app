@@ -308,6 +308,11 @@ async function queueOrganizerAudienceIdentityCleanup(
         .doc(`ocic_${link.identityHash.slice(0, 48)}`));
     });
   }
+  // The inbox views follow the contact through a trigger; unlink them here
+  // too so no manager-readable view keeps the deleted account's uid.
+  const threadViews = await db.collection("hostWhatsappThreadViews")
+    .where("linkedUid", "==", uid).get();
+  threadViews.forEach((view) => writer.update(view.ref, {linkedUid: null}));
 }
 
 /** Deletes permission evidence and redacts retained contact provenance. */

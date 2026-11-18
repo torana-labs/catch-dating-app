@@ -2600,10 +2600,18 @@ These contracts and services are not rollout authorization. Private persistence
 remains disabled until the explicit legacy publication backfill, all public
 readers/search projections and integrated privacy checks are complete.
 
-The offer picker uses `listOfferEventTargets` for both private and already
-published owned events. The bounded index
-uses canonical `organizerId`, status, start time and document ID; contradictory
-organizer ownership fails. This list exposes no payment settings.
+The offer picker reads coming events from Firestore under rules: published
+events from `events` (organizer, `publicationState` published, active, start
+time and document ID) and unpublished ones from the `hostEventSummaries` read
+model, merged soonest first and paged by start time and event ID. This list
+exposes no payment settings; picking an event never authorizes an offer.
+The offer workspace reads `organizerEventOffers` directly: current managers of
+the offer's organizer get an offer by its id (an offer not written yet reads as
+missing) and list an event's offers to the selected people
+(`organizerId`, `eventId`, `contactId in`). The stored document is what
+`getEventOffer` returned; an offered offer past `expiresAtMillis` reads as
+expired by the phone's clock. Receipts and audits stay server-only, and every
+offer command rereads the offer and checks its revision and generation.
 The offer settings screen reads the event's `eventSetupPreferences/{eventId}`
 document directly: current managers of the event's organizer get it under rules,
 and an event without saved settings reads as missing. The phone combines it with
@@ -2940,9 +2948,9 @@ Root-level edge/action documents are the source of truth for many-to-many state:
 | Short-lived invite open/share evidence | server-only `eventInviteTouches/{touchId}` and `eventShareIntents/{intentId}` |
 | Verified registration/check-in attribution | server-only immutable `eventInviteAttributions/{attributionId}` credit/reversal fact |
 | Organizer campaign and recipient snapshot | server-only `organizerCampaigns/{campaignId}` and `organizerCampaignRecipients/{recipientId}` |
-| Organizer Announcement history projection | server-only `organizerBroadcastSummaries/{broadcastId}`; manager clients use `listOrganizerCampaigns` and contact-detail callables |
+| Organizer Announcement history projection | server-only `organizerBroadcastSummaries/{broadcastId}`; manager clients use contact-detail callables and the `hostSendSummaries/{sendId}` Sends rows |
 | Organizer WhatsApp sender/template state | server-only `organizerSenderConnections/{connectionId}`, `organizerMessageTemplates/{templateId}`, and webhook receipts/events |
-| Organizer WhatsApp Inbox and reply reservation | server-only TTL-bound `organizerWhatsappThreads/{threadId}`, `organizerWhatsappMessages/{messageId}`, and `organizerWhatsappReplyOperations/{operationId}` |
+| Organizer WhatsApp Inbox and reply reservation | server-only TTL-bound `organizerWhatsappThreads/{threadId}` and `organizerWhatsappReplyOperations/{operationId}`; manager-readable TTL-bound `organizerWhatsappMessages/{messageId}` and `hostWhatsappThreadViews/{threadId}` |
 | External provider connection and event mapping | server-only `organizerProviderConnections/{connectionId}` and `providerSyncRuns/{runId}`; manager-readable `externalEventMappings/{mappingId}` (get only) and `hostProviderConnectionViews/{organizerId}` |
 | Door roster labels and Catch spend | manager-readable `hostEventRosterInsightViews/{eventId}` and `hostOrganizerSpendProjections/{organizerId}`; server-only `organizerSpendTotals/{organizerId}` |
 | Event-scoped staff authority | server-owned `eventStaffGrants/{eventId_uid}`; the grantee may get only their own grant, the organizer's current managers may list an event's grants, and all writes are denied |
@@ -3279,6 +3287,19 @@ The `host-form-version-filters` copy-forward migration in
 `tool/data/migrate_firestore_consolidation.mjs` creates views for versions
 published before the trigger. The version scope (active version and published
 version count) is already on the form's `hostFormSummaries` row.
+`hostEventRequestViews/{eventId}` gives Host Requests everyone waiting on one
+coming event without `listOrganizerRequests`: `organizerId`, `eventId`,
+`eventEndMillis`, `complete`, `version` and `rows`, the callable's rows for the
+event (join requests awaiting host approval and the waitlist numbered among the
+people the host can offer a spot, oldest ask first, at most 100). Triggers on the
+event, its waitlisted participations, public profiles, contacts and contact
+summaries write it; an event with nobody waiting, not active or over has none.
+Current organizer managers list their organizer's views by `organizerId` and
+`eventEndMillis`. Rows are not filtered by blocks: the phone hides anyone with a
+block either way using the reader's own `blocks` edges. A row's
+`offerExpiresAtMillis` is an active offer's expiry even after it passes; the
+phone compares it with its clock. The `host-event-request-views` copy-forward
+migration creates views for events that had people waiting before the triggers.
 Each summary may also carry two optional query fields, absent on older views and
 read as none: `reviewStatus` (a copy of the application's review status) and
 `offer {status, eventId, offeredAtMillis}`, the latest non-draft event offer made
@@ -3668,9 +3689,27 @@ STOP updates the same organizer-scoped preference/suppression boundary without
 creating analytics content. For one unambiguously resolved organizer contact,
 the bounded inbound body is also copied into
 `organizerWhatsappMessages/{messageId}` and summarized by
-`organizerWhatsappThreads/{threadId}`. Both are server-only and carry a rolling
-12-month `expiresAt`; the queue copy expires after 30 days. Manager callables
-list and open these threads in the existing Inbox scopes. Free-form replies
+`organizerWhatsappThreads/{threadId}`. Both carry a rolling 12-month
+`expiresAt`; the queue copy expires after 30 days. The thread stays
+server-only: its phone hash and sender connection never reach a client. Since
+#1339 the Host inbox reads through listeners. `hostWhatsappThreadViews/{threadId}`
+holds each retained thread's manager summary, exactly what
+`listOrganizerWhatsappThreads` returns without the clock-dependent
+`serviceWindowOpen` (the client derives it from `lastInboundAtMillis`), plus
+`expiresAtMillis`; the client hides a view past it until the retention delete
+removes the thread and, through the trigger, the view.
+`onHostWhatsappThreadViewThreadChanged` and
+`onHostWhatsappThreadViewContactChanged` keep it current, and the
+`host-whatsapp-thread-views` copy-forward migration creates views for threads
+retained before them. One thread's `organizerWhatsappMessages` are read
+directly (equality on `organizerId` and `threadId`, newest first, at most 200).
+Message bodies and contact names are personal data: rules let only the
+organizer's current managers, whose account is not deleted, read either
+collection, and no client writes them. No field of either is a credential:
+tokens stay in the vault and `META_WHATSAPP_APP_SECRET` stays with the webhook
+and the `catch-whatsapp-reader@` callables. Account deletion clears
+`linkedUid` on the views as it does on contacts. Manager callables still list
+and open these threads for older Host builds. Free-form replies
 require the current sender connection, unsuppressed contact state, an unchanged
 latest-inbound timestamp, and an open 24-hour customer-service window; the
 server rechecks all of those conditions even when the client composer appears
@@ -5270,9 +5309,9 @@ validates optional linked events against the same organizer, enforces the
 rolling three-posts-per-seven-days quota, writes the canonical post, and fans
 out durable `organizerUpdate` activity notifications to active followers.
 `createOrganizerPost` and the nested club post are compatibility shadows.
-Manager Sends history reads the same organizer-scoped collection through
-`listOrganizerCampaigns` and returns post identity, audience, status, optional
-linked event and timestamps without returning the message body.
+Manager Sends history reads each post's row from `hostSendSummaries` (below):
+post identity, audience, status, optional linked event, timestamps and its
+delivery operation's counts, without the message body.
 
 ## Event Broadcast Receipts
 
@@ -5288,11 +5327,21 @@ Finalization also upserts the durable, organizer-scoped
 event/activity label, audience, recipient count, send timestamp, partial-failure
 flag and bounded contact delivery states, but no message body, UID, endpoint or
 raw provider receipt. Direct client reads and writes are denied.
-`listOrganizerCampaigns` is the manager-authorized, rate-limited pagination
-boundary for the Host Sends workspace: it merges campaign summaries, these
-Announcement summaries and organizer follower updates in reverse chronological
-order using an opaque stable cursor. The queries are organizer-scoped and never
-use a collection-group scan.
+`hostSendSummaries/{sendId}` holds one manager Sends row per campaign
+(`campaign_{campaignId}`), Announcement (`announcement_{broadcastId}`) and
+follower update (`followerUpdate_{postId}`): `organizerId`, `sendId`, `kind`,
+`activityAtMillis`, `version` and `row`, exactly what `listOrganizerCampaigns`
+returns for that Send. A follower update's WhatsApp leg campaign has no row;
+its counts sit on the follower update row. Template and saved audience names
+come only from documents of the same organizer. Triggers on each source, and
+on template and saved audience renames, keep the rows current, and the
+`host-send-summaries` copy-forward migration creates rows for Sends recorded
+before them. Current organizer managers list rows under rules: the Sends
+history newest first, the automation message picker by `kind` and
+`row.status`. Rows hold no message body, recipient, contact id or receipt.
+`listOrganizerCampaigns`, the earlier rate-limited pagination boundary, stays
+for older Host builds; `getOrganizerCampaignReport` stays the reviewed read
+before approve, dispatch and cancel.
 
 The callable verifies current event-host authority and freezes a server-resolved
 audience from `eventParticipations`. Booked means `signedUp` plus `attended`;

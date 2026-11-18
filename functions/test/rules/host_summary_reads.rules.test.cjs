@@ -158,6 +158,130 @@ describe("firestore.rules", () => {
       await assertFails(deleteDoc(doc(db, "hostFormVersionFilters", "form_v1")));
       await assertFails(getDoc(doc(db, "organizerFormVersions", "form_v1")));
     });
+    it("lets managers list event request views and nothing else", async () => {
+      await seed(["organizers", "org"], summaryOrganizer({hostUserIds: ["manager"]}));
+      await seed(["organizers", "other"], summaryOrganizer({hostUserId: "other-host"}));
+      const view = (organizerId, eventId) => ({organizerId, eventId,
+        eventEndMillis: 2000, rows: [], complete: true, version: 1});
+      await seed(["hostEventRequestViews", "trivia"], view("org", "trivia"));
+      await seed(["hostEventRequestViews", "foreign"], view("other", "foreign"));
+      for (const uid of ["host-1", "manager"]) {
+        await assertSucceeds(getDoc(doc(authedDb(uid), "hostEventRequestViews",
+          "trivia")));
+        const page = await assertSucceeds(getDocs(query(
+          collection(authedDb(uid), "hostEventRequestViews"),
+          where("organizerId", "==", "org"),
+          where("eventEndMillis", ">", 1000),
+          orderBy("eventEndMillis"))));
+        assert.deepEqual(page.docs.map((row) => row.id), ["trivia"]);
+      }
+      const db = authedDb("host-1");
+      await assertFails(getDoc(doc(db, "hostEventRequestViews", "foreign")));
+      await assertFails(getDocs(collection(db, "hostEventRequestViews")));
+      await assertFails(getDocs(query(collection(authedDb("operator-1"),
+        "hostEventRequestViews"), where("organizerId", "==", "org"))));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(),
+        "hostEventRequestViews", "trivia")));
+      await assertFails(setDoc(doc(db, "hostEventRequestViews", "new"),
+        view("org", "new")));
+      await assertFails(updateDoc(doc(db, "hostEventRequestViews", "trivia"),
+        {complete: false}));
+      await assertFails(deleteDoc(doc(db, "hostEventRequestViews", "trivia")));
+    });
+    it("lets current managers read WhatsApp thread views and one thread's messages", async () => {
+      await seed(["organizers", "org"], summaryOrganizer({hostUserIds: ["manager"]}));
+      await seed(["organizers", "other"], summaryOrganizer({hostUserId: "other-host"}));
+      await seed(["hostWhatsappThreadViews", "owt_own"], {organizerId: "org",
+        threadId: "owt_own", lastMessageAtMillis: 2, version: 1});
+      await seed(["hostWhatsappThreadViews", "owt_foreign"], {organizerId: "other",
+        threadId: "owt_foreign", lastMessageAtMillis: 1, version: 1});
+      for (const id of ["m1", "m2"]) {
+        await seed(["organizerWhatsappMessages", id], {organizerId: "org",
+          threadId: "owt_own", body: "Private inbound text",
+          occurredAt: Timestamp.fromMillis(id === "m1" ? 1 : 2)});
+      }
+      await seed(["organizerWhatsappMessages", "foreign"], {organizerId: "other",
+        threadId: "owt_foreign", body: "Their text", occurredAt: Timestamp.fromMillis(1)});
+      const threads = (db) => query(collection(db, "hostWhatsappThreadViews"),
+        where("organizerId", "==", "org"), orderBy("lastMessageAtMillis", "desc"),
+        limit(20));
+      const messages = (db) => query(collection(db, "organizerWhatsappMessages"),
+        where("organizerId", "==", "org"), where("threadId", "==", "owt_own"),
+        orderBy("occurredAt", "desc"), limit(200));
+      for (const uid of ["host-1", "manager"]) {
+        const db = authedDb(uid);
+        assert.equal((await assertSucceeds(getDocs(threads(db)))).size, 1);
+        await assertSucceeds(getDoc(doc(db, "hostWhatsappThreadViews", "owt_own")));
+        assert.equal((await assertSucceeds(getDocs(messages(db)))).size, 2);
+      }
+      const db = authedDb("host-1");
+      const missing = await assertSucceeds(getDoc(doc(db,
+        "hostWhatsappThreadViews", "owt_new")));
+      assert.equal(missing.exists(), false);
+      await assertFails(getDoc(doc(db, "hostWhatsappThreadViews", "owt_foreign")));
+      await assertFails(getDoc(doc(db, "organizerWhatsappMessages", "foreign")));
+      await assertFails(getDocs(collection(db, "hostWhatsappThreadViews")));
+      await assertFails(getDocs(query(collection(db, "organizerWhatsappMessages"),
+        where("threadId", "==", "owt_own"))));
+      for (const uid of ["operator-1", "other-host"]) {
+        await assertFails(getDocs(threads(authedDb(uid))));
+        await assertFails(getDocs(messages(authedDb(uid))));
+      }
+      await assertFails(getDocs(messages(testEnv.unauthenticatedContext().firestore())));
+      await assertFails(setDoc(doc(db, "hostWhatsappThreadViews", "owt_own"),
+        {organizerId: "org"}));
+      await assertFails(setDoc(doc(db, "organizerWhatsappMessages", "injected"),
+        {organizerId: "org", threadId: "owt_own"}));
+      await assertFails(deleteDoc(doc(db, "organizerWhatsappMessages", "m1")));
+      // The thread store itself stays server-only.
+      await seed(["organizerWhatsappThreads", "owt_own"], {organizerId: "org"});
+      await assertFails(getDoc(doc(db, "organizerWhatsappThreads", "owt_own")));
+      // A manager removed from the organizer, or a deleted account, loses access.
+      await seed(["organizers", "org"], summaryOrganizer({hostUserId: "new-host"}));
+      await assertFails(getDocs(messages(authedDb("manager"))));
+      await assertFails(getDocs(threads(authedDb("host-1"))));
+      await seed(["organizers", "org"], summaryOrganizer());
+      await seed(["deletedUsers", "host-1"], {deletedAt: Timestamp.now()});
+      await assertFails(getDocs(messages(authedDb("host-1"))));
+    });
+    it("lets current managers list Sends rows and nothing else", async () => {
+      await seed(["organizers", "org"], summaryOrganizer({hostUserIds: ["manager"]}));
+      await seed(["organizers", "other"], summaryOrganizer({hostUserId: "other-host"}));
+      await seed(["hostSendSummaries", "campaign_c1"], {organizerId: "org",
+        sendId: "campaign_c1", kind: "campaign", activityAtMillis: 2,
+        row: {kind: "campaign", status: "draft"}, version: 1});
+      await seed(["hostSendSummaries", "announcement_b1"], {organizerId: "org",
+        sendId: "announcement_b1", kind: "announcement", activityAtMillis: 1,
+        row: {kind: "announcement"}, version: 1});
+      await seed(["hostSendSummaries", "campaign_foreign"], {organizerId: "other",
+        sendId: "campaign_foreign", kind: "campaign", activityAtMillis: 1,
+        row: {kind: "campaign", status: "draft"}, version: 1});
+      for (const uid of ["host-1", "manager"]) {
+        const db = authedDb(uid);
+        const all = await assertSucceeds(getDocs(query(collection(db, "hostSendSummaries"),
+          where("organizerId", "==", "org"), orderBy("activityAtMillis", "desc"),
+          limit(25))));
+        assert.deepEqual(all.docs.map((row) => row.id), ["campaign_c1", "announcement_b1"]);
+        const drafts = await assertSucceeds(getDocs(query(
+          collection(db, "hostSendSummaries"), where("organizerId", "==", "org"),
+          where("kind", "==", "campaign"), where("row.status", "in", ["draft", "previewed"]),
+          orderBy("activityAtMillis", "desc"), limit(25))));
+        assert.deepEqual(drafts.docs.map((row) => row.id), ["campaign_c1"]);
+      }
+      const db = authedDb("host-1");
+      await assertFails(getDoc(doc(db, "hostSendSummaries", "campaign_foreign")));
+      await assertFails(getDocs(collection(db, "hostSendSummaries")));
+      await assertFails(getDocs(query(collection(authedDb("operator-1"), "hostSendSummaries"),
+        where("organizerId", "==", "org"))));
+      await assertFails(setDoc(doc(db, "hostSendSummaries", "campaign_c2"),
+        {organizerId: "org"}));
+      await assertFails(updateDoc(doc(db, "hostSendSummaries", "campaign_c1"),
+        {activityAtMillis: 9}));
+      await assertFails(deleteDoc(doc(db, "hostSendSummaries", "campaign_c1")));
+      // The sources stay server-only.
+      await seed(["organizerCampaigns", "c1"], {organizerId: "org"});
+      await assertFails(getDoc(doc(db, "organizerCampaigns", "c1")));
+    });
     it("revokes unpublished Event summary reads when the organizer archives", async () => {
       await seed(["organizers", "org"], summaryOrganizer());
       await seed(["hostEventSummaries", "event"], {organizerId: "org"});

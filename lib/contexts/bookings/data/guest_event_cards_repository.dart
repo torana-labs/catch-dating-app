@@ -1,9 +1,11 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
+import 'package:catch_platform/streams/combine_latest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -18,9 +20,10 @@ part 'guest_event_cards_repository.g.dart';
 /// the event card the guest event triggers keep current, so no list joins
 /// `events`. Lists show only published events with a card.
 class GuestEventCardsRepository {
-  const GuestEventCardsRepository(this._db);
+  const GuestEventCardsRepository(this._db, {this._clock = const AppClock()});
 
   final FirebaseFirestore _db;
+  final AppClock _clock;
 
   static const _statusesPath = 'guestEventStatuses';
   static const _savedPath = 'savedEvents';
@@ -80,26 +83,44 @@ class GuestEventCardsRepository {
     ),
   );
 
-  /// Events the guest saved, by start.
-  Stream<List<GuestEventCard>> watchSavedCards({required String uid}) =>
-      withBackendErrorStream(
-        () => _db
-            .collection(_savedPath)
-            .where('uid', isEqualTo: uid)
-            .limit(ReadLimitPolicy.boundedWorkingSet)
-            .snapshots()
-            .map(
-              (snap) =>
-                  _listed(snap.docs.map((doc) => doc.data()))
-                    ..sort((a, b) => a.startTime.compareTo(b.startTime)),
-            )
-            .distinct(_sameCards),
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'watch saved event cards',
-          resource: _savedPath,
-        ),
-      );
+  /// Events the guest saved, by start: every coming one (from the start of
+  /// today, soonest first) and the most recent past page, each a bounded
+  /// listener in server order. Saved past events are not browsed further
+  /// back; a saved edge for an event long over is history.
+  // firestore-index: savedEvents (uid:ASCENDING,eventCard.startTimeMillis:ASCENDING)
+  // firestore-index: savedEvents (uid:ASCENDING,eventCard.startTimeMillis:DESCENDING)
+  Stream<List<GuestEventCard>> watchSavedCards({required String uid}) {
+    final now = _clock.now();
+    final boundary = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).millisecondsSinceEpoch;
+    Query<Map<String, dynamic>> saved() =>
+        _db.collection(_savedPath).where('uid', isEqualTo: uid);
+    final coming = saved()
+        .where('eventCard.startTimeMillis', isGreaterThanOrEqualTo: boundary)
+        .orderBy('eventCard.startTimeMillis')
+        .limit(ReadLimitPolicy.boundedWorkingSet);
+    final past = saved()
+        .where('eventCard.startTimeMillis', isLessThan: boundary)
+        .orderBy('eventCard.startTimeMillis', descending: true)
+        .limit(ReadLimitPolicy.directoryPage);
+    List<GuestEventCard> cards(QuerySnapshot<Map<String, dynamic>> snap) =>
+        _listed(snap.docs.map((doc) => doc.data()));
+    return withBackendErrorStream(
+      () => combineLatest(
+        coming.snapshots().map(cards),
+        past.snapshots().map(cards),
+        (upcoming, ended) => [...ended.reversed, ...upcoming],
+      ).distinct(_sameCards),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch saved event cards',
+        resource: _savedPath,
+      ),
+    );
+  }
 
   static List<GuestEventCard> _listed(Iterable<Map<String, dynamic>> rows) => [
     for (final row in rows)
@@ -119,7 +140,10 @@ class GuestEventCardsRepository {
 
 @riverpod
 GuestEventCardsRepository guestEventCardsRepository(Ref ref) =>
-    GuestEventCardsRepository(ref.watch(firebaseFirestoreProvider));
+    GuestEventCardsRepository(
+      ref.watch(firebaseFirestoreProvider),
+      clock: ref.watch(appClockProvider),
+    );
 
 /// Upcoming and past events the guest is booked at.
 @riverpod
