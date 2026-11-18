@@ -2785,64 +2785,71 @@
     },
     {
       "id": "new_to_city",
-      "kind": "contentFamily",
+      "kind": "dataFamily",
       "pathPattern": "/new-to-:city/",
-      "pageKey": "playbook",
-      "source": "website/src/features/playbook/playbookRoutes.ts",
-      "content": {
-        "group": "discovery",
-        "board": "PlaybookNewToCity"
-      },
-      "staticOutput": "content-postbuild",
+      "pageKey": "discovery",
+      "source": "website/src/features/discovery/NewToCityPage.tsx",
+      "metaFactory": "newToCityPageMeta",
+      "staticOutput": "server-render",
       "indexing": "owner-approval",
       "sitemap": "owner-approval",
-      "notes": "New to a city, such as /new-to-mumbai/; the city must be a market city slug.",
+      "notes": "New to a city, such as /new-to-mumbai/ (PlaybookNewToCity), for every website city: this week's plans in the formats where the host makes the groups from the city's cityPlans read model, or the next two weeks when the week is quiet, the board's authored bands and the WhatsApp capture. Matched before the playbook pages (matchDiscoveryRoute). noindex and out of the sitemap until the owner approves it. A city that cannot be read renders its unavailable state with a 503.",
       "review": {
         "priority": "p2",
-        "status": "planned",
+        "status": "ready",
         "viewports": [
           "desktop",
           "mobile"
         ],
         "states": [
-          "page"
+          "page",
+          "phone",
+          "quiet-week"
         ],
         "stateCoverage": {
-          "storybook": [],
-          "manual": [
-            "page"
-          ]
+          "storybook": [
+            "page",
+            "phone",
+            "quiet-week"
+          ],
+          "manual": []
         }
       }
     },
     {
       "id": "city_format",
-      "kind": "contentFamily",
+      "kind": "dataFamily",
       "pathPattern": "/:city/:format/",
-      "pageKey": "playbook",
-      "source": "website/src/features/playbook/playbookRoutes.ts",
-      "content": {
-        "group": "discovery",
-        "board": "PlaybookCityFormat"
-      },
-      "staticOutput": "content-postbuild",
-      "indexing": "owner-approval",
-      "sitemap": "owner-approval",
-      "notes": "A city by format, such as /mumbai/run-clubs/; the city must be a market city slug. Matched last, and only for registered pages.",
+      "pageKey": "discovery",
+      "source": "website/src/features/discovery/CityFormatPage.tsx",
+      "metaFactory": "cityFormatPageMeta",
+      "staticOutput": "server-render",
+      "indexing": "read-model-controlled",
+      "sitemap": "read-model-controlled",
+      "notes": "A city by format, such as /mumbai/run-clubs/ (PlaybookCityFormat): a website city and one of the cityPlans contract's format page slugs, matched before the playbook pages (matchDiscoveryRoute). Indexing and the sitemap follow the read model's formatPages[format].indexing (formatPageIndexingFor: 3+ organisers or 5+ plans, whether or not the city has launched); below the bar the page is the board's thin layout, noindex. A format with no organiser and no plan in the city is a 404; a city that cannot be read, or has no format pages yet, renders its unavailable state with a 503.",
       "review": {
         "priority": "p2",
-        "status": "planned",
+        "status": "ready",
         "viewports": [
           "desktop",
           "mobile"
         ],
         "states": [
-          "page"
+          "indexed",
+          "phone",
+          "below-the-bar",
+          "unavailable",
+          "not-found"
         ],
         "stateCoverage": {
-          "storybook": [],
+          "storybook": [
+            "indexed",
+            "phone",
+            "below-the-bar",
+            "unavailable"
+          ],
           "manual": [
-            "page"
+            "not-found"
           ]
         }
       }

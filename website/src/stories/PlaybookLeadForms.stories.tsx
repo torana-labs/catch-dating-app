@@ -1,0 +1,102 @@
+import type {Meta, StoryObj} from "@storybook/react-vite";
+import {expect, userEvent, within} from "storybook/test";
+import {applyBrand} from "@content/brand";
+import runClubs from "@content/playbook/pages/host/run-clubs.json";
+import {playbookCopy} from "@content/playbook/playbookCopy";
+import {validatedPlaybookPage} from "@content/playbook/playbookContract";
+import {marketingCaptures} from "../app/marketingCaptures";
+import {PlaybookPage} from "../features/playbook/PlaybookPage";
+import {PageShell} from "../shared/site";
+
+const meta = {
+  title: "Marketing Website/Playbook lead forms",
+} satisfies Meta;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+const runClubsPage = applyBrand(validatedPlaybookPage(runClubs));
+const guideForm = runClubsPage.sections.flatMap((section) => section.type === "cta" && section.leadForm ? [section.leadForm] : [])[0];
+
+function PlaybookAt({width}: {width: 390 | 1280}) {
+  return (
+    <div style={{margin: "0 auto", width}}>
+      <PageShell pageClassName="home-page">
+        <PlaybookPage captures={marketingCaptures} page={runClubsPage} />
+      </PageShell>
+    </div>
+  );
+}
+
+/**
+ * Storybook has no lead intake: the stories answer the site's lead posts
+ * themselves (accepted or refused), and leave every other request alone.
+ */
+const answerLeads = (answer: "accepted" | "failed") => () => {
+  const original = window.fetch;
+  window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const body = typeof init?.body === "string" ? JSON.parse(init.body) as {requestKind?: string} : {};
+    if (!String(input).includes("/api/join-waitlist") || !body.requestKind) return original(input, init);
+    return answer === "accepted" ?
+      new Response(JSON.stringify({ok: true, alreadyJoined: false, lead: {leadId: "0".repeat(64), requestKind: body.requestKind, isNew: true}}), {status: 200}) :
+      new Response(JSON.stringify({error: "Unavailable"}), {status: 503});
+  }) as typeof fetch;
+  return () => {
+    window.fetch = original;
+  };
+};
+
+async function sendGuide(canvasElement: HTMLElement) {
+  const form = within(within(canvasElement).getByRole("form", {name: guideForm.submitLabel}));
+  await userEvent.type(form.getByRole("textbox", {name: new RegExp(guideForm.label, "u")}), "98765 43210");
+  await userEvent.click(form.getByRole("button", {name: guideForm.submitLabel}));
+}
+
+/** The run-clubs closing band at rest: the trial, the WhatsApp action, then the number and Send the guide. */
+export const GuideIdle1280: Story = {
+  name: "/host/run-clubs/ setup guide form · 1280",
+  render: () => <PlaybookAt width={1280} />,
+  play: async ({canvasElement}) => {
+    await expect(within(canvasElement).getByRole("form", {name: guideForm.submitLabel})).toBeInTheDocument();
+  },
+};
+
+export const GuideIdle390: Story = {
+  name: "/host/run-clubs/ setup guide form · 390",
+  render: () => <PlaybookAt width={390} />,
+};
+
+/** Sent: a guide lead, and the thanks in the form's place. */
+export const GuideSent1280: Story = {
+  name: "/host/run-clubs/ setup guide form, sent · 1280",
+  beforeEach: answerLeads("accepted"),
+  render: () => <PlaybookAt width={1280} />,
+  play: async ({canvasElement}) => {
+    await sendGuide(canvasElement);
+    await expect(await within(canvasElement).findByText(playbookCopy.leadForm.sent.guide)).toBeInTheDocument();
+  },
+};
+
+export const GuideSent390: Story = {
+  ...GuideSent1280,
+  name: "/host/run-clubs/ setup guide form, sent · 390",
+  render: () => <PlaybookAt width={390} />,
+};
+
+/** Failed: the send's words, and the button offers to try again with the same request. */
+export const GuideFailed1280: Story = {
+  name: "/host/run-clubs/ setup guide form, failed · 1280",
+  beforeEach: answerLeads("failed"),
+  render: () => <PlaybookAt width={1280} />,
+  play: async ({canvasElement}) => {
+    await sendGuide(canvasElement);
+    await expect(await within(canvasElement).findByRole("button", {name: playbookCopy.leadForm.retry})).toBeInTheDocument();
+  },
+};
+
+export const GuideFailed390: Story = {
+  ...GuideFailed1280,
+  name: "/host/run-clubs/ setup guide form, failed · 390",
+  render: () => <PlaybookAt width={390} />,
+};

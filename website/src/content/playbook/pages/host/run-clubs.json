@@ -68,6 +68,7 @@
       "ground": "white",
       "kicker": "Sound familiar?",
       "title": "Running is the easy part.",
+      "align": "center",
       "columns": 3,
       "items": [
         {

@@ -18,6 +18,25 @@ export const explorePageCopy = {
   /** An open city with nothing in the next two weeks and no filter set. */
   liveNoPlans: "Nothing on in {city} in the next two weeks.",
   liveNoPlansBody: "New plans go up as hosts add them. See who hosts here, or check back soon.",
+  /** The empty window's two ways on: the hosts to follow, and the WhatsApp capture. */
+  seeHosts: "See who hosts here",
+  getNotified: "Get notified",
+  /** An open city with nothing this week: the next two weeks instead, never “0 plans” (the 14-day rule). */
+  quiet: {
+    kicker: "Next two weeks",
+    title: "Coming up in {city}",
+    lead: "Nothing is on this week yet, so here’s what’s next. New plans go up as hosts add them.",
+  },
+  /** The hosts band under the plans, by what the page leads with. */
+  hosts: {
+    full: {kicker: "The hosts", title: "Who runs them"},
+    quiet: {kicker: "Follow a host", title: "Hear about their next plan first."},
+    empty: {kicker: "Hosts in {city}", title: "Follow them for their next plan."},
+    seeAll: "See all organisers",
+  },
+  /** A city not open yet: its kicker, and the way in for a host there. */
+  soonKicker: "Launching soon",
+  soonHostAction: "Host in {city}? Start free trial",
   search: {label: "Search plans and organisers", placeholder: "A plan, an organiser or a place", clear: "Clear {query}", close: "Close search"},
   view: {label: "Show", plans: "Plans", organisers: "Organisers"},
   when: {label: "When", any: "Next two weeks", today: "Today", weekend: "This weekend", week: "Next 7 days"},

@@ -1,7 +1,8 @@
 import {type FormEvent, useState} from "react";
 import {homePageCopy as copy} from "@content/homePage";
 import type {WebsiteLeadSubmission} from "../../../shared/api/websiteLead";
-import {homeLeadCityFields, useWebsiteLeadController, type HomeLeadCity} from "./useWebsiteLeadController";
+import {useWebsiteLeadController} from "../../marketing/useWebsiteLeadController";
+import {homeLeadCityFields, type HomeLeadCity} from "./homeLeadCity";
 
 /**
  * Owns a thin week's "Want to hear first?" bar: a WhatsApp number for new

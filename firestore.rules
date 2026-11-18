@@ -1440,6 +1440,22 @@ service cloud.firestore {
       allow get, list: if isHostSummaryManager(resource.data.organizerId);
       allow write: if false;
     }
+    // One retained WhatsApp thread's inbox summary. Its latest message body
+    // and contact name are personal data, so only the organizer's current
+    // managers read it; the phone hash and sender connection stay on the
+    // server-only thread. A view not written yet reads as missing.
+    match /hostWhatsappThreadViews/{threadId} {
+      allow get: if (resource == null && isAuthed())
+        || isHostSummaryManager(resource.data.organizerId);
+      allow list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
+    // One Sends row: campaign, announcement or follower update. Approval,
+    // dispatch and the campaign report stay on the reviewed callables.
+    match /hostSendSummaries/{sendId} {
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
+    }
     // Everyone waiting on one coming event, written ahead of time by the
     // request view triggers. A current manager lists their organizer's views;
     // authority comes from the organizer document, never from the view.
@@ -1951,8 +1967,12 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Retained message bodies are personal data: the organizer's current
+    // managers read one thread's messages through the inbox listener. Only
+    // the webhook and the reply callable write them.
     match /organizerWhatsappMessages/{messageId} {
-      allow read, write: if false;
+      allow get, list: if isHostSummaryManager(resource.data.organizerId);
+      allow write: if false;
     }
 
     match /organizerWhatsappReplyOperations/{operationId} {

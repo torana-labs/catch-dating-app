@@ -237,6 +237,11 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         contactId: "contact-1",
         linkedUid: "runner-1",
       },
+      "hostWhatsappThreadViews/owt_contact-1": {
+        organizerId: "club-1",
+        contactId: "contact-1",
+        linkedUid: "runner-1",
+      },
       "organizerContactIdentityLinks/evidence-uid": {
         organizerId: "club-1",
         contactId: "contact-1",
@@ -412,6 +417,12 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   assert.ok(
     harness.updateWrites.some((write) =>
       write.path === "organizerContactEventEdges/attendee-1" &&
+      write.data.linkedUid === null
+    )
+  );
+  assert.ok(
+    harness.updateWrites.some((write) =>
+      write.path === "hostWhatsappThreadViews/owt_contact-1" &&
       write.data.linkedUid === null
     )
   );

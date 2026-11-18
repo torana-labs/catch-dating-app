@@ -1,7 +1,7 @@
 import {act, renderHook} from "@testing-library/react";
 import {describe, expect, it, vi} from "vitest";
-import type {WebsiteLeadForm, WebsiteLeadOutcome, WebsiteLeadSubmission} from "../../../shared/api/websiteLead";
-import {homeLeadCityFields, useWebsiteLeadController} from "./useWebsiteLeadController";
+import type {WebsiteLeadForm, WebsiteLeadOutcome, WebsiteLeadSubmission} from "../../shared/api/websiteLead";
+import {useWebsiteLeadController} from "./useWebsiteLeadController";
 
 const form: WebsiteLeadForm = {kind: "city_alerts", phone: "9876543210", consentVersion: "sample-v1", sourcePage: "/", entry: "sample",
   answers: {interests: []}, city: "Mumbai"};
@@ -11,15 +11,6 @@ function fakeSubmission(...outcomes: WebsiteLeadOutcome[]) {
   for (const outcome of outcomes) submit.mockResolvedValueOnce(outcome);
   return {submission: {submit, reset: vi.fn()} satisfies WebsiteLeadSubmission, submit};
 }
-
-describe("homeLeadCityFields", () => {
-  it("names a catalog city by id, country and how the site reached it, and an unlisted one by its label alone", () => {
-    expect(homeLeadCityFields({label: "Mumbai", slug: "mumbai", source: "picked"}))
-      .toEqual({city: "Mumbai", cityId: "in-mh-mumbai", countryIsoCode: "IN", citySource: "picked"});
-    expect(homeLeadCityFields({label: "Mumbai", slug: "mumbai"})).toEqual({city: "Mumbai", cityId: "in-mh-mumbai", countryIsoCode: "IN"});
-    expect(homeLeadCityFields({label: "Atlantis", slug: "atlantis", source: "picked"})).toEqual({city: "Atlantis"});
-  });
-});
 
 describe("useWebsiteLeadController", () => {
   it("is submitting while the lead is on its way, then sent", async () => {

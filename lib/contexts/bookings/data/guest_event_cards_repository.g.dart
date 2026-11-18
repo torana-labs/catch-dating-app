@@ -55,7 +55,7 @@ final class GuestEventCardsRepositoryProvider
 }
 
 String _$guestEventCardsRepositoryHash() =>
-    r'0247af01a6c85b18b3cd82fab52bc8ff65666635';
+    r'ae9844276e36bf1482b97cb01c5d16fbd219a41d';
 
 /// Upcoming and past events the guest is booked at.
 

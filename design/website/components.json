@@ -1536,7 +1536,8 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host_run_clubs"
+        "host_run_clubs",
+        "new_to_city"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchHeroSection.tsx",
@@ -1572,7 +1573,9 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host_run_clubs"
+        "host_run_clubs",
+        "city_format",
+        "new_to_city"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchSplitSection.tsx",
@@ -1607,7 +1610,10 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host_run_clubs"
+        "host_run_clubs",
+        "visitor_discovery",
+        "city_format",
+        "new_to_city"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchCtaSection.tsx",
@@ -1637,7 +1643,9 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "host_run_clubs"
+        "host_run_clubs",
+        "city_format",
+        "new_to_city"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchFaqSection.tsx",
@@ -1665,7 +1673,9 @@
       "id": "shared_screen_preview",
       "kind": "supporting-component",
       "routeIds": [
-        "host_run_clubs"
+        "host_run_clubs",
+        "city_format",
+        "new_to_city"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchScreenPreview.tsx",
@@ -1904,7 +1914,8 @@
         "stories",
         "new_to_city",
         "city_format",
-        "cities"
+        "cities",
+        "visitor_discovery"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchCardGrid.tsx",
@@ -1942,9 +1953,10 @@
       "exportName": "CatchStoryCard",
       "comparedWith": [
         "catch.detail_media",
+        "catch.event_card",
         "catch.text"
       ],
-      "comparisonReason": "One story in a grid of stories: a 4:3 photo, a meta line, the title, a body and a figure at the foot. It places a CatchHeroImage and CatchText in a card and implements neither the detail media nor the text contract.",
+      "comparisonReason": "One story in a grid of stories: a 4:3 photo, a meta line, the title, a body and a figure at the foot. It places a CatchHeroImage and CatchText in a card and implements neither the detail media nor the text contract. Nor is it a catch.event_card: it tells a story, with no date, place or booking state.",
       "css": [
         "packages/web-ui/src/components/CatchStoryCard.module.css"
       ],
@@ -4523,7 +4535,9 @@
       "routeIds": [
         "home",
         "visitor_discovery",
-        "cities"
+        "cities",
+        "city_format",
+        "new_to_city"
       ],
       "owner": "features/home",
       "source": "website/src/features/home/sections/CityPicker.tsx",
@@ -4550,7 +4564,9 @@
       "routeIds": [
         "home",
         "visitor_discovery",
-        "cities"
+        "cities",
+        "city_format",
+        "new_to_city"
       ],
       "owner": "features/home",
       "source": "website/src/features/home/sections/cityChrome.tsx",
@@ -5062,7 +5078,9 @@
         "home",
         "host",
         "organizer_listing_canonical",
-        "event_detail_canonical"
+        "event_detail_canonical",
+        "city_format",
+        "new_to_city"
       ],
       "owner": "shared/layout",
       "source": "packages/web-ui/src/components/CatchGrid.tsx",
@@ -5763,7 +5781,10 @@
       "id": "shared_catch_site_dock",
       "kind": "supporting-component",
       "routeIds": [
-        "home"
+        "home",
+        "visitor_discovery",
+        "city_format",
+        "new_to_city"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchSiteDock.tsx",
@@ -5781,7 +5802,11 @@
           "wide-hidden"
         ]
       },
-      "notes": "Website T4 under D26 (the playbook kit's .mbar). The phone action bar: a sticky ink pill 8px above the screen's foot with the page's main action (coral, or pink on the homepage), an optional outlined second action and an optional WhatsApp button, 44px each. It draws nothing on a wide page and sits last on the page, so it rides the screen's foot and comes to rest under the footer. First consumer: the homepage. Not catch.bottom_action (Flutter's CatchDock bar, card and pane): links only, no summary, note or loading state, and hidden on wide pages. Search aliases: MobileBar, StickyCta, PhoneBar."
+      "notes": "Website T4 under D26 (the playbook kit's .mbar). The phone action bar: a sticky ink pill 8px above the screen's foot with the page's main action (coral, or pink on the homepage), an optional outlined second action and an optional WhatsApp button, 44px each. It draws nothing on a wide page and sits last on the page, so it rides the screen's foot and comes to rest under the footer. First consumer: the homepage. Not catch.bottom_action (Flutter's CatchDock bar, card and pane): links only, no summary, note or loading state, and hidden on wide pages. Search aliases: MobileBar, StickyCta, PhoneBar.",
+      "comparedWith": [
+        "catch.bottom_action"
+      ],
+      "comparisonReason": "Not catch.bottom_action (Flutter's CatchDock bar, card and pane): links only, no summary, note or loading state, and hidden on wide pages."
     },
     {
       "id": "shared_device_frame",
@@ -6010,7 +6035,9 @@
       "routeIds": [
         "not_found",
         "host_run_clubs",
-        "organizer_listing_canonical"
+        "organizer_listing_canonical",
+        "city_format",
+        "new_to_city"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchBandHeader.tsx",
@@ -6108,7 +6135,9 @@
       "kind": "supporting-component",
       "routeIds": [
         "not_found",
-        "host_run_clubs"
+        "host_run_clubs",
+        "city_format",
+        "new_to_city"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchFeatureTile.tsx",
@@ -6146,7 +6175,9 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "visitor_discovery"
+        "visitor_discovery",
+        "city_format",
+        "new_to_city"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchPlanCard.tsx",
@@ -6171,16 +6202,18 @@
       },
       "notes": "Website T4 under D18 (CAT-260). One plan as a single link: the photo or a poster on its format accent, a label coloured by its format, the title, host and place, then the price and places left. Below 840px it becomes a row with the media at its start. Nearest concept: shared_preview_card (CatchPreviewCard), which has no media. Search aliases: EventCard, PlanTile, ListingCard, EventPreview.",
       "comparedWith": [
+        "catch.event_card",
         "catch.text"
       ],
-      "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it."
+      "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it. Nor is it catch.event_card: it is one plan as a website link card (photo or poster, a format label, title, host, place, price and places left) that becomes a row on phones, without the event card's spotlight, when badge, counts or faces coming."
     },
     {
       "id": "shared_organizer_card",
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "visitor_discovery"
+        "visitor_discovery",
+        "city_format"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchOrganizerCard.tsx",
@@ -6559,6 +6592,128 @@
         ]
       },
       "notes": "An inline sign-in line at the moment of need (the organiser review form) that opens the sign-in sheet."
+    },
+    {
+      "id": "route_city_format",
+      "kind": "route",
+      "routeIds": [
+        "city_format"
+      ],
+      "owner": "features/discovery",
+      "source": "website/src/features/discovery/CityFormatPage.tsx",
+      "exportName": "CityFormatPage",
+      "css": [
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchBandHeader.module.css",
+        "packages/web-ui/src/components/CatchFeatureTile.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchCardGrid.module.css",
+        "packages/web-ui/src/components/CatchPlanCard.module.css",
+        "packages/web-ui/src/components/CatchOrganizerCard.module.css",
+        "packages/web-ui/src/components/CatchSplitSection.module.css",
+        "packages/web-ui/src/components/CatchScreenPreview.module.css",
+        "packages/web-ui/src/components/CatchFaqSection.module.css",
+        "packages/web-ui/src/components/CatchEmptyState.module.css",
+        "packages/web-ui/src/components/CatchCtaSection.module.css",
+        "packages/web-ui/src/components/CatchField.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "indexed",
+          "phone",
+          "below-the-bar",
+          "unavailable"
+        ]
+      },
+      "notes": "The redesign's city-by-format page (/<city>/<format>/, PlaybookCityFormat), bound to the city's cityPlans read model: the backend's organiser, 30-day and free counts for the format (formatPages) on the coral tiles hero, its tagged plans and organisers, and the backend's indexing decision (formatPageIndexingFor: 3+ organisers or 5+ plans, launched or not). Indexed formats get the full layout; below the bar the thin layout on the tint panel, noindex. A format with no organiser and no plan in the city is a 404; a city that cannot be read, or has no format pages yet, renders its unavailable state with a 503. Copy lives in content/discovery/cityFormatPage.ts and discoveryFormats.ts."
+    },
+    {
+      "id": "route_new_to_city",
+      "kind": "route",
+      "routeIds": [
+        "new_to_city"
+      ],
+      "owner": "features/discovery",
+      "source": "website/src/features/discovery/NewToCityPage.tsx",
+      "exportName": "NewToCityPage",
+      "css": [
+        "packages/web-ui/src/components/CatchHeroSection.module.css",
+        "packages/web-ui/src/components/CatchScreenPreview.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchBandHeader.module.css",
+        "packages/web-ui/src/components/CatchFeatureTile.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchCardGrid.module.css",
+        "packages/web-ui/src/components/CatchPlanCard.module.css",
+        "packages/web-ui/src/components/CatchSplitSection.module.css",
+        "packages/web-ui/src/components/CatchFaqSection.module.css",
+        "packages/web-ui/src/components/CatchEmptyState.module.css",
+        "packages/web-ui/src/components/CatchCtaSection.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "page",
+          "phone",
+          "quiet-week"
+        ]
+      },
+      "notes": "The redesign's new-to-the-city page (/new-to-<city>/, PlaybookNewToCity): the pink hero with a real plan on the tilted card, this week's plans in the formats where the host makes the groups (run clubs, quiz nights, supper), or the next two weeks when the week is quiet, walking in alone on ink, a first month, the trust checklist on the tint panel, the questions and the pink WhatsApp band. No came-alone counts. noindex until the owner approves it. Copy lives in content/discovery/newToCityPage.ts."
+    },
+    {
+      "id": "city_alerts_capture",
+      "kind": "supporting-component",
+      "routeIds": [
+        "visitor_discovery",
+        "city_format",
+        "new_to_city"
+      ],
+      "owner": "features/discovery",
+      "source": "website/src/features/discovery/CityAlertsCapture.tsx",
+      "exportName": "CityAlertsCapture",
+      "css": [
+        "packages/web-ui/src/components/CatchCtaSection.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "quiet-week"
+        ]
+      },
+      "notes": "The closing 'Get new plans in {city} on WhatsApp' band (the kit's KitFinal) on Explore, the city pages and the discovery pages: a CatchCtaSection whose form sends a city_alerts website lead through the site's lead client (createSiteLeadSubmission, with App Check) with the page's interests under the cityNewPlans consent."
+    },
+    {
+      "id": "discovery_dock",
+      "kind": "supporting-component",
+      "routeIds": [
+        "visitor_discovery",
+        "city_format",
+        "new_to_city"
+      ],
+      "owner": "features/discovery",
+      "source": "website/src/features/discovery/DiscoveryDock.tsx",
+      "exportName": "DiscoveryDock",
+      "css": [
+        "packages/web-ui/src/components/CatchSiteDock.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "phone"
+        ]
+      },
+      "notes": "The phone action bar under Explore, the city pages and the discovery pages (the kit's KitFooter mbar): CatchSiteDock with the page's plans and a WhatsApp chat."
     }
   ]
 }

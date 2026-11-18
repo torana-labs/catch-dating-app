@@ -29,6 +29,14 @@ export default async function Page(props: Props) {
       <PlaybookPublicPage page={route.playbook.page} canonicalPath={route.playbook.canonicalPath} />
     </PublicProviders>;
   }
+  // A city-by-format or new-to-the-city page: the route read its city. A city that could not be read,
+  // or has no format pages yet, keeps the page's own message but answers 503, so no cache keeps it.
+  if (route.page === "discovery" && route.discovery) {
+    if (route.discovery.unavailable) markPublicPageUnavailable();
+    return <PublicProviders pathname={route.pathname} initialSearch="" catalog={route.catalog} live={route.live}>
+      <PublicPage page="discovery" readAt={route.discovery.catalog.readAt} home={route.discovery.catalog} discovery={route.discovery.route} />
+    </PublicProviders>;
+  }
   const requestedCity = typeof search.city === "string" ? search.city : undefined;
   // The homepage, Explore and the city pages read cityPlans documents instead of the catalog.
   const cityCatalog = route.page === "home" || route.page === "visitor_discovery" || route.page === "cities" ?
