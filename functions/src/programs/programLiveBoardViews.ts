@@ -196,7 +196,7 @@ export async function readTravelCountView(db: FirebaseFirestore.Firestore,
     if (last) query = query.startAfter(last);
     const snap = await tx.get(query);
     legs.push(...snap.docs.map((doc) => doc.data()));
-    if (snap.size < LEG_PAGE) break;
+    if (snap.docs.length < LEG_PAGE) break;
     last = snap.docs[snap.docs.length - 1];
   }
   return travelCountView(programId, organizerId, legs);

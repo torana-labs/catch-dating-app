@@ -101,7 +101,7 @@ export const onProgramHotelInboundSettingsChanged = onDocumentWritten({
         await reconcileProgramHotelInboundView(db, doc.id);
       }
     }
-    if (snap.size < fanoutLimit) break;
+    if (snap.docs.length < fanoutLimit) break;
     last = snap.docs[snap.docs.length - 1];
   }
 });
