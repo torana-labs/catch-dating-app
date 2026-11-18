@@ -6,7 +6,7 @@
     "title": "{{brand.name}} for teams | Team socials where people meet outside their team",
     "description": "A private link only your colleagues have, RSVPs you can trust, groups that mix teams on purpose, and a short report on who came. Free for socials that don’t sell tickets.",
     "socialDescription": "Team socials where people meet someone outside their team. {{brand.name}} for HR, people teams and team leads.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
@@ -129,7 +129,7 @@
       "kicker": "Pricing for teams",
       "price": "₹0",
       "title": "for socials your company pays for. Free events stay free.",
-      "trial": "If colleagues buy a ticket, say for an optional trip, it’s 5% of what they pay, never more than ₹10,000 per billing cycle. Payment gateway fees are separate.",
+      "trial": "If colleagues buy a ticket, say for an optional trip, it’s 5% of what they pay, never more than ₹10,000 a month. Payment gateway fees are separate.",
       "examples": [
         {"title": "A new-joiner social for 60", "value": "₹0", "body": "Your company pays the venue; nobody buys a ticket."},
         {"title": "A monthly team social", "value": "₹0", "body": "Every month, as long as it’s free to attend."},

@@ -25,7 +25,7 @@ describe("usePricingFeeCalculator", () => {
 });
 
 describe("PricingFeeCalculator", () => {
-  it("prices a billing cycle on the slider: 5% after the trial, capped at ₹10,000", () => {
+  it("prices a month on the slider: 5% after the trial, capped at ₹10,000", () => {
     render(<PricingFeeCalculator />);
     expect(screen.getAllByText("₹6,000").length).toBeGreaterThan(0);
     expect(screen.queryByText(copy.capped)).toBeNull();
@@ -37,10 +37,10 @@ describe("PricingFeeCalculator", () => {
     expect(screen.getByText(copy.capped)).toBeTruthy();
   });
 
-  it("says billing cycle, not month", () => {
+  it("says a month, not billing cycle (owner, 18 Nov 2026)", () => {
     const {container} = render(<PricingFeeCalculator initialSales={40_000} />);
-    expect(container.textContent).toContain("billing cycle");
-    expect(container.textContent).not.toMatch(/month/iu);
+    expect(container.textContent).toContain("in a month");
+    expect(container.textContent).not.toMatch(/cycle/iu);
     expect(screen.getByText("₹2,000")).toBeTruthy();
   });
 });

@@ -24,6 +24,12 @@ import {isDeepStrictEqual} from "node:util";
  * not already hold (absent, null, or an empty list or map) may be returned, so
  * no information is overwritten, and each update
  * is preconditioned on the document's last update time.
+ *
+ * A step may name `refresh` fields: trigger-owned copies derived from another
+ * document (an event's organizerSummary). A refresh field the document already
+ * holds is rewritten only when `fill` returns a different value, so a stale
+ * copy is repaired and a current one is never touched; every other field
+ * keeps the rule above.
  */
 
 const PAGE_SIZE = 500;
@@ -99,12 +105,17 @@ async function planFillStep(db, step) {
     // A fill may be async and may read other collections (never write).
     const fields = await step.fill(data, doc.id, db);
     if (fields === null) continue;
-    const present = Object.keys(fields).filter((field) => !isEmptyValue(data[field]));
+    const refresh = new Set(step.refresh ?? []);
+    const changes = Object.fromEntries(Object.entries(fields).filter(([field, value]) =>
+      !refresh.has(field) || !isDeepStrictEqual(data[field], value)));
+    if (Object.keys(changes).length === 0) continue;
+    const present = Object.keys(changes)
+      .filter((field) => !refresh.has(field) && !isEmptyValue(data[field]));
     if (present.length > 0) {
       result.conflicts.push({sourcePath: doc.ref.path, targetPath: doc.ref.path, fields: present});
       continue;
     }
-    result.toFill.push({sourcePath: doc.ref.path, targetPath: doc.ref.path, data: fields,
+    result.toFill.push({sourcePath: doc.ref.path, targetPath: doc.ref.path, data: changes,
       updateTime: doc.updateTime});
   }
   return result;

@@ -1,4 +1,5 @@
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
+import {trackWebsiteLeadFormEvent, type WebsiteLeadFormIdentity} from "../../analytics";
 import type {WebsiteLeadForm, WebsiteLeadProblem, WebsiteLeadSubmission} from "../../shared/api/websiteLead";
 import {createSiteLeadSubmission} from "./websiteLead";
 
@@ -7,13 +8,30 @@ type LeadState = {phase: LeadPhase; problem: WebsiteLeadProblem | null; message:
 const idle: LeadState = {phase: "idle", problem: null, message: ""};
 
 /**
+ * Records, once per form and after analytics consent, that a website lead
+ * form was shown: its lead kind and form id (the lead's entry), never an
+ * answer. The site lead submission records the rest of the form's events.
+ */
+function useLeadFormViewed({kind, formId}: WebsiteLeadFormIdentity) {
+  const recorded = useRef<string | null>(null);
+  useEffect(() => {
+    const key = `${kind}:${formId}`;
+    if (recorded.current === key) return;
+    recorded.current = key;
+    trackWebsiteLeadFormEvent("viewed", {kind, formId});
+  }, [kind, formId]);
+}
+
+/**
  * One website lead form's send: idle, submitting, sent, or failed with the
  * lead client's problem and its words. The submission is made once for the
  * form's life, so sending the same answers again after a failure reuses the
- * request id and is the same lead; changed answers are a new one. The
- * homepage's forms and the playbook pages' forms share it.
+ * request id and is the same lead; changed answers are a new one. `identity`
+ * names the form for its viewed event. The homepage's forms and the playbook
+ * pages' forms share it.
  */
-export function useWebsiteLeadController(submission?: WebsiteLeadSubmission) {
+export function useWebsiteLeadController(identity: WebsiteLeadFormIdentity, submission?: WebsiteLeadSubmission) {
+  useLeadFormViewed(identity);
   const [lead] = useState(() => submission ?? createSiteLeadSubmission());
   const [state, setState] = useState<LeadState>(idle);
   const inFlight = useRef(false);

@@ -3,7 +3,8 @@ import test from "node:test";
 import {readFileSync} from "node:fs";
 import {
   backfillPublicOrganizers, projectPublicOrganizer, publicOrganizerEligible,
-  reconcilePublicOrganizer, PUBLIC_ORGANIZER_DERIVED_FIELDS,
+  reconcilePublicOrganizer, reconcilePublicOrganizerDetailed,
+  PUBLIC_ORGANIZER_DERIVED_FIELDS,
   PUBLIC_ORGANIZER_FIELDS,
 } from "./publicOrganizerProjection";
 import {validatePublicOrganizerDocument} from
@@ -157,6 +158,32 @@ test("reconcile writes, skips unchanged, removes and refuses invalid",
     assert.equal(await reconcilePublicOrganizer("o1", deps(store)), "absent");
     assert.equal([...store.writes].some((w) => w.startsWith("set organizers") ||
       w.startsWith("delete organizers")), false);
+  });
+
+test("only a change to a field the event summary holds fans out to events",
+  async () => {
+    const store = new FakeStore();
+    const source = () => store.rows.get("organizers/o1")!;
+    store.rows.set("organizers/o1", {...organizerDoc(), hostUserId: "host-1"});
+    // A new projection changes the summary from hidden to the organizer's.
+    assert.equal((await reconcilePublicOrganizerDetailed("o1", deps(store)))
+      .summaryChanged, true);
+    assert.deepEqual(await reconcilePublicOrganizerDetailed("o1", deps(store)),
+      {outcome: "unchanged", summaryChanged: false});
+    // Follower counts and the next event move constantly and are not in it.
+    store.rows.set("organizers/o1", {...source(), followerCount: 5000,
+      reviewCount: 41, nextEventLabel: "Gate"});
+    assert.deepEqual(await reconcilePublicOrganizerDetailed("o1", deps(store)),
+      {outcome: "written", summaryChanged: false});
+    store.rows.set("organizers/o1", {...source(), name: "Renamed club"});
+    assert.deepEqual(await reconcilePublicOrganizerDetailed("o1", deps(store)),
+      {outcome: "written", summaryChanged: true});
+    // A removed projection hides the organizer's events.
+    store.rows.delete("organizers/o1");
+    assert.deepEqual(await reconcilePublicOrganizerDetailed("o1", deps(store)),
+      {outcome: "removed", summaryChanged: true});
+    assert.deepEqual(await reconcilePublicOrganizerDetailed("o1", deps(store)),
+      {outcome: "absent", summaryChanged: false});
   });
 
 test("backfill dry run writes nothing; apply writes projections only",

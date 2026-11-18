@@ -6,7 +6,7 @@
     "title": "Try a demo night | {{brand.stores.hostAppName}}",
     "description": "A private demo built around your event: your application questions, sample guests and the door on the night. Nothing is published, messaged or charged.",
     "socialDescription": "Run a night on {{brand.name}} before you run one for real.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

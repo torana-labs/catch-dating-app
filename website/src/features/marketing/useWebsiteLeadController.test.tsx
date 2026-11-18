@@ -1,7 +1,14 @@
 import {act, renderHook} from "@testing-library/react";
-import {describe, expect, it, vi} from "vitest";
+import {StrictMode} from "react";
+import {afterEach, describe, expect, it, vi} from "vitest";
 import type {WebsiteLeadForm, WebsiteLeadOutcome, WebsiteLeadSubmission} from "../../shared/api/websiteLead";
 import {useWebsiteLeadController} from "./useWebsiteLeadController";
+
+const trackWebsiteLeadFormEvent = vi.hoisted(() => vi.fn());
+vi.mock("../../analytics", () => ({trackWebsiteLeadFormEvent}));
+afterEach(() => trackWebsiteLeadFormEvent.mockReset());
+
+const identity = {kind: "city_alerts", formId: "sample"} as const;
 
 const form: WebsiteLeadForm = {kind: "city_alerts", phone: "9876543210", consentVersion: "sample-v1", sourcePage: "/", entry: "sample",
   answers: {interests: []}, city: "Mumbai"};
@@ -16,7 +23,7 @@ describe("useWebsiteLeadController", () => {
   it("is submitting while the lead is on its way, then sent", async () => {
     let resolve: (outcome: WebsiteLeadOutcome) => void = () => undefined;
     const submit = vi.fn(() => new Promise<WebsiteLeadOutcome>((done) => {resolve = done;}));
-    const {result} = renderHook(() => useWebsiteLeadController({submit, reset: vi.fn()}));
+    const {result} = renderHook(() => useWebsiteLeadController(identity, {submit, reset: vi.fn()}));
     let sending: Promise<void> = Promise.resolve();
     act(() => {sending = result.current.send(form);});
     expect(result.current.submitting).toBe(true);
@@ -35,7 +42,7 @@ describe("useWebsiteLeadController", () => {
       {status: "invalid_phone", message: "Check your number."},
       {status: "busy", message: "Try later."},
     );
-    const {result} = renderHook(() => useWebsiteLeadController(submission));
+    const {result} = renderHook(() => useWebsiteLeadController(identity, submission));
     await act(() => result.current.send(form));
     expect(result.current).toMatchObject({sent: false, phoneProblem: "Check your number.", sendProblem: null});
     act(() => result.current.clearProblem());
@@ -45,10 +52,18 @@ describe("useWebsiteLeadController", () => {
     expect(submit).toHaveBeenCalledTimes(2);
   });
 
+  it("records the form as viewed once for its life, naming only its kind and form id", async () => {
+    const {submission} = fakeSubmission({status: "sent", leadId: null, isNew: true});
+    const {result, rerender} = renderHook(() => useWebsiteLeadController(identity, submission), {wrapper: StrictMode});
+    rerender();
+    await act(() => result.current.send(form));
+    expect(trackWebsiteLeadFormEvent).toHaveBeenCalledExactlyOnceWith("viewed", {kind: "city_alerts", formId: "sample"});
+  });
+
   it("keeps one submission for the form's life", async () => {
     const first = fakeSubmission({status: "sent", leadId: null, isNew: true});
     const later = fakeSubmission({status: "sent", leadId: null, isNew: true});
-    const {result, rerender} = renderHook(({value}) => useWebsiteLeadController(value), {initialProps: {value: first.submission}});
+    const {result, rerender} = renderHook(({value}) => useWebsiteLeadController(identity, value), {initialProps: {value: first.submission}});
     rerender({value: later.submission});
     await act(() => result.current.send(form));
     expect(first.submit).toHaveBeenCalledWith(form);

@@ -276,7 +276,7 @@ HostWhatsappRepository hostWhatsappRepository(Ref ref) {
 
 @riverpod
 Future<HostMessagingSetup> hostMessagingSetup(Ref ref, String organizerId) =>
-    ref.read(hostWhatsappRepositoryProvider).getMessagingSetup(organizerId);
+    ref.watch(hostWhatsappRepositoryProvider).getMessagingSetup(organizerId);
 
 /// The organizer's WhatsApp threads, a page at a time, every row shown
 /// live. Threads past their retention are left out.

@@ -12,7 +12,10 @@ tests and scanners prove correctness, and CI stores run evidence.
 
 ## Starting Loop
 
-1. Run `git status --short` and preserve unrelated work.
+1. Run `git status --short` and preserve unrelated work. Then run
+   `node tool/git/sweep_merged_worktrees.mjs --apply` from the primary
+   checkout. It removes only clean, idle worktrees whose work is already in
+   `origin/main` or merged by PR, so finished checkouts never pile up.
 2. For every new task, fetch `origin/main` and create its branch/worktree from
    that exact commit through `node tool/git/worktree_guard.mjs start`. Never
    use the ambient checkout HEAD as a new-task base. Existing non-main work may
@@ -134,6 +137,8 @@ focused checks pass, compile-critical generated outputs are current, and the
 exact commit is preserved. Shipping, issue status and retirement of the task's
 own worktree follow the mandatory checklist in
 [`docs/agent_operating_model.md`](docs/agent_operating_model.md#completion).
+A session that ends while its PR is still in the merge queue leaves its
+worktree to the next session's sweep (Starting Loop step 1); that is expected.
 Ordinary product work must not recreate or replace the removed evidence layer.
 
 ## Generated Contract Outputs

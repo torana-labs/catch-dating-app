@@ -284,16 +284,16 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(navigate).toHaveBeenCalledWith("/?city=pune");
   });
 
-  it("states the host trial and price per billing cycle, and keeps dating words and placeholders off the page", () => {
+  it("states the host trial and price a month, and keeps dating words and placeholders off the page", () => {
     const {container} = render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const hosts = within(screen.getByRole("region", {name: "Bring people together? Run the whole night from one screen."}));
-    expect(hosts.getByText(/Free for 30 days, then 5% of ticket sales, capped at ₹10,000 per billing cycle\. Free events stay free\./u)).toBeTruthy();
+    expect(hosts.getByText(/Free for 30 days, then 5% of ticket sales, capped at ₹10,000 a month\. Free events stay free\./u)).toBeTruthy();
     expect(hosts.getByText("Payment gateway fees are charged separately by the payment provider.")).toBeTruthy();
     expect(hosts.getByRole("link", {name: "Start your free trial"}).getAttribute("href")).toBe("/host/#start");
     expect(hosts.getByRole("link", {name: "See Catch for hosts"}).getAttribute("href")).toBe("/host/");
     // A busy city shows no founding offer and reads no counter, and nothing names a count of places.
     expect(foundingOffer.markets.every((market) => market === undefined)).toBe(true);
-    expect(container.textContent).not.toMatch(/Founding hosts|of 50|a month/u);
+    expect(container.textContent).not.toMatch(/Founding hosts|of 50|billing cycle/u);
     expect(container.textContent).not.toMatch(/dating|singles|mixer|\bmatch/iu);
     expect(container.textContent).not.toMatch(/\[[^\]]*\]/u);
   });

@@ -1,6 +1,7 @@
 import {act, renderHook} from "@testing-library/react";
 import type {FormEvent} from "react";
-import {describe, expect, it, vi} from "vitest";
+import {afterEach, describe, expect, it, vi} from "vitest";
+import {setMarketingConsent} from "../../../analytics";
 import {createSiteLeadSubmission} from "../../marketing/websiteLead";
 import {useHostReferralController, type HostReferralField} from "./useHostReferralController";
 
@@ -9,11 +10,16 @@ const reply = (status: number, body: unknown = {}) => new Response(JSON.stringif
 const accepted = () => reply(200, {ok: true, alreadyJoined: false, lead: {leadId: "b".repeat(64), requestKind: "referral", isNew: true}});
 const fields: readonly HostReferralField[] = ["fullName", "phone", "hostName", "hostLink", "relationship"];
 
+/** The site's lead submission; `referrerIdToken` stands in for the signed-in account (none by default). */
 function siteSubmission(...responses: Response[]) {
+  return signedInSubmission(async () => null, ...responses);
+}
+
+function signedInSubmission(referrerIdToken: () => Promise<string | null>, ...responses: Response[]) {
   const post = vi.fn<typeof fetch>();
   for (const response of responses) post.mockResolvedValueOnce(response);
   let next = 0;
-  const submission = createSiteLeadSubmission({post, appCheckToken: async () => "app-check-token",
+  const submission = createSiteLeadSubmission({post, appCheckToken: async () => "app-check-token", referrerIdToken,
     newRequestId: () => `request${String(++next).padStart(12, "0")}`});
   const body = (call: number) => JSON.parse(String(post.mock.calls[call][1]?.body));
   return {submission, post, body};
@@ -27,6 +33,11 @@ function fill(referral: Referral, answers: Partial<Record<HostReferralField, str
 }
 const complete = {fullName: "  Asha  Rao ", phone: "98765 43210", hostName: " Lantern Lane Social ", hostLink: "@lanternlanesocial",
   relationship: "I go to their supper club"};
+
+afterEach(() => {
+  localStorage.clear();
+  window.dataLayer = [];
+});
 
 describe("useHostReferralController", () => {
   it("checks every field before sending, and clears a field's words when it is edited", async () => {
@@ -61,6 +72,52 @@ describe("useHostReferralController", () => {
     });
     expect(result.current).toMatchObject({sent: true, sendProblem: null,
       sentMessage: "Thanks for introducing Lantern Lane Social. We’ll message you on WhatsApp about it."});
+  });
+
+  it("sends a signed-in visitor's ID token so the intake credits the referrer", async () => {
+    const referrerIdToken = vi.fn(async () => "referrer-id-token");
+    const {submission, post, body} = signedInSubmission(referrerIdToken, accepted());
+    const {result} = renderHook(() => useHostReferralController({label: "Mumbai", slug: "mumbai"}, submission));
+    fill(result.current, complete);
+    await act(() => result.current.handleSubmit(submitEvent()));
+    expect(referrerIdToken).toHaveBeenCalledOnce();
+    expect(post.mock.calls[0][1]?.headers).toEqual({"Content-Type": "application/json", "X-Firebase-AppCheck": "app-check-token",
+      Authorization: "Bearer referrer-id-token"});
+    expect(JSON.stringify(body(0))).not.toContain("referrer-id-token");
+    expect(result.current.sent).toBe(true);
+  });
+
+  it("sends a signed-out visitor's referral without an Authorization header", async () => {
+    const {submission, post} = siteSubmission(accepted());
+    const {result} = renderHook(() => useHostReferralController({label: "Mumbai", slug: "mumbai"}, submission));
+    fill(result.current, complete);
+    await act(() => result.current.handleSubmit(submitEvent()));
+    expect(post.mock.calls[0][1]?.headers).toEqual({"Content-Type": "application/json", "X-Firebase-AppCheck": "app-check-token"});
+    expect(result.current.sent).toBe(true);
+  });
+
+  it("records the form's viewed, submitted and succeeded events after analytics consent, without any answer", async () => {
+    setMarketingConsent("analytics");
+    window.dataLayer = [];
+    const {submission} = siteSubmission(accepted());
+    const {result} = renderHook(() => useHostReferralController({label: "Mumbai", slug: "mumbai"}, submission));
+    fill(result.current, complete);
+    await act(() => result.current.handleSubmit(submitEvent()));
+    const recorded = (window.dataLayer ?? []).filter((entry) => !Array.isArray(entry) && String(entry.event).startsWith("lead_form_"));
+    const form = {content_version: "website_copy_v2", lead_kind: "referral", form_id: "home-refer", page_path: "/"};
+    expect(recorded).toEqual([{event: "lead_form_viewed", ...form}, {event: "lead_form_submitted", ...form}, {event: "lead_form_succeeded", ...form}]);
+    expect(JSON.stringify(window.dataLayer)).not.toMatch(/Asha|98765|Lantern|lanternlanesocial|supper club|Mumbai/u);
+  });
+
+  it("records no lead form event without analytics consent", async () => {
+    setMarketingConsent("essential");
+    window.dataLayer = [];
+    const {submission} = siteSubmission(accepted());
+    const {result} = renderHook(() => useHostReferralController({label: "Mumbai", slug: "mumbai"}, submission));
+    fill(result.current, complete);
+    await act(() => result.current.handleSubmit(submitEvent()));
+    expect(result.current.sent).toBe(true);
+    expect((window.dataLayer ?? []).some((entry) => !Array.isArray(entry) && String(entry.event).startsWith("lead_form_"))).toBe(false);
   });
 
   it("retries a failed send as the same request, and changed answers as a new one", async () => {
