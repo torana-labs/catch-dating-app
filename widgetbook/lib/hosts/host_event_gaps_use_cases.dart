@@ -92,7 +92,7 @@ final _reviews = [
   path: _eventsPath,
 )
 Widget hostEventShareBodyUseCase(BuildContext context) => HostEventShareBody(
-  link: 'https://catchdates.com/e/preview?invite=SEAFACE',
+  link: 'https://example.test/e/preview?invite=SEAFACE',
   inviteOnly: true,
   onCopy: widgetbookNoop,
   onShare: widgetbookNoop,
