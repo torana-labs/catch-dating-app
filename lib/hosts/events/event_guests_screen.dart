@@ -95,7 +95,11 @@ class _HostEventGuestsScreenState extends ConsumerState<HostEventGuestsScreen> {
         key: const ValueKey<String>('host-event-guests-screen'),
         topBar: CatchTopBar(
           variant: CatchTopBarVariant.tool,
-          back: CatchTopBarBack(label: l10n.hostEventsBack),
+          back: CatchTopBarBack(
+            label: l10n.hostEventsBack,
+            // Beside Today or in the split view, Back returns to that list.
+            onPressed: CatchWorkspaceBackScope.maybeOf(context),
+          ),
           kicker: event == null ? null : hostEventKicker(event),
           title: event?.title,
         ),
