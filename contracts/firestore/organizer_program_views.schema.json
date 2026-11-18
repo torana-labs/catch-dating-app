@@ -1,0 +1,314 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_program_views.schema.json",
+  "title": "OrganizerProgramViewDocument",
+  "description": "Server-maintained setup view of one programme, at organizerProgramViews/{programId}: the programme object getOrganizerProgram returned (kind, title, zone, dates, status, capabilities, transport settings, branding, retention dates, revision), the creator, the count of functions listOrganizerPrograms returned and the setup lists of functions, pickup points and hotels exactly as getOrganizerProgram returned them, except a function's live expected and checked-in counts (those change with every check-in; the phone reads them from programResourceViews). Written by triggers on organizerPrograms, programFunctions, programPickupPoints and programHotels. Readable by the organizer's current managers (get and list by organizer), the creator (get and list by creator), and an account whose live programAdmin duty reaches the programme (get), exactly the people requireProgramSetupAccess admits. Guest, household, journey and staff counts are not here: they stay on the callables. Never the programme's sender connection, entitlement or request hash, and never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerProgramViews",
+  "x-firestore-path": "organizerProgramViews/{programId}",
+  "x-document-id-field": "programId",
+  "x-owner": "Programme read model projector (organizerProgramViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "createdBy",
+    "kind",
+    "title",
+    "timezone",
+    "status",
+    "startsAtMillis",
+    "endsAtMillis",
+    "capabilities",
+    "transportSettings",
+    "branding",
+    "archivedAtMillis",
+    "anonymizeAtMillis",
+    "anonymizedAtMillis",
+    "revision",
+    "functionCount",
+    "functions",
+    "pickupPoints",
+    "hotels",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The programme creator: reads the row, and lists their own programmes, whatever their organizer role."
+    },
+    "kind": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programKind"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "status": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programStatus"
+    },
+    "startsAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "endsAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/programCapability"
+      }
+    },
+    "transportSettings": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programTransportSettings"
+    },
+    "branding": {
+      "anyOf": [
+        {
+          "$ref": "../shared/program_common.schema.json#/definitions/programGuestBranding"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "null when the programme has none."
+    },
+    "archivedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Set when the program is archived; null otherwise."
+    },
+    "anonymizeAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Grace deadline: identity scrub happens after this unless the program is unarchived."
+    },
+    "anonymizedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Set once identity/free-text fields were scrubbed; program stays archived indefinitely."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "functionCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Every function of the programme, as the list row counts them (the functions array stops at 40)."
+    },
+    "functions": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "functionId",
+          "name",
+          "startsAtMillis",
+          "endsAtMillis",
+          "venueName",
+          "status",
+          "invitationMode",
+          "checkInEnabled",
+          "dressCode",
+          "instructions",
+          "revision"
+        ],
+        "properties": {
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "endsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "venueName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "invitationMode": {
+            "$ref": "../shared/program_common.schema.json#/definitions/programFunctionInvitationMode",
+            "description": "Effective mode; absent document field reads as allGuests."
+          },
+          "checkInEnabled": {
+            "type": "boolean"
+          },
+          "dressCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "instructions": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 2000
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "pickupPoints": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pickupPointId",
+          "kind",
+          "label",
+          "active",
+          "revision"
+        ],
+        "properties": {
+          "pickupPointId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "$ref": "../shared/program_common.schema.json#/definitions/pickupPointKind"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "iataCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "terminal": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "meetingZone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "instructions": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "hotels": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hotelId",
+          "name",
+          "address",
+          "active",
+          "revision"
+        ],
+        "properties": {
+          "hotelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "receptionContact": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

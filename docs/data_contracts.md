@@ -5055,6 +5055,36 @@ with the grant by archive anonymization, which reaches the rows through the
 grant trigger. `revokeProgramStaff` and `grantProgramStaff` stay callables
 fenced by the grant's revision.
 
+`programWhatsappThreadViews/{threadId}` (the thread's own id) is the programme
+inbox row, kept by triggers on `programWhatsappThreads`, `programHouseholds`
+(the thread id derives from the programme and household) and `organizerPrograms`
+(side labels), and created for existing threads by the
+`program-whatsapp-thread-views` copy-forward migration. It is exactly the
+summary `listProgramWhatsappThreads` returned without `serviceWindowOpen`, plus
+`householdLabel`, `primaryContactName` and `guestCount`; never the phone hash,
+sender connection, take-over uid or message count. Managers and the
+communications duty list it by a query naming `programId`. Under the same rule
+they list `programWhatsappMessages` (a query naming `programId` and `threadId`;
+the existing composite index serves it), `programWhatsappCannedReplies` and
+`programPhotos` (a query naming `programId`). Messages, views and photo records
+go with the archived programme's retention sweep (the view follows its thread's
+deletion through the trigger). A phone listing the inbox newest first needs a
+composite index on `programWhatsappThreadViews` (`programId`, `lastMessageAtMillis`
+descending), to be added to `firestore.indexes.json` with the client batch.
+
+`organizerProgramViews/{programId}` is the planner's setup view of one
+programme, kept by triggers on `organizerPrograms`, `programFunctions`,
+`programPickupPoints` and `programHotels`, and created for existing programmes
+by the `organizer-program-views` copy-forward migration: the programme object
+`getOrganizerProgram` returned, its creator, the function count and the
+function, pickup point and hotel setup lists (a function's live expected and
+checked-in counts excluded; they stay in `programResourceViews`). The creator
+and the organizer's current managers read and list it (by `createdBy` or
+`organizerId`), a live `programAdmin` duty reads one by id, and a deleted
+account reads nothing. Guest, household, journey and staff counts are not in
+it. The anonymiser's scrubs of hotel contacts and the programme's `anonymizedAt`
+reach it through the same triggers.
+
 `organizerCampaigns.recipientSource` names where recipients resolve:
 `savedAudience` (default, backed by `savedAudienceId`) or
 `programSelection`, which draws from programFunctionGuests/programGuests
@@ -5081,8 +5111,10 @@ never guest or household names, phone numbers, rooms or notes.
 
 `organizerPrograms.whatsappSenderConnectionId` (optional; absent or null
 falls back to the organiser's first active WhatsApp sender) binds a
-wedding's own number. Six new server-only collections hold the guest
-conversation; clients reach them only through callables.
+wedding's own number. Six new collections hold the guest conversation; the
+threads, endpoint index, reply reservations and settings are server-only, and
+the inbox reads views and messages as described under
+`programWhatsappThreadViews` above.
 `programWhatsappEndpointIndex/{programId}_{endpointHash}` maps the sha256 of
 an E.164 number to `{householdId, guestId}` (claimants kept so a shared
 number is marked `ambiguous`), maintained by triggers on `programHouseholds`

@@ -771,6 +771,9 @@ export {onProgramTripViewChanged, onProgramHotelInboundLegChanged,
   onProgramHotelInboundPartyChanged, onProgramTripGuestChanged,
   onProgramHotelInboundSettingsChanged} from
   "./programs/programTripViewTriggers";
+export {onOrganizerProgramViewChanged, onOrganizerProgramFunctionChanged,
+  onOrganizerProgramPickupPointChanged, onOrganizerProgramHotelChanged} from
+  "./programs/organizerProgramViewTriggers";
 export {onProgramStaffViewGrantChanged, onProgramStaffViewProgramChanged} from
   "./programs/programStaffViewTriggers";
 export {listMyHostAssignments} from "./hostWork/listMyHostAssignments";
@@ -848,7 +851,8 @@ export {
   getProgramHamperWebView,
   upsertProgramHamper,
 } from "./programs/hampers";
-export {listProgramPhotos, upsertProgramPhoto} from "./programs/photos";
+export {listProgramPhotos, signProgramPhotoUrls, upsertProgramPhoto} from
+  "./programs/photos";
 export {
   addEventHostPhoto,
   deleteEventHostPhoto,
@@ -863,10 +867,15 @@ export {
   listProgramWhatsappCannedReplies,
   listProgramWhatsappThreads,
   sendProgramWhatsappReply,
+  markProgramWhatsappThreadRead,
   setProgramWhatsappThreadHandling,
   updateProgramAssistantSettings,
   upsertProgramWhatsappCannedReply,
 } from "./programs/programWhatsapp/callables";
+export {onProgramWhatsappThreadViewThreadChanged,
+  onProgramWhatsappThreadViewHouseholdChanged,
+  onProgramWhatsappThreadViewProgramChanged} from
+  "./programs/programWhatsapp/threadViewTriggers";
 export {
   onProgramGuestWhatsappEndpointWritten,
   onProgramHouseholdWhatsappEndpointWritten,

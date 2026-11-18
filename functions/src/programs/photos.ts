@@ -30,10 +30,18 @@ import type {ListProgramPhotosCallablePayload} from
   "../shared/generated/listProgramPhotosCallablePayload";
 import type {ProgramPhotosCallableResponse} from
   "../shared/generated/programPhotosCallableResponse";
+import type {SignProgramPhotoUrlsCallablePayload} from
+  "../shared/generated/signProgramPhotoUrlsCallablePayload";
+import type {ProgramPhotoUrlsCallableResponse} from
+  "../shared/generated/programPhotoUrlsCallableResponse";
 import {validateUpsertProgramPhotoCallablePayload} from
   "../shared/generated/validators/upsertProgramPhotoInput";
 import {validateListProgramPhotosCallablePayload} from
   "../shared/generated/validators/listProgramPhotosInput";
+import {validateSignProgramPhotoUrlsCallablePayload} from
+  "../shared/generated/validators/signProgramPhotoUrlsInput";
+import {validateProgramPhotoUrlsCallableResponse} from
+  "../shared/generated/validators/programPhotoUrlsOutput";
 
 import {validateProgramPhotoCallableResponse} from
   "../shared/generated/validators/programPhotoOutput";
@@ -213,6 +221,51 @@ export async function listProgramPhotosHandler(
   }, "photos");
 }
 
+/**
+ * Signs read URLs for photos the phone already lists from programPhotos
+ * (manager and communications rules), and the cover when asked. Metadata is
+ * read directly; the URL is the one thing a phone cannot make, so this is the
+ * only server step left of listProgramPhotos. The server reads each photo
+ * itself and signs only this programme's own files; it never signs a path the
+ * phone names.
+ */
+export async function signProgramPhotoUrlsHandler(
+  request: CallableRequest<unknown>,
+  deps: ProgramAssetDeps = defaultProgramAssetDeps,
+): Promise<ProgramPhotoUrlsCallableResponse> {
+  const actorUid = requireAuth(request);
+  const data = validateCallableWithAjv<SignProgramPhotoUrlsCallablePayload>(
+    request, validateSignProgramPhotoUrlsCallablePayload);
+  const db = deps.firestore();
+  await deps.checkRateLimit(db, actorUid, "signProgramPhotoUrls",
+    {maxRequests: 120, windowMs: 60 * 1000});
+  const access = await requireProgramAccess({db, programId: data.programId,
+    actorUid, now: deps.now()});
+  requirePhotoAccess(access);
+  const organizerId = access.program.organizerId;
+  const snaps = await Promise.all(data.photoIds.map((photoId) =>
+    db.collection(PROGRAM_PHOTOS_COLLECTION)
+      .doc(programPhotoDocId(data.programId, photoId)).get()));
+  const photos = snaps.flatMap((snap) => {
+    const photo = snap.data() as ProgramPhotoDocument | undefined;
+    return photo && photo.programId === data.programId &&
+      photo.organizerId === organizerId ? [photo] : [];
+  });
+  const bucket = deps.storageBucket();
+  const urlsExpireAtMillis = deps.now().toMillis() + READ_URL_MILLIS;
+  const sign = (path: string | null | undefined) =>
+    signedReadUrl(bucket, path, urlsExpireAtMillis);
+  const urls = await Promise.all(photos.map(async (photo) =>
+    ({photoId: photo.photoId, url: await sign(photo.storagePath)})));
+  return requireValid(validateProgramPhotoUrlsCallableResponse, {
+    programId: data.programId,
+    urls: urls.flatMap(({photoId, url}) => url ? [{photoId, url}] : []),
+    coverUrl: data.includeCover ?
+      await sign(access.program.branding?.coverImagePath ?? null) : null,
+    urlsExpireAtMillis,
+  }, "photo urls");
+}
+
 const photoLimits = {timeoutSeconds: 60, maxInstances: 20};
 
 export const upsertProgramPhoto = onCall(
@@ -222,4 +275,8 @@ export const upsertProgramPhoto = onCall(
 export const listProgramPhotos = onCall(
   appCheckCallableOptionsWithLimits(photoLimits),
   (request) => listProgramPhotosHandler(request),
+);
+export const signProgramPhotoUrls = onCall(
+  appCheckCallableOptionsWithLimits(photoLimits),
+  (request) => signProgramPhotoUrlsHandler(request),
 );
