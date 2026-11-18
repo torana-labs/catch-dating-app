@@ -1,7 +1,7 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {MemoryRouter} from "react-router";
 import {afterEach, describe, expect, it, vi} from "vitest";
-import {marketingCaptures} from "../../app/marketingCaptures";
+import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {mumbaiLiveCatalog} from "../../stories/fixtures/homeCatalogs";
 import type {HomeCatalog} from "../home/homeTypes";
 import {CityFormatPage} from "./CityFormatPage";
@@ -10,6 +10,10 @@ import type {DiscoveryFormatKey} from "./discoveryTypes";
 
 vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent: vi.fn()}));
 afterEach(cleanup);
+
+const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-checked-in"].map((id) => [id, {
+  id, webPath: `/captures/${id}.png`, width: 980, height: 1924, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Find a plan", pages: [],
+}]));
 
 const show = (catalog: HomeCatalog, format: DiscoveryFormatKey, url = "/mumbai/run-clubs/") =>
   render(<MemoryRouter initialEntries={[url]}><CityFormatPage catalog={catalog} format={format} /></MemoryRouter>);
@@ -41,9 +45,9 @@ describe("City format page", {timeout: 20_000}, () => {
   });
 
   it("shows the board's phones: a guest checked in by the first-time guide, and the app's Explore by the WhatsApp form", () => {
-    render(<MemoryRouter initialEntries={["/mumbai/run-clubs/"]}><CityFormatPage captures={marketingCaptures} catalog={mumbaiDiscoveryCatalog} format="runClubs" /></MemoryRouter>);
-    expect(within(band("Joining a run club in Mumbai.")).getByRole("img", {name: marketingCaptures["guest-checked-in"].alt})).toBeTruthy();
-    expect(within(band("Get new plans on WhatsApp.")).getByRole("img", {name: marketingCaptures["guest-explore"].alt})).toBeTruthy();
+    render(<MemoryRouter initialEntries={["/mumbai/run-clubs/"]}><CityFormatPage captures={captures} catalog={mumbaiDiscoveryCatalog} format="runClubs" /></MemoryRouter>);
+    expect(within(band("Joining a run club in Mumbai.")).getByRole("img", {name: "Screen guest-checked-in"})).toBeTruthy();
+    expect(within(band("Get new plans on WhatsApp.")).getByRole("img", {name: "Screen guest-explore"})).toBeTruthy();
   });
 
   it("is the thin page below the bar: what is here so far and what else is on", () => {
