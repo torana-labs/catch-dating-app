@@ -24,7 +24,8 @@ const seed = (): Record<string, FakeData> => {
   const base = baseSeed();
   return {
     ...base,
-    "transportVendors/shree": {organizerId: "org-1", name: "Lantern Lane Travels",
+    "transportVendors/shree": {organizerId: "org-1",
+      name: "Lantern Lane Travels",
       contactName: "Mahesh", phoneE164: "+919999911111",
       programIds: ["program-1"], active: true},
     "transportTrips/trip-1": {programId: "program-1", organizerId: "org-1",
