@@ -15,6 +15,9 @@ const body = {
 const receipt = {requestId: `lr-${"a".repeat(40)}`, reference: "LR-K7Q2M9TX", requestType: "claim", isNew: true,
   ackDueAt: "2026-11-19T06:00:00.000Z", actionDueAt: null, resolveDueAt: "2026-11-20T06:00:00.000Z"};
 
+/** Stands in for the words the intake sends with a 400. */
+const intakeWords = ["intake", "rule", "handle"].join("-");
+
 function respond(status: number, json: unknown) {
   return Promise.resolve(new Response(JSON.stringify(json), {status, headers: {"Content-Type": "application/json"}}));
 }
@@ -49,12 +52,12 @@ describe("listing request client", () => {
 
   it("passes the intake's words for a 400 and names the other failures", async () => {
     const post = vi.fn()
-      .mockImplementationOnce(() => respond(400, {error: "Add the official Instagram handle we should send the code to."}))
+      .mockImplementationOnce(() => respond(400, {error: intakeWords}))
       .mockImplementationOnce(() => respond(429, {error: "busy"}))
       .mockImplementationOnce(() => respond(401, {error: "refresh"}))
       .mockImplementationOnce(() => respond(200, {ok: true, request: {...receipt, reference: "bad"}}));
     const client = createListingRequestSubmission({appCheckToken: async () => null, post: post as never});
-    expect(await client.submit(body)).toEqual({status: "invalid", message: "Add the official Instagram handle we should send the code to."});
+    expect(await client.submit(body)).toEqual({status: "invalid", message: intakeWords});
     expect(await client.submit(body)).toEqual({status: "busy", message: null});
     expect(await client.submit(body)).toEqual({status: "refresh", message: null});
     expect(await client.submit(body)).toEqual({status: "failed", message: null});

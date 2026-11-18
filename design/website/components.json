@@ -4833,6 +4833,43 @@
       "notes": "/listings/request/ (noindex, no analytics): the kit's flow with its step rail. Step 1 is a radiogroup of the eight fixed request types with their timelines; step 2 the type's fixed fields as boxed fields and choice chips, with the target prefilled from the listing link; step 3 the fixed declarations as checkboxes; then the reference and the next steps. Copy in content/listingRequest.ts."
     },
     {
+      "id": "listing_request_flow",
+      "kind": "flow",
+      "routeIds": [
+        "listing_request"
+      ],
+      "owner": "features/listingRequests/sections",
+      "source": "website/src/features/listingRequests/sections/ListingRequestSections.tsx",
+      "exportName": "ListingRequestView",
+      "css": [
+        "packages/web-ui/src/components/CatchRoot.module.css",
+        "packages/web-ui/src/components/CatchTopBar.module.css",
+        "packages/web-ui/src/components/CatchPageBody.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchText.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchChoiceTile.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchFormStepList.module.css",
+        "packages/web-ui/src/components/CatchStepList.module.css",
+        "packages/web-ui/src/components/CatchIcon.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "type",
+          "details",
+          "declarations",
+          "sent"
+        ]
+      },
+      "notes": "The form drawn from the listing request controller: the type menu, the type's fixed fields, the declarations, then the reference and next steps."
+    },
+    {
       "id": "route_listing_policies",
       "kind": "route",
       "routeIds": [
