@@ -188,6 +188,42 @@ test("an existing audience is found by name; no qualifying host deletes it",
     assert.equal(receipt?.excluded.optedOut, 1);
   });
 
+test("switched off, a list an earlier live run left is deleted once",
+  async () => {
+    const db = new FakeFirestore({
+      "adAudienceRuns/meta_active_hosts": {platformAudienceId:
+        "120000000000009", status: "replaced"},
+    });
+    const {calls, fetchImpl} = graph(() => ({body: {success: true}}));
+    const receipt = await runHostAudienceSync(deps(db, fetchImpl,
+      {mode: "off"}));
+    assert.deepEqual(calls.map((call) => call.method), ["DELETE"]);
+    assert.ok(calls[0].url.endsWith("/120000000000009"));
+    assert.equal(receipt?.status, "emptied");
+    assert.equal(receipt?.outcome, "switched_off");
+    assert.equal(receipt?.platformAudienceId, null);
+    calls.length = 0;
+    assert.equal(await runHostAudienceSync(deps(db, fetchImpl,
+      {mode: "off"})), null);
+    assert.deepEqual(calls, []);
+  });
+
+test("a host opted out by the organizer email is left out, though the " +
+  "account email would be uploaded", async () => {
+  const db = new FakeFirestore({
+    "organizerGrowthFacts/org-1": facts(now - day),
+    "organizers/org-1": owned("host-1", {email: "club@example.com"}),
+    "users/host-1": {email: "me@example.com"},
+    [`adMatchingOptOuts/${adMatchingOptOutId("email",
+      hashedEmail("club@example.com")!)}`]: {status: "active"},
+  });
+  const {calls, fetchImpl} = graph(() => ({body: {data: []}}));
+  const receipt = await runHostAudienceSync(deps(db, fetchImpl));
+  assert.equal(receipt?.members, 0);
+  assert.equal(receipt?.excluded.optedOut, 1);
+  assert.ok(calls.every((call) => !call.url.includes("usersreplace")));
+});
+
 test("a refused replace is recorded as failed with Meta's status", async () => {
   const db = new FakeFirestore(world());
   const {fetchImpl} = graph((call) => call.url.includes("usersreplace") ?

@@ -21,6 +21,7 @@ import {
 } from "../adConversions/worker";
 import {
   activeAdMatchingOptOutIds,
+  hostContactDigests,
   inAdMatchingOptOuts,
 } from "../adMatching/optOuts";
 import {
@@ -161,7 +162,9 @@ export function hostAudienceMembers(input: HostAudienceInput):
     const emailSha256 = hashedEmail(user.email) ??
       hashedEmail(organizer?.email);
     const phoneSha256 = hashedPhone(user.phoneNumber);
-    if (inAdMatchingOptOuts(input.optedOut, {phoneSha256, emailSha256})) {
+    if (inAdMatchingOptOuts(input.optedOut, {phoneSha256, emailSha256}) ||
+        hostContactDigests(user, organizer)
+          .some((digests) => inAdMatchingOptOuts(input.optedOut, digests))) {
       excluded.optedOut += 1;
       continue;
     }
@@ -273,16 +276,73 @@ export async function loadHostAudienceMembers(deps: HostAudienceDeps):
     roleAssignments, auth, optedOut, nowMillis: deps.now()});
 }
 
+const noneExcluded = (): Excluded => ({notOwned: 0, deleted: 0, staff: 0,
+  test: 0, restricted: 0, underAge: 0, optedOut: 0, noContact: 0});
+
+/**
+ * The off-mode run: when an earlier live run left an audience in Meta, delete
+ * it, so a list that is no longer kept current (and would miss later
+ * opt-outs) does not linger. Reads only the run receipt and sends nothing
+ * when there is no audience, as in dev and staging.
+ * @param {HostAudienceDeps} deps Dependencies.
+ * @return {Promise<AdAudienceRunDocument|null>} The receipt, or null.
+ */
+export async function retireHostAudience(deps: HostAudienceDeps):
+  Promise<AdAudienceRunDocument | null> {
+  const ref = deps.db.collection(AD_AUDIENCE_RUNS).doc(HOST_AUDIENCE_KEY);
+  const last = (await ref.get()).data() as AdAudienceRunDocument | undefined;
+  const audienceId = last?.platformAudienceId;
+  if (!audienceId) return null;
+  const startedAt = Timestamp.fromMillis(deps.now());
+  let status: AdAudienceRunDocument["status"] = "failed";
+  let outcome = "unexpected";
+  try {
+    let token: string;
+    try {
+      token = await deps.token();
+    } catch {
+      throw new MetaAudienceError("meta_credential_unavailable");
+    }
+    await deleteMetaAudience({token, fetch: deps.fetch}, audienceId);
+    status = "emptied";
+    outcome = "switched_off";
+  } catch (error) {
+    outcome = error instanceof MetaAudienceError ? error.code : "unexpected";
+  }
+  const finishedAt = Timestamp.fromMillis(deps.now());
+  const receipt: AdAudienceRunDocument = {
+    schemaVersion: 1,
+    audienceKey: HOST_AUDIENCE_KEY,
+    destination: "meta",
+    // A failed delete keeps the ID so the next daily run tries again.
+    platformAudienceId: status === "emptied" ? null : audienceId,
+    status,
+    outcome,
+    startedAt,
+    finishedAt,
+    candidates: 0,
+    members: 0,
+    uploaded: 0,
+    invalid: 0,
+    excluded: noneExcluded(),
+    updatedAt: finishedAt,
+  };
+  await ref.set(receipt);
+  logger.info("Host ad audience retired", {status, outcome});
+  return receipt;
+}
+
 /**
  * One daily run: rebuild the members and replace the Meta audience whole,
  * creating it when missing, or delete it when no one qualifies (a replace
- * needs at least one row). Inert when the mode is off.
+ * needs at least one row). When the mode is off, it only deletes an audience
+ * an earlier live run left behind.
  * @param {HostAudienceDeps} deps Dependencies.
  * @return {Promise<AdAudienceRunDocument|null>} The run receipt.
  */
 export async function runHostAudienceSync(deps: HostAudienceDeps):
   Promise<AdAudienceRunDocument | null> {
-  if (deps.mode !== "live") return null;
+  if (deps.mode !== "live") return retireHostAudience(deps);
   const startedAt = Timestamp.fromMillis(deps.now());
   const members = await loadHostAudienceMembers(deps);
   let audienceId: string | null = null;
@@ -348,11 +408,9 @@ export const syncMetaHostAudience = onSchedule({
   timeZone: "Asia/Kolkata",
   timeoutSeconds: 540,
 }, async () => {
-  const mode = audienceMode(adAudiencesMode.value().trim());
-  if (mode === "off") return;
   await runHostAudienceSync({
     db: admin.firestore(),
-    mode,
+    mode: audienceMode(adAudiencesMode.value().trim()),
     now: Date.now,
     token: () => readPinnedSecret(adConversionsMetaTokenVersion.value().trim()),
     authFacts: firebaseAuthFacts,

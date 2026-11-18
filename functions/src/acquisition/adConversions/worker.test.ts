@@ -185,6 +185,20 @@ test("an opted-out phone or email cancels the record before any send",
     }
   });
 
+test("an opt-out by the organizer email cancels a record carrying the " +
+  "account email", async () => {
+  const {db, docs} = fakeDb({...seed(),
+    "organizers/org-1": {ownership: {state: "claimed", ownerUserId: "host-1"},
+      email: "club@example.com"},
+    ...optOut("email", hashedEmail("club@example.com")!)});
+  const calls: string[] = [];
+  await runAdConversionWorker(deps(db, "live", calls));
+  assert.deepEqual(calls, []);
+  for (const r of records) {
+    assert.equal(status(docs, r.deliveryId).lastOutcome, "opted_out");
+  }
+});
+
 test("a removed opt-out no longer stops a send", async () => {
   const {db} = fakeDb({...seed(),
     ...optOut("phone", hashedPhone("+919876543210")!, "removed")});

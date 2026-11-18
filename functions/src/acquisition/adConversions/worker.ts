@@ -15,7 +15,11 @@ import {
   enqueueHostConversions,
   optedOutCancellation,
 } from "./deliveries";
-import {isAdMatchingOptedOut} from "../adMatching/optOuts";
+import {
+  anyAdMatchingOptedOut,
+  hostContactDigests,
+  isAdMatchingOptedOut,
+} from "../adMatching/optOuts";
 import {newHostConversions} from "./hostConversions";
 import {sendGoogle, sendMeta} from "./platforms";
 
@@ -55,10 +59,10 @@ export interface WorkerDeps {
 
 /**
  * Whether the record may still be sent: the owner's account exists and is
- * not deleted, the event is within the platforms' window, and neither the
- * record's phone or email nor its attached lead's is opted out of ad
- * matching. An opted-out record is dropped whole, never sent without the
- * opted-out key.
+ * not deleted, the event is within the platforms' window, and none of the
+ * record's keys, the host's current phone and emails, or its attached lead's
+ * keys is opted out of ad matching. An opted-out record is dropped whole,
+ * never sent without the opted-out key.
  * @param {WorkerDeps} deps Worker dependencies.
  * @param {Delivery} delivery Queue record.
  * @return {Promise<string|null>} A cancellation code, or null to send.
@@ -69,7 +73,10 @@ async function cancellation(deps: WorkerDeps, delivery: Delivery):
   const owner = (await deps.db.collection("users").doc(delivery.uid).get())
     .data();
   if (!owner || owner.deletedAt) return "account_deleted";
-  if (await isAdMatchingOptedOut(deps.db, delivery.matching)) {
+  const organizer = (await deps.db.collection("organizers")
+    .doc(delivery.organizerId).get()).data();
+  if (await anyAdMatchingOptedOut(deps.db,
+    [delivery.matching, ...hostContactDigests(owner, organizer)])) {
     return "opted_out";
   }
   if (delivery.metaLeadId) {

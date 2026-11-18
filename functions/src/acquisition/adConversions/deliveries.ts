@@ -12,7 +12,11 @@ import {
   hashedPhoneForMeta,
   hostConversionEventId,
 } from "./hostConversions";
-import {isAdMatchingOptedOut} from "../adMatching/optOuts";
+import {
+  anyAdMatchingOptedOut,
+  hostContactDigests,
+  isAdMatchingOptedOut,
+} from "../adMatching/optOuts";
 
 export const AD_CONVERSION_DELIVERIES = "adConversionDeliveries";
 export const MAX_DELIVERY_ATTEMPTS = 5;
@@ -99,10 +103,8 @@ export async function enqueueHostConversions(input: {
   if (!uid) return 0;
   const owner = (await input.db.collection("users").doc(uid).get()).data();
   // Checked once per enqueue and again by the worker before each send.
-  const optedOut = await isAdMatchingOptedOut(input.db, {
-    phoneSha256: hashedPhone(owner?.phoneNumber),
-    emailSha256: hashedEmail(owner?.email) ?? hashedEmail(organizer?.email),
-  });
+  const optedOut = await anyAdMatchingOptedOut(input.db,
+    hostContactDigests(owner, organizer));
   const metaLeadId = optedOut ? null :
     await matchingMetaLead(input.db, owner, organizer);
   let created = 0;

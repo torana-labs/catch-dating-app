@@ -78,6 +78,23 @@ export function adMatchingDigestsFromContact(contact: {
   };
 }
 
+/**
+ * Every identifier a host can be known by: the account's phone and email,
+ * and the organizer's own email. A host who opts out with any of them is
+ * opted out, whichever key a record or list row would carry.
+ * @param {object|undefined} owner Owner's user document.
+ * @param {object|undefined} organizer Organizer document.
+ * @return {AdMatchingDigests[]} Digest sets to check.
+ */
+export function hostContactDigests(owner: Record<string, unknown> | undefined,
+  organizer: Record<string, unknown> | undefined): AdMatchingDigests[] {
+  return [
+    {phoneSha256: hashedPhone(owner?.phoneNumber),
+      emailSha256: hashedEmail(owner?.email)},
+    {emailSha256: hashedEmail(organizer?.email)},
+  ];
+}
+
 const isActive = (data: Record<string, unknown> | undefined) =>
   data?.status === "active";
 
@@ -93,6 +110,20 @@ export async function isAdMatchingOptedOut(db: FirebaseFirestore.Firestore,
     const snap = await db.collection(AD_MATCHING_OPT_OUTS)
       .doc(key.optOutId).get();
     if (isActive(snap.data())) return true;
+  }
+  return false;
+}
+
+/**
+ * Whether any identifier in any of the digest sets is opted out.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {AdMatchingDigests[]} sets Digest sets.
+ * @return {Promise<boolean>} True when at least one is opted out.
+ */
+export async function anyAdMatchingOptedOut(db: FirebaseFirestore.Firestore,
+  sets: AdMatchingDigests[]): Promise<boolean> {
+  for (const digests of sets) {
+    if (await isAdMatchingOptedOut(db, digests)) return true;
   }
   return false;
 }
