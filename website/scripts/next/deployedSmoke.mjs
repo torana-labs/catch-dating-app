@@ -32,8 +32,11 @@ export function sharedCacheSeconds(cache) {
  */
 // A launching-soon city points to an open city when there is one (soonLead),
 // and otherwise says only that hosts are setting up (soonLeadAlone, #1721).
+// A live city with a thin week leads with the quiet copy, and one with no plans
+// in its window with liveNoPlansBody (#1969); release run 44257407492 failed a
+// healthy quiet /explore/ on the live lead alone.
 export const exploreLeads = Object.freeze([explorePageCopy.lead, explorePageCopy.soonLead.split("{liveCity}")[0],
-  explorePageCopy.soonLeadAlone]);
+  explorePageCopy.soonLeadAlone, explorePageCopy.quiet.lead, explorePageCopy.liveNoPlansBody]);
 export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch} = {}) {
   assert.match(base ?? "", /^https:\/\/(?:catchdates\.com|catch-dating-app-64e51--next-(?:candidate|release)-[a-z0-9-]+\.web\.app)$/u);
   assert.match(sourceSha ?? "", /^[a-f0-9]{40}$/u);
