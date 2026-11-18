@@ -28,23 +28,19 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'live_controller.g.dart';
 
-/// Whether tonight runs on this console: a night in one room. A night that
+/// Whether tonight runs on this console: a night in one room, seated by a
+/// saved layout or not (the Room view carries the seat map). A night that
 /// moves (stops on a route, pace groups, live tracking or a sweep at the
-/// end) keeps the movement console, whose checkpoints and sweep this one
-/// does not show, and so does a plan with a saved room layout, whose seat
-/// moves the room map still owns. A plan not read yet does not decide.
+/// end) runs on its run or crawl board instead. The plan is not needed to
+/// decide; [plan] stays for callers that pass it.
 bool hostLiveConsoleFits(Event event, {EventSuccessPlan? plan}) {
   final profile = EventSuccessActivityProfile.forFormat(event.eventFormat);
   final route = event.eventFormat.routePlan;
-  final seatsByLayout =
-      plan?.layoutId != null &&
-      plan?.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup;
   return profile.accountability != EventSuccessAccountability.sweep &&
       !event.itinerary.any((stop) => stop.location != null) &&
       !(route?.groupStrategy == RouteGroupStrategy.paceGroups &&
           (route?.paceGroups.isNotEmpty ?? false)) &&
-      route?.liveTrackingPolicy.enabled != true &&
-      !seatsByLayout;
+      route?.liveTrackingPolicy.enabled != true;
 }
 
 /// The live console, composed from listeners only: the plan, the roster,
