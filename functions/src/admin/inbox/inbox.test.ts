@@ -187,7 +187,7 @@ test("staff close a lead with what they replied, and it can come back", async ()
 test("staff close a host enquiry that is not a fit with a note, keep the intent, and can bring it back", async () => {
   const h = harness();
   const intent = {source: "meta_lead_ad", status: "needs_identity_review", fullName: "Meta Test Lead",
-    city: "mumbai", createdAt: "2026-11-18T10:00:00.000Z"};
+    city: "mumbai", createdAt: "2026-10-30T10:00:00.000Z"};
   h.db.write("salesInboundIntents/meta-1", intent);
   await h.sync("salesInboundIntent", "meta-1", intent);
   const update = (data: Record<string, unknown>) => adminUpdateInboxItemHandler(h.request({itemId: "enquiry-meta-1",
