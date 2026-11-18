@@ -28,7 +28,7 @@ approved these rules on 2026-11-17:
 | Decision | Rule |
 | --- | --- |
 | Browser transport | First-party Google tag (`gtag.js`) and Meta Pixel (`fbevents.js`) loaded on the Catch web origin after marketing consent. The October 2026 preview iframe transport was superseded and removed on 18 November 2026. GTM stays out. |
-| Consent | Browser tags need the website marketing choice. Server-side conversions and customer lists rely on the notice shown at checkout, account creation and Host setup, and on the privacy policy, with an ad-matching opt-out that stops both. |
+| Consent | Browser ad tags need the website marketing choice; the analytics choice loads Google Analytics alone, with ad signals denied. Server-side conversions and customer lists rely on the notice shown at checkout, account creation and Host setup, and on the privacy policy, with an ad-matching opt-out that stops both. |
 | Purchase value | The ticket amount the guest paid, in INR, from the admitted payment record. |
 | Ad policy | The post-event matching feature makes Catch a dating service under Meta's and Google's ad policies. Ads never mention matching until Meta's written permission and Google's dating certification are granted. |
 | Spend | Test budget and launch cities are set in the ad accounts, not in code. |
@@ -113,18 +113,24 @@ Built on 18 November 2026 in `website/src/analytics/adTags.ts`, which holds the
 four destination IDs above. `analytics.ts` calls it on every page lifecycle
 update and consent change; it is not injected into the host-only controller.
 
-- **What loads when.** `gtag.js` (GA4 and the Ads tag, on its own data layer
-  `catchTagLayer`) and `fbevents.js` load together, once, only under a current
-  version-5 marketing choice, on a public page (see
+- **What loads when.** Tags load once, only on a public page (see
   [Payload and attribution](#payload-and-attribution)) of the production site
-  (`brand.web.domain` and its `www` host). Essential and analytics-only choices
-  load no tag at all, and nothing loads on dev, staging or preview hosts. There
-  is no GTM.
-- **Consent.** Before either script runs, Consent Mode defaults deny all four
-  purposes, then the marketing choice grants `ad_storage`, `analytics_storage`
-  and `ad_user_data`. `ad_personalization` stays denied, as do Google signals
-  and ad personalisation signals. Meta gets `fbq('consent', 'grant')` before
-  `init`. Google cookies last 30 days and are `Secure`.
+  (`brand.web.domain` and its `www` host), under a current version-5 choice.
+  The analytics choice loads `gtag.js` (on its own data layer `catchTagLayer`)
+  with GA4 only. The marketing choice adds the Ads tag to it and loads
+  `fbevents.js`. Essential loads nothing, and nothing loads on dev, staging or
+  preview hosts. There is no GTM.
+- **Consent.** Before any script runs, Consent Mode defaults deny all four
+  purposes. The analytics choice grants `analytics_storage` only; the
+  marketing choice also grants `ad_storage` and `ad_user_data`.
+  `ad_personalization` stays denied, as do Google signals and ad
+  personalisation signals. Meta gets `fbq('consent', 'grant')` before `init`.
+  A downgrade to analytics denies the ad signals again, revokes the Pixel and
+  removes the ad cookies; withdrawing everything also removes the GA4 cookies.
+  Google cookies last 30 days and are `Secure`. Under analytics only, GA4
+  receives the page and booking-step events and `generate_lead` without any
+  contact data; the Ads conversion, `user_data` and every Pixel event need the
+  marketing choice.
 - **No automatic sends.** Both Google configs set `send_page_view: false`; the
   Pixel has `autoConfig` off and `disablePushState` set, so neither tag reports
   history changes, clicks or form fields by itself. Every send is an explicit
@@ -196,11 +202,11 @@ outcomes.
 
 | Contract event | GA4 name | Meta name | Google Ads outcome | Sent from | Authoritative source | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| `page_view` | `page_view` | `PageView` | No | Browser | Public page visit (`publicAdPage`); one per lifecycle visit; the first marketing choice starts the current page without replaying earlier pages. | Built (browser, marketing choice) |
+| `page_view` | `page_view` | `PageView` | No | Browser | Public page visit (`publicAdPage`); one per lifecycle visit; the first marketing choice starts the current page without replaying earlier pages. | Built (browser: GA4 under analytics, ad tags under marketing) |
 | `cta_click` | `cta_click` | `CatchCtaClick` | No | Browser | Existing shared CTA helper; only a same-origin, allowlisted destination. Label and raw URL stay local. | Contract only (no transport) |
 | `acquisition_start` | `acquisition_start` | `CatchAcquisitionStart` | No | Browser | First form interaction in member waitlist, host lead or host operating application; first explicit claim lookup or selection, or the first code, review or review-request action in the claim panel (once per claim page). | Contract only (no transport) |
-| `lead_accepted` | `generate_lead` | `Lead` | Secondary, organizer only (host website-lead action 7908216651) | Browser | A website lead form of a host kind accepted by `/api/join-waitlist` (`ok: true`), with the lead receipt `lead.leadId` as event ID (or a generated ID), and unchanged submission-time permission. City alerts and referrals are excluded. | Built (browser, marketing choice) |
-| `event_viewed` | `view_item` | `ViewContent` | No | Browser | Public event page rendered for a published, public event; parameters are the event ID, activity kind, the organiser's city and the Catch ticket price. | Built (browser, marketing choice) |
+| `lead_accepted` | `generate_lead` | `Lead` | Secondary, organizer only (host website-lead action 7908216651) | Browser | A website lead form of a host kind accepted by `/api/join-waitlist` (`ok: true`), with the lead receipt `lead.leadId` as event ID (or a generated ID), and unchanged submission-time permission. City alerts and referrals are excluded. | Built (browser: GA4 under analytics, ad tags under marketing) |
+| `event_viewed` | `view_item` | `ViewContent` | No | Browser | Public event page rendered for a published, public event; parameters are the event ID, activity kind, the organiser's city and the Catch ticket price. | Built (browser: GA4 under analytics, ad tags under marketing) |
 | `checkout_started` | `begin_checkout` | `InitiateCheckout` | Interim primary while purchase volume is low | Browser | Live checkout opened for a paid public event after the server created the order; value is ticket price times seats. | Built (browser, marketing choice); no Ads action yet |
 | `purchase` | `purchase` | `Purchase` | Primary, guest | Server, with browser twin | `finalizePublicPayment` admits a paid seat: positive INR amount, the `publicEventPayments` ID as event and transaction ID. Pending, failed, refunded and free outcomes are rejected. | Browser twin built (marketing choice, checkout opened in that browser); server unwired |
 | `free_registration` | `sign_up` (`method: event_rsvp`) | `CompleteRegistration` | No | Server, with browser twin | A free public registration is admitted. | Unwired |
