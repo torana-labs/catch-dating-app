@@ -11,7 +11,7 @@ test("buildOrganizerAdminSearchRepairPlan detects missing and stale search",
     const firestore = fakeFirestore({
       organizers: {
         "club-1": {
-          name: "AFTER FLY",
+          name: "MOON MOTH",
           location: "in-mp-indore",
           locationMarketId: "in-mp-indore",
           publicPage: {citySlug: "indore"},
@@ -74,7 +74,7 @@ test("applyOrganizerAdminSearchRepairPlan writes planned adminSearch patches",
   async () => {
     const firestore = fakeFirestore({
       organizers: {
-        "club-1": {name: "AFTER FLY", description: "Keep me"},
+        "club-1": {name: "MOON MOTH", description: "Keep me"},
         "club-2": {name: "Bandra Social Run"},
       },
     });
@@ -96,7 +96,7 @@ test("applyOrganizerAdminSearchRepairPlan writes planned adminSearch patches",
     });
 
     assert.deepEqual(firestore.data.organizers["club-1"], {
-      name: "AFTER FLY",
+      name: "MOON MOTH",
       description: "Keep me",
       adminSearch: {
         tokens: ["after", "fly"],

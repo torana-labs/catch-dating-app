@@ -32,7 +32,7 @@
       "media": {
         "kind": "excerpt",
         "card": {
-          "title": "Carter Road Runners",
+          "title": "Driftwood Bay Runners",
           "subtitle": "Run club · Bandra · 212 followers",
           "label": "Verified",
           "rows": [
@@ -72,7 +72,7 @@
         "kind": "excerpt",
         "card": {
           "title": "Reviews",
-          "subtitle": "Carter Road Runners",
+          "subtitle": "Driftwood Bay Runners",
           "rows": [
             {"title": "A review from a guest who booked", "detail": "Sunday Social Run", "tag": "Booked on {{brand.name}}"},
             {"title": "Your reply", "detail": "Shown under the review"}

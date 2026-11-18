@@ -8,7 +8,7 @@ const publicFormId = "organizer_branding_test_form";
 
 async function publicOrganizer(media: Record<string, unknown>) {
   const store = new AudienceTestStore({
-    "organizers/org-1": {name: "Saket Run Club", ...media},
+    "organizers/org-1": {name: "Neemwood Run Club", ...media},
     "organizerForms/form-1": {
       organizerId: "org-1", publicFormId, activeVersionId: "form-1_v1",
       publishedVersion: 1, status: "published", submittedResponseCount: 0,
@@ -43,7 +43,7 @@ test("public form prefers the Host profile logo", async () => {
     profileImageUrl: "https://example.com/legacy-logo.png",
     imageUrl: "https://example.com/gallery-cover.png",
   }), {
-    organizerId: "org-1", name: "Saket Run Club",
+    organizerId: "org-1", name: "Neemwood Run Club",
     logoUrl: "https://example.com/logo.png",
   });
 });
@@ -61,7 +61,7 @@ test("missing logos never fall back to gallery covers", async () => {
       logoPhoto: {url: "   "}, profileImageUrl,
       imageUrl: "https://example.com/gallery-cover.png",
     });
-    assert.equal(organizer.name, "Saket Run Club");
+    assert.equal(organizer.name, "Neemwood Run Club");
     assert.equal(organizer.logoUrl, null);
   }
 });

@@ -257,7 +257,7 @@ void main() {
       comment: 'Loved the pacing.',
       ownerResponse: ReviewOwnerResponse(
         hostUserId: 'host-1',
-        hostName: 'Afterfly',
+        hostName: 'Moonmoth',
         message: 'Thanks for joining us.',
         createdAt: DateTime(2026, 6),
         updatedAt: DateTime(2026, 6),
@@ -273,7 +273,7 @@ void main() {
       reviews: [review],
     );
 
-    expect(find.text('Host response · Afterfly'), findsOneWidget);
+    expect(find.text('Host response · Moonmoth'), findsOneWidget);
     expect(find.text('Thanks for joining us.'), findsOneWidget);
   });
 

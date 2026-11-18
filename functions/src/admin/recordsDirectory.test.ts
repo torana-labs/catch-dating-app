@@ -28,26 +28,26 @@ function seed(): FakeFirestore {
       claim: {state: "unclaimed", claimHref: null, lastClaimRequestId: null},
       ...fields,
     });
-  organizer("afterfly", {name: "Afterfly", publicCategoryLabel: "Social nights",
+  organizer("moonmoth", {name: "Moonmoth", publicCategoryLabel: "Social nights",
     area: "Bandra", createdAt: at("2026-10-31T08:00:00Z"),
     publicPage: {publishStatus: "published", indexStatus: "noindex",
-      canonicalPath: "/mumbai/afterfly"},
+      canonicalPath: "/mumbai/moonmoth"},
     provenance: {origin: "scraper"}});
   organizer("lantern", {name: "Lantern Lane Social",
     publicCategoryLabel: "Trivia", createdAt: at("2026-08-14T08:00:00Z"),
     hostName: "Meher", imageUrl: "https://example.com/lantern.jpg",
     claim: {state: "claimed", claimHref: null, lastClaimRequestId: null},
     ownership: {claimedAt: at("2026-08-20T08:00:00Z")}});
-  organizer("bandra", {name: "Bandra Runners", organizerType: "club",
+  organizer("bandra", {name: "Sandbar Runners", organizerType: "club",
     appVisibility: "hidden", createdAt: at("2026-10-02T08:00:00Z")});
-  organizer("indore", {name: "AFTER FLY", locationMarketId: "in-mp-indore",
+  organizer("indore", {name: "MOON MOTH", locationMarketId: "in-mp-indore",
     publicCategoryLabel: "Social nights", createdAt: at("2026-06-20T08:00:00Z"),
     claim: {state: "claimPending", claimHref: null,
       lastClaimRequestId: "claim-1"}});
   organizer("gone", {name: "Gone Club", status: "archived",
     createdAt: at("2026-01-01T08:00:00Z")});
 
-  db.write("organizerSalesAccounts/afterfly", {assignedOwnerUid: "riya",
+  db.write("organizerSalesAccounts/moonmoth", {assignedOwnerUid: "riya",
     nextAction: "Send the claim link"});
   db.write("organizerSalesAccounts/lantern", {assignedOwnerUid: "riya"});
   db.write("organizerSalesAccounts/bandra", {assignedOwnerUid: "dev"});
@@ -65,11 +65,11 @@ function seed(): FakeFirestore {
   event("past", {name: "First Trivia", startTime: at("2026-09-01T14:00:00Z")});
 
   const imported = (id: string, fields: Record<string, unknown>) =>
-    db.write(`externalEvents/${id}`, {eventId: id, canonicalHostId: "afterfly",
+    db.write(`externalEvents/${id}`, {eventId: id, canonicalHostId: "moonmoth",
       status: "active", publicationStatus: "public",
       discovery: {citySlug: "in-mh-mumbai"},
       externalSource: {platform: "luma"}, ...fields});
-  imported("takeoff", {title: "Takeoff: Run + Rave",
+  imported("nightfall", {title: "Nightfall: Run + Rave",
     startTime: at("2026-11-02T12:30:00Z")});
   imported("neon", {title: "Neon Night Run", publicationStatus: "draft",
     startTime: at("2026-11-15T15:30:00Z")});
@@ -78,20 +78,20 @@ function seed(): FakeFirestore {
   db.write("supplyIntakeRequests/req-1", {
     request: {kind: "nomination", submittedAt: "2026-10-28T16:11:00.000Z",
       submittedBy: {role: "associate", uid: "riya", partnerId: null},
-      seed: {name: "Afterfly", urls: ["https://luma.com/afterfly"]}},
+      seed: {name: "Moonmoth", urls: ["https://luma.com/moonmoth"]}},
     result: {eventCount: 3},
-    approval: {organizerId: "afterfly", approvedByUid: "suvrat",
+    approval: {organizerId: "moonmoth", approvedByUid: "suvrat",
       approvedAt: "2026-10-31T07:50:00.000Z"},
   });
   db.write("organizerClaimRequests/claim-1", {organizerId: "indore",
-    requesterName: "Arjun Bhagat", requesterRole: "manager",
+    requesterName: "Arjun Bhatia", requesterRole: "manager",
     status: "pending", createdAt: at("2026-10-30T08:00:00Z")});
   db.write("organizerGrowthFacts/lantern", {organizerId: "lantern",
     channel: "partner", nominator: {uid: "neha", role: "partner",
       nominatedAt: at("2026-08-01T08:00:00Z")},
     milestones: {firstPaidBookingAt: at("2026-08-25T10:00:00Z")}});
-  db.write("salesTasks/task-1", {taskId: "task-1", organizerId: "afterfly",
-    title: "Send Afterfly the claim link", ownerUid: "riya", status: "open",
+  db.write("salesTasks/task-1", {taskId: "task-1", organizerId: "moonmoth",
+    title: "Send Moonmoth the claim link", ownerUid: "riya", status: "open",
     dueAt: "2026-11-04T04:00:00.000Z"});
   return db;
 }
@@ -119,13 +119,13 @@ test("organizer directory counts every view, newest first", async () => {
   assert.equal(response.total, 4);
   assert.deepEqual(response.scan, {complete: true, scanned: 5});
   assert.deepEqual(response.rows.map((row) => row.organizerId),
-    ["afterfly", "bandra", "lantern", "indore"]);
-  const [afterfly] = response.rows;
-  assert.equal(afterfly.pageState, "hiddenFromSearch");
-  assert.equal(afterfly.kindLabel, "Social nights");
-  assert.equal(afterfly.cityLabel, "Mumbai");
-  assert.deepEqual(afterfly.salesOwner, {uid: "riya", name: "Riya Sharma"});
-  assert.equal(afterfly.upcomingEventCount, 2);
+    ["moonmoth", "bandra", "lantern", "indore"]);
+  const [moonmoth] = response.rows;
+  assert.equal(moonmoth.pageState, "hiddenFromSearch");
+  assert.equal(moonmoth.kindLabel, "Social nights");
+  assert.equal(moonmoth.cityLabel, "Mumbai");
+  assert.deepEqual(moonmoth.salesOwner, {uid: "riya", name: "Riya Sharma"});
+  assert.equal(moonmoth.upcomingEventCount, 2);
   const lantern = response.rows.find((row) => row.organizerId === "lantern");
   assert.equal(lantern?.claimedByName, "Meher");
   assert.equal(lantern?.upcomingEventCount, 2);
@@ -142,7 +142,7 @@ test("organizer directory filters and keeps other chips' counts", async () => {
   const mine = await adminListOrganizerDirectoryHandler(
     request({mine: true, citySlug: "in-mh-mumbai", limit: 1}), deps(db));
   assert.equal(mine.total, 2);
-  assert.deepEqual(mine.rows.map((row) => row.organizerId), ["afterfly"]);
+  assert.deepEqual(mine.rows.map((row) => row.organizerId), ["moonmoth"]);
   assert.equal(mine.nextCursor, "o:1");
   // The city chip counts as if no city were chosen.
   assert.deepEqual(mine.facets.cities.map((f) => f.count), [2]);
@@ -173,15 +173,15 @@ test("event directory joins Catch and imported events", async () => {
 
   assert.deepEqual(response.views, {upcoming: 4, past: 2, cancelled: 1});
   assert.deepEqual(response.rows.map((row) => [row.key, row.status]), [
-    ["imported:takeoff", "live"],
+    ["imported:nightfall", "live"],
     ["catch:trivia", "live"],
     ["imported:neon", "needsCheck"],
     ["catch:supper", "full"],
   ]);
-  const takeoff = response.rows[0];
-  assert.equal(takeoff.platform, "luma");
-  assert.equal(takeoff.organizerName, "Afterfly");
-  assert.equal(takeoff.bookedCount, null);
+  const nightfall = response.rows[0];
+  assert.equal(nightfall.platform, "luma");
+  assert.equal(nightfall.organizerName, "Moonmoth");
+  assert.equal(nightfall.bookedCount, null);
   assert.equal(response.rows[1].bookedCount, 26);
   assert.deepEqual(response.facets, {catch: 2, imported: 2, needsCheck: 1,
     thisWeek: 2, cities: [{value: "in-mh-mumbai", label: "Mumbai",
@@ -213,14 +213,14 @@ test("event directory narrows by source, check, week and search", async () => {
 
 test("organizer overview reads the journey from nomination on", async () => {
   const response = await adminGetOrganizerOverviewHandler(
-    request({organizerId: "afterfly"}), deps(seed()));
+    request({organizerId: "moonmoth"}), deps(seed()));
 
   assert.deepEqual(response.organizer.pageState, "hiddenFromSearch");
   assert.equal(response.organizer.hasImage, false);
   assert.deepEqual(response.salesOwner, {uid: "riya", name: "Riya Sharma"});
   assert.equal(response.nextAction, "Send the claim link");
   assert.deepEqual(response.nextTask, {taskId: "task-1",
-    title: "Send Afterfly the claim link",
+    title: "Send Moonmoth the claim link",
     dueAt: "2026-11-04T04:00:00.000Z", ownerName: "Riya Sharma"});
   assert.deepEqual(response.terms,
     {source: "unset", rateBasisPoints: null, capMinor: null});
@@ -228,7 +228,7 @@ test("organizer overview reads the journey from nomination on", async () => {
     {state: "notConnected", webhookVerified: false});
   assert.deepEqual(response.journey.map((step) =>
     [step.kind, step.actorName, step.detail]), [
-    ["nominated", "Riya Sharma", "https://luma.com/afterfly"],
+    ["nominated", "Riya Sharma", "https://luma.com/moonmoth"],
     ["listingBuilt", null, "3"],
     ["approved", "Suvrat", null],
     ["listed", null, null],
@@ -237,7 +237,7 @@ test("organizer overview reads the journey from nomination on", async () => {
   assert.equal(response.growth, null);
   assert.deepEqual(response.upcomingEvents.map((event) =>
     [event.key, event.status]),
-  [["imported:takeoff", "live"], ["imported:neon", "needsCheck"]]);
+  [["imported:nightfall", "live"], ["imported:neon", "needsCheck"]]);
   assert.equal(response.upcomingEventCount, 2);
 });
 
@@ -247,7 +247,7 @@ test("organizer overview shows a waiting claim and a host", async () => {
     request({organizerId: "indore"}), deps(db));
   assert.equal(indore.nextStep, "decideClaim");
   assert.deepEqual(indore.pendingClaim, {requestId: "claim-1",
-    requesterName: "Arjun Bhagat", requesterRole: "manager",
+    requesterName: "Arjun Bhatia", requesterRole: "manager",
     createdAt: "2026-10-30T08:00:00.000Z"});
   assert.deepEqual(indore.journey.map((step) => step.kind),
     ["listed", "claimRequested"]);

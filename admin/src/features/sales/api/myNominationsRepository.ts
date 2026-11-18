@@ -28,12 +28,12 @@ const sampleNow = Date.parse("2026-10-31T12:00:00.000Z");
 const at = (hours: number) => new Date(sampleNow - hours * 3_600_000).toISOString();
 
 export const sampleNominations: MyNomination[] = [
-  {itemId: "supply-sunday-table", type: "stuck", title: "Sunday Table", subtitle: "Instagram asked to sign in, so Catch could not read the page.",
+  {itemId: "supply-saffron-table", type: "stuck", title: "Saffron Table", subtitle: "Instagram asked to sign in, so Catch could not read the page.",
     city: "mumbai", state: {code: "needs_person", label: "Stuck: page needs sign-in", tone: "danger"}, status: "waiting",
     sentAt: at(4), updatedAt: at(4), doneAt: null},
-  {itemId: "supply-small-world", type: "listing", title: "Small World", subtitle: "https://smallworld.in", city: "mumbai",
+  {itemId: "supply-tiny-orbit", type: "listing", title: "Tiny Orbit", subtitle: "https://tinyorbit.example", city: "mumbai",
     state: {code: "ready", label: "Waiting for a review", tone: "warning"}, status: "waiting", sentAt: at(26), updatedAt: at(24), doneAt: null},
-  {itemId: "supply-afterfly", type: "listing", title: "Afterfly", subtitle: "https://luma.com/afterfly", city: "mumbai",
+  {itemId: "supply-moonmoth", type: "listing", title: "Moonmoth", subtitle: "https://luma.com/moonmoth", city: "mumbai",
     state: {code: "approved", label: "Published", tone: "success"}, status: "done", sentAt: at(74), updatedAt: at(3), doneAt: at(3)},
 ];
 

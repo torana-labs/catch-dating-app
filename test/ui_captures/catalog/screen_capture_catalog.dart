@@ -901,7 +901,7 @@ const _matchChatEmptyOtherProfile = PublicProfile(
   gender: Gender.woman,
   city: 'Mumbai',
   occupation: 'Producer',
-  company: 'Sunday Table',
+  company: 'Saffron Table',
 );
 final _matchChatEmptyEvent = buildEvent(
   id: 'event-match-chat-empty',

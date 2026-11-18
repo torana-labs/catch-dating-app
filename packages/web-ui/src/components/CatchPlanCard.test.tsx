@@ -34,7 +34,7 @@ describe("CatchPlanCard", () => {
   });
 
   it("with a date, takes the canvas card: the date square beside the title, the label read but not shown", () => {
-    render(<CatchPlanCard date={{weekday: "Sun", day: "23", month: "Nov"}} detail="Carter Road Runners · Bandra" format="run" href="/events/run/"
+    render(<CatchPlanCard date={{weekday: "Sun", day: "23", month: "Nov"}} detail="Driftwood Bay Runners · Bandra" format="run" href="/events/run/"
       label="Run clubs · Sun 6:30 AM" posterLabel="Run club" price="Free" availability="18 left" title="Carter Road Social Run" />);
     const card = screen.getByRole("link", {name: /Carter Road Social Run/});
     expect(card.dataset.layout).toBe("kit");

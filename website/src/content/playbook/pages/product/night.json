@@ -43,7 +43,7 @@
           "label": "Run clubs",
           "accent": "coral",
           "title": "Sunday Social Run",
-          "subtitle": "Carter Road Runners · Carter Road, Bandra",
+          "subtitle": "Driftwood Bay Runners · Carter Road, Bandra",
           "body": "People are moving, so phones stay in pockets. {{brand.name}} does its work before the start and after the finish.",
           "list": [
             {"time": "Thursday", "title": "Pace groups, set before Sunday", "body": "Runners give their pace before the run. {{brand.name}} builds pods at a similar pace, and you can move anyone before the run."},

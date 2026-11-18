@@ -11,7 +11,7 @@ import 'support/golden_pump.dart';
 final _portrait = FileImage(File('test/goldens/fixtures/portrait.jpg'));
 final _organizer = Organizer(
   id: 'entity-material-organizer',
-  name: 'Afterfly Social',
+  name: 'Moonmoth Social',
   description: 'Bombay moves together.',
   location: 'in-mh-mumbai',
   area: 'Bandra',

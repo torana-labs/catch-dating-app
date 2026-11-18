@@ -47,17 +47,17 @@ function httpsCode(code: string, match: RegExp) {
 
 test("owner link URLs must be public https addresses", () => {
   for (const url of [
-    "https://instagram.com/afterfly.in",
-    "https://www.district.in/events/afterfly?utm_source=bio",
+    "https://instagram.com/moonmoth.example",
+    "https://www.district.in/events/moonmoth?utm_source=bio",
     "https://chat.whatsapp.com/abc123",
     "https://xn--bcher-kva.example.org/",
   ]) {
     assert.equal(ownerLinkUrlProblem(url), null, url);
   }
   for (const [url, problem] of [
-    ["http://instagram.com/afterfly.in", "not_https"],
+    ["http://instagram.com/moonmoth.example", "not_https"],
     ["javascript:alert(1)", "not_https"],
-    ["instagram.com/afterfly.in", "not_https"],
+    ["instagram.com/moonmoth.example", "not_https"],
     ["https://user:secret@instagram.com/", "credentials"],
     ["https://instagram.com:8443/", "port"],
     ["https://localhost/", "not_public_host"],

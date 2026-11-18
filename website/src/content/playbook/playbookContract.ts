@@ -387,7 +387,7 @@ export type PlaybookLeadForm = NonNullable<PlaybookSectionOf<"cta">["leadForm"]>
  * (content/playbook/pages/<section>/index.ts): the JSON file beside the
  * index, and its lazy import. The index key is the page's content key: the
  * route id for a single page, or the route id and its parameters joined
- * with `/` for a page of a family (`story_detail/carter-road-runners`).
+ * with `/` for a page of a family (`story_detail/driftwood-bay-runners`).
  */
 export interface PlaybookPageEntry {
   readonly file: string;

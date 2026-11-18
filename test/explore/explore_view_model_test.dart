@@ -994,7 +994,7 @@ void main() {
     test('ExploreExternalEventRowState derives provider-free row labels', () {
       final event = _externalEvent(
         id: 'external-row',
-        title: 'Afterfly Social',
+        title: 'Moonmoth Social',
         citySlug: 'mumbai',
         startTime: DateTime(2026, 7, 2, 18),
       );
@@ -2346,8 +2346,8 @@ ExternalEvent _externalEvent({
 }) {
   return ExternalEvent(
     id: id,
-    canonicalHostId: 'host-afterfly',
-    compatibilityOrganizerId: 'club-afterfly',
+    canonicalHostId: 'host-moonmoth',
+    compatibilityOrganizerId: 'club-moonmoth',
     title: title,
     description: 'A reviewed external event.',
     startTime: startTime,

@@ -264,7 +264,7 @@ function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
       const chosen = controller.hostMatches.find((match) => match.organizerId === hostId) ?? null;
       picker = <CatchSection title="Which host is it?" dividers="none">
         <CatchField recipe="input" title="Search organizers" value={controller.hostQuery} onChanged={controller.setHostQuery}
-          inputHint="Harbor Social Club" />
+          inputHint="Quayside Supper Club" />
         {controller.hostMatches.map((match) => <CatchIndexRow key={match.organizerId} title={match.name}
           subtitle={match.city ?? undefined} selected={match.organizerId === hostId} onTap={() => setHostId(match.organizerId)} />)}
       </CatchSection>;

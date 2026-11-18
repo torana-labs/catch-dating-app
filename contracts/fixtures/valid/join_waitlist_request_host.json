@@ -3,13 +3,13 @@
   "email": "host@example.com",
   "city": "Mumbai",
   "role": "host",
-  "instagram": "https://instagram.com/sundaytable",
+  "instagram": "https://instagram.com/saffrontable",
   "website": "",
   "hostApplication": {
-    "organizationName": "Sunday Table",
+    "organizationName": "Saffron Table",
     "organizationType": "Community",
     "operatingCity": "Mumbai",
-    "communityLink": "https://instagram.com/sundaytable",
+    "communityLink": "https://instagram.com/saffrontable",
     "formats": [
       "Dinner",
       "Singles mixer"

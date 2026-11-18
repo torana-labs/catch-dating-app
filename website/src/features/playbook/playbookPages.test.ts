@@ -131,7 +131,7 @@ describe("playbook route resolution", () => {
     expect(resolvePlaybookPage("/stories/nobody/")).toBeNull();
     expect(resolvePlaybookPage("/mumbai/run-clubs/")).toBeNull();
     expect(resolvePlaybookPage("/new-to-mumbai/")).toBeNull();
-    expect(resolvePlaybookPage("/organizers/afterfly/")).toBeNull();
+    expect(resolvePlaybookPage("/organizers/moonmoth/")).toBeNull();
   });
 
   it("reserves every top-level segment against the market city slugs", () => {

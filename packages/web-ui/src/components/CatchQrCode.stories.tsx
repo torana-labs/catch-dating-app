@@ -9,7 +9,7 @@ import {CatchLegacyText} from "./CatchLegacyText";
 const meta = {
   title: "Web UI/CatchQrCode",
   component: CatchQrCode,
-  args: {label: "QR code for carterroadrunners.club", value: "https://carterroadrunners.club"},
+  args: {label: "QR code for driftwoodbayrunners.example", value: "https://driftwoodbayrunners.example"},
 } satisfies Meta<typeof CatchQrCode>;
 
 export default meta;
@@ -29,12 +29,12 @@ export const Sizes: Story = {
         <CatchGap crossAxisAlignment="end" direction="horizontal" size="section" wrap>
           {(["s", "m", "l"] as const).map((size) => (
             <CatchGap key={size} size="inline">
-              <CatchQrCode label={`QR code for carterroadrunners.club, size ${size}`} size={size} value="https://carterroadrunners.club" />
+              <CatchQrCode label={`QR code for driftwoodbayrunners.example, size ${size}`} size={size} value="https://driftwoodbayrunners.example" />
               {caption(`Size ${size}`)}
             </CatchGap>
           ))}
           <CatchGap size="inline">
-            <CatchQrCode label="QR code for a long event link" value="https://catchdates.com/events/carter-road-runners/half-marathon-training-15k-sunday-23-november?utm_source=poster" />
+            <CatchQrCode label="QR code for a long event link" value="https://catchdates.com/events/driftwood-bay-runners/half-marathon-training-15k-sunday-23-november?utm_source=poster" />
             {caption("Long link")}
           </CatchGap>
           <CatchGap size="inline">

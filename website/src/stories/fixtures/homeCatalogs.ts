@@ -14,7 +14,7 @@ const ist = (day: number, hour: number, minute = 0) =>
 
 type Seed = [id: string, format: HomeFormat, title: string, host: string, where: string, start: string, price: string, left: number | null, photo?: string];
 const organizerIds: Record<string, string> = {
-  "The Quizzicals": "quizzicals", "Khar Table": "khar-table", "Carter Road Runners": "carter-road-runners",
+  "The Quizzicals": "quizzicals", "Khar Table": "khar-table", "Driftwood Bay Runners": "driftwood-bay-runners",
   "Night Shift Socials": "night-shift-socials", "Dink and Drink": "dink-and-drink", "Evening Club": "evening-club",
   "Night Shift Runners": "night-shift-runners", "Bandra Boardroom": "bandra-boardroom",
 };
@@ -23,7 +23,7 @@ const activity: Record<HomeFormat, string> = {run: "socialRun", dinner: "dinner"
 const seeds: Seed[] = [
   ["thursday-pub-quiz", "games", "Thursday Evening Pub Quiz", "The Quizzicals", "Khar Social", ist(0, 19, 30), "Free", 6],
   ["strangers-supper", "dinner", "Strangers’ Supper", "Khar Table", "Khar West", ist(0, 20, 30), "₹1,800", 2, "/assets/marketing/home-dinner.jpg"],
-  ["carter-road-run", "run", "Carter Road Social Run", "Carter Road Runners", "Carter Road, Bandra", ist(1, 6, 30), "Free", 9, "/assets/events/social-run-music-hero-960.jpg"],
+  ["carter-road-run", "run", "Carter Road Social Run", "Driftwood Bay Runners", "Carter Road, Bandra", ist(1, 6, 30), "Free", 9, "/assets/events/social-run-music-hero-960.jpg"],
   ["bandra-pub-crawl", "nightsOut", "Friday Bandra Pub Crawl", "Night Shift Socials", "Four stops in Bandra", ist(1, 19, 30), "₹999", 11],
   ["pickleball-social", "courts", "Pickleball Social", "Dink and Drink", "Andheri West", ist(2, 17), "₹450", 8],
   ["saturday-game-night", "games", "Saturday Game Night", "Evening Club", "Harbour Room, Bandra West", ist(2, 18, 30), "₹600", 6],
@@ -66,7 +66,7 @@ export const mumbaiPlansFixture: HomeCityPlans = {
   organizers: [
     organizer("quizzicals", "The Quizzicals", "Trivia nights and socials", ["games"], 74, "claimed", "/organizers/quizzicals/"),
     organizer("khar-table", "Khar Table", "Supper clubs for strangers", ["dinner"], 58, "verified", "/organizers/khar-table/"),
-    organizer("carter-road-runners", "Carter Road Runners", "Sunday social runs", ["run"], 212, "verified", "/organizers/carter-road-runners/"),
+    organizer("driftwood-bay-runners", "Driftwood Bay Runners", "Sunday social runs", ["run"], 212, "verified", "/organizers/driftwood-bay-runners/"),
     organizer("night-shift-socials", "Night Shift Socials", "Pub crawls and late runs", ["nightsOut", "run"], 140, "claimed", "/organizers/night-shift-socials/"),
     organizer("dink-and-drink", "Dink and Drink", "Pickleball socials", ["courts"], 96, "claimed", "/organizers/dink-and-drink/"),
     organizer("bandra-book-swap", "Bandra Book Swap", "Monthly book swaps", [], 0, "unclaimed", "/organizers/bandra-book-swap/"),
@@ -82,7 +82,7 @@ const empty = (citySlug: string, cityLabel: string, marketStatus: HomeCityPlans[
 export const punePlansFixture: HomeCityPlans = {
   ...empty("pune", "Pune", "planned"),
   organizers: [
-    {...organizer("koregaon-park-runners", "Koregaon Park Runners", "Saturday social runs", ["run"], 0, "claimed", null)},
+    {...organizer("jacaranda-park-runners", "Jacaranda Park Runners", "Saturday social runs", ["run"], 0, "claimed", null)},
     {...organizer("pune-board-gamers", "Pune Board Gamers", "Board game nights", ["games", "dinner"], 0, "claimed", null)},
   ],
 };

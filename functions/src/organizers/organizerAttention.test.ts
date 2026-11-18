@@ -1170,7 +1170,7 @@ function event(overrides: {
 
 function organizer(): OrganizerDocument {
   return {
-    name: "Saket Run Club",
+    name: "Neemwood Run Club",
     hostUserId: "owner-1",
     ownerUserId: "owner-1",
     hostUserIds: ["owner-1", "manager-1"],

@@ -34,11 +34,11 @@ const planFormats: Readonly<Record<string, readonly DiscoveryFormatKey[]>> = {
 const organizerFormats: Readonly<Record<string, readonly DiscoveryFormatKey[]>> = {
   "quizzicals": ["quizNights"],
   "khar-table": ["supper"],
-  "carter-road-runners": ["runClubs"],
+  "driftwood-bay-runners": ["runClubs"],
   "night-shift-socials": ["nightlife", "runClubs"],
   "dink-and-drink": ["racketSports", "pickleball"],
   "bandra-book-swap": ["books"],
-  "koregaon-park-runners": ["runClubs"],
+  "jacaranda-park-runners": ["runClubs"],
   "pune-board-gamers": [],
 };
 

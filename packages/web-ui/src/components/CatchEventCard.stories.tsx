@@ -45,7 +45,7 @@ export const Contract: Story = {
           <State label="compact">
             <CatchRail itemWidth={240} label="This week" wrap="always">
               <CatchEventCard format="games" formatLabel="Games and quizzes" href="#" place="The Quizzicals · Khar Social" price="Free · 6 left" title="Thursday Evening Pub Quiz" variant="compact" when="Thu 7:30 PM" />
-              <CatchEventCard format="run" formatLabel="Run clubs" href="#" place="Carter Road Runners · Carter Road, Bandra" price="Free · 9 left" title="Carter Road Social Run" variant="compact" when="Fri 6:30 AM" />
+              <CatchEventCard format="run" formatLabel="Run clubs" href="#" place="Driftwood Bay Runners · Carter Road, Bandra" price="Free · 9 left" title="Carter Road Social Run" variant="compact" when="Fri 6:30 AM" />
               <CatchEventCard format="dinner" href="#" imageUrl={photo} people={people} place="Khar Table · Khar West" price="₹1,800 · 2 left" title="Strangers’ Supper" variant="compact" when="Thu 8:30 PM" />
             </CatchRail>
           </State>

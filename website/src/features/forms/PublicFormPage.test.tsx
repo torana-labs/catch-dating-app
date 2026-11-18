@@ -39,7 +39,7 @@ function renderForm(question = city, answer?: string,
   const blurQuestion = vi.fn();
   const section = {title: "Your city", questions: [question]};
   usePublicFormController.mockReturnValue({
-    stage: "form", form: {organizer: {name: "Saket Run Club"}, cityOptions, definition: {
+    stage: "form", form: {organizer: {name: "Neemwood Run Club"}, cityOptions, definition: {
       title: "RSVP Escape — demo", appearance: {preset: "editorial"},
       sections: [section],
     }}, activeSection: section, visibleSections: [section], sectionIndex: 0,
@@ -83,7 +83,7 @@ describe("public form choices", () => {
       kind: "phone", options: [], canonicalFieldId: "phoneNumber"} as PublicFormQuestion;
     const section = {sectionId: "details", title: "Your details", questions: [question]};
     usePublicFormController.mockReturnValue({
-      stage: "form", form: {organizer: {name: "Saket Run Club"}, definition: {
+      stage: "form", form: {organizer: {name: "Neemwood Run Club"}, definition: {
         title: "RSVP Escape", appearance: {preset: "editorial"},
         identityPolicy: "phoneVerified", sections: [section],
       }}, activeSection: section, visibleSections: [section], sectionIndex: 0,

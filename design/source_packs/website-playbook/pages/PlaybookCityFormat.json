@@ -12,7 +12,7 @@
     "options": [
       {
         "key": "full",
-        "label": "Mumbai run clubs · indexed"
+        "label": "Run clubs in Mumbai · indexed"
       },
       {
         "key": "thin",
@@ -97,7 +97,7 @@
             "day": "Sun",
             "num": "23",
             "t": "Carter Road Social Run",
-            "s": "Carter Road Runners · Bandra",
+            "s": "Driftwood Bay Runners · Bandra",
             "price": "Free",
             "left": "18 going"
           },
@@ -178,10 +178,10 @@
         "cols": 4,
         "items": [
           {
-            "initials": "CR",
+            "initials": "DB",
             "tone": "m-coral",
             "ink": "#3B1F14",
-            "t": "Carter Road Runners",
+            "t": "Driftwood Bay Runners",
             "s": "Bandra · Sundays · ★ [4.9]",
             "next": "Next: Sun 23 · Social run"
           },

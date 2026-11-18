@@ -27,15 +27,15 @@ function nomination(requestId: string, overrides: Record<string, unknown> = {}) 
   return {
     schemaVersion: 1, requestId,
     request: {schemaVersion: 1, requestId, kind: "nomination", market: "mumbai",
-      seed: {name: "Afterfly", urls: ["https://luma.com/afterfly"], notes: null, categories: ["social"]},
+      seed: {name: "Moonmoth", urls: ["https://luma.com/moonmoth"], notes: null, categories: ["social"]},
       submittedBy: {role: "associate", uid: "riya", partnerId: null}, submittedAt: "2026-10-28T16:11:00.000Z",
       origin: {kind: "message_nomination", id: "msg-1"}},
     status: "completed", attempts: 1, leaseUntil: null,
     result: {runId: "run-1", listingId: "listing-1", listingWorkItemId: "wi-1", eventWorkItemIds: [], listingContentHash: "a".repeat(64),
       gaps: ["image_rights"], researchNeeded: false, eventCount: 3, stoppedReason: null, artifactHash: "b".repeat(64), snapshotRefs: [],
       captureReceipts: [
-        {requestedUrl: "https://luma.com/afterfly", finalUrl: "https://luma.com/afterfly", outcome: "fetched", capturedAt: "2026-10-28T16:12:00.000Z"},
-        {requestedUrl: "https://instagram.com/afterfly.run", finalUrl: null, outcome: "login_wall", capturedAt: "2026-10-28T16:12:30.000Z"},
+        {requestedUrl: "https://luma.com/moonmoth", finalUrl: "https://luma.com/moonmoth", outcome: "fetched", capturedAt: "2026-10-28T16:12:00.000Z"},
+        {requestedUrl: "https://instagram.com/moonmoth.run", finalUrl: null, outcome: "login_wall", capturedAt: "2026-10-28T16:12:30.000Z"},
       ]},
     failure: null, approval: null, createdAt: "2026-10-28T16:11:00.000Z", updatedAt: "2026-10-28T16:13:00.000Z",
     ...overrides,
@@ -49,7 +49,7 @@ function harness() {
   const request = (data: unknown, token: Record<string, unknown> = {support: true}, uid = "dev") =>
     ({auth: {uid, token}, data, rawRequest: {headers: {}}}) as unknown as CallableRequest<unknown>;
   const sync = (kind: Parameters<typeof syncInboxSource>[1], id: string, data: Record<string, unknown> | undefined, at = now) =>
-    syncInboxSource(firestore, kind, id, data, at, async () => ({organizerName: "Bhag Club", organizerCity: "in-mh-mumbai", personName: "Meher"}));
+    syncInboxSource(firestore, kind, id, data, at, async () => ({organizerName: "Brindle Club", organizerCity: "in-mh-mumbai", personName: "Meher"}));
   const list = (data: Record<string, unknown>, token?: Record<string, unknown>, uid?: string) =>
     adminListInboxItemsHandler(request({scope: "waiting", type: null, city: null, limit: 25, cursor: null, ...data}, token, uid), deps);
   return {db, firestore, deps, request, sync, list};
@@ -90,18 +90,18 @@ test("a failed request is stuck, an approved one is done, an event refresh is no
 });
 
 test("claims, enquiries, access and imported events project to their own types", () => {
-  const claim = projectInboxSource("organizerClaimRequest", "claim-1", {requestId: "claim-1", organizerId: "bhag", requesterUid: "arjun",
-    requesterName: "Arjun Bhagat", requesterRole: "manager", proofUrls: ["https://instagram.com/bhag.club"], status: "pending",
+  const claim = projectInboxSource("organizerClaimRequest", "claim-1", {requestId: "claim-1", organizerId: "brindle", requesterUid: "arjun",
+    requesterName: "Arjun Bhatia", requesterRole: "manager", proofUrls: ["https://instagram.com/brindleclub"], status: "pending",
     createdAt: {_seconds: 1761838320, _nanoseconds: 0}, updatedAt: {_seconds: 1761838320, _nanoseconds: 0},
     recommendation: {decision: "approve", byUid: "dev", at: "2026-10-30T09:00:00.000Z", note: "Phone verified."}},
-  {organizerName: "Bhag Club", organizerCity: "in-mh-mumbai"});
-  assert.equal(claim?.title, "Bhag Club");
-  assert.equal(claim?.subtitle, "Claim by Arjun Bhagat, manager");
+  {organizerName: "Brindle Club", organizerCity: "in-mh-mumbai"});
+  assert.equal(claim?.title, "Brindle Club");
+  assert.equal(claim?.subtitle, "Claim by Arjun Bhatia, manager");
   assert.equal(claim?.city, "mumbai");
   assert.deepEqual(claim?.state, {code: "recommended", label: "Recommended: approve", tone: "success"});
   assert.deepEqual(claim?.journey.map((step) => step.stepId), ["asked", "recommended"]);
   const enquiry = projectInboxSource("salesInboundIntent", "intent-1", {source: "website", status: "needs_identity_review",
-    fullName: "Harbor Social Club", city: "mumbai", createdAt: "2026-10-30T10:00:00.000Z"});
+    fullName: "Quayside Supper Club", city: "mumbai", createdAt: "2026-10-30T10:00:00.000Z"});
   assert.equal(enquiry?.type, "enquiry");
   assert.equal(enquiry?.cameFrom, "Host website");
   const weddings = projectInboxSource("salesInboundIntent", "intent-w", {source: "website",
@@ -120,11 +120,11 @@ test("claims, enquiries, access and imported events project to their own types",
   const event = projectInboxSource("externalEvent", "evt-1", {title: "Rooftop Singles Mixer", status: "active", publicationStatus: "draft",
     startTime: "2026-11-14T14:30:00.000Z", externalSource: {platform: "luma", eventUrl: "https://luma.com/rooftop"},
     discovery: {citySlug: "mumbai", manualApprovalRequired: true}, review: {decidedAt: null}, createdAt: "2026-10-29T10:00:00.000Z"},
-  {organizerName: "Afterfly"});
+  {organizerName: "Moonmoth"});
   assert.equal(event?.type, "event");
   assert.equal(event?.cameFrom, "Luma");
   assert.equal(event?.state.code, "needs_review");
-  assert.match(event?.subtitle ?? "", /^Afterfly · 14 Nov/u);
+  assert.match(event?.subtitle ?? "", /^Moonmoth · 14 Nov/u);
 });
 
 function websiteLead(kind: string, overrides: Record<string, unknown> = {}) {
@@ -185,20 +185,20 @@ test("staff close a lead with what they replied, and it can come back", async ()
 });
 
 const listingEvent = (overrides: Partial<ListingEventFacts> = {}): ListingEventFacts => ({
-  intakeRequestId: "req-1", approvedAt: "2026-10-29T10:00:00.000Z", organizerName: "Afterfly", citySlug: "mumbai",
-  eventWorkItemId: "wi-event-1", eventId: "ext-afterfly-mixer", title: "Singles mixer night", startAt: "2026-11-07T14:00:00.000Z",
-  platform: "luma", sourceUrl: "https://lu.ma/afterfly-mixer", planState: "ready", blockers: [],
+  intakeRequestId: "req-1", approvedAt: "2026-10-29T10:00:00.000Z", organizerName: "Moonmoth", citySlug: "mumbai",
+  eventWorkItemId: "wi-event-1", eventId: "ext-moonmoth-mixer", title: "Singles mixer night", startAt: "2026-11-07T14:00:00.000Z",
+  platform: "luma", sourceUrl: "https://lu.ma/moonmoth-mixer", planState: "ready", blockers: [],
   findings: [{check: "dating_framing", field: "title", match: "Singles"}], ...overrides,
 });
 
 test("an unpublished event of a listing waits in the inbox under the id its document will use", () => {
   const waiting = projectListingEvent(listingEvent());
-  assert.equal(waiting.itemId, "event-ext-afterfly-mixer");
+  assert.equal(waiting.itemId, "event-ext-moonmoth-mixer");
   assert.equal(waiting.lifecycle, "open");
   assert.deepEqual(waiting.state, {code: "needs_review", label: "1 check left", tone: "warning"});
   assert.deepEqual(waiting.listingEvent, {intakeRequestId: "req-1", eventWorkItemId: "wi-event-1"});
   assert.equal(waiting.cameFrom, "Luma");
-  assert.match(waiting.subtitle ?? "", /^Afterfly · 7 Nov/u);
+  assert.match(waiting.subtitle ?? "", /^Moonmoth · 7 Nov/u);
   assert.match(waiting.journey[1].detail ?? "", /title says "Singles"/u);
 
   const ready = projectListingEvent(listingEvent({findings: []}));
@@ -214,7 +214,7 @@ test("a dismissal holds across source writes until someone reopens it, and only 
   const h = harness();
   const write = () => syncInboxProjection(h.firestore, projectListingEvent(listingEvent()), now);
   await write();
-  const update = (data: Record<string, unknown>, itemId = "event-ext-afterfly-mixer") => adminUpdateInboxItemHandler(h.request({itemId,
+  const update = (data: Record<string, unknown>, itemId = "event-ext-moonmoth-mixer") => adminUpdateInboxItemHandler(h.request({itemId,
     assigneeUid: null, snoozedUntil: null, note: null, ...data}), h.deps);
   await assert.rejects(update({action: "dismiss"}), /Say why/);
   await assert.rejects(update({action: "reopen"}), /Only a dismissed item/);
@@ -224,7 +224,7 @@ test("a dismissal holds across source writes until someone reopens it, and only 
   assert.deepEqual(dismissed.item.listingEvent, {intakeRequestId: "req-1", eventWorkItemId: "wi-event-1"});
 
   await write();
-  assert.equal((h.db.read("adminInboxItems/event-ext-afterfly-mixer") as {status: string}).status, "done", "a later sync leaves it closed");
+  assert.equal((h.db.read("adminInboxItems/event-ext-moonmoth-mixer") as {status: string}).status, "done", "a later sync leaves it closed");
   const reopened = await update({action: "reopen"});
   assert.deepEqual([reopened.item.status, reopened.item.state.code, reopened.item.doneAt], ["waiting", "needs_review", null]);
 
@@ -236,10 +236,10 @@ test("a website instant draft waits for a WhatsApp reply from a person, who dism
   const h = harness();
   const draft = (overrides: Record<string, unknown> = {}) => nomination("draft-1", {
     request: {...nomination("draft-1").request, kind: "self_submission", seed: {name: null,
-      urls: ["https://lu.ma/afterfly"], notes: null, categories: []},
+      urls: ["https://lu.ma/moonmoth"], notes: null, categories: []},
     submittedBy: {role: "organizer", uid: null, partnerId: null}, origin: {kind: "web_instant_draft", id: "web-1"}},
     instantDraft: {schemaVersion: 1, draftId: "draft-1", accessTokenHash: "c".repeat(64), requestKind: "event_link",
-      entry: "event_page_tool", link: {url: "https://lu.ma/afterfly", provider: "luma", support: "instant", reason: null},
+      entry: "event_page_tool", link: {url: "https://lu.ma/moonmoth", provider: "luma", support: "instant", reason: null},
       whatsapp: {phone: "+919000000001", consentVersion: "instant-draft-whatsapp-v1", consentedAt: "2026-10-28T16:11:00.000Z",
         purpose: "instant_draft_follow_up", verifiedByUid: "submitter-1"}, followUp: {channel: "whatsapp", mode: "staff_reply"},
       outcome: null},

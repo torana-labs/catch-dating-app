@@ -41,7 +41,7 @@ test("a signed Instagram message claims the listing end to end",
     const app = initializeApp({projectId: "demo-catch-claims"}, uid);
     const db = getEmulatorFirestore(app);
     const provider = new FakeInstagramProvider({
-      [ownerSender]: "carterroadrunners",
+      [ownerSender]: "driftwoodbayrunners",
       [otherSender]: "someoneelse",
     });
     const deps: InstagramClaimMessageDeps = {
@@ -61,7 +61,7 @@ test("a signed Instagram message claims the listing end to end",
         (messages) => processInstagramClaimMessages(messages, deps));
     try {
       await db.doc(`organizers/${organizerId}`).set({
-        name: "Carter Road Runners", instagramHandle: "@CarterRoadRunners",
+        name: "Driftwood Bay Runners", instagramHandle: "@DriftwoodBayRunners",
         ownership: {state: "programmatic"},
         claim: {state: "unclaimed", claimHref: null, lastClaimRequestId: null},
         provenance: {origin: "import"}, publicSources: [],
@@ -99,7 +99,7 @@ test("a signed Instagram message claims the listing end to end",
       const attempt = (await db.doc(
         `organizerClaimVerifications/${started.attemptId}`).get()).data();
       assert.equal(attempt?.status, "verified");
-      assert.equal(attempt?.evidence.observedIdentity, "carterroadrunners");
+      assert.equal(attempt?.evidence.observedIdentity, "driftwoodbayrunners");
       assert.deepEqual(provider.replies.map((reply) => reply.recipientId),
         [otherSender, ownerSender]);
 

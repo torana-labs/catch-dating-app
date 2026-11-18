@@ -14,7 +14,7 @@ describe("useEventPageController", () => {
 
   it("finds an imported event by its id in the external list", async () => {
     const {wrapper} = createQueryHarness();
-    const eventId = "ext-afterfly-202503151800-takeoff-run-rave-e99b5e2138";
+    const eventId = "ext-moonmoth-202503151800-nightfall-run-rave-e99b5e2138";
     const {result} = renderHook(() => useEventPageController("imported", eventId), {wrapper});
     await waitFor(() => expect(result.current.loadState).toBe("ready"));
     expect(result.current.record).toMatchObject({source: "imported", event: {eventId}});

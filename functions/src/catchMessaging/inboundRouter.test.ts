@@ -66,7 +66,7 @@ function setup({nominator = true, limited = false} = {}) {
 
 test("a nominator's links become credited nominations and an acknowledgement", async () => {
   const t = setup();
-  const message = receipt("https://www.instagram.com/afterfly.in?igsh=abc\nlu.ma/calendar/bandra-runs Pune crowd");
+  const message = receipt("https://www.instagram.com/moonmoth.example?igsh=abc\nlu.ma/calendar/bandra-runs Pune crowd");
   assert.equal(await t.route(message), "nomination");
   const stored = t.requests();
   assert.equal(stored.length, 2);
@@ -77,7 +77,7 @@ test("a nominator's links become credited nominations and an acknowledgement", a
   assert.equal(t.replies.length, 1);
   assert.equal(t.replies[0].kind, "nomination_queued");
   assert.equal(t.replies[0].sourceEventId, message.eventId);
-  assert.match(t.replies[0].body, /Queued 2 organizers for a Catch listing: @afterfly\.in, luma\.com\/calendar\/bandra-runs/u);
+  assert.match(t.replies[0].body, /Queued 2 organizers for a Catch listing: @moonmoth\.in, luma\.com\/calendar\/bandra-runs/u);
   // A redelivery queues nothing new.
   await t.route({...message});
   assert.equal(t.requests().length, 2);
@@ -85,7 +85,7 @@ test("a nominator's links become credited nominations and an acknowledgement", a
 
 test("links with a question get a 1-or-2 question; 1 nominates the original message", async () => {
   const t = setup();
-  const question = receipt("is this a good one? @afterfly.in");
+  const question = receipt("is this a good one? @moonmoth.example");
   assert.equal(await t.route(question), "clarify");
   assert.equal(t.requests().length, 0);
   assert.equal(t.replies[0].kind, "clarification_question");
@@ -94,13 +94,13 @@ test("links with a question get a 1-or-2 question; 1 nominates the original mess
   assert.equal(await t.route(receipt("1")), "clarification_answer");
   assert.equal(t.store.records.has(`${CATCH_CLARIFICATIONS}/${ENDPOINT}`), false);
   assert.deepEqual(t.requests().map((row) => [row.request.seed.urls, row.request.origin.id]),
-    [[["https://instagram.com/afterfly.in"], question.eventId]]);
+    [[["https://instagram.com/moonmoth.example"], question.eventId]]);
   assert.equal(t.replies[1].kind, "nomination_queued");
 });
 
 test("2 turns an unclear message into a question for the team", async () => {
   const t = setup();
-  await t.route(receipt("can you check @afterfly.in for me?"));
+  await t.route(receipt("can you check @moonmoth.example for me?"));
   assert.equal(await t.route(receipt("2")), "clarification_answer");
   assert.equal(t.requests().length, 0);
   assert.deepEqual(t.replies.map((reply) => reply.kind), ["clarification_question", "support_acknowledged"]);
@@ -110,25 +110,25 @@ test("support messages, and anyone who is not a nominator, get no automatic repl
   const nominator = setup();
   assert.equal(await nominator.route(receipt("when do payouts arrive")), "support");
   const stranger = setup({nominator: false});
-  assert.equal(await stranger.route(receipt("@afterfly.in")), "support");
-  assert.equal(await stranger.route(receipt("nominate @afterfly.in")), "support");
+  assert.equal(await stranger.route(receipt("@moonmoth.example")), "support");
+  assert.equal(await stranger.route(receipt("nominate @moonmoth.example")), "support");
   assert.deepEqual([nominator.replies.length, stranger.replies.length, stranger.requests().length], [0, 0, 0]);
 });
 
 test("explicit nominations without links, Linktree-only links and rate limits are answered", async () => {
   const t = setup();
   assert.equal(await t.route(receipt("nominate the run club from yesterday")), "nomination_without_links");
-  await t.route(receipt("https://linktr.ee/afterfly"));
+  await t.route(receipt("https://linktr.ee/moonmoth"));
   assert.match(t.replies[1].body, /can't read Linktree or Beacons pages/u);
   const limited = setup({limited: true});
-  await limited.route(receipt("@afterfly.in"));
+  await limited.route(receipt("@moonmoth.example"));
   assert.deepEqual([limited.replies[0].kind, limited.requests().length], ["nomination_rate_limited", 0]);
 });
 
 test("STOP, truncated text and non-text messages are not routed", async () => {
   const t = setup();
   assert.equal(await t.route(receipt("STOP")), "ignored");
-  assert.equal(await t.route(receipt("@afterfly.in", {textTruncated: true})), "ignored");
+  assert.equal(await t.route(receipt("@moonmoth.example", {textTruncated: true})), "ignored");
   assert.equal(await t.route(receipt(null, {messageType: "image"})), "ignored");
   assert.equal(t.replies.length, 0);
 });

@@ -254,7 +254,7 @@ a{color:#141114}a:hover{color:#5A5450}
       <div style="display: flex; flex-direction: column; gap: 18px">
         <span class="eyebrow" style="color: #F08AA0">How a night works</span>
         <h2 class="dsp h2" style="color: #F6EFE6">Come on your own. Leave knowing a few more people.</h2>
-        <p class="lead" style="color: #BDB3A7; max-width: 520px">Hosts plan the first ten minutes so you don’t have to. Here’s a Sunday run with Carter Road Runners.</p>
+        <p class="lead" style="color: #BDB3A7; max-width: 520px">Hosts plan the first ten minutes so you don’t have to. Here’s a Sunday run with Driftwood Bay Runners.</p>
         <div style="display: flex; flex-direction: column; margin-top: 12px; border-bottom: 1px solid rgba(246,239,230,0.14)">
           <sc-for list="{{steps}}" as="st" hint-placeholder-count="3">
             <button type="button" class="gstep" onClick="{{st.pick}}" aria-expanded="{{st.on}}">
@@ -442,7 +442,7 @@ class Component extends DCLogic {
     return [
       { f: "games", title: "Thursday Evening Pub Quiz", host: "The Quizzicals", where: "Khar Social", when: "Thu 7:30 PM", price: "Free", left: "6 left", photo: "", short: "Quiz night", glyph: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01" },
       { f: "dinner", title: "Strangers’ Supper", host: "Khar Table", where: "Khar West", when: "Thu 8:30 PM", price: "₹1,800", left: "2 left", photo: "/_blob/409d3ee3e6896b80188944189323718b" },
-      { f: "run", title: "Carter Road Social Run", host: "Carter Road Runners", where: "Carter Road, Bandra", when: "Fri 6:30 AM", price: "Free", left: "9 left", photo: "/_blob/8294b5d46800331739b8ee58199a7d53" },
+      { f: "run", title: "Carter Road Social Run", host: "Driftwood Bay Runners", where: "Carter Road, Bandra", when: "Fri 6:30 AM", price: "Free", left: "9 left", photo: "/_blob/8294b5d46800331739b8ee58199a7d53" },
       { f: "crawl", title: "Friday Bandra Pub Crawl", host: "Night Shift Socials", where: "Four stops in Bandra", when: "Fri 7:30 PM", price: "₹999", left: "11 left", photo: "", short: "Pub crawl", glyph: "M5 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM19 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM7 19h6a3 3 0 0 0 0-6h-2a3 3 0 0 1 0-6h6" },
       { f: "courts", title: "Pickleball Social", host: "Dink and Drink", where: "Andheri West", when: "Sat 5:00 PM", price: "₹450", left: "8 left", photo: "/_blob/9cac328026e387b37fc5fab2457553c6" },
       { f: "games", title: "Saturday Game Night", host: "Evening Club", where: "Harbour Room, Bandra West", when: "Sat 6:30 PM", price: "₹600", left: "6 left", photo: "", short: "Game night", glyph: "M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8.5 8.5h.01M15.5 8.5h.01M12 12h.01M8.5 15.5h.01M15.5 15.5h.01" },
@@ -457,14 +457,14 @@ class Component extends DCLogic {
     return {
       mumbai: [
         { id: "evening", name: "Evening Club", what: "Trivia nights and socials", fans: 74, i: "EC", tone: "#F5C451", claimed: true, next: "Sat 6:30 PM · Saturday Game Night" },
-        { id: "carter", name: "Carter Road Runners", what: "Sunday social runs", fans: 212, i: "CR", tone: "#F07A55", claimed: true, next: "Fri 6:30 AM · Carter Road Social Run" },
+        { id: "carter", name: "Driftwood Bay Runners", what: "Sunday social runs", fans: 212, i: "DB", tone: "#F07A55", claimed: true, next: "Fri 6:30 AM · Carter Road Social Run" },
         { id: "khar", name: "Khar Table", what: "Supper clubs for strangers", fans: 58, i: "KT", tone: "#F08AA0", claimed: true, next: "Thu 8:30 PM · Strangers’ Supper" },
         { id: "dink", name: "Dink and Drink", what: "Pickleball socials", fans: 96, i: "DD", tone: "#5CCB9F", claimed: true, next: "Sat 5:00 PM · Pickleball Social" },
         { id: "night", name: "Night Shift Socials", what: "Pub crawls and late runs", fans: 140, i: "NS", tone: "#E58AC8", claimed: true, next: "Fri 7:30 PM · Friday Bandra Pub Crawl" },
         { id: "swap", name: "Bandra Book Swap", what: "Monthly book swaps", fans: 0, i: "BB", tone: "#E9E7E1", claimed: false, next: "First Sunday of the month · listed from their Instagram" }
       ],
       pune: [
-        { id: "kp", name: "Koregaon Park Runners", what: "Saturday social runs", fans: 0, i: "KP", tone: "#F07A55", claimed: true, soon: true },
+        { id: "kp", name: "Jacaranda Park Runners", what: "Saturday social runs", fans: 0, i: "JP", tone: "#F07A55", claimed: true, soon: true },
         { id: "pbg", name: "Pune Board Gamers", what: "Board game nights", fans: 0, i: "PB", tone: "#F5C451", claimed: true, soon: true }
       ],
       bengaluru: [

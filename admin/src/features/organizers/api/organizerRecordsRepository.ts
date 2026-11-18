@@ -38,7 +38,7 @@ export function loadOrganizerOverview(
 export async function refreshOrganizerEvents(input: AdminRefreshOrganizerEventsCallablePayload):
 Promise<AdminRefreshOrganizerEventsCallableResponse> {
   if (dataMode() === "sample") {
-    return {requestId: `refresh-sample-${input.organizerId}`, created: true, status: "queued", urls: ["https://lu.ma/afterfly"]};
+    return {requestId: `refresh-sample-${input.organizerId}`, created: true, status: "queued", urls: ["https://lu.ma/moonmoth"]};
   }
   // The validators load on first call, not in the organizers chunk.
   const {validateAdminCallableRequest, validateAdminCallableResponse} =

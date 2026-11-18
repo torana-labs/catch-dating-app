@@ -58,10 +58,10 @@ export function sampleMarketplace(payload: AdminGetMarketplaceCallablePayload):
       weekStart: String(weekStart), bookings: Number(bookings),
       partial: index === all.length - 1})),
     goingQuiet: [
-      {organizerId: "sample-harbor", name: "Harbor Social Club",
+      {organizerId: "sample-harbor", name: "Quayside Supper Club",
         marketId: "mumbai", daysSinceLastEvent: 36, eventsPerMonthBefore: 4,
         salesOwnerUid: "sample-riya", salesOwnerName: "Riya Sharma"},
-      {organizerId: "sample-after-fly-indore", name: "AFTER FLY",
+      {organizerId: "sample-moon-moth-indore", name: "MOON MOTH",
         marketId: "indore", daysSinceLastEvent: 41, eventsPerMonthBefore: 2.3,
         salesOwnerUid: "sample-karan", salesOwnerName: "Karan Mehta"}]};
 }
