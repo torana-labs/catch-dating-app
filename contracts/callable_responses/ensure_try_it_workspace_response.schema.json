@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/ensure_try_it_workspace_response.schema.json",
+  "title": "EnsureTryItWorkspaceCallableResponse",
+  "description": "Response of workspace.ensure. result.created says whether this call made the workspace; an existing workspace is returned unchanged.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["commandId", "status", "previewHash", "summary", "effects", "result", "next", "receiptId"],
+  "properties": {
+    "commandId": {"const": "workspace.ensure"},
+    "status": {"type": "string", "enum": ["previewed", "applied", "replayed"]},
+    "previewHash": {"$ref": "../shared/command_envelope.schema.json#/definitions/previewHash"},
+    "summary": {"$ref": "../shared/command_envelope.schema.json#/definitions/summary"},
+    "effects": {"type": "array", "maxItems": 8, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/effect"}},
+    "next": {"type": "array", "maxItems": 8, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/next"}},
+    "receiptId": {"type": ["string", "null"], "pattern": "^[a-z][A-Za-z0-9]{0,63}_[a-f0-9]{64}$", "description": "The commandReceipts document id of an applied command; null for a preview."},
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["organizerId", "organizerName", "marketId", "exists", "created", "publishStatus", "expiresAt"],
+      "properties": {
+        "organizerId": {"type": "string", "pattern": "^[A-Za-z0-9]{20}$"},
+        "organizerName": {"type": "string", "minLength": 1, "maxLength": 120},
+        "marketId": {"$ref": "../shared/event_common.schema.json#/definitions/marketId"},
+        "exists": {"type": "boolean", "description": "Whether the workspace exists after this call (false only for a preview of a new one)."},
+        "created": {"type": "boolean"},
+        "publishStatus": {"type": "string", "enum": ["draft", "published"]},
+        "expiresAt": {"type": ["string", "null"], "format": "date-time",
+          "description": "When an untouched workspace is removed; null once it is kept."}
+      }
+    }
+  }
+}

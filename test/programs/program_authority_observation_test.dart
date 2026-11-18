@@ -32,13 +32,13 @@ const _manager = {
   'hotels': [],
   'vehicleClasses': [],
 };
-ProgramArrivalsRoster _roster(String identity) => ProgramArrivalsRoster(
+ProgramTransportPlan _roster(String identity) => ProgramTransportPlan(
   programId: 'p',
   pickupPointId: identity,
   accessExpiresAt: null,
   generatedAt: DateTime(2026),
-  rows: const [],
-  vehicleClasses: const [],
+  groups: const [],
+  unassigned: const [],
 );
 
 void main() {
@@ -52,14 +52,14 @@ void main() {
   testWidgets(
     'a learned authority change removes a displayed roster until a fresh projection arrives',
     (tester) async {
-      final fresh = Completer<ProgramArrivalsRoster>();
+      final fresh = Completer<ProgramTransportPlan>();
       var calls = 0;
       final container = ProviderContainer(
         retry: (_, _) => null,
         overrides: [
           uidProvider.overrideWithValue(const AsyncData('account')),
           programReadSnapshotStoreProvider.overrideWithValue(store),
-          programArrivalsRosterProvider('p', 'station').overrideWith((
+          programTransportPlanProvider('p', 'station').overrideWith((
             ref,
           ) async {
             calls++;
@@ -75,7 +75,7 @@ void main() {
             home: Consumer(
               builder: (context, ref, _) => CatchAsyncBoundary(
                 value: ref.watch(
-                  programArrivalsRosterViewProvider('p', 'station'),
+                  programTransportPlanViewProvider('p', 'station'),
                 ),
                 retainDataOn: const {},
                 loadingBuilder: (_) => const Text('Refreshing'),

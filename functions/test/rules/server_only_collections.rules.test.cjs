@@ -56,6 +56,7 @@ const SERVER_ONLY = [
   "organizerPolicyGapReviewDecisions",
   "programRoomBlocks",
   "programStays",
+  "tryItWorkspaces",
   "walkthroughAvailability",
   "walkthroughBookings",
   "walkthroughSlotHolds",

@@ -4000,6 +4000,9 @@ service cloud.firestore {
     match /programStays/{privateDocument=**} {
       allow read, write: if false;
     }
+    match /tryItWorkspaces/{privateDocument=**} {
+      allow read, write: if false;
+    }
     match /walkthroughAvailability/{privateDocument=**} {
       allow read, write: if false;
     }

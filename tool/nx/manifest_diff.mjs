@@ -14,7 +14,7 @@ export const manifestFile = "tool/tools_manifest.json";
 // changed; a field outside this list selects every lane until it is added here.
 export const knownEntryFields = new Set(["id", "category", "path", "command", "safety", "status", "description",
   "checks", "impactPaths", "ciRequirements", "role", "rules", "alsoEnforces", "alsoCheckIds", "checkSafety", "baseline",
-  "platforms"]);
+  "platforms", "runbook", "retiredOn", "reason", "lastCommit"]);
 const bookkeepingKeys = new Set(["version", "updated"]);
 
 /** JSON with object keys sorted at every level, so key order and whitespace never count as a change. */

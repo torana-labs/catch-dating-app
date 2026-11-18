@@ -56,6 +56,31 @@ should be repairable from edge/source documents.
 | HTTP Function | External web/client POST endpoint. | CORS, validation, rate limiting, server writes. |
 | Server/Admin Only | No client write surface. | Firestore rules deny client writes. |
 
+## Product commands
+
+`contracts/commands/catalog.json` lists the commands that the website try-it
+tools, Catch Host, the `catch` CLI and later WhatsApp call (owner decision,
+18 Nov 2026; issue #2058). Each surface is a thin client of one callable;
+a website demo is the same command run in the visitor's own try-it
+workspace, never a separate demo path. Every command:
+
+- takes the shared envelope (`contracts/shared/command_envelope.schema.json`):
+  `mode` (`preview` or `apply`), a client `idempotencyKey`, the calling
+  `surface`, an optional `confirm`, and a closed `input` small enough for an
+  AI caller to fill;
+- answers with `status`, a `previewHash`, a plain-language `summary`, the
+  `effects` written or proposed, `next` commands and the `receiptId`;
+- writes nothing durable on preview; on apply it recomputes, refuses a
+  `confirm` whose preview changed, and records its response in
+  `commandReceipts` (`functions/src/commands/envelope.ts`), so a retry with the
+  same key replays and the same key with another request is refused;
+- declares an effect class. `messages-guests` and `moves-money` need a
+  matching `confirm`.
+
+`functions/src/commands/catalog.test.ts` keeps the catalog, the schemas and the
+Functions exports in step. The first command is `workspace.ensure`
+(`ensureTryItWorkspace`, below).
+
 ## Rehearsal completion summary
 
 The completion transaction alone stamps `eventRehearsalMilestones/{organizerId}`
@@ -436,6 +461,8 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `adminManageFoundingHostOffers` | Admin callable (owner) | Admin Settings → Payments (UI pending; catalog action `finance.manage-founding-host-offers`, control plane until it has one) | `foundingHostOffers/{marketId}`, `publicFoundingHostOffers/{marketId}`, admin audit log | Founding-host offer (owner decision 16 Nov 2026). `read` lists every opened city; `replace` opens a city (`expectedRevision: 0`) or changes its cap (owner decided 50; 1 to 1000, never below places taken) and optional deadline (`endsAtMillis`, null for none) against the reviewed revision, with a reason. Places taken never change. Rewrites the public counter in the same transaction. |
 | `requestInstantDraft`, `getInstantDraft` | Callables (App Check; request needs a signed-in caller with a verified phone) | Website event-page-from-a-link tool and demo request | `supplyIntakeRequests/{draftId}` (`web_instant_draft` origin, private `instantDraft` state), `rateLimits`; `getInstantDraft` may save the draft through `approveListing` in draft mode (`organizers`, `organizerIntakeCurationDecisions`, `organizerIntakeReviewDecisions`, `organizerGrowthFacts`, `adminAuditLogs`) | Owner decisions 16 Nov 2026. The draft is private, hidden, noindex and unclaimed until the submitter claims it; nothing publishes before the claim. The city is chosen, given or inferred from the imported events; otherwise the poll returns `needs_city` with the open markets. Staff follow up on WhatsApp from the Admin Inbox. The tool reads from its own 300-page monthly allowance. |
 | `expireInstantDrafts` | Schedule, daily 04:23 IST | Backend | Deletes `organizers` drafts, releases `publicRouteReservations`, deletes `organizerIntakeReviewDecisions` and `organizerGrowthFacts`, marks `organizerIntakeCurationDecisions` superseded, sets `supplyIntakeRequests.instantDraft` expired, writes `adminAuditLogs` | Removes an instant draft nobody claimed 30 days after it was saved. Claimed, owned or published organizers are never touched. Bounded to 25 per run; idempotent. |
+| `ensureTryItWorkspace` | Callable (App Check; a signed-in caller whose phone Firebase verified) | Command `workspace.ensure` (`contracts/commands/catalog.json`): website try-it phone step, Catch Host, `catch` CLI | `organizers`, `organizerTeamMemberships`, `hostProfiles` seed and `publicRouteReservations` through `stageOwnedOrganizerCreate` (the `createOrganizer` path); `tryItWorkspaces/{uid}`; `commandReceipts`; `rateLimits` | Owner decisions 18 Nov 2026. A phone-verified visitor gets one private, unpublished organizer they own from the start, which every try-it tool writes into and Catch Host shows on sign-in. A caller who already owns one organizer gets it, kept; several are refused (`multiple_organizers`). Preview writes nothing; apply replays per caller and idempotency key, and refuses a confirm whose preview changed. |
+| `expireTryItWorkspaces` | Schedule, daily 04:41 IST | Backend | Deletes the workspace `organizers` record, its owner `organizerTeamMemberships` edge and `organizerGrowthFacts`, releases `publicRouteReservations`, sets `tryItWorkspaces/{uid}` expired, writes `adminAuditLogs` | Removes a try-it workspace nobody used for 30 days after its last command. A published workspace, one with an event or a second team member, or one its account no longer owns is kept and never read again. Bounded to 25 per run; idempotent. |
 | `onInstantDraftOrganizerPublished` | Firestore trigger | `organizers/{organizerId}` update | `externalEvents`, `externalEventPublicationReceipts` | When the claimed owner publishes an instant-draft page, its imported events publish through the same path as `adminPublishListingEvents`, with the same automated checks; an event that fails one waits for staff. Receipts are keyed per request, so a redelivery replays. |
 | `onFoundingHostOrganizerWritten`, `reconcileFoundingHostPlacesDaily` | Firestore trigger on `organizers/{organizerId}` (not retried); schedule daily 04:25, India time | An organizer gaining an owner (`createOrganizer`, or a listing claim approved or verified) | `foundingHostPlaces/{organizerId}`, `foundingHostOwnerPlaces/{sha256(JSON.stringify([ownerUserId, marketId]))}`, `foundingHostOffers/{marketId}.takenCount`, `publicFoundingHostOffers/{marketId}`, `commercialTerms/org_<sha256(organizerId)>`, `commercialTermsRevisions/{termsId}_r{n}` | One transaction per organizer: if its city's offer opened before it gained an owner, the deadline had not passed at that moment, places are left and its trial has not started (no first event or paid booking in `organizerGrowthFacts`), it takes place `takenCount + 1`, the counter and the public projection move with it, and its override's `trial.days` becomes 90 (other keys kept; an override already at 90 or more is left alone) as a new terms revision by `system:foundingHostOffer`. One place per person per city (owner decision 16 Nov 2026): the person is the organizer's canonical owner (`ownerUserId`, else legacy `hostUserId`, as `organizerOwnerUserId` reads it), and the grant reads and creates that owner's `foundingHostOwnerPlaces` guard in the same transaction, so their other organizer pages in the city (`ownerHoldsPlace`), even ones granted at the same moment, keep the standard trial. An ownership transfer leaves the place with its organizer and revokes nothing. The place record makes retries no-ops. Sold out, closed or not new: nothing is written and the standard trial applies. The daily run grants places the trigger missed for organizers whose growth facts record `claimedAt` in the last three days, oldest first, through the same transaction and the same per-owner rule. |
 | `adminManageNominatorCredits` | Admin callable (owner) | Admin Growth → Nominators | `nominatorCredits`, admin audit log | Approves all of one nominator's owed credit only at or above the minimum payout (less rolls over), then records it paid with partner payouts. |
@@ -908,7 +935,7 @@ collections by owner decision (12 Nov 2026).
 | `moderationFlags/{id}` | Moderation triggers | Direct client writes denied. |
 | `deletedUsers/{uid}` | Account deletion callable | Direct client writes denied. |
 | `rateLimits/{key}` | Rate-limit helper | Direct client writes denied. |
-| `commandReceipts/{command}_{id}` | Idempotent callables and triggers (`functions/src/shared/commandReceipts.ts`) | Server only; TTL policy on `expiresAt` approved by the owner on 18 Nov 2026, landing in a follow-up change. |
+| `commandReceipts/{command}_{id}` | Idempotent callables and triggers (`functions/src/shared/commandReceipts.ts`) | Server only; TTL policy on `expiresAt`, approved by the owner on 18 Nov 2026 after the legal hold was narrowed. |
 
 ## Notification Timeline
 

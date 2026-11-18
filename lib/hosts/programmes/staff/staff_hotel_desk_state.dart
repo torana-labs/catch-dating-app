@@ -21,6 +21,7 @@ class StaffHotelDeskState {
     this.moreCars = false,
     this.moreExpected = false,
     this.paged = false,
+    this.stillToCome = 0,
   });
 
   const StaffHotelDeskState.loading()
@@ -29,20 +30,26 @@ class StaffHotelDeskState {
   const StaffHotelDeskState.error() : this(status: StaffHotelDeskStatus.error);
 
   /// The inbound board, with the room board when it has loaded for the
-  /// keys, the room numbers and the check-in and free-room counts.
+  /// keys, the room numbers and the check-in and free-room counts. Both
+  /// lists are live and whole; the desk shows [carsShown] cars and
+  /// [expectedShown] parties and offers the rest on More, while the counts
+  /// cover every row.
   factory StaffHotelDeskState.fromInbound(
     ProgramHotelInbound inbound, {
     ProgramHotelRooms? rooms,
+    int carsShown = 1 << 30,
+    int expectedShown = 1 << 30,
     bool paged = false,
   }) {
+    final cars = [
+      for (final trip in inbound.trips)
+        if (trip.status == TransportTripStatus.enRoute) trip,
+    ];
     final stays = rooms?.stays ?? const <ProgramStay>[];
     return StaffHotelDeskState(
       status: StaffHotelDeskStatus.content,
       hotelName: inbound.hotelName,
-      onTheWay: [
-        for (final trip in inbound.trips)
-          if (trip.status == TransportTripStatus.enRoute) trip,
-      ],
+      onTheWay: cars.take(carsShown).toList(growable: false),
       atDesk: [
         for (final stay in stays)
           if (stay.hotelArrivedAt != null &&
@@ -50,7 +57,9 @@ class StaffHotelDeskState {
                   stay.status == ProgramStayStatus.confirmed))
             stay,
       ],
-      stillToLeave: inbound.expectedLegs,
+      stillToLeave: inbound.expectedLegs
+          .take(expectedShown)
+          .toList(growable: false),
       rooms: {for (final stay in stays) stay.guestDisplayName: ?stay.roomLabel},
       checkedIn: rooms == null
           ? null
@@ -62,9 +71,12 @@ class StaffHotelDeskState {
         (sum, block) => sum + block.remainingRooms,
       ),
       generatedAt: inbound.generatedAt,
-      moreCars: inbound.nextTripCursor != null,
-      moreExpected: inbound.nextExpectedCursor != null,
+      moreCars: cars.length > carsShown,
+      moreExpected: inbound.expectedLegs.length > expectedShown,
       paged: paged,
+      stillToCome:
+          cars.fold(0, (sum, trip) => sum + trip.passengerCount) +
+          inbound.expectedLegs.fold(0, (sum, leg) => sum + leg.passengers),
     );
   }
 
@@ -85,15 +97,13 @@ class StaffHotelDeskState {
   final int? roomsFree;
   final DateTime? generatedAt;
 
-  /// The server holds more cars or expected parties than this page shows.
+  /// More cars or expected parties than the desk shows so far.
   final bool moreCars;
   final bool moreExpected;
 
-  /// The desk shows a later page; Back to the first returns.
+  /// The desk shows more than its first rows; Back to the first returns.
   final bool paged;
 
-  /// People in cars on the way and still at the airport.
-  int get stillToCome =>
-      onTheWay.fold(0, (sum, trip) => sum + trip.passengerCount) +
-      stillToLeave.fold(0, (sum, leg) => sum + leg.passengers);
+  /// People in cars on the way and still at the airport, over every row.
+  final int stillToCome;
 }

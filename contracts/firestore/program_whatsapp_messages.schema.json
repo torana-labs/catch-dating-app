@@ -108,6 +108,12 @@
       "description": "The staff member who wrote a planner reply.",
       "x-catch-ownership": "server-only"
     },
+    "authorLabel": {
+      "type": ["string", "null"],
+      "maxLength": 120,
+      "description": "The display name of the staff member who wrote a planner reply, copied from their grant when the reply is written, so communications staff, who cannot read the staff list, still see who answered. Null when the grant has no name; absent on messages written before this field.",
+      "x-catch-ownership": "server-only"
+    },
     "runId": {
       "type": [
         "string",

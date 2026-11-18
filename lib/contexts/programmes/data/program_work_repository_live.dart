@@ -25,54 +25,19 @@ extension ProgramLiveRepositoryApi on ProgramWorkRepository {
   );
 }
 
-/// One hotel's departures, saved for offline cold starts.
-extension ProgramDeparturesRepositoryApi on ProgramWorkRepository {
-  Future<ProgramDeparturesRoster> getDeparturesRoster({
-    required String programId,
-    required String hotelId,
-    String? snapshotAccountId,
-  }) => _call(
-    name: 'getProgramDeparturesRoster',
-    authorityScopedRead: true,
-    payload: GetProgramDeparturesRosterCallableRequest(
-      programId: programId,
-      hotelId: hotelId,
-    ).toJson(),
-    action: 'load the departures',
-    parse: ProgramDeparturesRoster.fromCallableData,
-    snapshotScope: programSnapshotScope('departures', programId, hotelId),
-    snapshotAccountId: snapshotAccountId,
-  );
-}
-
-/// The departures desk, from the live read or a bounded offline snapshot.
+/// The departures desk, live from `programDepartureViews` (#1339).
 @riverpod
 Future<ProgramReadView<ProgramDeparturesRoster>> programDeparturesRosterView(
   Ref ref,
   String programId,
   String hotelId,
-) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await _readView(
-    ref,
-    accountId,
-    programId,
-    programSnapshotScope('departures', programId, hotelId),
-    () => ref
-        .read(programWorkRepositoryProvider)
-        .getDeparturesRoster(
-          programId: programId,
-          hotelId: hotelId,
-          snapshotAccountId: accountId,
-        ),
-    ProgramDeparturesRoster.fromCallableData,
-  );
-  retainProgramProjection(
-    ref,
-    programProjectionDeadline(null, result.snapshotExpiresAt),
-  );
-  return result;
-}
+) async => (
+  value: await ref.watch(
+    programDeparturesStreamProvider(programId, hotelId).future,
+  ),
+  snapshotAt: null,
+  snapshotExpiresAt: null,
+);
 
 /// The live board (#1339): function labels, the alerts this account may
 /// read and the travel counts through listeners, gated on the account's

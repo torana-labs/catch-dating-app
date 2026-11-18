@@ -2012,13 +2012,15 @@ Everything else about a receipt is the shared module's job:
   no underscore.
 - Retention (`expiresAt`): `trigger` 7 days, `request` 30 days, `webhook` 30
   days. A receipt past `expiresAt` counts as absent. The collection's Firestore
-  TTL policy (a `fieldOverrides` entry for `commandReceipts.expiresAt` in
-  `firestore.indexes.json`) was approved by the owner on 18 Nov 2026 for this
-  collection only and lands in a follow-up change. Seven other collections write `expiresAt` with no policy
-  and stay as they are: `eventRuntimeDataRequestReceipts`, `organizerAudienceProjectionReceipts`,
-  `organizerEntitlementReceipts`, `salesDemoReceipts`,
-  `transportOperationReceipts`, `eventLiveCommandReceipts` and
-  `instagramAccessTokens` (this one is not a receipt).
+  TTL policy is a `fieldOverrides` entry for `commandReceipts.expiresAt` in
+  `firestore.indexes.json`, approved by the owner on 18 Nov 2026 after the legal
+  hold was narrowed. The same approval covers the receipt collections that
+  already write `expiresAt`: `eventRuntimeDataRequestReceipts`,
+  `organizerAudienceProjectionReceipts`, `organizerEntitlementReceipts`,
+  `salesDemoReceipts`, `transportOperationReceipts` and `eventLiveCommandReceipts`.
+  `instagramAccessTokens` has no policy on purpose: it is one pointer per
+  account whose `expiresAt` says when Meta expires the renewed token, not that
+  the document is dead, and the refresh job rewrites it.
 - Server only: rules deny every client read and write.
 
 Only pure replay lives here: a receipt whose sole job is to let a retry return

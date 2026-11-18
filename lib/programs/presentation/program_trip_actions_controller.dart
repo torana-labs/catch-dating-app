@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_trip_export.dart';
@@ -44,23 +45,15 @@ class ProgramTripActions extends _$ProgramTripActions {
         clientOperationId: clientOperationId,
       );
 
-  /// Walks the bounded ledger pages and shares the reconciliation CSV.
+  /// Shares the reconciliation CSV of the live trip ledger the account reads.
   Future<void> exportLedger({
     required String programId,
     required String programTitle,
     required String subject,
-    int pageLimit = 20,
   }) async {
-    final repository = ref.read(programWorkRepositoryProvider);
     final share = ref.read(externalShareControllerProvider);
-    final trips = <ProgramTripSummary>[];
-    String? cursor;
-    for (var page = 0; page < pageLimit; page++) {
-      final result = await repository.listTrips(programId, cursor: cursor);
-      trips.addAll(result.trips);
-      cursor = result.nextCursor;
-      if (cursor == null) break;
-    }
+    final ledger = await ref.read(programTripsStreamProvider(programId).future);
+    final trips = ledger.trips;
     final export = buildProgramTripLedgerExport(
       programId: programId,
       programTitle: programTitle,

@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/programmes/data/program_door_live_repo
 import 'package:catch_dating_app/contexts/programmes/data/program_projection_lifetime.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_shell_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_access_policy.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_bill_models.dart';
@@ -70,23 +71,6 @@ class ProgramWorkRepository {
     action: 'claim the staff invite',
     parse: (value) =>
         requiredString(requiredMap(value, 'invite claim'), 'programId'),
-  );
-
-  Future<ProgramArrivalsRoster> getArrivalsRoster({
-    required String programId,
-    String? pickupPointId,
-    String? snapshotAccountId,
-  }) => _call(
-    name: 'getProgramArrivalsRoster',
-    authorityScopedRead: true,
-    payload: ProgramStationScopeCallableRequest(
-      programId: programId,
-      pickupPointId: pickupPointId,
-    ).toJson(),
-    action: 'load the arrivals roster',
-    parse: ProgramArrivalsRoster.fromCallableData,
-    snapshotScope: programSnapshotScope('arrivals', programId, pickupPointId),
-    snapshotAccountId: snapshotAccountId,
   );
 
   Future<ProgramTransportPlan> getTransportPlan({
@@ -253,24 +237,6 @@ class ProgramWorkRepository {
     errorAction: 'void the trip',
   );
 
-  Future<ProgramHotelInbound> getHotelInbound({
-    required String programId,
-    required String hotelId,
-    String? tripCursor,
-    String? expectedCursor,
-  }) => _call(
-    name: 'getProgramHotelInbound',
-    authorityScopedRead: true,
-    payload: GetProgramHotelInboundCallableRequest(
-      programId: programId,
-      hotelId: hotelId,
-      tripCursor: tripCursor,
-      expectedCursor: expectedCursor,
-    ).toJson(),
-    action: 'load the hotel inbound view',
-    parse: ProgramHotelInbound.fromCallableData,
-  );
-
   /// The hotel desk's room board: block capacity, live stays, and routed
   /// guests still needing a room — all scoped to `hotelId`.
   Future<ProgramHotelRooms> getHotelRooms({
@@ -358,28 +324,6 @@ class ProgramWorkRepository {
     parse: ProgramMutationResult.fromCallableData,
   );
 
-  Future<ProgramTripList> listTrips(String programId, {String? cursor}) =>
-      _call(
-        name: 'listProgramTrips',
-        authorityScopedRead: true,
-        payload: ListProgramTripsCallableRequest(
-          programId: programId,
-          cursor: cursor,
-        ).toJson(),
-        action: 'load the trip ledger',
-        parse: ProgramTripList.fromCallableData,
-      );
-
-  /// Function-lead attention feed — the callable returns only the alerts
-  /// stamped for duties the caller holds.
-  Future<ProgramStaffAttention> listStaffAttention(String programId) => _call(
-    name: 'listProgramStaffAttention',
-    authorityScopedRead: true,
-    payload: ProgramIdCallableRequest(programId: programId).toJson(),
-    action: 'load staff attention',
-    parse: ProgramStaffAttention.fromCallableData,
-  );
-
   /// The reconciliationViewer's program-wide attendance report — per-function
   /// RSVP-vs-door counts plus the exception guest-id lists.
   Future<ProgramAttendanceReport> getAttendanceReport(String programId) =>
@@ -401,34 +345,6 @@ class ProgramWorkRepository {
         action: 'load the program counts',
         parse: ProgramStakeholderCounts.fromCallableData,
       );
-
-  /// Vendor picker data for the dispatch sheet — the callable filters to
-  /// vendors bound to this program and returns operational fields only.
-  Future<List<ProgramVendorOption>> listVendors({
-    required String organizerId,
-    required String programId,
-  }) => _call(
-    name: 'listTransportVendors',
-    authorityScopedRead: true,
-    payload: ListTransportVendorsCallableRequest(
-      organizerId: organizerId,
-      programId: programId,
-    ).toJson(),
-    action: 'load transport vendors',
-    parse: (value) {
-      final map = requiredMap(value, 'transport vendors');
-      return mapList(map['vendors'], 'vendors')
-          .map(
-            (vendor) => ProgramVendorOption(
-              vendorId: requiredString(vendor, 'vendorId'),
-              name: requiredString(vendor, 'name'),
-              active: vendor['active'] == true,
-              boundToProgram: vendor['boundToProgram'] == true,
-            ),
-          )
-          .toList(growable: false);
-    },
-  );
 
   Future<ProgramMutationResult> _readiness({
     required String programId,
@@ -656,63 +572,19 @@ Future<ProgramReadView<ProgramWorkAccess>> programWorkEntry(
   return (value: access, snapshotAt: null, snapshotExpiresAt: null);
 }
 
-@riverpod
-Future<ProgramArrivalsRoster> programArrivalsRoster(
-  Ref ref,
-  String programId,
-  String? pickupPointId,
-) {
-  final accountId = _watchWorkAccount(ref);
-  return ref
-      .read(programWorkRepositoryProvider)
-      .getArrivalsRoster(
-        programId: programId,
-        pickupPointId: pickupPointId,
-        snapshotAccountId: accountId,
-      );
-}
-
+/// The arrivals roster, live from `programArrivalViews` (#1339).
 @riverpod
 Future<ProgramReadView<ProgramArrivalsRoster>> programArrivalsRosterView(
   Ref ref,
   String programId,
   String? pickupPointId,
-) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await _readView(
-    ref,
-    accountId,
-    programId,
-    programSnapshotScope('arrivals', programId, pickupPointId),
-    () => ref.watch(
-      programArrivalsRosterProvider(programId, pickupPointId).future,
-    ),
-    ProgramArrivalsRoster.fromCallableData,
-    onAuthorityChanged: () => ref.invalidate(
-      programArrivalsRosterProvider(programId, pickupPointId),
-      asReload: true,
-    ),
-    allowsAccess: (access) => canReadProgramStation(
-      access,
-      pickupPointId,
-      dispatch: false,
-      now: ref.read(programProjectionClockProvider)(),
-      forSnapshot: true,
-    ),
-  );
-  retainProgramProjection(
-    ref,
-    programProjectionDeadline(
-      result.value.accessExpiresAt,
-      result.snapshotExpiresAt,
-    ),
-    onExpiry: () => ref.invalidate(
-      programArrivalsRosterProvider(programId, pickupPointId),
-      asReload: true,
-    ),
-  );
-  return result;
-}
+) async => (
+  value: await ref.watch(
+    programArrivalsStreamProvider(programId, pickupPointId).future,
+  ),
+  snapshotAt: null,
+  snapshotExpiresAt: null,
+);
 
 @riverpod
 Future<ProgramTransportPlan> programTransportPlan(
@@ -769,24 +641,5 @@ Future<ProgramReadView<ProgramTransportPlan>> programTransportPlanView(
       asReload: true,
     ),
   );
-  return result;
-}
-
-@riverpod
-Future<ProgramTripList> programTripList(
-  Ref ref,
-  String programId, {
-  String? cursor,
-}) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await readWithProgramAuthority(
-    ref,
-    accountId,
-    programId,
-    () => ref
-        .read(programWorkRepositoryProvider)
-        .listTrips(programId, cursor: cursor),
-  );
-  retainProgramProjection(ref, result.accessExpiresAt);
   return result;
 }

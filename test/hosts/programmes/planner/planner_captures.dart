@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_planner_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_whatsapp_models.dart';
@@ -29,6 +30,7 @@ import 'package:catch_dating_app/programs/presentation/program_create_controller
 import 'package:catch_dating_app/programs/presentation/program_create_state.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/misc.dart' show Override;
 
 import '../staff/staff_live_fixtures.dart';
@@ -78,10 +80,10 @@ List<Override> plannerCaptureOverrides() => [
   programPlannedMessagesProvider(
     plannerProgramId,
   ).overrideWith((ref) async => plannerMessages),
-  programArrivalsRosterProvider(
+  programArrivalsStreamProvider(
     plannerProgramId,
     null,
-  ).overrideWith((ref) async => plannerTravel.roster!),
+  ).overrideWithValue(AsyncData(plannerTravel.roster!)),
   programmesOverviewProvider(
     plannerOrganizerId,
   ).overrideWith((ref) async => plannerOverview),

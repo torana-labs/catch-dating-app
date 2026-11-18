@@ -51,10 +51,10 @@ void main() {
     account = 'account';
     repository = ProgramWorkRepository(functions, store, () => account);
     await store.save('account', 'work:p', _access('airportGreeter'));
-    await store.save('account', 'arrivals:p:station', {'programId': 'p'});
+    await store.save('account', 'plan:p:station', {'programId': 'p'});
     await store.save('account', 'plan:p:other', {'programId': 'p'});
   });
-  Future<ProgramArrivalsRoster> read() => repository.getArrivalsRoster(
+  Future<ProgramTransportPlan> read() => repository.getTransportPlan(
     programId: 'p',
     pickupPointId: 'station',
     snapshotAccountId: 'account',
@@ -73,10 +73,10 @@ void main() {
         };
         await expectLater(read(), throwsA(same(denial)));
         expect(functions.calls, [
-          'getProgramArrivalsRoster',
+          'getProgramTransportPlan',
           'getProgramWorkAccess',
         ]);
-        expect(await store.load('account', 'arrivals:p:station'), isNull);
+        expect(await store.load('account', 'plan:p:station'), isNull);
         expect(await store.load('account', 'plan:p:other'), isNull);
         final offline = await readProgramWithSnapshot(
           accountId: 'account',
@@ -144,7 +144,7 @@ void main() {
       throw _denied;
     };
     await expectLater(read(), throwsA(same(_denied)));
-    expect(functions.calls, ['getProgramArrivalsRoster']);
+    expect(functions.calls, ['getProgramTransportPlan']);
     expect(await store.load('account', 'work:p'), isNull);
   });
 
@@ -162,7 +162,7 @@ void main() {
       await started.future;
       final reopened = SharedPreferencesProgramReadSnapshotStore();
       expect(await reopened.load('account', 'work:p'), isNull);
-      expect(await reopened.load('account', 'arrivals:p:station'), isNull);
+      expect(await reopened.load('account', 'plan:p:station'), isNull);
       account = null;
       await store.clearAccount('account');
       response.complete(_access('hotelDesk'));
@@ -185,7 +185,10 @@ void main() {
     };
     final rejected = expectLater(read(), throwsA(same(_denied)));
     await started.future;
-    await expectLater(repository.listTrips('p'), throwsA(same(_denied)));
+    await expectLater(
+      repository.getAttendanceReport('p'),
+      throwsA(same(_denied)),
+    );
     response.complete(_access('airportGreeter'));
     await rejected;
     expect((await store.load('account', 'work:p'))!.data, _access('hotelDesk'));
@@ -209,7 +212,7 @@ void main() {
         _access('hotelDesk'),
       );
       expect(functions.calls, [
-        'getProgramArrivalsRoster',
+        'getProgramTransportPlan',
         'getProgramWorkAccess',
       ]);
     },
@@ -249,7 +252,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
-      final provider = programArrivalsRosterViewProvider('p', 'station');
+      final provider = programTransportPlanViewProvider('p', 'station');
       final subscription = container.listen(provider, (_, _) {});
       addTearDown(subscription.close);
       await expectLater(
@@ -258,14 +261,14 @@ void main() {
       );
       await container.pump();
       expect(functions.calls, [
-        'getProgramArrivalsRoster',
+        'getProgramTransportPlan',
         'getProgramWorkAccess',
       ]);
       expect(
         (await store.load('account', 'work:p'))!.data,
         _access('hotelDesk'),
       );
-      expect(await store.load('account', 'arrivals:p:station'), isNull);
+      expect(await store.load('account', 'plan:p:station'), isNull);
     },
   );
 }

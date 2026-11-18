@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_departures_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_hotel_desk_screen.dart';
@@ -66,7 +67,7 @@ class StaffDeparturesScreen extends ConsumerWidget {
           roster: value,
           now: at,
           onRetry: () => ref.invalidate(
-            programDeparturesRosterViewProvider(programId, hotelId),
+            programDeparturesStreamProvider(programId, hotelId),
           ),
         ),
       ),

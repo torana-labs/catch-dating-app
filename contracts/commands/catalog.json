@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "description": "Every command the website try-it tools, Catch Host, the catch CLI and later WhatsApp call. One entry per command: one callable, its payload and response schemas (which share contracts/shared/command_envelope.schema.json), what it may change, who may call it and which surfaces expose it. functions/src/commands/catalog.test.ts keeps this file, the schemas and the Functions exports in step.",
+  "effectClasses": {
+    "draft": "Writes only the caller's own private, unpublished records.",
+    "publishes": "Makes something visible to the public or to guests.",
+    "messages-guests": "Sends a message to guests. Needs confirm with the reviewed preview's hash.",
+    "moves-money": "Charges, refunds or pays out. Needs confirm with the reviewed preview's hash."
+  },
+  "commands": [
+    {
+      "commandId": "workspace.ensure",
+      "version": 1,
+      "callable": "ensureTryItWorkspace",
+      "payloadSchema": "contracts/callables/ensure_try_it_workspace_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/ensure_try_it_workspace_response.schema.json",
+      "effect": "draft",
+      "caller": "phone_verified",
+      "surfaces": ["website", "catch_host", "cli"],
+      "linkAllowance": null,
+      "summary": "Give a phone-verified caller their one try-it workspace: a private organizer they own, which every try-it tool writes into."
+    }
+  ]
+}
