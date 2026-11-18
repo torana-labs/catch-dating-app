@@ -414,6 +414,7 @@ async function main() {
       organizerProviderCatalog,
       eventSuccessPresencePolicy,
       organizerEntitlementSkuCatalog,
+      customDomainBlocklist,
       photoCatalog,
       profilePhotoPolicy,
     })
@@ -2373,6 +2374,7 @@ function renderToolSchemaRegistry({
   organizerProviderCatalog,
   eventSuccessPresencePolicy,
   organizerEntitlementSkuCatalog,
+  customDomainBlocklist,
   photoCatalog,
   profilePhotoPolicy,
 }) {
@@ -2394,6 +2396,7 @@ function renderToolSchemaRegistry({
         eventSuccessPresencePolicy.likelyDepartedAfterSeconds,
     }],
     ["organizerEntitlementSkuCatalog", organizerEntitlementSkuCatalog],
+    ["customDomainBlocklistCatalog", customDomainBlocklist],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],

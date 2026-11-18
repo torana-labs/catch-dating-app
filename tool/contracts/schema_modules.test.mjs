@@ -9,6 +9,7 @@ import {fileURLToPath} from "node:url";
 import test from "node:test";
 import * as canonical from "./generated/schema_contract_registry.mjs";
 import {
+  assertCustomDomainBlocklist,
   boundFieldConstraints,
   functionsRuntimeModules,
   publishSchemaOutputs,
@@ -51,6 +52,26 @@ test("modular Functions schemas match their canonical schema and catalog values"
   for (const [name, value] of Object.entries(actual)) {
     assert.ok(Object.hasOwn(canonical, name), `Unknown generated export: ${name}`);
     assert.deepEqual(value, canonical[name], `Schema/catalog semantics drifted: ${name}`);
+  }
+});
+
+test("the custom domain blocklist fails generation instead of widening the registry", () => {
+  const catalog = JSON.parse(fs.readFileSync(
+    path.join(root, "contracts/catalogs/custom_domain_blocklist.json"), "utf8"));
+  assertCustomDomainBlocklist(catalog);
+  const term = catalog.terms[0];
+  for (const broken of [
+    {...catalog, kind: "other"},
+    {...catalog, extra: true},
+    {...catalog, providerSuffixes: ["*.example.net"]},
+    {...catalog, providerSuffixes: ["web.app", "web.app"]},
+    {...catalog, terms: [{...term, term: "Bad-Term"}]},
+    {...catalog, terms: [{...term, action: "allow"}]},
+    {...catalog, terms: [{...term, category: "unknown"}]},
+    {...catalog, terms: [term, term]},
+    {...catalog, terms: [{...term, note: "x"}]},
+  ]) {
+    assert.throws(() => assertCustomDomainBlocklist(broken), /blocklist is invalid/);
   }
 });
 
