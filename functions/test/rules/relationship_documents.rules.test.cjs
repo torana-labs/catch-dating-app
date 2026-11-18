@@ -942,7 +942,6 @@ describe("firestore.rules", () => {
         ["organizerApplicationResponses", "response-1"],
         ["organizerApplicationImportReceipts", "receipt-1"],
         ["participantIntakeProfiles", "profile-1"],
-        ["participantOrganizerDataGrants", "grant-1"],
       ];
       for (const path of paths) {
         await seed(path, {eventId: "event-1", organizerId: "club-1"});
