@@ -4816,7 +4816,11 @@ instant of an assignment naming that id. `workPickup`, `workHotel` and
 `getProgramWorkAccess` resolves it (pickup points from every operational duty
 but the hotel desk, hotels from every operational duty, functions from door and
 guest-desk duties): key `*` for every one, otherwise one key per named id.
-Rules compare these with
+`assignments` repeats the live duty
+tuples with their scopes and own expiries, and `grantExpiresAtMillis` the grant's
+own expiry, as `getProgramWorkAccess` returns them, because a phone's policies
+need one assignment to cover both ends of a transport route, which the flattened
+maps cannot say. Rules compare these with
 `request.time` through `hasProgramDuty`, `programDutyCoversPickup`,
 `programDutyCoversHotel`, `programDutyCoversFunction` and `isProgramManager`;
 each dimension is checked alone, as the callables' `allowed*Ids` union them, so
