@@ -241,7 +241,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.text('Meet'), findsOneWidget);
   });
 
-  testWidgets('CatchTabBar reveals only the selected label and badges icons', (
+  testWidgets('CatchTabBar labels every destination and badges icons', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -270,7 +270,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.byType(CatchNavigationButton<String>), findsNWidgets(2));
     expect(find.byIcon(Icons.home_outlined), findsOneWidget);
     expect(find.byIcon(Icons.chat_bubble), findsOneWidget);
-    expect(find.text('Home'), findsNothing);
+    expect(find.text('Home'), findsOneWidget);
     expect(find.text('Chats'), findsOneWidget);
     expect(find.text('99+'), findsOneWidget);
   });
@@ -335,7 +335,9 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
       ),
     );
     final labelRect = tester.getRect(find.text('Explore'));
-    expect(iconRect.center.dy, closeTo(labelRect.center.dy, 0.5));
+    // The label sits under its icon, centred on it.
+    expect(labelRect.top, greaterThanOrEqualTo(iconRect.bottom));
+    expect(iconRect.center.dx, closeTo(labelRect.center.dx, 0.5));
 
     await tester.tap(find.bySemanticsLabel('You'));
     await pumpFeatureUi(tester);

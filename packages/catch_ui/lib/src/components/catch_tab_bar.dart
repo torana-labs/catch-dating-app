@@ -12,7 +12,6 @@ import 'package:catch_ui/src/components/catch_tab_bar_item.dart';
 import 'package:catch_ui/src/foundations/catch_adaptive_platform.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_root.dart';
-import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/foundations/catch_transitions.dart';
 import 'package:catch_ui/src/primitives/catch_text.dart';
 import 'package:catch_ui/src/primitives/catch_text_variant.dart';
@@ -366,9 +365,8 @@ class _CatchTabBarState<T> extends State<CatchTabBar<T>>
                                                     // The system's 56 by 32 px
                                                     // rail pill.
                                                     Container(
-                                                      width:
-                                                          CatchSpacing.s16 -
-                                                          CatchSpacing.s2,
+                                                      width: CatchLayout
+                                                          .tabBarIconPillWidth,
                                                       height:
                                                           GeneratedCatchSizeTokens
                                                               .controlSm,
