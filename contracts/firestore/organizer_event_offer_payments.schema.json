@@ -4,7 +4,7 @@
   "title": "OrganizerEventOfferPaymentDocument",
   "x-firestore-collection": "guestPayments",
   "x-firestore-path": "guestPayments/{paymentId}",
-  "description": "Server-owned payment attempt created atomically with its 15-minute canonical-seat hold. Routing and issued terms remain frozen through capture, admission, expiry and refund recovery.",
+  "description": "Event offer checkout: a document in the single guest-payment ledger guestPayments/{paymentId} with purpose offer (every guest checkout shares that ledger; purpose names the flow). Server-owned payment attempt created atomically with its 15-minute canonical-seat hold. Routing and issued terms remain frozen through capture, admission, expiry and refund recovery.",
   "type": "object",
   "additionalProperties": false,
   "required": [

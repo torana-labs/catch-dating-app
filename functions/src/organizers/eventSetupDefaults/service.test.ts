@@ -13,7 +13,7 @@ function harness() {
     hostUserId: "host1", ownerUserId: "host1", hostUserIds: [],
     hostProfiles: [], status: "active", archived: false,
     locationCityId: "city1", locationMarketId: "market1",
-    hostDefaults: {timezone: "Asia/Kolkata", revision: 2},
+    hostDefaults: {revision: 2},
   }], ["organizerEventOffers/historical", {status: "offered"}]]);
   let writes = 0;
   const db = {
@@ -78,10 +78,10 @@ test("manager reads coherent public and private defaults", async () => {
   const h = harness();
   const before = await read(h.deps);
   assert.equal(before.city?.cityId, "city1");
-  assert.equal(before.timezone, "Asia/Kolkata");
+  assert.equal(before.timezone, null);
   assert.equal(before.organizerDefaultsRevision, 2);
   assert.equal(before.preferencesRevision, 0);
-  assert.deepEqual(before.preferences, {timezone: "Asia/Kolkata"});
+  assert.deepEqual(before.preferences, {});
   const result = await update(h.deps);
   assert.equal(result.appliedRevision, 1);
   assert.equal(result.current.preferences.offerValidityMinutes, 30);
@@ -143,7 +143,7 @@ test("clear, validation and changed public defaults are fenced", async () => {
   const cleared = await update(h.deps, {requestId: "request_004",
     expectedRevision: 1,
     changes: {offerValidityMinutes: {mode: "clear"}}});
-  assert.deepEqual(cleared.current.preferences, {timezone: "Asia/Kolkata"});
+  assert.deepEqual(cleared.current.preferences, {});
   const writes = h.writes;
   await assert.rejects(update(h.deps, {requestId: "request_005",
     expectedRevision: 2,
@@ -203,7 +203,7 @@ test("real payment-page validation rejects unsafe storage without writes",
   });
 
 
-test("private timezone overrides and clear never revives legacy timezone",
+test("private timezone sets and clears with no public fallback",
   async () => {
     const h = harness();
     const publicBefore = structuredClone(h.rows.get("organizers/org1"));
@@ -239,7 +239,7 @@ test("the board defaults save, clear and validate", async () => {
     askedAtBooking: {mode: "set", value: ["food", "heard"]},
     autoMessages: {mode: "set", value: {thankYou: true, arrival: false}},
   }});
-  assert.deepEqual(result.current.preferences, {timezone: "Asia/Kolkata",
+  assert.deepEqual(result.current.preferences, {
     startingPriceMinor: 49900, places: 32, waitlistEnabled: true,
     bookingMode: "askFirst", refundPolicy: "flexible",
     askedAtBooking: ["food", "heard"],

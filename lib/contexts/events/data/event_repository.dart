@@ -326,8 +326,7 @@ class EventRepository with EventRepositoryActions {
   String generateId() => _eventsRef.doc().id;
 
   /// Generates a stable client request id without writing a broadcast receipt.
-  String generateBroadcastRequestId() =>
-      _db.collection('eventBroadcastRequests').doc().id;
+  String generateBroadcastRequestId() => generateId();
 
   /// Fetches upcoming events from the given club IDs.
   Future<List<Event>> fetchUpcomingEventsForOrganizers(

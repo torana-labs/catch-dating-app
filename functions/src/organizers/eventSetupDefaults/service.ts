@@ -219,12 +219,8 @@ export function projectManagerEventSetupDefaults(
   }
   const hostDefaults = organizer.hostDefaults as
     Record<string, unknown> | undefined;
-  // Adopt legacy values once; clearing private timezone never re-inherits.
-  const legacyTimezone = typeof hostDefaults?.timezone === "string" ?
-    hostDefaults.timezone : undefined;
   const preferences = raw ?
-    {...raw.eventSetup} as EventSetupPreferences :
-    (legacyTimezone === undefined ? {} : {timezone: legacyTimezone});
+    {...raw.eventSetup} as EventSetupPreferences : {};
   if (Object.keys(preferences).some((field) =>
     !fields.has(field as PreferenceField))) {
     throw new HttpsError("failed-precondition",
