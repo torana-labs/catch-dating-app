@@ -1,0 +1,41 @@
+/*
+ * The cap chart (PlaybookPricing .capbar and .ex on paper): a bar 56px tall
+ * at 16px corners, its stretches 14px inside with 13px bold labels, the fee
+ * stretch coral on ink and the rest mint on its own ink; the examples two
+ * across 12px apart, 16px under the bar, as white cards at 20px corners, 20px
+ * inside, with a hairline ring and 32px figures.
+ */
+.chart { min-width: 0; }
+
+.bar {
+  display: flex;
+  min-height: var(--catch-website-cap-bar-height);
+  overflow: hidden;
+  border-radius: var(--catch-radius-md);
+}
+
+.part {
+  display: flex;
+  align-items: center;
+  flex-basis: 0;
+  min-width: 0;
+  padding: 0 var(--catch-space-micro14);
+  background: var(--catch-palette-coral);
+  color: var(--catch-palette-ink);
+}
+
+.part[data-part="free"] {
+  background: var(--catch-palette-mint);
+  color: var(--catch-palette-mint-ink);
+}
+
+.partLabel.partLabel {
+  font-size: var(--catch-typography-role-body-meta-size);
+  font-weight: var(--catch-typography-role-title-bar-weight);
+}
+
+.examples { margin-top: var(--catch-space-s4); }
+
+@media (max-width: 599px) {
+  .part { padding-block: var(--catch-space-s2); }
+}

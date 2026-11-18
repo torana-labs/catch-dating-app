@@ -9,13 +9,16 @@ const families = {
   itinerary: "programme_link", ids: "programme_link", hotel: "programme_link",
   trip: "programme_link", runsheet: "programme_link", hampers: "programme_link",
   family: "programme_link",
+  // The organiser owner's billing (/host/billing/) only; every other /host/ path is a public page.
+  host: "host_billing",
 } as const;
 
 /** Only a public route-family enum enters the rewrite; never the credential URL. */
 export function privateShellFamily(pathname: string): keyof typeof families | null {
   const first = pathname.split("/")[1];
   if (!Object.hasOwn(families, first) || (first === "offer" && !/^\/offer\/?$/.test(pathname)) ||
-    (first === "account" && !/^\/account\/?$/.test(pathname))) return null;
+    (first === "account" && !/^\/account\/?$/.test(pathname)) ||
+    (first === "host" && !/^\/host\/billing\/?$/.test(pathname))) return null;
   return first as keyof typeof families;
 }
 

@@ -1,45 +1,51 @@
 import {
-  CatchAccordion,
   CatchAppCaptureImage,
+  CatchBand,
+  CatchBandHeader,
   CatchButton,
-  CatchDeviceFrame,
-  CatchFormatMatrix,
-  CatchFormatTile,
-  CatchIndexRow,
-  CatchLayerMap,
-  CatchMeter,
-  CatchMetricTile,
-  CatchNightScene,
-  CatchPageTabBar,
-  CatchPipelineBoard,
+  CatchCardGrid,
+  CatchChip,
+  CatchComparisonTable,
+  CatchCtaSection,
+  CatchFaqSection,
+  CatchGrid,
+  CatchHeroSection,
   CatchQrCode,
-  CatchRangeInput,
   CatchRoot,
-  CatchScroller,
-  CatchSection,
+  CatchRouteCard,
   CatchSectionTopBar,
+  CatchSiteDock,
   CatchStack,
-  CatchStepList,
-  CatchStoreButton,
-  CatchSurface,
+  CatchStepCards,
   CatchText,
+  CatchTimelineSection,
   useCatch,
   type CatchAppCaptureImageProps,
 } from "@catch/web-ui";
-import {hostLandingCopy as copy, hostNightCaptureScreen, hostNightFocus, hostNightFormats} from "@content/hostLanding";
-import {interpolateContent as fill} from "@content/interpolate";
+import {hostLandingCopy as copy, hostNightFormats} from "@content/hostLanding";
 import {brand} from "@content/brand";
 import {whatsappChatCopy, whatsappChatHref} from "@content/site";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {captureSlot} from "../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
-import {feeCap, salesRange, useHostLandingController, type HostLandingController} from "./useHostLandingController";
+import {PricingFeeBand} from "../marketing/PricingBands";
+import {hostLandingHref, hostNightHref, useHostLandingController, type HostLandingController} from "./useHostLandingController";
 
 type Host = HostLandingController;
 
 /**
- * Every capture the night scene can show, by slot id. Each slot is named
+ * A retired route's anchor (#features, #how-it-works …), an empty mark just
+ * before the band that now carries its content, so old links still land
+ * there. It sits beside the band rather than around it: a panel keeps its
+ * gap to the band above only when nothing wraps it.
+ */
+function RetiredAnchor({id}: {id: string}) {
+  return <CatchStack aria-hidden="true" gap={0} id={id} />;
+}
+
+/**
+ * Every capture the night band can show, by slot id. Each slot is named
  * literally so tool/marketing/capture_manifest.json's page bindings can be
  * checked against the page (marketingCaptures.test.tsx).
  */
@@ -61,360 +67,278 @@ function nightScreens(captures: CaptureSlots): Record<string, CatchAppCaptureIma
   };
 }
 
-/** Catch Host's official store badges for one placement. */
-function HostStoreBadges({placement}: {placement: string}) {
-  const stores = useAppDownloadCtas({placement, app: "host"});
-  return (
-    <CatchStack align="center" direction="row" gap={12} wrap>
-      {stores.map((store) => (
-        <CatchStoreButton badgeSrc={store.badgeSrc} comingSoon={store.comingSoon} href={store.href || undefined} key={store.store} label={store.accessibleLabel} onClick={store.onClick} store={store.store} />
-      ))}
-    </CatchStack>
-  );
+/** The hero's laptop card's action (wide screens only, leak 6): a WhatsApp chat that asks for the link. */
+function LaptopLink() {
+  return <CatchButton href={whatsappChatHref(whatsappChatCopy.hostLinkMessage)} label={copy.start.whatsappLink} newTab size="sm" />;
 }
 
-/** A headline across from its lead on a wide page. */
-function HeadingRow({id, title, body, anchor}: {id: string; title: string; body: string; anchor?: string}) {
-  return (
-    <CatchStack align="end" collapseBelow="medium" direction="row" equal gap={48} id={anchor}>
-      <CatchText as="h2" id={id} variant="display-xl">{title}</CatchText>
-      <CatchText tone="secondary" variant="body-lead">{body}</CatchText>
-    </CatchStack>
-  );
-}
-
+/** The coral hero: the trial first, a person on WhatsApp one tap away (leak 7), the walkthrough for organisations and, on a laptop, the QR card. */
 function Hero({captures}: {captures: CaptureSlots}) {
+  const {sizeClass} = useCatch();
   const today = captureSlot(captures, "host-today", "eager");
+  const hero = copy.hero;
   return (
-    <CatchSurface aria-labelledby="host-hero-title" as="section" block="band" color="run">
-      <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={32}>
-        <CatchStack gap={28}>
-          <CatchText as="h1" id="host-hero-title" variant="hero">{copy.hero.title}</CatchText>
-          <CatchText variant="body-lead">{copy.hero.body}</CatchText>
-          <CatchStack direction="row" gap={12} wrap>
-            <CatchButton href="#start" label={copy.hero.start} />
-            <CatchButton href="#night" label={copy.hero.seeNight} variant="light" />
-          </CatchStack>
-          <HostStoreBadges placement="host_hero" />
-          <CatchText variant="label-action">{copy.hero.terms}</CatchText>
-          {/* A person, one tap away (leak 7). */}
-          <CatchStack align="start"><CatchButton href={whatsappChatHref(whatsappChatCopy.hostQuestionMessage)} label={copy.hero.talk} size="sm" variant="quiet" /></CatchStack>
-        </CatchStack>
-        {today ? <CatchAppCaptureImage {...today} bleed size="md" tilt="right" /> : null}
-      </CatchStack>
-    </CatchSurface>
-  );
-}
-
-function Kinds({host}: {host: Host}) {
-  return (
-    <CatchSurface aria-labelledby="host-kinds-title" as="section" block="band" id="features">
-      <HeadingRow anchor="use-cases" body={copy.kinds.body} id="host-kinds-title" title={copy.kinds.title} />
-      <CatchScroller gap="related" itemWidth="m" label={copy.kinds.label}>
-        {hostNightFormats.map((item, index) => (
-          <CatchFormatTile body={item.tile} format={item.format} key={item.format} kicker={copy.kinds.kicker} onPressed={() => host.pickFormat(index, true)}
-            photoUrl={item.photo ?? null} pressed={index === host.format} title={item.title} />
-        ))}
-      </CatchScroller>
-      <CatchFormatMatrix
-        formats={hostNightFormats.map((item) => ({format: item.format, title: item.title}))}
-        heading={copy.matrix.heading}
-        note={copy.matrix.note}
-        onSelect={(index, source) => host.pickFormat(index, source === "table")}
-        properties={copy.matrix.properties}
-        selected={host.format}
-        values={Object.fromEntries(hostNightFormats.map((item) => [item.format, item.properties]))}
-      />
-    </CatchSurface>
-  );
-}
-
-function Night({captures, host}: {captures: CaptureSlots; host: Host}) {
-  const night = host.night;
-  const screens = nightScreens(captures);
-  return (
-    <CatchSurface aria-labelledby="host-night-title" as="section" block="band" color="ink" id="night">
-      <CatchStack gap={16} id="how-it-works">
-        <CatchText tone="warning" variant="label-kicker">{copy.night.kicker}</CatchText>
-        <CatchText as="h2" id="host-night-title" variant="display-xl">{copy.night.title}</CatchText>
-        <CatchText tone="secondary" variant="body-lead">{copy.night.lead}</CatchText>
-      </CatchStack>
-      <CatchNightScene
-        formats={hostNightFormats.map((item) => ({format: item.format, title: item.title}))}
-        frame="capture"
-        journey={{
-          accent: night.accent,
-          event: night.event,
-          where: night.where,
-          lead: night.lead,
-          moments: night.moments.map((moment) => {
-            const screen = screens[moment.slot];
-            return {
-              time: moment.time,
-              title: moment.title,
-              body: moment.body,
-              badge: night.badges[moment.property],
-              capture: screen ? {src: screen.src, alt: screen.alt, width: screen.width, height: screen.height,
-                screen: hostNightCaptureScreen, focus: hostNightFocus[moment.slot]} : null,
-            };
-          }),
-        }}
-        label={host.storyLabel}
-        onSelect={(index) => host.pickFormat(index, false)}
-        pickerLabel={copy.night.pickerLabel}
-        pickerLead={copy.night.pickerLead}
-        position={(index, total) => fill(copy.night.position, {index, total})}
-        selected={host.format}
-        timelineLabel={copy.night.timelineLabel}
-      />
-    </CatchSurface>
-  );
-}
-
-function Tablet({captures}: {captures: CaptureSlots}) {
-  const tablet = captureSlot(captures, "host-live-tablet");
-  return (
-    <CatchSurface aria-labelledby="host-tablet-title" as="section" block="band" color="tile">
-      <CatchStack align="center" gap={20}>
-        <CatchText align="center" tone="info" variant="label-kicker">{copy.tablet.kicker}</CatchText>
-        <CatchText align="center" as="h2" id="host-tablet-title" variant="display-xl">{copy.tablet.title}</CatchText>
-        <CatchText align="center" tone="secondary" variant="body-lead">{copy.tablet.body}</CatchText>
-      </CatchStack>
-      {tablet ? <CatchDeviceFrame bleed kind="tablet"><CatchAppCaptureImage {...tablet} caption={undefined} /></CatchDeviceFrame> : null}
-    </CatchSurface>
-  );
-}
-
-function Pipeline() {
-  const pipeline = copy.pipeline;
-  return (
-    <CatchSurface aria-labelledby="host-pipeline-title" as="section" block="band">
-      <HeadingRow body={pipeline.body} id="host-pipeline-title" title={pipeline.title} />
-      <CatchPipelineBoard boardLabel={pipeline.boardLabel} guests={pipeline.guests} label={pipeline.label} replayLabel={pipeline.replay} steps={pipeline.steps} />
-    </CatchSurface>
-  );
-}
-
-function Guests({captures}: {captures: CaptureSlots}) {
-  const guests = copy.guests;
-  const explore = captureSlot(captures, "guest-explore");
-  return (
-    <CatchSurface aria-labelledby="host-guests-title" as="section" block="band" color="dinner">
-      <CatchStack align="end" collapseBelow="medium" direction="row" equal gap={64}>
-        {explore ? <CatchAppCaptureImage {...explore} bleed size="sm" tilt="left" /> : null}
-        <CatchStack gap={20}>
-          <CatchText tone="primary" variant="label-kicker">{guests.kicker}</CatchText>
-          <CatchText as="h2" id="host-guests-title" variant="display-xl">{guests.title}</CatchText>
-          <CatchText variant="body-lead">{guests.body}</CatchText>
-          <CatchSection dividers="none">
-            {guests.items.map((item) => <CatchIndexRow density="regular" icon={item.icon} key={item.title} subtitle={item.body} title={item.title} wrap />)}
-          </CatchSection>
-          <CatchSurface block="spotlight" color="ink" padding="md">
-            <CatchStack align="end" direction="row" gap={16} justify="between" wrap>
-              <CatchStack gap={4}>
-                <CatchText tone="secondary" variant="label-kicker">{guests.sees.kicker}</CatchText>
-                <CatchText variant="display-lg">{guests.sees.title}</CatchText>
-              </CatchStack>
-              <CatchText tone="secondary" variant="body-small">{guests.sees.body}</CatchText>
-            </CatchStack>
-          </CatchSurface>
-        </CatchStack>
-      </CatchStack>
-    </CatchSurface>
-  );
-}
-
-function Growth({host}: {host: Host}) {
-  const growth = copy.growth;
-  const stats = host.linkStats;
-  return (
-    <CatchSurface aria-labelledby="host-growth-title" as="section" block="band">
-      <HeadingRow body={growth.body} id="host-growth-title" title={growth.title} />
-      <CatchStack align="stretch" collapseBelow="medium" direction="row" equal gap={24}>
-        <CatchStack gap={12}>
-          <CatchSection dividers="none" title={growth.pickLink}>
-            {growth.links.map((item, index) => (
-              <CatchIndexRow density="regular" icon="link" key={item.slug} onTap={() => host.setLink(index)} selected={index === host.link} subtitle={item.description} title={item.name} />
-            ))}
-          </CatchSection>
-          <CatchStepList steps={growth.steps} />
-        </CatchStack>
-        <CatchSurface block="spotlight" color="ink" padding="lg">
-          <CatchText variant="label-code">{host.linkUrl}</CatchText>
-          <CatchMeter label={stats.visitsLabel} max={host.maxVisits} showLabel thickness={8} value={stats.visits} />
-          <CatchMeter fill="format" format={stats.format} label={stats.bookingsLabel} max={host.maxVisits} showLabel thickness={8} value={stats.bookings} />
-          <CatchStack direction="row" equal gap={12}>
-            <CatchMetricTile label={growth.rate} layout="inline" value={stats.rate} />
-            <CatchMetricTile label={growth.revenue} layout="inline" value={stats.revenue} />
-            <CatchMetricTile label={growth.perVisit} layout="inline" value={stats.perVisit} />
-          </CatchStack>
-          <CatchText tone="secondary" variant="body-small">{growth.insight}</CatchText>
-        </CatchSurface>
-      </CatchStack>
-      <CatchStack gap={8}>
-        <CatchText variant="title-row">{growth.regularsTitle}</CatchText>
-        <CatchText tone="secondary" variant="body">{growth.regularsBody}</CatchText>
-        <CatchText tone="secondary" variant="body-meta">{growth.disclaimer}</CatchText>
-      </CatchStack>
-    </CatchSurface>
-  );
-}
-
-function Layers({host}: {host: Host}) {
-  const layers = copy.layers;
-  return (
-    <CatchSurface aria-labelledby="host-layers-title" as="section" block="band" color="indigo" id="ways">
-      <CatchStack align="end" collapseBelow="medium" direction="row" equal gap={48} id="existing-tools">
-        <CatchText as="h2" id="host-layers-title" variant="display-xl">{layers.title}</CatchText>
-        <CatchText variant="body-lead">{layers.body}</CatchText>
-      </CatchStack>
-      <CatchPageTabBar fill label={layers.label} onChanged={host.setLayer} options={layers.options} selected={host.layer} />
-      <CatchStack gap={0} id="layers">
-        <CatchLayerMap
-          labels={{
-            on: layers.map.on,
-            off: layers.map.off,
-            everyLayer: layers.map.everyLayer,
-            fromLayer: (layer) => fill(layers.map.fromLayer, {layer}),
-            newHere: layers.map.newHere,
-            youKeep: (yours) => fill(layers.map.youKeep, {yours}),
-          }}
-          layer={host.layerIndex}
-          nodes={layers.nodes}
-        />
-      </CatchStack>
-      <CatchStack align="center" collapseBelow="medium" direction="row" gap={24} justify="between">
-        <CatchText variant="title-bar">{host.layerBody}</CatchText>
-        <CatchButton href="#pricing" label={layers.pricing} />
-      </CatchStack>
-    </CatchSurface>
-  );
-}
-
-function Pricing({host}: {host: Host}) {
-  const pricing = copy.pricing;
-  return (
-    <CatchSurface aria-labelledby="host-pricing-title" as="section" block="band" color="courts" id="pricing">
-      <CatchStack align="center" collapseBelow="medium" direction="row" equal gap={48}>
-        <CatchStack gap={16}>
-          <CatchText variant="label-kicker">{pricing.kicker}</CatchText>
-          <CatchText as="h2" id="host-pricing-title" numeric variant="display-giant">{pricing.rate}</CatchText>
-          <CatchText variant="display-title">{pricing.title}</CatchText>
-          <CatchText variant="body-lead">{pricing.body}</CatchText>
-          <CatchStack align="start"><CatchButton href="#start" label={pricing.start} /></CatchStack>
-        </CatchStack>
-        <CatchSurface block="floating" padding="lg">
-          <CatchText tone="secondary" variant="label-action">{pricing.sales}</CatchText>
-          <CatchText aria-live="polite" numeric variant="display-lg">{host.salesText}</CatchText>
-          <CatchRangeInput label={pricing.sales} max={salesRange.max} min={salesRange.min} onChange={(value) => host.setSales(Array.isArray(value) ? value[1] : (value as number))}
-            step={salesRange.step} value={host.sales} />
-          <CatchStack direction="row" justify="between">
-            <CatchText tone="secondary" variant="body-meta">{pricing.min}</CatchText>
-            <CatchText tone="secondary" variant="body-meta">{pricing.max}</CatchText>
-          </CatchStack>
-          <CatchStack direction="row" equal gap={12}>
-            <CatchMetricTile label={pricing.fee} note={pricing.feeNote} value={host.feeText} />
-            <CatchMetricTile label={pricing.effective} note={pricing.effectiveNote} value={host.rateText} />
-          </CatchStack>
-          <CatchMeter kind="cap" label={pricing.capLabel} max={feeCap} thickness={8} value={host.fee} />
-          <CatchText tone={host.capped ? "success" : "secondary"} variant="label-action">{host.capped ? pricing.capped : pricing.uncapped}</CatchText>
-          <CatchText variant="body-small">{pricing.trial}</CatchText>
-          <CatchText tone="secondary" variant="body-meta">{pricing.gateway}</CatchText>
-        </CatchSurface>
-      </CatchStack>
-    </CatchSurface>
-  );
-}
-
-function Faq() {
-  return (
-    <CatchSurface aria-labelledby="host-faq-title" as="section" block="band" id="faq">
-      <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={48}>
-        <CatchText as="h2" id="host-faq-title" variant="display-xl">{copy.faq.title}</CatchText>
-        <CatchAccordion exclusive items={copy.faq.items} name="host-faq" size="lg" />
-      </CatchStack>
-    </CatchSurface>
+    <CatchHeroSection
+      actions={[
+        {label: hero.start, href: "#start"},
+        {label: hero.talk, href: whatsappChatHref(whatsappChatCopy.hostQuestionMessage), newTab: true, variant: "secondary"},
+      ]}
+      ground="coral"
+      id="top-hero"
+      kicker={hero.kicker}
+      lead={hero.body}
+      link={{label: hero.walkthrough, href: whatsappChatHref(whatsappChatCopy.walkthroughMessage)}}
+      media={today ? <CatchAppCaptureImage {...today} bezel bleed caption={undefined} size="hero" tilt="left" /> : undefined}
+      note={hero.terms}
+      // A phone already has the stores a tap away (the start band and the dock); the card is for a laptop.
+      notice={sizeClass === "compact" ? undefined : {
+        title: copy.start.qrTitle,
+        body: copy.start.qrBody,
+        // The QR code opens the start band on the phone, where both store buttons are.
+        leading: <CatchQrCode label={copy.start.qrLabel} size="s" value={`${brand.web.origin}/host/#start`} />,
+        children: <LaptopLink />,
+      }}
+      title={hero.title}
+    />
   );
 }
 
 /**
- * On a wide screen the store badges open store pages on the desktop, so the
- * start band adds a QR code that opens this band on the phone, and a WhatsApp
- * chat that asks Catch for the link (leak 6). Phones get the badges alone.
+ * Every kind of host: a format card for each night the page follows, each
+ * linking to that night below. The retired routes' anchors (#features,
+ * #use-cases) land here, on the content that replaced them.
  */
-function LaptopHandoff() {
-  const {sizeClass} = useCatch();
-  const start = copy.start;
-  if (sizeClass === "compact") return null;
+function Ways() {
+  const ways = copy.ways;
   return (
-    <CatchSurface block="floating" padding="md">
-      <CatchStack align="center" direction="row" gap={16}>
-        <CatchQrCode label={start.qrLabel} value={`${brand.web.origin}/host/#start`} />
-        <CatchStack gap={8}>
-          <CatchText variant="title-row">{start.qrTitle}</CatchText>
-          <CatchText tone="secondary" variant="body-small">{start.qrBody}</CatchText>
-          <CatchStack align="start"><CatchButton href={whatsappChatHref(whatsappChatCopy.hostLinkMessage)} label={start.whatsappLink} size="sm" variant="secondary" /></CatchStack>
-        </CatchStack>
-      </CatchStack>
-    </CatchSurface>
+    <>
+      <RetiredAnchor id="features" />
+      <RetiredAnchor id="use-cases" />
+      <CatchCardGrid
+          columns={5}
+          ground="paper"
+          id="ways"
+          items={hostNightFormats.map((item) => ({
+            id: item.format, title: item.tileTitle, body: item.tile, more: ways.more, href: hostNightHref(item.format),
+            ground: item.accent, format: item.format, photoUrl: item.photo ?? null,
+          }))}
+          kicker={ways.kicker}
+          kickerAccent="mint"
+          kind="format"
+          layout="rail"
+          lead={ways.body}
+          title={ways.title}
+        />
+    </>
   );
 }
 
-function Start() {
-  const start = copy.start;
+/** Where the host is today: three ways in, each a filled card. The retired #layers anchor lands here. */
+function Stages() {
+  const ways = copy.ways;
   return (
-    <CatchSurface aria-labelledby="host-start-title" as="section" block="band" color="games" id="start">
-      <CatchStack align="start" collapseBelow="medium" direction="row" equal gap={48} id="apply">
-        <CatchStack gap={24}>
-          <CatchText variant="label-kicker">{start.kicker}</CatchText>
-          <CatchText as="h2" id="host-start-title" variant="display-xl">{start.title}</CatchText>
-          <CatchText variant="body-lead">{start.body}</CatchText>
+    <CatchBand aria-labelledby="host-stages-title" as="section" id="layers">
+      <CatchStack gap={24}>
+        <CatchBandHeader level={2} size="small" title={ways.stagesTitle} titleId="host-stages-title" />
+        <CatchGrid columns={3}>
+          {ways.stages.map((stage) => (
+            <CatchRouteCard action={{label: stage.link, href: hostLandingHref(stage.to), newTab: "whatsapp" in stage.to}} body={stage.body}
+              ground={stage.ground} key={stage.title} title={stage.title} />
+          ))}
+        </CatchGrid>
+      </CatchStack>
+    </CatchBand>
+  );
+}
+
+/** On the night: the picked format's evening, moment by moment, beside the chosen moment's screen. The retired #how-it-works anchor lands here. */
+function Night({captures, host}: {captures: CaptureSlots; host: Host}) {
+  const night = host.night;
+  const moment = night.moments[host.moment];
+  const screen = nightScreens(captures)[moment.slot];
+  return (
+    <>
+      <RetiredAnchor id="how-it-works" />
+      <CatchTimelineSection
+        id="night"
+        kicker={copy.night.kicker}
+        lead={copy.night.lead}
+        media={screen ? <CatchAppCaptureImage {...screen} bezel bleed caption={undefined} size="md" /> : undefined}
+        moments={night.moments.map((item) => ({time: item.time, title: item.title, body: item.body}))}
+        onSelect={host.pickMoment}
+        picker={(
+          <CatchStack gap={8}>
+            <CatchText tone="secondary" variant="body-meta">{copy.night.pickerLead}</CatchText>
+            <CatchStack aria-label={copy.night.pickerLabel} direction="row" gap={8} role="radiogroup" wrap>
+              {hostNightFormats.map((item, index) => (
+                <CatchChip colourWhenSelected dot={item.format} key={item.format} kind="choice" label={item.title}
+                  onPressed={() => host.pickFormat(index, false)} selected={index === host.format} />
+              ))}
+            </CatchStack>
+          </CatchStack>
+        )}
+        selected={host.moment}
+        timelineLabel={host.storyLabel}
+        title={copy.night.title}
+      />
+    </>
+  );
+}
+
+/** What hosts use today, side by side; the retired #existing-tools anchor lands here. */
+function Compare() {
+  const compare = copy.compare;
+  return (
+    <>
+      <RetiredAnchor id="existing-tools" />
+      <CatchComparisonTable
+        checked={compare.checked}
+        columns={compare.columns}
+        ground="paper"
+        highlightColumn={0}
+        id="compare"
+        kicker={compare.kicker}
+        lead={compare.body}
+        rowHeader={compare.rowHeader}
+        rows={compare.rows}
+        source={compare.source}
+        title={compare.title}
+      />
+    </>
+  );
+}
+
+/** The fee band on ink: the rate, what it includes, the trial and full pricing, the shared calculator, three worked examples and the organisations line. */
+function Pricing() {
+  const pricing = copy.pricing;
+  return (
+    <PricingFeeBand
+      actions={[
+        {label: pricing.start, href: "#start", variant: "light"},
+        {label: pricing.full, href: pricing.fullHref, variant: "ghost"},
+      ]}
+      examples={pricing.examples}
+      foot={{text: pricing.organisations, action: {label: pricing.talk, href: whatsappChatHref(pricing.talkMessage), newTab: true, variant: "ghost"}}}
+      id="pricing"
+      kicker={pricing.kicker}
+      labels={pricing.included}
+      rateTitle={pricing.title}
+    />
+  );
+}
+
+/** However the host likes to start: every route ends in the same free trial. The "see it" route shows the live console on the iPad. */
+function Talk({captures}: {captures: CaptureSlots}) {
+  const talk = copy.talk;
+  const tablet = captureSlot(captures, "host-live-tablet");
+  return (
+    <CatchBand aria-labelledby="host-talk-title" as="section" id="talk">
+      <CatchStack gap={40}>
+        <CatchBandHeader align="center" kicker={talk.kicker} kickerAccent="indigo" lead={talk.body} size="section" title={talk.title} titleId="host-talk-title" />
+        <CatchGrid columns={4}>
+          {talk.paths.map((path, index) => (
+            <CatchRouteCard
+              action={{label: path.link, href: hostLandingHref(path.to), newTab: "whatsapp" in path.to, variant: path.ground === "ink" ? "light" : index === 1 ? "secondary" : "primary"}}
+              body={path.body}
+              ground={path.ground}
+              key={path.title}
+              kicker={path.kicker}
+              kind="button"
+              media={index === 1 && tablet ? <CatchAppCaptureImage {...tablet} caption={undefined} /> : undefined}
+              title={path.title}
+            />
+          ))}
+        </CatchGrid>
+      </CatchStack>
+    </CatchBand>
+  );
+}
+
+function Faq() {
+  const faq = copy.faq;
+  return (
+    <CatchFaqSection
+      defaultOpen={[]}
+      footer={(
+        <CatchStack align="center" direction="row" gap={8} wrap>
+          <CatchText variant="body">{faq.elsewhere}</CatchText>
+          <CatchButton href={whatsappChatHref(whatsappChatCopy.hostQuestionMessage)} label={faq.ask} newTab size="sm" trailingIcon="forward" variant="quiet" />
         </CatchStack>
-        <CatchStack gap={24}>
-          <CatchStepList steps={start.steps} />
-          <HostStoreBadges placement="host_start" />
-          <LaptopHandoff />
+      )}
+      id="faq"
+      items={faq.items.map((item, index) => ({id: `host-faq-${index + 1}`, question: item.title, answer: item.body}))}
+      kicker={faq.kicker}
+      title={faq.title}
+    />
+  );
+}
+
+/** The free-trial start on yellow: three steps, Catch Host's badges, a person and weddings, beside Explore. The retired #apply anchor lands here. */
+function Start({captures}: {captures: CaptureSlots}) {
+  const start = copy.start;
+  const explore = captureSlot(captures, "guest-explore");
+  const stores = useAppDownloadCtas({placement: "host_start", app: "host"});
+  return (
+    <CatchCtaSection
+      capture={(
+        <CatchStack gap={20} id="apply">
+          <CatchStepCards current={0} on="colour" steps={start.steps} />
+          <CatchStack align="center" direction="row" gap={8} wrap>
+            <CatchText variant="body-small">{start.personLead}</CatchText>
+            <CatchButton href={whatsappChatHref(whatsappChatCopy.hostQuestionMessage)} label={start.personWhatsapp} newTab size="sm" variant="quiet" />
+            <CatchButton href={whatsappChatHref(whatsappChatCopy.walkthroughMessage)} label={start.personWalkthrough} newTab size="sm" variant="quiet" />
+          </CatchStack>
           <CatchStack align="center" direction="row" gap={8} wrap>
             <CatchText variant="body-small">{start.weddingsLead}</CatchText>
             <CatchButton href={start.weddingsHref} label={start.weddings} size="sm" trailingIcon="forward" variant="quiet" />
           </CatchStack>
         </CatchStack>
-      </CatchStack>
-    </CatchSurface>
+      )}
+      flush={explore != null}
+      ground="yellow"
+      id="start"
+      kicker={start.kicker}
+      lead={start.body}
+      media={explore ? <CatchAppCaptureImage {...explore} bezel bleed caption={undefined} size="md" /> : undefined}
+      stores={stores.map((store) => ({badgeSrc: store.badgeSrc, comingSoon: store.comingSoon, href: store.href || undefined, label: store.accessibleLabel,
+        onClick: store.onClick, store: store.store}))}
+      title={start.title}
+    />
   );
 }
 
 /**
- * The host landing, band for band as the RbWebHostV2 board: the hero, every
- * kind of night with the format matrix, the night scene, the tablet, the
- * booking board, guests, growth links, the ways to use Catch, pricing, the
- * FAQ and the free-trial start. The legacy route anchors (#features,
- * #use-cases, #how-it-works, #existing-tools, #layers, #apply) sit on the
- * bands that now carry that content, so retired links still land.
+ * The host landing, band for band as the PlaybookHosts board: the coral
+ * hero, every kind of host (format cards that lead to their night), where
+ * you are today, on the night, the comparison, the fee band with the shared
+ * calculator, the ways to start, the FAQ and the yellow free-trial start.
+ * The legacy route anchors (#features, #use-cases, #how-it-works,
+ * #existing-tools, #layers, #apply) sit on the bands that now carry that
+ * content, so retired links still land. The board's proof, story, no-show
+ * tool and referral bands wait for real data and backends.
  */
 function HostLandingBands({captures, host}: {captures: CaptureSlots; host: Host}) {
   return (
     <>
       <Hero captures={captures} />
-      <Kinds host={host} />
+      <Ways />
+      <Stages />
       <Night captures={captures} host={host} />
-      <Tablet captures={captures} />
-      <Pipeline />
-      <Guests captures={captures} />
-      <Growth host={host} />
-      <Layers host={host} />
-      <Pricing host={host} />
+      <Compare />
+      <Pricing />
+      <Talk captures={captures} />
       <Faq />
-      <Start />
+      <Start captures={captures} />
     </>
   );
 }
 
 /**
- * The host landing (the RbWebHostV2 board) on the white ground: the site
+ * The host landing (the PlaybookHosts board) on the white ground: the site
  * header, then the page's sections with Start free trial in the bar that
- * takes its place once you scroll, the board's bands, and the host footer. `captures` are the marketing capture
- * slots (src/app/marketingCaptures.ts).
+ * takes its place once you scroll, the board's bands, the host footer and
+ * the phone action bar. `captures` are the marketing capture slots
+ * (src/app/marketingCaptures.ts).
  */
 export function HostPage({captures}: {captures: CaptureSlots}) {
   const host = useHostLandingController();
@@ -426,7 +350,9 @@ export function HostPage({captures}: {captures: CaptureSlots}) {
       <WebsitePageMain id="top">
         <HostLandingBands captures={captures} host={host} />
       </WebsitePageMain>
-      <PublicSiteFooter tagline={copy.footer.tagline} variant="host" />
+      <PublicSiteFooter helpTitle={copy.footer.helpTitle} tagline={copy.footer.tagline} variant="host" />
+      <CatchSiteDock label={copy.dock.label} primary={{label: copy.dock.start, href: "#start"}}
+        whatsapp={{label: copy.dock.whatsapp, href: whatsappChatHref(whatsappChatCopy.hostQuestionMessage)}} />
     </CatchRoot>
   );
 }

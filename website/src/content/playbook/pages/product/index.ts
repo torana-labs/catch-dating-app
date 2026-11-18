@@ -10,4 +10,5 @@ import type {PlaybookPageIndex} from "../../playbookContract.ts";
  * in features/playbook/playbookRoutes.ts and design/website/routes.json.
  */
 export const productPlaybookPages: PlaybookPageIndex = {
+  pricing: {file: "pricing.json", load: () => import("./pricing.json")},
 };

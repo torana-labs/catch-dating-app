@@ -1676,7 +1676,11 @@
                   "noShowCalculator",
                   "eventPageFromLink",
                   "walkthroughSlots",
-                  "pricingCalculator"
+                  "pricingCalculator",
+                  "pricingExamples",
+                  "pricingCap",
+                  "pricingIncluded",
+                  "pricingOrganisations"
                 ]
               },
               "kicker": {
@@ -1687,6 +1691,9 @@
               },
               "title": {
                 "$ref": "#/$defs/copy"
+              },
+              "pageTitle": {
+                "type": "boolean"
               },
               "labels": {
                 "type": "array",

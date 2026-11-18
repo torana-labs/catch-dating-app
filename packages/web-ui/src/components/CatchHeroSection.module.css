@@ -77,6 +77,18 @@
   color: var(--catch-palette-ink);
 }
 
+/* With a leading picture (PlaybookHosts .qr): the picture beside the words, 16px apart, the card 12px inside and 18px at its end. */
+.notice[data-leading] {
+  display: flex;
+  align-items: center;
+  gap: var(--catch-space-s4);
+  padding: var(--catch-space-s3) var(--catch-space-micro18) var(--catch-space-s3) var(--catch-space-s3);
+}
+
+.noticeLeading { flex: none; }
+
+.noticeCopy { min-width: 0; }
+
 .noticeBody {
   margin: var(--catch-space-micro2) 0 var(--catch-space-micro10);
 }

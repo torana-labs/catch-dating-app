@@ -1,0 +1,82 @@
+/*
+ * A route card (PlaybookHosts .stg and .path): a Website v2 ground at 24px
+ * corners, 24px inside, its parts 10px apart and its action at the foot.
+ * Link cards (.stg) are at least 230px tall, with a 20px title, a 15px line
+ * and a 14px bold underlined link; button cards (.path) at least 300px, with a
+ * 15px bold tracked label, a 21px title, a 14px line and a picture 110px tall
+ * at 16px corners. Below 840px the least heights drop.
+ */
+.card {
+  composes: ground from "./grounds.module.css";
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro10);
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--catch-website-route-card-min-height);
+  padding: var(--catch-space-s6);
+  border-radius: var(--catch-radius-xl);
+}
+
+.card[data-kind="button"] { min-height: var(--catch-website-route-card-tall-min-height); }
+
+.kicker.kicker {
+  margin: 0;
+  font-size: var(--catch-typography-role-body-size);
+  font-weight: var(--catch-website-type-figure-weight);
+  letter-spacing: var(--catch-website-type-kicker-tracking);
+}
+
+.title.title {
+  margin: 0;
+  font-size: var(--catch-typography-role-display-xs-size);
+  line-height: var(--catch-website-type-card-title-line-height);
+}
+
+.card[data-kind="button"] .title.title {
+  font-size: var(--catch-website-route-card-tall-title-size);
+  line-height: var(--catch-website-type-tile-title-line-height);
+}
+
+.body.body {
+  margin: 0;
+  line-height: var(--catch-website-type-body-line-height);
+}
+
+.card[data-kind="button"] .body.body {
+  color: var(--catch-theme-ink2);
+  font-size: var(--catch-typography-role-body-small-size);
+}
+
+.media {
+  overflow: hidden;
+  height: var(--catch-website-route-card-media-height);
+  margin-top: var(--catch-space-s1);
+  border-radius: var(--catch-radius-md);
+}
+
+.foot {
+  display: flex;
+  margin-top: auto;
+  padding-top: var(--catch-space-s2);
+}
+
+.link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: var(--catch-space-micro2);
+}
+
+.link :global(*) { font-weight: var(--catch-typography-role-title-bar-weight); }
+
+.link:focus-visible {
+  border-radius: var(--catch-radius-xs);
+  outline: var(--catch-stroke-focus) solid currentColor;
+  outline-offset: var(--catch-space-micro2);
+}
+
+@media (max-width: 839px) {
+  .card,
+  .card[data-kind="button"] { min-height: 0; }
+}
+.media :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; }

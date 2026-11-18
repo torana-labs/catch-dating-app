@@ -16,6 +16,7 @@ import {
   runImport,
   setJsonValue,
 } from "./import_kit_tokens.mjs";
+import {kitFiles} from "./lib/kit_token_map.mjs";
 
 const panels = `/* comment { } */
 .pg{background:#fff;color:#141114}
@@ -136,9 +137,7 @@ test("the import is idempotent and --check passes after it", () => {
     };
     const repo = path.resolve(import.meta.dirname, "../../..");
     for (const file of [
-      "design/source_packs/website-playbook/kit/playbook-panels.css",
-      "design/source_packs/website-playbook/kit/playbook-kit.css",
-      "design/source_packs/website-playbook/oneoff/PlaybookHome.dc.html",
+      ...Object.values(kitFiles),
       "design/tokens/catch.tokens.json",
       "design/source_packs/website-playbook/README.md",
       "design/source_packs/website-playbook/source-pack.json",
