@@ -291,6 +291,18 @@ service cloud.firestore {
           && programView(programId).workFunction.get('*', 0) > request.time.toMillis());
     }
 
+    // The door of one function: function check-in or function lead duty
+    // covering it, or the owner. Coordinators hold both duties in the view.
+    function programDoorCovers(programId, functionId) {
+      return programDutyCoversFunction(programId, 'functionCheckIn', functionId)
+        || programDutyCoversFunction(programId, 'functionLead', functionId);
+    }
+
+    // Full reach over programme-wide operations: coordinators and the owner.
+    function programFullReach(programId) {
+      return hasProgramDuty(programId, 'programCoordinator');
+    }
+
     function programDutyCoversFunction(programId, duty, functionId) {
       return isProgramManager(programId)
         || (hasProgramAccessView(programId)
@@ -2497,6 +2509,39 @@ service cloud.firestore {
         || (resource.data.kind == 'function'
           && programWorkListsAllFunctions(resource.data.programId));
       allow write: if false;
+    }
+
+    // The door of one function (#1339): the header, the roster rows and the
+    // newest journal entries. Rows and entries are listed by a query naming
+    // the programme and the function; contacts never appear in them.
+    match /programDoorFunctions/{functionId} {
+      allow get: if programDoorCovers(resource.data.programId, functionId);
+      allow list, write: if false;
+    }
+    match /programDoorRows/{rowId} {
+      allow get, list: if programDoorCovers(resource.data.programId,
+        resource.data.functionId);
+      allow write: if false;
+    }
+    match /programDoorJournalViews/{journalId} {
+      allow get, list: if programDoorCovers(resource.data.programId,
+        resource.data.functionId);
+      allow write: if false;
+    }
+
+    // Live board alerts (#1339). A function lead reads the alerts stamped for
+    // a duty they hold, listing one duty at a time; full reach reads every
+    // alert, including travel alerts (no duty). The counts are full reach's.
+    match /programAlertViews/{alertId} {
+      allow get, list: if programFullReach(resource.data.programId)
+        || (hasProgramDuty(resource.data.programId, 'functionLead')
+          && resource.data.duty != null
+          && programView(resource.data.programId).duties.get(resource.data.duty, 0) > request.time.toMillis());
+      allow write: if false;
+    }
+    match /programTravelCountViews/{programId} {
+      allow get: if programFullReach(programId);
+      allow list, write: if false;
     }
 
     match /programStaffInvites/{inviteId} {

@@ -758,6 +758,13 @@ export {onProgramAccessViewGrantChanged,
 export {onProgramWorkSummaryChanged, onProgramPickupPointViewChanged,
   onProgramHotelViewChanged, onProgramFunctionViewChanged} from
   "./programs/programWorkViewTriggers";
+export {onProgramDoorFunctionChanged, onProgramDoorJoinChanged,
+  onProgramDoorGuestChanged, onProgramDoorHouseholdChanged,
+  onProgramDoorJournalChanged, onProgramDoorStaffLabelChanged} from
+  "./programs/programDoorViewTriggers";
+export {onProgramAlertSendChanged, onProgramAlertLegChanged,
+  onProgramAlertResolutionChanged} from
+  "./programs/programLiveBoardViewTriggers";
 export {listMyHostAssignments} from "./hostWork/listMyHostAssignments";
 export {
   inviteProgramStaff,

@@ -557,6 +557,15 @@ enter previews.
 | `onHostDirectoryOrganizerCreated` | `src/hostReadModels/directoryActivation.ts` | Activates every Host directory read model (contacts, responses, forms, groups, events) for a new organizer |
 | `onProgramAccessViewGrantChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites that account's programme access view when a staff grant changes |
 | `onProgramAccessViewProgramChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites the owner's view, and every staff view when the creator or organizer changes, when a programme changes |
+| `onProgramAlertLegChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Rewrites a journey's live board alerts and the programme's travel counts when its status changes |
+| `onProgramAlertResolutionChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Merges a taken, finished or deleted alert resolution into its live board alert |
+| `onProgramAlertSendChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Rewrites a live board alert when a staff attention send fires |
+| `onProgramDoorFunctionChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites a function's door header, and its whole roster when the invitation list moves |
+| `onProgramDoorGuestChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites a guest's door rows and journal views when their name or household changes |
+| `onProgramDoorHouseholdChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites the door rows of a household's members when its label or members change |
+| `onProgramDoorJoinChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites a guest's door row when their attendance or RSVP at a function changes |
+| `onProgramDoorJournalChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites a door journal entry's view when it appears or is anonymized |
+| `onProgramDoorStaffLabelChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites a staff member's door journal views when their display name changes |
 | `onProgramFunctionViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a function's work shell label and counts when it changes |
 | `onProgramGuestWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a guest's phone or household changes. |
 | `onProgramHotelViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a hotel's work shell label when it changes |

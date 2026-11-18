@@ -3285,6 +3285,115 @@
       ]
     },
     {
+      "id": "programDoorFunctions",
+      "path": "programDoorFunctions/{functionId}",
+      "rulesMatch": "/programDoorFunctions/{functionId}",
+      "typescriptInterface": "ProgramDoorFunctionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+      "rulesTestNames": [
+        "reads a function's door only where a door duty covers it"
+      ],
+      "owner": "Programme read model projector: programDoorViewTriggers",
+      "read": "get by id where the account's function check-in or function lead duty covers the function (programAccessViews), and the programme owner, while not deleted; never listed",
+      "write": "server only; written from programFunctions",
+      "exportedFunctions": [
+        "onProgramDoorFunctionChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the function fields getProgramFunctionDoorView returned, venue notes, dress code and instructions included, for door duty holders only. The program-door-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programDoorRows",
+      "path": "programDoorRows/{functionId}__{guestId}",
+      "rulesMatch": "/programDoorRows/{rowId}",
+      "typescriptInterface": "ProgramDoorRowDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+      "rulesTestNames": [
+        "lists door rows and journal entries for one covered function"
+      ],
+      "owner": "Programme read model projector: programDoorViewTriggers",
+      "read": "get and list (query naming programId and functionId) where a door duty covers the function, and the programme owner, while not deleted",
+      "write": "server only; written from programFunctionGuests, programGuests, programHouseholds and programFunctions",
+      "exportedFunctions": [
+        "onProgramDoorFunctionChanged",
+        "onProgramDoorJoinChanged",
+        "onProgramDoorGuestChanged",
+        "onProgramDoorHouseholdChanged"
+      ],
+      "migrationNotes": [
+        "Display name, RSVP and attendance state, party size, household label and response note only; never a phone number, email or other contact field. An allGuests function has a row for every programme guest. The program-door-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone.",
+        "Guest and household anonymization reaches the rows through their source triggers."
+      ]
+    },
+    {
+      "id": "programDoorJournalViews",
+      "path": "programDoorJournalViews/{journalId}",
+      "rulesMatch": "/programDoorJournalViews/{journalId}",
+      "typescriptInterface": "ProgramDoorJournalViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+      "rulesTestNames": [
+        "lists door rows and journal entries for one covered function"
+      ],
+      "owner": "Programme read model projector: programDoorViewTriggers",
+      "read": "get and list (query naming programId and functionId) where a door duty covers the function, and the programme owner, while not deleted",
+      "write": "server only; written from programDoorJournal, programGuests and programStaffGrants",
+      "exportedFunctions": [
+        "onProgramDoorJournalChanged",
+        "onProgramDoorGuestChanged",
+        "onProgramDoorStaffLabelChanged"
+      ],
+      "migrationNotes": [
+        "The newest entries are read by an ordered query with a limit of 60. No actor account id and no device id: only the actor's label. An anonymized entry's view drops the name, note and label. The program-door-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programAlertViews",
+      "path": "programAlertViews/{programId}__{alertId}",
+      "rulesMatch": "/programAlertViews/{alertId}",
+      "typescriptInterface": "ProgramAlertViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+      "rulesTestNames": [
+        "shows an alert to the lead holding its duty, never another duty's",
+        "lists alerts per duty for a lead and all of them for full reach"
+      ],
+      "owner": "Programme read model projector: programLiveBoardViewTriggers",
+      "read": "get and list by an account with the function lead duty for an alert stamped for a duty it holds (a lead lists one duty at a time), and by full reach (coordinators and the owner) for every alert, travel alerts included, while not deleted",
+      "write": "server only; written from organizerMomentSends, programTravelLegs and programAlerts",
+      "exportedFunctions": [
+        "onProgramAlertSendChanged",
+        "onProgramAlertLegChanged",
+        "onProgramAlertResolutionChanged"
+      ],
+      "migrationNotes": [
+        "One document per alert; a staff attention alert per run and duty from the earliest send, ending 24 hours after it (clients hide it past expiresAtMillis; documents are not removed by a TTL yet). Carries the assignee's account id so a phone can tell its own alerts; the retention sweep deletes the resolutions, which clears the assignee. The program-live-board-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programTravelCountViews",
+      "path": "programTravelCountViews/{programId}",
+      "rulesMatch": "/programTravelCountViews/{programId}",
+      "typescriptInterface": "ProgramTravelCountViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_door_live.rules.test.cjs",
+      "rulesTestNames": [
+        "gives travel counts to full reach only"
+      ],
+      "owner": "Programme read model projector: programLiveBoardViewTriggers",
+      "read": "get by id by full reach (coordinators and the owner) while not deleted; never listed",
+      "write": "server only; written from programTravelLegs",
+      "exportedFunctions": [
+        "onProgramAlertLegChanged"
+      ],
+      "migrationNotes": [
+        "Readiness counts of inbound journeys. The program-live-board-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
       "id": "programStaffGrants",
       "path": "programStaffGrants/{grantId}",
       "rulesMatch": "/programStaffGrants/{grantId}",
