@@ -52,11 +52,11 @@ function PricingExamplesSection({section, labels}: PlaybookCustomSectionProps) {
   return <PricingExamplesBand foot={labels.foot} ground={section.ground} id={section.id} kicker={section.kicker} title={section.title} />;
 }
 
-/** /pricing/'s organisations band (pricingOrganisations): its words beside a walkthrough on WhatsApp and the weddings page. */
+/** /pricing/'s organisations band (pricingOrganisations): its words beside the walkthrough request page and the weddings page. */
 function PricingOrganisationsSection({section, labels, controller}: PlaybookCustomSectionProps) {
   if (section.type !== "custom" || !section.title) return null;
   const actions = controller.actions([
-    {label: labels.walkthrough, to: {kind: "whatsapp", message: labels.walkthroughMessage}, emphasis: "primary"},
+    {label: labels.walkthrough, to: {route: "host_walkthrough"}, emphasis: "primary"},
     {label: labels.weddings, to: {route: "weddings"}, emphasis: "secondary"},
   ], section.id) ?? [];
   return <PricingOrganisationsBand actions={actions} ground={section.ground} id={section.id} kicker={section.kicker} lead={section.lead} title={section.title} />;

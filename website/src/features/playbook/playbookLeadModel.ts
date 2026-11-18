@@ -39,11 +39,16 @@ export const playbookGuideFormats: Readonly<Record<string, WebsiteLeadGuideForma
   teams: "team_social",
 };
 
-/** The fields a form of each kind may show. Every field a form shows must be filled. */
+/**
+ * The fields a form of each kind may show. Every field a form shows must be
+ * filled. A walkthrough is a request for a time, which staff confirm on
+ * WhatsApp; its organisation and what they run are optional to the intake.
+ */
 const kindFields = {
   guide: {needs: [], may: ["name"]},
   venue: {needs: ["orgName", "capacity", "nights"], may: ["name", "area"]},
   demo: {needs: ["name", "whatYouHost"], may: []},
+  walkthrough: {needs: ["name", "preferredTime"], may: ["orgName", "whatYouHost"]},
 } as const satisfies Record<string, {needs: readonly PlaybookLeadFieldName[]; may: readonly PlaybookLeadFieldName[]}>;
 
 type PlaybookLeadFieldName = NonNullable<PlaybookLeadForm["fields"]>[number]["name"];
@@ -102,7 +107,8 @@ export function playbookLeadProblems(form: PlaybookLeadForm, answers: PlaybookLe
  * The lead a sendable form files: its kind, the number as typed, the
  * playbook consent version, the page path, the form's id as its entry, and
  * the kind's answers (a guide's format as the intake names it; a venue's
- * name as spaceName). A shown name goes as the person's full name.
+ * name as spaceName; a walkthrough's organisation and what they run as
+ * organisation and whatYouRun). A shown name goes as the person's full name.
  */
 export function playbookLeadRequest(form: PlaybookLeadForm, kind: PlaybookSendableLeadKind, answers: PlaybookLeadAnswers, sourcePage: string): WebsiteLeadForm {
   const shared = {
@@ -123,6 +129,14 @@ export function playbookLeadRequest(form: PlaybookLeadForm, kind: PlaybookSendab
     return {
       kind, ...shared, ...named,
       answers: {spaceName: typed(answers.orgName), capacity: typed(answers.capacity), nights: typed(answers.nights), ...(area ? {area} : {})},
+    };
+  }
+  if (kind === "walkthrough") {
+    const organisation = typed(answers.orgName);
+    const whatYouRun = typed(answers.whatYouHost);
+    return {
+      kind, ...shared, fullName,
+      answers: {preferredTime: typed(answers.preferredTime), ...(organisation ? {organisation} : {}), ...(whatYouRun ? {whatYouRun} : {})},
     };
   }
   return {kind, ...shared, fullName, answers: {whatYouHost: typed(answers.whatYouHost)}};

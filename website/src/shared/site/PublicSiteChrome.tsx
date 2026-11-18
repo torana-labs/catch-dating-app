@@ -288,15 +288,13 @@ function siteLinks(hrefs: readonly string[]): SiteNavItem[] {
 
 /**
  * The footer's help band actions: a person answers on WhatsApp. Guest pages
- * add Help; host pages add the walkthrough, asked for on WhatsApp. The band
- * states no hours.
+ * add Help; host pages add the walkthrough request page. The band states no
+ * hours.
  */
 function FooterHelpActions({variant}: {variant: SiteFooterVariant}) {
   const band = siteFooterCopy.helpBand;
   const whatsapp = {href: whatsappChatHref(variant === "host" ? band.hostMessage : band.guestMessage), label: band.whatsapp};
-  const second = variant === "host"
-    ? {href: whatsappChatHref(band.walkthrough.message), label: band.walkthrough.label}
-    : band.guestHelp;
+  const second = variant === "host" ? band.walkthrough : band.guestHelp;
   return (
     <>
       <CatchButton href={whatsapp.href} label={whatsapp.label} onPressed={() => trackFooter(whatsapp)} size="sm" variant="light" />

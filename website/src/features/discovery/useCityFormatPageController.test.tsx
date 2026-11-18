@@ -43,7 +43,8 @@ describe("useCityFormatPageController", () => {
 
   it("tags a women-led plan and organiser from the read model", () => {
     const {result} = renderHook(() => useCityFormatPageController(mumbaiDiscoveryCatalog, "pickleball", vi.fn()));
-    expect(result.current.plans.cards[0].detail).toMatch(/ · Women-led$/u);
+    expect(result.current.plans.cards[0]).toMatchObject({badge: "Women-led"});
+    expect(result.current.plans.cards[0].detail).not.toMatch(/Women-led/u);
     expect(result.current.organisers.cards[0].meta).toMatch(/^Women-led · /u);
   });
 

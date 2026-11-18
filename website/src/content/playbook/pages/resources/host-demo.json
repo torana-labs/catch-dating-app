@@ -93,7 +93,7 @@
       "actions": [
         {
           "label": "Rather see it with a person? Ask for a 15-minute walkthrough",
-          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like a 15-minute walkthrough of {{brand.name}} for hosts."},
+          "to": {"route": "host_walkthrough"},
           "emphasis": "secondary"
         }
       ],
