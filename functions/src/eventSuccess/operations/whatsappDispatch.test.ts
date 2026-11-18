@@ -47,6 +47,36 @@ function withdrawal(h: Harness) {
     whatsappPermissionId(h.context, h.scope.attendeeId, h.scope.senderId);
   return {store, credential, input, permissionPath};
 }
+
+/**
+ * Runs competing calls the way production retries them. Under lock
+ * contention the emulator answers "10 ABORTED: Transaction lock timeout", and
+ * a call can exhaust the SDK's five transaction attempts; the delivery work
+ * checkpoint (deliveryWorkStore) treats that throw as unavailable and runs the
+ * worker again, and a webhook or callable is redelivered. So a call that ends
+ * ABORTED runs again, alone with the other losers; any other error fails.
+ * Arbitration is still asserted by the callers: exactly one winner overall.
+ */
+async function settleContended<T>(calls: Array<() => Promise<T>>,
+  rounds = 4): Promise<T[]> {
+  const results = new Array<T>(calls.length);
+  let pending = calls.map((_, index) => index);
+  for (let round = 0; round < rounds && pending.length; round++) {
+    const settled = await Promise.allSettled(pending.map((i) => calls[i]()));
+    const aborted: number[] = [];
+    settled.forEach((outcome, k) => {
+      if (outcome.status === "fulfilled") results[pending[k]] = outcome.value;
+      else if ((outcome.reason as {code?: unknown})?.code === 10) {
+        aborted.push(pending[k]);
+      } else throw outcome.reason;
+    });
+    pending = aborted;
+  }
+  assert.equal(pending.length, 0,
+    `${pending.length} call(s) still ABORTED after ${rounds} rounds`);
+  return results;
+}
+
 test("WhatsApp withdrawal authority is issued atomically with dispatch",
   async () => {
     const h = await harness();
@@ -855,8 +885,8 @@ test("Firestore arbitrates one claim/debit under eight competing workers", {
       correlation = JSON.parse(init!.body as string).biz_opaque_callback_data;
       return Response.json({messages: [{id: "wamid.delivery"}]});
     });
-    const results = await Promise.all(Array.from({length: 8}, () =>
-      service.dispatch(h.messageId, h.link.linkId)));
+    const results = await settleContended(Array.from({length: 8}, () =>
+      () => service.dispatch(h.messageId, h.link.linkId)));
     assert.equal(results.filter((r) => r.kind === "submitted").length, 1);
     assert.equal(sends, 1);
     for (const path of h.budgetPaths) {
@@ -866,15 +896,15 @@ test("Firestore arbitrates one claim/debit under eight competing workers", {
     h.clock.now += 1000;
     const statusId = await queuedStatus(h, correlation, "delivered");
     const reports = new WhatsappDeliveryStore(h.db, () => h.clock.now);
-    const reconciled = await Promise.all(Array.from({length: 8}, () =>
-      reports.consumeQueued(statusId)));
+    const reconciled = await settleContended(Array.from({length: 8}, () =>
+      () => reports.consumeQueued(statusId)));
     assert.equal(reconciled.filter((r) => r.kind === "recorded" &&
       r.disposition === "applied").length, 1);
     assert.equal((await h.outbox.get(h.messageId))!.attempts[0].state.kind,
       "delivered");
     const w = withdrawal(h);
-    const withdrawals = await Promise.all(Array.from({length: 8}, () =>
-      w.store.withdraw(w.input)));
+    const withdrawals = await settleContended(Array.from({length: 8}, () =>
+      () => w.store.withdraw(w.input)));
     assert.equal(withdrawals.filter((r) => r.outcome === "applied").length, 1);
     assert.equal((await w.store.get(w.credential)).view.revision, 2);
     // Different outboxes must contend on spending, not just on message CAS.
@@ -891,8 +921,8 @@ test("Firestore arbitrates one claim/debit under eight competing workers", {
     const secondId = assistanceMessageId(secondIntent);
     const reservation = await second.reserve(secondId);
     await shared.reserve();
-    const resultsAcrossMessages = await Promise.all([
-      shared.claim(), second.claimLiveDispatch(secondId,
+    const resultsAcrossMessages = await settleContended([
+      () => shared.claim(), () => second.claimLiveDispatch(secondId,
         reservation.record.attempts[0].attemptId,
         shared.store.prepare(link.linkId, shared.expected)),
     ]);
@@ -902,8 +932,8 @@ test("Firestore arbitrates one claim/debit under eight competing workers", {
       assert.equal((await shared.read(path))!.chargedMicros, 500_000);
     }
     shared.clock.now += 1000;
-    const stops = await Promise.all(Array.from({length: 8}, () =>
-      shared.stop(shared.clock.now)));
+    const stops = await settleContended(Array.from({length: 8}, () =>
+      () => shared.stop(shared.clock.now)));
     assert.equal(stops.reduce((a, b) => a + b, 0), 1);
     const preference = await shared.preferences.get(shared.actor, shared.scope);
     assert.equal(preference.view.preference, "disabled");
