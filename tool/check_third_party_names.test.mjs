@@ -87,8 +87,8 @@ test("helpers classify accounts, files, annotations and fictional names", () => 
   assert.equal(socialAccount("www.instagram.com", "/@kestrel/"), "kestrel");
   assert.equal(socialAccount("instagram.com", "/explore/tags/run"), null);
   assert.equal(socialAccount("graph.instagram.com", "/v26.0/me"), null);
-  assert.equal(isDataFile("operations/src/workflows/supply-intake/fixtures/pages/luma-event.html"), true);
-  assert.equal(isDataFile("operations/src/workflows/supply-intake/message-nomination.mjs"), false);
+  assert.equal(isDataFile("website/src/stories/fixtures/syntheticHostListings.json"), true);
+  assert.equal(isDataFile("website/src/features/organizers/data.ts"), false);
   assert.equal(isCodeAnnotation("lib/main.dart", "Riverpod"), true);
   assert.equal(isCodeAnnotation("docs/a.md", "KestrelPoint"), false);
   assert.equal(isFictional("ShopName.Example", allowlist), true);
