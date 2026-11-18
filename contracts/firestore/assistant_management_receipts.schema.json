@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/assistant_management_receipts.schema.json",
   "title": "AssistantManagementReceiptDocument",
-  "description": "Immutable server-side result of one owner management request; keyed by issuer and request id hash.",
+  "description": "Immutable server-side result of one owner management request; keyed by issuer and request id hash. Kept as its own collection (L8 decision, 18 Nov 2026): the sales privacy inventory enumerates it for erasure and review, so it stays with the sales records it describes.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schemaVersion", "classification", "receiptId", "issuerUid", "requestId", "action", "targetId", "materialHash", "result", "createdAt"],

@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_assistance_rcs_callback_receipts.schema.json",
   "title": "EventRcsCallbackReceiptDocument",
+  "description": "Kept as its own collection (L8 decision, 18 Nov 2026): part of the dormant event-assistance Operations platform, whose receipts must outlive the event and may be hashed into other receipts or serve as provider evidence.",
   "$ref": "../shared/event_assistance_rcs_callbacks.schema.json#/definitions/ConsumerReceipt",
   "x-firestore-collection": "eventAssistanceRcsCallbackReceipts",
   "x-firestore-path": "eventAssistanceRcsCallbackReceipts/{callbackId}",

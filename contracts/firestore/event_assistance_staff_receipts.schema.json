@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_assistance_staff_receipts.schema.json",
   "title": "EventAssistanceStaffReceiptDocument",
+  "description": "Kept as its own collection (L8 decision, 18 Nov 2026): part of the dormant event-assistance Operations platform, whose receipts must outlive the event and may be hashed into other receipts or serve as provider evidence.",
   "$ref": "../shared/event_assistance_group_staff.schema.json#/definitions/Receipt",
   "x-firestore-collection": "eventAssistanceStaffReceipts",
   "x-firestore-path": "eventAssistanceStaffReceipts/{receiptId}",
