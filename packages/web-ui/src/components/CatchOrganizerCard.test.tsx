@@ -26,6 +26,16 @@ describe("CatchOrganizerCard", () => {
     expect(screen.getByRole("heading", {name: "Pune Board Gamers"})).toBeTruthy();
     expect(screen.queryByRole("link")).toBeNull();
   });
+
+  it("draws the kit's Follow card on the white ground, with no footnote when none is given", () => {
+    render(
+      <CatchOrganizerCard action={<a href="/organizers/carter/">Follow</a>} ground="white" monogramGround="coral" name="Carter Road Runners"
+        next="Next: Sun 23 · Social run" subtitle="Sunday social runs" />,
+    );
+    const card = screen.getByRole("article");
+    expect(card.dataset.ground).toBe("white");
+    expect(card.textContent).toBe("Carter Road RunnersSunday social runsNext: Sun 23 · Social runFollow");
+  });
 });
 
 describe("CatchOrganizerCard as the system OrganiserCard", () => {

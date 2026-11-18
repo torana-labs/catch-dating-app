@@ -1,11 +1,16 @@
 import {cleanup, render, screen, within} from "@testing-library/react";
 import {MemoryRouter} from "react-router";
 import {afterEach, describe, expect, it, vi} from "vitest";
+import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {mumbaiDiscoveryCatalog} from "./discoveryCatalogFixtures";
 import {NewToCityPage} from "./NewToCityPage";
 
 vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent: vi.fn()}));
 afterEach(cleanup);
+
+const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-checked-in"].map((id) => [id, {
+  id, webPath: `/captures/${id}.png`, width: 980, height: 1924, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Find a plan", pages: [],
+}]));
 
 describe("New to the city page", {timeout: 20_000}, () => {
   it("leads with the board's hero, then this week's plans for newcomers and the capture", () => {
@@ -19,5 +24,11 @@ describe("New to the city page", {timeout: 20_000}, () => {
     expect(screen.getByRole("heading", {name: "Four plans, then you’re a regular."})).toBeTruthy();
     expect(screen.getByRole("heading", {name: "Get newcomer-friendly plans on WhatsApp."})).toBeTruthy();
     expect(screen.queryByText(/came alone/iu)).toBeNull();
+  });
+
+  it("shows a guest's phone after checking in beside the WhatsApp form, as the board does", () => {
+    render(<MemoryRouter initialEntries={["/new-to-mumbai/"]}><NewToCityPage captures={captures} catalog={mumbaiDiscoveryCatalog} /></MemoryRouter>);
+    const notify = screen.getByRole("region", {name: "Get newcomer-friendly plans on WhatsApp."});
+    expect(within(notify).getByRole("img", {name: "Screen guest-checked-in"})).toBeTruthy();
   });
 });

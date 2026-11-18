@@ -10,7 +10,12 @@ const srcRoot = path.resolve(__dirname, "..");
 const publicRoot = path.resolve(srcRoot, "../public");
 // Where each canonical page's sections live. A capture that names a page
 // must be rendered there, and a slot may only appear on a page it names.
-const pageFeatures: Record<string, string> = {"/": "features/home/", "/host/": "features/host/", "/weddings/": "features/weddings/"};
+// A discovery page stands for its whole family: /mumbai/run-clubs/ for
+// every city-by-format page, /new-to-mumbai/ for every new-to-the-city page.
+const pageFeatures: Record<string, string> = {
+  "/": "features/home/", "/host/": "features/host/", "/weddings/": "features/weddings/",
+  "/mumbai/run-clubs/": "features/discovery/CityFormatPage.tsx", "/new-to-mumbai/": "features/discovery/NewToCityPage.tsx",
+};
 
 function featureSources() {
   return fs.readdirSync(path.join(srcRoot, "features"), {recursive: true, encoding: "utf8"})

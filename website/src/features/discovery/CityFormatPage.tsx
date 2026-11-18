@@ -1,4 +1,5 @@
 import {
+  CatchAppCaptureImage,
   CatchBand,
   CatchBandHeader,
   CatchButton,
@@ -15,12 +16,14 @@ import {
 } from "@catch/web-ui";
 import {explorePageCopy} from "@content/explorePage";
 import {useNavigate} from "react-router";
+import {captureSlot, type CaptureSlots} from "../../shared/media/captureSlot";
 import type {HomeCatalog} from "../home/homeTypes";
 import {CitySiteChrome} from "../home/sections/cityChrome";
 import {CityAlertsCapture} from "./CityAlertsCapture";
 import {DiscoveryDock} from "./DiscoveryDock";
+import {DiscoveryOrganisers} from "./DiscoveryOrganisers";
 import {cityFormatFilters} from "./discoveryModel";
-import {organizerGridItems, planGridItems} from "./discoveryCards";
+import {planGridItems} from "./discoveryCards";
 import type {DiscoveryFormatKey} from "./discoveryTypes";
 import {cityFormatPlansAnchor, useCityFormatPageController, type CityFormatPageController} from "./useCityFormatPageController";
 
@@ -73,19 +76,7 @@ function CityFormatPlans({page}: {page: Page}) {
 
 function CityFormatOrganisers({page}: {page: Page}) {
   const {organisers} = page;
-  return (
-    <CatchCardGrid
-      actions={[{label: organisers.join.label, href: organisers.join.href, variant: "secondary"}]}
-      columns={4}
-      ground="paper"
-      items={organizerGridItems(organisers.cards)}
-      kicker={organisers.kicker}
-      kickerAccent="mint"
-      kind="org"
-      lead={organisers.lead}
-      title={organisers.title}
-    />
-  );
+  return <DiscoveryOrganisers cards={organisers.cards} claim={organisers.claim} kicker={organisers.kicker} lead={organisers.lead} title={organisers.title} />;
 }
 
 /** Below the bar (the backend says noindex): what is here so far, and what else is on in the city, on the tint panel. */
@@ -113,10 +104,14 @@ function CityFormatThin({page}: {page: Page}) {
  * board): above the indexing bar, the coral hero with the backend's counts,
  * the plans, who runs them and the first-time guide; below it, the thin
  * layout. In both, the city's other format pages, the questions, the
- * WhatsApp band, the footer and the phone action bar. It arranges library
- * parts and binds the controller (D18).
+ * WhatsApp band, the footer and the phone action bar. The first-time guide
+ * shows a guest's phone after checking in and the WhatsApp band the app's
+ * Explore screen, as the board's phones. It arranges library parts and binds
+ * the controller (D18).
  */
-function CityFormatPageSections({page}: {page: Page}) {
+function CityFormatPageSections({captures, page}: {captures: CaptureSlots; page: Page}) {
+  const checkedIn = captureSlot(captures, "guest-checked-in");
+  const explore = captureSlot(captures, "guest-explore");
   return (
     <CitySiteChrome cities={page.cities} city={page.city} dock={<DiscoveryDock href={page.dock.href} label={page.dock.label} message={page.notify.message} />}
       exploreHref={page.exploreHref} onChooseCity={page.chooseCity} showWhatsOn={page.showWhatsOn}>
@@ -133,20 +128,22 @@ function CityFormatPageSections({page}: {page: Page}) {
           <CityFormatPlans page={page} />
           <CityFormatOrganisers page={page} />
           {page.firstTime ? (
-            <CatchSplitSection kicker={page.firstTime.kicker} kickerAccent="indigo" ticks={page.firstTime.ticks} title={page.firstTime.title} />
+            <CatchSplitSection kicker={page.firstTime.kicker} kickerAccent="indigo" ticks={page.firstTime.ticks} title={page.firstTime.title}
+              media={checkedIn ? <CatchAppCaptureImage {...checkedIn} bezel caption={undefined} size="sm" /> : undefined} />
           ) : null}
         </> : <CityFormatThin page={page} />}
         <CatchCardGrid items={[]} kicker={page.more.kicker} kickerAccent="coral" kind="plan" links={page.more.links} title={page.more.title} />
         <CatchFaqSection items={page.faq.items} kicker={page.faq.kicker} title={page.faq.title} />
-        <CityAlertsCapture interests={page.notify.interests} kicker={page.notify.kicker} place={page.notify.place} title={page.notify.title} />
+        <CityAlertsCapture interests={page.notify.interests} kicker={page.notify.kicker} place={page.notify.place} title={page.notify.title}
+          media={explore ? <CatchAppCaptureImage {...explore} bezel caption={undefined} size="md" /> : undefined} />
       </>}
     </CitySiteChrome>
   );
 }
 
 /** The route: the selected city's catalog and the format the path names (matchDiscoveryRoute). */
-export function CityFormatPage({catalog, format}: {catalog: HomeCatalog; format: DiscoveryFormatKey}) {
+export function CityFormatPage({captures = {}, catalog, format}: {captures?: CaptureSlots; catalog: HomeCatalog; format: DiscoveryFormatKey}) {
   const navigate = useNavigate();
   const page = useCityFormatPageController(catalog, format, (href) => navigate(href));
-  return <CatchRoot theme="day"><CityFormatPageSections page={page} /></CatchRoot>;
+  return <CatchRoot theme="day"><CityFormatPageSections captures={captures} page={page} /></CatchRoot>;
 }

@@ -87,7 +87,12 @@ export function useCityFormatPageController(catalog: HomeCatalog, format: Discov
       title: copy.organisers.title,
       lead: copy.organisers.lead,
       cards: model.organizers.map((organizer) => discoveryOrganizerCard(organizer, city)),
-      join: {label: words.joinAction, href: "/host/"},
+      claim: {
+        title: "claimTitle" in words ? fill(words.claimTitle, {city: city.label}) :
+          fill(copy.organisers.claimTitle, {formatLower: tokens.formatLower, city: city.label}),
+        body: copy.organisers.claimBody,
+        action: {label: words.joinAction, href: "/host/"},
+      },
     },
     firstTime: "firstTime" in words ? {
       kicker: words.firstTime.kicker,

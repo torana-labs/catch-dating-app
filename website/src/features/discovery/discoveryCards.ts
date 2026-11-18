@@ -19,7 +19,8 @@ export function discoveryPlanCard(plan: HomePlan, timezone: string, withDate = t
 
 export function discoveryOrganizerCard(organizer: HomeOrganizer, city: HomeCity): OrganizerCardView {
   const card = organizerCard(organizer, city);
-  return (organizer as DiscoveryOrganizer).womenLed ? {...card, meta: fill(copy.womenLedMeta, {meta: card.meta})} : card;
+  return (organizer as DiscoveryOrganizer).womenLed ?
+    {...card, meta: fill(copy.womenLedMeta, {meta: card.meta}), subtitle: fill(copy.womenLedMeta, {meta: card.subtitle})} : card;
 }
 
 export function planGridItems(cards: readonly PlanCardView[]): (CatchPlanCardProps & {id: string})[] {
