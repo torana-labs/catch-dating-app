@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/hosts/live/formats/formats_moving_night.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 
 /// Which screen an event link opens.
@@ -6,8 +7,8 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_sta
 /// tablet and desktop split view, the workspace's own tabs, insights and the
 /// legacy `/attendance` and `/success` URLs) resolves here, so the rebuilt
 /// screens are what a host sees. The old event screen remains only as the
-/// [movementConsole]: the live view of a night that moves or has a saved room
-/// layout, until the redrawn run and crawl console replaces it.
+/// [movementConsole]: the live view of a night with a saved room layout,
+/// whose seat moves only the old room map makes.
 enum HostEventRouteDestination {
   /// The rebuilt event workspace: Overview and its rows.
   workspace,
@@ -18,20 +19,29 @@ enum HostEventRouteDestination {
   /// The rebuilt live console for a night in one room.
   liveConsole,
 
-  /// The old event screen's movement console and room map.
+  /// The rebuilt run console: a social run or any night in pace pods.
+  runConsole,
+
+  /// The rebuilt crawl board: a pub crawl or any night with located stops.
+  crawlBoard,
+
+  /// The old event screen's console and room map, for a night with a saved
+  /// room layout.
   movementConsole,
 
   /// The rebuilt event report.
   report,
 }
 
-/// The screen for [section], given the event's [phase] and whether tonight
-/// runs on the rebuilt live console ([liveConsoleFits], from
-/// `hostLiveConsoleFits`).
+/// The screen for [section], given the event's [phase], whether tonight
+/// runs on the rebuilt one-room console ([liveConsoleFits], from
+/// `hostLiveConsoleFits`) and, when it does not, which rebuilt console a
+/// night that moves runs on ([movingNight], from `hostMovingNightView`).
 HostEventRouteDestination hostEventRouteDestination({
   required HostEventManageSection section,
   required HostEventWorkspacePhase phase,
   required bool liveConsoleFits,
+  HostMovingNightView? movingNight,
 }) {
   return switch (section) {
     HostEventManageSection.setup => HostEventRouteDestination.workspace,
@@ -42,7 +52,11 @@ HostEventRouteDestination hostEventRouteDestination({
           ? HostEventRouteDestination.report
           : liveConsoleFits
           ? HostEventRouteDestination.liveConsole
-          : HostEventRouteDestination.movementConsole,
+          : switch (movingNight) {
+              HostMovingNightView.run => HostEventRouteDestination.runConsole,
+              HostMovingNightView.crawl => HostEventRouteDestination.crawlBoard,
+              null => HostEventRouteDestination.movementConsole,
+            },
   };
 }
 

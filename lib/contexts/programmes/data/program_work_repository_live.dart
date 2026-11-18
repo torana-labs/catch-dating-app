@@ -4,21 +4,6 @@ part of 'program_work_repository.dart';
 /// a part file so the work repository stays under the handwritten-source
 /// size budget; `_call` remains library-private.
 extension ProgramLiveRepositoryApi on ProgramWorkRepository {
-  /// The live board for the caller's duties, saved for offline cold starts
-  /// like the other staff projections.
-  Future<ProgramLiveBoard> getLiveBoard({
-    required String programId,
-    String? snapshotAccountId,
-  }) => _call(
-    name: 'getProgramLiveBoard',
-    authorityScopedRead: true,
-    payload: GetProgramLiveBoardCallableRequest(programId: programId).toJson(),
-    action: 'load the live board',
-    parse: ProgramLiveBoard.fromCallableData,
-    snapshotScope: programSnapshotScope('live', programId),
-    snapshotAccountId: snapshotAccountId,
-  );
-
   /// Takes, finishes or reopens one alert, fenced by its revision.
   /// [requestId] makes a retried tap return the stored result.
   Future<ProgramAlertResolution> resolveAlert({
@@ -89,26 +74,16 @@ Future<ProgramReadView<ProgramDeparturesRoster>> programDeparturesRosterView(
   return result;
 }
 
-/// The live board, from the live read or a bounded offline snapshot.
+/// The live board (#1339): function labels, the alerts this account may
+/// read and the travel counts through listeners, gated on the account's
+/// authority, with the schedule phased by the app clock.
 @riverpod
 Future<ProgramReadView<ProgramLiveBoard>> programLiveBoardView(
   Ref ref,
   String programId,
 ) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await _readView(
-    ref,
-    accountId,
-    programId,
-    programSnapshotScope('live', programId),
-    () => ref
-        .read(programWorkRepositoryProvider)
-        .getLiveBoard(programId: programId, snapshotAccountId: accountId),
-    ProgramLiveBoard.fromCallableData,
+  final board = await ref.watch(
+    programLiveBoardStreamProvider(programId).future,
   );
-  retainProgramProjection(
-    ref,
-    programProjectionDeadline(null, result.snapshotExpiresAt),
-  );
-  return result;
+  return (value: board, snapshotAt: null, snapshotExpiresAt: null);
 }

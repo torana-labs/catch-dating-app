@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/live/live_controller.dart';
 import 'package:catch_dating_app/hosts/live/live_needs_body.dart';
+import 'package:catch_dating_app/hosts/live/live_night_alerts_controller.dart';
 import 'package:catch_dating_app/hosts/live/live_screen.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -49,6 +50,9 @@ class HostLiveNeedsScreen extends ConsumerWidget {
           now: clock,
           checking: state.needsChecking,
           onOpenNeed: (need) => actions.openNeed(state, need),
+          alerts: ref.watch(
+            hostLiveNightAlertsProvider(event, hostLiveAlertMinute(clock)),
+          ),
         ),
       ),
     );

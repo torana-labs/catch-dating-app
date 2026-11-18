@@ -471,6 +471,34 @@ function functionsProgramTripViews() {
   return programTripViewModule;
 }
 
+let programWhatsappThreadViewModule = null;
+function functionsProgramWhatsappThreadViews() {
+  try {
+    programWhatsappThreadViewModule ??= createFunctionsRequire()(
+      "./lib/programs/programWhatsapp/threadViews.js");
+  } catch (error) {
+    throw new Error(
+      "The program-whatsapp-thread-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programWhatsappThreadViewModule;
+}
+
+let organizerProgramViewModule = null;
+function functionsOrganizerProgramViews() {
+  try {
+    organizerProgramViewModule ??= createFunctionsRequire()(
+      "./lib/programs/organizerProgramViews.js");
+  } catch (error) {
+    throw new Error(
+      "The organizer-program-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return organizerProgramViewModule;
+}
+
 /** A trip or hotel inbound row from current sources, or null when it exists or cannot be built. */
 async function newTripView(db, collection, id, build) {
   const existing = await db.collection(collection).doc(id).get();
@@ -1345,6 +1373,53 @@ export const MIGRATIONS = [
         targetId: (id, data) => validId(data.programId) && validId(data.uid) &&
           id === `${data.programId}__${data.uid}` ? id : null,
         transform: (data, id, db) => newStaffView(db, data.programId, data.uid),
+      },
+    ],
+  },
+  {
+    name: "program-whatsapp-thread-views",
+    description:
+      "The programme inbox reads programWhatsappThreadViews through a " +
+      "listener (#1339) instead of the listProgramWhatsappThreads callable. " +
+      "Every programWhatsappThreads document whose programme exists without " +
+      "a view gets one, with the row the callable returned (no clock-dependent " +
+      "window flag) and the household's label, contact name and guest count, " +
+      "as the new triggers write it. The phone hash, sender connection and " +
+      "take-over uid stay in the thread. Existing views are never replaced; " +
+      "threads, messages and households are never changed. Build Functions " +
+      "first.",
+    steps: [
+      {
+        source: "programWhatsappThreads",
+        target: "programWhatsappThreadViews",
+        skipReason: "no programme or organizer, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newTripView(db, "programWhatsappThreadViews", id,
+          (tx) => functionsProgramWhatsappThreadViews()
+            .readProgramWhatsappThreadView(db, tx, id)),
+      },
+    ],
+  },
+  {
+    name: "organizer-program-views",
+    description:
+      "The planner's programme list and setup read organizerProgramViews " +
+      "through listeners (#1339) instead of the listOrganizerPrograms and " +
+      "getOrganizerProgram callables. Every programme without a view gets " +
+      "one, with the programme object, its creator, the function count and " +
+      "the function, pickup point and hotel setup lists, as the new " +
+      "triggers write it. The sender connection, entitlement and request " +
+      "hash never appear. Existing views are never replaced; programmes and " +
+      "their setup documents are never changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerPrograms",
+        target: "organizerProgramViews",
+        skipReason: "no organizer or creator, or already viewed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => newTripView(db, "organizerProgramViews", id,
+          (tx) => functionsOrganizerProgramViews()
+            .readOrganizerProgramView(db, tx, id)),
       },
     ],
   },

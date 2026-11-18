@@ -579,6 +579,78 @@ test("program-staff-views creates each staff row once, without the full phone nu
   assert.equal(again.totals.conflicts, 0);
 });
 
+test("program-whatsapp-thread-views creates each thread's view once, without phone data", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-whatsapp-thread-views");
+  const thread = (overrides = {}) => ({threadId: "p1_h1", programId: "p1", organizerId: "o1",
+    householdId: "h1", guestId: null, connectionId: "conn-1", endpointHash: "a".repeat(64),
+    unknownSender: false, handledBy: "assistant", state: "needsYou", language: null,
+    escalationReason: null, lastMessagePreview: "Is there a bus?", lastMessageDirection: "inbound",
+    lastMessageAuthor: "guest", lastMessageAtMillis: 10, lastInboundAtMillis: 10,
+    lastInboundMessageId: "m1", serviceWindowExpiresAtMillis: 86_400_010, unreadCount: 1,
+    messageCount: 1, takenOverByUid: "planner-secret", revision: 2, ...overrides});
+  const db = fakeDb({
+    "organizerPrograms/p1": {organizerId: "o1", householdSideLabels: {partnerA: "Aditi"}},
+    "programHouseholds/h1": {programId: "p1", organizerId: "o1", label: "The Mehra family",
+      primaryContactName: "Neha", memberGuestIds: ["g1", "g2"], side: "partnerA"},
+    "programWhatsappThreads/p1_h1": thread(),
+    "programWhatsappThreads/p1_u-abc": thread({threadId: "p1_u-abc", householdId: null,
+      unknownSender: true, handledBy: "planner"}),
+    "programWhatsappThreads/p9_h1": thread({threadId: "p9_h1", programId: "p9"}),
+    "programWhatsappThreadViews/p1_u-abc": {existing: true},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 1);
+  await applyMigrationPlan(db, plan);
+  const view = db.data["programWhatsappThreadViews/p1_h1"];
+  assert.equal(view.displayName, "The Mehra family");
+  assert.equal(view.sideLabel, "Aditi");
+  assert.equal(view.guestCount, 2);
+  assert.equal(db.data["programWhatsappThreadViews/p9_h1"], undefined);
+  assert.deepEqual(db.data["programWhatsappThreadViews/p1_u-abc"], {existing: true});
+  const copied = JSON.stringify(view);
+  for (const secret of ["conn-1", "a".repeat(64), "planner-secret"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
+test("organizer-program-views creates each programme's setup view once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "organizer-program-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const db = fakeDb({
+    "organizerPrograms/p1": {organizerId: "o1", createdBy: "u1", kind: "wedding", title: "Wedding",
+      timezone: "Asia/Kolkata", status: "active", startsAt: at(1_000), endsAt: at(2_000),
+      capabilities: [], transportSettings: {bandWindowMillis: 1, maxReadyWaitMillis: 1,
+        domesticExitLagMillis: 1, internationalExitLagMillis: 1, vehicleClasses: []},
+      whatsappSenderConnectionId: "conn-secret", revision: 3},
+    "organizerPrograms/p2": {organizerId: "o1", createdBy: "u1", kind: "wedding", title: "Done",
+      timezone: "Asia/Kolkata", status: "active", startsAt: at(1_000), endsAt: at(2_000),
+      capabilities: [], transportSettings: {}, revision: 1},
+    "organizerProgramViews/p2": {existing: true},
+    "programFunctions/f1": {programId: "p1", organizerId: "o1", name: "Sangeet",
+      startsAt: at(1_500), endsAt: at(1_600), venueName: "Lawns", status: "scheduled",
+      expectedCount: 99, checkedInCount: 7, revision: 2},
+    "programHotels/h1": {programId: "p1", organizerId: "o1", name: "The Grand", address: "Road 1",
+      receptionContact: "+910000000", active: true, revision: 1},
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 1);
+  await applyMigrationPlan(db, plan);
+  const view = db.data["organizerProgramViews/p1"];
+  assert.equal(view.functionCount, 1);
+  assert.equal(view.functions[0].invitationMode, "allGuests");
+  assert.equal(view.hotels[0].name, "The Grand");
+  assert.equal(JSON.stringify(view).includes("conn-secret"), false);
+  assert.equal("expectedCount" in view.functions[0], false);
+  assert.deepEqual(db.data["organizerProgramViews/p2"], {existing: true});
+  assert.equal(db.data["organizerPrograms/p1"].whatsappSenderConnectionId, "conn-secret");
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("program-arrival-views creates arrivals, departures and vendor views once, without phone numbers", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-arrival-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});

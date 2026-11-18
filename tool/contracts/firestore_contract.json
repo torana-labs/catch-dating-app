@@ -3149,6 +3149,31 @@
       ]
     },
     {
+      "dartModel": null,
+      "id": "organizerProgramViews",
+      "path": "organizerProgramViews/{programId}",
+      "rulesMatch": "/organizerProgramViews/{programId}",
+      "typescriptInterface": "OrganizerProgramViewDocument",
+      "rulesTestFile": "functions/test/rules/program_batch5_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "admits the creator and the organizer's managers, by their queries",
+        "lets a live programAdmin duty read its one programme, not list",
+        "denies a deleted account and every write"
+      ],
+      "owner": "Programme read model projector: organizerProgramViewTriggers",
+      "read": "get for the creator, the organizer's current managers and a live programAdmin duty; list by a query naming createdBy (the creator) or organizerId (a current manager); never while deleted",
+      "write": "server only; written from organizerPrograms, programFunctions, programPickupPoints and programHotels",
+      "exportedFunctions": [
+        "onOrganizerProgramViewChanged",
+        "onOrganizerProgramFunctionChanged",
+        "onOrganizerProgramPickupPointChanged",
+        "onOrganizerProgramHotelChanged"
+      ],
+      "migrationNotes": [
+        "The programme object getOrganizerProgram returns, its creator, the function count and the setup lists, without a function's live expected and checked-in counts (programResourceViews carries those) and without the sender connection, entitlement or request hash. Guest, household, journey and staff counts stay on listOrganizerPrograms and getOrganizerProgram. The organizer-program-views copy-forward migration creates views for programmes that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
       "id": "programFunctions",
       "path": "programFunctions/{functionId}",
       "rulesMatch": "/programFunctions/{functionId}",
@@ -3657,13 +3682,16 @@
       "path": "programPhotos/{programPhotoId}",
       "rulesMatch": "/programPhotos/{programPhotoId}",
       "typescriptInterface": "ProgramPhotoDocument",
-      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_batch5_reads.rules.test.cjs",
       "owner": "upsertProgramPhoto callable",
-      "read": "server only",
+      "read": "get and list (query naming programId) for the programme owner and the communications duty (programAccessViews), while not deleted; the file itself leaves only as a signed URL from signProgramPhotoUrls",
       "write": "server only",
       "migrationNotes": [
         "One function photo; the file lives in private Storage under programs/{programId}/photos/.",
         "Deleted by the archive retention sweep."
+      ],
+      "rulesTestNames": [
+        "reads saved replies and photo records by the same duty"
       ]
     },
     {
@@ -3700,13 +3728,16 @@
       "path": "programWhatsappMessages/{programWhatsappMessageId}",
       "rulesMatch": "/programWhatsappMessages/{programWhatsappMessageId}",
       "typescriptInterface": "ProgramWhatsappMessageDocument",
-      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_batch5_reads.rules.test.cjs",
       "owner": "programme WhatsApp inbound router and reply callables",
-      "read": "server only",
+      "read": "get and list (query naming programId and threadId) for the programme owner and the communications duty (programAccessViews), while not deleted",
       "write": "server only",
       "migrationNotes": [
         "One guest, assistant or planner message; media is recorded by reference only.",
         "Deleted by the archive retention sweep."
+      ],
+      "rulesTestNames": [
+        "reads one thread's messages, never the server-only thread"
       ]
     },
     {
@@ -3728,13 +3759,38 @@
       "path": "programWhatsappCannedReplies/{programWhatsappCannedReplyId}",
       "rulesMatch": "/programWhatsappCannedReplies/{programWhatsappCannedReplyId}",
       "typescriptInterface": "ProgramWhatsappCannedReplyDocument",
-      "rulesTestFile": "functions/test/rules/program_operations.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/program_batch5_reads.rules.test.cjs",
       "owner": "upsertProgramWhatsappCannedReply callable",
-      "read": "server only",
+      "read": "get and list (query naming programId) for the programme owner and the communications duty (programAccessViews), while not deleted",
       "write": "server only",
       "migrationNotes": [
         "A saved inbox reply with one text per language.",
         "Deleted by the archive retention sweep."
+      ],
+      "rulesTestNames": [
+        "reads saved replies and photo records by the same duty"
+      ]
+    },
+    {
+      "dartModel": null,
+      "id": "programWhatsappThreadViews",
+      "path": "programWhatsappThreadViews/{threadId}",
+      "rulesMatch": "/programWhatsappThreadViews/{threadId}",
+      "typescriptInterface": "ProgramWhatsappThreadViewDocument",
+      "rulesTestFile": "functions/test/rules/program_batch5_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "lists thread views for managers and the communications duty only"
+      ],
+      "owner": "Programme read model projector: programWhatsapp threadViewTriggers",
+      "read": "get and list (query naming programId) for the programme owner and the communications duty (programAccessViews), while not deleted",
+      "write": "server only; written from programWhatsappThreads, programHouseholds and organizerPrograms",
+      "exportedFunctions": [
+        "onProgramWhatsappThreadViewThreadChanged",
+        "onProgramWhatsappThreadViewHouseholdChanged",
+        "onProgramWhatsappThreadViewProgramChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the row listProgramWhatsappThreads returns without the clock-dependent serviceWindowOpen, plus the household's label, primary contact name and guest count from getProgramWhatsappThread's header. The phone hash, sender connection and take-over uid stay in programWhatsappThreads. Deleted with its thread by the archive retention sweep. The program-whatsapp-thread-views copy-forward migration creates views for threads that predate the triggers and leaves views the triggers wrote alone."
       ]
     },
     {

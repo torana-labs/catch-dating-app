@@ -814,7 +814,9 @@
     "ProgramWhatsappThreadHandlingCallableResponse",
     "ProgramWhatsappCannedRepliesCallableResponse",
     "ProgramWhatsappCannedReplyCallableResponse",
-    "ProgramAssistantSettingsCallableResponse"
+    "ProgramAssistantSettingsCallableResponse",
+    "SignProgramPhotoUrlsCallablePayload",
+    "ProgramPhotoUrlsCallableResponse"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",

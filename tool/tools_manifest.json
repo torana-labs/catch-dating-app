@@ -725,7 +725,13 @@
           ],
           "instruction": "Declare each callable's limit where it calls checkRateLimit, inline or as a constant in a module only that callable family imports. The limit parameter is required, so no call falls back to a loose default. Never add a per-action limit table to functions/src/shared/rateLimit.ts: nearly every Function imports it, so editing it makes the backend deploy select every Function. Its frozen LEGACY_RATE_LIMITS table covers only callers whose module another task's claim holds; it may only shrink. demoOps and other privileged fan-out callables must declare dedicated limits."
         }
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "audit:fn-readme-inventory",
@@ -875,7 +881,13 @@
       "impactPaths": [
         "tool/architecture/check_mutation_error_surfaces.test.mjs",
         "tool/architecture/check_mutation_error_surfaces.mjs"
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "audit:provider-graph",
@@ -1026,7 +1038,13 @@
       "impactPaths": [
         "tool/architecture/check_route_string_literals.test.mjs",
         "tool/architecture/check_route_string_literals.mjs"
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "audit:unused-code",
@@ -1884,7 +1902,15 @@
           ],
           "instruction": "Every editable canonical control and form-descriptor instance in the Consumer and Catch Host apps must bind generated CatchContractFieldConstraints instead of repeating length, required, pattern, collection, enum, format, or numeric constraints. Typed choices must declare their wire-value serializer, range controls must bind both endpoints, and genuinely non-editable disclosures must carry an explicit audited exemption."
         }
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
+      }
     },
     {
       "id": "contracts:generate-business-rules",
@@ -2257,7 +2283,13 @@
           ],
           "instruction": "Handwritten user-facing Flutter copy belongs in packages/l10n/lib/app_en.arb with description, audience, owner, and surface metadata and is consumed through generated AppLocalizations. Domain and controller layers carry semantic ids, codes, and placeholder data rather than localized prose. Native permission copy belongs in copy/native_en.json and notification templates belong in copy/notifications_en.json; generated consumers must stay in sync. Inline technical identifiers, test fixtures, and user-authored content require narrow documented exemptions rather than broad folders."
         }
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "copy:mobile-catalog-tests",
@@ -3598,6 +3630,12 @@
         "apps/*/lib/**",
         "packages/catch_ui/lib/src/patterns/catch_skeleton.dart"
       ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "checks": [
         "node --check tool/design/check_loading_composition.mjs",
         "node --test tool/design/check_loading_composition.test.mjs",
@@ -6022,6 +6060,14 @@
         "widgetbook/lib/primitives/contracts/feedback.dart",
         "tool/architecture/context_map.json"
       ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
+      },
       "alsoCheckIds": [
         "lint:probe-batch-protocol"
       ],

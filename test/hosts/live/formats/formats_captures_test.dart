@@ -68,6 +68,18 @@ void main() {
       CaptureTheme.light,
     ),
     (
+      'host_formats_run_phone',
+      (_) => hostFormatsRunCapture(),
+      phone,
+      CaptureTheme.dark,
+    ),
+    (
+      'host_formats_crawl_sweep_phone',
+      (_) => hostFormatsCrawlSweepCapture(),
+      phone,
+      CaptureTheme.dark,
+    ),
+    (
       'host_formats_rule_sheet_phone',
       (_) => hostFormatsRulesCapture(adding: true),
       phone,

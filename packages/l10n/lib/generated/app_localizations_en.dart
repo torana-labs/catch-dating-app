@@ -29389,4 +29389,147 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return 'Photo $index of $count';
   }
+
+  @override
+  String get hostFormatsSweepTitle => 'The return sweep';
+
+  @override
+  String hostFormatsSweepBackCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count back',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostFormatsSweepHomeCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count home',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostFormatsSweepOfTotal({required int total, required int out}) {
+    return 'of $total · $out still out';
+  }
+
+  @override
+  String get hostFormatsSweepExplainRun =>
+      'Mark runners back as they reach the start. Anyone not accounted for stays here until they are.';
+
+  @override
+  String get hostFormatsSweepExplainCrawl =>
+      'Mark everyone home as you hear from them. Anyone not accounted for stays here until they are.';
+
+  @override
+  String get hostFormatsSweepStillOut => 'Still out';
+
+  @override
+  String get hostFormatsSweepAllAccounted => 'Everyone is accounted for.';
+
+  @override
+  String get hostFormatsSweepMarkBack => 'Back';
+
+  @override
+  String get hostFormatsSweepMarkHome => 'Home';
+
+  @override
+  String get hostFormatsSweepCall => 'Call';
+
+  @override
+  String get hostFormatsSweepThen => 'Then';
+
+  @override
+  String get hostFormatsSweepClose => 'Close the night';
+
+  @override
+  String get hostFormatsSweepMessage => 'Message guests';
+
+  @override
+  String hostFormatsSweepCloseAnywayTitle({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Close with $count still out?',
+      one: 'Close with 1 still out?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostFormatsSweepCloseAnywayBody =>
+      'They stay marked as not accounted for. Close only when you know everyone is safe.';
+
+  @override
+  String get hostFormatsSweepCloseAnyway => 'Close anyway';
+
+  @override
+  String get hostFormatsSweepKeepSweeping => 'Keep sweeping';
+
+  @override
+  String get hostFormatsSweepClosed => 'The night is closed';
+
+  @override
+  String get hostFormatsSweepAlreadyClosed =>
+      'This night is already closed. You can still mark people and change the switches.';
+
+  @override
+  String hostFormatsRunStep({required int index, required int total}) {
+    return 'Step $index of $total';
+  }
+
+  @override
+  String get hostFormatsRunNow => 'Now';
+
+  @override
+  String hostFormatsRunBack({required int back, required int total}) {
+    return '$back of $total runners back';
+  }
+
+  @override
+  String get hostFormatsRunPods => 'Pace pods';
+
+  @override
+  String hostFormatsRunPodBack({required int back, required int total}) {
+    return '$back of $total back';
+  }
+
+  @override
+  String get hostFormatsRunNoPod => 'No pod';
+
+  @override
+  String hostFormatsRunStillOut({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Still out: $count',
+      one: 'Still out: 1',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostFormatsRunAllOut =>
+      'Everyone is out on the route. Mark runners back as they reach the start.';
+
+  @override
+  String get hostFormatsRunClose => 'Close the route';
+
+  @override
+  String get hostFormatsRunCloseAllBack => 'Everyone’s back · close the route';
+
+  @override
+  String get hostFormatsRunNoPlanTitle => 'No plan for tonight';
+
+  @override
+  String get hostFormatsRunNoPlanBody =>
+      'Set up the plan for the night from the event to run it here.';
+
+  @override
+  String get hostFormatsCrawlSweep => 'Start the return sweep';
 }
