@@ -4797,6 +4797,36 @@ with display labels configurable via `organizerPrograms.householdSideLabels`.
 capability allowlist at grant time so program-scoped limit checks do not
 drift with later catalog edits.
 
+`programAccessViews/{programId}__{uid}` (#1339) is one account's current
+authority over one programme, written by triggers on `programStaffGrants` and
+`organizerPrograms` (`onProgramAccessViewGrantChanged`,
+`onProgramAccessViewProgramChanged`) and created for existing owners and grants
+by the `program-access-views` copy-forward migration. The programme's creator
+gets `role: manager` with no expiry; a staff member gets `role: staff` and the
+duties their grant proves: an `inactive` view when the grant is revoked,
+expired, malformed or lacks the owner-approval proof `requireProgramAccess`
+demands. The view folds the proof's deadline, the grant expiry and each
+assignment's own expiry into instants: `duties` maps a duty to the latest
+instant it is held (the coordinator duty counts for every duty but
+`programAdmin`); `pickupAll`, `hotelAll` and `functionAll` map a duty to the
+latest instant of an assignment covering every station, hotel or function;
+`pickupScoped`, `hotelScoped` and `functionScoped` map `duty__id` to the latest
+instant of an assignment naming that id. `workPickup`, `workHotel` and
+`workFunction` hold what the work shell lists, resolved as
+`getProgramWorkAccess` resolves it (pickup points from every operational duty
+but the hotel desk, hotels from every operational duty, functions from door and
+guest-desk duties): key `*` for every one, otherwise one key per named id.
+Rules compare these with
+`request.time` through `hasProgramDuty`, `programDutyCoversPickup`,
+`programDutyCoversHotel`, `programDutyCoversFunction` and `isProgramManager`;
+each dimension is checked alone, as the callables' `allowed*Ids` union them, so
+a read that needs one assignment to satisfy two dimensions stays a callable.
+The account reads only its own view by its derived id; nothing lists views.
+They hold ids, duty names and instants and no name or phone digits, so account
+deletion and archive anonymization have nothing personal to scrub there. A
+phone enforces the same instants offline from the cached view and its clock.
+Commands re-check authority from the source documents.
+
 `organizerCampaigns.recipientSource` names where recipients resolve:
 `savedAudience` (default, backed by `savedAudienceId`) or
 `programSelection`, which draws from programFunctionGuests/programGuests

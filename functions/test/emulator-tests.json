@@ -12,6 +12,7 @@
   "test/rules/organizers.rules.test.cjs",
   "test/rules/participant_success_metrics.rules.test.cjs",
   "test/rules/private_workspace_relationship_authority.rules.test.cjs",
+  "test/rules/program_access.rules.test.cjs",
   "test/rules/program_operations.rules.test.cjs",
   "test/rules/public_config.rules.test.cjs",
   "test/rules/relationship_documents.rules.test.cjs",
