@@ -19,8 +19,10 @@ function harness(entry = "/listings/request/?organizer=lantern-lane-social") {
   return {submit};
 }
 
-const field = (label: string, value: string) => fireEvent.change(screen.getByLabelText(new RegExp(`^${label.replace(/[()?]/gu, "\\$&")}`)), {target: {value}});
-const radio = (name: string) => fireEvent.click(screen.getByRole("radio", {name: new RegExp(`^${name.replace(/[()?]/gu, "\\$&")}`)}));
+/** Escapes every regex metacharacter, backslash included, so a label is matched literally. */
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+const field = (label: string, value: string) => fireEvent.change(screen.getByLabelText(new RegExp(`^${escapeRegExp(label)}`, "u")), {target: {value}});
+const radio = (name: string) => fireEvent.click(screen.getByRole("radio", {name: new RegExp(`^${escapeRegExp(name)}`, "u")}));
 const button = (name: string) => fireEvent.click(screen.getByRole("button", {name}));
 
 /** The fields each type shows on step 2, by label. */
