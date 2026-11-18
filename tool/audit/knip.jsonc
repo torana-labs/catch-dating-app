@@ -97,8 +97,11 @@
     "keytool",
     "mkfifo"
   ],
-  // Functions tests require compiled output (../lib/...) built by `npm run build`.
+  // Functions tests require compiled output (../lib/...) built by `npm run build`,
+  // and tool tests that exercise a Function's helpers import the same output
+  // (../../functions/lib/...).
   "ignoreUnresolved": [
-    "^(\\.\\./)+lib/"
+    "^(\\.\\./)+lib/",
+    "^(\\.\\./)+functions/lib/"
   ]
 }
