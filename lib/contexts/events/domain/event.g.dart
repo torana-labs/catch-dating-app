@@ -87,6 +87,11 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   priceHiddenUntilBookingOpens:
       json['priceHiddenUntilBookingOpens'] as bool? ?? false,
   planVisibleToGuests: json['planVisibleToGuests'] as bool? ?? true,
+  organizerSummary: json['organizerSummary'] == null
+      ? null
+      : EventOrganizerSummary.fromJson(
+          json['organizerSummary'] as Map<String, dynamic>,
+        ),
   externalBooking: json['externalBooking'] == null
       ? null
       : EventExternalBooking.fromJson(
@@ -166,6 +171,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'showGuestList': instance.showGuestList,
   'priceHiddenUntilBookingOpens': instance.priceHiddenUntilBookingOpens,
   'planVisibleToGuests': instance.planVisibleToGuests,
+  'organizerSummary': ?instance.organizerSummary?.toJson(),
   'externalBooking': ?instance.externalBooking?.toJson(),
   'constraints': instance.constraints.toJson(),
   'eventPolicy': ?instance.eventPolicy?.toJson(),
@@ -243,6 +249,51 @@ const _$EventRosterAuthorityEnumMap = {
   EventRosterAuthority.catchProjection: 'catchProjection',
   EventRosterAuthority.hostImport: 'hostImport',
   EventRosterAuthority.providerSync: 'providerSync',
+};
+
+_EventOrganizerSummary _$EventOrganizerSummaryFromJson(
+  Map<String, dynamic> json,
+) => _EventOrganizerSummary(
+  name: json['name'] as String,
+  location: json['location'] as String,
+  area: json['area'] as String,
+  hostName: json['hostName'] as String?,
+  tags:
+      (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const [],
+  rating: (json['rating'] as num).toDouble(),
+  synthetic: json['synthetic'] as bool? ?? false,
+  appVisibility: $enumDecode(
+    _$EventOrganizerVisibilityEnumMap,
+    json['appVisibility'],
+  ),
+  status: $enumDecode(_$EventOrganizerLifecycleEnumMap, json['status']),
+  archived: json['archived'] as bool,
+);
+
+Map<String, dynamic> _$EventOrganizerSummaryToJson(
+  _EventOrganizerSummary instance,
+) => <String, dynamic>{
+  'name': instance.name,
+  'location': instance.location,
+  'area': instance.area,
+  'hostName': instance.hostName,
+  'tags': instance.tags,
+  'rating': instance.rating,
+  'synthetic': instance.synthetic,
+  'appVisibility': _$EventOrganizerVisibilityEnumMap[instance.appVisibility]!,
+  'status': _$EventOrganizerLifecycleEnumMap[instance.status]!,
+  'archived': instance.archived,
+};
+
+const _$EventOrganizerVisibilityEnumMap = {
+  EventOrganizerVisibility.discoverable: 'discoverable',
+  EventOrganizerVisibility.hidden: 'hidden',
+};
+
+const _$EventOrganizerLifecycleEnumMap = {
+  EventOrganizerLifecycle.active: 'active',
+  EventOrganizerLifecycle.archived: 'archived',
 };
 
 _EventExternalBooking _$EventExternalBookingFromJson(

@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/discovery/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
-import 'package:catch_dating_app/contexts/organizers/organizers.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart';
 import 'package:catch_kernel/location_coordinate.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
@@ -55,28 +54,21 @@ Future<List<ExploreEventRecommendationCandidate>> exploreRecommendedEvents(
       .fetchUpcomingEventsForOrganizers(query.followedOrganizerIds);
   if (events.isEmpty) return const [];
 
-  final organizersRepository = ref.watch(organizersRepositoryProvider);
-  final organizerIds = events.map((event) => event.organizerId).toSet().toList()
-    ..sort();
-  final organizers = await Future.wait(
-    organizerIds.map(organizersRepository.fetchOrganizer),
-  );
-  final organizersById = <String, Organizer>{};
-  for (final organizer in organizers) {
-    if (organizer != null) {
-      organizersById[organizer.id] = organizer;
-    }
-  }
-
+  // The organizer's name and city come from the summary each event carries
+  // (copied from its public organizer), so no organizer is read per id.
   return [
     for (final event in events)
       ExploreEventRecommendationCandidate(
         event: event,
-        organizerName:
-            organizersById[event.organizerId]?.name ?? 'Your organizer',
-        organizerLocation: organizersById[event.organizerId]?.location,
+        organizerName: _organizerNameFor(event),
+        organizerLocation: event.organizerSummary?.location,
       ),
   ];
+}
+
+String _organizerNameFor(Event event) {
+  final name = event.organizerSummary?.name.trim() ?? '';
+  return name.isEmpty ? 'Your organizer' : name;
 }
 
 List<ExploreEventRecommendation> rankExploreEventRecommendations({

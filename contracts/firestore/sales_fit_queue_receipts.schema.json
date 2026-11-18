@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_fit_queue_receipts.schema.json",
   "title": "SalesFitQueueReceiptDocument",
-  "description": "Private exact-retry receipt for one host fit projection refresh, not a durable claim of current rank.",
+  "description": "Private exact-retry receipt for one host fit projection refresh, not a durable claim of current rank. Kept as its own collection (L8 decision, 18 Nov 2026): the sales privacy inventory enumerates it for erasure and review, so it stays with the sales records it describes.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "salesFitQueueReceipts",

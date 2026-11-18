@@ -34,6 +34,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart' as event_test;
 import '../organizers/organizers_test_helpers.dart';
+import '../support/event_organizer_summary_fixture.dart';
 import '../test_pump_helpers.dart';
 import 'explore_device_location_fakes.dart';
 
@@ -1804,7 +1805,9 @@ void main() {
               _mumbaiMarketId,
             ).overrideWith((ref) => Stream.value([organizer])),
             eventDiscoveryRepositoryProvider.overrideWithValue(
-              _FakeEventDiscoveryRepository([far, near]),
+              _FakeEventDiscoveryRepository(
+                eventsCarrying(organizer, [far, near]),
+              ),
             ),
             externalEventRepositoryProvider.overrideWithValue(
               _FakeExternalEventRepository([]),
@@ -1881,7 +1884,9 @@ void main() {
               _mumbaiMarketId,
             ).overrideWith((ref) => Stream.value([organizer])),
             eventDiscoveryRepositoryProvider.overrideWithValue(
-              _FakeEventDiscoveryRepository([dayTwo, tomorrow, tonight]),
+              _FakeEventDiscoveryRepository(
+                eventsCarrying(organizer, [dayTwo, tomorrow, tonight]),
+              ),
             ),
             externalEventRepositoryProvider.overrideWithValue(
               _FakeExternalEventRepository([]),
@@ -2030,11 +2035,13 @@ void main() {
               (ref) => Stream.value(guestEventCardsOf([savedEvent])),
             ),
             eventDiscoveryRepositoryProvider.overrideWithValue(
-              _FakeEventDiscoveryRepository([
-                joinedEvent,
-                requestEvent,
-                savedEvent,
-              ]),
+              _FakeEventDiscoveryRepository(
+                eventsCarrying(organizer, [
+                  joinedEvent,
+                  requestEvent,
+                  savedEvent,
+                ]),
+              ),
             ),
             externalEventRepositoryProvider.overrideWithValue(
               _FakeExternalEventRepository([]),
@@ -2131,7 +2138,9 @@ void main() {
             ]),
           ),
           eventDiscoveryRepositoryProvider.overrideWithValue(
-            _FakeEventDiscoveryRepository([discoverableEvent]),
+            _FakeEventDiscoveryRepository(
+              eventsCarrying(organizer, [discoverableEvent]),
+            ),
           ),
           externalEventRepositoryProvider.overrideWithValue(
             _FakeExternalEventRepository([]),
@@ -2192,9 +2201,13 @@ void main() {
             ),
             watchExploreSearchEventsProvider(
               ExploreSearchEventsQuery(const ['search-hit']),
-            ).overrideWith((ref) => Stream.value([hitEvent])),
+            ).overrideWith(
+              (ref) => Stream.value(eventsCarrying(organizer, [hitEvent])),
+            ),
             eventDiscoveryRepositoryProvider.overrideWithValue(
-              _FakeEventDiscoveryRepository([discoverableEvent]),
+              _FakeEventDiscoveryRepository(
+                eventsCarrying(organizer, [discoverableEvent]),
+              ),
             ),
             externalEventRepositoryProvider.overrideWithValue(
               _FakeExternalEventRepository([]),
