@@ -3,9 +3,10 @@ import {hostLandingCopy as copy, hostNightFormats, type HostLandingTarget} from 
 import {interpolateContent as fill} from "@content/interpolate";
 import {whatsappChatHref} from "@content/site";
 
-/** Where a page link goes: a band on this page, or a WhatsApp chat with its message typed. */
+/** Where a page link goes: a band on this page, another page, or a WhatsApp chat with its message typed. */
 export function hostLandingHref(to: HostLandingTarget): string {
-  return "anchor" in to ? `#${to.anchor}` : whatsappChatHref(to.whatsapp);
+  if ("anchor" in to) return `#${to.anchor}`;
+  return "href" in to ? to.href : whatsappChatHref(to.whatsapp);
 }
 
 /** The link from a format card to its night: `#night-<format>`, which picks the format and lands on the night band. */

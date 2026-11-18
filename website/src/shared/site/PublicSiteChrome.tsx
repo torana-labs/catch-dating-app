@@ -282,7 +282,7 @@ const trackFooter = (link: SiteNavItem) => trackSiteCtaClick(`footer_${slugForTr
 
 /** The site's own links by path, in the order given. */
 function siteLinks(hrefs: readonly string[]): SiteNavItem[] {
-  const pool: readonly SiteNavItem[] = [publicSiteCopy.whatsOn, ...siteFooterLegalLinks];
+  const pool: readonly SiteNavItem[] = [publicSiteCopy.whatsOn, ...siteFooterLegalLinks, ...siteFooterCopy.extraLinks];
   return hrefs.map((href) => pool.find((link) => link.href === href)!);
 }
 

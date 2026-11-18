@@ -140,9 +140,11 @@ describe("Explore", {timeout: 20_000}, () => {
       lead: {phone: "+919800000000", sourcePage: "/mumbai/", entry: "ex-wa", cityAlerts: {interests: []}}});
   });
 
-  it("tags a women-led plan from the read model", () => {
+  it("badges a women-led plan from the read model, on its photo rather than its host line", () => {
     show(mumbaiDiscoveryCatalog, "/mumbai/?format=courts");
-    expect(screen.getByRole("link", {name: /Pickleball Social.*Women-led/u})).toBeTruthy();
+    const card = screen.getByRole("link", {name: /Pickleball Social.*Women-led/u});
+    expect(within(card).getByText("Women-led").dataset.variant).toBe("label-badge");
+    expect(card.textContent).not.toContain("· Women-led");
   });
 
   it("says when plans could not load", () => {
