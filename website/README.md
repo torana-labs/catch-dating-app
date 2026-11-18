@@ -274,6 +274,16 @@ host-visible organizer metrics through `recordOrganizerAnalyticsEvent` in
 - Browser errors and unhandled promise rejections emit only a coarse
   `client_error` event after analytics consent. Error messages, stacks, query
   strings, and user identifiers are deliberately excluded.
+- The WhatsApp lead forms that post a typed lead to `/api/join-waitlist`
+  (homepage and discovery city alerts, "Know a host" referrals, playbook
+  forms) emit `lead_form_viewed`, `lead_form_submitted`, `lead_form_succeeded`
+  and `lead_form_failed` after analytics consent, through
+  `trackWebsiteLeadFormEvent`. Each carries only `lead_kind` (the contract's
+  `requestKind`), `form_id` (the lead's `entry`), `page_path` without its
+  query and, on failure, the lead client's `problem`; answers, names and
+  phone numbers never enter them. A referral from a signed-in visitor also
+  sends the account's Firebase ID token as `Authorization: Bearer`, so the
+  intake credits the referrer; a signed-out referral sends none.
 - Configure GA4, Google Ads, Meta Pixel, LinkedIn Insight Tag, and other pixels in
   GTM against the pushed `dataLayer` events.
 - Set `VITE_WEBSITE_APPCHECK_SITE_KEY` and the Firebase web config in
@@ -290,6 +300,10 @@ Primary web events:
 - `page_view`
 - `client_error`
 - `cta_click`
+- `lead_form_viewed`
+- `lead_form_submitted`
+- `lead_form_succeeded`
+- `lead_form_failed`
 - `city_selected`
 - `role_selected`
 - `waitlist_started`
