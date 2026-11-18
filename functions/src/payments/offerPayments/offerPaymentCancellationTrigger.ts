@@ -25,6 +25,7 @@ export async function queueCancelledEventOfferRefunds(
   return queueCancelledEventPaymentRefunds(input, {
     ...deps,
     collection: OFFER_PAYMENT_COLLECTION,
+    purpose: "offer",
   });
 }
 
