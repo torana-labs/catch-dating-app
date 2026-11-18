@@ -193,8 +193,8 @@
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
         {
-          "label": "Ask for a walkthrough on WhatsApp",
-          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like a walkthrough of {{brand.name}} for my events."},
+          "label": "Ask for a walkthrough",
+          "to": {"route": "host_walkthrough"},
           "emphasis": "secondary"
         }
       ],

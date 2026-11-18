@@ -123,7 +123,7 @@ describe("playbook page", () => {
   });
 
   it("sends every walkthrough action on the host pages to the request page, not WhatsApp", async () => {
-    for (const path of ["/host/run-clubs/", "/host/demo/"]) {
+    for (const path of ["/host/run-clubs/", "/host/brands/", "/host/demo/", "/how-it-works/"]) {
       const host = (await loadPlaybookPage(resolvePlaybookPage(path)!))!;
       const {unmount} = render(<PlaybookPage captures={captures} page={host} />);
       const main = within(screen.getByRole("main"));
