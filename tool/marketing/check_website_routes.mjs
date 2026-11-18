@@ -319,6 +319,7 @@ function validatePageKey(route) {
     "home",
     "visitor_discovery",
     "cities",
+    "listing_requests",
     "host",
     "weddings",
     "organizers",

@@ -42,6 +42,7 @@ import {
 } from "../controllers/listingEventPublish";
 import {inboxTypeLabels, type InboxController} from "../controllers/useInboxController";
 import {inboxScopeLabels, inboxTypeLabel, queueNote, waitingLabel, waitingTone} from "../controllers/inboxLabels";
+import {TakedownRequestPanel} from "../../takedowns/ui/TakedownRequestPanel";
 
 interface Row {
   key: string;
@@ -58,7 +59,8 @@ const columns: CatchTableColumn<Row>[] = [
   {key: "waiting", label: "Waiting", width: "92px", sort: "asc", align: "end"},
 ];
 
-const types: InboxType[] = ["listing", "event", "claim", "enquiry", "lead", "access", "stuck"];
+const noReport = () => undefined;
+const types: InboxType[] = ["listing", "event", "claim", "enquiry", "lead", "access", "stuck", "takedown"];
 const toneOf = (tone: InboxItem["state"]["tone"]) =>
   tone === "success" || tone === "warning" || tone === "danger" ? tone : undefined;
 
@@ -282,6 +284,9 @@ function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
         secondary={holdIt}
         note={{label: "What you replied", placeholder: "Sent the guide on WhatsApp", value: note, onChanged: setNote, required: true}}
         next={`Reply on WhatsApp first; nothing is sent for you · ${next.toLowerCase()}`} />;
+    } else if (item.type === "takedown") {
+      // A listing request takes its own fixed steps in the panel below; here it can be picked up or snoozed.
+      dock = <CatchDock recipe="pane" primary={holdIt} next={`Reply by email; nothing is sent for you · ${next.toLowerCase()}`} />;
     } else if (item.type === "event") {
       const ref = item.listingEvent ?? null;
       dock = <CatchDock recipe="pane"
@@ -321,6 +326,10 @@ function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
       {evidence ? <ClaimChecks evidence={evidence} /> : null}
       {item.type === "claim" && controller.claimEvidenceFailed ? <CatchEmptyState title="Their evidence could not be loaded" message="Try again before deciding." /> : null}
       {picker}
+      {item.type === "takedown" ? (
+        <TakedownRequestPanel key={item.sourceId} onChanged={controller.refreshItem} onError={controller.reportError ?? noReport} onNotice={controller.reportNotice ?? noReport}
+          requestId={item.sourceId} />
+      ) : null}
       <CatchSection title="How it got here" timeline={timeline(item, journey)} dividers="none" />
       {controller.listingReviewFailed || controller.eventReviewFailed ? <CatchEmptyState title="The review could not be opened" message="It may have been decided already. Try again." /> : null}
       {dock}
@@ -549,7 +558,8 @@ function EventPublishSheet({controller, intakeRequestId, review, onClose}: {
 }
 
 /** What the inbox screen draws from: the controller, with the open item as plain data. */
-export type InboxScreenModel = Omit<InboxController, "detail" | "page" | "refresh" | "city" | "setCity"> & {
+export type InboxScreenModel = Omit<InboxController, "detail" | "page" | "refresh" | "city" | "setCity" | "refreshItem" | "reportError" |
+  "reportNotice"> & Partial<Pick<InboxController, "refreshItem" | "reportError" | "reportNotice">> & {
   detail: InboxItemDetail | null;
   detailError: boolean;
 };
