@@ -154,7 +154,7 @@ test("organizer directory filters and keeps other chips' counts", async () => {
   assert.equal(next.nextCursor, null);
 
   const waiting = await adminListOrganizerDirectoryHandler(
-    request({claimState: "claimPending", query: "after"}), deps(db));
+    request({claimState: "claimPending", query: "moon"}), deps(db));
   assert.deepEqual(waiting.rows.map((row) => row.organizerId), ["indore"]);
 });
 

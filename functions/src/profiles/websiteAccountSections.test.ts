@@ -23,7 +23,8 @@ function fixture() {
   const set = (path: string, data: Record<string, unknown>) =>
     store.records.set(path, data);
   set("organizers/run", {name: "Brindle Run Club", publicPage: {
-    publishStatus: "published", canonicalPath: "/organizers/brindle-run-club/"}});
+    publishStatus: "published",
+    canonicalPath: "/organizers/brindle-run-club/"}});
   set("organizers/quiz", {name: "Quiz Night", publicPage: {
     publishStatus: "draft", canonicalPath: "/organizers/quiz-night/"}});
   set("events/soon", {name: "Sunday 10K", organizerId: "run",

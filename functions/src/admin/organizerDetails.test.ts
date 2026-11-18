@@ -494,7 +494,7 @@ test(
 
     assert.deepEqual(
       result.rows.map((row) => row.organizerId).sort(),
-      ["moonmoth-run-club-indore", "bandra-social-run"]
+      ["bandra-social-run", "moonmoth-run-club-indore"]
     );
   }
 );
@@ -598,7 +598,7 @@ test("adminUpdateOrganizerDetailsHandler replaces the organizer page links",
             url: " https://www.district.in/moonmoth ", icon: "tickets",
             pinned: false, showUntil: null},
           {id: "drop", label: "Diwali run kit", subtitle: "Pre-order",
-            url: "https://shop.moonmoth.example/kit", icon: null, pinned: true,
+            url: "https://shop.example.com/kit", icon: null, pinned: true,
             showUntil: "2026-11-14T12:00:00.000Z"},
         ]},
         reviewNote: "Owner sent their links over WhatsApp.",
@@ -633,8 +633,8 @@ test("adminUpdateOrganizerDetailsHandler refuses links the page may not show",
       showUntil: null};
     for (const [ownerLinks, code] of [
       [[link], "invalid-argument"],
-      [[{...link, url: "http://moonmoth.example/"}], "invalid-argument"],
-      [[{...link, url: "https://moonmoth.example/",
+      [[{...link, url: "http://moonmoth.example.com/"}], "invalid-argument"],
+      [[{...link, url: "https://moonmoth.example.com/",
         label: "Seed listing for owner review"}], "failed-precondition"],
     ] as const) {
       await assert.rejects(

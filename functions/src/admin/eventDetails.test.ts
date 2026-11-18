@@ -514,7 +514,7 @@ test(
 
     assert.deepEqual(
       result.rows.map((row) => row.eventId).sort(),
-      ["moonmoth-social-run-1", "bandra-run-1"]
+      ["bandra-run-1", "moonmoth-social-run-1"]
     );
   }
 );

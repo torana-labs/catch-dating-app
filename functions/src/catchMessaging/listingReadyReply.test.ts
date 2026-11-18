@@ -39,7 +39,7 @@ test("a finished WhatsApp nomination tells its nominator, once per organizer", a
   assert.equal(await replyWhenListingReady(t.deps, "msg-1", state("running"), state("completed")), "sent");
   assert.deepEqual([t.replies[0].kind, t.replies[0].discriminator, t.replies[0].participantId, t.replies[0].sourceEventId],
     ["listing_ready", "msg-1", "919800012345", EVENT_ID]);
-  assert.match(t.replies[0].body, /^@moonmoth\.in is ready: the listing is built with 3 upcoming events/u);
+  assert.match(t.replies[0].body, /^@moonmoth\.example is ready: the listing is built with 3 upcoming events/u);
   assert.deepEqual(t.publishes, ["msg-1"]);
 });
 

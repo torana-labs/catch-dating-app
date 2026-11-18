@@ -77,7 +77,7 @@ test("a nominator's links become credited nominations and an acknowledgement", a
   assert.equal(t.replies.length, 1);
   assert.equal(t.replies[0].kind, "nomination_queued");
   assert.equal(t.replies[0].sourceEventId, message.eventId);
-  assert.match(t.replies[0].body, /Queued 2 organizers for a Catch listing: @moonmoth\.in, luma\.com\/calendar\/bandra-runs/u);
+  assert.match(t.replies[0].body, /Queued 2 organizers for a Catch listing: @moonmoth\.example, luma\.com\/calendar\/bandra-runs/u);
   // A redelivery queues nothing new.
   await t.route({...message});
   assert.equal(t.requests().length, 2);
