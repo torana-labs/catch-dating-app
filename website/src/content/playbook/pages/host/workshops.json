@@ -6,7 +6,7 @@
     "title": "{{brand.name}} for workshops | Paid booking, waitlists and guest details",
     "description": "Paid booking for pottery, cooking, art and craft workshops, a waitlist that offers seats in order, your own questions answered at booking, and regulars told first about the next date.",
     "socialDescription": "Small rooms, full every time. {{brand.name}} for pottery, cooking, art and craft workshops.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
@@ -138,11 +138,11 @@
       "ground": "ink",
       "kicker": "Pricing for workshops",
       "price": "5%",
-      "title": "of ticket sales, never more than ₹10,000 per billing cycle.",
+      "title": "of ticket sales, never more than ₹10,000 a month.",
       "trial": "Free for 30 days from your first workshop, 90 for founding hosts. Payment gateway fees are separate.",
       "examples": [
         {"title": "12 seats at ₹2,500", "value": "₹1,500 a workshop", "body": "5% of ₹30,000, paid when guests book."},
-        {"title": "Eight workshops in a billing cycle", "value": "₹10,000 a billing cycle", "body": "5% would be ₹12,000; the cap stops it at ₹10,000."},
+        {"title": "Eight workshops in a month", "value": "₹10,000 a month", "body": "5% would be ₹12,000; the cap stops it at ₹10,000."},
         {"title": "A free open studio", "value": "₹0", "body": "Free events stay free."}
       ],
       "actions": [

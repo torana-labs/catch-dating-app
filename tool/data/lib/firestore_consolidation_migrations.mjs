@@ -77,6 +77,19 @@ function functionsChatDirectory() {
   return chatDirectoryModule;
 }
 
+let organizerSummaryModule = null;
+function functionsOrganizerSummary() {
+  try {
+    organizerSummaryModule ??= createFunctionsRequire()("./lib/organizers/eventOrganizerSummary.js");
+  } catch (error) {
+    throw new Error(
+      "The event-organizer-summary migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return organizerSummaryModule;
+}
+
 /** One clock per run, so a row reached from two sources is identical. */
 const chatDirectoryNowMillis = Date.now();
 
@@ -335,6 +348,31 @@ export const MIGRATIONS = [
         kind: "fill",
         collection: "events",
         fill: (data) => eventSchemaFill(data, functionsMarket),
+      },
+    ],
+  },
+  {
+    name: "event-organizer-summary",
+    description:
+      "Explore reads the organizer's name, place, host name, tags, rating and " +
+      "visibility from events/{eventId}.organizerSummary (#1340) instead of " +
+      "looking organizers up by id. Every event whose summary is missing or " +
+      "differs from its organizer's public projection (publicOrganizers) gets " +
+      "the summary the event and organizer triggers write; an organizer with " +
+      "no public projection gets the hidden summary. Only organizerSummary is " +
+      "written, with a last-update-time precondition. No other field changes " +
+      "and nothing is deleted; a rerun writes nothing. Build Functions first.",
+    steps: [
+      {
+        kind: "fill",
+        collection: "events",
+        refresh: ["organizerSummary"],
+        fill: async (data, id, db) => {
+          if (!validId(data.organizerId)) return null;
+          const {organizerSummaryFrom} = functionsOrganizerSummary();
+          const organizer = await db.collection("publicOrganizers").doc(data.organizerId).get();
+          return {organizerSummary: organizerSummaryFrom(organizer.exists ? organizer.data() : undefined)};
+        },
       },
     ],
   },

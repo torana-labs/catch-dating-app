@@ -53,7 +53,7 @@ export const NightFormat: Story = {
   },
 };
 
-/** Pricing at the cap: the shared fee calculator stops the fee at the cap for the billing cycle. */
+/** Pricing at the cap: the shared fee calculator stops the fee at the cap for the month. */
 export const PricingCap: Story = {
   name: "Host landing · pricing cap",
   parameters: {layout: "fullscreen"},

@@ -6,7 +6,7 @@
     "title": "Forms | {{brand.name}} for hosts",
     "description": "Applications, registrations, signed waivers, guest details, feedback and surveys, built from a template. Conditional questions, file uploads and optional fees paid into your own Razorpay.",
     "socialDescription": "Ask anything. Do something with the answer. Forms on {{brand.name}}.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
@@ -139,7 +139,7 @@
       "items": [
         {"title": "Separate from the ticket", "body": "A fee to apply, a ticket to attend."},
         {"title": "Refund policy shown first", "body": "Before anyone pays."},
-        {"title": "Paid into your own Razorpay", "body": "Counts toward the same 5% fee and its cap per billing cycle."},
+        {"title": "Paid into your own Razorpay", "body": "Counts toward the same 5% fee and its monthly cap."},
         {"title": "Its own checkout", "body": "A governed payment step, never a question in the form."}
       ]
     },

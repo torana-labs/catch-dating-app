@@ -36,8 +36,7 @@ describe("the /pricing/ page content", () => {
 
   it("shows only figures the fee model works out", () => {
     const cap = section("custom", "cap");
-    expect(cap.lead).toContain(`${hostPricingFacts.cap} in a billing cycle, which happens at ${hostPricingFacts.capReachedAt} of ticket sales`);
-    expect(cap.lead).toContain(`${hostPricingFacts.cycleDays}-day cycle`);
+    expect(cap.lead).toContain(`${hostPricingFacts.cap} in a month, which happens at ${hostPricingFacts.capReachedAt} of ticket sales`);
     // The worked examples are the fee model's own (pricingPageFeeExamples); the page carries only their header and foot.
     expect(JSON.stringify(section("custom", "examples"))).not.toMatch(/₹/u);
     expect(pricingPageFeeExamples.map(hostFeeExample).map((example) => example.value)).toEqual(
@@ -46,9 +45,9 @@ describe("the /pricing/ page content", () => {
     expect(section("custom", "organisations").lead).toContain(hostPricingLines.organisations);
   });
 
-  it("says per billing cycle, never a month, and names no place count", () => {
+  it("says a month, never per billing cycle (owner, 18 Nov 2026), and names no place count", () => {
     for (const text of strings(pricingPage)) {
-      expect(text, text).not.toMatch(/\b(a|per|this|in a|each) month\b|\bmonthly\b|of 50|places left/iu);
+      expect(text, text).not.toMatch(/billing cycle|\bcycle\b|of 50|places left/iu);
     }
   });
 

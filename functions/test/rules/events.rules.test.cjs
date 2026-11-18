@@ -142,6 +142,26 @@ describe("firestore.rules", () => {
       await assertFails(updateDoc(runRef, {genderCounts: {woman: 1}}));
     });
 
+    it("denies every client write to the trigger-owned organizerSummary", async () => {
+      const summary = {
+        name: "Bandra Run Club", location: "mumbai", area: "Bandra",
+        hostName: null, tags: [], rating: 0, synthetic: false,
+        appVisibility: "discoverable", status: "active", archived: false,
+      };
+      await seed(["organizers", "club-1"], organizer());
+      await seed(["events", "event-1"], event({organizerSummary: summary}));
+      const hostRef = doc(authedDb("host-1"), "events", "event-1");
+      const guestRef = doc(authedDb("runner-1"), "events", "event-1");
+
+      // Anyone may read the public copy; nobody may change it.
+      await assertSucceeds(getDoc(guestRef));
+      await assertFails(updateDoc(hostRef, {organizerSummary: {...summary, appVisibility: "hidden"}}));
+      await assertFails(updateDoc(guestRef, {"organizerSummary.rating": 5}));
+      await assertFails(updateDoc(hostRef, {organizerSummary: null}));
+      await assertFails(setDoc(doc(authedDb("host-1"), "events", "event-new"), event({organizerSummary: summary})));
+      await assertFails(setDoc(hostRef, event({organizerSummary: summary})));
+    });
+
     it("denies direct event aggregate rewrites because roster actions are callable-owned", async () => {
       await seed(["events", "event-1"], event());
 

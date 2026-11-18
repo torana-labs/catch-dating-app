@@ -10,7 +10,7 @@ import {homeLeadCityFields, type HomeLeadCity} from "./homeLeadCity";
  * new-plans consent. The bar has no format chips, so it asks for none.
  */
 export function useCityAlertsController(city: HomeLeadCity, submission?: WebsiteLeadSubmission) {
-  const lead = useWebsiteLeadController(submission);
+  const lead = useWebsiteLeadController({kind: "city_alerts", formId: copy.alerts.entry}, submission);
   const [phone, setPhone] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

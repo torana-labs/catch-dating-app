@@ -85,9 +85,14 @@ void main() {
     },
   );
 
-  test('history reads every own card by event id', () async {
-    final cards = await repository.watchOwnCardsById(uid: 'me').first;
-    expect(cards.keys.toSet(), {'late', 'early', 'wait', 'paid'});
+  test('history reads only the named events own cards by event id', () async {
+    final cards = await repository
+        .watchOwnCardsForEvents(
+          uid: 'me',
+          eventIds: const ['late', 'paid', 'theirs', 'unknown'],
+        )
+        .first;
+    expect(cards.keys.toSet(), {'late', 'paid'});
   });
 
   test('saved cards come from the guest saved edges, by start', () async {

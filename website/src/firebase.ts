@@ -1179,6 +1179,37 @@ export async function getWebsiteAppCheckToken(): Promise<string | null> {
 }
 
 /**
+ * The signed-in website account's Firebase ID token, for the one website lead
+ * that credits its sender: a host referral, which the lead intake reads as
+ * `Authorization: Bearer` (functions/src/waitlist/websiteLead.ts). Firebase
+ * Auth loads on the first call, not with the page, and the call waits for the
+ * saved sign-in to be restored. Null when no one is signed in, the account is
+ * anonymous (the intake would not credit it), this build has no Firebase
+ * configuration, or a token cannot be read: it never throws, so a referral
+ * without an account goes exactly as before.
+ */
+export async function getWebsiteReferrerIdToken(): Promise<string | null> {
+  if (!claimFirebaseConfigured) return null;
+  try {
+    const runtime = await getFirebaseRuntime();
+    if (!runtime) return null;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const restored = await Promise.race([
+      runtime.auth.authStateReady().then(() => true),
+      new Promise<false>((resolve) => {timer = setTimeout(() => resolve(false), REFERRER_SIGN_IN_DEADLINE_MS);}),
+    ]).finally(() => clearTimeout(timer));
+    const user = restored ? runtime.auth.currentUser : null;
+    if (!user || user.isAnonymous) return null;
+    return (await user.getIdToken()) || null;
+  } catch {
+    return null;
+  }
+}
+
+/** A referral waits this long for a saved sign-in, then goes without one. */
+const REFERRER_SIGN_IN_DEADLINE_MS = 5_000;
+
+/**
  * How long a website call waits for its App Check token. App Check mints the
  * token through the reCAPTCHA Enterprise script, which has no failure path:
  * when a content blocker, a network or a firewall stops the script, the token

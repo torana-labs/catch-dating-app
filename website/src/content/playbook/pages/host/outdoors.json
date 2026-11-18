@@ -4,9 +4,9 @@
   "route": "host_outdoors",
   "meta": {
     "title": "{{brand.name}} for treks, rides and outdoor groups | Waivers, groups and headcounts",
-    "description": "Bookings with fitness level and a signed waiver, groups with a lead each, a count at every regroup point, and the people who loved it told first about the next trail.",
+    "description": "Bookings with fitness level and a signed waiver, groups with a lead each, a count at every regroup point, and the photos after the trail.",
     "socialDescription": "Everyone out, everyone back. {{brand.name}} for trekking, cycling and outdoor groups.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
@@ -20,7 +20,7 @@
       "ground": "mint",
       "kicker": "{{brand.name}} for trekking, cycling and outdoor groups",
       "title": "Everyone out, everyone back.",
-      "lead": "Bookings with fitness level and waiver signed, groups with a lead each, a count at every regroup point, and the people who loved it told first about the next trail.",
+      "lead": "Bookings with fitness level and waiver signed, groups with a lead each, a count at every regroup point, and the photos after the trail.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
         {
@@ -70,7 +70,7 @@
       "columns": 3,
       "items": [
         {"title": "A spreadsheet of waivers", "body": "Forms in one place, payments in another, and three people who never signed.", "fix": "Waiver signed and paid at booking, on one record per person."},
-        {"title": "Counting heads on a hillside", "body": "Forty people, four groups, and a headcount shouted at every stop.", "fix": "Each lead marks who’s with them; anyone missing shows on your screen."},
+        {"title": "Counting heads on a hillside", "body": "Forty people, four groups, and a headcount shouted at every stop.", "fix": "Each lead marks who’s with them; anyone not marked stays on your list."},
         {"title": "Beginners who struggle and never return", "body": "A first-timer stuck at the back of the fast group.", "fix": "Groups by fitness level, each with a lead who knows who’s new."}
       ]
     },
@@ -109,8 +109,8 @@
         {"time": "Monday", "title": "Bookings, waivers and levels", "body": "Everyone books with a fitness level and a signed waiver. Groups are planned so beginners get an easy group and a lead."},
         {"time": "4:30 AM", "title": "Check in at the pick-up", "body": "People scan in at the meeting point. Leads see their group on their own phone."},
         {"time": "Trailhead", "title": "A first hello in each group", "body": "Each group gets one question to break the ice before they set off."},
-        {"time": "Summit", "title": "Count at every regroup", "body": "Leads mark who’s with them. Anyone not marked shows on your screen."},
-        {"time": "Evening", "title": "Everyone home, then the next trail", "body": "Leads mark people as home. Photos go out, and people who loved it hear about the next trek first."}
+        {"time": "Summit", "title": "Count at every regroup", "body": "Leads mark who’s with them. Anyone not marked stays on your list."},
+        {"time": "Evening", "title": "Everyone back, then the photos", "body": "Leads mark everyone back at the end. Anyone not marked stays on your list until you close the trek, and the photos follow."}
       ],
       "media": {"kind": "capture", "slot": "host-live-tablet"}
     },
@@ -125,7 +125,7 @@
         {"title": "Waivers with every booking", "body": "Signed, kept as a receipt."},
         {"title": "Fitness level at booking", "body": "Groups planned from it."},
         {"title": "A lead for every group", "body": "On their own phone."},
-        {"title": "Counts at regroup points", "body": "Anyone missing, flagged."},
+        {"title": "Counts at regroup points", "body": "Anyone not marked stays on your list."},
         {"title": "Paid booking", "body": "UPI or card, refunds by your policy."},
         {"title": "A waitlist", "body": "For the treks that sell out."},
         {"title": "Help for beginners", "body": "An easy group and a first hello."},
@@ -138,11 +138,11 @@
       "ground": "ink",
       "kicker": "Pricing for outdoor groups",
       "price": "5%",
-      "title": "of ticket sales, never more than ₹10,000 per billing cycle.",
+      "title": "of ticket sales, never more than ₹10,000 a month.",
       "trial": "Free for 30 days from your first trek, 90 for founding hosts. Payment gateway fees are separate.",
       "examples": [
         {"title": "A 40-person trek at ₹1,800", "value": "₹3,600 a trek", "body": "5% of ₹72,000."},
-        {"title": "Three treks in a billing cycle", "value": "₹10,000 a billing cycle", "body": "5% would be ₹10,800; the cap stops it at ₹10,000."},
+        {"title": "Three treks in a month", "value": "₹10,000 a month", "body": "5% would be ₹10,800; the cap stops it at ₹10,000."},
         {"title": "A free Sunday ride", "value": "₹0", "body": "Free events stay free."}
       ],
       "actions": [

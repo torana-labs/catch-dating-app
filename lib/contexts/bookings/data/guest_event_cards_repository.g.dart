@@ -423,14 +423,15 @@ final class WatchSavedEventCardsFamily extends $Family
   String toString() => r'watchSavedEventCardsProvider';
 }
 
-/// The guest's event cards by event id, for payment and review history.
+/// The guest's event cards for the events a history page names.
 
-@ProviderFor(watchOwnEventCardsById)
-final watchOwnEventCardsByIdProvider = WatchOwnEventCardsByIdFamily._();
+@ProviderFor(watchOwnEventCardsForEvents)
+final watchOwnEventCardsForEventsProvider =
+    WatchOwnEventCardsForEventsFamily._();
 
-/// The guest's event cards by event id, for payment and review history.
+/// The guest's event cards for the events a history page names.
 
-final class WatchOwnEventCardsByIdProvider
+final class WatchOwnEventCardsForEventsProvider
     extends
         $FunctionalProvider<
           AsyncValue<Map<String, GuestEventCard>>,
@@ -440,24 +441,24 @@ final class WatchOwnEventCardsByIdProvider
     with
         $FutureModifier<Map<String, GuestEventCard>>,
         $StreamProvider<Map<String, GuestEventCard>> {
-  /// The guest's event cards by event id, for payment and review history.
-  WatchOwnEventCardsByIdProvider._({
-    required WatchOwnEventCardsByIdFamily super.from,
-    required String super.argument,
+  /// The guest's event cards for the events a history page names.
+  WatchOwnEventCardsForEventsProvider._({
+    required WatchOwnEventCardsForEventsFamily super.from,
+    required OwnEventCardsQuery super.argument,
   }) : super(
          retry: null,
-         name: r'watchOwnEventCardsByIdProvider',
+         name: r'watchOwnEventCardsForEventsProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$watchOwnEventCardsByIdHash();
+  String debugGetCreateSourceHash() => _$watchOwnEventCardsForEventsHash();
 
   @override
   String toString() {
-    return r'watchOwnEventCardsByIdProvider'
+    return r'watchOwnEventCardsForEventsProvider'
         ''
         '($argument)';
   }
@@ -470,13 +471,13 @@ final class WatchOwnEventCardsByIdProvider
 
   @override
   Stream<Map<String, GuestEventCard>> create(Ref ref) {
-    final argument = this.argument as String;
-    return watchOwnEventCardsById(ref, argument);
+    final argument = this.argument as OwnEventCardsQuery;
+    return watchOwnEventCardsForEvents(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is WatchOwnEventCardsByIdProvider &&
+    return other is WatchOwnEventCardsForEventsProvider &&
         other.argument == argument;
   }
 
@@ -486,28 +487,31 @@ final class WatchOwnEventCardsByIdProvider
   }
 }
 
-String _$watchOwnEventCardsByIdHash() =>
-    r'ff632d5478499f104785c64f5e16544170d40903';
+String _$watchOwnEventCardsForEventsHash() =>
+    r'fb7f9beb99074b7c0d8201ab507e9e7bdff2bc02';
 
-/// The guest's event cards by event id, for payment and review history.
+/// The guest's event cards for the events a history page names.
 
-final class WatchOwnEventCardsByIdFamily extends $Family
+final class WatchOwnEventCardsForEventsFamily extends $Family
     with
-        $FunctionalFamilyOverride<Stream<Map<String, GuestEventCard>>, String> {
-  WatchOwnEventCardsByIdFamily._()
+        $FunctionalFamilyOverride<
+          Stream<Map<String, GuestEventCard>>,
+          OwnEventCardsQuery
+        > {
+  WatchOwnEventCardsForEventsFamily._()
     : super(
         retry: null,
-        name: r'watchOwnEventCardsByIdProvider',
+        name: r'watchOwnEventCardsForEventsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  /// The guest's event cards by event id, for payment and review history.
+  /// The guest's event cards for the events a history page names.
 
-  WatchOwnEventCardsByIdProvider call(String uid) =>
-      WatchOwnEventCardsByIdProvider._(argument: uid, from: this);
+  WatchOwnEventCardsForEventsProvider call(OwnEventCardsQuery query) =>
+      WatchOwnEventCardsForEventsProvider._(argument: query, from: this);
 
   @override
-  String toString() => r'watchOwnEventCardsByIdProvider';
+  String toString() => r'watchOwnEventCardsForEventsProvider';
 }

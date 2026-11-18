@@ -6,7 +6,7 @@
     "title": "Your page | {{brand.name}} for hosts",
     "description": "A free organiser page that replaces the link in your bio: your next event, your links, everything coming up, reviews with your replies, and followers. Claim it with Instagram or Luma.",
     "socialDescription": "A page that replaces the link in your bio. Make yours, or claim it if it’s already on {{brand.name}}.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

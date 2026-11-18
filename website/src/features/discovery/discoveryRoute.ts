@@ -38,9 +38,9 @@ export function cityFormatPageMeta(catalog: HomeCatalog, format: DiscoveryFormat
 }
 
 /**
- * The new-to-the-city page's title, description and robots line. The page
- * waits for the owner's approval before it enters search, as every redesign
- * page does (the playbook contract's `noindex` until approved).
+ * The new-to-the-city page's title, description and robots line. The owner
+ * approved the page for search (18 Nov 2026): it is indexed in every listed
+ * city, quiet weeks included, as it renders in every one.
  */
 export function newToCityPageMeta(catalog: HomeCatalog): DiscoveryPageMeta {
   const city = catalog.selected.label;
@@ -50,7 +50,7 @@ export function newToCityPageMeta(catalog: HomeCatalog): DiscoveryPageMeta {
     description,
     twitterDescription: description,
     canonicalPath: newToCityPath(catalog.selected.slug),
-    robots: "noindex, follow",
+    robots: "index, follow",
   };
 }
 
@@ -75,9 +75,8 @@ export function discoveryPageMeta(route: DiscoveryRoute, catalog: HomeCatalog): 
 
 /**
  * The city-by-format pages the backend indexes in one city, from its
- * cityPlans read model, in the taxonomy's order: the only discovery pages a
- * sitemap lists. New-to-the-city pages wait for the owner's approval, and a
- * city read without format pages lists none.
+ * cityPlans read model, in the taxonomy's order. A city read without format
+ * pages lists none. The sitemap adds each city's new-to-the-city page.
  */
 export function indexedCityFormatPaths(citySlug: string, plans: Pick<DiscoveryCityPlans, "formatPages">): string[] {
   const pages = plans.formatPages;

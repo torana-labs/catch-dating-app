@@ -1049,6 +1049,17 @@ node tool/git/worktree_guard.mjs retire \
 # Repeat the exact report command with --apply only in its normal cleanup slot.
 ```
 
+Fourth, `tool/git/sweep_merged_worktrees.mjs` is the routine cleanup every
+session runs first. It reports every linked worktree and, with `--apply`,
+removes the clean, idle, unused ones whose HEAD is in `origin/main` or is the
+exact head of a merged PR (read through `gh`), releasing any guard claim first.
+Removal is non-forced; branches, refs and stashes stay.
+
+```sh
+node tool/git/sweep_merged_worktrees.mjs            # report only
+node tool/git/sweep_merged_worktrees.mjs --apply    # remove finished worktrees
+```
+
 The guard does not fetch, install dependencies, execute checks, push, merge,
 delete refs, or authorize commands. Retirement uses read-only live ref queries
 and refuses stale/unavailable remote evidence. Its local claims are disposable; Git

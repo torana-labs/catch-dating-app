@@ -136,7 +136,7 @@ Future<HostCommunicationPlan> hostCommunicationPlan(
   String organizerId,
   String contactId,
 ) => ref
-    .read(hostCommunicationRepositoryProvider)
+    .watch(hostCommunicationRepositoryProvider)
     .resolveIndividualCommunicationPlan(
       organizerId: organizerId,
       contactId: contactId,
@@ -147,7 +147,7 @@ Future<HostManualSendTaskPage> hostManualSendTasks(
   Ref ref,
   String organizerId,
 ) => ref
-    .read(hostCommunicationRepositoryProvider)
+    .watch(hostCommunicationRepositoryProvider)
     .listManualSendTasks(organizerId: organizerId);
 
 final class _HostCommunicationContactTarget {

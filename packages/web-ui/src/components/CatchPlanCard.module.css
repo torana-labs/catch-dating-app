@@ -4,6 +4,7 @@
  * turns into a row with a 112px media column.
  */
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -45,6 +46,26 @@
 .poster > * {
   overflow-wrap: normal;
   word-break: normal;
+}
+
+/*
+ * The canvas plan card's badge (.plan .badge): a white pill on the media's
+ * top corner, 10px in, in the badge type. The card is its containing block,
+ * so it sits on the media in every layout; a long tag ends in an ellipsis
+ * before the far edge.
+ */
+.badge.badge {
+  position: absolute;
+  inset: var(--catch-space-micro10) var(--catch-space-micro10) auto;
+  width: fit-content;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: var(--catch-website-badge-pad-block) var(--catch-space-micro10);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-palette-white);
+  color: var(--catch-palette-ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .body {
@@ -100,6 +121,11 @@
 .card[data-layout="kit"] .media {
   height: var(--catch-website-plan-media-height);
   border-radius: var(--catch-radius-md);
+}
+
+/* 10px inside the media, which sits 14px inside the card. */
+.card[data-layout="kit"] .badge.badge {
+  inset: calc(var(--catch-space-micro14) + var(--catch-space-micro10)) calc(var(--catch-space-micro14) + var(--catch-space-micro10)) auto;
 }
 
 .row {

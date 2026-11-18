@@ -7,6 +7,7 @@ import {pendingPlaybookBindings} from "./playbookBindings";
 import {playbookRouteAliases} from "./playbookHrefs";
 import {
   alwaysNoindexPlaybookRoutes,
+  approvedPlaybookPaths,
   loadPlaybookPage,
   playbookPageIndexes,
   registeredPlaybookPages,
@@ -121,6 +122,22 @@ describe("playbook page indexes", () => {
     expect(pendingPlaybookBindings(page)).toEqual([]);
     expect(JSON.stringify(page)).not.toMatch(/\{\{/u);
     expect(page.meta.noindex).toBe(true);
+  });
+
+  it("indexes only the pages the owner approved for search (18 Nov 2026); /pricing/ is not ready yet", async () => {
+    expect((await approvedPlaybookPaths()).sort()).toEqual([
+      "/host/brands/", "/host/colleges/", "/host/communities/", "/host/creators/", "/host/demo/", "/host/facilities/",
+      "/host/nightlife/", "/host/outdoors/", "/host/quiz-nights/", "/host/racket-sports/", "/host/studios/",
+      "/host/supper-clubs/", "/host/teams/", "/host/venues/", "/host/workshops/", "/how-it-works/",
+      "/product/bookings/", "/product/door/", "/product/forms/", "/product/guests/", "/product/messages/",
+      "/product/night/", "/product/reports/", "/product/your-page/", "/safety/",
+    ]);
+  });
+
+  it("states the fee cap a month on every page, never per billing cycle (owner, 18 Nov 2026)", () => {
+    for (const {ref, raw} of loaded) {
+      expect(JSON.stringify(raw), ref.match.contentKey).not.toMatch(/billing cycle|\bcycle\b/iu);
+    }
   });
 });
 

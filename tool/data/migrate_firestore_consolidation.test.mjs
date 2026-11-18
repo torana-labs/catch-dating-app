@@ -305,6 +305,44 @@ test("guest-event-cards only fills what is missing and never replaces", async ()
     null);
 });
 
+test("event-organizer-summary fills missing and stale summaries and nothing else", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "event-organizer-summary");
+  const publicOrganizer = {name: "Bandra Run Club", description: "x", location: "mumbai",
+    area: "Bandra", hostName: "Asha", tags: ["running"], rating: 4.6, status: "active",
+    archived: false, appVisibility: "discoverable", followerCount: 99};
+  const summary = {name: "Bandra Run Club", location: "mumbai", area: "Bandra", hostName: "Asha",
+    tags: ["running"], rating: 4.6, synthetic: false, appVisibility: "discoverable",
+    status: "active", archived: false};
+  const hidden = {name: "", location: "", area: "", hostName: null, tags: [], rating: 0,
+    synthetic: false, appVisibility: "hidden", status: "archived", archived: true};
+  const db = fakeDb({
+    "publicOrganizers/o1": publicOrganizer,
+    "events/missing": {organizerId: "o1", name: "Run", bookedCount: 3},
+    "events/stale": {organizerId: "o1", name: "Run", organizerSummary: {...summary, rating: 3}},
+    "events/current": {organizerId: "o1", name: "Run", organizerSummary: summary},
+    "events/ghost": {organizerId: "gone", name: "Run"},
+    "events/broken": {name: "no organizer"},
+  });
+  const before = JSON.stringify(db.data);
+
+  const plan = await planMigration(db, migration);
+  assert.deepEqual(plan.totals, {scanned: 5, toCreate: 3, alreadyCopied: 0, conflicts: 0, skipped: 0});
+  // A dry run reads and writes nothing.
+  assert.equal(JSON.stringify(db.data), before);
+
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data["events/missing"], {organizerId: "o1", name: "Run", bookedCount: 3,
+    organizerSummary: summary});
+  assert.deepEqual(db.data["events/stale"].organizerSummary, summary);
+  assert.deepEqual(db.data["events/ghost"].organizerSummary, hidden);
+  assert.equal(db.data["events/broken"].organizerSummary, undefined);
+  assert.deepEqual(Object.keys(db.data["events/current"]).sort(), ["name", "organizerId", "organizerSummary"]);
+  assert.equal(Object.keys(db.data).length, 6);
+
+  // A rerun finds nothing to write.
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
 test("host-form-version-filters creates each missing view once", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "host-form-version-filters");
   const definition = {sections: [{sectionId: "one", questions: [

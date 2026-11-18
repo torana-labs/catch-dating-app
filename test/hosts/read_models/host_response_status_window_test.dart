@@ -120,18 +120,38 @@ void main() {
 
   test('the latest submitted answer is the newest of its form', () async {
     final window = await reads
-        .watchWindow(_latestSubmitted, limit: _latestSubmitted.limit)
+        .watchPages(_latestSubmitted, pageSize: _latestSubmitted.limit)
+        .pages
         .first;
 
-    expect(window.page.items.map((item) => item.responseId), ['latest']);
-    expect(window.page.entries, isNull);
+    expect(window.items.map((item) => item.response?.responseId), ['latest']);
     expect(window.hasMore, isTrue);
+  });
+
+  test('the next page opens after the last row shown', () async {
+    final pager = reads.watchPages(_latestSubmitted, pageSize: 1);
+    final shown = <List<String?>>[];
+    final hasMore = <bool>[];
+    final subscription = pager.pages.listen((pages) {
+      shown.add(pages.items.map((item) => item.response?.responseId).toList());
+      hasMore.add(pages.hasMore);
+    });
+    addTearDown(subscription.cancel);
+    await pumpEventQueue();
+    expect(shown.last, ['latest']);
+    expect(hasMore.last, isTrue);
+
+    pager.loadMore();
+    await pumpEventQueue();
+    expect(shown.last, ['latest', 'old']);
+    expect(hasMore.last, isFalse);
   });
 
   test('a newer submitted answer shows at once', () async {
     final latest = reads
-        .watchWindow(_latestSubmitted, limit: 1)
-        .map((window) => window.page.items.single.responseId);
+        .watchPages(_latestSubmitted, pageSize: 1)
+        .pages
+        .map((pages) => pages.items.single.response?.responseId);
     final expectation = expectLater(latest, emitsInOrder(['latest', 'new']));
     await pumpEventQueue();
     await response('new', 5000);
