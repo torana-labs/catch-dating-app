@@ -55,4 +55,4 @@ final class FirestoreCacheWipeProvider
 }
 
 String _$firestoreCacheWipeHash() =>
-    r'5db8fec4b6dcda2049a9668d4cdf40c183ffb573';
+    r'8666c2a70c7980c5646dbe98bd02e6d8fe6d4d5d';
