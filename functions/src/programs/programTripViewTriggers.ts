@@ -64,10 +64,12 @@ export const onProgramTripGuestChanged = onDocumentWritten({
   if (typeof programId !== "string" || !programId ||
       unchanged(before, after, ["displayName"])) return;
   const db = admin.firestore();
+  // One equality filter keeps this off the composite index list; the
+  // programme is checked on each journey.
   const legs = await db.collection("programTravelLegs")
-    .where("programId", "==", programId)
     .where("guestId", "==", event.params.guestId).limit(fanoutLimit).get();
   for (const leg of legs.docs) {
+    if (leg.data().programId !== programId) continue;
     await reconcileProgramHotelInboundView(db, leg.id);
     const trips = await db.collection("transportTrips")
       .where("legIds", "array-contains", leg.id).limit(20).get();
@@ -85,10 +87,21 @@ export const onProgramHotelInboundSettingsChanged = onDocumentWritten({
   const after = event.data?.after.data();
   if (!after || unchanged(before, after, ["transportSettings"])) return;
   const db = admin.firestore();
-  const legs = await db.collection("programTravelLegs")
-    .where("programId", "==", event.params.programId)
-    .where("kind", "==", "inbound").limit(fanoutLimit).get();
-  for (const doc of legs.docs) {
-    await reconcileProgramHotelInboundView(db, doc.id);
+  // The programme's journeys a page at a time (one equality filter keeps
+  // this off the composite index list); inbound ones are rewritten.
+  let last: FirebaseFirestore.QueryDocumentSnapshot | null = null;
+  for (let page = 0; page < 6; page++) {
+    let query: FirebaseFirestore.Query = db.collection("programTravelLegs")
+      .where("programId", "==", event.params.programId)
+      .orderBy(admin.firestore.FieldPath.documentId()).limit(fanoutLimit);
+    if (last) query = query.startAfter(last);
+    const snap = await query.get();
+    for (const doc of snap.docs) {
+      if (doc.data().kind === "inbound") {
+        await reconcileProgramHotelInboundView(db, doc.id);
+      }
+    }
+    if (snap.size < fanoutLimit) break;
+    last = snap.docs[snap.docs.length - 1];
   }
 });
