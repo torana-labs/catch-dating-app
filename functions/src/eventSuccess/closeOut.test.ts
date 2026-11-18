@@ -60,6 +60,11 @@ test("setEventCloseOut arms, pauses and replays", async () => {
   const replay = await setEventCloseOutHandler(
     {auth: {uid: "host-1"}, data} as never, deps as never);
   assert.deepEqual(replay, {...first, replayed: true});
+  assert.equal(Object.keys(store.docs).filter((path) =>
+    path.startsWith("commandReceipts/setEventCloseOut_")).length, 1);
+  await assert.rejects(setEventCloseOutHandler({auth: {uid: "host-1"},
+    data: {...data, noShowNote: true}} as never, deps as never),
+  code("already-exists"));
   await assert.rejects(setEventCloseOutHandler({auth: {uid: "host-1"},
     data: {...data, requestId: "close-out-0002"}} as never, deps as never),
   code("aborted"));

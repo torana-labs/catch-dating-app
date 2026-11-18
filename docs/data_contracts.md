@@ -1809,7 +1809,7 @@ left follows the schedule and the step runs), and `crawlStopChanges` (stops
 changed on the night by `changeEventCrawlStop`, keyed by itinerary item id;
 missing means the published route). Rules keep all four out of client
 creates and setup updates. Their replay receipts live in server-only
-`eventLiveCommandReceipts/{receiptId}`.
+`commandReceipts` (see Command Receipts).
 
 ### Event Close-Out And Guest Game History
 
@@ -1990,6 +1990,53 @@ come from JSON Schema; the boundary is the timestamp representation:
 `tool/contracts/check_firestore_contract.mjs` cross-checks that the Admin SDK
 projection has the expected fields for every collection with a
 `typescriptInterface` entry.
+
+### Command Receipts
+
+`commandReceipts/{command}_{id}` is the one replay-receipt collection (L8 of the
+November 2026 Firestore consolidation). A command that must not run twice
+(a callable a client may retry, a trigger or webhook the platform may
+redeliver) reads its receipt in the same transaction as its write, through
+`functions/src/shared/commandReceipts.ts`. An exact retry returns the stored
+result; a different request that reuses the id is rejected by the command.
+Everything else about a receipt is the shared module's job:
+
+- Shape (`contracts/firestore/command_receipts.schema.json`): `command`,
+  optional `requestHash` (SHA-256 of what the request asked for, the acting
+  user and target included), optional `result` (at most 4096 bytes, only what a
+  replay must return that live state cannot rebuild), `createdAt`, `expiresAt`.
+  No actor or personal field is stored; ids embed hashes, not identities.
+- Id: `{command}_{id}`. An id that is longer than 100 characters or holds
+  anything beyond letters, digits and `:._-` becomes `h` plus its SHA-256, so
+  the document id is always valid and bounded. Command names are camelCase with
+  no underscore.
+- Retention (`expiresAt`): `trigger` 7 days, `request` 30 days, `webhook` 30
+  days. A receipt past `expiresAt` counts as absent. The collection's Firestore
+  TTL policy (a `fieldOverrides` entry for `commandReceipts.expiresAt` in
+  `firestore.indexes.json`) was approved by the owner on 18 Nov 2026 for this
+  collection only and lands in a follow-up change. Seven other collections write `expiresAt` with no policy
+  and stay as they are: `eventRuntimeDataRequestReceipts`, `organizerAudienceProjectionReceipts`,
+  `organizerEntitlementReceipts`, `salesDemoReceipts`,
+  `transportOperationReceipts`, `eventLiveCommandReceipts` and
+  `instagramAccessTokens` (this one is not a receipt).
+- Server only: rules deny every client read and write.
+
+Only pure replay lives here: a receipt whose sole job is to let a retry return
+the same result. A receipt that proves a decision to someone later keeps its
+own collection and retention: consent (`organizerCommunicationPermissionReceipts`,
+`catchCommunicationPermissionReceipts`, `eventAssistanceConsentReceipts`,
+`eventApprovalNotificationReceipts`), money (`hostMembershipWebhookReceipts`,
+`eventMessagingBudget*Receipts`, `publicEventAdmissionReceipts`), admission and
+conversion proofs other commands read (`organizerFormAdmissionReceipts`,
+`organizerFormConversionReceipts`), merges and publications kept for audit
+(`organizerContactMergeReceipts`, `externalEventPublicationReceipts`), and
+provider-delivery evidence (`organizerCampaignWebhookReceipts`).
+
+Moved so far: `functionEventReceipts` and `eventLiveCommandReceipts`. They are no
+longer written or declared;
+their documents stay under the legal hold. Replay windows are short and an
+in-flight retry across the deploy only re-runs a revision-fenced or idempotent
+command, so nothing was copied forward.
 
 ### Public HTTP And Admin Callable Boundaries
 

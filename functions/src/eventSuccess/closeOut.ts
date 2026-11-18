@@ -34,11 +34,10 @@ import {DEFAULT_SCOPE_TIMEZONE} from "../moments/momentPlanning";
 import {replanMoment} from "../moments/momentRunner";
 import {requireEventManager} from "./liveControl";
 import {
-  buildLiveCommandReceipt,
-  liveCommandReceiptId,
   liveCommandReceiptRef,
   liveCommandRequestHash,
   matchingLiveCommandReceipt,
+  writeLiveCommandReceipt,
 } from "./liveCommandReceipts";
 
 /**
@@ -172,14 +171,14 @@ export async function setEventCloseOutHandler(
       "This event belongs to another organizer.");
   }
   const closeOutRef = db.collection(EVENT_CLOSE_OUTS).doc(payload.eventId);
-  const receiptId = liveCommandReceiptId("setEventCloseOut", uid,
+  const receiptRef = liveCommandReceiptRef(db, "setEventCloseOut", uid,
     payload.eventId, payload.requestId);
-  const receiptRef = liveCommandReceiptRef(db, receiptId);
   const command: Record<string, unknown> = {...payload};
   delete command.requestId;
   const requestHash = liveCommandRequestHash("setEventCloseOut", command);
-  const expected = {receiptId, command: "setEventCloseOut" as const,
-    eventId: payload.eventId, actorUid: uid, requestHash};
+  const now = deps.nowMillis();
+  const expected = {command: "setEventCloseOut" as const, requestHash,
+    nowMillis: now};
 
   // Replays and stale saves stop before any moment changes.
   const [receiptSnap, currentSnap] = await db.getAll(receiptRef, closeOutRef);
@@ -187,7 +186,6 @@ export async function setEventCloseOutHandler(
   if (prior) return replayResponse(payload.eventId, prior.appliedRevision);
   requireCloseOutRevision(currentSnap.data(), payload.expectedRevision);
 
-  const now = deps.nowMillis();
   const endMillis = timestampMillis(event.endTime) ??
     timestampMillis(event.startTime) ?? now;
   const sendAtMs = payload.thankYou === null ? null :
@@ -221,10 +219,9 @@ export async function setEventCloseOutHandler(
       throw new HttpsError("internal", "Close-out record is invalid.");
     }
     transaction.set(closeOutRef, doc);
-    transaction.create(receiptRef, buildLiveCommandReceipt({
-      ...expected, appliedRevision: revision, nowMillis: now,
-      timestampFromMillis: deps.timestampFromMillis,
-    }));
+    writeLiveCommandReceipt(transaction, receiptRef, {
+      ...expected, appliedRevision: revision,
+    });
     return {eventId: payload.eventId, revision, replayed: false};
   });
   if (!validateSetEventCloseOutCallableResponse(response)) {

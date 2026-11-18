@@ -147,7 +147,7 @@ export const fixtureSchemaCases = Object.freeze([
   ["valid/city_plans_doc.json", "cityPlansDocumentSchema"],
   ["valid/fetch_event_success_wingman_candidates_response.json", "fetchEventSuccessWingmanCandidatesCallableResponseSchema"],
   ["valid/fetch_swipe_candidates_response.json", "fetchSwipeCandidatesCallableResponseSchema"],
-  ["valid/function_event_receipt_doc.json", "functionEventReceiptDocumentSchema"],
+  ["valid/command_receipt_doc.json", "commandReceiptDocumentSchema"],
   ["valid/host_profile_doc.json", "hostProfileDocumentSchema"],
   ["valid/join_waitlist_request_host.json", "joinWaitlistHTTPRequestSchema"],
   ["valid/join_waitlist_request_member.json", "joinWaitlistHTTPRequestSchema"],
