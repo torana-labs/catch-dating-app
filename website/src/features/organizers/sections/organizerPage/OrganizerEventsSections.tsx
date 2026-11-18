@@ -27,7 +27,7 @@ export function OrganizerEventsSection({controller}: {controller: OrganizerPageC
   return (
     <CatchStack aria-labelledby={titleId} as="section" gap={8} id="events">
       <CatchStack align="end" direction="row" gap={12} justify="between" wrap>
-        <CatchBandHeader size="feature" title={copy.eventsTitle} titleId={titleId} />
+        <CatchBandHeader size="profile" title={copy.eventsTitle} titleId={titleId} />
         {events.rows.length ? <CatchText as="p" tone="secondary" variant="body-small">{events.note}</CatchText> : null}
       </CatchStack>
       <CatchSection
@@ -39,7 +39,7 @@ export function OrganizerEventsSection({controller}: {controller: OrganizerPageC
             density="roomy"
             footer={(
               <>
-                <CatchBadge label={row.sourceLabel} size="sm" tone={row.source === "catch" ? "brand" : "affinity"} />
+                <CatchBadge label={row.sourceLabel} size="sm" tone={row.source === "catch" ? "coral" : "indigo"} />
                 {row.womenLed ? <CatchBadge label={copy.labels.womenLed} size="sm" tone="success" /> : null}
                 <CatchText as="span" variant="label-action">{row.price}</CatchText>
                 {/* An imported row names its seller in the tag and on its button already. */}
@@ -77,7 +77,7 @@ export function OrganizerMomentsSection({controller}: {controller: OrganizerPage
   if (!moments.tiles.length) return null;
   return (
     <CatchStack aria-labelledby={titleId} as="section" gap={16}>
-      <CatchBandHeader size="feature" title={moments.title} titleId={titleId} />
+      <CatchBandHeader size="profile" title={moments.title} titleId={titleId} />
       <CatchGrid columns={4} compactColumns={2}>
         {moments.tiles.map((tile) => (
           <CatchPhotoTile caption={tile.caption} figure={tile.figure} ground={tile.ground} imageAlt={tile.imageAlt}

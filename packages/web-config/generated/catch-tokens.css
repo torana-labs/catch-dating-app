@@ -372,6 +372,10 @@
   --catch-website-color-tag-warn: #FCE3B5;
   --catch-website-color-tag-good: #D6F2E6;
   --catch-website-color-tag-info: #E3E6FC;
+  --catch-website-color-tag-coral: #FDE7DF;
+  --catch-website-color-tag-coral-ink: #8A2F12;
+  --catch-website-color-tag-indigo: #ECEBFD;
+  --catch-website-color-tag-indigo-ink: #3A3F9E;
   --catch-website-color-compare-us: #EAF7F1;
   --catch-website-color-compare-us-ink: #0F3D2B;
   --catch-website-color-device-bezel: #121013;
@@ -410,6 +414,8 @@
   --catch-website-type-figure-weight: 800;
   --catch-website-type-feature-size: 42px;
   --catch-website-type-feature-compact-size: 32px;
+  --catch-website-type-profile-section-size: 44px;
+  --catch-website-type-profile-section-compact-size: 34px;
   --catch-website-type-tile-title-line-height: 1.2;
   --catch-website-type-tile-body-line-height: 1.45;
   --catch-website-type-card-title-size: 18px;
@@ -476,6 +482,9 @@
   --catch-website-profile-compact-monogram-overlap: 48px;
   --catch-website-profile-copy-max: 640px;
   --catch-website-profile-actions-width: 420px;
+  --catch-website-profile-content-max: 1080px;
+  --catch-website-profile-section-gap: 56px;
+  --catch-website-profile-compact-section-gap: 44px;
   --catch-website-plan-media-height: 150px;
   --catch-website-badge-pad-block: 5px;
   --catch-website-chip-dot-size: 8px;

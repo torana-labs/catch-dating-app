@@ -17,11 +17,12 @@ export type CatchBandHeaderDirection = "column" | "row";
 /**
  * The canvas's display headline sizes (D26, playbook-panels.css .d-hero,
  * .d-sec and .d-sm): hero 80px (44px on phones), section 56px (36px), feature
- * 42px (32px), the homepage's app band, and small 30px (26px). All take the
+ * 42px (32px), the homepage's app band, profile 44px (34px), the organiser
+ * page's section titles (WebOrgV2 .h2), and small 30px (26px). All take the
  * hero role's weight, .98 leading and -0.03em tracking; small keeps the
  * display-section role's 1.05 leading.
  */
-export type CatchBandHeaderSize = "hero" | "section" | "feature" | "small";
+export type CatchBandHeaderSize = "hero" | "section" | "feature" | "profile" | "small";
 
 /**
  * A kicker's accent (playbook kit `.k` colours): the palette's deep tone on

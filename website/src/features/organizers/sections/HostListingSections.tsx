@@ -25,19 +25,19 @@ export function HostListingSections({controller, owner, ownerFooter}: {
 }) {
   return (
     <CatchStack gap={0}>
-      {owner ? <CatchBand as="div" pb="none" pt="compact" width="content">{owner}</CatchBand> : null}
-      <CatchBand as="div" pb="none" pt="compact" width="content">
+      {owner ? <CatchBand as="div" pb="none" pt="compact" width="profile">{owner}</CatchBand> : null}
+      <CatchBand as="div" pb="none" pt="compact" width="profile">
         <OrganizerIdentitySection controller={controller} />
       </CatchBand>
-      <CatchBand as="div" pb="regular" pt="compact" width="content">
+      <CatchBand as="div" pb="regular" pt="compact" width="profile">
         <CatchStack collapseBelow="expanded" direction="row" gap={48} railSide="start" railWidth="wide">
-          <CatchStack aria-label={controller.view.name} as="aside" gap={12}>
+          <CatchStack aria-label={controller.view.name} as="aside" gap={14}>
             <OrganizerFollowPanels controller={controller} />
             <OrganizerNextUpSection controller={controller} />
             <OrganizerLinksSection controller={controller} />
             <OrganizerSocialsSection controller={controller} />
           </CatchStack>
-          <CatchStack gap={48}>
+          <CatchStack gap="profile">
             <OrganizerClaimSection controller={controller} />
             <OrganizerEventsSection controller={controller} />
             <OrganizerMomentsSection controller={controller} />

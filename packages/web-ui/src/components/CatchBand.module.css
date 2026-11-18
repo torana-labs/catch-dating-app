@@ -88,6 +88,12 @@
   padding-inline: var(--catch-band-gutter);
 }
 
+/* The organiser page's content width (website.profile.contentMax). */
+.inner[data-width="profile"] {
+  max-width: calc(var(--catch-website-profile-content-max) + (2 * var(--catch-band-gutter)));
+  padding-inline: var(--catch-band-gutter);
+}
+
 /*
  * Spacious is the boards' 112px section rhythm, space.s28.
  */

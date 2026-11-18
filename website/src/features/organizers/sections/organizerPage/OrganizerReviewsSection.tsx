@@ -41,7 +41,7 @@ export function OrganizerReviewsSection({controller}: {controller: OrganizerPage
   return (
     <CatchStack aria-labelledby={titleId} as="section" gap={16} id="reviews">
       <CatchStack align="end" direction="row" gap={12} justify="between" wrap>
-        <CatchBandHeader size="feature" title={copy.reviewsTitle} titleId={titleId} />
+        <CatchBandHeader size="profile" title={copy.reviewsTitle} titleId={titleId} />
         {review ? <CatchButton label={copy.writeReview} onPressed={review.toggle} size="md" variant="secondary" /> : null}
       </CatchStack>
       {review?.open ? <OrganizerReviewForm review={review} /> : null}

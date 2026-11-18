@@ -370,6 +370,9 @@ abstract final class GeneratedCatchWebsiteTokens {
   static const double profileCompactMonogramOverlap = 48.0;
   static const double profileCopyMax = 640.0;
   static const double profileActionsWidth = 420.0;
+  static const double profileContentMax = 1080.0;
+  static const double profileSectionGap = 56.0;
+  static const double profileCompactSectionGap = 44.0;
   static const double planMediaHeight = 150.0;
   static const double badgePadBlock = 5.0;
   static const double chipDotSize = 8.0;
