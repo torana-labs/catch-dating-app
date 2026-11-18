@@ -1,0 +1,7 @@
+{
+  "organizerId": "organizer-1",
+  "role": "owner",
+  "canManage": false,
+  "manageBlockedReason": "featureDisabled",
+  "domain": null
+}

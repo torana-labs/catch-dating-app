@@ -1,0 +1,111 @@
+{
+  "hostname": "www.example-club.test",
+  "registrableDomain": "example-club.test",
+  "target": {
+    "kind": "organizerPage",
+    "organizerId": "organizer-1"
+  },
+  "status": "suspended",
+  "generation": 1,
+  "revision": 7,
+  "ownershipChallenge": "catch-verification=Qx7Lr2Vb9Tn4Hc6Md1Ks8Wp3Yf5Ga0Ze",
+  "expectedCname": "domains.example.net",
+  "apexRedirect": {
+    "hostname": "example-club.test",
+    "mode": "registrar"
+  },
+  "provider": "cloudflareSaas",
+  "providerHostnameId": "0d89c70d-ad9f-4843-b99f-6cc0252067e9",
+  "providerStatus": {
+    "hostname": "active",
+    "ssl": "active",
+    "errors": [],
+    "observedAtMillis": 1763452800000
+  },
+  "dnsInstructions": [
+    {
+      "type": "CNAME",
+      "name": "www.example-club.test",
+      "value": "domains.example.net",
+      "purpose": "routing"
+    },
+    {
+      "type": "TXT",
+      "name": "_catch-verify.www.example-club.test",
+      "value": "catch-verification=Qx7Lr2Vb9Tn4Hc6Md1Ks8Wp3Yf5Ga0Ze",
+      "purpose": "ownership"
+    },
+    {
+      "type": "TXT",
+      "name": "_cf-custom-hostname.www.example-club.test",
+      "value": "4b1c7d2e-9f3a-4e6b-8c5d-1a2b3c4d5e6f",
+      "purpose": "certificate"
+    },
+    {
+      "type": "redirect",
+      "name": "example-club.test",
+      "value": "https://www.example-club.test/",
+      "purpose": "apexRedirect"
+    }
+  ],
+  "reservedAtMillis": 1763366400000,
+  "pendingExpiresAtMillis": null,
+  "verifiedAtMillis": 1763370000000,
+  "activatedAtMillis": 1763373600000,
+  "lastCheckedAtMillis": 1763452800000,
+  "lastHealthyAtMillis": 1763452800000,
+  "lapsedAtMillis": null,
+  "consecutiveProbeFailures": 0,
+  "review": {
+    "state": "none",
+    "reason": null
+  },
+  "suspension": {
+    "reason": "Impersonates a payment provider",
+    "byUid": "admin-1",
+    "atMillis": 1763456400000
+  },
+  "createdByUid": "owner-1",
+  "history": [
+    {
+      "atMillis": 1763366400000,
+      "from": null,
+      "to": "pendingDns",
+      "actor": "owner",
+      "actorUid": "owner-1",
+      "reason": null
+    },
+    {
+      "atMillis": 1763370000000,
+      "from": "pendingDns",
+      "to": "verified",
+      "actor": "reconciler",
+      "actorUid": null,
+      "reason": null
+    },
+    {
+      "atMillis": 1763370000000,
+      "from": "verified",
+      "to": "provisioning",
+      "actor": "reconciler",
+      "actorUid": null,
+      "reason": null
+    },
+    {
+      "atMillis": 1763373600000,
+      "from": "provisioning",
+      "to": "active",
+      "actor": "reconciler",
+      "actorUid": null,
+      "reason": null
+    },
+    {
+      "atMillis": 1763456400000,
+      "from": "active",
+      "to": "suspended",
+      "actor": "admin",
+      "actorUid": "admin-1",
+      "reason": "Impersonates a payment provider"
+    }
+  ]
+}
