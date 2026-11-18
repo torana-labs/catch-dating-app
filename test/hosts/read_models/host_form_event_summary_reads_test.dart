@@ -56,9 +56,10 @@ void main() {
       HostSummaryReader(db, actorId: () => 'host'),
     );
     final window = await reads
-        .watchWindow(const HostFormListRequest(organizerId: 'org'), limit: 25)
+        .watchPages(const HostFormListRequest(organizerId: 'org'), pageSize: 25)
+        .pages
         .first;
-    expect(window.forms.map((item) => item.formId), ['form']);
+    expect(window.items.map((item) => item.formId), ['form']);
     expect(window.hasMore, isFalse);
   });
 

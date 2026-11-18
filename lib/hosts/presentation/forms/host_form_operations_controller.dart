@@ -18,7 +18,7 @@ class HostFormResponsesState {
     required this.responses,
     this.entries,
     required this.nextCursor,
-    this.windowHasMore = false,
+    this.liveHasMore = false,
     this.answerFilterOptions = const [],
     this.versionScope,
     this.loadingMore = false,
@@ -32,14 +32,14 @@ class HostFormResponsesState {
       responses.map(HostFormInboxEntry.fromResponse).toList(growable: false);
   final String? nextCursor;
 
-  /// Whether a live window has more rows after the ones listened to.
-  final bool windowHasMore;
+  /// Whether live pages have another page after the ones listened to.
+  final bool liveHasMore;
   final List<HostFormResponseFilterOption> answerFilterOptions;
   final HostFormResponseVersionScope? versionScope;
   final bool loadingMore;
   final Object? loadMoreError;
 
-  bool get canLoadMore => (nextCursor != null || windowHasMore) && !loadingMore;
+  bool get canLoadMore => (nextCursor != null || liveHasMore) && !loadingMore;
 
   HostFormResponsesState copyWith({
     List<HostFormResponseSummary>? responses,
@@ -54,7 +54,7 @@ class HostFormResponsesState {
     answerFilterOptions: answerFilterOptions,
     versionScope: versionScope,
     nextCursor: clearNextCursor ? null : nextCursor ?? this.nextCursor,
-    windowHasMore: windowHasMore,
+    liveHasMore: liveHasMore,
     loadingMore: loadingMore ?? this.loadingMore,
     loadMoreError: clearLoadMoreError
         ? null
@@ -62,31 +62,39 @@ class HostFormResponsesState {
   );
 }
 
-/// How many rows a live response request listens to; it grows by the
-/// request's page size each time the list asks for more.
+/// A response request's entries, a page at a time, every row shown live.
+/// Each page is its own listener, so asking for more reads only the new
+/// page.
 @riverpod
-class HostFormResponsesWindow extends _$HostFormResponsesWindow {
-  @override
-  int build(HostFormResponseListRequest request) => request.limit;
+class HostFormResponsePages extends _$HostFormResponsePages {
+  late LivePager<HostFormInboxEntry> _pager;
 
-  void grow() => state += request.limit;
+  @override
+  Stream<LivePages<HostFormInboxEntry>> build(
+    HostFormResponseListRequest request,
+  ) {
+    _pager = ref
+        .watch(hostFormsRepositoryProvider)
+        .watchResponsePages(request, pageSize: request.limit);
+    return _pager.pages;
+  }
+
+  /// Opens the next page, or retries the one that failed.
+  void loadMore() => _pager.loadMore();
 }
 
-/// The first rows of a response request the read model serves, as a
-/// listener.
+/// A form page's version scope and answer filter options, read once. Shared
+/// by every sort, status and date slice of the same form page.
 @riverpod
-Stream<HostFormResponseWindow> hostFormResponsesListener(
+Future<HostFormResponseScope?> hostFormResponseScope(
   Ref ref,
-  HostFormResponseListRequest request,
-  int limit,
-) => ref
-    .watch(hostFormsRepositoryProvider)
-    .watchResponses(request, limit: limit);
+  HostFormResponseScopeKey key,
+) => ref.watch(hostFormsRepositoryProvider).responseScope(key);
 
 /// A response list. A request the response read model serves is live: an
 /// answer submitted, reviewed or offered elsewhere shows at once, and more
-/// rows mean a larger listener. Answer, identity, contact and text filters
-/// page through the callable, their recorded search exception.
+/// rows open one more page listener. Answer, identity, contact and text
+/// filters page through the callable, their recorded search exception.
 @riverpod
 class HostFormResponsesController extends _$HostFormResponsesController {
   int _generation = 0;
@@ -96,31 +104,29 @@ class HostFormResponsesController extends _$HostFormResponsesController {
     ++_generation;
     ref.onDispose(() => ++_generation);
     return HostResponseSummaryReads.supports(request)
-        ? _watchWindow()
+        ? _watchPages()
         : _loadInitial();
   }
 
-  Future<HostFormResponsesState> _watchWindow() async {
-    final limit = ref.watch(hostFormResponsesWindowProvider(request));
-    final previous = state.value;
-    final HostFormResponseWindow window;
-    try {
-      window = await ref.watch(
-        hostFormResponsesListenerProvider(request, limit).future,
-      );
-    } on Object catch (error) {
-      // A larger window that fails keeps the rows already shown.
-      if (limit == request.limit || previous == null) rethrow;
-      return previous.copyWith(loadingMore: false, loadMoreError: error);
-    }
-    final page = window.page;
+  Future<HostFormResponsesState> _watchPages() async {
+    final scopeKey = HostResponseSummaryReads.scopeKey(request);
+    final scope = scopeKey == null
+        ? null
+        : await ref.watch(hostFormResponseScopeProvider(scopeKey).future);
+    final pages = await ref.watch(
+      hostFormResponsePagesProvider(request).future,
+    );
     return HostFormResponsesState(
-      responses: page.items,
-      entries: page.entries,
-      answerFilterOptions: page.answerFilterOptions,
-      versionScope: page.versionScope,
+      responses: List.unmodifiable(
+        pages.items.map((entry) => entry.response).nonNulls,
+      ),
+      entries: request.includeApplications ? pages.items : null,
+      answerFilterOptions: scope?.answerFilterOptions ?? const [],
+      versionScope: scope?.versionScope,
       nextCursor: null,
-      windowHasMore: window.hasMore,
+      liveHasMore: pages.hasMore,
+      loadingMore: pages.loadingMore,
+      loadMoreError: pages.nextPageError,
     );
   }
 
@@ -141,12 +147,11 @@ class HostFormResponsesController extends _$HostFormResponsesController {
   /// again too, so a failed listener is not handed back as it was.
   void retry() {
     if (HostResponseSummaryReads.supports(request)) {
-      ref.invalidate(
-        hostFormResponsesListenerProvider(
-          request,
-          ref.read(hostFormResponsesWindowProvider(request)),
-        ),
-      );
+      ref.invalidate(hostFormResponsePagesProvider(request));
+      final scopeKey = HostResponseSummaryReads.scopeKey(request);
+      if (scopeKey != null) {
+        ref.invalidate(hostFormResponseScopeProvider(scopeKey));
+      }
     }
     ref.invalidateSelf();
   }
@@ -155,13 +160,13 @@ class HostFormResponsesController extends _$HostFormResponsesController {
     final generation = _generation;
     final current = state.asData?.value;
     if (current == null || !current.canLoadMore) return;
+    if (HostResponseSummaryReads.supports(request)) {
+      ref.read(hostFormResponsePagesProvider(request).notifier).loadMore();
+      return;
+    }
     state = AsyncData(
       current.copyWith(loadingMore: true, clearLoadMoreError: true),
     );
-    if (HostResponseSummaryReads.supports(request)) {
-      ref.read(hostFormResponsesWindowProvider(request).notifier).grow();
-      return;
-    }
     try {
       final page = await ref
           .read(hostFormsRepositoryProvider)
