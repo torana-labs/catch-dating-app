@@ -38,7 +38,7 @@ describe("useOrganizerBillsController", () => {
 
   it("has no bills for an organizer Catch has not billed", async () => {
     const {wrapper} = createQueryHarness();
-    const {result} = renderHook(() => useOrganizerBillsController("bandra-runners"), {wrapper});
+    const {result} = renderHook(() => useOrganizerBillsController("sandbar-runners"), {wrapper});
     await waitFor(() => expect(result.current.loadState).toBe("ready"));
     expect(result.current.bills).toEqual([]);
     expect(result.current.latest).toBeNull();

@@ -20,7 +20,7 @@ const validateSupplyIntakeRequestsDocument =
 execFileSync(process.execPath, [path.join(__dirname, "../../../scripts/copy-operations-runtime.cjs")]);
 
 const NOW = "2026-10-24T08:00:00.000Z";
-const REQUEST_PATH = `${supplyIntakeCollections.requests}/nom-afterfly-1`;
+const REQUEST_PATH = `${supplyIntakeCollections.requests}/nom-moonmoth-1`;
 
 interface StoredResult {
   gaps: string[];
@@ -54,8 +54,8 @@ class MemoryWriter implements ProjectionImportWriter {
 
 function request(overrides: Record<string, unknown> = {}) {
   return {
-    schemaVersion: 1, requestId: "nom-afterfly-1", kind: "nomination", market: "mumbai",
-    seed: {name: "Afterfly", urls: ["https://lu.ma/afterfly"], notes: null, categories: ["social"]},
+    schemaVersion: 1, requestId: "nom-moonmoth-1", kind: "nomination", market: "mumbai",
+    seed: {name: "Moonmoth", urls: ["https://lu.ma/moonmoth"], notes: null, categories: ["social"]},
     submittedBy: {role: "associate", uid: "associate-1", partnerId: null}, submittedAt: NOW, origin: null, ...overrides,
   };
 }
@@ -79,13 +79,13 @@ function organizer(name: string, {citySlug = "mumbai", publishStatus = "publishe
 function setup(stored: Record<string, unknown> = {}) {
   const db = new FakeFirestore();
   acceptPageFetch(db);
-  db.write(REQUEST_PATH, {schemaVersion: 1, requestId: "nom-afterfly-1", request: request(), status: "queued", attempts: 0,
+  db.write(REQUEST_PATH, {schemaVersion: 1, requestId: "nom-moonmoth-1", request: request(), status: "queued", attempts: 0,
     leaseUntil: null, result: null, failure: null, approval: null, createdAt: NOW, updatedAt: NOW, ...stored});
   const writer = new MemoryWriter();
   const deps = {db: db as unknown as Firestore, now: () => new Date(NOW), projectionWriter: writer,
     transport: notFoundTransport, putSnapshot: async () => "supply-intake/snapshots/x.json"};
   const run = async () => {
-    const outcome = await processSupplyIntakeRequest(deps, "nom-afterfly-1");
+    const outcome = await processSupplyIntakeRequest(deps, "nom-moonmoth-1");
     const document = db.read(REQUEST_PATH) as {result: StoredResult; failure: unknown};
     assert.equal(outcome, "completed", JSON.stringify(document.failure));
     assert.equal(validateSupplyIntakeRequestsDocument(document), true,
@@ -99,7 +99,7 @@ function setup(stored: Record<string, unknown> = {}) {
 
 test("a nominated organizer Catch already lists is flagged for the reviewer", async () => {
   const {db, run} = setup();
-  db.write("organizers/org-afterfly", organizer("Afterfly", {hrefs: ["https://lu.ma/afterfly"]}));
+  db.write("organizers/org-moonmoth", organizer("Moonmoth", {hrefs: ["https://lu.ma/moonmoth"]}));
   db.write("organizers/org-sketch", organizer("Sunday Sketchers"));
   const {result, listing} = await run();
   assert.ok(result.gaps.includes("possible_duplicate_organizer"));
@@ -109,8 +109,8 @@ test("a nominated organizer Catch already lists is flagged for the reviewer", as
   assert.equal(check.verdict, "match");
   assert.equal(check.organizersCompared, 2);
   assert.deepEqual(check.inventory, {citySlug: null, limit: ORGANIZER_INVENTORY_LIMIT, truncated: false});
-  assert.equal(check.candidates[0].organizerId, "org-afterfly");
-  assert.equal(check.candidates[0].name, "Afterfly");
+  assert.equal(check.candidates[0].organizerId, "org-moonmoth");
+  assert.equal(check.candidates[0].name, "Moonmoth");
   assert.equal(check.candidates[0].band, "match");
   assert.match(check.candidates[0].rationale, /likely the same organizer/);
   assert.ok(check.candidates.every((candidate) => candidate.organizerId !== "org-sketch"));
@@ -127,15 +127,15 @@ test("a new organizer is compared but not flagged", async () => {
 });
 
 test("a nominated organizer still in QA, under another name for its city, is flagged", async () => {
-  // Bhag Club in prod: a QA page in "delhi", a record in "in-dl-delhi-ncr" and
+  // A production-shaped case: a QA page in "delhi", a record in "in-dl-delhi-ncr" and
   // a nomination filed under "delhi-ncr" are all the same city.
   const {db, run} = setup({request: request({market: "delhi-ncr"})});
-  db.write("organizers/org-afterfly-qa", organizer("Afterfly", {citySlug: "delhi", publishStatus: "qa",
-    hrefs: ["https://lu.ma/afterfly"], extra: {location: "in-dl-delhi-ncr"}}));
+  db.write("organizers/org-moonmoth-qa", organizer("Moonmoth", {citySlug: "delhi", publishStatus: "qa",
+    hrefs: ["https://lu.ma/moonmoth"], extra: {location: "in-dl-delhi-ncr"}}));
   const {result} = await run();
   const check = result.duplicateCheck!;
   assert.equal(check.verdict, "match");
-  assert.equal(check.candidates[0].organizerId, "org-afterfly-qa");
+  assert.equal(check.candidates[0].organizerId, "org-moonmoth-qa");
   const candidate = check.candidates[0] as unknown as {signals: string[]; conflicts: string[]};
   assert.ok(candidate.signals.includes("same_market"), candidate.signals.join(","));
   assert.ok(!candidate.conflicts.includes("different_market"), candidate.conflicts.join(","));
@@ -144,12 +144,12 @@ test("a nominated organizer still in QA, under another name for its city, is fla
 test("every organizer Catch keeps is compared, in every city, from a bounded projected read", async () => {
   const db = new FakeFirestore();
   for (let index = 0; index < 4; index += 1) db.write(`organizers/org-mumbai-${index}`, organizer(`Mumbai Club ${index}`));
-  db.write("organizers/org-pune", organizer("Afterfly", {citySlug: "pune"}));
-  db.write("organizers/org-draft", organizer("Afterfly", {publishStatus: "draft"}));
-  db.write("organizers/org-app", {name: "Saket Run Club", instagramHandle: "Saketruns", location: "in-mp-indore",
+  db.write("organizers/org-pune", organizer("Moonmoth", {citySlug: "pune"}));
+  db.write("organizers/org-draft", organizer("Moonmoth", {publishStatus: "draft"}));
+  db.write("organizers/org-app", {name: "Neemwood Run Club", instagramHandle: "Neemwoodruns", location: "in-mp-indore",
     phoneNumber: "+910000000000", ownerUserId: "owner-1"});
-  db.write("organizers/org-retired", organizer("Afterfly", {extra: {archived: true}}));
-  db.write("organizers/org-retired-status", organizer("Afterfly", {extra: {status: "archived"}}));
+  db.write("organizers/org-retired", organizer("Moonmoth", {extra: {archived: true}}));
+  db.write("organizers/org-retired-status", organizer("Moonmoth", {extra: {status: "archived"}}));
   const calls: unknown[][] = [];
   const recording = (target: object): object => new Proxy(target, {
     get(object, property) {
@@ -209,12 +209,12 @@ test("an empty inventory leaves the listing as it was without one", async () => 
 
 test("an event refresh is not compared with the organizer it names", async () => {
   const {db, run} = setup({
-    request: request({kind: "event_refresh", target: {organizerId: "org-afterfly"},
+    request: request({kind: "event_refresh", target: {organizerId: "org-moonmoth"},
       origin: {kind: "admin_event_refresh", id: "refresh-1"}}),
-    approval: {approvalId: `refresh-${"0".repeat(40)}`, organizerId: "org-afterfly", approvedByUid: "admin-1",
+    approval: {approvalId: `refresh-${"0".repeat(40)}`, organizerId: "org-moonmoth", approvedByUid: "admin-1",
       approvedAt: NOW, materialHash: "0".repeat(64), salesOwnerUid: "admin-1"},
   });
-  db.write("organizers/org-afterfly", organizer("Afterfly", {hrefs: ["https://lu.ma/afterfly"]}));
+  db.write("organizers/org-moonmoth", organizer("Moonmoth", {hrefs: ["https://lu.ma/moonmoth"]}));
   const {result} = await run();
   assert.equal(result.duplicateCheck, null);
   assert.ok(!result.gaps.includes("possible_duplicate_organizer"));

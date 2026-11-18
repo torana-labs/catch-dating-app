@@ -47,7 +47,7 @@ export const districtAdapter = Object.freeze({
   },
 });
 
-// "Hitchin | Hajipur, Noida" names the venue then its locality.
+// "Giggle Yard | Sector 18, Noida" names the venue then its locality.
 function localityFromVenue(venue) {
   const tail = text(venue)?.split(",").at(-1);
   return tail ? tail.trim() || null : null;

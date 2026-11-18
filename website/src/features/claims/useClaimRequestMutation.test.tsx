@@ -34,9 +34,9 @@ describe("useClaimRequestMutation", () => {
     requestOrganizerClaim.mockResolvedValue({claimId: "claim-1", status: "pending"});
     const {client, wrapper} = queryHarness();
     const invalidateQueries = vi.spyOn(client, "invalidateQueries");
-    const {result} = renderHook(() => useClaimRequestMutation("afterfly"), {wrapper});
+    const {result} = renderHook(() => useClaimRequestMutation("moonmoth"), {wrapper});
     const payload = {
-      organizerId: "afterfly",
+      organizerId: "moonmoth",
       requesterName: "A Host",
       requesterRole: "owner" as const,
       businessEmail: null,
@@ -51,7 +51,7 @@ describe("useClaimRequestMutation", () => {
 
     expect(requestOrganizerClaim).toHaveBeenCalledWith(payload);
     expect(invalidateQueries).toHaveBeenCalledWith({
-      queryKey: websiteQueryKeys.claims.lookup("afterfly"),
+      queryKey: websiteQueryKeys.claims.lookup("moonmoth"),
     });
     expect(invalidateQueries).toHaveBeenCalledWith({
       queryKey: websiteQueryKeys.claims.requests(),

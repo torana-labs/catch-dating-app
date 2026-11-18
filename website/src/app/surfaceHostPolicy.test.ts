@@ -3,8 +3,8 @@ import {canonicalProductionRedirect} from "./surfaceHostPolicy";
 import {brand} from "@catch/brand";
 
 it(`sends the production Firebase hosts to ${brand.web.domain}, keeping the path and query`, () => {
-  expect(canonicalProductionRedirect("catch-dating-app-64e51.web.app", "/organizers/mumbai/afterfly/", "?ref=ig", true))
-    .toBe(`${brand.web.origin}/organizers/mumbai/afterfly/?ref=ig`);
+  expect(canonicalProductionRedirect("catch-dating-app-64e51.web.app", "/organizers/mumbai/moonmoth/", "?ref=ig", true))
+    .toBe(`${brand.web.origin}/organizers/mumbai/moonmoth/?ref=ig`);
   expect(canonicalProductionRedirect("catch-dating-app-64e51.firebaseapp.com", "/", "", true))
     .toBe(`${brand.web.origin}/`);
 });

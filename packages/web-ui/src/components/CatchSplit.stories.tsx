@@ -63,9 +63,9 @@ export const GapsAndAlignment: Story = {
 };
 
 const rail = (
-  <CatchGap as="aside" aria-label="Carter Road Runners" size="related">
+  <CatchGap as="aside" aria-label="Driftwood Bay Runners" size="related">
     <StoryPhoto alt="Runners on the promenade at sunset" aspectRatio="5 / 2" src="/assets/events/social-run-music-hero-960.jpg" />
-    <StoryHeading lead="Social runs on Carter Road, Sundays at 6:30 and Wednesdays at 7. Coffee after, always." title="Carter Road Runners" />
+    <StoryHeading lead="Social runs on Carter Road, Sundays at 6:30 and Wednesdays at 7. Coffee after, always." title="Driftwood Bay Runners" />
     <StoryTile body="Sun 2 Nov, 6:30 AM · Carter Road jetty" ground="ink" kicker="Next up · in 2 days" title="Sunday Social Run" />
   </CatchGap>
 );

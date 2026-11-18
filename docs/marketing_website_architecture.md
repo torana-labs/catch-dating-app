@@ -267,7 +267,7 @@ App Check token the lead intake requires.
    from its board in `design/source_packs/website-playbook/pages/`, with
    `"$schema": "../../playbookPage.schema.json"`. `id` is the content key: the
    route id, or for a family page the route id and its parameters joined with
-   `/` (`story_detail/carter-road-runners`). Resolve or remove every
+   `/` (`story_detail/driftwood-bay-runners`). Resolve or remove every
    bracketed placeholder, map kit tones to grounds, name capture slots, and
    start with `"noindex": true`.
 3. Add one entry to that section's `index.ts`:

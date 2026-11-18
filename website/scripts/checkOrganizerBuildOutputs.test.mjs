@@ -10,7 +10,7 @@ test("checkOrganizerBuildOutputs validates listing routes, legacy routes, and si
     sitemapUrls: [
       "https://example.test/",
       "https://example.test/host/",
-      "https://example.test/organizers/afterfly/",
+      "https://example.test/organizers/moonmoth/",
     ],
     withStaticProfiles: true,
   });
@@ -33,7 +33,7 @@ test("checkOrganizerBuildOutputs validates listing routes, legacy routes, and si
 
 test("checkOrganizerBuildOutputs rejects stale route and sitemap state", () => {
   const distRoot = createDist({
-    afterflyRobots: "noindex, follow",
+    moonmothRobots: "noindex, follow",
     includeNoindexInSitemap: true,
     includeLegacyInSitemap: true,
     includePublicSourceMap: true,
@@ -41,7 +41,7 @@ test("checkOrganizerBuildOutputs rejects stale route and sitemap state", () => {
     sitemapUrls: [
       "https://example.test/",
       "https://example.test/host/",
-      "https://example.test/organizers/afterfly/",
+      "https://example.test/organizers/moonmoth/",
     ],
   });
 
@@ -51,7 +51,7 @@ test("checkOrganizerBuildOutputs rejects stale route and sitemap state", () => {
     hostListings: hostListings(),
   });
 
-  assert.match(result.errors.join("\n"), /afterfly: .* robots noindex, follow/);
+  assert.match(result.errors.join("\n"), /moonmoth: .* robots noindex, follow/);
   assert.match(result.errors.join("\n"), /legacy path present in sitemap/);
   assert.match(result.errors.join("\n"), /missing legacy route HTML/);
   assert.match(result.errors.join("\n"), /noindex listing present in sitemap/);
@@ -64,7 +64,7 @@ test("checkOrganizerBuildOutputs rejects demo listings in production input", () 
     sitemapUrls: [
       "https://example.test/",
       "https://example.test/host/",
-      "https://example.test/organizers/afterfly/",
+      "https://example.test/organizers/moonmoth/",
     ],
     withStaticProfiles: true,
   });
@@ -79,12 +79,12 @@ test("checkOrganizerBuildOutputs rejects demo listings in production input", () 
 
   assert.match(
     result.errors.join("\n"),
-    /afterfly: production organizer output must not include catchDemo records/u
+    /moonmoth: production organizer output must not include catchDemo records/u
   );
 });
 
 function createDist({
-  afterflyRobots = "index, follow",
+  moonmothRobots = "index, follow",
   includeLegacyInSitemap = false,
   includeNoindexInSitemap = false,
   includePublicSourceMap = false,
@@ -105,24 +105,24 @@ function createDist({
   writeSitemap(distRoot, [
     ...sitemapUrls,
     ...(includeLegacyInSitemap ? [
-      "https://example.test/organizers/indore/afterfly-run-club/",
+      "https://example.test/organizers/indore/moonmoth-run-club/",
     ] : []),
     ...(includeNoindexInSitemap ? [
       "https://example.test/organizers/noindex-sample/",
     ] : []),
   ]);
   writeRoute({
-    canonical: "https://example.test/organizers/afterfly/",
+    canonical: "https://example.test/organizers/moonmoth/",
     distRoot,
-    routePath: "/organizers/afterfly/",
-    robots: afterflyRobots,
+    routePath: "/organizers/moonmoth/",
+    robots: moonmothRobots,
     staticProfile: withStaticProfiles,
   });
   if (!omitLegacyRoute) {
     writeRoute({
-      canonical: "https://example.test/organizers/afterfly/",
+      canonical: "https://example.test/organizers/moonmoth/",
       distRoot,
-      routePath: "/organizers/indore/afterfly-run-club/",
+      routePath: "/organizers/indore/moonmoth-run-club/",
       robots: "noindex, follow",
     });
   }
@@ -153,7 +153,7 @@ function writeSitemap(distRoot, urls) {
       '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
       ...urls.map((url) =>
         `  <url><loc>${url}</loc>` +
-          `${url.endsWith("/organizers/afterfly/") ? "<lastmod>2026-06-18</lastmod>" : ""}` +
+          `${url.endsWith("/organizers/moonmoth/") ? "<lastmod>2026-06-18</lastmod>" : ""}` +
           `</url>`
       ),
       "</urlset>",
@@ -189,11 +189,11 @@ function writeRoute({canonical, distRoot, robots, routePath, staticProfile = fal
 function hostListings() {
   return [
     {
-      id: "afterfly",
+      id: "moonmoth",
       indexing: "index, follow",
       lastVerifiedAt: "2026-06-18",
-      legacyPaths: ["/organizers/indore/afterfly-run-club/"],
-      path: "/organizers/afterfly/",
+      legacyPaths: ["/organizers/indore/moonmoth-run-club/"],
+      path: "/organizers/moonmoth/",
     },
     {
       id: "noindex-sample",

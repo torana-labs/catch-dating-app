@@ -33,8 +33,8 @@ Widget catchTimelineListContractStates(BuildContext context) =>
               copy: _copy,
               steps: [
                 const CatchSectionStep(
-                  title: 'Someone nominated Afterfly',
-                  subtitle: 'Catch built a page from luma.com/afterfly',
+                  title: 'Someone nominated Moonmoth',
+                  subtitle: 'Catch built a page from luma.com/moonmoth',
                   meta: 'Mon 28 Oct',
                   status: CatchSectionStepStatus.done,
                 ),

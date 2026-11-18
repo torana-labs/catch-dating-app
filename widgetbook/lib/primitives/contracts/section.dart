@@ -180,7 +180,7 @@ Widget catchSectionContractStates(BuildContext context) {
               CatchField.input(
                 copy: catchFieldCopy(context.l10n),
                 title: 'Public name',
-                initialValue: 'Bandra Social Run',
+                initialValue: 'Harbour Line Social Run',
                 icon: CatchIcons.people,
                 states: const <WidgetState>{WidgetState.focused},
               ),

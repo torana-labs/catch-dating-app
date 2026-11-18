@@ -220,7 +220,7 @@ const sampleActionExecutions: AdminListActionExecutionsResponse = {
       status: "started",
       requestHash: "c".repeat(64),
       responseHash: null,
-      target: "afterfly",
+      target: "moonmoth",
       errorCode: null,
       errorMessage: null,
       cliVersion: "1.0.0",

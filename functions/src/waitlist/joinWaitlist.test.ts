@@ -428,7 +428,7 @@ test("normalizeHostApplication keeps bounded operating fields", () => {
   })!, "eventPricing"), false, "legacy packets retain their replay hash");
   assert.deepEqual(
     normalizeHostApplication({
-      organizationName: "  Sunday Table  ",
+      organizationName: "  Saffron Table  ",
       organizationType: "Venue",
       operatingCity: "Mumbai",
       communityLink: "https://example.com/events",
@@ -454,7 +454,7 @@ test("normalizeHostApplication keeps bounded operating fields", () => {
       ignored: "drop me",
     }),
     {
-      organizationName: "Sunday Table",
+      organizationName: "Saffron Table",
       organizationType: "Venue",
       operatingCity: "Mumbai",
       communityLink: "https://example.com/events",

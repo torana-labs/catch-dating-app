@@ -18,7 +18,7 @@ function item(itemId: string, nominatorUid: string, waitingSince: string, overri
 
 test("a sales associate sees only what they nominated, newest first, with totals per filter", async () => {
   const db = new FakeFirestore();
-  db.write("adminInboxItems/supply-afterfly", item("supply-afterfly", "riya", "2026-10-28T10:00:00.000Z",
+  db.write("adminInboxItems/supply-moonmoth", item("supply-moonmoth", "riya", "2026-10-28T10:00:00.000Z",
     {status: "done", doneAt: "2026-10-31T07:50:00.000Z", state: {code: "approved", label: "Approved and published", tone: "success"}}));
   db.write("adminInboxItems/supply-small", item("supply-small", "riya", "2026-10-30T10:00:00.000Z", {}));
   db.write("adminInboxItems/supply-sunday", item("supply-sunday", "riya", "2026-10-31T11:00:00.000Z",
@@ -33,7 +33,7 @@ test("a sales associate sees only what they nominated, newest first, with totals
   assert.deepEqual(first.nominations.map((entry) => entry.itemId), ["supply-sunday", "supply-small"]);
   assert.deepEqual(first.totals, {all: 3, published: 1, waiting: 1, stuck: 1});
   const second = await list({cursor: first.nextCursor});
-  assert.deepEqual(second.nominations.map((entry) => entry.itemId), ["supply-afterfly"]);
+  assert.deepEqual(second.nominations.map((entry) => entry.itemId), ["supply-moonmoth"]);
   assert.equal(second.nextCursor, null);
   assert.deepEqual((await list({filter: "stuck"})).nominations.map((entry) => entry.itemId), ["supply-sunday"]);
   await assert.rejects(list({}, {safetyReviewer: true}), /not authorized/);

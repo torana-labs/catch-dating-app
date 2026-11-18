@@ -1230,10 +1230,10 @@ export const OrganizerSearch = {
   );
   assert.equal(
     formatContentTemplate(validMeta.listing.titleTemplate, {
-      name: "AFTER FLY",
+      name: "MOON MOTH",
       city: "Indore",
     }),
-    "AFTER FLY | Indore organizer profile | Catch"
+    "MOON MOTH | Indore organizer profile | Catch"
   );
   assert.throws(
     () => formatContentTemplate("{name} in {market}", {name: "Catch"}),

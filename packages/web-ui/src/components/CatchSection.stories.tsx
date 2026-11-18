@@ -25,8 +25,8 @@ export const Contract: Story = {
     <CatchViewport fill="parent" register="quiet" sizeClass="expanded">
       <div style={{display: "grid", gap: 32, maxWidth: 720, padding: 24}}>
         <CatchSection action={{label: "All 14", onPressed: noop}} count={14} title="Oldest first">
-          <CatchIndexRow onTap={noop} subtitle="Listing · nominated by Riya" title="Afterfly" />
-          <CatchIndexRow onTap={noop} subtitle="Claim · Dev recommends approval" title="Bhag Club" />
+          <CatchIndexRow onTap={noop} subtitle="Listing · nominated by Riya" title="Moonmoth" />
+          <CatchIndexRow onTap={noop} subtitle="Claim · Dev recommends approval" title="Brindle Club" />
         </CatchSection>
         <CatchSection title="Settings">
           <CatchIndexRow onTap={noop} title="Intake" />
@@ -35,7 +35,7 @@ export const Contract: Story = {
         </CatchSection>
         <CatchSection dividers="none" title="Which host is it?">
           <CatchField onChanged={noop} recipe="input" title="Search organizers" value="Harbor" />
-          <CatchIndexRow onTap={noop} selected subtitle="Mumbai" title="Harbor Social Club" />
+          <CatchIndexRow onTap={noop} selected subtitle="Mumbai" title="Quayside Supper Club" />
           <CatchIndexRow onTap={noop} subtitle="Goa" title="Harbor Run Club" />
         </CatchSection>
         <CatchSection container="tile" note="3 of 4" title="Checks">
@@ -44,7 +44,7 @@ export const Contract: Story = {
         </CatchSection>
         <CatchSection
           timeline={[
-            {title: "Riya sent a link on WhatsApp", subtitle: "luma.com/afterfly", meta: "Mon 9:41 PM", state: "done"},
+            {title: "Riya sent a link on WhatsApp", subtitle: "luma.com/moonmoth", meta: "Mon 9:41 PM", state: "done"},
             {title: "Read 2 pages", meta: "9:42 PM", state: "done"},
             {title: "Waiting for a review", subtitle: "No image rights", meta: "Now", state: "current", tone: "warning"},
             {title: "Published unclaimed", meta: "Next", state: "next"},

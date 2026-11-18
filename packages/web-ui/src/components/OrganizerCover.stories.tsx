@@ -13,7 +13,7 @@ const photo = `data:image/svg+xml,${encodeURIComponent(
 const meta = {
   title: "Web UI/Club cover",
   component: OrganizerCover,
-  args: {name: "AFTER FLY", city: "Mumbai", activityKind: "socialRun"},
+  args: {name: "MOON MOTH", city: "Mumbai", activityKind: "socialRun"},
   decorators: [Story => <div style={{inlineSize: 400, aspectRatio: 1.85}}><Story /></div>],
 } satisfies Meta<typeof OrganizerCover>;
 

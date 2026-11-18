@@ -45,7 +45,7 @@ export const weddingsCopy = {
     stickers: [
       {label: "Sangeet · Sat 12 Dec · 8 PM", title: "266 coming", ground: "white", labelAccent: "magenta"},
       {label: "Flights · Friday", title: "171 of 196 shared", ground: "ink", labelAccent: "yellow"},
-      {label: "Taj Fateh Prakash", title: "58 of 62 rooms placed", ground: "pink"},
+      {label: "Lakeview Haveli", title: "58 of 62 rooms placed", ground: "pink"},
     ],
   },
   order: {
@@ -164,7 +164,7 @@ export const weddingsCopy = {
       {icon: "celebrate", title: "Porters", body: "Welcome hampers, room by room", access: "Hamper link"},
       {icon: "protected", title: "The family", body: "Numbers only, no phone numbers", access: "View-only link"},
     ] satisfies readonly {icon: CatchIconName; title: string; body: string; access: string}[],
-    hotel: {slot: "wedding-hotel", address: "/w/taj-fateh-prakash/rooming", title: "Hotel desks get a link, not a login.", body: "The Taj sees its own guests, rooms and IDs, and the cars on their way. Nothing else."},
+    hotel: {slot: "wedding-hotel", address: "/w/lakeview-haveli/rooming", title: "Hotel desks get a link, not a login.", body: "The Haveli sees its own guests, rooms and IDs, and the cars on their way. Nothing else."},
   },
   messages: {
     kicker: "Messages",

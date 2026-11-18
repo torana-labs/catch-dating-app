@@ -31,7 +31,7 @@ void main() {
               'name': 'Sangeet',
               'startsAtMillis': 1735750800000,
               'endsAtMillis': 1735761600000,
-              'venueName': 'Lake Palace',
+              'venueName': 'Mirror Lake Pavilion',
               'status': 'scheduled',
               'invitationMode': 'allGuests',
               'checkInEnabled': true,

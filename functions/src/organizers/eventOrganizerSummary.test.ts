@@ -97,7 +97,7 @@ const deps = (store: FakeStore) => ({
 });
 
 const publicOrganizer = (patch: Row = {}): Row => ({
-  name: "Bandra Run Club", description: "x", location: "mumbai",
+  name: "Sandbar Run Club", description: "x", location: "mumbai",
   locationCityId: "mumbai", locationMarketId: "mumbai", area: "Bandra",
   hostName: "Asha", hostUserId: "host-1", tags: ["running"], rating: 4.6,
   status: "active", archived: false, appVisibility: "discoverable",
@@ -110,7 +110,7 @@ const event = (organizerId: string, end: string, patch: Row = {}): Row => ({
 
 test("the summary copies only what Explore shows and filters on", () => {
   assert.deepEqual(organizerSummaryFrom(publicOrganizer({synthetic: true})), {
-    name: "Bandra Run Club", location: "mumbai", area: "Bandra",
+    name: "Sandbar Run Club", location: "mumbai", area: "Bandra",
     hostName: "Asha", tags: ["running"], rating: 4.6, synthetic: true,
     appVisibility: "discoverable", status: "active", archived: false,
   });

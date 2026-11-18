@@ -36,36 +36,36 @@ function baseOrganizer(): Data {
   };
 }
 
-// Shape of the stored AFTER FLY seed listing whose intake text leaked onto
+// Shape of the stored MOON MOTH seed listing whose intake text leaked onto
 // the public organizer page, including the retired operator-only lists.
 function leakedListing(): Data {
   return {
     ...baseOrganizer(),
-    name: "AFTER FLY",
-    description: "AFTER FLY is an Indore run-and-rave organizer discovered " +
+    name: "MOON MOTH",
+    description: "MOON MOTH is an Indore run-and-rave organizer discovered " +
       "through a public Luma event page. This unclaimed profile summarizes " +
       "owner-safe public facts while claim, cadence, and contact details " +
       "remain unverified.",
     publicPage: {
-      slug: "afterfly",
+      slug: "moonmoth",
       citySlug: "indore",
-      canonicalPath: "/organizers/afterfly/",
+      canonicalPath: "/organizers/moonmoth/",
       publishStatus: "published",
       indexStatus: "noindex",
       robots: "noindex, follow",
-      seoTitle: "AFTER FLY | Indore organizer profile | Catch",
-      seoDescription: "Source-backed, unclaimed Catch profile for AFTER FLY.",
+      seoTitle: "MOON MOTH | Indore organizer profile | Catch",
+      seoDescription: "Source-backed, unclaimed Catch profile for MOON MOTH.",
       lastRenderedAt: null,
     },
     publicProfile: {
-      headline: "AFTER FLY run club in Indore",
-      summary: "AFTER FLY is an Indore run-and-rave organizer discovered " +
+      headline: "MOON MOTH run club in Indore",
+      summary: "MOON MOTH is an Indore run-and-rave organizer discovered " +
         "through a public Luma event page. This unclaimed profile " +
         "summarizes verified public facts for owner review and stays out " +
         "of search until cadence, contact, and claim details are confirmed.",
-      sourceSummary: "A public Luma event page confirms AFTER FLY hosted " +
-        "AFTERFLY TAKEOFF RUN & RAVE and the embedded event data lists " +
-        "Instagram handle afterfly.in.",
+      sourceSummary: "A public Luma event page confirms MOON MOTH hosted " +
+        "MOONMOTH NIGHTFALL RUN & RAVE and the embedded event data lists " +
+        "Instagram handle moonmoth.example.",
       formats: ["Social runs", "Run-and-rave"],
       facts: [
         {label: "Location", value: "Indore, Madhya Pradesh"},
@@ -80,7 +80,7 @@ function leakedListing(): Data {
       {
         type: "user_supplied",
         label: "User seed input",
-        detail: "User requested an initial listing for Afterfly.",
+        detail: "User requested an initial listing for Moonmoth.",
         href: null,
         confidence: "medium",
         lastCheckedAt: null,
@@ -88,8 +88,8 @@ function leakedListing(): Data {
       {
         type: "public_event_page",
         label: "Luma event page",
-        detail: "Public Luma page for AFTERFLY TAKEOFF RUN & RAVE.",
-        href: "https://luma.com/pxgmph3b",
+        detail: "Public Luma page for MOONMOTH NIGHTFALL RUN & RAVE.",
+        href: "https://luma.com/mmoth26x",
         confidence: "high",
         lastCheckedAt: null,
       },
@@ -97,7 +97,7 @@ function leakedListing(): Data {
         type: "embedded_event_data",
         label: "Luma event listing",
         detail: "Event timing and location for the same Luma page.",
-        href: "https://luma.com/pxgmph3b/",
+        href: "https://luma.com/mmoth26x/",
         confidence: "high",
         lastCheckedAt: null,
       },
@@ -131,16 +131,16 @@ function cleanListing(): Data {
   };
 }
 
-const afterflyCopy = {
-  "description": "AFTER FLY pairs social runs with post-run music in Indore.",
+const moonmothCopy = {
+  "description": "MOON MOTH pairs social runs with post-run music in Indore.",
   "publicPage.seoDescription":
-    "AFTER FLY pairs social runs with post-run music in Indore.",
+    "MOON MOTH pairs social runs with post-run music in Indore.",
   "publicProfile.summary":
-    "AFTER FLY pairs social runs with post-run music in Indore.",
+    "MOON MOTH pairs social runs with post-run music in Indore.",
   "publicProfile.sourceSummary": null,
 };
 
-test("flags every operator leak found on the AFTER FLY page", () => {
+test("flags every operator leak found on the MOON MOTH page", () => {
   const issues = organizerPublicContentIssues(leakedListing());
   const byField = new Map(issues.map((issue) => [issue.field, issue.rule]));
 
@@ -170,7 +170,7 @@ test("accepts visitor-facing copy, including ordinary uses of shared words",
 
 test("checks only the fields present in a partial patch", () => {
   assert.deepEqual(organizerPublicContentIssues({
-    publicProfile: {headline: "AFTER FLY in Indore"},
+    publicProfile: {headline: "MOON MOTH in Indore"},
   }), []);
   assert.deepEqual(
     organizerPublicContentIssues({
@@ -200,7 +200,7 @@ test("assert raises failed-precondition naming fields, not the copy", () => {
 
 test("repair deletes retired lists and removes mechanical leaks", () => {
   const plan = planOrganizerPublicContentRepair(
-    "organizers/afterfly",
+    "organizers/moonmoth",
     leakedListing()
   );
 
@@ -254,18 +254,18 @@ test("an empty retired list is still deleted so the contract validates",
 
 test("reviewed replacements clear the remaining wording issues", () => {
   const plan = planOrganizerPublicContentRepair(
-    "organizers/afterfly",
+    "organizers/moonmoth",
     leakedListing(),
-    afterflyCopy
+    moonmothCopy
   );
   assert.deepEqual(plan.remainingIssues, []);
   assert.equal(plan.patch["publicProfile.sourceSummary"], null);
 
   const repaired = applyRepair(leakedListing(), plan.patch, plan.deletes);
   const rerun = planOrganizerPublicContentRepair(
-    "organizers/afterfly",
+    "organizers/moonmoth",
     repaired,
-    afterflyCopy
+    moonmothCopy
   );
   assert.deepEqual(rerun.patch, {}, "a repaired document plans no writes");
   assert.deepEqual(rerun.deletes, []);
@@ -275,17 +275,17 @@ test("reviewed replacements clear the remaining wording issues", () => {
 
 test("plan hashes bind the reviewed before-state", () => {
   const first = planOrganizerPublicContentRepair(
-    "organizers/afterfly",
+    "organizers/moonmoth",
     leakedListing()
   );
   const same = planOrganizerPublicContentRepair(
-    "organizers/afterfly",
+    "organizers/moonmoth",
     leakedListing()
   );
   const drifted = leakedListing();
   ((drifted.publicProfile as Data).fitNotes as string[]).push("Another note");
   const changed = planOrganizerPublicContentRepair(
-    "organizers/afterfly",
+    "organizers/moonmoth",
     drifted
   );
   assert.equal(first.hash, same.hash);
@@ -299,7 +299,7 @@ test("plan hashes bind the reviewed before-state", () => {
 test("repair refuses fields outside the public replacement allowlist", () => {
   assert.throws(
     () => planOrganizerPublicContentRepair(
-      "organizers/afterfly",
+      "organizers/moonmoth",
       leakedListing(),
       {"ownership.state": "claimed"}
     ),

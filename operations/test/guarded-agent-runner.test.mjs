@@ -28,7 +28,7 @@ const fetchTool = {
   description: "Read one public page.",
   inputSchema: {type: "object", additionalProperties: false, required: ["url"],
     properties: {url: {type: "string", minLength: 1}}},
-  handler: async ({url}) => ({url, title: "Afterfly"}),
+  handler: async ({url}) => ({url, title: "Moonmoth"}),
 };
 const finishTool = {
   name: "finish",
@@ -49,7 +49,7 @@ function runner({transport, month = agentBudgetLedgers({limits: {...limits, maxC
 }
 
 const job = {task: "organizer_research", promptVersion: "organizer-research-v1", system: "Research organizers.",
-  prompt: "Find Afterfly.", tools: [fetchTool], finishTool, webSearch: {}};
+  prompt: "Find Moonmoth.", tools: [fetchTool], finishTool, webSearch: {}};
 
 test("the agent ships disabled and refuses unreviewed models or missing ports", async () => {
   const run = agentBudgetLedgers({limits});
@@ -65,18 +65,18 @@ test("the agent ships disabled and refuses unreviewed models or missing ports", 
 
 test("a research loop runs tools, passes thinking back unchanged and stops at the finish tool", async () => {
   const {transport, requests} = scripted([
-    message([thinking, toolUse("toolu_1", "fetch_page", {url: "https://lu.ma/afterfly"}),
+    message([thinking, toolUse("toolu_1", "fetch_page", {url: "https://lu.ma/moonmoth"}),
       toolUse("toolu_2", "fetch_page", {url: 42})], "tool_use"),
-    message([thinking, {type: "server_tool_use", id: "srvtoolu_1", name: "web_search", input: {query: "Afterfly"}}],
+    message([thinking, {type: "server_tool_use", id: "srvtoolu_1", name: "web_search", input: {query: "Moonmoth"}}],
       "pause_turn", {usage: usage({server_tool_use: {web_search_requests: 1}})}),
-    message([toolUse("toolu_3", "finish", {summary: "Afterfly runs weekly in Mumbai."})], "tool_use",
+    message([toolUse("toolu_3", "finish", {summary: "Moonmoth runs weekly in Mumbai."})], "tool_use",
       {usage: usage({cache_read_input_tokens: 900, input_tokens: 300})}),
   ]);
   const {agent, run, month} = runner({transport});
   const result = await agent.run(job);
   assert.equal(result.status, "completed");
   assert.equal(result.stopReason, "finished");
-  assert.deepEqual(result.finishInput, {summary: "Afterfly runs weekly in Mumbai."});
+  assert.deepEqual(result.finishInput, {summary: "Moonmoth runs weekly in Mumbai."});
   assert.deepEqual(result.toolCalls.map((call) => [call.name, call.ok]),
     [["fetch_page", true], ["fetch_page", false], ["finish", true]]);
 

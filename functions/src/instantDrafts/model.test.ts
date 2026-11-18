@@ -10,7 +10,7 @@ import {instantDraftId, parseGetInstantDraftPayload, parseRequestInstantDraftPay
 
 const validRequest = {
   requestId: "web-0f3c2a9e-5b1d-4c7e", requestKind: "event_link", entry: "event_page_tool",
-  link: "https://lu.ma/afterfly", accessToken: "A".repeat(43),
+  link: "https://lu.ma/moonmoth", accessToken: "A".repeat(43),
   whatsapp: {phone: "+919000000001", consentVersion: "instant-draft-whatsapp-v1", followUpConsent: true},
   city: "Mumbai",
 };

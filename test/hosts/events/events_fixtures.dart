@@ -67,7 +67,7 @@ final comingEvents = <Event>[
   tonightEvent,
   _coming(
     'run',
-    'Carter Road Social Run',
+    'Salt Air Social Run',
     DateTime(2026, 11, 1, 6, 30),
     booked: 32,
     capacity: 40,

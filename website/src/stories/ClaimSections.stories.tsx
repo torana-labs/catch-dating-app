@@ -14,7 +14,7 @@ import {hostListings} from "./fixtures/hostListings";
 import {isUnclaimedListing, isVerifiedListing} from "../features/organizers/selectors";
 import type {HostListing} from "../features/organizers/types";
 
-const claimableListing = hostListings.find(isUnclaimedListing) ?? requireListing("afterfly");
+const claimableListing = hostListings.find(isUnclaimedListing) ?? requireListing("moonmoth");
 const claimedListing = hostListings.find(isVerifiedListing) ?? requireListing("club-sales-sunday-table");
 
 /** The boards' frames: the phone boards at 390 and the desktop board at 1280. */
@@ -155,10 +155,10 @@ export const ClaimSearchSelected: Story = {
 
 const inHalfAnHour = "2026-10-31T12:30:00.000Z";
 const instagramAttempt = {attemptId: "attempt-1", organizerId: claimableListing.id, method: "instagramMessage" as const,
-  code: "482173", proofText: "482173", proofTarget: "carterroadrunners", catchInstagramHandle: brand.social.instagramHandle,
+  code: "482173", proofText: "482173", proofTarget: "driftwoodbayrunners", catchInstagramHandle: brand.social.instagramHandle,
   expiresAt: inHalfAnHour};
 const lumaAttempt = {...instagramAttempt, method: "lumaDescription" as const, proofText: "catch-482173",
-  proofTarget: "https://lu.ma/carterroadrunners", catchInstagramHandle: null};
+  proofTarget: "https://lu.ma/driftwoodbayrunners", catchInstagramHandle: null};
 
 export const InstantClaimChoose: Story = {
   name: "Instant check · choose (RbWebClaimChoose)",
@@ -246,7 +246,7 @@ export const InstantClaimReview: Story = {
     },
   },
   render: () => <InstantClaimPanel controller={mockInstantController({phase: "review",
-    proofLinks: "https://carterroadrunners.in"})} listing={claimableListing} />,
+    proofLinks: "https://driftwoodbayrunners.example"})} listing={claimableListing} />,
 };
 
 export const InstantClaimNoMethods: Story = {
@@ -367,8 +367,8 @@ function mockAccount(overrides: Record<string, unknown> = {}): InstantClaimContr
 
 function mockInstantController(overrides: Partial<InstantClaimController>): InstantClaimController {
   const methods = [
-    {method: "instagramMessage" as const, available: true, proofTarget: "carterroadrunners", unavailableReason: null},
-    {method: "lumaDescription" as const, available: true, proofTarget: "https://lu.ma/carterroadrunners",
+    {method: "instagramMessage" as const, available: true, proofTarget: "driftwoodbayrunners", unavailableReason: null},
+    {method: "lumaDescription" as const, available: true, proofTarget: "https://lu.ma/driftwoodbayrunners",
       unavailableReason: null},
   ];
   const noop = () => undefined;

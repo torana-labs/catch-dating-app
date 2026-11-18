@@ -14,7 +14,7 @@ export type CatchQrCodeErrorCorrection = "L" | "M" | "Q" | "H";
 export interface CatchQrCodeProps {
   /** Defaults to M. */
   errorCorrection?: CatchQrCodeErrorCorrection;
-  /** The accessible name, such as "QR code for carterroadrunners.club". */
+  /** The accessible name, such as "QR code for driftwoodbayrunners.example". */
   label: string;
   /** Defaults to m. */
   size?: CatchQrCodeSize;

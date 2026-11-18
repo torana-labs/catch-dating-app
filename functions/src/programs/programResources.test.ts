@@ -109,7 +109,8 @@ test("vendor writes recheck manager authority", async () => {
     revokeManager(db);
   };
   await assert.rejects(vendorEdit(db), code("permission-denied"));
-  assert.equal(db.getDoc("transportVendors/vendor-1")!.name, "Sharma Cabs");
+  assert.equal(db.getDoc("transportVendors/vendor-1")!.name,
+    "Harbour Line Cabs");
 });
 
 for (const includePrograms of [false, true]) {

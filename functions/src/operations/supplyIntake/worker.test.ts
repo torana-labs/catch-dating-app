@@ -51,8 +51,8 @@ class MemoryWriter implements ProjectionImportWriter {
 
 function request(overrides: Record<string, unknown> = {}) {
   return {
-    schemaVersion: 1, requestId: "nom-afterfly-1", kind: "nomination", market: "mumbai",
-    seed: {name: "Afterfly", urls: ["https://lu.ma/afterfly"], notes: null, categories: ["social"]},
+    schemaVersion: 1, requestId: "nom-moonmoth-1", kind: "nomination", market: "mumbai",
+    seed: {name: "Moonmoth", urls: ["https://lu.ma/moonmoth"], notes: null, categories: ["social"]},
     submittedBy: {role: "associate", uid: "associate-1", partnerId: null}, submittedAt: NOW, origin: null, ...overrides,
   };
 }
@@ -60,7 +60,7 @@ function request(overrides: Record<string, unknown> = {}) {
 function setup(stored: Record<string, unknown> = {},
   {decision = acceptedPageFetchDecision as Record<string, unknown> | null, transport = notFoundTransport} = {}) {
   const db = new FakeFirestore();
-  db.write(`${supplyIntakeCollections.requests}/nom-afterfly-1`, {schemaVersion: 1, requestId: "nom-afterfly-1",
+  db.write(`${supplyIntakeCollections.requests}/nom-moonmoth-1`, {schemaVersion: 1, requestId: "nom-moonmoth-1",
     request: request(), status: "queued", attempts: 0, leaseUntil: null, result: null, failure: null,
     approval: null, createdAt: NOW, updatedAt: NOW, ...stored});
   if (decision) acceptPageFetch(db, decision);
@@ -82,8 +82,8 @@ function setup(stored: Record<string, unknown> = {},
 
 test("a queued request becomes a reviewable listing in Firestore, once", async () => {
   const {db, writer, deps} = setup();
-  const outcome = await processSupplyIntakeRequest(deps, "nom-afterfly-1");
-  const stored = db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+  const outcome = await processSupplyIntakeRequest(deps, "nom-moonmoth-1");
+  const stored = db.read(`${supplyIntakeCollections.requests}/nom-moonmoth-1`) as unknown as Stored;
   assert.equal(outcome, "completed", JSON.stringify(stored.failure));
   assert.equal(validateSupplyIntakeRequestsDocument(stored), true,
     JSON.stringify(validateSupplyIntakeRequestsDocument.errors));
@@ -99,15 +99,15 @@ test("a queued request becomes a reviewable listing in Firestore, once", async (
   assert.equal((listing.normalizedPayload as {intake?: {recordType?: string}}).intake?.recordType, "organizer_listing_draft");
   assert.ok(listing.taskFlags.includes("human_review_required"));
   assert.equal(writer.runs.size, 1);
-  assert.equal(await processSupplyIntakeRequest(deps, "nom-afterfly-1"), "skipped", "a completed request never reruns");
+  assert.equal(await processSupplyIntakeRequest(deps, "nom-moonmoth-1"), "skipped", "a completed request never reruns");
 });
 
 test("a leased request is left to its worker and an expired lease is taken over", async () => {
   const busy = setup({status: "running", attempts: 1, leaseUntil: "2026-10-24T08:05:00.000Z"});
-  assert.equal(await processSupplyIntakeRequest(busy.deps, "nom-afterfly-1"), "busy");
+  assert.equal(await processSupplyIntakeRequest(busy.deps, "nom-moonmoth-1"), "busy");
   const stale = setup({status: "running", attempts: 1, leaseUntil: "2026-10-24T07:00:00.000Z"});
-  assert.equal(await processSupplyIntakeRequest(stale.deps, "nom-afterfly-1"), "completed");
-  assert.equal((stale.db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored).attempts, 2);
+  assert.equal(await processSupplyIntakeRequest(stale.deps, "nom-moonmoth-1"), "completed");
+  assert.equal((stale.db.read(`${supplyIntakeCollections.requests}/nom-moonmoth-1`) as unknown as Stored).attempts, 2);
   assert.equal(await processSupplyIntakeRequest(setup().deps, "missing"), "skipped");
 });
 
@@ -116,21 +116,21 @@ test("failures release the lease for a retry, and the last attempt or a contract
   failing.deps.projectionWriter.createRun = async () => {
     throw new Error("transient write failure");
   };
-  assert.equal(await processSupplyIntakeRequest(failing.deps, "nom-afterfly-1"), "retry");
-  let stored = failing.db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+  assert.equal(await processSupplyIntakeRequest(failing.deps, "nom-moonmoth-1"), "retry");
+  let stored = failing.db.read(`${supplyIntakeCollections.requests}/nom-moonmoth-1`) as unknown as Stored;
   assert.deepEqual([stored.status, stored.leaseUntil, stored.failure.attempts], ["queued", null, 1]);
 
   const last = setup({attempts: SUPPLY_INTAKE_MAX_ATTEMPTS - 1});
   last.deps.projectionWriter.createRun = async () => {
     throw new Error("still failing");
   };
-  assert.equal(await processSupplyIntakeRequest(last.deps, "nom-afterfly-1"), "failed");
+  assert.equal(await processSupplyIntakeRequest(last.deps, "nom-moonmoth-1"), "failed");
 
   const invalid = setup({request: request({kind: "discovery"})});
-  assert.equal(await processSupplyIntakeRequest(invalid.deps, "nom-afterfly-1"), "failed");
-  stored = invalid.db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+  assert.equal(await processSupplyIntakeRequest(invalid.deps, "nom-moonmoth-1"), "failed");
+  stored = invalid.db.read(`${supplyIntakeCollections.requests}/nom-moonmoth-1`) as unknown as Stored;
   assert.equal(stored.failure.code, "INVALID_INTAKE_REQUEST");
-  stored = failing.db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+  stored = failing.db.read(`${supplyIntakeCollections.requests}/nom-moonmoth-1`) as unknown as Stored;
   assert.equal(validateSupplyIntakeRequestsDocument(stored), true, "a failed attempt still satisfies the contract");
 });
 
@@ -138,8 +138,8 @@ test("a request for a city discovery has not mapped still becomes a listing", as
   // "unassigned" is how a front door records a city it could not place.
   for (const market of ["unassigned", "kolkata"]) {
     const {db, writer, deps} = setup({request: request({market})});
-    const outcome = await processSupplyIntakeRequest(deps, "nom-afterfly-1");
-    const stored = db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+    const outcome = await processSupplyIntakeRequest(deps, "nom-moonmoth-1");
+    const stored = db.read(`${supplyIntakeCollections.requests}/nom-moonmoth-1`) as unknown as Stored;
     assert.equal(outcome, "completed", `${market}: ${JSON.stringify(stored.failure)}`);
     const listing = writer.items.get(stored.result.listingWorkItemId)!;
     assert.equal((listing.normalizedPayload as {intake?: {recordType?: string}}).intake?.recordType,
@@ -148,23 +148,23 @@ test("a request for a city discovery has not mapped still becomes a listing", as
 });
 
 test("the accepted page fetch policy reads the nominated page and books it against the month", async () => {
-  const html = "<html><head><title>Afterfly</title><meta property=\"og:title\" content=\"Afterfly\"></head><body></body></html>";
+  const html = "<html><head><title>Moonmoth</title><meta property=\"og:title\" content=\"Moonmoth\"></head><body></body></html>";
   const {db, requested, deps} = setup({}, {transport: async ({url}) => url.pathname === "/robots.txt" ?
     {status: 404, location: null, contentType: "text/plain", body: Buffer.alloc(0)} :
     {status: 200, location: null, contentType: "text/html", body: Buffer.from(html)}});
-  const outcome = await processSupplyIntakeRequest(deps, "nom-afterfly-1");
-  const stored = db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+  const outcome = await processSupplyIntakeRequest(deps, "nom-moonmoth-1");
+  const stored = db.read(`${supplyIntakeCollections.requests}/nom-moonmoth-1`) as unknown as Stored;
   assert.equal(outcome, "completed", JSON.stringify(stored.failure));
   assert.deepEqual(stored.result.captureReceipts.map((receipt) => [receipt.adapterId, receipt.outcome]),
     [["page_fetch", "fetched"]]);
-  assert.deepEqual(requested, ["https://luma.com/robots.txt", "https://luma.com/afterfly"], "lu.ma links resolve to luma.com");
+  assert.deepEqual(requested, ["https://luma.com/robots.txt", "https://luma.com/moonmoth"], "lu.ma links resolve to luma.com");
   // The month keeps only what the intake used, robots.txt included.
   assert.equal((db.read(`${supplyIntakeCollections.usage}/2026-10`) as {networkRequests: number}).networkRequests, 2);
 });
 
 test("a website instant draft reads from the tool's own monthly allowance, never the one nominations share", async () => {
-  const html = "<html><head><title>Afterfly</title><meta property=\"og:title\" content=\"Afterfly\"></head><body></body></html>";
-  const draftRequest = request({requestId: "nom-afterfly-1", kind: "self_submission",
+  const html = "<html><head><title>Moonmoth</title><meta property=\"og:title\" content=\"Moonmoth\"></head><body></body></html>";
+  const draftRequest = request({requestId: "nom-moonmoth-1", kind: "self_submission",
     submittedBy: {role: "organizer", uid: null, partnerId: null}, origin: {kind: "web_instant_draft", id: "web-1"}});
   const {db, requested, deps} = setup({request: draftRequest}, {transport: async ({url}) => url.pathname === "/robots.txt" ?
     {status: 404, location: null, contentType: "text/plain", body: Buffer.alloc(0)} :
@@ -172,12 +172,12 @@ test("a website instant draft reads from the tool's own monthly allowance, never
   // Nominations have spent their whole month; drafts still read.
   db.write(`${supplyIntakeCollections.usage}/2026-10`, {schemaVersion: 1, monthKey: "2026-10", networkRequests: 600,
     updatedAt: NOW});
-  assert.equal(await processSupplyIntakeRequest(deps, "nom-afterfly-1"), "completed");
+  assert.equal(await processSupplyIntakeRequest(deps, "nom-moonmoth-1"), "completed");
   assert.equal(requested.length, 2);
   assert.equal((db.read(`${supplyIntakeCollections.usage}/2026-10`) as {networkRequests: number}).networkRequests, 600);
   assert.deepEqual(db.read(`${supplyIntakeCollections.usage}/instant-draft-pages-2026-10`),
     {schemaVersion: 1, monthKey: "2026-10", networkRequests: 2, updatedAt: NOW});
-  const receipt = (db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as
+  const receipt = (db.read(`${supplyIntakeCollections.requests}/nom-moonmoth-1`) as unknown as
     {result: {captureReceipts: Array<{budgetWindow: {monthLimit: number}}>}}).result.captureReceipts[0];
   assert.equal(receipt.budgetWindow.monthLimit, 300);
 
@@ -185,7 +185,7 @@ test("a website instant draft reads from the tool's own monthly allowance, never
   const spent = setup({request: draftRequest});
   spent.db.write(`${supplyIntakeCollections.usage}/instant-draft-pages-2026-10`, {schemaVersion: 1, monthKey: "2026-10",
     networkRequests: 300, updatedAt: NOW});
-  assert.equal(await processSupplyIntakeRequest(spent.deps, "nom-afterfly-1"), "completed");
+  assert.equal(await processSupplyIntakeRequest(spent.deps, "nom-moonmoth-1"), "completed");
   assert.deepEqual(spent.requested, []);
   assert.equal(spent.db.read(`${supplyIntakeCollections.usage}/2026-10`), undefined);
 });
@@ -193,25 +193,25 @@ test("a website instant draft reads from the tool's own monthly allowance, never
 test("page fetch fails closed without the accepted decision, and never touches the network", async () => {
   for (const decision of [null, {...acceptedPageFetchDecision, decision: "hold", decisionStatus: "held"}]) {
     const {db, requested, deps} = setup({attempts: SUPPLY_INTAKE_MAX_ATTEMPTS - 1}, {decision});
-    assert.notEqual(await processSupplyIntakeRequest(deps, "nom-afterfly-1"), "completed");
-    const stored = db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+    assert.notEqual(await processSupplyIntakeRequest(deps, "nom-moonmoth-1"), "completed");
+    const stored = db.read(`${supplyIntakeCollections.requests}/nom-moonmoth-1`) as unknown as Stored;
     assert.equal(stored.failure.code, "ACQUISITION_POLICY_DECISION_REQUIRED");
     assert.deepEqual(requested, []);
   }
 });
 
 test("an Instagram profile is read through Business Discovery when the environment has a token", async () => {
-  const instagram = request({seed: {name: null, urls: ["https://www.instagram.com/afterfly.in"], notes: null, categories: []}});
+  const instagram = request({seed: {name: null, urls: ["https://www.instagram.com/moonmoth.example"], notes: null, categories: []}});
   const {db, requested, deps} = setup({request: instagram});
   const discoveryCalls: string[] = [];
   const outcome = await processSupplyIntakeRequest({...deps,
     instagramDiscovery: async () => ({accountId: "17841476918450741", accessToken: "test-token", graphVersion: "v26.0"}),
     discoveryTransport: async (url: URL) => {
       discoveryCalls.push(url.href);
-      return {status: 200, text: async () => JSON.stringify({business_discovery: {username: "afterfly.in", name: "Afterfly",
-        biography: "Social nights in Mumbai", website: "https://afterfly.in", media: {data: []}}})};
-    }}, "nom-afterfly-1");
-  const stored = db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+      return {status: 200, text: async () => JSON.stringify({business_discovery: {username: "moonmoth.example", name: "Moonmoth",
+        biography: "Social nights in Mumbai", website: "https://moonmoth.example", media: {data: []}}})};
+    }}, "nom-moonmoth-1");
+  const stored = db.read(`${supplyIntakeCollections.requests}/nom-moonmoth-1`) as unknown as Stored;
   assert.equal(outcome, "completed", JSON.stringify(stored.failure));
   assert.equal(validateSupplyIntakeRequestsDocument(stored), true);
   assert.deepEqual(stored.result.captureReceipts.map((receipt) => [receipt.adapterId, receipt.outcome]),
@@ -222,12 +222,12 @@ test("an Instagram profile is read through Business Discovery when the environme
 });
 
 test("an unreadable discovery token leaves Instagram unread instead of failing the request", async () => {
-  const instagram = request({seed: {name: "Afterfly", urls: ["https://www.instagram.com/afterfly.in"], notes: null, categories: []}});
+  const instagram = request({seed: {name: "Moonmoth", urls: ["https://www.instagram.com/moonmoth.example"], notes: null, categories: []}});
   const {db, deps} = setup({request: instagram});
   const outcome = await processSupplyIntakeRequest({...deps, instagramDiscovery: async () => {
     throw Object.assign(new Error("denied"), {code: "PERMISSION_DENIED"});
-  }}, "nom-afterfly-1");
-  const stored = db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+  }}, "nom-moonmoth-1");
+  const stored = db.read(`${supplyIntakeCollections.requests}/nom-moonmoth-1`) as unknown as Stored;
   assert.equal(outcome, "completed", JSON.stringify(stored.failure));
   assert.notEqual(stored.result.captureReceipts[0]?.adapterId, "instagram_business_discovery");
 });

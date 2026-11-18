@@ -5581,7 +5581,7 @@ event-accuracy, and unclaimed-affordance review. The shared Functions policy
 derives effective event visibility as the minimum of the event request and
 organizer ceiling on every surface and refuses a request above that ceiling.
 Before this contract shipped, the guarded visibility-decision backfill repaired
-the two production legacy approvals (`afterfly` and `bhag`) to their exact prior
+the two production legacy approvals to their exact prior
 `published` + `indexed` semantics; the post-apply dry run reported two current
 documents and zero remaining repairs.
 

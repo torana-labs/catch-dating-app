@@ -157,7 +157,7 @@ or an independent feature contract. Its domain state and route intents remain te
 - Host Event Manage now matches all five registered Claude references within
   advisory thresholds after the Guests split, shared segmented control,
   compact setup action rows, cohort-waitlist full banner rule, and deterministic
-  Bandra Social fixture pass. Final metrics are setup `13.35% / 13.30`,
+  Harbour Line Social fixture pass. Final metrics are setup `13.35% / 13.30`,
   full/waitlist `14.49% / 15.54`, guests roster `12.68% / 15.43`, live
   `10.05% / 4.69`, and report `12.61% / 15.52`.
 - Host Today and Events are independent destinations. `HostTodayOverview`

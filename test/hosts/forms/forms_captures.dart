@@ -261,12 +261,12 @@ Widget hostOfferCapture() {
   final events = [
     HostOfferEvent(
       id: 'n8',
-      name: 'Carter Road Social Run',
+      name: 'Salt Air Social Run',
       startsAt: DateTime(2026, 11, 15, 6, 30),
     ),
     HostOfferEvent(
       id: 'n15',
-      name: 'Carter Road Social Run',
+      name: 'Salt Air Social Run',
       startsAt: DateTime(2026, 11, 22, 6, 30),
     ),
     HostOfferEvent(

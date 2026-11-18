@@ -28,18 +28,18 @@ import {SupplyIntakeWorkflow} from "../src/workflows/supply-intake/workflow.mjs"
 const NOW = "2026-07-26T12:00:00.000Z";
 const repoRoot = fileURLToPath(new URL("../../", import.meta.url));
 const SERPAPI_FIXTURE = path.join(repoRoot,
-  "operations/src/workflows/supply-intake/fixtures/search/afterfly.serpapi.raw.json");
+  "operations/src/workflows/supply-intake/fixtures/search/moonmoth.serpapi.raw.json");
 
 const planEntry = {
-  candidateId: "afterfly-run-club-indore",
-  candidateName: "AFTER FLY",
+  candidateId: "moonmoth-run-club-indore",
+  candidateName: "MOON MOTH",
   categoryId: "social_run_club",
   city: "Indore",
   citySlug: "indore",
   planKind: "candidate_verification",
-  renderedQuery: "\"AFTER FLY\" Luma",
+  renderedQuery: "\"MOON MOTH\" Luma",
   resultFingerprint: "c383931a89d36db6",
-  runKey: "web_search|\"after fly\" luma|indore|social_run_club|afterfly-run-club-indore",
+  runKey: "web_search|\"moon moth\" luma|indore|social_run_club|moonmoth-run-club-indore",
   source: "web_search",
 };
 
@@ -63,12 +63,12 @@ test("normalizes SerpAPI organic results into a search result batch", async () =
     source: "serp_api",
   });
 
-  assert.equal(batch.batchId, "2026-06-17-afterfly-run-club-indore-c383931a89d36db6");
+  assert.equal(batch.batchId, "2026-06-17-moonmoth-run-club-indore-c383931a89d36db6");
   assert.equal(batch.source, "serp_api");
-  assert.equal(batch.query, "\"AFTER FLY\" Luma");
+  assert.equal(batch.query, "\"MOON MOTH\" Luma");
   assert.deepEqual(batch.queryIntent, {
     activityKind: "socialRun",
-    entityHint: "AFTER FLY",
+    entityHint: "MOON MOTH",
     marketSlug: "indore",
   });
   assert.equal(batch.captureContext.runKey, planEntry.runKey);
@@ -79,8 +79,8 @@ test("normalizes SerpAPI organic results into a search result batch", async () =
   assert.deepEqual(batch.results[1], {
     resultId: "result-2",
     rank: 2,
-    title: "AFTER FLY on Instagram",
-    url: "https://www.instagram.com/afterfly.in/?igshid=fixture",
+    title: "MOON MOTH on Instagram",
+    url: "https://www.instagram.com/moonmoth.example/?igshid=fixture",
     snippet: "Primary Instagram profile surfaced in search.",
     observedAt: "2026-06-17",
   });
@@ -91,7 +91,7 @@ test("normalizes SerpAPI organic results into a search result batch", async () =
 test("normalizes Google Custom Search items and bounds the kept results", () => {
   const batch = buildSearchResultBatchFromCapture({
     capture: {items: [
-      {title: "Luma", link: "https://luma.com/pxgmph3b", snippet: "Event page."},
+      {title: "Luma", link: "https://luma.com/mmoth26x", snippet: "Event page."},
       {title: "Second", link: "https://example.com/two"},
     ]},
     capturedAt: "2026-06-17",
@@ -114,7 +114,7 @@ test("uses deterministic fallback batch ids", () => {
     {...planEntry, resultFingerprint: undefined},
     "2026-06-17"
   );
-  assert.match(unfingerprinted, /^2026-06-17-afterfly-run-club-indore-[0-9a-f]{16}$/u);
+  assert.match(unfingerprinted, /^2026-06-17-moonmoth-run-club-indore-[0-9a-f]{16}$/u);
 });
 
 test("rejects empty or malformed captures", () => {
@@ -148,11 +148,11 @@ test("builds normalized candidates and matches existing surface keys", () => {
     dedupeIndex: {
       generatedAt: null,
       dedupeKeys: [{
-        entityId: "afterfly",
+        entityId: "moonmoth",
         reason: "luma eventListing surface.",
         strength: "strong",
         type: "surface",
-        value: "luma:event:pxgmph3b",
+        value: "luma:event:mmoth26x",
       }],
     },
   });
@@ -165,14 +165,14 @@ test("builds normalized candidates and matches existing surface keys", () => {
   assert.deepEqual(queue.summary.platforms, {instagram: 1, luma: 1, news: 1});
 
   const luma = queue.candidates.find((candidate) => candidate.resultId === "luma-event");
-  assert.equal(luma.candidateId, "2026-06-17-afterfly-search-fixture:luma-event");
-  assert.equal(luma.normalizedKey, "luma:event:pxgmph3b");
-  assert.equal(luma.canonicalUrl, "https://luma.com/pxgmph3b");
+  assert.equal(luma.candidateId, "2026-06-17-moonmoth-search-fixture:luma-event");
+  assert.equal(luma.normalizedKey, "luma:event:mmoth26x");
+  assert.equal(luma.canonicalUrl, "https://luma.com/mmoth26x");
   assert.equal(luma.reviewAction, "attach_to_existing_or_curate");
-  assert.deepEqual(luma.existingEntityMatches.map((match) => match.entityId), ["afterfly"]);
+  assert.deepEqual(luma.existingEntityMatches.map((match) => match.entityId), ["moonmoth"]);
 
   const instagram = queue.candidates.find((candidate) => candidate.resultId === "instagram");
-  assert.equal(instagram.normalizedKey, "instagram:afterfly.in");
+  assert.equal(instagram.normalizedKey, "instagram:moonmoth.example");
   assert.equal(instagram.reviewAction, "create_or_merge_candidate");
 
   const press = queue.candidates.find((candidate) => candidate.resultId === "press");
@@ -187,19 +187,19 @@ test("one organizer surface seen through several results and queries is one cand
     resultId: "luma-duplicate",
     rank: 4,
     title: "Duplicate Luma",
-    url: "https://lu.ma/pxgmph3b",
+    url: "https://lu.ma/mmoth26x",
     snippet: null,
     observedAt: "2026-06-17",
   });
   const second = {
     ...sampleBatch(),
-    batchId: "2026-06-18-afterfly-second-query",
+    batchId: "2026-06-18-moonmoth-second-query",
     createdAt: "2026-06-18",
     results: [{
       resultId: "result-1",
       rank: 1,
-      title: "AFTER FLY (@afterfly.in)",
-      url: "https://m.instagram.com/afterfly.in?utm_source=serp",
+      title: "MOON MOTH (@moonmoth.example)",
+      url: "https://m.instagram.com/moonmoth.example?utm_source=serp",
       snippet: null,
       observedAt: "2026-06-18",
     }],
@@ -211,21 +211,21 @@ test("one organizer surface seen through several results and queries is one cand
   assert.equal(queue.summary.collapsedDuplicates, 2);
   assert.deepEqual(queue.duplicateKeys, [
     {
-      normalizedKey: "instagram:afterfly.in",
-      canonicalUrl: "https://instagram.com/afterfly.in",
-      keptCandidateId: "2026-06-17-afterfly-search-fixture:instagram",
+      normalizedKey: "instagram:moonmoth.example",
+      canonicalUrl: "https://instagram.com/moonmoth.example",
+      keptCandidateId: "2026-06-17-moonmoth-search-fixture:instagram",
       candidateIds: [
-        "2026-06-17-afterfly-search-fixture:instagram",
-        "2026-06-18-afterfly-second-query:result-1",
+        "2026-06-17-moonmoth-search-fixture:instagram",
+        "2026-06-18-moonmoth-second-query:result-1",
       ],
     },
     {
-      normalizedKey: "luma:event:pxgmph3b",
-      canonicalUrl: "https://luma.com/pxgmph3b",
-      keptCandidateId: "2026-06-17-afterfly-search-fixture:luma-event",
+      normalizedKey: "luma:event:mmoth26x",
+      canonicalUrl: "https://luma.com/mmoth26x",
+      keptCandidateId: "2026-06-17-moonmoth-search-fixture:luma-event",
       candidateIds: [
-        "2026-06-17-afterfly-search-fixture:luma-duplicate",
-        "2026-06-17-afterfly-search-fixture:luma-event",
+        "2026-06-17-moonmoth-search-fixture:luma-duplicate",
+        "2026-06-17-moonmoth-search-fixture:luma-event",
       ],
     },
   ]);
@@ -238,15 +238,15 @@ test("suggested surfaces satisfy the Admin curation surface contract", async () 
   batch.results.push({
     resultId: "urbanaut",
     rank: 4,
-    title: "Afterfly on Urbanaut",
-    url: "https://urbanaut.app/spot/afterfly-sunrise-run",
+    title: "Moonmoth on Urbanaut",
+    url: "https://urbanaut.app/spot/moonmoth-sunrise-run",
     snippet: null,
     observedAt: "2026-06-17",
   }, {
     resultId: "website",
     rank: 5,
-    title: "Afterfly",
-    url: "https://www.afterfly.in/",
+    title: "Moonmoth",
+    url: "https://www.moonmoth.example/",
     snippet: null,
     observedAt: "2026-06-17",
   });
@@ -274,10 +274,10 @@ test("invalid batches are reported and cannot become an input snapshot", () => {
   broken.results.push({...broken.results[0]});
   const queue = buildSearchResultCandidateQueue([broken, sampleBatch()]);
   assert.deepEqual(queue.errors, [
-    "2026-06-17-afterfly-search-fixture: duplicate batchId.",
-    "2026-06-17-afterfly-search-fixture: duplicate resultId luma-event.",
-    "2026-06-17-afterfly-search-fixture: queryIntent.marketSlug is required.",
-    "2026-06-17-afterfly-search-fixture: schemaVersion must be 1.",
+    "2026-06-17-moonmoth-search-fixture: duplicate batchId.",
+    "2026-06-17-moonmoth-search-fixture: duplicate resultId luma-event.",
+    "2026-06-17-moonmoth-search-fixture: queryIntent.marketSlug is required.",
+    "2026-06-17-moonmoth-search-fixture: schemaVersion must be 1.",
   ]);
   assert.throws(() => searchCandidateInputSnapshot(queue, {
     market: "indore",
@@ -292,9 +292,9 @@ test("search candidates enter a run through an ingest-input snapshot", async () 
   assert.deepEqual(queue.errors, []);
   assert.deepEqual(queue.warnings, []);
   assert.deepEqual(queue.candidates.map((candidate) => candidate.normalizedKey), [
-    "luma:event:pxgmph3b",
-    "instagram:afterfly.in",
-    "sortMyScene:profile:afterfly",
+    "luma:event:mmoth26x",
+    "instagram:moonmoth.example",
+    "sortMyScene:profile:moonmoth",
   ]);
   const snapshot = searchCandidateInputSnapshot(queue, {
     market: "indore",
@@ -322,10 +322,10 @@ test("search candidates enter a run through an ingest-input snapshot", async () 
     item.adminProjection?.recordType === "organizer_search_candidate");
   assert.equal(projected.length, 3);
   const luma = projected.find((item) =>
-    item.adminProjection.candidate.normalizedKey === "luma:event:pxgmph3b");
+    item.adminProjection.candidate.normalizedKey === "luma:event:mmoth26x");
   assert.equal(luma.entityKind, "organizer");
   assert.equal(luma.sourceEntity.id,
-    "2026-06-17-afterfly-run-club-indore-c383931a89d36db6:result-1");
+    "2026-06-17-moonmoth-run-club-indore-c383931a89d36db6:result-1");
   assert.equal(luma.adminProjection.candidate.queryIntent.marketSlug, "indore");
 });
 
@@ -537,37 +537,37 @@ async function curationSurfaceValidator() {
 function sampleBatch() {
   return {
     schemaVersion: 1,
-    batchId: "2026-06-17-afterfly-search-fixture",
+    batchId: "2026-06-17-moonmoth-search-fixture",
     createdAt: "2026-06-17",
     source: "fixture",
-    query: "Afterfly organizer",
+    query: "Moonmoth organizer",
     queryIntent: {
       activityKind: "socialRun",
-      entityHint: "Afterfly",
+      entityHint: "Moonmoth",
       marketSlug: "indore",
     },
     results: [
       {
         resultId: "luma-event",
         rank: 1,
-        title: "Afterfly Luma event",
-        url: "https://luma.com/pxgmph3b?utm_source=google",
+        title: "Moonmoth Luma event",
+        url: "https://luma.com/mmoth26x?utm_source=google",
         snippet: "Luma event",
         observedAt: "2026-06-17",
       },
       {
         resultId: "instagram",
         rank: 2,
-        title: "Afterfly Instagram",
-        url: "https://instagram.com/afterfly.in/",
+        title: "Moonmoth Instagram",
+        url: "https://instagram.com/moonmoth.example/",
         snippet: "Instagram profile",
         observedAt: "2026-06-17",
       },
       {
         resultId: "press",
         rank: 3,
-        title: "Afterfly press",
-        url: "https://lbb.in/mumbai/afterfly-profile/",
+        title: "Moonmoth press",
+        url: "https://lbb.in/mumbai/moonmoth-profile/",
         snippet: "Press coverage",
         observedAt: "2026-06-17",
       },

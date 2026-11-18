@@ -19,7 +19,7 @@ HostFormatsCrawlState _changed() => hostFormatsCrawlState(
     liveControlRevision: 6,
     crawlStopChanges: const [
       EventSuccessCrawlStopChange(
-        stopId: 'bonobo',
+        stopId: 'copperleaf',
         title: 'The Daily',
         address: 'Bandra West',
         changedAtMs: 1,
@@ -49,7 +49,7 @@ void main() {
   test('a stop changed tonight replaces the published one', () {
     final state = _changed();
     final stop = state.stops.singleWhere((stop) => stop.changed);
-    expect(stop.stop.id, 'bonobo');
+    expect(stop.stop.id, 'copperleaf');
     expect(stop.stop.title, 'The Daily');
     expect(stop.address, 'Bandra West');
     expect(stop.stop.location, isNull);
@@ -113,13 +113,13 @@ void main() {
         of: find.byKey(const ValueKey<String>('formats-crawl-change-title')),
         matching: find.byType(EditableText),
       ),
-      'Bastian',
+      'Sandpiper Kitchen',
     );
     await tester.pump();
     await tester.tap(
       find.byKey(const ValueKey<String>('formats-crawl-change-send')),
     );
-    expect(sent.single[0], 'Bastian');
-    expect(sent.single[2], 'Change of plan: stop 4 is now Bastian.');
+    expect(sent.single[0], 'Sandpiper Kitchen');
+    expect(sent.single[2], 'Change of plan: stop 4 is now Sandpiper Kitchen.');
   });
 }

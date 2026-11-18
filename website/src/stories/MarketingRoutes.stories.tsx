@@ -39,7 +39,7 @@ import {
   eventRuntimeVisualAssetPath,
 } from "../features/eventRuntime/eventRuntimeMotion";
 
-const generatedOrganizerListing = requireListing("afterfly");
+const generatedOrganizerListing = requireListing("moonmoth");
 // Synthetic, Storybook-only review permissions to exercise the populated public state.
 const communityProfileFixture: HostListing = {
   ...requireListing("club-sales-sunday-table"),

@@ -29,7 +29,7 @@ test("intake refuses a suppressed organiser and queues others, in one transactio
       const caseId = `TD-${suffix.slice(-4)}`;
       // Many hashes, so the lookup spans more than one 30-value query.
       const keys = module.suppressionKeysForIdentity({names: ["Quarry Lane Cyclists"],
-        domains: ["quarry-lane.example"], handles: Array.from({length: 40}, (_, index) => `@quarrylane${index}`)});
+        domains: ["quarry-lane.example"], handles: Array.from({length: 40}, (_, index) => `@moonmoth.quarry${index}`)});
       await db.collection(LISTING_SUPPRESSIONS).doc(caseId).set({schemaVersion: 1, caseId, reason: "trademark",
         active: true, hashScheme: "hmac-sha256/listing-suppression-v1", identityHashes: module.suppressionHashes(SECRET, keys),
         identityKeyCounts: {labels: keys.length, links: 0, organizers: 0, slugs: 0}, createdAtMillis: 1, updatedAtMillis: 1,

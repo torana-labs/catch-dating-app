@@ -37,7 +37,7 @@ function Launcher({label, wide, align, width}: {label: string; wide: CatchAdapti
   const [open, setOpen] = useState(false);
   return (
     <CatchAdaptiveSheet align={align} closeLabel="Close" onClose={() => setOpen(false)} open={open}
-      subtitle="Carter Road Runners" title={wide === "dialog" ? "Sunday Social Run" : "Choose your city"}
+      subtitle="Driftwood Bay Runners" title={wide === "dialog" ? "Sunday Social Run" : "Choose your city"}
       trigger={<CatchButton label={label} onPressed={() => setOpen(true)} size="md" variant="secondary" />} wide={wide} width={width}>
       <CatchText as="p" tone="secondary" variant="body">
         {wide === "dialog" ? "Show this at the start. Sun 15 Nov · 6:15 AM, Carter Road promenade." : "Mumbai, Indore, Bengaluru, Delhi NCR and Pune."}
