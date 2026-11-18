@@ -316,6 +316,18 @@ service cloud.firestore {
             || programView(programId).arrivalRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
     }
 
+    // A transport trip: one reconciliation viewer, dispatcher or coordinator
+    // assignment covers its pickup point and hotel together (the keys are an
+    // id or '*' per side; a trip with no hotel is '~').
+    function programTripRoute(programId, pickupKey, hotelKey) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && (programView(programId).tripRoutes.get('*|*', 0) > request.time.toMillis()
+            || programView(programId).tripRoutes.get(pickupKey + '|*', 0) > request.time.toMillis()
+            || programView(programId).tripRoutes.get('*|' + hotelKey, 0) > request.time.toMillis()
+            || programView(programId).tripRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
+    }
+
     function programDutyCoversFunction(programId, duty, functionId) {
       return isProgramManager(programId)
         || (hasProgramAccessView(programId)
@@ -2572,6 +2584,24 @@ service cloud.firestore {
     match /programVendorViews/{viewId} {
       allow get, list: if hasProgramDuty(resource.data.programId,
         'transportDispatcher');
+      allow write: if false;
+    }
+
+    // Transport trips and the hotel desk's inbound guests (#1339). A trip is
+    // read by the accounts whose assignments cover its route, and, while it is
+    // still en route, by the hotel desk of its destination hotel (the hotel's
+    // inbound vehicles: a query naming programId, hotelKey and status).
+    match /programTripViews/{tripId} {
+      allow get, list: if programTripRoute(resource.data.programId,
+          resource.data.pickupKey, resource.data.hotelKey)
+        || (resource.data.status == 'enRoute'
+          && programDutyCoversHotel(resource.data.programId, 'hotelDesk',
+            resource.data.hotelKey));
+      allow write: if false;
+    }
+    match /programHotelInboundViews/{legId} {
+      allow get, list: if programDutyCoversHotel(resource.data.programId,
+        'hotelDesk', resource.data.hotelId);
       allow write: if false;
     }
 

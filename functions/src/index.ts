@@ -767,6 +767,10 @@ export {onProgramArrivalLegChanged, onProgramArrivalPartyChanged,
   onProgramArrivalStaffLabelChanged, onProgramDepartureStayChanged,
   onProgramArrivalSettingsChanged, onProgramVendorViewChanged} from
   "./programs/programArrivalViewTriggers";
+export {onProgramTripViewChanged, onProgramHotelInboundLegChanged,
+  onProgramHotelInboundPartyChanged, onProgramTripGuestChanged,
+  onProgramHotelInboundSettingsChanged} from
+  "./programs/programTripViewTriggers";
 export {listMyHostAssignments} from "./hostWork/listMyHostAssignments";
 export {
   inviteProgramStaff,

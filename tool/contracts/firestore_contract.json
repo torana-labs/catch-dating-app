@@ -3449,6 +3449,51 @@
       ]
     },
     {
+      "id": "programTripViews",
+      "path": "programTripViews/{tripId}",
+      "rulesMatch": "/programTripViews/{tripId}",
+      "typescriptInterface": "ProgramTripViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_trips.rules.test.cjs",
+      "rulesTestNames": [
+        "reads a trip only where one assignment covers its pickup and hotel",
+        "lets a hotel desk read only trips still en route to its hotel"
+      ],
+      "owner": "Programme read model projector: programTripViewTriggers",
+      "read": "get and list where one reconciliation viewer, dispatcher or coordinator assignment covers the trip's pickup point and hotel together (programAccessViews tripRoutes), and the programme owner; the hotel desk covering the destination hotel reads trips still en route (a query naming programId, hotelKey and status); never while deleted",
+      "write": "server only; written from transportTrips, programGuests and programTravelLegs",
+      "exportedFunctions": [
+        "onProgramTripViewChanged",
+        "onProgramTripGuestChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the row listProgramTrips returns, with the manifest's guest names from the recorded dispatch snapshot; the trip's notes, rate, driver and account ids stay in transportTrips. Hotel desks also read a trip's pickup point id, vendor id, kind, arrival time and void reason, which getProgramHotelInbound did not return. The program-trip-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
+      "id": "programHotelInboundViews",
+      "path": "programHotelInboundViews/{legId}",
+      "rulesMatch": "/programHotelInboundViews/{legId}",
+      "typescriptInterface": "ProgramHotelInboundViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_trips.rules.test.cjs",
+      "rulesTestNames": [
+        "gives the hotel desk its inbound guests, and no other duty"
+      ],
+      "owner": "Programme read model projector: programTripViewTriggers",
+      "read": "get and list (query naming programId and hotelId) where a hotel desk duty covers the hotel, and the programme owner, while not deleted",
+      "write": "server only; written from programTravelLegs, programTravelParties, programGuests and the programme's transport settings",
+      "exportedFunctions": [
+        "onProgramHotelInboundLegChanged",
+        "onProgramHotelInboundPartyChanged",
+        "onProgramTripGuestChanged",
+        "onProgramHotelInboundSettingsChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the expected-guest row getProgramHotelInbound returned; nothing about the flight, claimant or pickup point. The program-trip-views copy-forward migration creates views for sources that predate the triggers and leaves views the triggers wrote alone."
+      ]
+    },
+    {
       "id": "programStaffGrants",
       "path": "programStaffGrants/{grantId}",
       "rulesMatch": "/programStaffGrants/{grantId}",
