@@ -1,0 +1,57 @@
+{
+  "workflow": {
+    "workflowId": "takedowns",
+    "label": "Listing requests",
+    "guiPath": "/inbox"
+  },
+  "actions": [
+    {
+      "actionId": "takedowns.get-request",
+      "callable": "adminGetTakedownRequest",
+      "workflowIds": [
+        "takedowns",
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_get_takedown_request_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_get_takedown_request_response.schema.json",
+      "summary": "Open one listing request from its takedown Inbox item: the requester, the type's verification fields, the declarations, the deadlines, the history, the outcomes its type allows and what the caller may do.",
+      "example": {
+        "requestId": "lr-0123456789abcdef0123456789abcdef01234567"
+      }
+    },
+    {
+      "actionId": "takedowns.update-request",
+      "callable": "adminUpdateTakedownRequest",
+      "workflowIds": [
+        "takedowns",
+        "inbox"
+      ],
+      "guiPath": "/inbox",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "requestId",
+      "requestSchema": "contracts/callables/admin_update_takedown_request_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/admin_update_takedown_request_response.schema.json",
+      "summary": "Take one fixed step on a listing request: acknowledge, ask for more with a fixed template, action with a fixed outcome and the takedown case id, decline with a fixed reason, record or decide its one appeal, or close it. Only admins and the owner decide; audited.",
+      "example": {
+        "requestId": "lr-0123456789abcdef0123456789abcdef01234567",
+        "action": "acknowledge",
+        "note": "Fixture step; do not apply to production."
+      }
+    }
+  ]
+}

@@ -208,7 +208,8 @@
         "salesInboundIntent",
         "accessApplication",
         "externalEvent",
-        "walkthroughBooking"
+        "walkthroughBooking",
+        "takedownRequest"
       ],
       "type": "string",
       "x-catch-ownership": "server-only"
@@ -275,7 +276,8 @@
         "enquiry",
         "lead",
         "access",
-        "stuck"
+        "stuck",
+        "takedown"
       ],
       "type": "string",
       "x-catch-ownership": "server-only"

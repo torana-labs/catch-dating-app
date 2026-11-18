@@ -35,7 +35,7 @@ function model(selectedItemId: string | null, canDecideClaim = false, eventSheet
     scope: "waiting", type: null, setScope: noop, setType: noop,
     items,
     totals: {scopes: {waiting: items.length, mine: 1, snoozed: 0, working: 2},
-      types: {all: items.length, listing: 3, event: 1, claim: 1, enquiry: 1, lead: 1, access: 0, stuck: 1}},
+      types: {all: items.length, listing: 3, event: 1, claim: 1, enquiry: 1, lead: 1, access: 0, stuck: 1, takedown: 0}},
     oldestWaitingSince: items[0]?.waitingSince ?? null,
     hasNextPage: false, hasPreviousPage: false, nextPage: noop, previousPage: noop,
     position: index >= 0 ? {index: index + 1, of: items.length} : null,

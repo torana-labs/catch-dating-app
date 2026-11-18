@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/http/listing_request_response.schema.json",
+  "title": "Listing Request HTTP Response",
+  "description": "Version 1 response from /api/listing-request: the receipt (stable for the requester's email and client request id, so a retry returns the same one) with the deadlines that apply, or an error the website words.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ok",
+        "request"
+      ],
+      "properties": {
+        "ok": {
+          "const": true
+        },
+        "request": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requestId",
+            "reference",
+            "requestType",
+            "isNew",
+            "ackDueAt",
+            "actionDueAt",
+            "resolveDueAt"
+          ],
+          "properties": {
+            "requestId": {
+              "$ref": "../shared/takedown_request_common.schema.json#/definitions/requestId"
+            },
+            "reference": {
+              "$ref": "../shared/takedown_request_common.schema.json#/definitions/reference"
+            },
+            "requestType": {
+              "$ref": "../shared/takedown_request_common.schema.json#/definitions/requestType"
+            },
+            "isNew": {
+              "type": "boolean"
+            },
+            "ackDueAt": {
+              "$ref": "../shared/takedown_request_common.schema.json#/definitions/instant"
+            },
+            "actionDueAt": {
+              "$ref": "../shared/takedown_request_common.schema.json#/definitions/nullableInstant"
+            },
+            "resolveDueAt": {
+              "$ref": "../shared/takedown_request_common.schema.json#/definitions/instant"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "error"
+      ],
+      "properties": {
+        "error": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        }
+      }
+    }
+  ]
+}

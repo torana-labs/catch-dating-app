@@ -520,6 +520,9 @@ export {
   adminUpsertSupportSavedReply,
 } from "./supportInbox/adminSupport";
 export {reportGuest, reportUser} from "./safety/reporting";
+export {submitListingRequest} from "./takedownRequests/intake";
+export {adminGetTakedownRequest, adminUpdateTakedownRequest} from
+  "./takedownRequests/admin";
 export {
   adminLiftAccountSafetyAction,
   adminListAccountSafetyActions,
@@ -620,6 +623,7 @@ export {
   onOrganizerClaimRequestWrittenSyncInbox,
   onSalesInboundIntentWrittenSyncInbox,
   onSupplyIntakeRequestWrittenSyncInbox,
+  onTakedownRequestWrittenSyncInbox,
   onWalkthroughBookingWrittenSyncInbox,
   reconcileAdminInboxNightly,
   wakeSnoozedInboxItemsEvery30Minutes,
