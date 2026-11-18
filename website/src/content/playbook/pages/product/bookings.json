@@ -1,0 +1,177 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "product_bookings",
+  "route": "product_bookings",
+  "meta": {
+    "title": "Bookings and payments | {{brand.name}} for hosts",
+    "description": "Applications with your questions, approvals with a tap, waitlists with offers you control, and every UPI or card payment next to the right name, paid into your own Razorpay account.",
+    "socialDescription": "From interested to paid, without the chasing. Bookings and payments on {{brand.name}}.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [{"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}}],
+      "current": "Bookings and payments"
+    }
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "indigo",
+      "kicker": "Product · bookings and payments",
+      "title": "From interested to paid, without the chasing.",
+      "lead": "Applications with your questions, approvals with a tap, waitlists with offers you control, and every payment next to the right name. In rupees, by UPI or card.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Tuesday Trivia Social · this week",
+          "bars": [
+            {"label": "They apply", "value": "10 applications", "share": 100},
+            {"label": "You approve", "value": "9 approved", "share": 90},
+            {"label": "They pay", "value": "7 paid · ₹4,200", "share": 70},
+            {"label": "They show up", "value": "7 booked", "share": 70}
+          ],
+          "note": "Booked guests get where to meet. Guests on the {{brand.name}} app also get a push reminder 15 minutes before the start."
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "ways-in",
+      "ground": "white",
+      "kicker": "Four ways in",
+      "title": "Decide who gets a place, event by event.",
+      "columns": 4,
+      "items": [
+        {"title": "Open", "body": "Anyone can book. A page with spots left. Book and pay in a couple of taps.", "ground": "coral"},
+        {"title": "Applications", "body": "They apply, you choose. Ask the questions you want answered: who they are, who they’re bringing, what they’re hoping for. Approve with a tap.", "ground": "yellow"},
+        {"title": "Invite-only", "body": "Only people with your invite link or code can book.", "ground": "mint"},
+        {"title": "Private offer", "body": "A place for one person. Send someone their own checkout link, checked against their phone number.", "ground": "ink"}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "groups",
+      "ground": "paper",
+      "kicker": "Booking for friends",
+      "title": "One booking, up to four places.",
+      "lead": "A guest can book up to four places in one go, for themselves and their friends, with a name for each guest so your list is right before the door opens.",
+      "ticks": [
+        "Up to 4 places per booking",
+        "A name for every guest in the booking",
+        "A member price covers the member’s own place; friends pay the usual price",
+        "The whole booking checks in together at the door"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Long Table Supper · 3 places",
+          "subtitle": "Booked by Aanya Mehta",
+          "rows": [
+            {"title": "Aanya Mehta", "detail": "Member price", "tag": "Booker"},
+            {"title": "Kabir Shah", "detail": "Usual price", "tag": "Guest"},
+            {"title": "Meher Iyer", "detail": "Usual price", "tag": "Guest"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "waitlists",
+      "ground": "ink",
+      "kicker": "Waitlists",
+      "title": "A full event, still filling.",
+      "lead": "When the event is full, new bookings join the waitlist. When someone drops out of a free event, the next person on the waitlist gets the place. For a paid event, send waitlisted guests an offer that stays open for as long as you choose.",
+      "ticks": [
+        "Free events move the next person up for you",
+        "You set how long each offer stays open, up to a day",
+        "Guests get a reminder before their offer runs out"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Waitlist",
+          "rows": [
+            {"title": "32 of 32 places", "tag": "Booked"},
+            {"title": "Aanya · 2 hours left", "tag": "Offer open"},
+            {"title": "Kabir", "tag": "Waiting"},
+            {"title": "Meher", "tag": "Waiting"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "payments",
+      "ground": "paper",
+      "kicker": "Payments",
+      "title": "Paid in rupees, no screenshots.",
+      "align": "start",
+      "columns": 3,
+      "items": [
+        {"title": "UPI or card", "body": "Guests pay at booking through Razorpay. Every payment lands next to the right name."},
+        {"title": "Refunds by your policy", "body": "Set a cancellation policy per event. Refunds follow it, and the fee is on sales net of refunds."},
+        {"title": "Payouts", "body": "By default, guests pay into your own Razorpay account, and it reaches your bank on Razorpay’s usual schedule. {{brand.name}} bills its fee afterwards. Payment gateway fees are separate."}
+      ],
+      "foot": "5% of ticket sales, never more than ₹10,000 per 30-day billing cycle · Free events stay free · 30 days free from your first event"
+    },
+    {
+      "type": "split",
+      "id": "links",
+      "ground": "white",
+      "kicker": "Links",
+      "title": "Know which post sold the tickets.",
+      "lead": "Give every promoter, venue and post its own link. Each one shows how many people opened it, booked through it and checked in.",
+      "actions": [
+        {"label": "Guest records and groups", "to": {"route": "product_guests"}, "emphasis": "secondary"}
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Newsletter link · Long Table Supper",
+          "stats": [
+            {"value": "112", "label": "Opens"},
+            {"value": "14", "label": "Booked"},
+            {"value": "12", "label": "Checked in"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Questions",
+      "title": "About bookings and payments.",
+      "items": [
+        {"question": "Can I approve each guest myself?", "answer": "Yes. Turn on applications, ask your questions, and approve or decline each person. Approved guests pay to confirm their place."},
+        {"question": "Can guests pay by UPI?", "answer": "Yes. Guests pay by UPI or card at booking, through Razorpay. Every payment is matched to the right name."},
+        {"question": "Can one person book for a group?", "answer": "Yes, up to four places in one booking, with a name for each guest. A member price applies to the member’s own place only."},
+        {"question": "What happens when someone cancels?", "answer": "Refunds follow the cancellation policy you set for the event. On a free event, the next person on the waitlist gets the place; on a paid one, you can send waitlisted guests an offer."},
+        {"question": "Where does the money go?", "answer": "By default, into your own Razorpay account, and from there to your bank on Razorpay’s usual schedule. Setting up Razorpay includes its KYC check, which usually takes 1 to 2 working days. Free events don’t need it."},
+        {"question": "Can an event be invite-only?", "answer": "Yes. Make it invite-only and share your invite link or code, or send one person a private offer with their own checkout."},
+        {"question": "Can I bring bookings from another tool?", "answer": "Yes. Import your guest list from a CSV or Excel file and take new bookings on {{brand.name}} whenever you’re ready."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Free for 30 days · founding hosts get 90",
+      "title": "Take your next bookings on {{brand.name}}.",
+      "lead": "Bring your guest list from any tool. Nothing changes for guests until the doors open.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}, "emphasis": "secondary"}
+      ],
+      "media": {"kind": "capture", "slot": "guest-explore"}
+    }
+  ]
+}

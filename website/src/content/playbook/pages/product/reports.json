@@ -1,0 +1,159 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "product_reports",
+  "route": "product_reports",
+  "meta": {
+    "title": "Reports, payouts and team | {{brand.name}} for hosts",
+    "description": "A report after every event, payouts into your own Razorpay account by default, one bill per billing cycle capped at ₹10,000, and team access you control.",
+    "socialDescription": "Know what worked, get paid, share the work. Reports, payouts and team on {{brand.name}}.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [{"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}}],
+      "current": "Reports, payouts and team"
+    }
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "coral",
+      "kicker": "Product · reports, payouts and team",
+      "title": "Know what worked, get paid, share the work.",
+      "lead": "A report after every event: who came, who was new and what guests said. By default, money goes straight into your own Razorpay account. And the people who help you run things get the access they need, and no more.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Report · Sunday social run, 24 Nov",
+          "subtitle": "Ready in {{brand.stores.hostAppName}} after the event",
+          "stats": [
+            {"value": "46", "label": "came, of 52 booked"},
+            {"value": "11", "label": "first time with you"},
+            {"value": "4.8", "label": "rating, from 21 guests"}
+          ],
+          "rows": [
+            {"title": "Ticket sales", "detail": "From 46 payments", "value": "₹13,800"},
+            {"title": "What guests said", "detail": "21 reviews", "value": "Read"},
+            {"title": "Bring these 46 back", "detail": "Next Sunday · 40 places", "value": "Invite"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "report",
+      "ground": "white",
+      "kicker": "After every event",
+      "title": "A report you’ll actually read.",
+      "lead": "After the event, your report is ready in {{brand.stores.hostAppName}}, with the night in one place: who came, who was new, what you sold and what guests said. Then invite everyone who came to the next one.",
+      "ticks": [
+        "Who came, out of who booked",
+        "First-timers, and who came back",
+        "Ticket sales, and ratings and reviews from guests",
+        "The guest list, check-ins, bookings and payments, as CSV files"
+      ],
+      "media": {"kind": "capture", "slot": "host-post-event-report"}
+    },
+    {
+      "type": "tiles",
+      "id": "payouts",
+      "ground": "ink",
+      "kicker": "Payouts",
+      "title": "Your money goes to you, not through us.",
+      "lead": "Connect your Razorpay account once. By default, guests pay into it directly, and Razorpay sends it to your bank on its usual schedule. {{brand.name}} doesn’t hold your ticket money.",
+      "align": "start",
+      "columns": 4,
+      "items": [
+        {"figure": "1", "figureNote": "Booking", "title": "Guest pays by UPI or card", "body": "Straight into your Razorpay account."},
+        {"figure": "2", "figureNote": "Settlement", "title": "Razorpay pays your bank", "body": "On Razorpay’s usual schedule for your account."},
+        {"figure": "3", "figureNote": "Refunds", "title": "By your policy", "body": "Refunds follow the cancellation policy you set."},
+        {"figure": "4", "figureNote": "{{brand.name}}’s fee", "title": "Billed afterwards", "body": "5% of net sales, never more than ₹10,000, in one bill per 30-day billing cycle."}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "bill",
+      "ground": "white",
+      "kicker": "One bill, in arrears",
+      "title": "No surprises from us.",
+      "lead": "Your first bill comes after your free trial ends. Each one shows what you sold, what was refunded, and the 5%, never more than ₹10,000 per billing cycle.",
+      "ticks": [
+        "Nothing to pay during your trial",
+        "Free events never appear on a bill",
+        "Memberships and form fees count toward the same cap"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "{{brand.name}} bill · one billing cycle",
+          "rows": [
+            {"title": "Sunday social runs × 4", "value": "₹0"},
+            {"title": "Coached 10K × 2 · ₹48,000", "value": "₹2,400"},
+            {"title": "Memberships · ₹36,000", "value": "₹1,800"},
+            {"title": "Refunds · −₹3,000", "value": "−₹150"},
+            {"title": "{{brand.name}} fee this billing cycle", "value": "₹4,050"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "team",
+      "ground": "paper",
+      "kicker": "Your team",
+      "title": "Bring in help without handing over everything.",
+      "lead": "Add co-hosts and managers to run your events with you. Give someone the door for one night. Door staff see only the door.",
+      "ticks": [
+        "Co-hosts and managers run events alongside you",
+        "Door staff see only one event’s list, until their access ends",
+        "Take anyone’s access back at any time"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Your team",
+          "rows": [
+            {"title": "You", "detail": "Owner · your page, events and payments setup", "tag": "Owner"},
+            {"title": "Meera Iyer", "detail": "Manager · runs events with you", "tag": "Manager"},
+            {"title": "Arjun Rao", "detail": "Door · Sunday social run only", "tag": "Until 9 AM Sun"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Questions",
+      "title": "About reports and payouts.",
+      "items": [
+        {"question": "When is my report ready?", "answer": "After the event, in {{brand.stores.hostAppName}}. Open the event to see who came, who was new, what you sold and what guests said."},
+        {"question": "Do I need a Razorpay account?", "answer": "To sell tickets, yes, and we’ll help you set it up. Razorpay’s KYC check usually takes 1 to 2 working days. Free events don’t need one."},
+        {"question": "When do I get my money?", "answer": "By default, guests pay into your Razorpay account, and Razorpay sends it to your bank on its usual schedule for your account. {{brand.name}} doesn’t hold it."},
+        {"question": "How does {{brand.name}} charge me?", "answer": "One bill after each 30-day billing cycle: 5% of ticket sales, memberships and form fees, net of refunds, never more than ₹10,000 per billing cycle. Nothing during your trial."},
+        {"question": "Can more than one person run my events?", "answer": "Yes. Add co-hosts and managers to your team, and give helpers door access for a single event."},
+        {"question": "Can I export my numbers?", "answer": "Yes. Each event’s report downloads its guest list, check-ins, bookings and payments as CSV files, and you can export your guest contacts any time."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Free for 30 days · founding hosts get 90",
+      "title": "Run it, then see what worked.",
+      "lead": "Your first report is ready in {{brand.stores.hostAppName}} after your first event.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}, "emphasis": "secondary"}
+      ],
+      "media": {"kind": "capture", "slot": "host-today"}
+    }
+  ]
+}

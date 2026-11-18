@@ -1,0 +1,202 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "how_it_works",
+  "route": "how_it_works",
+  "meta": {
+    "title": "How {{brand.name}} works | From the first booking to the next one",
+    "description": "Your page, bookings and payments, messages, the door, the night itself and the follow-up, in one app for hosts. Use all of it, or start with one part.",
+    "socialDescription": "One app, from the first booking to the next one. See how {{brand.name}} runs the whole life of an event.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [{"label": "For hosts", "to": {"route": "host"}}],
+      "current": "How {{brand.name}} works"
+    }
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "tiles",
+      "id": "top",
+      "ground": "white",
+      "pageTitle": true,
+      "kicker": "How {{brand.name}} works",
+      "title": "One app, from the first booking to the next one.",
+      "lead": "{{brand.name}} runs the whole life of an event: your page, bookings and payments, the door, the night itself and the follow-up. Use all of it, or start with one part.",
+      "columns": 6,
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See a night on {{brand.name}}", "to": {"route": "product_night"}, "emphasis": "secondary"}
+      ],
+      "items": [
+        {"figure": "1", "title": "Your page", "body": "A page that replaces the link in your bio.", "ground": "coral", "link": {"label": "Your page", "to": {"route": "product_your_page"}}},
+        {"figure": "2", "title": "Bookings and payments", "body": "Applications, waitlists, and UPI or card.", "ground": "pink", "link": {"label": "Bookings and payments", "to": {"route": "product_bookings"}}},
+        {"figure": "3", "title": "Messages", "body": "Confirmations, reminders and updates for everyone booked.", "ground": "yellow", "link": {"label": "Messages", "to": {"route": "product_messages"}}},
+        {"figure": "4", "title": "The door", "body": "QR or self check-in on a phone or iPad.", "ground": "mint", "link": {"label": "The door", "to": {"route": "product_door"}}},
+        {"figure": "5", "title": "The night", "body": "Groups, teams, seating and rotations, by format.", "ground": "indigo", "link": {"label": "Running the night", "to": {"route": "product_night"}}},
+        {"figure": "6", "title": "After", "body": "Reviews, reports, payouts and who to invite back.", "ground": "ink", "link": {"label": "Reports and payouts", "to": {"route": "product_reports"}}}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "before",
+      "ground": "paper",
+      "kicker": "Before the night",
+      "title": "Get found, fill it, and tell people where to be.",
+      "groups": [
+        {
+          "label": "1",
+          "title": "Your page",
+          "list": [
+            "Your links, upcoming events and reviews in one place, for your Instagram bio",
+            "Events you run elsewhere appear as tiles that link out",
+            "Reviews from people who booked, with your replies, and followers you can tell about your next event",
+            "It may already exist: claim it free"
+          ],
+          "links": [{"label": "Your page", "to": {"route": "product_your_page"}}]
+        },
+        {
+          "label": "2",
+          "title": "Bookings and payments",
+          "list": [
+            "Applications with the questions you ask, approved with a tap",
+            "Waitlists, with offers that stay open for as long as you choose",
+            "Private offers and invite-only events",
+            "Up to four places on one booking, with a name for each guest",
+            "UPI or card, every payment next to the right name, refunds by your policy"
+          ],
+          "links": [{"label": "Bookings and payments", "to": {"route": "product_bookings"}}]
+        },
+        {
+          "label": "3",
+          "title": "Messages",
+          "list": [
+            "Confirmations and changes for everyone booked, and a push reminder 15 minutes before the start for guests on the {{brand.name}} app",
+            "Announcements to everyone booked, and WhatsApp campaigns from your own WhatsApp Business number"
+          ],
+          "links": [{"label": "Messages", "to": {"route": "product_messages"}}]
+        }
+      ],
+      "media": {"kind": "capture", "slot": "guest-explore"}
+    },
+    {
+      "type": "split",
+      "id": "night",
+      "ground": "ink",
+      "kicker": "On the night",
+      "title": "Open the door, then run the room.",
+      "groups": [
+        {
+          "label": "4",
+          "title": "The door",
+          "list": [
+            "QR or self check-in, on your phone or an iPad at the door",
+            "Arrivals, late-comers and walk-ins, live",
+            "Check-ins made without signal sync when you’re back online"
+          ],
+          "links": [{"label": "The door", "to": {"route": "product_door"}}]
+        },
+        {
+          "label": "5",
+          "title": "The night",
+          "list": [
+            "Pace groups, tables, teams, court rotations or a route between venues, built for each format",
+            "A first hello, and Help me say hi for private introductions",
+            "Guests join live moments in their phone’s browser, no app needed",
+            "A dress rehearsal with your team before doors open"
+          ],
+          "links": [{"label": "Running the night", "to": {"route": "product_night"}}]
+        }
+      ],
+      "media": {"kind": "capture", "slot": "host-live-tablet"}
+    },
+    {
+      "type": "split",
+      "id": "after",
+      "ground": "white",
+      "kicker": "After the night",
+      "title": "Know what worked, and who to invite back.",
+      "groups": [
+        {
+          "label": "6",
+          "title": "After",
+          "list": [
+            "One record per guest across every event you run",
+            "Reviews and private feedback, with replies",
+            "A report in {{brand.stores.hostAppName}} after every event, and insights across them",
+            "Payouts to your own Razorpay account, and roles for your team",
+            "Groups such as first-timers, regulars and lapsed regulars, so you know who to invite back"
+          ],
+          "links": [{"label": "Guest records", "to": {"route": "product_guests"}}]
+        }
+      ],
+      "actions": [
+        {"label": "Reports, payouts and team", "to": {"route": "product_reports"}, "emphasis": "secondary"}
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Sunday Social Run · report",
+          "subtitle": "Carter Road Runners · Sun 8 Nov",
+          "stats": [
+            {"value": "34", "label": "Booked"},
+            {"value": "31", "label": "Came"},
+            {"value": "9", "label": "First time with you"}
+          ],
+          "rows": [
+            {"title": "Rating", "detail": "From 18 guests", "value": "4.7"},
+            {"title": "New followers", "value": "11"},
+            {"title": "Booked through the café’s link", "value": "6"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "tools",
+      "ground": "paper",
+      "kicker": "Also in every plan",
+      "title": "The tools around the edges.",
+      "align": "start",
+      "columns": 4,
+      "items": [
+        {"title": "Forms", "body": "Build a form, share the link, and see answers next to each guest.", "ground": "white", "link": {"label": "Forms", "to": {"route": "product_forms"}}},
+        {"title": "Links for promoters", "body": "A link for every promoter, venue and post, with its opens, bookings and check-ins.", "ground": "white", "link": {"label": "Bookings and payments", "to": {"route": "product_bookings", "anchor": "links"}}},
+        {"title": "Bring your list", "body": "Import guests from a CSV or Excel file. Nothing changes for them until the doors open.", "ground": "white", "link": {"label": "Guest records", "to": {"route": "product_guests"}}},
+        {"title": "Weddings and programmes", "body": "Guests, travel, rooms and run sheets for multi-day events.", "ground": "white", "link": {"label": "Weddings", "to": {"route": "weddings"}}}
+      ]
+    },
+    {
+      "type": "tiles",
+      "id": "start-where-you-are",
+      "ground": "white",
+      "kicker": "Start where you are",
+      "title": "Hand {{brand.name}} as much of the evening as you want.",
+      "columns": 3,
+      "items": [
+        {"figure": "1", "title": "Keep your tools", "body": "Import your guest list and use {{brand.name}} for the door and the night. Nothing changes for guests until doors open."},
+        {"figure": "2", "title": "Take bookings on {{brand.name}}", "body": "Applications, payments and reminders, with one record for every guest."},
+        {"figure": "3", "title": "Get found on {{brand.name}}", "body": "Your events appear where people in your city look for something to do."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Free for 30 days",
+      "title": "See it on your next event.",
+      "lead": "Everything is included in the trial. Free events stay free after it.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Ask for a walkthrough on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like a walkthrough of {{brand.name}} for my events."},
+          "emphasis": "secondary"
+        }
+      ],
+      "media": {"kind": "capture", "slot": "host-today"}
+    }
+  ]
+}
