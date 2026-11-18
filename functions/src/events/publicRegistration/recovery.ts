@@ -32,6 +32,7 @@ export const reconcilePublicEventPayments = onSchedule(
         {db: admin.firestore(), nowMillis: Date.now()},
         {
           collection: PUBLIC_PAYMENT_COLLECTION,
+          purpose: "publicEvent",
           execution: publicPaymentExecutionFor,
           clock: Date.now,
           release: (input) =>
@@ -50,7 +51,13 @@ export const reconcilePublicEventPayments = onSchedule(
       if (summary.processed || summary.failed || summary.deferred) {
         logger.info("Public event payment reconciliation", summary);
       }
-    } catch {
+    } catch (error) {
+      // The thrown message stays generic for the scheduler; the cause (such as
+      // a missing index) must reach the logs or the job fails unexplained.
+      logger.error("Public event payment reconciliation failed", {
+        code: (error as {code?: unknown}).code,
+        message: error instanceof Error ? error.message : String(error),
+      });
       throw new Error("Public payment recovery is unavailable.");
     }
   },
@@ -74,6 +81,7 @@ export const onCancelledPublicEventPayments = onDocumentUpdated(
       {db: admin.firestore(), eventId: event.params.eventId},
       {
         collection: PUBLIC_PAYMENT_COLLECTION,
+        purpose: "publicEvent",
         now: Date.now,
         cancel: (input) =>
           cancelPaidEventAdmission({
