@@ -15468,7 +15468,7 @@
         "symbol": "HostInboxScreen"
       },
       "stateController": {
-        "primary": "hostOrganizerSelectionProvider + resolveHostInboxScope + composeHostInboxPeople + HostInboxCatchPages + HostInboxWhatsappPages + HostPersonConversationController + HostConversationHistory + HostReplyDrafts + hostSendsProvider + hostMessagingSetupProvider + chatSearchQueryProvider",
+        "primary": "hostOrganizerSelectionProvider + resolveHostInboxScope + composeHostInboxPeople + HostInboxCatchPages + HostWhatsappThreadPages + HostPersonConversationController + HostConversationHistory + HostReplyDrafts + hostSendsProvider + hostMessagingSetupProvider + chatSearchQueryProvider",
         "files": [
           {
             "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
@@ -15563,8 +15563,8 @@
             "symbol": "HostInboxCatchPages"
           },
           {
-            "file": "lib/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart",
-            "symbol": "HostInboxWhatsappPages"
+            "file": "lib/contexts/audience/data/crm/host_whatsapp_repository.dart",
+            "symbol": "HostWhatsappThreadPages"
           },
           {
             "file": "lib/hosts/presentation/inbox/host_person_conversation_controller.dart",
