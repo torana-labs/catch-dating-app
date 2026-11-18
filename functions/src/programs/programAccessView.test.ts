@@ -41,7 +41,8 @@ test("the owner is a manager with no expiry and no identity fields", () => {
   assert.equal(view.uid, "manager-1");
   assert.equal(view.expiresAtMillis, null);
   assert.deepEqual(Object.keys(view).sort(), [
-    "activeFromMillis", "assignments", "duties", "expiresAtMillis", "functionAll",
+    "activeFromMillis", "assignments", "duties", "expiresAtMillis",
+    "functionAll",
     "functionScoped", "grantExpiresAtMillis", "hotelAll", "hotelScoped",
     "organizerId", "ownerUid",
     "pickupAll", "pickupScoped", "programId", "revision", "role", "status",
