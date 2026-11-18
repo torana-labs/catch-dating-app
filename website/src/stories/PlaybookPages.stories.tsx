@@ -253,9 +253,9 @@ export const ProductYourPage390: Story = {
 
 /** The ProductBookings board's live bands: ways in, a balanced room, memberships and the checkout. */
 export const ProductBookings: Story = {
-  name: "/product/bookings/ · 1280",
+  name: "/product/bookings-and-memberships/ · 1280",
   parameters: {
-    catchRoute: {id: "product_bookings", path: "/product/bookings/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchRoute: {id: "product_bookings", path: "/product/bookings-and-memberships/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
     catchComponent: {id: "route_playbook_page", routeIds: ["product_bookings"], states: ["product-bookings"]},
   },
   render: () => <PlaybookAt page={bookingsPage} width={1280} />,
@@ -263,16 +263,16 @@ export const ProductBookings: Story = {
 
 /** The phone board: every band stacks. */
 export const ProductBookings390: Story = {
-  name: "/product/bookings/ · 390",
+  name: "/product/bookings-and-memberships/ · 390",
   parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_bookings"], states: ["product-bookings"]}},
   render: () => <PlaybookAt page={bookingsPage} width={390} />,
 };
 
 /** The ProductGrowth board's live bands: four ways to reach people, tracked links, invite links, messages and WhatsApp campaigns. */
 export const ProductMessages: Story = {
-  name: "/product/messages/ · 1280",
+  name: "/product/messages-and-growth/ · 1280",
   parameters: {
-    catchRoute: {id: "product_messages", path: "/product/messages/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchRoute: {id: "product_messages", path: "/product/messages-and-growth/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
     catchComponent: {id: "route_playbook_page", routeIds: ["product_messages"], states: ["product-messages"]},
   },
   render: () => <PlaybookAt page={messagesPage} width={1280} />,
@@ -280,16 +280,16 @@ export const ProductMessages: Story = {
 
 /** The phone board: every band stacks. */
 export const ProductMessages390: Story = {
-  name: "/product/messages/ · 390",
+  name: "/product/messages-and-growth/ · 390",
   parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_messages"], states: ["product-messages"]}},
   render: () => <PlaybookAt page={messagesPage} width={390} />,
 };
 
 /** The ProductRoom board's live bands: First Hello, groups by format, Help me say hi and the permission rules. */
 export const ProductRoom: Story = {
-  name: "/product/room/ · 1280",
+  name: "/product/the-room/ · 1280",
   parameters: {
-    catchRoute: {id: "product_room", path: "/product/room/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchRoute: {id: "product_room", path: "/product/the-room/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
     catchComponent: {id: "route_playbook_page", routeIds: ["product_room"], states: ["product-room"]},
   },
   render: () => <PlaybookAt page={roomPage} width={1280} />,
@@ -297,16 +297,16 @@ export const ProductRoom: Story = {
 
 /** The phone board: every band stacks. */
 export const ProductRoom390: Story = {
-  name: "/product/room/ · 390",
+  name: "/product/the-room/ · 390",
   parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_room"], states: ["product-room"]}},
   render: () => <PlaybookAt page={roomPage} width={390} />,
 };
 
 /** The ProductEvent board's live bands: the door, the live console, rehearsal, attendance and your team. */
 export const ProductEvent: Story = {
-  name: "/product/event/ · 1280",
+  name: "/product/running-the-event/ · 1280",
   parameters: {
-    catchRoute: {id: "product_event", path: "/product/event/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchRoute: {id: "product_event", path: "/product/running-the-event/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
     catchComponent: {id: "route_playbook_page", routeIds: ["product_event"], states: ["product-event"]},
   },
   render: () => <PlaybookAt page={eventPage} width={1280} />,
@@ -314,16 +314,16 @@ export const ProductEvent: Story = {
 
 /** The phone board: every band stacks. */
 export const ProductEvent390: Story = {
-  name: "/product/event/ · 390",
+  name: "/product/running-the-event/ · 390",
   parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_event"], states: ["product-event"]}},
   render: () => <PlaybookAt page={eventPage} width={390} />,
 };
 
 /** The ProductRecords board's live bands: groups with plain rules, one person's history, merges and privacy. */
 export const ProductGuests: Story = {
-  name: "/product/guests/ · 1280",
+  name: "/product/guest-records/ · 1280",
   parameters: {
-    catchRoute: {id: "product_guests", path: "/product/guests/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchRoute: {id: "product_guests", path: "/product/guest-records/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
     catchComponent: {id: "route_playbook_page", routeIds: ["product_guests"], states: ["product-guests"]},
   },
   render: () => <PlaybookAt page={guestsPage} width={1280} />,
@@ -331,16 +331,16 @@ export const ProductGuests: Story = {
 
 /** The phone board: every band stacks. */
 export const ProductGuests390: Story = {
-  name: "/product/guests/ · 390",
+  name: "/product/guest-records/ · 390",
   parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_guests"], states: ["product-guests"]}},
   render: () => <PlaybookAt page={guestsPage} width={390} />,
 };
 
 /** The ProductReports board's live bands: the report, payouts and the monthly bill. */
 export const ProductReports: Story = {
-  name: "/product/reports/ · 1280",
+  name: "/product/reports-and-payouts/ · 1280",
   parameters: {
-    catchRoute: {id: "product_reports", path: "/product/reports/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
+    catchRoute: {id: "product_reports", path: "/product/reports-and-payouts/", reviewStates: ["page"], stateCoverage: {storybook: [], manual: ["page"]}},
     catchComponent: {id: "route_playbook_page", routeIds: ["product_reports"], states: ["product-reports"]},
   },
   render: () => <PlaybookAt page={reportsPage} width={1280} />,
@@ -348,7 +348,7 @@ export const ProductReports: Story = {
 
 /** The phone board: every band stacks. */
 export const ProductReports390: Story = {
-  name: "/product/reports/ · 390",
+  name: "/product/reports-and-payouts/ · 390",
   parameters: {catchComponent: {id: "route_playbook_page", routeIds: ["product_reports"], states: ["product-reports"]}},
   render: () => <PlaybookAt page={reportsPage} width={390} />,
 };

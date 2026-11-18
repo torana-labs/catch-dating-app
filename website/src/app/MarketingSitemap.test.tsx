@@ -59,14 +59,18 @@ describe("consolidated public sitemap", () => {
     expect(retiredMarketingDestination({pathname: "/host/", search: "?utm_source=partner", hash: "#features"})).toBeNull();
     expect(getPageKey("/host/unknown/")).toBe("not_found");
   });
-  it("sends the product pages v2 replaced to their new pages, as Hosting does, keeping the query", () => {
-    for (const [slug, destination] of [["night", "/product/room/"], ["door", "/product/event/"]]) {
+  it("sends the #1983 product paths straight to their final pages, as Hosting does, keeping the query", () => {
+    for (const [slug, destination] of [
+      ["night", "/product/the-room/"], ["door", "/product/running-the-event/"], ["bookings", "/product/bookings-and-memberships/"],
+      ["messages", "/product/messages-and-growth/"], ["guests", "/product/guest-records/"], ["reports", "/product/reports-and-payouts/"],
+    ]) {
       for (const suffix of ["", "/", "/old-section"]) {
         expect(retiredMarketingDestination({pathname: `/product/${slug}${suffix}`, search: "?utm_source=partner", hash: "#rehearsal"}))
           .toBe(`${destination}?utm_source=partner`);
       }
     }
-    for (const pathname of ["/product/room/", "/product/event/", "/product/bookings/", "/product/constructor/"]) {
+    for (const pathname of ["/product/the-room/", "/product/running-the-event/", "/product/bookings-and-memberships/", "/product/messages-and-growth/",
+      "/product/guest-records/", "/product/reports-and-payouts/", "/product/your-page/", "/product/forms/", "/product/constructor/"]) {
       expect(retiredMarketingDestination({pathname, search: "", hash: ""}), pathname).toBeNull();
     }
   });

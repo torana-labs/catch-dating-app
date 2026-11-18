@@ -234,13 +234,21 @@ that uses a section or option no kit component draws yet
   owner's approval is the PR that sets it `false`. Ad landing pages stay
   noindex whatever it says. routes.json marks these routes
   `owner-approval` for indexing and the sitemap.
-- **Product pages v2.** How it works, Your page, Bookings and memberships,
-  Messages and growth, The room (`/product/room/`), Running the event
-  (`/product/event/`), Guest records, Reports and payouts, and Forms replace
-  the #1983 pages on the owner-approved canvas. `/product/night/` and
-  `/product/door/` answer 301 to The room and Running the event in Hosting
-  (routes.json redirects), the preview config and the Next proxy
-  (`retiredMarketingRoutes.ts`), keeping the query. Each page takes one
+- **Product pages v2.** How it works (`/how-it-works/`), Your page
+  (`/product/your-page/`), Bookings and memberships
+  (`/product/bookings-and-memberships/`), Messages and growth
+  (`/product/messages-and-growth/`), The room (`/product/the-room/`), Running
+  the event (`/product/running-the-event/`), Guest records
+  (`/product/guest-records/`), Reports and payouts
+  (`/product/reports-and-payouts/`) and Forms (`/product/forms/`) replace the
+  #1983 pages on the owner-approved canvas; their addresses follow their
+  titles (owner, 18 Nov 2026). The #1983 paths (`/product/bookings/`,
+  `/messages/`, `/guests/`, `/reports/`, `/night/` and `/door/`, each with
+  anything under it) answer 301 straight to their final page, with no
+  chain, in Hosting (routes.json redirects), the preview config and the Next
+  proxy (`retiredMarketingRoutes.ts`), keeping the query. The room and
+  Running the event are new and stay noindex until the owner approves them;
+  the other seven keep the indexing the #1983 pages had. Each page takes one
   colour (coral, indigo, yellow, magenta, mint, pink, sky); sky and the soft
   tile tints (`coralSoft` … `skySoft`, tiles only) are canvas-owned tokens
   imported by `tool/design/playbook/import_kit_tokens.mjs`.

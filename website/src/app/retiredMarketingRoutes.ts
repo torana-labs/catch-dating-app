@@ -12,13 +12,19 @@ const retiredDestinations: Readonly<Record<string, string>> = {
 };
 
 /**
- * Product pages the product pages v2 replaced (owner-approved design, 18 Nov
- * 2026): Running the night became The room, and The door became Running the
- * event. Hosting answers the same 301s (design/website/routes.json redirects).
+ * Product pages the product pages v2 replaced or renamed (owner decisions, 18
+ * Nov 2026): Running the night became The room and The door became Running
+ * the event, and the pages' addresses follow their titles. Each old path goes
+ * straight to its final page, never through another redirect. Hosting answers
+ * the same 301s (design/website/routes.json redirects).
  */
 const retiredProductDestinations: Readonly<Record<string, string>> = {
-  night: "/product/room/",
-  door: "/product/event/",
+  night: "/product/the-room/",
+  door: "/product/running-the-event/",
+  bookings: "/product/bookings-and-memberships/",
+  messages: "/product/messages-and-growth/",
+  guests: "/product/guest-records/",
+  reports: "/product/reports-and-payouts/",
 };
 
 /**
