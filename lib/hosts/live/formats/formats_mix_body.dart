@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/live/parts/formats_table_row.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_compatibility_section.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_mix_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/schema_contracts/generated/field_constraints.g.dart';
@@ -21,6 +22,7 @@ class HostFormatsMixBody extends StatelessWidget {
     required this.onRetry,
     this.shuffling = false,
     this.savingOpeners = false,
+    this.onEditTables,
   });
 
   final HostFormatsMixState state;
@@ -29,6 +31,9 @@ class HostFormatsMixBody extends StatelessWidget {
   final VoidCallback onRetry;
   final bool shuffling;
   final bool savingOpeners;
+
+  /// Moves guests between tables by hand; null hides Edit groups.
+  final VoidCallback? onEditTables;
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +128,15 @@ class HostFormatsMixBody extends StatelessWidget {
               ),
           ],
         ),
+        if (onEditTables != null && state.editable.isNotEmpty)
+          CatchButton(
+            key: const ValueKey<String>('formats-mix-edit-tables'),
+            label: l10n.eventSuccessEventSuccessHostOverridesLabelEditGroups,
+            variant: CatchButtonVariant.secondary,
+            leading: CatchIcon(CatchIcons.edit),
+            fullWidth: true,
+            onPressed: shuffling || state.countingDown ? null : onEditTables,
+          ),
         CatchSection(
           children: [
             CatchIndexRow(
@@ -141,6 +155,8 @@ class HostFormatsMixBody extends StatelessWidget {
             ),
           ],
         ),
+        if (state.compatibility && state.plan != null)
+          EventSuccessCompatibilitySection(plan: state.plan!),
       ],
     );
   }
