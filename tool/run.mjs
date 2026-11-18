@@ -180,7 +180,18 @@ async function runChecks(tools, {marketingChecksInReact = false,
     );
     return false;
   });
+  // Run every selected tool and report every failure: one red check must not
+  // hide the checks after it (#2041's harness break went unseen behind an
+  // unrelated failure). A tool's later commands build on its earlier ones,
+  // so after a failure only that tool's remaining commands are skipped.
+  const categoryOf = new Map(compatible.map((tool) => [tool.id, tool.category]));
+  const failures = [];
+  const failedTools = new Set();
   for (const {toolId, command} of uniqueToolChecks(compatible)) {
+    if (failedTools.has(toolId)) {
+      console.log(`    skipped, an earlier ${toolId} command failed: ${command}`);
+      continue;
+    }
     // CI's required aggregate owns the parallel React result. Match both the
     // tool and exact command: an altered check must execute until its new
     // equivalence is established. Standalone runs retain builds and browser gates.
@@ -199,9 +210,14 @@ async function runChecks(tools, {marketingChecksInReact = false,
       stdio: "inherit",
     });
     if (result.status !== 0) {
-      process.exitCode = result.status ?? 1;
-      return;
+      failures.push({toolId, category: categoryOf.get(toolId), command, status: result.status ?? 1});
+      failedTools.add(toolId);
     }
+  }
+  if (failures.length > 0) {
+    reportToolFailures(failures);
+    process.exitCode = failures[0].status || 1;
+    return;
   }
   // Selected checks must not invalidate evidence reused by this invocation.
   try { await verifyProducerProofs(); } catch (error) {
@@ -210,6 +226,26 @@ async function runChecks(tools, {marketingChecksInReact = false,
     return;
   }
   console.log("Tool checks passed.");
+}
+
+/** Lists every failed check, in the log and in the CI step summary. */
+function formatToolFailures(failures) {
+  return [
+    `${failures.length} tool check${failures.length === 1 ? "" : "s"} failed:`,
+    ...failures.map(({toolId, category, command, status}) =>
+      `- ${toolId} (${category ?? "uncategorized"}), exit ${status}: ${command}`),
+  ].join("\n");
+}
+
+function reportToolFailures(failures) {
+  const report = formatToolFailures(failures);
+  console.error(`\n${report}`);
+  if (!process.env.GITHUB_STEP_SUMMARY) return;
+  try {
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Failed tool checks\n\n${report}\n`);
+  } catch (error) {
+    console.error(`Could not write the step summary: ${error.message}`);
+  }
 }
 
 function requireSelection(tools, {category, ids = []} = {}) {

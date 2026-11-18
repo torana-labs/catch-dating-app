@@ -291,6 +291,42 @@ test("the runner executes manifest checks without task authority metadata", (con
   assert.doesNotMatch(result.stderr, /authority|lease|phase|managed task/iu);
 });
 
+// One red check must not hide the rest of a bucket (#2041's harness-test
+// break went unseen behind an unrelated failure in core-audit).
+test("a bucket with two failing checks runs every tool and reports both failures", (context) => {
+  const fixture = createRunnerFixture(context);
+  fs.writeFileSync(path.join(fixture, "tool/exit.mjs"),
+    'console.log(`exit-${process.argv[2]}`); process.exit(Number(process.argv[2]));\n');
+  const summary = path.join(fixture, "step-summary.md");
+  mutateFixtureManifest(fixture, (doc) => {
+    const template = fixtureCheck(doc);
+    const tool = (id, checks) => ({...template, id, path: "tool/exit.mjs", command: checks[0], checks,
+      role: undefined});
+    doc.tools.push(
+      tool("fixture:a-fails", ["node tool/exit.mjs 3", "node tool/exit.mjs 0 a-second-step"]),
+      tool("fixture:b-passes", ["node tool/exit.mjs 0"]),
+      tool("fixture:c-fails", ["node tool/exit.mjs 1"]),
+    );
+    doc.tools = doc.tools.map((entry) => JSON.parse(JSON.stringify(entry)));
+    sortedTools(doc);
+  });
+  const result = run(["check", "fixture:a-fails", "fixture:b-passes", "fixture:c-fails"],
+    {cwd: fixture, env: {...process.env, GITHUB_STEP_SUMMARY: summary}});
+  assert.equal(result.status, 3, result.stderr);
+  // The tool after the first failure still runs, and so does the second failure.
+  assert.match(result.stdout, /==> fixture:b-passes: node tool\/exit\.mjs 0\n/u);
+  assert.match(result.stdout, /==> fixture:c-fails: node tool\/exit\.mjs 1/u);
+  // A failed tool's own later commands are skipped, not run.
+  assert.doesNotMatch(result.stdout, /==> fixture:a-fails: node tool\/exit\.mjs 0 a-second-step/u);
+  assert.match(result.stdout, /skipped, an earlier fixture:a-fails command failed/u);
+  assert.doesNotMatch(result.stdout, /Tool checks passed/u);
+  for (const output of [result.stderr, fs.readFileSync(summary, "utf8")]) {
+    assert.match(output, /2 tool checks failed:/u);
+    assert.match(output, /- fixture:a-fails \(fixture\), exit 3: node tool\/exit\.mjs 3/u);
+    assert.match(output, /- fixture:c-fails \(fixture\), exit 1: node tool\/exit\.mjs 1/u);
+  }
+});
+
 const restoredProofOwners = [
   ["audit:mutation-error-surfaces", "tool/architecture/check_mutation_error_surfaces.test.mjs"],
   ["audit:route-string-literals", "tool/architecture/check_route_string_literals.test.mjs"],
