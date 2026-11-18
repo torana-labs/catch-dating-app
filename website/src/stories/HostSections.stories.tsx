@@ -49,7 +49,7 @@ export const NightFormat: Story = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     await userEvent.click(within(canvas.getByRole("radiogroup", {name: copy.night.pickerLabel})).getByRole("radio", {name: "Pickleball"}));
-    await expect(canvas.getByRole("button", {name: /Levels in, courts balanced/})).toHaveAttribute("aria-current", "step");
+    await expect(canvas.getByRole("button", {name: /Levels in, courts planned/})).toHaveAttribute("aria-current", "step");
   },
 };
 
