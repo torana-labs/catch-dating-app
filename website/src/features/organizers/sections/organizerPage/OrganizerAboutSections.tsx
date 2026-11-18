@@ -90,12 +90,17 @@ export function OrganizerClaimSection({controller}: {controller: OrganizerPageCo
  * to report a mistake.
  */
 export function OrganizerPageFooter({controller}: {controller: OrganizerPageController}) {
-  const {footer} = controller.view;
+  const {footer, report} = controller.view;
   return (
     // Not a <footer>: the site footer is the page's one contentinfo landmark.
-    <CatchStack align="center" direction="row" dividerAbove gap={12} justify="between" wrap>
-      <CatchText tone="secondary" variant="body-small">{footer.line}</CatchText>
-      <CatchButton href={footer.href} label={footer.link} size="sm" variant="quiet" />
+    <CatchStack gap={4}>
+      <CatchStack align="center" direction="row" dividerAbove gap={12} justify="between" wrap>
+        <CatchText tone="secondary" variant="body-small">{footer.line}</CatchText>
+        <CatchButton href={footer.href} label={footer.link} size="sm" variant="quiet" />
+      </CatchStack>
+      <CatchStack align="start">
+        <CatchButton href={report.href} label={report.label} recipe="text" tone="neutral" />
+      </CatchStack>
     </CatchStack>
   );
 }

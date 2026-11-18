@@ -29389,4 +29389,320 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return 'Photo $index of $count';
   }
+
+  @override
+  String get hostFormatsSweepTitle => 'The return sweep';
+
+  @override
+  String hostFormatsSweepBackCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count back',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostFormatsSweepHomeCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count home',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostFormatsSweepOfTotal({required int total, required int out}) {
+    return 'of $total · $out still out';
+  }
+
+  @override
+  String get hostFormatsSweepExplainRun =>
+      'Mark runners back as they reach the start. Anyone not accounted for stays here until they are.';
+
+  @override
+  String get hostFormatsSweepExplainCrawl =>
+      'Mark everyone home as you hear from them. Anyone not accounted for stays here until they are.';
+
+  @override
+  String get hostFormatsSweepStillOut => 'Still out';
+
+  @override
+  String get hostFormatsSweepAllAccounted => 'Everyone is accounted for.';
+
+  @override
+  String get hostFormatsSweepMarkBack => 'Back';
+
+  @override
+  String get hostFormatsSweepMarkHome => 'Home';
+
+  @override
+  String get hostFormatsSweepCall => 'Call';
+
+  @override
+  String get hostFormatsSweepThen => 'Then';
+
+  @override
+  String get hostFormatsSweepClose => 'Close the night';
+
+  @override
+  String get hostFormatsSweepMessage => 'Message guests';
+
+  @override
+  String hostFormatsSweepCloseAnywayTitle({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Close with $count still out?',
+      one: 'Close with 1 still out?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostFormatsSweepCloseAnywayBody =>
+      'They stay marked as not accounted for. Close only when you know everyone is safe.';
+
+  @override
+  String get hostFormatsSweepCloseAnyway => 'Close anyway';
+
+  @override
+  String get hostFormatsSweepKeepSweeping => 'Keep sweeping';
+
+  @override
+  String get hostFormatsSweepClosed => 'The night is closed';
+
+  @override
+  String get hostFormatsSweepAlreadyClosed =>
+      'This night is already closed. You can still mark people and change the switches.';
+
+  @override
+  String hostFormatsRunStep({required int index, required int total}) {
+    return 'Step $index of $total';
+  }
+
+  @override
+  String get hostFormatsRunNow => 'Now';
+
+  @override
+  String hostFormatsRunBack({required int back, required int total}) {
+    return '$back of $total runners back';
+  }
+
+  @override
+  String get hostFormatsRunPods => 'Pace pods';
+
+  @override
+  String hostFormatsRunPodBack({required int back, required int total}) {
+    return '$back of $total back';
+  }
+
+  @override
+  String get hostFormatsRunNoPod => 'No pod';
+
+  @override
+  String hostFormatsRunStillOut({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Still out: $count',
+      one: 'Still out: 1',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostFormatsRunAllOut =>
+      'Everyone is out on the route. Mark runners back as they reach the start.';
+
+  @override
+  String get hostFormatsRunClose => 'Close the route';
+
+  @override
+  String get hostFormatsRunCloseAllBack => 'Everyone’s back · close the route';
+
+  @override
+  String get hostFormatsRunNoPlanTitle => 'No plan for tonight';
+
+  @override
+  String get hostFormatsRunNoPlanBody =>
+      'Set up the plan for the night from the event to run it here.';
+
+  @override
+  String get hostFormatsCrawlSweep => 'Start the return sweep';
+
+  @override
+  String hostEventsGuestsOfferAll({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Offer the next $count places',
+      one: 'Offer the next place',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostEventsGuestsOffered => 'Offered';
+
+  @override
+  String hostEventsGuestsAskedTitle({required String name}) {
+    return '$name asked to come';
+  }
+
+  @override
+  String get hostEventsGuestsAskedBody =>
+      'Let them in, or decline. We’ll tell them either way.';
+
+  @override
+  String get hostEventsGuestsSeeProfile => 'See profile';
+
+  @override
+  String get hostEventsGuestsDecline => 'Decline';
+
+  @override
+  String get hostEventsPlanEmptyAction => 'Edit the event';
+
+  @override
+  String get hostEventsLinkShare => 'Share and invite links';
+
+  @override
+  String get hostEventsLinkShareBody => 'Your link to copy or share';
+
+  @override
+  String get hostEventsLinkShareInviteBody =>
+      'Your private link and named invite links';
+
+  @override
+  String get hostEventsMenuChat => 'Event chat';
+
+  @override
+  String get hostEventsMenuDelete => 'Delete event';
+
+  @override
+  String get hostEventsDeleteTitle => 'Delete this event?';
+
+  @override
+  String get hostEventsDeleteBody =>
+      'Nobody has booked yet, so it goes for good. To keep a record of it, cancel it instead.';
+
+  @override
+  String get hostEventsDeleteConfirm => 'Delete';
+
+  @override
+  String get hostEventsDeleted => 'Event deleted';
+
+  @override
+  String get hostEventsDoorTitle => 'Door access';
+
+  @override
+  String get hostEventsDoorBody =>
+      'Give someone the door for this event only. They can check guests in and see their names, and nothing else.';
+
+  @override
+  String get hostEventsDoorWholeTeam => 'Your whole team';
+
+  @override
+  String get hostEventsDoorWholeTeamBody =>
+      'Hosts and door staff for every event';
+
+  @override
+  String get hostEventsShareLinkTitle => 'Your link';
+
+  @override
+  String get hostEventsShareLinkNote =>
+      'Anyone with it can see the event and book.';
+
+  @override
+  String get hostEventsShareInviteLinkTitle => 'Private link';
+
+  @override
+  String get hostEventsShareInviteLinkNote =>
+      'People with this link can book. Share it only with people you’re inviting.';
+
+  @override
+  String get hostEventsShareCopy => 'Copy link';
+
+  @override
+  String get hostEventsShareShare => 'Share';
+
+  @override
+  String get hostEventsShareCopied => 'Link copied';
+
+  @override
+  String get hostEventsShareNamedTitle => 'Invite links';
+
+  @override
+  String get hostEventsShareNamedNote =>
+      'Make one for each place you share the night, to see who came from where.';
+
+  @override
+  String get hostEventsShareNamedEmpty => 'No invite links yet.';
+
+  @override
+  String get hostEventsShareNamedOff => 'Turned off';
+
+  @override
+  String hostEventsShareNamedCounts({
+    required int opened,
+    required int booked,
+  }) {
+    return '$opened opened · $booked booked';
+  }
+
+  @override
+  String get hostEventsShareCopyShort => 'Copy';
+
+  @override
+  String get hostEventsShareTurnOff => 'Turn off';
+
+  @override
+  String get hostEventsShareNewLabel => 'New invite link';
+
+  @override
+  String get hostEventsShareNewPlaceholder => 'Who it’s for, like Office group';
+
+  @override
+  String get hostEventsShareCreate => 'Make and copy the link';
+
+  @override
+  String hostEventsShareCopiedNamed({required String label}) {
+    return '$label link copied';
+  }
+
+  @override
+  String hostEventsShareTurnOffTitle({required String label}) {
+    return 'Turn off $label?';
+  }
+
+  @override
+  String get hostEventsShareTurnOffBody =>
+      'People can’t book through it any more.';
+
+  @override
+  String get hostEventsShareKeepOn => 'Keep it on';
+
+  @override
+  String get hostEventReviewsReplyNote =>
+      'Tap a review to reply. Your reply shows with it on your page.';
+
+  @override
+  String hostEventReviewsWithReply({
+    required String comment,
+    required String reply,
+  }) {
+    return '$comment\n\nYour reply: $reply';
+  }
+
+  @override
+  String get hostLiveScoresStopCountdown => 'Stop the countdown';
+
+  @override
+  String get hostEventsGuestSourcesTitle => 'Guest sources';
+
+  @override
+  String get hostEventsGuestSourcesBody =>
+      'Catch registration, a guest file, Luma, and forwarding the list';
 }

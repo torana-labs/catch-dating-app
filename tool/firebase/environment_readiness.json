@@ -18,7 +18,6 @@
     ],
     "capabilities": [
       "cross-paths",
-      "host-acquisition-meta",
       "host-operator-alerts"
     ]
   },
@@ -397,6 +396,31 @@
       "rotationCompatibility": "identity-migration"
     },
     {
+      "id": "functions.secret.listing-suppression-hmac-key",
+      "kind": "secret-version",
+      "name": "LISTING_SUPPRESSION_HMAC_KEY",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "organizer-takedown",
+      "sourcePaths": [
+        "functions/src/listingSuppressions/registry.ts"
+      ],
+      "credentialClass": "identity-hmac",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "identity-migration"
+    },
+    {
       "id": "firestore.ttl.cross-paths-suggestion-exposures",
       "kind": "firestore-ttl",
       "collectionGroup": "crossPathsSuggestionExposures",
@@ -686,36 +710,6 @@
       "owner": "organizer-claims",
       "sourcePaths": [
         "functions/src/organizers/instagramClaimWebhook.ts"
-      ],
-      "credentialClass": "provider-secret",
-      "binding": {
-        "kind": "firebase-secret-param",
-        "exactReference": "observed-numeric-version",
-        "identity": "observed-function-service-account"
-      },
-      "activationPolicy": "required-by-selected-consumer",
-      "rotationCompatibility": "provider-overlap"
-    },
-    {
-      "id": "functions.secret.catch-host-meta-conversions-token",
-      "kind": "secret-version",
-      "name": "CATCH_HOST_META_CONVERSIONS_TOKEN",
-      "environments": [
-        "dev",
-        "staging",
-        "prod"
-      ],
-      "requiredWhen": {
-        "anyCapability": [
-          "host-acquisition-meta"
-        ]
-      },
-      "acceptedStates": [
-        "ENABLED"
-      ],
-      "owner": "host-acquisition",
-      "sourcePaths": [
-        "functions/src/acquisition/metaDispatcher.ts"
       ],
       "credentialClass": "provider-secret",
       "binding": {
@@ -1130,7 +1124,8 @@
       "credentialClass": "provider-token",
       "consumers": [
         "sendAdConversions",
-        "onMetaLeadgenEventCreated"
+        "onMetaLeadgenEventCreated",
+        "syncMetaHostAudience"
       ],
       "binding": {
         "kind": "parameter",

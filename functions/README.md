@@ -217,7 +217,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `refreshHostMembershipSegments` | `src/hostMemberships/crmRefresh.ts` | Daily bounded CRM trait rebuild so membership and 30/60-day attendance segments stay current |
 | `onHostMembershipAudienceProjected` | `src/organizers/organizerAudienceProjection.ts` | Projects a member's membership onto linked organizer contacts and rebuilds their CRM traits |
 | `createOrganizerForm` / `updateOrganizerFormDraft` / `getOrganizerFormEditor` / `listOrganizerForms` / `validateOrganizerFormDraft` / `publishOrganizerForm` / `setOrganizerFormLifecycle` / `duplicateOrganizerForm` / `deleteOrganizerFormDraft` / `listOrganizerFormTemplates` | `src/organizers/organizerForms.ts` | Create, edit, validate, publish, paginate, duplicate, pause, archive, and safely delete eligible standalone Host forms and drafts |
-| `resolvePublicFormDomain` | `src/organizers/organizerFormDomainHttp.ts` | Public exact-host lookup for custom form domains. The manager callable that reserved, verified and revoked domains is retired, so no new domain can be added; the lookup exposes only the active form ID after current ownership and DNS checks. Certificate readiness remains a trusted operator action. |
+| `resolvePublicFormDomain` | `src/customDomains/formDomainHttp.ts` | Public exact-host lookup for custom form domains in the `customDomains` registry (form-target records). Only the trusted operator CLI reserves, verifies, provisions and removes form domains; the lookup exposes only the active form ID after current ownership and DNS checks. Certificate readiness remains a trusted operator action. |
 | `promoteFormCommunicationIntent` | `src/organizers/organizerFormConsentPromotion.ts` | Rechecks an explicit respondent communication choice before promoting a purpose-bound organizer contact permission. |
 | `listOrganizerFormPayments` | `src/payments/formPayments/formPaymentLedger.ts` | Manager-only bounded form fee ledger, including unfinished checkout and refund status; does not expose unsubmitted answers |
 | `manageOrganizerFormPaymentConnection` / `organizerFormPaymentOauthCallback` | `src/payments/formPayments/formPaymentHandlers.ts`, `formPaymentTriggers.ts` | Connect organizer Razorpay accounts with one-use OAuth and verified webhooks; secrets stay in the vault |
@@ -407,6 +407,7 @@ enter previews.
 | `onAccessApplicationWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `accessApplications` onWrite — projects the launch access item and journey steps |
 | `onExternalEventWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `externalEvents` onWrite — projects the imported event's inbox item and journey steps |
 | `onWalkthroughBookingWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `walkthroughBookings` onWrite — projects the booking's confirm-on-WhatsApp task (`src/walkthroughs/inbox.ts`) and journey steps |
+| `onTakedownRequestWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `takedownRequests` onWrite — projects the listing request's `takedown` task (`src/takedownRequests/inbox.ts`): acknowledge, verify and decide, or decide the appeal, with the next deadline |
 | `onUserWrittenIndexPeople` | `src/admin/peopleSearch.ts` | `users` onWrite — keeps `adminPeopleIndex/{uid}` (name prefixes, phone digits) for logged people search |
 | `onSwipeCreated` | `src/matching/` | `profileDecisions/{id}/outgoing/{id}` onCreate — mutual-like → match |
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
@@ -484,6 +485,8 @@ enter previews.
 | `reconcileOrganizerGrowthDaily` | `src/growth/` | Nightly (03:40 India time): recomputes every organizer's growth steps from organizers, claim requests, booked events and captured checkouts and records any the triggers missed (the triggers are not retried); creates BigQuery `organizer_growth_events` if it is missing and sends only the rows it lacks, including form payments |
 | `onAdConversionGrowthFactsWritten`, `sendAdConversions` | `src/acquisition/adConversions/` | Host-programme ad conversions (docs/ads_conversion_spec.md): new owned organizers and first booked events from `organizerGrowthFacts` are queued in `adConversionDeliveries` (hashed matching keys only) and sent every five minutes to Meta Conversions API and Google Data Manager. `AD_CONVERSIONS_MODE` defaults to off; `validate` sends test and validate-only requests |
 | `metaLeadgenWebhook`, `onMetaLeadgenEventCreated` | `src/acquisition/metaLeadgen/` | Meta host lead forms: verified Facebook/Instagram `leadgen` webhooks are filed in `metaLeadgenEvents` (one per lead ID), then each lead is fetched with the CatchAds token and filed as a `meta_lead_ad` sales intent for review. Closed (503) until `META_LEADGEN_CREDENTIAL_VERSION` pins its webhook secret; only listed page IDs are taken |
+| `adminManageAdMatchingOptOut` | `src/acquisition/adMatching/` | Support, safety, ops and the owner check, record or remove an ad-matching opt-out for a phone number and/or email (Admin Support). Each identifier is stored in `adMatchingOptOuts` only as a domain-separated hash of the digest the ad platforms receive; the response names kinds, never values. Recording cancels matching pending ad conversions at once; removal keeps who removed it. Audited |
+| `syncMetaHostAudience` | `src/acquisition/adAudiences/` | Daily (04:20 India time) host customer list: the owners of real organizers with a first booked event, minus opted-out, deleted, staff, test, restricted and under-18 accounts, uploaded to the Meta custom audience "Catch \| Active hosts" as hashed email and phone with Meta's replace flow, so removals leave Meta within a day. Keeps a counts-only receipt in `adAudienceRuns`. `AD_AUDIENCES_MODE` defaults to off; Google Customer Match is not built |
 | `adminManageOrganizerBills`, `generateOrganizerCycleBillsDaily` | `src/money/` | Bills per organizer from bookings paid into their own account, per rolling cycle (#1126): `commission.cycleDays` days anchored at trial end, billed in arrears once a day after each cycle closes (`organizerBillingCycles` pointer, at most once per cycle), cap per cycle, tools-only OR ticketing per cycle, commission on each payment's frozen terms, GST only when registered. Calendar-month bills made before the move stay readable and actionable; cycles never count a payment before the organizer's last month bill or 1 Nov 2026 IST. Send (per-financial-year invoice number, due date, Razorpay payment link), remind, mark paid (credits the nominator), write off. A host's first two sent cycle bills are staff-reviewed; later cycle bills are sent automatically by the daily run a day after they are made unless held (`hold`/`releaseHold` per bill, `holdOrganizer`/`releaseOrganizerHold` per organizer). Refunds recorded after a cycle bill was sent or paid are credited on the next cycle bill (`refundCredit`, `billRefundCredits.ts`) |
 | `adminManageMoneySettings` | `src/money/` | Owner reads or replaces Catch's money settings (GST registered, bill due day, nominator credit rule) |
 | `adminManageNominatorCredits` | `src/money/` | Nominator credit ledger: list, approve a nominator's owed credit at or above the minimum payout, record it paid |
@@ -496,10 +499,10 @@ enter previews.
 | `bookWalkthrough` | `src/walkthroughs/publicCallables.ts` | A prospective host books one slot with their code-verified WhatsApp number: transactional on the slot hold, idempotent per request id, rate limited; opens an Admin Inbox task, staff confirm on WhatsApp |
 | `manageWalkthroughBooking` | `src/walkthroughs/publicCallables.ts` | Read, cancel or move a walkthrough booking with its manage token or its verified phone |
 | `adminSetWalkthroughAvailability`, `adminListWalkthroughBookings`, `adminUpdateWalkthroughBooking` | `src/walkthroughs/adminCallables.ts` | Admin and owner set the walkthrough staff calendar (weekly India-time windows, slot length, lead time, closed dates), list bookings with each verified number, and confirm or cancel one |
+| `submitListingRequest` | `src/takedownRequests/intake.ts` | Public HTTP (App Check, hashed network and email limits): one structured listing request from `/listings/request/`, idempotent per requester email and client request id; records deadlines, sends nothing |
+| `adminGetTakedownRequest`, `adminUpdateTakedownRequest` | `src/takedownRequests/admin.ts` | Admin, owner and support open a listing request and take its fixed steps; admins and the owner decide; one appeal decided by someone else |
 | `adminGetCityInterest` | `src/cityInterest/` | Interest by city from the `cityInterest` counters: people per city in all and over the last 7 and 30 days against the days before |
 | `adminGetMarketplace` | `src/marketplace/` | Marketplace from the warehouse's raw Firestore export views: events a week, places filled, no-shows and waitlists by city; guests by first-booking month and whether they came back; bookings each week; organizers going quiet with their sales owner |
-| `hostAcquisitionConsent` | `src/acquisition/` | Default-disabled versioned Host measurement grant and capability withdrawal |
-| `expireHostAcquisitionConsent` | `src/acquisition/` | Bounded transactional expiry of private grants and withdrawal tombstones |
 | `ingestEventRosterWebhook` | `src/events/eventRosterHandoffs.ts` | Receive one HMAC-verified, provider-authenticated roster attachment through a capability-bound email or WhatsApp handoff |
 | `organizerWhatsappWebhook` | `src/organizers/organizerWhatsappWebhook.ts` | Verify Meta webhook signatures and project delivery or STOP events without retaining message content |
 
@@ -515,6 +518,8 @@ enter previews.
 | `createProgramAssetUpload` | `src/programs/programAssets.ts` | Signs one private programme file upload (guest ID, hamper photo, function photo, cover). |
 | `decideProgramGuestId` | `src/programs/guestIds.ts` | Guest relations accept a guest's ID or ask again. |
 | `deleteEventHostPhoto` | `src/events/eventHostPhotos.ts` | Removes a shared host photo and its files. |
+| `ensureTryItWorkspace` | `src/commands/ensureTryItWorkspace.ts` | Command `workspace.ensure`: gives a phone-verified caller their one private try-it organizer workspace. |
+| `expireTryItWorkspaces` | `src/commands/workspaceExpiry.ts` | Daily: removes try-it workspaces unused for 30 days, unless kept. |
 | `followOrganizerByPhone` | `src/organizers/followOrganizerByPhone.ts` | Not yet described. |
 | `getOrganizerOwnerView` | `src/organizerInsights/ownerView.ts` | The website owner view for an organiser's team: role, capabilities, 30 days of organizerInsights, links, about, photos and follower-message usage. |
 | `getProgramAssistantSettings` | `src/programs/programWhatsapp/callables.ts` | Programme assistant settings (defaults when unsaved), the wedding's WhatsApp number and the staff for escalations; managers and coordinators. |
@@ -527,13 +532,15 @@ enter previews.
 | `getProgramLiveBoard` | `src/programs/programLiveBoard.ts` | Not yet described. |
 | `getProgramVendorRunSheet` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `getProgramWhatsappThread` | `src/programs/programWhatsapp/callables.ts` | One guest WhatsApp thread with its household and retained messages; marks it read. Managers and communications staff. |
+| `importOrganizerFromLink` | `src/commands/importOrganizerFromLink.ts` | Command `organizer.import-from-link`: fills a try-it workspace from one public link, or routes to an existing listing's claim. |
 | `issueProgramWebLink` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `listEventHostPhotos` | `src/events/eventHostPhotos.ts` | Host photos as signed URLs for checked-in guests and the host team. |
 | `listProgramIdTracker` | `src/programs/guestIds.ts` | ID tracker: staying guests with ID status and signed images. |
-| `listProgramPhotos` | `src/programs/photos.ts` | Programme photo albums, photos and the cover as signed URLs. |
+| `listProgramPhotos` | `src/programs/photos.ts` | Programme photo albums, photos and the cover as signed URLs (older builds; current builds list programPhotos and call signProgramPhotoUrls). |
 | `listProgramWhatsappCannedReplies` | `src/programs/programWhatsapp/callables.ts` | A programme's saved WhatsApp replies in order. |
 | `listProgramWhatsappThreads` | `src/programs/programWhatsapp/callables.ts` | The programme guest inbox: threads by Needs you, Handled or All with counts and the wedding's number. |
 | `manageOrganizerOwnerPage` | `src/organizerInsights/ownerPage.ts` | Owner view writes: owner links (add, reorder, pin, schedule), the photo order, and Message followers at most twice a calendar month. |
+| `markProgramWhatsappThreadRead` | `src/programs/programWhatsapp/callables.ts` | Marks one programme WhatsApp thread read (the write half of opening it); managers and communications staff; answers the thread's handling and new revision. |
 | `onEventChatDirectoryAttendeeWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds the linked person's chat directory row when a roster row's link or status changes |
 | `onEventChatDirectoryEventWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds every chat directory row of an event when its name, status, organizer or start changes |
 | `onEventChatDirectoryMembershipWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds the person's `eventChatDirectoryEntries` row when their chat membership changes |
@@ -552,11 +559,46 @@ enter previews.
 | `onGuestEventStatusParticipationWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest's `guestEventStatuses` row when their Catch booking status changes |
 | `onGuestEventStatusPaymentWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest's `guestEventStatuses` row when a website or offer payment changes |
 | `onHostDirectoryOrganizerCreated` | `src/hostReadModels/directoryActivation.ts` | Activates every Host directory read model (contacts, responses, forms, groups, events) for a new organizer |
+| `onOrganizerProgramFunctionChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a function's programme when the function changes |
+| `onOrganizerProgramHotelChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a hotel's programme when the hotel changes |
+| `onOrganizerProgramPickupPointChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a pickup point's programme when the point changes |
+| `onOrganizerProgramViewChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites a programme's setup view when its settings, dates, status, branding or retention dates change |
 | `onProgramAccessViewGrantChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites that account's programme access view when a staff grant changes |
 | `onProgramAccessViewProgramChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites the owner's view, and every staff view when the creator or organizer changes, when a programme changes |
+| `onProgramAlertLegChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Rewrites a journey's live board alerts and the programme's travel counts when its status changes |
+| `onProgramAlertResolutionChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Merges a taken, finished or deleted alert resolution into its live board alert |
+| `onProgramAlertSendChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Rewrites a live board alert when a staff attention send fires |
+| `onProgramArrivalGuestChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites the rows of a guest's journeys when their name changes |
+| `onProgramArrivalHotelChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites the arrivals rows heading to a hotel when its name changes |
+| `onProgramArrivalLegChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites a journey's arrivals and departures rows, and its party's rows when membership moves |
+| `onProgramArrivalPartyChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites the rows of a travel party's journeys when its label or members change |
+| `onProgramArrivalSettingsChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites every arrivals row's curb time when the programme's transport settings change |
+| `onProgramArrivalStaffLabelChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites the arrivals rows a staff member claimed when their display name changes |
+| `onProgramDepartureStayChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites a guest's departures row at a hotel when their stay's room or status changes |
+| `onProgramDoorFunctionChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites a function's door header, and its whole roster when the invitation list moves |
+| `onProgramDoorGuestChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites a guest's door rows and journal views when their name or household changes |
+| `onProgramDoorHouseholdChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites the door rows of a household's members when its label or members change |
+| `onProgramDoorJoinChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites a guest's door row when their attendance or RSVP at a function changes |
+| `onProgramDoorJournalChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites a door journal entry's view when it appears or is anonymized |
+| `onProgramDoorStaffLabelChanged` | `src/programs/programDoorViewTriggers.ts` | Rewrites a staff member's door journal views when their display name changes |
+| `onProgramFunctionViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a function's work shell label and counts when it changes |
 | `onProgramGuestWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a guest's phone or household changes. |
+| `onProgramHotelInboundLegChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites a journey's hotel desk inbound row when its readiness, hotel or timing changes |
+| `onProgramHotelInboundPartyChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites the hotel inbound rows of a travel party's journeys when its label or members change |
+| `onProgramHotelInboundSettingsChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites every hotel inbound row's curb time when the programme's transport settings change |
+| `onProgramHotelViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a hotel's work shell label when it changes |
 | `onProgramHouseholdWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a household's primary phone changes. |
+| `onProgramPickupPointViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a pickup point's work shell label when it changes |
+| `onProgramStaffViewGrantChanged` | `src/programs/programStaffViewTriggers.ts` | Rewrites a staff member's row of the administrators' staff list when their grant changes |
+| `onProgramStaffViewProgramChanged` | `src/programs/programStaffViewTriggers.ts` | Rewrites every staff row when a programme's creator or organizer changes |
+| `onProgramTripGuestChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites a guest's hotel inbound rows and legacy trip manifests when their name changes |
+| `onProgramTripViewChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites a transport trip's view when it is created, arrives, is cancelled or voided |
+| `onProgramVendorViewChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites a vendor's per-programme views when its name, active flag or bound programmes change |
 | `onProgramWhatsappInboundMessageCreated` | `src/programs/programWhatsapp/inboundTrigger.ts` | Runs the wedding assistant (handleProgramWhatsappInbound) for each stored inbound guest message; replies through sendProgramServiceReply or passes the thread to the planner. |
+| `onProgramWhatsappThreadViewHouseholdChanged` | `src/programs/programWhatsapp/threadViewTriggers.ts` | Rewrites a household's thread view when its label, contact name, members or side change |
+| `onProgramWhatsappThreadViewProgramChanged` | `src/programs/programWhatsapp/threadViewTriggers.ts` | Rewrites every thread view of a programme when its side labels change |
+| `onProgramWhatsappThreadViewThreadChanged` | `src/programs/programWhatsapp/threadViewTriggers.ts` | Rewrites a thread's inbox view when its message, handling, language or read state changes |
+| `onProgramWorkSummaryChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a programme's work shell header when the programme changes |
 | `onSavedEventCardCreated` | `src/guestEvents/triggers.ts` | Writes a new saved-event edge's list card from its event |
 | `previewProgramAssistantReply` | `src/programs/assistant/preview.ts` | The wedding assistant's Try it: the same policy, fact pack, model and budget as a guest message, nothing sent. |
 | `reconcileFoundingHostPlacesDaily` | `src/foundingHosts/foundingHostTriggers.ts` | Daily 04:25 India time: takes the founding places the trigger missed for organizers that gained an owner in the last three days, still one per owner per city. |
@@ -565,6 +607,7 @@ enter previews.
 | `rollupOrganizerInsightsDaily` | `src/organizerInsights/insightsRollup.ts` | Nightly organizerInsights roll-up per organiser-day from the host analytics marts and organizerFollows. |
 | `sendProgramWhatsappReply` | `src/programs/programWhatsapp/callables.ts` | Free-text planner reply inside the 24-hour window, reserved before the Meta call and failing closed; takes the thread over. |
 | `setProgramWhatsappThreadHandling` | `src/programs/programWhatsapp/callables.ts` | Takes a guest thread over from the assistant or hands it back, optionally marking it handled. |
+| `signProgramPhotoUrls` | `src/programs/photos.ts` | Short-lived signed URLs for programme photos listed from programPhotos, and the cover; signs only this programme's own files. Managers and communications staff. |
 | `submitProgramGuestId` | `src/programs/guestIds.ts` | A household saves a member's ID through its RSVP link. |
 | `updateProgramAssistantSettings` | `src/programs/programWhatsapp/callables.ts` | Changes the programme assistant settings under a revision fence; escalation staff must be active programme staff. |
 | `upsertProgramHamper` | `src/programs/hampers.ts` | Marks a room's welcome hamper placed (porter link or hotel desk). |

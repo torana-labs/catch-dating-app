@@ -28,6 +28,7 @@ staging and prod.
 | `google_secret_manager_secret` and `google_secret_manager_secret_iam_member` (google provider) | `catchdates-dev` and `catch-dating-app-64e51` | Forms payment secret containers and their runtime grants, never values; see [Forms payment secrets](#forms-payment-secrets) |
 | `google_firestore_database` and `google_firestore_backup_schedule` (google provider) | The `(default)` database in `catch-dating-app-64e51` | Point-in-time recovery, delete protection and a daily 14-day backup; see [Firestore recovery](#firestore-recovery) |
 | `google_monitoring_alert_policy` and `google_monitoring_uptime_check_config` (google provider) | `catch-dating-app-64e51` | The Functions error and out-of-memory alerts, and the website-origin uptime check with its alert; see [Monitoring](#monitoring) |
+| `google_storage_bucket` and `google_storage_bucket_iam_member` (google provider) | `catchdates-dev` and `catch-dating-app-64e51` | The restricted organiser takedown preservation bucket and its deploy-identity object grants; see [Takedown preservation bucket](#takedown-preservation-bucket) |
 
 The Android inventory lives in `infra/firebase/terraform.tfvars`; the Forms
 payment inputs live in `infra/firebase/form_payments.auto.tfvars`. Everything in it is
@@ -50,7 +51,10 @@ Guards, from first to last:
   or grant a secret role other than the two the runtime needs, or to a
   `github-actions` identity. It also fails any plan that would create a
   Firestore database instead of importing it, turn off its delete
-  protection or point-in-time recovery, or disable an alert policy.
+  protection or point-in-time recovery, or disable an alert policy, and any
+  bucket without uniform access, enforced public access prevention and a
+  retention policy of at least 180 days, or a bucket grant other than object
+  create or read to a `github-actions-deploy` identity.
   This also covers a resource block deleted from the configuration, which
   takes its `prevent_destroy` with it.
 - The committed inventory has blank display names and fingerprint lists until
@@ -124,9 +128,9 @@ environment claim and is rejected.
 
 | Identity | Trusted by | Roles | Why |
 |---|---|---|---|
-| `github-actions-platform-plan@catch-dating-app-64e51` | `principalSet://…/attribute.repository_environment/1170579691:platform-plan` | Custom `catchPlatformPlanReader` in each of the three projects: `firebase.clients.get`, `firebase.clients.list`, `firebase.projects.get`, `firebaseappcheck.playIntegrityConfig.get`, `datastore.databases.get`, `datastore.databases.getMetadata`, `datastore.backupSchedules.get`, `datastore.backupSchedules.list`, `monitoring.alertPolicies.get`/`list`, `monitoring.uptimeCheckConfigs.get`/`list`, `monitoring.notificationChannels.get`/`list` | Read the apps Terraform imports, their Play Integrity configs, Firestore database settings and backup schedules, and the alerting setup. `roles/firebase.viewer` was rejected: it includes Firestore data reads (`datastore.entities.get`), and pull-request jobs use this identity. No `datastore.entities.*` permission is granted. |
+| `github-actions-platform-plan@catch-dating-app-64e51` | `principalSet://…/attribute.repository_environment/1170579691:platform-plan` | Custom `catchPlatformPlanReader` in each of the three projects: `firebase.clients.get`, `firebase.clients.list`, `firebase.projects.get`, `firebaseappcheck.playIntegrityConfig.get`, `datastore.databases.get`, `datastore.databases.getMetadata`, `datastore.backupSchedules.get`, `datastore.backupSchedules.list`, `monitoring.alertPolicies.get`/`list`, `monitoring.uptimeCheckConfigs.get`/`list`, `monitoring.notificationChannels.get`/`list`, `storage.buckets.get`, `storage.buckets.getIamPolicy` | Read the apps Terraform imports, their Play Integrity configs, Firestore database settings and backup schedules, the alerting setup, and the takedown preservation bucket's settings and IAM (bucket metadata, never objects). `roles/firebase.viewer` was rejected: it includes Firestore data reads (`datastore.entities.get`), and pull-request jobs use this identity. No `datastore.entities.*` permission is granted. |
 | | | `roles/storage.objectViewer` on the state bucket only | Read state. Plans run with `-lock=false`, so this identity never writes the bucket. |
-| `github-actions-platform-apply@catch-dating-app-64e51` | `principalSet://…/attribute.repository_environment/1170579691:prod-platform` | Custom `catchPlatformApplier` in each project: the reads above plus `firebase.clients.update`, `firebaseappcheck.playIntegrityConfig.update`, `datastore.databases.update`, `datastore.backupSchedules.create`, `datastore.backupSchedules.update`, `monitoring.alertPolicies.create`/`update` and `monitoring.uptimeCheckConfigs.create`/`update` | Update an existing app's fingerprints and its Play Integrity config; change a Firestore database's recovery settings and add or change its backup schedule; add or change alert policies and uptime checks. No `monitoring.*.delete`, and notification channels are only read. No `firebase.clients.create` or `delete`, no `firebaseappcheck.services.update` (enforcement), no `datastore.databases.create` or `delete` and no `datastore.backupSchedules.delete`. The narrowest predefined role with `firebase.clients.update` is Firebase Admin. |
+| `github-actions-platform-apply@catch-dating-app-64e51` | `principalSet://…/attribute.repository_environment/1170579691:prod-platform` | Custom `catchPlatformApplier` in each project: the reads above plus `firebase.clients.update`, `firebaseappcheck.playIntegrityConfig.update`, `datastore.databases.update`, `datastore.backupSchedules.create`, `datastore.backupSchedules.update`, `monitoring.alertPolicies.create`/`update`, `monitoring.uptimeCheckConfigs.create`/`update` and `storage.buckets.create`/`update`/`setIamPolicy` | Update an existing app's fingerprints and its Play Integrity config; change a Firestore database's recovery settings and add or change its backup schedule; add or change alert policies and uptime checks; create the takedown preservation bucket and set its settings and IAM (no `storage.buckets.delete`, no object permission). No `monitoring.*.delete`, and notification channels are only read. No `firebase.clients.create` or `delete`, no `firebaseappcheck.services.update` (enforcement), no `datastore.databases.create` or `delete` and no `datastore.backupSchedules.delete`. The narrowest predefined role with `firebase.clients.update` is Firebase Admin. |
 | | | `roles/storage.objectUser` on the state bucket only | Write state and take the state lock. No bucket IAM. |
 | Both platform identities, dev and prod only | As above | Custom `catchPlatformSecretsReader` (plan: `secretmanager.secrets.get`, `secretmanager.secrets.getIamPolicy`) and `catchPlatformSecretsAdmin` (apply: those plus `secretmanager.secrets.setIamPolicy`, `secretmanager.secrets.update`), each with the IAM condition `resource.name.startsWith('projects/<number>/secrets/FORM_RAZORPAY_')`; apply also has `catchPlatformSecretCreator` (`secretmanager.secrets.create`) unconditionally, because creation is checked on the project | Manage the Forms payment secret containers and their IAM. Neither identity holds any `secretmanager.versions.*` permission, so neither can read, add or disable a value. |
 | `github-actions-play-publisher@catch-dating-app-64e51` (existing) | `prod-mobile`, `prod-mobile-release` | Unchanged | The fingerprints workflow reads generated APKs with it. |
@@ -213,6 +217,20 @@ reports the pending imports as drift.
 If the Play publisher identity gets a 403 on `generatedApks`, its Play Console
 invitation lacks access to the app bundle explorer downloads; add that
 permission for the two apps in Play Console (Users and permissions).
+
+## New required secrets on deployed Functions
+
+The deploy readiness gate checks a required Functions secret in three phases.
+Before the deploy, a Function that does not exist yet (first deploy) and an
+existing Function that gains a new required secret both have no live binding
+to compare. For both, the gate requires that the secret's latest version
+exists and is ENABLED and that the consumer's runtime service account already
+holds `roles/secretmanager.secretAccessor` on that secret (for an existing
+Function, the account it already runs as). The deploy itself adds the binding
+and cannot create the secret or grant the role, so create the secret, add its
+value and grant the runtime account before the deploy; otherwise the gate stops
+it. After the deploy the binding must exist, and the post-deploy check fails if
+it does not.
 
 ## Forms payment secrets
 
@@ -323,6 +341,34 @@ $0.35 a month each.
 
 The plan guard refuses a plan that disables or deletes an alert policy or the
 uptime check.
+
+## Takedown preservation bucket
+
+`infra/firebase/takedown_preservation.tf` creates
+`<project>-takedown-preservation` in `catchdates-dev` and
+`catch-dating-app-64e51` (inputs in
+`infra/firebase/takedown_preservation.auto.tfvars`). The organiser takedown
+tool reads case files from and writes preservation snapshots, manifests and
+BigQuery exports to `cases/<caseId>/` there, so nothing about a case reaches
+this public repository's Actions artifacts (runbook:
+[Organiser takedown](release_operations.md#organiser-takedown)).
+
+- Uniform bucket-level access, public access prevention enforced, no
+  versioning, soft delete off (destruction after the hold is final), no
+  `force_destroy`, `prevent_destroy`.
+- A 180-day retention policy, unlocked: no object can be deleted or
+  overwritten for 180 days. Locking it is irreversible and is the owner's
+  decision with counsel. A case held longer gets temporary object holds.
+- The environment's `github-actions-deploy` identity gets
+  `roles/storage.objectCreator` and `roles/storage.objectViewer` on the bucket
+  only; project owners keep their project-level access. Nothing else is
+  granted.
+
+The apply identity creates the bucket and its IAM with the
+`storage.buckets.create/get/update/getIamPolicy/setIamPolicy` permissions in
+its custom role, and the plan identity reads bucket metadata; rerun
+`infra/bootstrap/bootstrap.sh` once so the roles carry them before the first
+plan that includes the bucket.
 
 ## What stays elsewhere
 

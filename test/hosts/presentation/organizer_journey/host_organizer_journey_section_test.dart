@@ -10,14 +10,14 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../test_pump_helpers.dart';
 
 final _waiting = OrganizerJourney(
-  organizerId: 'afterfly',
-  organizerName: 'Afterfly',
+  organizerId: 'moonmoth',
+  organizerName: 'Moonmoth',
   waitingClaim: true,
   steps: [
     OrganizerJourneyStep(
       kind: OrganizerJourneyStepKind.nominated,
       at: DateTime(2026, 10, 28),
-      detail: 'https://luma.com/afterfly',
+      detail: 'https://luma.com/moonmoth',
     ),
     OrganizerJourneyStep(
       kind: OrganizerJourneyStepKind.listed,
@@ -58,9 +58,9 @@ void main() {
   ) async {
     await _pump(tester, HostOrganizerJourneySection(journey: _waiting));
     expect(find.text('Your claim is being checked'), findsOneWidget);
-    expect(find.text('Someone nominated Afterfly'), findsOneWidget);
+    expect(find.text('Someone nominated Moonmoth'), findsOneWidget);
     expect(
-      find.text('Catch built a page from luma.com/afterfly'),
+      find.text('Catch built a page from luma.com/moonmoth'),
       findsOneWidget,
     );
     expect(find.text('You asked to claim it'), findsOneWidget);
@@ -72,8 +72,8 @@ void main() {
       tester,
       const HostOrganizerJourneySection(
         journey: OrganizerJourney(
-          organizerId: 'afterfly',
-          organizerName: 'Afterfly',
+          organizerId: 'moonmoth',
+          organizerName: 'Moonmoth',
           waitingClaim: false,
           steps: [
             OrganizerJourneyStep(
@@ -129,13 +129,13 @@ void main() {
   ) async {
     await _pump(
       tester,
-      const HostOrganizerJourneySheet(organizerId: 'afterfly'),
+      const HostOrganizerJourneySheet(organizerId: 'moonmoth'),
       overrides: [
         organizerJourneysProvider(
-          'afterfly',
+          'moonmoth',
         ).overrideWith((ref) async => [_waiting]),
       ],
     );
-    expect(find.text('Someone nominated Afterfly'), findsOneWidget);
+    expect(find.text('Someone nominated Moonmoth'), findsOneWidget);
   });
 }

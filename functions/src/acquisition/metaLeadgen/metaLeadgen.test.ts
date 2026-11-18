@@ -27,7 +27,7 @@ const graphLead = {
     {name: "email", values: [" Asha@Example.com "]},
     {name: "city", values: ["Bengaluru"]},
     {name: "Club Name", values: ["Sunrise Runners"]},
-    {name: "instagram_handle", values: ["@sunrise.runners"]},
+    {name: "instagram_handle", values: ["@sunrise.runners.example"]},
     {name: "event_cadence", values: ["Every week"]},
   ],
 };
@@ -59,7 +59,7 @@ test("a lead becomes a meta_lead_ad intent with normalised contact", () => {
   assert.equal(intent.fullName, "Asha Rao");
   assert.deepEqual(intent.hostApplication, {organizationName: "Sunrise Runners",
     operatingCity: "Bengaluru",
-    communityLink: "https://instagram.com/sunrise.runners",
+    communityLink: "https://instagram.com/sunrise.runners.example",
     eventCadence: "Every week"});
   assert.equal(intent.metaLead.leadgenId, change.leadgenId);
   assert.equal(intent.metaLead.campaignId, "444444444");

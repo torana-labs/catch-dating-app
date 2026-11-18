@@ -44,7 +44,7 @@ void main() {
       final wire = original.toJson();
       subscription.close();
       await h.container.pump();
-      expect(h.container.exists(provider), isTrue);
+      expect(h.container.read(provider.exists), isTrue);
       h.container.read(h.query.notifier).reload();
       await h.container.pump();
       await h.completeRead(
@@ -193,7 +193,7 @@ void main() {
         await h.fail(0, actions.submit());
         subscription.close();
         await h.container.pump();
-        expect(h.container.exists(provider), isTrue);
+        expect(h.container.read(provider.exists), isTrue);
         switch (transition) {
           case 'switchBack':
             await h.signIn('host-2');

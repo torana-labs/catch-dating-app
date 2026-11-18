@@ -8,6 +8,7 @@
     "retired": "A removed switch. It may not reappear in source, the Remote Config template or a workflow outside its allowedIn sources; live leftovers are reported for cleanup."
   },
   "switches": {
+    "AD_AUDIENCES_MODE": {"class": "feature-gate", "note": "Host customer list upload to Meta (docs/ads_conversion_spec.md, Customer lists). Off everywhere; when prod is switched to live, that difference needs an allowedDifferences entry, since dev and staging never upload."},
     "AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT": {"class": "identity"},
     "AD_CONVERSIONS_META_TEST_EVENT_CODE": {"class": "identity"},
     "AD_CONVERSIONS_META_TOKEN_VERSION": {"class": "identity"},
@@ -85,7 +86,6 @@
     "VITE_FIREBASE_MESSAGING_SENDER_ID": {"class": "identity"},
     "VITE_FIREBASE_PROJECT_ID": {"class": "identity"},
     "VITE_FIREBASE_STORAGE_BUCKET": {"class": "identity"},
-    "VITE_GTM_ID": {"class": "identity"},
     "VITE_WEBSITE_APPCHECK_SITE_KEY": {"class": "identity"},
     "WEBSITE_AUTO_ROLLBACK": {"class": "feature-gate"},
     "catch_whatsapp_support_enabled": {"class": "feature-gate"},
@@ -122,6 +122,13 @@
     "host_wedding_phone_import_enabled": {"replacedBy": "always on", "allowedIn": [], "liveHold": {"environments": ["prod"], "value": "true", "reason": "Catch Host builds released before this removal (Host 1.0.1, build 202610200000357901, is in App Store review) still read this key with a bundled default of false. Deleting it or publishing the checked-in template, which replaces the whole live template, would switch the feature off for those installs.", "until": "every Catch Host build that predates this removal is retired: no longer distributed and blocked by the host_min_build_* force-update floors"}}
   },
   "allowedDifferences": [
+    {
+      "switch": "AD_CONVERSIONS_MODE",
+      "owner": "Suvrat Garg",
+      "reason": "Ad conversions go only from prod, where real hosts sign up; Meta and Google take one Catch dataset and one Ads account. Prod runs validate (Meta test events, Google validate-only) from 2026-11-18 and then live; dev and staging stay off and never send.",
+      "ticket": "CAT-183",
+      "expires": "2027-02-28"
+    },
     {
       "switch": "CATCH_INSTAGRAM_CLAIMS_ENABLED",
       "owner": "Suvrat Garg",

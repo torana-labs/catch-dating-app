@@ -34,7 +34,7 @@ class EventAssistanceLiveGroupsSection extends ConsumerWidget {
             attendeeId: id,
           );
           final query = eventAssistanceMembershipProvider(scope);
-          if (ref.exists(query)) ref.read(query.notifier).reload();
+          if (ref.read(query.exists)) ref.read(query.notifier).reload();
           showCatchBottomSheet<void>(
             context: context,
             builder: (_) => EventAssistanceMembershipSheet(

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'explore_view_model.dart';
@@ -9,6 +9,7 @@ part of 'explore_view_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $ExploreViewModelCopyWith<ExploreViewModel> get copyWith => _$ExploreViewModelCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExploreViewModel&&const DeepCollectionEquality().equals(other.joinedOrganizers, joinedOrganizers)&&const DeepCollectionEquality().equals(other.allOrganizers, allOrganizers)&&const DeepCollectionEquality().equals(other.joinedOrganizerIds, joinedOrganizerIds)&&const DeepCollectionEquality().equals(other.followedOrganizerIds, followedOrganizerIds));
+  final _this = this as ExploreViewModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExploreViewModel&&const DeepCollectionEquality().equals(other.joinedOrganizers, _this.joinedOrganizers)&&const DeepCollectionEquality().equals(other.allOrganizers, _this.allOrganizers)&&const DeepCollectionEquality().equals(other.joinedOrganizerIds, _this.joinedOrganizerIds)&&const DeepCollectionEquality().equals(other.followedOrganizerIds, _this.followedOrganizerIds));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(joinedOrganizers),const DeepCollectionEquality().hash(allOrganizers),const DeepCollectionEquality().hash(joinedOrganizerIds),const DeepCollectionEquality().hash(followedOrganizerIds));
+int get hashCode {
+  final _this = this as ExploreViewModel;
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.joinedOrganizers),const DeepCollectionEquality().hash(_this.allOrganizers),const DeepCollectionEquality().hash(_this.joinedOrganizerIds),const DeepCollectionEquality().hash(_this.followedOrganizerIds));
+}
 
 @override
 String toString() {
-  return 'ExploreViewModel(joinedOrganizers: $joinedOrganizers, allOrganizers: $allOrganizers, joinedOrganizerIds: $joinedOrganizerIds, followedOrganizerIds: $followedOrganizerIds)';
+  final _this = this as ExploreViewModel;
+  return 'ExploreViewModel(joinedOrganizers: ${_this.joinedOrganizers}, allOrganizers: ${_this.allOrganizers}, joinedOrganizerIds: ${_this.joinedOrganizerIds}, followedOrganizerIds: ${_this.followedOrganizerIds})';
 }
 
 
@@ -63,7 +69,7 @@ class _$ExploreViewModelCopyWithImpl<$Res>
 /// Create a copy of ExploreViewModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? joinedOrganizers = null,Object? allOrganizers = null,Object? joinedOrganizerIds = null,Object? followedOrganizerIds = null,}) {
-  return _then(_self.copyWith(
+  return _then(ExploreViewModel(
 joinedOrganizers: null == joinedOrganizers ? _self.joinedOrganizers : joinedOrganizers // ignore: cast_nullable_to_non_nullable
 as List<Organizer>,allOrganizers: null == allOrganizers ? _self.allOrganizers : allOrganizers // ignore: cast_nullable_to_non_nullable
 as List<Organizer>,joinedOrganizerIds: null == joinedOrganizerIds ? _self.joinedOrganizerIds : joinedOrganizerIds // ignore: cast_nullable_to_non_nullable
@@ -209,7 +215,7 @@ return $default(_that.joinedOrganizers,_that.allOrganizers,_that.joinedOrganizer
 
 
 class _ExploreViewModel extends ExploreViewModel {
-  const _ExploreViewModel({required final  List<Organizer> joinedOrganizers, required final  List<Organizer> allOrganizers, final  Set<String> joinedOrganizerIds = const {}, final  Set<String> followedOrganizerIds = const {}}): _joinedOrganizers = joinedOrganizers,_allOrganizers = allOrganizers,_joinedOrganizerIds = joinedOrganizerIds,_followedOrganizerIds = followedOrganizerIds,super._();
+  const _ExploreViewModel({required  List<Organizer> joinedOrganizers, required  List<Organizer> allOrganizers,  Set<String> joinedOrganizerIds = const {},  Set<String> followedOrganizerIds = const {}}): _joinedOrganizers = joinedOrganizers,_allOrganizers = allOrganizers,_joinedOrganizerIds = joinedOrganizerIds,_followedOrganizerIds = followedOrganizerIds,super._();
   
 
  final  List<Organizer> _joinedOrganizers;
@@ -251,16 +257,18 @@ _$ExploreViewModelCopyWith<_ExploreViewModel> get copyWith => __$ExploreViewMode
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExploreViewModel&&const DeepCollectionEquality().equals(other._joinedOrganizers, _joinedOrganizers)&&const DeepCollectionEquality().equals(other._allOrganizers, _allOrganizers)&&const DeepCollectionEquality().equals(other._joinedOrganizerIds, _joinedOrganizerIds)&&const DeepCollectionEquality().equals(other._followedOrganizerIds, _followedOrganizerIds));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExploreViewModel&&const DeepCollectionEquality().equals(other.joinedOrganizers, _joinedOrganizers)&&const DeepCollectionEquality().equals(other.allOrganizers, _allOrganizers)&&const DeepCollectionEquality().equals(other.joinedOrganizerIds, _joinedOrganizerIds)&&const DeepCollectionEquality().equals(other.followedOrganizerIds, _followedOrganizerIds));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_joinedOrganizers),const DeepCollectionEquality().hash(_allOrganizers),const DeepCollectionEquality().hash(_joinedOrganizerIds),const DeepCollectionEquality().hash(_followedOrganizerIds));
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_joinedOrganizers),const DeepCollectionEquality().hash(_allOrganizers),const DeepCollectionEquality().hash(_joinedOrganizerIds),const DeepCollectionEquality().hash(_followedOrganizerIds));
+}
 
 @override
 String toString() {
-  return 'ExploreViewModel(joinedOrganizers: $joinedOrganizers, allOrganizers: $allOrganizers, joinedOrganizerIds: $joinedOrganizerIds, followedOrganizerIds: $followedOrganizerIds)';
+    return 'ExploreViewModel(joinedOrganizers: $joinedOrganizers, allOrganizers: $allOrganizers, joinedOrganizerIds: $joinedOrganizerIds, followedOrganizerIds: $followedOrganizerIds)';
 }
 
 

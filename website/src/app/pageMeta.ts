@@ -33,6 +33,7 @@ export type PageKey =
   | "host_billing"
   | "public_form"
   | "claim"
+  | "listing_requests"
   | "privacy"
   | "terms"
   | "help"
@@ -74,6 +75,13 @@ export function pageMetaForPlaybook(page: PlaybookPageDocument, canonicalPath: s
     canonicalPath,
     ...(page.meta.noindex ? {robots: "noindex, follow"} : {}),
   };
+}
+
+/** The listing request form and its two draft policies share one page key, each with its own metadata. */
+export function pageMetaForListingRequestsPath(pathname: string): PageMeta | null {
+  const path = pathname.replace(/\/+$/, "") + "/";
+  return path === "/listings/policy/" ? websiteMeta.routes.listing_policy :
+    path === "/listings/notice-and-takedown/" ? websiteMeta.routes.takedown_policy : null;
 }
 
 /** Catch for weddings' application page shares the landing's page key, with its own metadata. */
@@ -132,6 +140,8 @@ export function getPageKey(
 ): Exclude<PageKey, "listing" | "event_detail"> {
   if (pathname.startsWith("/demo/")) return "sales_demo";
   if (pathname.startsWith("/claim")) return "claim";
+  if (["/listings/request", "/listings/request/", "/listings/policy", "/listings/policy/", "/listings/notice-and-takedown",
+    "/listings/notice-and-takedown/"].includes(pathname)) return "listing_requests";
   if (pathname.startsWith("/privacy")) return "privacy";
   if (pathname.startsWith("/terms")) return "terms";
   if (pathname.startsWith("/help")) return "help";

@@ -1,8 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  checkPathArguments,
+  markdownAnchors,
   sourceRulesFromManifest,
+  validateToolLifecycle,
   validateToolOrder,
+  validateToolPaths,
   validateToolRoles,
   validateToolRules,
 } from "./tool_manifest_rules.mjs";
@@ -95,4 +99,124 @@ test("an internal gate's node tests must be run by an active tool", () => {
   assert.match(validateToolRoles([internal, filtered]).join("\n"), /no active tool runs/u);
   const owner = gate({checks: ["node --test tool/x/internal.test.mjs tool/check_fixture.test.mjs"]});
   assert.deepEqual(validateToolRoles([internal, owner]), []);
+});
+
+const files = new Map([
+  ["tool/check_fixture.mjs", ""],
+  ["tool/kept_codemod.mjs", ""],
+  ["docs/runbook.md", "# Runbook\n\n## Deploy Backend\n\n## Cloudflare edge for example.com\n\n## Deploy Backend\n"],
+]);
+const lifecycle = (tools) => validateToolLifecycle(tools, {exists: (file) => files.has(file), read: (file) => files.get(file)});
+const sha = "0123456789abcdef0123456789abcdef01234567";
+const retired = (extra = {}) => ({id: "fixture:retired", status: "retired", path: "tool/deleted_codemod.mjs",
+  retiredOn: "2026-11-18", reason: "The rename landed; fixture:guard now fails on any leftover name.", lastCommit: sha, ...extra});
+
+test("status is one of the five lifecycle statuses", () => {
+  assert.deepEqual(lifecycle([gate()]), []);
+  assert.deepEqual(lifecycle([gate({status: "deprecated"})]),
+    ['fixture:gate: status must be one of active, internal, support, completed, retired, found "deprecated".']);
+});
+
+test("a retired tool records when, why and its last commit, and its file is gone", () => {
+  assert.deepEqual(lifecycle([retired()]), []);
+  assert.deepEqual(lifecycle([retired({retiredOn: "18 Nov 2026", reason: "done", lastCommit: "abc123"})]), [
+    "fixture:retired: a retired tool needs retiredOn as YYYY-MM-DD.",
+    "fixture:retired: a retired tool needs a reason that says why it closed and what covers it now.",
+    "fixture:retired: a retired tool needs lastCommit, the full SHA of the last commit that contained tool/deleted_codemod.mjs.",
+  ]);
+  assert.deepEqual(lifecycle([retired({retiredOn: "2026-02-30"})]),
+    ["fixture:retired: a retired tool needs retiredOn as YYYY-MM-DD."]);
+  assert.deepEqual(lifecycle([retired({path: "tool/kept_codemod.mjs"})]), [
+    "fixture:retired: a retired tool's file is deleted, but tool/kept_codemod.mjs still exists; delete it or mark it completed.",
+  ]);
+});
+
+test("a closed tool never runs, so it keeps no run fields", () => {
+  assert.deepEqual(lifecycle([retired({checks: ["node tool/deleted_codemod.mjs"], impactPaths: ["lib/**"]})]), [
+    "fixture:retired: a retired tool never runs, so drop checks.",
+    "fixture:retired: a retired tool never runs, so drop impactPaths.",
+  ]);
+});
+
+test("a completed tool keeps its file and has no lastCommit", () => {
+  const completed = retired({id: "fixture:completed", status: "completed", path: "tool/kept_codemod.mjs", lastCommit: undefined});
+  assert.deepEqual(lifecycle([completed]), []);
+  assert.deepEqual(lifecycle([{...completed, path: "tool/deleted_codemod.mjs", lastCommit: sha}]), [
+    "fixture:completed: lastCommit is only for retired tools.",
+    "fixture:completed: a completed tool keeps its file, but tool/deleted_codemod.mjs is missing; retire it with lastCommit.",
+  ]);
+});
+
+test("closing fields belong only to closed tools", () => {
+  assert.deepEqual(lifecycle([gate({retiredOn: "2026-11-18", reason: "x".repeat(30)})]), [
+    "fixture:gate: retiredOn is only for completed or retired tools.",
+    "fixture:gate: reason is only for completed or retired tools.",
+  ]);
+});
+
+test("an active operator names a runbook that exists, and its anchor must be a heading", () => {
+  const operator = gate({id: "fixture:operator", role: "operator"});
+  assert.deepEqual(lifecycle([operator]),
+    ["fixture:operator: an active operator must name its runbook (a document path, optionally with a #anchor)."]);
+  assert.deepEqual(lifecycle([{...operator, runbook: "docs/runbook.md#deploy-backend"}]), []);
+  assert.deepEqual(lifecycle([{...operator, runbook: "docs/runbook.md#cloudflare-edge-for-examplecom"}]), []);
+  assert.deepEqual(lifecycle([{...operator, runbook: "docs/runbook.md#deploy-backend-1"}]), []);
+  assert.deepEqual(lifecycle([{...operator, runbook: "docs/missing.md"}]),
+    ["fixture:operator: runbook docs/missing.md does not exist."]);
+  assert.deepEqual(lifecycle([{...operator, runbook: "docs/runbook.md#deploy"}]),
+    ["fixture:operator: runbook docs/runbook.md has no heading #deploy."]);
+  assert.deepEqual(lifecycle([{...operator, status: "internal"}]), []);
+});
+
+test("a runbook whose content the checkout cannot supply is checked for existence only", () => {
+  const operator = gate({id: "fixture:operator", role: "operator", runbook: "docs/runbook.md#not-a-heading"});
+  const sparse = (tools) => validateToolLifecycle(tools, {exists: (file) => files.has(file), read: () => null});
+  assert.deepEqual(sparse([operator]), []);
+  assert.deepEqual(sparse([{...operator, runbook: "docs/missing.md#x"}]),
+    ["fixture:operator: runbook docs/missing.md does not exist."]);
+});
+
+test("markdown anchors follow GitHub's heading slugs", () => {
+  assert.deepEqual([...markdownAnchors("# A `code` Title!\n## Same\n## Same\ntext # not a heading")],
+    ["a-code-title", "same", "same-1"]);
+});
+
+test("a retired gate's deleted tests need no active runner", () => {
+  assert.deepEqual(validateToolRoles([retired({role: "gate", checks: undefined})]), []);
+});
+
+const tree = new Set(["tool/check_fixture.mjs", "tool/check_fixture.test.mjs", "functions/test/a.test.cjs",
+  "functions/src/index.ts"]);
+const paths = (tools) => validateToolPaths(tools, {
+  exists: (file) => tree.has(file),
+  isTrackedFolder: (directory) => [...tree].some((file) => file.startsWith(`${directory}/`)),
+});
+
+test("check arguments resolve node --test and node --check paths, following cd", () => {
+  assert.deepEqual(checkPathArguments([
+    "node --check tool/a.mjs",
+    "node --test tool/a.test.mjs tool/b.test.mjs",
+    "node --test --test-concurrency=1 tool/c.test.mjs",
+    "(cd functions && node --test lib/x.test.js)",
+    "npm --prefix functions run build && node --test functions/test/a.test.cjs",
+    "node tool/a.mjs --check",
+    "node --test tool/**/*.test.mjs",
+  ]), ["tool/a.mjs", "tool/a.test.mjs", "tool/b.test.mjs", "tool/c.test.mjs", "functions/lib/x.test.js",
+    "functions/test/a.test.cjs"]);
+});
+
+test("a check or impactPath that names a missing file fails; build outputs and globs do not", () => {
+  assert.deepEqual(paths([gate({impactPaths: ["tool/check_fixture.test.mjs", "lib/**/*.dart", "functions/src"]})]), []);
+  // functions/lib is a build output an earlier check creates: its directory is not tracked.
+  assert.deepEqual(paths([gate({checks: ["npm --prefix functions run build", "node --test functions/lib/x.test.js",
+    "node tool/check_fixture.mjs"]})]), []);
+  assert.deepEqual(paths([gate({
+    checks: ["node --test tool/renamed.test.mjs", "node tool/check_fixture.mjs"],
+    impactPaths: ["tool/gone.mjs", "functions/test/missing.test.cjs"],
+  })]), [
+    "fixture:gate: check names tool/renamed.test.mjs, which does not exist.",
+    "fixture:gate: impactPath tool/gone.mjs does not exist.",
+    "fixture:gate: impactPath functions/test/missing.test.cjs does not exist.",
+  ]);
+  assert.deepEqual(paths([retired({checks: undefined})]), []);
 });

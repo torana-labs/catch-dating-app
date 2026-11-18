@@ -1,4 +1,4 @@
-import type {CatchFormat, CatchBandGround} from "@catch/web-ui";
+import type {CatchFormat, CatchMonogramGround} from "@catch/web-ui";
 import {homeFormats, homePageCopy as copy, otherFormatPoster} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {siteFooterCopy} from "@content/site";
@@ -109,7 +109,7 @@ export interface PlanCardView {
   formatLabel: string;
   format: CatchFormat | null;
   detail: string;
-  /** Where the plan meets, such as "Khar Social". */
+  /** Where the plan meets, such as "Lantern Lane Tavern". */
   place: string;
   /** The date square's parts in the city's time zone. */
   date: PlanDateParts;
@@ -156,7 +156,7 @@ export interface OrganizerCardView {
   name: string;
   subtitle: string;
   initials: string;
-  monogramGround: CatchBandGround;
+  monogramGround: CatchMonogramGround;
   href?: string;
   next: string;
   footnote: string;
@@ -168,7 +168,7 @@ export interface OrganizerCardView {
 }
 
 /** Each format's ground: its date squares, mats and chips. */
-export const formatGrounds: Record<CatchFormat, CatchBandGround> = {run: "coral", dinner: "pink", games: "yellow", courts: "mint", nightsOut: "magenta"};
+export const formatGrounds: Record<CatchFormat, CatchMonogramGround> = {run: "coral", dinner: "pink", games: "yellow", courts: "mint", nightsOut: "magenta"};
 
 export function organizerCard(organizer: HomeOrganizer, city: HomeCity): OrganizerCardView {
   const firstFormat = organizer.formats.find((format): format is CatchFormat => format !== "other");

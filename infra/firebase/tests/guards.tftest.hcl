@@ -304,3 +304,82 @@ run "production_alerts_stay_on_and_email_the_alerts_channel" {
     error_message = "The uptime check reads the Hosting origin, which Cloudflare's bot protection does not front."
   }
 }
+
+run "takedown_preservation_buckets_are_restricted_and_held_for_180_days" {
+  command = plan
+
+  variables {
+    takedown_preservation_environments = {
+      prod = {
+        project                = "catch-dating-app-64e51"
+        deploy_service_account = "github-actions-deploy@catch-dating-app-64e51.iam.gserviceaccount.com"
+      }
+    }
+  }
+
+  assert {
+    condition     = google_storage_bucket.takedown_preservation["prod"].name == "catch-dating-app-64e51-takedown-preservation"
+    error_message = "The bucket name is the one the takedown tool derives from the project."
+  }
+
+  assert {
+    condition = (
+      google_storage_bucket.takedown_preservation["prod"].uniform_bucket_level_access &&
+      google_storage_bucket.takedown_preservation["prod"].public_access_prevention == "enforced" &&
+      !google_storage_bucket.takedown_preservation["prod"].force_destroy
+    )
+    error_message = "The preservation bucket needs uniform access, enforced public access prevention and no force_destroy."
+  }
+
+  assert {
+    condition     = google_storage_bucket.takedown_preservation["prod"].retention_policy[0].retention_period == "15552000"
+    error_message = "Preserved objects are held for 180 days."
+  }
+
+  assert {
+    condition = (
+      !google_storage_bucket.takedown_preservation["prod"].versioning[0].enabled &&
+      google_storage_bucket.takedown_preservation["prod"].soft_delete_policy[0].retention_duration_seconds == 0
+    )
+    error_message = "No versioning and no soft delete, so destruction after the hold is final."
+  }
+
+  assert {
+    condition = (
+      google_storage_bucket_iam_member.takedown_preservation_writer["prod"].role == "roles/storage.objectCreator" &&
+      google_storage_bucket_iam_member.takedown_preservation_reader["prod"].role == "roles/storage.objectViewer" &&
+      google_storage_bucket_iam_member.takedown_preservation_writer["prod"].member == "serviceAccount:github-actions-deploy@catch-dating-app-64e51.iam.gserviceaccount.com"
+    )
+    error_message = "Only the deploy identity gets object create and read on the preservation bucket."
+  }
+}
+
+run "takedown_preservation_only_in_dev_and_prod_for_the_deploy_identity" {
+  command = plan
+
+  variables {
+    takedown_preservation_environments = {
+      staging = {
+        project                = "catchdates-staging"
+        deploy_service_account = "github-actions-deploy@catchdates-staging.iam.gserviceaccount.com"
+      }
+    }
+  }
+
+  expect_failures = [var.takedown_preservation_environments]
+}
+
+run "takedown_preservation_refuses_another_identity" {
+  command = plan
+
+  variables {
+    takedown_preservation_environments = {
+      dev = {
+        project                = "catchdates-dev"
+        deploy_service_account = "someone@catchdates-dev.iam.gserviceaccount.com"
+      }
+    }
+  }
+
+  expect_failures = [var.takedown_preservation_environments]
+}

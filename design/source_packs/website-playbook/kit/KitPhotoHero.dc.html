@@ -27,7 +27,7 @@ const P = (t) => String(t == null ? '' : t).split(/(\[[^\]]+\])/).filter(Boolean
 const B = (bs) => (bs || []).map((b) => ({ l: b.l, href: b.href || '#', cls: b.kind === 'sec' ? 'o' : b.kind === 'light' ? 'w' : b.kind === 'lightsec' ? 'ow' : '' }));
 const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
 
-    const d = this.props.d || {"img": "/_blob/8294b5d46800331739b8ee58199a7d53", "alt": "", "tags": ["Run club", "Bandra"], "title": "How Carter Road Runners [the outcome].", "lead": "[One sentence.]"};
+    const d = this.props.d || {"img": "/_blob/8294b5d46800331739b8ee58199a7d53", "alt": "", "tags": ["Run club", "Bandra"], "title": "How Driftwood Bay Runners [the outcome].", "lead": "[One sentence.]"};
     return { d, hasTags: has(d.tags), tags: (d.tags || []).map((x) => ({ parts: P(x) })), title: P(d.title), lead: P(d.lead), hasNote: has(d.note) };
   }
 }

@@ -64,11 +64,11 @@ function event(organizerId: string, appVisibility: string): Row {
 test("an organizer made discoverable brings its events into the app",
   async () => {
     const {writes, deps} = fakeDb({
-      "ext-a": event("afterfly", "hidden"),
-      "ext-b": event("afterfly", "discoverable"),
+      "ext-a": event("moonmoth", "hidden"),
+      "ext-b": event("moonmoth", "discoverable"),
       "ext-c": event("other", "hidden"),
     });
-    const updated = await syncExternalEventAppVisibility("afterfly",
+    const updated = await syncExternalEventAppVisibility("moonmoth",
       {appVisibility: "hidden"}, {appVisibility: "discoverable"}, deps);
     assert.equal(updated, 1);
     assert.deepEqual(writes, [{id: "ext-a", patch: {
@@ -81,10 +81,10 @@ test("hiding or deleting an organizer hides its events in the app",
   async () => {
     for (const after of [{appVisibility: "hidden"}, undefined]) {
       const {writes, deps} = fakeDb({
-        "ext-a": event("afterfly", "discoverable"),
-        "ext-b": event("afterfly", "discoverable"),
+        "ext-a": event("moonmoth", "discoverable"),
+        "ext-b": event("moonmoth", "discoverable"),
       });
-      const updated = await syncExternalEventAppVisibility("afterfly",
+      const updated = await syncExternalEventAppVisibility("moonmoth",
         {appVisibility: "discoverable"}, after, deps);
       assert.equal(updated, 2);
       assert.deepEqual(writes.map((write) =>
@@ -94,11 +94,11 @@ test("hiding or deleting an organizer hides its events in the app",
 
 test("an organizer write that keeps its app visibility reads nothing",
   async () => {
-    const {writes, deps} = fakeDb({"ext-a": event("afterfly", "discoverable")});
+    const {writes, deps} = fakeDb({"ext-a": event("moonmoth", "discoverable")});
     deps.firestore = () => {
       throw new Error("No read expected.");
     };
-    const updated = await syncExternalEventAppVisibility("afterfly",
+    const updated = await syncExternalEventAppVisibility("moonmoth",
       {appVisibility: "hidden", followerCount: 1},
       {followerCount: 2}, deps);
     assert.equal(updated, 0);

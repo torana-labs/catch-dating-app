@@ -136,6 +136,12 @@
   .split { padding-top: var(--catch-space-s10); }
   .text { padding-bottom: var(--catch-space-s2); }
   .media { max-height: var(--catch-website-hero-compact-media-max); padding-top: var(--catch-space-s2); }
+  /*
+   * A screen with no floating card beside it keeps its whole height, with
+   * its illustrative caption, under the copy rather than rising over the
+   * copy and its actions.
+   */
+  .media:not(:has(> .aside)) { max-height: none; }
 
   .aside.aside[data-chip] {
     inset: auto auto var(--catch-space-s6) 0;

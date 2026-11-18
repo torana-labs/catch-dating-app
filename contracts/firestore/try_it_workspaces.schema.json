@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/try_it_workspaces.schema.json",
+  "title": "TryItWorkspaceDocument",
+  "description": "tryItWorkspaces/{uid}: the one try-it workspace of a phone-verified account (owner decision, 18 Nov 2026). The workspace is an ordinary private organizer the account owns (organizers/{organizerId}, made by stageOwnedOrganizerCreate); this record only points to it and tracks expiry. An untouched workspace is removed 30 days after its last command unless it was kept: published, given an event of its own, a second team member, or kept explicitly. A caller who already owns exactly one organizer gets that organizer as their workspace, kept. Server only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "tryItWorkspaces",
+  "x-firestore-path": "tryItWorkspaces/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "ensureTryItWorkspace and expireTryItWorkspaces",
+  "required": ["schemaVersion", "uid", "organizerId", "generation", "state", "createdVia", "createdAt", "lastCommandAt", "expiresAt", "keptAt", "keptReason", "expiredAt"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "uid": {"type": "string", "pattern": "^[A-Za-z0-9_-]{3,128}$"},
+    "organizerId": {"type": "string", "pattern": "^[A-Za-z0-9]{20}$"},
+    "generation": {"type": "integer", "minimum": 1, "maximum": 1000,
+      "description": "Counts workspaces this account has had. A workspace made again after one expired gets a new organizer id, so it never reuses the old page address."},
+    "state": {"type": "string", "enum": ["active", "kept", "expired"]},
+    "createdVia": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commandId", "surface"],
+      "properties": {
+        "commandId": {"$ref": "../shared/command_envelope.schema.json#/definitions/commandId"},
+        "surface": {"$ref": "../shared/command_envelope.schema.json#/definitions/surface"}
+      }
+    },
+    "createdAt": {"type": "string", "format": "date-time"},
+    "lastCommandAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": ["string", "null"], "format": "date-time", "description": "Null once kept or expired, so the expiry sweep's range query never reads it again."},
+    "keptAt": {"type": ["string", "null"], "format": "date-time"},
+    "keptReason": {"type": ["string", "null"], "enum": ["published", "has_events", "team_member", "owner_kept", "not_owner", "existing_organizer", null]},
+    "expiredAt": {"type": ["string", "null"], "format": "date-time"}
+  }
+}

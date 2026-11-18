@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/host_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_operations.dart';
@@ -46,11 +47,10 @@ List<Override> hostStaffCaptureOverrides({
     staffProgramId,
     staffStationId,
   ).overrideWithValue(AsyncData(_live(staffPlan()))),
-  programTransportVendorsProvider(
-    'meher-shah',
+  programVendorsStreamProvider(
     staffProgramId,
   ).overrideWithValue(const AsyncData(staffVendors)),
-  programHotelInboundProvider(
+  programHotelInboundStreamProvider(
     staffProgramId,
     staffHotelId,
   ).overrideWithValue(AsyncData(staffInbound())),

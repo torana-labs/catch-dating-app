@@ -21,7 +21,7 @@ export const Contract: Story = {
     <div style={{display: "grid", gap: 24}}>
       <div style={{width: 390}}>
         <CatchViewport fill="parent" sizeClass="compact">
-          <CatchRail itemWidth={200} label="More from Afterfly, phone">
+          <CatchRail itemWidth={200} label="More from Moonmoth, phone">
             {cards.map((title) => (
               <div key={title} style={{background: "var(--catch-theme-bg)", borderRadius: "var(--catch-radius-md)", height: 120, padding: 16}}>
                 <CatchLegacyText as="span" variant="bodyM">{title}</CatchLegacyText>
@@ -31,7 +31,7 @@ export const Contract: Story = {
         </CatchViewport>
       </div>
       <CatchViewport fill="parent" sizeClass="expanded">
-        <CatchRail itemWidth={200} label="More from Afterfly, desktop">
+        <CatchRail itemWidth={200} label="More from Moonmoth, desktop">
           {cards.map((title) => <CatchLegacyText as="span" key={title} variant="bodyM">{title}</CatchLegacyText>)}
         </CatchRail>
       </CatchViewport>

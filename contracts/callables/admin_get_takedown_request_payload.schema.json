@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_takedown_request_payload.schema.json",
+  "title": "AdminGetTakedownRequestCallablePayload",
+  "description": "Staff open one listing request from its Admin Inbox item.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Catch operators (Admin)",
+  "required": [
+    "requestId"
+  ],
+  "properties": {
+    "requestId": {
+      "$ref": "../shared/takedown_request_common.schema.json#/definitions/requestId"
+    }
+  }
+}

@@ -1809,7 +1809,7 @@ left follows the schedule and the step runs), and `crawlStopChanges` (stops
 changed on the night by `changeEventCrawlStop`, keyed by itinerary item id;
 missing means the published route). Rules keep all four out of client
 creates and setup updates. Their replay receipts live in server-only
-`eventLiveCommandReceipts/{receiptId}`.
+`commandReceipts` (see Command Receipts).
 
 ### Event Close-Out And Guest Game History
 
@@ -1990,6 +1990,60 @@ come from JSON Schema; the boundary is the timestamp representation:
 `tool/contracts/check_firestore_contract.mjs` cross-checks that the Admin SDK
 projection has the expected fields for every collection with a
 `typescriptInterface` entry.
+
+### Command Receipts
+
+`commandReceipts/{command}_{id}` is the one replay-receipt collection (L8 of the
+November 2026 Firestore consolidation). A command that must not run twice
+(a callable a client may retry, a trigger or webhook the platform may
+redeliver) reads its receipt in the same transaction as its write, through
+`functions/src/shared/commandReceipts.ts`. An exact retry returns the stored
+result; a different request that reuses the id is rejected by the command.
+Everything else about a receipt is the shared module's job:
+
+- Shape (`contracts/firestore/command_receipts.schema.json`): `command`,
+  optional `requestHash` (SHA-256 of what the request asked for, the acting
+  user and target included), optional `result` (at most 4096 bytes, only what a
+  replay must return that live state cannot rebuild), `createdAt`, `expiresAt`.
+  No actor or personal field is stored; ids embed hashes, not identities.
+- Id: `{command}_{id}`. An id that is longer than 100 characters or holds
+  anything beyond letters, digits and `:._-` becomes `h` plus its SHA-256, so
+  the document id is always valid and bounded. Command names are camelCase with
+  no underscore.
+- Retention (`expiresAt`): `trigger` 7 days, `request` 30 days, `webhook` 30
+  days. A receipt past `expiresAt` counts as absent. The collection's Firestore
+  TTL policy is a `fieldOverrides` entry for `commandReceipts.expiresAt` in
+  `firestore.indexes.json`, approved by the owner on 18 Nov 2026 after the legal
+  hold was narrowed. The same approval covers the receipt collections that
+  already write `expiresAt`: `eventRuntimeDataRequestReceipts`,
+  `organizerAudienceProjectionReceipts`, `organizerEntitlementReceipts`,
+  `salesDemoReceipts`, `transportOperationReceipts` and `eventLiveCommandReceipts`.
+  `instagramAccessTokens` has no policy on purpose: it is one pointer per
+  account whose `expiresAt` says when Meta expires the renewed token, not that
+  the document is dead, and the refresh job rewrites it.
+- Server only: rules deny every client read and write.
+
+Only pure replay lives here: a receipt whose sole job is to let a retry return
+the same result. A receipt that proves a decision to someone later keeps its
+own collection and retention: consent (`organizerCommunicationPermissionReceipts`,
+`catchCommunicationPermissionReceipts`, `eventAssistanceConsentReceipts`,
+`eventApprovalNotificationReceipts`), money (`hostMembershipWebhookReceipts`,
+`eventMessagingBudget*Receipts`, `publicEventAdmissionReceipts`), admission and
+conversion proofs other commands read (`organizerFormAdmissionReceipts`,
+`organizerFormConversionReceipts`), merges and publications kept for audit
+(`organizerContactMergeReceipts`, `externalEventPublicationReceipts`), and
+provider-delivery evidence (`organizerCampaignWebhookReceipts`).
+
+Moved so far: `functionEventReceipts`, `eventLiveCommandReceipts`,
+`eventChatAccessReceipts` (the five event-room commands),
+`organizerAudienceProjectionReceipts` (the audience projection's trigger dedupe)
+and `organizerEntitlementReceipts` (admin grant and revoke, one command name so
+an operation id reused across the two still conflicts). They are no longer
+written or declared; their documents stay under the legal hold, and account
+deletion still removes old chat receipts by uid. An entitlement grant keeps its
+own operation hash and result revision, so its identity outlives the receipt. Replay windows are short and an
+in-flight retry across the deploy only re-runs a revision-fenced or idempotent
+command, so nothing was copied forward.
 
 ### Public HTTP And Admin Callable Boundaries
 
@@ -3724,6 +3778,51 @@ Retained organizer roster history is unlinked by setting `linkedUid` and
 subject to the organizer's stated booking/records purpose rather than Catch
 account or marketing permission.
 
+### Listing Requests
+
+The website's `/listings/request/` form posts one structured request to
+`submitListingRequest` (`/api/listing-request`, `contracts/http/listing_request_*`).
+The request types are fixed: `claim`, `correctFact`, `removeAndDoNotList`,
+`trademark`, `copyright`, `privacy`, `impersonation` and `legalOrder`. Each
+type takes only its own verification fields (`contracts/shared/takedown_request_common.schema.json`):
+an official-channel proof for claim, removal and impersonation (an Instagram
+code to the official handle, a reply from an email at the official domain, or
+for removal a letter on letterhead), the field, correction and evidence link
+for a fact, the registration number, class and country or the year of first
+use and evidence for a trademark, the work, original and ownership basis for
+copyright (Rule 75's fields), the data kinds and identity match for privacy (no
+identity documents), and the issuer, reference and date of an order. Every
+request names its target (an organiser or event id, or a page URL on Catch's
+own site, stored as its path), the requester (name, role, email, optional phone
+and organisation), the fixed declarations (accurate, authorised, contact
+consent; good faith for trademark, copyright and impersonation; not licensed
+for copyright), the consent version and an optional context line capped at 280
+characters. There is no free-text demand. Who may file each type is checked on
+the server.
+
+Each request is one server-only `takedownRequests/{lr-<sha256(email, clientRequestId)>}`
+document with a short `reference` the requester quotes. It carries the
+deadlines the Admin Inbox works to, modelled on safety reports:
+`ackDueAt` 24 hours after receipt; `actionDueAt` for the interim step (suspend
+within 24 hours for removal and impersonation, disable within 36 hours for
+copyright, 3 hours for an order, null otherwise); and `resolveDueAt` (2 days
+for a claim, 7 days otherwise). `status` moves `received` → `acknowledged` →
+`verifying` → `actioned` or `declined` → `appealed` → `closed`. An actioned
+request records one outcome its type allows; removing or suspending a page
+also records the takedown tool's opaque `caseId` (`TD-0001`), never a name or
+slug. A declined request records one fixed reason. One appeal is allowed
+within 30 days of the decision, due 7 days after it is recorded and decided by
+someone other than the decider; upheld closes the request and overturned
+reopens it for a new decision. Every step is a `history` entry and an audit
+log. The intake follows Website Leads: App Check, hashed network (10 an hour)
+and email (5 an hour) limits, one record per email and client request id, 409
+on changed answers. It is never a `salesInboundIntents` row. Nothing is sent
+automatically; staff acknowledge and reply by email and record the step.
+Removal itself, preservation and the do-not-list registry belong to the
+organiser takedown tool. The Admin Inbox projects each request as a `takedown`
+item (`sourceKind` `takedownRequest`) that waits until decided and returns on
+appeal.
+
 ### Person Data Lenses And Canonical Fields
 
 Catch does not have one client-readable master person document. A verified
@@ -4532,8 +4631,8 @@ Mutations bind `expectedUid` to the authenticated account before any reads or
 writes. A token/account change during an outgoing request cannot send a previous
 account's draft, reaction, typing state or join decision as the new account.
 Mutations also use a reviewed revision and UID-bound request ID.
-`eventChatAccessReceipts` prevents an old join or open retry from reversing a
-later leave or close. Replay results report the originally applied revision;
+Its `commandReceipts` entry (see Command Receipts) prevents an old join or
+open retry from reversing a later leave or close. Replay results report the originally applied revision;
 clients must refresh current access, not interpret replay as current permission.
 `sendEventChatMessage`, `listEventChatMessages`, `setEventChatReaction` and
 `setEventChatTyping` read that same current authority on every active operation.
@@ -4580,7 +4679,7 @@ event admission or removes another participant from the event.
 
 `eventChatReactions/{sha256([messageId,uid])}` stores one optional reaction per
 person; the message stores six anonymous aggregate counts. Revision checks and
-namespaced payload-bound `eventChatAccessReceipts` prevent retries or late edits
+payload-bound `commandReceipts` entries prevent retries or late edits
 from double-counting or restoring a replaced reaction. Deletion removes the
 person's reaction record; anonymous historical counts on other people's
 messages remain. Their own removed messages expose neither text nor counts.
@@ -4801,7 +4900,10 @@ drift with later catalog edits.
 authority over one programme, written by triggers on `programStaffGrants` and
 `organizerPrograms` (`onProgramAccessViewGrantChanged`,
 `onProgramAccessViewProgramChanged`) and created for existing owners and grants
-by the `program-access-views` copy-forward migration. The programme's creator
+by the `program-access-views` copy-forward migration, and repaired by
+`program-access-views-refresh` (a view that differs from what the triggers would
+compute now is rewritten under a last-update-time precondition; nothing is
+deleted). The programme's creator
 gets `role: manager` with no expiry; a staff member gets `role: staff` and the
 duties their grant proves: an `inactive` view when the grant is revoked,
 expired, malformed or lacks the owner-approval proof `requireProgramAccess`
@@ -4816,7 +4918,14 @@ instant of an assignment naming that id. `workPickup`, `workHotel` and
 `getProgramWorkAccess` resolves it (pickup points from every operational duty
 but the hotel desk, hotels from every operational duty, functions from door and
 guest-desk duties): key `*` for every one, otherwise one key per named id.
-Rules compare these with
+`tripRoutes` holds the trips the account's reconciliation viewer, dispatcher
+and coordinator assignments reach, in the same `pickup|hotel` form. `arrivalRoutes` holds the arrivals journeys the account's airport greeter,
+transport dispatcher and coordinator assignments reach, as `pickup|hotel` keys
+(see the arrivals views below). `assignments` repeats the live duty
+tuples with their scopes and own expiries, and `grantExpiresAtMillis` the grant's
+own expiry, as `getProgramWorkAccess` returns them, because a phone's policies
+need one assignment to cover both ends of a transport route, which the flattened
+maps cannot say. Rules compare these with
 `request.time` through `hasProgramDuty`, `programDutyCoversPickup`,
 `programDutyCoversHotel`, `programDutyCoversFunction` and `isProgramManager`;
 each dimension is checked alone, as the callables' `allowed*Ids` union them, so
@@ -4826,6 +4935,159 @@ They hold ids, duty names and instants and no name or phone digits, so account
 deletion and archive anonymization have nothing personal to scrub there. A
 phone enforces the same instants offline from the cached view and its clock.
 Commands re-check authority from the source documents.
+
+`programWorkSummaries/{programId}` and `programResourceViews/{programId}__{kind}__{resourceId}`
+(#1339) are the work shell's programme header and its pickup point, hotel and
+function labels, kept by triggers on `organizerPrograms`, `programPickupPoints`,
+`programHotels` and `programFunctions` and created for existing sources by the
+`program-work-views` copy-forward migration. Each holds exactly the fields
+`getProgramWorkAccess` returns and nothing else the source holds: no sender
+connection, entitlement or branding, no hotel reception contact or notes, no
+function venue notes, location, instructions or dress code, and no pickup point
+coordinates or instructions. Rules let any account with live access read the
+header by id, and read a resource by id when its `programAccessViews` work list
+reaches it; a query naming the programme and one kind lists every resource of
+that kind when the work list's `*` key is live (the owner always), and a scoped
+account reads its named ids one by one. With the access view they replace the
+callable, which stays deployed for older builds.
+`programDoorFunctions/{functionId}`, `programDoorRows/{functionId}__{guestId}`
+and `programDoorJournalViews/{journalId}` (#1339) are the door of one function,
+kept by triggers on `programFunctions`, `programFunctionGuests`,
+`programGuests`, `programHouseholds`, `programDoorJournal` and
+`programStaffGrants`, and created for existing sources by the
+`program-door-views` copy-forward migration. The header holds exactly the
+function fields `getProgramFunctionDoorView` returned (venue notes, dress code
+and instructions included, since only door duty holders read it). A row is one
+guest at one function with the callable's roster fields: display name, whether
+invited, RSVP and attendance state, party size, household label and the
+response note, and never a phone number, email or other contact field. An
+`allGuests` function has a row for every programme guest, a `selectedGuests`
+function for each guest with a join row, and a guest neither invited nor
+checked in has none. A journal view is one door activity entry with the guest's
+name, the action, time, party size, note and the acting staff member's label,
+without the actor's account id or the device id; once the source is
+anonymized its view drops the name, note and label. The phone computes the
+header counts (heads expected and checked in, parties, no-shows, walk-ins) from
+the rows it lists and reads the newest 60 journal views by an ordered query.
+Rules let accounts whose function check-in or function lead duty covers the
+function, and the programme owner, get these by id or list them with a query
+naming `programId` and `functionId`; coordinators hold both duties in their
+`programAccessViews` document. The door's offline outbox and journal writes are
+unchanged: only the read moves.
+
+`programAlertViews/{programId}__{alertId}` and
+`programTravelCountViews/{programId}` (#1339) are the live board's alerts and
+travel counts, kept by triggers on `organizerMomentSends`,
+`programTravelLegs` and `programAlerts` and created by the
+`program-live-board-views` migration. An alert is one document: a staff
+attention send stamped for a duty (one per run and duty, from the earliest
+send, ending 24 hours after it) or a cancelled or diverted flight or disrupted
+inbound journey (no duty, no end), merged with who took or finished it. It
+carries `duty`, `expiresAtMillis`, the resolution state and the assignee's
+account id, so a phone can tell its own alerts; clients hide an alert past
+`expiresAtMillis`, and the retention sweep's delete of the resolutions clears
+the assignee. A function lead reads the alerts stamped for a duty it holds
+(one listener per duty); full reach (coordinators and the owner) reads every
+alert and the counts. The phone computes the schedule's phases from its clock.
+`listProgramStaffAttention` reads the same alerts (source `staffAttention`).
+
+`programArrivalViews/{legId}`, `programDepartureViews/{legId}` and
+`programVendorViews/{programId}__{vendorId}` (#1339) are the transport desks'
+rows, kept by triggers on `programTravelLegs`, `programTravelParties`,
+`programGuests`, `programHotels`, `programStaffGrants`, `programStays`, the
+programme's transport settings and `transportVendors`, and created for existing
+sources by the `program-arrival-views` copy-forward migration. An arrivals row
+is one expected, ready or disrupted inbound journey with exactly the fields
+`getProgramArrivalsRoster` returns (guest name, party, flight, the curb time
+resolved from the transport settings, readiness, claimant, destination), the
+claimant's account id in place of the caller's `claimedByMe` flag, and
+`pickupKey` and `hotelKey` (the ids, or `~` when the journey has none). Rules
+match those keys against `programAccessViews.arrivalRoutes`: each key is
+`pickup|hotel`, either side an id or `*`, written from one airport greeter,
+transport dispatcher or coordinator assignment so that its pickup and hotel
+scopes cover a journey together, as the roster's query scopes do; an assignment
+whose scopes would expand past 300 routes grants none. A scoped account lists
+one route at a time with a query naming `programId` and its pickup or hotel key.
+A departures row is one outbound journey to a hotel with the callable's row
+(guest, party, flight, leave-by, the guest's room and desk state); hotel desk
+duty covering the hotel reads them by a query naming `programId` and `hotelId`,
+and the desk counts are computed on the phone from the rows and its clock. A
+vendor view is the vendor's id, name and active flag for one bound programme,
+read by dispatchers: the vendor's phone number stays in `transportVendors`, so
+the callable's reply (which never carried it) becomes a read model without
+withholding by role. None carries a phone number or other contact field.
+
+`programTripViews/{tripId}` and `programHotelInboundViews/{legId}` (#1339) are
+the transport trips and the hotel desk's expected guests, kept by triggers on
+`transportTrips`, `programTravelLegs`, `programTravelParties`, `programGuests`
+and the programme's transport settings, and created for existing sources by the
+`program-trip-views` copy-forward migration. A trip view is exactly the row
+`listProgramTrips` returns (vehicle, plate, vendor name, status, times,
+passenger count and the manifest's guest names, from the recorded dispatch
+snapshot when there is one) with `pickupKey` and `hotelKey` (`~` for a trip
+with no hotel); the trip's notes, rate, driver and account ids stay in
+`transportTrips`. Rules match the keys against `programAccessViews.tripRoutes`,
+built like `arrivalRoutes` from reconciliation viewer, transport dispatcher and
+coordinator assignments (an id or `*` per side, one assignment covering both).
+A hotel desk covering the destination hotel also reads trips still en route to
+it (a query naming `programId`, `hotelKey` and `status`), which is the hotel's
+inbound vehicle list; it therefore also sees a trip's pickup point id, vendor
+id, kind, arrival time and void reason, which `getProgramHotelInbound` did not
+return. A hotel inbound row is the expected-guest row of one expected or ready
+inbound journey (guest, party, passengers, curb time, readiness) and nothing
+about the flight, claimant or pickup point; hotel desk duty covering the hotel
+reads them by a query naming `programId` and `hotelId`. Neither holds a phone
+number or other contact field.
+
+`programStaffViews/{programId}__{uid}` (#1339) is the administrators' staff
+list, kept by triggers on `programStaffGrants` and `organizerPrograms` and
+created for existing grants by the `program-staff-views` copy-forward
+migration. A row is exactly the member row `listProgramStaff` returns (display
+name, last four phone digits, the duty assignments with scopes and expiries,
+the grant's expiry and revision), with the status the callable computed from
+the clock replaced by the facts it computes from: `revoked`, `ownerApproved`
+(the owner's approval proof is present and valid), `activeFromMillis` and
+`activeUntilMillis` (the latest expiry of an assignment the grant and the
+approval allow, null when none does). The phone derives revoked, approval
+required, expired or active from those and its clock. Rules let accounts
+holding the programme administration duty, and the owner, get or list rows with
+a query naming `programId`; a coordinator holds every duty but programAdmin and
+reads none. Display names and phone digits are personal data and are scrubbed
+with the grant by archive anonymization, which reaches the rows through the
+grant trigger. `revokeProgramStaff` and `grantProgramStaff` stay callables
+fenced by the grant's revision.
+
+`programWhatsappThreadViews/{threadId}` (the thread's own id) is the programme
+inbox row, kept by triggers on `programWhatsappThreads`, `programHouseholds`
+(the thread id derives from the programme and household) and `organizerPrograms`
+(side labels), and created for existing threads by the
+`program-whatsapp-thread-views` copy-forward migration. It is exactly the
+summary `listProgramWhatsappThreads` returned without `serviceWindowOpen`, plus
+`householdLabel`, `primaryContactName` and `guestCount`; never the phone hash,
+sender connection, take-over uid or message count. Managers and the
+communications duty list it by a query naming `programId`. Under the same rule
+they list `programWhatsappMessages` (a query naming `programId` and `threadId`;
+the existing composite index serves it), `programWhatsappCannedReplies` and
+`programPhotos` (a query naming `programId`). Messages, views and photo records
+go with the archived programme's retention sweep (the view follows its thread's
+deletion through the trigger). A phone listing the inbox newest first uses the composite
+index on `programWhatsappThreadViews` (`programId`, `lastMessageAtMillis`
+descending), with `programPhotos` (`programId`, `createdAtMillis` descending) and
+`organizerProgramViews` (`organizerId`, `startsAtMillis` descending), in
+`firestore.indexes.json`.
+
+`organizerProgramViews/{programId}` is the planner's setup view of one
+programme, kept by triggers on `organizerPrograms`, `programFunctions`,
+`programPickupPoints` and `programHotels`, and created for existing programmes
+by the `organizer-program-views` copy-forward migration: the programme object
+`getOrganizerProgram` returned, its creator, the function count and the
+function, pickup point and hotel setup lists (a function's live expected and
+checked-in counts excluded; they stay in `programResourceViews`). The creator
+and the organizer's current managers read and list it (by `createdBy` or
+`organizerId`), a live `programAdmin` duty reads one by id, and a deleted
+account reads nothing. Guest, household, journey and staff counts are not in
+it. The anonymiser's scrubs of hotel contacts and the programme's `anonymizedAt`
+reach it through the same triggers.
 
 `organizerCampaigns.recipientSource` names where recipients resolve:
 `savedAudience` (default, backed by `savedAudienceId`) or
@@ -4853,8 +5115,10 @@ never guest or household names, phone numbers, rooms or notes.
 
 `organizerPrograms.whatsappSenderConnectionId` (optional; absent or null
 falls back to the organiser's first active WhatsApp sender) binds a
-wedding's own number. Six new server-only collections hold the guest
-conversation; clients reach them only through callables.
+wedding's own number. Six new collections hold the guest conversation; the
+threads, endpoint index, reply reservations and settings are server-only, and
+the inbox reads views and messages as described under
+`programWhatsappThreadViews` above.
 `programWhatsappEndpointIndex/{programId}_{endpointHash}` maps the sha256 of
 an E.164 number to `{householdId, guestId}` (claimants kept so a shared
 number is marked `ambiguous`), maintained by triggers on `programHouseholds`
@@ -4865,7 +5129,9 @@ senders: `{programId}_u-{hash}`) carries the 24-hour window, `handledBy`
 (`assistant` | `planner`), `state` (`needsYou` | `handled`), the guest's
 language, the last message preview and the escalation reason.
 `programWhatsappMessages/{messageId}` holds one message (text up to 4096
-characters; media by reference only), its author and delivery status.
+characters; media by reference only), its author (`authorUid` and, for a
+planner reply, `authorLabel`, the author's display name copied from their grant
+when the reply is written) and delivery status.
 `programWhatsappReplyOperations` reserve each free-text reply before the
 Meta call. `programWhatsappCannedReplies` hold saved replies per language
 and `programAssistantSettings/{programId}` the assistant settings (absent
@@ -5466,7 +5732,7 @@ event-accuracy, and unclaimed-affordance review. The shared Functions policy
 derives effective event visibility as the minimum of the event request and
 organizer ceiling on every surface and refuses a request above that ceiling.
 Before this contract shipped, the guarded visibility-decision backfill repaired
-the two production legacy approvals (`afterfly` and `bhag`) to their exact prior
+the two production legacy approvals to their exact prior
 `published` + `indexed` semantics; the post-apply dry run reported two current
 documents and zero remaining repairs.
 
@@ -5550,6 +5816,55 @@ host locks:
 | `organizers/{organizerId}.ownership` | organizer claim/create/update callables | `programmatic` before ownership, `claimed` after approval. |
 | `organizers/{organizerId}.publicPage.indexReview` | admin organizer indexing | Audit evidence for source quality, media rights, cadence, and owner/contact verification before a page becomes indexable. |
 | `reviews/{reviewId}.ownerResponse` | `setReviewResponse` | Server-owned owner response rendered by app and website review surfaces. |
+
+## Listing Suppressions
+
+`listingSuppressions/{caseId}` is the do-not-list registry: one document per
+takedown case (`caseId` is the opaque `TD-nnnn` id, never a name or slug),
+written by the organiser takedown tool's `suppress` mode
+(`tool/data/organizer_takedown.mjs`; operator runbook in
+`docs/release_operations.md`, "Organiser takedown"). It is server-only: rules
+deny every client, including Admin claims, because even a keyed hash confirms
+whether a guessed organiser is suppressed.
+
+- **What it stores.** `identityHashes` are HMAC-SHA256 hashes, under the
+  Secret Manager key `LISTING_SUPPRESSION_HMAC_KEY`, of identity keys derived by
+  `operations/src/workflows/supply-intake/organizer-matching/suppression.mjs`:
+  `label:` keys for business names, aliases and handles (lowercase letters and
+  digits, with and without stop words, so a name, an `@handle` and a domain's
+  first label agree), the organizer-matching identity keys of links
+  (`instagram:`, `luma:calendar:`, `domain:`, `url:` for shared hosts),
+  `organizer:` ids and `slug:` slugs. No name, handle, link or domain is stored
+  in clear, and `identityKeyCounts` gives only how many of each kind. The key is
+  never in the repository; Functions bind it with `defineSecret` and the tool
+  reads it from Secret Manager. Rotating it invalidates every stored hash, so a
+  rotation must rehash every case from its case file while the case files are
+  still held.
+- **Other fields.** `reason` is the takedown request type
+  (`removeAndDoNotList`, `trademark`, `copyright`, `privacy`, `courtOrder`,
+  `impersonation`); `active` (false lifts the suppression);
+  `createdAtMillis`, `reviewAtMillis` (three years for a business by default),
+  `createdBy`; `blockedIntakeCount`/`lastBlockedAtMillis`; and `reviewFlags`
+  (self-created organizers that matched, newest 50).
+- **Enforcement.** `createSupplyIntakeRequest`, the one entry point for every
+  nomination, host application, message nomination, event refresh and
+  instant draft, hashes the request's seed name, links, `@handles` and links
+  in its notes, and refresh target, and looks them up with
+  `array-contains-any`. A match writes nothing but the case's
+  `blockedIntakeCount`; staff front doors (`adminNominateOrganizer`,
+  `adminRefreshOrganizerEvents`) refuse with `failed-precondition` naming the
+  case id, the website instant draft refuses without naming anything, and
+  triggers drop the request and log the case id (never the identity).
+  `approveListing` repeats the check on the approved name, slug, built links
+  and the request (a backstop for identity the worker found after intake and
+  for cases written after intake). `createOrganizer` does not block a host's
+  own workspace (it starts private and unpublished, and the real organiser may
+  be the one signing up); it records a `reviewFlags` entry on the case for
+  staff review.
+- **Failure policy.** With no active case nothing can match and no key is read.
+  While an active case exists, a missing or short key fails intake and listing
+  approval closed (`unavailable`, nothing queued or published); organizer
+  creation proceeds and logs an error, since it only flags.
 
 ## Organizer Growth Facts
 
@@ -6926,9 +7241,35 @@ apex-redirect definitions live in `contracts/shared/custom_domain_common.schema.
   active and null otherwise; pages built before it omit it and readers treat
   absence as null.
 
-The contracts land before their writers: no function writes `customDomains`
-yet, the four callables are not exported, and `organizerFormDomains` stays the
-live form registry until the forms code moves onto `customDomains`.
+`functions/src/customDomains/` owns the rules the schema cannot express.
+`domainPolicy.ts` computes the registrable domain from the Public Suffix List
+(the pinned `tldts` package, never a label count, so `club.co.in` is an apex),
+rejects hosts under a private suffix such as a hosting provider's, non-ICANN
+names other than the reserved `.test` and `.example`, IDN and Catch or
+provider hosts, and requires `apexRedirect.hostname` to equal
+`registrableDomain`. It screens every reservation against
+`contracts/catalogs/custom_domain_blocklist.json` plus Catch's own brand label:
+an exact hit is refused, a lookalike or credential/payment term is reserved
+with `review.state: held` and cannot activate until Admin approves. Its
+transition table is the only way `status` changes; each write bumps
+`revision` and appends bounded `history`. `domainRegistry.ts` applies it in
+transactions fenced by `generation` (and the whole binding for operator
+flows): one non-removed domain per organiser across hostnames (an ended
+`pendingDns` lease no longer counts), a 7-day lease that becomes `expired`,
+activation only on fresh DNS proof plus fresh provider evidence for the exact
+`providerHostnameId`, `lapsed` back to `active` within 14 days or `removed`
+after, and suspension that returns to the interrupted status. No provider is
+called there; callers pass trusted evidence.
+
+Organiser form domains now live here as `target.kind: "form"` records on the
+`firebaseHosting` provider: `resolvePublicFormDomain` and
+`tool/firebase/form_domain_operator.mjs` read and write `customDomains`, and
+the operator's revoke is a `removed` transition. The `organizerFormDomains`
+schema, rules match and contract entry are retired; the path stays denied by
+default. `tool/data/migrate_form_domains_to_custom_domains.mjs` folds any
+remaining legacy documents (`pending` to `pendingDns`, `revoked` to `removed`)
+as described in `contracts/migrations/organizer_form_domains_to_custom_domains.json`.
+The owner callables are not exported yet.
 
 
 ## Catch-owned controlled support reply (CAT16)

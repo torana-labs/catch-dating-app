@@ -1,45 +1,36 @@
 part of 'program_work_repository.dart';
 
-/// The wedding's WhatsApp inbox: guest threads (saved for offline cold
-/// starts like every programme read), the reply and take-over commands,
-/// saved replies and the assistant settings.
+/// The wedding's WhatsApp inbox commands (reply, take-over, mark read, saved
+/// replies) and the assistant settings; the threads, conversations and saved
+/// replies themselves are listeners in `program_inbox_views_repository.dart`.
 extension ProgramWhatsappRepositoryApi on ProgramWorkRepository {
-  Future<ProgramWhatsappInbox> listWhatsappThreads({
-    required String programId,
-    required ProgramWhatsappFilter filter,
-    String? cursor,
-    String? snapshotAccountId,
-  }) => _call(
+  /// The wedding's number, for the inbox header: the one part of the inbox
+  /// that is not a listener row (the sender connection stays on the server).
+  Future<ProgramWhatsappSender?> getWhatsappSender(String programId) => _call(
     name: 'listProgramWhatsappThreads',
     authorityScopedRead: true,
     payload: ListProgramWhatsappThreadsCallableRequest(
       programId: programId,
-      filter: filter.name,
-      cursor: cursor,
+      filter: ProgramWhatsappFilter.all.name,
+      limit: 1,
     ).toJson(),
-    action: 'load the guest messages',
-    parse: ProgramWhatsappInbox.fromCallableData,
-    snapshotScope: cursor == null
-        ? programSnapshotScope('whatsappInbox', programId, filter.name)
-        : null,
-    snapshotAccountId: snapshotAccountId,
+    action: 'load the wedding number',
+    parse: (value) => ProgramWhatsappInbox.fromCallableData(value).sender,
   );
 
-  Future<ProgramWhatsappThread> getWhatsappThread({
+  /// Marks a thread read, the write half of opening it. Answers with the
+  /// thread's revision.
+  Future<int> markWhatsappThreadRead({
     required String programId,
     required String threadId,
-    String? snapshotAccountId,
   }) => _call(
-    name: 'getProgramWhatsappThread',
-    authorityScopedRead: true,
+    name: 'markProgramWhatsappThreadRead',
     payload: GetProgramWhatsappThreadCallableRequest(
       programId: programId,
       threadId: threadId,
     ).toJson(),
-    action: 'load the conversation',
-    parse: ProgramWhatsappThread.fromCallableData,
-    snapshotScope: programSnapshotScope('whatsappThread', programId, threadId),
-    snapshotAccountId: snapshotAccountId,
+    action: 'mark the conversation read',
+    parse: (data) => requiredInt(requiredMap(data, 'read'), 'revision'),
   );
 
   /// Sends [text] inside the 24-hour window the planner saw
@@ -66,38 +57,26 @@ extension ProgramWhatsappRepositoryApi on ProgramWorkRepository {
     parse: (data) => requiredString(requiredMap(data, 'reply'), 'messageId'),
   );
 
-  /// Takes a thread over from the assistant or hands it back.
+  /// Takes a thread over from the assistant or hands it back, fenced by
+  /// [expectedRevision]: the thread's revision as the view shows it, or the
+  /// newer one marking it read answered (a view lags its thread by a trigger).
   Future<int> setWhatsappThreadHandling({
     required String programId,
-    required ProgramWhatsappThreadSummary thread,
+    required String threadId,
+    required int expectedRevision,
     required ProgramWhatsappHandledBy handledBy,
     ProgramWhatsappThreadState? state,
   }) => _call(
     name: 'setProgramWhatsappThreadHandling',
     payload: SetProgramWhatsappThreadHandlingCallableRequest(
       programId: programId,
-      threadId: thread.threadId,
+      threadId: threadId,
       handledBy: handledBy.name,
       state: state?.name,
-      expectedRevision: thread.revision,
+      expectedRevision: expectedRevision,
     ).toJson(),
     action: 'change who answers',
     parse: (data) => requiredInt(requiredMap(data, 'handling'), 'revision'),
-  );
-
-  Future<List<ProgramCannedReply>> listCannedReplies({
-    required String programId,
-    String? snapshotAccountId,
-  }) => _call(
-    name: 'listProgramWhatsappCannedReplies',
-    authorityScopedRead: true,
-    payload: ListProgramWhatsappCannedRepliesCallableRequest(
-      programId: programId,
-    ).toJson(),
-    action: 'load the saved replies',
-    parse: ProgramCannedReply.listFromCallableData,
-    snapshotScope: programSnapshotScope('cannedReplies', programId),
-    snapshotAccountId: snapshotAccountId,
   );
 
   Future<int> upsertCannedReply({
@@ -183,87 +162,71 @@ extension ProgramAssistantPreviewApi on ProgramWorkRepository {
 ProgramWorkRepository programmeInboxCommands(Ref ref) =>
     ref.watch(programWorkRepositoryProvider);
 
-/// One inbox segment, from the live read or a bounded snapshot.
+/// One inbox segment, live from `programWhatsappThreadViews` (#1339). The
+/// wedding's number comes from the server; without it the inbox still shows.
 @riverpod
 Future<ProgramReadView<ProgramWhatsappInbox>> programWhatsappInbox(
   Ref ref,
   String programId,
   ProgramWhatsappFilter filter,
 ) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await _readView(
-    ref,
-    accountId,
-    programId,
-    programSnapshotScope('whatsappInbox', programId, filter.name),
-    () => ref
-        .read(programWorkRepositoryProvider)
-        .listWhatsappThreads(
-          programId: programId,
-          filter: filter,
-          snapshotAccountId: accountId,
-        ),
-    ProgramWhatsappInbox.fromCallableData,
+  final rows = await ref.watch(
+    programWhatsappThreadRowsStreamProvider(programId).future,
   );
-  retainProgramProjection(
-    ref,
-    programProjectionDeadline(null, result.snapshotExpiresAt),
+  final sender = await ref.watch(
+    programWhatsappSenderProvider(programId).future,
   );
-  return result;
+  final inbox = programWhatsappInboxFromViews(
+    programId: programId,
+    filter: filter,
+    rows: rows,
+    sender: sender,
+    now: ref.read(appClockProvider).now(),
+  );
+  return (value: inbox, snapshotAt: null, snapshotExpiresAt: null);
 }
 
-/// One conversation, from the live read or a bounded snapshot.
+/// The wedding's WhatsApp number for the inbox header, or null when it
+/// cannot be read now.
+@riverpod
+Future<ProgramWhatsappSender?> programWhatsappSender(
+  Ref ref,
+  String programId,
+) async {
+  _watchWorkAccount(ref);
+  try {
+    return await ref
+        .read(programWorkRepositoryProvider)
+        .getWhatsappSender(programId);
+  } on AppException {
+    return null;
+  }
+}
+
+/// One conversation, live.
 @riverpod
 Future<ProgramReadView<ProgramWhatsappThread>> programWhatsappThread(
   Ref ref,
   String programId,
   String threadId,
-) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await _readView(
-    ref,
-    accountId,
-    programId,
-    programSnapshotScope('whatsappThread', programId, threadId),
-    () => ref
-        .read(programWorkRepositoryProvider)
-        .getWhatsappThread(
-          programId: programId,
-          threadId: threadId,
-          snapshotAccountId: accountId,
-        ),
-    ProgramWhatsappThread.fromCallableData,
-  );
-  retainProgramProjection(
-    ref,
-    programProjectionDeadline(null, result.snapshotExpiresAt),
-  );
-  return result;
-}
+) async => (
+  value: await ref.watch(
+    programWhatsappThreadStreamProvider(programId, threadId).future,
+  ),
+  snapshotAt: null,
+  snapshotExpiresAt: null,
+);
 
-/// The programme's saved replies.
+/// The programme's saved replies, live.
 @riverpod
 Future<ProgramReadView<List<ProgramCannedReply>>> programCannedReplies(
   Ref ref,
   String programId,
-) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await _readView(
-    ref,
-    accountId,
-    programId,
-    programSnapshotScope('cannedReplies', programId),
-    () => ref
-        .read(programWorkRepositoryProvider)
-        .listCannedReplies(programId: programId, snapshotAccountId: accountId),
-    ProgramCannedReply.listFromCallableData,
-  );
-  retainProgramProjection(
-    ref,
-    programProjectionDeadline(null, result.snapshotExpiresAt),
-  );
-  return result;
-}
+) async => (
+  value: await ref.watch(programCannedRepliesStreamProvider(programId).future),
+  snapshotAt: null,
+  snapshotExpiresAt: null,
+);
 
 /// The assistant settings and the wedding's number.
 @riverpod

@@ -144,7 +144,7 @@ describe("firestore.rules", () => {
 
     it("denies every client write to the trigger-owned organizerSummary", async () => {
       const summary = {
-        name: "Bandra Run Club", location: "mumbai", area: "Bandra",
+        name: "Sandbar Run Club", location: "mumbai", area: "Bandra",
         hostName: null, tags: [], rating: 0, synthetic: false,
         appVisibility: "discoverable", status: "active", archived: false,
       };

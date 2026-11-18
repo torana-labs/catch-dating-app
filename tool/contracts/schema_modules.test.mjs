@@ -9,6 +9,7 @@ import {fileURLToPath} from "node:url";
 import test from "node:test";
 import * as canonical from "./generated/schema_contract_registry.mjs";
 import {
+  assertCustomDomainBlocklist,
   boundFieldConstraints,
   functionsRuntimeModules,
   publishSchemaOutputs,
@@ -51,6 +52,26 @@ test("modular Functions schemas match their canonical schema and catalog values"
   for (const [name, value] of Object.entries(actual)) {
     assert.ok(Object.hasOwn(canonical, name), `Unknown generated export: ${name}`);
     assert.deepEqual(value, canonical[name], `Schema/catalog semantics drifted: ${name}`);
+  }
+});
+
+test("the custom domain blocklist fails generation instead of widening the registry", () => {
+  const catalog = JSON.parse(fs.readFileSync(
+    path.join(root, "contracts/catalogs/custom_domain_blocklist.json"), "utf8"));
+  assertCustomDomainBlocklist(catalog);
+  const term = catalog.terms[0];
+  for (const broken of [
+    {...catalog, kind: "other"},
+    {...catalog, extra: true},
+    {...catalog, providerSuffixes: ["*.example.net"]},
+    {...catalog, providerSuffixes: ["web.app", "web.app"]},
+    {...catalog, terms: [{...term, term: "Bad-Term"}]},
+    {...catalog, terms: [{...term, action: "allow"}]},
+    {...catalog, terms: [{...term, category: "unknown"}]},
+    {...catalog, terms: [term, term]},
+    {...catalog, terms: [{...term, note: "x"}]},
+  ]) {
+    assert.throws(() => assertCustomDomainBlocklist(broken), /blocklist is invalid/);
   }
 });
 
@@ -298,4 +319,18 @@ test("generated platform Dart imports nothing from a context", () => {
     .filter((file) => fs.readFileSync(path.join(generated, file), "utf8")
       .includes("package:catch_dating_app/contexts/"));
   assert.deepEqual(upward, []);
+});
+
+test("tool validators compile on first use and keep Ajv's errors property", async () => {
+  // Compiling all of them at import cost every importing tool about 9 s.
+  const source = fs.readFileSync(new URL("./generated/schema_contract_validators.mjs", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /^export const validate\w+ = ajv\.compile\(/mu);
+  const started = performance.now();
+  const validators = await import("./generated/schema_contract_validators.mjs");
+  assert.ok(performance.now() - started < 3000, "importing the tool validators compiles nothing");
+  const validate = validators.validateOrganizerDocument;
+  assert.equal(validate.errors, null);
+  assert.equal(validate({}), false);
+  assert.ok(Array.isArray(validate.errors) && validate.errors.length > 0, JSON.stringify(validate.errors));
+  assert.ok(validators.schemaErrorMessages(validate).length > 0);
 });

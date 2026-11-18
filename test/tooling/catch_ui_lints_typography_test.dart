@@ -47,9 +47,9 @@ MethodInvocation _methodInvocation(String source) {
   return invocation;
 }
 
-List<NamedExpression> _namedExpressions(String source) {
+List<NamedArgument> _namedExpressions(String source) {
   final unit = parseString(content: source).unit;
-  final visitor = _NamedExpressionVisitor();
+  final visitor = _NamedArgumentVisitor();
   unit.accept(visitor);
   return visitor.expressions;
 }
@@ -64,12 +64,12 @@ class _MethodInvocationVisitor extends RecursiveAstVisitor<void> {
   }
 }
 
-class _NamedExpressionVisitor extends RecursiveAstVisitor<void> {
-  final expressions = <NamedExpression>[];
+class _NamedArgumentVisitor extends RecursiveAstVisitor<void> {
+  final expressions = <NamedArgument>[];
 
   @override
-  void visitNamedExpression(NamedExpression node) {
-    if (node.name.label.name == 'letterSpacing') expressions.add(node);
-    super.visitNamedExpression(node);
+  void visitNamedArgument(NamedArgument node) {
+    if (node.name.lexeme == 'letterSpacing') expressions.add(node);
+    super.visitNamedArgument(node);
   }
 }

@@ -58,7 +58,7 @@ it as a 503 with `private, no-store` and `Retry-After: 30`, never a cached 200
 signed-in, Host, legal, `/api/public-catalog`, `/api/home-catalog` and private-shell responses stay
 `no-store`. Signed-in and follow state load in the browser. React cache only
 deduplicates a render's reads; there is no server-side cross-request snapshot or
-ISR fallback. The only shared read is one a minute per instance for the uptime
+ISR fallback. The only shared read is one every two minutes per instance for the uptime
 check's `/api/public-catalog` calls (see
 [web surface architecture](web_surface_architecture.md#unavailable-public-reads)). The request gate checks
 availability, organizer aliases and missing live-route statuses before streaming
@@ -164,12 +164,17 @@ in `guest` or `host` columns (`KitFooter`), each link flush with its column
 title on one row rhythm, then the wordmark with the tagline on its baseline and
 the operator line. Guest: Explore, Hosts (with Weddings) and Help and legal;
 the homepage and the city pages add their Cities column. Host: Product, Get
-started, the brand's column (What's on, Help, Contact) and Legal. The last
-column ends with Privacy choices. The help band leads the footer on every
-guest and host page ("We reply on WhatsApp, usually within an hour.", with
-the WhatsApp link and, on host pages, Book a walkthrough to the free-trial
-start); one-job flows (booking, invitation, the demo continuation) turn it
-off, and ad landing pages will too. It states no hours. A product page (host,
+started, the brand's column (What's on, Help, Contact) and Legal. Help and
+legal, and the brand's column, list a quiet "Report or remove a listing" link
+to the `/listings/request/` form after Contact. The last column ends with
+Privacy choices. A playbook page may pass its own `footer.columns` in place
+of the variant's (the kit's KitFooter `cols`): the product pages v2 pass the
+canvas's five (Product, Hosts by format, Get started, Resources with Forms,
+and the brand's column with the report link and the legal links). The help band leads the footer on every guest and host page
+("We reply on WhatsApp, usually within an hour.", with the WhatsApp link and,
+on host pages, Book a walkthrough to the `/host/walkthrough/` request form);
+one-job flows (booking, invitation, the demo continuation) turn it off, and ad
+landing pages will too. It states no hours. A product page (host,
 weddings) may name itself in the wordmark and give its own line. Home, Explore
 and the city pages, the host landing, billing and application, weddings, the
 account page, legal, help, 404, the claim page, organiser pages and event
@@ -215,11 +220,38 @@ that uses a section or option no kit component draws yet
   screen card, a photo asset or a QR code; card grids name a read model.
   Copy never holds `[placeholders]`, hex colours or the brand name (write
   `{{brand.name}}`), and every numeric proof cites a footnote.
+- **Show-when-live.** A section or an action may name its feature's product
+  brief status (`built`, `partly`, `new` or `tryIt`, with a `statusNote` on a
+  section). Only `built` (the default) parts render: `livePlaybookPage`
+  strips the rest before the render, the structured data and the static
+  heads, and a live link to a hidden section fails validation. The product
+  pages v2 (18 Nov 2026) keep their Partly and New features and every
+  try-it band, button and closing tool form (`requestKind: "tool"` with
+  `input` url or text, which no slot sends) hidden this way until each
+  ships; flipping one is a content PR that sets it `built`.
 - **Indexing.** `meta.noindex` is the page's one approval flag. Every page
   starts `true`, so it is `noindex, follow` and out of both sitemaps; the
   owner's approval is the PR that sets it `false`. Ad landing pages stay
   noindex whatever it says. routes.json marks these routes
   `owner-approval` for indexing and the sitemap.
+- **Product pages v2.** How it works (`/how-it-works/`), Your page
+  (`/product/your-page/`), Bookings and memberships
+  (`/product/bookings-and-memberships/`), Messages and growth
+  (`/product/messages-and-growth/`), The room (`/product/the-room/`), Running
+  the event (`/product/running-the-event/`), Guest records
+  (`/product/guest-records/`), Reports and payouts
+  (`/product/reports-and-payouts/`) and Forms (`/product/forms/`) replace the
+  #1983 pages on the owner-approved canvas; their addresses follow their
+  titles (owner, 18 Nov 2026). The #1983 paths (`/product/bookings/`,
+  `/messages/`, `/guests/`, `/reports/`, `/night/` and `/door/`, each with
+  anything under it) answer 301 straight to their final page, with no
+  chain, in Hosting (routes.json redirects), the preview config and the Next
+  proxy (`retiredMarketingRoutes.ts`), keeping the query. The room and
+  Running the event are new and stay noindex until the owner approves them;
+  the other seven keep the indexing the #1983 pages had. Each page takes one
+  colour (coral, indigo, yellow, magenta, mint, pink, sky); sky and the soft
+  tile tints (`coralSoft` … `skySoft`, tiles only) are canvas-owned tokens
+  imported by `tool/design/playbook/import_kit_tokens.mjs`.
 - **Rendering.** `features/playbook/PlaybookPage.tsx` draws the site header in
   the page's variant (with its breadcrumbs, its own action and the
   founding-host offer strip while that market's public counter is open), each
@@ -267,7 +299,7 @@ App Check token the lead intake requires.
    from its board in `design/source_packs/website-playbook/pages/`, with
    `"$schema": "../../playbookPage.schema.json"`. `id` is the content key: the
    route id, or for a family page the route id and its parameters joined with
-   `/` (`story_detail/carter-road-runners`). Resolve or remove every
+   `/` (`story_detail/driftwood-bay-runners`). Resolve or remove every
    bracketed placeholder, map kit tones to grounds, name capture slots, and
    start with `"noindex": true`.
 3. Add one entry to that section's `index.ts`:

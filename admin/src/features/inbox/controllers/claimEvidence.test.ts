@@ -3,11 +3,11 @@ import type {ClaimEvidence} from "../api/inboxRepository";
 import {claimApprovalIssue, claimChecks} from "./claimEvidence";
 
 const evidence = (overrides: Partial<ClaimEvidence> = {}): ClaimEvidence => ({
-  requestId: "bhag", organizerId: "bhag", requesterUid: "arjun", requesterName: "Arjun Bhagat", requesterRole: "manager",
-  contact: "arjun@example.com", proofCount: 1, status: "pending", createdAt: "2026-10-29T13:42:00.000Z", targetPath: "organizerClaimRequests/bhag",
-  businessEmail: "arjun@example.com", businessPhone: null, proofUrls: ["https://instagram.com/bhag.club"], message: "I run it.", updatedAt: null,
+  requestId: "brindle", organizerId: "brindle", requesterUid: "arjun", requesterName: "Arjun Bhatia", requesterRole: "manager",
+  contact: "arjun@example.com", proofCount: 1, status: "pending", createdAt: "2026-10-29T13:42:00.000Z", targetPath: "organizerClaimRequests/brindle",
+  businessEmail: "arjun@example.com", businessPhone: null, proofUrls: ["https://instagram.com/brindleclub"], message: "I run it.", updatedAt: null,
   requesterProfile: {exists: true, profileComplete: true},
-  organizer: {exists: true, name: "Bhag Club", claimState: "claimPending", ownershipState: "programmatic", ownerUserId: null, canonicalPath: "/organizers/bhag/"},
+  organizer: {exists: true, name: "Brindle Club", claimState: "claimPending", ownershipState: "programmatic", ownerUserId: null, canonicalPath: "/organizers/brindle/"},
   ...overrides,
 } as ClaimEvidence);
 

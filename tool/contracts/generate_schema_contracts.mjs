@@ -253,6 +253,10 @@ async function main() {
     "catalogs/organizer_form_templates.json"
   );
   assertOrganizerFormTemplateCatalog(organizerFormTemplateCatalog);
+  const customDomainBlocklist = readContractJson(
+    "catalogs/custom_domain_blocklist.json"
+  );
+  assertCustomDomainBlocklist(customDomainBlocklist);
   const hostAttentionPolicyCatalog = readContractJson(
     "catalogs/host_attention_policies.json"
   );
@@ -381,6 +385,7 @@ async function main() {
       organizerProviderCatalog,
       eventSuccessPresencePolicy,
       organizerEntitlementSkuCatalog,
+      customDomainBlocklist,
       photoCatalog,
       profilePhotoPolicy,
   });
@@ -409,6 +414,7 @@ async function main() {
       organizerProviderCatalog,
       eventSuccessPresencePolicy,
       organizerEntitlementSkuCatalog,
+      customDomainBlocklist,
       photoCatalog,
       profilePhotoPolicy,
     })
@@ -1471,6 +1477,44 @@ ${rows}
  * The provider catalog is the provider row the setup command responses
  * return: it must satisfy that row's schema, one row per provider.
  */
+// The custom domain registry screens hostnames with this catalog in Functions.
+// A malformed entry must fail generation, never widen what the registry serves.
+export function assertCustomDomainBlocklist(catalog) {
+  const fail = (detail) => {
+    throw new Error(`Custom domain blocklist is invalid: ${detail}`);
+  };
+  if (catalog?.schemaVersion !== 1 || catalog?.kind !== "customDomainBlocklist" ||
+      typeof catalog.description !== "string" ||
+      !Array.isArray(catalog.providerSuffixes) || !Array.isArray(catalog.terms)) {
+    fail("identity");
+  }
+  const allowed = new Set(["schemaVersion", "kind", "description",
+    "providerSuffixes", "terms"]);
+  for (const key of Object.keys(catalog)) {
+    if (!allowed.has(key)) fail(`unknown field ${key}`);
+  }
+  const host = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/u;
+  const seenSuffixes = new Set();
+  for (const suffix of catalog.providerSuffixes) {
+    if (typeof suffix !== "string" || !host.test(suffix) ||
+        seenSuffixes.has(suffix)) fail(`provider suffix ${suffix}`);
+    seenSuffixes.add(suffix);
+  }
+  const seenTerms = new Set();
+  for (const entry of catalog.terms) {
+    if (!entry || typeof entry !== "object" ||
+        JSON.stringify(Object.keys(entry).sort()) !==
+          JSON.stringify(["action", "category", "term"]) ||
+        typeof entry.term !== "string" || !/^[a-z0-9]{4,63}$/u.test(entry.term) ||
+        !["reject", "review"].includes(entry.action) ||
+        !["bank", "brand", "credential", "payment"].includes(entry.category) ||
+        seenTerms.has(entry.term)) {
+      fail(`term ${entry?.term}`);
+    }
+    seenTerms.add(entry.term);
+  }
+}
+
 function assertOrganizerProviderCatalog(catalog, responseSchema) {
   const rows = responseSchema.properties.providers;
   const row = rows.items;
@@ -2186,6 +2230,7 @@ function renderTsSchemaModules({
   organizerProviderCatalog,
   eventSuccessPresencePolicy,
   organizerEntitlementSkuCatalog,
+  customDomainBlocklist,
   photoCatalog,
   profilePhotoPolicy,
 }) {
@@ -2220,6 +2265,7 @@ function renderTsSchemaModules({
         eventSuccessPresencePolicy.likelyDepartedAfterSeconds,
     }],
     ["organizerEntitlementSkuCatalog", organizerEntitlementSkuCatalog],
+    ["customDomainBlocklistCatalog", customDomainBlocklist],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],
@@ -2328,6 +2374,7 @@ function renderToolSchemaRegistry({
   organizerProviderCatalog,
   eventSuccessPresencePolicy,
   organizerEntitlementSkuCatalog,
+  customDomainBlocklist,
   photoCatalog,
   profilePhotoPolicy,
 }) {
@@ -2349,6 +2396,7 @@ function renderToolSchemaRegistry({
         eventSuccessPresencePolicy.likelyDepartedAfterSeconds,
     }],
     ["organizerEntitlementSkuCatalog", organizerEntitlementSkuCatalog],
+    ["customDomainBlocklistCatalog", customDomainBlocklist],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],
@@ -2367,7 +2415,7 @@ function renderToolValidators() {
     `  ${schemaConstName(spec)},`
   ).join("\n");
   const validators = schemaSpecs.map((spec) =>
-    `export const ${validatorName(spec)} = ajv.compile(${schemaConstName(spec)});`
+    `export const ${validatorName(spec)} = lazyValidator(${schemaConstName(spec)});`
   ).join("\n");
 
   return `${mjsGeneratedHeader()}import {createRequire} from "node:module";
@@ -2396,6 +2444,18 @@ const addFormats = requireContractDependency("ajv-formats");
 
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
+
+// Compile on first use, like the Functions runtime's lazyValidator: compiling
+// every validator at import cost each importing tool about 9 s.
+function lazyValidator(schema) {
+  let compiled = null;
+  const validate = (data) => {
+    compiled ??= ajv.compile(schema);
+    return compiled(data);
+  };
+  Object.defineProperty(validate, "errors", {get: () => compiled?.errors ?? null});
+  return validate;
+}
 
 ${validators}
 

@@ -348,8 +348,8 @@ ExternalEvent _buildExternalExploreEvent({
   final startTime = DateTime(2026, 7, 8, 19);
   return ExternalEvent(
     id: id,
-    canonicalHostId: 'host-afterfly',
-    compatibilityOrganizerId: 'club-afterfly',
+    canonicalHostId: 'host-moonmoth',
+    compatibilityOrganizerId: 'club-moonmoth',
     title: title,
     description: 'A reviewed external event.',
     startTime: startTime,

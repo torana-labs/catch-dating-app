@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'swipe.dart';
@@ -9,6 +9,7 @@ part of 'swipe.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $SwipeCopyWith<Swipe> get copyWith => _$SwipeCopyWithImpl<Swipe>(this as Swipe, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Swipe&&(identical(other.swiperId, swiperId) || other.swiperId == swiperId)&&(identical(other.targetId, targetId) || other.targetId == targetId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.direction, direction) || other.direction == direction)&&(identical(other.reactionTargetId, reactionTargetId) || other.reactionTargetId == reactionTargetId)&&(identical(other.reactionTargetType, reactionTargetType) || other.reactionTargetType == reactionTargetType)&&(identical(other.reactionTargetLabel, reactionTargetLabel) || other.reactionTargetLabel == reactionTargetLabel)&&(identical(other.reactionTargetPreview, reactionTargetPreview) || other.reactionTargetPreview == reactionTargetPreview)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  final _this = this as Swipe;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Swipe&&(identical(other.swiperId, _this.swiperId) || other.swiperId == _this.swiperId)&&(identical(other.targetId, _this.targetId) || other.targetId == _this.targetId)&&(identical(other.eventId, _this.eventId) || other.eventId == _this.eventId)&&(identical(other.direction, _this.direction) || other.direction == _this.direction)&&(identical(other.reactionTargetId, _this.reactionTargetId) || other.reactionTargetId == _this.reactionTargetId)&&(identical(other.reactionTargetType, _this.reactionTargetType) || other.reactionTargetType == _this.reactionTargetType)&&(identical(other.reactionTargetLabel, _this.reactionTargetLabel) || other.reactionTargetLabel == _this.reactionTargetLabel)&&(identical(other.reactionTargetPreview, _this.reactionTargetPreview) || other.reactionTargetPreview == _this.reactionTargetPreview)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,swiperId,targetId,eventId,direction,reactionTargetId,reactionTargetType,reactionTargetLabel,reactionTargetPreview,comment,createdAt);
+int get hashCode {
+  final _this = this as Swipe;
+  return Object.hash(runtimeType,_this.swiperId,_this.targetId,_this.eventId,_this.direction,_this.reactionTargetId,_this.reactionTargetType,_this.reactionTargetLabel,_this.reactionTargetPreview,_this.comment,_this.createdAt);
+}
 
 @override
 String toString() {
-  return 'Swipe(swiperId: $swiperId, targetId: $targetId, eventId: $eventId, direction: $direction, reactionTargetId: $reactionTargetId, reactionTargetType: $reactionTargetType, reactionTargetLabel: $reactionTargetLabel, reactionTargetPreview: $reactionTargetPreview, comment: $comment, createdAt: $createdAt)';
+  final _this = this as Swipe;
+  return 'Swipe(swiperId: ${_this.swiperId}, targetId: ${_this.targetId}, eventId: ${_this.eventId}, direction: ${_this.direction}, reactionTargetId: ${_this.reactionTargetId}, reactionTargetType: ${_this.reactionTargetType}, reactionTargetLabel: ${_this.reactionTargetLabel}, reactionTargetPreview: ${_this.reactionTargetPreview}, comment: ${_this.comment}, createdAt: ${_this.createdAt})';
 }
 
 
@@ -66,7 +72,7 @@ class _$SwipeCopyWithImpl<$Res>
 /// Create a copy of Swipe
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? swiperId = null,Object? targetId = null,Object? eventId = null,Object? direction = null,Object? reactionTargetId = freezed,Object? reactionTargetType = freezed,Object? reactionTargetLabel = freezed,Object? reactionTargetPreview = freezed,Object? comment = freezed,Object? createdAt = null,}) {
-  return _then(_self.copyWith(
+  return _then(Swipe(
 swiperId: null == swiperId ? _self.swiperId : swiperId // ignore: cast_nullable_to_non_nullable
 as String,targetId: null == targetId ? _self.targetId : targetId // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
@@ -245,16 +251,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Swipe&&(identical(other.swiperId, swiperId) || other.swiperId == swiperId)&&(identical(other.targetId, targetId) || other.targetId == targetId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.direction, direction) || other.direction == direction)&&(identical(other.reactionTargetId, reactionTargetId) || other.reactionTargetId == reactionTargetId)&&(identical(other.reactionTargetType, reactionTargetType) || other.reactionTargetType == reactionTargetType)&&(identical(other.reactionTargetLabel, reactionTargetLabel) || other.reactionTargetLabel == reactionTargetLabel)&&(identical(other.reactionTargetPreview, reactionTargetPreview) || other.reactionTargetPreview == reactionTargetPreview)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Swipe&&(identical(other.swiperId, swiperId) || other.swiperId == swiperId)&&(identical(other.targetId, targetId) || other.targetId == targetId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.direction, direction) || other.direction == direction)&&(identical(other.reactionTargetId, reactionTargetId) || other.reactionTargetId == reactionTargetId)&&(identical(other.reactionTargetType, reactionTargetType) || other.reactionTargetType == reactionTargetType)&&(identical(other.reactionTargetLabel, reactionTargetLabel) || other.reactionTargetLabel == reactionTargetLabel)&&(identical(other.reactionTargetPreview, reactionTargetPreview) || other.reactionTargetPreview == reactionTargetPreview)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,swiperId,targetId,eventId,direction,reactionTargetId,reactionTargetType,reactionTargetLabel,reactionTargetPreview,comment,createdAt);
+int get hashCode {
+    return Object.hash(runtimeType,swiperId,targetId,eventId,direction,reactionTargetId,reactionTargetType,reactionTargetLabel,reactionTargetPreview,comment,createdAt);
+}
 
 @override
 String toString() {
-  return 'Swipe(swiperId: $swiperId, targetId: $targetId, eventId: $eventId, direction: $direction, reactionTargetId: $reactionTargetId, reactionTargetType: $reactionTargetType, reactionTargetLabel: $reactionTargetLabel, reactionTargetPreview: $reactionTargetPreview, comment: $comment, createdAt: $createdAt)';
+    return 'Swipe(swiperId: $swiperId, targetId: $targetId, eventId: $eventId, direction: $direction, reactionTargetId: $reactionTargetId, reactionTargetType: $reactionTargetType, reactionTargetLabel: $reactionTargetLabel, reactionTargetPreview: $reactionTargetPreview, comment: $comment, createdAt: $createdAt)';
 }
 
 

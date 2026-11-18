@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/programmes/data/program_planner_repository.dart';
-import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_transport_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_message_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
@@ -154,7 +154,7 @@ class _HostProgrammeMessageScreenState
       ref.watch(programPlannedMessagesProvider(widget.programId)),
     );
     final roster = ref.watch(
-      programArrivalsRosterProvider(widget.programId, null),
+      programArrivalsStreamProvider(widget.programId, null),
     );
     final loaded = messages.value;
     final ready =

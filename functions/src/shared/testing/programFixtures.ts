@@ -87,7 +87,7 @@ export function baseSeed(): Record<string, FakeData> {
     "programHotels/hotel-1": {
       programId: "program-1",
       organizerId: "org-1",
-      name: "Taj Palace",
+      name: "Harbourview Palace",
       address: "Chanakyapuri",
       latitude: null,
       longitude: null,
@@ -101,7 +101,7 @@ export function baseSeed(): Record<string, FakeData> {
     "programHotels/hotel-2": {
       programId: "program-1",
       organizerId: "org-1",
-      name: "ITC Maurya",
+      name: "Maple Court Hotel",
       address: "Diplomatic Enclave",
       latitude: null,
       longitude: null,
@@ -300,7 +300,7 @@ export function baseSeed(): Record<string, FakeData> {
     },
     "transportVendors/vendor-1": {
       organizerId: "org-1",
-      name: "Sharma Cabs",
+      name: "Harbour Line Cabs",
       contactName: null,
       phoneE164: null,
       programIds: ["program-1"],

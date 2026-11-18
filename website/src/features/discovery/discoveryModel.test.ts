@@ -51,7 +51,7 @@ describe("city format pages", () => {
     expect(runs.page).toMatchObject({slug: "run-clubs", organizerCount: 4, upcomingEventCount: 6, freeEventCount: 2, indexing: "index, follow"});
     expect(runs.indexed).toBe(true);
     expect(runs.plans.map((plan) => plan.eventId)).toEqual(["carter-road-run", "run-and-rave"]);
-    expect(runs.organizers.map((organizer) => organizer.organizerId)).toEqual(["carter-road-runners", "night-shift-socials"]);
+    expect(runs.organizers.map((organizer) => organizer.organizerId)).toEqual(["driftwood-bay-runners", "night-shift-socials"]);
     // Other indexed format pages in the city, and the busiest formats for the thin card.
     expect(runs.links.map((link) => link.href)).toEqual(["/mumbai/nightlife/"]);
     expect(runs.popular.map((item) => item.format)).toEqual(["nightlife", "quizNights", "supper", "racketSports"]);

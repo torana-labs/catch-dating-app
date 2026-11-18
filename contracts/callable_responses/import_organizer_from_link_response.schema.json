@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/import_organizer_from_link_response.schema.json",
+  "title": "ImportOrganizerFromLinkCallableResponse",
+  "description": "Response of organizer.import-from-link. running: the link is being read; preview again with the same idempotency key after result.pollAfterMs. previewed: result.proposal says what apply would write. needs_input: the caller must act first (result.reasons: no_workspace, or existing_listing with result.match naming the organizer to claim). refused: the link cannot be read (result.reasons). applied or replayed: the proposal was written into the workspace.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["commandId", "status", "previewHash", "summary", "effects", "result", "next", "receiptId"],
+  "properties": {
+    "commandId": {"const": "organizer.import-from-link"},
+    "status": {"type": "string", "enum": ["previewed", "applied", "replayed", "running", "needs_input", "refused"]},
+    "previewHash": {"$ref": "../shared/command_envelope.schema.json#/definitions/previewHash"},
+    "summary": {"$ref": "../shared/command_envelope.schema.json#/definitions/summary"},
+    "effects": {"type": "array", "maxItems": 12, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/effect"}},
+    "next": {"type": "array", "maxItems": 8, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/next"}},
+    "receiptId": {"type": ["string", "null"], "pattern": "^[a-z][A-Za-z0-9]{0,63}_[a-f0-9]{64}$"},
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["organizerId", "runId", "link", "proposal", "match", "reasons", "pollAfterMs"],
+      "properties": {
+        "organizerId": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9]{20}$"},
+        "runId": {"type": ["string", "null"], "pattern": "^tryit-[a-f0-9]{40}$"},
+        "link": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["provider", "support", "reason"],
+          "properties": {
+            "provider": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]{0,59}$"},
+            "support": {"type": "string", "enum": ["instant", "best_effort", "staff_follow_up"]},
+            "reason": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]{0,79}$"}
+          }
+        },
+        "proposal": {
+          "anyOf": [{"type": "null"}, {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "nameChanges", "description", "instagramHandle", "categories", "sources", "events", "eventCount", "gaps", "verificationNeeded"],
+            "properties": {
+              "name": {"type": ["string", "null"], "maxLength": 120},
+              "nameChanges": {"type": "boolean"},
+              "description": {"type": ["string", "null"], "maxLength": 2000},
+              "instagramHandle": {"type": ["string", "null"], "maxLength": 60},
+              "categories": {"type": "array", "maxItems": 12, "items": {"type": "string", "minLength": 1, "maxLength": 60}},
+              "sources": {"type": "array", "maxItems": 8, "items": {
+                "type": "object", "additionalProperties": false, "required": ["platform", "url"],
+                "properties": {"platform": {"type": "string", "minLength": 1, "maxLength": 60}, "url": {"type": "string", "minLength": 8, "maxLength": 2000}}}},
+              "events": {"type": "array", "maxItems": 10, "items": {
+                "type": "object", "additionalProperties": false, "required": ["title", "startAt", "endAt", "venue", "sourceUrl"],
+                "properties": {
+                  "title": {"type": ["string", "null"], "maxLength": 300},
+                  "startAt": {"type": "string", "maxLength": 40},
+                  "endAt": {"type": ["string", "null"], "maxLength": 40},
+                  "venue": {"type": ["string", "null"], "maxLength": 300},
+                  "sourceUrl": {"type": "string", "maxLength": 2000}}}},
+              "eventCount": {"type": "integer", "minimum": 0, "maximum": 200},
+              "gaps": {"type": "array", "maxItems": 20, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,79}$"}},
+              "verificationNeeded": {"type": "boolean", "description": "The page names an Instagram account or Luma calendar the owner must prove before publishing."}
+            }
+          }]
+        },
+        "match": {
+          "anyOf": [{"type": "null"}, {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["verdict", "candidates"],
+            "properties": {
+              "verdict": {"type": "string", "enum": ["match", "ambiguous"]},
+              "candidates": {"type": "array", "maxItems": 5, "items": {
+                "type": "object", "additionalProperties": false, "required": ["organizerId", "name", "claimable"],
+                "properties": {
+                  "organizerId": {"type": "string", "minLength": 1, "maxLength": 128},
+                  "name": {"type": "string", "minLength": 1, "maxLength": 200},
+                  "claimable": {"type": "boolean", "description": "Nobody manages it yet, so the caller can claim it."}}}}
+            }
+          }]
+        },
+        "reasons": {"type": "array", "maxItems": 20, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,79}$"}},
+        "pollAfterMs": {"type": ["integer", "null"], "minimum": 500, "maximum": 60000}
+      }
+    }
+  }
+}

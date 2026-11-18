@@ -38,25 +38,10 @@
       "kind": "fixture",
       "reason": "Synthetic demo personas; city is a persona attribute, not the served-city list."
     },
-    "tool/demo/rsvp_escape/build_fixture.cjs": {
-      "cities": 4,
-      "kind": "fixture",
-      "reason": "Synthetic RSVP fixture rows."
-    },
-    "tool/demo/rsvp_escape/form_definition.mjs": {
-      "cities": 4,
-      "kind": "fixture",
-      "reason": "Synthetic RSVP form options for a demo fixture."
-    },
     "tool/demo/seed_demo_data.mjs": {
       "cities": 10,
       "kind": "fixture",
       "reason": "Demo seed scenarios keyed by city (neighbourhoods, languages); resolves markets through location_markets.mjs."
-    },
-    "website/src/generated/hostListings.demo.json": {
-      "cities": 3,
-      "kind": "fixture",
-      "reason": "Generated demo host listings."
     },
     "widgetbook/lib/profiles/catalog/forms.dart": {
       "cities": 3,

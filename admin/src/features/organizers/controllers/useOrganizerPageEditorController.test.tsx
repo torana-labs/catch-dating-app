@@ -13,7 +13,7 @@ vi.mock("../api/organizerPublishingRepository", () => ({
   saveOrganizerProfile: vi.fn(),
 }));
 
-const organizer = sampleOrganizerDetails.afterfly!;
+const organizer = sampleOrganizerDetails.moonmoth!;
 const allChecked = {
   sourceEvidenceVerified: true,
   mediaRightsVerified: true,

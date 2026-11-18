@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'activity_notification.dart';
@@ -9,6 +9,7 @@ part of 'activity_notification.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $ActivityNotificationCopyWith<ActivityNotification> get copyWith => _$ActivityNo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActivityNotification&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.readAt, readAt) || other.readAt == readAt)&&(identical(other.matchId, matchId) || other.matchId == matchId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.postId, postId) || other.postId == postId)&&(identical(other.invitationId, invitationId) || other.invitationId == invitationId)&&(identical(other.actorUid, actorUid) || other.actorUid == actorUid)&&(identical(other.actorName, actorName) || other.actorName == actorName));
+  final _this = this as ActivityNotification;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActivityNotification&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.uid, _this.uid) || other.uid == _this.uid)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.body, _this.body) || other.body == _this.body)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.readAt, _this.readAt) || other.readAt == _this.readAt)&&(identical(other.matchId, _this.matchId) || other.matchId == _this.matchId)&&(identical(other.eventId, _this.eventId) || other.eventId == _this.eventId)&&(identical(other.organizerId, _this.organizerId) || other.organizerId == _this.organizerId)&&(identical(other.postId, _this.postId) || other.postId == _this.postId)&&(identical(other.invitationId, _this.invitationId) || other.invitationId == _this.invitationId)&&(identical(other.actorUid, _this.actorUid) || other.actorUid == _this.actorUid)&&(identical(other.actorName, _this.actorName) || other.actorName == _this.actorName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,uid,type,title,body,createdAt,readAt,matchId,eventId,organizerId,postId,invitationId,actorUid,actorName);
+int get hashCode {
+  final _this = this as ActivityNotification;
+  return Object.hash(runtimeType,_this.id,_this.uid,_this.type,_this.title,_this.body,_this.createdAt,_this.readAt,_this.matchId,_this.eventId,_this.organizerId,_this.postId,_this.invitationId,_this.actorUid,_this.actorName);
+}
 
 @override
 String toString() {
-  return 'ActivityNotification(id: $id, uid: $uid, type: $type, title: $title, body: $body, createdAt: $createdAt, readAt: $readAt, matchId: $matchId, eventId: $eventId, organizerId: $organizerId, postId: $postId, invitationId: $invitationId, actorUid: $actorUid, actorName: $actorName)';
+  final _this = this as ActivityNotification;
+  return 'ActivityNotification(id: ${_this.id}, uid: ${_this.uid}, type: ${_this.type}, title: ${_this.title}, body: ${_this.body}, createdAt: ${_this.createdAt}, readAt: ${_this.readAt}, matchId: ${_this.matchId}, eventId: ${_this.eventId}, organizerId: ${_this.organizerId}, postId: ${_this.postId}, invitationId: ${_this.invitationId}, actorUid: ${_this.actorUid}, actorName: ${_this.actorName})';
 }
 
 
@@ -66,7 +72,7 @@ class _$ActivityNotificationCopyWithImpl<$Res>
 /// Create a copy of ActivityNotification
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? uid = null,Object? type = null,Object? title = null,Object? body = null,Object? createdAt = null,Object? readAt = freezed,Object? matchId = freezed,Object? eventId = freezed,Object? organizerId = freezed,Object? postId = freezed,Object? invitationId = freezed,Object? actorUid = freezed,Object? actorName = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(ActivityNotification(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -253,16 +259,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActivityNotification&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.readAt, readAt) || other.readAt == readAt)&&(identical(other.matchId, matchId) || other.matchId == matchId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.postId, postId) || other.postId == postId)&&(identical(other.invitationId, invitationId) || other.invitationId == invitationId)&&(identical(other.actorUid, actorUid) || other.actorUid == actorUid)&&(identical(other.actorName, actorName) || other.actorName == actorName));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActivityNotification&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.readAt, readAt) || other.readAt == readAt)&&(identical(other.matchId, matchId) || other.matchId == matchId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.postId, postId) || other.postId == postId)&&(identical(other.invitationId, invitationId) || other.invitationId == invitationId)&&(identical(other.actorUid, actorUid) || other.actorUid == actorUid)&&(identical(other.actorName, actorName) || other.actorName == actorName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,uid,type,title,body,createdAt,readAt,matchId,eventId,organizerId,postId,invitationId,actorUid,actorName);
+int get hashCode {
+    return Object.hash(runtimeType,id,uid,type,title,body,createdAt,readAt,matchId,eventId,organizerId,postId,invitationId,actorUid,actorName);
+}
 
 @override
 String toString() {
-  return 'ActivityNotification(id: $id, uid: $uid, type: $type, title: $title, body: $body, createdAt: $createdAt, readAt: $readAt, matchId: $matchId, eventId: $eventId, organizerId: $organizerId, postId: $postId, invitationId: $invitationId, actorUid: $actorUid, actorName: $actorName)';
+    return 'ActivityNotification(id: $id, uid: $uid, type: $type, title: $title, body: $body, createdAt: $createdAt, readAt: $readAt, matchId: $matchId, eventId: $eventId, organizerId: $organizerId, postId: $postId, invitationId: $invitationId, actorUid: $actorUid, actorName: $actorName)';
 }
 
 

@@ -155,7 +155,7 @@ void main() {
         viewModel: AsyncData(viewModel),
       );
 
-      expect(find.text('SOURCE BACKED'), findsOneWidget);
+      expect(find.text('Source backed'), findsOneWidget);
       expect(find.text('Your hosts'), findsNothing);
       expect(find.byType(OrganizerHostRow), findsNothing);
     },
@@ -189,7 +189,7 @@ void main() {
       viewModel: AsyncData(viewModel),
     );
 
-    expect(find.text('OWNER VERIFIED'), findsOneWidget);
+    expect(find.text('Owner verified'), findsOneWidget);
   });
 }
 

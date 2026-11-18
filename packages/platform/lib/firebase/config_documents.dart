@@ -1,3 +1,5 @@
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -16,8 +18,14 @@ class ConfigDocuments {
   final FirebaseFirestore _db;
 
   /// The data of the document at [path], or null when it does not exist.
-  Future<Map<String, dynamic>?> read(String path) async =>
-      (await _db.doc(path).get()).data();
+  Future<Map<String, dynamic>?> read(String path) => withBackendErrorContext(
+    () async => (await _db.doc(path).get()).data(),
+    context: BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'load app configuration',
+      resource: path,
+    ),
+  );
 }
 
 // keepalive: a stateless facade over the app's Firestore singleton.

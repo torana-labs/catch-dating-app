@@ -52,7 +52,9 @@ class _EventMessagePreferencesSheetState
             attendeeId: scope.attendeeId,
           ),
         );
-        if (ref.exists(sender)) unawaited(ref.read(sender.notifier).refresh());
+        if (ref.read(sender.exists)) {
+          unawaited(ref.read(sender.notifier).refresh());
+        }
       }
     }
     // Loading hides the old identity. Channel owners preserve uncertain writes

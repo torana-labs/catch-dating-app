@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_hotel_inbound_views.schema.json",
+  "title": "ProgramHotelInboundViewDocument",
+  "description": "Server-maintained hotel desk row of one inbound journey still expected or ready: exactly the expected-guest row getProgramHotelInbound returned (guest name, party, passengers, curb time, readiness), with nothing about the flight, claimant or pickup point. Written by triggers on programTravelLegs, programTravelParties, programGuests and the programme's transport settings. Readable by accounts whose hotel desk duty covers the hotel, and the programme owner. Never a phone number or other contact field, and never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programHotelInboundViews",
+  "x-firestore-path": "programHotelInboundViews/{legId}",
+  "x-document-id-field": "legId",
+  "x-owner": "Programme read model projector (programTripViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "legId",
+    "hotelId",
+    "guestDisplayName",
+    "partyLabel",
+    "passengers",
+    "curbAtMillis",
+    "readiness",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "legId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "hotelId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "guestDisplayName": {
+      "type": "string"
+    },
+    "partyLabel": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "passengers": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "curbAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "readiness": {
+      "type": "string",
+      "enum": [
+        "expected",
+        "ready"
+      ]
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

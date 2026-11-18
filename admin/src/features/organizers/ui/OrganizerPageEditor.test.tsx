@@ -8,7 +8,7 @@ import {
 import type {OrganizerPageEditorController} from "../controllers/useOrganizerPageEditorController";
 import {organizerPageEditorPanels} from "./OrganizerPageEditor";
 
-const organizer = sampleOrganizerDetails.afterfly!;
+const organizer = sampleOrganizerDetails.moonmoth!;
 
 function editor(overrides: Partial<OrganizerPageEditorController> = {}): OrganizerPageEditorController {
   return {

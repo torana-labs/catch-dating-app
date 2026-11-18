@@ -50,7 +50,8 @@
             "enquiry",
             "lead",
             "access",
-            "stuck"
+            "stuck",
+            "takedown"
           ]
         },
         "sourceKind": {
@@ -61,7 +62,8 @@
             "salesInboundIntent",
             "accessApplication",
             "externalEvent",
-            "walkthroughBooking"
+            "walkthroughBooking",
+            "takedownRequest"
           ]
         },
         "sourceId": {

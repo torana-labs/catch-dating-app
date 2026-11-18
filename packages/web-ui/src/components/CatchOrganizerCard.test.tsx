@@ -10,12 +10,12 @@ describe("CatchOrganizerCard", () => {
   it("names the organiser in a heading that links to their page, with the next plan and the action", () => {
     render(
       <CatchOrganizerCard action={<button type="button">Follow</button>} footnote="212 followers" href="/organizers/carter/"
-        monogramGround="coral" name="Carter Road Runners" next="Next: Fri 6:30 AM · Carter Road Social Run" subtitle="Sunday social runs" />,
+        monogramGround="coral" name="Driftwood Bay Runners" next="Next: Fri 6:30 AM · Salt Air Social Run" subtitle="Sunday social runs" />,
     );
     const card = screen.getByRole("article");
-    expect(within(card).getByRole("heading", {level: 3, name: "Carter Road Runners"})).toBeTruthy();
-    expect(within(card).getByRole("link", {name: "Carter Road Runners"}).getAttribute("href")).toBe("/organizers/carter/");
-    expect(card.textContent).toContain("Next: Fri 6:30 AM · Carter Road Social Run");
+    expect(within(card).getByRole("heading", {level: 3, name: "Driftwood Bay Runners"})).toBeTruthy();
+    expect(within(card).getByRole("link", {name: "Driftwood Bay Runners"}).getAttribute("href")).toBe("/organizers/carter/");
+    expect(card.textContent).toContain("Next: Fri 6:30 AM · Salt Air Social Run");
     expect(card.textContent).toContain("212 followers");
     expect(within(card).getByRole("button", {name: "Follow"})).toBeTruthy();
     expect(card.dataset.ground).toBe("paper");
@@ -29,22 +29,22 @@ describe("CatchOrganizerCard", () => {
 
   it("draws the kit's Follow card on the white ground, with no footnote when none is given", () => {
     render(
-      <CatchOrganizerCard action={<a href="/organizers/carter/">Follow</a>} ground="white" monogramGround="coral" name="Carter Road Runners"
+      <CatchOrganizerCard action={<a href="/organizers/carter/">Follow</a>} ground="white" monogramGround="coral" name="Driftwood Bay Runners"
         next="Next: Sun 23 · Social run" subtitle="Sunday social runs" />,
     );
     const card = screen.getByRole("article");
     expect(card.dataset.ground).toBe("white");
-    expect(card.textContent).toBe("Carter Road RunnersSunday social runsNext: Sun 23 · Social runFollow");
+    expect(card.textContent).toBe("Driftwood Bay RunnersSunday social runsNext: Sun 23 · Social runFollow");
   });
 });
 
 describe("CatchOrganizerCard as the system OrganiserCard", () => {
   it("draws the logo square, name and meta as one link, and follows", () => {
     const follow = vi.fn();
-    render(<CatchOrganizerCard color="run" href="/organizers/crr/" initials="CR" meta="Sunday social runs" name="Carter Road Runners" onFollow={follow} />);
+    render(<CatchOrganizerCard color="run" href="/organizers/crr/" initials="DB" meta="Sunday social runs" name="Driftwood Bay Runners" onFollow={follow} />);
     const link = screen.getByRole("link");
     expect(link.getAttribute("href")).toBe("/organizers/crr/");
-    expect(link.querySelector('[data-format="run"]')?.textContent).toBe("CR");
+    expect(link.querySelector('[data-format="run"]')?.textContent).toBe("DB");
     fireEvent.click(screen.getByRole("button", {name: "Follow"}));
     expect(follow).toHaveBeenCalledOnce();
   });

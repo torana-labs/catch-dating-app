@@ -1,6 +1,6 @@
 # Website v2 prototype boards
 
-Approved by the owner on 2026-10-25 as the target design for catchdates.com. They were drawn on the Catch directions design canvas, on its "Website v2" page: https://claude.ai/artifact/S6RC4qZwMpNhyUrtxQ2xKf. The build plan is https://claude.ai/artifact/CBpW6KApEA3dVrTqpwFgor, and the work is tracked in the Linear project "Website v2" (CAT-245 to CAT-265).
+Approved by the owner on 2026-10-25 as the target design for catchdates.com. They were drawn on the Catch directions design canvas, on its "Website v2" page: https://claude.ai/artifact/S6RC4qZwMpNhyUrtxQ2xKf. The build plan is https://claude.ai/artifact/CBpW6KApEA3dVrTqpwFgor, and the work is tracked in GitHub Issues with the `project: website v2` label. (Older notes cite Linear ids CAT-245 to CAT-265; Linear is retired, and each migrated issue links to its original.)
 
 ## What is here
 
@@ -32,6 +32,6 @@ Each board's dashed prototype bar is a review control, not part of the page.
 ## How to use them
 
 - Build every visual part from these boards as `@catch/web-ui` components, then compose the pages from them (blueprint D18).
-- Snap to the decided library defaults. Headlines max out at 72px under D19 (the boards use 88px). Buttons have 4px corners under D20 (the boards use 10px). Colours come from the v2 tokens (CAT-245), not from hex values in the boards.
+- Snap to the decided library defaults. Headlines max out at 72px under D19 (the boards use 88px). Buttons have 4px corners under D20 (the boards use 10px). Colours come from the v2 tokens (historical Linear CAT-245), not from hex values in the boards.
 - Keep dating wording out of public pages. The host board's games journey still says "Saturday Singles Mixer", and its live-screen images show partner and match words. Those parts are not a target for copy.
 - Pixel comparison against these references is advisory.

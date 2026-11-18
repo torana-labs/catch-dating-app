@@ -26,6 +26,20 @@ class HostEventManageRouteScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // The rebuilt workspace and guest lists read and check access themselves.
+    if (hostEventRouteOpensWithoutEvent(initialSection)) {
+      final request = HostEventRequest(
+        organizerId: organizerId,
+        eventId: eventId,
+      );
+      return initialSection == HostEventManageSection.guests
+          ? HostEventGuestsScreen(request: request)
+          : HostEventWorkspaceScreen(
+              organizerId: organizerId,
+              eventId: eventId,
+              now: referenceNow,
+            );
+    }
     final uidAsync = ref.watch(uidProvider);
     final organizerAsync = ref.watch(watchOrganizerProvider(organizerId));
     final eventAsync = ref.watch(watchEventProvider(eventId));
@@ -129,27 +143,63 @@ class HostEventManageRouteScreen extends ConsumerWidget {
           );
         }
 
-        // After the event, its report is the rebuilt event report.
-        if (initialSection == HostEventManageSection.report &&
-            !event.endTime.isAfter(referenceNow ?? DateTime.now())) {
-          return HostEventReportScreen(
+        final now = referenceNow ?? DateTime.now();
+        final onBack =
+            CatchWorkspaceBackScope.maybeOf(context) ??
+            () => Navigator.of(context).maybePop();
+        void openGuests() => context.pushNamed(
+          Routes.hostEventRosterScreen.name,
+          pathParameters: {'organizerId': organizer.id, 'eventId': event.id},
+          extra: event,
+        );
+        final plan = ref.watch(watchEventSuccessPlanProvider(event.id)).value;
+        final destination = hostEventRouteDestination(
+          section: initialSection,
+          phase: hostEventWorkspacePhaseFor(event: event, now: now),
+          liveConsoleFits: hostLiveConsoleFits(event, plan: plan),
+          movingNight: hostMovingNightView(event, plan: plan),
+        );
+        return switch (destination) {
+          HostEventRouteDestination.report => HostEventReportScreen(
             organizer: organizer,
             event: event,
             onBack: CatchWorkspaceBackScope.maybeOf(context),
             now: referenceNow,
-          );
-        }
-
-        return HostEventManageScreen(
-          organizer: organizer,
-          event: event,
-          onBackToSuccess:
-              CatchWorkspaceBackScope.maybeOf(context) ??
-              () => Navigator.of(context).maybePop(),
-          initialSection: initialSection,
-          initialParticipantSearchQuery: initialParticipantSearchQuery,
-          referenceNow: referenceNow,
-        );
+          ),
+          HostEventRouteDestination.liveConsole => HostLiveScreen(
+            organizer: organizer,
+            event: event,
+            onBack: onBack,
+            onOpenGuests: openGuests,
+            now: referenceNow,
+          ),
+          HostEventRouteDestination.runConsole => HostFormatsRunScreen(
+            organizer: organizer,
+            event: event,
+            onBack: onBack,
+            onOpenGuests: openGuests,
+            now: referenceNow,
+          ),
+          HostEventRouteDestination.crawlBoard => HostFormatsCrawlScreen(
+            organizer: organizer,
+            event: event,
+            onBack: onBack,
+            onOpenGuests: openGuests,
+            now: referenceNow,
+          ),
+          // Setup and guests return above, and every night that moves has a
+          // run or crawl board, so the old screen is a fallback only.
+          HostEventRouteDestination.workspace ||
+          HostEventRouteDestination.guests ||
+          HostEventRouteDestination.movementConsole => HostEventManageScreen(
+            organizer: organizer,
+            event: event,
+            onBackToSuccess: onBack,
+            initialSection: initialSection,
+            initialParticipantSearchQuery: initialParticipantSearchQuery,
+            referenceNow: referenceNow,
+          ),
+        };
       },
     );
   }

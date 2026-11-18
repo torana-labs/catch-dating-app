@@ -20,9 +20,9 @@ describe("useEventDirectoryController", () => {
     expect(result.current.views).toEqual(
       {upcoming: 5, past: 0, cancelled: 0});
     expect(result.current.rows.map((row) => row.key)).toEqual([
-      "catch:afterfly-social-run-1", "catch:bandra-sunset-run-1",
+      "catch:moonmoth-social-run-1", "catch:bandra-sunset-run-1",
       "catch:mumbai-padel-mixer-1",
-      "imported:ext-afterfly-202503151800-takeoff-run-rave-e99b5e2138",
+      "imported:ext-moonmoth-202503151800-nightfall-run-rave-e99b5e2138",
       "imported:ext-mumbai-editorial-mixer-1",
     ]);
     expect(result.current.facets?.needsCheck).toBe(1);
@@ -36,11 +36,11 @@ describe("useEventDirectoryController", () => {
   it("reads one organizer's events for its page", async () => {
     const {wrapper} = createQueryHarness();
     const {result} = renderHook(() => useEventDirectoryController(
-      {organizerId: "afterfly"}), {wrapper});
+      {organizerId: "moonmoth"}), {wrapper});
     await waitFor(() => expect(result.current.loadState).toBe("ready"));
     expect(result.current.rows.map((row) => row.eventId)).toEqual([
-      "afterfly-social-run-1",
-      "ext-afterfly-202503151800-takeoff-run-rave-e99b5e2138",
+      "moonmoth-social-run-1",
+      "ext-moonmoth-202503151800-nightfall-run-rave-e99b5e2138",
     ]);
   });
 });

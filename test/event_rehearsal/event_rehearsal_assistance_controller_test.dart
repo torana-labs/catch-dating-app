@@ -402,7 +402,7 @@ void main() {
       await failure;
       subscription.close();
       await container.pump();
-      expect(container.exists(provider), isTrue);
+      expect(container.read(provider.exists), isTrue);
       final reopened = container.listen(provider, (_, _) {});
       expect(container.read(provider.notifier), same(actions));
       expect(form(current).change, same(original));
@@ -411,7 +411,7 @@ void main() {
       container.read(query.notifier).reload();
       await container.pump();
       expect(current.isCurrent, isFalse);
-      expect(container.exists(provider), isTrue);
+      expect(container.read(provider.exists), isTrue);
       await completeRead(1, data: practiceBootstrap(runtimeRevision: 6));
       final fresh = container.read(query).requireValue;
       final replacement = editor(fresh)

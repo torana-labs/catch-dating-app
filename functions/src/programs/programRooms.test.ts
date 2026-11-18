@@ -52,7 +52,7 @@ const guest = (id: string, patch: FakeData = {}): FakeData => ({
 const block = (id: string, patch: FakeData = {}): FakeData => ({
   programId: "program-1",
   organizerId: "org-1",
-  hotelId: "hotel-taj",
+  hotelId: "hotel-haveli",
   label: id,
   roomType: null,
   totalRooms: 2,
@@ -71,7 +71,7 @@ const stay = (id: string, patch: FakeData = {}): FakeData => ({
   programId: "program-1",
   organizerId: "org-1",
   guestId: id,
-  hotelId: "hotel-taj",
+  hotelId: "hotel-haveli",
   roomBlockId: null,
   roomLabel: null,
   startsAt: admin.firestore.Timestamp.fromMillis(WINDOW_START),
@@ -107,7 +107,7 @@ const leg = (guestId: string, patch: FakeData = {}): FakeData => ({
   flightNextRefreshAt: null,
   international: null,
   pickupPointId: null,
-  destinationHotelId: "hotel-taj",
+  destinationHotelId: "hotel-haveli",
   destinationLabel: null,
   readiness: "expected",
   readyAt: null,
@@ -163,8 +163,8 @@ const seed = (): Record<string, FakeData> => ({
     endsAt: admin.firestore.Timestamp.fromMillis(WINDOW_END),
     createdBy: "manager-1", createdAt: now, updatedAt: now, revision: 1,
   },
-  "programHotels/hotel-taj": hotel("hotel-taj"),
-  "programHotels/hotel-oberoi": hotel("hotel-oberoi"),
+  "programHotels/hotel-haveli": hotel("hotel-haveli"),
+  "programHotels/hotel-mirrorlake": hotel("hotel-mirrorlake"),
   "programGuests/g-1": guest("g-1"),
   "programGuests/g-2": guest("g-2", {groupIds: ["grp-bride"]}),
   "programGuests/g-3": guest("g-3"),
@@ -184,7 +184,7 @@ const seed = (): Record<string, FakeData> => ({
   "programTravelLegs/leg-3": leg("g-3"),
   "programTravelLegs/leg-noshow": leg("g-4", {readiness: "noShow"}),
   "programStaffGrants/program-1__desk-1":
-    grant("desk-1", [duty("hotelDesk", ["hotel-taj"])]),
+    grant("desk-1", [duty("hotelDesk", ["hotel-haveli"])]),
   "programStaffGrants/program-1__desk-all":
     grant("desk-all", [duty("hotelDesk")]),
   "programStaffGrants/program-1__coord-1":
@@ -193,7 +193,7 @@ const seed = (): Record<string, FakeData> => ({
     grant("staff-other", [duty("guestRelations")]),
 });
 
-const view = (db: FakeFirestore, uid: string, hotelId = "hotel-taj") =>
+const view = (db: FakeFirestore, uid: string, hotelId = "hotel-haveli") =>
   getProgramHotelRoomsHandler(request({
     programId: "program-1", hotelId,
   }, uid), deps(db));
@@ -201,14 +201,14 @@ const view = (db: FakeFirestore, uid: string, hotelId = "hotel-taj") =>
 const upsertStay = (db: FakeFirestore, uid: string,
   data: Record<string, unknown> = {}) =>
   upsertProgramStayHandler(request({
-    programId: "program-1", guestId: "g-2", hotelId: "hotel-taj",
+    programId: "program-1", guestId: "g-2", hotelId: "hotel-haveli",
     ...data,
   }, uid), deps(db));
 
 const upsertBlock = (db: FakeFirestore, uid: string,
   data: Record<string, unknown> = {}) =>
   upsertProgramRoomBlockHandler(request({
-    programId: "program-1", hotelId: "hotel-taj", label: "New block",
+    programId: "program-1", hotelId: "hotel-haveli", label: "New block",
     totalRooms: 4, heldForGroupIds: [],
     startsAtMillis: WINDOW_START, endsAtMillis: WINDOW_END,
     ...data,
@@ -226,7 +226,7 @@ const aborted = (err: unknown) =>
 test("hotel desk reads blocks, stays, and unplaced guests without PII",
   async () => {
     const result = await view(new FakeFirestore(seed()), "desk-1");
-    assert.equal(result.hotelName, "Hotel hotel-taj");
+    assert.equal(result.hotelName, "Hotel hotel-haveli");
     const general = result.roomBlocks.find((b) =>
       b.roomBlockId === "blk-general")!;
     // One live stay consumes one of two rooms; cancelled stay-2 holds none.
@@ -255,13 +255,13 @@ test("hotel desk reads blocks, stays, and unplaced guests without PII",
 
 test("scoped desk staff and non-desk duties are rejected", async () => {
   await assert.rejects(
-    view(new FakeFirestore(seed()), "desk-1", "hotel-oberoi"), denied);
+    view(new FakeFirestore(seed()), "desk-1", "hotel-mirrorlake"), denied);
   await assert.rejects(
     view(new FakeFirestore(seed()), "staff-other"), denied);
   const unscoped = await view(new FakeFirestore(seed()), "desk-all");
-  assert.equal(unscoped.hotelId, "hotel-taj");
+  assert.equal(unscoped.hotelId, "hotel-haveli");
   const manager = await view(new FakeFirestore(seed()), "manager-1");
-  assert.equal(manager.hotelId, "hotel-taj");
+  assert.equal(manager.hotelId, "hotel-haveli");
 });
 
 test("cross-program or unknown hotels read as not-found", async () => {
@@ -317,7 +317,7 @@ test("stale revisions abort; scoped desks cannot write other hotels",
       roomLabel: "999",
     }), aborted);
     await assert.rejects(upsertStay(db, "desk-1", {
-      guestId: "g-3", hotelId: "hotel-oberoi",
+      guestId: "g-3", hotelId: "hotel-mirrorlake",
     }), denied);
   });
 
@@ -426,7 +426,7 @@ test("cross-hotel simultaneous assignments have one winner", async () => {
   const db = new FakeFirestore(seed());
   const result = await Promise.allSettled([
     upsertStay(db, "manager-1", {guestId: "g-3"}),
-    upsertStay(db, "manager-1", {guestId: "g-3", hotelId: "hotel-oberoi"}),
+    upsertStay(db, "manager-1", {guestId: "g-3", hotelId: "hotel-mirrorlake"}),
   ]);
   assert.equal(result.filter((r) => r.status === "fulfilled").length, 1);
   assert.equal(result.filter((r) => r.status === "rejected").length, 1);

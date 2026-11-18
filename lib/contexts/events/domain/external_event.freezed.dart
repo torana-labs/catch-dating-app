@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'external_event.dart';
@@ -9,6 +9,7 @@ part of 'external_event.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $ExternalEventCopyWith<ExternalEvent> get copyWith => _$ExternalEventCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExternalEvent&&(identical(other.id, id) || other.id == id)&&(identical(other.canonicalHostId, canonicalHostId) || other.canonicalHostId == canonicalHostId)&&(identical(other.compatibilityOrganizerId, compatibilityOrganizerId) || other.compatibilityOrganizerId == compatibilityOrganizerId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.activityKind, activityKind) || other.activityKind == activityKind)&&(identical(other.interactionModel, interactionModel) || other.interactionModel == interactionModel)&&(identical(other.priceDisplayText, priceDisplayText) || other.priceDisplayText == priceDisplayText)&&(identical(other.parsedPriceInPaise, parsedPriceInPaise) || other.parsedPriceInPaise == parsedPriceInPaise)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.publicationStatus, publicationStatus) || other.publicationStatus == publicationStatus)&&(identical(other.organizerCapabilities, organizerCapabilities) || other.organizerCapabilities == organizerCapabilities)&&(identical(other.citySlug, citySlug) || other.citySlug == citySlug)&&const DeepCollectionEquality().equals(other.externalLinks, externalLinks)&&(identical(other.sourcePlatform, sourcePlatform) || other.sourcePlatform == sourcePlatform));
+  final _this = this as ExternalEvent;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExternalEvent&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.canonicalHostId, _this.canonicalHostId) || other.canonicalHostId == _this.canonicalHostId)&&(identical(other.compatibilityOrganizerId, _this.compatibilityOrganizerId) || other.compatibilityOrganizerId == _this.compatibilityOrganizerId)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.startTime, _this.startTime) || other.startTime == _this.startTime)&&(identical(other.endTime, _this.endTime) || other.endTime == _this.endTime)&&(identical(other.timezone, _this.timezone) || other.timezone == _this.timezone)&&(identical(other.meetingPoint, _this.meetingPoint) || other.meetingPoint == _this.meetingPoint)&&(identical(other.locationDetails, _this.locationDetails) || other.locationDetails == _this.locationDetails)&&(identical(other.photoUrl, _this.photoUrl) || other.photoUrl == _this.photoUrl)&&(identical(other.latitude, _this.latitude) || other.latitude == _this.latitude)&&(identical(other.longitude, _this.longitude) || other.longitude == _this.longitude)&&(identical(other.activityKind, _this.activityKind) || other.activityKind == _this.activityKind)&&(identical(other.interactionModel, _this.interactionModel) || other.interactionModel == _this.interactionModel)&&(identical(other.priceDisplayText, _this.priceDisplayText) || other.priceDisplayText == _this.priceDisplayText)&&(identical(other.parsedPriceInPaise, _this.parsedPriceInPaise) || other.parsedPriceInPaise == _this.parsedPriceInPaise)&&(identical(other.currency, _this.currency) || other.currency == _this.currency)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.publicationStatus, _this.publicationStatus) || other.publicationStatus == _this.publicationStatus)&&(identical(other.organizerCapabilities, _this.organizerCapabilities) || other.organizerCapabilities == _this.organizerCapabilities)&&(identical(other.citySlug, _this.citySlug) || other.citySlug == _this.citySlug)&&const DeepCollectionEquality().equals(other.externalLinks, _this.externalLinks)&&(identical(other.sourcePlatform, _this.sourcePlatform) || other.sourcePlatform == _this.sourcePlatform));
 }
 
 
 @override
-int get hashCode => Object.hashAll([runtimeType,id,canonicalHostId,compatibilityOrganizerId,title,description,startTime,endTime,timezone,meetingPoint,locationDetails,photoUrl,latitude,longitude,activityKind,interactionModel,priceDisplayText,parsedPriceInPaise,currency,status,publicationStatus,organizerCapabilities,citySlug,const DeepCollectionEquality().hash(externalLinks),sourcePlatform]);
+int get hashCode {
+  final _this = this as ExternalEvent;
+  return Object.hashAll([runtimeType,_this.id,_this.canonicalHostId,_this.compatibilityOrganizerId,_this.title,_this.description,_this.startTime,_this.endTime,_this.timezone,_this.meetingPoint,_this.locationDetails,_this.photoUrl,_this.latitude,_this.longitude,_this.activityKind,_this.interactionModel,_this.priceDisplayText,_this.parsedPriceInPaise,_this.currency,_this.status,_this.publicationStatus,_this.organizerCapabilities,_this.citySlug,const DeepCollectionEquality().hash(_this.externalLinks),_this.sourcePlatform]);
+}
 
 @override
 String toString() {
-  return 'ExternalEvent(id: $id, canonicalHostId: $canonicalHostId, compatibilityOrganizerId: $compatibilityOrganizerId, title: $title, description: $description, startTime: $startTime, endTime: $endTime, timezone: $timezone, meetingPoint: $meetingPoint, locationDetails: $locationDetails, photoUrl: $photoUrl, latitude: $latitude, longitude: $longitude, activityKind: $activityKind, interactionModel: $interactionModel, priceDisplayText: $priceDisplayText, parsedPriceInPaise: $parsedPriceInPaise, currency: $currency, status: $status, publicationStatus: $publicationStatus, organizerCapabilities: $organizerCapabilities, citySlug: $citySlug, externalLinks: $externalLinks, sourcePlatform: $sourcePlatform)';
+  final _this = this as ExternalEvent;
+  return 'ExternalEvent(id: ${_this.id}, canonicalHostId: ${_this.canonicalHostId}, compatibilityOrganizerId: ${_this.compatibilityOrganizerId}, title: ${_this.title}, description: ${_this.description}, startTime: ${_this.startTime}, endTime: ${_this.endTime}, timezone: ${_this.timezone}, meetingPoint: ${_this.meetingPoint}, locationDetails: ${_this.locationDetails}, photoUrl: ${_this.photoUrl}, latitude: ${_this.latitude}, longitude: ${_this.longitude}, activityKind: ${_this.activityKind}, interactionModel: ${_this.interactionModel}, priceDisplayText: ${_this.priceDisplayText}, parsedPriceInPaise: ${_this.parsedPriceInPaise}, currency: ${_this.currency}, status: ${_this.status}, publicationStatus: ${_this.publicationStatus}, organizerCapabilities: ${_this.organizerCapabilities}, citySlug: ${_this.citySlug}, externalLinks: ${_this.externalLinks}, sourcePlatform: ${_this.sourcePlatform})';
 }
 
 
@@ -63,7 +69,7 @@ class _$ExternalEventCopyWithImpl<$Res>
 /// Create a copy of ExternalEvent
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? canonicalHostId = null,Object? compatibilityOrganizerId = null,Object? title = null,Object? description = null,Object? startTime = null,Object? endTime = freezed,Object? timezone = freezed,Object? meetingPoint = null,Object? locationDetails = freezed,Object? photoUrl = freezed,Object? latitude = freezed,Object? longitude = freezed,Object? activityKind = null,Object? interactionModel = null,Object? priceDisplayText = freezed,Object? parsedPriceInPaise = freezed,Object? currency = null,Object? status = null,Object? publicationStatus = null,Object? organizerCapabilities = null,Object? citySlug = freezed,Object? externalLinks = null,Object? sourcePlatform = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(ExternalEvent(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,canonicalHostId: null == canonicalHostId ? _self.canonicalHostId : canonicalHostId // ignore: cast_nullable_to_non_nullable
 as String,compatibilityOrganizerId: null == compatibilityOrganizerId ? _self.compatibilityOrganizerId : compatibilityOrganizerId // ignore: cast_nullable_to_non_nullable
@@ -229,7 +235,7 @@ return $default(_that.id,_that.canonicalHostId,_that.compatibilityOrganizerId,_t
 
 
 class _ExternalEvent extends ExternalEvent {
-  const _ExternalEvent({required this.id, required this.canonicalHostId, required this.compatibilityOrganizerId, required this.title, required this.description, @TimestampConverter() required this.startTime, @NullableTimestampConverter() this.endTime, this.timezone, required this.meetingPoint, this.locationDetails, this.photoUrl, this.latitude, this.longitude, required this.activityKind, required this.interactionModel, this.priceDisplayText, this.parsedPriceInPaise, this.currency = defaultCurrencyCode, required this.status, required this.publicationStatus, this.organizerCapabilities = const OrganizerSupplyCapabilities.unclaimedReadOnly(), this.citySlug, required final  List<ExternalEventLink> externalLinks, this.sourcePlatform}): _externalLinks = externalLinks,super._();
+  const _ExternalEvent({required this.id, required this.canonicalHostId, required this.compatibilityOrganizerId, required this.title, required this.description, @TimestampConverter() required this.startTime, @NullableTimestampConverter() this.endTime, this.timezone, required this.meetingPoint, this.locationDetails, this.photoUrl, this.latitude, this.longitude, required this.activityKind, required this.interactionModel, this.priceDisplayText, this.parsedPriceInPaise, this.currency = defaultCurrencyCode, required this.status, required this.publicationStatus, this.organizerCapabilities = const OrganizerSupplyCapabilities.unclaimedReadOnly(), this.citySlug, required  List<ExternalEventLink> externalLinks, this.sourcePlatform}): _externalLinks = externalLinks,super._();
   
 
 @override final  String id;
@@ -273,16 +279,18 @@ _$ExternalEventCopyWith<_ExternalEvent> get copyWith => __$ExternalEventCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExternalEvent&&(identical(other.id, id) || other.id == id)&&(identical(other.canonicalHostId, canonicalHostId) || other.canonicalHostId == canonicalHostId)&&(identical(other.compatibilityOrganizerId, compatibilityOrganizerId) || other.compatibilityOrganizerId == compatibilityOrganizerId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.activityKind, activityKind) || other.activityKind == activityKind)&&(identical(other.interactionModel, interactionModel) || other.interactionModel == interactionModel)&&(identical(other.priceDisplayText, priceDisplayText) || other.priceDisplayText == priceDisplayText)&&(identical(other.parsedPriceInPaise, parsedPriceInPaise) || other.parsedPriceInPaise == parsedPriceInPaise)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.publicationStatus, publicationStatus) || other.publicationStatus == publicationStatus)&&(identical(other.organizerCapabilities, organizerCapabilities) || other.organizerCapabilities == organizerCapabilities)&&(identical(other.citySlug, citySlug) || other.citySlug == citySlug)&&const DeepCollectionEquality().equals(other._externalLinks, _externalLinks)&&(identical(other.sourcePlatform, sourcePlatform) || other.sourcePlatform == sourcePlatform));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExternalEvent&&(identical(other.id, id) || other.id == id)&&(identical(other.canonicalHostId, canonicalHostId) || other.canonicalHostId == canonicalHostId)&&(identical(other.compatibilityOrganizerId, compatibilityOrganizerId) || other.compatibilityOrganizerId == compatibilityOrganizerId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.timezone, timezone) || other.timezone == timezone)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.activityKind, activityKind) || other.activityKind == activityKind)&&(identical(other.interactionModel, interactionModel) || other.interactionModel == interactionModel)&&(identical(other.priceDisplayText, priceDisplayText) || other.priceDisplayText == priceDisplayText)&&(identical(other.parsedPriceInPaise, parsedPriceInPaise) || other.parsedPriceInPaise == parsedPriceInPaise)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.publicationStatus, publicationStatus) || other.publicationStatus == publicationStatus)&&(identical(other.organizerCapabilities, organizerCapabilities) || other.organizerCapabilities == organizerCapabilities)&&(identical(other.citySlug, citySlug) || other.citySlug == citySlug)&&const DeepCollectionEquality().equals(other.externalLinks, _externalLinks)&&(identical(other.sourcePlatform, sourcePlatform) || other.sourcePlatform == sourcePlatform));
 }
 
 
 @override
-int get hashCode => Object.hashAll([runtimeType,id,canonicalHostId,compatibilityOrganizerId,title,description,startTime,endTime,timezone,meetingPoint,locationDetails,photoUrl,latitude,longitude,activityKind,interactionModel,priceDisplayText,parsedPriceInPaise,currency,status,publicationStatus,organizerCapabilities,citySlug,const DeepCollectionEquality().hash(_externalLinks),sourcePlatform]);
+int get hashCode {
+    return Object.hashAll([runtimeType,id,canonicalHostId,compatibilityOrganizerId,title,description,startTime,endTime,timezone,meetingPoint,locationDetails,photoUrl,latitude,longitude,activityKind,interactionModel,priceDisplayText,parsedPriceInPaise,currency,status,publicationStatus,organizerCapabilities,citySlug,const DeepCollectionEquality().hash(_externalLinks),sourcePlatform]);
+}
 
 @override
 String toString() {
-  return 'ExternalEvent(id: $id, canonicalHostId: $canonicalHostId, compatibilityOrganizerId: $compatibilityOrganizerId, title: $title, description: $description, startTime: $startTime, endTime: $endTime, timezone: $timezone, meetingPoint: $meetingPoint, locationDetails: $locationDetails, photoUrl: $photoUrl, latitude: $latitude, longitude: $longitude, activityKind: $activityKind, interactionModel: $interactionModel, priceDisplayText: $priceDisplayText, parsedPriceInPaise: $parsedPriceInPaise, currency: $currency, status: $status, publicationStatus: $publicationStatus, organizerCapabilities: $organizerCapabilities, citySlug: $citySlug, externalLinks: $externalLinks, sourcePlatform: $sourcePlatform)';
+    return 'ExternalEvent(id: $id, canonicalHostId: $canonicalHostId, compatibilityOrganizerId: $compatibilityOrganizerId, title: $title, description: $description, startTime: $startTime, endTime: $endTime, timezone: $timezone, meetingPoint: $meetingPoint, locationDetails: $locationDetails, photoUrl: $photoUrl, latitude: $latitude, longitude: $longitude, activityKind: $activityKind, interactionModel: $interactionModel, priceDisplayText: $priceDisplayText, parsedPriceInPaise: $parsedPriceInPaise, currency: $currency, status: $status, publicationStatus: $publicationStatus, organizerCapabilities: $organizerCapabilities, citySlug: $citySlug, externalLinks: $externalLinks, sourcePlatform: $sourcePlatform)';
 }
 
 
@@ -360,16 +368,21 @@ $ExternalEventLinkCopyWith<ExternalEventLink> get copyWith => _$ExternalEventLin
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExternalEventLink&&(identical(other.platform, platform) || other.platform == platform)&&(identical(other.url, url) || other.url == url)&&(identical(other.linkType, linkType) || other.linkType == linkType)&&(identical(other.sourceEventKey, sourceEventKey) || other.sourceEventKey == sourceEventKey)&&(identical(other.candidateId, candidateId) || other.candidateId == candidateId)&&(identical(other.primary, primary) || other.primary == primary));
+  final _this = this as ExternalEventLink;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExternalEventLink&&(identical(other.platform, _this.platform) || other.platform == _this.platform)&&(identical(other.url, _this.url) || other.url == _this.url)&&(identical(other.linkType, _this.linkType) || other.linkType == _this.linkType)&&(identical(other.sourceEventKey, _this.sourceEventKey) || other.sourceEventKey == _this.sourceEventKey)&&(identical(other.candidateId, _this.candidateId) || other.candidateId == _this.candidateId)&&(identical(other.primary, _this.primary) || other.primary == _this.primary));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,platform,url,linkType,sourceEventKey,candidateId,primary);
+int get hashCode {
+  final _this = this as ExternalEventLink;
+  return Object.hash(runtimeType,_this.platform,_this.url,_this.linkType,_this.sourceEventKey,_this.candidateId,_this.primary);
+}
 
 @override
 String toString() {
-  return 'ExternalEventLink(platform: $platform, url: $url, linkType: $linkType, sourceEventKey: $sourceEventKey, candidateId: $candidateId, primary: $primary)';
+  final _this = this as ExternalEventLink;
+  return 'ExternalEventLink(platform: ${_this.platform}, url: ${_this.url}, linkType: ${_this.linkType}, sourceEventKey: ${_this.sourceEventKey}, candidateId: ${_this.candidateId}, primary: ${_this.primary})';
 }
 
 
@@ -398,7 +411,7 @@ class _$ExternalEventLinkCopyWithImpl<$Res>
 /// Create a copy of ExternalEventLink
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? platform = null,Object? url = null,Object? linkType = null,Object? sourceEventKey = null,Object? candidateId = null,Object? primary = null,}) {
-  return _then(_self.copyWith(
+  return _then(ExternalEventLink(
 platform: null == platform ? _self.platform : platform // ignore: cast_nullable_to_non_nullable
 as String,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
 as String,linkType: null == linkType ? _self.linkType : linkType // ignore: cast_nullable_to_non_nullable
@@ -569,16 +582,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExternalEventLink&&(identical(other.platform, platform) || other.platform == platform)&&(identical(other.url, url) || other.url == url)&&(identical(other.linkType, linkType) || other.linkType == linkType)&&(identical(other.sourceEventKey, sourceEventKey) || other.sourceEventKey == sourceEventKey)&&(identical(other.candidateId, candidateId) || other.candidateId == candidateId)&&(identical(other.primary, primary) || other.primary == primary));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExternalEventLink&&(identical(other.platform, platform) || other.platform == platform)&&(identical(other.url, url) || other.url == url)&&(identical(other.linkType, linkType) || other.linkType == linkType)&&(identical(other.sourceEventKey, sourceEventKey) || other.sourceEventKey == sourceEventKey)&&(identical(other.candidateId, candidateId) || other.candidateId == candidateId)&&(identical(other.primary, primary) || other.primary == primary));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,platform,url,linkType,sourceEventKey,candidateId,primary);
+int get hashCode {
+    return Object.hash(runtimeType,platform,url,linkType,sourceEventKey,candidateId,primary);
+}
 
 @override
 String toString() {
-  return 'ExternalEventLink(platform: $platform, url: $url, linkType: $linkType, sourceEventKey: $sourceEventKey, candidateId: $candidateId, primary: $primary)';
+    return 'ExternalEventLink(platform: $platform, url: $url, linkType: $linkType, sourceEventKey: $sourceEventKey, candidateId: $candidateId, primary: $primary)';
 }
 
 

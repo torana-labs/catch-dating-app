@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_resource_views.schema.json",
+  "title": "ProgramResourceViewDocument",
+  "description": "Server-maintained, staff-readable label of one programme pickup point, hotel or function for the work shell: exactly the fields getProgramWorkAccess returns for it. The id is {programId}__{kind}__{resourceId}. Written by triggers on programPickupPoints, programHotels and programFunctions. A hotel's reception contact and notes, a function's venue notes, location, instructions and dress code, and a pickup point's coordinates and instructions are never copied. Which accounts read a view comes from their programAccessViews work lists. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programResourceViews",
+  "x-firestore-path": "programResourceViews/{viewId}",
+  "x-document-id-field": "viewId",
+  "x-owner": "Programme read model projector (programWorkViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "kind",
+    "resourceId",
+    "active",
+    "label",
+    "pickupKind",
+    "iataCode",
+    "terminal",
+    "venueName",
+    "startsAtMillis",
+    "endsAtMillis",
+    "checkInEnabled",
+    "status",
+    "expectedCount",
+    "checkedInCount",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["pickupPoint", "hotel", "function"]
+    },
+    "resourceId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Pickup points and hotels carry their own flag; functions are always active."
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "description": "The pickup point label, the hotel name or the function name."
+    },
+    "pickupKind": {
+      "anyOf": [
+        {"$ref": "../shared/program_common.schema.json#/definitions/pickupPointKind"},
+        {"type": "null"}
+      ],
+      "description": "Pickup points only."
+    },
+    "iataCode": {
+      "type": ["string", "null"],
+      "description": "Pickup points only."
+    },
+    "terminal": {
+      "type": ["string", "null"],
+      "description": "Pickup points only."
+    },
+    "venueName": {
+      "type": ["string", "null"],
+      "description": "Functions only."
+    },
+    "startsAtMillis": {
+      "type": ["integer", "null"],
+      "description": "Functions only."
+    },
+    "endsAtMillis": {
+      "type": ["integer", "null"],
+      "description": "Functions only."
+    },
+    "checkInEnabled": {
+      "type": ["boolean", "null"],
+      "description": "Functions only; true when the source omits it."
+    },
+    "status": {
+      "type": ["string", "null"],
+      "enum": ["scheduled", "completed", "cancelled", null],
+      "description": "Functions only."
+    },
+    "expectedCount": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Functions only; 0 when the source has none."
+    },
+    "checkedInCount": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Functions only; 0 when the source has none."
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

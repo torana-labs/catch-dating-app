@@ -1,6 +1,8 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
+import {citiesPageCopy} from "@content/citiesPage";
 import {interpolateContent as fill} from "@content/interpolate";
+import {websiteCities} from "@content/markets";
 import {playbookCopy} from "@content/playbook/playbookCopy";
 import {websiteLeadCopy} from "@content/websiteLead";
 import {loadPlaybookPage, resolvePlaybookPage} from "./playbookPages";
@@ -30,10 +32,10 @@ describe("playbook page", () => {
     expect(screen.getByRole("contentinfo")).toBeTruthy();
   });
 
-  it("sends the trial to the host start band until /host/start/ ships, and WhatsApp to a typed chat in a new tab", () => {
+  it("sends the trial to /host/start/, and WhatsApp to a typed chat in a new tab", () => {
     render(<PlaybookPage captures={captures} page={page} />);
     const hero = within(document.getElementById("top")!);
-    expect(hero.getByRole("link", {name: "Start free trial"}).getAttribute("href")).toBe("/host/#start");
+    expect(hero.getByRole("link", {name: "Start free trial"}).getAttribute("href")).toBe("/host/start/");
     const whatsapp = hero.getByRole("link", {name: "Talk to us on WhatsApp"});
     expect(whatsapp.getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/u);
     expect(whatsapp.getAttribute("target")).toBe("_blank");
@@ -121,7 +123,7 @@ describe("playbook page", () => {
   });
 
   it("sends every walkthrough action on the host pages to the request page, not WhatsApp", async () => {
-    for (const path of ["/host/run-clubs/", "/host/demo/"]) {
+    for (const path of ["/host/run-clubs/", "/host/brands/", "/host/demo/", "/how-it-works/"]) {
       const host = (await loadPlaybookPage(resolvePlaybookPage(path)!))!;
       const {unmount} = render(<PlaybookPage captures={captures} page={host} />);
       const main = within(screen.getByRole("main"));
@@ -130,6 +132,57 @@ describe("playbook page", () => {
       for (const link of walkthroughs) expect(link.getAttribute("href"), path).toBe("/host/walkthrough/");
       unmount();
     }
+  });
+
+  it("draws About's cities band from the market catalog: an open city links its page, the rest the launch notice", async () => {
+    const about = (await loadPlaybookPage(resolvePlaybookPage("/about/")!))!;
+    render(<PlaybookPage captures={captures} page={about} />);
+    const band = within(document.getElementById("where")!);
+    const listed = websiteCities.filter((city) => city.status !== "paused");
+    expect(band.getAllByRole("heading", {level: 3}).map((heading) => heading.textContent)).toEqual(listed.map((city) => city.label));
+    for (const city of listed) {
+      const live = city.status === "live";
+      const links = band.getAllByRole("link", {name: live ? citiesPageCopy.seeWhatsOn : citiesPageCopy.getNotified});
+      expect(links.map((link) => link.getAttribute("href"))).toContain(live ? `/${city.slug}/` : `/?city=${city.slug}#whats-on`);
+    }
+  });
+
+  it("starts the trial on its own page: the minimal header, a QR code of the page and the host app's store badges", async () => {
+    const start = (await loadPlaybookPage(resolvePlaybookPage("/host/start/")!))!;
+    render(<PlaybookPage captures={captures} page={start} />);
+    expect(screen.getByRole("heading", {level: 1}).textContent).toBe("Start your free trial.");
+    expect(screen.queryByRole("navigation", {name: /breadcrumb/iu})).toBeNull();
+    expect(screen.getByRole("img", {name: /Scan to get/u})).toBeTruthy();
+    const band = within(document.getElementById("get-app")!);
+    expect(band.getByRole("link", {name: "Download on the App Store"}).getAttribute("href")).toMatch(/^https:\/\/apps\.apple\.com\//u);
+    expect(band.getByRole("link", {name: "Book a 15-minute walkthrough"}).getAttribute("href")).toBe("/host/walkthrough/");
+  });
+
+  it("draws a product page's live bands only: no try-it band or button, and the footer's own columns", async () => {
+    const room = (await loadPlaybookPage(resolvePlaybookPage("/product/the-room/")!))!;
+    render(<PlaybookPage captures={captures} page={room} />);
+    expect(screen.getByRole("heading", {level: 1}).textContent).toBe("Nobody comes to stand by the wall.");
+    expect(document.getElementById("try")).toBeNull();
+    expect(document.getElementById("start-try")).toBeNull();
+    expect(document.getElementById("first-hello-missions")).toBeNull();
+    expect(screen.queryByRole("link", {name: "Plan your first hello"})).toBeNull();
+    expect(screen.queryByText(/mutual/iu)).toBeNull();
+    const footer = within(screen.getByRole("contentinfo"));
+    expect(footer.getByRole("link", {name: "The room"}).getAttribute("href")).toBe("/product/the-room/");
+    expect(footer.getByRole("link", {name: "Running the event"}).getAttribute("href")).toBe("/product/running-the-event/");
+    expect(footer.getByRole("link", {name: "Forms"}).getAttribute("href")).toBe("/product/forms/");
+    expect(footer.getByRole("link", {name: "Report or remove a listing"}).getAttribute("href")).toBe("/listings/request/");
+    expect(footer.getByRole("button", {name: /privacy choices/iu})).toBeTruthy();
+    const faq = (playbookStructuredData(room, "/product/the-room/", "https://example.test") as {"@graph": {"@type": string; mainEntity?: unknown[]}[]})["@graph"]
+      .find((node) => node["@type"] === "FAQPage")!;
+    expect(faq.mainEntity).toHaveLength(4);
+  });
+
+  it("keeps the host footer's own columns on pages that pass none", () => {
+    render(<PlaybookPage captures={captures} page={page} />);
+    const footer = within(screen.getByRole("contentinfo"));
+    expect(footer.queryByRole("link", {name: "The room"})).toBeNull();
+    expect(footer.getByRole("button", {name: /privacy choices/iu})).toBeTruthy();
   });
 
   it("states its questions as FAQPage and its breadcrumb as BreadcrumbList", () => {

@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_staff_views.schema.json",
+  "title": "ProgramStaffViewDocument",
+  "description": "Server-maintained staff-list row of one programme staff grant for the programme's administrators: exactly the member row listProgramStaff returned (display name, last four phone digits, the duty assignments with their scopes and expiries, the grant's expiry and revision), with the status the callable computed from the clock replaced by the facts it computes from (revoked, whether the owner has approved the grant, and when the grant's live duties start and end), so the phone derives active, expired, revoked or approval required itself. Written by triggers on programStaffGrants and organizerPrograms. Readable by accounts holding the programme administration duty (the owner included). The staff member's display name and phone digits are personal data: they are scrubbed with the grant by archive anonymization. Never the full phone number, never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programStaffViews",
+  "x-firestore-path": "programStaffViews/{programId}__{uid}",
+  "x-document-id-field": "viewId",
+  "x-owner": "Programme read model projector (programStaffViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "uid",
+    "displayName",
+    "phoneLastFour",
+    "duties",
+    "revoked",
+    "ownerApproved",
+    "activeFromMillis",
+    "activeUntilMillis",
+    "expiresAtMillis",
+    "revision",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "displayName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "description": "Null after archive anonymization."
+    },
+    "phoneLastFour": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{4}$",
+      "description": "Null after archive anonymization."
+    },
+    "duties": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/programStaffGrantedDuty"
+      }
+    },
+    "revoked": {
+      "type": "boolean",
+      "description": "The grant is revoked, by status, revoker or revocation time."
+    },
+    "ownerApproved": {
+      "type": "boolean",
+      "description": "The programme owner's approval proof is present and valid; false means approval is required."
+    },
+    "activeFromMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The owner approval instant; the grant's duties are not live before it."
+    },
+    "activeUntilMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "The latest expiry of an assignment that the grant and the owner's approval allow; null when none does. The grant is active while this is in the future and the approval has begun."
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

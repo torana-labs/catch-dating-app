@@ -28,6 +28,7 @@ export type {
   CatchAvatarStatus,
   CatchAvatarVariant,
   CatchAvatarVeiledProps,
+  CatchMonogramGround,
 } from "./components/CatchAvatar";
 export {CatchAvatarRow} from "./components/CatchAvatarRow";
 export type {CatchAvatarRowProps, CatchPersonAvatarItem} from "./components/CatchAvatarRow";

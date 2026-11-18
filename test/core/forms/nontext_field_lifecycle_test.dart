@@ -350,10 +350,10 @@ class _ActionVisitor extends RecursiveAstVisitor<void> {
         .replaceFirst(RegExp(r'^(const|new)\s+'), '')
         .trim();
     if (!RegExp(r'^CatchField(?:<.*>)?\.action$').hasMatch(head)) return;
-    for (final argument in arguments.arguments.whereType<NamedExpression>()) {
-      if (argument.name.label.name != 'onTap') continue;
+    for (final argument in arguments.arguments.whereType<NamedArgument>()) {
+      if (argument.name.lexeme != 'onTap') continue;
       final routes = _RouteVisitor();
-      argument.expression.accept(routes);
+      argument.argumentExpression.accept(routes);
       if (routes.found) {
         lines.add('\n'.allMatches(source.substring(0, node.offset)).length + 1);
       }

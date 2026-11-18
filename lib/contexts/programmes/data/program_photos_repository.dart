@@ -1,24 +1,36 @@
 part of 'program_work_repository.dart';
 
-/// Programme photos: albums per function and the guest page cover, saved
-/// for offline cold starts (image links expire within minutes, so an
-/// offline album shows placeholders), and the add/change command.
+/// Programme photos: the add/change command, the signed read URLs and the
+/// albums per function and guest page cover built from the live `programPhotos`
+/// rows (image links expire within minutes, so an offline album shows
+/// placeholders).
 extension ProgramPhotosRepositoryApi on ProgramWorkRepository {
-  Future<ProgramPhotos> listPhotos({
+  /// The short-lived read URLs of [photoIds] (and the programme cover when
+  /// asked): the one thing a phone cannot make from the `programPhotos` rows
+  /// it lists. The server signs only this programme's own files.
+  Future<({Map<String, String> urls, String? coverUrl})> signPhotoUrls({
     required String programId,
-    String? functionId,
-    String? snapshotAccountId,
+    required List<String> photoIds,
+    bool includeCover = false,
   }) => _call(
-    name: 'listProgramPhotos',
+    name: 'signProgramPhotoUrls',
     authorityScopedRead: true,
-    payload: ListProgramPhotosCallableRequest(
+    payload: SignProgramPhotoUrlsCallableRequest(
       programId: programId,
-      functionId: functionId,
+      photoIds: photoIds,
+      includeCover: includeCover,
     ).toJson(),
     action: 'load the photos',
-    parse: ProgramPhotos.fromCallableData,
-    snapshotScope: programSnapshotScope('photos', programId, functionId),
-    snapshotAccountId: snapshotAccountId,
+    parse: (data) {
+      final map = requiredMap(data, 'photo urls');
+      return (
+        urls: {
+          for (final row in mapList(map['urls'], 'urls'))
+            requiredString(row, 'photoId'): requiredString(row, 'url'),
+        },
+        coverUrl: map['coverUrl'] as String?,
+      );
+    },
   );
 
   /// Adds the uploaded photo [photoId] (revision 0) or changes its album
@@ -45,31 +57,45 @@ extension ProgramPhotosRepositoryApi on ProgramWorkRepository {
   );
 }
 
-/// One album (or every photo), from the live read or a bounded snapshot.
+/// One album (or every photo), live from `programPhotos` (#1339). The
+/// album names come from the work shell's functions; the signed URLs from
+/// the server, in calls of at most 60 photos.
 @riverpod
 Future<ProgramReadView<ProgramPhotos>> programPhotosView(
   Ref ref,
   String programId,
   String? functionId,
 ) async {
-  final accountId = _watchWorkAccount(ref);
-  final result = await _readView(
-    ref,
-    accountId,
-    programId,
-    programSnapshotScope('photos', programId, functionId),
-    () => ref
-        .read(programWorkRepositoryProvider)
-        .listPhotos(
-          programId: programId,
-          functionId: functionId,
-          snapshotAccountId: accountId,
-        ),
-    ProgramPhotos.fromCallableData,
+  final rows = await ref.watch(
+    programPhotoRowsStreamProvider(programId).future,
   );
-  retainProgramProjection(
-    ref,
-    programProjectionDeadline(null, result.snapshotExpiresAt),
+  final work = await ref.watch(
+    programWorkEntryProvider(programId, null).future,
   );
-  return result;
+  final functions = work.value.functions;
+  final ids = programPhotoIdsToSign(rows, functions, functionId);
+  final repository = ref.read(programWorkRepositoryProvider);
+  final urls = <String, String>{};
+  String? coverUrl;
+  for (var start = 0; start == 0 || start < ids.length; start += 60) {
+    final signed = await repository.signPhotoUrls(
+      programId: programId,
+      photoIds: ids.sublist(start, min(start + 60, ids.length)),
+      includeCover: start == 0,
+    );
+    urls.addAll(signed.urls);
+    coverUrl ??= signed.coverUrl;
+  }
+  return (
+    value: programPhotosFromViews(
+      programId: programId,
+      functionId: functionId,
+      rows: rows,
+      functions: functions,
+      urls: urls,
+      coverUrl: coverUrl,
+    ),
+    snapshotAt: null,
+    snapshotExpiresAt: null,
+  );
 }

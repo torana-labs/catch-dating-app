@@ -1,0 +1,392 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/http/listing_request_request.schema.json",
+  "title": "Listing Request HTTP Request",
+  "description": "Version 1 body for /api/listing-request: one structured request about a listing on Catch (claim, correct a fact, remove and don't list again, trademark, copyright, privacy, impersonation, or a court or government order). Each type takes its own fixed verification fields; every request carries the requester, the fixed declarations and an optional short context line. Staff acknowledge within 24 hours; nothing is sent automatically.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestType",
+        "clientRequestId",
+        "target",
+        "requester",
+        "verification",
+        "declarations",
+        "consent",
+        "sourcePage"
+      ],
+      "properties": {
+        "requestType": {
+          "const": "claim"
+        },
+        "clientRequestId": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/clientRequestId"
+        },
+        "target": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/targetRequest"
+        },
+        "requester": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/requester"
+        },
+        "verification": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/claimVerification"
+        },
+        "declarations": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/declarations"
+        },
+        "context": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/context"
+        },
+        "consent": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/consent"
+        },
+        "sourcePage": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/sourcePage"
+        },
+        "website": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Honeypot field; people leave it empty."
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestType",
+        "clientRequestId",
+        "target",
+        "requester",
+        "verification",
+        "declarations",
+        "consent",
+        "sourcePage"
+      ],
+      "properties": {
+        "requestType": {
+          "const": "correctFact"
+        },
+        "clientRequestId": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/clientRequestId"
+        },
+        "target": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/targetRequest"
+        },
+        "requester": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/requester"
+        },
+        "verification": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/correctFactVerification"
+        },
+        "declarations": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/declarations"
+        },
+        "context": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/context"
+        },
+        "consent": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/consent"
+        },
+        "sourcePage": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/sourcePage"
+        },
+        "website": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Honeypot field; people leave it empty."
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestType",
+        "clientRequestId",
+        "target",
+        "requester",
+        "verification",
+        "declarations",
+        "consent",
+        "sourcePage"
+      ],
+      "properties": {
+        "requestType": {
+          "const": "removeAndDoNotList"
+        },
+        "clientRequestId": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/clientRequestId"
+        },
+        "target": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/targetRequest"
+        },
+        "requester": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/requester"
+        },
+        "verification": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/removeVerification"
+        },
+        "declarations": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/declarations"
+        },
+        "context": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/context"
+        },
+        "consent": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/consent"
+        },
+        "sourcePage": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/sourcePage"
+        },
+        "website": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Honeypot field; people leave it empty."
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestType",
+        "clientRequestId",
+        "target",
+        "requester",
+        "verification",
+        "declarations",
+        "consent",
+        "sourcePage"
+      ],
+      "properties": {
+        "requestType": {
+          "const": "trademark"
+        },
+        "clientRequestId": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/clientRequestId"
+        },
+        "target": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/targetRequest"
+        },
+        "requester": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/requester"
+        },
+        "verification": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/trademarkVerification"
+        },
+        "declarations": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/declarations"
+        },
+        "context": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/context"
+        },
+        "consent": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/consent"
+        },
+        "sourcePage": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/sourcePage"
+        },
+        "website": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Honeypot field; people leave it empty."
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestType",
+        "clientRequestId",
+        "target",
+        "requester",
+        "verification",
+        "declarations",
+        "consent",
+        "sourcePage"
+      ],
+      "properties": {
+        "requestType": {
+          "const": "copyright"
+        },
+        "clientRequestId": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/clientRequestId"
+        },
+        "target": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/targetRequest"
+        },
+        "requester": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/requester"
+        },
+        "verification": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/copyrightVerification"
+        },
+        "declarations": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/declarations"
+        },
+        "context": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/context"
+        },
+        "consent": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/consent"
+        },
+        "sourcePage": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/sourcePage"
+        },
+        "website": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Honeypot field; people leave it empty."
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestType",
+        "clientRequestId",
+        "target",
+        "requester",
+        "verification",
+        "declarations",
+        "consent",
+        "sourcePage"
+      ],
+      "properties": {
+        "requestType": {
+          "const": "privacy"
+        },
+        "clientRequestId": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/clientRequestId"
+        },
+        "target": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/targetRequest"
+        },
+        "requester": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/requester"
+        },
+        "verification": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/privacyVerification"
+        },
+        "declarations": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/declarations"
+        },
+        "context": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/context"
+        },
+        "consent": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/consent"
+        },
+        "sourcePage": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/sourcePage"
+        },
+        "website": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Honeypot field; people leave it empty."
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestType",
+        "clientRequestId",
+        "target",
+        "requester",
+        "verification",
+        "declarations",
+        "consent",
+        "sourcePage"
+      ],
+      "properties": {
+        "requestType": {
+          "const": "impersonation"
+        },
+        "clientRequestId": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/clientRequestId"
+        },
+        "target": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/targetRequest"
+        },
+        "requester": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/requester"
+        },
+        "verification": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/impersonationVerification"
+        },
+        "declarations": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/declarations"
+        },
+        "context": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/context"
+        },
+        "consent": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/consent"
+        },
+        "sourcePage": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/sourcePage"
+        },
+        "website": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Honeypot field; people leave it empty."
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestType",
+        "clientRequestId",
+        "target",
+        "requester",
+        "verification",
+        "declarations",
+        "consent",
+        "sourcePage"
+      ],
+      "properties": {
+        "requestType": {
+          "const": "legalOrder"
+        },
+        "clientRequestId": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/clientRequestId"
+        },
+        "target": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/targetRequest"
+        },
+        "requester": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/requester"
+        },
+        "verification": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/legalOrderVerification"
+        },
+        "declarations": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/declarations"
+        },
+        "context": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/context"
+        },
+        "consent": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/consent"
+        },
+        "sourcePage": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/sourcePage"
+        },
+        "website": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Honeypot field; people leave it empty."
+        }
+      }
+    }
+  ]
+}

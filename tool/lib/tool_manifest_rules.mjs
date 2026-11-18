@@ -1,3 +1,5 @@
+import path from "node:path";
+
 // What the tool manifest must say about each tool beyond its id and path: its
 // role, a check that executes it, and the rules it enforces. A rule's text lives
 // on one active tool's `rules`; other tools that help enforce it name its id in
@@ -44,6 +46,7 @@ export function validateToolRoles(tools) {
       errors.push(`${tool.id}: invalid role ${tool.role}.`);
     }
     if (tool.role !== "gate" && tool.role !== "ratchet") continue;
+    if (closedToolStatuses.includes(tool.status)) continue;
     if (!hasRuntimeCheck(tool)) {
       errors.push(
         `${tool.id}: ${tool.role} tool needs a manifest check that can execute the guard, not only syntax/count/help checks.`,
@@ -151,4 +154,148 @@ function isRealManifestRun(check) {
   if (trimmed.startsWith("dart analyze ")) return false;
   if (/^python3\b.+\bast\.parse\b/u.test(trimmed)) return false;
   return trimmed.length > 0;
+}
+
+// Lifecycle: every entry has a status. `active` tools run in CI, `internal` and
+// `support` entries are helpers that an active owner checks, and the two
+// closed statuses never run. A `completed` tool finished its job and keeps its
+// file (a one-off operation kept for audit); a `retired` tool's file is
+// deleted, and `lastCommit` names the last commit that contained it. Both
+// closed statuses record the date and the reason, so `node tool/run.mjs list
+// --closed` still shows what existed and why it went.
+export const toolStatuses = Object.freeze(["active", "internal", "support", "completed", "retired"]);
+export const closedToolStatuses = Object.freeze(["completed", "retired"]);
+const runFields = ["checks", "impactPaths", "alsoCheckIds", "checkSafety", "ciRequirements", "baseline", "rules",
+  "alsoEnforces", "platforms"];
+
+/** Errors for status, the closed-status record and the runbook field. */
+export function validateToolLifecycle(tools, {exists, read = null}) {
+  const errors = [];
+  for (const tool of tools) {
+    const id = tool.id ?? "<missing>";
+    if (!toolStatuses.includes(tool.status)) {
+      errors.push(`${id}: status must be one of ${toolStatuses.join(", ")}, found ${JSON.stringify(tool.status)}.`);
+      continue;
+    }
+    if (tool.runbook !== undefined) {
+      const file = typeof tool.runbook === "string" ? tool.runbook.split("#")[0] : "";
+      if (!file) errors.push(`${id}: runbook must be a repository path, optionally with a #anchor.`);
+      else if (!exists(file)) errors.push(`${id}: runbook ${file} does not exist.`);
+      else if (read && tool.runbook.includes("#") && file.endsWith(".md")) {
+        // read returns null where the checkout cannot supply the content (the
+        // sparse, blobless Tools preflight); the full-checkout
+        // meta:tool-manifest run still checks the anchor.
+        const source = read(file);
+        const anchor = tool.runbook.slice(tool.runbook.indexOf("#") + 1);
+        if (source != null && !markdownAnchors(source).has(anchor)) {
+          errors.push(`${id}: runbook ${file} has no heading #${anchor}.`);
+        }
+      }
+    }
+    if (tool.status === "active" && tool.role === "operator" && tool.runbook === undefined) {
+      errors.push(`${id}: an active operator must name its runbook (a document path, optionally with a #anchor).`);
+    }
+    const closed = closedToolStatuses.includes(tool.status);
+    if (!closed) {
+      for (const field of ["retiredOn", "reason", "lastCommit"]) {
+        if (tool[field] !== undefined) errors.push(`${id}: ${field} is only for completed or retired tools.`);
+      }
+      continue;
+    }
+    if (!isIsoDate(tool.retiredOn)) errors.push(`${id}: a ${tool.status} tool needs retiredOn as YYYY-MM-DD.`);
+    if (typeof tool.reason !== "string" || tool.reason.trim().length < 20) {
+      errors.push(`${id}: a ${tool.status} tool needs a reason that says why it closed and what covers it now.`);
+    }
+    for (const field of runFields) {
+      if (tool[field] !== undefined) errors.push(`${id}: a ${tool.status} tool never runs, so drop ${field}.`);
+    }
+    if (tool.status === "completed") {
+      if (tool.lastCommit !== undefined) errors.push(`${id}: lastCommit is only for retired tools.`);
+      if (tool.path && !exists(tool.path)) {
+        errors.push(`${id}: a completed tool keeps its file, but ${tool.path} is missing; retire it with lastCommit.`);
+      }
+    } else {
+      if (typeof tool.lastCommit !== "string" || !/^[0-9a-f]{40}$/u.test(tool.lastCommit)) {
+        errors.push(`${id}: a retired tool needs lastCommit, the full SHA of the last commit that contained ${tool.path}.`);
+      }
+      if (tool.path && exists(tool.path)) {
+        errors.push(`${id}: a retired tool's file is deleted, but ${tool.path} still exists; delete it or mark it completed.`);
+      }
+    }
+  }
+  return errors;
+}
+
+/** GitHub-style heading anchors of a Markdown document. */
+export function markdownAnchors(source) {
+  const anchors = new Set();
+  const seen = new Map();
+  for (const line of String(source).split("\n")) {
+    const heading = /^#{1,6}\s+(.+?)\s*#*\s*$/u.exec(line);
+    if (!heading) continue;
+    const base = heading[1].toLowerCase().replace(/[`*_~]/gu, "").replace(/[^\p{L}\p{N}\s-]/gu, "").trim()
+      .replace(/\s/gu, "-");
+    const count = seen.get(base) ?? 0;
+    seen.set(base, count + 1);
+    anchors.add(count === 0 ? base : `${base}-${count}`);
+  }
+  return anchors;
+}
+
+function isIsoDate(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/u.test(value)) return false;
+  const date = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
+// Paths a tool names must exist: every file argument of a `node --test` or
+// `node --check` check, and every literal (non-glob) impactPath. A renamed or
+// deleted test file otherwise passes the manifest check and fails only when CI
+// runs the tool. A `cd <dir>` earlier in the same command makes later paths
+// relative to it. A path whose directory is not in the repository at all is a
+// build output an earlier check creates (functions/lib), so only paths under
+// a tracked directory are required.
+const globCharacters = /[*?[\]{}]/u;
+
+export function validateToolPaths(tools, {exists, isTrackedFolder}) {
+  const errors = [];
+  const required = (file) => {
+    const directory = path.posix.dirname(file);
+    return directory === "." || isTrackedFolder(directory);
+  };
+  for (const tool of tools) {
+    if (closedToolStatuses.includes(tool.status)) continue;
+    const id = tool.id ?? "<missing>";
+    for (const file of checkPathArguments(tool.checks ?? [])) {
+      if (required(file) && !exists(file)) errors.push(`${id}: check names ${file}, which does not exist.`);
+    }
+    for (const entry of tool.impactPaths ?? []) {
+      if (globCharacters.test(entry) || entry.endsWith("/")) continue;
+      if (!exists(entry) && !isTrackedFolder(entry) && required(entry)) {
+        errors.push(`${id}: impactPath ${entry} does not exist.`);
+      }
+    }
+  }
+  return errors;
+}
+
+/** File arguments of `node --test` and `node --check` in check commands, relative to the repository root. */
+export function checkPathArguments(checks) {
+  const files = [];
+  for (const check of checks) {
+    let cwd = "";
+    for (const segment of check.replace(/[()]/gu, " ").split(/&&|\|\||;/u)) {
+      const words = segment.trim().split(/\s+/u).filter(Boolean);
+      if (words[0] === "cd" && words[1]) {
+        cwd = path.posix.normalize(path.posix.join(cwd, words[1]));
+        continue;
+      }
+      if (words[0] !== "node" || (words[1] !== "--test" && words[1] !== "--check")) continue;
+      for (const word of words.slice(2)) {
+        if (word.startsWith("-") || globCharacters.test(word)) continue;
+        files.push(path.posix.normalize(path.posix.join(cwd, word)));
+      }
+    }
+  }
+  return files;
 }

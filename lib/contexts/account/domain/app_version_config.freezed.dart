@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'app_version_config.dart';
@@ -9,6 +9,7 @@ part of 'app_version_config.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $AppVersionConfigCopyWith<AppVersionConfig> get copyWith => _$AppVersionConfigCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppVersionConfig&&(identical(other.minVersion, minVersion) || other.minVersion == minVersion)&&(identical(other.minBuildAndroid, minBuildAndroid) || other.minBuildAndroid == minBuildAndroid)&&(identical(other.minBuildIos, minBuildIos) || other.minBuildIos == minBuildIos)&&(identical(other.minBuildWeb, minBuildWeb) || other.minBuildWeb == minBuildWeb)&&(identical(other.minBuildMacos, minBuildMacos) || other.minBuildMacos == minBuildMacos)&&(identical(other.storeUrlAndroid, storeUrlAndroid) || other.storeUrlAndroid == storeUrlAndroid)&&(identical(other.storeUrlIos, storeUrlIos) || other.storeUrlIos == storeUrlIos));
+  final _this = this as AppVersionConfig;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppVersionConfig&&(identical(other.minVersion, _this.minVersion) || other.minVersion == _this.minVersion)&&(identical(other.minBuildAndroid, _this.minBuildAndroid) || other.minBuildAndroid == _this.minBuildAndroid)&&(identical(other.minBuildIos, _this.minBuildIos) || other.minBuildIos == _this.minBuildIos)&&(identical(other.minBuildWeb, _this.minBuildWeb) || other.minBuildWeb == _this.minBuildWeb)&&(identical(other.minBuildMacos, _this.minBuildMacos) || other.minBuildMacos == _this.minBuildMacos)&&(identical(other.storeUrlAndroid, _this.storeUrlAndroid) || other.storeUrlAndroid == _this.storeUrlAndroid)&&(identical(other.storeUrlIos, _this.storeUrlIos) || other.storeUrlIos == _this.storeUrlIos));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,minVersion,minBuildAndroid,minBuildIos,minBuildWeb,minBuildMacos,storeUrlAndroid,storeUrlIos);
+int get hashCode {
+  final _this = this as AppVersionConfig;
+  return Object.hash(runtimeType,_this.minVersion,_this.minBuildAndroid,_this.minBuildIos,_this.minBuildWeb,_this.minBuildMacos,_this.storeUrlAndroid,_this.storeUrlIos);
+}
 
 @override
 String toString() {
-  return 'AppVersionConfig(minVersion: $minVersion, minBuildAndroid: $minBuildAndroid, minBuildIos: $minBuildIos, minBuildWeb: $minBuildWeb, minBuildMacos: $minBuildMacos, storeUrlAndroid: $storeUrlAndroid, storeUrlIos: $storeUrlIos)';
+  final _this = this as AppVersionConfig;
+  return 'AppVersionConfig(minVersion: ${_this.minVersion}, minBuildAndroid: ${_this.minBuildAndroid}, minBuildIos: ${_this.minBuildIos}, minBuildWeb: ${_this.minBuildWeb}, minBuildMacos: ${_this.minBuildMacos}, storeUrlAndroid: ${_this.storeUrlAndroid}, storeUrlIos: ${_this.storeUrlIos})';
 }
 
 
@@ -63,7 +69,7 @@ class _$AppVersionConfigCopyWithImpl<$Res>
 /// Create a copy of AppVersionConfig
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? minVersion = null,Object? minBuildAndroid = null,Object? minBuildIos = null,Object? minBuildWeb = null,Object? minBuildMacos = null,Object? storeUrlAndroid = null,Object? storeUrlIos = null,}) {
-  return _then(_self.copyWith(
+  return _then(AppVersionConfig(
 minVersion: null == minVersion ? _self.minVersion : minVersion // ignore: cast_nullable_to_non_nullable
 as String,minBuildAndroid: null == minBuildAndroid ? _self.minBuildAndroid : minBuildAndroid // ignore: cast_nullable_to_non_nullable
 as int,minBuildIos: null == minBuildIos ? _self.minBuildIos : minBuildIos // ignore: cast_nullable_to_non_nullable
@@ -233,16 +239,18 @@ _$AppVersionConfigCopyWith<_AppVersionConfig> get copyWith => __$AppVersionConfi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppVersionConfig&&(identical(other.minVersion, minVersion) || other.minVersion == minVersion)&&(identical(other.minBuildAndroid, minBuildAndroid) || other.minBuildAndroid == minBuildAndroid)&&(identical(other.minBuildIos, minBuildIos) || other.minBuildIos == minBuildIos)&&(identical(other.minBuildWeb, minBuildWeb) || other.minBuildWeb == minBuildWeb)&&(identical(other.minBuildMacos, minBuildMacos) || other.minBuildMacos == minBuildMacos)&&(identical(other.storeUrlAndroid, storeUrlAndroid) || other.storeUrlAndroid == storeUrlAndroid)&&(identical(other.storeUrlIos, storeUrlIos) || other.storeUrlIos == storeUrlIos));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppVersionConfig&&(identical(other.minVersion, minVersion) || other.minVersion == minVersion)&&(identical(other.minBuildAndroid, minBuildAndroid) || other.minBuildAndroid == minBuildAndroid)&&(identical(other.minBuildIos, minBuildIos) || other.minBuildIos == minBuildIos)&&(identical(other.minBuildWeb, minBuildWeb) || other.minBuildWeb == minBuildWeb)&&(identical(other.minBuildMacos, minBuildMacos) || other.minBuildMacos == minBuildMacos)&&(identical(other.storeUrlAndroid, storeUrlAndroid) || other.storeUrlAndroid == storeUrlAndroid)&&(identical(other.storeUrlIos, storeUrlIos) || other.storeUrlIos == storeUrlIos));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,minVersion,minBuildAndroid,minBuildIos,minBuildWeb,minBuildMacos,storeUrlAndroid,storeUrlIos);
+int get hashCode {
+    return Object.hash(runtimeType,minVersion,minBuildAndroid,minBuildIos,minBuildWeb,minBuildMacos,storeUrlAndroid,storeUrlIos);
+}
 
 @override
 String toString() {
-  return 'AppVersionConfig(minVersion: $minVersion, minBuildAndroid: $minBuildAndroid, minBuildIos: $minBuildIos, minBuildWeb: $minBuildWeb, minBuildMacos: $minBuildMacos, storeUrlAndroid: $storeUrlAndroid, storeUrlIos: $storeUrlIos)';
+    return 'AppVersionConfig(minVersion: $minVersion, minBuildAndroid: $minBuildAndroid, minBuildIos: $minBuildIos, minBuildWeb: $minBuildWeb, minBuildMacos: $minBuildMacos, storeUrlAndroid: $storeUrlAndroid, storeUrlIos: $storeUrlIos)';
 }
 
 

@@ -47145,6 +47145,483 @@ abstract class AppLocalizations {
     required int index,
     required int count,
   });
+
+  /// Sweep screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'The return sweep'**
+  String get hostFormatsSweepTitle;
+
+  /// Sweep headline for a run: runners accounted for.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{{count} back}}'**
+  String hostFormatsSweepBackCount({required int count});
+
+  /// Sweep headline for a crawl: guests accounted for.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{{count} home}}'**
+  String hostFormatsSweepHomeCount({required int count});
+
+  /// Sweep headline suffix: checked in and still out.
+  ///
+  /// In en, this message translates to:
+  /// **'of {total} · {out} still out'**
+  String hostFormatsSweepOfTotal({required int total, required int out});
+
+  /// Sweep explanation on a run.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark runners back as they reach the start. Anyone not accounted for stays here until they are.'**
+  String get hostFormatsSweepExplainRun;
+
+  /// Sweep explanation on a crawl.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark everyone home as you hear from them. Anyone not accounted for stays here until they are.'**
+  String get hostFormatsSweepExplainCrawl;
+
+  /// Sweep list title: checked in, not accounted for.
+  ///
+  /// In en, this message translates to:
+  /// **'Still out'**
+  String get hostFormatsSweepStillOut;
+
+  /// Sweep list empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone is accounted for.'**
+  String get hostFormatsSweepAllAccounted;
+
+  /// Marks a runner back at the start.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get hostFormatsSweepMarkBack;
+
+  /// Marks a crawl guest home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get hostFormatsSweepMarkHome;
+
+  /// Calls a guest who is still out.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get hostFormatsSweepCall;
+
+  /// Sweep section title for the after-the-night switches.
+  ///
+  /// In en, this message translates to:
+  /// **'Then'**
+  String get hostFormatsSweepThen;
+
+  /// Sweep primary action: completes the night and saves the switches.
+  ///
+  /// In en, this message translates to:
+  /// **'Close the night'**
+  String get hostFormatsSweepClose;
+
+  /// Sweep secondary action: opens messages for the event.
+  ///
+  /// In en, this message translates to:
+  /// **'Message guests'**
+  String get hostFormatsSweepMessage;
+
+  /// Confirm closing the night with guests not accounted for.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Close with 1 still out?} other{Close with {count} still out?}}'**
+  String hostFormatsSweepCloseAnywayTitle({required int count});
+
+  /// Confirm closing body.
+  ///
+  /// In en, this message translates to:
+  /// **'They stay marked as not accounted for. Close only when you know everyone is safe.'**
+  String get hostFormatsSweepCloseAnywayBody;
+
+  /// Confirms closing with guests still out.
+  ///
+  /// In en, this message translates to:
+  /// **'Close anyway'**
+  String get hostFormatsSweepCloseAnyway;
+
+  /// Cancels closing with guests still out.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep sweeping'**
+  String get hostFormatsSweepKeepSweeping;
+
+  /// Notice after closing the night.
+  ///
+  /// In en, this message translates to:
+  /// **'The night is closed'**
+  String get hostFormatsSweepClosed;
+
+  /// Sweep note once the plan is complete.
+  ///
+  /// In en, this message translates to:
+  /// **'This night is already closed. You can still mark people and change the switches.'**
+  String get hostFormatsSweepAlreadyClosed;
+
+  /// Run console tag: the active run-of-show step.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {index} of {total}'**
+  String hostFormatsRunStep({required int index, required int total});
+
+  /// Run console spotlight kicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get hostFormatsRunNow;
+
+  /// Run console spotlight progress label.
+  ///
+  /// In en, this message translates to:
+  /// **'{back} of {total} runners back'**
+  String hostFormatsRunBack({required int back, required int total});
+
+  /// Run console section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace pods'**
+  String get hostFormatsRunPods;
+
+  /// Run console pod row status.
+  ///
+  /// In en, this message translates to:
+  /// **'{back} of {total} back'**
+  String hostFormatsRunPodBack({required int back, required int total});
+
+  /// Run console row for runners with no pod.
+  ///
+  /// In en, this message translates to:
+  /// **'No pod'**
+  String get hostFormatsRunNoPod;
+
+  /// Run console sweep section title.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Still out: 1} other{Still out: {count}}}'**
+  String hostFormatsRunStillOut({required int count});
+
+  /// Run console note before anyone is back.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone is out on the route. Mark runners back as they reach the start.'**
+  String get hostFormatsRunAllOut;
+
+  /// Run console action: opens the return sweep.
+  ///
+  /// In en, this message translates to:
+  /// **'Close the route'**
+  String get hostFormatsRunClose;
+
+  /// Run console action once everyone is accounted for.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone’s back · close the route'**
+  String get hostFormatsRunCloseAllBack;
+
+  /// Run console with no plan.
+  ///
+  /// In en, this message translates to:
+  /// **'No plan for tonight'**
+  String get hostFormatsRunNoPlanTitle;
+
+  /// Run console with no plan, body.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up the plan for the night from the event to run it here.'**
+  String get hostFormatsRunNoPlanBody;
+
+  /// Crawl board action: opens the return sweep.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the return sweep'**
+  String get hostFormatsCrawlSweep;
+
+  /// Guests waitlist: offers every place left to the guests first in line.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Offer the next place} other{Offer the next {count} places}}'**
+  String hostEventsGuestsOfferAll({required int count});
+
+  /// Guests waitlist: a guest who already holds an open place offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Offered'**
+  String get hostEventsGuestsOffered;
+
+  /// Guests: title of the choice for a guest who asked to join.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} asked to come'**
+  String hostEventsGuestsAskedTitle({required String name});
+
+  /// Guests: what letting in or declining a join request does.
+  ///
+  /// In en, this message translates to:
+  /// **'Let them in, or decline. We’ll tell them either way.'**
+  String get hostEventsGuestsAskedBody;
+
+  /// Guests: opens the guest's profile.
+  ///
+  /// In en, this message translates to:
+  /// **'See profile'**
+  String get hostEventsGuestsSeeProfile;
+
+  /// Guests: declines a join request.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get hostEventsGuestsDecline;
+
+  /// Plan screen with no plan: opens the event editor, where the format is chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit the event'**
+  String get hostEventsPlanEmptyAction;
+
+  /// Workspace row and share screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Share and invite links'**
+  String get hostEventsLinkShare;
+
+  /// Workspace share row subtitle for an event anyone can book.
+  ///
+  /// In en, this message translates to:
+  /// **'Your link to copy or share'**
+  String get hostEventsLinkShareBody;
+
+  /// Workspace share row subtitle for an invite-only event.
+  ///
+  /// In en, this message translates to:
+  /// **'Your private link and named invite links'**
+  String get hostEventsLinkShareInviteBody;
+
+  /// Workspace menu: opens the event's group chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Event chat'**
+  String get hostEventsMenuChat;
+
+  /// Workspace menu: deletes an event nobody has booked.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete event'**
+  String get hostEventsMenuDelete;
+
+  /// Confirm title before deleting an unused event.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this event?'**
+  String get hostEventsDeleteTitle;
+
+  /// Confirm body before deleting an unused event.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody has booked yet, so it goes for good. To keep a record of it, cancel it instead.'**
+  String get hostEventsDeleteBody;
+
+  /// Confirms deleting an unused event.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get hostEventsDeleteConfirm;
+
+  /// Notice after an event is deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Event deleted'**
+  String get hostEventsDeleted;
+
+  /// Event door access screen title.
+  ///
+  /// In en, this message translates to:
+  /// **'Door access'**
+  String get hostEventsDoorTitle;
+
+  /// Event door access screen: what event-only access allows.
+  ///
+  /// In en, this message translates to:
+  /// **'Give someone the door for this event only. They can check guests in and see their names, and nothing else.'**
+  String get hostEventsDoorBody;
+
+  /// Event door access: opens the organizer's team.
+  ///
+  /// In en, this message translates to:
+  /// **'Your whole team'**
+  String get hostEventsDoorWholeTeam;
+
+  /// Event door access: subtitle of the whole-team row.
+  ///
+  /// In en, this message translates to:
+  /// **'Hosts and door staff for every event'**
+  String get hostEventsDoorWholeTeamBody;
+
+  /// Share screen: the event link section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your link'**
+  String get hostEventsShareLinkTitle;
+
+  /// Share screen: what the public event link does.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone with it can see the event and book.'**
+  String get hostEventsShareLinkNote;
+
+  /// Share screen: the invite-only event's private link section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Private link'**
+  String get hostEventsShareInviteLinkTitle;
+
+  /// Share screen: what the private link does.
+  ///
+  /// In en, this message translates to:
+  /// **'People with this link can book. Share it only with people you’re inviting.'**
+  String get hostEventsShareInviteLinkNote;
+
+  /// Share screen: copies the event link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get hostEventsShareCopy;
+
+  /// Share screen: opens the share sheet with the event link.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get hostEventsShareShare;
+
+  /// Notice after the event link is copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get hostEventsShareCopied;
+
+  /// Share screen: named invite links section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite links'**
+  String get hostEventsShareNamedTitle;
+
+  /// Share screen: why named invite links exist.
+  ///
+  /// In en, this message translates to:
+  /// **'Make one for each place you share the night, to see who came from where.'**
+  String get hostEventsShareNamedNote;
+
+  /// Share screen: no named invite links.
+  ///
+  /// In en, this message translates to:
+  /// **'No invite links yet.'**
+  String get hostEventsShareNamedEmpty;
+
+  /// Share screen: an invite link that no longer works.
+  ///
+  /// In en, this message translates to:
+  /// **'Turned off'**
+  String get hostEventsShareNamedOff;
+
+  /// Share screen: how many opened and booked through an invite link.
+  ///
+  /// In en, this message translates to:
+  /// **'{opened} opened · {booked} booked'**
+  String hostEventsShareNamedCounts({required int opened, required int booked});
+
+  /// Share screen: copies one invite link.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get hostEventsShareCopyShort;
+
+  /// Share screen: turns an invite link off.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off'**
+  String get hostEventsShareTurnOff;
+
+  /// Share screen: field title for a new invite link's name.
+  ///
+  /// In en, this message translates to:
+  /// **'New invite link'**
+  String get hostEventsShareNewLabel;
+
+  /// Share screen: placeholder for a new invite link's name.
+  ///
+  /// In en, this message translates to:
+  /// **'Who it’s for, like Office group'**
+  String get hostEventsShareNewPlaceholder;
+
+  /// Share screen: creates a named invite link and copies it.
+  ///
+  /// In en, this message translates to:
+  /// **'Make and copy the link'**
+  String get hostEventsShareCreate;
+
+  /// Notice after a named invite link is made or copied.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} link copied'**
+  String hostEventsShareCopiedNamed({required String label});
+
+  /// Confirm title before turning an invite link off.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off {label}?'**
+  String hostEventsShareTurnOffTitle({required String label});
+
+  /// Confirm body before turning an invite link off.
+  ///
+  /// In en, this message translates to:
+  /// **'People can’t book through it any more.'**
+  String get hostEventsShareTurnOffBody;
+
+  /// Keeps an invite link on.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep it on'**
+  String get hostEventsShareKeepOn;
+
+  /// Event reviews screen: how replying works.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a review to reply. Your reply shows with it on your page.'**
+  String get hostEventReviewsReplyNote;
+
+  /// Event reviews screen: a review with the host's reply under it.
+  ///
+  /// In en, this message translates to:
+  /// **'{comment}\n\nYour reply: {reply}'**
+  String hostEventReviewsWithReply({
+    required String comment,
+    required String reply,
+  });
+
+  /// Live scores: cancels a running reveal countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop the countdown'**
+  String get hostLiveScoresStopCountdown;
+
+  /// Workspace row and screen title: where an event's guests come from.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest sources'**
+  String get hostEventsGuestSourcesTitle;
+
+  /// Workspace guest sources row subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch registration, a guest file, Luma, and forwarding the list'**
+  String get hostEventsGuestSourcesBody;
 }
 
 class _AppLocalizationsDelegate

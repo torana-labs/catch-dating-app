@@ -94,12 +94,12 @@ class _TextCalls extends RecursiveAstVisitor<void> {
           'package:catch_ui/src/foundations/catch_text_styles.dart',
         )) {
       final contexts = node.argumentList.arguments
-          .where((arg) => arg is! NamedExpression)
+          .where((arg) => arg is! NamedArgument)
           .toList();
       if (contexts.length == 1 &&
           contexts.single.toSource() == 'context' &&
-          node.argumentList.arguments.whereType<NamedExpression>().every(
-            (arg) => arg.name.label.name == 'color',
+          node.argumentList.arguments.whereType<NamedArgument>().every(
+            (arg) => arg.name.lexeme == 'color',
           )) {
         return node.methodName.name;
       }
@@ -110,7 +110,7 @@ class _TextCalls extends RecursiveAstVisitor<void> {
     if (node is MethodInvocation && node.methodName.name == 'copyWith') {
       if (node.argumentList.arguments.isEmpty ||
           node.argumentList.arguments.any(
-            (arg) => arg is! NamedExpression || arg.name.label.name != 'color',
+            (arg) => arg is! NamedArgument || arg.name.lexeme != 'color',
           )) {
         return null;
       }
@@ -162,12 +162,11 @@ class _TextCalls extends RecursiveAstVisitor<void> {
       return;
     }
     final named = {
-      for (final arg
-          in node.argumentList.arguments.whereType<NamedExpression>())
-        arg.name.label.name: arg.expression,
+      for (final arg in node.argumentList.arguments.whereType<NamedArgument>())
+        arg.name.lexeme: arg.argumentExpression,
     };
     final data = node.argumentList.arguments
-        .where((arg) => arg is! NamedExpression)
+        .where((arg) => arg is! NamedArgument)
         .toList();
     if (data.length != 1 ||
         named.keys.any(

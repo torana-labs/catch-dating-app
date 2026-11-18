@@ -41,8 +41,8 @@ void main() {
     'accessExpiresAtMillis': expiry,
     'generatedAtMillis': DateTime(2026).millisecondsSinceEpoch,
     'pickupPointId': 't3',
-    'rows': [],
-    'vehicleClasses': [],
+    'groups': [],
+    'unassigned': [],
   };
   final staleRead = isA<BackendOperationException>().having(
     (error) => error.code,
@@ -57,55 +57,6 @@ void main() {
     functions = _Functions();
     repository = ProgramWorkRepository(functions, store, () => 'account');
   });
-
-  test(
-    'ledger sends the continuation cursor and retains the returned cursor',
-    () async {
-      functions.respond = (_) async => {
-        'programId': 'p1',
-        'accessExpiresAtMillis': null,
-        'trips': [],
-        'nextCursor': 'following-trip',
-      };
-      final page = await repository.listTrips('p1', cursor: 'prior-trip');
-      expect(functions.lastPayload, {
-        'programId': 'p1',
-        'cursor': 'prior-trip',
-      });
-      expect(page.nextCursor, 'following-trip');
-    },
-  );
-
-  test(
-    'hotel sends independent cursors and retains both continuations',
-    () async {
-      functions.respond = (_) async => {
-        'programId': 'p1',
-        'hotelId': 'hotel',
-        'hotelName': 'Hotel',
-        'generatedAtMillis': DateTime(2026).millisecondsSinceEpoch,
-        'accessExpiresAtMillis': null,
-        'trips': [],
-        'expectedLegs': [],
-        'nextTripCursor': 'next-trip',
-        'nextExpectedCursor': 'next-leg',
-      };
-      final page = await repository.getHotelInbound(
-        programId: 'p1',
-        hotelId: 'hotel',
-        tripCursor: 'prior-trip',
-        expectedCursor: 'prior-leg',
-      );
-      expect(functions.lastPayload, {
-        'programId': 'p1',
-        'hotelId': 'hotel',
-        'tripCursor': 'prior-trip',
-        'expectedCursor': 'prior-leg',
-      });
-      expect(page.nextTripCursor, 'next-trip');
-      expect(page.nextExpectedCursor, 'next-leg');
-    },
-  );
 
   test('fresh work bootstrap accepts its own generation change', () async {
     functions.respond = (_) async => access();
@@ -122,7 +73,7 @@ void main() {
     await seed();
     final response = Completer<Object?>();
     functions.respond = (_) => response.future;
-    final reading = repository.getArrivalsRoster(
+    final reading = repository.getTransportPlan(
       programId: 'p1',
       pickupPointId: 't3',
       snapshotAccountId: 'account',
@@ -131,7 +82,7 @@ void main() {
     await store.save('account', 'work:p1', access(hotel: 'hotel'));
     response.complete(roster);
     await rejected;
-    expect(await store.load('account', 'arrivals:p1:t3'), isNull);
+    expect(await store.load('account', 'plan:p1:t3'), isNull);
     expect(
       (await store.load('account', 'work:p1'))!.data,
       access(hotel: 'hotel'),
@@ -156,17 +107,19 @@ void main() {
     },
   );
 
-  test('uncached ledger read is fenced by concurrent revocation', () async {
+  test('uncached plan read is fenced by concurrent revocation', () async {
     final response = Completer<Object?>();
     functions.respond = (_) => response.future;
-    final reading = repository.listTrips('p1');
+    final reading = repository.getTransportPlan(programId: 'p1');
     final rejected = expectLater(reading, throwsA(staleRead));
     await store.clearProgram('account', 'p1');
     response.complete({
       'programId': 'p1',
       'accessExpiresAtMillis': expiry,
-      'trips': [],
-      'nextCursor': null,
+      'generatedAtMillis': DateTime(2026).millisecondsSinceEpoch,
+      'pickupPointId': null,
+      'groups': [],
+      'unassigned': [],
     });
     await rejected;
   });
@@ -197,7 +150,7 @@ void main() {
       () => 'account',
     );
     functions.respond = (_) async => roster;
-    final result = await repository.getArrivalsRoster(
+    final result = await repository.getTransportPlan(
       programId: 'p1',
       pickupPointId: 't3',
       snapshotAccountId: 'account',

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'auth_controller.dart';
@@ -9,6 +9,7 @@ part of 'auth_controller.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -24,23 +25,29 @@ $AuthScreenStateCopyWith<AuthScreenState> get copyWith => _$AuthScreenStateCopyW
 
 @override
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  final _this = this as AuthScreenState;
   properties
     ..add(DiagnosticsProperty('type', 'AuthScreenState'))
-    ..add(DiagnosticsProperty('phoneNumber', phoneNumber))..add(DiagnosticsProperty('countryCode', countryCode))..add(DiagnosticsProperty('verificationId', verificationId))..add(DiagnosticsProperty('step', step));
+    ..add(DiagnosticsProperty('phoneNumber', _this.phoneNumber))..add(DiagnosticsProperty('countryCode', _this.countryCode))..add(DiagnosticsProperty('verificationId', _this.verificationId))..add(DiagnosticsProperty('step', _this.step));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthScreenState&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.verificationId, verificationId) || other.verificationId == verificationId)&&(identical(other.step, step) || other.step == step));
+  final _this = this as AuthScreenState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthScreenState&&(identical(other.phoneNumber, _this.phoneNumber) || other.phoneNumber == _this.phoneNumber)&&(identical(other.countryCode, _this.countryCode) || other.countryCode == _this.countryCode)&&(identical(other.verificationId, _this.verificationId) || other.verificationId == _this.verificationId)&&(identical(other.step, _this.step) || other.step == _this.step));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,phoneNumber,countryCode,verificationId,step);
+int get hashCode {
+  final _this = this as AuthScreenState;
+  return Object.hash(runtimeType,_this.phoneNumber,_this.countryCode,_this.verificationId,_this.step);
+}
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'AuthScreenState(phoneNumber: $phoneNumber, countryCode: $countryCode, verificationId: $verificationId, step: $step)';
+  final _this = this as AuthScreenState;
+  return 'AuthScreenState(phoneNumber: ${_this.phoneNumber}, countryCode: ${_this.countryCode}, verificationId: ${_this.verificationId}, step: ${_this.step})';
 }
 
 
@@ -69,7 +76,7 @@ class _$AuthScreenStateCopyWithImpl<$Res>
 /// Create a copy of AuthScreenState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? phoneNumber = null,Object? countryCode = null,Object? verificationId = freezed,Object? step = null,}) {
-  return _then(_self.copyWith(
+  return _then(AuthScreenState(
 phoneNumber: null == phoneNumber ? _self.phoneNumber : phoneNumber // ignore: cast_nullable_to_non_nullable
 as String,countryCode: null == countryCode ? _self.countryCode : countryCode // ignore: cast_nullable_to_non_nullable
 as String,verificationId: freezed == verificationId ? _self.verificationId : verificationId // ignore: cast_nullable_to_non_nullable
@@ -232,23 +239,25 @@ _$AuthScreenStateCopyWith<_AuthScreenState> get copyWith => __$AuthScreenStateCo
 
 @override
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  properties
+    properties
     ..add(DiagnosticsProperty('type', 'AuthScreenState'))
     ..add(DiagnosticsProperty('phoneNumber', phoneNumber))..add(DiagnosticsProperty('countryCode', countryCode))..add(DiagnosticsProperty('verificationId', verificationId))..add(DiagnosticsProperty('step', step));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthScreenState&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.verificationId, verificationId) || other.verificationId == verificationId)&&(identical(other.step, step) || other.step == step));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthScreenState&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.verificationId, verificationId) || other.verificationId == verificationId)&&(identical(other.step, step) || other.step == step));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,phoneNumber,countryCode,verificationId,step);
+int get hashCode {
+    return Object.hash(runtimeType,phoneNumber,countryCode,verificationId,step);
+}
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'AuthScreenState(phoneNumber: $phoneNumber, countryCode: $countryCode, verificationId: $verificationId, step: $step)';
+    return 'AuthScreenState(phoneNumber: $phoneNumber, countryCode: $countryCode, verificationId: $verificationId, step: $step)';
 }
 
 

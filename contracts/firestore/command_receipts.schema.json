@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/command_receipts.schema.json",
+  "title": "CommandReceiptDocument",
+  "description": "Server-only replay receipt stored at commandReceipts/{command}_{id}: a retried callable, trigger or webhook finds it and returns the original result instead of running again. Pure replay only; consent, money, safety and audit evidence keep their own collections. A receipt past expiresAt counts as absent. The collection's TTL policy on expiresAt was approved by the owner on 18 Nov 2026 after the legal hold was narrowed.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "commandReceipts",
+  "x-firestore-path": "commandReceipts/{receiptId}",
+  "x-owner": "every command that dedupes its retries (functions/src/shared/commandReceipts.ts)",
+  "required": [
+    "command",
+    "createdAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "command": {
+      "type": "string",
+      "pattern": "^[a-z][A-Za-z0-9]{0,63}$",
+      "description": "The callable, trigger or webhook the receipt belongs to; the document id starts with it.",
+      "x-catch-ownership": "server-only"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of what the first request asked for; absent for trigger and webhook dedupe, which have no request to compare.",
+      "x-catch-ownership": "server-only"
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "What a replay returns that live state cannot rebuild; at most 4096 bytes.",
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "Expiry: seven days after a trigger runs, thirty after a request or webhook. Counts as absent once past; the TTL policy was approved by the owner on 18 Nov 2026 after the legal hold was narrowed.",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/live/actions/formats_plan_actions.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
+import 'package:catch_dating_app/event_success/presentation/assignments/event_success_assignment_profiles.dart';
+import 'package:catch_dating_app/event_success/presentation/assignments/event_success_group_override_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_mix_body.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_mix_controller.dart';
@@ -64,6 +67,7 @@ class _HostFormatsMixScreenState extends ConsumerState<HostFormatsMixScreen>
         EventSuccessController.generateMicroPodsMutation,
         EventSuccessController.startRevealCountdownMutation,
         HostFormatsCommands.openersMutation,
+        EventSuccessController.overrideGroupAssignmentsMutation,
       ],
       errorContext: AppErrorContext.event,
     );
@@ -82,6 +86,7 @@ class _HostFormatsMixScreenState extends ConsumerState<HostFormatsMixScreen>
             savingOpeners: savingOpeners,
             onShuffle: () => unawaited(_shuffle()),
             onOpeners: (on) => unawaited(_openers(state, on)),
+            onEditTables: () => unawaited(_editTables(state)),
             onRetry: () =>
                 ref.invalidate(watchEventSuccessPlanProvider(event.id)),
           ),
@@ -131,6 +136,42 @@ class _HostFormatsMixScreenState extends ConsumerState<HostFormatsMixScreen>
     } on Object {
       // The mutation's error shows as a notice.
     }
+  }
+
+  /// Opens the group editor the old console used on tonight's tables,
+  /// saving through the existing group override.
+  Future<void> _editTables(HostFormatsMixState state) async {
+    final event = widget.event;
+    final key = eventSuccessPeerUidsKey(
+      eventSuccessAssignmentParticipantUids(state.editable),
+    );
+    final List<PublicProfile> profiles;
+    try {
+      profiles = key.isEmpty
+          ? const <PublicProfile>[]
+          : await ref.read(
+              eventSuccessAssignmentPeerProfilesProvider(key).future,
+            );
+    } on Object catch (error) {
+      if (mounted) showCatchNoticeError(context, error);
+      return;
+    }
+    if (!mounted) return;
+    await showCatchBottomSheet<void>(
+      context: context,
+      builder: (_) => EventSuccessGroupOverrideSheet(
+        event: event,
+        assignments: state.editable,
+        participantProfiles: profiles,
+        onOverride: (rounds) =>
+            EventSuccessController.overrideGroupAssignmentsMutation.run(
+              ref,
+              (tx) => tx
+                  .get(eventSuccessControllerProvider.notifier)
+                  .overrideGroupAssignments(eventId: event.id, rounds: rounds),
+            ),
+      ),
+    );
   }
 
   Future<void> _reveal(HostFormatsMixState state) async {

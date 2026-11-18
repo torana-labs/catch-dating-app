@@ -114,7 +114,7 @@ final class ProgramCreateProvider
   }
 }
 
-String _$programCreateHash() => r'35b0cf7b435302125f6d5c538d61ee2239151c26';
+String _$programCreateHash() => r'45d804ccf7577cd27c9c9b167d2f37887ffd2eaa';
 
 /// The programme create transaction for one account and organizer: the
 /// draft, its validation, the request id and the journal that recovers a

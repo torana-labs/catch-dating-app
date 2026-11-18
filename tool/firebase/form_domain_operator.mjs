@@ -106,22 +106,25 @@ export async function verifyDomainProviderTarget(input, {request}) {
 
 /** All provider and registry writes are explicit. The manager UID records whose
  * current authority the operator acts on behalf of; ADC authenticates the
- * operator separately and is never inferred from that UID.
+ * operator separately and is never inferred from that UID. Form domains live in
+ * the shared customDomains registry (#1110) as `target.kind: "form"` records
+ * on the Firebase Hosting provider.
  */
 export async function runDomainOperator(args, {target, db, registry, policy,
   request, now = Date.now, assertManager}) {
-  if (policy.normalizeCustomFormHost(target.hostname) !== target.hostname) {
+  if (policy.parseServedHostname(target.hostname)?.hostname !== target.hostname) {
     throw new Error("Reserved or invalid custom form hostname.");
   }
   assertProdWriteAllowed({env: args.environment, projectId: target.projectId,
     apply: args.apply, allowProd: args.allowProd, action: "change a custom form domain"});
   await verifyDomainProviderTarget(target, {request});
   const readRecord = async () => {
-    const snap = await db.collection("organizerFormDomains").doc(target.hostname).get();
-    const value = policy.parseOrganizerFormDomain(snap.data());
+    const snap = await db.collection("customDomains").doc(target.hostname).get();
+    const value = policy.parseCustomDomain(snap.data());
     if (snap.exists && !value) throw new Error("Invalid domain registry record.");
     return value;
   };
+  const actor = {kind: "operator", uid: args.managerUid, authority: assertManager};
   const record = await readRecord();
   const hosting = await readHostingDomain(target, {request, now});
   const summary = {action: args.action, apply: args.apply, projectId: target.projectId,
@@ -139,50 +142,59 @@ export async function runDomainOperator(args, {target, db, registry, policy,
     if (!form.exists || form.get("status") !== "published" || form.get("organizerId") !== args.organizerId) {
       throw new Error("A published form owned by this organizer is required.");
     }
-    if (record && record.status !== "revoked" &&
-        !(record.status === "pending" && record.pendingExpiresAtMillis <= now())) {
+    if (record && policy.holdsHostname(record, now())) {
       throw new Error("Hostname is already reserved; use status and its generation.");
     }
-    if (!args.apply) return {...summary, nextAction: "reserve-with-apply"};
-    const reserved = await registry.reserveOrganizerFormDomain(db, {hostname: target.hostname,
-      organizerId: args.organizerId, formId: args.formId, actorUid: args.managerUid},
-    now(), target.expectedCname, assertManager);
+    const screening = policy.screenHostname(policy.parseServedHostname(target.hostname));
+    if (screening.verdict === "reject") throw new Error("Hostname is blocklisted.");
+    if (!args.apply) return {...summary, screening, nextAction: "reserve-with-apply"};
+    const reserved = await registry.reserveCustomDomain(db, {hostname: target.hostname,
+      provider: "firebaseHosting", expectedCname: target.expectedCname, actor,
+      target: {kind: "form", organizerId: args.organizerId, formId: args.formId}}, now());
     return {...summary, registry: reserved, nextAction: "publish-dns-then-verify"};
   }
-  if (!record || record.organizerId !== args.organizerId || record.formId !== args.formId ||
-      record.generation !== args.generation || record.expectedCname !== target.expectedCname) {
+  if (!record || record.target?.kind !== "form" || record.target.organizerId !== args.organizerId ||
+      record.target.formId !== args.formId || record.generation !== args.generation ||
+      record.provider !== "firebaseHosting" || record.expectedCname !== target.expectedCname) {
     throw new Error("Requested organizer/form/generation/site does not match the reservation.");
   }
   const cleanup = args.action === "remove-origins";
-  const statuses = cleanup ? ["revoked"] : args.action === "revoke" ?
-    ["pending", "verified", "active", "revoked"] : args.action === "verify" ? ["pending"] : ["verified", "active"];
-  const assertBinding = () => registry.assertOrganizerFormDomainBinding(db, record,
+  const statuses = cleanup ? ["removed"] : args.action === "revoke" ?
+    ["pendingDns", "verified", "provisioning", "active", "lapsed", "suspended", "failed", "removed"] :
+    args.action === "verify" ? ["pendingDns"] : args.action === "provision" ?
+      ["verified", "provisioning"] : ["provisioning", "active"];
+  const assertBinding = () => registry.assertFormCustomDomainBinding(db, record,
     args.managerUid, statuses, assertManager);
   await assertBinding();
   if (args.action === "revoke") {
-    if (args.apply) await registry.revokeOrganizerFormDomain(db, target.hostname,
-      args.organizerId, args.managerUid, assertManager, record);
+    // Revocation removes the record in the shared registry: routing stops in
+    // that commit and a new reservation needs a new generation and challenge.
+    if (args.apply) await registry.removeCustomDomain(db, {fence: record, actor,
+      reason: "Operator revoked the form domain"}, now());
     return {...summary, registry: await readRecord(), nextAction: args.apply ? "remove-origins" : "revoke-with-apply"};
   }
   if (cleanup) {
     const origins = await reconcileFormOrigins(target, {request, apply: args.apply, remove: true, assertBinding});
     return {...summary, origins: originSummary(origins), nextAction: "review-residual-trust-and-client-dns"};
   }
-  const probe = await registry.probeFormDomain(target.hostname);
+  const probe = await registry.probeCustomDomain(target.hostname);
   if (!policy.hasCurrentDomainOwnership(record, probe, now())) {
     throw new Error("Current TXT challenge and exact CNAME proof are required.");
   }
   if (args.action === "verify") {
-    policy.verifyFormDomain(record, probe, now());
-    if (args.apply) await registry.verifyOrganizerFormDomain(db, target.hostname, probe,
-      now(), args.organizerId, {expected: record, actorUid: args.managerUid, assertManager});
+    if (policy.isLeaseExpired(record, now())) throw new Error("The pending reservation has expired; reserve again.");
+    if (args.apply) await registry.verifyCustomDomain(db, {fence: record, probe, actor}, now());
     return {...summary, registry: await readRecord(), nextAction: args.apply ? "provision" : "verify-with-apply"};
   }
   await assertBinding();
   if (args.action === "provision") {
     const result = await provisionHostingDomain(target, {request, now, apply: args.apply, assertBinding});
     await assertBinding();
-    return {...summary, hosting: result, nextAction: "follow-hosting-dns-and-read-status"};
+    // The registry records the exact Hosting resource it now waits on.
+    if (args.apply) await registry.markCustomDomainProvisioning(db, {fence: record, actor,
+      providerHostnameId: registry.firebaseHostingProviderHostnameId(target.siteId, target.hostname)}, now());
+    return {...summary, hosting: result, registry: await readRecord(),
+      nextAction: "follow-hosting-dns-and-read-status"};
   }
   if (args.action === "prepare-origins") {
     if (!hosting.ready) throw new Error("Hosting and certificate must be ready before preparing origins.");
@@ -191,12 +203,12 @@ export async function runDomainOperator(args, {target, db, registry, policy,
   }
   const origins = await readFormOrigins(target, {request});
   const freshHosting = await readHostingDomain(target, {request, now});
-  const freshProbe = await registry.probeFormDomain(target.hostname);
+  const freshProbe = await registry.probeCustomDomain(target.hostname);
   if (!origins.ready || !freshHosting.ready || !policy.hasCurrentDomainOwnership(record, freshProbe, now())) {
     throw new Error("Current Hosting, DNS, Auth, App Check and upload origins must all be ready.");
   }
   await assertBinding();
-  if (args.apply) await registry.activateOrganizerFormDomain(db, {expected: record,
+  if (args.apply) await registry.activateFormCustomDomain(db, {expected: record,
     probe: freshProbe, certificate: {projectId: target.projectId, siteId: target.siteId,
       hostname: target.hostname, observedAtMillis: freshHosting.observedAt,
       expiresAtMillis: freshHosting.certificateExpiresAt}, actorUid: args.managerUid,
@@ -215,8 +227,8 @@ export async function domainOperatorMain(argv = process.argv.slice(2)) {
   const {GoogleAuth} = require("google-auth-library");
   const {initializeApp, applicationDefault, deleteApp} = require("firebase-admin/app");
   const {getFirestore} = require("firebase-admin/firestore");
-  const registry = require("./lib/organizers/organizerFormDomainRegistry.js");
-  const policy = require("./lib/organizers/organizerFormDomains.js");
+  const registry = require("./lib/customDomains/domainRegistry.js");
+  const policy = require("./lib/customDomains/domainPolicy.js");
   const {requireOrganizerManager} = require("./lib/shared/organizerManagerAuthority.js");
   const auth = new GoogleAuth({projectId: target.projectId,
     scopes: ["https://www.googleapis.com/auth/cloud-platform"]});

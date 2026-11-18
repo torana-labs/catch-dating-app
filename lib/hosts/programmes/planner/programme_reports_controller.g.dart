@@ -116,13 +116,13 @@ final class HostProgrammeAttendanceControllerFamily extends $Family
   String toString() => r'hostProgrammeAttendanceControllerProvider';
 }
 
-/// The trip ledger: the programme and the first page of `listProgramTrips`.
+/// The trip ledger: the programme and the live trips.
 
 @ProviderFor(hostProgrammeTripsController)
 final hostProgrammeTripsControllerProvider =
     HostProgrammeTripsControllerFamily._();
 
-/// The trip ledger: the programme and the first page of `listProgramTrips`.
+/// The trip ledger: the programme and the live trips.
 
 final class HostProgrammeTripsControllerProvider
     extends
@@ -132,7 +132,7 @@ final class HostProgrammeTripsControllerProvider
           HostProgrammeReport<ProgramTripList>
         >
     with $Provider<HostProgrammeReport<ProgramTripList>> {
-  /// The trip ledger: the programme and the first page of `listProgramTrips`.
+  /// The trip ledger: the programme and the live trips.
   HostProgrammeTripsControllerProvider._({
     required HostProgrammeTripsControllerFamily super.from,
     required String super.argument,
@@ -188,9 +188,9 @@ final class HostProgrammeTripsControllerProvider
 }
 
 String _$hostProgrammeTripsControllerHash() =>
-    r'8428b2ac9a4738fcb2c952382990aa30a0468f13';
+    r'84f6238d4d95e4597ae53e23631288acc1aaa584';
 
-/// The trip ledger: the programme and the first page of `listProgramTrips`.
+/// The trip ledger: the programme and the live trips.
 
 final class HostProgrammeTripsControllerFamily extends $Family
     with
@@ -207,7 +207,7 @@ final class HostProgrammeTripsControllerFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The trip ledger: the programme and the first page of `listProgramTrips`.
+  /// The trip ledger: the programme and the live trips.
 
   HostProgrammeTripsControllerProvider call(String programId) =>
       HostProgrammeTripsControllerProvider._(argument: programId, from: this);

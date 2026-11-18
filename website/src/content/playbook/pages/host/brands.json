@@ -24,7 +24,7 @@
       "actions": [
         {
           "label": "Ask for a walkthrough",
-          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I work on a brand’s community events and would like a 15-minute walkthrough."},
+          "to": {"route": "host_walkthrough"},
           "emphasis": "primary"
         },
         {
@@ -92,7 +92,7 @@
           "title": "Links · Run series",
           "label": "Bookings per link",
           "rows": [
-            {"title": "Carter Road Runners", "detail": "Mumbai · 4 runs", "value": "412"},
+            {"title": "Driftwood Bay Runners", "detail": "Mumbai · 4 runs", "value": "412"},
             {"title": "Sea Face Striders", "detail": "Mumbai · 4 runs", "value": "286"},
             {"title": "Creator · @runwithrhea", "detail": "Reel and stories", "value": "198"},
             {"title": "Store QR codes", "detail": "12 stores", "value": "131"}
@@ -129,7 +129,7 @@
       "actions": [
         {
           "label": "Ask for a walkthrough",
-          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like a walkthrough for a brand series across cities."},
+          "to": {"route": "host_walkthrough"},
           "emphasis": "primary"
         },
         {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
@@ -145,7 +145,7 @@
         {"question": "Can we see the guests partner hosts bring?", "answer": "You see counts: bookings, attendance and repeat guests by partner. Names and contact details only come from people who opted in to hear from your brand."},
         {"question": "Can we run events in several cities?", "answer": "Yes. Each city’s events sit on your brand page, and the report rolls them up."},
         {"question": "Can we keep a launch invite-only?", "answer": "Yes. Invite-only events stay off public pages; only people with your link can book."},
-        {"question": "How do we find hosts to partner with?", "answer": "Ask us for a walkthrough on WhatsApp and tell us the cities and formats you want. We’ll introduce hosts who fit."},
+        {"question": "How do we find hosts to partner with?", "answer": "Ask us for a walkthrough and tell us the cities and formats you want. We’ll introduce hosts who fit."},
         {"question": "Do guests need an app?", "answer": "No. Guests book and check in in their phone’s browser."}
       ]
     },
@@ -159,7 +159,7 @@
       "actions": [
         {
           "label": "Ask for a walkthrough",
-          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like a 15-minute walkthrough for our brand’s community events."},
+          "to": {"route": "host_walkthrough"},
           "emphasis": "primary"
         },
         {

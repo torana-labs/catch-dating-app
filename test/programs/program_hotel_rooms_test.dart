@@ -15,7 +15,7 @@ import 'program_operations_fixture.dart';
 Map<String, Object?> _roomsData() => {
   'programId': 'program',
   'hotelId': 'hotel',
-  'hotelName': 'Taj Palace',
+  'hotelName': 'Harbourview Palace',
   'generatedAtMillis': DateTime(2026).millisecondsSinceEpoch,
   'accessExpiresAtMillis': null,
   'roomBlocks': [
@@ -142,9 +142,9 @@ void main() {
     expect(find.text('Suggested block: Bride family'), findsOneWidget);
     expect(find.text('Nisha Rao'), findsOneWidget);
     expect(find.text('Room 512 · Bride family'), findsOneWidget);
-    expect(find.text('CONFIRMED'), findsOneWidget);
+    expect(find.text('Confirmed'), findsOneWidget);
     expect(find.text('Bride family · Suite'), findsOneWidget);
-    expect(find.text('1 OF 2 LEFT'), findsOneWidget);
+    expect(find.text('1 of 2 left'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

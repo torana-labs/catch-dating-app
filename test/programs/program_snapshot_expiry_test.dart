@@ -17,7 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../test_pump_helpers.dart';
 
 const _offline = NetworkException('connection-failed', 'Offline');
-const _scope = 'arrivals:p:station';
+const _scope = 'plan:p:station';
 const _manager = {
   'programId': 'p',
   'organizerId': 'org',
@@ -49,15 +49,15 @@ void _seed(DateTime workAt, DateTime rosterAt) {
           'accessExpiresAtMillis': null,
           'generatedAtMillis': rosterAt.millisecondsSinceEpoch,
           'pickupPointId': 'station',
-          'rows': [],
-          'vehicleClasses': [],
+          'groups': [],
+          'unassigned': [],
         },
       },
     }),
   });
 }
 
-Future<ProgramReadView<ProgramArrivalsRoster>> _read(
+Future<ProgramReadView<ProgramTransportPlan>> _read(
   ProgramReadSnapshotStore store,
   DateTime Function() now,
 ) => readProgramWithSnapshot(
@@ -67,7 +67,7 @@ Future<ProgramReadView<ProgramArrivalsRoster>> _read(
   store: store,
   isCurrentAccount: () => true,
   live: () async => throw _offline,
-  parse: ProgramArrivalsRoster.fromCallableData,
+  parse: ProgramTransportPlan.fromCallableData,
   now: now,
 );
 
@@ -123,7 +123,7 @@ void main() {
           uidProvider.overrideWithValue(const AsyncData('account')),
           programReadSnapshotStoreProvider.overrideWithValue(store),
           programProjectionClockProvider.overrideWithValue(() => now),
-          programArrivalsRosterProvider(
+          programTransportPlanProvider(
             'p',
             'station',
           ).overrideWith((ref) async => throw _offline),
@@ -137,7 +137,7 @@ void main() {
             home: Consumer(
               builder: (context, ref, _) => CatchAsyncBoundary(
                 value: ref.watch(
-                  programArrivalsRosterViewProvider('p', 'station'),
+                  programTransportPlanViewProvider('p', 'station'),
                 ),
                 retainDataOn: const {},
                 loadingBuilder: (_) => const Text('Loading'),

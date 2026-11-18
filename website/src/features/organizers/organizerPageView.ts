@@ -1,11 +1,12 @@
-import {catchAvatarInitialsOf, catchFormatAccentOf, catchFormatOf, type CatchBandGround, type CatchFormat, type CatchIconName} from "@catch/web-ui";
+import {catchAvatarInitialsOf, catchFormatAccentOf, catchFormatOf, type CatchMonogramGround, type CatchFormat, type CatchIconName} from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../content/organizerPage";
+import {listingRequestCopy} from "../../content/listingRequest";
 import type {OrganizerPageEvent, OrganizerPageRecord, OrganizerPageReview} from "./organizerPage";
 import {brand} from "@catch/brand";
 
 /** `claimed` is the organiser's own page; `generated` is built from public pages before a claim. */
 export type OrganizerPageKind = "claimed" | "generated";
-type Accent = Exclude<CatchBandGround, "white" | "paper" | "ink">;
+type Accent = Exclude<CatchMonogramGround, "white" | "paper" | "ink">;
 
 export interface OrganizerEventView {
   key: string;
@@ -15,7 +16,7 @@ export interface OrganizerEventView {
   href: string;
   title: string;
   date: {dateTime: string; day: string; month: string; weekday: string};
-  ground: CatchBandGround;
+  ground: CatchMonogramGround;
   /** The system format the event's date tile and marker take, when its activity has one. */
   format?: CatchFormat;
   /** "6:30 AM · Carter Road jetty" */
@@ -68,7 +69,7 @@ export interface OrganizerMomentView {
   figure?: string;
   imageUrl?: string;
   imageAlt?: string;
-  ground: CatchBandGround;
+  ground: CatchMonogramGround;
   placeholder?: boolean;
 }
 
@@ -76,7 +77,7 @@ export interface OrganizerReviewView {
   key: string;
   name: string;
   initials: string;
-  ground: CatchBandGround;
+  ground: CatchMonogramGround;
   meta: string;
   rating: number;
   ratingLabel: string;
@@ -98,7 +99,7 @@ export interface OrganizerPageView {
     /** The organiser's most common format: the logo square, the cover placeholder and the figures. */
     format: CatchFormat;
     monogram: string;
-    monogramGround: CatchBandGround;
+    monogramGround: CatchMonogramGround;
     verified: boolean;
     tag?: string;
     /** Labels under the name, such as women-led. */
@@ -143,6 +144,8 @@ export interface OrganizerPageView {
     built: string;
   };
   footer: {line: string; link: string; href: string};
+  /** Report or remove this listing: the listing request form with this organiser filled in. */
+  report: {label: string; href: string};
 }
 
 const defaultZone = "Asia/Kolkata";
@@ -151,7 +154,7 @@ const siteOrigin = brand.web.origin;
 const internalSourceTypes = new Set(["user_supplied", "embedded_event_data", "catch_demo"]);
 // Review notes from listing intake that are not facts about the organiser.
 const internalFactLabels = new Set(["claim state", "indexing", "city evidence", "location target"]);
-const reviewGrounds: readonly CatchBandGround[] = ["pink", "indigo", "mint", "yellow", "coral"];
+const reviewGrounds: readonly CatchMonogramGround[] = ["pink", "indigo", "mint", "yellow", "coral"];
 const reviewLimit = 6;
 const factLimit = 6;
 
@@ -256,6 +259,7 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
     footer: generated ?
       {line: copy.footer.generated(sourceNames), link: copy.footer.generatedLink, href: "/help/"} :
       {line: copy.footer.claimed, link: copy.footer.claimedLink, href: "/host/"},
+    report: {label: listingRequestCopy.reportLink, href: `/listings/request/?organizer=${encodeURIComponent(record.organizerId)}`},
   };
 }
 

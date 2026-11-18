@@ -282,7 +282,7 @@ const trackFooter = (link: SiteNavItem) => trackSiteCtaClick(`footer_${slugForTr
 
 /** The site's own links by path, in the order given. */
 function siteLinks(hrefs: readonly string[]): SiteNavItem[] {
-  const pool: readonly SiteNavItem[] = [publicSiteCopy.whatsOn, ...siteFooterLegalLinks];
+  const pool: readonly SiteNavItem[] = [publicSiteCopy.whatsOn, ...siteFooterLegalLinks, ...siteFooterCopy.extraLinks];
   return hrefs.map((href) => pool.find((link) => link.href === href)!);
 }
 
@@ -317,6 +317,7 @@ function FooterHelpActions({variant}: {variant: SiteFooterVariant}) {
 export function PublicSiteFooter({
   appHref,
   cities,
+  columns,
   exploreHref,
   footnotes,
   helpBand = true,
@@ -329,6 +330,12 @@ export function PublicSiteFooter({
   /** Where Get the app goes: the homepage's own band from the homepage. */
   appHref?: string;
   cities?: readonly SiteFooterCity[];
+  /**
+   * The link columns in place of the variant's, such as the product pages'
+   * Product column (the kit's KitFooter `cols`). The last column ends with
+   * Privacy choices, as every footer's does.
+   */
+  columns?: readonly SiteFooterColumn[];
   /** Where What's on goes: a city page links its own plans. */
   exploreHref?: string;
   /** Numbered notes under the columns, such as a figure's source; each carries its own number. */
@@ -344,7 +351,8 @@ export function PublicSiteFooter({
   wordmark?: string;
 }) {
   const {brand, subBrand} = wordmarkParts(wordmark);
-  const groups = variant === "host" ? hostFooterGroups(exploreHref) : guestFooterGroups({appHref, cities: cities ?? siteFooterDefaultCities, exploreHref});
+  const groups = columns ? columnFooterGroups(columns) :
+    variant === "host" ? hostFooterGroups(exploreHref) : guestFooterGroups({appHref, cities: cities ?? siteFooterDefaultCities, exploreHref});
   return (
     <CatchSiteFooter
       brandHref="/"
@@ -372,6 +380,20 @@ function guestFooterGroups({appHref, cities, exploreHref}: {appHref?: string; ci
     {title: siteFooterCopy.groups.hosts, links: siteFooterCopy.hosts},
     {title: siteFooterCopy.groups.help, links: siteLinks(siteFooterCopy.helpOrder), trailing: <PrivacyChoicesButton tone="link" />},
   ];
+}
+
+/** A page's own footer column: its title and links. */
+interface SiteFooterColumn {
+  readonly title: string;
+  readonly links: readonly SiteNavItem[];
+}
+
+function columnFooterGroups(columns: readonly SiteFooterColumn[]): CatchSiteFooterGroup[] {
+  return columns.map((column, index) => ({
+    title: column.title,
+    links: column.links,
+    ...(index === columns.length - 1 ? {trailing: <PrivacyChoicesButton tone="link" />} : {}),
+  }));
 }
 
 function hostFooterGroups(exploreHref?: string): CatchSiteFooterGroup[] {

@@ -37,7 +37,7 @@ Map<String, Object?> _function(
 }) => {
   'functionId': id,
   'name': name,
-  'venueName': 'Durbar hall, Taj Fateh Prakash',
+  'venueName': 'Durbar hall, Lakeview Haveli',
   'startsAtMillis': start.millisecondsSinceEpoch,
   'endsAtMillis': end.millisecondsSinceEpoch,
   'expectedCount': expected,
@@ -91,7 +91,7 @@ ProgramLiveBoard staffLiveBoard() {
         'r1_functionLead',
         'staffAttention',
         'warning',
-        'The Iyers reach the Taj after the Sangeet starts',
+        'The Iyers reach the Haveli after the Sangeet starts',
         DateTime(2026, 12, 12, 19, 40),
         mine: true,
         assignee: 'Pooja Nair',
@@ -112,7 +112,7 @@ ProgramLiveBoard staffLiveBoard() {
   });
 }
 
-/// The Taj's Tuesday departures: one late, one checked out, one gone.
+/// The Haveli's Tuesday departures: one late, one checked out, one gone.
 ProgramDeparturesRoster staffDepartures() {
   Map<String, Object?> row(
     String id,
@@ -140,7 +140,7 @@ ProgramDeparturesRoster staffDepartures() {
   return ProgramDeparturesRoster.fromCallableData({
     'programId': staffProgramId,
     'hotelId': staffHotelId,
-    'hotelName': 'Taj Fateh Prakash',
+    'hotelName': 'Lakeview Haveli',
     'generatedAtMillis': DateTime(2026, 12, 15, 9, 40).millisecondsSinceEpoch,
     'rows': [
       row(

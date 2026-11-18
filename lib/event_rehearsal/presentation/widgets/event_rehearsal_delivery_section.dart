@@ -26,7 +26,7 @@ class EventRehearsalDeliverySection extends ConsumerWidget {
             sessionId,
             practiceOperatorId: practiceOperatorId,
           );
-          if (ref.exists(query)) ref.read(query.notifier).reload();
+          if (ref.read(query.exists)) ref.read(query.notifier).reload();
           showCatchBottomSheet<void>(
             context: context,
             builder: (_) => EventRehearsalDeliveryQueueSheet(

@@ -18,7 +18,7 @@ const functions: ProgramFunctionLike[] = [
     // 2026-05-01 19:00 IST.
     startsAt: Date.UTC(2026, 4, 1, 13, 30),
     endsAt: Date.UTC(2026, 4, 1, 16, 0),
-    venueName: "Lake Palace",
+    venueName: "Mirror Lake Pavilion",
     status: "scheduled",
     revision: 1,
   },
@@ -78,7 +78,7 @@ test("invited guests get every scheduled function in order", () => {
     "Saturday, May 2, 2026",
     "Saturday, May 2, 2026",
   ]);
-  assert.equal(itinerary[0].venueName, "Lake Palace");
+  assert.equal(itinerary[0].venueName, "Mirror Lake Pavilion");
   assert.equal(itinerary[2].venueName, null);
   assert.equal(itinerary[0].name, "Sangeet");
 });

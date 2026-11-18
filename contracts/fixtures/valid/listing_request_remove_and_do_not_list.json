@@ -1,0 +1,29 @@
+{
+  "requestType": "removeAndDoNotList",
+  "clientRequestId": "0f3c2a9e5b1d4c7e8a6b2d9f1e3c5a70",
+  "target": {
+    "kind": "organizer",
+    "organizerId": "lantern-lane-social"
+  },
+  "requester": {
+    "name": "Asha Verma",
+    "role": "owner",
+    "email": "asha@lanternlane.example",
+    "organisation": "Lantern Lane Social"
+  },
+  "verification": {
+    "proofMethod": "domainEmail",
+    "officialDomain": "lanternlane.example"
+  },
+  "declarations": {
+    "accurate": true,
+    "authorised": true,
+    "contactConsent": true
+  },
+  "consent": {
+    "purpose": "listingRequest",
+    "version": "listing-request-v1"
+  },
+  "sourcePage": "/listings/request/",
+  "website": ""
+}

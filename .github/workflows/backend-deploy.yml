@@ -1,7 +1,7 @@
 name: Deploy backend
 
 # The one path from main to the Firebase backend (indexes, Functions, Firestore
-# and Storage rules). Once a day (03:00 IST) it deploys the newest main commit
+# and Storage rules). Once a day (02:43 IST) it deploys the newest main commit
 # whose CI passed to dev, then to prod once dev succeeds (the prod environment
 # has no required reviewer since 30 Oct 2026). Each deploy rebuilds only the
 # Functions codebases whose code, parameters or secrets changed; the Firebase
@@ -16,7 +16,9 @@ name: Deploy backend
 
 on:
   schedule:
-    - cron: '30 21 * * *'
+    # 21:13 UTC (02:43 IST): off the :00/:30 minutes GitHub delays most. The
+    # :30 schedule started 5-7 hours late on 17 and 18 Nov 2026.
+    - cron: '13 21 * * *'
   workflow_dispatch:
     inputs:
       environment:

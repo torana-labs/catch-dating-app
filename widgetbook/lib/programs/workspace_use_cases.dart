@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_staff_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
@@ -54,7 +55,7 @@ final _functions = [
     name: 'Sangeet',
     startsAt: _now.add(const Duration(hours: 3)),
     endsAt: _now.add(const Duration(hours: 6)),
-    venueName: 'The Leela Ballroom',
+    venueName: 'The Lakeshore Ballroom',
     status: ProgramFunctionStatus.scheduled,
     invitationMode: 'selectedGuests',
     checkInEnabled: true,
@@ -104,8 +105,8 @@ final _stations = [
 
 final _hotels = [
   const ProgramHotel(
-    hotelId: 'hotel_taj',
-    name: 'Taj Palace',
+    hotelId: 'hotel_harbourview',
+    name: 'Harbourview Palace',
     address: '2 Sardar Patel Marg, Chanakyapuri',
     receptionContact: '+91 11 2611 0202',
     active: true,
@@ -146,12 +147,14 @@ final _deskAccess = ProgramWorkAccess(
   grantExpiresAt: _now.add(const Duration(hours: 8)),
   capabilities: const {},
   pickupPoints: const [],
-  hotels: const [ProgramHotel(hotelId: 'hotel_taj', name: 'Taj Palace')],
+  hotels: const [
+    ProgramHotel(hotelId: 'hotel_harbourview', name: 'Harbourview Palace'),
+  ],
   functions: [
     ProgramFunction(
       functionId: _functionId,
       name: 'Sangeet',
-      venueName: 'The Leela Ballroom',
+      venueName: 'The Lakeshore Ballroom',
       startsAt: _now.add(const Duration(hours: 3)),
       endsAt: _now.add(const Duration(hours: 6)),
       checkInEnabled: true,
@@ -327,7 +330,7 @@ List<Override> _workspaceOverrides() => [
     _programId,
   ).overrideWithValue(AsyncData(_detail)),
   programGuestListProvider(_programId).overrideWithValue(AsyncData(_guestPage)),
-  programStaffListProvider(_programId).overrideWithValue(AsyncData(_staff)),
+  programStaffStreamProvider(_programId).overrideWithValue(AsyncData(_staff)),
 ];
 
 class _DialogFrame extends StatelessWidget {
@@ -537,7 +540,12 @@ Widget programGuestGroupEditDialogStates(BuildContext context) {
         label: 'new group',
         child: _DialogFrame(
           child: ProgramGuestGroupEditDialog(
-            hotels: [ProgramHotel(hotelId: 'hotel_taj', name: 'Taj Palace')],
+            hotels: [
+              ProgramHotel(
+                hotelId: 'hotel_harbourview',
+                name: 'Harbourview Palace',
+              ),
+            ],
           ),
         ),
       ),

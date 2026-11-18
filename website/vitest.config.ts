@@ -17,6 +17,13 @@ export default mergeConfig(
           test: {
             name: "unit",
             environment: "jsdom",
+            // The committed production projection is empty: real organisers
+            // live only in the production database. Unit tests read the
+            // fictional listing from the story fixtures instead.
+            alias: [{
+              find: /^\.\.\/\.\.\/generated\/hostListings\.json$/u,
+              replacement: path.join(dirname, "src/stories/fixtures/syntheticHostListings.json"),
+            }],
             include: ["src/**/*.test.{ts,tsx}"],
             mockReset: true,
             restoreMocks: true,

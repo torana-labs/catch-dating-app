@@ -64,11 +64,22 @@ HostEventGuestsState hostEventGuestsController(
       .watch(hostEventRosterInsightsProvider(request.eventId))
       .value;
   final insightById = insights?.byAttendeeId ?? const {};
+  final participationByUid = <String, EventParticipation>{
+    for (final participation
+        in participationsValue.value ?? const <EventParticipation>[])
+      participation.uid: participation,
+  };
   HostEventGuest guest(EventAttendee attendee) => HostEventGuest(
     id: attendee.id,
     name: attendee.displayName,
     uid: attendee.linkedUid,
     insight: insightById[attendee.id],
+    offered:
+        switch (participationByUid[attendee.linkedUid]?.waitlistOfferStatus) {
+          EventWaitlistOfferStatus.active ||
+          EventWaitlistOfferStatus.accepted => true,
+          _ => false,
+        },
   );
   List<HostEventGuest> where(Set<EventAttendeeStatus> statuses) =>
       List<HostEventGuest>.unmodifiable(

@@ -26,6 +26,7 @@ import {
   metaWhatsappConfigId,
   metaWhatsappGraphVersion,
 } from "../../organizers/organizerMessagingSetup";
+import {programStaffGrantId} from "../../shared/programAuthority";
 import {whatsappStatusCorrelation} from
   "../../eventSuccess/operations/whatsappDeliveryProtocol";
 import {whatsappEndpointHash} from
@@ -79,6 +80,26 @@ export const defaultProgramReplyDeps: ProgramReplyDeps = {
   }),
   tokenStore: new OrganizerTokenStore(),
 };
+
+/**
+ * The display name a planner reply carries, copied from the author's staff
+ * grant at write time so communications staff, who cannot read the staff
+ * list, still see who answered. Null for the assistant, for the programme
+ * owner (who holds no grant) and for a grant with no name.
+ * @param {DocumentSnapshot|null} grantSnap The author's grant, when read.
+ * @param {string} programId The programme the reply belongs to.
+ * @return {string|null} The label, or null.
+ */
+export function programReplyAuthorLabel(
+  grantSnap: FirebaseFirestore.DocumentSnapshot | null,
+  programId: string,
+): string | null {
+  const grant = grantSnap?.data() as
+    {programId?: unknown; displayName?: unknown} | undefined;
+  return grant?.programId === programId &&
+    typeof grant.displayName === "string" && grant.displayName.trim() ?
+    grant.displayName.trim().slice(0, 120) : null;
+}
 
 export interface ProgramReplyInput {
   programId: string;
@@ -296,8 +317,12 @@ export async function sendProgramWhatsappText(deps: ProgramReplyDeps,
   const sentAtMillis = now.toMillis();
   try {
     await db.runTransaction(async (tx) => {
-      const [operationSnap, messageSnap, threadSnap] = await Promise.all([
-        tx.get(operationRef), tx.get(messageRef), tx.get(threadRef)]);
+      const [operationSnap, messageSnap, threadSnap, grantSnap] =
+        await Promise.all([tx.get(operationRef), tx.get(messageRef),
+          tx.get(threadRef), input.actorUid ?
+            tx.get(db.collection("programStaffGrants").doc(
+              programStaffGrantId(input.programId, input.actorUid))) :
+            Promise.resolve(null)]);
       const operation = operationSnap.data() as ReplyOperation | undefined;
       const thread = readThread(threadSnap, input.programId);
       if (!operation || operation.state !== "pending" ||
@@ -309,7 +334,9 @@ export async function sendProgramWhatsappText(deps: ProgramReplyDeps,
         programId: input.programId, organizerId: thread.organizerId,
         householdId: thread.householdId, direction: "outbound",
         kind: "text", text: input.text, author: input.author,
-        authorUid: input.actorUid, runId: input.runId,
+        authorUid: input.actorUid,
+        authorLabel: programReplyAuthorLabel(grantSnap, input.programId),
+        runId: input.runId,
         cannedReplyId: input.cannedReplyId, providerMessageId,
         status: "pending", createdAtMillis: sentAtMillis,
         statusUpdatedAtMillis: sentAtMillis,

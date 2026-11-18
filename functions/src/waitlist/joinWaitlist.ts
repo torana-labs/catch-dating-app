@@ -4,8 +4,6 @@ import type {Request, Response} from "express";
 import * as logger from "firebase-functions/logger";
 import {HttpsError, onRequest} from "firebase-functions/v2/https";
 import {checkIpRateLimit} from "../shared/rateLimit";
-import type {JoinWaitlistHTTPRequest} from
-  "../shared/generated/joinWaitlistHttpRequest";
 import type {JoinWaitlistHTTPResponse} from
   "../shared/generated/joinWaitlistHttpResponse";
 import {schemaErrorMessages} from "../shared/generated/schemaValidationRuntime";
@@ -22,15 +20,6 @@ import {
 } from "./websiteLead";
 import {readCityAttribution, type CityAttribution} from "./cityAttribution";
 import {prepareCityInterest} from "../cityInterest/cityInterest";
-import {hostConsentKey} from "../acquisition/consentPolicy";
-import {prepareHostAttribution} from "../acquisition/attribution";
-import {HOST_CONSENT_COLLECTION} from "../acquisition/consentStore";
-import {
-  hostConsentAllowedOrigin, hostServerMeasurementEnabled,
-} from "../acquisition/consentHttp";
-import {
-  HOST_DELIVERY_COLLECTION, prepareHostMetaDelivery,
-} from "../acquisition/metaDelivery";
 
 interface NormalizedMarketingAnalytics {
   consent: Record<string, unknown> | null;
@@ -678,7 +667,6 @@ async function joinByWhatsapp(
 }
 
 export function createJoinWaitlistHandler(options: {
-  measurementEnabled: boolean;
   /** Services for website leads (requestKind requests); tests replace them. */
   lead?: WebsiteLeadDeps;
 }) {
@@ -719,8 +707,8 @@ export function createJoinWaitlistHandler(options: {
     const programme = body.programme === "weddings" ? "weddings" : null;
     const programmeApplication = programme ?
       normalizeProgrammeApplication(body.programmeApplication) : null;
-    // Host acquisition uses only the consent-bound immutable receipt below.
-    // The legacy mutable field remains available for consumer submissions.
+    // Campaign labels are kept for consumer submissions only; Host leads are
+    // attributed by the ad conversion context, not by the browser payload.
     const marketingAttribution = role === "host" || role === "both" ? null :
       normalizeMarketingAttribution(body.attribution);
     const marketingAnalytics = normalizeMarketingAnalytics(body.analytics);
@@ -831,15 +819,6 @@ export function createJoinWaitlistHandler(options: {
     let hostLead: {eventId: string; isNew: boolean} | undefined;
     // Generate outside the transaction so Firestore retries keep one identity.
     const proposedHostEventId = `host_lead_${Date.now()}_${randomUUID()}`;
-    // Old analytics metadata never grants server advertising permission.
-    // Do not retain the raw capability in intake, Sales or diagnostics.
-    const measurement = options.measurementEnabled && intent &&
-      hostConsentAllowedOrigin(request.get("origin"),
-        process.env.GCLOUD_PROJECT ?? process.env.GCP_PROJECT ?? "") ?
-      validatedBody.hostMeasurement as JoinWaitlistHTTPRequest[
-        "hostMeasurement"] : undefined;
-    const consentId = measurement ?
-      hostConsentKey(measurement.capability) : null;
 
     try {
       await admin.firestore().runTransaction(async (transaction) => {
@@ -847,8 +826,6 @@ export function createJoinWaitlistHandler(options: {
         const priorIntent = intentRef ? await transaction.get(intentRef) : null;
         const priorLead = existing.data()?.hostLead as
           {eventId: string; isNew: boolean} | undefined;
-        const permission = consentId ? await transaction.get(admin.firestore()
-          .collection(HOST_CONSENT_COLLECTION).doc(consentId)) : null;
         if (intent && intentRef) {
           const replay = hostSalesIntentReplay(priorIntent?.data(), intent);
           if (replay !== null) {
@@ -861,30 +838,9 @@ export function createJoinWaitlistHandler(options: {
             isNew: !priorLead &&
               !["host", "both"].includes(existing.data()?.role),
           };
-          const delivery = measurement && consentId ?
-            prepareHostMetaDelivery({
-              enabled: options.measurementEnabled,
-              ...hostLead, intentId: intent.intentId, consentId,
-              consentDocument: permission?.data(),
-              context: {clientId: measurement.clientId, userAgent,
-                ...(measurement.fbclid ? {fbclid: measurement.fbclid} : {}),
-                ...(measurement.clickCapturedAt ?
-                  {clickCapturedAt: measurement.clickCapturedAt} : {})},
-              now: Date.now(),
-            }) : null;
-          if (delivery) {
-            transaction.create(admin.firestore()
-              .collection(HOST_DELIVERY_COLLECTION).doc(delivery.eventId),
-            delivery);
-          }
-          const acquisitionAttribution = measurement && consentId ?
-            prepareHostAttribution({enabled: options.measurementEnabled,
-              ...hostLead, consentId, consentDocument: permission?.data(),
-              attribution: body.attribution, now: Date.now()}) : null;
           transaction.create(intentRef, {
             ...intent,
             hostLead,
-            ...(acquisitionAttribution ? {acquisitionAttribution} : {}),
             alreadyJoined: existing.exists,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -954,6 +910,4 @@ export function createJoinWaitlistHandler(options: {
 }
 
 export const joinWaitlist = onRequest({region: "asia-south1"},
-  createJoinWaitlistHandler({
-    measurementEnabled: hostServerMeasurementEnabled,
-  }));
+  createJoinWaitlistHandler({}));

@@ -10,6 +10,7 @@ import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.d
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/event_runtime_claim_repository.dart';
 import 'package:catch_dating_app/hosts/door/door_scan_state.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
@@ -18,6 +19,7 @@ import 'package:catch_platform/errors/app_error_context.dart' as app_ops;
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/errors/error_logger.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -83,6 +85,9 @@ class DoorSessionState {
 /// the local state lets go once they have.
 @riverpod
 class DoorSession extends _$DoorSession {
+  /// Approving or rejecting a web guest's claim to a name on the list.
+  static final reviewClaimMutation = Mutation<void>();
+
   @override
   DoorSessionState build(String eventId) {
     ref.listen(watchEventAttendeesProvider(eventId), (_, next) {
@@ -97,6 +102,22 @@ class DoorSession extends _$DoorSession {
   }
 
   void setFilter(DoorFilter filter) => state = state.copyWith(filter: filter);
+
+  /// Approves (as [attendeeId]) or rejects a web guest's claim, through the
+  /// existing runtime claim review; the claims and attendees listeners
+  /// deliver the result.
+  Future<void> reviewClaim({
+    required String uid,
+    required EventRuntimeClaimDecision decision,
+    String? attendeeId,
+  }) => ref
+      .read(hostOperationalRosterControllerProvider)
+      .reviewRuntimeClaim(
+        eventId: eventId,
+        uid: uid,
+        decision: decision,
+        attendeeId: attendeeId,
+      );
 
   void setQuery(String query) => state = state.copyWith(query: query);
 

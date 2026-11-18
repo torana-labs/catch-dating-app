@@ -4,6 +4,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_preference.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_courts_controller.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_mix_state.dart';
@@ -22,6 +23,9 @@ HostFormatsMixState hostFormatsMixController(Ref ref, Event event) {
     watchEventSuccessAssignmentsProvider(event.id),
   );
   final attendeesValue = ref.watch(watchEventAttendeesProvider(event.id));
+  final preferences =
+      ref.watch(watchEventSuccessPreferencesProvider(event.id)).value ??
+      const <EventSuccessPreference>[];
   for (final value in <AsyncValue<Object?>>[planValue, assignmentsValue]) {
     if (value case AsyncValue(:final error?, hasValue: false)) {
       return HostFormatsMixState(
@@ -43,6 +47,7 @@ HostFormatsMixState hostFormatsMixController(Ref ref, Event event) {
     plan: plan,
     assignments: assignmentsValue.value ?? const [],
     attendees: attendeesValue.value ?? const [],
+    preferences: preferences,
   );
 }
 
@@ -52,13 +57,19 @@ HostFormatsMixState hostFormatsMixState({
   required EventSuccessPlan plan,
   required List<EventSuccessAssignment> assignments,
   required List<EventAttendee> attendees,
+  List<EventSuccessPreference> preferences = const [],
 }) {
+  final optedOut = {
+    for (final preference in preferences)
+      if (preference.microPodsOptedOut) preference.uid,
+  };
   final names = hostFormatsNames(attendees);
-  final steps = EventSuccessRuntime(
+  final runtime = EventSuccessRuntime(
     plan: plan,
     event: event,
     now: event.startTime,
-  ).runOfShowSteps;
+  );
+  final steps = runtime.runOfShowSteps;
   final active = steps.isEmpty
       ? 0
       : plan.activeStepIndex.clamp(0, steps.length - 1);
@@ -100,5 +111,9 @@ HostFormatsMixState hostFormatsMixState({
     revealed: next >= rounds,
     countdownSeconds: plan.structureConfig.revealCountdownSeconds,
     openers: plan.contextualOpenersEnabled,
+    editable: List.unmodifiable(
+      assignments.where((assignment) => !optedOut.contains(assignment.uid)),
+    ),
+    compatibility: runtime.compatibilityQuestionnaireEnabled,
   );
 }

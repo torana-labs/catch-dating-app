@@ -6,6 +6,7 @@
       "docs:metadata",
       "meta:tool-manifest",
       "meta:brand-literals",
+      "meta:third-party-names",
       "meta:repository-root-hygiene",
       "operations:boundaries",
       "contracts:market-lists"
@@ -127,7 +128,34 @@
         "setup": [
           "node"
         ]
-      }
+      },
+      "runbook": "docs/ads_conversion_spec.md"
+    },
+    {
+      "id": "ads:meta-campaigns",
+      "category": "marketing",
+      "path": "tool/ads/apply_meta_campaigns.mjs",
+      "command": "node tool/ads/apply_meta_campaigns.mjs",
+      "safety": "remote-write",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "description": "Plans, and with --apply creates, the Meta lead forms and lead campaigns in tool/ads/meta_campaigns.json for ad account 3245368689001899. Every campaign, ad set and ad is created PAUSED for the owner to enable; existing forms and campaigns are left unchanged, and a failed run deletes what it made. The plan asks Meta to validate the campaign without making anything.",
+      "checks": [
+        "node --check tool/ads/apply_meta_campaigns.mjs",
+        "node --test tool/ads/apply_meta_campaigns.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/ads/meta_campaigns.json",
+        "tool/ads/apply_meta_campaigns.test.mjs"
+      ],
+      "role": "operator",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "runbook": "docs/ads_conversion_spec.md"
     },
     {
       "id": "agent:context-pack",
@@ -261,7 +289,8 @@
         "node --check tool/analytics/check_host_analytics_bigquery.mjs",
         "node tool/analytics/check_host_analytics_bigquery.mjs",
         "node --test tool/analytics/mart_refresh.test.mjs",
-        "node --test tool/analytics/host_analytics_contract.test.mjs"
+        "node --test tool/analytics/host_analytics_contract.test.mjs",
+        "node --check tool/analytics/host_analytics_contract.mjs"
       ],
       "role": "finder",
       "impactPaths": [
@@ -339,21 +368,12 @@
       "path": "tool/analytics/host_analytics_contract.mjs",
       "command": "node --test tool/analytics/host_analytics_contract.test.mjs",
       "safety": "local-test",
-      "status": "active",
-      "description": "Checks canonical host export expectations and source/live schedule consistency while retaining historical dimensions.",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
+      "status": "internal",
+      "description": "Checked by analytics:check-host-bigquery. Checks canonical host export expectations and source/live schedule consistency while retaining historical dimensions.",
       "role": "gate",
       "checks": [
         "node --check tool/analytics/host_analytics_contract.mjs",
         "node --test tool/analytics/host_analytics_contract.test.mjs"
-      ],
-      "impactPaths": [
-        "tool/analytics/host_analytics_contract.test.mjs"
       ]
     },
     {
@@ -399,28 +419,13 @@
       "path": "tool/architecture/move_to_contexts.mjs",
       "command": "node tool/architecture/move_to_contexts.mjs --plan",
       "safety": "local",
-      "status": "active",
-      "description": "Moves legacy domain/ and data/ files into lib/contexts/<context>/ as tool/architecture/context_map.json places them, rewrites every Dart directive and whole-path mention, writes each context's public API file, and proves a move commit is mechanical (--verify). --imports-only updates another branch after the move lands.",
+      "status": "internal",
+      "description": "Library: contracts:organizer-nomenclature reaches rewriteDartDirectives and rewritePathMentions through the rename libraries. The context move is finished: --check reports no legacy file waiting, lib/domain and lib/data are gone, and context_map.json has no moveTo entry. The catch_arch_* lints and audit:context-map enforce placement. Its CLI still prints the plan and --verify proves an old move commit. Moves legacy domain/ and data/ files into lib/contexts/<context>/ as tool/architecture/context_map.json places them, rewrites every Dart directive and whole-path mention, writes each context's public API file, and proves a move commit is mechanical (--verify). --imports-only updates another branch after the move lands.",
       "checks": [
         "node --test tool/architecture/move_to_contexts.test.mjs",
         "node --check tool/architecture/move_to_contexts.mjs"
       ],
-      "role": "generator",
-      "alsoEnforces": [
-        "CONTEXT-MAP-001"
-      ],
-      "impactPaths": [
-        "tool/architecture/move_to_contexts.mjs",
-        "tool/architecture/move_to_contexts.test.mjs",
-        "tool/architecture/check_context_map.mjs",
-        "tool/architecture/context_map.json"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator"
     },
     {
       "id": "architecture:organizer-rename",
@@ -428,28 +433,13 @@
       "path": "tool/architecture/rename_to_organizer.mjs",
       "command": "node tool/architecture/rename_to_organizer.mjs --plan",
       "safety": "local",
-      "status": "active",
-      "description": "Renames Club to Organizer in Flutter code: Dart file and folder names, identifiers, code references in comments, localization keys, and the registries and tools that name them. Names the generated schema contracts declare, string literals and the club subtype stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
+      "status": "internal",
+      "description": "Library: contracts:organizer-nomenclature imports clubNameFindings and fails on anything this rename would still change. The Club-to-Organizer rename of Flutter code is finished. Renames Club to Organizer in Flutter code: Dart file and folder names, identifiers, code references in comments, localization keys, and the registries and tools that name them. Names the generated schema contracts declare, string literals and the club subtype stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
       "checks": [
         "node --test tool/architecture/rename_to_organizer.test.mjs",
         "node --check tool/architecture/rename_to_organizer.mjs"
       ],
-      "role": "generator",
-      "alsoEnforces": [
-        "ORGANIZER-AUTHORITY-001"
-      ],
-      "impactPaths": [
-        "tool/architecture/rename_to_organizer.mjs",
-        "tool/architecture/rename_to_organizer.test.mjs",
-        "tool/architecture/move_to_contexts.mjs",
-        "tool/lib/dart_source.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator"
     },
     {
       "id": "architecture:ui-composition-contracts",
@@ -506,29 +496,13 @@
       "path": "tool/architecture/rename_wire_to_organizer.mjs",
       "command": "node tool/architecture/rename_wire_to_organizer.mjs --plan",
       "safety": "local",
-      "status": "active",
-      "description": "Renames the club names the contracts declare (fields, enum values, collections, titles) across contracts, TypeScript, rules, indexes, fixtures and Dart strings, and TypeScript identifiers and file names. A club field beside its organizer twin collapses into the twin. The club subtype, BigQuery columns, copy and URLs stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
+      "status": "internal",
+      "description": "Library: contracts:organizer-nomenclature imports wireNameFindings and fails on anything this rename would still change. The Club-to-Organizer rename on the wire is finished. Renames the club names the contracts declare (fields, enum values, collections, titles) across contracts, TypeScript, rules, indexes, fixtures and Dart strings, and TypeScript identifiers and file names. A club field beside its organizer twin collapses into the twin. The club subtype, BigQuery columns, copy and URLs stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
       "checks": [
         "node --test tool/architecture/rename_wire_to_organizer.test.mjs",
         "node --check tool/architecture/rename_wire_to_organizer.mjs"
       ],
-      "role": "generator",
-      "alsoEnforces": [
-        "ORGANIZER-AUTHORITY-001"
-      ],
-      "impactPaths": [
-        "tool/architecture/rename_wire_to_organizer.mjs",
-        "tool/architecture/rename_wire_to_organizer.test.mjs",
-        "tool/architecture/rename_to_organizer.mjs",
-        "tool/architecture/move_to_contexts.mjs",
-        "tool/lib/dart_source.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator"
     },
     {
       "id": "audit:app-architecture-exhibits",
@@ -573,6 +547,19 @@
       "safety": "local",
       "status": "active",
       "description": "Scans backend error handling migration candidates.",
+      "impactPaths": [
+        "tool/audit/backend_error_candidates.dart",
+        "lib/**/*.dart",
+        "packages/platform/lib/**/*.dart",
+        "test/**/*.dart"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter"
+        ]
+      },
       "checks": [
         "dart analyze tool/audit/backend_error_candidates.dart",
         "dart tool/audit/backend_error_candidates.dart --check"
@@ -686,7 +673,13 @@
           ],
           "instruction": "Declare each callable's limit where it calls checkRateLimit, inline or as a constant in a module only that callable family imports. The limit parameter is required, so no call falls back to a loose default. Never add a per-action limit table to functions/src/shared/rateLimit.ts: nearly every Function imports it, so editing it makes the backend deploy select every Function. Its frozen LEGACY_RATE_LIMITS table covers only callers whose module another task's claim holds; it may only shrink. demoOps and other privileged fan-out callables must declare dedicated limits."
         }
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "audit:fn-readme-inventory",
@@ -836,7 +829,13 @@
       "impactPaths": [
         "tool/architecture/check_mutation_error_surfaces.test.mjs",
         "tool/architecture/check_mutation_error_surfaces.mjs"
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "audit:provider-graph",
@@ -851,7 +850,8 @@
         "test/tool/provider_graph_test.dart",
         "tool/architecture/provider_graph_baseline.json",
         "lib/**/*.dart",
-        "apps/*/lib/**/*.dart"
+        "apps/*/lib/**/*.dart",
+        "packages/platform/lib/**/*.dart"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -986,7 +986,13 @@
       "impactPaths": [
         "tool/architecture/check_route_string_literals.test.mjs",
         "tool/architecture/check_route_string_literals.mjs"
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "audit:unused-code",
@@ -1334,32 +1340,6 @@
       ]
     },
     {
-      "id": "ci:host-measurement-preview",
-      "category": "ci",
-      "path": "tool/ci/host_measurement_preview.mjs",
-      "command": "node --test tool/ci/host_measurement_preview.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/host_measurement_preview.test.mjs",
-        ".github/workflows/host-measurement-preview.yml",
-        "website/measurement-hosting.json",
-        "website/measurement-runtime/**"
-      ],
-      "description": "Verifies the fixed preview-only measurement runtime, accepted main CI, exact static bytes and serving privacy headers; production tracking remains disabled.",
-      "checks": [
-        "node --check tool/ci/host_measurement_preview.mjs",
-        "node --test tool/ci/host_measurement_preview.test.mjs website/scripts/next/measurementRuntime.test.mjs"
-      ],
-      "role": "gate"
-    },
-    {
       "id": "ci:ios-build-inputs",
       "category": "ci",
       "path": "tool/ci/ios_build_inputs.mjs",
@@ -1453,6 +1433,56 @@
       "checks": [
         "node --check tool/ci/main_red_alert.mjs",
         "node --test tool/ci/main_red_alert.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:organizer-takedown-workflow",
+      "category": "ci",
+      "path": "tool/ci/organizer_takedown_workflow.test.mjs",
+      "command": "node --test tool/ci/organizer_takedown_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/organizer-takedown.yml",
+        "tool/ci/organizer_takedown_workflow.test.mjs"
+      ],
+      "description": "Keeps the organiser takedown workflow dispatch-only from main, keyless and least-privileged, with only environment, mode and an opaque TD case id as inputs, no artifacts, a counts-only summary, and --allow-prod only for prod writes.",
+      "checks": [
+        "node --check tool/ci/organizer_takedown_workflow.test.mjs",
+        "node --test tool/ci/organizer_takedown_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:pr-text-guard",
+      "category": "ci",
+      "path": "tool/ci/pr_text_guard.mjs",
+      "command": "node --test tool/ci/pr_text_guard.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/pr-text-guard.yml",
+        "tool/ci/pr_text_guard.test.mjs",
+        "tool/check_third_party_names.mjs",
+        "tool/third_party_names_allowlist.json"
+      ],
+      "description": "Keeps the PR text guard keyless and read-only on pull_request, running the base commit's guard without the pull request's code, and failing when a title, body or commit message @-mentions a non-collaborator or names a social account outside the fictional allowlist without repeating the matched text.",
+      "checks": [
+        "node --check tool/ci/pr_text_guard.mjs",
+        "node --test tool/ci/pr_text_guard.test.mjs"
       ],
       "role": "gate"
     },
@@ -1585,7 +1615,8 @@
       "checks": [
         "node --check tool/ci/web_hosting_workflow.test.mjs",
         "node --check tool/ci/web_hosting_freshness.mjs",
-        "node --test tool/ci/web_hosting_workflow.test.mjs website/scripts/marketingDeployWorkflow.test.mjs"
+        "node --test tool/ci/web_hosting_workflow.test.mjs website/scripts/marketingDeployWorkflow.test.mjs",
+        "node --test tool/ci/web_hosting_workflow.test.mjs"
       ],
       "role": "gate"
     },
@@ -1595,19 +1626,8 @@
       "path": "tool/ci/web_hosting_freshness.mjs",
       "command": "node --test tool/ci/web_hosting_workflow.test.mjs",
       "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        ".github/workflows/_web-hosting-promote.yml",
-        "tool/ci/web_hosting_freshness.mjs",
-        "tool/ci/web_hosting_workflow.test.mjs"
-      ],
-      "description": "Evaluates sanitized expected and observed source/run evidence at the final website-promotion freshness gate and refuses any mismatch after at most one no-cache reread.",
+      "status": "internal",
+      "description": "Checked by ci:web-hosting-delivery-workflow. Evaluates sanitized expected and observed source/run evidence at the final website-promotion freshness gate and refuses any mismatch after at most one no-cache reread.",
       "checks": [
         "node --check tool/ci/web_hosting_freshness.mjs",
         "node --test tool/ci/web_hosting_workflow.test.mjs"
@@ -1656,7 +1676,8 @@
         "setup": [
           "node"
         ]
-      }
+      },
+      "runbook": "docs/release_operations.md#cloudflare-edge-for-catchdatescom"
     },
     {
       "id": "contracts:check-all",
@@ -1707,6 +1728,19 @@
       "safety": "local-readonly",
       "status": "active",
       "description": "Checks repository-owned composite Firestore query contracts against firestore.indexes.json, rejects uncontracted composite query builders, and blocks duplicate composite definitions and non-deployable single-field plus __name__ pseudo-composites.",
+      "impactPaths": [
+        "firestore.indexes.json",
+        "lib/**/data/**/*repository*.dart",
+        "packages/platform/lib/**/data/**/*repository*.dart",
+        "functions/src/programs/**/*.ts",
+        "functions/src/transport/**/*.ts"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "checks": [
         "node --check tool/contracts/check_firestore_query_indexes.mjs",
         "node --test tool/contracts/check_firestore_query_indexes.test.mjs",
@@ -1807,7 +1841,15 @@
           ],
           "instruction": "Every editable canonical control and form-descriptor instance in the Consumer and Catch Host apps must bind generated CatchContractFieldConstraints instead of repeating length, required, pattern, collection, enum, format, or numeric constraints. Typed choices must declare their wire-value serializer, range controls must bind both endpoints, and genuinely non-editable disclosures must carry an explicit audited exemption."
         }
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
+      }
     },
     {
       "id": "contracts:generate-business-rules",
@@ -1950,9 +1992,38 @@
       "safety": "local",
       "status": "active",
       "description": "Keeps organizers canonical across contracts, Flutter, React, Functions, routes, media, and product copy while club remains a subtype. Flutter Dart file names, identifiers and localization keys must say organizer: what tool/architecture/rename_to_organizer.mjs would still rename fails, apart from the club subtype and names the generated schema contracts declare. Contract names, TypeScript identifiers and file names must say organizer too: what tool/architecture/rename_wire_to_organizer.mjs would still rename fails, apart from the club subtype and BigQuery columns.",
+      "impactPaths": [
+        "docs/migrations/clubs_to_organizers.md",
+        "firebase.json",
+        "lib/**/*.dart",
+        "test/**/*.dart",
+        "integration_test/**/*.dart",
+        "apps/**/*.dart",
+        "packages/**/*.dart",
+        "functions/src/**/*.ts",
+        "contracts/**/*.json",
+        "tool/architecture/move_to_contexts.mjs",
+        "tool/architecture/move_to_contexts.test.mjs",
+        "tool/architecture/check_context_map.mjs",
+        "tool/architecture/context_map.json",
+        "tool/architecture/rename_to_organizer.mjs",
+        "tool/architecture/rename_to_organizer.test.mjs",
+        "tool/architecture/rename_wire_to_organizer.mjs",
+        "tool/architecture/rename_wire_to_organizer.test.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
       "checks": [
         "node --check tool/check_organizer_nomenclature.mjs",
         "node --test tool/check_organizer_nomenclature.test.mjs",
+        "node --test tool/architecture/rename_wire_to_organizer.test.mjs",
+        "node --test tool/architecture/rename_to_organizer.test.mjs",
+        "node --test tool/architecture/move_to_contexts.test.mjs",
         "node tool/check_organizer_nomenclature.mjs"
       ],
       "role": "gate",
@@ -2108,7 +2179,12 @@
       "path": "tool/copy/check_l10n_key_usage.mjs",
       "impactPaths": [
         "tool/copy/check_l10n_key_usage.test.mjs",
-        "tool/copy/fixtures/l10n_key_usage/**"
+        "tool/copy/fixtures/l10n_key_usage/**",
+        "packages/l10n/lib/app_en.arb",
+        "lib/**/*.dart",
+        "packages/platform/lib/**/*.dart",
+        "apps/*/lib/**/*.dart",
+        "tool/lib/flutter_source_roots.mjs"
       ],
       "command": "node tool/copy/check_l10n_key_usage.mjs --check",
       "safety": "local-readonly",
@@ -2157,7 +2233,13 @@
           ],
           "instruction": "Handwritten user-facing Flutter copy belongs in packages/l10n/lib/app_en.arb with description, audience, owner, and surface metadata and is consumed through generated AppLocalizations. Domain and controller layers carry semantic ids, codes, and placeholder data rather than localized prose. Native permission copy belongs in copy/native_en.json and notification templates belong in copy/notifications_en.json; generated consumers must stay in sync. Inline technical identifiers, test fixtures, and user-authored content require narrow documented exemptions rather than broad folders."
         }
-      ]
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     },
     {
       "id": "copy:mobile-catalog-tests",
@@ -2196,15 +2278,13 @@
       "id": "copy:mobile-simple-migration",
       "category": "generator",
       "path": "tool/copy/migrate_simple_mobile_copy.dart",
-      "command": "dart run tool/copy/migrate_simple_mobile_copy.dart",
       "safety": "local",
-      "status": "active",
+      "status": "retired",
       "description": "Migrates eligible user-visible literals from clean Flutter files into the typed ARB catalog while preserving copy whitespace.",
-      "checks": [
-        "dart analyze tool/copy/migrate_simple_mobile_copy.dart",
-        "dart run tool/copy/migrate_simple_mobile_copy.dart"
-      ],
-      "role": "generator"
+      "role": "generator",
+      "retiredOn": "2026-11-18",
+      "reason": "The literal-to-ARB migration is finished. copy:mobile-ownership fails on any unmanaged Flutter product copy and its baseline is empty, so nothing is left to migrate. Its CI step was a dry run that always exited 0 (about 111 s a nightly run).",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "copy:native-sync",
@@ -2233,8 +2313,7 @@
       "description": "Keeps Functions notification templates generated from the marketing-reviewable English catalog.",
       "checks": [
         "node --check tool/copy/sync_notification_copy.mjs",
-        "node tool/copy/sync_notification_copy.mjs",
-        "npm --prefix functions run build"
+        "node tool/copy/sync_notification_copy.mjs"
       ],
       "role": "generator",
       "alsoEnforces": [
@@ -2364,6 +2443,52 @@
         "tool/data/lib/firestore_consolidation_migrations.mjs",
         "tool/data/lib/copy_forward.mjs",
         "functions/src/events/eventPolicy.ts"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "data:migrate-form-domains",
+      "category": "data",
+      "path": "tool/data/migrate_form_domains_to_custom_domains.mjs",
+      "command": "node tool/data/migrate_form_domains_to_custom_domains.mjs --env <dev|staging|prod> [--apply [--retire-legacy]]",
+      "safety": "remote-destructive-apply-guarded",
+      "status": "active",
+      "description": "One-time fold of the retired organizerFormDomains registry into customDomains (#1110): a read-only count and conversion plan by default, idempotent copies on --apply that never overwrite a differing record, and deletion of exactly copied legacy documents with --retire-legacy.",
+      "checks": [
+        "node --check tool/data/migrate_form_domains_to_custom_domains.mjs",
+        "node --test tool/data/migrate_form_domains_to_custom_domains.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/migrate_form_domains_to_custom_domains.test.mjs",
+        "functions/src/customDomains/legacyFormDomainMigration.ts",
+        "contracts/migrations/organizer_form_domains_to_custom_domains.json"
+      ]
+    },
+    {
+      "id": "data:organizer-takedown",
+      "category": "data",
+      "path": "tool/data/organizer_takedown.mjs",
+      "command": "node tool/data/organizer_takedown.mjs --env <dev|prod> --case-id TD-nnnn --mode <plan|preserve|apply|suppress|verify|bigquery>",
+      "safety": "remote-destructive-apply-guarded",
+      "status": "active",
+      "description": "Preserve-then-delete takedown of one organiser case read from the restricted preservation bucket: counts-only plan, SHA-256 preservation export, deletion across every store with audit-log redaction, do-not-list suppression entry, verification and BigQuery cleanup.",
+      "checks": [
+        "node --check tool/data/organizer_takedown.mjs",
+        "npm --prefix functions run build && node --test tool/data/organizer_takedown.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/organizer_takedown.test.mjs",
+        "tool/data/lib/organizer_takedown/actions.mjs",
+        "tool/data/lib/organizer_takedown/bigquery.mjs",
+        "tool/data/lib/organizer_takedown/inventory.mjs",
+        "tool/data/lib/organizer_takedown/plan.mjs",
+        "tool/data/lib/organizer_takedown/suppression.mjs",
+        "functions/src/listingSuppressions/registry.ts",
+        "tool/data/fixtures/organizer_takedown/fakes.mjs",
+        "tool/data/fixtures/organizer_takedown/world.mjs",
+        "operations/src/workflows/supply-intake/organizer-matching/suppression.mjs",
+        "operations/src/workflows/supply-intake/organizer-matching/normalize.mjs",
+        "contracts/firestore/listing_suppressions.schema.json"
       ],
       "role": "generator"
     },
@@ -2655,76 +2780,67 @@
       "category": "demo",
       "path": "tool/demo/rsvp_escape/build_fixture.cjs",
       "safety": "local-writes-build-artifacts",
-      "status": "internal",
+      "status": "retired",
       "description": "Internal synthetic RSVP fixture builder dispatched and checked by the active demo:rsvp-preview owner.",
-      "checks": [
-        "node --check tool/demo/rsvp_escape/build_fixture.cjs"
-      ]
+      "retiredOn": "2026-11-18",
+      "reason": "The owner retired the RSVP proof of concept on 18 Nov 2026. It was a local demo with synthetic data, touched no live system, and nothing outside its own README ran it.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "demo:rsvp-host-ui",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/main.dart",
-      "command": "flutter build web --target=tool/demo/rsvp_escape/main.dart --output=build/rsvp-demo-web",
       "safety": "local-writes-build-artifacts",
-      "status": "internal",
+      "status": "retired",
       "description": "Renders production Host widgets with localhost synthetic repository adapters.",
-      "checks": [
-        "dart format --output=none --set-exit-if-changed tool/demo/rsvp_escape/main.dart"
-      ]
+      "retiredOn": "2026-11-18",
+      "reason": "The owner retired the RSVP proof of concept on 18 Nov 2026. It was a local demo with synthetic data, touched no live system, and nothing outside its own README ran it.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "demo:rsvp-import-api",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/import_server.cjs",
-      "command": "node tool/demo/rsvp_escape/import_server.cjs --verify",
       "safety": "local-writes-build-artifacts",
-      "status": "internal",
+      "status": "retired",
       "description": "Runs normal roster import and CRM projection against an isolated synthetic store; never initializes Firebase Admin.",
-      "checks": [
-        "node --check tool/demo/rsvp_escape/import_server.cjs"
-      ]
+      "retiredOn": "2026-11-18",
+      "reason": "The owner retired the RSVP proof of concept on 18 Nov 2026. It was a local demo with synthetic data, touched no live system, and nothing outside its own README ran it.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "demo:rsvp-import-ui",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/import_main.dart",
-      "command": "flutter build web --target=tool/demo/rsvp_escape/import_main.dart --output=build/rsvp-import-web",
       "safety": "local-writes-build-artifacts",
-      "status": "internal",
+      "status": "retired",
       "description": "Renders the production spreadsheet parser and mapping sheet for a local synthetic XLSX fixture.",
-      "checks": [
-        "dart format --output=none --set-exit-if-changed tool/demo/rsvp_escape/import_main.dart"
-      ]
+      "retiredOn": "2026-11-18",
+      "reason": "The owner retired the RSVP proof of concept on 18 Nov 2026. It was a local demo with synthetic data, touched no live system, and nothing outside its own README ran it.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "demo:rsvp-preview",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/form_definition.mjs",
-      "command": "node tool/demo/rsvp_escape/build_fixture.cjs",
       "safety": "local-writes-build-artifacts",
-      "status": "active",
-      "role": "generator",
+      "status": "retired",
       "description": "Builds an isolated synthetic RSVP form and review fixture; does not initialize Firebase or send messages.",
-      "impactPaths": [
-        "tool/demo/rsvp_escape/**"
-      ],
-      "checks": [
-        "node --check tool/demo/rsvp_escape/build_fixture.cjs",
-        "node --test tool/demo/rsvp_escape/form_definition.test.mjs"
-      ]
+      "role": "generator",
+      "retiredOn": "2026-11-18",
+      "reason": "The owner retired the RSVP proof of concept on 18 Nov 2026. It was a local demo with synthetic data, touched no live system, and nothing outside its own README ran it.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "demo:rsvp-public-ui",
       "category": "demo",
       "path": "tool/demo/rsvp_escape/vite.config.mjs",
-      "command": "node website/node_modules/vite/bin/vite.js --config tool/demo/rsvp_escape/vite.config.mjs",
       "safety": "local",
-      "status": "internal",
+      "status": "retired",
       "description": "Serves the production public form renderer with synthetic in-memory submission adapters.",
-      "checks": [
-        "node --check tool/demo/rsvp_escape/vite.config.mjs"
-      ]
+      "retiredOn": "2026-11-18",
+      "reason": "The owner retired the RSVP proof of concept on 18 Nov 2026. It was a local demo with synthetic data, touched no live system, and nothing outside its own README ran it.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "demo:schedule-policy",
@@ -2886,8 +3002,7 @@
         "node --test tool/design/component_naming.test.mjs",
         "node --check tool/design/lib/component_api.mjs",
         "node --test tool/design/component_api.test.mjs",
-        "node --test tool/design/check_component_lexicon.test.mjs",
-        "node tool/design/check_component_lexicon.mjs"
+        "node --test tool/design/check_component_lexicon.test.mjs"
       ],
       "role": "gate",
       "rules": [
@@ -3246,7 +3361,8 @@
           "node"
         ]
       },
-      "role": "operator"
+      "role": "operator",
+      "runbook": "docs/app_architecture.md#icon-roles"
     },
     {
       "id": "design:import-ds-props",
@@ -3282,103 +3398,49 @@
       "id": "design:legacy-dock-rename",
       "category": "design",
       "path": "tool/design/codemods/legacy_dock.mjs",
-      "command": "node tool/design/codemods/legacy_dock.mjs --check",
       "safety": "local-readonly",
-      "status": "active",
-      "role": "generator",
+      "status": "retired",
       "description": "Moves the pre-redesign catch_ui dock's callers (its utility, primary, pageAction and primaryContent recipes) from CatchDock to CatchLegacyDock, and the moved file's path, under the same trees as the top bar rename, now that CatchDock takes the system's placements. One-shot: --check, --dry-run and the rename run by hand on branches cut before the first caller of the system dock; CI runs only its tests.",
-      "checks": [
-        "node --check tool/design/codemods/legacy_dock.mjs",
-        "node --test tool/design/codemods/legacy_dock.test.mjs"
-      ],
-      "impactPaths": [
-        "tool/design/codemods/legacy_dock.mjs",
-        "tool/design/codemods/legacy_dock.test.mjs",
-        "tool/design/codemods/lib/legacy_rename.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator",
+      "retiredOn": "2026-11-18",
+      "reason": "The redesign P2.1 rename landed on main: the pre-redesign components live on as CatchLegacy*, and the system components now own the old names, so this codemod's --check reports correct callers and running it would break them. design:library-shims ratchets the legacy residue. Its callers moved to CatchLegacyDock (catch_legacy_dock.dart).",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "design:legacy-library-rename",
       "category": "design",
       "path": "tool/design/rename_legacy_library_symbols.mjs",
-      "command": "node tool/design/rename_legacy_library_symbols.mjs --check",
       "safety": "local-readonly",
-      "status": "active",
-      "role": "generator",
+      "status": "retired",
       "description": "Redesign P2.1 (Flutter): renames the pre-redesign catch_ui callers of CatchSurface, CatchText and CatchTextVariant to CatchLegacySurface, CatchLegacyText and CatchLegacyTextVariant, and the moved files' paths, under lib, apps, packages/*/lib and test, test, integration_test, widgetbook/lib and tool/ui_capture. One-shot: --check and the rename run by hand on branches cut before the first caller of the system components; CI runs only its tests.",
-      "checks": [
-        "node --check tool/design/rename_legacy_library_symbols.mjs",
-        "node --test tool/design/rename_legacy_library_symbols.test.mjs"
-      ],
-      "impactPaths": [
-        "tool/design/rename_legacy_library_symbols.mjs",
-        "tool/design/rename_legacy_library_symbols.test.mjs",
-        "tool/design/check_library_shims.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator",
+      "retiredOn": "2026-11-18",
+      "reason": "The redesign P2.1 rename landed on main: the pre-redesign components live on as CatchLegacy*, and the system components now own the old names, so this codemod's --check reports correct callers and running it would break them. design:library-shims ratchets the legacy residue. Its callers moved to CatchLegacySurface, CatchLegacyText and CatchLegacyTextVariant.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "design:legacy-top-bar-rename",
       "category": "design",
       "path": "tool/design/codemods/legacy_top_bar.mjs",
-      "command": "node tool/design/codemods/legacy_top_bar.mjs --check",
       "safety": "local-readonly",
-      "status": "active",
-      "role": "generator",
+      "status": "retired",
       "description": "Moves the pre-redesign catch_ui top bar's callers (its route, screen, primaryRail, brand and identity recipes) from CatchTopBar to CatchLegacyTopBar, and the moved file's path, under lib, apps, packages/*/lib and test, test, integration_test, widgetbook/lib and tool/ui_capture, now that CatchTopBar takes the system's six variants. One-shot: --check, --dry-run and the rename run by hand on branches cut before the first caller of the system top bar; CI runs only its tests.",
-      "checks": [
-        "node --check tool/design/codemods/legacy_top_bar.mjs",
-        "node --check tool/design/codemods/lib/legacy_rename.mjs",
-        "node --test tool/design/codemods/legacy_top_bar.test.mjs"
-      ],
-      "impactPaths": [
-        "tool/design/codemods/legacy_top_bar.mjs",
-        "tool/design/codemods/legacy_top_bar.test.mjs",
-        "tool/design/codemods/lib/legacy_rename.mjs",
-        "tool/design/rename_legacy_library_symbols.mjs",
-        "tool/design/check_library_shims.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator",
+      "retiredOn": "2026-11-18",
+      "reason": "The redesign P2.1 rename landed on main: the pre-redesign components live on as CatchLegacy*, and the system components now own the old names, so this codemod's --check reports correct callers and running it would break them. design:library-shims ratchets the legacy residue. Its callers moved to CatchLegacyTopBar (catch_legacy_top_bar.dart).",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "design:legacy-web-library-rename",
       "category": "design",
       "path": "tool/design/rename_legacy_web_library_symbols.mjs",
-      "command": "node tool/design/rename_legacy_web_library_symbols.mjs --check",
       "safety": "local-readonly",
-      "status": "active",
-      "role": "generator",
+      "status": "retired",
       "description": "Redesign P2.1 (web): renames the pre-redesign web-ui callers of CatchSurface, CatchText and CatchIcon (and their props and variant types) to the CatchLegacy* names, and the barrel's CatchGround to CatchBandGround, under admin/src, website/src and packages/web-ui/src. One-shot: --check and the rename run by hand on branches cut before the first caller of the system components; CI runs only its tests.",
-      "checks": [
-        "node --check tool/design/rename_legacy_web_library_symbols.mjs",
-        "node --test tool/design/rename_legacy_web_library_symbols.test.mjs"
-      ],
-      "impactPaths": [
-        "tool/design/rename_legacy_web_library_symbols.mjs",
-        "tool/design/rename_legacy_web_library_symbols.test.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator",
+      "retiredOn": "2026-11-18",
+      "reason": "The redesign P2.1 rename landed on main: the pre-redesign components live on as CatchLegacy*, and the system components now own the old names, so this codemod's --check reports correct callers and running it would break them. design:library-shims ratchets the legacy residue. Its web-ui callers moved to CatchLegacySurface, CatchLegacyText and CatchLegacyIcon.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "design:library-shims",
@@ -3441,27 +3503,13 @@
       "id": "design:loading-composition",
       "category": "design",
       "path": "tool/design/check_loading_composition.mjs",
-      "command": "node tool/design/check_loading_composition.mjs",
       "safety": "local",
-      "status": "active",
+      "status": "retired",
       "description": "Rejects removed generic row and collection skeleton recipes in app source and screen-local root title typography overrides.",
-      "impactPaths": [
-        "tool/design/check_loading_composition.test.mjs",
-        "lib/**",
-        "packages/platform/lib/**",
-        "apps/*/lib/**",
-        "packages/catch_ui/lib/src/patterns/catch_skeleton.dart"
-      ],
-      "checks": [
-        "node --check tool/design/check_loading_composition.mjs",
-        "node --test tool/design/check_loading_composition.test.mjs",
-        "node tool/design/check_loading_composition.mjs"
-      ],
       "role": "gate",
-      "alsoEnforces": [
-        "UI-LINT-001",
-        "ASYNC-LOADING-PRESENTATION-001"
-      ]
+      "retiredOn": "2026-11-18",
+      "reason": "Covered by ci:flutter-workspace-analysis. It banned CatchSkeleton.rows, mediaRows, iconRows, cards, boxes and chips, and titleStyle on CatchLegacyTopBar.primaryRail. None of these exist in catch_ui any more, so any use is a compile error that analysis with --fatal-infos fails. Its allowances had been zero everywhere.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "design:new-widget-inventory",
@@ -4235,7 +4283,8 @@
         "design/components/catch.components.json",
         "packages/catch_ui/lib/**",
         "packages/platform/lib/riverpod_ui/**",
-        "widgetbook/lib/main.directories.g.dart"
+        "widgetbook/lib/main.directories.g.dart",
+        "tool/design/check_widget_classification.mjs"
       ],
       "command": "node tool/design/check_widget_classification.mjs",
       "safety": "local-readonly",
@@ -4245,7 +4294,9 @@
         "node --check tool/design/check_widget_classification.mjs",
         "node --test tool/design/check_widget_classification.test.mjs",
         "node --test tool/design/component_concepts.test.mjs",
-        "node tool/design/check_widget_classification.mjs"
+        "node tool/design/check_widget_classification.mjs",
+        "node --check tool/design/generate_widget_classification.mjs",
+        "node tool/design/generate_widget_classification.mjs --check"
       ],
       "role": "gate",
       "alsoEnforces": [
@@ -4262,29 +4313,16 @@
       "id": "design:widget-classification-generate",
       "category": "design",
       "path": "tool/design/generate_widget_classification.mjs",
-      "impactPaths": [
-        "tool/design/check_widget_classification.mjs",
-        "tool/design/check_widget_classification.test.mjs",
-        "tool/design/lib/new_widget_inventory_declarations.mjs",
-        "tool/design/lib/production_widget_roots.mjs",
-        "widgetbook/lib/main.directories.g.dart"
-      ],
       "command": "node tool/design/generate_widget_classification.mjs --check",
       "safety": "local-readonly",
-      "status": "active",
+      "status": "internal",
       "role": "generator",
-      "description": "Builds the exhaustive widget role, ownership, catalog, and consolidation classification from current Dart source, component contracts, and Widgetbook; explicit generation writes only an ignored build report.",
+      "description": "Checked by design:widget-classification-check. Builds the exhaustive widget role, ownership, catalog, and consolidation classification from current Dart source, component contracts, and Widgetbook; explicit generation writes only an ignored build report.",
       "checks": [
         "node --check tool/design/generate_widget_classification.mjs",
         "node --test tool/design/check_widget_classification.test.mjs",
         "node tool/design/generate_widget_classification.mjs --check"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      ]
     },
     {
       "id": "design:widget-dedupe-fingerprint-tests",
@@ -4665,7 +4703,8 @@
         "node --test tool/ci/install_pinned_node.test.mjs",
         "bash tool/ci/install_pinned_node.sh --help"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "tool/README.md"
     },
     {
       "id": "env:use-firebase",
@@ -4697,26 +4736,13 @@
       "id": "firebase:affected-function-targets",
       "category": "firebase",
       "path": "tool/firebase/affected_function_targets.mjs",
-      "command": "node --test tool/firebase/affected_function_targets.test.mjs",
       "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node",
-          "root-npm"
-        ]
-      },
-      "impactPaths": [
-        "tool/firebase/affected_function_targets.test.mjs",
-        ".github/workflows/_backend-deploy.yml"
-      ],
+      "status": "retired",
       "description": "Selects the authorized Functions affected by exact committed module dependencies and the npm packages they load, with full snapshot and conservative fallback behavior.",
-      "checks": [
-        "node --check tool/firebase/affected_function_targets.mjs",
-        "node --test tool/firebase/affected_function_targets.test.mjs"
-      ],
-      "role": "gate"
+      "role": "gate",
+      "retiredOn": "2026-11-18",
+      "reason": "Superseded: #1311 (6dc5e6135) rebuilt _backend-deploy.yml without it, and nothing calls or imports it since. Deploy target selection is planned by firebase:deploy-target-plan and firebase:plan-function-deploy.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "firebase:check-deploy-parity",
@@ -4750,18 +4776,8 @@
       "path": "tool/firebase/check_deploy_ref.mjs",
       "command": "node tool/firebase/check_deploy_ref.mjs",
       "safety": "local-readonly",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/firebase/check_deploy_ref.test.mjs",
-        "tool/deploy_firebase_targets.sh"
-      ],
-      "description": "Refuses a Firebase deploy whose working ref is provably behind its remote, so a stale checkout cannot publish an older configuration than the remote records.",
+      "status": "internal",
+      "description": "Checked by firebase:deploy-targets. Refuses a Firebase deploy whose working ref is provably behind its remote, so a stale checkout cannot publish an older configuration than the remote records.",
       "checks": [
         "node --check tool/firebase/check_deploy_ref.mjs",
         "node --test tool/firebase/check_deploy_ref.test.mjs"
@@ -4825,12 +4841,14 @@
         ]
       },
       "impactPaths": [
-        "tool/firebase/plan_firebase_deploy_targets.test.mjs"
+        "tool/firebase/plan_firebase_deploy_targets.test.mjs",
+        "tool/firebase/list_firebase_function_targets.mjs"
       ],
       "description": "Expands only CI-authorized backend groups and validated exact targets into indexes-first Firebase phases while rejecting all, hosting, Remote Config, Extensions, and arbitrary extras.",
       "checks": [
         "node --check tool/firebase/plan_firebase_deploy_targets.mjs",
-        "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs"
+        "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs",
+        "node --check tool/firebase/list_firebase_function_targets.mjs"
       ],
       "role": "finder"
     },
@@ -4853,7 +4871,8 @@
         "node --test tool/firebase/plan_firebase_deploy_targets.test.mjs",
         "node --test tool/firebase/check_deploy_ref.test.mjs",
         "node --test tool/firebase/check_deploy_parity.test.mjs",
-        "node --test tool/firebase/retry_transient.test.mjs"
+        "node --test tool/firebase/retry_transient.test.mjs",
+        "node --check tool/firebase/check_deploy_ref.mjs"
       ],
       "role": "generator",
       "impactPaths": [
@@ -4864,7 +4883,8 @@
         "tool/firebase/check_deploy_parity.mjs",
         "tool/firebase/check_deploy_parity.test.mjs",
         "functions/scripts/set-callable-invokers-public.cjs",
-        "functions/test/callable-invokers.test.cjs"
+        "functions/test/callable-invokers.test.cjs",
+        "tool/deploy_firebase_targets.sh"
       ]
     },
     {
@@ -4976,8 +4996,8 @@
       ],
       "impactPaths": [
         "tool/firebase/form_domain_operator.test.mjs",
-        "functions/src/organizers/organizerFormDomainRegistry.ts",
-        "functions/src/organizers/organizerFormDomainCallables.ts",
+        "functions/src/customDomains/domainRegistry.ts",
+        "functions/src/customDomains/domainPolicy.ts",
         ".github/workflows/_backend-deploy.yml"
       ],
       "ciRequirements": {
@@ -5067,25 +5087,13 @@
       "id": "firebase:function-release-fingerprints",
       "category": "firebase",
       "path": "tool/firebase/function_release_fingerprints.mjs",
-      "command": "node --test tool/firebase/function_release_fingerprints.test.mjs",
       "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node",
-          "root-npm"
-        ]
-      },
-      "impactPaths": [
-        "tool/firebase/function_release_fingerprints.test.mjs"
-      ],
+      "status": "retired",
       "description": "Tests per-export runtime dependency fingerprints with conservative unknown-impact rejection; promotion integration requires independent source and immutable package evidence.",
-      "checks": [
-        "node --check tool/firebase/function_release_fingerprints.mjs",
-        "node --test tool/firebase/function_release_fingerprints.test.mjs"
-      ],
-      "role": "gate"
+      "role": "gate",
+      "retiredOn": "2026-11-18",
+      "reason": "Superseded: #799 (0c14b06cf) deleted its only importer, tool/ci/selective_backend_release.mjs, and nothing has imported it since. Its tests were the only thing exercising it.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "firebase:function-targets",
@@ -5093,13 +5101,10 @@
       "path": "tool/firebase/list_firebase_function_targets.mjs",
       "command": "node tool/firebase/list_firebase_function_targets.mjs",
       "safety": "local",
-      "status": "active",
-      "description": "Expands Firebase function deploy target names from Functions exports.",
+      "status": "internal",
+      "description": "Checked by firebase:deploy-target-plan. Expands Firebase function deploy target names from Functions exports.",
       "checks": [
         "node --check tool/firebase/list_firebase_function_targets.mjs"
-      ],
-      "alsoCheckIds": [
-        "firebase:deploy-target-plan"
       ]
     },
     {
@@ -5152,7 +5157,8 @@
         "node --check tool/firebase/prepare_functions_params_for_deploy.mjs",
         "node --test tool/firebase/prepare_functions_params_for_deploy.test.mjs"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "docs/release_operations.md#deploy-backend"
     },
     {
       "id": "firebase:functions-environment-wrapper",
@@ -5165,7 +5171,8 @@
       "description": "Requires an explicit Firebase environment for Functions deploy and log commands.",
       "checks": [
         "node --test tool/firebase_functions.test.mjs"
-      ]
+      ],
+      "runbook": "docs/release_operations.md#deploy-backend"
     },
     {
       "id": "firebase:functions-source-closure",
@@ -5218,7 +5225,8 @@
         "node --check tool/firebase/sanitize_firestore_indexes_for_deploy.mjs",
         "node --test tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "docs/release_operations.md#deploy-backend"
     },
     {
       "id": "firebase:index-readiness-waiter",
@@ -5243,7 +5251,8 @@
         "node --test tool/firebase/wait_firestore_indexes_ready.test.mjs",
         "node tool/firebase/wait_firestore_indexes_ready.mjs --self-test"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "docs/release_operations.md#deploy-backend"
     },
     {
       "id": "firebase:maps-config",
@@ -5511,7 +5520,8 @@
         "node --check tool/firebase/synthetic_backend_probe.mjs",
         "node --test tool/firebase/synthetic_backend_probe.test.mjs"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "tool/README.md"
     },
     {
       "id": "functions:emulator-test-selection",
@@ -5739,7 +5749,8 @@
         "node --test tool/git/sweep_merged_worktrees.test.mjs",
         "node tool/git/sweep_merged_worktrees.mjs --help"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "docs/agent_operating_model.md#parallel-worktrees"
     },
     {
       "id": "git:worktree-bootstrap",
@@ -5767,7 +5778,8 @@
         "node --test tool/git/bootstrap_worktree.test.mjs",
         "bash tool/git/bootstrap_worktree.sh --help"
       ],
-      "role": "operator"
+      "role": "operator",
+      "runbook": "docs/agent_operating_model.md#parallel-worktrees"
     },
     {
       "id": "git:worktree-guard",
@@ -5820,13 +5832,12 @@
       "command": "bash tool/check_catch_ui_lint_drift.sh",
       "safety": "local",
       "status": "active",
-      "description": "Projects focused Catch UI analyzer reports and rejects every Catch diagnostic at the aggregate zero gate.",
+      "description": "Projects focused Catch UI analyzer reports (--summary, --count, --json, --code). The zero-diagnostic rule itself is enforced by ci:flutter-workspace-analysis, whose dart analyze --fatal-infos fails on any catch_* diagnostic; Flutter CI also runs --check on that analysis output.",
       "checks": [
         "bash -n tool/check_catch_ui_lint_drift.sh",
-        "bash tool/check_catch_ui_lint_drift.sh --self-test",
-        "bash tool/check_catch_ui_lint_drift.sh --check"
+        "bash tool/check_catch_ui_lint_drift.sh --self-test"
       ],
-      "role": "gate",
+      "role": "finder",
       "rules": [
         {
           "id": "DESIGN-TOKENS-001",
@@ -5874,15 +5885,23 @@
         "tool/design/generated/enforcement_expectations.json",
         "widgetbook/lib/primitives/catalog/feedback.dart",
         "widgetbook/lib/primitives/contracts/feedback.dart",
-        "tool/architecture/context_map.json"
+        "tool/architecture/context_map.json",
+        "tool/check_catch_ui_lints.sh"
       ],
-      "alsoCheckIds": [
-        "lint:probe-batch-protocol"
-      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
+      },
       "checks": [
         "bash -n tool/check_catch_ui_lints.sh",
         "node tool/design/build_lint_enforcement_tables.mjs --check",
-        "bash tool/check_catch_ui_lints.sh"
+        "bash tool/check_catch_ui_lints.sh",
+        "node --check tool/lib/lint_probe_batch.mjs",
+        "node --test tool/lib/lint_probe_batch.test.mjs"
       ],
       "role": "gate",
       "rules": [
@@ -6020,18 +6039,8 @@
       "path": "tool/lib/lint_probe_batch.mjs",
       "command": "node --test tool/lib/lint_probe_batch.test.mjs",
       "safety": "local-test",
-      "status": "active",
-      "description": "Checks per-file lint fixture assertions and analyzer output attribution, refusing plugin crashes, malformed output, missing fixtures, and diagnostics from the wrong file.",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/lib/lint_probe_batch.test.mjs",
-        "tool/check_catch_ui_lints.sh"
-      ],
+      "status": "internal",
+      "description": "Checked by lint:catch-ui-plugin-smoke. Checks per-file lint fixture assertions and analyzer output attribution, refusing plugin crashes, malformed output, missing fixtures, and diagnostics from the wrong file.",
       "checks": [
         "node --check tool/lib/lint_probe_batch.mjs",
         "node --test tool/lib/lint_probe_batch.test.mjs"
@@ -6199,9 +6208,7 @@
       "description": "Projects approved organizer intake and seed organizer records into production hostListings.json, with a separate explicit demo-inclusive Storybook projection.",
       "checks": [
         "node --check website/scripts/generateOrganizerListings.mjs",
-        "node --test website/scripts/generateOrganizerListings.test.mjs",
-        "node website/scripts/generateOrganizerListings.mjs --check",
-        "node website/scripts/generateOrganizerListings.mjs --include-demo --output website/src/generated/hostListings.demo.json --check"
+        "node --test website/scripts/generateOrganizerListings.test.mjs"
       ],
       "impactPaths": [
         "contracts/**/*.json",
@@ -6221,7 +6228,10 @@
       "category": "marketing",
       "path": "tool/marketing/export_hosted_captures.mjs",
       "impactPaths": [
-        "tool/marketing/export_hosted_captures.test.mjs",
+        "tool/marketing/export_hosted_captures_a.test.mjs",
+        "tool/marketing/export_hosted_captures_b.test.mjs",
+        "tool/marketing/export_hosted_captures_c.test.mjs",
+        "tool/marketing/lib/hosted_capture_support.test.mjs",
         "tool/marketing/lib/capture_seeds.mjs",
         ".github/workflows/marketing-captures.yml",
         ".github/workflows/ci.yml",
@@ -6246,7 +6256,7 @@
       },
       "checks": [
         "node --check tool/marketing/export_hosted_captures.mjs",
-        "node --test tool/marketing/export_hosted_captures.test.mjs"
+        "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs"
       ]
     },
     {
@@ -6268,7 +6278,10 @@
       "impactPaths": [
         "tool/marketing/import_hosted_captures.test.mjs",
         "tool/marketing/export_hosted_captures.mjs",
-        "tool/marketing/export_hosted_captures.test.mjs",
+        "tool/marketing/export_hosted_captures_a.test.mjs",
+        "tool/marketing/export_hosted_captures_b.test.mjs",
+        "tool/marketing/export_hosted_captures_c.test.mjs",
+        "tool/marketing/lib/hosted_capture_support.test.mjs",
         "tool/marketing/lib/capture_provenance.mjs",
         "tool/marketing/sync_website_media.mjs",
         "tool/marketing/export_app_screenshots.mjs",
@@ -6290,7 +6303,7 @@
       "checks": [
         "node --check tool/marketing/import_hosted_captures.mjs",
         "node --test tool/marketing/import_hosted_captures.test.mjs",
-        "node --test tool/marketing/export_hosted_captures.test.mjs"
+        "node --test tool/marketing/export_hosted_captures_a.test.mjs tool/marketing/export_hosted_captures_b.test.mjs tool/marketing/export_hosted_captures_c.test.mjs"
       ]
     },
     {
@@ -6750,7 +6763,8 @@
         "node --check tool/repository_hygiene.mjs",
         "node --test tool/repository_hygiene.test.mjs",
         "node tool/repository_hygiene.mjs --json"
-      ]
+      ],
+      "runbook": "tool/README.md#repository-hygiene"
     },
     {
       "id": "meta:repository-root-hygiene",
@@ -6787,6 +6801,32 @@
           ],
           "instruction": "Every root entry must match exactly one manifest classification. Cleanup is dry-run first and mutates only an explicit allowlisted scope; tracked files, protected paths, worktrees, symlinks, path escapes, and machine-local Markdown links are rejected."
         }
+      ]
+    },
+    {
+      "id": "meta:third-party-names",
+      "category": "meta",
+      "path": "tool/check_third_party_names.mjs",
+      "command": "node tool/check_third_party_names.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/third_party_names_allowlist.json",
+        "tool/check_third_party_names.test.mjs",
+        "packages/brand/brand.json"
+      ],
+      "role": "gate",
+      "description": "Keeps real third-party organisers out of the public repository, since they live only in the production database: fails when an Instagram, Facebook, Luma or Meetup URL in any tracked file, or an @handle in a fixture, story, test, doc, design pack, sample or demo file, names an account that is not on the fictional allowlist, and when committed generated listing data holds a record built from public sources. Findings print file, line and rule only, never the matched text.",
+      "checks": [
+        "node --check tool/check_third_party_names.mjs",
+        "node --test tool/check_third_party_names.test.mjs",
+        "node tool/check_third_party_names.mjs"
       ]
     },
     {
@@ -6869,7 +6909,8 @@
           "node",
           "root-npm"
         ]
-      }
+      },
+      "runbook": "docs/operations_platform.md"
     },
     {
       "id": "operations:boundaries",
@@ -6938,7 +6979,8 @@
           "node",
           "root-npm"
         ]
-      }
+      },
+      "runbook": "docs/operations_platform.md"
     },
     {
       "id": "operations:import-admin-projection",
@@ -6960,7 +7002,8 @@
       ],
       "impactPaths": [
         "functions/src/operations/projectionImporter.test.ts"
-      ]
+      ],
+      "runbook": "functions/README.md"
     },
     {
       "id": "operations:review-event-messaging",
@@ -6982,7 +7025,8 @@
       ],
       "impactPaths": [
         "functions/src/eventSuccess/operations/messageSetupReview.test.ts"
-      ]
+      ],
+      "runbook": "docs/operations_platform.md#read-only-event-messaging-setup-review"
     },
     {
       "id": "operations:workflow-manifest",
@@ -7072,14 +7116,17 @@
         "node --check tool/platform/check_app_targets.mjs",
         "bash tool/flutter_with_env.test.sh",
         "node --test tool/platform/check_app_targets.test.mjs",
-        "node tool/platform/check_app_targets.mjs --check"
+        "node tool/platform/check_app_targets.mjs --check",
+        "bash -n tool/flutter_with_env.sh",
+        "bash -n tool/flutter_with_env.test.sh"
       ],
       "impactPaths": [
         "tool/app_targets.json",
         "tool/platform/check_app_targets.test.mjs",
         "fastlane/Fastfile",
         ".github/workflows/mobile-beta.yml",
-        ".github/workflows/mobile-production.yml"
+        ".github/workflows/mobile-production.yml",
+        "tool/flutter_with_env.test.sh"
       ],
       "role": "gate",
       "rules": [
@@ -7123,17 +7170,14 @@
       "path": "tool/flutter_with_env.test.sh",
       "command": "bash tool/flutter_with_env.test.sh",
       "safety": "local-readonly",
-      "status": "active",
-      "description": "Regression-checks canonical Flutter app-target arguments and narrowly bounded CI-only retries for verified CocoaPods Git TLS and Gradle-wrapper download failures.",
+      "status": "internal",
+      "description": "Checked by platform:app-targets. Regression-checks canonical Flutter app-target arguments and narrowly bounded CI-only retries for verified CocoaPods Git TLS and Gradle-wrapper download failures.",
       "checks": [
         "bash -n tool/flutter_with_env.sh",
         "bash -n tool/flutter_with_env.test.sh",
         "bash tool/flutter_with_env.test.sh"
       ],
-      "role": "gate",
-      "alsoEnforces": [
-        "APP-TARGET-IDENTITY-001"
-      ]
+      "role": "gate"
     },
     {
       "id": "platform:ios-maps-key",
@@ -7726,24 +7770,11 @@
       "status": "active",
       "description": "Builds the Storybook workbench for registry-linked admin shared primitives and future admin route/workspace review states.",
       "checks": [
-        "npm --workspace catch-admin run build:storybook"
-      ],
-      "role": "generator"
-    },
-    {
-      "id": "web:admin-storybook-bundle-budget",
-      "category": "test",
-      "path": "admin/scripts/checkStorybookBundleBudget.mjs",
-      "command": "node admin/scripts/checkStorybookBundleBudget.mjs --check",
-      "safety": "local-readonly",
-      "status": "active",
-      "description": "Ratchets Catch-authored admin Storybook route and feature chunks while excluding framework and accessibility-vendor runtime chunks.",
-      "checks": [
+        "npm --workspace catch-admin run build:storybook",
         "node --check admin/scripts/checkStorybookBundleBudget.mjs",
-        "node admin/scripts/checkStorybookBundleBudget.mjs --self-test",
-        "node admin/scripts/checkStorybookBundleBudget.mjs --check"
+        "node admin/scripts/checkStorybookBundleBudget.mjs --self-test"
       ],
-      "role": "ratchet",
+      "role": "generator",
       "rules": [
         {
           "id": "WEB-STORYBOOK-BUNDLE-001",
@@ -7759,6 +7790,21 @@
           "instruction": "Keep Catch-authored admin feature and route-story chunks within the reviewed Storybook budgets. Split feature code and large generated datasets with named Rollup boundaries; do not hide regressions by raising the general Vite warning limit."
         }
       ]
+    },
+    {
+      "id": "web:admin-storybook-bundle-budget",
+      "category": "test",
+      "path": "admin/scripts/checkStorybookBundleBudget.mjs",
+      "command": "node admin/scripts/checkStorybookBundleBudget.mjs --check",
+      "safety": "local-readonly",
+      "status": "internal",
+      "description": "Checked by web:admin-storybook. Ratchets Catch-authored admin Storybook route and feature chunks while excluding framework and accessibility-vendor runtime chunks.",
+      "checks": [
+        "node --check admin/scripts/checkStorybookBundleBudget.mjs",
+        "node admin/scripts/checkStorybookBundleBudget.mjs --self-test",
+        "node admin/scripts/checkStorybookBundleBudget.mjs --check"
+      ],
+      "role": "ratchet"
     },
     {
       "id": "web:react-architecture-boundaries",

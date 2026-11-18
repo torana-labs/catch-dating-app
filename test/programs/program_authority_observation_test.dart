@@ -5,6 +5,7 @@ import 'package:catch_dating_app/contexts/programmes/data/program_projection_lif
 import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_work_shell_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_boundary.dart';
@@ -31,13 +32,13 @@ const _manager = {
   'hotels': [],
   'vehicleClasses': [],
 };
-ProgramArrivalsRoster _roster(String identity) => ProgramArrivalsRoster(
+ProgramTransportPlan _roster(String identity) => ProgramTransportPlan(
   programId: 'p',
   pickupPointId: identity,
   accessExpiresAt: null,
   generatedAt: DateTime(2026),
-  rows: const [],
-  vehicleClasses: const [],
+  groups: const [],
+  unassigned: const [],
 );
 
 void main() {
@@ -51,14 +52,14 @@ void main() {
   testWidgets(
     'a learned authority change removes a displayed roster until a fresh projection arrives',
     (tester) async {
-      final fresh = Completer<ProgramArrivalsRoster>();
+      final fresh = Completer<ProgramTransportPlan>();
       var calls = 0;
       final container = ProviderContainer(
         retry: (_, _) => null,
         overrides: [
           uidProvider.overrideWithValue(const AsyncData('account')),
           programReadSnapshotStoreProvider.overrideWithValue(store),
-          programArrivalsRosterProvider('p', 'station').overrideWith((
+          programTransportPlanProvider('p', 'station').overrideWith((
             ref,
           ) async {
             calls++;
@@ -74,7 +75,7 @@ void main() {
             home: Consumer(
               builder: (context, ref, _) => CatchAsyncBoundary(
                 value: ref.watch(
-                  programArrivalsRosterViewProvider('p', 'station'),
+                  programTransportPlanViewProvider('p', 'station'),
                 ),
                 retainDataOn: const {},
                 loadingBuilder: (_) => const Text('Refreshing'),
@@ -162,25 +163,46 @@ void main() {
   );
 
   test(
-    'fresh work bootstrap settles after its own authority publication',
+    'work entry saves each delivered access for callable screens and clears it on denial',
     () async {
-      final repository = _WorkRepository(store);
+      final deliveries = StreamController<ProgramWorkAccess>();
+      addTearDown(deliveries.close);
       final container = ProviderContainer(
         retry: (_, _) => null,
         overrides: [
           uidProvider.overrideWithValue(const AsyncData('account')),
           programReadSnapshotStoreProvider.overrideWithValue(store),
-          programWorkRepositoryProvider.overrideWithValue(repository),
+          programWorkAccessStreamProvider(
+            'p',
+          ).overrideWith((ref) => deliveries.stream),
         ],
       );
       addTearDown(container.dispose);
       final provider = programWorkEntryProvider('p', null);
       final subscription = container.listen(provider, (_, _) {});
       addTearDown(subscription.close);
+
+      deliveries.add(ProgramWorkAccess.fromCallableData(_manager));
       expect((await container.read(provider.future)).value.programId, 'p');
-      await container.pump();
-      expect(repository.calls, 2);
       expect(await store.load('account', 'work:p'), isNotNull);
+
+      // A rewritten access arrives live and replaces the saved one.
+      deliveries.add(
+        ProgramWorkAccess.fromCallableData({..._manager, 'title': 'Renamed'}),
+      );
+      await container.pump();
+      expect((await container.read(provider.future)).value.title, 'Renamed');
+      final saved = await store.load('account', 'work:p');
+      expect((saved!.data! as Map)['title'], 'Renamed');
+
+      // The gate reports a denial: the saved projections are cleared.
+      deliveries.addError(const PermissionException('Program access expired.'));
+      await container.pump();
+      await expectLater(
+        container.read(provider.future),
+        throwsA(isA<PermissionException>()),
+      );
+      expect(await store.load('account', 'work:p'), isNull);
     },
   );
 
@@ -234,19 +256,4 @@ void main() {
       second();
     },
   );
-}
-
-class _WorkRepository extends Fake implements ProgramWorkRepository {
-  _WorkRepository(this.store);
-  final ProgramReadSnapshotStore store;
-  var calls = 0;
-  @override
-  Future<ProgramWorkAccess> getWorkAccess(
-    String programId, {
-    String? snapshotAccountId,
-  }) async {
-    calls++;
-    await store.save(snapshotAccountId!, 'work:p', _manager);
-    return ProgramWorkAccess.fromCallableData(_manager);
-  }
 }

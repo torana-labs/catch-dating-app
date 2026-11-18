@@ -64,7 +64,7 @@ class _HostProgrammePhotosScreenState
     } on Object {
       ok = false;
     }
-    ref.invalidate(programPhotosViewProvider(widget.programId, functionId));
+    // The photo list is a listener and shows the new photo itself.
     if (!mounted) return;
     setState(() => _uploading = false);
     if (!ok) {

@@ -23,9 +23,29 @@ import {applyBrandText, brand} from "../brand.ts";
  * context; the static schema cannot know those lists, nor the brand name.
  */
 
-/** Website v2 grounds, as @catch/web-ui's `Ground` (PlaybookSections.tsx pins the parity). */
-export const playbookGrounds = ["white", "paper", "ink", "coral", "pink", "yellow", "mint", "indigo", "magenta"] as const;
+/**
+ * Website v2 grounds, as @catch/web-ui's `Ground` (PlaybookSections.tsx pins
+ * the parity): white, paper, ink, the six accents, then the page colours the
+ * product pages added (17 Nov 2026), sky and the soft tints.
+ */
+export const playbookGrounds = [
+  "white", "paper", "ink", "coral", "pink", "yellow", "mint", "indigo", "magenta",
+  "sky", "coralSoft", "pinkSoft", "yellowSoft", "mintSoft", "indigoSoft", "magentaSoft", "skySoft",
+] as const;
 export type PlaybookGround = (typeof playbookGrounds)[number];
+/** The soft tints colour a secondary tile, never a band or a card (the kit's `.tile.s-*`). */
+export const playbookTileOnlyGrounds: ReadonlySet<PlaybookGround> = new Set(["coralSoft", "pinkSoft", "yellowSoft", "mintSoft", "indigoSoft", "magentaSoft", "skySoft"]);
+/** A story's initials sit on one of the grounds the apps share (the avatar's monogram grounds). */
+const avatarGrounds = ["white", "paper", "ink", "coral", "pink", "yellow", "mint", "indigo", "magenta"] as const satisfies readonly PlaybookGround[];
+
+/**
+ * Show-when-live: where a section's or an action's feature stands in the
+ * product brief. Only `built` (the default) is shown. A `partly` or `new`
+ * feature, or a `tryIt` tool whose command has not shipped, stays in the
+ * page's content, hidden, until a PR flips it to `built`.
+ */
+export const playbookFeatureStatuses = ["built", "partly", "new", "tryIt"] as const;
+export type PlaybookFeatureStatus = (typeof playbookFeatureStatuses)[number];
 
 /** The chrome a page asks for: PublicSiteHeader and PublicSiteFooter variants. */
 export const playbookHeaderVariants = ["guest", "host", "minimal"] as const;
@@ -126,7 +146,8 @@ const destination = destinationSpec as OneOfSpec<readonly [
   ObjectSpec<{kind: ConstSpec<"whatsapp">; message: CopySpec}>,
 ]>;
 
-const action = obj({label: copy(), to: destination}, {emphasis: oneOfValues(["primary", "secondary"] as const)}, "action");
+const featureStatus = oneOfValues(playbookFeatureStatuses);
+const action = obj({label: copy(), to: destination}, {emphasis: oneOfValues(["primary", "secondary"] as const), status: featureStatus}, "action");
 const actions = (max = 3) => list(action, 1, max);
 
 /** An illustrative screen: sample data drawn as a card, labelled as illustrative by the renderer. */
@@ -165,14 +186,23 @@ const media = mediaSpec as OneOfSpec<readonly [
   typeof qr,
 ]>;
 
+/**
+ * The input a closing form asks for: a phone number (the default), or a link
+ * or a line of text for a tool that reads one. A form renders only when its
+ * slot can send what it asks for, so a link form waits for its command.
+ */
+export const playbookLeadInputs = ["tel", "url", "text"] as const;
+
 /** What a lead form asks for: its request kind and extra fields, as the website enquiry intake takes them. */
-export const playbookLeadRequestKinds = ["guide", "walkthrough", "demo", "venue", "story", "referral", "org_contact", "city_alerts"] as const;
+export const playbookLeadRequestKinds = ["guide", "walkthrough", "demo", "venue", "story", "referral", "org_contact", "city_alerts", "tool"] as const;
 export const playbookLeadFieldNames = ["name", "preferredTime", "whatYouHost", "area", "capacity", "nights", "orgType", "orgName"] as const;
 
 /**
  * A phone-number capture: the request it files, an optional format tag, any
  * extra fields, and its words. It renders only once its slot is filled
  * (features/playbook/playbookLeadForms.ts), so no form submits to nowhere.
+ * A `tool` form asks for a link or a line of text (`input`) for a try-it
+ * command; no slot takes one until its command ships.
  */
 const leadForm = obj({
   id: str(leadFormIdPattern),
@@ -181,6 +211,8 @@ const leadForm = obj({
   submitLabel: copy(),
 }, {
   format: str(formatPattern),
+  /** The kit's form input type: tel (the default), url or text. */
+  input: oneOfValues(playbookLeadInputs),
   fields: list(obj({name: oneOfValues(playbookLeadFieldNames), label: copy()}, {placeholder: copy()}), 1, 6),
   /** A line under the field, such as "We’ll message you on WhatsApp." */
   note: copy(),
@@ -189,6 +221,8 @@ const leadForm = obj({
 const proofLine = obj({text: copy()}, {footnote: str(footnoteIdPattern)});
 
 const base = <const T extends string>(type: T) => ({type: constant(type), id: str(sectionIdPattern), ground});
+/** Every section may say where its feature stands (show-when-live), and why it is held back. */
+const sectionStatus = {status: featureStatus, statusNote: copy()};
 /** A band's own heading: the headline, with an optional kicker and lead. `pageTitle: true` makes the headline the page's h1. */
 const band = {title: copy()};
 const bandOptional = {kicker: copy(), lead: copy()};
@@ -198,6 +232,7 @@ const sectionSpec = {
   by: "type",
   variants: {
     hero: obj({...base("hero"), title: copy(), lead: copy(), actions: actions()}, {
+      ...sectionStatus,
       kicker: copy(),
       proof: list(proofLine, 1, 3),
       aside: action,
@@ -218,8 +253,9 @@ const sectionSpec = {
       kicker: copy(),
       ground,
       link: action,
-    }), 1, 12)}, {...bandOptional, pageTitle: bool(), columns: int([2, 3, 4, 6]), align: oneOfValues(["start", "center"] as const), actions: actions(), foot: copy()}),
+    }), 1, 12)}, {...sectionStatus, ...bandOptional, pageTitle: bool(), columns: int([2, 3, 4, 6]), align: oneOfValues(["start", "center"] as const), actions: actions(), foot: copy()}),
     split: obj({...base("split"), ...band}, {
+      ...sectionStatus,
       ...bandOptional,
       /** The second column: media, or a lead form in its place (never both). */
       media,
@@ -233,18 +269,20 @@ const sectionSpec = {
       steps: list(obj({label: copy(), title: copy(), body: copy()}), 1, 6),
       callout: obj({figure: copy(), text: copy()}),
     }),
-    timeline: obj({...base("timeline"), ...band, steps: list(obj({time: copy(), title: copy(), body: copy()}), 2, 8)}, {...bandOptional, media}),
-    checklist: obj({...base("checklist"), ...band, items: list(obj({title: copy(), body: copy()}), 2, 12)}, {...bandOptional, actions: actions()}),
+    timeline: obj({...base("timeline"), ...band, steps: list(obj({time: copy(), title: copy(), body: copy()}), 2, 8)}, {...sectionStatus, ...bandOptional, media}),
+    checklist: obj({...base("checklist"), ...band, items: list(obj({title: copy(), body: copy()}), 2, 12)}, {...sectionStatus, ...bandOptional, actions: actions()}),
     story: obj({...base("story"), name: copy(), initials: copy(), quote: copy()}, {
+      ...sectionStatus,
       kicker: copy(),
       meta: copy(),
-      avatarGround: ground,
+      avatarGround: oneOfValues(avatarGrounds),
       metrics: list(obj({label: copy(), value: copy(), footnote: str(footnoteIdPattern)}, {source: copy()}), 1, 4),
       media: photo,
       link: action,
     }),
     /** The rate as one figure, the headline that completes it, the cap and trial lines, and worked examples. */
     pricing: obj({...base("pricing"), price: copy(), title: copy(), examples: list(obj({title: copy(), value: copy()}, {body: copy()}), 1, 4)}, {
+      ...sectionStatus,
       kicker: copy(),
       cap: copy(),
       trial: copy(),
@@ -252,8 +290,9 @@ const sectionSpec = {
       /** A calculator under the columns, from the custom registry (the /pricing/ fee calculator). */
       calculator: oneOfValues(["pricingCalculator"] as const),
     }),
-    faq: obj({...base("faq"), ...band, items: list(obj({question: copy(), answer: copy()}), 1, 12)}, {kicker: copy(), action}),
+    faq: obj({...base("faq"), ...band, items: list(obj({question: copy(), answer: copy()}), 1, 12)}, {...sectionStatus, kicker: copy(), action}),
     cta: obj({...base("cta"), ...band}, {
+      ...sectionStatus,
       ...bandOptional,
       actions: actions(),
       leadForm,
@@ -279,6 +318,7 @@ const sectionSpec = {
       ObjectSpec<{kind: ConstSpec<"playbooks">}, {format: StringSpec; city: StringSpec}>,
       ObjectSpec<{kind: ConstSpec<"people">; group: StringSpec}>,
     ]>}, {
+      ...sectionStatus,
       /** Filter chips over the cards, each narrowing the source by its key. */
       filters: list(obj({key: str(formatPattern), label: copy()}), 2, 8),
       ...bandOptional,
@@ -296,7 +336,7 @@ const sectionSpec = {
       tips: list(copy(), 1, 6),
       list: list(obj({time: copy(), title: copy()}, {body: copy()}), 1, 8),
       media,
-    }), 2, 8)}, {...bandOptional, layout: oneOfValues(["tabs", "steps"] as const), align: oneOfValues(["start", "center"] as const), defaultItem: range(0, 7)}),
+    }), 2, 8)}, {...sectionStatus, ...bandOptional, layout: oneOfValues(["tabs", "steps"] as const), align: oneOfValues(["start", "center"] as const), defaultItem: range(0, 7)}),
     /**
      * A comparison: the compared columns, an optional corner label over the
      * row labels, and per row one cell per column, each with text, a yes/no
@@ -305,15 +345,16 @@ const sectionSpec = {
     table: obj({...base("table"), ...band, columns: list(copy(), 1, 6), rows: list(obj({label: copy(), cells: list(obj({}, {
       text: copy(),
       status: oneOfValues(["yes", "no", "unknown"] as const),
-    }), 1, 6)}), 1, 30)}, {...bandOptional, rowHeader: copy(), highlightColumn: range(0, 5), source: copy(), checked: copy()}),
+    }), 1, 6)}), 1, 30)}, {...sectionStatus, ...bandOptional, rowHeader: copy(), highlightColumn: range(0, 5), source: copy(), checked: copy()}),
     article: obj({...base("article"), ...band, sections: list(obj({heading: copy(), paragraphs: list(copy(), 1, 12)}, {list: list(copy(), 1, 12), tip: copy()}), 1, 20)}, {
+      ...sectionStatus,
       ...bandOptional,
       pageTitle: bool(),
       meta: copy(),
       aside: obj({ground, title: copy(), body: copy()}, {action}),
     }),
     /** One illustrative screen or capture on its own, with an optional heading. */
-    screen: obj({...base("screen"), media}, {...bandOptional, title: copy(), caption: copy()}),
+    screen: obj({...base("screen"), media}, {...sectionStatus, ...bandOptional, title: copy(), caption: copy()}),
     /**
      * A section drawn by a component the site provides, such as a calculator
      * or a form with its own backend: `component` names it in the closed
@@ -321,6 +362,7 @@ const sectionSpec = {
      * carries its words by key, so its copy stays in the page.
      */
     custom: obj({...base("custom"), component: oneOfValues(playbookCustomComponents)}, {
+      ...sectionStatus,
       ...bandOptional,
       title: copy(),
       /** The title is the page's h1, as /pricing/'s fee band is. */
@@ -329,6 +371,7 @@ const sectionSpec = {
     }),
     /** A one-job flow: its step rail or tabs, then the screens of the current step. */
     flow: obj({...base("flow"), ...band, blocks: list(excerptCard, 1, 6)}, {
+      ...sectionStatus,
       ...bandOptional,
       steps: list(copy(), 2, 6),
       currentStep: range(0, 5),
@@ -350,6 +393,8 @@ const breadcrumbs = obj({links: list(obj({label: copy(), to: destination}), 1, 4
  */
 const pageMeta = obj({title: copy(), description: copy(), noindex: bool()}, {socialDescription: copy(), ogImage: str(assetPattern)});
 
+/** A link in a footer column: its words and where it goes. */
+const footerLink = obj({label: copy(), to: destination});
 const pageSpec = obj({
   $schema: constant("../../playbookPage.schema.json"),
   id: str(pageIdPattern),
@@ -367,6 +412,12 @@ const pageSpec = obj({
   }),
   footer: obj({variant: oneOfValues(playbookFooterVariants)}, {
     footnotes: list(obj({id: str(footnoteIdPattern), text: copy()}), 1, 12),
+    /**
+     * The host footer's link columns in place of the variant's (the kit's
+     * KitFooter `cols`), such as the product pages' Product column. The last
+     * column ends with Privacy choices; pages that pass none render as before.
+     */
+    columns: list(obj({title: copy(), links: list(footerLink, 1, 12)}), 1, 5),
     /** A bar fixed to the foot of a phone screen with the page's one action. */
     phoneBar: obj({action}, {note: copy()}),
   }),
@@ -387,7 +438,7 @@ export type PlaybookLeadForm = NonNullable<PlaybookSectionOf<"cta">["leadForm"]>
  * (content/playbook/pages/<section>/index.ts): the JSON file beside the
  * index, and its lazy import. The index key is the page's content key: the
  * route id for a single page, or the route id and its parameters joined
- * with `/` for a page of a family (`story_detail/carter-road-runners`).
+ * with `/` for a page of a family (`story_detail/driftwood-bay-runners`).
  */
 export interface PlaybookPageEntry {
   readonly file: string;
@@ -527,9 +578,12 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
     if (sectionIds.has(section.id)) errors.push(`sections: duplicate id ${section.id}`);
     sectionIds.add(section.id);
   }
+  // The rules below hold for the page as visitors get it: its live sections and actions.
+  const liveIds = new Set(page.sections.filter(playbookIsLive).map((section) => section.id));
+  const hiddenIds = new Set([...sectionIds].filter((id) => !liveIds.has(id)));
 
-  const titles = page.sections.filter((section) => section.type === "hero" || ("pageTitle" in section && section.pageTitle === true));
-  if (titles.length !== 1) errors.push(`page needs exactly one page title (a hero, or one section with pageTitle), found ${titles.length}`);
+  const titles = page.sections.filter(playbookIsLive).filter((section) => section.type === "hero" || ("pageTitle" in section && section.pageTitle === true));
+  if (titles.length !== 1) errors.push(`page needs exactly one page title (a hero, or one section with pageTitle) among its live sections, found ${titles.length}`);
 
   const footnoteIds = new Set((page.footer.footnotes ?? []).map((footnote) => footnote.id));
   const referenced = new Set<string>();
@@ -542,7 +596,7 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
     if (!footnoteIds.has(id)) errors.push(`${label} cites unknown footnote ${id}`);
   };
 
-  const destinationErrors = (label: string, to: PlaybookDestination) => {
+  const destinationErrors = (label: string, to: PlaybookDestination, live = true) => {
     if ("route" in to) {
       if (context && !context.routeIds.has(to.route)) errors.push(`${label} links unknown route ${to.route}`);
       const anchors = context?.routeAnchors?.get(to.route);
@@ -553,6 +607,8 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
       if (to.anchor && anchors && !anchors.has(to.anchor)) errors.push(`${label} links #${to.anchor}, which is not a section of ${to.page}`);
     } else if ("anchor" in to && !sectionIds.has(to.anchor)) {
       errors.push(`${label} links #${to.anchor}, which is not a section on this page`);
+    } else if ("anchor" in to && live && hiddenIds.has(to.anchor)) {
+      errors.push(`${label} links #${to.anchor}, which is hidden until its feature is built; hide the link too`);
     }
   };
   const mediaErrors = (label: string, item: PlaybookMedia | undefined) => {
@@ -564,9 +620,16 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
 
   page.sections.forEach((section, index) => {
     const label = `sections[${index}] (${section.id})`;
-    forEachAction(section, (item, path) => destinationErrors(`${label}.${path}`, item.to));
+    const live = playbookIsLive(section);
+    forEachAction(section, (item, path) => destinationErrors(`${label}.${path}`, item.to, live && playbookIsLive(item)));
+    if (playbookTileOnlyGrounds.has(section.ground)) errors.push(`${label}.ground ${section.ground} is a soft tint, for a tile only`);
+    if (section.type === "tiles") {
+      section.items.forEach((item, itemIndex) => {
+        if (item.ground && playbookTileOnlyGrounds.has(item.ground) && playbookTileOnlyGrounds.has(section.ground)) errors.push(`${label}.items[${itemIndex}] sits on a soft tint`);
+      });
+    }
     forEachMedia(section, (item, path) => mediaErrors(`${label}.${path}`, item));
-    if (section.type === "hero") {
+    if (section.type === "hero" && live) {
       section.proof?.forEach((line, lineIndex) => footnote(`${label}.proof[${lineIndex}]`, line.footnote, /\d/u.test(line.text)));
     }
     if (section.type === "flow") {
@@ -582,13 +645,17 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
       });
       if (section.highlightColumn !== undefined && section.highlightColumn >= section.columns.length) errors.push(`${label}.highlightColumn names no column`);
     }
+    const form = "leadForm" in section ? section.leadForm : undefined;
+    if (form && ((form.input ?? "tel") === "tel") === (form.requestKind === "tool")) {
+      errors.push(`${label}.leadForm: a tool form asks for a link or text (input url or text), and only a tool form does`);
+    }
     if (section.type === "split" && section.media && section.leadForm) {
       errors.push(`${label} holds media or a lead form in its second column, not both`);
     }
     if (section.type === "tabs" && section.defaultItem !== undefined && section.defaultItem >= section.items.length) {
       errors.push(`${label}.defaultItem names no item`);
     }
-    if (section.type === "story") {
+    if (section.type === "story" && live) {
       section.metrics?.forEach((metric, metricIndex) => footnote(`${label}.metrics[${metricIndex}]`, metric.footnote, true));
     }
   });
@@ -598,7 +665,9 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
     ["header.offer.action", page.header.offer?.action],
     ["footer.phoneBar.action", page.footer.phoneBar?.action],
   ] as const;
-  for (const [label, item] of chromeActions) if (item) destinationErrors(label, item.to);
+  for (const [label, item] of chromeActions) if (item) destinationErrors(label, item.to, playbookIsLive(item));
+  page.footer.columns?.forEach((column, columnIndex) => column.links.forEach((link, linkIndex) =>
+    destinationErrors(`footer.columns[${columnIndex}].links[${linkIndex}]`, link.to)));
   for (const id of footnoteIds) {
     if (!referenced.has(id)) errors.push(`footer.footnotes: ${id} is not cited by any section`);
   }
@@ -608,6 +677,49 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
 
   }
   return errors;
+}
+
+/** Whether a section or an action is shown: its feature is built (show-when-live). */
+export function playbookIsLive(item: {readonly status?: PlaybookFeatureStatus}): boolean {
+  return (item.status ?? "built") === "built";
+}
+
+/**
+ * The page as visitors get it: its live sections, each without its hidden
+ * actions. The renderer, the structured data and the static heads all read
+ * this; the hidden parts stay in the content file until their feature ships.
+ */
+export function livePlaybookPage(page: PlaybookPageDocument): PlaybookPageDocument {
+  const liveActions = (items: readonly PlaybookAction[] | undefined) => items?.filter(playbookIsLive);
+  const liveAction = (item: PlaybookAction | undefined) => item && playbookIsLive(item) ? item : undefined;
+  const sections = page.sections.filter(playbookIsLive).map((section): PlaybookSection => {
+    const next: Record<string, unknown> = {...section};
+    if ("actions" in section && section.actions) {
+      const kept = liveActions(section.actions);
+      if (kept?.length) next.actions = kept;
+      else delete next.actions;
+    }
+    if (section.type === "hero" && section.aside && !liveAction(section.aside)) delete next.aside;
+    if (section.type === "faq" && section.action && !liveAction(section.action)) delete next.action;
+    if (section.type === "story" && section.link && !liveAction(section.link)) delete next.link;
+    if (section.type === "tiles") next.items = section.items.map((item) => item.link && !liveAction(item.link) ? without(item, "link") : item);
+    if (section.type === "split" && section.groups) {
+      next.groups = section.groups.map((group) => {
+        const links = liveActions(group.links);
+        return links?.length ? {...group, links} : without(group, "links");
+      });
+    }
+    if (section.type === "article" && section.aside?.action && !liveAction(section.aside.action)) next.aside = without(section.aside, "action");
+    return next as PlaybookSection;
+  });
+  const header = page.header.action && !playbookIsLive(page.header.action) ? without(page.header, "action") : page.header;
+  return {...page, header, sections};
+}
+
+function without<T extends object, K extends keyof T>(value: T, key: K): Omit<T, K> {
+  const copy = {...value};
+  delete copy[key];
+  return copy;
 }
 
 /** Every action in a section, with its path for messages. */

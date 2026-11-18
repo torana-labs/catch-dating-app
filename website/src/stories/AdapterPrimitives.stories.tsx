@@ -8,7 +8,7 @@ import {
 import type {HostListing} from "../features/organizers/types";
 import {BadgeRow, ContentGrid} from "../shared/ui/primitives";
 
-const unclaimedListing = requireListing("afterfly");
+const unclaimedListing = requireListing("moonmoth");
 const verifiedListing = requireListing("sunday-table-club");
 const claimedListing: HostListing = {
   ...verifiedListing,

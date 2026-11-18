@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'event_success_defaults.dart';
@@ -9,6 +9,7 @@ part of 'event_success_defaults.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $EventSuccessDefaultsCopyWith<EventSuccessDefaults> get copyWith => _$EventSucce
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessDefaults&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.layoutId, layoutId) || other.layoutId == layoutId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other.selectedModuleIds, selectedModuleIds)&&(identical(other.moduleSelectionConfigured, moduleSelectionConfigured) || other.moduleSelectionConfigured == moduleSelectionConfigured)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt));
+  final _this = this as EventSuccessDefaults;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessDefaults&&(identical(other.enabled, _this.enabled) || other.enabled == _this.enabled)&&(identical(other.layoutId, _this.layoutId) || other.layoutId == _this.layoutId)&&(identical(other.playbookId, _this.playbookId) || other.playbookId == _this.playbookId)&&const DeepCollectionEquality().equals(other.selectedModuleIds, _this.selectedModuleIds)&&(identical(other.moduleSelectionConfigured, _this.moduleSelectionConfigured) || other.moduleSelectionConfigured == _this.moduleSelectionConfigured)&&(identical(other.structureConfig, _this.structureConfig) || other.structureConfig == _this.structureConfig)&&(identical(other.hostGoal, _this.hostGoal) || other.hostGoal == _this.hostGoal)&&(identical(other.wingmanRequestsEnabled, _this.wingmanRequestsEnabled) || other.wingmanRequestsEnabled == _this.wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, _this.contextualOpenersEnabled) || other.contextualOpenersEnabled == _this.contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, _this.compatibilityAffectsRanking) || other.compatibilityAffectsRanking == _this.compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, _this.questionnaireConfig) || other.questionnaireConfig == _this.questionnaireConfig)&&(identical(other.attendeePrompt, _this.attendeePrompt) || other.attendeePrompt == _this.attendeePrompt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enabled,layoutId,playbookId,const DeepCollectionEquality().hash(selectedModuleIds),moduleSelectionConfigured,structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,attendeePrompt);
+int get hashCode {
+  final _this = this as EventSuccessDefaults;
+  return Object.hash(runtimeType,_this.enabled,_this.layoutId,_this.playbookId,const DeepCollectionEquality().hash(_this.selectedModuleIds),_this.moduleSelectionConfigured,_this.structureConfig,_this.hostGoal,_this.wingmanRequestsEnabled,_this.contextualOpenersEnabled,_this.compatibilityAffectsRanking,_this.questionnaireConfig,_this.attendeePrompt);
+}
 
 @override
 String toString() {
-  return 'EventSuccessDefaults(enabled: $enabled, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, moduleSelectionConfigured: $moduleSelectionConfigured, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, attendeePrompt: $attendeePrompt)';
+  final _this = this as EventSuccessDefaults;
+  return 'EventSuccessDefaults(enabled: ${_this.enabled}, layoutId: ${_this.layoutId}, playbookId: ${_this.playbookId}, selectedModuleIds: ${_this.selectedModuleIds}, moduleSelectionConfigured: ${_this.moduleSelectionConfigured}, structureConfig: ${_this.structureConfig}, hostGoal: ${_this.hostGoal}, wingmanRequestsEnabled: ${_this.wingmanRequestsEnabled}, contextualOpenersEnabled: ${_this.contextualOpenersEnabled}, compatibilityAffectsRanking: ${_this.compatibilityAffectsRanking}, questionnaireConfig: ${_this.questionnaireConfig}, attendeePrompt: ${_this.attendeePrompt})';
 }
 
 
@@ -66,7 +72,7 @@ class _$EventSuccessDefaultsCopyWithImpl<$Res>
 /// Create a copy of EventSuccessDefaults
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? enabled = null,Object? layoutId = freezed,Object? playbookId = null,Object? selectedModuleIds = null,Object? moduleSelectionConfigured = null,Object? structureConfig = null,Object? hostGoal = null,Object? wingmanRequestsEnabled = null,Object? contextualOpenersEnabled = null,Object? compatibilityAffectsRanking = null,Object? questionnaireConfig = null,Object? attendeePrompt = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(EventSuccessDefaults(
 enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,layoutId: freezed == layoutId ? _self.layoutId : layoutId // ignore: cast_nullable_to_non_nullable
 as String?,playbookId: null == playbookId ? _self.playbookId : playbookId // ignore: cast_nullable_to_non_nullable
@@ -220,7 +226,7 @@ return $default(_that.enabled,_that.layoutId,_that.playbookId,_that.selectedModu
 @JsonSerializable()
 
 class _EventSuccessDefaults extends EventSuccessDefaults {
-  const _EventSuccessDefaults({this.enabled = false, this.layoutId, this.playbookId = 'social_run_light', final  List<String> selectedModuleIds = const <String>[], this.moduleSelectionConfigured = false, this.structureConfig = const EventSuccessStructureConfig.legacyDefault(), this.hostGoal = StructuredDomainCopy.eventSuccessDefaultHostGoal, @Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') this.wingmanRequestsEnabled = true, @Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') this.contextualOpenersEnabled = true, this.compatibilityAffectsRanking = false, this.questionnaireConfig = const EventSuccessQuestionnaireConfig.defaultTemplate(), this.attendeePrompt}): _selectedModuleIds = selectedModuleIds,super._();
+  const _EventSuccessDefaults({this.enabled = false, this.layoutId, this.playbookId = 'social_run_light',  List<String> selectedModuleIds = const <String>[], this.moduleSelectionConfigured = false, this.structureConfig = const EventSuccessStructureConfig.legacyDefault(), this.hostGoal = StructuredDomainCopy.eventSuccessDefaultHostGoal, @Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') this.wingmanRequestsEnabled = true, @Deprecated('Platform-owned and always true; retained only for stored-schema compatibility.') this.contextualOpenersEnabled = true, this.compatibilityAffectsRanking = false, this.questionnaireConfig = const EventSuccessQuestionnaireConfig.defaultTemplate(), this.attendeePrompt}): _selectedModuleIds = selectedModuleIds,super._();
   factory _EventSuccessDefaults.fromJson(Map<String, dynamic> json) => _$EventSuccessDefaultsFromJson(json);
 
 @override@JsonKey() final  bool enabled;
@@ -255,16 +261,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessDefaults&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.layoutId, layoutId) || other.layoutId == layoutId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other._selectedModuleIds, _selectedModuleIds)&&(identical(other.moduleSelectionConfigured, moduleSelectionConfigured) || other.moduleSelectionConfigured == moduleSelectionConfigured)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessDefaults&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.layoutId, layoutId) || other.layoutId == layoutId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other.selectedModuleIds, _selectedModuleIds)&&(identical(other.moduleSelectionConfigured, moduleSelectionConfigured) || other.moduleSelectionConfigured == moduleSelectionConfigured)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enabled,layoutId,playbookId,const DeepCollectionEquality().hash(_selectedModuleIds),moduleSelectionConfigured,structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,attendeePrompt);
+int get hashCode {
+    return Object.hash(runtimeType,enabled,layoutId,playbookId,const DeepCollectionEquality().hash(_selectedModuleIds),moduleSelectionConfigured,structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,attendeePrompt);
+}
 
 @override
 String toString() {
-  return 'EventSuccessDefaults(enabled: $enabled, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, moduleSelectionConfigured: $moduleSelectionConfigured, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, attendeePrompt: $attendeePrompt)';
+    return 'EventSuccessDefaults(enabled: $enabled, layoutId: $layoutId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, moduleSelectionConfigured: $moduleSelectionConfigured, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, attendeePrompt: $attendeePrompt)';
 }
 
 

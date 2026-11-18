@@ -15,6 +15,8 @@ import 'package:catch_dating_app/hosts/live/formats/formats_pods_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_body.dart';
 import 'package:catch_dating_app/hosts/live/live_controller.dart';
 import 'package:catch_dating_app/hosts/live/live_needs_screen.dart';
+import 'package:catch_dating_app/hosts/live/live_night_alerts_controller.dart';
+import 'package:catch_dating_app/hosts/live/live_room_map_controller.dart';
 import 'package:catch_dating_app/hosts/live/live_room_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_scores_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_state.dart';
@@ -163,12 +165,21 @@ class _HostLiveScreenState extends ConsumerState<HostLiveScreen> {
             onEnterScores: () => actions.openView(HostLiveView.scores),
             onMessage: actions.messageEveryone,
             onRetry: () => retryHostLiveReads(ref, event),
+            alerts: ref.watch(
+              hostLiveNightAlertsProvider(event, hostLiveAlertMinute(_now)),
+            ),
+            seats: ref.watch(hostLiveRoomMapProvider(event)) != null,
           ),
         ),
       ),
     );
   }
 }
+
+/// [now] to the minute, so the night alerts reread once a minute rather
+/// than on every tick.
+DateTime hostLiveAlertMinute(DateTime now) =>
+    DateTime(now.year, now.month, now.day, now.hour, now.minute);
 
 /// The live top bar: the event's title, back, and the live tag with the
 /// time now.

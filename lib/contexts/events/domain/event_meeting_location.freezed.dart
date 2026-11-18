@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'event_meeting_location.dart';
@@ -9,6 +9,7 @@ part of 'event_meeting_location.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $EventMeetingLocationCopyWith<EventMeetingLocation> get copyWith => _$EventMeeti
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventMeetingLocation&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.placeId, placeId) || other.placeId == placeId)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.notes, notes) || other.notes == notes));
+  final _this = this as EventMeetingLocation;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventMeetingLocation&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.address, _this.address) || other.address == _this.address)&&(identical(other.placeId, _this.placeId) || other.placeId == _this.placeId)&&(identical(other.latitude, _this.latitude) || other.latitude == _this.latitude)&&(identical(other.longitude, _this.longitude) || other.longitude == _this.longitude)&&(identical(other.notes, _this.notes) || other.notes == _this.notes));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,address,placeId,latitude,longitude,notes);
+int get hashCode {
+  final _this = this as EventMeetingLocation;
+  return Object.hash(runtimeType,_this.name,_this.address,_this.placeId,_this.latitude,_this.longitude,_this.notes);
+}
 
 @override
 String toString() {
-  return 'EventMeetingLocation(name: $name, address: $address, placeId: $placeId, latitude: $latitude, longitude: $longitude, notes: $notes)';
+  final _this = this as EventMeetingLocation;
+  return 'EventMeetingLocation(name: ${_this.name}, address: ${_this.address}, placeId: ${_this.placeId}, latitude: ${_this.latitude}, longitude: ${_this.longitude}, notes: ${_this.notes})';
 }
 
 
@@ -66,7 +72,7 @@ class _$EventMeetingLocationCopyWithImpl<$Res>
 /// Create a copy of EventMeetingLocation
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? address = freezed,Object? placeId = freezed,Object? latitude = null,Object? longitude = null,Object? notes = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(EventMeetingLocation(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
 as String?,placeId: freezed == placeId ? _self.placeId : placeId // ignore: cast_nullable_to_non_nullable
@@ -237,16 +243,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventMeetingLocation&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.placeId, placeId) || other.placeId == placeId)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.notes, notes) || other.notes == notes));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventMeetingLocation&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.placeId, placeId) || other.placeId == placeId)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.notes, notes) || other.notes == notes));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,address,placeId,latitude,longitude,notes);
+int get hashCode {
+    return Object.hash(runtimeType,name,address,placeId,latitude,longitude,notes);
+}
 
 @override
 String toString() {
-  return 'EventMeetingLocation(name: $name, address: $address, placeId: $placeId, latitude: $latitude, longitude: $longitude, notes: $notes)';
+    return 'EventMeetingLocation(name: $name, address: $address, placeId: $placeId, latitude: $latitude, longitude: $longitude, notes: $notes)';
 }
 
 

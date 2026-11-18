@@ -5,18 +5,23 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 
 /// The live top bar of a formats screen: the event, a kicker, back, the
-/// live tag with the time now and an optional action.
+/// live tag with the time now and an optional action. [onBack] null pops
+/// the nearest navigator.
 CatchTopBar hostFormatsLiveTopBar(
   BuildContext context, {
   required Event event,
   required DateTime now,
   String? kicker,
   CatchTopBarAction? action,
+  VoidCallback? onBack,
 }) => CatchTopBar(
   variant: CatchTopBarVariant.live,
   title: event.title,
   kicker: kicker,
-  back: CatchTopBarBack(label: context.l10n.hostFormatsBackToEvent),
+  back: CatchTopBarBack(
+    label: context.l10n.hostFormatsBackToEvent,
+    onPressed: onBack,
+  ),
   live: context.l10n.hostLiveTag(time: AppTimeFormatters.time(now)),
   action: action,
 );

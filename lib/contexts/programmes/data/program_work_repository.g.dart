@@ -57,14 +57,18 @@ final class ProgramWorkRepositoryProvider
 String _$programWorkRepositoryHash() =>
     r'1afd99f8840d6c75a4c222e78cf1b1ab9211f42b';
 
-/// An invitation must be claimed online; an existing program may reopen from
-/// a bounded snapshot of its previously verified access.
+/// The work shell's access through listeners (#1339), gated on the account's
+/// authority; an invitation is still claimed online. Callable-reading screens
+/// keep their offline cold start: each delivery refreshes the saved work
+/// access they bound a snapshot by, and a denial clears it.
 
 @ProviderFor(programWorkEntry)
 final programWorkEntryProvider = ProgramWorkEntryFamily._();
 
-/// An invitation must be claimed online; an existing program may reopen from
-/// a bounded snapshot of its previously verified access.
+/// The work shell's access through listeners (#1339), gated on the account's
+/// authority; an invitation is still claimed online. Callable-reading screens
+/// keep their offline cold start: each delivery refreshes the saved work
+/// access they bound a snapshot by, and a denial clears it.
 
 final class ProgramWorkEntryProvider
     extends
@@ -76,8 +80,10 @@ final class ProgramWorkEntryProvider
     with
         $FutureModifier<ProgramReadView<ProgramWorkAccess>>,
         $FutureProvider<ProgramReadView<ProgramWorkAccess>> {
-  /// An invitation must be claimed online; an existing program may reopen from
-  /// a bounded snapshot of its previously verified access.
+  /// The work shell's access through listeners (#1339), gated on the account's
+  /// authority; an invitation is still claimed online. Callable-reading screens
+  /// keep their offline cold start: each delivery refreshes the saved work
+  /// access they bound a snapshot by, and a denial clears it.
   ProgramWorkEntryProvider._({
     required ProgramWorkEntryFamily super.from,
     required (String, String?) super.argument,
@@ -122,10 +128,12 @@ final class ProgramWorkEntryProvider
   }
 }
 
-String _$programWorkEntryHash() => r'50b7414a9ad3e95964a784acc5674c5edca7c87f';
+String _$programWorkEntryHash() => r'1517d312d676f6aca053b96e4cc20e42d076d236';
 
-/// An invitation must be claimed online; an existing program may reopen from
-/// a bounded snapshot of its previously verified access.
+/// The work shell's access through listeners (#1339), gated on the account's
+/// authority; an invitation is still claimed online. Callable-reading screens
+/// keep their offline cold start: each delivery refreshes the saved work
+/// access they bound a snapshot by, and a denial clears it.
 
 final class ProgramWorkEntryFamily extends $Family
     with
@@ -142,8 +150,10 @@ final class ProgramWorkEntryFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// An invitation must be claimed online; an existing program may reopen from
-  /// a bounded snapshot of its previously verified access.
+  /// The work shell's access through listeners (#1339), gated on the account's
+  /// authority; an invitation is still claimed online. Callable-reading screens
+  /// keep their offline cold start: each delivery refreshes the saved work
+  /// access they bound a snapshot by, and a denial clears it.
 
   ProgramWorkEntryProvider call(String programId, String? inviteId) =>
       ProgramWorkEntryProvider._(argument: (programId, inviteId), from: this);
@@ -152,93 +162,12 @@ final class ProgramWorkEntryFamily extends $Family
   String toString() => r'programWorkEntryProvider';
 }
 
-@ProviderFor(programArrivalsRoster)
-final programArrivalsRosterProvider = ProgramArrivalsRosterFamily._();
-
-final class ProgramArrivalsRosterProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<ProgramArrivalsRoster>,
-          ProgramArrivalsRoster,
-          FutureOr<ProgramArrivalsRoster>
-        >
-    with
-        $FutureModifier<ProgramArrivalsRoster>,
-        $FutureProvider<ProgramArrivalsRoster> {
-  ProgramArrivalsRosterProvider._({
-    required ProgramArrivalsRosterFamily super.from,
-    required (String, String?) super.argument,
-  }) : super(
-         retry: null,
-         name: r'programArrivalsRosterProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$programArrivalsRosterHash();
-
-  @override
-  String toString() {
-    return r'programArrivalsRosterProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<ProgramArrivalsRoster> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<ProgramArrivalsRoster> create(Ref ref) {
-    final argument = this.argument as (String, String?);
-    return programArrivalsRoster(ref, argument.$1, argument.$2);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ProgramArrivalsRosterProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$programArrivalsRosterHash() =>
-    r'9143c3b11fe80a644e2361169750efb93ef3d832';
-
-final class ProgramArrivalsRosterFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<ProgramArrivalsRoster>,
-          (String, String?)
-        > {
-  ProgramArrivalsRosterFamily._()
-    : super(
-        retry: null,
-        name: r'programArrivalsRosterProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  ProgramArrivalsRosterProvider call(String programId, String? pickupPointId) =>
-      ProgramArrivalsRosterProvider._(
-        argument: (programId, pickupPointId),
-        from: this,
-      );
-
-  @override
-  String toString() => r'programArrivalsRosterProvider';
-}
+/// The arrivals roster, live from `programArrivalViews` (#1339).
 
 @ProviderFor(programArrivalsRosterView)
 final programArrivalsRosterViewProvider = ProgramArrivalsRosterViewFamily._();
+
+/// The arrivals roster, live from `programArrivalViews` (#1339).
 
 final class ProgramArrivalsRosterViewProvider
     extends
@@ -250,6 +179,7 @@ final class ProgramArrivalsRosterViewProvider
     with
         $FutureModifier<ProgramReadView<ProgramArrivalsRoster>>,
         $FutureProvider<ProgramReadView<ProgramArrivalsRoster>> {
+  /// The arrivals roster, live from `programArrivalViews` (#1339).
   ProgramArrivalsRosterViewProvider._({
     required ProgramArrivalsRosterViewFamily super.from,
     required (String, String?) super.argument,
@@ -296,7 +226,9 @@ final class ProgramArrivalsRosterViewProvider
 }
 
 String _$programArrivalsRosterViewHash() =>
-    r'f085a79621708513500c7eb57d21125c922958f0';
+    r'e1bb9d5747af86f12d28d3b55a5c8402d41ac744';
+
+/// The arrivals roster, live from `programArrivalViews` (#1339).
 
 final class ProgramArrivalsRosterViewFamily extends $Family
     with
@@ -312,6 +244,8 @@ final class ProgramArrivalsRosterViewFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The arrivals roster, live from `programArrivalViews` (#1339).
 
   ProgramArrivalsRosterViewProvider call(
     String programId,
@@ -498,88 +432,6 @@ final class ProgramTransportPlanViewFamily extends $Family
   String toString() => r'programTransportPlanViewProvider';
 }
 
-@ProviderFor(programTripList)
-final programTripListProvider = ProgramTripListFamily._();
-
-final class ProgramTripListProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<ProgramTripList>,
-          ProgramTripList,
-          FutureOr<ProgramTripList>
-        >
-    with $FutureModifier<ProgramTripList>, $FutureProvider<ProgramTripList> {
-  ProgramTripListProvider._({
-    required ProgramTripListFamily super.from,
-    required (String, {String? cursor}) super.argument,
-  }) : super(
-         retry: null,
-         name: r'programTripListProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$programTripListHash();
-
-  @override
-  String toString() {
-    return r'programTripListProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<ProgramTripList> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<ProgramTripList> create(Ref ref) {
-    final argument = this.argument as (String, {String? cursor});
-    return programTripList(ref, argument.$1, cursor: argument.cursor);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ProgramTripListProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$programTripListHash() => r'567c8a1f768d508f26d435ab1dc865997b20eae6';
-
-final class ProgramTripListFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<ProgramTripList>,
-          (String, {String? cursor})
-        > {
-  ProgramTripListFamily._()
-    : super(
-        retry: null,
-        name: r'programTripListProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  ProgramTripListProvider call(String programId, {String? cursor}) =>
-      ProgramTripListProvider._(
-        argument: (programId, cursor: cursor),
-        from: this,
-      );
-
-  @override
-  String toString() => r'programTripListProvider';
-}
-
 /// One vendor's bill, from the live read or a bounded offline snapshot.
 
 @ProviderFor(programVendorBillView)
@@ -762,12 +614,16 @@ final class ProgramIdTrackerFamily extends $Family
   String toString() => r'programIdTrackerProvider';
 }
 
-/// One album (or every photo), from the live read or a bounded snapshot.
+/// One album (or every photo), live from `programPhotos` (#1339). The
+/// album names come from the work shell's functions; the signed URLs from
+/// the server, in calls of at most 60 photos.
 
 @ProviderFor(programPhotosView)
 final programPhotosViewProvider = ProgramPhotosViewFamily._();
 
-/// One album (or every photo), from the live read or a bounded snapshot.
+/// One album (or every photo), live from `programPhotos` (#1339). The
+/// album names come from the work shell's functions; the signed URLs from
+/// the server, in calls of at most 60 photos.
 
 final class ProgramPhotosViewProvider
     extends
@@ -779,7 +635,9 @@ final class ProgramPhotosViewProvider
     with
         $FutureModifier<ProgramReadView<ProgramPhotos>>,
         $FutureProvider<ProgramReadView<ProgramPhotos>> {
-  /// One album (or every photo), from the live read or a bounded snapshot.
+  /// One album (or every photo), live from `programPhotos` (#1339). The
+  /// album names come from the work shell's functions; the signed URLs from
+  /// the server, in calls of at most 60 photos.
   ProgramPhotosViewProvider._({
     required ProgramPhotosViewFamily super.from,
     required (String, String?) super.argument,
@@ -824,9 +682,11 @@ final class ProgramPhotosViewProvider
   }
 }
 
-String _$programPhotosViewHash() => r'fd06a615b640a3b0a789b1f6d1e6cd1a46d14251';
+String _$programPhotosViewHash() => r'4ee65e5a876336c20230a9adf582b60c6f3669d8';
 
-/// One album (or every photo), from the live read or a bounded snapshot.
+/// One album (or every photo), live from `programPhotos` (#1339). The
+/// album names come from the work shell's functions; the signed URLs from
+/// the server, in calls of at most 60 photos.
 
 final class ProgramPhotosViewFamily extends $Family
     with
@@ -843,7 +703,9 @@ final class ProgramPhotosViewFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// One album (or every photo), from the live read or a bounded snapshot.
+  /// One album (or every photo), live from `programPhotos` (#1339). The
+  /// album names come from the work shell's functions; the signed URLs from
+  /// the server, in calls of at most 60 photos.
 
   ProgramPhotosViewProvider call(String programId, String? functionId) =>
       ProgramPhotosViewProvider._(
@@ -911,12 +773,14 @@ final class ProgrammeInboxCommandsProvider
 String _$programmeInboxCommandsHash() =>
     r'6e9249961f2c67699c62a3575d281d45845871a2';
 
-/// One inbox segment, from the live read or a bounded snapshot.
+/// One inbox segment, live from `programWhatsappThreadViews` (#1339). The
+/// wedding's number comes from the server; without it the inbox still shows.
 
 @ProviderFor(programWhatsappInbox)
 final programWhatsappInboxProvider = ProgramWhatsappInboxFamily._();
 
-/// One inbox segment, from the live read or a bounded snapshot.
+/// One inbox segment, live from `programWhatsappThreadViews` (#1339). The
+/// wedding's number comes from the server; without it the inbox still shows.
 
 final class ProgramWhatsappInboxProvider
     extends
@@ -928,7 +792,8 @@ final class ProgramWhatsappInboxProvider
     with
         $FutureModifier<ProgramReadView<ProgramWhatsappInbox>>,
         $FutureProvider<ProgramReadView<ProgramWhatsappInbox>> {
-  /// One inbox segment, from the live read or a bounded snapshot.
+  /// One inbox segment, live from `programWhatsappThreadViews` (#1339). The
+  /// wedding's number comes from the server; without it the inbox still shows.
   ProgramWhatsappInboxProvider._({
     required ProgramWhatsappInboxFamily super.from,
     required (String, ProgramWhatsappFilter) super.argument,
@@ -974,9 +839,10 @@ final class ProgramWhatsappInboxProvider
 }
 
 String _$programWhatsappInboxHash() =>
-    r'8a41cd1419e5354ac4c2ea134b569836e8767d14';
+    r'5a03f173c32e3efa1bd173b623cd0b4fdc28ad70';
 
-/// One inbox segment, from the live read or a bounded snapshot.
+/// One inbox segment, live from `programWhatsappThreadViews` (#1339). The
+/// wedding's number comes from the server; without it the inbox still shows.
 
 final class ProgramWhatsappInboxFamily extends $Family
     with
@@ -993,7 +859,8 @@ final class ProgramWhatsappInboxFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// One inbox segment, from the live read or a bounded snapshot.
+  /// One inbox segment, live from `programWhatsappThreadViews` (#1339). The
+  /// wedding's number comes from the server; without it the inbox still shows.
 
   ProgramWhatsappInboxProvider call(
     String programId,
@@ -1005,12 +872,104 @@ final class ProgramWhatsappInboxFamily extends $Family
   String toString() => r'programWhatsappInboxProvider';
 }
 
-/// One conversation, from the live read or a bounded snapshot.
+/// The wedding's WhatsApp number for the inbox header, or null when it
+/// cannot be read now.
+
+@ProviderFor(programWhatsappSender)
+final programWhatsappSenderProvider = ProgramWhatsappSenderFamily._();
+
+/// The wedding's WhatsApp number for the inbox header, or null when it
+/// cannot be read now.
+
+final class ProgramWhatsappSenderProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramWhatsappSender?>,
+          ProgramWhatsappSender?,
+          FutureOr<ProgramWhatsappSender?>
+        >
+    with
+        $FutureModifier<ProgramWhatsappSender?>,
+        $FutureProvider<ProgramWhatsappSender?> {
+  /// The wedding's WhatsApp number for the inbox header, or null when it
+  /// cannot be read now.
+  ProgramWhatsappSenderProvider._({
+    required ProgramWhatsappSenderFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'programWhatsappSenderProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programWhatsappSenderHash();
+
+  @override
+  String toString() {
+    return r'programWhatsappSenderProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramWhatsappSender?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramWhatsappSender?> create(Ref ref) {
+    final argument = this.argument as String;
+    return programWhatsappSender(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramWhatsappSenderProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programWhatsappSenderHash() =>
+    r'2c9b0510d69191eaa47515f14715cc704da323a2';
+
+/// The wedding's WhatsApp number for the inbox header, or null when it
+/// cannot be read now.
+
+final class ProgramWhatsappSenderFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ProgramWhatsappSender?>, String> {
+  ProgramWhatsappSenderFamily._()
+    : super(
+        retry: null,
+        name: r'programWhatsappSenderProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The wedding's WhatsApp number for the inbox header, or null when it
+  /// cannot be read now.
+
+  ProgramWhatsappSenderProvider call(String programId) =>
+      ProgramWhatsappSenderProvider._(argument: programId, from: this);
+
+  @override
+  String toString() => r'programWhatsappSenderProvider';
+}
+
+/// One conversation, live.
 
 @ProviderFor(programWhatsappThread)
 final programWhatsappThreadProvider = ProgramWhatsappThreadFamily._();
 
-/// One conversation, from the live read or a bounded snapshot.
+/// One conversation, live.
 
 final class ProgramWhatsappThreadProvider
     extends
@@ -1022,7 +981,7 @@ final class ProgramWhatsappThreadProvider
     with
         $FutureModifier<ProgramReadView<ProgramWhatsappThread>>,
         $FutureProvider<ProgramReadView<ProgramWhatsappThread>> {
-  /// One conversation, from the live read or a bounded snapshot.
+  /// One conversation, live.
   ProgramWhatsappThreadProvider._({
     required ProgramWhatsappThreadFamily super.from,
     required (String, String) super.argument,
@@ -1068,9 +1027,9 @@ final class ProgramWhatsappThreadProvider
 }
 
 String _$programWhatsappThreadHash() =>
-    r'1bea45390c5f583051d290006811bbdf831b5653';
+    r'391aa3bf873af8343893c5df48dc4b0d83ffdf17';
 
-/// One conversation, from the live read or a bounded snapshot.
+/// One conversation, live.
 
 final class ProgramWhatsappThreadFamily extends $Family
     with
@@ -1087,7 +1046,7 @@ final class ProgramWhatsappThreadFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// One conversation, from the live read or a bounded snapshot.
+  /// One conversation, live.
 
   ProgramWhatsappThreadProvider call(String programId, String threadId) =>
       ProgramWhatsappThreadProvider._(
@@ -1099,12 +1058,12 @@ final class ProgramWhatsappThreadFamily extends $Family
   String toString() => r'programWhatsappThreadProvider';
 }
 
-/// The programme's saved replies.
+/// The programme's saved replies, live.
 
 @ProviderFor(programCannedReplies)
 final programCannedRepliesProvider = ProgramCannedRepliesFamily._();
 
-/// The programme's saved replies.
+/// The programme's saved replies, live.
 
 final class ProgramCannedRepliesProvider
     extends
@@ -1116,7 +1075,7 @@ final class ProgramCannedRepliesProvider
     with
         $FutureModifier<ProgramReadView<List<ProgramCannedReply>>>,
         $FutureProvider<ProgramReadView<List<ProgramCannedReply>>> {
-  /// The programme's saved replies.
+  /// The programme's saved replies, live.
   ProgramCannedRepliesProvider._({
     required ProgramCannedRepliesFamily super.from,
     required String super.argument,
@@ -1161,9 +1120,9 @@ final class ProgramCannedRepliesProvider
 }
 
 String _$programCannedRepliesHash() =>
-    r'58d66f21999e2695d6e1f574a3b98e53f0bdc5dc';
+    r'2b3ee4a2c9ace7dc6d88600358f30410fedff593';
 
-/// The programme's saved replies.
+/// The programme's saved replies, live.
 
 final class ProgramCannedRepliesFamily extends $Family
     with
@@ -1180,7 +1139,7 @@ final class ProgramCannedRepliesFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The programme's saved replies.
+  /// The programme's saved replies, live.
 
   ProgramCannedRepliesProvider call(String programId) =>
       ProgramCannedRepliesProvider._(argument: programId, from: this);
@@ -1280,8 +1239,16 @@ final class ProgramAssistantSettingsFamily extends $Family
   String toString() => r'programAssistantSettingsProvider';
 }
 
+/// The door of one function, live (#1339): the function's header, roster
+/// rows and newest journal entries through listeners, gated on the account's
+/// authority. The same type as the callable read it replaces.
+
 @ProviderFor(programFunctionDoorView)
 final programFunctionDoorViewProvider = ProgramFunctionDoorViewFamily._();
+
+/// The door of one function, live (#1339): the function's header, roster
+/// rows and newest journal entries through listeners, gated on the account's
+/// authority. The same type as the callable read it replaces.
 
 final class ProgramFunctionDoorViewProvider
     extends
@@ -1291,6 +1258,9 @@ final class ProgramFunctionDoorViewProvider
           FutureOr<ProgramDoorView>
         >
     with $FutureModifier<ProgramDoorView>, $FutureProvider<ProgramDoorView> {
+  /// The door of one function, live (#1339): the function's header, roster
+  /// rows and newest journal entries through listeners, gated on the account's
+  /// authority. The same type as the callable read it replaces.
   ProgramFunctionDoorViewProvider._({
     required ProgramFunctionDoorViewFamily super.from,
     required (String, String) super.argument,
@@ -1337,7 +1307,11 @@ final class ProgramFunctionDoorViewProvider
 }
 
 String _$programFunctionDoorViewHash() =>
-    r'f73a6dc0c0bbd06be491ede77e443b26c2281059';
+    r'a990d1ac20f3995f2662fae12a3ca6da5feb9b30';
+
+/// The door of one function, live (#1339): the function's header, roster
+/// rows and newest journal entries through listeners, gated on the account's
+/// authority. The same type as the callable read it replaces.
 
 final class ProgramFunctionDoorViewFamily extends $Family
     with
@@ -1351,6 +1325,10 @@ final class ProgramFunctionDoorViewFamily extends $Family
         isAutoDispose: true,
       );
 
+  /// The door of one function, live (#1339): the function's header, roster
+  /// rows and newest journal entries through listeners, gated on the account's
+  /// authority. The same type as the callable read it replaces.
+
   ProgramFunctionDoorViewProvider call(String programId, String functionId) =>
       ProgramFunctionDoorViewProvider._(
         argument: (programId, functionId),
@@ -1361,9 +1339,15 @@ final class ProgramFunctionDoorViewFamily extends $Family
   String toString() => r'programFunctionDoorViewProvider';
 }
 
+/// The door for the screen: the live door, which opens offline from the
+/// device cache while the account's duty holds.
+
 @ProviderFor(programFunctionDoorViewWithSnapshot)
 final programFunctionDoorViewWithSnapshotProvider =
     ProgramFunctionDoorViewWithSnapshotFamily._();
+
+/// The door for the screen: the live door, which opens offline from the
+/// device cache while the account's duty holds.
 
 final class ProgramFunctionDoorViewWithSnapshotProvider
     extends
@@ -1375,6 +1359,8 @@ final class ProgramFunctionDoorViewWithSnapshotProvider
     with
         $FutureModifier<ProgramReadView<ProgramDoorView>>,
         $FutureProvider<ProgramReadView<ProgramDoorView>> {
+  /// The door for the screen: the live door, which opens offline from the
+  /// device cache while the account's duty holds.
   ProgramFunctionDoorViewWithSnapshotProvider._({
     required ProgramFunctionDoorViewWithSnapshotFamily super.from,
     required (String, String) super.argument,
@@ -1422,7 +1408,10 @@ final class ProgramFunctionDoorViewWithSnapshotProvider
 }
 
 String _$programFunctionDoorViewWithSnapshotHash() =>
-    r'033a5625589ab42a2286a690e161d5a8678b4c47';
+    r'cd529530b08892ae2f7daad24a1fb133ab57cca9';
+
+/// The door for the screen: the live door, which opens offline from the
+/// device cache while the account's duty holds.
 
 final class ProgramFunctionDoorViewWithSnapshotFamily extends $Family
     with
@@ -1439,6 +1428,9 @@ final class ProgramFunctionDoorViewWithSnapshotFamily extends $Family
         isAutoDispose: true,
       );
 
+  /// The door for the screen: the live door, which opens offline from the
+  /// device cache while the account's duty holds.
+
   ProgramFunctionDoorViewWithSnapshotProvider call(
     String programId,
     String functionId,
@@ -1451,13 +1443,13 @@ final class ProgramFunctionDoorViewWithSnapshotFamily extends $Family
   String toString() => r'programFunctionDoorViewWithSnapshotProvider';
 }
 
-/// The departures desk, from the live read or a bounded offline snapshot.
+/// The departures desk, live from `programDepartureViews` (#1339).
 
 @ProviderFor(programDeparturesRosterView)
 final programDeparturesRosterViewProvider =
     ProgramDeparturesRosterViewFamily._();
 
-/// The departures desk, from the live read or a bounded offline snapshot.
+/// The departures desk, live from `programDepartureViews` (#1339).
 
 final class ProgramDeparturesRosterViewProvider
     extends
@@ -1469,7 +1461,7 @@ final class ProgramDeparturesRosterViewProvider
     with
         $FutureModifier<ProgramReadView<ProgramDeparturesRoster>>,
         $FutureProvider<ProgramReadView<ProgramDeparturesRoster>> {
-  /// The departures desk, from the live read or a bounded offline snapshot.
+  /// The departures desk, live from `programDepartureViews` (#1339).
   ProgramDeparturesRosterViewProvider._({
     required ProgramDeparturesRosterViewFamily super.from,
     required (String, String) super.argument,
@@ -1515,9 +1507,9 @@ final class ProgramDeparturesRosterViewProvider
 }
 
 String _$programDeparturesRosterViewHash() =>
-    r'0a5f9d9cd14f063a15521d76776f468b379ba115';
+    r'56c545cc857ea861cdcc63e14acd05b083169d48';
 
-/// The departures desk, from the live read or a bounded offline snapshot.
+/// The departures desk, live from `programDepartureViews` (#1339).
 
 final class ProgramDeparturesRosterViewFamily extends $Family
     with
@@ -1534,7 +1526,7 @@ final class ProgramDeparturesRosterViewFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The departures desk, from the live read or a bounded offline snapshot.
+  /// The departures desk, live from `programDepartureViews` (#1339).
 
   ProgramDeparturesRosterViewProvider call(String programId, String hotelId) =>
       ProgramDeparturesRosterViewProvider._(
@@ -1546,12 +1538,16 @@ final class ProgramDeparturesRosterViewFamily extends $Family
   String toString() => r'programDeparturesRosterViewProvider';
 }
 
-/// The live board, from the live read or a bounded offline snapshot.
+/// The live board (#1339): function labels, the alerts this account may
+/// read and the travel counts through listeners, gated on the account's
+/// authority, with the schedule phased by the app clock.
 
 @ProviderFor(programLiveBoardView)
 final programLiveBoardViewProvider = ProgramLiveBoardViewFamily._();
 
-/// The live board, from the live read or a bounded offline snapshot.
+/// The live board (#1339): function labels, the alerts this account may
+/// read and the travel counts through listeners, gated on the account's
+/// authority, with the schedule phased by the app clock.
 
 final class ProgramLiveBoardViewProvider
     extends
@@ -1563,7 +1559,9 @@ final class ProgramLiveBoardViewProvider
     with
         $FutureModifier<ProgramReadView<ProgramLiveBoard>>,
         $FutureProvider<ProgramReadView<ProgramLiveBoard>> {
-  /// The live board, from the live read or a bounded offline snapshot.
+  /// The live board (#1339): function labels, the alerts this account may
+  /// read and the travel counts through listeners, gated on the account's
+  /// authority, with the schedule phased by the app clock.
   ProgramLiveBoardViewProvider._({
     required ProgramLiveBoardViewFamily super.from,
     required String super.argument,
@@ -1609,9 +1607,11 @@ final class ProgramLiveBoardViewProvider
 }
 
 String _$programLiveBoardViewHash() =>
-    r'54efdc4c0a01e01ca505dca9629f86908b73c04f';
+    r'dcf30ae562f7ed16b475de188146fa7d4ccb1518';
 
-/// The live board, from the live read or a bounded offline snapshot.
+/// The live board (#1339): function labels, the alerts this account may
+/// read and the travel counts through listeners, gated on the account's
+/// authority, with the schedule phased by the app clock.
 
 final class ProgramLiveBoardViewFamily extends $Family
     with
@@ -1628,7 +1628,9 @@ final class ProgramLiveBoardViewFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The live board, from the live read or a bounded offline snapshot.
+  /// The live board (#1339): function labels, the alerts this account may
+  /// read and the travel counts through listeners, gated on the account's
+  /// authority, with the schedule phased by the app clock.
 
   ProgramLiveBoardViewProvider call(String programId) =>
       ProgramLiveBoardViewProvider._(argument: programId, from: this);
@@ -1637,17 +1639,15 @@ final class ProgramLiveBoardViewFamily extends $Family
   String toString() => r'programLiveBoardViewProvider';
 }
 
-/// Lead-facing report and feed providers: attendance rollups, stakeholder
-/// counts, the duty-scoped attention feed and the organizer's vendor
-/// directory. Split into a part file so the work repository stays under the
+/// Lead-facing report providers: attendance rollups and stakeholder counts.
+/// Split into a part file so the work repository stays under the
 /// handwritten-source size budget.
 
 @ProviderFor(programAttendanceReport)
 final programAttendanceReportProvider = ProgramAttendanceReportFamily._();
 
-/// Lead-facing report and feed providers: attendance rollups, stakeholder
-/// counts, the duty-scoped attention feed and the organizer's vendor
-/// directory. Split into a part file so the work repository stays under the
+/// Lead-facing report providers: attendance rollups and stakeholder counts.
+/// Split into a part file so the work repository stays under the
 /// handwritten-source size budget.
 
 final class ProgramAttendanceReportProvider
@@ -1660,9 +1660,8 @@ final class ProgramAttendanceReportProvider
     with
         $FutureModifier<ProgramAttendanceReport>,
         $FutureProvider<ProgramAttendanceReport> {
-  /// Lead-facing report and feed providers: attendance rollups, stakeholder
-  /// counts, the duty-scoped attention feed and the organizer's vendor
-  /// directory. Split into a part file so the work repository stays under the
+  /// Lead-facing report providers: attendance rollups and stakeholder counts.
+  /// Split into a part file so the work repository stays under the
   /// handwritten-source size budget.
   ProgramAttendanceReportProvider._({
     required ProgramAttendanceReportFamily super.from,
@@ -1712,9 +1711,8 @@ final class ProgramAttendanceReportProvider
 String _$programAttendanceReportHash() =>
     r'ef4875bbc0e32499ac51d6f10a1a47149d57c7d1';
 
-/// Lead-facing report and feed providers: attendance rollups, stakeholder
-/// counts, the duty-scoped attention feed and the organizer's vendor
-/// directory. Split into a part file so the work repository stays under the
+/// Lead-facing report providers: attendance rollups and stakeholder counts.
+/// Split into a part file so the work repository stays under the
 /// handwritten-source size budget.
 
 final class ProgramAttendanceReportFamily extends $Family
@@ -1728,9 +1726,8 @@ final class ProgramAttendanceReportFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Lead-facing report and feed providers: attendance rollups, stakeholder
-  /// counts, the duty-scoped attention feed and the organizer's vendor
-  /// directory. Split into a part file so the work repository stays under the
+  /// Lead-facing report providers: attendance rollups and stakeholder counts.
+  /// Split into a part file so the work repository stays under the
   /// handwritten-source size budget.
 
   ProgramAttendanceReportProvider call(String programId) =>
@@ -1819,317 +1816,20 @@ final class ProgramStakeholderCountsFamily extends $Family
   String toString() => r'programStakeholderCountsProvider';
 }
 
-/// Function-lead attention feed scoped to the caller's duties.
-
-@ProviderFor(programStaffAttention)
-final programStaffAttentionProvider = ProgramStaffAttentionFamily._();
-
-/// Function-lead attention feed scoped to the caller's duties.
-
-final class ProgramStaffAttentionProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<ProgramStaffAttention>,
-          ProgramStaffAttention,
-          FutureOr<ProgramStaffAttention>
-        >
-    with
-        $FutureModifier<ProgramStaffAttention>,
-        $FutureProvider<ProgramStaffAttention> {
-  /// Function-lead attention feed scoped to the caller's duties.
-  ProgramStaffAttentionProvider._({
-    required ProgramStaffAttentionFamily super.from,
-    required String super.argument,
-  }) : super(
-         retry: null,
-         name: r'programStaffAttentionProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$programStaffAttentionHash();
-
-  @override
-  String toString() {
-    return r'programStaffAttentionProvider'
-        ''
-        '($argument)';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<ProgramStaffAttention> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<ProgramStaffAttention> create(Ref ref) {
-    final argument = this.argument as String;
-    return programStaffAttention(ref, argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ProgramStaffAttentionProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$programStaffAttentionHash() =>
-    r'7b6333c2e24450f40ddaa2abcd82b496ffda4b13';
-
-/// Function-lead attention feed scoped to the caller's duties.
-
-final class ProgramStaffAttentionFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<ProgramStaffAttention>, String> {
-  ProgramStaffAttentionFamily._()
-    : super(
-        retry: null,
-        name: r'programStaffAttentionProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// Function-lead attention feed scoped to the caller's duties.
-
-  ProgramStaffAttentionProvider call(String programId) =>
-      ProgramStaffAttentionProvider._(argument: programId, from: this);
-
-  @override
-  String toString() => r'programStaffAttentionProvider';
-}
-
-/// Organizer-scoped vendor directory for the transport planning surface.
-
-@ProviderFor(programTransportVendors)
-final programTransportVendorsProvider = ProgramTransportVendorsFamily._();
-
-/// Organizer-scoped vendor directory for the transport planning surface.
-
-final class ProgramTransportVendorsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<List<ProgramVendorOption>>,
-          List<ProgramVendorOption>,
-          FutureOr<List<ProgramVendorOption>>
-        >
-    with
-        $FutureModifier<List<ProgramVendorOption>>,
-        $FutureProvider<List<ProgramVendorOption>> {
-  /// Organizer-scoped vendor directory for the transport planning surface.
-  ProgramTransportVendorsProvider._({
-    required ProgramTransportVendorsFamily super.from,
-    required (String, String) super.argument,
-  }) : super(
-         retry: null,
-         name: r'programTransportVendorsProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$programTransportVendorsHash();
-
-  @override
-  String toString() {
-    return r'programTransportVendorsProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<List<ProgramVendorOption>> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<List<ProgramVendorOption>> create(Ref ref) {
-    final argument = this.argument as (String, String);
-    return programTransportVendors(ref, argument.$1, argument.$2);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ProgramTransportVendorsProvider &&
-        other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$programTransportVendorsHash() =>
-    r'8a888d1076d4957a61446ef6f487d86dfad14ed9';
-
-/// Organizer-scoped vendor directory for the transport planning surface.
-
-final class ProgramTransportVendorsFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<List<ProgramVendorOption>>,
-          (String, String)
-        > {
-  ProgramTransportVendorsFamily._()
-    : super(
-        retry: null,
-        name: r'programTransportVendorsProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// Organizer-scoped vendor directory for the transport planning surface.
-
-  ProgramTransportVendorsProvider call(String organizerId, String programId) =>
-      ProgramTransportVendorsProvider._(
-        argument: (organizerId, programId),
-        from: this,
-      );
-
-  @override
-  String toString() => r'programTransportVendorsProvider';
-}
-
-/// Hotel desk providers: the inbound board and the room board for one
-/// property. Split into a part file so the work repository stays under the
-/// handwritten-source size budget; providers remain top-level so tests fake
-/// them through `overrideWith`, not repository subclassing.
-
-@ProviderFor(programHotelInbound)
-final programHotelInboundProvider = ProgramHotelInboundFamily._();
-
-/// Hotel desk providers: the inbound board and the room board for one
-/// property. Split into a part file so the work repository stays under the
-/// handwritten-source size budget; providers remain top-level so tests fake
-/// them through `overrideWith`, not repository subclassing.
-
-final class ProgramHotelInboundProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<ProgramHotelInbound>,
-          ProgramHotelInbound,
-          FutureOr<ProgramHotelInbound>
-        >
-    with
-        $FutureModifier<ProgramHotelInbound>,
-        $FutureProvider<ProgramHotelInbound> {
-  /// Hotel desk providers: the inbound board and the room board for one
-  /// property. Split into a part file so the work repository stays under the
-  /// handwritten-source size budget; providers remain top-level so tests fake
-  /// them through `overrideWith`, not repository subclassing.
-  ProgramHotelInboundProvider._({
-    required ProgramHotelInboundFamily super.from,
-    required (String, String, {String? tripCursor, String? expectedCursor})
-    super.argument,
-  }) : super(
-         retry: null,
-         name: r'programHotelInboundProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$programHotelInboundHash();
-
-  @override
-  String toString() {
-    return r'programHotelInboundProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $FutureProviderElement<ProgramHotelInbound> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<ProgramHotelInbound> create(Ref ref) {
-    final argument =
-        this.argument
-            as (String, String, {String? tripCursor, String? expectedCursor});
-    return programHotelInbound(
-      ref,
-      argument.$1,
-      argument.$2,
-      tripCursor: argument.tripCursor,
-      expectedCursor: argument.expectedCursor,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is ProgramHotelInboundProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$programHotelInboundHash() =>
-    r'85ec7cf0b6a8c27edd1740e0792a038601c75b08';
-
-/// Hotel desk providers: the inbound board and the room board for one
-/// property. Split into a part file so the work repository stays under the
-/// handwritten-source size budget; providers remain top-level so tests fake
-/// them through `overrideWith`, not repository subclassing.
-
-final class ProgramHotelInboundFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          FutureOr<ProgramHotelInbound>,
-          (String, String, {String? tripCursor, String? expectedCursor})
-        > {
-  ProgramHotelInboundFamily._()
-    : super(
-        retry: null,
-        name: r'programHotelInboundProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// Hotel desk providers: the inbound board and the room board for one
-  /// property. Split into a part file so the work repository stays under the
-  /// handwritten-source size budget; providers remain top-level so tests fake
-  /// them through `overrideWith`, not repository subclassing.
-
-  ProgramHotelInboundProvider call(
-    String programId,
-    String hotelId, {
-    String? tripCursor,
-    String? expectedCursor,
-  }) => ProgramHotelInboundProvider._(
-    argument: (
-      programId,
-      hotelId,
-      tripCursor: tripCursor,
-      expectedCursor: expectedCursor,
-    ),
-    from: this,
-  );
-
-  @override
-  String toString() => r'programHotelInboundProvider';
-}
+/// Hotel desk providers: the room board for one property (the inbound board
+/// is `programHotelInboundStreamProvider`). Split into a part file so the
+/// work repository stays under the handwritten-source size budget; providers
+/// remain top-level so tests fake them through `overrideWith`, not repository
+/// subclassing.
 
 @ProviderFor(programHotelRooms)
 final programHotelRoomsProvider = ProgramHotelRoomsFamily._();
+
+/// Hotel desk providers: the room board for one property (the inbound board
+/// is `programHotelInboundStreamProvider`). Split into a part file so the
+/// work repository stays under the handwritten-source size budget; providers
+/// remain top-level so tests fake them through `overrideWith`, not repository
+/// subclassing.
 
 final class ProgramHotelRoomsProvider
     extends
@@ -2141,6 +1841,11 @@ final class ProgramHotelRoomsProvider
     with
         $FutureModifier<ProgramHotelRooms>,
         $FutureProvider<ProgramHotelRooms> {
+  /// Hotel desk providers: the room board for one property (the inbound board
+  /// is `programHotelInboundStreamProvider`). Split into a part file so the
+  /// work repository stays under the handwritten-source size budget; providers
+  /// remain top-level so tests fake them through `overrideWith`, not repository
+  /// subclassing.
   ProgramHotelRoomsProvider._({
     required ProgramHotelRoomsFamily super.from,
     required (String, String) super.argument,
@@ -2187,6 +1892,12 @@ final class ProgramHotelRoomsProvider
 
 String _$programHotelRoomsHash() => r'2e5b788b876388427eddc07237310c98aaf2f278';
 
+/// Hotel desk providers: the room board for one property (the inbound board
+/// is `programHotelInboundStreamProvider`). Split into a part file so the
+/// work repository stays under the handwritten-source size budget; providers
+/// remain top-level so tests fake them through `overrideWith`, not repository
+/// subclassing.
+
 final class ProgramHotelRoomsFamily extends $Family
     with
         $FunctionalFamilyOverride<
@@ -2201,6 +1912,12 @@ final class ProgramHotelRoomsFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// Hotel desk providers: the room board for one property (the inbound board
+  /// is `programHotelInboundStreamProvider`). Split into a part file so the
+  /// work repository stays under the handwritten-source size budget; providers
+  /// remain top-level so tests fake them through `overrideWith`, not repository
+  /// subclassing.
 
   ProgramHotelRoomsProvider call(String programId, String hotelId) =>
       ProgramHotelRoomsProvider._(argument: (programId, hotelId), from: this);

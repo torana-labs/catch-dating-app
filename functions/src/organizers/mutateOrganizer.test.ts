@@ -44,7 +44,7 @@ function hostRequest(uid: string, data: Row): CallableRequest<unknown> {
 }
 
 const teamOrganizer = (overrides: Row = {}): Row => ({
-  name: "Saket Run Club", description: "Easy social runs.",
+  name: "Neemwood Run Club", description: "Easy social runs.",
   location: "in-dl-delhi-ncr", area: "Saket", hostUserId: "owner-1",
   ownerUserId: "owner-1", hostUserIds: ["owner-1", "manager-1"],
   hostProfiles: [], ...overrides,
@@ -78,11 +78,11 @@ test(
 
 test("publishing a legacy organizer derives a reservable website route", () => {
   const organizerId = "fJlZbx9BewUXsOZwQKv3";
-  const slug = defaultOrganizerPublicSlug("Saket Run Club", organizerId);
+  const slug = defaultOrganizerPublicSlug("Neemwood Run Club", organizerId);
 
   assert.deepEqual(
     organizerPublicationRoute(organizerId, {
-      name: "Saket Run Club",
+      name: "Neemwood Run Club",
       location: "in-dl-delhi-ncr",
     }),
     {
@@ -97,12 +97,12 @@ test("publishing a legacy organizer derives a reservable website route", () => {
 test("publishing preserves an existing organizer route identity", () => {
   assert.deepEqual(
     organizerPublicationRoute("organizer-one", {
-      name: "Saket Run Club",
+      name: "Neemwood Run Club",
       location: "in-dl-delhi-ncr",
       publicPage: {
-        slug: "saket-run-club",
+        slug: "neemwood-run-club",
         citySlug: "delhi-ncr",
-        canonicalPath: "/organizers/saket-run-club/",
+        canonicalPath: "/organizers/neemwood-run-club/",
         publishStatus: "draft",
         indexStatus: "noindex",
         robots: "noindex, follow",
@@ -112,9 +112,9 @@ test("publishing preserves an existing organizer route identity", () => {
       },
     }),
     {
-      slug: "saket-run-club",
+      slug: "neemwood-run-club",
       citySlug: "delhi-ncr",
-      canonicalPath: "/organizers/saket-run-club/",
+      canonicalPath: "/organizers/neemwood-run-club/",
       needsIdentityPatch: false,
     }
   );

@@ -56,6 +56,32 @@ should be repairable from edge/source documents.
 | HTTP Function | External web/client POST endpoint. | CORS, validation, rate limiting, server writes. |
 | Server/Admin Only | No client write surface. | Firestore rules deny client writes. |
 
+## Product commands
+
+`contracts/commands/catalog.json` lists the commands that the website try-it
+tools, Catch Host, the `catch` CLI and later WhatsApp call (owner decision,
+18 Nov 2026; issue #2058). Each surface is a thin client of one callable;
+a website demo is the same command run in the visitor's own try-it
+workspace, never a separate demo path. Every command:
+
+- takes the shared envelope (`contracts/shared/command_envelope.schema.json`):
+  `mode` (`preview` or `apply`), a client `idempotencyKey`, the calling
+  `surface`, an optional `confirm`, and a closed `input` small enough for an
+  AI caller to fill;
+- answers with `status`, a `previewHash`, a plain-language `summary`, the
+  `effects` written or proposed, `next` commands and the `receiptId`;
+- writes nothing durable on preview; on apply it recomputes, refuses a
+  `confirm` whose preview changed, and records its response in
+  `commandReceipts` (`functions/src/commands/envelope.ts`), so a retry with the
+  same key replays and the same key with another request is refused;
+- declares an effect class. `messages-guests` and `moves-money` need a
+  matching `confirm`.
+
+`functions/src/commands/catalog.test.ts` keeps the catalog, the schemas and the
+Functions exports in step. The commands so far are `workspace.ensure`
+(`ensureTryItWorkspace`) and `organizer.import-from-link`
+(`importOrganizerFromLink`), both below.
+
 ## Rehearsal completion summary
 
 The completion transaction alone stamps `eventRehearsalMilestones/{organizerId}`
@@ -238,6 +264,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `requestOrganizerClaim` / `adminDecideOrganizerClaim` | Callable | Website claim flow / admin claim queue | `organizerClaimRequests`, canonical organizer ownership/claim fields, team membership, notifications, legacy shadows | Claim submission never grants access; the owner's decision (`admin`, `adminOwner`) owns transfer. |
 | `adminRecommendOrganizerClaim` | Callable | Admin inbox claim inspector | `organizerClaimRequests/{requestId}.recommendation`, `adminAuditLogs` | Ops (`support`) recommend approve or reject with a note; the request stays pending until the owner decides. |
 | `adminListInboxItems` / `adminGetInboxItem` / `adminUpdateInboxItem` | Callable | Admin inbox | Reads `adminInboxItems` and `adminInboxJourney`; staff actions write assignee/snooze, a journey step and `adminAuditLogs` | One list of items waiting on a person, oldest first, with `count()` totals per scope and type. The nightly reconcile rebuilds the projection from its sources. |
+| `adminGetTakedownRequest` / `adminUpdateTakedownRequest` | Callable (admin, owner, support) | Admin inbox `takedown` items | Reads and writes `takedownRequests`; each step appends a history entry and an `adminAuditLogs` row | Acknowledge, ask for more with a fixed template, action with a fixed outcome (the takedown case id is required where a page is removed or suspended), decline with a fixed reason, record the one appeal (30 days) and decide it (someone other than the decider), close. Only admins and the owner decide. The Inbox item follows the document through `onTakedownRequestWrittenSyncInbox`. |
 | `on*WrittenSyncInbox` / `wakeSnoozedInboxItemsEvery30Minutes` | Firestore trigger / schedule | Supply Intake requests, organizer claims, sales inbound intents, access applications, external events | `adminInboxItems`, `adminInboxJourney` | Each source write re-projects its one item; journey steps are created once with the time Catch first saw them. The triggers are not retried (a retrying trigger needs a forced deploy); `reconcileAdminInboxNightly` re-projects every source and the people index each night, changing only what a failed trigger missed. |
 | `adminSearchPeople` / `onUserWrittenIndexPeople` | Callable / Firestore trigger | Admin People search | `adminPeopleIndex/{uid}` from `users/{uid}`; `adminAuditLogs` | Name prefixes, phone digits or exact uid; every search and its query is audited. |
 | `getOrganizerClaimVerificationOptions` / `startOrganizerClaimVerification` | Callable | Website claim page | Reads the organizer listing; writes `organizerClaimVerifications/{attemptId}` and reserves `organizerClaimInstagramCodes/{code}` | Signed-in accounts with a name and verified phone only. Shows a 30-minute six-digit code bound to one listing, account and method. Instagram stays hidden until `CATCH_INSTAGRAM_CLAIMS_ENABLED` is on, and Luma until page fetching is. Grants nothing by itself. |
@@ -300,9 +327,9 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `getEventAttendanceReport` | Callable | `EventAttendanceReportRepository` and account-scoped report provider; Host UI integration pending | Reads canonical event, organizer, runtime plan and complete bounded `eventAttendees` roster with guest evidence and closeout annotations in one SDK read-only snapshot | Current-manager-only, App Check and ten reads/minute. Returns counts and compact member classifications using the individual closeout policy; includes imported/unlinked guests. Empty and unresolved remain explicit. Invalid evidence or more than 1,000 rows fails instead of returning partial totals. No report-cache, attendance, message or decision writes. |
 | `setEventSuccessAccountabilityResolution` | Callable | Host Event Success return sweep | One `eventAttendees/{attendeeId}` accountability resolution | App-Check-protected, rate-limited organizer-manager mutation for a `sweep` event. It accepts only a currently checked-in attendee, binds returned/departed to that exact check-in timestamp, and can explicitly reopen the row. Imported and unlinked operational guests use the same path. |
 | `controlEventSuccessLive` | Callable | `EventSuccessRepository` live controls | `eventSuccessPlans/{eventId}` live-control fields; reads bounded `eventAttendees` for sweep completion | Organizer-manager-only, App-Check-protected state reducer. It revision-fences step/completion/countdown/cancel and pause/resume actions (a new step sets `stepStartedAtMs`; pause sets `pausedAtMs`; resume moves `stepStartedAtMs` later by the paused span; repeating pause or resume replays), requires explicit reveal confirmation, derives countdown publication from a persisted server anchor, and never moves a published reveal index backwards. Unresolved `sweep` rows raise a warning unless the Host sends explicit `accountabilityAcknowledged`; acknowledgement permits completion rather than creating a hard lock. |
-| `saveEventPlanStep` | Callable | Plan screen step editor (`HostEventPlanCommands`) | `eventSuccessPlans/{eventId}` `stepOverrides`, `liveControlRevision`, `activeStepIndex` while live; `eventLiveCommandReceipts/{receiptId}` | Organizer-manager-only, App-Check-protected and rate-limited. Adds, edits, removes or reorders one run-of-show step; the first edit of a plan still on its playbook carries `baseSteps`. Fenced on `liveControlRevision`, replay-safe on `requestId`; while live the pointer follows its step. Refused once the plan is complete. |
-| `setEventCloseOut` | Callable | Close out screen dock | `eventCloseOuts/{eventId}`, the event-scope `organizerMoments/{eventId}_close_out_thank_you`, `eventLiveCommandReceipts/{receiptId}` | Organizer-manager-only. Arms the thank-you as a scheduled push to everyone booked (10 AM local the morning after, through the moments engine) or pauses it; records stay-in-touch picks and the no-show note (nothing reads them yet). Fenced on the close-out revision, replay-safe on `requestId`; the idempotent moment change runs first so a retry converges. |
-| `changeEventCrawlStop` | Callable | Crawl move sheet stop editor | `eventSuccessPlans/{eventId}` `crawlStopChanges` and `liveControlRevision`, `eventLiveCommandReceipts/{receiptId}`, then one `sendEventBroadcast` to everyone booked | Organizer-manager-only. Records one stop change by itinerary item id (the published itinerary is untouched) and, with a message, sends one event broadcast whose request id derives from this one, so a retry replays both. The broadcast keeps its own moderation and rate limit. Requires a saved plan. |
+| `saveEventPlanStep` | Callable | Plan screen step editor (`HostEventPlanCommands`) | `eventSuccessPlans/{eventId}` `stepOverrides`, `liveControlRevision`, `activeStepIndex` while live; `commandReceipts/{command}_{receiptId}` | Organizer-manager-only, App-Check-protected and rate-limited. Adds, edits, removes or reorders one run-of-show step; the first edit of a plan still on its playbook carries `baseSteps`. Fenced on `liveControlRevision`, replay-safe on `requestId`; while live the pointer follows its step. Refused once the plan is complete. |
+| `setEventCloseOut` | Callable | Close out screen dock | `eventCloseOuts/{eventId}`, the event-scope `organizerMoments/{eventId}_close_out_thank_you`, `commandReceipts/{command}_{receiptId}` | Organizer-manager-only. Arms the thank-you as a scheduled push to everyone booked (10 AM local the morning after, through the moments engine) or pauses it; records stay-in-touch picks and the no-show note (nothing reads them yet). Fenced on the close-out revision, replay-safe on `requestId`; the idempotent moment change runs first so a retry converges. |
+| `changeEventCrawlStop` | Callable | Crawl move sheet stop editor | `eventSuccessPlans/{eventId}` `crawlStopChanges` and `liveControlRevision`, `commandReceipts/{command}_{receiptId}`, then one `sendEventBroadcast` to everyone booked | Organizer-manager-only. Records one stop change by itinerary item id (the published itinerary is untouched) and, with a message, sends one event broadcast whose request id derives from this one, so a retry replays both. The broadcast keeps its own moderation and rate limit. Requires a saved plan. |
 | `onEventSuccessStandingsWritten` | Firestore trigger on `eventSuccessStandings/{eventId}` write | Backend | `eventSuccessGuestHistory/{eventId}_{uid}` | Projects each placed guest's per-round standing (their team, table, arrival group or rotation pair, by the Host scoreboard's unit ids) and final standing. Bounded at 1,000 source documents and 450 writes per run; guests read only their own. |
 | `recordEventSuccessUnitOutcomes` | Callable | Host Event Success live reveal card | `eventSuccessUnitOutcomes/{eventId}`, optional `eventSuccessStandings/{eventId}` | Organizer-manager-only, App-Check-protected, revision-fenced complete-round replacement. Exact replay is idempotent. Scores accumulate across corrected snapshots, ranks require one complete contiguous ordering and use the latest round, completion stores Host-only facts, and `none` rejects recording. Score/rank tables reuse the plan's existing synchronized reveal cursor and confirmation. |
 | `upsertEventSuccessLayout` | Callable | Host create-event layout authoring | `organizerEventSuccessLayouts/{organizerId_layoutId}` | App-Check-protected organizer-manager mutation for reusable parametric assets. It validates unique bounded grid units across the five supported shapes and preserves asset identity/timestamps; it never stores derived coordinates or creates event-scoped copies. |
@@ -398,7 +425,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `onCrossPathsBlockCreated` | Firestore trigger on `blocks/{blockId}` | Backend | Invitations and event plans for the blocked pair | Immediately invalidates pending invitations and closes accepted event plans in addition to the existing dating-match safety closure. |
 | `onSwipeCreated` | Firestore trigger on `profileDecisions/{uid}/outgoing/{targetId}` create | Backend | `matches/{matchId}` | Deterministic match ID; creates a match only when both decisions are current picks (`deckEraDecision.ts`). Deck-era decisions record no signals, open no chat, and their comments never become messages. Writes `eventIds` so a match can track every shared event over time. If a legacy pair-only id is occupied by a `organizerHostInquiry`, the dating match uses a separate deterministic opaque id so organizer-support messages can never be converted into dating chat history. |
 | `onMatchCreated` | Firestore trigger on `matches/{matchId}` create | Backend | `notifications/{uid}/items/{notificationId}`, FCM | Writes deterministic match activity notifications for both participants and sends push notifications when tokens exist. |
-| `onMessageCreated` | Firestore trigger on `matches/{matchId}/messages/{messageId}` create | Backend | `matches/{matchId}`, `functionEventReceipts/{receiptId}`, FCM | Receipt prevents duplicate metadata writes/fan-out; unread is a 0/1 conversation flag and the sender's flag clears. No separate Activity item. App-role routing distinguishes customer inquiries (Host) from Host replies and personal chats (Consumer). Only dating matches refresh Event Success scorecards or emit participant chat-signal facts. |
+| `onMessageCreated` | Firestore trigger on `matches/{matchId}/messages/{messageId}` create | Backend | `matches/{matchId}`, `commandReceipts/onMessageCreated_{eventId}`, FCM | Receipt prevents duplicate metadata writes/fan-out; unread is a 0/1 conversation flag and the sender's flag clears. No separate Activity item. App-role routing distinguishes customer inquiries (Host) from Host replies and personal chats (Consumer). Only dating matches refresh Event Success scorecards or emit participant chat-signal facts. |
 | `moderateChatMessage` | Firestore trigger on match-scoped message create | Backend | `matches/{matchId}/messages/{messageId}`, `moderationFlags/{id}` | Deterministic moderation flag for blocked/flagged text. |
 | `moderatePhotoOnUpload` | Storage trigger | Backend | `moderationFlags/{id}`, `users/{uid}.profilePhotos`, Storage delete | Deletes unsafe uploaded profile photos and removes the matching grouped photo from the private profile. |
 | `createEventReview` | Callable | `ReviewsRepository.addReview` | `reviews/{eventId~uid}` | Attended-event review create. Server verifies the `eventParticipations/{eventId_uid}` edge, derives public reviewer name with the shared profile projection helper, and writes the deterministic review doc. |
@@ -426,6 +453,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `purgeRetainedSafetyRecords` | Scheduled, daily | Backend | `reports`, `accountSafetyActions`, `blockedSignupAttempts` | Deletes case records 180 days after account deletion. |
 | `requestAccountDeletion` | Callable | `SafetyRepository.requestAccountDeletion` | `deletedUsers/{uid}`, `users/{uid}`, `publicProfiles/{uid}`, `onboarding_drafts/{uid}`, `organizerCommunicationPreferences`, `organizerCommunicationPermissionReceipts`, contact-origin actor redaction, `eventAttendees` and organizer-audience identity links/claims, `crossPathsShowcaseEligibility/{uid}`, Storage deletes, Auth delete, relationship cleanup across memberships, participations, Cross Paths consents/exposures/invitations/pair holds/event plans, saved events, profile decisions, matches, reviews, payments, notifications, blocks, reports, and `eventBroadcasts` | Rate-limited before destructive work; backend-only account deletion/anonymization. Writes a processing tombstone before cleanup so notification fan-out cannot race deletion; clears the OTP onboarding seed and organizer channel grants and receipts, redacts the deleted actor UID from retained origin classification, unlinks retained operational roster/contact history from the deleted UID, removes UID identity evidence/claims, and clears both private Cross Paths preferences, consent edges, showcase eligibility, suggestion receipts, participant invitations, and active companion reservations, while existing match cleanup closes event plans. It also deletes host-authored broadcast receipts, removes a recipient's target identifier and delivery evidence, deletes original profile photos plus thumbnails, and uses relationship-doc queries instead of scanning parent arrays. |
 | `joinWaitlist` | HTTP function | Marketing member waitlist, WhatsApp city-launch and app-launch notices and Host application, and typed website leads (`requestKind`) | `launchWaitlist/{emailHash}`, `launchWaitlist/whatsapp_{phoneCityKey}`, `launchWaitlist/whatsapp_app_{phoneCityKey}`, `marketingConversionEvents/{leadId}`, `salesInboundIntents/{intentId}`, `cityInterest/{cityKey}`, `cityInterestMarkers/{markerId}`, `rateLimits/{key}` | A `cityId` must be a non-hidden market catalog id (null with `cityOther` for a city the catalog lacks); a WhatsApp launch notice with a city counts its person once per city in `cityInterest` through a hashed marker in the same transaction. A member may instead leave a phone for one WhatsApp message when their city opens: no name or email, one row per number and city, the launch notice and a separate off-by-default marketing choice each recorded with wording version and time (CAT-72); nothing is sent until CAT-16. The guest app's "Get notified" is an app-launch notice on its own row, purpose `appLaunchNotice`, with an optional, off-by-default `cityNewPlans` consent; it does not count toward `cityInterest`. Host receipt identity and intent are committed atomically; email-level membership is not Host acquisition authority. Exact retries retain the receipt and legacy Host enquiries are not recounted. Prepared server measurement binds an optional allowlisted attribution snapshot to that first receipt under current analytics consent; Host legacy mutable attribution is omitted. Public endpoint with CORS and IP rate limiting; request/response shapes are versioned under `contracts/http/`, generated into website and Functions types, and validated at both boundaries. A website lead needs App Check, is limited per hashed network address (30 an hour) and per hashed number (6 an hour), and is stored once per number and request id: a retry replays the receipt and changed answers get 409. A referral's optional Bearer token names the referrer for credit. Nothing is sent. |
+| `submitListingRequest` | HTTP function (`/api/listing-request`) | Website `/listings/request/` form | `takedownRequests/{requestId}`, `rateLimits/{key}` | One structured listing request of a fixed type (claim, correct a fact, remove and don't list again, trademark, copyright, privacy, impersonation, court or government order) with that type's fixed verification fields, the fixed declarations and an optional context line of at most 280 characters. App Check, then a hashed network limit (10 an hour), per-type rules a schema cannot say (who may file, the official channel, trademark basis fields, IP declarations, URL targets on Catch's own site), then a hashed email limit (5 an hour). Stored once per requester email and client request id: a retry replays the receipt with its deadlines and changed answers get 409. Never a Sales record; nothing is sent. |
 | `onHostPilotCheckIn` | Firestore trigger | Canonical Host roster check-in | Private `hostOrganizerActivations/{organizerId}` | Requires a current staff-confirmed `hostPilotEventReviews` record, a published event and matching current checked-in roster. One private receipt per organiser; no attendee identity or provider export. |
 | `onOrganizerGrowthOrganizerWritten`, `onOrganizerGrowthClaimRequestCreated`, `onOrganizerGrowthParticipationWritten`, `onOrganizerGrowthPublicPaymentWritten`, `onOrganizerGrowthOfferPaymentWritten`, `onOrganizerGrowthBookingPaymentWritten` | Firestore triggers | Organizer, claim request, booking and payment writes | Private `organizerGrowthFacts/{organizerId}`; BigQuery `catch_analytics.organizer_growth_events` | Each step (listed, claim asked, claimed, first event, first paid booking) keeps the earliest time observed and is never edited by hand. The channel is set by `adminApproveOrganizerListing` from the Supply Intake request, or from provenance for organizers made any other way. Paid bookings and refunds stream with Razorpay's fee and tax. A failed BigQuery insert is logged, never fatal. The triggers are not retried on failure; `reconcileOrganizerGrowthDaily` records any step they missed. |
 | `reconcileOrganizerGrowthDaily` | Schedule, 03:40 India time | Organizers, claim requests, events with bookings, captured website, offer and form checkouts, native payments, BigQuery `organizer_growth_events` | `organizerGrowthFacts`, BigQuery `organizer_growth_events` | Bounded reads; each step keeps the earliest time, so reruns change nothing. Claimed, claim asked, first event and first paid booking are exact; a missed listed step falls back to the organizer's creation time. Creates the table if it is missing, then sends only the rows BigQuery lacks; sends nothing if either side can't be read in full, and one run at a time (`analytics/sql/README.md`). |
@@ -434,6 +462,9 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `adminManageFoundingHostOffers` | Admin callable (owner) | Admin Settings → Payments (UI pending; catalog action `finance.manage-founding-host-offers`, control plane until it has one) | `foundingHostOffers/{marketId}`, `publicFoundingHostOffers/{marketId}`, admin audit log | Founding-host offer (owner decision 16 Nov 2026). `read` lists every opened city; `replace` opens a city (`expectedRevision: 0`) or changes its cap (owner decided 50; 1 to 1000, never below places taken) and optional deadline (`endsAtMillis`, null for none) against the reviewed revision, with a reason. Places taken never change. Rewrites the public counter in the same transaction. |
 | `requestInstantDraft`, `getInstantDraft` | Callables (App Check; request needs a signed-in caller with a verified phone) | Website event-page-from-a-link tool and demo request | `supplyIntakeRequests/{draftId}` (`web_instant_draft` origin, private `instantDraft` state), `rateLimits`; `getInstantDraft` may save the draft through `approveListing` in draft mode (`organizers`, `organizerIntakeCurationDecisions`, `organizerIntakeReviewDecisions`, `organizerGrowthFacts`, `adminAuditLogs`) | Owner decisions 16 Nov 2026. The draft is private, hidden, noindex and unclaimed until the submitter claims it; nothing publishes before the claim. The city is chosen, given or inferred from the imported events; otherwise the poll returns `needs_city` with the open markets. Staff follow up on WhatsApp from the Admin Inbox. The tool reads from its own 300-page monthly allowance. |
 | `expireInstantDrafts` | Schedule, daily 04:23 IST | Backend | Deletes `organizers` drafts, releases `publicRouteReservations`, deletes `organizerIntakeReviewDecisions` and `organizerGrowthFacts`, marks `organizerIntakeCurationDecisions` superseded, sets `supplyIntakeRequests.instantDraft` expired, writes `adminAuditLogs` | Removes an instant draft nobody claimed 30 days after it was saved. Claimed, owned or published organizers are never touched. Bounded to 25 per run; idempotent. |
+| `ensureTryItWorkspace` | Callable (App Check; a signed-in caller whose phone Firebase verified) | Command `workspace.ensure` (`contracts/commands/catalog.json`): website try-it phone step, Catch Host, `catch` CLI | `organizers`, `organizerTeamMemberships`, `hostProfiles` seed and `publicRouteReservations` through `stageOwnedOrganizerCreate` (the `createOrganizer` path); `tryItWorkspaces/{uid}`; `commandReceipts`; `rateLimits` | Owner decisions 18 Nov 2026. A phone-verified visitor gets one private, unpublished organizer they own from the start, which every try-it tool writes into and Catch Host shows on sign-in. A caller who already owns one organizer gets it, kept; several are refused (`multiple_organizers`). Preview writes nothing; apply replays per caller and idempotency key, and refuses a confirm whose preview changed. |
+| `importOrganizerFromLink` | Callable (App Check; a signed-in caller whose phone Firebase verified) | Command `organizer.import-from-link`: website try-it, Catch Host, `catch` CLI | `supplyIntakeRequests/{tryit-…}` (origin `try_it_import`, private `tryItImport`), `rateLimits`; on apply `organizers` (fields the workspace lacks, `publicSources`, `importProvenance`), `tryItWorkspaces/{uid}`, `commandReceipts` | #2060. Fills the caller's try-it workspace from one public link through Supply Intake, or routes a unique strong match with another organizer to its claim; the caller's own workspace never counts as a match. Preview reads and answers `running`, then the proposal; apply refuses a changed preview. Imported Instagram or Luma identities stay unverified until proven; nothing publishes. |
+| `expireTryItWorkspaces` | Schedule, daily 04:41 IST | Backend | Deletes the workspace `organizers` record, its owner `organizerTeamMemberships` edge and `organizerGrowthFacts`, releases `publicRouteReservations`, sets `tryItWorkspaces/{uid}` expired, writes `adminAuditLogs` | Removes a try-it workspace nobody used for 30 days after its last command. A published workspace, one with an event or a second team member, or one its account no longer owns is kept and never read again. Bounded to 25 per run; idempotent. |
 | `onInstantDraftOrganizerPublished` | Firestore trigger | `organizers/{organizerId}` update | `externalEvents`, `externalEventPublicationReceipts` | When the claimed owner publishes an instant-draft page, its imported events publish through the same path as `adminPublishListingEvents`, with the same automated checks; an event that fails one waits for staff. Receipts are keyed per request, so a redelivery replays. |
 | `onFoundingHostOrganizerWritten`, `reconcileFoundingHostPlacesDaily` | Firestore trigger on `organizers/{organizerId}` (not retried); schedule daily 04:25, India time | An organizer gaining an owner (`createOrganizer`, or a listing claim approved or verified) | `foundingHostPlaces/{organizerId}`, `foundingHostOwnerPlaces/{sha256(JSON.stringify([ownerUserId, marketId]))}`, `foundingHostOffers/{marketId}.takenCount`, `publicFoundingHostOffers/{marketId}`, `commercialTerms/org_<sha256(organizerId)>`, `commercialTermsRevisions/{termsId}_r{n}` | One transaction per organizer: if its city's offer opened before it gained an owner, the deadline had not passed at that moment, places are left and its trial has not started (no first event or paid booking in `organizerGrowthFacts`), it takes place `takenCount + 1`, the counter and the public projection move with it, and its override's `trial.days` becomes 90 (other keys kept; an override already at 90 or more is left alone) as a new terms revision by `system:foundingHostOffer`. One place per person per city (owner decision 16 Nov 2026): the person is the organizer's canonical owner (`ownerUserId`, else legacy `hostUserId`, as `organizerOwnerUserId` reads it), and the grant reads and creates that owner's `foundingHostOwnerPlaces` guard in the same transaction, so their other organizer pages in the city (`ownerHoldsPlace`), even ones granted at the same moment, keep the standard trial. An ownership transfer leaves the place with its organizer and revokes nothing. The place record makes retries no-ops. Sold out, closed or not new: nothing is written and the standard trial applies. The daily run grants places the trigger missed for organizers whose growth facts record `claimedAt` in the last three days, oldest first, through the same transaction and the same per-owner rule. |
 | `adminManageNominatorCredits` | Admin callable (owner) | Admin Growth → Nominators | `nominatorCredits`, admin audit log | Approves all of one nominator's owed credit only at or above the minimum payout (less rolls over), then records it paid with partner payouts. |
@@ -457,8 +488,6 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `adminGetMarketplace` | Admin callable (owner) | Admin Marketplace | Read only | Four parameterised BigQuery queries over `organizers_raw_latest`, `events_raw_latest` and `event_participations_raw_latest` in `catch_analytics`, India time; no-shows count only events that checked anyone in; a return window not yet over reads as unknown. When the warehouse cannot be read it answers `available: false` instead of failing. Sales owners of quiet organizers come from `organizerSalesAccounts`. |
 | `onHostApplicationAccepted` | Firestore create trigger (runtime export pending) | New website `salesInboundIntents` receipt | Private `hostOperatorAlerts/{eventId}` | Default-off, explicit activation cutoff, one durable notice per new Host receipt. Excludes attendee/honeypot paths, legacy/repeated acquisitions, internal_qa_ submission IDs, [QA] names and reserved test email domains. Never delays intake. |
 | `dispatchHostApplicationAlerts` | Scheduled function (runtime export pending) | Every minute, at most 20 sequential notices | Private `hostOperatorAlerts/{eventId}` | Rechecks live intake, sends only an Admin link to the fixed operator via the scoped Resend adapter. Five bounded throttle retries within 24h; unknown/interrupted sends never auto-retry. Terminal receipts remain for deduplication without contact/answer snapshots. Secret, runtime identity and activation require a reviewed release; no advertising consent is required for this operational staff notification. |
-| `hostAcquisitionConsent` | HTTP function | Host website privacy choice at `/api/host-acquisition-consent` | Private `hostAcquisitionConsents/{capabilityHash}` | Default-disabled grants; versioned purpose, bounded request, exact-origin CORS and separate grant/withdrawal rate limits. Transactional replay preserves expiry, and withdrawal tombstones prevent delayed grants from restoring permission. No raw capability or contact data is stored or logged. |
-| `expireHostAcquisitionConsent` | Scheduled function | Every 15 minutes | Expired private `hostAcquisitionConsents` and optional Host intake attribution | At most 500 records per collection per invocation. Attribution withdrawal/expiry removes only the optional snapshot, preserving operational intake. Each transaction rechecks current expiry so concurrent withdrawal extensions are retained. Does not depend on a separately configured TTL policy. |
 
 ## Direct Client Firestore Writes
 
@@ -549,6 +578,76 @@ instants itself from its cached view and its clock, and stops showing cached
 rows when the duty or grant has expired, been revoked or been narrowed.
 Commands still re-check authority from the source documents.
 
+`getProgramWorkAccess` moves, with the access view, to the work shell's
+read models: `programWorkSummaries` (the programme header) and
+`programResourceViews` (pickup point, hotel and function labels), both
+trigger-kept and readable under rules through the account's access view. The
+callable stays deployed for older builds, retire-later.
+
+**Read path decision (Nov 2026, #1339): server-trust.** The two phone-import
+checks (`phone_import_adapter` before the import commit, and the import route's
+access refresh) keep calling `getProgramWorkAccess` live: each is the review
+before a write, and the current wedding-wide guest grant it confirms must come
+from the server, never a cache.
+`getProgramFunctionDoorView` moves to the door read models
+(`programDoorFunctions`, `programDoorRows`, `programDoorJournalViews`):
+function-scoped, readable when the account's function check-in or function
+lead duty covers the function, with no contact fields; the door's offline
+outbox and journal writes are unchanged. `getProgramLiveBoard` and
+`listProgramStaffAttention` move to `programAlertViews` (duty-tagged alerts
+with their resolution, readable by duty, travel alerts by full reach only),
+`programTravelCountViews` and the function labels of `programResourceViews`;
+the phone computes the schedule phases from its clock. `resolveProgramAlert`,
+`recordProgramDoorJournal` and `createProgramWalkIn` stay commands with their
+revision and request-id fences. All three callables stay deployed for older
+builds, retire-later.
+
+`getProgramArrivalsRoster`, `getProgramDeparturesRoster` and
+`listTransportVendors` move to read models: `programArrivalViews` (readable
+where one greeter, dispatcher or coordinator assignment covers the journey's
+pickup point and hotel together, through the access view's `arrivalRoutes`),
+`programDepartureViews` (hotel desk duty covering the hotel) and
+`programVendorViews` (dispatchers; the callable never returned the vendor's
+phone number, and the view cannot hold it). The desk counts come from the rows
+and the phone's clock. All three callables stay deployed for older builds,
+retire-later. `getProgramHotelInbound` and `listProgramTrips` move in the next
+transport batch; `getProgramTransportPlan` stays server-trust below.
+
+`listProgramTrips` and `getProgramHotelInbound` move to `programTripViews`
+(readable where one reconciliation viewer, dispatcher or coordinator assignment
+covers the trip's pickup point and hotel together, through the access view's
+`tripRoutes`; and by the destination hotel's desk while the trip is en route)
+and `programHotelInboundViews` (the hotel desk's expected guests). Both
+callables stay deployed for older builds, retire-later.
+
+Current Host builds read all of these (`getProgramArrivalsRoster`,
+`getProgramDeparturesRoster`, `listTransportVendors`, `listProgramTrips` and
+`getProgramHotelInbound`) through listeners gated on the account's access view
+(`ProgramTransportViewsRepository`): lists are read a page of 100 at a time up
+to 500 rows, ordered by document id, with no cursors; the trip ledger export
+shares the live ledger. The five callables stay deployed for older builds and
+are retired later.
+
+`listProgramStaff` moves to `programStaffViews` (administrators and the owner;
+the row is the callable's with its status's facts, and the revoke command keeps
+its revision fence). `listProgramStaffAttention` needs no new read model: it
+reads the staff attention alerts of `programAlertViews` (source
+`staffAttention`, alert id `{runId}_{duty}`), under the same duty rule. The
+callables stay deployed for older builds, retire-later.
+
+**Read path decision (Nov 2026, #1339): server-trust.** `listProgramGuests` and
+`listProgramHouseholds` stay callables: their phone numbers and emails are
+resolved from the workspace field assertions and decisions (the disclosure
+evidence a client must not hold), and the `fieldAuthority` and revisions they
+return are the write fence of `upsertProgramGuest`, `upsertProgramHousehold`
+and the field conflict choices.
+
+**Read path decision (Nov 2026, #1339): server-trust.** `getProgramStakeholderCounts`
+and `getProgramAttendanceReport` stay callables: the stakeholder viewer and the
+reconciliation viewer see counts and guest ids only, computed over every
+guest, household, function and journey row, which those roles must not hold,
+and the freshness contract is `hostReports` (five minutes), not a live view.
+
 **Read path decision (Nov 2026, #1339): server-trust.** `getProgramTransportPlan`
 stays a callable: it groups waiting parties into vehicles with an algorithm
 that depends on the current time (wait overdue, dispatch-by) and on every
@@ -566,6 +665,99 @@ records the handover in the same call.
 **Read path decision (Nov 2026, #1339): server-trust.** `getProgramAssistantSettings`
 stays a callable: it reads the assistant's settings and credential
 references, which no client may hold.
+
+`listProgramWhatsappThreads` and `getProgramWhatsappThread` move to listeners
+(batch 5). The inbox reads `programWhatsappThreadViews`, one row per thread:
+exactly the summary the list returned, without the clock-dependent
+`serviceWindowOpen` (the phone derives it from `lastInboundAtMillis`), plus
+the household's label, primary contact name and guest count from the thread
+header. The Needs you, Handled and All counts are the phone's tally of its own
+rows. A thread's messages are read directly from `programWhatsappMessages`
+(a query naming the programme and the thread, newest first). Managers and the
+communications duty read both under rules; the phone hash, sender connection,
+who took the thread over and the reply reservations stay on server-only
+documents, and the views and messages go with the archived programme's
+retention sweep. A planner reply names its author by `authorUid` and, since
+the author-label change, by `authorLabel`: the author's display name copied
+from their staff grant when the reply is written (null for the assistant and
+for the owner, who holds no grant; filled onto earlier replies by the
+`program-whatsapp-author-labels` migration), so communications staff, who
+cannot read `programStaffViews`, still see who answered. Opening a thread used to mark it read; that write is
+now `markProgramWhatsappThreadRead` (same payload, same access, a no-op on an
+archived programme or an already read thread), which answers the thread's
+handling and its new revision: use that revision as the next
+`setProgramWhatsappThreadHandling` `expectedRevision`, because a view lags its
+thread by a trigger. `listProgramWhatsappCannedReplies` becomes a direct read of
+`programWhatsappCannedReplies` by the same duty (the phone drops archived rows
+unless asked and orders by `sortOrder`, then label); saving stays
+`upsertProgramWhatsappCannedReply`. Both read callables stay deployed for older
+builds, retire-later. Current Host builds read all of this through listeners
+gated on the communications duty (`ProgramInboxViewsRepository`): the thread
+rows a page of 50 at a time up to 500, a conversation's newest 200 messages
+(`truncated` when more exist), the saved replies up to 100. Opening a thread
+marks it read once per revision, and the next handling command is fenced by
+the newer of the view's revision and the one marking it read answered.
+
+**Read path decision (Nov 2026, #1339): server-trust.** The `sender` block of
+`listProgramWhatsappThreads` (the wedding's number as displayed, its
+connection id and health) stays on that callable: it resolves a bound or
+first-active connection from `organizerSenderConnections`, which holds
+credentials references and stays server-only, and no view of it exists yet. The
+inbox header asks the callable for it (`limit: 1`) until a sender read model is
+approved.
+
+`listProgramPhotos` splits in two. Photo records are read directly:
+`programPhotos` is readable by managers and the communications duty (a query
+naming the programme), so albums, counts, captions and visibility come from the
+phone's own grouping, and function names come from the work shell's function
+labels. The one thing a phone cannot make is a short-lived URL, so
+`signProgramPhotoUrls` (managers and communications staff, at most 60 photo ids
+and optionally the cover) reads each named photo itself, signs only files that
+belong to this programme and returns URLs that expire within ten minutes. It
+never signs a path the phone names, and Storage rules stay closed to client
+reads (a download URL carries a token that does not expire). `listProgramPhotos`
+stays deployed for older builds, retire-later. Current Host builds list the
+records (a page of 100 at a time up to 1,000, newest first), build the albums
+and name them from the work shell's functions (a communications account whose
+work list reaches no functions sees no function album), and sign the cover and
+the albums' first photos and the photos shown in calls of at most 60.
+
+`listOrganizerPrograms` and `getOrganizerProgram` move to
+`organizerProgramViews`: the programme object, its creator, the function count
+and the function, pickup point and hotel setup lists, kept by triggers on the
+programme and those three collections. Rules admit exactly what
+`requireProgramSetupAccess` admits: the creator (listing by `createdBy`), the
+organizer's current managers (listing by `organizerId`) and a live
+`programAdmin` duty (one programme by id); a deleted account reads nothing. A
+function's expected and checked-in counts are not in the view (they move with
+every check-in); the phone reads them from `programResourceViews`. The list is
+the organizer's programmes ordered on the phone by start. Both callables stay
+deployed for older builds, retire-later.
+
+**Read path decision (Nov 2026, #1339): server-trust.** The guest, flying-in and
+replied counts of a `listOrganizerPrograms` row, and the guest, household,
+inbound journey and active staff counts of `getOrganizerProgram`, stay on those
+callables. They are tallies over every guest, household and journey of the
+programme, which change with each RSVP, import and flight update; stored copies
+would need a counter that every one of those writes contends on, or a recount of
+thousands of documents per write. The screens paint the listener data first and
+ask the callable (`listOrganizerPrograms` with `programId` for one row) for the
+counts. Current Host builds read the programme and the organiser's list
+(`OrganizerProgramViewsRepository`) from `organizerProgramViews` by `organizerId`; the
+programme's detail asks `getOrganizerProgram` for its counts alongside, and shows
+without them when that fails. These reads are not gated on a programme access
+view, since an organiser manager who did not create the programme has none:
+rules end them online.
+
+**Retire-later callables (programme read batches 3 to 5, #1339).** Deployed for
+older builds, no current client calls them: `getProgramArrivalsRoster`,
+`getProgramDeparturesRoster`, `listTransportVendors`, `listProgramTrips`,
+`getProgramHotelInbound`, `listProgramStaff`, `listProgramStaffAttention`,
+`listProgramWhatsappThreads` for rows (still called with `limit: 1` for the
+header's number), `getProgramWhatsappThread`,
+`listProgramWhatsappCannedReplies` and `listProgramPhotos`. The overview and
+rollup counts of `listOrganizerPrograms` and `getOrganizerProgram` are still
+called.
 
 ## Programme WhatsApp threads, replies and the assistant settings
 
@@ -731,7 +923,7 @@ collections by owner decision (12 Nov 2026).
 | `eventSuccessUnitOutcomes/{eventId}` | `recordEventSuccessUnitOutcomes` callable | Event Host get only. Lists, attendee reads, and every direct client write are denied. |
 | `eventSuccessStandings/{eventId}` | `recordEventSuccessUnitOutcomes` callable | Authorized Host, active participant, or ready external runtime identity may get the event projection. Lists and every direct client write are denied. |
 | `eventInviteLinkSecrets`, `eventInviteTouches`, `eventShareIntents`, `eventInviteAttributions` | Invite bearer-token, measurement and verified-fact attribution callables/triggers | Server-only. Touch and intent evidence use TTL; raw tokens and immutable attribution facts are never directly exposed. |
-| `organizerAudienceSummaries/{organizerId}` / `organizerAudienceProjectionReceipts/{receiptId}` | Audience projection and CRM summary callable | Server-only. Receipts require TTL on `expiresAt`; summaries expose only authorized aggregate responses. |
+| `organizerAudienceSummaries/{organizerId}` | Audience projection and CRM summary callable | Server-only. Summaries expose only authorized aggregate responses; the projection's redelivery receipts are `commandReceipts` entries. |
 | `organizerClaimRequests/{requestId}` / `scheduleLocks/{lockId}` | Organizer claim callables; event publication, schedule edit, booking and waitlist callables (organizer locks `organizer_{organizerId}_{slot}`, user locks `user_{uid}_{slot}`) | Server-only; direct client reads/writes denied. |
 | `organizers/{organizerId}` writes | Organizer create/update/archive/delete, admin publishing, and projection triggers | Public read; direct client writes denied. |
 | `organizers/{organizerId}/posts/{postId}` | `createOrganizerPost` callable | Authenticated clients can read; direct writes denied. |
@@ -780,7 +972,7 @@ collections by owner decision (12 Nov 2026).
 | `moderationFlags/{id}` | Moderation triggers | Direct client writes denied. |
 | `deletedUsers/{uid}` | Account deletion callable | Direct client writes denied. |
 | `rateLimits/{key}` | Rate-limit helper | Direct client writes denied. |
-| `functionEventReceipts/{id}` | Idempotent triggers | Direct client writes denied. |
+| `commandReceipts/{command}_{id}` | Idempotent callables and triggers (`functions/src/shared/commandReceipts.ts`) | Server only; TTL policy on `expiresAt`, approved by the owner on 18 Nov 2026 after the legal hold was narrowed. |
 
 ## Notification Timeline
 

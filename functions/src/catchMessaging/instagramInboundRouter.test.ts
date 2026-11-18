@@ -69,7 +69,7 @@ function setup({limited = false} = {}) {
 
 test("a nominator's links become credited nominations, answered once in the thread", async () => {
   const t = setup();
-  const inbound = message("@afterfly.in mumbai\nhttps://lu.ma/quietclub");
+  const inbound = message("@moonmoth.example mumbai\nhttps://lu.ma/quietclub");
   assert.equal(await t.route(inbound), "nominationQueued");
   const requests = t.requests();
   assert.equal(requests.length, 2);
@@ -77,7 +77,7 @@ test("a nominator's links become credited nominations, answered once in the thre
   assert.deepEqual(requests.map((request) => [request.request.origin, request.request.submittedBy.uid]),
     [[{kind: "message_nomination", id: inbound.messageKey}, "associate-1"], [{kind: "message_nomination", id: inbound.messageKey}, "associate-1"]]);
   assert.deepEqual(t.provider.replies.map((reply) => reply.recipientId), [NOMINATOR]);
-  assert.ok(t.provider.replies[0].text.startsWith("Got it. Queued 2 organizers for a Catch listing: @afterfly.in, " +
+  assert.ok(t.provider.replies[0].text.startsWith("Got it. Queued 2 organizers for a Catch listing: @moonmoth.example, " +
     `luma.com/quietclub. It shows on ${BRAND.web.domain}`));
   const stored = t.receipt(inbound.messageKey)!;
   assert.equal(stored.nominatorId, "instagram-asha.runs");
@@ -94,19 +94,19 @@ test("ordinary messages and strangers get no reply, and plain chat never asks Me
   const t = setup();
   assert.equal(await t.route(message("hey, when do you launch in Pune?")), "support");
   assert.equal(t.lookups(), 0);
-  assert.equal(await t.route(message("@afterfly.in", {senderId: STRANGER})), "support");
+  assert.equal(await t.route(message("@moonmoth.example", {senderId: STRANGER})), "support");
   assert.equal(t.lookups(), 1);
   assert.deepEqual([t.requests().length, t.provider.replies.length], [0, 0]);
 });
 
 test("unclear, linkless and rate-limited nominations are answered", async () => {
   const t = setup();
-  assert.equal(await t.route(message("@afterfly.in do you think they would fit Catch?")), "nominationUnclear");
+  assert.equal(await t.route(message("@moonmoth.example do you think they would fit Catch?")), "nominationUnclear");
   assert.equal(await t.route(message("nominate the run club near Bandra")), "nominationWithoutLinks");
   assert.deepEqual(t.provider.replies.map((reply) => reply.text.slice(0, 30)),
     ["Is this a nomination? Send it ", "I couldn't find a link in that"]);
   const limited = setup({limited: true});
-  assert.equal(await limited.route(message("@afterfly.in")), "nominationRateLimited");
+  assert.equal(await limited.route(message("@moonmoth.example")), "nominationRateLimited");
   assert.equal(limited.requests().length, 0);
 });
 
@@ -116,10 +116,10 @@ test("a shared post asks for the handle; a share that carries a profile link nom
   assert.equal(await t.route(message(null, {attachments: [post]})), "shareWithoutProfile");
   assert.equal(await t.route(message(null, {unsupported: true})), "shareWithoutProfile");
   assert.match(t.provider.replies[0].text, /Send their Instagram @handle or profile link/u);
-  assert.equal(await t.route(message(null, {attachments: [{type: "share", pageUrl: "https://www.instagram.com/afterfly.in/",
+  assert.equal(await t.route(message(null, {attachments: [{type: "share", pageUrl: "https://www.instagram.com/moonmoth.example/",
     payloadKeys: ["url"]}]})), "nominationQueued");
   // A post's page link names no account.
   assert.equal(await t.route(message(null, {attachments: [{type: "share", pageUrl: "https://www.instagram.com/p/Cx1/",
     payloadKeys: ["url"]}]})), "shareWithoutProfile");
-  assert.deepEqual(t.requests().map((request) => request.request.seed.urls), [["https://instagram.com/afterfly.in"]]);
+  assert.deepEqual(t.requests().map((request) => request.request.seed.urls), [["https://instagram.com/moonmoth.example"]]);
 });

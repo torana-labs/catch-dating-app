@@ -1,3 +1,5 @@
+import 'package:catch_platform/errors/app_exception.dart';
+import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -29,14 +31,26 @@ class PushInstallationStore {
     required String uid,
     required String installationId,
     required Map<String, Object?> fields,
-  }) => _installation(uid, installationId).set({
-    ...fields,
-    'updatedAt': FieldValue.serverTimestamp(),
-  }, SetOptions(merge: true));
+  }) => withBackendErrorContext(
+    () => _installation(uid, installationId).set({
+      ...fields,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true)),
+    context: _context,
+  );
 
   /// Deletes the installation, so no sender targets this device again.
   Future<void> delete({required String uid, required String installationId}) =>
-      _installation(uid, installationId).delete();
+      withBackendErrorContext(
+        () => _installation(uid, installationId).delete(),
+        context: _context,
+      );
+
+  static const _context = BackendErrorContext(
+    service: BackendService.firestore,
+    action: 'update push notification settings',
+    resource: 'pushInstallations',
+  );
 }
 
 // keepalive: a stateless facade over the app's Firestore singleton, held by

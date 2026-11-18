@@ -11,11 +11,11 @@ const parts = (container: HTMLElement) =>
 
 describe("OrganizerPlaceholderCover", () => {
   it("sets the organiser's city and name over its activity artwork", () => {
-    const {container} = render(<OrganizerPlaceholderCover name="AFTER FLY" city="Mumbai" activityKind="social_run" />);
+    const {container} = render(<OrganizerPlaceholderCover name="MOON MOTH" city="Mumbai" activityKind="social_run" />);
 
     const root = container.firstElementChild as HTMLElement;
     expect(root.getAttribute("aria-hidden")).toBe("true");
-    expect(parts(container)).toEqual(["Mumbai", "AFTER FLY", "AF"]);
+    expect(parts(container)).toEqual(["Mumbai", "MOON MOTH", "MM"]);
     expect(container.querySelector("[data-compact]")).toBeNull();
     expect(container.querySelector("[data-activity-kind]")?.getAttribute("data-activity-kind")).toBe("socialRun");
     expect(container.querySelector("linearGradient")?.getAttribute("x2")).toBe("0");

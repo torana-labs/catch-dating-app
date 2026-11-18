@@ -128,7 +128,7 @@ Future<(ProviderContainer, _Session, _Inventory)> _load({
         AsyncData<List<Organizer>>([
           buildOrganizer(
             id: 'organizer',
-            name: 'Saket Run Club',
+            name: 'Neemwood Run Club',
             ownerUserId: 'account',
           ),
         ]),

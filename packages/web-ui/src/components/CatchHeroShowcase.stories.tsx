@@ -26,7 +26,7 @@ const showcase: CatchHeroShowcaseProps = {
   ),
   ground: "pink",
   stickers: [
-    {ground: "white", label: "Run club · Fri 6:30 AM", labelAccent: "coral", title: "Carter Road Social Run"},
+    {ground: "white", label: "Run club · Fri 6:30 AM", labelAccent: "coral", title: "Salt Air Social Run"},
     {ground: "ink", label: "Pickleball · Sat 5:00 PM", labelAccent: "mint", title: "Pickleball Social"},
     {ground: "yellow", label: "Nights out · Fri 7:30 PM", title: "Friday Bandra Pub Crawl"},
   ],

@@ -74,6 +74,7 @@ operations/
   src/cli/                       stable JSON command surface
   src/admin-cli/                 stable admin-action JSON command surface
   src/admin/                     catalog, callable client, receipt storage
+  src/command-client/            shared core for catalog-driven callable CLIs
   src/platform/                  runs, leases, budgets, ledger, storage, models
   src/workflows/registry.mjs     workflow definitions and factories
   src/workflows/supply-intake/   the reference workflow and source profiles

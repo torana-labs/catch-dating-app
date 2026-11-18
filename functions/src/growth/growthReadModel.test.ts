@@ -59,17 +59,17 @@ const neha = {uid: "neha", role: "partner" as const,
 const input = {
   range: "12m" as const, nowMillis: now,
   facts: [
-    facts("afterfly", "partner", {listed: sep + day, claimed: sep + 5 * day,
+    facts("moonmoth", "partner", {listed: sep + day, claimed: sep + 5 * day,
       event: sep + 20 * day}, neha),
     facts("harbor", "imported", {listed: sep + 2 * day}),
     facts("lantern", "sales_associate", {listed: monthWindow("2026-10")
       .startMillis, claimed: monthWindow("2026-10").startMillis + 9 * day},
     {uid: "riya", role: "associate", nominatedAt: Timestamp.fromMillis(sep)}),
   ],
-  bills: [bill("afterfly", "2026-09", 100_000, "free"),
-    bill("afterfly", "2026-10", 200_000, "paid")],
-  credits: [{creditId: "afterfly_2026-10", billId: "afterfly_2026-10",
-    organizerId: "afterfly", nominatorUid: "neha", nominatorRole: "partner",
+  bills: [bill("moonmoth", "2026-09", 100_000, "free"),
+    bill("moonmoth", "2026-10", 200_000, "paid")],
+  credits: [{creditId: "moonmoth_2026-10", billId: "moonmoth_2026-10",
+    organizerId: "moonmoth", nominatorUid: "neha", nominatorRole: "partner",
     creditMinor: 1_000, status: "owed", monthIndex: 1} as
       NominatorCreditDocument],
   costs: [],
@@ -115,5 +115,5 @@ test("channels, nominators and best organizers", () => {
     "Lantern Lane Social");
   assert.deepEqual(growth.best.map((row) => [row.organizerId, row.salesMinor,
     row.earnedMinor, row.payingSinceMonth, row.inTrial]),
-  [["afterfly", 300_000, 10_000, "2026-10", false]]);
+  [["moonmoth", 300_000, 10_000, "2026-10", false]]);
 });

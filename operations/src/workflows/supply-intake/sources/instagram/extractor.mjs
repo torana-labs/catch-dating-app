@@ -15,7 +15,7 @@ const MAX_SAME_AS = 20;
 // Intake reads at most 12 pages, so captions get a few of them.
 const MAX_RELATED_URLS = 6;
 const urlPattern = /\bhttps?:\/\/[^\s<>"'`]+/giu;
-// Captions often name an event platform without the scheme: "lu.ma/afterfly".
+// Captions often name an event platform without the scheme: "lu.ma/moonmoth".
 const bareHosts = platformCatalog.platforms.flatMap((platform) => platform.hosts)
   .map((host) => host.replace(/\./gu, "\\."));
 const barePattern = new RegExp(`(?<![\\w@./-])(?:www\\.)?(?:${bareHosts.join("|")})\\/[^\\s<>"'\`]+`, "giu");

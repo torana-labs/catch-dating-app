@@ -288,7 +288,7 @@
               {
                 "name": "display-title",
                 "role": "displayTitle",
-                "sample": "Carter Road Social Run"
+                "sample": "Salt Air Social Run"
               },
               {
                 "name": "display-section",
@@ -4039,6 +4039,122 @@
         ],
         "hex": "#46163A"
       }
+    },
+    "sky": {
+      "$type": "color",
+      "$description": "Sky: a page colour between mint and indigo, for a band or a tile. Canvas-owned (product pages v2).",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.368627451,
+          0.7607843137,
+          0.9019607843
+        ],
+        "hex": "#5EC2E6"
+      }
+    },
+    "skyInk": {
+      "$description": "Supporting text on a sky ground: the kit's lead and body rule (ink at 80% over sky), made opaque.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.137254902,
+          0.2039215686,
+          0.2431372549
+        ],
+        "hex": "#23343E"
+      }
+    },
+    "coralSoft": {
+      "$type": "color",
+      "$description": "A soft coral tint for a secondary tile. Canvas-owned (product pages v2).",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9921568627,
+          0.9058823529,
+          0.8745098039
+        ],
+        "hex": "#FDE7DF"
+      }
+    },
+    "pinkSoft": {
+      "$type": "color",
+      "$description": "A soft pink tint for a secondary tile. Canvas-owned (product pages v2).",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9921568627,
+          0.8941176471,
+          0.9176470588
+        ],
+        "hex": "#FDE4EA"
+      }
+    },
+    "yellowSoft": {
+      "$type": "color",
+      "$description": "A soft yellow tint for a secondary tile. Canvas-owned (product pages v2).",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          0.9568627451,
+          0.8392156863
+        ],
+        "hex": "#FFF4D6"
+      }
+    },
+    "mintSoft": {
+      "$type": "color",
+      "$description": "A soft mint tint for a secondary tile. Canvas-owned (product pages v2).",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8666666667,
+          0.9529411765,
+          0.9176470588
+        ],
+        "hex": "#DDF3EA"
+      }
+    },
+    "indigoSoft": {
+      "$type": "color",
+      "$description": "A soft indigo tint for a secondary tile. Canvas-owned (product pages v2).",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9098039216,
+          0.9215686275,
+          0.9921568627
+        ],
+        "hex": "#E8EBFD"
+      }
+    },
+    "magentaSoft": {
+      "$type": "color",
+      "$description": "A soft magenta tint for a secondary tile. Canvas-owned (product pages v2).",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9843137255,
+          0.8941176471,
+          0.9529411765
+        ],
+        "hex": "#FBE4F3"
+      }
+    },
+    "skySoft": {
+      "$type": "color",
+      "$description": "A soft sky tint for a secondary tile. Canvas-owned (product pages v2).",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8666666667,
+          0.9450980392,
+          0.9725490196
+        ],
+        "hex": "#DDF1F8"
+      }
     }
   },
   "ground": {
@@ -4141,6 +4257,94 @@
       },
       "inkSecondary": {
         "$value": "{palette.magentaInk}"
+      }
+    },
+    "sky": {
+      "fill": {
+        "$value": "{palette.sky}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.skyInk}"
+      }
+    },
+    "coralSoft": {
+      "fill": {
+        "$value": "{palette.coralSoft}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.inkSecondary}"
+      }
+    },
+    "pinkSoft": {
+      "fill": {
+        "$value": "{palette.pinkSoft}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.inkSecondary}"
+      }
+    },
+    "yellowSoft": {
+      "fill": {
+        "$value": "{palette.yellowSoft}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.inkSecondary}"
+      }
+    },
+    "mintSoft": {
+      "fill": {
+        "$value": "{palette.mintSoft}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.inkSecondary}"
+      }
+    },
+    "indigoSoft": {
+      "fill": {
+        "$value": "{palette.indigoSoft}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.inkSecondary}"
+      }
+    },
+    "magentaSoft": {
+      "fill": {
+        "$value": "{palette.magentaSoft}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.inkSecondary}"
+      }
+    },
+    "skySoft": {
+      "fill": {
+        "$value": "{palette.skySoft}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.inkSecondary}"
       }
     }
   },

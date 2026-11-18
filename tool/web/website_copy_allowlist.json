@@ -4,16 +4,6 @@
   "description": "Permanent, narrowly justified website copy ownership exceptions. Keep this near-empty.",
   "entries": [
     {
-      "file": "website/src/analytics/catchLiveTransport.ts",
-      "text": "G-HZFG0DL2DK",
-      "reason": "Public GA4 destination identifier in default-disabled transport configuration, not visible marketing copy or a credential."
-    },
-    {
-      "file": "website/src/analytics/catchLiveTransport.ts",
-      "text": "AW-18526407471/dUL7CNKBn6MdEK-WioJF",
-      "reason": "Public Google Ads conversion destination in default-disabled transport configuration, not visible marketing copy or a credential."
-    },
-    {
       "file": "website/src/app/next/publicPageCache.ts",
       "text": "public, s-maxage=${PUBLIC_PAGE_CACHE_SECONDS}",
       "reason": "HTTP Cache-Control header value for the CDN window of public catalog pages, not visible marketing copy."

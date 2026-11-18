@@ -200,14 +200,14 @@ class _PathVisitor extends RecursiveAstVisitor<void> {
 
   void _arguments(ArgumentList arguments) {
     final positional = arguments.arguments.where(
-      (argument) => argument is! NamedExpression,
+      (argument) => argument is! NamedArgument,
     );
     if (positional.isEmpty) {
       paths.add(_computed);
       return;
     }
     for (final argument in positional) {
-      paths.addAll(evaluate(argument));
+      paths.addAll(evaluate(argument.argumentExpression));
     }
   }
 
@@ -286,9 +286,9 @@ class _LocalNames extends RecursiveAstVisitor<void> {
   }
 
   @override
-  void visitSimpleFormalParameter(SimpleFormalParameter node) {
+  void visitRegularFormalParameter(RegularFormalParameter node) {
     _add(node.name);
-    super.visitSimpleFormalParameter(node);
+    super.visitRegularFormalParameter(node);
   }
 
   @override
@@ -301,12 +301,6 @@ class _LocalNames extends RecursiveAstVisitor<void> {
   void visitSuperFormalParameter(SuperFormalParameter node) {
     _add(node.name);
     super.visitSuperFormalParameter(node);
-  }
-
-  @override
-  void visitFunctionTypedFormalParameter(FunctionTypedFormalParameter node) {
-    _add(node.name);
-    super.visitFunctionTypedFormalParameter(node);
   }
 
   @override

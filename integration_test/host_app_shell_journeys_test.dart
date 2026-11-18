@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
-import 'package:catch_dating_app/event_success/presentation/host_components/event_success_live_workspace_tab_bar.dart';
 import 'package:catch_dating_app/hosts/create/create_basics_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_tickets_screen.dart';
 import 'package:catch_dating_app/hosts/create/create_when_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_screen.dart';
 import 'package:catch_dating_app/hosts/events/events_screen.dart';
 import 'package:catch_dating_app/hosts/events/widgets/host_event_tab_bar.dart';
+import 'package:catch_dating_app/hosts/live/formats/formats_run_screen.dart';
 import 'package:catch_dating_app/hosts/organizer/organizer_screen.dart';
 import 'package:catch_dating_app/hosts/people/messages_screen.dart';
 import 'package:catch_dating_app/hosts/people/people_screen.dart';
@@ -30,9 +30,9 @@ import 'support/host_app_shell_test_harness.dart';
 
 const _hostUid = 'host-journey-user';
 
-final _saketRunClub = organizer_helpers.buildOrganizer(
+final _neemwoodRunClub = organizer_helpers.buildOrganizer(
   id: 'host-journey-saket',
-  name: 'Saket Run Club',
+  name: 'Neemwood Run Club',
   hostUserId: _hostUid,
   ownerUserId: _hostUid,
 );
@@ -50,7 +50,7 @@ void main() {
 
   testWidgets('signed-in Host boots the Host shell on Today', (tester) async {
     final backend = _returningHostBackend();
-    await _pumpHost(tester, backend, organizers: [_saketRunClub]);
+    await _pumpHost(tester, backend, organizers: [_neemwoodRunClub]);
 
     expect(find.byType(HostShellScreen), findsOneWidget);
     expect(find.byType(HostTodayScreen), findsOneWidget);
@@ -64,7 +64,7 @@ void main() {
         reason: 'Host navigation must expose $label.',
       );
     }
-    expect(_navigation(tester).items.last.semanticValue, _saketRunClub.name);
+    expect(_navigation(tester).items.last.semanticValue, _neemwoodRunClub.name);
     // Today listens to its attention queue in Firestore; booting the shell
     // makes no attention callable.
     expect(
@@ -81,7 +81,7 @@ void main() {
     tester,
   ) async {
     final backend = HostShellBackend(uid: _hostUid);
-    await _pumpHost(tester, backend, organizers: [_saketRunClub]);
+    await _pumpHost(tester, backend, organizers: [_neemwoodRunClub]);
 
     expect(find.byType(HostTodayScreen, skipOffstage: false), findsOneWidget);
     expect(find.text('Needs you'), findsOneWidget);
@@ -94,7 +94,7 @@ void main() {
 
   testWidgets('every Host tab loads without an error state', (tester) async {
     final backend = _returningHostBackend();
-    await _pumpHost(tester, backend, organizers: [_saketRunClub]);
+    await _pumpHost(tester, backend, organizers: [_neemwoodRunClub]);
 
     for (final MapEntry(key: label, value: screen) in _hostTabs.entries) {
       await openHostTab(tester, label);
@@ -116,7 +116,7 @@ void main() {
     await _pumpHost(
       tester,
       backend,
-      organizers: [_saketRunClub],
+      organizers: [_neemwoodRunClub],
       initialRoute: '/host/inbox',
     );
 
@@ -180,10 +180,12 @@ void main() {
     await _pumpHost(
       tester,
       backend,
-      organizers: [_saketRunClub, _lodhiSocials],
+      organizers: [_neemwoodRunClub, _lodhiSocials],
     );
     final selected = _selectedOrganizerId(tester);
-    final other = selected == _saketRunClub.id ? _lodhiSocials : _saketRunClub;
+    final other = selected == _neemwoodRunClub.id
+        ? _lodhiSocials
+        : _neemwoodRunClub;
 
     await tester.longPress(
       find.descendant(
@@ -215,7 +217,7 @@ void main() {
 
   testWidgets('Host creates a private event and reopens it', (tester) async {
     final backend = HostShellBackend(uid: _hostUid);
-    await _pumpHost(tester, backend, organizers: [_saketRunClub]);
+    await _pumpHost(tester, backend, organizers: [_neemwoodRunClub]);
 
     await openHostTab(tester, 'Events');
     await pumpAppShellFrames(tester, frames: 20);
@@ -285,7 +287,7 @@ void main() {
       backend.functions.calls.skip(reopenFrom).map((call) => call.input),
       isNot(
         anyElement(
-          equals({'organizerId': _saketRunClub.id, 'eventId': eventId}),
+          equals({'organizerId': _neemwoodRunClub.id, 'eventId': eventId}),
         ),
       ),
     );
@@ -300,7 +302,7 @@ void main() {
     final now = DateTime.now();
     final event = event_helpers.buildEvent(
       id: 'host-journey-live-event',
-      organizerId: _saketRunClub.id,
+      organizerId: _neemwoodRunClub.id,
       name: 'Sunset social run',
       startTime: now.subtract(const Duration(minutes: 10)),
       endTime: now.add(const Duration(hours: 2)),
@@ -314,7 +316,7 @@ void main() {
         EventAttendee(
           id: id,
           eventId: event.id,
-          organizerId: _saketRunClub.id,
+          organizerId: _neemwoodRunClub.id,
           displayName: name,
           searchName: name.toLowerCase(),
           source: EventAttendeeSource.hostImport,
@@ -327,14 +329,15 @@ void main() {
     await _pumpHost(
       tester,
       backend,
-      organizers: [_saketRunClub],
+      organizers: [_neemwoodRunClub],
       initialRoute: '/host/events',
     );
 
     await tester.tap(find.byKey(ValueKey('host-events-tonight-${event.id}')));
     await pumpAppShellFrames(tester, frames: 30);
-    // The event workspace's Live view runs a night that is on now; its
-    // Guests view is the door, where guests are checked in.
+    // The event workspace's Live view runs a night that is on now; a run
+    // opens the run console, whose Guests action is the door, where guests
+    // are checked in.
     await tester.tap(
       find.descendant(
         of: find.byType(HostEventTabBar),
@@ -342,12 +345,12 @@ void main() {
       ),
     );
     await pumpAppShellFrames(tester, frames: 30);
-    await tester.tap(
-      find.descendant(
-        of: find.byType(EventSuccessLiveWorkspaceTabBar),
-        matching: find.text('Guests'),
-      ),
+    final guests = find.descendant(
+      of: find.byType(HostFormatsRunScreen),
+      matching: find.byKey(const ValueKey('formats-run-guests')),
     );
+    await tester.ensureVisible(guests);
+    await tester.tap(guests);
     await pumpAppShellFrames(tester, frames: 30);
     expect(find.byType(DoorScreen), findsOneWidget);
     expect(find.text('Asha Rao'), findsOneWidget);
@@ -383,7 +386,7 @@ void main() {
     final now = DateTime.now();
     final event = event_helpers.buildEvent(
       id: 'host-journey-door-event',
-      organizerId: _saketRunClub.id,
+      organizerId: _neemwoodRunClub.id,
       name: 'Door social run',
       startTime: now.subtract(const Duration(minutes: 10)),
       endTime: now.add(const Duration(hours: 2)),
@@ -397,7 +400,7 @@ void main() {
         EventAttendee(
           id: id,
           eventId: event.id,
-          organizerId: _saketRunClub.id,
+          organizerId: _neemwoodRunClub.id,
           displayName: name,
           searchName: name.toLowerCase(),
           source: EventAttendeeSource.hostImport,
@@ -410,9 +413,9 @@ void main() {
     await _pumpHost(
       tester,
       backend,
-      organizers: [_saketRunClub],
+      organizers: [_neemwoodRunClub],
       initialRoute:
-          '/host/organizers/${_saketRunClub.id}/events/${event.id}/guests',
+          '/host/organizers/${_neemwoodRunClub.id}/events/${event.id}/guests',
     );
     await pumpAppShellFrames(tester, frames: 30);
 
@@ -441,7 +444,7 @@ void main() {
 
   testWidgets('Host settings offer Delete your account', (tester) async {
     final backend = HostShellBackend(uid: _hostUid);
-    await _pumpHost(tester, backend, organizers: [_saketRunClub]);
+    await _pumpHost(tester, backend, organizers: [_neemwoodRunClub]);
 
     await openHostTab(tester, 'Organizer');
     await pumpAppShellFrames(tester, frames: 20);
@@ -470,8 +473,9 @@ const _hostTabs = <String, Type>{
 };
 
 /// A Host who already dismissed the first-run Today focus prompt.
-HostShellBackend _returningHostBackend() => HostShellBackend(uid: _hostUid)
-  ..todayPreferences.skip(accountId: _hostUid, organizerId: _saketRunClub.id);
+HostShellBackend _returningHostBackend() => HostShellBackend(
+  uid: _hostUid,
+)..todayPreferences.skip(accountId: _hostUid, organizerId: _neemwoodRunClub.id);
 
 Future<void> _pumpHost(
   WidgetTester tester,

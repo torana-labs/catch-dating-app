@@ -8,7 +8,7 @@ const at = (ms: number) => Timestamp.fromMillis(ms);
 test("source records give each organizer its earliest steps", () => {
   const steps = milestonesFromSources({
     organizers: [
-      {id: "afterfly", data: {createdAt: at(100),
+      {id: "moonmoth", data: {createdAt: at(100),
         publicPage: {publishStatus: "published"},
         ownership: {state: "claimed", claimedAt: at(500)}}},
       {id: "draft", data: {createdAt: at(50),
@@ -17,25 +17,25 @@ test("source records give each organizer its earliest steps", () => {
       {id: "self", data: {createdAt: at(70),
         ownership: {state: "userCreated", claimedAt: null}}},
     ],
-    claimRequests: [{organizerId: "afterfly", createdAt: at(400)},
-      {organizerId: "afterfly", createdAt: at(300)}],
+    claimRequests: [{organizerId: "moonmoth", createdAt: at(400)},
+      {organizerId: "moonmoth", createdAt: at(300)}],
     events: [
-      {id: "later", data: {organizerId: "afterfly", startTime: at(900),
+      {id: "later", data: {organizerId: "moonmoth", startTime: at(900),
         bookedCount: 3, status: "active"}},
-      {id: "first", data: {organizerId: "afterfly", startTime: at(800),
+      {id: "first", data: {organizerId: "moonmoth", startTime: at(800),
         bookedCount: 1, status: "active"}},
-      {id: "cancelled", data: {organizerId: "afterfly", startTime: at(600),
+      {id: "cancelled", data: {organizerId: "moonmoth", startTime: at(600),
         bookedCount: 2, status: "cancelled"}},
     ],
-    payments: [{organizerId: "afterfly", capturedAt: at(700)},
-      {organizerId: "afterfly", capturedAt: null}],
+    payments: [{organizerId: "moonmoth", capturedAt: at(700)},
+      {organizerId: "moonmoth", capturedAt: null}],
   });
-  const afterfly = steps.get("afterfly")!;
-  assert.deepEqual(Object.fromEntries(Object.entries(afterfly.observed)
+  const moonmoth = steps.get("moonmoth")!;
+  assert.deepEqual(Object.fromEntries(Object.entries(moonmoth.observed)
     .map(([key, value]) => [key, value!.toMillis()])), {listedAt: 100,
     claimedAt: 500, claimRequestedAt: 300, firstEventAt: 800,
     firstPaidBookingAt: 700});
-  assert.equal(afterfly.firstEventId, "first");
+  assert.equal(moonmoth.firstEventId, "first");
   assert.equal(steps.has("draft"), false);
   assert.equal(steps.get("self")?.observed.claimedAt?.toMillis(), 70);
 });

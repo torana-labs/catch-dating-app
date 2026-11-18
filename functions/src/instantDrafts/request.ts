@@ -2,9 +2,10 @@
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {logger} from "firebase-functions";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
+import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {createSupplyIntakeRequest, intakeMarket} from "../operations/supplyIntake/requests";
+import {listingSuppressionHmacKey} from "../listingSuppressions/registry";
 import {supplyIntakeCollections} from "../operations/supplyIntake/worker";
 import {classifyDraftLink, InvalidDraftLink, parseDraftLink} from "./links";
 import {
@@ -99,9 +100,14 @@ export async function requestInstantDraftHandler(request: CallableRequest<unknow
   const created = await db.runTransaction(async (tx) => {
     const again = await tx.get(ref);
     if (again.exists) return null;
-    await createSupplyIntakeRequest(tx, db, intake, now, {instantDraft});
-    return instantDraft;
+    const result = await createSupplyIntakeRequest(tx, db, intake, now, {instantDraft});
+    return result.suppressed ? "suppressed" as const : instantDraft;
   });
+  if (created === "suppressed") {
+    // The submitter learns only that no page is made from their own link.
+    throw new HttpsError("failed-precondition", "Catch can't make a page for this organizer. " +
+      "Contact support if you think this is a mistake.", {reason: "listing_suppressed"});
+  }
   if (!created) return replay((await ref.get()).data(), data, verified.phone);
   // The number and the token stay out of logs.
   logger.info("Instant draft requested.", {draftId, requestKind: data.requestKind, entry: data.entry,
@@ -109,8 +115,8 @@ export async function requestInstantDraftHandler(request: CallableRequest<unknow
   return response(created, false);
 }
 
-export const requestInstantDraft = onCall(appCheckCallableOptionsWithLimits({maxInstances: 5}),
-  (request) => requestInstantDraftHandler(request));
+export const requestInstantDraft = onCall(appCheckCallableOptionsWithSecrets([listingSuppressionHmacKey],
+  {maxInstances: 5}), (request) => requestInstantDraftHandler(request));
 
 /** An exact retry finds its draft; the same key with a different submission or number is refused. */
 function replay(stored: unknown, data: RequestInstantDraftPayload, phone: string): RequestInstantDraftResponse {

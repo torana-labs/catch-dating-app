@@ -598,12 +598,16 @@ bool _manualProviderBuilder(Token builder, Set<String> riverpodPrefixes) {
 }
 
 class _WidgetRefParameters extends RecursiveAstVisitor<void> {
-  final sites = <SimpleFormalParameter>[];
+  final sites = <RegularFormalParameter>[];
 
   @override
-  void visitSimpleFormalParameter(SimpleFormalParameter node) {
-    super.visitSimpleFormalParameter(node);
-    if (node.type?.toSource() != 'WidgetRef' || node.name == null) return;
+  void visitRegularFormalParameter(RegularFormalParameter node) {
+    super.visitRegularFormalParameter(node);
+    if (node.functionTypedSuffix != null ||
+        node.type?.toSource() != 'WidgetRef' ||
+        node.name == null) {
+      return;
+    }
     final owner = node.thisOrAncestorOfType<FormalParameterList>()?.parent;
     if (owner is MethodDeclaration && owner.name.lexeme == 'build') return;
     sites.add(node);

@@ -133,7 +133,7 @@ Widget catchTableWave3States(BuildContext context) {
           children: [
             CatchTableRow.cells(
               cells: [
-                CatchTableCell.text('Airport to Taj, 11:40'),
+                CatchTableCell.text('Airport to Haveli, 11:40'),
                 CatchTableCell.number(1284, text: '1,284'),
               ],
             ),

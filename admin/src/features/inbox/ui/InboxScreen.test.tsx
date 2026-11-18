@@ -2,8 +2,8 @@ import {cleanup, fireEvent, render, screen, waitFor} from "@testing-library/reac
 import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
 import {InboxScreen, type InboxScreenModel} from "./InboxScreen";
 
-const stuck = {itemId: "supply-sunday-table", type: "stuck", sourceKind: "supplyIntakeRequest", sourceId: "sunday-table",
-  sourcePath: "supplyIntakeRequests/sunday-table", title: "Sunday Table", subtitle: "Instagram asked to sign in.",
+const stuck = {itemId: "supply-saffron-table", type: "stuck", sourceKind: "supplyIntakeRequest", sourceId: "saffron-table",
+  sourcePath: "supplyIntakeRequests/saffron-table", title: "Saffron Table", subtitle: "Instagram asked to sign in.",
   cameFrom: "Sales associate on WhatsApp", nominatorUid: null, city: "mumbai",
   state: {code: "needs_person", label: "Needs a person", tone: "danger"}, status: "waiting",
   waitingSince: "2026-10-30T10:00:00.000Z", doneAt: null, assigneeUid: null, snoozedUntil: null, recommendation: null,
@@ -34,12 +34,12 @@ describe("a stuck nomination in the inbox", () => {
     const fillInByHand = vi.fn(async () => true);
     draw(model(fillInByHand), true);
     fireEvent.click(screen.getByRole("button", {name: "Fill in by hand"}));
-    expect((screen.getByRole("textbox", {name: /Organizer name/u}) as HTMLInputElement).value).toBe("Sunday Table");
+    expect((screen.getByRole("textbox", {name: /Organizer name/u}) as HTMLInputElement).value).toBe("Saffron Table");
     expect((screen.getByRole("textbox", {name: /City/u}) as HTMLInputElement).value).toBe("Mumbai");
-    fireEvent.change(screen.getByRole("textbox", {name: /Links/u}), {target: {value: "https://sundaytable.example\n"}});
+    fireEvent.change(screen.getByRole("textbox", {name: /Links/u}), {target: {value: "https://saffrontable.example\n"}});
     fireEvent.click(screen.getByRole("button", {name: "Build a new listing"}));
-    await waitFor(() => expect(fillInByHand).toHaveBeenCalledWith({name: "Sunday Table", market: "Mumbai",
-      urls: ["https://sundaytable.example"], notes: null, categories: []}, stuck.itemId));
+    await waitFor(() => expect(fillInByHand).toHaveBeenCalledWith({name: "Saffron Table", market: "Mumbai",
+      urls: ["https://saffrontable.example"], notes: null, categories: []}, stuck.itemId));
     await waitFor(() => expect(screen.queryByRole("button", {name: "Build a new listing"})).toBeNull());
   });
 
@@ -47,7 +47,7 @@ describe("a stuck nomination in the inbox", () => {
     const fillInByHand = vi.fn(async () => true);
     draw(model(fillInByHand), true);
     fireEvent.click(screen.getByRole("button", {name: "Fill in by hand"}));
-    fireEvent.change(screen.getByRole("textbox", {name: /Links/u}), {target: {value: "instagram.com/sundaytable"}});
+    fireEvent.change(screen.getByRole("textbox", {name: /Links/u}), {target: {value: "instagram.com/saffrontable"}});
     fireEvent.click(screen.getByRole("button", {name: "Build a new listing"}));
     expect(fillInByHand).not.toHaveBeenCalled();
     expect(screen.getByText(/Links start with https/u)).toBeTruthy();
@@ -81,5 +81,38 @@ describe("a website lead in the inbox", () => {
     fireEvent.click(screen.getByRole("button", {name: "Close"}));
     expect(inbox.updateItem).toHaveBeenCalledWith({itemId: lead.itemId, action: "dismiss", assigneeUid: null,
       snoozedUntil: null, note: "Sent the venue guide"}, "Closed. It stays in Done if you need it back.");
+  });
+});
+
+describe("a host enquiry in the inbox", () => {
+  afterEach(cleanup);
+
+  const enquiry = {...stuck, itemId: "enquiry-meta-1", type: "enquiry", sourceKind: "salesInboundIntent",
+    sourceId: "meta-1", sourcePath: "salesInboundIntents/meta-1", title: "Meta Test Lead",
+    subtitle: "Wants to run events on Catch", cameFrom: "Host website",
+    state: {code: "new", label: "New", tone: "neutral"}};
+
+  it("closes as not a fit only with a note, and nothing is linked", () => {
+    const inbox = {...model(), items: [enquiry], linkEnquiry: vi.fn(),
+      detail: {item: enquiry, journey: [], canWork: true, canDecideClaim: false}} as unknown as InboxScreenModel;
+    render(<InboxScreen canFillIn={false} model={inbox} onSelect={vi.fn()} selectedItemId={enquiry.itemId} uid="uid-1" />);
+    fireEvent.click(screen.getByRole("button", {name: "Close"}));
+    expect(inbox.updateItem).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByRole("textbox", {name: /Note for the record/u}), {target: {value: "Meta test lead, not a host"}});
+    fireEvent.click(screen.getByRole("button", {name: "Close"}));
+    expect(inbox.updateItem).toHaveBeenCalledWith({itemId: enquiry.itemId, action: "dismiss", assigneeUid: null,
+      snoozedUntil: null, note: "Meta test lead, not a host"}, "Closed. It stays in Done if you need it back.");
+    expect(inbox.linkEnquiry).not.toHaveBeenCalled();
+  });
+
+  it("comes back to the inbox once closed", () => {
+    const closed = {...enquiry, status: "done", state: {code: "dismissed", label: "Dismissed", tone: "neutral"}};
+    const inbox = {...model(), items: [closed],
+      detail: {item: closed, journey: [], canWork: false, canDecideClaim: false}} as unknown as InboxScreenModel;
+    render(<InboxScreen canFillIn={false} model={inbox} onSelect={vi.fn()} selectedItemId={closed.itemId} uid="uid-1" />);
+    expect(screen.queryByRole("button", {name: "Close"})).toBeNull();
+    fireEvent.click(screen.getByRole("button", {name: "Back in the inbox"}));
+    expect(inbox.updateItem).toHaveBeenCalledWith({itemId: closed.itemId, action: "reopen", assigneeUid: null,
+      snoozedUntil: null, note: null}, "It's back in the inbox.");
   });
 });

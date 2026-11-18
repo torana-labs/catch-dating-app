@@ -185,7 +185,7 @@ Future<void> _seedExternalEvent(
   return firestore.collection('externalEvents').doc(id).set({
     'schemaVersion': 1,
     'eventId': id,
-    'canonicalHostId': 'host-afterfly',
+    'canonicalHostId': 'host-moonmoth',
     'title': 'External event $id',
     'description': 'A reviewed external event.',
     'startTime': Timestamp.fromDate(startTime),

@@ -5,11 +5,16 @@ import {baseSeed, deps, request, now} from "../shared/testing/programFixtures";
 import {FakeFirestore} from "../shared/testing/programFirestore";
 import {createProgramAssetUploadHandler} from "./programAssets";
 import {FakeProgramBucket} from "./programAssetFixture";
-import {listProgramPhotosHandler, upsertProgramPhotoHandler} from "./photos";
+import {
+  listProgramPhotosHandler,
+  signProgramPhotoUrlsHandler,
+  upsertProgramPhotoHandler,
+} from "./photos";
 import {contractValidator} from "../shared/contractTestValidators";
 
 const validateDocument = contractValidator("ProgramPhotoDocument");
 const validateList = contractValidator("ProgramPhotosCallableResponse");
+const validateUrls = contractValidator("ProgramPhotoUrlsCallableResponse");
 const code = (expected: string) => (err: unknown) =>
   (err as {code?: string}).code === expected;
 const stamp = admin.firestore.Timestamp.fromMillis;
@@ -81,6 +86,37 @@ test("a photo is added to an album, then hidden; albums count it",
     const after = await listProgramPhotosHandler(request({
       programId: "program-1"}, "manager-1"), ctx.photoDeps);
     assert.equal(after.albums[0].photoCount, 0);
+  });
+
+test("the signer returns urls for this programme's own photos only",
+  async () => {
+    const ctx = setup();
+    const intent = await upload(ctx, "photo-request-3");
+    await upsertProgramPhotoHandler(request({
+      programId: "program-1", photoId: intent.assetId, expectedRevision: 0,
+      requestId: "photo-cmd-6"}, "manager-1"), ctx.photoDeps);
+    // Another programme's photo, named by its real id, is never signed.
+    const foreign = "photo_" + "e".repeat(40);
+    ctx.db.setDoc(`programPhotos/program-2_${foreign}`, {
+      programId: "program-2", organizerId: "org-1", photoId: foreign,
+      storagePath: `programs/program-2/photos/${foreign}`});
+    const signed = await signProgramPhotoUrlsHandler(request({
+      programId: "program-1", photoIds: [intent.assetId, foreign,
+        "photo_" + "f".repeat(40)], includeCover: true}, "manager-1"),
+    ctx.photoDeps);
+    assert.equal(validateUrls(signed), true,
+      JSON.stringify(validateUrls.errors));
+    assert.deepEqual(signed.urls.map((entry) => entry.photoId),
+      [intent.assetId]);
+    assert.match(signed.urls[0].url, /photos\//);
+    assert.match(signed.coverUrl!, /branding\/cover_/);
+    assert.equal(signed.urlsExpireAtMillis, now.toMillis() + 10 * 60 * 1000);
+    const bare = await signProgramPhotoUrlsHandler(request({
+      programId: "program-1", photoIds: []}, "manager-1"), ctx.photoDeps);
+    assert.equal(bare.coverUrl, null);
+    await assert.rejects(signProgramPhotoUrlsHandler(request({
+      programId: "program-1", photoIds: [intent.assetId]}, "greeter-1"),
+    ctx.photoDeps), code("permission-denied"));
   });
 
 test("photos need an upload, a known function and photo access",

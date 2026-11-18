@@ -31,7 +31,7 @@ export const inMarket = {
   ],
   exampleEvent: {
     name: "Sunday Table Club",
-    venue: "Pali Village Cafe",
+    venue: "Lantern Lane Cafe",
     cityId: india.defaultMarketId,
     timezone: "Asia/Kolkata",
     currencyCode: "INR",

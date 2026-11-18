@@ -335,7 +335,7 @@ void _registerHostOperationsTeamFailuresTests() {
   ) async {
     final ownedOrganizer = buildOrganizer(
       id: 'canonical-city-club',
-      name: 'Saket Run Club',
+      name: 'Neemwood Run Club',
       location: 'in-dl-delhi-ncr',
       ownerUserId: _hostUid,
     );
@@ -388,7 +388,7 @@ void _registerHostOperationsTeamFailuresTests() {
     (tester) async {
       final ownedOrganizer = buildOrganizer(
         id: 'owned-club',
-        name: 'Saket Run Club',
+        name: 'Neemwood Run Club',
         ownerUserId: _hostUid,
         hostProfiles: const [
           OrganizerHostProfile(
@@ -752,7 +752,7 @@ void _registerHostOperationsTeamFailuresTests() {
           of: find.byKey(
             const ValueKey<String>('host-team-professional-profile-preview'),
           ),
-          matching: find.text('Saket Run Club'),
+          matching: find.text('Neemwood Run Club'),
         ),
         findsOneWidget,
       );

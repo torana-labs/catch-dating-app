@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'event_detail_view_model.dart';
@@ -9,6 +9,7 @@ part of 'event_detail_view_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $EventDetailViewModelCopyWith<EventDetailViewModel> get copyWith => _$EventDetai
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventDetailViewModel&&(identical(other.event, event) || other.event == event)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&const DeepCollectionEquality().equals(other.reviews, reviews)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isSaved, isSaved) || other.isSaved == isSaved)&&(identical(other.isOrganizerMember, isOrganizerMember) || other.isOrganizerMember == isOrganizerMember)&&(identical(other.participation, participation) || other.participation == participation));
+  final _this = this as EventDetailViewModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventDetailViewModel&&(identical(other.event, _this.event) || other.event == _this.event)&&(identical(other.userProfile, _this.userProfile) || other.userProfile == _this.userProfile)&&const DeepCollectionEquality().equals(other.reviews, _this.reviews)&&(identical(other.isAuthenticated, _this.isAuthenticated) || other.isAuthenticated == _this.isAuthenticated)&&(identical(other.isHost, _this.isHost) || other.isHost == _this.isHost)&&(identical(other.isSaved, _this.isSaved) || other.isSaved == _this.isSaved)&&(identical(other.isOrganizerMember, _this.isOrganizerMember) || other.isOrganizerMember == _this.isOrganizerMember)&&(identical(other.participation, _this.participation) || other.participation == _this.participation));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,event,userProfile,const DeepCollectionEquality().hash(reviews),isAuthenticated,isHost,isSaved,isOrganizerMember,participation);
+int get hashCode {
+  final _this = this as EventDetailViewModel;
+  return Object.hash(runtimeType,_this.event,_this.userProfile,const DeepCollectionEquality().hash(_this.reviews),_this.isAuthenticated,_this.isHost,_this.isSaved,_this.isOrganizerMember,_this.participation);
+}
 
 @override
 String toString() {
-  return 'EventDetailViewModel(event: $event, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated, isHost: $isHost, isSaved: $isSaved, isOrganizerMember: $isOrganizerMember, participation: $participation)';
+  final _this = this as EventDetailViewModel;
+  return 'EventDetailViewModel(event: ${_this.event}, userProfile: ${_this.userProfile}, reviews: ${_this.reviews}, isAuthenticated: ${_this.isAuthenticated}, isHost: ${_this.isHost}, isSaved: ${_this.isSaved}, isOrganizerMember: ${_this.isOrganizerMember}, participation: ${_this.participation})';
 }
 
 
@@ -63,7 +69,7 @@ class _$EventDetailViewModelCopyWithImpl<$Res>
 /// Create a copy of EventDetailViewModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? event = null,Object? userProfile = freezed,Object? reviews = null,Object? isAuthenticated = null,Object? isHost = null,Object? isSaved = null,Object? isOrganizerMember = null,Object? participation = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(EventDetailViewModel(
 event: null == event ? _self.event : event // ignore: cast_nullable_to_non_nullable
 as Event,userProfile: freezed == userProfile ? _self.userProfile : userProfile // ignore: cast_nullable_to_non_nullable
 as UserProfile?,reviews: null == reviews ? _self.reviews : reviews // ignore: cast_nullable_to_non_nullable
@@ -246,7 +252,7 @@ return $default(_that.event,_that.userProfile,_that.reviews,_that.isAuthenticate
 
 
 class _EventDetailViewModel implements EventDetailViewModel {
-  const _EventDetailViewModel({required this.event, required this.userProfile, required final  List<Review> reviews, required this.isAuthenticated, required this.isHost, required this.isSaved, this.isOrganizerMember = false, required this.participation}): _reviews = reviews;
+  const _EventDetailViewModel({required this.event, required this.userProfile, required  List<Review> reviews, required this.isAuthenticated, required this.isHost, required this.isSaved, this.isOrganizerMember = false, required this.participation}): _reviews = reviews;
   
 
 @override final  Event event;
@@ -274,16 +280,18 @@ _$EventDetailViewModelCopyWith<_EventDetailViewModel> get copyWith => __$EventDe
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventDetailViewModel&&(identical(other.event, event) || other.event == event)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&const DeepCollectionEquality().equals(other._reviews, _reviews)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isSaved, isSaved) || other.isSaved == isSaved)&&(identical(other.isOrganizerMember, isOrganizerMember) || other.isOrganizerMember == isOrganizerMember)&&(identical(other.participation, participation) || other.participation == participation));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventDetailViewModel&&(identical(other.event, event) || other.event == event)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&const DeepCollectionEquality().equals(other.reviews, _reviews)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isSaved, isSaved) || other.isSaved == isSaved)&&(identical(other.isOrganizerMember, isOrganizerMember) || other.isOrganizerMember == isOrganizerMember)&&(identical(other.participation, participation) || other.participation == participation));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,event,userProfile,const DeepCollectionEquality().hash(_reviews),isAuthenticated,isHost,isSaved,isOrganizerMember,participation);
+int get hashCode {
+    return Object.hash(runtimeType,event,userProfile,const DeepCollectionEquality().hash(_reviews),isAuthenticated,isHost,isSaved,isOrganizerMember,participation);
+}
 
 @override
 String toString() {
-  return 'EventDetailViewModel(event: $event, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated, isHost: $isHost, isSaved: $isSaved, isOrganizerMember: $isOrganizerMember, participation: $participation)';
+    return 'EventDetailViewModel(event: $event, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated, isHost: $isHost, isSaved: $isSaved, isOrganizerMember: $isOrganizerMember, participation: $participation)';
 }
 
 

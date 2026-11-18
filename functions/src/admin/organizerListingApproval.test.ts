@@ -83,11 +83,11 @@ interface HarnessOptions {
 async function harness({submittedBy = {role: "associate", uid: "associate-1", partnerId: null},
   origin = null, intent = null}: HarnessOptions = {}) {
   const db = new FakeFirestore();
-  const requestId = "nom-afterfly-1";
+  const requestId = "nom-moonmoth-1";
   db.write(`${supplyIntakeCollections.requests}/${requestId}`, {schemaVersion: 1, requestId,
     request: {schemaVersion: 1, requestId, kind: submittedBy.role === "associate" ? "nomination" :
       submittedBy.role === "partner" ? "nomination" : "self_submission", market: "mumbai",
-    seed: {name: "Afterfly", urls: ["https://lu.ma/afterfly"], notes: null, categories: ["social"]},
+    seed: {name: "Moonmoth", urls: ["https://lu.ma/moonmoth"], notes: null, categories: ["social"]},
     submittedBy, submittedAt: NOW, origin},
     status: "queued", attempts: 0, leaseUntil: null, result: null, failure: null, approval: null,
     createdAt: NOW, updatedAt: NOW});
@@ -102,8 +102,8 @@ async function harness({submittedBy = {role: "associate", uid: "associate-1", pa
   const workItem = structuredClone(writer.items.get(stored.result.listingWorkItemId)!);
   const listing = (workItem.normalizedPayload.intake as {listing: Record<string, any>}).listing; // eslint-disable-line @typescript-eslint/no-explicit-any
   listing.organizer.description = "Weekly social nights for people who would rather meet in person.";
-  listing.organizer.links = [{platform: "luma", surfaceKind: "calendar", url: "https://lu.ma/afterfly",
-    normalizedKey: "lu.ma/afterfly", evidenceUrl: "https://lu.ma/afterfly"}];
+  listing.organizer.links = [{platform: "luma", surfaceKind: "calendar", url: "https://lu.ma/moonmoth",
+    normalizedKey: "lu.ma/moonmoth", evidenceUrl: "https://lu.ma/moonmoth"}];
   db.write(`operationWorkItems/${workItem.workItemId}`, workItem as unknown as Record<string, unknown>);
   const routes: unknown[] = [];
   const deps = {
@@ -115,8 +115,8 @@ async function harness({submittedBy = {role: "associate", uid: "associate-1", pa
     },
   };
   const payload = (overrides: Record<string, unknown> = {}) => ({
-    requestId: "approve-afterfly-1", listingWorkItemId: workItem.workItemId,
-    contentHash: listing.contentHash as string, name: "Afterfly", publicSlug: "afterfly",
+    requestId: "approve-moonmoth-1", listingWorkItemId: workItem.workItemId,
+    contentHash: listing.contentHash as string, name: "Moonmoth", publicSlug: "moonmoth",
     marketId: "in-mh-mumbai", organizerType: "community",
     checklist: {identityReviewed: true, surfaceInventoryReviewed: true, ownerSafeCopyReviewed: true,
       marketScopeReviewed: true, mediaRightsReviewed: true, crawlDisabledReviewed: true,
@@ -137,13 +137,13 @@ test("an approved listing is published unclaimed and noindex, with its Sales wor
   assert.deepEqual([response.approvalId, response.created, response.salesOwnerUid], [approvalId, true, "associate-1"]);
   const organizer = h.db.read(`organizers/${response.organizerId}`)!;
   valid(validateOrganizerDocument, organizer, "OrganizerDocument");
-  assert.deepEqual(organizer.publicPage, {slug: "afterfly", citySlug: "mumbai", canonicalPath: "/organizers/afterfly/",
+  assert.deepEqual(organizer.publicPage, {slug: "moonmoth", citySlug: "mumbai", canonicalPath: "/organizers/moonmoth/",
     publishStatus: "published", indexStatus: "noindex", robots: "noindex, follow", seoTitle: null,
     seoDescription: null, lastRenderedAt: null});
   assert.deepEqual([organizer.appVisibility, (organizer.claim as {state: string}).state, organizer.imageUrl],
     ["hidden", "unclaimed", null]);
-  assert.deepEqual((organizer.publicSources as Array<{href: string}>).map((source) => source.href), ["https://lu.ma/afterfly"]);
-  assert.deepEqual(h.routes, ["/organizers/afterfly/"]);
+  assert.deepEqual((organizer.publicSources as Array<{href: string}>).map((source) => source.href), ["https://lu.ma/moonmoth"]);
+  assert.deepEqual(h.routes, ["/organizers/moonmoth/"]);
   const decision = h.db.read(`organizerIntakeReviewDecisions/${response.organizerId}`);
   valid(validateOrganizerIntakeReviewDecisionDocument, decision, "OrganizerIntakeReviewDecisionDocument");
   assert.equal(decision?.decisionStatus, "approved_public");
@@ -172,9 +172,9 @@ test("an approved listing is published unclaimed and noindex, with its Sales wor
 
   // A retry replays; a different approval of the same listing is refused.
   const before = h.db.entries().length;
-  assert.deepEqual(await h.call(h.payload({requestId: "approve-afterfly-retry"})), {...response, created: false});
+  assert.deepEqual(await h.call(h.payload({requestId: "approve-moonmoth-retry"})), {...response, created: false});
   assert.equal(h.db.entries().length, before);
-  await assert.rejects(h.call(h.payload({name: "Afterfly Club"})), /already approved as organizer/);
+  await assert.rejects(h.call(h.payload({name: "Moonmoth Club"})), /already approved as organizer/);
 });
 
 test("a partner's or organizer's enquiry is linked to the organizer it became", async () => {

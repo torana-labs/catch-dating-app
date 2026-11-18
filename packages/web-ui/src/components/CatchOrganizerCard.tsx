@@ -7,7 +7,7 @@ import type {CatchFormat} from "./catchCoreVocabulary";
 import {CatchLegacyText} from "./CatchLegacyText";
 import {CatchSurface} from "./CatchSurface";
 import {CatchText} from "./CatchText";
-import type {Ground} from "./palette";
+import type {Ground, SharedGround} from "./palette";
 import styles from "./CatchOrganizerCard.module.css";
 
 /** The system OrganiserCard: a tile with the logo square, name, a line about them and follow. */
@@ -33,12 +33,12 @@ export interface CatchOrganizerCardLegacyProps {
   /** What they run, such as "Sunday social runs". */
   subtitle: string;
   /** The monogram ground, usually the accent of the organiser's main format. */
-  monogramGround: Ground;
+  monogramGround: SharedGround;
   /** Defaults to the name's initials. */
   initials?: string;
   /** The organiser's page; the name links to it when given. */
   href?: string;
-  /** The next plan, such as "Next: Fri 6:30 AM · Carter Road Social Run". */
+  /** The next plan, such as "Next: Fri 6:30 AM · Salt Air Social Run". */
   next: string;
   /** The quiet line at the foot, such as "212 followers" or "Joining at launch". */
   footnote?: string;

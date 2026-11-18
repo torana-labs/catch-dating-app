@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'organizer_detail_view_model.dart';
@@ -9,6 +9,7 @@ part of 'organizer_detail_view_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $OrganizerDetailViewModelCopyWith<OrganizerDetailViewModel> get copyWith => _$Or
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrganizerDetailViewModel&&(identical(other.organizer, organizer) || other.organizer == organizer)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isMember, isMember) || other.isMember == isMember)&&const DeepCollectionEquality().equals(other.upcomingEvents, upcomingEvents)&&const DeepCollectionEquality().equals(other.reviews, reviews)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated));
+  final _this = this as OrganizerDetailViewModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OrganizerDetailViewModel&&(identical(other.organizer, _this.organizer) || other.organizer == _this.organizer)&&(identical(other.isHost, _this.isHost) || other.isHost == _this.isHost)&&(identical(other.isMember, _this.isMember) || other.isMember == _this.isMember)&&const DeepCollectionEquality().equals(other.upcomingEvents, _this.upcomingEvents)&&const DeepCollectionEquality().equals(other.reviews, _this.reviews)&&(identical(other.userProfile, _this.userProfile) || other.userProfile == _this.userProfile)&&(identical(other.uid, _this.uid) || other.uid == _this.uid)&&(identical(other.isAuthenticated, _this.isAuthenticated) || other.isAuthenticated == _this.isAuthenticated));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,organizer,isHost,isMember,const DeepCollectionEquality().hash(upcomingEvents),const DeepCollectionEquality().hash(reviews),userProfile,uid,isAuthenticated);
+int get hashCode {
+  final _this = this as OrganizerDetailViewModel;
+  return Object.hash(runtimeType,_this.organizer,_this.isHost,_this.isMember,const DeepCollectionEquality().hash(_this.upcomingEvents),const DeepCollectionEquality().hash(_this.reviews),_this.userProfile,_this.uid,_this.isAuthenticated);
+}
 
 @override
 String toString() {
-  return 'OrganizerDetailViewModel(organizer: $organizer, isHost: $isHost, isMember: $isMember, upcomingEvents: $upcomingEvents, reviews: $reviews, userProfile: $userProfile, uid: $uid, isAuthenticated: $isAuthenticated)';
+  final _this = this as OrganizerDetailViewModel;
+  return 'OrganizerDetailViewModel(organizer: ${_this.organizer}, isHost: ${_this.isHost}, isMember: ${_this.isMember}, upcomingEvents: ${_this.upcomingEvents}, reviews: ${_this.reviews}, userProfile: ${_this.userProfile}, uid: ${_this.uid}, isAuthenticated: ${_this.isAuthenticated})';
 }
 
 
@@ -63,7 +69,7 @@ class _$OrganizerDetailViewModelCopyWithImpl<$Res>
 /// Create a copy of OrganizerDetailViewModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? organizer = null,Object? isHost = null,Object? isMember = null,Object? upcomingEvents = null,Object? reviews = null,Object? userProfile = freezed,Object? uid = freezed,Object? isAuthenticated = null,}) {
-  return _then(_self.copyWith(
+  return _then(OrganizerDetailViewModel(
 organizer: null == organizer ? _self.organizer : organizer // ignore: cast_nullable_to_non_nullable
 as Organizer,isHost: null == isHost ? _self.isHost : isHost // ignore: cast_nullable_to_non_nullable
 as bool,isMember: null == isMember ? _self.isMember : isMember // ignore: cast_nullable_to_non_nullable
@@ -234,7 +240,7 @@ return $default(_that.organizer,_that.isHost,_that.isMember,_that.upcomingEvents
 
 
 class _OrganizerDetailViewModel implements OrganizerDetailViewModel {
-  const _OrganizerDetailViewModel({required this.organizer, required this.isHost, required this.isMember, required final  List<Event> upcomingEvents, required final  List<Review> reviews, required this.userProfile, required this.uid, required this.isAuthenticated}): _upcomingEvents = upcomingEvents,_reviews = reviews;
+  const _OrganizerDetailViewModel({required this.organizer, required this.isHost, required this.isMember, required  List<Event> upcomingEvents, required  List<Review> reviews, required this.userProfile, required this.uid, required this.isAuthenticated}): _upcomingEvents = upcomingEvents,_reviews = reviews;
   
 
 @override final  Organizer organizer;
@@ -268,16 +274,18 @@ _$OrganizerDetailViewModelCopyWith<_OrganizerDetailViewModel> get copyWith => __
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrganizerDetailViewModel&&(identical(other.organizer, organizer) || other.organizer == organizer)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isMember, isMember) || other.isMember == isMember)&&const DeepCollectionEquality().equals(other._upcomingEvents, _upcomingEvents)&&const DeepCollectionEquality().equals(other._reviews, _reviews)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OrganizerDetailViewModel&&(identical(other.organizer, organizer) || other.organizer == organizer)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isMember, isMember) || other.isMember == isMember)&&const DeepCollectionEquality().equals(other.upcomingEvents, _upcomingEvents)&&const DeepCollectionEquality().equals(other.reviews, _reviews)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,organizer,isHost,isMember,const DeepCollectionEquality().hash(_upcomingEvents),const DeepCollectionEquality().hash(_reviews),userProfile,uid,isAuthenticated);
+int get hashCode {
+    return Object.hash(runtimeType,organizer,isHost,isMember,const DeepCollectionEquality().hash(_upcomingEvents),const DeepCollectionEquality().hash(_reviews),userProfile,uid,isAuthenticated);
+}
 
 @override
 String toString() {
-  return 'OrganizerDetailViewModel(organizer: $organizer, isHost: $isHost, isMember: $isMember, upcomingEvents: $upcomingEvents, reviews: $reviews, userProfile: $userProfile, uid: $uid, isAuthenticated: $isAuthenticated)';
+    return 'OrganizerDetailViewModel(organizer: $organizer, isHost: $isHost, isMember: $isMember, upcomingEvents: $upcomingEvents, reviews: $reviews, userProfile: $userProfile, uid: $uid, isAuthenticated: $isAuthenticated)';
 }
 
 

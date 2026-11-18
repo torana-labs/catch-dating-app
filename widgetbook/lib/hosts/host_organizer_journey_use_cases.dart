@@ -7,14 +7,14 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/page_preview.dart';
 
 final _waiting = OrganizerJourney(
-  organizerId: 'afterfly',
-  organizerName: 'Afterfly',
+  organizerId: 'moonmoth',
+  organizerName: 'Moonmoth',
   waitingClaim: true,
   steps: [
     OrganizerJourneyStep(
       kind: OrganizerJourneyStepKind.nominated,
       at: DateTime(2026, 10, 28),
-      detail: 'luma.com/afterfly',
+      detail: 'luma.com/moonmoth',
     ),
     OrganizerJourneyStep(
       kind: OrganizerJourneyStepKind.listed,

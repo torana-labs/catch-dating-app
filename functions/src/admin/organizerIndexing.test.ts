@@ -253,15 +253,15 @@ function callableRequest(
 
 function organizerDoc(overrides: FakeData = {}): FakeData {
   return {
-    name: "AFTER FLY",
+    name: "MOON MOTH",
     publicPage: {
-      slug: "afterfly-run-club",
+      slug: "moonmoth-run-club",
       citySlug: "indore",
-      canonicalPath: "/organizers/indore/afterfly-run-club/",
+      canonicalPath: "/organizers/indore/moonmoth-run-club/",
       publishStatus: "qa",
       indexStatus: "noindex",
       robots: "noindex, follow",
-      seoTitle: "AFTER FLY",
+      seoTitle: "MOON MOTH",
       seoDescription: "Indore organizer profile.",
       lastRenderedAt: null,
     },
@@ -286,12 +286,12 @@ function assertHttpsCode(error: unknown, code: string): boolean {
 test("adminSetOrganizerIndexStatusHandler marks a page index-ready",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
     });
 
     const result = await adminSetOrganizerIndexStatusHandler(
       callableRequest("admin-1", {
-        organizerId: "afterfly-run-club-indore",
+        organizerId: "moonmoth-run-club-indore",
         indexStatus: "indexReady",
         checklist: completeChecklist(),
         reviewNote:
@@ -301,21 +301,21 @@ test("adminSetOrganizerIndexStatusHandler marks a page index-ready",
     );
 
     assert.deepEqual(result, {
-      organizerId: "afterfly-run-club-indore",
+      organizerId: "moonmoth-run-club-indore",
       indexStatus: "indexReady",
       publishStatus: "published",
       robots: "index, follow",
     });
     assert.deepEqual(
-      h.firestore.get("organizers/afterfly-run-club-indore")?.publicPage,
+      h.firestore.get("organizers/moonmoth-run-club-indore")?.publicPage,
       {
-        slug: "afterfly-run-club",
+        slug: "moonmoth-run-club",
         citySlug: "indore",
-        canonicalPath: "/organizers/indore/afterfly-run-club/",
+        canonicalPath: "/organizers/indore/moonmoth-run-club/",
         publishStatus: "published",
         indexStatus: "indexReady",
         robots: "index, follow",
-        seoTitle: "AFTER FLY",
+        seoTitle: "MOON MOTH",
         seoDescription: "Indore organizer profile.",
         lastRenderedAt: null,
         indexReview: {
@@ -329,44 +329,44 @@ test("adminSetOrganizerIndexStatusHandler marks a page index-ready",
       }
     );
     const reservation = h.firestore.get(
-      "publicRouteReservations/organizers__indore__afterfly-run-club"
+      "publicRouteReservations/organizers__indore__moonmoth-run-club"
     );
     assert.equal(reservation?.status, "active");
     assert.equal(
       reservation?.targetPath,
-      "organizers/afterfly-run-club-indore"
+      "organizers/moonmoth-run-club-indore"
     );
     assert.equal(
       reservation?.routePath,
-      "/organizers/indore/afterfly-run-club/"
+      "/organizers/indore/moonmoth-run-club/"
     );
     assert.equal(reservation?.lastVerifiedByUid, "admin-1");
     assert.equal(
       reservation?.lastVerifiedSource,
       "adminSetOrganizerIndexStatus"
     );
-    const search = h.firestore.get("organizers/afterfly-run-club-indore")
+    const search = h.firestore.get("organizers/moonmoth-run-club-indore")
       ?.adminSearch as FakeData | undefined;
     assert.equal(search?.updatedBySource, "adminSetOrganizerIndexStatus");
-    assert.ok((search?.tokens as string[]).includes("afterfly"));
+    assert.ok((search?.tokens as string[]).includes("moonmoth"));
     assert.equal(h.firestore.auditLogs().length, 1);
   });
 
 test("adminSetOrganizerIndexStatusHandler rejects reserved route conflicts",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
-      "publicRouteReservations/organizers__indore__afterfly-run-club": {
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
+      "publicRouteReservations/organizers__indore__moonmoth-run-club": {
         status: "active",
         targetPath: "organizers/other-organizer",
-        routePath: "/organizers/indore/afterfly-run-club/",
+        routePath: "/organizers/indore/moonmoth-run-club/",
       },
     });
 
     await assert.rejects(
       () => adminSetOrganizerIndexStatusHandler(
         callableRequest("admin-1", {
-          organizerId: "afterfly-run-club-indore",
+          organizerId: "moonmoth-run-club-indore",
           indexStatus: "indexReady",
           checklist: completeChecklist(),
           reviewNote: "Checked route before indexing.",
@@ -381,13 +381,13 @@ test("adminSetOrganizerIndexStatusHandler rejects reserved route conflicts",
 test("adminSetOrganizerIndexStatusHandler rejects incomplete index checklist",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
     });
 
     await assert.rejects(
       () => adminSetOrganizerIndexStatusHandler(
         callableRequest("admin-1", {
-          organizerId: "afterfly-run-club-indore",
+          organizerId: "moonmoth-run-club-indore",
           indexStatus: "indexReady",
           checklist: {
             ...completeChecklist(),
@@ -409,12 +409,12 @@ test("adminSetOrganizerIndexStatusHandler refuses to publish operator content",
         facts: [{label: "Indexing", value: "Noindex until verified"}],
       },
     });
-    const h = harness({"organizers/afterfly-run-club-indore": leaked});
+    const h = harness({"organizers/moonmoth-run-club-indore": leaked});
 
     await assert.rejects(
       () => adminSetOrganizerIndexStatusHandler(
         callableRequest("admin-1", {
-          organizerId: "afterfly-run-club-indore",
+          organizerId: "moonmoth-run-club-indore",
           indexStatus: "indexReady",
           checklist: completeChecklist(),
           reviewNote: "Sources, cadence, media rights, and owner contact.",
@@ -428,12 +428,12 @@ test("adminSetOrganizerIndexStatusHandler refuses to publish operator content",
         return true;
       }
     );
-    assert.deepEqual(h.firestore.get("organizers/afterfly-run-club-indore"),
+    assert.deepEqual(h.firestore.get("organizers/moonmoth-run-club-indore"),
       leaked);
 
     await adminSetOrganizerIndexStatusHandler(
       callableRequest("admin-1", {
-        organizerId: "afterfly-run-club-indore",
+        organizerId: "moonmoth-run-club-indore",
         indexStatus: "noindex",
         checklist: completeChecklist(),
         reviewNote: "Taking the page out of the index.",
@@ -441,7 +441,7 @@ test("adminSetOrganizerIndexStatusHandler refuses to publish operator content",
       h.deps
     );
     assert.equal(
-      ((h.firestore.get("organizers/afterfly-run-club-indore")
+      ((h.firestore.get("organizers/moonmoth-run-club-indore")
         ?.publicPage) as FakeData).publishStatus,
       "qa",
       "unpublishing stays available while content needs repair"
@@ -451,13 +451,13 @@ test("adminSetOrganizerIndexStatusHandler refuses to publish operator content",
 test("adminSetOrganizerIndexStatusHandler blocks viewer-only admins",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
     });
 
     await assert.rejects(
       () => adminSetOrganizerIndexStatusHandler(
         callableRequest("admin-1", {
-          organizerId: "afterfly-run-club-indore",
+          organizerId: "moonmoth-run-club-indore",
           indexStatus: "noindex",
           checklist: completeChecklist(),
         }, {salesStaff: true}),
@@ -469,13 +469,13 @@ test("adminSetOrganizerIndexStatusHandler blocks viewer-only admins",
 
 test("adminSetOrganizerIndexStatusHandler requires review notes", async () => {
   const h = harness({
-    "organizers/afterfly-run-club-indore": organizerDoc(),
+    "organizers/moonmoth-run-club-indore": organizerDoc(),
   });
 
   await assert.rejects(
     () => adminSetOrganizerIndexStatusHandler(
       callableRequest("admin-1", {
-        organizerId: "afterfly-run-club-indore",
+        organizerId: "moonmoth-run-club-indore",
         indexStatus: "indexReady",
         checklist: completeChecklist(),
       }, {support: true}),
@@ -489,14 +489,14 @@ test(
   "adminSetOrganizerIndexStatusHandler enforces the rate limit before writing",
   async () => {
     const h = harness({
-      "organizers/afterfly-run-club-indore": organizerDoc(),
+      "organizers/moonmoth-run-club-indore": organizerDoc(),
     });
     const rateLimitCalls: string[] = [];
 
     await assert.rejects(
       () => adminSetOrganizerIndexStatusHandler(
         callableRequest("admin-1", {
-          organizerId: "afterfly-run-club-indore",
+          organizerId: "moonmoth-run-club-indore",
           indexStatus: "indexReady",
           checklist: completeChecklist(),
           reviewNote: "Checked route before indexing.",
@@ -518,7 +518,7 @@ test(
 
     assert.deepEqual(rateLimitCalls, ["admin-1:adminSetOrganizerIndexStatus"]);
     // The page must be untouched when the request is throttled.
-    const page = h.firestore.get("organizers/afterfly-run-club-indore")
+    const page = h.firestore.get("organizers/moonmoth-run-club-indore")
       ?.publicPage as {indexStatus?: string} | undefined;
     assert.equal(page?.indexStatus, "noindex");
     assert.equal(h.firestore.auditLogs().length, 0);

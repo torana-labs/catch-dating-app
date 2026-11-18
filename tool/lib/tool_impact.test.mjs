@@ -84,6 +84,20 @@ test("Admin pending inputs select the registered scanner without a full Tools fa
   }
 });
 
+// #1881 removed a Dart use of an ARB key beside Widgetbook edits. Only the
+// Widgetbook paths could select checks then, so the orphaned key reached main.
+test("a Dart edit beside a Tools-lane edit still selects the checks that read Dart", () => {
+  const changedPaths = ["widgetbook/lib/dashboard/catalog/home.dart", "lib/contexts/events/domain/event_formatters.dart"];
+  assert.deepEqual(planAffected({changedPaths: [changedPaths[0]], graph: productionGraph, mode: "pr"})
+    .operations.ciTargets.includes("tools"), true, "the Widgetbook path is a Tools-lane path");
+  const plan = planAffectedToolChecks({changedPaths, manifest: productionManifest, componentGraph: productionGraph});
+  assert.equal(plan.mode, "affected");
+  for (const id of ["copy:l10n-key-usage", "audit:provider-graph", "audit:backend-errors"]) {
+    assert.ok(plan.toolIds.includes(id), id);
+  }
+  assert.deepEqual(plan.ownersByPath[changedPaths[1]].includes("copy:l10n-key-usage"), true);
+});
+
 test("removing all Admin source readers fails closed and unrelated Admin changes stay narrow", () => {
   const broken = structuredClone(productionManifest);
   // Remove every declared reader, including the shared ESLint preset. This
@@ -467,9 +481,9 @@ test("React dependency graph changes keep a bounded root npm closure", () => {
   }
 });
 
-test("backend deploy helper repairs preserve checks with only Node and root npm setup", () => {
+test("backend deploy helper repairs preserve checks with only Node setup", () => {
   const changedPaths = [
-    "tool/firebase/affected_function_targets.test.mjs",
+    "tool/firebase/plan_firebase_deploy_targets.test.mjs",
     "tool/deploy_firebase_targets.sh",
   ];
   const plan = planAffectedToolChecks({
@@ -479,12 +493,12 @@ test("backend deploy helper repairs preserve checks with only Node and root npm 
   });
   assert.equal(plan.mode, "affected");
   assert.equal(plan.repositoryView, "full");
-  assert.deepEqual(plan.setupRequirements, ["node", "root-npm"]);
+  assert.deepEqual(plan.setupRequirements, ["node"]);
 
   // Filling in setup metadata must not remove any direct, mandatory, or
   // transitive check that the previous conservative plan selected.
   const unannotatedManifest = structuredClone(productionManifest);
-  for (const id of ["firebase:check-deploy-ref", "firebase:deploy-targets"]) {
+  for (const id of ["firebase:deploy-target-plan", "firebase:deploy-targets"]) {
     delete unannotatedManifest.tools.find((tool) => tool.id === id).ciRequirements;
   }
   const previousPlan = planAffectedToolChecks({

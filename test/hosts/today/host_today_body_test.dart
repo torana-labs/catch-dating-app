@@ -12,7 +12,7 @@ import 'host_today_fixtures.dart';
 final _tonight = todayEvent('tonight', start: DateTime(2026, 10, 27, 19, 30));
 final _run = todayEvent(
   'run',
-  name: 'Carter Road Social Run',
+  name: 'Salt Air Social Run',
   start: DateTime(2026, 11, 1, 6, 30),
   booked: 32,
   capacity: 40,
@@ -143,7 +143,7 @@ void main() {
     ]);
 
     await tester.tap(find.text('Tuesday Trivia Night'));
-    await tester.tap(find.text('Carter Road Social Run'));
+    await tester.tap(find.text('Salt Air Social Run'));
     expect(calls.events.map((event) => event.id), ['tonight', 'run']);
 
     await tester.tap(

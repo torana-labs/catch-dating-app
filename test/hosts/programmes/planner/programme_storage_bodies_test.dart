@@ -17,8 +17,8 @@ void main() {
   test('the ID tracker parses rows, counts and hotels', () {
     expect(plannerIdTracker.staying, 286);
     expect(plannerIdTracker.hotels.map((h) => h.name), [
-      'Taj Fateh Prakash',
-      'Leela Palace',
+      'Lakeview Haveli',
+      'Lakeshore Palace',
     ]);
     final james = plannerIdTracker.rows.firstWhere(
       (row) => row.guestId == 'james',
@@ -114,7 +114,7 @@ void main() {
       onRetry: () {},
     );
     await pumpPlannerBody(tester, body(editing: false), size: plannerDesktop);
-    expect(find.text('Shree Travels · invoice 2026-118'), findsOneWidget);
+    expect(find.text('Lantern Lane Travels · invoice 2026-118'), findsOneWidget);
     expect(find.text('The 3 trips to question'), findsOneWidget);
     expect(find.text('Send the 3 questions'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('host-bill-approve')));

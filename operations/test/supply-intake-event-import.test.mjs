@@ -39,17 +39,17 @@ const validateExternalEvent = (() => {
 const NOW = "2026-10-24T08:00:00.000Z";
 const event = (overrides = {}) => ({
   listingId: "intake-nom-1", listingWorkItemId: "wi-listing", requestId: "nom-1",
-  eventKey: "luma:1dfd73wq", platform: "luma", sourceEntityId: "1dfd73wq",
-  title: "BlrDroid Meetup #133", description: "Talks on Kotlin and Compose.",
+  eventKey: "luma:bbany133", platform: "luma", sourceEntityId: "bbany133",
+  title: "ByteBanyan Meetup #133", description: "Talks on Kotlin and Compose.",
   startAt: "2026-11-01T09:30:00.000+05:30", endAt: "2026-11-01T13:00:00.000+05:30", timezone: "Asia/Kolkata",
   venue: "Thoughtworks", address: "Koramangala, Bengaluru", locality: "Bengaluru",
-  latitude: 12.9352, longitude: 77.6245, sourceUrl: "https://luma.com/1dfd73wq",
+  latitude: 12.9352, longitude: 77.6245, sourceUrl: "https://luma.com/bbany133",
   imageUrl: "https://images.lumacdn.com/x.png", price: {min: 0, max: 0, currency: "INR"}, status: "scheduled",
-  attendanceMode: "offline", organizerName: "BlrDroid", organizerUrl: "https://luma.com/blrdroid",
+  attendanceMode: "offline", organizerName: "ByteBanyan", organizerUrl: "https://luma.com/bytebanyan",
   adapterId: "luma", evidenceFields: ["title", "startAt"], alsoListedAt: [], ...overrides,
 });
 // An approved listing's organizer: published on the web, hidden in the app.
-const organizer = {organizerId: "organizer-blrdroid", claimable: true, appVisibility: "hidden"};
+const organizer = {organizerId: "organizer-bytebanyan", claimable: true, appVisibility: "hidden"};
 const review = (overrides = {}) => ({reviewerUid: "staff-1", decidedAt: NOW, note: null,
   ownerSafeCopyReviewed: true, importPolicyAcknowledged: true, blockerResolutions: [], ...overrides});
 const plan = (overrides = {}) => planListingEventImport({event: event(), workItemId: "wi-event-1", organizer,
@@ -60,12 +60,12 @@ test("a complete, reviewed event plans a read-only external event that satisfies
   assert.deepEqual([result.status, result.blockers], ["write_ready", []]);
   assert.equal(validateExternalEvent(result.document), true, JSON.stringify(validateExternalEvent.errors));
   const doc = result.document;
-  assert.equal(doc.canonicalHostId, "organizer-blrdroid");
+  assert.equal(doc.canonicalHostId, "organizer-bytebanyan");
   assert.equal(doc.booking.mode, "external_outbound_only");
   assert.deepEqual([doc.booking.catchBookingEnabled, doc.booking.catchPaymentsEnabled,
     doc.organizerCapabilities.bookable, doc.organizerCapabilities.claimable], [false, false, false, true]);
   assert.deepEqual(doc.booking.externalLinks.map((link) => [link.platform, link.url, link.primary]),
-    [["luma", "https://luma.com/1dfd73wq", true]]);
+    [["luma", "https://luma.com/bbany133", true]]);
   assert.equal(doc.price.displayText, "Free");
   assert.equal(doc.discovery.manualApprovalRequired, true);
   assert.equal(doc.discovery.appVisibility, "hidden", "an app-hidden organizer's event stays out of the app");
@@ -121,7 +121,7 @@ test("a reviewer-supplied map location clears the coordinate blocker; a resolved
   assert.equal(validateExternalEvent(located.document), true, JSON.stringify(validateExternalEvent.errors));
   assert.deepEqual(located.document.meetingLocation, {name: "Cubbon Park bandstand",
     address: "Kasturba Road, Bengaluru", placeId: "ChIJbandstand", latitude: 12.9763, longitude: 77.5929,
-    notes: "Kasturba Road, Bengaluru\nhttps://luma.com/1dfd73wq"});
+    notes: "Kasturba Road, Bengaluru\nhttps://luma.com/bbany133"});
   // The page's own venue and address win; the reviewer's coordinates replace the page's.
   const corrected = plan({review: review({location: {name: "Elsewhere", address: null, placeId: null,
     latitude: 12.97, longitude: 77.59}})});
@@ -149,7 +149,7 @@ test("events that cannot be published say why", () => {
 
 test("the same event on two platforms publishes once with both links", () => {
   const district = event({eventKey: "district:abc", platform: "district", sourceEntityId: "abc",
-    sourceUrl: "https://district.in/events/blrdroid-133"});
+    sourceUrl: "https://district.in/events/bytebanyan-133"});
   const blocked = plan({duplicates: [district]});
   assert.deepEqual(blocked.blockers, ["duplicate_normalized_event_key"]);
   const merged = plan({duplicates: [district], review: review({blockerResolutions: [{blockerCode:
@@ -158,7 +158,7 @@ test("the same event on two platforms publishes once with both links", () => {
   assert.deepEqual(merged.document.booking.externalLinks.map((link) => [link.platform, link.primary]),
     [["luma", true], ["district", false]]);
   assert.deepEqual(merged.document.dedupe.duplicateCandidateIds, ["district:abc"]);
-  const alsoListed = plan({event: event({alsoListedAt: ["https://district.in/events/blrdroid-133"]})});
+  const alsoListed = plan({event: event({alsoListedAt: ["https://district.in/events/bytebanyan-133"]})});
   assert.deepEqual(alsoListed.document.booking.externalLinks.map((link) => link.platform), ["luma", "district"],
     "a link elsewhere keeps its own platform");
   assert.equal(validateExternalEvent(merged.document), true, JSON.stringify(validateExternalEvent.errors));

@@ -78,6 +78,7 @@
     // Loads firebase-admin, google-auth-library and compiled functions/lib
     // modules through createFunctionsRequire(), rooted at functions/.
     "tool/firebase/form_domain_operator.mjs": ["unlisted", "unresolved"],
+    "tool/data/migrate_form_domains_to_custom_domains.mjs": ["unlisted", "unresolved"],
     // The Tools lane installs Playwright through its "playwright" setup step.
     "tool/web/check_storybook_visuals.mjs": ["unlisted"],
     // marketing-captures.yml installs the lockfile-pinned Playwright package
@@ -97,8 +98,11 @@
     "keytool",
     "mkfifo"
   ],
-  // Functions tests require compiled output (../lib/...) built by `npm run build`.
+  // Functions tests require compiled output (../lib/...) built by `npm run build`,
+  // and tool tests that exercise a Function's helpers import the same output
+  // (../../functions/lib/...).
   "ignoreUnresolved": [
-    "^(\\.\\./)+lib/"
+    "^(\\.\\./)+lib/",
+    "^(\\.\\./)+functions/lib/"
   ]
 }

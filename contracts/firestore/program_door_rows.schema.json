@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_door_rows.schema.json",
+  "title": "ProgramDoorRowDocument",
+  "description": "Server-maintained door roster row of one guest at one function: exactly the row getProgramFunctionDoorView returned (display name, whether invited, RSVP and attendance state, party size, household label and the response note). An allGuests function has a row for every programme guest, a selectedGuests function for each guest with a join row; a guest who is neither invited nor checked in has none. Written by triggers on programFunctionGuests, programGuests, programHouseholds and programFunctions. Readable by accounts whose function check-in or function lead duty covers the function, and by the programme owner. Never a phone number, email or other contact field, and never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programDoorRows",
+  "x-firestore-path": "programDoorRows/{functionId}__{guestId}",
+  "x-document-id-field": "rowId",
+  "x-owner": "Programme read model projector (programDoorViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "functionId",
+    "guestId",
+    "displayName",
+    "invited",
+    "rsvpStatus",
+    "attendanceStatus",
+    "partySize",
+    "householdLabel",
+    "responseNote",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "functionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "guestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "invited": {
+      "type": "boolean"
+    },
+    "rsvpStatus": {
+      "type": "string"
+    },
+    "attendanceStatus": {
+      "type": "string",
+      "enum": [
+        "expected",
+        "checkedIn",
+        "noShow"
+      ]
+    },
+    "partySize": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "householdLabel": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "responseNote": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

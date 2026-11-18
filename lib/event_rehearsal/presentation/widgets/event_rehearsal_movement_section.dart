@@ -31,7 +31,7 @@ class EventRehearsalMovementSection extends ConsumerWidget {
             practiceOperatorId: practiceOperatorId,
           );
           final query = eventRehearsalMovementProvider(selection);
-          if (ref.exists(query)) ref.read(query.notifier).reload();
+          if (ref.read(query.exists)) ref.read(query.notifier).reload();
           showCatchBottomSheet<void>(
             context: context,
             builder: (_) => EventRehearsalDepartureSheet(selection: selection),
@@ -43,7 +43,7 @@ class EventRehearsalMovementSection extends ConsumerWidget {
             practiceOperatorId: practiceOperatorId,
           );
           final query = eventRehearsalMovementProvider(selection);
-          if (ref.exists(query)) ref.read(query.notifier).reload();
+          if (ref.read(query.exists)) ref.read(query.notifier).reload();
           showCatchBottomSheet<void>(
             context: context,
             builder: (_) =>

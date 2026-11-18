@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'public_profile.dart';
@@ -9,6 +9,7 @@ part of 'public_profile.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $PublicProfileCopyWith<PublicProfile> get copyWith => _$PublicProfileCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PublicProfile&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.name, name) || other.name == name)&&(identical(other.age, age) || other.age == age)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other.profilePrompts, profilePrompts)&&const DeepCollectionEquality().equals(other.profilePhotos, profilePhotos)&&(identical(other.city, city) || other.city == city)&&(identical(other.height, height) || other.height == height)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.company, company) || other.company == company)&&(identical(other.education, education) || other.education == education)&&(identical(other.religion, religion) || other.religion == religion)&&const DeepCollectionEquality().equals(other.languages, languages)&&(identical(other.relationshipGoal, relationshipGoal) || other.relationshipGoal == relationshipGoal)&&(identical(other.drinking, drinking) || other.drinking == drinking)&&(identical(other.smoking, smoking) || other.smoking == smoking)&&(identical(other.workout, workout) || other.workout == workout)&&(identical(other.diet, diet) || other.diet == diet)&&(identical(other.children, children) || other.children == children)&&(identical(other.activityPreferences, activityPreferences) || other.activityPreferences == activityPreferences));
+  final _this = this as PublicProfile;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PublicProfile&&(identical(other.uid, _this.uid) || other.uid == _this.uid)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.age, _this.age) || other.age == _this.age)&&(identical(other.gender, _this.gender) || other.gender == _this.gender)&&const DeepCollectionEquality().equals(other.profilePrompts, _this.profilePrompts)&&const DeepCollectionEquality().equals(other.profilePhotos, _this.profilePhotos)&&(identical(other.city, _this.city) || other.city == _this.city)&&(identical(other.height, _this.height) || other.height == _this.height)&&(identical(other.occupation, _this.occupation) || other.occupation == _this.occupation)&&(identical(other.company, _this.company) || other.company == _this.company)&&(identical(other.education, _this.education) || other.education == _this.education)&&(identical(other.religion, _this.religion) || other.religion == _this.religion)&&const DeepCollectionEquality().equals(other.languages, _this.languages)&&(identical(other.relationshipGoal, _this.relationshipGoal) || other.relationshipGoal == _this.relationshipGoal)&&(identical(other.drinking, _this.drinking) || other.drinking == _this.drinking)&&(identical(other.smoking, _this.smoking) || other.smoking == _this.smoking)&&(identical(other.workout, _this.workout) || other.workout == _this.workout)&&(identical(other.diet, _this.diet) || other.diet == _this.diet)&&(identical(other.children, _this.children) || other.children == _this.children)&&(identical(other.activityPreferences, _this.activityPreferences) || other.activityPreferences == _this.activityPreferences));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,uid,name,age,gender,const DeepCollectionEquality().hash(profilePrompts),const DeepCollectionEquality().hash(profilePhotos),city,height,occupation,company,education,religion,const DeepCollectionEquality().hash(languages),relationshipGoal,drinking,smoking,workout,diet,children,activityPreferences]);
+int get hashCode {
+  final _this = this as PublicProfile;
+  return Object.hashAll([runtimeType,_this.uid,_this.name,_this.age,_this.gender,const DeepCollectionEquality().hash(_this.profilePrompts),const DeepCollectionEquality().hash(_this.profilePhotos),_this.city,_this.height,_this.occupation,_this.company,_this.education,_this.religion,const DeepCollectionEquality().hash(_this.languages),_this.relationshipGoal,_this.drinking,_this.smoking,_this.workout,_this.diet,_this.children,_this.activityPreferences]);
+}
 
 @override
 String toString() {
-  return 'PublicProfile(uid: $uid, name: $name, age: $age, gender: $gender, profilePrompts: $profilePrompts, profilePhotos: $profilePhotos, city: $city, height: $height, occupation: $occupation, company: $company, education: $education, religion: $religion, languages: $languages, relationshipGoal: $relationshipGoal, drinking: $drinking, smoking: $smoking, workout: $workout, diet: $diet, children: $children, activityPreferences: $activityPreferences)';
+  final _this = this as PublicProfile;
+  return 'PublicProfile(uid: ${_this.uid}, name: ${_this.name}, age: ${_this.age}, gender: ${_this.gender}, profilePrompts: ${_this.profilePrompts}, profilePhotos: ${_this.profilePhotos}, city: ${_this.city}, height: ${_this.height}, occupation: ${_this.occupation}, company: ${_this.company}, education: ${_this.education}, religion: ${_this.religion}, languages: ${_this.languages}, relationshipGoal: ${_this.relationshipGoal}, drinking: ${_this.drinking}, smoking: ${_this.smoking}, workout: ${_this.workout}, diet: ${_this.diet}, children: ${_this.children}, activityPreferences: ${_this.activityPreferences})';
 }
 
 
@@ -66,7 +72,7 @@ class _$PublicProfileCopyWithImpl<$Res>
 /// Create a copy of PublicProfile
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? name = null,Object? age = null,Object? gender = null,Object? profilePrompts = null,Object? profilePhotos = null,Object? city = freezed,Object? height = freezed,Object? occupation = freezed,Object? company = freezed,Object? education = freezed,Object? religion = freezed,Object? languages = null,Object? relationshipGoal = freezed,Object? drinking = freezed,Object? smoking = freezed,Object? workout = freezed,Object? diet = freezed,Object? children = freezed,Object? activityPreferences = null,}) {
-  return _then(_self.copyWith(
+  return _then(PublicProfile(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,age: null == age ? _self.age : age // ignore: cast_nullable_to_non_nullable
@@ -237,7 +243,7 @@ return $default(_that.uid,_that.name,_that.age,_that.gender,_that.profilePrompts
 @JsonSerializable()
 
 class _PublicProfile implements PublicProfile {
-  const _PublicProfile({@JsonKey(includeToJson: false) required this.uid, required this.name, required this.age, required this.gender, final  List<ProfilePromptAnswer> profilePrompts = const [], final  List<ProfilePhoto> profilePhotos = const [], this.city, this.height, this.occupation, this.company, this.education, this.religion, final  List<Language> languages = const [], this.relationshipGoal, this.drinking, this.smoking, this.workout, this.diet, this.children, this.activityPreferences = const ActivityPreferences()}): _profilePrompts = profilePrompts,_profilePhotos = profilePhotos,_languages = languages;
+  const _PublicProfile({@JsonKey(includeToJson: false) required this.uid, required this.name, required this.age, required this.gender,  List<ProfilePromptAnswer> profilePrompts = const [],  List<ProfilePhoto> profilePhotos = const [], this.city, this.height, this.occupation, this.company, this.education, this.religion,  List<Language> languages = const [], this.relationshipGoal, this.drinking, this.smoking, this.workout, this.diet, this.children, this.activityPreferences = const ActivityPreferences()}): _profilePrompts = profilePrompts,_profilePhotos = profilePhotos,_languages = languages;
   factory _PublicProfile.fromJson(Map<String, dynamic> json) => _$PublicProfileFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String uid;
@@ -292,16 +298,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PublicProfile&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.name, name) || other.name == name)&&(identical(other.age, age) || other.age == age)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other._profilePrompts, _profilePrompts)&&const DeepCollectionEquality().equals(other._profilePhotos, _profilePhotos)&&(identical(other.city, city) || other.city == city)&&(identical(other.height, height) || other.height == height)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.company, company) || other.company == company)&&(identical(other.education, education) || other.education == education)&&(identical(other.religion, religion) || other.religion == religion)&&const DeepCollectionEquality().equals(other._languages, _languages)&&(identical(other.relationshipGoal, relationshipGoal) || other.relationshipGoal == relationshipGoal)&&(identical(other.drinking, drinking) || other.drinking == drinking)&&(identical(other.smoking, smoking) || other.smoking == smoking)&&(identical(other.workout, workout) || other.workout == workout)&&(identical(other.diet, diet) || other.diet == diet)&&(identical(other.children, children) || other.children == children)&&(identical(other.activityPreferences, activityPreferences) || other.activityPreferences == activityPreferences));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PublicProfile&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.name, name) || other.name == name)&&(identical(other.age, age) || other.age == age)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other.profilePrompts, _profilePrompts)&&const DeepCollectionEquality().equals(other.profilePhotos, _profilePhotos)&&(identical(other.city, city) || other.city == city)&&(identical(other.height, height) || other.height == height)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.company, company) || other.company == company)&&(identical(other.education, education) || other.education == education)&&(identical(other.religion, religion) || other.religion == religion)&&const DeepCollectionEquality().equals(other.languages, _languages)&&(identical(other.relationshipGoal, relationshipGoal) || other.relationshipGoal == relationshipGoal)&&(identical(other.drinking, drinking) || other.drinking == drinking)&&(identical(other.smoking, smoking) || other.smoking == smoking)&&(identical(other.workout, workout) || other.workout == workout)&&(identical(other.diet, diet) || other.diet == diet)&&(identical(other.children, children) || other.children == children)&&(identical(other.activityPreferences, activityPreferences) || other.activityPreferences == activityPreferences));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,uid,name,age,gender,const DeepCollectionEquality().hash(_profilePrompts),const DeepCollectionEquality().hash(_profilePhotos),city,height,occupation,company,education,religion,const DeepCollectionEquality().hash(_languages),relationshipGoal,drinking,smoking,workout,diet,children,activityPreferences]);
+int get hashCode {
+    return Object.hashAll([runtimeType,uid,name,age,gender,const DeepCollectionEquality().hash(_profilePrompts),const DeepCollectionEquality().hash(_profilePhotos),city,height,occupation,company,education,religion,const DeepCollectionEquality().hash(_languages),relationshipGoal,drinking,smoking,workout,diet,children,activityPreferences]);
+}
 
 @override
 String toString() {
-  return 'PublicProfile(uid: $uid, name: $name, age: $age, gender: $gender, profilePrompts: $profilePrompts, profilePhotos: $profilePhotos, city: $city, height: $height, occupation: $occupation, company: $company, education: $education, religion: $religion, languages: $languages, relationshipGoal: $relationshipGoal, drinking: $drinking, smoking: $smoking, workout: $workout, diet: $diet, children: $children, activityPreferences: $activityPreferences)';
+    return 'PublicProfile(uid: $uid, name: $name, age: $age, gender: $gender, profilePrompts: $profilePrompts, profilePhotos: $profilePhotos, city: $city, height: $height, occupation: $occupation, company: $company, education: $education, religion: $religion, languages: $languages, relationshipGoal: $relationshipGoal, drinking: $drinking, smoking: $smoking, workout: $workout, diet: $diet, children: $children, activityPreferences: $activityPreferences)';
 }
 
 

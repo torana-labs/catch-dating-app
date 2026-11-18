@@ -1874,13 +1874,10 @@ card or row collection while the route structure is unresolved.
 The route scaffold and its body geometry belong outside async state switches.
 For example, Today selects `CatchRootScreenScaffold.sections` once, then
 switches only the sliver content. A state change cannot substitute a standard
-inset body for the loaded full-width section body. The
-`design:loading-composition` rejects removed generic row and collection
-recipes on Host and Consumer presentation surfaces, as well as root-title
-style overrides. Its per-file allowance is now zero everywhere. Catch UI no
-longer exposes repeated cards, rows, boxes, chips, or fake screen/sliver
-adapters; callers must choose the real composition or the centered state
-viewport.
+inset body for the loaded full-width section body. Catch UI no longer
+exposes repeated cards, rows, boxes, chips, or fake screen/sliver adapters, and
+the root top bar takes no title style, so any such call fails analysis;
+callers must choose the real composition or the centered state viewport.
 
 Both primitives apply the first-load deadline of the read class (`CachePolicies.defaultFirstLoad`, 10 seconds, unless the freshness table gives the class its own) to the first
 user-visible resolution and to blocking retries that have no credible data.
@@ -3088,9 +3085,9 @@ new roots may neither name nor import one. P2.1 gave the system names to
 became `CatchLegacySurface`, `CatchLegacyText` and `CatchLegacyTextVariant`;
 the first two are the legacy members of `catch.surface` and `catch.text`, and
 `CatchMetadataText` and `CatchCountText`, which the system Text absorbs, carry
-the qualifier where they are recorded. `tool/design/rename_legacy_library_symbols.mjs`
-renamed the callers; a branch cut before that rename re-runs it to resolve its
-conflicts.
+the qualifier where they are recorded. A codemod renamed the callers and is
+retired (`node tool/run.mjs list --closed`); a branch cut before that rename
+recovers it with `git show <lastCommit>:tool/design/rename_legacy_library_symbols.mjs`.
 
 ### Contexts as packages
 

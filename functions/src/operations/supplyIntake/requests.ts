@@ -1,8 +1,10 @@
 /* eslint-disable max-len */
 import {createHash} from "node:crypto";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
+import {logger} from "firebase-functions";
 import {HttpsError} from "firebase-functions/v2/https";
 import {marketForIdOrAlias} from "../../locations/marketConfig";
+import {blockedIntakePatch, checkListingSuppression, suppressionModule} from "../../listingSuppressions/registry";
 import type {SupplyIntakeRequest} from "../../shared/generated/supplyIntakeRequest";
 import {validateSupplyIntakeRequest} from "../../shared/generated/validators/supplyIntakeRequest";
 import {supplyIntakeCollections} from "./worker";
@@ -14,7 +16,7 @@ import {supplyIntakeCollections} from "./worker";
 
 const UNMAPPED_MARKET = "unassigned";
 
-export function supplyIntakeRequestId(prefix: "nom" | "intent" | "msg" | "discovery" | "refresh" | "draft", parts: readonly string[]): string {
+export function supplyIntakeRequestId(prefix: "nom" | "intent" | "msg" | "discovery" | "refresh" | "draft" | "tryit", parts: readonly string[]): string {
   return `${prefix}-${createHash("sha256").update(JSON.stringify(parts)).digest("hex").slice(0, 40)}`;
 }
 
@@ -49,27 +51,83 @@ export interface SupplyIntakeInstantDraft {
 }
 
 /**
+ * The private state of a request the command organizer.import-from-link
+ * created (supplyIntakeRequests.tryItImport): whose workspace the link fills.
+ * Everything but appliedAt is fixed at capture.
+ */
+export interface SupplyIntakeTryItImport {
+  schemaVersion: 1;
+  uid: string;
+  organizerId: string;
+  commandKey: string;
+  link: {url: string; provider: string | null; support: "instant" | "best_effort" | "staff_follow_up"; reason: string | null};
+  appliedAt: string | null;
+}
+
+/** A request the do-not-list registry refused: the case it matched, for staff, never the matched identity. */
+export interface SupplyIntakeSuppression {
+  caseId: string;
+  reason: string;
+}
+
+export interface SupplyIntakeRequestResult {
+  requestId: string;
+  created: boolean;
+  /** Set when a do-not-list case refused the request; nothing was written but the case's refusal count. */
+  suppressed?: SupplyIntakeSuppression;
+}
+
+/**
  * Writes one queued request. An event refresh for an organizer Catch already
  * lists is created with that organizer's approval, so it never waits for
  * listing review and its events go straight to the publication policy. A
  * website instant draft is created with its private draft state, which
  * makes any later approval save a private draft instead of publishing.
+ *
+ * Every request is first checked against the do-not-list registry
+ * (listingSuppressions): a request whose name, links, handles or target
+ * match an active case is not written; the case's blockedIntakeCount is
+ * incremented in this transaction and the result names the case so the
+ * front door can refuse. While an active case exists and the registry key
+ * is unavailable, intake fails closed with "unavailable".
  */
 export async function createSupplyIntakeRequest(tx: Transaction, db: Firestore, request: SupplyIntakeRequest, now: Date,
-  {approval = null, instantDraft = null}: {approval?: SupplyIntakeRequestApproval | null;
-    instantDraft?: SupplyIntakeInstantDraft | null} = {}): Promise<{requestId: string; created: boolean}> {
+  {approval = null, instantDraft = null, tryItImport = null}: {approval?: SupplyIntakeRequestApproval | null;
+    instantDraft?: SupplyIntakeInstantDraft | null; tryItImport?: SupplyIntakeTryItImport | null} = {}):
+  Promise<SupplyIntakeRequestResult> {
   if (!validateSupplyIntakeRequest(request)) {
     throw new HttpsError("invalid-argument", "The intake request does not satisfy its contract.");
   }
   if ((request.origin?.kind === "web_instant_draft") !== (instantDraft !== null)) {
     throw new HttpsError("invalid-argument", "Only a website instant draft request carries instant draft state.");
   }
+  if ((request.origin?.kind === "try_it_import") !== (tryItImport !== null) || (tryItImport !== null && approval !== null)) {
+    throw new HttpsError("invalid-argument", "Only a try-it import request carries try-it import state, and it is never approved.");
+  }
+  const keys = (await suppressionModule()).suppressionKeysForIntakeRequest(request);
+  const suppression = await checkListingSuppression(tx, db, keys);
+  if (suppression.state === "unavailable") {
+    logger.error("Supply intake paused: the do-not-list registry key is unavailable.",
+      {originKind: request.origin?.kind ?? null});
+    throw new HttpsError("unavailable", "The do-not-list check is unavailable (LISTING_SUPPRESSION_HMAC_KEY), " +
+      "so Supply Intake is paused. Nothing was queued.");
+  }
+  if (suppression.state === "suppressed") {
+    const {caseId, reason} = suppression.match;
+    tx.update(suppression.match.ref, blockedIntakePatch(suppression.match, now));
+    // The case id is opaque; the request's name and links stay out of logs.
+    logger.warn("Supply intake request refused by the do-not-list registry.",
+      {caseId, originKind: request.origin?.kind ?? null, kind: request.kind});
+    return {requestId: request.requestId, created: false, suppressed: {caseId, reason}};
+  }
   const ref = db.collection(supplyIntakeCollections.requests).doc(request.requestId);
   const existing = await tx.get(ref);
   if (existing.exists) {
-    const stored = existing.data() as {request?: unknown; instantDraft?: Record<string, unknown> | null};
+    const stored = existing.data() as {request?: unknown; instantDraft?: Record<string, unknown> | null;
+      tryItImport?: Record<string, unknown> | null};
     if (canonical(stored.request) !== canonical(request) ||
-        canonical(capture(stored.instantDraft ?? null)) !== canonical(capture(instantDraft as object | null))) {
+        canonical(capture(stored.instantDraft ?? null)) !== canonical(capture(instantDraft as object | null)) ||
+        canonical(importCapture(stored.tryItImport ?? null)) !== canonical(importCapture(tryItImport as object | null))) {
       throw new HttpsError("already-exists", "This intake request id already holds a different request.");
     }
     return {requestId: request.requestId, created: false};
@@ -77,6 +135,7 @@ export async function createSupplyIntakeRequest(tx: Transaction, db: Firestore, 
   const at = now.toISOString();
   tx.create(ref, {schemaVersion: 1, requestId: request.requestId, request, status: "queued", attempts: 0,
     leaseUntil: null, result: null, failure: null, approval, ...(instantDraft ? {instantDraft} : {}),
+    ...(tryItImport ? {tryItImport} : {}),
     createdAt: at, updatedAt: at});
   return {requestId: request.requestId, created: true};
 }
@@ -87,6 +146,13 @@ function capture(value: object | null): unknown {
   const {outcome: _outcome, whatsapp, ...rest} = value as Record<string, unknown>; // eslint-disable-line @typescript-eslint/no-unused-vars
   const {consentedAt: _consentedAt, ...consent} = (whatsapp ?? {}) as Record<string, unknown>; // eslint-disable-line @typescript-eslint/no-unused-vars
   return {...rest, whatsapp: consent};
+}
+
+/** The fixed part of a try-it import: appliedAt may differ on a retry. */
+function importCapture(value: object | null): unknown {
+  if (!value) return null;
+  const {appliedAt: _appliedAt, ...rest} = value as Record<string, unknown>; // eslint-disable-line @typescript-eslint/no-unused-vars
+  return rest;
 }
 
 interface InboundIntent {

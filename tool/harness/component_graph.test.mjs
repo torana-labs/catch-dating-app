@@ -11,7 +11,8 @@ import {
   summarizeCoverage,
   validateComponentGraph,
 } from "./lib/component_graph.mjs";
-import {collectLocalReadonlyCheckIds, planAffectedToolChecks} from "../lib/tool_impact.mjs";
+import {collectLocalReadonlyCheckIds, planAffectedToolChecks, supportedToolSetupRequirements}
+  from "../lib/tool_impact.mjs";
 import {planPreCommitActions} from "../git/pre_commit_generated_artifacts.mjs";
 import {iosBuildInput} from "../ci/ios_build_inputs.mjs";
 
@@ -317,7 +318,7 @@ test("backend-only delivery controls validate the backend without granting mutat
       assert.deepEqual(result.operations.ciTargets,
         ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], file);
       for (const check of ["agent:harness-v2", "ci:delivery-core",
-        "firebase:affected-function-targets"]) {
+        "firebase:plan-function-deploy"]) {
         assert.ok(result.operations.checkIds.includes(check), `${file}: ${check}`);
       }
     }
@@ -375,7 +376,7 @@ test("Hosting promotion controls select only their React callers and affected To
       // the environment difference policy guard owns them too.
       // Every CI configuration edit reruns the caller-closure proof.
       assert.deepEqual(tools.toolIds, ["agent:harness-v2", "ci:web-hosting-delivery-workflow",
-        "ci:web-hosting-freshness", "meta:nx-workflow-callers", ...toolsManifest.ciImpact.mandatoryCheckIds,
+        "meta:nx-workflow-callers", ...toolsManifest.ciImpact.mandatoryCheckIds,
         ...(file.startsWith(".github/workflows/") ? ["firebase:environment-parity"] : [])].sort());
       assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
       assert.equal(tools.repositoryView, "full");
@@ -405,8 +406,16 @@ test("Hosting promotion control routing preserves mixed Host and Functions owner
         const tools = planAffectedToolChecks({changedPaths: [control, companion],
           manifest: toolsManifest, componentGraph: graph, mode});
         assert.equal(tools.mode, "affected");
-        assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
-        assert.ok(tools.toolIds.includes("ci:web-hosting-freshness"));
+        // The companion's own readers run too (#2041: a Dart or Functions edit
+        // beside a Tools-lane edit still selects the checks that read it), so
+        // the setup is the control's plus the companion's, nothing more.
+        const alone = (paths) => planAffectedToolChecks({changedPaths: paths,
+          manifest: toolsManifest, componentGraph: graph, mode}).setupRequirements;
+        const needed = new Set([...alone([control]), ...alone([companion])]);
+        assert.deepEqual(alone([control]), ["node", "root-npm"]);
+        assert.deepEqual(tools.setupRequirements,
+          supportedToolSetupRequirements.filter((requirement) => needed.has(requirement)));
+        assert.ok(tools.toolIds.includes("ci:web-hosting-delivery-workflow"));
         assert.ok(tools.toolIds.includes("ci:web-hosting-delivery-workflow"));
         if (companion.startsWith("apps/host/") && ["pr", "merge_group"].includes(mode)) {
           assert.ok(result.operations.ciTargets.includes("flutter"));
@@ -1484,6 +1493,7 @@ test("deploy and maintenance workflows ci.yml never calls select their own tests
     ".github/workflows/_brand-config-publish.yml": ["ci:brand-config-publish-workflow"],
     ".github/workflows/city-interest-backfill.yml": ["ci:city-interest-backfill-workflow"],
     ".github/workflows/deck-era-purge.yml": ["ci:deck-era-purge-workflow"],
+    ".github/workflows/organizer-takedown.yml": ["ci:organizer-takedown-workflow"],
     ".github/workflows/branch-prune.yml": ["git:branch-hygiene"],
     ".github/workflows/nx-shadow.yml": ["meta:nx-shadow-plan"],
     ".github/actions/find-queue-validation/action.yml": ["ci:web-hosting-delivery-workflow"],

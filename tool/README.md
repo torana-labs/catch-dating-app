@@ -655,16 +655,6 @@ pinned Firebase CLI before credentials; it never installs source dependencies,
 rebuilds frontend bytes, or rematerializes organizer data. Recovery is terminal-source-
 bound, current-main-only, and rejects older attempts at the same SHA.
 
-`tool/firebase/affected_function_targets.mjs` plans each `Deploy backend` run
-from exact Git base/source objects and transitive TypeScript module
-dependencies, excluding whole-declaration type-only imports and exports.
-Functions runtime imports use individual generated schemas, validators and
-catalogs; the schema/type boundary gate rejects aggregate runtime imports.
-It retains all authorized functions for shared initialization,
-runtime/dependency changes, snapshots, and uncertain analysis; a proven empty
-selection records a Functions no-op. It never rewrites package bytes or adds
-unauthorized targets. Its focused tests run with the delivery-package check.
-
 `tool/firebase/plan_firebase_deploy_targets.mjs` is the pure planner behind
 `tool/deploy_firebase_targets.sh`. It validates target syntax, expands logical
 Functions from source exports, keeps exact `functions:<name>` targets, orders
@@ -1220,6 +1210,38 @@ ids, non-empty text, and exact generated output.
 
 Remote write tools should default to dry-run/read-only behavior, require an
 explicit apply flag, and carry a `safety` label that reflects the blast radius.
+An active `operator` names its `runbook`: the document, optionally with a
+`#heading` anchor, that says when and how to run it. The validator checks that
+the file and the heading exist.
+
+## Tool Lifecycle
+
+Every entry has a `status`. Only `active` tools run in CI and through
+`node tool/run.mjs check`.
+
+| Status | Meaning | File |
+|---|---|---|
+| `active` | Runs in CI: affected tools on pull requests and the queue, and every tool in its nightly bucket. | Exists |
+| `internal`, `support` | A helper that an active owner checks or calls. | Exists |
+| `completed` | Finished its job, and the file is kept, for example a one-off live operation kept for audit. | Exists |
+| `retired` | Finished or superseded, and the file is deleted. | Deleted |
+
+A `completed` or `retired` entry records `retiredOn` (`YYYY-MM-DD`) and a
+`reason` that says why it closed and which check covers its job now. A
+`retired` entry also records `lastCommit`, the full SHA of the last commit that
+contained its file, so `git show <lastCommit>:<path>` recovers it. Closed
+entries keep their id, category, path, role and description, and drop every
+field that only matters to a run (`checks`, `impactPaths`, `alsoCheckIds`,
+`ciRequirements` and the rest). Do not delete an entry when you delete its file:
+retire it, so the record stays.
+
+```sh
+node tool/run.mjs list --closed            # completed and retired tools, with date and reason
+node tool/run.mjs list --closed --json
+```
+
+Retire a tool when its job is done or another check enforces the same rule.
+Name that check in the reason, and keep the evidence in the PR.
 
 ## PR validation and the merge queue
 
@@ -1289,29 +1311,6 @@ until their stated scope is complete. Measure completed job runner time, reruns
 and superseded work separately from queue and approval waits. Public
 standard-runner usage and private billed usage must not be conflated when
 reporting savings.
-
-## Host measurement preview runtime
-
-The manual `Host measurement preview runtime` workflow publishes only the two
-reviewed PR726 assets to `catch-host-measurement.web.app`. The
-`ci:host-measurement-preview` binds their configuration/content hashes and
-rejects extra files and symlinks before deploy. After deploy, serving acceptance
-allows only the pinned Hosting client's generated hash cache and validates its
-two gzip-upload hashes against the reviewed runtime before checking public
-bytes and privacy headers.
-The release helper requires current main, its successful same-source main CI,
-the exact workflow caller and a first-attempt dispatch before existing Hosting
-OIDC authentication and again at the deployment boundary. No source build,
-Functions, IAM, credential installation or production-parent permission is part
-of this release. The existing website preview is a separate deployment.
-
-The runtime accepts messages only from the reviewed `next-candidate` origin and
-sends only consented internal/debug Analytics events. Publication proves serving
-bytes, not provider receipt or live advertising attribution. A failed deployment
-requires inspecting its retained evidence before a new dispatch; no automatic
-deploy retry or rollback is provided. Production measurement and ad launch
-remain separately held. Run `node tool/run.mjs check ci:host-measurement-preview`
-for the offline release-boundary tests.
 
 ## Generated Contract Outputs
 

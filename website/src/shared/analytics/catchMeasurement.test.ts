@@ -6,7 +6,7 @@ import {brand} from "@catch/brand";
 
 const id = (n = 1) => `catch_1790899200000_00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 const context = (marketing = true): MeasurementContext => ({path: "/host/", consent: {
-  version: 4, analytics: true, marketing, updatedAt: "2026-10-02T00:00:00Z",
+  version: 5, analytics: true, marketing, updatedAt: "2026-10-02T00:00:00Z",
 }});
 const lead: CatchAcquisitionEvent = {name: "lead_accepted", eventId: id(), form: "host_application",
   receipt: {ok: true, alreadyJoined: false}};
@@ -30,7 +30,7 @@ describe("Catch acquisition boundary", () => {
   });
 
   it.each([null, {...context().consent!, analytics: false, marketing: false},
-    {...context().consent!, version: 1}])("drops unconsented/legacy events with no backlog", (consent) => {
+    {...context().consent!, version: 4}])("drops unconsented/legacy events with no backlog", (consent) => {
     const f = fixture();
     f.controller.update({...context(), consent});
     expect(f.controller.track(lead)).toBe(false);

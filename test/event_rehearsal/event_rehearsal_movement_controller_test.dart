@@ -123,7 +123,7 @@ void main() {
       final original = repository.writes.single.change;
       subscription.close();
       await container.pump();
-      expect(container.exists(provider), isTrue);
+      expect(container.read(provider.exists), isTrue);
       container.read(query.notifier).reload();
       await settle();
       final fresh = container.read(query).requireValue;

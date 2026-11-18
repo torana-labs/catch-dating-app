@@ -173,6 +173,66 @@
           "source": "/host/claim/**",
           "destination": "/claim/",
           "type": 301
+        },
+        {
+          "source": "/product/bookings",
+          "destination": "/product/bookings-and-memberships/",
+          "type": 301
+        },
+        {
+          "source": "/product/bookings/**",
+          "destination": "/product/bookings-and-memberships/",
+          "type": 301
+        },
+        {
+          "source": "/product/messages",
+          "destination": "/product/messages-and-growth/",
+          "type": 301
+        },
+        {
+          "source": "/product/messages/**",
+          "destination": "/product/messages-and-growth/",
+          "type": 301
+        },
+        {
+          "source": "/product/guests",
+          "destination": "/product/guest-records/",
+          "type": 301
+        },
+        {
+          "source": "/product/guests/**",
+          "destination": "/product/guest-records/",
+          "type": 301
+        },
+        {
+          "source": "/product/reports",
+          "destination": "/product/reports-and-payouts/",
+          "type": 301
+        },
+        {
+          "source": "/product/reports/**",
+          "destination": "/product/reports-and-payouts/",
+          "type": 301
+        },
+        {
+          "source": "/product/night",
+          "destination": "/product/the-room/",
+          "type": 301
+        },
+        {
+          "source": "/product/night/**",
+          "destination": "/product/the-room/",
+          "type": 301
+        },
+        {
+          "source": "/product/door",
+          "destination": "/product/running-the-event/",
+          "type": 301
+        },
+        {
+          "source": "/product/door/**",
+          "destination": "/product/running-the-event/",
+          "type": 301
         }
       ],
       "rewrites": [
@@ -231,9 +291,9 @@
           }
         },
         {
-          "source": "/api/host-acquisition-consent",
+          "source": "/api/listing-request",
           "function": {
-            "functionId": "hostAcquisitionConsent",
+            "functionId": "submitListingRequest",
             "region": "asia-south1"
           }
         },
