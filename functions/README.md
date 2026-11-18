@@ -542,7 +542,6 @@ enter previews.
 | `onEventChatSignalMembershipWritten` | `src/chatSignals/eventChatSignals.ts` | Not yet described. |
 | `onEventChatSignalRoomWritten` | `src/chatSignals/eventChatSignals.ts` | Not yet described. |
 | `onEventGuestEntryEventWritten` | `src/guestEvents/triggers.ts` | Rebuilds the event's `eventGuestEntries` document, its guests' `guestEventStatuses` rows and its `savedEvents` cards when anything besides booking counters changes |
-| `onSavedEventCardCreated` | `src/guestEvents/triggers.ts` | Writes a new saved-event edge's list card from its event |
 | `onEventGuestEntryFormWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest entry of the event an application form targets when the form is published, paused or retargeted |
 | `onEventGuestEntryOrganizerWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest entries of an organizer's published events when its visibility or public page changes |
 | `onFoundingHostOrganizerWritten` | `src/foundingHosts/foundingHostTriggers.ts` | When an organizer gains an owner, takes the next founding place in its city (capped in one transaction, one per owner per city) and writes the 90-day trial into its commercial terms override. |
@@ -552,9 +551,12 @@ enter previews.
 | `onGuestEventStatusParticipationWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest's `guestEventStatuses` row when their Catch booking status changes |
 | `onGuestEventStatusPaymentWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest's `guestEventStatuses` row when a website or offer payment changes |
 | `onHostDirectoryOrganizerCreated` | `src/hostReadModels/directoryActivation.ts` | Activates every Host directory read model (contacts, responses, forms, groups, events) for a new organizer |
+| `onProgramAccessViewGrantChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites that account's programme access view when a staff grant changes |
+| `onProgramAccessViewProgramChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites the owner's view, and every staff view when the creator or organizer changes, when a programme changes |
 | `onProgramGuestWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a guest's phone or household changes. |
 | `onProgramHouseholdWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a household's primary phone changes. |
 | `onProgramWhatsappInboundMessageCreated` | `src/programs/programWhatsapp/inboundTrigger.ts` | Runs the wedding assistant (handleProgramWhatsappInbound) for each stored inbound guest message; replies through sendProgramServiceReply or passes the thread to the planner. |
+| `onSavedEventCardCreated` | `src/guestEvents/triggers.ts` | Writes a new saved-event edge's list card from its event |
 | `previewProgramAssistantReply` | `src/programs/assistant/preview.ts` | The wedding assistant's Try it: the same policy, fact pack, model and budget as a guest message, nothing sent. |
 | `reconcileFoundingHostPlacesDaily` | `src/foundingHosts/foundingHostTriggers.ts` | Daily 04:25 India time: takes the founding places the trigger missed for organizers that gained an owner in the last three days, still one per owner per city. |
 | `reconcileProgramVendorBill` | `src/programs/vendorBills.ts` | Reviews, checks, questions or approves a vendor bill against recorded trips. |
