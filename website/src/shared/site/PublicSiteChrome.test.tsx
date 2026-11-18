@@ -10,7 +10,7 @@ afterEach(() => {cleanup(); vi.mocked(trackSiteCtaClick).mockReset();});
 const globalLabels = ["What’s on", "Safety", "For hosts"];
 const destinations = ["/explore/", "/safety/", "/host/"];
 // The For hosts menu's columns and pages, in reading order (the canvas's KitHeader menu).
-const forHosts_ = siteHeaderCopy.host.nav.find((entry) => "sections" in entry && entry.label === "For hosts") as {sections: {title: string; links: {href: string; label: string}[]}[]};
+const forHostsColumns = siteHeaderCopy.host.nav.flatMap((entry) => "sections" in entry && entry.label === "For hosts" ? entry.sections ?? [] : []);
 const hostTypePages = ["run-clubs", "racket-sports", "supper-clubs", "quiz-nights", "venues", "studios", "nightlife", "workshops", "communities",
   "creators", "teams", "outdoors", "facilities", "colleges", "brands"].map((type) => `/host/${type}/`);
 const productPages = ["/how-it-works/", "/product/your-page/", "/product/bookings-and-memberships/", "/product/messages-and-growth/", "/product/the-room/",
@@ -122,7 +122,7 @@ describe("canonical public chrome", () => {
     expect(within(panel).getAllByRole("list").map((list) => document.getElementById(list.getAttribute("aria-labelledby")!)?.textContent))
       .toEqual(["Product", "By format", "By organisation", "Programmes", "Where you are"]);
     const hrefs = within(panel).getAllByRole("link").map((link) => link.getAttribute("href"));
-    expect(hrefs).toEqual(forHosts_.sections.flatMap((section) => section.links.map((link) => link.href)));
+    expect(hrefs).toEqual(forHostsColumns.flatMap((section) => section.links.map((link) => link.href)));
     // Every product page and every organiser type page is one press away.
     for (const page of [...productPages, ...hostTypePages]) expect(hrefs, page).toContain(page);
     expect(within(within(panel).getByRole("list", {name: "Product"})).getAllByRole("link")[0].getAttribute("href")).toBe("/host/");
@@ -146,7 +146,7 @@ describe("canonical public chrome", () => {
     );
     fireEvent.click(screen.getByRole("button", {name: publicSiteCopy.menu.openLabel}));
     const items = screen.getAllByRole("menuitem");
-    const columns = forHosts_.sections.map((section) => section.links.map((link) => link.label));
+    const columns = forHostsColumns.map((section) => section.links.map((link) => link.label));
     expect(items.map((item) => item.textContent)).toEqual(["What’s on", "Pricing", "Help", ...columns.flat(), "Sign in"]);
     // A divider opens each of the menu's columns, and the account entry after them.
     const starts = columns.reduce<number[]>((at, column, index) => [...at, index === 0 ? 3 : at[index - 1] + columns[index - 1].length], []);
