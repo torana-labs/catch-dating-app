@@ -6,8 +6,10 @@ import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart'
 import 'package:catch_dating_app/hosts/insights/host_event_report_body.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_photos_section.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_state.dart';
+import 'package:catch_dating_app/hosts/insights/host_event_reviews_screen.dart';
 import 'package:catch_dating_app/hosts/insights/host_insights_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
+import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -87,14 +89,18 @@ class HostEventReportScreen extends ConsumerWidget {
               )
             : HostEventReportBody(
                 state: state,
-                onAllReviews: () => context.pushNamed(
-                  Routes.hostAppEventManageScreen.name,
-                  pathParameters: {
-                    'organizerId': organizer.id,
-                    'eventId': event.id,
-                  },
-                  queryParameters: const {'section': 'setup'},
-                  extra: event,
+                onAllReviews: () => unawaited(
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => HostEventReviewsScreen(
+                        eventId: event.id,
+                        eventTitle: event.title,
+                      ),
+                    ),
+                  ),
+                ),
+                onReview: (review) => unawaited(
+                  showReviewResponseSheet(context: context, review: review),
                 ),
                 onInviteAll: () => context.pushNamed(
                   Routes.hostInboxScreen.name,

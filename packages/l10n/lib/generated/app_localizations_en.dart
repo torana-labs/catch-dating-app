@@ -29532,4 +29532,177 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostFormatsCrawlSweep => 'Start the return sweep';
+
+  @override
+  String hostEventsGuestsOfferAll({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Offer the next $count places',
+      one: 'Offer the next place',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get hostEventsGuestsOffered => 'Offered';
+
+  @override
+  String hostEventsGuestsAskedTitle({required String name}) {
+    return '$name asked to come';
+  }
+
+  @override
+  String get hostEventsGuestsAskedBody =>
+      'Let them in, or decline. We’ll tell them either way.';
+
+  @override
+  String get hostEventsGuestsSeeProfile => 'See profile';
+
+  @override
+  String get hostEventsGuestsDecline => 'Decline';
+
+  @override
+  String get hostEventsPlanEmptyAction => 'Edit the event';
+
+  @override
+  String get hostEventsLinkShare => 'Share and invite links';
+
+  @override
+  String get hostEventsLinkShareBody => 'Your link to copy or share';
+
+  @override
+  String get hostEventsLinkShareInviteBody =>
+      'Your private link and named invite links';
+
+  @override
+  String get hostEventsMenuChat => 'Event chat';
+
+  @override
+  String get hostEventsMenuDelete => 'Delete event';
+
+  @override
+  String get hostEventsDeleteTitle => 'Delete this event?';
+
+  @override
+  String get hostEventsDeleteBody =>
+      'Nobody has booked yet, so it goes for good. To keep a record of it, cancel it instead.';
+
+  @override
+  String get hostEventsDeleteConfirm => 'Delete';
+
+  @override
+  String get hostEventsDeleted => 'Event deleted';
+
+  @override
+  String get hostEventsDoorTitle => 'Door access';
+
+  @override
+  String get hostEventsDoorBody =>
+      'Give someone the door for this event only. They can check guests in and see their names, and nothing else.';
+
+  @override
+  String get hostEventsDoorWholeTeam => 'Your whole team';
+
+  @override
+  String get hostEventsDoorWholeTeamBody =>
+      'Hosts and door staff for every event';
+
+  @override
+  String get hostEventsShareLinkTitle => 'Your link';
+
+  @override
+  String get hostEventsShareLinkNote =>
+      'Anyone with it can see the event and book.';
+
+  @override
+  String get hostEventsShareInviteLinkTitle => 'Private link';
+
+  @override
+  String get hostEventsShareInviteLinkNote =>
+      'People with this link can book. Share it only with people you’re inviting.';
+
+  @override
+  String get hostEventsShareCopy => 'Copy link';
+
+  @override
+  String get hostEventsShareShare => 'Share';
+
+  @override
+  String get hostEventsShareCopied => 'Link copied';
+
+  @override
+  String get hostEventsShareNamedTitle => 'Invite links';
+
+  @override
+  String get hostEventsShareNamedNote =>
+      'Make one for each place you share the night, to see who came from where.';
+
+  @override
+  String get hostEventsShareNamedEmpty => 'No invite links yet.';
+
+  @override
+  String get hostEventsShareNamedOff => 'Turned off';
+
+  @override
+  String hostEventsShareNamedCounts({
+    required int opened,
+    required int booked,
+  }) {
+    return '$opened opened · $booked booked';
+  }
+
+  @override
+  String get hostEventsShareCopyShort => 'Copy';
+
+  @override
+  String get hostEventsShareTurnOff => 'Turn off';
+
+  @override
+  String get hostEventsShareNewLabel => 'New invite link';
+
+  @override
+  String get hostEventsShareNewPlaceholder => 'Who it’s for, like Office group';
+
+  @override
+  String get hostEventsShareCreate => 'Make and copy the link';
+
+  @override
+  String hostEventsShareCopiedNamed({required String label}) {
+    return '$label link copied';
+  }
+
+  @override
+  String hostEventsShareTurnOffTitle({required String label}) {
+    return 'Turn off $label?';
+  }
+
+  @override
+  String get hostEventsShareTurnOffBody =>
+      'People can’t book through it any more.';
+
+  @override
+  String get hostEventsShareKeepOn => 'Keep it on';
+
+  @override
+  String get hostEventReviewsReplyNote =>
+      'Tap a review to reply. Your reply shows with it on your page.';
+
+  @override
+  String hostEventReviewsWithReply({
+    required String comment,
+    required String reply,
+  }) {
+    return '$comment\n\nYour reply: $reply';
+  }
+
+  @override
+  String get hostLiveScoresStopCountdown => 'Stop the countdown';
+
+  @override
+  String get hostEventsGuestSourcesTitle => 'Guest sources';
+
+  @override
+  String get hostEventsGuestSourcesBody =>
+      'Catch registration, a guest file, Luma, and forwarding the list';
 }

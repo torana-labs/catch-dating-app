@@ -20,6 +20,7 @@ class HostEventPlanBody extends StatelessWidget {
     required this.onRetry,
     this.onEditStep,
     this.onAddStep,
+    this.onEditEvent,
   });
 
   final HostEventPlanState state;
@@ -35,6 +36,10 @@ class HostEventPlanBody extends StatelessWidget {
 
   /// Opens the editor for a new last step; null while steps are locked.
   final VoidCallback? onAddStep;
+
+  /// Opens the event's editor, where a night without a plan picks its
+  /// format; null hides the button.
+  final VoidCallback? onEditEvent;
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +62,15 @@ class HostEventPlanBody extends StatelessWidget {
             icon: CatchIcons.rules,
             title: l10n.hostEventsPlanEmptyTitle,
             message: l10n.hostEventsPlanEmptyBody,
+            actions: [
+              if (onEditEvent case final onEditEvent?)
+                CatchButton(
+                  key: const ValueKey<String>('host-event-plan-edit-event'),
+                  label: l10n.hostEventsPlanEmptyAction,
+                  leading: CatchIcon(CatchIcons.edit),
+                  onPressed: onEditEvent,
+                ),
+            ],
           ),
         );
       case HostEventPlanStatus.ready:

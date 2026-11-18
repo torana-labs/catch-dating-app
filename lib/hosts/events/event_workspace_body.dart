@@ -13,17 +13,23 @@ import 'package:flutter/widgets.dart';
 enum HostEventWorkspaceAction {
   plan,
   publish,
+  share,
+  sources,
+  moments,
   closeOut,
   edit,
   duplicate,
   team,
   practise,
+  chat,
   cancel,
+  delete,
 }
 
 /// The event workspace's overview in board order: the poster, the views,
-/// Ready for tonight, the plan, booking and after-the-night links, Booked
-/// and Ticket sales, Edit and the team, and Cancel this event.
+/// Ready for tonight, the plan, booking, sharing, moments and
+/// after-the-night links, Booked and Ticket sales, Edit and the team, and
+/// Cancel this event.
 class HostEventWorkspaceBody extends StatelessWidget {
   const HostEventWorkspaceBody({
     super.key,
@@ -125,7 +131,8 @@ class HostEventWorkspaceBody extends StatelessWidget {
                 ? context.l10n.hostEventSettingsArrivalReady
                 : context.l10n.hostEventSettingsArrivalNotReady,
             leading: state.arrivalReady! ? done : todo,
-            onTap: null,
+            chevron: true,
+            onTap: () => onAction(HostEventWorkspaceAction.moments),
           ),
         CatchIndexRow(
           key: const ValueKey<String>('host-event-ready-practise'),
@@ -166,6 +173,31 @@ class HostEventWorkspaceBody extends StatelessWidget {
             chevron: true,
             onTap: () => onAction(HostEventWorkspaceAction.publish),
           ),
+        if (!cancelled)
+          CatchIndexRow(
+            key: const ValueKey<String>('host-event-link-share'),
+            title: l10n.hostEventsLinkShare,
+            subtitle: event.effectiveEventPolicy.usesInviteOnly
+                ? l10n.hostEventsLinkShareInviteBody
+                : l10n.hostEventsLinkShareBody,
+            chevron: true,
+            onTap: () => onAction(HostEventWorkspaceAction.share),
+          ),
+        if (!cancelled)
+          CatchIndexRow(
+            key: const ValueKey<String>('host-event-link-sources'),
+            title: l10n.hostEventsGuestSourcesTitle,
+            subtitle: l10n.hostEventsGuestSourcesBody,
+            chevron: true,
+            onTap: () => onAction(HostEventWorkspaceAction.sources),
+          ),
+        CatchIndexRow(
+          key: const ValueKey<String>('host-event-link-moments'),
+          title: context.l10n.hostMomentsManageEntryTitle,
+          subtitle: context.l10n.hostMomentsManageEntryBody,
+          chevron: true,
+          onTap: () => onAction(HostEventWorkspaceAction.moments),
+        ),
         CatchIndexRow(
           key: const ValueKey<String>('host-event-link-close-out'),
           title: l10n.hostEventsLinkCloseOut,

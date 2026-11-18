@@ -105,6 +105,13 @@ class _HostEventPlanScreenState extends ConsumerState<HostEventPlanScreen> {
             },
             onEditStep: (index) => _openStep(state, index),
             onAddStep: () => _openStep(state, null),
+            onEditEvent: () => context.pushNamed(
+              Routes.hostAppEditEventScreen.name,
+              pathParameters: {
+                'organizerId': request.organizerId,
+                'eventId': request.eventId,
+              },
+            ),
           ),
           overlay: editing == null
               ? null

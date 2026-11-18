@@ -203,6 +203,8 @@ import 'package:widgetbook_workspace/host_memberships/host_membership_use_cases.
     as _widgetbook_workspace_host_memberships_host_membership_use_cases;
 import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart'
     as _widgetbook_workspace_hosts_host_booking_provider_use_cases;
+import 'package:widgetbook_workspace/hosts/host_event_gaps_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_event_gaps_use_cases;
 import 'package:widgetbook_workspace/hosts/host_event_offer_use_cases.dart'
     as _widgetbook_workspace_hosts_host_event_offer_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_admission_use_cases.dart'
@@ -9702,6 +9704,83 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookFolder(
             name: 'Events',
             children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventDoorScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Before anyone has the door',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_gaps_use_cases
+                            .hostEventDoorScreenUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventGuestSourcesScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'A Catch night',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_gaps_use_cases
+                            .hostEventGuestSourcesScreenUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventInviteLinkRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Working and turned off',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_gaps_use_cases
+                            .hostEventInviteLinkRowUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventReviewsBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'One replied, one not',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_gaps_use_cases
+                            .hostEventReviewsBodyUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventReviewsScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'One replied, one not',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_gaps_use_cases
+                            .hostEventReviewsScreenUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventShareBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'An invite-only night',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_gaps_use_cases
+                            .hostEventShareBodyUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventShareScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'An invite-only night',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_gaps_use_cases
+                            .hostEventShareScreenUseCase,
+                  ),
+                ],
+              ),
               _widgetbook.WidgetbookFolder(
                 name: 'Rows',
                 children: [
