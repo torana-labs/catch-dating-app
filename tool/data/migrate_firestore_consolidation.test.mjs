@@ -537,7 +537,41 @@ test("program-access-views creates each owner and staff view once", async () => 
   assert.equal(db.data["programStaffGrants/p1__desk-1"].revision, 2);
   const again = await planMigration(db, migration);
   assert.equal(again.totals.toCreate, 0);
-  assert.equal(again.totals.alreadyCopied, 3);
+  assert.equal(again.totals.conflicts, 0);
+});
+
+test("program-access-views-refresh repairs a stale view once and then writes nothing", async () => {
+  const create = MIGRATIONS.find((entry) => entry.name === "program-access-views");
+  const refresh = MIGRATIONS.find((entry) => entry.name === "program-access-views-refresh");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const db = fakeDb({
+    "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active"},
+    "programStaffGrants/p1__desk-1": {organizerId: "o1", programId: "p1", uid: "desk-1",
+      displayName: "Arjun", phoneLastFour: "0001", status: "active", createdBy: "owner-1",
+      duties: [{duty: "hotelDesk", pickupPointIds: [], hotelIds: ["h1"], expiresAtMillis: later}],
+      expiresAt: at(later), revokedBy: null, revokedAt: null, revision: 2},
+  });
+  await applyMigrationPlan(db, await planMigration(db, create));
+  // A view an earlier trigger wrote without assignments and the grant expiry.
+  const current = {...db.data["programAccessViews/p1__desk-1"]};
+  const stale = {...current};
+  delete stale.assignments;
+  delete stale.grantExpiresAtMillis;
+  db.data["programAccessViews/p1__desk-1"] = stale;
+  // Creating never conflicts with an existing view, stale or not.
+  const plan = await planMigration(db, create);
+  assert.equal(plan.totals.conflicts, 0);
+  assert.equal(plan.totals.toCreate, 0);
+
+  const dry = await planMigration(db, refresh);
+  assert.equal(dry.totals.toCreate, 1, "one stale view to rewrite");
+  await applyMigrationPlan(db, dry);
+  assert.deepEqual(db.data["programAccessViews/p1__desk-1"], current);
+  assert.equal(db.data["programStaffGrants/p1__desk-1"].revision, 2);
+  const again = await planMigration(db, refresh);
+  assert.equal(again.totals.toCreate, 0, "a rerun writes nothing");
+  assert.equal(again.totals.conflicts, 0);
 });
 
 test("host-whatsapp-thread-views creates each retained thread's view once", async () => {

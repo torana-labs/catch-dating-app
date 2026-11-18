@@ -343,6 +343,25 @@ async function programAccessViewRow(db, programId, uid) {
   }
 }
 
+/**
+ * A view to create, or null when the account already has one: a stale view
+ * is the refresh migration's to repair, never a conflict here.
+ */
+async function newProgramAccessViewRow(db, programId, uid) {
+  const existing = await db.collection("programAccessViews")
+    .doc(`${programId}__${uid}`).get();
+  return existing.exists ? null : programAccessViewRow(db, programId, uid);
+}
+
+/** Every field of a view; the refresh rewrites any that differ. */
+const programAccessViewFields = [
+  "programId", "organizerId", "uid", "ownerUid", "role", "status",
+  "activeFromMillis", "expiresAtMillis", "duties", "pickupAll",
+  "pickupScoped", "hotelAll", "hotelScoped", "functionAll", "functionScoped",
+  "workPickup", "workHotel", "workFunction", "assignments",
+  "grantExpiresAtMillis", "revision", "version",
+];
+
 let programWorkViewModule = null;
 function functionsProgramWorkViews() {
   try {
@@ -893,22 +912,47 @@ export const MIGRATIONS = [
       {
         source: "organizerPrograms",
         target: "programAccessViews",
-        skipReason: "no creator recorded",
+        skipReason: "no creator recorded, or the creator already has a view",
         targetId: (id, data) => validId(id) &&
           typeof data.createdBy === "string" && validId(data.createdBy) ?
           `${id}__${data.createdBy}` : null,
         transform: (data, id, db) =>
-          programAccessViewRow(db, id, data.createdBy),
+          newProgramAccessViewRow(db, id, data.createdBy),
       },
       {
         source: "programStaffGrants",
         target: "programAccessViews",
-        skipReason: "not a grant of an existing programme, or the owner's own",
+        skipReason: "not a grant of an existing programme, the owner's own, or " +
+          "already viewed",
         targetId: (id, data) => validId(data.programId) &&
           validId(data.uid) && id === `${data.programId}__${data.uid}` ?
           id : null,
         transform: (data, id, db) =>
-          programAccessViewRow(db, data.programId, data.uid),
+          newProgramAccessViewRow(db, data.programId, data.uid),
+      },
+    ],
+  },
+  {
+    name: "program-access-views-refresh",
+    description:
+      "Repairs programAccessViews that a trigger wrote before it knew every " +
+      "field (the live duty assignments and the grant expiry, #1339). Every " +
+      "view that differs from what the triggers would compute now is " +
+      "rewritten, with a last-update-time precondition, so a view changed " +
+      "meanwhile is left for the next run. Views are derived: programmes and " +
+      "grants are never changed, nothing is deleted, a source that cannot " +
+      "produce a view leaves its view untouched, and a rerun writes " +
+      "nothing. Run after program-access-views. Build Functions first.",
+    steps: [
+      {
+        kind: "fill",
+        collection: "programAccessViews",
+        refresh: programAccessViewFields,
+        fill: async (data, id, db) => {
+          if (!validId(data.programId) || typeof data.uid !== "string" ||
+              !validId(data.uid)) return null;
+          return programAccessViewRow(db, data.programId, data.uid);
+        },
       },
     ],
   },

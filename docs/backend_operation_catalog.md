@@ -555,6 +555,12 @@ read models: `programWorkSummaries` (the programme header) and
 trigger-kept and readable under rules through the account's access view. The
 callable stays deployed for older builds, retire-later.
 
+**Read path decision (Nov 2026, #1339): server-trust.** The two phone-import
+checks (`phone_import_adapter` before the import commit, and the import route's
+access refresh) keep calling `getProgramWorkAccess` live: each is the review
+before a write, and the current wedding-wide guest grant it confirms must come
+from the server, never a cache.
+
 **Read path decision (Nov 2026, #1339): server-trust.** `getProgramTransportPlan`
 stays a callable: it groups waiting parties into vehicles with an algorithm
 that depends on the current time (wait overdue, dispatch-by) and on every

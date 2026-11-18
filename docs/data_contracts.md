@@ -4801,7 +4801,10 @@ drift with later catalog edits.
 authority over one programme, written by triggers on `programStaffGrants` and
 `organizerPrograms` (`onProgramAccessViewGrantChanged`,
 `onProgramAccessViewProgramChanged`) and created for existing owners and grants
-by the `program-access-views` copy-forward migration. The programme's creator
+by the `program-access-views` copy-forward migration, and repaired by
+`program-access-views-refresh` (a view that differs from what the triggers would
+compute now is rewritten under a last-update-time precondition; nothing is
+deleted). The programme's creator
 gets `role: manager` with no expiry; a staff member gets `role: staff` and the
 duties their grant proves: an `inactive` view when the grant is revoked,
 expired, malformed or lacks the owner-approval proof `requireProgramAccess`
