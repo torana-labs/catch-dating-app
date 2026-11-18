@@ -506,6 +506,51 @@ test("program-work-views creates each summary and label once, without contacts",
   assert.equal(again.totals.alreadyCopied, 4);
 });
 
+test("program-arrival-views creates arrivals, departures and vendor views once, without phone numbers", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-arrival-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const leg = (overrides = {}) => ({programId: "p1", organizerId: "o1", guestId: "g1", partyId: null,
+    kind: "inbound", flightNumber: "AI1", originIata: "BOM", flightStatus: "scheduled",
+    scheduledArrivalAt: at(5_000_000), readiness: "expected", pickupPointId: "pp1",
+    destinationHotelId: "h1", destinationLabel: null, passengers: 2, luggageUnits: 1,
+    requiredCapabilities: [], dedicatedVehicle: false, revision: 1, international: false,
+    claimedByUid: null, ...overrides});
+  const db = fakeDb({
+    "organizerPrograms/p1": {organizerId: "o1", transportSettings: {bandWindowMillis: 1,
+      maxReadyWaitMillis: 1, domesticExitLagMillis: 1_800_000, internationalExitLagMillis: 3_600_000,
+      vehicleClasses: []}},
+    "programGuests/g1": {programId: "p1", organizerId: "o1", displayName: "Rohan", phoneE164: "+919900000000"},
+    "programHotels/h1": {programId: "p1", organizerId: "o1", name: "The Grand", receptionContact: "+919911111111"},
+    "programTravelLegs/in1": leg(),
+    "programTravelLegs/in2": leg({readiness: "dispatched"}),
+    "programTravelLegs/out1": leg({kind: "outbound", pickupPointId: "pp1"}),
+    "programStays/s1": {programId: "p1", organizerId: "o1", guestId: "g1", hotelId: "h1",
+      roomLabel: "412", status: "checkedIn", endsAt: at(9_000_000)},
+    "transportVendors/v1": {organizerId: "o1", name: "City Cabs", phoneE164: "+919922222222",
+      programIds: ["p1", "p2"], active: true},
+  });
+  const plan = await planMigration(db, migration);
+  // One arrivals row (the dispatched journey is off the roster), one
+  // departures row and two vendor views.
+  assert.equal(plan.totals.toCreate, 1 + 1 + 2);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["programArrivalViews/in1"].guestDisplayName, "Rohan");
+  assert.equal(db.data["programArrivalViews/in1"].destinationLabel, "The Grand");
+  assert.equal(db.data["programArrivalViews/in2"], undefined);
+  assert.equal(db.data["programDepartureViews/out1"].roomLabel, "412");
+  assert.equal(db.data["programVendorViews/p1__v1"].name, "City Cabs");
+  assert.equal(db.data["programVendorViews/p2__v1"].programId, "p2");
+  const copied = JSON.stringify(Object.fromEntries(Object.entries(db.data).filter(
+    ([key]) => /^program(Arrival|Departure|Vendor)Views\//.test(key))));
+  for (const secret of ["9900000000", "9911111111", "9922222222"]) {
+    assert.equal(copied.includes(secret), false, secret);
+  }
+  assert.equal(db.data["transportVendors/v1"].phoneE164, "+919922222222");
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.conflicts, 0);
+});
+
 test("program-access-views creates each owner and staff view once", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "program-access-views");
   const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});

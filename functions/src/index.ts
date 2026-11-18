@@ -765,6 +765,11 @@ export {onProgramDoorFunctionChanged, onProgramDoorJoinChanged,
 export {onProgramAlertSendChanged, onProgramAlertLegChanged,
   onProgramAlertResolutionChanged} from
   "./programs/programLiveBoardViewTriggers";
+export {onProgramArrivalLegChanged, onProgramArrivalPartyChanged,
+  onProgramArrivalGuestChanged, onProgramArrivalHotelChanged,
+  onProgramArrivalStaffLabelChanged, onProgramDepartureStayChanged,
+  onProgramArrivalSettingsChanged, onProgramVendorViewChanged} from
+  "./programs/programArrivalViewTriggers";
 export {listMyHostAssignments} from "./hostWork/listMyHostAssignments";
 export {
   inviteProgramStaff,

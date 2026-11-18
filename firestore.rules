@@ -303,6 +303,19 @@ service cloud.firestore {
       return hasProgramDuty(programId, 'programCoordinator');
     }
 
+    // An arrivals journey: one airport greeter, dispatcher or coordinator
+    // assignment covers its pickup point and hotel together. Each side of a
+    // route is an id or '*'; a journey with no pickup point or hotel is '~',
+    // which only '*' reaches.
+    function programArrivalRoute(programId, pickupKey, hotelKey) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && (programView(programId).arrivalRoutes.get('*|*', 0) > request.time.toMillis()
+            || programView(programId).arrivalRoutes.get(pickupKey + '|*', 0) > request.time.toMillis()
+            || programView(programId).arrivalRoutes.get('*|' + hotelKey, 0) > request.time.toMillis()
+            || programView(programId).arrivalRoutes.get(pickupKey + '|' + hotelKey, 0) > request.time.toMillis()));
+    }
+
     function programDutyCoversFunction(programId, duty, functionId) {
       return isProgramManager(programId)
         || (hasProgramAccessView(programId)
@@ -2542,6 +2555,26 @@ service cloud.firestore {
     match /programTravelCountViews/{programId} {
       allow get: if programFullReach(programId);
       allow list, write: if false;
+    }
+
+    // Arrivals, departures and dispatchers' vendors (#1339). Arrivals rows
+    // follow the account's arrival routes; a scoped account lists one route at
+    // a time, a query naming the programme and its pickup and hotel keys.
+    // Departures follow the hotel desk duty; vendors the dispatcher duty.
+    match /programArrivalViews/{legId} {
+      allow get, list: if programArrivalRoute(resource.data.programId,
+        resource.data.pickupKey, resource.data.hotelKey);
+      allow write: if false;
+    }
+    match /programDepartureViews/{legId} {
+      allow get, list: if programDutyCoversHotel(resource.data.programId,
+        'hotelDesk', resource.data.hotelId);
+      allow write: if false;
+    }
+    match /programVendorViews/{viewId} {
+      allow get, list: if hasProgramDuty(resource.data.programId,
+        'transportDispatcher');
+      allow write: if false;
     }
 
     match /programStaffInvites/{inviteId} {

@@ -575,6 +575,17 @@ the phone computes the schedule phases from its clock. `resolveProgramAlert`,
 revision and request-id fences. All three callables stay deployed for older
 builds, retire-later.
 
+`getProgramArrivalsRoster`, `getProgramDeparturesRoster` and
+`listTransportVendors` move to read models: `programArrivalViews` (readable
+where one greeter, dispatcher or coordinator assignment covers the journey's
+pickup point and hotel together, through the access view's `arrivalRoutes`),
+`programDepartureViews` (hotel desk duty covering the hotel) and
+`programVendorViews` (dispatchers; the callable never returned the vendor's
+phone number, and the view cannot hold it). The desk counts come from the rows
+and the phone's clock. All three callables stay deployed for older builds,
+retire-later. `getProgramHotelInbound` and `listProgramTrips` move in the next
+transport batch; `getProgramTransportPlan` stays server-trust below.
+
 **Read path decision (Nov 2026, #1339): server-trust.** `getProgramTransportPlan`
 stays a callable: it groups waiting parties into vehicles with an algorithm
 that depends on the current time (wait overdue, dispatch-by) and on every
