@@ -52,14 +52,14 @@ export const playbookFixedRoutes = [
   {id: "host_brands", group: "host", path: "/host/brands/"},
 
   {id: "how_it_works", group: "product", path: "/how-it-works/"},
-  {id: "product_night", group: "product", path: "/product/night/"},
-  {id: "product_bookings", group: "product", path: "/product/bookings/"},
   {id: "product_your_page", group: "product", path: "/product/your-page/"},
-  {id: "product_door", group: "product", path: "/product/door/"},
-  {id: "product_messages", group: "product", path: "/product/messages/"},
-  {id: "product_guests", group: "product", path: "/product/guests/"},
+  {id: "product_bookings", group: "product", path: "/product/bookings-and-memberships/"},
+  {id: "product_messages", group: "product", path: "/product/messages-and-growth/"},
+  {id: "product_room", group: "product", path: "/product/the-room/"},
+  {id: "product_event", group: "product", path: "/product/running-the-event/"},
+  {id: "product_guests", group: "product", path: "/product/guest-records/"},
+  {id: "product_reports", group: "product", path: "/product/reports-and-payouts/"},
   {id: "product_forms", group: "product", path: "/product/forms/"},
-  {id: "product_reports", group: "product", path: "/product/reports/"},
 
   {id: "pricing", group: "product", path: "/pricing/"},
   {id: "safety", group: "resources", path: "/safety/"},
@@ -114,6 +114,7 @@ export const siteRouteHrefs = {
   account_deletion: "/delete-account/",
   refunds: "/refunds/",
   contact: "/contact/",
+  listing_request: "/listings/request/",
 } as const;
 
 /** A path matched to a playbook route: the route, its parameters and the key its content is registered under. */

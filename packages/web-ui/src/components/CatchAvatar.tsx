@@ -1,7 +1,7 @@
 "use client";
 
 import {useState, type CSSProperties, type ReactNode} from "react";
-import type {Ground} from "./palette";
+import type {SharedGround} from "./palette";
 import styles from "./CatchAvatar.module.css";
 
 /** Flutter `CatchAvatarStatus`. */
@@ -55,9 +55,12 @@ export interface CatchAvatarVeiledProps extends CatchAvatarFrame {
   recipe: "veiled";
 }
 
+/** The grounds a monogram's initials sit on: the palette grounds the apps share. */
+export type CatchMonogramGround = SharedGround;
+
 /** `CatchAvatar.monogram`: initials on a palette ground. */
 export interface CatchAvatarMonogramProps extends CatchAvatarFrame {
-  ground: Ground;
+  ground: CatchMonogramGround;
   initials?: string;
   name?: string;
   recipe: "monogram";
