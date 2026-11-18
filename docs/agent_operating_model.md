@@ -174,6 +174,37 @@ when the surface is governed by one:
 
 This is product architecture state, not agent execution state.
 
+## Third-Party Names
+
+The repository is public, so everything in it, and every issue, pull request
+and commit message, is published. Real organisers, venues and brands live only
+in the production database.
+
+- Fixtures, sample data, stories, tests, docs, design packs and generated data
+  use fictional names, fictional handles and reserved domains (`.example`,
+  `.test`, `example.com`). Reuse the fictional set in
+  `tool/third_party_names_allowlist.json`; add a new name there only when it is
+  clearly invented. Platform names that adapters need (Luma, Instagram,
+  District, Urbanaut) are fine; a real account or page on them is not.
+- Never commit a record built from a real public page, a production export or
+  a captured third-party page. Re-synthesise a capture as a fictional page with
+  the same markup. Committed generated listing projections stay as the
+  generator writes them offline; the deploy materialises production data.
+- Issues, PR titles and bodies, review comments and commit messages describe a
+  real organiser generically ("the complaining organiser", "the Indore
+  organiser") or by an opaque case id, never by name, handle, URL or a
+  name-derived id. A bare `@name` in GitHub text notifies that account: use
+  `@` only for a collaborator you mean to notify, and put code, placeholders
+  and handles in backticks.
+
+`meta:third-party-names` (`tool/check_third_party_names.mjs`) fails on social
+URLs and `@handles` outside the fictional allowlist and on public-source
+records in generated data. `.github/workflows/pr-text-guard.yml` fails a pull
+request whose title, body or commit messages mention a non-collaborator or a
+social account outside the allowlist. Both print locations, never the matched
+text, because CI logs are public. Neither can recognise a plain real name, so
+the rule above still applies to prose.
+
 ## Git Preservation And Reconciliation
 
 Working branches are single-use preservation units. Commit bounded work and
