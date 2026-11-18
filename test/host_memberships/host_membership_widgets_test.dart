@@ -173,7 +173,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(const HostMembershipBadge(planName: 'Sunday Runners')),
     );
-    expect(find.text('MEMBER · SUNDAY RUNNERS'), findsOneWidget);
+    expect(find.text('Member · Sunday Runners'), findsOneWidget);
     await tester.pumpWidget(
       _wrap(const HostMembershipBadge(status: HostMembershipStatus.expired)),
     );

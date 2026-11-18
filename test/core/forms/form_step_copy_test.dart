@@ -68,10 +68,10 @@ void main() {
       ),
     );
 
-    expect(find.text('TERMINÉ'), findsOneWidget);
-    expect(find.text('À COMPLÉTER'), findsOneWidget);
-    expect(find.text('FACULTATIF'), findsOneWidget);
-    expect(find.text('COMPLETE'), findsNothing);
+    expect(find.text('Terminé'), findsOneWidget);
+    expect(find.text('À compléter'), findsOneWidget);
+    expect(find.text('Facultatif'), findsOneWidget);
+    expect(find.text('Complete'), findsNothing);
     await tester.tap(find.text('Location'));
     expect(selected, 1);
   });
@@ -92,7 +92,7 @@ void main() {
       ),
     );
 
-    expect(find.text('À COMPLÉTER'), findsOneWidget);
+    expect(find.text('À compléter'), findsOneWidget);
     await tester.tap(find.text('Notes'));
     expect(selected, 2);
   });
@@ -123,7 +123,7 @@ void main() {
 
     await tester.tap(find.text('Open overview'));
     await pumpFeatureUi(tester);
-    expect(find.text('TERMINÉ'), findsOneWidget);
+    expect(find.text('Terminé'), findsOneWidget);
     await tester.tap(find.text('Location'));
     await pumpFeatureUi(tester);
     expect(selected, 1);
