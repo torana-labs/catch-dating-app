@@ -22,6 +22,17 @@ function assertOk(result, label) {
   assert.equal(result.status, 0, `${label} failed:\n${result.stdout}\n${result.stderr}`);
 }
 
+// The distinct findings in `flutter analyze` text output, as
+// "severity|file:line:column|code", sorted. Repeated lines count once.
+function distinctAnalyzerFindings(report) {
+  const findings = new Set();
+  for (const line of report.split("\n")) {
+    const match = /^\s*(error|warning|info) • .+ • (\S+:\d+:\d+) • (\w+)\s*$/u.exec(line);
+    if (match) findings.add(`${match[1]}|${match[2]}|${match[3]}`);
+  }
+  return [...findings].sort();
+}
+
 const listedFiles = (stdout) => stdout.split("\n")
   .filter((line) => /^ {2}\S/u.test(line))
   .map((line) => line.trim());
@@ -205,6 +216,23 @@ describe("templates", () => {
 const toolchainMissing = !process.env.CI &&
   (run("flutter", ["--version"]).status !== 0 || !fs.existsSync(fromRepo("node_modules/.bin/tsc")));
 
+test("analyzer findings count each distinct diagnostic once", () => {
+  // The text of the 18 Nov queue failure: one seeded error reported twice.
+  const repeated = "Analyzing zebras...\n\n" +
+    "  error • Undefined name 'notARealSymbol'. Try correcting the name to one that is defined, or defining the name • lib/src/parts/analysis_probe.dart:1:30 • undefined_identifier\n" +
+    "  error • Undefined name 'notARealSymbol'. Try correcting the name to one that is defined, or defining the name • lib/src/parts/analysis_probe.dart:1:30 • undefined_identifier\n\n" +
+    "2 issues found. (ran in 28.5s)\n";
+  assert.deepEqual(distinctAnalyzerFindings(repeated),
+    ["error|lib/src/parts/analysis_probe.dart:1:30|undefined_identifier"]);
+  // A second, different finding must still show up, so a dirty generated file fails.
+  const dirty = `${repeated}  info • Unused import • lib/src/zebras.dart:3:8 • unused_import\n`;
+  assert.deepEqual(distinctAnalyzerFindings(dirty), [
+    "error|lib/src/parts/analysis_probe.dart:1:30|undefined_identifier",
+    "info|lib/src/zebras.dart:3:8|unused_import",
+  ]);
+  assert.deepEqual(distinctAnalyzerFindings("No issues found!\n"), []);
+});
+
 describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "flutter or node_modules is missing"}, () => {
   // A stable path, so the analyzer's per-path plugin build is reused between runs.
   const tree = path.join(fs.realpathSync(os.tmpdir()), `catch-scaffold-test-${createHash("sha1").update(repoRoot).digest("hex").slice(0, 8)}`);
@@ -298,8 +326,12 @@ describe("a real run in a temp copy of the tree", {skip: toolchainMissing && "fl
     fs.rmSync(seeded);
     assert.notEqual(context.status, 0);
     const report = context.stdout + context.stderr;
-    assert.match(report, /analysis_probe\.dart/u, report);
-    assert.match(report, /\b1 issue found/u, report);
+    // Analyzer 13 can report one diagnostic once per analysis context (the
+    // package and its pub workspace), so its "N issues found" total counts
+    // repeats. Compare distinct findings instead: the seeded one must be the
+    // only one.
+    assert.deepEqual(distinctAnalyzerFindings(report),
+      ["error|lib/src/parts/analysis_probe.dart:1:30|undefined_identifier"], report);
     assertOk(run("dart", ["analyze", "lib/catch_ui.dart", "lib/src/components/catch_venue_probe_row.dart",
       "lib/src/components/catch_probe_badge.dart", "--fatal-infos"], inTree("packages/catch_ui")), "catch_ui");
   });

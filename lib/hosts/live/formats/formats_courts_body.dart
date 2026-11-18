@@ -23,6 +23,7 @@ class HostFormatsCourtsBody extends StatelessWidget {
     required this.onSetUp,
     required this.onRetry,
     this.rotating = false,
+    this.onEditRotations,
   });
 
   final HostFormatsCourtsState state;
@@ -35,6 +36,9 @@ class HostFormatsCourtsBody extends StatelessWidget {
 
   /// A rotate command is on its way.
   final bool rotating;
+
+  /// Moves players between rounds by hand; null hides Edit rotations.
+  final VoidCallback? onEditRotations;
 
   @override
   Widget build(BuildContext context) {
@@ -84,8 +88,16 @@ class HostFormatsCourtsBody extends StatelessWidget {
       onRotate: onRotate,
       size: expanded ? CatchButtonSize.sm : CatchButtonSize.md,
     );
+    final edit = onEditRotations == null || rotating
+        ? null
+        : CatchSectionAction(
+            label: l10n.eventSuccessEventSuccessHostOverridesLabelEditRotations,
+            onPressed: onEditRotations,
+          );
     final sitting = CatchSection(
       title: l10n.hostFormatsSittingOut,
+      // Beside the courts on a tablet, Edit rotations sits here.
+      action: expanded ? edit : null,
       note: expanded
           ? '${state.sitters.length}'
           : l10n.hostFormatsSittingOutNote(count: state.sitters.length),
@@ -261,6 +273,7 @@ class HostFormatsCourtsBody extends StatelessWidget {
           ),
           CatchSection(
             title: l10n.hostFormatsOnCourt,
+            action: edit,
             children: [
               for (final court in state.courts)
                 FormatsCourtRow(
