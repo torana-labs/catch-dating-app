@@ -33,7 +33,8 @@ async function seeded() {
 test("a thread view is the inbox row and holds no phone data", async () => {
   const {store, db} = await seeded();
   await reconcileProgramWhatsappThreadView(db, "program-1_household-1");
-  const view = store.getDoc("programWhatsappThreadViews/program-1_household-1")!;
+  const view = store.getDoc(
+    "programWhatsappThreadViews/program-1_household-1")!;
   assert.equal(validate(view), true, JSON.stringify(validate.errors));
   assert.equal(view.displayName, "The Mehra family");
   assert.equal(view.sideLabel, "Aditi");

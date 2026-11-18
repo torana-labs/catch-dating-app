@@ -18,9 +18,11 @@ const fn = (overrides: Record<string, unknown> = {}) => ({
 
 test("the setup view is the callable's programme with no secrets", async () => {
   const store = new FakeFirestore({...baseSeed(),
-    "organizerPrograms/program-1": {...baseSeed()["organizerPrograms/program-1"]!,
+    "organizerPrograms/program-1": {
+      ...baseSeed()["organizerPrograms/program-1"]!,
       whatsappSenderConnectionId: "conn-secret",
-      branding: {color: "rani", coverImagePath: null, creditLine: "Planned by A"}},
+      branding: {color: "rani", coverImagePath: null,
+        creditLine: "Planned by A"}},
     "programFunctions/sangeet": fn(),
     "programFunctions/other": fn({programId: "program-2", name: "Not ours"})});
   const db = store as unknown as FirebaseFirestore.Firestore;
