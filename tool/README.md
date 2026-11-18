@@ -655,16 +655,6 @@ pinned Firebase CLI before credentials; it never installs source dependencies,
 rebuilds frontend bytes, or rematerializes organizer data. Recovery is terminal-source-
 bound, current-main-only, and rejects older attempts at the same SHA.
 
-`tool/firebase/affected_function_targets.mjs` plans each `Deploy backend` run
-from exact Git base/source objects and transitive TypeScript module
-dependencies, excluding whole-declaration type-only imports and exports.
-Functions runtime imports use individual generated schemas, validators and
-catalogs; the schema/type boundary gate rejects aggregate runtime imports.
-It retains all authorized functions for shared initialization,
-runtime/dependency changes, snapshots, and uncertain analysis; a proven empty
-selection records a Functions no-op. It never rewrites package bytes or adds
-unauthorized targets. Its focused tests run with the delivery-package check.
-
 `tool/firebase/plan_firebase_deploy_targets.mjs` is the pure planner behind
 `tool/deploy_firebase_targets.sh`. It validates target syntax, expands logical
 Functions from source exports, keeps exact `functions:<name>` targets, orders

@@ -481,9 +481,9 @@ test("React dependency graph changes keep a bounded root npm closure", () => {
   }
 });
 
-test("backend deploy helper repairs preserve checks with only Node and root npm setup", () => {
+test("backend deploy helper repairs preserve checks with only Node setup", () => {
   const changedPaths = [
-    "tool/firebase/affected_function_targets.test.mjs",
+    "tool/firebase/plan_firebase_deploy_targets.test.mjs",
     "tool/deploy_firebase_targets.sh",
   ];
   const plan = planAffectedToolChecks({
@@ -493,12 +493,12 @@ test("backend deploy helper repairs preserve checks with only Node and root npm 
   });
   assert.equal(plan.mode, "affected");
   assert.equal(plan.repositoryView, "full");
-  assert.deepEqual(plan.setupRequirements, ["node", "root-npm"]);
+  assert.deepEqual(plan.setupRequirements, ["node"]);
 
   // Filling in setup metadata must not remove any direct, mandatory, or
   // transitive check that the previous conservative plan selected.
   const unannotatedManifest = structuredClone(productionManifest);
-  for (const id of ["firebase:check-deploy-ref", "firebase:deploy-targets"]) {
+  for (const id of ["firebase:deploy-target-plan", "firebase:deploy-targets"]) {
     delete unannotatedManifest.tools.find((tool) => tool.id === id).ciRequirements;
   }
   const previousPlan = planAffectedToolChecks({
