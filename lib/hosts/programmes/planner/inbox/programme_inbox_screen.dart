@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:catch_dating_app/contexts/programmes/data/program_inbox_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_whatsapp_models.dart';
@@ -60,12 +61,44 @@ class _HostProgrammeInboxScreenState
       '$prefix-${DateTime.now().microsecondsSinceEpoch}-'
       '${_random.nextInt(1 << 30)}';
 
+  /// Reads the inbox and the open conversation again after a failed load.
+  /// A command needs no refresh: both are listeners and show its result.
   void _refresh() {
-    ref.invalidate(programWhatsappInboxProvider(widget.programId, _filter));
+    ref.invalidate(programWhatsappThreadRowsStreamProvider(widget.programId));
+    ref.invalidate(programWhatsappSenderProvider(widget.programId));
     final threadId = _threadId;
     if (threadId != null) {
-      ref.invalidate(programWhatsappThreadProvider(widget.programId, threadId));
+      ref.invalidate(
+        programWhatsappThreadStreamProvider(widget.programId, threadId),
+      );
     }
+  }
+
+  /// Marks the open conversation read once per revision, the write half of
+  /// opening it.
+  final Map<String, int> _marked = {};
+
+  /// The revision marking a thread read answered, newer than the view's
+  /// until the trigger catches up.
+  final Map<String, int> _readRevision = {};
+  void _markRead(ProgramWhatsappThreadSummary thread) {
+    if (thread.unreadCount == 0 ||
+        _marked[thread.threadId] == thread.revision) {
+      return;
+    }
+    _marked[thread.threadId] = thread.revision;
+    unawaited(
+      ref
+          .read(programmeInboxCommandsProvider)
+          .markWhatsappThreadRead(
+            programId: widget.programId,
+            threadId: thread.threadId,
+          )
+          .then<void>(
+            (revision) => _readRevision[thread.threadId] = revision,
+            onError: (Object _) {},
+          ),
+    );
   }
 
   Future<void> _run(Future<void> Function() action, String failure) async {
@@ -77,7 +110,6 @@ class _HostProgrammeInboxScreenState
     } on Object {
       ok = false;
     }
-    _refresh();
     if (!mounted) return;
     setState(() => _busy = false);
     if (!ok) {
@@ -117,7 +149,11 @@ class _HostProgrammeInboxScreenState
           .read(programmeInboxCommandsProvider)
           .setWhatsappThreadHandling(
             programId: widget.programId,
-            thread: thread,
+            threadId: thread.threadId,
+            expectedRevision: max(
+              thread.revision,
+              _readRevision[thread.threadId] ?? 0,
+            ),
             handledBy: handledBy,
             state: state,
           ),
@@ -140,6 +176,15 @@ class _HostProgrammeInboxScreenState
     );
     final inbox = read.value?.value;
     final threadId = _threadId;
+    if (threadId != null) {
+      ref.listen(programWhatsappThreadProvider(widget.programId, threadId), (
+        _,
+        next,
+      ) {
+        final summary = next.value?.value.summary;
+        if (summary != null) _markRead(summary);
+      });
+    }
     final CatchAsyncState<ProgramReadView<ProgramWhatsappThread>>? threadRead =
         threadId == null
         ? null
