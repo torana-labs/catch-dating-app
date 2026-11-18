@@ -47,6 +47,8 @@ MINIMUM_ANDROID_VERSION_CODE = 100_000
 # refuses the support and marketing URLs on a live version ("cannot be edited
 # at this time"), so only the promotional text goes.
 APP_STORE_LIVE_FIELDS = { "promotional_text" => "promotionalText" }.freeze
+# App Store states of a version that has been submitted but is not yet public.
+SUBMITTED_STATES = %w[WAITING_FOR_REVIEW IN_REVIEW PENDING_DEVELOPER_RELEASE].freeze
 
 opt_out_usage
 default_platform(:ios)
@@ -239,11 +241,34 @@ platform :ios do
     notes = File.join(metadata_path, "en-US", "release_notes.txt")
     UI.user_error!("#{notes} is missing; write this version's What's New there") unless File.exist?(notes)
     screenshots = images_in?(paths[:ios_screenshots])
+    version_string = marketing_version(target)
+    outcome = "submitted; phased rollout starts automatically after approval"
     with_api_key do |key, _key_path|
+    # A version already submitted cannot be submitted again. Running the lane
+    # for it instead switches it to release on approval, or releases it now
+    # when Apple has approved it and it waits for a developer release.
+    app = Spaceship::ConnectAPI::App.find(target["ios.bundleId"])
+    UI.user_error!("No App Store Connect app for #{target['ios.bundleId']}") unless app
+    submitted = app.get_app_store_versions(filter: {
+      platform: Spaceship::ConnectAPI::Platform::IOS, versionString: version_string,
+      appStoreState: SUBMITTED_STATES.join(",")
+    }).first
+    if submitted
+      state = submitted.app_store_state
+      if state == Spaceship::ConnectAPI::AppStoreVersion::AppStoreState::PENDING_DEVELOPER_RELEASE
+        submitted.create_app_store_version_release_request
+        outcome = "was approved and waiting; released now"
+      else
+        submitted.update(attributes: { releaseType: Spaceship::ConnectAPI::AppStoreVersion::ReleaseType::AFTER_APPROVAL })
+        outcome = "already #{state}; switched to release on approval"
+      end
+      UI.success("#{version_string} #{outcome}")
+      next
+    end
     upload_to_app_store(
       api_key: key,
       app_identifier: target["ios.bundleId"],
-      app_version: marketing_version(target),
+      app_version: version_string,
       build_number: build_number,
       skip_binary_upload: true,
       skip_metadata: false,
@@ -252,7 +277,7 @@ platform :ios do
       skip_screenshots: !screenshots,
       overwrite_screenshots: screenshots,
       submit_for_review: true,
-      automatic_release: false,
+      automatic_release: true,
       phased_release: true,
       force: true,
       run_precheck_before_submit: false,
@@ -260,8 +285,8 @@ platform :ios do
     )
     end
     summarize("App Store submission (#{role})", [
-      ["App", target["ios.bundleId"]], ["Version (build)", "#{marketing_version(target)} (#{build_number})"],
-      ["Release", "phased after approval, released manually"]
+      ["App", target["ios.bundleId"]], ["Version (build)", "#{version_string} (#{build_number})"],
+      ["Release", outcome]
     ])
   end
 
