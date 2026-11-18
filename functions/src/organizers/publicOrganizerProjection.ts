@@ -5,6 +5,10 @@ import {logger} from "firebase-functions";
 import {validatePublicOrganizerDocument} from
   "../shared/generated/validators/publicOrganizerDocument";
 import {organizerWomenLed} from "./womenLed";
+import {
+  organizerSummaryChanged,
+  refreshOrganizerEventSummaries,
+} from "./eventOrganizerSummary";
 
 /**
  * Public organizer projection (#1221).
@@ -91,13 +95,17 @@ const defaultDeps: PublicOrganizerDeps = {
  * Rebuilds publicOrganizers/{id} from the current organizer document inside
  * a transaction, so out-of-order trigger delivery cannot leave a stale copy.
  * An organizer that is ineligible, deleted or fails the public contract has
- * no projection.
+ * no projection. Also reports whether the change touched a field the events'
+ * organizerSummary holds, so only those writes fan out to events.
  * @param {string} organizerId Organizer id.
  * @param {PublicOrganizerDeps} deps Injectable Firebase dependencies.
- * @return {Promise<PublicOrganizerOutcome>} What happened to the projection.
+ * @return {Promise<{outcome: PublicOrganizerOutcome, summaryChanged: boolean}>}
+ *   What happened to the projection.
  */
-export async function reconcilePublicOrganizer(organizerId: string,
-  deps: PublicOrganizerDeps = defaultDeps): Promise<PublicOrganizerOutcome> {
+export async function reconcilePublicOrganizerDetailed(organizerId: string,
+  deps: PublicOrganizerDeps = defaultDeps): Promise<{
+    outcome: PublicOrganizerOutcome; summaryChanged: boolean;
+  }> {
   const db = deps.firestore();
   const sourceRef = db.collection("organizers").doc(organizerId);
   const publicRef = db.collection(COLLECTION).doc(organizerId);
@@ -106,30 +114,49 @@ export async function reconcilePublicOrganizer(organizerId: string,
       await Promise.all([tx.get(sourceRef), tx.get(publicRef)]);
     const source = sourceSnap.exists ?
       sourceSnap.data() as Source : undefined;
+    const current = publicSnap.exists ? publicSnap.data() : undefined;
     if (!publicOrganizerEligible(source)) {
-      if (!publicSnap.exists) return "absent";
+      if (!publicSnap.exists) {
+        return {outcome: "absent" as const, summaryChanged: false};
+      }
       tx.delete(publicRef);
-      return "removed";
+      return {outcome: "removed" as const,
+        summaryChanged: organizerSummaryChanged(current, undefined)};
     }
     const projection = projectPublicOrganizer(source as Source);
     if (!validatePublicOrganizerDocument(projection)) {
       logger.warn("Organizer fails the public contract; no projection.",
         {organizerId});
       if (publicSnap.exists) tx.delete(publicRef);
-      return "invalid";
+      return {outcome: "invalid" as const,
+        summaryChanged: organizerSummaryChanged(current, undefined)};
     }
-    if (publicSnap.exists && isDeepStrictEqual(publicSnap.data(), projection)) {
-      return "unchanged";
+    if (publicSnap.exists && isDeepStrictEqual(current, projection)) {
+      return {outcome: "unchanged" as const, summaryChanged: false};
     }
     tx.set(publicRef, projection);
-    return "written";
+    return {outcome: "written" as const,
+      summaryChanged: organizerSummaryChanged(current, projection)};
   });
 }
 
+export async function reconcilePublicOrganizer(organizerId: string,
+  deps: PublicOrganizerDeps = defaultDeps): Promise<PublicOrganizerOutcome> {
+  return (await reconcilePublicOrganizerDetailed(organizerId, deps)).outcome;
+}
+
+/**
+ * Keeps the projection current, and the organizerSummary on the organizer's
+ * events that have not ended when the projection changes what it holds.
+ */
 export const syncPublicOrganizer = onDocumentWritten(
-  "organizers/{organizerId}",
+  {document: "organizers/{organizerId}", retry: true},
   async (event) => {
-    await reconcilePublicOrganizer(event.params.organizerId);
+    const {summaryChanged} =
+      await reconcilePublicOrganizerDetailed(event.params.organizerId);
+    if (summaryChanged) {
+      await refreshOrganizerEventSummaries(event.params.organizerId);
+    }
   });
 
 /**
