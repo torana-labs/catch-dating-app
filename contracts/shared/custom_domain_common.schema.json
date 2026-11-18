@@ -16,7 +16,7 @@
     },
     "servedHostname": {
       "type": "string",
-      "description": "The exact normalised host Catch serves: lowercase LDH labels, no trailing dot, port, wildcard or IP address, and at least one label below the registrable domain (launch serves subdomains only, such as www.myrunclub.com). Punycode (xn--) labels are rejected at launch.",
+      "description": "The exact normalised host Catch serves: lowercase LDH labels, no trailing dot, port, wildcard or IP address, and at least one label below the registrable domain (launch serves subdomains only, such as www.example-club.test). Punycode (xn--) labels are rejected at launch.",
       "minLength": 5,
       "maxLength": 253,
       "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.){2,}[a-z]{2,63}$",
@@ -24,7 +24,7 @@
     },
     "registrableDomain": {
       "type": "string",
-      "description": "The registrable domain (public suffix plus one label, from the Public Suffix List, for example myrunclub.com or myrunclub.co.in) that the served host belongs to. Also the apex a registrar redirect forwards from.",
+      "description": "The registrable domain (public suffix plus one label, from the Public Suffix List, for example example-club.test, or a name under a multi-label public suffix such as co.in) that the served host belongs to. Also the apex a registrar redirect forwards from.",
       "minLength": 4,
       "maxLength": 253,
       "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$",

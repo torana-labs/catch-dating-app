@@ -1,6 +1,6 @@
 {
   "organizerId": "organizer-1",
-  "hostname": "www.myrunclub.com",
+  "hostname": "www.example-club.test",
   "target": {
     "kind": "organizerPage"
   }

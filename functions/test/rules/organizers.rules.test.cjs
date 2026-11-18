@@ -1464,15 +1464,15 @@ describe("firestore.rules", () => {
         hostUserIds: ["owner-1", "manager-1"],
       }));
       const record = {
-        hostname: "www.myrunclub.com",
-        registrableDomain: "myrunclub.com",
+        hostname: "www.example-club.test",
+        registrableDomain: "example-club.test",
         target: {kind: "organizerPage", organizerId: "organizer-1"},
         status: "active",
         generation: 1,
         ownershipChallenge: "catch-verification=Qx7Lr2Vb9Tn4Hc6Md1Ks8Wp3Yf5Ga0Ze",
         createdByUid: "owner-1",
       };
-      await seed(["customDomains", "www.myrunclub.com"], record);
+      await seed(["customDomains", "www.example-club.test"], record);
 
       for (const db of [
         authedDb("owner-1"),
@@ -1480,7 +1480,7 @@ describe("firestore.rules", () => {
         authedDb("guest-1"),
         testEnv.unauthenticatedContext().firestore(),
       ]) {
-        const ref = doc(db, "customDomains", "www.myrunclub.com");
+        const ref = doc(db, "customDomains", "www.example-club.test");
         await assertFails(getDoc(ref));
         await assertFails(getDocs(query(
           collection(db, "customDomains"),
