@@ -18,8 +18,6 @@ export type AdMatchingOptOutAction = AdMatchingOptOutRequest["action"];
 export type AdMatchingOptOutResult = AdminManageAdMatchingOptOutCallableResponse;
 export type AdMatchingKind = AdMatchingOptOutResult["kinds"][number];
 
-const CALLABLE = "adminManageAdMatchingOptOut";
-
 /** Checks, records or removes an opt-out for a phone and/or email. */
 export async function manageAdMatchingOptOut(
   payload: AdMatchingOptOutRequest
@@ -29,11 +27,11 @@ export async function manageAdMatchingOptOut(
     return sampleManage(payload);
   }
   const {validateAdminCallableRequest, validateAdminCallableResponse} =
-    await loadAdminCallableValidators(CALLABLE);
-  validateAdminCallableRequest(CALLABLE, payload);
+    await loadAdminCallableValidators("adminManageAdMatchingOptOut");
+  validateAdminCallableRequest("adminManageAdMatchingOptOut", payload);
   const response = await httpsCallable<AdMatchingOptOutRequest,
-    AdMatchingOptOutResult>(functions, CALLABLE)(payload);
-  validateAdminCallableResponse(CALLABLE, response.data);
+    AdMatchingOptOutResult>(functions, "adminManageAdMatchingOptOut")(payload);
+  validateAdminCallableResponse("adminManageAdMatchingOptOut", response.data);
   return response.data;
 }
 
