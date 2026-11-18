@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_staff_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_controller.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_reports_state.dart';
@@ -7,13 +7,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'programme_team_controller.g.dart';
 
-/// The team: the programme and the first page of `listProgramStaff`.
+/// The team: the programme and the live `programStaffViews` rows.
 @riverpod
 HostProgrammeReport<ProgramStaffList> hostProgrammeTeamController(
   Ref ref,
   String programId,
 ) {
-  final staff = ref.watch(programStaffListProvider(programId));
+  final staff = ref.watch(programStaffStreamProvider(programId));
   return HostProgrammeReport(
     programme: ref.watch(hostProgrammeControllerProvider(programId)),
     value: staff.value,
@@ -21,7 +21,9 @@ HostProgrammeReport<ProgramStaffList> hostProgrammeTeamController(
   );
 }
 
+/// Reads the team again after a failed load. A write needs no refresh: the
+/// staff list is a listener and shows the grant or revoke itself.
 void refreshHostProgrammeTeam(WidgetRef ref, String programId) {
   refreshHostProgramme(ref, programId);
-  ref.invalidate(programStaffListProvider(programId));
+  ref.invalidate(programStaffStreamProvider(programId));
 }

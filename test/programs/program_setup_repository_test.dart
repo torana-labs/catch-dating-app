@@ -14,23 +14,6 @@ void main() {
     );
   });
 
-  test('staff listing serializes its cursor and reads the next one', () async {
-    final functions = _Functions()
-      ..response = {
-        'programId': 'program',
-        'members': [],
-        'nextCursor': 'next-staff',
-      };
-    final repository = ProgramSetupRepository(functions);
-    final page = await repository.listStaff('program', cursor: 'prior-staff');
-    expect(functions.calls, ['listProgramStaff']);
-    expect(functions.payload, {
-      'programId': 'program',
-      'cursor': 'prior-staff',
-    });
-    expect(page.nextCursor, 'next-staff');
-  });
-
   for (final grant in [true, false]) {
     test(
       '${grant ? "grant" : "revoke"} accepts the committed mutation receipt',
