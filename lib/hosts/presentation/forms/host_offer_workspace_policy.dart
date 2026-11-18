@@ -55,50 +55,30 @@ class HostOfferWorkspacePolicy {
     return draft;
   }
 
-  static ({List<Map<String, Object?>> items, String? cursor}) offerPage({
-    required Map<String, Object?> response,
+  /// The offers of [eventId] to the selected people in [details], checked:
+  /// every item belongs to the event and no offer repeats. The listener asks
+  /// only for these people; anything else is left out rather than shown.
+  static List<Map<String, Object?>> offerItems({
+    required List<Map<String, Object?>> items,
     required String eventId,
-    required String? previousCursor,
-    required bool append,
     required List<HostFormResponseDetail> details,
-    required List<Map<String, Object?>> offers,
   }) {
-    final rawItems = response['items'];
-    final cursor = response['nextCursor'];
-    if (rawItems is! List || cursor != null && cursor is! String) {
-      throw const FormatException('Offer list is invalid.');
-    }
-    final parsed = rawItems.map((item) {
-      if (item is! Map) {
-        throw const FormatException('Offer row is invalid.');
-      }
-      return item.cast<String, Object?>();
-    }).toList();
-    if (parsed.any(
+    if (items.any(
           (item) =>
               item['eventId'] != eventId ||
               item['offerId'] is! String ||
               item['contactId'] is! String,
         ) ||
-        parsed.map((item) => item['offerId']).toSet().length != parsed.length ||
-        append && cursor == previousCursor) {
+        items.map((item) => item['offerId']).toSet().length != items.length) {
       throw const FormatException('Offer list is inconsistent.');
     }
-    // This workspace belongs to one selected response set. Keep unrelated
-    // event offers out of the chooser without fetching private CRM labels.
     final selectedContacts = details
         .map((detail) => detail.contactId)
         .whereType<String>()
         .toSet();
-    final visible = parsed
-        .where((item) => selectedContacts.contains(item['contactId']))
-        .toList();
-    final combined = append ? [...offers, ...visible] : visible;
-    if (combined.map((item) => item['offerId']).toSet().length !=
-        combined.length) {
-      throw const FormatException('Offer list repeats an offer.');
-    }
-    return (items: List.unmodifiable(combined), cursor: cursor as String?);
+    return List.unmodifiable(
+      items.where((item) => selectedContacts.contains(item['contactId'])),
+    );
   }
 
   static final Random _entropy = Random.secure();

@@ -56,6 +56,7 @@ void main() {
     final accounts = StreamController<String?>();
     final storage = MemoryCommandJournalStorage();
     final functions = _RouteFunctions();
+    final firestore = await _routeFirestore();
     final configurations = _GatedConfigurationReads();
     addTearDown(accounts.close);
     addTearDown(storage.close);
@@ -65,6 +66,7 @@ void main() {
           uidProvider.overrideWith((ref) => accounts.stream),
           firebaseAuthProvider.overrideWithValue(auth),
           firebaseFunctionsProvider.overrideWithValue(functions),
+          firebaseFirestoreProvider.overrideWithValue(firestore),
           eventOfferConfigurationReadsProvider.overrideWithValue(
             configurations,
           ),

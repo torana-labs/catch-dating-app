@@ -32,8 +32,8 @@ class HostEventOfferWorkspaceDependencies {
     this.queryController,
     this.responseId,
     required this.offerScope,
-    required this.listOffers,
-    required this.getOffer,
+    required this.watchOffers,
+    required this.watchOffer,
     required this.prepareHandoff,
     required this.copyMessage,
     required this.openHandoff,
@@ -52,18 +52,12 @@ class HostEventOfferWorkspaceDependencies {
   final HostResponseQueryController? queryController;
   final String? responseId;
   final HostEventOfferScope offerScope;
-  final Future<Map<String, Object?>> Function({
-    required String organizerId,
-    required String eventId,
-    String? afterOfferId,
-  })
-  listOffers;
-  final Future<HostEventOffer> Function({
-    required String organizerId,
-    required String eventId,
-    required String contactId,
-  })
-  getOffer;
+
+  /// The event's offers to the selected people while listened to.
+  final HostEventOffersWatch watchOffers;
+
+  /// One selected offer while listened to.
+  final HostEventOfferWatch watchOffer;
   final Future<HostOfferHandoff> Function({required HostEventOffer offer})
   prepareHandoff;
   final Future<void> Function(String text) copyMessage;
@@ -105,7 +99,6 @@ abstract class HostEventOfferWorkspaceState
     HostOfferBatchDraft? draft,
     String? commitRequestId,
     @Default([]) List<Map<String, Object?>> offers,
-    String? nextOfferCursor,
     String? refreshedReceiptId,
     HostEventOffer? selectedOffer,
     HostOfferHandoff? handoff,

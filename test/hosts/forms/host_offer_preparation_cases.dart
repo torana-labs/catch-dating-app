@@ -269,9 +269,11 @@ void _preparationRegressionTests() {
         now: DateTime.fromMillisecondsSinceEpoch(1799990000000),
         eventStartsAt: _start,
       );
-      failList = true;
       await offers.commit(workspace.commitRequestId!);
       await Future<void>.delayed(Duration.zero);
+      // The offers listener fails when the host listens again.
+      failList = true;
+      await workspace.refreshOffers();
       expect(workspace.hasError, isTrue);
       expect(offers.view.pendingRequestId, isNotNull);
       expect(workspace.hasUnresolvedCommand, isFalse);
@@ -283,7 +285,8 @@ void _preparationRegressionTests() {
     },
   );
 
-  test('selection starts independent reads together and rejects late '
+  test('selection starts independent reads together, listens to the '
+      "people's offers once their contacts are known, and rejects late "
       'cancelled results after a new preparation', () async {
     final targets = _PreparationTargets();
     final responses = List.generate(
@@ -307,7 +310,8 @@ void _preparationRegressionTests() {
     await Future<void>.delayed(Duration.zero);
     expect(targets.configurationCalls, 1);
     expect(responseReads, 1);
-    expect(offerReads, 1);
+    // The offers listener needs the selected contacts first.
+    expect(offerReads, 0);
     await workspace.choose(event); // repeated tap must dispatch nothing
     expect(targets.configurationCalls, 1);
     workspace.cancelPreparation();
@@ -317,14 +321,15 @@ void _preparationRegressionTests() {
     final second = workspace.choose(event);
     await Future<void>.delayed(Duration.zero);
     responses[1].complete(_detail('contact-current'));
-    existing[1].complete(const {'items': <Object>[], 'nextCursor': null});
     targets.configurations[1].complete(
       await _Targets().configuration(organizerId: 'org', eventId: 'event-one'),
     );
+    await Future<void>.delayed(Duration.zero);
+    expect(offerReads, 1);
+    existing[0].complete(const {'items': <Object>[], 'nextCursor': null});
     await second;
     expect(workspace.draft!.rows.single.contactId, 'contact-current');
     responses[0].complete(_detail('contact-stale'));
-    existing[0].complete(const {'items': <Object>[], 'nextCursor': null});
     targets.configurations[0].complete(
       await _Targets().configuration(organizerId: 'org', eventId: 'event-one'),
     );
@@ -332,6 +337,8 @@ void _preparationRegressionTests() {
     expect(workspace.draft!.rows.single.contactId, 'contact-current');
     expect(workspace.hasError, isFalse);
     expect(targets.listCalls, 1);
+    // The cancelled preparation never listened to offers.
+    expect(offerReads, 1);
   });
 
   test(

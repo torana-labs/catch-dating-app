@@ -247,6 +247,7 @@ void main() {
                 required organizerId,
                 required eventId,
                 required contactId,
+                required minRevision,
               }) async => offer,
         );
     await expectLater(
@@ -289,6 +290,7 @@ void main() {
                   required organizerId,
                   required eventId,
                   required contactId,
+                  required minRevision,
                 }) async => offer,
           );
       await expectLater(
@@ -524,6 +526,7 @@ void main() {
                 required organizerId,
                 required eventId,
                 required contactId,
+                required minRevision,
               }) async => throw StateError('detail unavailable'),
         );
     final action = <String, Object?>{

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
@@ -20,6 +21,27 @@ class HostEventOfferWorkspaceController
     extends _$HostEventOfferWorkspaceController {
   late HostEventOfferWorkspaceDependencies _dependencies;
   int _generation = 0;
+
+  /// The selected event's offers to the selected people, while listened to.
+  StreamSubscription<List<Map<String, Object?>>>? _offersSubscription;
+
+  /// The selected offer, while listened to.
+  StreamSubscription<HostEventOffer?>? _selectedSubscription;
+
+  /// Offers a commit receipt named that the list has not delivered yet.
+  Set<String>? _awaitedOfferIds;
+
+  void _stopOffers() {
+    unawaited(_offersSubscription?.cancel());
+    _offersSubscription = null;
+    _awaitedOfferIds = null;
+  }
+
+  void _stopSelected() {
+    unawaited(_selectedSubscription?.cancel());
+    _selectedSubscription = null;
+  }
+
   @override
   HostEventOfferWorkspaceState build(HostEventOfferWorkspaceScope scope) {
     _dependencies = ref.read(
@@ -34,6 +56,8 @@ class HostEventOfferWorkspaceController
     ref.onDispose(() {
       _generation++;
       query?.removeListener(_onQueryChanged);
+      _stopOffers();
+      _stopSelected();
     });
     final flow = ref.read(hostEventOfferControllerProvider(scope.offers));
     ref.listen(hostEventOfferControllerProvider(scope.offers), (_, next) {
@@ -58,6 +82,8 @@ class HostEventOfferWorkspaceController
   void invalidateActor() {
     if (!ref.mounted) return;
     _generation++;
+    _stopOffers();
+    _stopSelected();
     state = const HostEventOfferWorkspaceState(actorAvailable: false);
   }
 
@@ -72,18 +98,8 @@ class HostEventOfferWorkspaceController
   HostResponseQueryController? get _queryController =>
       _dependencies.queryController;
   String? get _responseId => _dependencies.responseId;
-  Future<Map<String, Object?>> Function({
-    required String organizerId,
-    required String eventId,
-    String? afterOfferId,
-  })
-  get _listOffers => _dependencies.listOffers;
-  Future<HostEventOffer> Function({
-    required String organizerId,
-    required String eventId,
-    required String contactId,
-  })
-  get _getOffer => _dependencies.getOffer;
+  HostEventOffersWatch get _watchOffers => _dependencies.watchOffers;
+  HostEventOfferWatch get _watchOffer => _dependencies.watchOffer;
   Future<HostOfferHandoff> Function({required HostEventOffer offer})
   get _prepareHandoff => _dependencies.prepareHandoff;
   Future<void> Function(String text) get _copyMessage =>
@@ -188,11 +204,6 @@ class HostEventOfferWorkspaceController
     if (_active) state = state.copyWith(offers: value);
   }
 
-  String? get _nextOfferCursor => state.nextOfferCursor;
-  set _nextOfferCursor(String? value) {
-    if (_active) state = state.copyWith(nextOfferCursor: value);
-  }
-
   String? get _refreshedReceiptId => state.refreshedReceiptId;
   set _refreshedReceiptId(String? value) {
     if (_active) state = state.copyWith(refreshedReceiptId: value);
@@ -244,8 +255,9 @@ class HostEventOfferWorkspaceController
     _personalLinks = const {};
     _draft = null;
     _commitRequestId = null;
+    _stopOffers();
+    _stopSelected();
     _offers = const [];
-    _nextOfferCursor = null;
     _refreshedReceiptId = null;
     _selectedOffer = null;
     _handoff = null;
@@ -300,11 +312,11 @@ class HostEventOfferWorkspaceController
       return;
     }
     _refreshedReceiptId = receipt.requestId;
-    refreshOffers().then((_) {
-      if (_active && _ids.length == 1 && _offers.length == 1) {
-        selectExisting(_offers.single);
-      }
-    });
+    // The offers listener delivers the committed offers; select the single
+    // one once it has, as soon as the list shows every offer the receipt
+    // names.
+    _awaitedOfferIds = {for (final row in receipt.results) row.offerId};
+    _selectAwaitedOffer();
   }
 
   static bool _sameIds(List<String> a, List<String> b) =>
@@ -451,11 +463,12 @@ class HostEventOfferWorkspaceController
       _draft = null;
       _commitRequestId = null;
       _offers = const [];
-      _nextOfferCursor = null;
       _selectedOffer = null;
       _handoff = null;
       _error = null;
     });
+    _stopOffers();
+    _stopSelected();
     try {
       if (!await _revalidate(generation, accountId)) {
         return;
@@ -463,7 +476,6 @@ class HostEventOfferWorkspaceController
       late HostOfferEventConfiguration configuration;
       late List<HostFormResponseDetail> details;
       late List<HostFormResponseDetail> missing;
-      late Map<String, Object?> existing;
       // These manager reads are independent. Accept their combined result
       // only after the selection and account fences have been checked again.
       await Future.wait<void>([
@@ -483,13 +495,19 @@ class HostEventOfferWorkspaceController
             isCurrent: () => _current(generation, accountId),
           );
         })(),
-        (() async {
-          existing = await _listOffers(
-            organizerId: _organizerId,
-            eventId: event.eventId,
-          );
-        })(),
       ]);
+      if (!await _revalidate(generation, accountId)) {
+        return;
+      }
+      // The selected people's offers come from a listener: the first value
+      // (from the device cache when it has one) prepares the workspace and
+      // later values keep the list current.
+      final existing = await _listenOffers(
+        eventId: event.eventId,
+        details: details,
+        generation: generation,
+        accountId: accountId,
+      );
       if (!await _revalidate(generation, accountId)) {
         return;
       }
@@ -515,14 +533,6 @@ class HostEventOfferWorkspaceController
       )) {
         throw StateError('Selected responses changed.');
       }
-      final page = HostOfferWorkspacePolicy.offerPage(
-        response: existing,
-        eventId: event.eventId,
-        previousCursor: null,
-        append: false,
-        details: details,
-        offers: const [],
-      );
       _update(() {
         _event = selected;
         _events = List.unmodifiable([
@@ -536,8 +546,7 @@ class HostEventOfferWorkspaceController
         _commitRequestId = null;
         _selectedOffer = null;
         _handoff = null;
-        _offers = page.items;
-        _nextOfferCursor = page.cursor;
+        _offers = existing;
       });
       if (missing.isEmpty &&
           configuration.suggestedExpiresAt != null &&
@@ -676,8 +685,9 @@ class HostEventOfferWorkspaceController
     _commitRequestId = null;
     _selectedOffer = null;
     _handoff = null;
+    _stopOffers();
+    _stopSelected();
     _offers = const [];
-    _nextOfferCursor = null;
     _error = null;
     _personalLinks = const {};
   }
