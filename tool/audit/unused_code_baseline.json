@@ -52,7 +52,6 @@
     "file functions/src/eventSuccess/operations/contracts.typecheck.ts",
     "file functions/src/hostAlerts/runtime.ts",
     "file functions/src/operations/index.ts",
-    "type functions/src/acquisition/metaPayload.ts HostMetaBrowserContext",
     "type functions/src/admin/accessApplications.ts AccessApplicationDecision",
     "type functions/src/catchMessaging/whatsappReadinessEvidence.ts CatchReadinessEvidencePublisher",
     "type functions/src/eventSuccess/operations/catalog.ts ResolutionBoundary",

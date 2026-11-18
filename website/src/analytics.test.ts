@@ -106,8 +106,7 @@ test("legacy raw attribution is discarded, expired touches are not reused", () =
   expect(localStorage.getItem(ephemeralKey)).toBeNull();
 });
 
-test("an environment GTM ID cannot load a script or call an external global gtag", () => {
-  vi.stubEnv("VITE_GTM_ID", "GTM-SYNTHETIC");
+test("analytics never loads a tag script or calls an external global gtag", () => {
   const external = vi.fn();
   window.gtag = external;
   const append = vi.spyOn(document.head, "appendChild");
@@ -117,7 +116,7 @@ test("an environment GTM ID cannot load a script or call an external global gtag
   expect(external).not.toHaveBeenCalled();
   expect(append).not.toHaveBeenCalled();
   expect(window.dataLayer?.some((entry) => entry.event === "gtm.js")).toBe(false);
-  delete window.gtag; vi.unstubAllEnvs();
+  delete window.gtag;
 });
 
 
@@ -146,7 +145,7 @@ test.each(["/claim", "/claim/"])("approved labels survive host to actual CTA %s"
 });
 
 test("lead success requires submission-time permission with no mid-request accept/revoke replay", () => {
-  window.history.replaceState(null, "", "/host/apply/");
+  window.history.replaceState(null, "", "/host/");
   const id = createMarketingEventId("host_lead");
   expect(trackAcceptedMarketingLead(id, "host_application", false, null)).toBe(false);
   const permission = setMarketingConsent("accepted");

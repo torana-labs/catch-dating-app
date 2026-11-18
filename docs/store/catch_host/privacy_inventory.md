@@ -129,9 +129,11 @@ These facts hold for the submitted build:
   - zero links to Google Ads, AdMob, Display & Video 360 or Search Ads 360
   - "Google products and services" sharing off
 - No advertising SDK or ad placements.
-- The server-side Host acquisition Meta delivery
-  (`functions/src/acquisition/metaPayload.ts`) sends only website `Lead`
-  events. The pilot activation receipt has no vendor delivery.
+- The website `Lead` Meta dispatcher was retired in November 2026 without
+  ever sending. Server-side ad conversions are owned by
+  `functions/src/acquisition/adConversions/` and described in
+  [`docs/ads_conversion_spec.md`](../../ads_conversion_spec.md). The pilot
+  activation receipt has no vendor delivery.
 
 ## Collection changes after the submitted build
 

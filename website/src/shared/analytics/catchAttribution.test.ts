@@ -18,12 +18,12 @@ describe("consented 30-day attribution", () => {
     const input = {...base, consent: {...consent, marketing: false}};
     const first = browserAttribution(input);
     expect(first).toEqual({clientId: "12345.1792486200", sessionId: 1792486200});
-    expect(browserAttribution({...input, path: "/host/apply/", search: "", now: now + 1000, random: () => 999})).toEqual(first);
+    expect(browserAttribution({...input, path: "/host/claim/", search: "", now: now + 1000, random: () => 999})).toEqual(first);
     expect(localStorage.getItem(catchAttributionKey)).not.toMatch(/gclid|fbclid|email|secret/u);
   });
   it("retains only valid click identifiers and replaces a new Google touch", () => {
     expect(browserAttribution(base)).toMatchObject({gclid: "SyntheticGoogle123", fbclid: "SyntheticMeta123"});
-    expect(browserAttribution({...base, path: "/host/apply/", search: "?wbraid=SecondGoogle123&gclid=person%40example.test"}))
+    expect(browserAttribution({...base, path: "/host/claim/", search: "?wbraid=SecondGoogle123&gclid=person%40example.test"}))
       .toEqual({clientId: "12345.1792486200", sessionId: 1792486200, wbraid: "SecondGoogle123",
         fbclid: "SyntheticMeta123", fbclidCapturedAt: now});
     expect(localStorage.getItem(catchAttributionKey)).not.toMatch(/email|secret|person|landingUrl/u);

@@ -501,8 +501,6 @@ enter previews.
 | `adminGetTakedownRequest`, `adminUpdateTakedownRequest` | `src/takedownRequests/admin.ts` | Admin, owner and support open a listing request and take its fixed steps; admins and the owner decide; one appeal decided by someone else |
 | `adminGetCityInterest` | `src/cityInterest/` | Interest by city from the `cityInterest` counters: people per city in all and over the last 7 and 30 days against the days before |
 | `adminGetMarketplace` | `src/marketplace/` | Marketplace from the warehouse's raw Firestore export views: events a week, places filled, no-shows and waitlists by city; guests by first-booking month and whether they came back; bookings each week; organizers going quiet with their sales owner |
-| `hostAcquisitionConsent` | `src/acquisition/` | Default-disabled versioned Host measurement grant and capability withdrawal |
-| `expireHostAcquisitionConsent` | `src/acquisition/` | Bounded transactional expiry of private grants and withdrawal tombstones |
 | `ingestEventRosterWebhook` | `src/events/eventRosterHandoffs.ts` | Receive one HMAC-verified, provider-authenticated roster attachment through a capability-bound email or WhatsApp handoff |
 | `organizerWhatsappWebhook` | `src/organizers/organizerWhatsappWebhook.ts` | Verify Meta webhook signatures and project delivery or STOP events without retaining message content |
 
