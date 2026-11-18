@@ -935,7 +935,7 @@ collections by owner decision (12 Nov 2026).
 | `moderationFlags/{id}` | Moderation triggers | Direct client writes denied. |
 | `deletedUsers/{uid}` | Account deletion callable | Direct client writes denied. |
 | `rateLimits/{key}` | Rate-limit helper | Direct client writes denied. |
-| `commandReceipts/{command}_{id}` | Idempotent callables and triggers (`functions/src/shared/commandReceipts.ts`) | Server only; TTL policy on `expiresAt` approved by the owner on 18 Nov 2026, landing in a follow-up change. |
+| `commandReceipts/{command}_{id}` | Idempotent callables and triggers (`functions/src/shared/commandReceipts.ts`) | Server only; TTL policy on `expiresAt`, approved by the owner on 18 Nov 2026 after the legal hold was narrowed. |
 
 ## Notification Timeline
 

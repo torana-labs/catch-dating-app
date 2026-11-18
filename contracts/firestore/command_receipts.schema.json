@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/command_receipts.schema.json",
   "title": "CommandReceiptDocument",
-  "description": "Server-only replay receipt stored at commandReceipts/{command}_{id}: a retried callable, trigger or webhook finds it and returns the original result instead of running again. Pure replay only; consent, money, safety and audit evidence keep their own collections. A receipt past expiresAt counts as absent. The collection's TTL policy on expiresAt was approved by the owner on 18 Nov 2026.",
+  "description": "Server-only replay receipt stored at commandReceipts/{command}_{id}: a retried callable, trigger or webhook finds it and returns the original result instead of running again. Pure replay only; consent, money, safety and audit evidence keep their own collections. A receipt past expiresAt counts as absent. The collection's TTL policy on expiresAt was approved by the owner on 18 Nov 2026 after the legal hold was narrowed.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "commandReceipts",
@@ -38,7 +38,7 @@
     },
     "expiresAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
-      "description": "Expiry: seven days after a trigger runs, thirty after a request or webhook. Counts as absent once past; the TTL policy was approved by the owner on 18 Nov 2026.",
+      "description": "Expiry: seven days after a trigger runs, thirty after a request or webhook. Counts as absent once past; the TTL policy was approved by the owner on 18 Nov 2026 after the legal hold was narrowed.",
       "x-catch-ownership": "server-only"
     }
   }
