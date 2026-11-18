@@ -4,6 +4,7 @@ import {hostPlaybookPages} from "../../content/playbook/pages/host/index.ts";
 import {productPlaybookPages} from "../../content/playbook/pages/product/index.ts";
 import {resourcesPlaybookPages} from "../../content/playbook/pages/resources/index.ts";
 import {
+  livePlaybookPage,
   validatedPlaybookPage,
   type PlaybookPageDocument,
   type PlaybookPageEntry,
@@ -71,16 +72,18 @@ export function registeredPlaybookPages(): PlaybookPageRef[] {
 
 /**
  * Loads a page, validates it (a malformed page fails loudly instead of
- * rendering half a page), checks it is the page its index says, and resolves
- * its brand tokens. Ad landing pages are always noindex. Null when the page
- * uses a section or option no kit component draws yet (./playbookBindings):
- * such a page 404s like an unwritten one.
+ * rendering half a page), checks it is the page its index says, keeps its
+ * live sections and actions (show-when-live: hidden parts stay in the file),
+ * and resolves its brand tokens. Ad landing pages are always noindex. Null
+ * when the live page uses a section or option no kit component draws yet
+ * (./playbookBindings): such a page 404s like an unwritten one.
  */
 export async function loadPlaybookPage(ref: PlaybookPageRef): Promise<PlaybookPageDocument | null> {
-  const page = validatedPlaybookPage((await ref.entry.load()).default);
-  if (page.id !== ref.match.contentKey || page.route !== ref.match.route.id) {
-    throw new Error(`Playbook page ${ref.entry.file} is ${page.id} on ${page.route}, not ${ref.match.contentKey}.`);
+  const written = validatedPlaybookPage((await ref.entry.load()).default);
+  if (written.id !== ref.match.contentKey || written.route !== ref.match.route.id) {
+    throw new Error(`Playbook page ${ref.entry.file} is ${written.id} on ${written.route}, not ${ref.match.contentKey}.`);
   }
+  const page = livePlaybookPage(written);
   if (pendingPlaybookBindings(page).length > 0) return null;
   const branded = applyBrand(page);
   return alwaysNoindexPlaybookRoutes.has(page.route) ? {...branded, meta: {...branded.meta, noindex: true}} : branded;

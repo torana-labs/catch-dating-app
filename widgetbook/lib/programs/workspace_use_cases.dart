@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_staff_views_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
@@ -146,7 +147,9 @@ final _deskAccess = ProgramWorkAccess(
   grantExpiresAt: _now.add(const Duration(hours: 8)),
   capabilities: const {},
   pickupPoints: const [],
-  hotels: const [ProgramHotel(hotelId: 'hotel_harbourview', name: 'Harbourview Palace')],
+  hotels: const [
+    ProgramHotel(hotelId: 'hotel_harbourview', name: 'Harbourview Palace'),
+  ],
   functions: [
     ProgramFunction(
       functionId: _functionId,
@@ -327,7 +330,7 @@ List<Override> _workspaceOverrides() => [
     _programId,
   ).overrideWithValue(AsyncData(_detail)),
   programGuestListProvider(_programId).overrideWithValue(AsyncData(_guestPage)),
-  programStaffListProvider(_programId).overrideWithValue(AsyncData(_staff)),
+  programStaffStreamProvider(_programId).overrideWithValue(AsyncData(_staff)),
 ];
 
 class _DialogFrame extends StatelessWidget {
@@ -537,7 +540,12 @@ Widget programGuestGroupEditDialogStates(BuildContext context) {
         label: 'new group',
         child: _DialogFrame(
           child: ProgramGuestGroupEditDialog(
-            hotels: [ProgramHotel(hotelId: 'hotel_harbourview', name: 'Harbourview Palace')],
+            hotels: [
+              ProgramHotel(
+                hotelId: 'hotel_harbourview',
+                name: 'Harbourview Palace',
+              ),
+            ],
           ),
         ),
       ),

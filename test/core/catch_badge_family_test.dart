@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('badge typography keeps metadata case and normalizes status', (
-    tester,
-  ) async {
+  testWidgets('badge typography keeps the caller copy case', (tester) async {
     await tester.pumpWidget(
       _wrap(
         const Wrap(
@@ -20,9 +18,9 @@ void main() {
       ),
     );
 
-    expect(find.text('Ready soon'), findsOneWidget);
-    expect(find.text('READY SOON'), findsOneWidget);
-    expect(find.text('LIVE NOW'), findsOneWidget);
+    // Every badge keeps the caller's sentence case, as the system draws it.
+    expect(find.text('Ready soon'), findsNWidgets(2));
+    expect(find.text('Live now'), findsOneWidget);
     expect(find.byType(CatchStatusIndicator), findsOneWidget);
   });
 
@@ -39,7 +37,7 @@ void main() {
 
     expect(badgeDecoration.color, CatchTokens.light.primary);
     expect(find.byType(CatchStatusIndicator), findsOneWidget);
-    expect(find.text('LIVE NOW'), findsOneWidget);
+    expect(find.text('Live now'), findsOneWidget);
   });
 
   testWidgets('on-dark badge owns the fixed editorial recipe', (tester) async {
@@ -81,7 +79,7 @@ void main() {
       ),
     );
     expect(
-      tester.widget<Text>(find.text('PREVIEW ONLY')).style?.color,
+      tester.widget<Text>(find.text('Preview only')).style?.color,
       CatchTokens.editorialWhite,
     );
     expect(tester.takeException(), isNull);

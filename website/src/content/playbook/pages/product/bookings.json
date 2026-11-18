@@ -3,42 +3,325 @@
   "id": "product_bookings",
   "route": "product_bookings",
   "meta": {
-    "title": "Bookings and payments | {{brand.name}} for hosts",
-    "description": "Applications with your questions, approvals with a tap, waitlists with offers you control, and every UPI or card payment next to the right name, paid into your own Razorpay account.",
-    "socialDescription": "From interested to paid, without the chasing. Bookings and payments on {{brand.name}}.",
+    "title": "Bookings and memberships | {{brand.name}} for hosts",
+    "description": "Open booking, applications, invite-only links and private offers, places for women and for men and an age range, memberships with member prices and early access, and every UPI or card payment next to the right name.",
+    "socialDescription": "Decide who comes. Reward the ones who keep coming. Bookings and memberships on {{brand.name}}.",
     "noindex": false
   },
   "header": {
     "variant": "host",
     "breadcrumbs": {
-      "links": [{"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}}],
-      "current": "Bookings and payments"
+      "links": [
+        {
+          "label": "How {{brand.name}} works",
+          "to": {
+            "route": "how_it_works"
+          }
+        }
+      ],
+      "current": "Bookings and memberships"
     }
   },
-  "footer": {"variant": "host"},
+  "footer": {
+    "variant": "host",
+    "columns": [
+      {
+        "title": "Product",
+        "links": [
+          {
+            "label": "How {{brand.name}} works",
+            "to": {
+              "route": "how_it_works"
+            }
+          },
+          {
+            "label": "Your page",
+            "to": {
+              "route": "product_your_page"
+            }
+          },
+          {
+            "label": "Bookings and memberships",
+            "to": {
+              "route": "product_bookings"
+            }
+          },
+          {
+            "label": "Messages and growth",
+            "to": {
+              "route": "product_messages"
+            }
+          },
+          {
+            "label": "The room",
+            "to": {
+              "route": "product_room"
+            }
+          },
+          {
+            "label": "Running the event",
+            "to": {
+              "route": "product_event"
+            }
+          },
+          {
+            "label": "Guest records",
+            "to": {
+              "route": "product_guests"
+            }
+          },
+          {
+            "label": "Reports and payouts",
+            "to": {
+              "route": "product_reports"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Hosts by format",
+        "links": [
+          {
+            "label": "Run and walk clubs",
+            "to": {
+              "route": "host_run_clubs"
+            }
+          },
+          {
+            "label": "Racket sports",
+            "to": {
+              "route": "host_racket_sports"
+            }
+          },
+          {
+            "label": "Supper clubs",
+            "to": {
+              "route": "host_supper_clubs"
+            }
+          },
+          {
+            "label": "Quiz and game nights",
+            "to": {
+              "route": "host_quiz_nights"
+            }
+          },
+          {
+            "label": "Studios",
+            "to": {
+              "route": "host_studios"
+            }
+          },
+          {
+            "label": "Venues",
+            "to": {
+              "route": "host_venues"
+            }
+          },
+          {
+            "label": "Communities",
+            "to": {
+              "route": "host_communities"
+            }
+          },
+          {
+            "label": "Mixers and pub crawls",
+            "to": {
+              "route": "host_nightlife"
+            }
+          },
+          {
+            "label": "Teams",
+            "to": {
+              "route": "host_teams"
+            }
+          },
+          {
+            "label": "Colleges and alumni",
+            "to": {
+              "route": "host_colleges"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Get started",
+        "links": [
+          {
+            "label": "Start free trial",
+            "to": {
+              "route": "host_start"
+            }
+          },
+          {
+            "label": "Pricing",
+            "to": {
+              "route": "pricing"
+            }
+          },
+          {
+            "label": "Your first event",
+            "to": {
+              "route": "host_first_event"
+            }
+          },
+          {
+            "label": "Switch to {{brand.name}}",
+            "to": {
+              "route": "host_switch"
+            }
+          },
+          {
+            "label": "Try a demo night",
+            "to": {
+              "route": "host_demo"
+            }
+          },
+          {
+            "label": "Programmes",
+            "to": {
+              "route": "programmes"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Resources",
+        "links": [
+          {
+            "label": "Forms",
+            "to": {
+              "route": "product_forms"
+            }
+          },
+          {
+            "label": "Book a walkthrough",
+            "to": {
+              "route": "host_walkthrough"
+            }
+          },
+          {
+            "label": "Help",
+            "to": {
+              "route": "help"
+            }
+          }
+        ]
+      },
+      {
+        "title": "{{brand.name}}",
+        "links": [
+          {
+            "label": "What’s on",
+            "to": {
+              "route": "visitor_discovery"
+            }
+          },
+          {
+            "label": "About",
+            "to": {
+              "route": "about"
+            }
+          },
+          {
+            "label": "Safety",
+            "to": {
+              "route": "safety"
+            }
+          },
+          {
+            "label": "Contact",
+            "to": {
+              "route": "contact"
+            }
+          },
+          {
+            "label": "Report or remove a listing",
+            "to": {
+              "route": "listing_request"
+            }
+          },
+          {
+            "label": "Terms",
+            "to": {
+              "route": "terms"
+            }
+          },
+          {
+            "label": "Privacy",
+            "to": {
+              "route": "privacy"
+            }
+          },
+          {
+            "label": "Refunds",
+            "to": {
+              "route": "refunds"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "sections": [
     {
       "type": "hero",
       "id": "top",
       "ground": "indigo",
-      "kicker": "Product · bookings and payments",
-      "title": "From interested to paid, without the chasing.",
-      "lead": "Applications with your questions, approvals with a tap, waitlists with offers you control, and every payment next to the right name. In rupees, by UPI or card.",
+      "status": "built",
+      "kicker": "Product · bookings and memberships",
+      "title": "Decide who comes. Reward the ones who keep coming.",
+      "lead": "Open booking or applications, a balanced room, and memberships that give your regulars a better price. Every rupee by UPI or card, next to the right name.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {"label": "See pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Try it with your event",
+          "to": {
+            "anchor": "try"
+          },
+          "emphasis": "secondary",
+          "status": "tryIt"
+        },
+        {
+          "label": "See pricing",
+          "to": {
+            "route": "pricing"
+          },
+          "emphasis": "secondary"
+        }
       ],
       "media": {
         "kind": "excerpt",
         "card": {
-          "title": "Tuesday Trivia Social · this week",
-          "bars": [
-            {"label": "They apply", "value": "10 applications", "share": 100},
-            {"label": "You approve", "value": "9 approved", "share": 90},
-            {"label": "They pay", "value": "7 paid · ₹4,200", "share": 70},
-            {"label": "They show up", "value": "7 booked", "share": 70}
-          ],
-          "note": "Booked guests get where to meet. Guests on the {{brand.name}} app also get a push reminder 15 minutes before the start."
+          "title": "Who can book · Long Table Supper",
+          "subtitle": "Saffron Table · Fri 28 Nov · 24 seats",
+          "rows": [
+            {
+              "title": "Applications",
+              "detail": "New guests fill in your form first",
+              "tag": "On"
+            },
+            {
+              "title": "Balance",
+              "detail": "12 women, 12 men",
+              "tag": "On"
+            },
+            {
+              "title": "Age",
+              "detail": "25 to 40",
+              "tag": "On"
+            },
+            {
+              "title": "Members",
+              "detail": "₹200 off, booking 48 hours early",
+              "tag": "Members"
+            }
+          ]
         }
       }
     },
@@ -46,101 +329,277 @@
       "type": "tiles",
       "id": "ways-in",
       "ground": "white",
+      "status": "built",
       "kicker": "Four ways in",
       "title": "Decide who gets a place, event by event.",
       "columns": 4,
       "items": [
-        {"title": "Open", "body": "Anyone can book. A page with spots left. Book and pay in a couple of taps.", "ground": "coral"},
-        {"title": "Applications", "body": "They apply, you choose. Ask the questions you want answered: who they are, who they’re bringing, what they’re hoping for. Approve with a tap.", "ground": "yellow"},
-        {"title": "Invite-only", "body": "Only people with your invite link or code can book.", "ground": "mint"},
-        {"title": "Private offer", "body": "A place for one person. Send someone their own checkout link, checked against their phone number.", "ground": "magenta"}
+        {
+          "title": "Open",
+          "body": "Anyone can book. A page with places left. Book and pay in a couple of taps.",
+          "ground": "coral"
+        },
+        {
+          "title": "Applications",
+          "body": "They apply, you choose. Ask what you want to know with your own form. Approve with a tap.",
+          "ground": "yellow"
+        },
+        {
+          "title": "Invite-only",
+          "body": "A private link. Only people with your invite link or code can book.",
+          "ground": "mint"
+        },
+        {
+          "title": "Private offer",
+          "body": "A place for one person. Send someone their own checkout link, checked against their phone number.",
+          "ground": "magenta"
+        }
       ]
     },
     {
       "type": "split",
-      "id": "groups",
-      "ground": "paper",
-      "kicker": "Booking for friends",
-      "title": "One booking, up to four places.",
-      "lead": "A guest can book up to four places in one go, for themselves and their friends, with a name for each guest so your list is right before the door opens.",
+      "id": "approvals",
+      "ground": "ink",
+      "status": "new",
+      "statusNote": "Approval scope on applications (this event, a series, all future events), approved guests skipping the form and members approved automatically are not built. Show this when they ship.",
+      "kicker": "Approvals that carry over",
+      "title": "Approve someone once, not every time.",
+      "lead": "Someone new to your community fills in your application form. You approve them for this event, or for everything you run, so next time they just book. Your regulars never wait in a queue again.",
       "ticks": [
-        "Up to 4 places per booking",
-        "A name for every guest in the booking",
-        "A member price covers the member’s own place; friends pay the usual price",
-        "The whole booking checks in together at the door"
+        "Approve for one event, for a series, or for every event you host",
+        "Approved guests skip the form and book straight away",
+        "Approval lives on their guest record, so you can change it any time",
+        "Members can be approved automatically"
       ],
       "media": {
         "kind": "excerpt",
         "card": {
-          "title": "Long Table Supper · 3 places",
-          "subtitle": "Booked by Aanya Mehta",
+          "title": "Application · Saffron Table",
+          "subtitle": "Ira Desai · first time",
           "rows": [
-            {"title": "Aanya Mehta", "detail": "Member price", "tag": "Booker"},
-            {"title": "Kabir Shah", "detail": "Usual price", "tag": "Guest"},
-            {"title": "Meher Iyer", "detail": "Usual price", "tag": "Guest"}
+            {
+              "title": "What brings you here?",
+              "detail": "New to Mumbai, looking for people who like to cook."
+            },
+            {
+              "title": "Coming with anyone?",
+              "detail": "On my own."
+            },
+            {
+              "title": "Dietary needs",
+              "detail": "Vegetarian"
+            }
+          ],
+          "actions": [
+            "Approve for all events",
+            "This event only"
+          ],
+          "note": "Answers come from your application form."
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "balance",
+      "ground": "white",
+      "status": "built",
+      "kicker": "A balanced room",
+      "title": "Keep the room balanced, by itself.",
+      "lead": "Set how many places go to women and how many to men, or no limits at all, and an age range for the night. When a group fills, the rest of the room stays open.",
+      "ticks": [
+        "A cap for women and a cap for men, or none",
+        "An age range for each event",
+        "Set once on the event, and every booking is checked against it"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Balance · Long Table Supper",
+          "bars": [
+            {
+              "label": "Women",
+              "value": "9 of 12",
+              "share": 75
+            },
+            {
+              "label": "Men",
+              "value": "12 of 12",
+              "share": 100
+            }
+          ],
+          "rows": [
+            {
+              "title": "Age range",
+              "detail": "25 to 40",
+              "tag": "On"
+            }
           ]
         }
       }
     },
     {
       "type": "split",
-      "id": "waitlists",
-      "ground": "ink",
-      "kicker": "Waitlists",
-      "title": "A full event, still filling.",
-      "lead": "When the event is full, new bookings join the waitlist. When someone drops out of a free event, the next person on the waitlist gets the place. For a paid event, send waitlisted guests an offer that stays open for as long as you choose.",
+      "id": "balance-groups",
+      "ground": "white",
+      "status": "partly",
+      "statusNote": "Caps are built for women and men. The third capped group (non-binary or other), asking guests without a gender once at booking, and a waitlist per group are decided (18 Nov) but not built. Show this in place of the band above when they ship.",
+      "kicker": "A balanced room",
+      "title": "Keep the room balanced, by itself.",
+      "lead": "Set how many places go to women, to men, and to non-binary and other guests, and an age range for the night. When one group fills, new bookings from it join the waitlist, and the rest of the room stays open.",
       "ticks": [
-        "Free events move the next person up for you",
-        "You set how long each offer stays open, up to a day",
-        "Guests get a reminder before their offer runs out"
+        "A cap for each group: women, men, and non-binary or other. Or no limits at all",
+        "An age range, checked against the date of birth on the guest’s profile",
+        "A waitlist for each group, so a cancellation goes to the right person",
+        "Guests only see whether they can book, never your numbers. Anyone who hasn’t shared their gender is asked once, at booking"
       ],
       "media": {
         "kind": "excerpt",
         "card": {
-          "title": "Waitlist",
+          "title": "Balance · Long Table Supper",
+          "bars": [
+            {
+              "label": "Women",
+              "value": "9 of 11",
+              "share": 82
+            },
+            {
+              "label": "Men",
+              "value": "11 of 11 · 4 waiting",
+              "share": 100
+            },
+            {
+              "label": "Non-binary or other",
+              "value": "1 of 2",
+              "share": 50
+            }
+          ],
           "rows": [
-            {"title": "32 of 32 places", "tag": "Booked"},
-            {"title": "Aanya · 2 hours left", "tag": "Offer open"},
-            {"title": "Kabir", "tag": "Waiting"},
-            {"title": "Meher", "tag": "Waiting"}
+            {
+              "title": "Age range",
+              "detail": "25 to 40",
+              "tag": "On"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "memberships",
+      "ground": "paper",
+      "status": "built",
+      "kicker": "Memberships",
+      "title": "Turn regulars into members.",
+      "lead": "Sell a monthly or yearly membership with your own perks. Members pay less for tickets, book before everyone else and get into members-only nights. You get income that doesn’t depend on the next event selling out.",
+      "ticks": [
+        "Monthly and annual plans, with a free trial if you want one",
+        "Member prices for each event: a discount, or free",
+        "Early access: members can book before general sale opens",
+        "Members-only events, and a cap on how many members you take",
+        "Paid through Razorpay, and renewed each month or year"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Saffron Table Members",
+          "subtitle": "₹1,500 a month · ₹15,000 a year",
+          "stats": [
+            {
+              "value": "86",
+              "label": "members"
+            },
+            {
+              "value": "₹1.2L",
+              "label": "a month"
+            }
+          ],
+          "rows": [
+            {
+              "title": "Member price",
+              "detail": "₹200 off every supper",
+              "tag": "On"
+            },
+            {
+              "title": "Early access",
+              "detail": "48 hours before everyone else",
+              "tag": "On"
+            },
+            {
+              "title": "Members only",
+              "detail": "Chef’s table, last Friday of the month",
+              "tag": "12 seats"
+            }
           ]
         }
       }
     },
     {
       "type": "tiles",
-      "id": "payments",
-      "ground": "paper",
-      "kicker": "Payments",
-      "title": "Paid in rupees, no screenshots.",
-      "align": "start",
+      "id": "checkout",
+      "ground": "white",
+      "status": "built",
+      "kicker": "Everything else at the checkout",
+      "title": "Full events fill themselves. Payments match themselves.",
       "columns": 3,
       "items": [
-        {"title": "UPI or card", "body": "Guests pay at booking through Razorpay. Every payment lands next to the right name."},
-        {"title": "Refunds by your policy", "body": "Set a cancellation policy per event. Refunds follow it, and the fee is on sales net of refunds."},
-        {"title": "Payouts", "body": "By default, guests pay into your own Razorpay account, and it reaches your bank on Razorpay’s usual schedule. {{brand.name}} bills its fee afterwards. Payment gateway fees are separate."}
+        {
+          "title": "Waitlists that move",
+          "body": "When someone drops out of a free event, the next person moves up. On a paid one, send an offer that stays open for as long as you choose, up to a day."
+        },
+        {
+          "title": "Questions with the booking",
+          "body": "Dietary needs, a T-shirt size or a signed waiver, asked with a form. Answers go on the guest’s record."
+        },
+        {
+          "title": "Booking for friends",
+          "body": "Up to four places in one booking, with a name for each guest."
+        },
+        {
+          "title": "UPI or card",
+          "body": "Paid at booking through Razorpay. Every payment lands next to the right name."
+        },
+        {
+          "title": "Refunds by your rules",
+          "body": "Set a cancellation policy for each event, and refunds follow it."
+        },
+        {
+          "title": "Paid to you",
+          "body": "By default, guests pay into your own Razorpay account. {{brand.name}} bills its fee afterwards."
+        }
       ],
-      "foot": "5% of ticket sales, never more than ₹10,000 a month · Free events stay free · 30 days free from your first event"
+      "foot": "5% of ticket and membership sales, never more than ₹10,000 a month · Free events stay free · 30 days free from your first event"
     },
     {
       "type": "split",
-      "id": "links",
-      "ground": "white",
-      "kicker": "Links",
-      "title": "Know which post sold the tickets.",
-      "lead": "Give every promoter, venue and post its own link. Each one shows how many people opened it, booked through it and checked in.",
-      "actions": [
-        {"label": "Guest records and groups", "to": {"route": "product_guests"}, "emphasis": "secondary"}
+      "id": "try",
+      "ground": "paper",
+      "status": "tryIt",
+      "statusNote": "Command: import an event from a link, with suggested access rules and a membership plan. Show this when the command ships.",
+      "kicker": "Try it with your next event",
+      "title": "Turn an event you’ve already listed into a {{brand.name}} page.",
+      "lead": "Paste a link to an event on Luma, District, Eventbrite, Instagram or a Google Form. {{brand.name}} builds a bookable page with checkout, then suggests how to run it: who gets in, how to balance the room, and what a membership could earn you.",
+      "ticks": [
+        "Title, date, venue, price and photos read from your link",
+        "Access rules suggested for your format: applications, balance, age",
+        "A membership plan priced from your tickets and how often people come",
+        "Open it for booking when you claim it"
       ],
       "media": {
         "kind": "excerpt",
         "card": {
-          "title": "Newsletter link · Long Table Supper",
-          "stats": [
-            {"value": "112", "label": "Opens"},
-            {"value": "14", "label": "Booked"},
-            {"value": "12", "label": "Checked in"}
-          ]
+          "label": "Try it",
+          "title": "Build your event from a link",
+          "fields": [
+            {
+              "label": "Link to an event",
+              "placeholder": "lu.ma/sundaysupper"
+            }
+          ],
+          "actions": [
+            "Build my event page",
+            "Send it to my WhatsApp"
+          ],
+          "note": "Private until you claim it. Takes about a minute."
         }
       }
     },
@@ -148,30 +607,104 @@
       "type": "faq",
       "id": "questions",
       "ground": "white",
+      "status": "built",
       "kicker": "Questions",
-      "title": "About bookings and payments.",
+      "title": "About bookings and memberships.",
       "items": [
-        {"question": "Can I approve each guest myself?", "answer": "Yes. Turn on applications, ask your questions, and approve or decline each person. Approved guests pay to confirm their place."},
-        {"question": "Can guests pay by UPI?", "answer": "Yes. Guests pay by UPI or card at booking, through Razorpay. Every payment is matched to the right name."},
-        {"question": "Can one person book for a group?", "answer": "Yes, up to four places in one booking, with a name for each guest. A member price applies to the member’s own place only."},
-        {"question": "What happens when someone cancels?", "answer": "Refunds follow the cancellation policy you set for the event. On a free event, the next person on the waitlist gets the place; on a paid one, you can send waitlisted guests an offer."},
-        {"question": "Where does the money go?", "answer": "By default, into your own Razorpay account, and from there to your bank on Razorpay’s usual schedule. Setting up Razorpay includes its KYC check, which usually takes 1 to 2 working days. Free events don’t need it."},
-        {"question": "Can an event be invite-only?", "answer": "Yes. Make it invite-only and share your invite link or code, or send one person a private offer with their own checkout."},
-        {"question": "Can I bring bookings from another tool?", "answer": "Yes. Import your guest list from a CSV or Excel file and take new bookings on {{brand.name}} whenever you’re ready."}
+        {
+          "question": "Can I approve each guest myself?",
+          "answer": "Yes. Turn on applications, ask your questions, and approve or decline each person. Approved guests pay to confirm their place."
+        },
+        {
+          "question": "Can I balance the room by gender?",
+          "answer": "Yes. Set how many places go to women and how many to men, or leave it open."
+        },
+        {
+          "question": "Can I set an age range?",
+          "answer": "Yes, for each event."
+        },
+        {
+          "question": "How do memberships work?",
+          "answer": "You create plans with a monthly or annual price and choose the perks: member prices, early access and members-only events. Members pay through Razorpay, and the membership renews by itself."
+        },
+        {
+          "question": "Can members come for free?",
+          "answer": "Yes. Set the member price for an event to free, and members book without paying."
+        },
+        {
+          "question": "What happens when someone cancels?",
+          "answer": "Refunds follow the cancellation policy you set for the event. On a free event, the next person on the waitlist gets the place; on a paid one, you can send waitlisted guests an offer."
+        },
+        {
+          "question": "Where does the money go?",
+          "answer": "By default, into your own Razorpay account, and from there to your bank on Razorpay’s usual schedule. Setting up Razorpay includes its KYC check, which usually takes 1 to 2 working days. Free events don’t need it."
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions-coming",
+      "ground": "white",
+      "status": "new",
+      "statusNote": "Answers about approvals that carry over, which are not built. Show them with that section.",
+      "kicker": "Questions",
+      "title": "About approvals.",
+      "items": [
+        {
+          "question": "Do regulars have to apply every time?",
+          "answer": "No. Approve someone for all your events and they book straight away from then on. You can change that on their record whenever you like."
+        }
       ]
     },
     {
       "type": "cta",
       "id": "start",
-      "ground": "coral",
+      "ground": "indigo",
+      "status": "built",
       "kicker": "Free for 30 days · founding hosts get 90",
       "title": "Take your next bookings on {{brand.name}}.",
       "lead": "Bring your guest list from any tool. Nothing changes for guests until the doors open.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}, "emphasis": "secondary"}
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "How {{brand.name}} works",
+          "to": {
+            "route": "how_it_works"
+          },
+          "emphasis": "secondary"
+        }
       ],
-      "media": {"kind": "capture", "slot": "guest-explore"}
+      "media": {
+        "kind": "capture",
+        "slot": "guest-explore"
+      }
+    },
+    {
+      "type": "cta",
+      "id": "start-try",
+      "ground": "indigo",
+      "status": "tryIt",
+      "statusNote": "The closing band of the import-an-event tool. Show it, in place of the band above, when the command ships.",
+      "kicker": "Free for 30 days · founding hosts get 90",
+      "title": "Your next event, on {{brand.name}} in a minute.",
+      "lead": "Paste a link to an event you’ve already listed. We’ll build the page and suggest how to run it.",
+      "leadForm": {
+        "id": "final_event",
+        "requestKind": "tool",
+        "input": "url",
+        "label": "Link to an event",
+        "submitLabel": "Build my event page"
+      },
+      "media": {
+        "kind": "capture",
+        "slot": "guest-explore"
+      }
     }
   ]
 }

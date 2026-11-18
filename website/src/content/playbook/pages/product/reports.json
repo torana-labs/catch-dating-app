@@ -3,30 +3,297 @@
   "id": "product_reports",
   "route": "product_reports",
   "meta": {
-    "title": "Reports, payouts and team | {{brand.name}} for hosts",
-    "description": "A report after every event, payouts into your own Razorpay account by default, one bill a month capped at ₹10,000, and team access you control.",
-    "socialDescription": "Know what worked, get paid, share the work. Reports, payouts and team on {{brand.name}}.",
+    "title": "Reports and payouts | {{brand.name}} for hosts",
+    "description": "A report after every event, payouts into your own Razorpay account by default, and one bill a month: 5% of net sales, never more than ₹10,000 a month.",
+    "socialDescription": "Know what worked. Get paid. Reports and payouts on {{brand.name}}.",
     "noindex": false
   },
   "header": {
     "variant": "host",
     "breadcrumbs": {
-      "links": [{"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}}],
-      "current": "Reports, payouts and team"
+      "links": [
+        {
+          "label": "How {{brand.name}} works",
+          "to": {
+            "route": "how_it_works"
+          }
+        }
+      ],
+      "current": "Reports and payouts"
     }
   },
-  "footer": {"variant": "host"},
+  "footer": {
+    "variant": "host",
+    "columns": [
+      {
+        "title": "Product",
+        "links": [
+          {
+            "label": "How {{brand.name}} works",
+            "to": {
+              "route": "how_it_works"
+            }
+          },
+          {
+            "label": "Your page",
+            "to": {
+              "route": "product_your_page"
+            }
+          },
+          {
+            "label": "Bookings and memberships",
+            "to": {
+              "route": "product_bookings"
+            }
+          },
+          {
+            "label": "Messages and growth",
+            "to": {
+              "route": "product_messages"
+            }
+          },
+          {
+            "label": "The room",
+            "to": {
+              "route": "product_room"
+            }
+          },
+          {
+            "label": "Running the event",
+            "to": {
+              "route": "product_event"
+            }
+          },
+          {
+            "label": "Guest records",
+            "to": {
+              "route": "product_guests"
+            }
+          },
+          {
+            "label": "Reports and payouts",
+            "to": {
+              "route": "product_reports"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Hosts by format",
+        "links": [
+          {
+            "label": "Run and walk clubs",
+            "to": {
+              "route": "host_run_clubs"
+            }
+          },
+          {
+            "label": "Racket sports",
+            "to": {
+              "route": "host_racket_sports"
+            }
+          },
+          {
+            "label": "Supper clubs",
+            "to": {
+              "route": "host_supper_clubs"
+            }
+          },
+          {
+            "label": "Quiz and game nights",
+            "to": {
+              "route": "host_quiz_nights"
+            }
+          },
+          {
+            "label": "Studios",
+            "to": {
+              "route": "host_studios"
+            }
+          },
+          {
+            "label": "Venues",
+            "to": {
+              "route": "host_venues"
+            }
+          },
+          {
+            "label": "Communities",
+            "to": {
+              "route": "host_communities"
+            }
+          },
+          {
+            "label": "Mixers and pub crawls",
+            "to": {
+              "route": "host_nightlife"
+            }
+          },
+          {
+            "label": "Teams",
+            "to": {
+              "route": "host_teams"
+            }
+          },
+          {
+            "label": "Colleges and alumni",
+            "to": {
+              "route": "host_colleges"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Get started",
+        "links": [
+          {
+            "label": "Start free trial",
+            "to": {
+              "route": "host_start"
+            }
+          },
+          {
+            "label": "Pricing",
+            "to": {
+              "route": "pricing"
+            }
+          },
+          {
+            "label": "Your first event",
+            "to": {
+              "route": "host_first_event"
+            }
+          },
+          {
+            "label": "Switch to {{brand.name}}",
+            "to": {
+              "route": "host_switch"
+            }
+          },
+          {
+            "label": "Try a demo night",
+            "to": {
+              "route": "host_demo"
+            }
+          },
+          {
+            "label": "Programmes",
+            "to": {
+              "route": "programmes"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Resources",
+        "links": [
+          {
+            "label": "Forms",
+            "to": {
+              "route": "product_forms"
+            }
+          },
+          {
+            "label": "Book a walkthrough",
+            "to": {
+              "route": "host_walkthrough"
+            }
+          },
+          {
+            "label": "Help",
+            "to": {
+              "route": "help"
+            }
+          }
+        ]
+      },
+      {
+        "title": "{{brand.name}}",
+        "links": [
+          {
+            "label": "What’s on",
+            "to": {
+              "route": "visitor_discovery"
+            }
+          },
+          {
+            "label": "About",
+            "to": {
+              "route": "about"
+            }
+          },
+          {
+            "label": "Safety",
+            "to": {
+              "route": "safety"
+            }
+          },
+          {
+            "label": "Contact",
+            "to": {
+              "route": "contact"
+            }
+          },
+          {
+            "label": "Report or remove a listing",
+            "to": {
+              "route": "listing_request"
+            }
+          },
+          {
+            "label": "Terms",
+            "to": {
+              "route": "terms"
+            }
+          },
+          {
+            "label": "Privacy",
+            "to": {
+              "route": "privacy"
+            }
+          },
+          {
+            "label": "Refunds",
+            "to": {
+              "route": "refunds"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "sections": [
     {
       "type": "hero",
       "id": "top",
-      "ground": "coral",
-      "kicker": "Product · reports, payouts and team",
-      "title": "Know what worked, get paid, share the work.",
-      "lead": "A report after every event: who came, who was new and what guests said. By default, money goes straight into your own Razorpay account. And the people who help you run things get the access they need, and no more.",
+      "ground": "sky",
+      "status": "built",
+      "kicker": "Product · reports and payouts",
+      "title": "Know what worked. Get paid. Do it better next time.",
+      "lead": "A report after every event, with what guests said in it. Money straight into your own Razorpay account. And one simple bill from us, after the month.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {"label": "See pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "See your last event as a report",
+          "to": {
+            "anchor": "try"
+          },
+          "emphasis": "secondary",
+          "status": "tryIt"
+        },
+        {
+          "label": "See pricing",
+          "to": {
+            "route": "pricing"
+          },
+          "emphasis": "secondary"
+        }
       ],
       "media": {
         "kind": "excerpt",
@@ -34,14 +301,35 @@
           "title": "Report · Sunday social run, 24 Nov",
           "subtitle": "Ready in {{brand.stores.hostAppName}} after the event",
           "stats": [
-            {"value": "46/52", "label": "came"},
-            {"value": "11", "label": "new to you"},
-            {"value": "4.8", "label": "rating"}
+            {
+              "value": "46/52",
+              "label": "came"
+            },
+            {
+              "value": "11",
+              "label": "new to you"
+            },
+            {
+              "value": "4.8",
+              "label": "rating"
+            }
           ],
           "rows": [
-            {"title": "Ticket sales", "detail": "From 46 payments", "value": "₹13,800"},
-            {"title": "What guests said", "detail": "21 reviews", "value": "Read"},
-            {"title": "Bring these 46 back", "detail": "Next Sunday · 40 places", "value": "Invite"}
+            {
+              "title": "Ticket sales",
+              "detail": "From 46 payments",
+              "value": "₹13,800"
+            },
+            {
+              "title": "What guests said",
+              "detail": "21 reviews",
+              "value": "Read"
+            },
+            {
+              "title": "Bring these 46 back",
+              "detail": "Next Sunday · 40 places",
+              "value": "Invite"
+            }
           ]
         }
       }
@@ -59,7 +347,58 @@
         "Ticket sales, and ratings and reviews from guests",
         "The guest list, check-ins, bookings and payments, as CSV files"
       ],
-      "media": {"kind": "capture", "slot": "host-post-event-report"}
+      "media": {
+        "kind": "capture",
+        "slot": "host-post-event-report"
+      },
+      "status": "built"
+    },
+    {
+      "type": "split",
+      "id": "feedback",
+      "ground": "paper",
+      "status": "partly",
+      "statusNote": "Ratings and reviews from guests are built. The feedback summary with a would-come-back share and private notes summed up across events are not. Show this when they ship.",
+      "kicker": "Feedback",
+      "title": "Ask how it went, while it’s fresh.",
+      "lead": "A short form goes out the morning after: a rating, what to change, and whether they’d come back. Public reviews can go on your page. Private notes come only to you.",
+      "ticks": [
+        "A rating and two questions, sent for you",
+        "Public reviews and private notes, kept apart",
+        "What people asked for, summed up across events"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Feedback · Long Table Supper",
+          "stats": [
+            {
+              "value": "4.8",
+              "label": "average"
+            },
+            {
+              "value": "38",
+              "label": "responses"
+            },
+            {
+              "value": "82%",
+              "label": "would come back"
+            }
+          ],
+          "rows": [
+            {
+              "title": "“Loved the dessert swap. More of that.”",
+              "detail": "Public review",
+              "tag": "On your page"
+            },
+            {
+              "title": "“Table 4 was a bit cramped.”",
+              "detail": "Private note",
+              "tag": "Only you"
+            }
+          ]
+        }
+      }
     },
     {
       "type": "tiles",
@@ -71,11 +410,36 @@
       "align": "start",
       "columns": 4,
       "items": [
-        {"figure": "1", "figureNote": "Booking", "title": "Guest pays by UPI or card", "ground": "ink", "body": "Straight into your Razorpay account."},
-        {"figure": "2", "figureNote": "Settlement", "title": "Razorpay pays your bank", "ground": "ink", "body": "On Razorpay’s usual schedule for your account."},
-        {"figure": "3", "figureNote": "Refunds", "title": "By your policy", "ground": "ink", "body": "Refunds follow the cancellation policy you set."},
-        {"figure": "4", "figureNote": "{{brand.name}}’s fee", "title": "Billed afterwards", "ground": "ink", "body": "5% of net sales, never more than ₹10,000, in one bill a month."}
-      ]
+        {
+          "figure": "1",
+          "figureNote": "Booking",
+          "title": "Guest pays by UPI or card",
+          "ground": "ink",
+          "body": "Straight into your Razorpay account."
+        },
+        {
+          "figure": "2",
+          "figureNote": "Settlement",
+          "title": "Razorpay pays your bank",
+          "ground": "ink",
+          "body": "On Razorpay’s usual schedule for your account."
+        },
+        {
+          "figure": "3",
+          "figureNote": "Refunds",
+          "title": "By your policy",
+          "ground": "ink",
+          "body": "Refunds follow the cancellation policy you set."
+        },
+        {
+          "figure": "4",
+          "figureNote": "{{brand.name}}’s fee",
+          "title": "Billed afterwards",
+          "ground": "ink",
+          "body": "5% of net sales, never more than ₹10,000, in one bill a month."
+        }
+      ],
+      "status": "built"
     },
     {
       "type": "split",
@@ -94,36 +458,70 @@
         "card": {
           "title": "{{brand.name}} bill · one month",
           "rows": [
-            {"title": "Sunday social runs × 4", "value": "₹0"},
-            {"title": "Coached 10K × 2 · ₹48,000", "value": "₹2,400"},
-            {"title": "Memberships · ₹36,000", "value": "₹1,800"},
-            {"title": "Refunds · −₹3,000", "value": "−₹150"},
-            {"title": "{{brand.name}} fee this month", "value": "₹4,050"}
+            {
+              "title": "Sunday social runs × 4",
+              "value": "₹0"
+            },
+            {
+              "title": "Coached 10K × 2 · ₹48,000",
+              "value": "₹2,400"
+            },
+            {
+              "title": "Memberships · ₹36,000",
+              "value": "₹1,800"
+            },
+            {
+              "title": "Refunds · −₹3,000",
+              "value": "−₹150"
+            },
+            {
+              "title": "{{brand.name}} fee this month",
+              "value": "₹4,050"
+            }
           ]
         }
-      }
+      },
+      "status": "built"
     },
     {
       "type": "split",
-      "id": "team",
+      "id": "try",
       "ground": "paper",
-      "kicker": "Your team",
-      "title": "Bring in help without handing over everything.",
-      "lead": "Add co-hosts and managers to run your events with you. Give someone the door for one night. Door staff see only the door.",
+      "status": "tryIt",
+      "statusNote": "Command: import past sales and produce a report with a fee comparison. Show this when the command ships.",
+      "kicker": "Try it with your last event",
+      "title": "See your last event as a {{brand.name}} report.",
+      "lead": "Upload the sales export from your ticketing tool, or just enter what you sold, the price and how many came. {{brand.name}} builds the report you’d have had after the event, and shows what {{brand.name}} would have charged next to what you paid.",
       "ticks": [
-        "Co-hosts and managers run events alongside you",
-        "Door staff see only one event’s list, until their access ends",
-        "Take anyone’s access back at any time"
+        "Works with exports from Luma, District, Eventbrite or a spreadsheet",
+        "First-timers and repeat guests, if the export has names",
+        "{{brand.name}}’s fee next to your current tool’s",
+        "Your history comes with you when you claim it"
       ],
       "media": {
         "kind": "excerpt",
         "card": {
-          "title": "Your team",
-          "rows": [
-            {"title": "You", "detail": "Owner · your page, events and payments setup", "tag": "Owner"},
-            {"title": "Meera Iyer", "detail": "Manager · runs events with you", "tag": "Manager"},
-            {"title": "Arjun Rao", "detail": "Door · Sunday social run only", "tag": "Until 9 AM Sun"}
-          ]
+          "label": "Try it",
+          "title": "Build a report",
+          "fields": [
+            {
+              "label": "Tickets sold",
+              "placeholder": "52"
+            },
+            {
+              "label": "Ticket price (₹)",
+              "placeholder": "400"
+            },
+            {
+              "label": "How many came",
+              "placeholder": "46"
+            }
+          ],
+          "actions": [
+            "Build my report",
+            "Upload an export"
+          ],
+          "note": "Numbers alone need no sign-in. Exports with names need your phone number first."
         }
       }
     },
@@ -134,26 +532,88 @@
       "kicker": "Questions",
       "title": "About reports and payouts.",
       "items": [
-        {"question": "When is my report ready?", "answer": "After the event, in {{brand.stores.hostAppName}}. Open the event to see who came, who was new, what you sold and what guests said."},
-        {"question": "Do I need a Razorpay account?", "answer": "To sell tickets, yes, and we’ll help you set it up. Razorpay’s KYC check usually takes 1 to 2 working days. Free events don’t need one."},
-        {"question": "When do I get my money?", "answer": "By default, guests pay into your Razorpay account, and Razorpay sends it to your bank on its usual schedule for your account. {{brand.name}} doesn’t hold it."},
-        {"question": "How does {{brand.name}} charge me?", "answer": "One bill a month: 5% of ticket sales, memberships and form fees, net of refunds, never more than ₹10,000 a month. Nothing during your trial."},
-        {"question": "Can more than one person run my events?", "answer": "Yes. Add co-hosts and managers to your team, and give helpers door access for a single event."},
-        {"question": "Can I export my numbers?", "answer": "Yes. Each event’s report downloads its guest list, check-ins, bookings and payments as CSV files, and you can export your guest contacts any time."}
-      ]
+        {
+          "question": "When is my report ready?",
+          "answer": "After the event, in {{brand.stores.hostAppName}}. Open the event to see who came, who was new, what you sold and what guests said."
+        },
+        {
+          "question": "Do I need a Razorpay account?",
+          "answer": "To sell tickets, yes, and we’ll help you set it up. Razorpay’s KYC check usually takes 1 to 2 working days. Free events don’t need one."
+        },
+        {
+          "question": "When do I get my money?",
+          "answer": "By default, guests pay into your Razorpay account, and Razorpay sends it to your bank on its usual schedule for your account. {{brand.name}} doesn’t hold it."
+        },
+        {
+          "question": "How does {{brand.name}} charge me?",
+          "answer": "One bill a month: 5% of ticket sales, memberships and form fees, net of refunds, never more than ₹10,000 a month. Nothing during your trial."
+        },
+        {
+          "question": "Can I export my numbers?",
+          "answer": "Yes. Each event’s report downloads its guest list, check-ins, bookings and payments as CSV files, and you can export your guest contacts any time."
+        }
+      ],
+      "status": "built"
     },
     {
       "type": "cta",
       "id": "start",
-      "ground": "coral",
+      "ground": "sky",
+      "status": "built",
       "kicker": "Free for 30 days · founding hosts get 90",
       "title": "Run it, then see what worked.",
       "lead": "Your first report is ready in {{brand.stores.hostAppName}} after your first event.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}, "emphasis": "secondary"}
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "How {{brand.name}} works",
+          "to": {
+            "route": "how_it_works"
+          },
+          "emphasis": "secondary"
+        }
       ],
-      "media": {"kind": "capture", "slot": "host-today"}
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
+    },
+    {
+      "type": "cta",
+      "id": "start-try",
+      "ground": "sky",
+      "status": "tryIt",
+      "statusNote": "The closing band of the past-sales tool. Show it, in place of the band above, when the command ships.",
+      "kicker": "Free for 30 days · founding hosts get 90",
+      "title": "See what your last event was really telling you.",
+      "lead": "Enter three numbers or upload an export. Your report is ready in a minute.",
+      "actions": [
+        {
+          "label": "Build my report",
+          "to": {
+            "anchor": "try"
+          },
+          "emphasis": "primary",
+          "status": "tryIt"
+        },
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "secondary"
+        }
+      ],
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
     }
   ]
 }

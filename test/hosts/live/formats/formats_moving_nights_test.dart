@@ -92,7 +92,7 @@ void main() {
       expect(hostMovingNightView(courtsEvent), isNull);
     });
 
-    test('a saved room layout keeps the old console', () {
+    test('a run with a saved room layout still gets the run console', () {
       final plan = _runPlan().copyWith(
         layoutId: 'layout-1',
         structureConfig: const EventSuccessStructureConfig(
@@ -106,7 +106,10 @@ void main() {
           ),
         ),
       );
-      expect(hostMovingNightView(_runEvent, plan: plan), isNull);
+      expect(
+        hostMovingNightView(_runEvent, plan: plan),
+        HostMovingNightView.run,
+      );
     });
   });
 

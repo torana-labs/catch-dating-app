@@ -165,7 +165,7 @@ void _registerEventSuccessCompanionFlowTests() {
         400,
         scrollable: verticalScroll(EventSuccessCompanionKeys.scrollView),
       );
-      expect(find.text('HOST CAN SEE'), findsOneWidget);
+      expect(find.text('Host can see'), findsOneWidget);
       expect(find.text('Rhea'), findsOneWidget);
 
       await tester.scrollUntilVisible(

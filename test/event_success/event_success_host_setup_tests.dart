@@ -129,8 +129,8 @@ void _registerEventSuccessHostSetupTests() {
 
     await tester.tap(find.text('Live'));
     await pumpFeatureUi(tester);
-    expect(find.textContaining('LIVE NOW'), findsOneWidget);
-    expect(find.textContaining('SYNCED'), findsOneWidget);
+    expect(find.textContaining('Live now'), findsOneWidget);
+    expect(find.textContaining('Synced'), findsOneWidget);
     expect(find.text('Up next'), findsOneWidget);
     expect(find.text('Guests'), findsOneWidget);
     expect(find.text('Conversation cues'), findsOneWidget);

@@ -3,41 +3,317 @@
   "id": "product_messages",
   "route": "product_messages",
   "meta": {
-    "title": "Messages | {{brand.name}} for hosts",
-    "description": "Event messages for every booking, a push reminder before the start, announcements to up to 500 guests, follower updates, and WhatsApp campaigns from your own WhatsApp Business number.",
-    "socialDescription": "The right message, to the right people. Event messages, announcements and WhatsApp campaigns on {{brand.name}}.",
+    "title": "Messages and growth | {{brand.name}} for hosts",
+    "description": "Event messages for every booking, a push reminder before the start, announcements, follower updates and WhatsApp campaigns, plus tracked links and guest invite links that show what fills your events.",
+    "socialDescription": "Fill the next one from the last one. Messages and growth on {{brand.name}}.",
     "noindex": false
   },
   "header": {
     "variant": "host",
     "breadcrumbs": {
-      "links": [{"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}}],
-      "current": "Messages"
+      "links": [
+        {
+          "label": "How {{brand.name}} works",
+          "to": {
+            "route": "how_it_works"
+          }
+        }
+      ],
+      "current": "Messages and growth"
     }
   },
-  "footer": {"variant": "host"},
+  "footer": {
+    "variant": "host",
+    "columns": [
+      {
+        "title": "Product",
+        "links": [
+          {
+            "label": "How {{brand.name}} works",
+            "to": {
+              "route": "how_it_works"
+            }
+          },
+          {
+            "label": "Your page",
+            "to": {
+              "route": "product_your_page"
+            }
+          },
+          {
+            "label": "Bookings and memberships",
+            "to": {
+              "route": "product_bookings"
+            }
+          },
+          {
+            "label": "Messages and growth",
+            "to": {
+              "route": "product_messages"
+            }
+          },
+          {
+            "label": "The room",
+            "to": {
+              "route": "product_room"
+            }
+          },
+          {
+            "label": "Running the event",
+            "to": {
+              "route": "product_event"
+            }
+          },
+          {
+            "label": "Guest records",
+            "to": {
+              "route": "product_guests"
+            }
+          },
+          {
+            "label": "Reports and payouts",
+            "to": {
+              "route": "product_reports"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Hosts by format",
+        "links": [
+          {
+            "label": "Run and walk clubs",
+            "to": {
+              "route": "host_run_clubs"
+            }
+          },
+          {
+            "label": "Racket sports",
+            "to": {
+              "route": "host_racket_sports"
+            }
+          },
+          {
+            "label": "Supper clubs",
+            "to": {
+              "route": "host_supper_clubs"
+            }
+          },
+          {
+            "label": "Quiz and game nights",
+            "to": {
+              "route": "host_quiz_nights"
+            }
+          },
+          {
+            "label": "Studios",
+            "to": {
+              "route": "host_studios"
+            }
+          },
+          {
+            "label": "Venues",
+            "to": {
+              "route": "host_venues"
+            }
+          },
+          {
+            "label": "Communities",
+            "to": {
+              "route": "host_communities"
+            }
+          },
+          {
+            "label": "Mixers and pub crawls",
+            "to": {
+              "route": "host_nightlife"
+            }
+          },
+          {
+            "label": "Teams",
+            "to": {
+              "route": "host_teams"
+            }
+          },
+          {
+            "label": "Colleges and alumni",
+            "to": {
+              "route": "host_colleges"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Get started",
+        "links": [
+          {
+            "label": "Start free trial",
+            "to": {
+              "route": "host_start"
+            }
+          },
+          {
+            "label": "Pricing",
+            "to": {
+              "route": "pricing"
+            }
+          },
+          {
+            "label": "Your first event",
+            "to": {
+              "route": "host_first_event"
+            }
+          },
+          {
+            "label": "Switch to {{brand.name}}",
+            "to": {
+              "route": "host_switch"
+            }
+          },
+          {
+            "label": "Try a demo night",
+            "to": {
+              "route": "host_demo"
+            }
+          },
+          {
+            "label": "Programmes",
+            "to": {
+              "route": "programmes"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Resources",
+        "links": [
+          {
+            "label": "Forms",
+            "to": {
+              "route": "product_forms"
+            }
+          },
+          {
+            "label": "Book a walkthrough",
+            "to": {
+              "route": "host_walkthrough"
+            }
+          },
+          {
+            "label": "Help",
+            "to": {
+              "route": "help"
+            }
+          }
+        ]
+      },
+      {
+        "title": "{{brand.name}}",
+        "links": [
+          {
+            "label": "What’s on",
+            "to": {
+              "route": "visitor_discovery"
+            }
+          },
+          {
+            "label": "About",
+            "to": {
+              "route": "about"
+            }
+          },
+          {
+            "label": "Safety",
+            "to": {
+              "route": "safety"
+            }
+          },
+          {
+            "label": "Contact",
+            "to": {
+              "route": "contact"
+            }
+          },
+          {
+            "label": "Report or remove a listing",
+            "to": {
+              "route": "listing_request"
+            }
+          },
+          {
+            "label": "Terms",
+            "to": {
+              "route": "terms"
+            }
+          },
+          {
+            "label": "Privacy",
+            "to": {
+              "route": "privacy"
+            }
+          },
+          {
+            "label": "Refunds",
+            "to": {
+              "route": "refunds"
+            }
+          }
+        ]
+      }
+    ]
+  },
   "sections": [
     {
       "type": "hero",
       "id": "top",
       "ground": "yellow",
-      "kicker": "Product · messages",
-      "title": "The right message, to the right people, without you typing it.",
-      "lead": "Confirmations and changes reach everyone booked, and guests on the {{brand.name}} app get a push reminder 15 minutes before the start. Announcements reach everyone booked. Followers hear about your next event. And with your own WhatsApp Business number connected, you can send WhatsApp campaigns to the people who said yes.",
+      "status": "built",
+      "kicker": "Product · messages and growth",
+      "title": "Fill the next one from the last one.",
+      "lead": "Event messages send themselves. Then {{brand.name}} shows you what actually fills your events: which post, which promoter, and which guests bring their friends.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {"label": "See WhatsApp setup", "to": {"anchor": "whatsapp"}, "emphasis": "secondary"}
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Make links for your event",
+          "to": {
+            "anchor": "try"
+          },
+          "emphasis": "secondary",
+          "status": "tryIt"
+        }
       ],
       "media": {
         "kind": "excerpt",
         "card": {
-          "title": "Event messages · Sunday social run",
-          "rows": [
-            {"title": "Booking confirmation", "detail": "Where to be and when", "tag": "On"},
-            {"title": "Push reminder", "detail": "15 minutes before the start, on the {{brand.name}} app", "tag": "On"},
-            {"title": "Change notice", "detail": "New time or place, to everyone booked", "tag": "On"},
-            {"title": "Cancellation and refund", "detail": "Refunded by your policy", "tag": "On"},
-            {"title": "Feedback request", "detail": "After the event, to everyone booked", "tag": "On"}
+          "title": "Where Sunday’s 52 runners came from",
+          "subtitle": "Sunday Social Run · 24 Nov",
+          "bars": [
+            {
+              "label": "Followers",
+              "value": "21",
+              "share": 100
+            },
+            {
+              "label": "Instagram bio",
+              "value": "13",
+              "share": 62
+            },
+            {
+              "label": "Aanya’s invites",
+              "value": "9",
+              "share": 43
+            },
+            {
+              "label": "Café counter link",
+              "value": "6",
+              "share": 29
+            }
           ]
         }
       }
@@ -46,74 +322,281 @@
       "type": "tiles",
       "id": "four-ways",
       "ground": "white",
+      "status": "built",
       "kicker": "Four ways to reach people",
       "title": "Each one for a different job.",
       "columns": 4,
       "items": [
-        {"title": "Event messages", "body": "Confirmations, changes, cancellations and a feedback request for every booking, and a push reminder 15 minutes before the start for guests on the app.", "then": "To: the people booked", "ground": "yellow"},
-        {"title": "Announcements", "body": "“Meet at the north gate, it’s raining.” One notification to everyone booked, or everyone interested, up to 500 people.", "then": "To: one event’s guests", "ground": "coral"},
-        {"title": "Follower updates", "body": "Send your followers an update about your next event, up to twice a month, without sharing a link.", "then": "To: your followers", "ground": "indigo"},
-        {"title": "WhatsApp campaigns", "body": "Approved templates, scheduled and sent from your own WhatsApp Business number, with delivery reports. Needs a one-time Meta setup.", "then": "To: people who opted in", "ground": "mint"}
+        {
+          "title": "Event messages",
+          "body": "Confirmations, changes, cancellations and a feedback request for every booking, and a push reminder 15 minutes before the start for guests on the {{brand.name}} app.",
+          "then": "To: the people booked",
+          "ground": "yellow"
+        },
+        {
+          "title": "Announcements",
+          "body": "“Meet at the north gate, it’s raining.” One notification to everyone booked, or everyone interested, up to 500 people.",
+          "then": "To: one event’s guests",
+          "ground": "coral"
+        },
+        {
+          "title": "Follower updates",
+          "body": "Send your followers an update about your next event, up to twice a month.",
+          "then": "To: your followers",
+          "ground": "indigo"
+        },
+        {
+          "title": "WhatsApp campaigns",
+          "body": "Approved templates, scheduled and sent from your own WhatsApp Business number, with delivery reports.",
+          "then": "To: people who opted in",
+          "ground": "mint"
+        }
       ]
     },
     {
       "type": "split",
-      "id": "whatsapp",
+      "id": "tracked-links",
       "ground": "ink",
-      "kicker": "WhatsApp campaigns",
-      "title": "Your number. Your people. Proof it arrived.",
-      "lead": "Send your next event to the people who asked to hear from you on WhatsApp. Pick who gets it from your guest records, preview it, schedule it, and see how many it reached.",
+      "status": "built",
+      "kicker": "Tracked links",
+      "title": "Know which post sold the tickets.",
+      "lead": "Make a link for every promoter, venue, poster and post in a few seconds. Every visit, booking and rupee is counted against the link it came from, so you spend time and money where it works.",
       "ticks": [
-        "Sent from your own WhatsApp Business number",
-        "Only to people who opted in to hear from you; STOP is honoured",
-        "Delivered and read counts for every send",
-        "Replies land in one inbox, and you can answer them there"
-      ],
-      "steps": [
-        {"label": "Step 1", "title": "Connect your WhatsApp Business number", "body": "Link your own WhatsApp Business number to {{brand.name}} through Meta, once. It takes about 20 minutes, and we’ll do it with you on a call or on WhatsApp."},
-        {"label": "Step 2", "title": "Get your templates approved", "body": "Meta approves each message template before it can go out, so campaigns only use approved wording."},
-        {"label": "Step 3", "title": "Send to the people who said yes", "body": "Pick an audience from your guest records, schedule the send, and watch delivered and read counts come in."}
-      ],
-      "actions": [
-        {
-          "label": "Set it up with us on WhatsApp",
-          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’d like help connecting my WhatsApp Business number for campaigns."},
-          "emphasis": "secondary"
-        }
+        "A link for each promoter, venue, poster or post",
+        "Visits, bookings and revenue for every link",
+        "In your event report, link by link"
       ],
       "media": {
         "kind": "excerpt",
         "card": {
-          "title": "Campaign · Next Long Table Supper",
-          "stats": [
-            {"value": "212", "label": "sent"},
-            {"value": "204", "label": "delivered"},
-            {"value": "161", "label": "read"}
+          "title": "Links · last 30 days",
+          "rows": [
+            {
+              "title": "Reel · 12 Nov",
+              "detail": "1,204 visits · 14 booked",
+              "value": "₹5,600"
+            },
+            {
+              "title": "Promoter · Kabir",
+              "detail": "41 visits · 9 booked",
+              "value": "₹3,600"
+            },
+            {
+              "title": "Café counter",
+              "detail": "88 visits · 6 booked",
+              "value": "₹2,400"
+            },
+            {
+              "title": "Newsletter",
+              "detail": "186 visits · 24 booked",
+              "value": "₹9,600"
+            }
           ]
         }
       }
     },
     {
       "type": "split",
-      "id": "personal",
-      "ground": "white",
-      "kicker": "Personal messages",
-      "title": "One person, your words, one tap.",
-      "lead": "From anyone’s record, open WhatsApp on your phone with a message already written. Change it, press send. It comes from you, like any message you’d send yourself.",
+      "id": "promoter-commission",
+      "ground": "ink",
+      "status": "new",
+      "statusNote": "Tracked links and their counts are built. Promoter commission, QR codes per link and sending bookings to the host’s own pixel are not. Show this in place of the band above when they ship.",
+      "kicker": "Tracked links",
+      "title": "Know which post sold the tickets.",
+      "lead": "Make a link for every promoter, venue, poster and post in a few seconds. Every visit, booking and rupee is counted against the link it came from, so you spend time and money where it works.",
       "ticks": [
-        "“We missed you on Sunday” to someone who hasn’t been in a while",
-        "A thank-you to a regular",
-        "A seat offered to someone who asked last time"
+        "A link and QR code for each promoter, venue, poster or post",
+        "Visits, bookings and revenue for every link",
+        "Promoter commission worked out from their link",
+        "Bookings also reach your own pixel, so your ads learn too"
       ],
       "media": {
         "kind": "excerpt",
         "card": {
-          "title": "Kabir Shah",
-          "subtitle": "Regular · last came in September",
+          "title": "Links · last 30 days",
           "rows": [
-            {"title": "Personal message", "detail": "Opens WhatsApp on your phone, ready to edit", "tag": "Ready"}
+            {
+              "title": "Reel · 12 Nov",
+              "detail": "1,204 visits · 14 booked",
+              "value": "₹5,600"
+            },
+            {
+              "title": "Promoter · Kabir",
+              "detail": "41 visits · 9 booked · ₹360 commission",
+              "value": "₹3,600"
+            },
+            {
+              "title": "Café counter QR",
+              "detail": "88 scans · 6 booked",
+              "value": "₹2,400"
+            },
+            {
+              "title": "Newsletter",
+              "detail": "186 visits · 24 booked",
+              "value": "₹9,600"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "invite-links",
+      "ground": "white",
+      "status": "built",
+      "kicker": "Guests who bring guests",
+      "title": "Find the people who fill your events for you.",
+      "lead": "Every guest gets their own invite link when they book. When a friend books through it, {{brand.name}} counts it, so over time you see who brings people, and how many.",
+      "ticks": [
+        "A personal invite link for every guest, made for them",
+        "Shares and bookings counted to the person who sent them",
+        "Advocates, the guests who bring people, as a group in your records"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Advocates",
+          "subtitle": "Last 6 months",
+          "rows": [
+            {
+              "title": "Aanya Mehta",
+              "detail": "14 friends booked through her link",
+              "tag": "Advocate"
+            },
+            {
+              "title": "Kabir Shah",
+              "detail": "8 friends",
+              "tag": "Advocate"
+            },
+            {
+              "title": "Meher Joshi",
+              "detail": "5 friends",
+              "tag": "Advocate"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "ambassadors",
+      "ground": "white",
+      "status": "partly",
+      "statusNote": "Invite links, share counts and the Advocates group are built. Friends’ spend (verified payments net of refunds, shown as a separate fact, never blended), Top ambassadors ranked by friends brought and reward actions are decided (18 Nov) but not built. Show this in place of the band above when they ship.",
+      "kicker": "Guests who bring guests",
+      "title": "Find the people who fill your events for you.",
+      "lead": "Every guest gets their own invite link when they book. When a friend books through it, {{brand.name}} counts it. Over time you see who brings people, how many, and what those friends went on to spend, so you can thank the right people properly.",
+      "ticks": [
+        "A personal invite link for every guest, made for them",
+        "Shares and bookings counted to the person who sent them",
+        "For each guest: the friends they brought and, separately, what those friends paid on {{brand.name}}",
+        "Reward them in a tap: a free ticket, a member discount or a thank-you"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Your top ambassadors",
+          "subtitle": "Last 6 months · by friends brought",
+          "rows": [
+            {
+              "title": "Aanya Mehta",
+              "detail": "14 friends · ₹9,800 in their tickets",
+              "tag": "Top ambassador"
+            },
+            {
+              "title": "Kabir Shah",
+              "detail": "8 friends · ₹5,200",
+              "tag": "Advocate"
+            },
+            {
+              "title": "Meher Joshi",
+              "detail": "5 friends · ₹2,000",
+              "tag": "Advocate"
+            }
           ],
-          "note": "“Hey Kabir! Haven’t seen you at a Sunday run since September. We’ve got a new 5K route along the sea face this week, if you fancy it.”"
+          "actions": [
+            "Send Aanya a free ticket",
+            "Message all three"
+          ],
+          "note": "Spend counts verified {{brand.name}} payments only, net of refunds."
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "automations",
+      "ground": "paper",
+      "status": "built",
+      "kicker": "Automations",
+      "title": "The messages you’d forget to send, sent.",
+      "lead": "Confirmations, changes, cancellations and a feedback request go out for every booking, and guests on the app get a push reminder before the start, so guests always know where to be.",
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Event messages · Sunday social run",
+          "rows": [
+            {
+              "title": "Booking confirmation",
+              "detail": "Where to be and when",
+              "tag": "On"
+            },
+            {
+              "title": "Push reminder",
+              "detail": "15 minutes before the start, on the {{brand.name}} app",
+              "tag": "On"
+            },
+            {
+              "title": "Change notice",
+              "detail": "New time or place, to everyone booked",
+              "tag": "On"
+            },
+            {
+              "title": "Cancellation and refund",
+              "detail": "Refunded by your policy",
+              "tag": "On"
+            },
+            {
+              "title": "Feedback request",
+              "detail": "After the event, to everyone booked",
+              "tag": "On"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "whatsapp",
+      "ground": "ink",
+      "status": "built",
+      "kicker": "WhatsApp campaigns",
+      "title": "Your number. Your people. Proof it arrived.",
+      "lead": "Send your next event to the people who asked to hear from you on WhatsApp. Pick who gets it from your guest records, preview it, schedule it, and see how many it reached.",
+      "ticks": [
+        "Sent from your own WhatsApp Business number",
+        "Only to people who opted in. STOP is honoured",
+        "Delivered and read counts for every send",
+        "Replies land in one inbox, and you can answer them there"
+      ],
+      "body": "Setting it up: connect a WhatsApp Business number through Meta, once. It takes about 20 minutes, and we’ll do it with you.",
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Campaign · New date: Long Table Supper",
+          "stats": [
+            {
+              "value": "212",
+              "label": "sent"
+            },
+            {
+              "value": "204",
+              "label": "delivered"
+            },
+            {
+              "value": "161",
+              "label": "read"
+            }
+          ]
         }
       }
     },
@@ -121,43 +604,161 @@
       "type": "checklist",
       "id": "permission",
       "ground": "paper",
+      "status": "built",
       "kicker": "Who hears from you",
-      "title": "Permission, kept per channel.",
+      "title": "Permission, kept for each channel.",
       "lead": "Booking an event lets you send that event’s messages. Hearing about future events on WhatsApp is a separate yes.",
       "items": [
-        {"title": "Event messages go to people booked", "body": "Only what’s needed for that event."},
-        {"title": "Campaigns go to people who opted in", "body": "A clear yes, to you, on WhatsApp."},
-        {"title": "STOP means stop", "body": "They’re taken off straight away."},
-        {"title": "Imported lists don’t count as a yes", "body": "Ask them first, then message them."}
+        {
+          "title": "Event messages go to people booked",
+          "body": "Only what’s needed for that event."
+        },
+        {
+          "title": "Campaigns go to people who opted in",
+          "body": "A clear yes, to you, on WhatsApp."
+        },
+        {
+          "title": "STOP means stop",
+          "body": "They’re taken off straight away."
+        },
+        {
+          "title": "Imported lists aren’t a yes",
+          "body": "Ask them first, then message them."
+        }
       ]
+    },
+    {
+      "type": "split",
+      "id": "try",
+      "ground": "paper",
+      "status": "tryIt",
+      "statusNote": "Command: create a promotion kit (tracked links, QR codes, draft messages) for an event. Show this when the command ships.",
+      "kicker": "Try it with your event",
+      "title": "Get a tracked link for everywhere you promote.",
+      "lead": "Paste your event link and list where you promote it: your Instagram, a WhatsApp group, your promoters, the café that keeps your posters. {{brand.name}} makes a link and QR code for each, and writes your confirmation, reminder and day-of messages from your event page.",
+      "ticks": [
+        "A link and QR code for every place you promote",
+        "Reminders written in your voice, previewed as WhatsApp messages",
+        "Invite links for your guests, switched on",
+        "Counting starts the moment you claim them"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "label": "Try it",
+          "title": "Make your links and messages",
+          "fields": [
+            {
+              "label": "Your event link",
+              "placeholder": "lu.ma/sunday-social"
+            },
+            {
+              "label": "Where you promote it",
+              "placeholder": "Instagram, run club WhatsApp, Kabir, Brindle Café"
+            }
+          ],
+          "actions": [
+            "Make my links",
+            "Send them to my WhatsApp"
+          ],
+          "note": "Private until you claim it. Takes about a minute."
+        }
+      }
     },
     {
       "type": "faq",
       "id": "questions",
       "ground": "white",
+      "status": "built",
       "kicker": "Questions",
-      "title": "About messages.",
+      "title": "About messages and growth.",
       "items": [
-        {"question": "Do I need a WhatsApp Business number?", "answer": "Only for WhatsApp campaigns. Event messages, the push reminder, announcements, follower updates and personal messages work without one. To connect one, you link your own WhatsApp Business number through Meta once, which takes about 20 minutes with our help, and Meta approves your message templates."},
-        {"question": "Does {{brand.name}} send messages for me?", "answer": "Yes: confirmations, changes, cancellations and a feedback request go out for every booking, and guests on the {{brand.name}} app get a push reminder 15 minutes before the start."},
-        {"question": "How many people can an announcement reach?", "answer": "Up to 500 people booked on, or interested in, one event, as a notification."},
-        {"question": "Who pays for WhatsApp messages?", "answer": "Meta charges for business-started WhatsApp conversations, billed to your WhatsApp Business account at its rates."},
-        {"question": "Can I message people I imported from a spreadsheet?", "answer": "Campaigns only go to people who opted in to hear from you on WhatsApp, so ask them first. You can always send a personal message from your own phone."},
-        {"question": "Can guests reply?", "answer": "To campaigns, yes: replies land in your {{brand.name}} inbox and you can answer while WhatsApp’s reply window is open. Announcements are one-way notifications."}
+        {
+          "question": "How do I know which post sold tickets?",
+          "answer": "Make a tracked link for each post, promoter or venue. You see visits, bookings and revenue for every link."
+        },
+        {
+          "question": "How do guest invite links work?",
+          "answer": "Every guest gets their own link when they book. Friends who book through it are counted to them, and you see it on their record."
+        },
+        {
+          "question": "Do I need a WhatsApp Business number?",
+          "answer": "Only for WhatsApp campaigns. Event messages, the push reminder, announcements, follower updates and invite links work without one."
+        },
+        {
+          "question": "Who pays for WhatsApp messages?",
+          "answer": "Meta charges for business-started WhatsApp conversations, billed to your WhatsApp Business account at its rates."
+        },
+        {
+          "question": "Can guests reply?",
+          "answer": "To campaigns, yes: replies land in your {{brand.name}} inbox and you can answer while WhatsApp’s reply window is open. Announcements are one-way notifications."
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions-coming",
+      "ground": "white",
+      "status": "new",
+      "statusNote": "Answers about promoter commission, which is not built. Show them with that section.",
+      "kicker": "Questions",
+      "title": "About promoters.",
+      "items": [
+        {
+          "question": "Can I pay promoters a commission?",
+          "answer": "Yes. Set a commission for a promoter’s link and {{brand.name}} works out what they’ve earned from the bookings it brought."
+        }
       ]
     },
     {
       "type": "cta",
       "id": "start",
       "ground": "yellow",
+      "status": "built",
       "kicker": "Free for 30 days · founding hosts get 90",
       "title": "Your next event, with its messages ready.",
       "lead": "Every event comes with a confirmation, a push reminder before the start and a feedback request, ready to go.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}, "emphasis": "secondary"}
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "How {{brand.name}} works",
+          "to": {
+            "route": "how_it_works"
+          },
+          "emphasis": "secondary"
+        }
       ],
-      "media": {"kind": "capture", "slot": "host-today"}
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
+    },
+    {
+      "type": "cta",
+      "id": "start-try",
+      "ground": "yellow",
+      "status": "tryIt",
+      "statusNote": "The closing band of the promotion-kit tool. Show it, in place of the band above, when the command ships.",
+      "kicker": "Free for 30 days · founding hosts get 90",
+      "title": "Know what’s working before your next post.",
+      "lead": "Paste your event link. We’ll make a tracked link for each place you promote it, and write your reminders.",
+      "leadForm": {
+        "id": "final_links",
+        "requestKind": "tool",
+        "input": "url",
+        "label": "Your event link",
+        "submitLabel": "Make my links"
+      },
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
     }
   ]
 }

@@ -565,7 +565,7 @@ void _registerCatchPrimitivesCompositionTests() {
 
     expect(find.text('pending'), findsOneWidget);
     expect(find.text('paid'), findsOneWidget);
-    expect(find.text('LIVE - 6H LEFT'), findsOneWidget);
+    expect(find.text('live - 6h left'), findsOneWidget);
     expect(find.text('reward'), findsOneWidget);
     expect(find.text('checked in'), findsOneWidget);
     expect(

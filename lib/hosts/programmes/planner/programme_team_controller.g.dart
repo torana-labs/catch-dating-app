@@ -8,13 +8,13 @@ part of 'programme_team_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The team: the programme and the first page of `listProgramStaff`.
+/// The team: the programme and the live `programStaffViews` rows.
 
 @ProviderFor(hostProgrammeTeamController)
 final hostProgrammeTeamControllerProvider =
     HostProgrammeTeamControllerFamily._();
 
-/// The team: the programme and the first page of `listProgramStaff`.
+/// The team: the programme and the live `programStaffViews` rows.
 
 final class HostProgrammeTeamControllerProvider
     extends
@@ -24,7 +24,7 @@ final class HostProgrammeTeamControllerProvider
           HostProgrammeReport<ProgramStaffList>
         >
     with $Provider<HostProgrammeReport<ProgramStaffList>> {
-  /// The team: the programme and the first page of `listProgramStaff`.
+  /// The team: the programme and the live `programStaffViews` rows.
   HostProgrammeTeamControllerProvider._({
     required HostProgrammeTeamControllerFamily super.from,
     required String super.argument,
@@ -80,9 +80,9 @@ final class HostProgrammeTeamControllerProvider
 }
 
 String _$hostProgrammeTeamControllerHash() =>
-    r'1fcf5522d0c3eba74dc849dab92d06e14c2b205f';
+    r'3679e682009fdca7e7707a8172e17f2d150c5b84';
 
-/// The team: the programme and the first page of `listProgramStaff`.
+/// The team: the programme and the live `programStaffViews` rows.
 
 final class HostProgrammeTeamControllerFamily extends $Family
     with
@@ -99,7 +99,7 @@ final class HostProgrammeTeamControllerFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The team: the programme and the first page of `listProgramStaff`.
+  /// The team: the programme and the live `programStaffViews` rows.
 
   HostProgrammeTeamControllerProvider call(String programId) =>
       HostProgrammeTeamControllerProvider._(argument: programId, from: this);

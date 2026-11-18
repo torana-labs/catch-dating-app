@@ -144,7 +144,7 @@ void _registerExploreOrganizerDetailTests() {
     expect(find.text('Night Pacers'), findsNWidgets(2));
     expect(find.text('Following'), findsOneWidget);
     expect(find.text('Follow'), findsNothing);
-    expect(find.text('SOCIAL RUN'), findsOneWidget);
+    expect(find.text('Social run'), findsOneWidget);
     expect(find.text('BANDRA / INDORE · 1 FOLLOWER'), findsOneWidget);
     expect(find.text('RACE COURSE ROAD MAIN GATE'), findsNothing);
     expect(find.text('4.8'), findsNothing);

@@ -74,6 +74,54 @@
   --catch-band-ink-secondary: var(--catch-ground-magenta-ink-secondary);
 }
 
+.band[data-ground="sky"] {
+  --catch-band-fill: var(--catch-ground-sky-fill);
+  --catch-band-ink: var(--catch-ground-sky-ink);
+  --catch-band-ink-secondary: var(--catch-ground-sky-ink-secondary);
+}
+
+.band[data-ground="coralSoft"] {
+  --catch-band-fill: var(--catch-ground-coral-soft-fill);
+  --catch-band-ink: var(--catch-ground-coral-soft-ink);
+  --catch-band-ink-secondary: var(--catch-ground-coral-soft-ink-secondary);
+}
+
+.band[data-ground="pinkSoft"] {
+  --catch-band-fill: var(--catch-ground-pink-soft-fill);
+  --catch-band-ink: var(--catch-ground-pink-soft-ink);
+  --catch-band-ink-secondary: var(--catch-ground-pink-soft-ink-secondary);
+}
+
+.band[data-ground="yellowSoft"] {
+  --catch-band-fill: var(--catch-ground-yellow-soft-fill);
+  --catch-band-ink: var(--catch-ground-yellow-soft-ink);
+  --catch-band-ink-secondary: var(--catch-ground-yellow-soft-ink-secondary);
+}
+
+.band[data-ground="mintSoft"] {
+  --catch-band-fill: var(--catch-ground-mint-soft-fill);
+  --catch-band-ink: var(--catch-ground-mint-soft-ink);
+  --catch-band-ink-secondary: var(--catch-ground-mint-soft-ink-secondary);
+}
+
+.band[data-ground="indigoSoft"] {
+  --catch-band-fill: var(--catch-ground-indigo-soft-fill);
+  --catch-band-ink: var(--catch-ground-indigo-soft-ink);
+  --catch-band-ink-secondary: var(--catch-ground-indigo-soft-ink-secondary);
+}
+
+.band[data-ground="magentaSoft"] {
+  --catch-band-fill: var(--catch-ground-magenta-soft-fill);
+  --catch-band-ink: var(--catch-ground-magenta-soft-ink);
+  --catch-band-ink-secondary: var(--catch-ground-magenta-soft-ink-secondary);
+}
+
+.band[data-ground="skySoft"] {
+  --catch-band-fill: var(--catch-ground-sky-soft-fill);
+  --catch-band-ink: var(--catch-ground-sky-soft-ink);
+  --catch-band-ink-secondary: var(--catch-ground-sky-soft-ink-secondary);
+}
+
 /* The gutter is the boards' 40px desktop margin, 20px on a phone. */
 .inner {
   --catch-band-gutter: var(--catch-space-s10);

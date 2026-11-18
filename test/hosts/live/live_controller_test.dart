@@ -208,7 +208,7 @@ void main() {
     expect(state.countdownSeconds, 10);
   });
 
-  test('a night that moves keeps the movement console', () {
+  test('a night that moves runs on its own board', () {
     expect(hostLiveConsoleFits(liveEvent), isTrue);
     expect(
       hostLiveConsoleFits(

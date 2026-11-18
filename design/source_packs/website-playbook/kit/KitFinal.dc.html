@@ -18,7 +18,7 @@ body{margin:0}
 <div class="pg"><section class="panel flush {{d.tone}}"><div class="split"><div class="htext"><p class="k" style="color:{{ink}}">{{d.kicker}}</p><h2 class="d d-sec"><sc-for list="{{title}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></h2>
 <p class="lead"><sc-for list="{{lead}}" as="p" hint-placeholder-count="1"><span class="{{p.cls}}">{{p.t}}</span></sc-for></p>
 <sc-if value="{{hasBtns}}" hint-placeholder-val="{{ true }}"><div class="btns"><sc-for list="{{btns}}" as="b" hint-placeholder-count="2"><a class="b {{b.cls}}" href="{{b.href}}">{{b.l}}</a></sc-for></div></sc-if>
-<sc-if value="{{hasForm}}" hint-placeholder-val="{{ false }}"><form class="row2" style="margin-top:14px;max-width:520px" onsubmit="return false"><label class="sr" for="{{formId}}">{{d.form.label}}</label><input id="{{formId}}" class="in" type="tel" placeholder="{{d.form.label}}"><button class="b {{formBtnCls}}" type="submit">{{d.form.button}}</button></form></sc-if>
+<sc-if value="{{hasForm}}" hint-placeholder-val="{{ false }}"><form class="row2" style="margin-top:14px;max-width:520px" onsubmit="return false"><label class="sr" for="{{formId}}">{{d.form.label}}</label><input id="{{formId}}" class="in" type="{{formType}}" placeholder="{{d.form.label}}"><button class="b {{formBtnCls}}" type="submit">{{d.form.button}}</button></form></sc-if>
 <sc-if value="{{hasBadges}}" hint-placeholder-val="{{ false }}"><div class="badges"><img src="/_blob/b9d404c93226266a9f3d8d84d6626f14" alt="Download on the App Store"><img src="/_blob/5431322c4be24007ddd2bd3a6e412fe3" alt="Get it on Google Play"></div></sc-if></div>
 <div class="fmedia"><div class="phone fphone"><img src="{{img}}" alt="{{alt}}"></div></div></div></section></div>
 </x-dc>
@@ -31,7 +31,7 @@ const has = (x) => Array.isArray(x) ? x.length > 0 : !!x;
 
     const d = this.props.d || {"tone": "m-pink", "ink": "#4A2330", "kicker": "Your next dinner", "title": "Fill the table with the right people.", "lead": "Start the free trial.", "btns": [{"l": "Start free trial"}], "form": {"label": "Your WhatsApp number", "button": "Send the guide"}};
     return { d, ink: d.ink || '#141114', title: P(d.title), lead: P(d.lead), hasBtns: has(d.btns), btns: B(d.btns), hasForm: !!d.form, hasBadges: !!d.badges,
-      formId: (d.form && d.form.id) || 'final-wa', formBtnCls: has(d.btns) ? 'o' : '',
+      formId: (d.form && d.form.id) || 'final-wa', formType: (d.form && d.form.type) || 'tel', formBtnCls: has(d.btns) ? 'o' : '',
       img: d.img || '/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b', alt: d.alt || 'An event as guests see it on Catch' };
   }
 }

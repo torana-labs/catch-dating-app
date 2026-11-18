@@ -6,7 +6,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_host_s
 import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_live_workspace_tab_bar.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/live/live_screen.dart';
 import 'package:catch_kernel/activity_taxonomy.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/theme/app_theme.dart';
@@ -185,8 +185,8 @@ void main() {
         ),
       );
 
-      expect(find.textContaining('LIVE NOW'), findsOneWidget);
-      expect(find.textContaining('SYNCED'), findsOneWidget);
+      expect(find.textContaining('Live now'), findsOneWidget);
+      expect(find.textContaining('Synced'), findsOneWidget);
       expect(find.textContaining('Step 2 of 4'), findsOneWidget);
       expect(find.text('18 checked in · 24 expected'), findsOneWidget);
       expect(find.text('Guests'), findsNWidgets(2));
@@ -520,7 +520,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
   testWidgets(
-    'real Host room fixture forwards spatial callbacks through its shell',
+    'a seated night opens the rebuilt console, whose Room shows the seat map',
     (tester) async {
       tester.view.physicalSize = const Size(430, 2400);
       tester.view.devicePixelRatio = 1;
@@ -538,44 +538,18 @@ void main() {
           ),
         ),
       );
-      await pumpUntilFound(
-        tester,
-        find.byType(EventSuccessHostWorkspacePageBody),
-      );
-      final shell = tester.widget<HostEventManageScreen>(
-        find.byType(HostEventManageScreen),
-      );
-      final workspace = tester.widget<EventSuccessHostWorkspacePageBody>(
-        find.byType(EventSuccessHostWorkspacePageBody),
-      );
-      expect(
-        workspace.initialSpatialSelectionUid,
-        shell.initialSpatialSelectionUid,
-      );
-      expect(workspace.onPreviewSpatial, same(shell.onPreviewSpatial));
-      expect(workspace.onReassignSpatial, same(shell.onReassignSpatial));
-      expect(workspace.onConfirmSpatial, same(shell.onConfirmSpatial));
-      expect(workspace.onReleaseSpatial, same(shell.onReleaseSpatial));
+      // A saved room layout no longer keeps the old console.
+      await pumpUntilFound(tester, find.byType(HostLiveScreen));
+      expect(find.byType(EventSuccessHostWorkspacePageBody), findsNothing);
+      await pumpUntilFound(tester, find.text('Room'));
       await tester.tap(find.text('Room'));
       await pumpUntilFound(tester, find.byType(EventSuccessRoomMap));
       await tester.pump();
       final map = tester.widget<EventSuccessRoomMap>(
         find.byType(EventSuccessRoomMap),
       );
-      expect(map.initialSelectedUid, shell.initialSpatialSelectionUid);
-      final guest = map.assignments.singleWhere(
-        (a) => a.uid == map.initialSelectedUid,
-      );
-      final destinations = await map.onPreview!(guest);
-      expect(destinations.where((d) => d.valid).map((d) => d.unitId), [
-        'round-4',
-        'round-5',
-        'round-6',
-      ]);
-      expect(
-        destinations.first.reason,
-        EventSuccessSpatialDestinationReason.declaredConstraint,
-      );
+      expect(map.assignments, isNotEmpty);
+      expect(map.onReassign, isNotNull);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
       await fixture.cleanup?.call(tester);

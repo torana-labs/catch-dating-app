@@ -1,4 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/foundations/catch_root.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_dashed_outline_painter.dart';
 import 'package:catch_ui/src/primitives/catch_status_indicator.dart';
@@ -273,14 +274,22 @@ class CatchBadge extends StatelessWidget {
       recipe: _recipe,
       accentColor: accentColor,
       emphasis: emphasis,
-      format: format,
+      // The live badge takes the night's format colour, as the system top
+      // bar draws it; outside a format it keeps the primary fill.
+      format:
+          format ??
+          (_recipe == _CatchBadgeRecipe.live
+              ? CatchRootScope.maybeOf(context)?.format
+              : null),
     );
     final metrics = _BadgeMetrics.from(
       size,
       functional: _functional,
       recipe: _recipe,
     );
-    final displayLabel = _functional ? label.toUpperCase() : label;
+    // Every badge reads in sentence case, as the system draws them; the
+    // caller's copy is shown as written.
+    final displayLabel = label;
     final foreground = foregroundColor ?? palette.foreground;
     final outline =
         _recipe == _CatchBadgeRecipe.standard &&
@@ -660,8 +669,8 @@ class _BadgePalette {
     }
     if (recipe == _CatchBadgeRecipe.live) {
       return _BadgePalette(
-        background: t.primary,
-        foreground: t.primaryInk,
+        background: format?.accent ?? t.primary,
+        foreground: format?.ink ?? t.primaryInk,
         border: Colors.transparent,
       );
     }

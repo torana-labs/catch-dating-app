@@ -37,7 +37,7 @@ function PlaybookHeader({header, controller}: {header: PlaybookPageDocument["hea
  * A page of the website redesign, drawn from its content file: the site
  * header in the page's variant, its sections in order through the kit's
  * components (./PlaybookSections), then the site footer in the page's
- * variant with the page's numbered notes. `page` is validated and has its
+ * variant, or with the page's own columns, and the page's numbered notes. `page` is validated and has its
  * brand tokens resolved (loadPlaybookPage); `captures` are the marketing
  * capture slots its media names.
  */
@@ -49,13 +49,17 @@ export function PlaybookPage({page, captures, leadForms = playbookLeadForms}: {
   const controller = usePlaybookPageController(page, leadForms);
   const context = {page, controller, captures};
   const footnotes = page.footer.footnotes?.map((footnote, index) => `${index + 1}. ${footnote.text}`);
+  const columns = page.footer.columns?.map((column) => ({
+    title: column.title,
+    links: column.links.map((link) => ({label: link.label, href: controller.href(link.to)})),
+  }));
   return (
     <CatchRoot theme="day">
       <PlaybookHeader controller={controller} header={page.header} />
       <WebsitePageMain>
         {page.sections.map((section) => playbookSectionNode(section, context))}
       </WebsitePageMain>
-      {page.footer.variant === "minimal" ? <PublicPageFooter /> : <PublicSiteFooter footnotes={footnotes} variant={page.footer.variant} />}
+      {page.footer.variant === "minimal" ? <PublicPageFooter /> : <PublicSiteFooter columns={columns} footnotes={footnotes} variant={page.footer.variant} />}
     </CatchRoot>
   );
 }

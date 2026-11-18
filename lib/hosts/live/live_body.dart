@@ -37,6 +37,7 @@ class HostLiveBody extends StatelessWidget {
     this.onResume,
     this.changingStep = false,
     this.alerts = const HostLiveNightAlerts(),
+    this.seats = false,
   });
 
   final HostLiveState state;
@@ -61,6 +62,10 @@ class HostLiveBody extends StatelessWidget {
 
   /// A step command is on its way.
   final bool changingStep;
+
+  /// The night seats guests by a saved layout, so the Room view (and its
+  /// seat moves) shows on a phone too.
+  final bool seats;
 
   /// Guests left out and open intro requests; each kind shows as one row
   /// in Needs you now that opens the full list.
@@ -107,7 +112,7 @@ class HostLiveBody extends StatelessWidget {
 
     final views = HostLiveViewTabBar(
       scores: state.scores && !expanded,
-      room: state.room && expanded,
+      room: seats || (state.room && expanded),
       format: state.formatView,
       onView: onView,
     );
@@ -260,7 +265,8 @@ class HostLiveBody extends StatelessWidget {
   }
 }
 
-/// Now, Guests and Scores on a phone; Now, Guests and Room on a tablet;
+/// Now, Guests and Scores on a phone; Now, Guests and Room on a tablet, or
+/// on a phone when the night has a saved room layout;
 /// Courts or Teams when the format has its own board.
 class HostLiveViewTabBar extends StatelessWidget {
   const HostLiveViewTabBar({

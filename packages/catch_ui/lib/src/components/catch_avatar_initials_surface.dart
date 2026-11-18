@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_avatar.dart';
 import 'package:catch_ui/src/components/catch_avatar_colors.dart';
 import 'package:catch_ui/src/components/catch_avatar_initials.dart';
 import 'package:catch_ui/src/components/catch_avatar_viewport.dart';
@@ -42,7 +43,12 @@ class CatchAvatarInitialsSurface extends StatelessWidget {
     final t = CatchTokens.of(context);
     final activity = variant == CatchAvatarInitialsSurfaceVariant.activity;
     final label = initials ?? catchAvatarInitialsOf(name);
-    final tone = name.runes.fold<int>(0, (value, rune) => value + rune) % 3;
+    // A person's initials sit on their palette colour, the same for them
+    // everywhere, as the system Avatar draws them; no initials keep a quiet
+    // tile.
+    final (personFill, personInk) = label.isEmpty
+        ? (t.tile, t.ink2)
+        : CatchAvatarColor.of(name).resolve(t);
 
     return Stack(
       fit: StackFit.expand,
@@ -68,13 +74,7 @@ class CatchAvatarInitialsSurface extends StatelessWidget {
             ),
           )
         else
-          ColoredBox(
-            color: Color.lerp(
-              t.primarySoft,
-              t.ink2,
-              (tone + 1) * CatchOpacity.calloutFill,
-            )!,
-          ),
+          ColoredBox(color: personFill),
         if (activity) CustomPaint(painter: _ActivityAvatarTexturePainter()),
         if (label.isNotEmpty)
           CatchAvatarViewport.label(
@@ -88,7 +88,7 @@ class CatchAvatarInitialsSurface extends StatelessWidget {
                     (activity
                         ? CatchLayout.activityAvatarInitialsScale
                         : CatchLayout.personAvatarInitialsScale),
-                color: activity ? CatchTokens.editorialWhite : t.ink2,
+                color: activity ? CatchTokens.editorialWhite : personInk,
               ),
             ),
           ),

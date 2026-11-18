@@ -5,7 +5,7 @@ import {CatchAvatar} from "./CatchAvatar";
 import {CatchHeroImage} from "./CatchHeroImage";
 import {CatchLegacyText} from "./CatchLegacyText";
 import {useCatch} from "./catchRootContext";
-import type {Ground} from "./palette";
+import type {Ground, SharedGround} from "./palette";
 import styles from "./CatchProfileHeader.module.css";
 
 /** One figure in the stats line, read as "<value> <label>", such as "2,140 followers". */
@@ -40,7 +40,7 @@ export interface CatchProfileHeaderProps {
   /** Defaults to the first letters of the name. */
   monogram?: string;
   /** The monogram's ground; defaults to white. */
-  monogramGround?: Ground;
+  monogramGround?: SharedGround;
   name: string;
   /** The name's element, by document outline; defaults to h1. */
   nameElement?: "h1" | "h2";

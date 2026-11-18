@@ -32,9 +32,9 @@ void main() {
       ),
     );
 
-    expect(find.text('PRIVATE TO YOU'), findsOneWidget);
-    expect(find.text('CATCH PRIVATE'), findsOneWidget);
-    expect(find.text('HOST CAN SEE'), findsOneWidget);
+    expect(find.text('Private to you'), findsOneWidget);
+    expect(find.text('Catch private'), findsOneWidget);
+    expect(find.text('Host can see'), findsOneWidget);
     expect(find.byIcon(CatchIcons.locked), findsOneWidget);
     expect(find.byIcon(CatchIcons.safety), findsOneWidget);
     expect(find.byIcon(CatchIcons.show), findsOneWidget);
