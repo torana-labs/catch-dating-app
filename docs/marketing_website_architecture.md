@@ -58,7 +58,7 @@ it as a 503 with `private, no-store` and `Retry-After: 30`, never a cached 200
 signed-in, Host, legal, `/api/public-catalog`, `/api/home-catalog` and private-shell responses stay
 `no-store`. Signed-in and follow state load in the browser. React cache only
 deduplicates a render's reads; there is no server-side cross-request snapshot or
-ISR fallback. The only shared read is one a minute per instance for the uptime
+ISR fallback. The only shared read is one every two minutes per instance for the uptime
 check's `/api/public-catalog` calls (see
 [web surface architecture](web_surface_architecture.md#unavailable-public-reads)). The request gate checks
 availability, organizer aliases and missing live-route statuses before streaming

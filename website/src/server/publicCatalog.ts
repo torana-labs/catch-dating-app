@@ -242,12 +242,12 @@ export function memoizeFor<T>(ttlMs: number, read: () => Promise<T>, now: () => 
  * withhold a catalog 30 seconds after its read, so their live check reads
  * fresh. `readAt` stays the real read time.
  */
-export const PUBLIC_CATALOG_PROBE_MEMO_MS = 60_000;
+export const PUBLIC_CATALOG_PROBE_MEMO_MS = 120_000;
 
 /** React cache deduplicates within one render only. No cross-request or offline cache. */
 export const readRouteCatalog = cache(async (pathname: string) =>
   assembleRouteCatalog(await publicReader(), pathname, Date.now()));
 export const readPublicCatalog = cache(async () => assemblePublicCatalog(await publicReader(), Date.now()));
-/** The catalog for uptime probes only: at most one real read a minute per instance. */
+/** The catalog for uptime probes only: at most one real read every two minutes per instance. */
 export const readPublicCatalogForProbe = memoizeFor(PUBLIC_CATALOG_PROBE_MEMO_MS,
   async () => assemblePublicCatalog(await publicReader(), Date.now()));
