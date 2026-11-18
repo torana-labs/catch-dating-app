@@ -188,3 +188,68 @@ test("an event that fails an automated check waits for staff even when the owner
   assert.ok(held.blockers.includes("dating_framing"));
   assert.equal(held.blockers.includes("staff_review_policy"), false);
 });
+
+/**
+ * The same saved listing, as a try-it import leaves it: the request carries
+ * tryItImport (applied to the owner's workspace) and no approval, and the
+ * organizer's provenance names the request.
+ */
+async function appliedTryItImport(verification: "unverified" | "verified" | "not_needed") {
+  const h = await savedDraft();
+  const requestId = "tryit-0123456789abcdef0123";
+  const {approval: _approval, instantDraft: _instantDraft, ...rest} = h.db.read(h.requestPath)!;
+  void _approval; void _instantDraft;
+  h.db.write(`${supplyIntakeCollections.requests}/${requestId}`, {...rest, requestId,
+    tryItImport: {organizerId: h.organizerId, appliedAt: NOW}});
+  h.db.remove(h.requestPath);
+  const draft = h.db.read(`organizers/${h.organizerId}`)!;
+  const owned = {...claimed(draft), importProvenance: {requestId, listingId: "listing-1", contentHash: "b".repeat(64),
+    sourceUrls: [CALENDAR], identities: [{platform: "luma", url: CALENDAR}], verification, importedAt: SERVER_TIME}};
+  h.db.write(`organizers/${h.organizerId}`, owned);
+  return {...h, requestId, owned};
+}
+
+test("an applied try-it import's events go live when the owner publishes, once its imported identity is verified", async () => {
+  const h = await appliedTryItImport("verified");
+  const live = published(h.owned);
+  h.db.write(`organizers/${h.organizerId}`, live);
+  const results = await publishClaimedDraftEvents(h.organizerId, h.owned, live, h.deps);
+  assert.ok(results);
+  assert.deepEqual(results.map((entry) => entry.outcome), h.eventWorkItemIds.map(() => "published"),
+    JSON.stringify(results.map((entry) => entry.blockers)));
+  assert.equal(externalEvents(h.db).length, h.eventWorkItemIds.length);
+  const replay = await publishClaimedDraftEvents(h.organizerId, h.owned, live, h.deps);
+  assert.ok(replay?.every((entry) => entry.idempotent));
+});
+
+test("a try-it import publishes nothing while unverified, unapplied or replaced by a later import", async () => {
+  const h = await appliedTryItImport("unverified");
+  const live = published(h.owned);
+  h.db.write(`organizers/${h.organizerId}`, live);
+  const blocked = await publishClaimedDraftEvents(h.organizerId, h.owned, live, h.deps);
+  assert.ok(blocked?.every((entry) => entry.outcome === "blocked" && entry.blockers.includes("organizer_identity_unverified")),
+    JSON.stringify(blocked));
+  assert.equal(externalEvents(h.db).length, 0);
+
+  // Verified, but the import was previewed and never applied.
+  const verified = {...live, importProvenance: {...live.importProvenance, verification: "verified"}};
+  h.db.write(`organizers/${h.organizerId}`, verified);
+  const requestPath = `${supplyIntakeCollections.requests}/${h.requestId}`;
+  const stored = h.db.read(requestPath)!;
+  h.db.write(requestPath, {...stored, tryItImport: {organizerId: h.organizerId}});
+  assert.equal(await publishClaimedDraftEvents(h.organizerId, h.owned, verified, h.deps), null);
+
+  // Applied to another workspace.
+  h.db.write(requestPath, {...stored, tryItImport: {organizerId: "someone-elses-workspace", appliedAt: NOW}});
+  assert.equal(await publishClaimedDraftEvents(h.organizerId, h.owned, verified, h.deps), null);
+
+  // A later import replaced this one: the provenance names another request, so the old request is not an approval.
+  h.db.write(requestPath, stored);
+  const replaced = {...verified, importProvenance: {...verified.importProvenance, requestId: "tryit-ffffffffffffffffffff"}};
+  h.db.write(`organizers/${h.organizerId}`, replaced);
+  const direct = await publishListingEvents({intakeRequestId: h.requestId, eventWorkItemIds: h.eventWorkItemIds,
+    actor: {kind: "owner", ownerUid: OWNER}, executionMode: "apply", idempotencyKey: "owner-publish:replaced"}, h.deps);
+  assert.ok(direct.results.every((entry) => entry.outcome !== "published"), JSON.stringify(direct.results));
+  assert.equal(direct.organizerId, null);
+  assert.equal(externalEvents(h.db).length, 0);
+});

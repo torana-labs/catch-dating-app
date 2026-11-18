@@ -315,11 +315,30 @@ export async function approvedListingInTransaction(
   const eventWorkItemIds = Array.isArray(result.eventWorkItemIds) ?
     result.eventWorkItemIds.filter((id): id is string => typeof id === "string") : [];
   const approval = recordValue(stored?.approval);
-  const organizerId = typeof approval?.organizerId === "string" ? approval.organizerId : null;
+  const approvedId = typeof approval?.organizerId === "string" ? approval.organizerId : null;
+  const organizerId = approvedId ?? appliedTryItOrganizerId(stored);
   if (!organizerId) return {listingId: result.listingId, eventWorkItemIds, organizerId: null, organizer: null};
   const organizerSnap = await tx.get(db.collection("organizers").doc(organizerId));
+  const organizer = organizerSnap.exists ? organizerSnap.data() ?? {} : null;
+  // An applied try-it import counts as approval only for the organizer whose
+  // provenance still names this request: a later import replaces it.
+  if (!approvedId && recordValue(organizer?.importProvenance)?.requestId !== intakeRequestId) {
+    return {listingId: result.listingId, eventWorkItemIds, organizerId: null, organizer: null};
+  }
   return {listingId: result.listingId, eventWorkItemIds, organizerId,
-    organizer: organizerSnap.exists ? approvedOrganizer(organizerId, organizerSnap.data() ?? {}) : null};
+    organizer: organizer ? approvedOrganizer(organizerId, organizer) : null};
+}
+
+/**
+ * Pure: the organizer a try-it import (organizer.import-from-link) was applied
+ * to, or null. Its owner applied the import into their own workspace, so the
+ * apply is the approval; publishing still needs the owner's publish, the
+ * page's checks and every automated event check.
+ */
+export function appliedTryItOrganizerId(stored: Record<string, unknown> | null): string | null {
+  const tryIt = recordValue(stored?.tryItImport);
+  return typeof tryIt?.organizerId === "string" && tryIt.organizerId.length > 0 &&
+    typeof tryIt.appliedAt === "string" ? tryIt.organizerId : null;
 }
 
 /** Pure: what an organizer document contributes to its events' plans. */
@@ -331,6 +350,9 @@ export function approvedOrganizer(organizerId: string, organizer: Record<string,
     blockers.push("organizer_page_unpublished");
   }
   if (!market) blockers.push("organizer_market_unknown");
+  // A page built from a third party's public page publishes nothing until its
+  // imported identity is verified (owner decision, 18 Nov 2026).
+  if (recordValue(organizer.importProvenance)?.verification === "unverified") blockers.push("organizer_identity_unverified");
   const links = (Array.isArray(organizer.publicSources) ? organizer.publicSources : []).flatMap((source) => {
     const href = recordValue(source)?.href;
     return typeof href === "string" ? [href] : [];
