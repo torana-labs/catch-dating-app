@@ -1,6 +1,7 @@
 import {cleanup, render, screen, within} from "@testing-library/react";
 import {MemoryRouter} from "react-router";
 import {afterEach, describe, expect, it, vi} from "vitest";
+import {marketingCaptures} from "../../app/marketingCaptures";
 import {mumbaiDiscoveryCatalog} from "./discoveryCatalogFixtures";
 import {NewToCityPage} from "./NewToCityPage";
 
@@ -19,5 +20,11 @@ describe("New to the city page", {timeout: 20_000}, () => {
     expect(screen.getByRole("heading", {name: "Four plans, then you’re a regular."})).toBeTruthy();
     expect(screen.getByRole("heading", {name: "Get newcomer-friendly plans on WhatsApp."})).toBeTruthy();
     expect(screen.queryByText(/came alone/iu)).toBeNull();
+  });
+
+  it("shows a guest's phone after checking in beside the WhatsApp form, as the board does", () => {
+    render(<MemoryRouter initialEntries={["/new-to-mumbai/"]}><NewToCityPage captures={marketingCaptures} catalog={mumbaiDiscoveryCatalog} /></MemoryRouter>);
+    const notify = screen.getByRole("region", {name: "Get newcomer-friendly plans on WhatsApp."});
+    expect(within(notify).getByRole("img", {name: marketingCaptures["guest-checked-in"].alt})).toBeTruthy();
   });
 });

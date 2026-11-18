@@ -6231,7 +6231,8 @@
           "unclaimed",
           "joining",
           "no-page",
-          "board-reference"
+          "board-reference",
+          "kit-follow"
         ]
       },
       "notes": "Website T4 under D18 (CAT-260). An organiser on paper: monogram, name (linked when the organiser has a page), what they run, the next plan, and a footnote across from the page's action (Follow, a claim link). Nearest concept: catch.organizer_poster, the photo-led organiser card. Search aliases: HostCard, OrganiserCard, OrganizerCard, FollowCard.",
@@ -6714,6 +6715,34 @@
         ]
       },
       "notes": "The phone action bar under Explore, the city pages and the discovery pages (the kit's KitFooter mbar): CatchSiteDock with the page's plans and a WhatsApp chat."
+    },
+    {
+      "id": "discovery_organisers",
+      "kind": "supporting-component",
+      "routeIds": [
+        "visitor_discovery",
+        "city_format"
+      ],
+      "owner": "features/discovery",
+      "source": "website/src/features/discovery/DiscoveryOrganisers.tsx",
+      "exportName": "DiscoveryOrganisers",
+      "css": [
+        "packages/web-ui/src/components/CatchSurface.module.css",
+        "packages/web-ui/src/components/CatchStack.module.css",
+        "packages/web-ui/src/components/CatchBandHeader.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchOrganizerCard.module.css",
+        "packages/web-ui/src/components/CatchFeatureTile.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "follow-cards",
+          "claim"
+        ]
+      },
+      "notes": "'Who runs them' on Explore and the city-by-format pages (the kit's KitCards org band on the tint panel): CatchOrganizerCard on its white ground as the kit's Follow card, whose Follow opens the organiser's page (where following happens), then a mint CatchFeatureTile for an organiser who is not listed."
     }
   ]
 }

@@ -36,6 +36,9 @@ export const cityFormatPageCopy = {
     kicker: "The {organisers}",
     title: "Who runs them",
     lead: "Follow one and you’ll hear about their next plan first.",
+    /** The mint card after the organisers; a format may word its own title (discoveryFormats.ts claimTitle). */
+    claimTitle: "Host {formatLower} in {city}?",
+    claimBody: `Start a free trial and take bookings on ${brand.name}.`,
   },
   thin: {
     lead: `${brand.name} is just getting started with {formatLower} in {city}. Here’s what’s on so far, and what else is happening in the city.`,

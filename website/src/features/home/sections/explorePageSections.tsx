@@ -17,6 +17,7 @@ import {interpolateContent as fill} from "@content/interpolate";
 import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot";
 import {CityAlertsCapture, cityAlertsAnchor} from "../../discovery/CityAlertsCapture";
 import {DiscoveryDock} from "../../discovery/DiscoveryDock";
+import {DiscoveryOrganisers} from "../../discovery/DiscoveryOrganisers";
 import {organizerGridItems, planGridItems} from "../../discovery/discoveryCards";
 import {CitySiteChrome} from "./cityChrome";
 import type {ExploreFilters, ExploreView, ExploreWhen} from "../exploreModel";
@@ -145,23 +146,15 @@ function ExploreResults({explore}: {explore: Explore}) {
     <CatchCardGrid {...shared} columns={3} items={planGridItems(explore.plans)} kind="plan" />;
 }
 
-/** Under the plans of an open city: who runs them, on the tint panel, and the way to all of them in the Organisers tab. */
+/** Under the plans of an open city: who runs them as the kit's Follow cards on the tint panel, and the way to all of them in the Organisers tab. */
 function ExploreHosts({explore}: {explore: Explore}) {
   if (explore.filters.view !== "plans" || !explore.hosts.length) return null;
   const band = explore.state === "full" ? copy.hosts.full : explore.state === "quiet" ? copy.hosts.quiet :
     explore.state === "empty" ? {kicker: fill(copy.hosts.empty.kicker, {city: explore.city.label}), title: copy.hosts.empty.title} : null;
   if (!band) return null;
   return (
-    <CatchCardGrid
-      actions={explore.moreHosts ? [{label: copy.hosts.seeAll, href: explore.organisersHref, variant: "secondary"}] : undefined}
-      columns={4}
-      ground="paper"
-      items={organizerGridItems(explore.hosts)}
-      kicker={band.kicker}
-      kickerAccent="mint"
-      kind="org"
-      title={band.title}
-    />
+    <DiscoveryOrganisers action={explore.moreHosts ? {label: copy.hosts.seeAll, href: explore.organisersHref} : undefined} cards={explore.hosts}
+      kicker={band.kicker} title={band.title} />
   );
 }
 
@@ -185,7 +178,7 @@ export function ExplorePageSections({captures = {}, explore}: {captures?: Captur
       <ExploreHosts explore={explore} />
       {capture ? (
         <CityAlertsCapture interests={explore.notify.interests} place={explore.notify.place}
-          media={screen ? <CatchAppCaptureImage {...screen} bezel caption={undefined} size="md" tilt="right" /> : undefined} />
+          media={screen ? <CatchAppCaptureImage {...screen} bezel caption={undefined} size="md" /> : undefined} />
       ) : null}
     </CitySiteChrome>
   );

@@ -1,12 +1,16 @@
 /**
  * Words the discovery pages (Explore, the city pages, /<city>/<format>/ and
  * /new-to-<city>/) share: the women-led tag the read model resolves for a
- * plan or an organiser, and the phone action bar (the kit's KitFooter mbar).
+ * plan or an organiser, the organisers' Follow cards, and the phone action
+ * bar (the kit's KitFooter mbar).
  */
 export const discoveryPagesCopy = {
   /** A plan's host line, and an organiser's line, when the read model marks it women-led. */
   womenLedDetail: "{detail} · Women-led",
   womenLedMeta: "Women-led · {meta}",
+  /** The Follow card's button, which opens the organiser's page; its accessible name says whom. */
+  follow: "Follow",
+  followLabel: "Follow {name}",
   dock: {
     label: "Quick actions",
     whatsapp: "Talk to us on WhatsApp",

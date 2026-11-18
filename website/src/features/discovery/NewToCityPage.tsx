@@ -1,4 +1,5 @@
 import {
+  CatchAppCaptureImage,
   CatchBand,
   CatchBandHeader,
   CatchCardGrid,
@@ -15,6 +16,7 @@ import {
 } from "@catch/web-ui";
 import {explorePageCopy} from "@content/explorePage";
 import {useNavigate} from "react-router";
+import {captureSlot, type CaptureSlots} from "../../shared/media/captureSlot";
 import type {HomeCatalog} from "../home/homeTypes";
 import {CitySiteChrome} from "../home/sections/cityChrome";
 import {CityAlertsCapture} from "./CityAlertsCapture";
@@ -78,10 +80,12 @@ function NewToCityMonth({page}: {page: Page}) {
  * The new-to-the-city page (/new-to-<city>/, the PlaybookNewToCity board):
  * the pink hero, this week's newcomer plans, walking in alone on ink, a
  * first month, why the hosts can be trusted on the tint panel, the
- * questions, the pink WhatsApp band, the footer and the phone action bar.
- * It arranges library parts and binds the controller (D18).
+ * questions, the pink WhatsApp band beside a guest's phone after checking
+ * in (the board's phone), the footer and the phone action bar. It arranges
+ * library parts and binds the controller (D18).
  */
-function NewToCityPageSections({page}: {page: Page}) {
+function NewToCityPageSections({captures, page}: {captures: CaptureSlots; page: Page}) {
+  const checkedIn = captureSlot(captures, "guest-checked-in");
   return (
     <CitySiteChrome cities={page.cities} city={page.city} dock={<DiscoveryDock href={page.dock.href} label={page.dock.label} message={page.notify.message} />}
       exploreHref={page.exploreHref} onChooseCity={page.chooseCity} showWhatsOn={page.showWhatsOn}>
@@ -114,14 +118,15 @@ function NewToCityPageSections({page}: {page: Page}) {
         title={page.trust.title}
       />
       <CatchFaqSection items={page.faq.items} kicker={page.faq.kicker} title={page.faq.title} />
-      <CityAlertsCapture ground="pink" interests={page.notify.interests} kicker={page.notify.kicker} place={page.notify.place} title={page.notify.title} />
+      <CityAlertsCapture ground="pink" interests={page.notify.interests} kicker={page.notify.kicker} place={page.notify.place} title={page.notify.title}
+        media={checkedIn ? <CatchAppCaptureImage {...checkedIn} bezel caption={undefined} size="md" /> : undefined} />
     </CitySiteChrome>
   );
 }
 
 /** The route: the selected city's catalog (matchDiscoveryRoute names the city). */
-export function NewToCityPage({catalog}: {catalog: HomeCatalog}) {
+export function NewToCityPage({captures = {}, catalog}: {captures?: CaptureSlots; catalog: HomeCatalog}) {
   const navigate = useNavigate();
   const page = useNewToCityPageController(catalog, (href) => navigate(href));
-  return <CatchRoot theme="day"><NewToCityPageSections page={page} /></CatchRoot>;
+  return <CatchRoot theme="day"><NewToCityPageSections captures={captures} page={page} /></CatchRoot>;
 }

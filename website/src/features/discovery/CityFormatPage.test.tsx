@@ -1,6 +1,7 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {MemoryRouter} from "react-router";
 import {afterEach, describe, expect, it, vi} from "vitest";
+import {marketingCaptures} from "../../app/marketingCaptures";
 import {mumbaiLiveCatalog} from "../../stories/fixtures/homeCatalogs";
 import type {HomeCatalog} from "../home/homeTypes";
 import {CityFormatPage} from "./CityFormatPage";
@@ -26,12 +27,23 @@ describe("City format page", {timeout: 20_000}, () => {
       .toEqual(["/events/carter-road-run/", "/events/run-and-rave/"]);
     fireEvent.click(within(plans).getByRole("radio", {name: "Free"}));
     expect(within(plans).getAllByRole("link", {name: /Run/u})).toHaveLength(1);
-    expect(within(band("Who runs them")).getByRole("link", {name: /Carter Road Runners/u}).getAttribute("href")).toBe("/organizers/carter-road-runners/");
+    // Each organiser as the kit's Follow card: Follow opens their page, where following happens; then the mint card for a club not listed.
+    const organisers = band("Who runs them");
+    expect(within(organisers).getByRole("link", {name: "Carter Road Runners"}).getAttribute("href")).toBe("/organizers/carter-road-runners/");
+    expect(within(organisers).getByRole("link", {name: "Follow Carter Road Runners"}).getAttribute("href")).toBe("/organizers/carter-road-runners/");
+    expect(within(organisers).getByRole("heading", {name: "Run a club in Mumbai?"})).toBeTruthy();
+    expect(within(organisers).getByRole("link", {name: "List your club"}).getAttribute("href")).toBe("/host/");
     expect(within(band("Joining a run club in Mumbai.")).getByText(/Stay for coffee/u)).toBeTruthy();
     // The city's other indexed format pages, and the newcomers' page.
     const more = band("Other things to do");
     expect(within(more).getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(["/mumbai/nightlife/", "/new-to-mumbai/"]);
     expect(within(band("Get new plans on WhatsApp.")).getByRole("button", {name: "Notify me"})).toBeTruthy();
+  });
+
+  it("shows the board's phones: a guest checked in by the first-time guide, and the app's Explore by the WhatsApp form", () => {
+    render(<MemoryRouter initialEntries={["/mumbai/run-clubs/"]}><CityFormatPage captures={marketingCaptures} catalog={mumbaiDiscoveryCatalog} format="runClubs" /></MemoryRouter>);
+    expect(within(band("Joining a run club in Mumbai.")).getByRole("img", {name: marketingCaptures["guest-checked-in"].alt})).toBeTruthy();
+    expect(within(band("Get new plans on WhatsApp.")).getByRole("img", {name: marketingCaptures["guest-explore"].alt})).toBeTruthy();
   });
 
   it("is the thin page below the bar: what is here so far and what else is on", () => {

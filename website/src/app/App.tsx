@@ -318,7 +318,8 @@ function CanonicalMarketingRouteShell() {
         />
         {fallbackPage === "discovery" && discoveryRoute ? (
           discoveryRoute.kind === "cityFormat" ?
-            <CityFormatPage catalog={homeCatalog} format={discoveryRoute.format} /> : <NewToCityPage catalog={homeCatalog} />
+            <CityFormatPage captures={marketingCaptures} catalog={homeCatalog} format={discoveryRoute.format} /> :
+            <NewToCityPage captures={marketingCaptures} catalog={homeCatalog} />
         ) : fallbackPage === "playbook" ? (
           playbookPage ? <PlaybookPage captures={marketingCaptures} page={playbookPage} /> : <RouteLoadingState />
         ) : (

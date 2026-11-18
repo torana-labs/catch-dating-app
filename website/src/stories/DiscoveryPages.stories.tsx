@@ -2,6 +2,7 @@ import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {ReactNode} from "react";
 import {MemoryRouter} from "react-router";
 import {expect, within} from "storybook/test";
+import {marketingCaptures} from "../app/marketingCaptures";
 import {CityFormatPage} from "../features/discovery/CityFormatPage";
 import {mumbaiDiscoveryCatalog, mumbaiQuietCatalog} from "../features/discovery/discoveryCatalogFixtures";
 import type {DiscoveryFormatKey} from "../features/discovery/discoveryTypes";
@@ -33,10 +34,10 @@ function Width({children, width}: {children: ReactNode; width: 390 | 1280}) {
 }
 
 const cityFormat = (catalog: HomeCatalog, format: DiscoveryFormatKey, url: string, width: 390 | 1280 = 1280) => (
-  <MemoryRouter initialEntries={[url]}><Width width={width}><CityFormatPage catalog={catalog} format={format} /></Width></MemoryRouter>
+  <MemoryRouter initialEntries={[url]}><Width width={width}><CityFormatPage captures={marketingCaptures} catalog={catalog} format={format} /></Width></MemoryRouter>
 );
 const newToCity = (catalog: HomeCatalog, width: 390 | 1280 = 1280) => (
-  <MemoryRouter initialEntries={["/new-to-mumbai/"]}><Width width={width}><NewToCityPage catalog={catalog} /></Width></MemoryRouter>
+  <MemoryRouter initialEntries={["/new-to-mumbai/"]}><Width width={width}><NewToCityPage captures={marketingCaptures} catalog={catalog} /></Width></MemoryRouter>
 );
 
 /** Run clubs in Mumbai, above the bar: the backend's counts, the runs, the clubs, first time, questions and the capture. */
