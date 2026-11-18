@@ -182,12 +182,6 @@
       "rule": "CACHE-INVALIDATE-001",
       "path": "lib/user_profile/presentation/form_profiles_controller.dart",
       "symbol": "formProfileClaimControllerProvider",
-      "detail": "invalidate:formProfileReviewProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/user_profile/presentation/form_profiles_controller.dart",
-      "symbol": "formProfileClaimControllerProvider",
       "detail": "invalidate:formProfilesControllerProvider"
     },
     {

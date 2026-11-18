@@ -19,6 +19,7 @@ import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
 import 'package:catch_platform/firebase/firebase_providers.dart';
 import 'package:catch_platform/firebase/host_summary_reader.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/firebase/read_limit_policy.dart';
 import 'package:catch_platform/persistence/command_journal_storage.dart';
 import 'package:catch_platform/persistence/local_command_journal.dart';
@@ -27,10 +28,11 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:crypto/crypto.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-export 'package:catch_dating_app/contexts/forms/data/read_models/host_form_summary_reads.dart'
-    show HostFormWindow;
 export 'package:catch_dating_app/contexts/forms/data/read_models/host_response_summary_reads.dart'
-    show HostFormResponseWindow, HostResponseSummaryReads;
+    show
+        HostFormResponseScope,
+        HostFormResponseScopeKey,
+        HostResponseSummaryReads;
 
 part 'host_forms_repository.g.dart';
 
@@ -110,11 +112,12 @@ class HostFormsRepository {
     parse: HostFormPaymentPage.fromCallableData,
   );
 
-  /// The first [limit] forms of [request] while it is listened to.
-  Stream<HostFormWindow> watchForms(
+  /// The forms of [request], [pageSize] at a time, every row kept live.
+  LivePager<HostFormSummary> watchFormPages(
     HostFormListRequest request, {
-    required int limit,
-  }) => _required(summaries, 'form list').watchWindow(request, limit: limit);
+    required int pageSize,
+  }) =>
+      _required(summaries, 'form list').watchPages(request, pageSize: pageSize);
 
   Future<List<HostFormTemplateSummary>> listTemplates(String organizerId) =>
       _call(
@@ -299,13 +302,20 @@ class HostFormsRepository {
     parse: HostFormShareLink.fromCallableData,
   );
 
-  /// The first [limit] rows of a request the response read model serves
-  /// ([HostResponseSummaryReads.supports]) while it is listened to.
-  Stream<HostFormResponseWindow> watchResponses(
+  /// The entries of a request the response read model serves
+  /// ([HostResponseSummaryReads.supports]), [pageSize] at a time, every row
+  /// kept live.
+  LivePager<HostFormInboxEntry> watchResponsePages(
     HostFormResponseListRequest request, {
-    required int limit,
-  }) =>
-      _required(responses, 'response inbox').watchWindow(request, limit: limit);
+    required int pageSize,
+  }) => _required(
+    responses,
+    'response inbox',
+  ).watchPages(request, pageSize: pageSize);
+
+  /// A form page's version scope and answer filter options, read once.
+  Future<HostFormResponseScope?> responseScope(HostFormResponseScopeKey key) =>
+      _required(responses, 'response inbox').scope(key);
 
   Future<HostFormResponsePage> listResponses(
     HostFormResponseListRequest request,

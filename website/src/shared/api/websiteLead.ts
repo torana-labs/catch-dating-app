@@ -142,6 +142,11 @@ async function siteAppCheckToken(): Promise<string | null> {
   return (await import("../../firebase")).getWebsiteAppCheckToken();
 }
 
+/** The signed-in account's ID token, loaded with Firebase Auth only when a referral is sent. */
+async function siteReferrerIdToken(): Promise<string | null> {
+  return (await import("../../firebase")).getWebsiteReferrerIdToken();
+}
+
 export interface WebsiteLeadSubmissionOptions {
   /** The words for each failure state, from the content layer. */
   readonly messages: WebsiteLeadMessages;
@@ -149,6 +154,13 @@ export interface WebsiteLeadSubmissionOptions {
   readonly dialCode: string;
   /** Supplies the X-Firebase-AppCheck token; the site's by default. */
   readonly appCheckToken?: () => Promise<string | null>;
+  /**
+   * Supplies the signed-in account's Firebase ID token for a referral, sent as
+   * `Authorization: Bearer` so the intake credits the referrer; null when no
+   * one is signed in, and the referral goes without it. The site's by
+   * default. Other kinds never ask for it.
+   */
+  readonly referrerIdToken?: () => Promise<string | null>;
   readonly post?: typeof fetch;
   readonly newRequestId?: () => string;
 }
@@ -172,10 +184,11 @@ const problemByStatus: Readonly<Record<number, WebsiteLeadProblem>> = {
  * keeps it while the answers stay the same, so a retry after a failure or a
  * lost response is the same lead (the backend returns its receipt) rather
  * than a second one. Changed answers are a new submission with a new id.
- * Every send carries the App Check token the lead intake requires.
+ * Every send carries the App Check token the lead intake requires, and a
+ * referral also carries the signed-in referrer's ID token when there is one.
  */
 export function createWebsiteLeadSubmission(options: WebsiteLeadSubmissionOptions): WebsiteLeadSubmission {
-  const {messages, dialCode, appCheckToken = siteAppCheckToken,
+  const {messages, dialCode, appCheckToken = siteAppCheckToken, referrerIdToken = siteReferrerIdToken,
     post = (...args) => fetch(...args), newRequestId = () => websiteLeadRequestId()} = options;
   let current: {signature: string; requestId: string} | null = null;
   const problem = (status: WebsiteLeadProblem): WebsiteLeadOutcome => ({status, message: messages[status]});
@@ -191,11 +204,13 @@ export function createWebsiteLeadSubmission(options: WebsiteLeadSubmissionOption
       if (current?.signature !== signature) current = {signature, requestId: newRequestId()};
       const body = websiteLeadRequest(form, phone, current.requestId);
       const token = await appCheckToken().catch(() => null);
+      const idToken = form.kind === "referral" ? await referrerIdToken().catch(() => null) : null;
       let response: Response;
       try {
         response = await post("/api/join-waitlist", {
           method: "POST",
-          headers: {"Content-Type": "application/json", ...(token ? {"X-Firebase-AppCheck": token} : {})},
+          headers: {"Content-Type": "application/json", ...(token ? {"X-Firebase-AppCheck": token} : {}),
+            ...(idToken ? {Authorization: `Bearer ${idToken}`} : {})},
           body: JSON.stringify(body),
         });
       } catch {

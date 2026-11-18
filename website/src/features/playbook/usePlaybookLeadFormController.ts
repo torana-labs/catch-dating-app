@@ -21,7 +21,7 @@ type FieldKey = PlaybookLeadField | "phone";
  * answers are a new one. Staff answer on WhatsApp.
  */
 export function usePlaybookLeadFormController(form: PlaybookLeadForm, kind: PlaybookSendableLeadKind, submission?: WebsiteLeadSubmission) {
-  const lead = useWebsiteLeadController(submission);
+  const lead = useWebsiteLeadController({kind, formId: form.id}, submission);
   const [answers, setAnswers] = useState<PlaybookLeadAnswers>({});
   const [problems, setProblems] = useState<Partial<Record<FieldKey, string>>>({});
 
