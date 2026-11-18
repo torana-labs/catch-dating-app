@@ -36,7 +36,6 @@
       "{workspaceRoot}/functions/**/*.json",
       "{workspaceRoot}/integration_test/**/*.dart",
       "{workspaceRoot}/lib/**/*.dart",
-      "{workspaceRoot}/lib/assets/fonts",
       "{workspaceRoot}/nx.json",
       "{workspaceRoot}/packages/**/*.dart",
       "{workspaceRoot}/packages/catch_ui/**/*",

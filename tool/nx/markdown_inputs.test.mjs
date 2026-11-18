@@ -162,8 +162,10 @@ test("every Markdown impactPath in the tools manifest is a lane-tools input", ()
 const laneToolsExceptions = ["admin/", "website/"];
 
 function uncoveredImpactFiles(nxJson, manifest = readJson("tool/tools_manifest.json")) {
-  const files = execFileSync("git", ["ls-files"], {cwd: workspaceRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024})
-    .trim().split("\n").filter((file) => !file.endsWith(".md") && !laneToolsCovers(nxJson, file) &&
+  // Nx never hashes a tracked symlink (mode 120000), so one cannot select the lane.
+  const files = execFileSync("git", ["ls-files", "-s"], {cwd: workspaceRoot, encoding: "utf8", maxBuffer: 64 * 1024 * 1024})
+    .trim().split("\n").filter((entry) => !entry.startsWith("120000 ")).map((entry) => entry.slice(entry.indexOf("\t") + 1))
+    .filter((file) => !file.endsWith(".md") && !laneToolsCovers(nxJson, file) &&
       !laneToolsExceptions.some((prefix) => file.startsWith(prefix)));
   const missing = [];
   for (const tool of manifest.tools.filter((entry) => entry.status === "active")) {
