@@ -149,7 +149,8 @@ test("WhatsApp launch notices store the consented phone per city",
     assert.equal(consents.marketing.granted, false);
     assert.equal(consents.marketing.consentVersion, "city-launch-whatsapp-v1");
     assert.equal(
-      [...records.keys()].some((key) => key.startsWith("marketingConversionEvents/")),
+      [...records.keys()].some((key) =>
+        key.startsWith("marketingConversionEvents/")),
       false);
 
     // Asking again updates the same request; a choice made later replaces it.
