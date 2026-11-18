@@ -35,8 +35,8 @@
         "value": 4
       },
       "owner": "Website convergence (web_surface_architecture)",
-      "linear": [
-        "CAT-217"
+      "issues": [
+        1177
       ],
       "enforcement": "website/scripts/cssTokenDebt.test.mjs keeps rawColorDebt shrink-only."
     },
@@ -51,8 +51,8 @@
         "value": 3722
       },
       "owner": "UI blueprint Phase 7g, lowered by 7e and website Phase 4 migrations",
-      "linear": [
-        "CAT-217"
+      "issues": [
+        1177
       ],
       "enforcement": "stylelint suppressions are shrink-only with a freshness check (packages/web-config/lint/check-stylelint-suppressions.mjs)."
     },
@@ -67,8 +67,8 @@
         "value": 23
       },
       "owner": "UI blueprint Phase 7e",
-      "linear": [
-        "CAT-215"
+      "issues": [
+        1175
       ],
       "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json as a Git-backed ceiling on identities. Existing missing styled T1 contracts are allowed by identity; new missing contracts fail; resolving one passes with no baseline edit."
     },
@@ -83,8 +83,8 @@
         "value": 6
       },
       "owner": "UI blueprint Phase 7e",
-      "linear": [
-        "CAT-215"
+      "issues": [
+        1175
       ],
       "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json as a Git-backed ceiling on identities. The approved priority T2 contract set is measured from the canonical registry; new missing styled contracts fail; resolving one passes with no baseline edit."
     },
@@ -99,8 +99,8 @@
         "value": 9
       },
       "owner": "UI blueprint Phase 7e (D10: *Control exports become package internals)",
-      "linear": [
-        "CAT-215"
+      "issues": [
+        1175
       ],
       "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json as a Git-backed ceiling on identities. New headless-control identities fail; contracts that gain styled implementations pass with no baseline edit."
     },
@@ -115,8 +115,8 @@
         "value": 24
       },
       "owner": "UI blueprint Phase 7f",
-      "linear": [
-        "CAT-216"
+      "issues": [
+        1176
       ],
       "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json as a Git-backed ceiling on identities. This is catalog state coverage: ready styled Storybook states must cover the canonical Widgetbook states. Missing identities are ratcheted; screenshot parity remains a separate check."
     },
@@ -131,8 +131,8 @@
         "value": 54
       },
       "owner": "UI blueprint Phase 7e",
-      "linear": [
-        "CAT-215"
+      "issues": [
+        1175
       ],
       "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json as a Git-backed ceiling on identities. Every remaining adapter is tracked by source path and symbol; same-count identity replacement cannot add new debt."
     },
@@ -148,9 +148,9 @@
         "source": "knip (tool/audit/unused_code_baseline.json); the React inventory counted 109 before #783 fixed its Next route roots"
       },
       "owner": "Website Phase 4 and Admin (Phase 7 'screens become assemblies')",
-      "linear": [
-        "CAT-218",
-        "CAT-219"
+      "issues": [
+        1178,
+        1179
       ],
       "enforcement": "audit:unused-code (knip) keeps tool/audit/unused_code_baseline.json shrink-only; this gate counts its unused exports and files per web workspace, and falls back to the React inventory only if that file is missing."
     },
@@ -165,9 +165,9 @@
         "value": 420
       },
       "owner": "Website Phase 4 and Admin. Under blueprint D18 (\"the library draws; features arrange and bind\") each one becomes a registered @catch/web-ui component; none moves into a feature.",
-      "linear": [
-        "CAT-218",
-        "CAT-219"
+      "issues": [
+        1178,
+        1179
       ],
       "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json as a Git-backed ceiling on identities. The canonical inventory tracks remaining t4-move identities by path and symbol. Registered library T4 components use their registry mapping; new move candidates fail; resolving one passes with no baseline edit."
     },
@@ -182,8 +182,8 @@
         "value": 2292
       },
       "owner": "UI blueprint Phase 7g (ESLint no-bare-elements) with website Phase 4 and Admin migrations",
-      "linear": [
-        "CAT-217"
+      "issues": [
+        1177
       ],
       "enforcement": "web:react-ui-lint runs the shared ESLint preset, app-local bulk suppressions and exact-source freshness. Production raw-element and drawing-prop counts cannot grow above accepted origin/main. This measure counts react/forbid-elements suppressions; table/image families remain deferred under D17 until their styled components exist."
     },
@@ -198,9 +198,9 @@
         "value": 13048
       },
       "owner": "Website Phase 4 and Admin",
-      "linear": [
-        "CAT-218",
-        "CAT-219"
+      "issues": [
+        1178,
+        1179
       ],
       "enforcement": "web:shared-ui-adoption caps each page CSS file at its line count on the merge base, with no recorded budget. New or larger files fail, shorter files pass and lower the cap once merged, and moving debt between files cannot spend another allowance. The scope matches the scorecard and excludes only base.css and catch-language.css."
     },
@@ -214,11 +214,11 @@
         "date": "2026-10-23",
         "value": 875
       },
-      "owner": "Linear CAT-211 (CatchText migration)",
-      "linear": [
-        "CAT-211"
+      "owner": "CatchText migration (#1174)",
+      "issues": [
+        1174
       ],
-      "enforcement": "None yet: a source scan until CAT-211 adds its lint."
+      "enforcement": "None yet: a source scan until #1174 adds its lint."
     },
     {
       "id": "screens.flutter_raw_chrome",
@@ -231,8 +231,8 @@
         "value": 102
       },
       "owner": "Widget consolidation pipeline (docs/plans/widget_consolidation_pipeline_spec.md)",
-      "linear": [
-        "CAT-220"
+      "issues": [
+        1180
       ],
       "enforcement": "Partial: catch_ui_lints rejects raw Material controls; decoration and gesture wrappers are unchecked."
     },
@@ -248,8 +248,8 @@
         "value": 54
       },
       "owner": "Widget consolidation pipeline (docs/plans/widget_consolidation_pipeline_spec.md)",
-      "linear": [
-        "CAT-220"
+      "issues": [
+        1180
       ],
       "enforcement": "None: the similarity build reports clusters but nothing ratchets them."
     },
@@ -265,11 +265,11 @@
         "value": 6
       },
       "owner": "Widget consolidation pipeline (docs/plans/widget_consolidation_pipeline_spec.md)",
-      "linear": [
-        "CAT-220"
+      "issues": [
+        1180
       ],
       "enforcement": "None."
     }
   ],
-  "linear": "CAT-214"
+  "issues": [1098]
 }

@@ -286,7 +286,7 @@ it never fails on the measured values.`);
   const rows = evaluate(definition, measures);
   if (args.includes("--json")) {
     console.log(JSON.stringify({rows: rows.map(({gate, measure, status}) =>
-      ({id: gate.id, status, target: gate.target, baseline: gate.baseline ?? null, linear: gate.linear ?? [], ...measure}))}, null, 2));
+      ({id: gate.id, status, target: gate.target, baseline: gate.baseline ?? null, issues: gate.issues ?? [], ...measure}))}, null, 2));
     return;
   }
   for (const row of rows) console.log(formatRow(row));
