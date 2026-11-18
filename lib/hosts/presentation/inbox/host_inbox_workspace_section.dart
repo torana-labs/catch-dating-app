@@ -50,7 +50,7 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
     );
     final inboxAsync = ref.watch(hostInboxCatchViewModelProvider);
     final whatsappAsync = ref.watch(
-      hostInboxWhatsappPagesProvider(organizer.id),
+      hostWhatsappThreadPagesProvider(organizer.id),
     );
     final programsAsync = ref.watch(organizerProgramListProvider(organizer.id));
     final eventsState = catchAsyncStateFromAsyncValue(eventsAsync);
@@ -59,6 +59,11 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
       ref.watch(chatsListViewModelProvider),
     );
     final whatsappState = catchAsyncStateFromAsyncValue(whatsappAsync);
+    void retryPartialSources() {
+      ref.invalidate(hostWhatsappThreadPagesProvider(organizer.id));
+      onRetry(organizer.id);
+    }
+
     final programsState = catchAsyncStateFromAsyncValue(programsAsync);
     final events = eventsState.value;
     final requestedProgramId = requestedScope?.programId;
@@ -134,7 +139,7 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
         ).value?.sourceWindowMayHaveMore ??
         true;
     final catchHasMore = catchPages.canLoadMore(sourceWindowMayHaveMore);
-    final whatsappThreads = whatsappPage?.threads ?? const [];
+    final whatsappThreads = whatsappPage?.items ?? const [];
     final programAudience = programId == null
         ? null
         : hostInboxProgramAudience(
@@ -195,7 +200,7 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
         inboxState.hasError ||
         whatsappState.isLoading ||
         whatsappState.hasError ||
-        whatsappPage?.nextCursor != null ||
+        (whatsappPage?.hasMore ?? false) ||
         (programPage?.nextCursor != null) ||
         (programPage?.loadingMore ?? false) ||
         (programPage?.error != null) ||
@@ -231,12 +236,7 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
                       whatsappState.hasError)
                     CatchButton(
                       label: context.l10n.sharedActionTryAgain,
-                      onPressed: () {
-                        ref.invalidate(
-                          hostWhatsappThreadsProvider(organizer.id),
-                        );
-                        onRetry(organizer.id);
-                      },
+                      onPressed: retryPartialSources,
                     ),
                 ],
               ),
@@ -284,18 +284,18 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
               ),
             ),
           ),
-        if (whatsappPage?.nextCursor != null)
+        if (whatsappPage?.hasMore ?? false)
           SliverToBoxAdapter(
             child: CatchSection.content(
               child: CatchButton(
-                label: whatsappPage?.error == null
+                label: whatsappPage?.nextPageError == null
                     ? context.l10n.hostInboxMoreConversations
                     : context.l10n.sharedActionTryAgain,
                 onPressed: whatsappPage!.loadingMore
                     ? null
                     : () => ref
                           .read(
-                            hostInboxWhatsappPagesProvider(
+                            hostWhatsappThreadPagesProvider(
                               organizer.id,
                             ).notifier,
                           )

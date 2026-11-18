@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_form_admission_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
@@ -143,8 +144,8 @@ class TestHostEventOfferWorkspaceController {
             queryController: queryController,
             responseId: responseId,
             offerScope: offerController.scope,
-            listOffers: listOffers,
-            getOffer: getOffer,
+            watchOffers: offersWatchFrom(listOffers),
+            watchOffer: offerWatchFrom(getOffer),
             prepareHandoff: prepareHandoff,
             copyMessage: copyMessage,
             openHandoff: openHandoff,
@@ -207,7 +208,6 @@ class TestHostEventOfferWorkspaceController {
   HostOfferBatchDraft? get draft => snapshot.draft;
   String? get commitRequestId => snapshot.commitRequestId;
   List<Map<String, Object?>> get offers => snapshot.offers;
-  String? get nextOfferCursor => snapshot.nextOfferCursor;
   HostEventOffer? get selectedOffer => snapshot.selectedOffer;
   String? get selectedResponseId => snapshot.selectedResponseId;
   HostOfferHandoff? get handoff => snapshot.handoff;
@@ -225,7 +225,6 @@ class TestHostEventOfferWorkspaceController {
   Future<void> prepareSelectedHandoff() => notifier.prepareSelectedHandoff();
   Future<void> copyPreparedHandoff() => notifier.copyPreparedHandoff();
   Future<void> openPreparedWhatsapp() => notifier.openPreparedWhatsapp();
-  Future<void> fetchMoreOffers() => notifier.fetchMoreOffers();
   void cancelPreparation() => notifier.cancelPreparation();
   void changeEvent() => notifier.changeEvent();
   void closeExisting() => notifier.closeExisting();
@@ -324,8 +323,8 @@ class TestHostEventOfferWorkspaceSection extends StatelessWidget {
       responseId: responseId,
       recipientLabel: recipientLabel,
       offerScope: offerController.scope,
-      listOffers: listOffers,
-      getOffer: getOffer,
+      watchOffers: offersWatchFrom(listOffers),
+      watchOffer: offerWatchFrom(getOffer),
       prepareHandoff: prepareHandoff,
       copyMessage: copyMessage,
       openHandoff: openHandoff,
@@ -499,3 +498,44 @@ class _TestHostFormAdmissionSectionState
     ),
   );
 }
+
+/// A listener over a one-shot offer list fake: it delivers the fake's items
+/// once, as the offers listener's first value.
+HostEventOffersWatch offersWatchFrom(
+  Future<Map<String, Object?>> Function({
+    required String organizerId,
+    required String eventId,
+    String? afterOfferId,
+  })
+  listOffers,
+) =>
+    ({required organizerId, required eventId, required contactIds}) =>
+        Stream.fromFuture(
+          listOffers(organizerId: organizerId, eventId: eventId),
+        ).map((response) {
+          final items = response['items'];
+          if (items is! List) {
+            throw const FormatException('Offer list is invalid.');
+          }
+          return [
+            for (final item in items) (item as Map).cast<String, Object?>(),
+          ];
+        });
+
+/// A listener over a one-shot offer detail fake.
+HostEventOfferWatch offerWatchFrom(
+  Future<HostEventOffer> Function({
+    required String organizerId,
+    required String eventId,
+    required String contactId,
+  })
+  getOffer,
+) =>
+    ({required organizerId, required eventId, required contactId}) =>
+        Stream.fromFuture(
+          getOffer(
+            organizerId: organizerId,
+            eventId: eventId,
+            contactId: contactId,
+          ),
+        );

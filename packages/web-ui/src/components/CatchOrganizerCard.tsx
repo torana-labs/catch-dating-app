@@ -41,16 +41,23 @@ export interface CatchOrganizerCardLegacyProps {
   /** The next plan, such as "Next: Fri 6:30 AM · Carter Road Social Run". */
   next: string;
   /** The quiet line at the foot, such as "212 followers" or "Joining at launch". */
-  footnote: string;
+  footnote?: string;
   /** The foot's action, such as a Follow button or a claim link. */
   action?: ReactNode;
+  /**
+   * paper (the default): the Website v2 card on a white band. white: the
+   * playbook kit's Follow card (KitCards org) for a tint band: a white raised
+   * card, the next plan on a paper inset and the action across the foot.
+   */
+  ground?: "paper" | "white";
 }
 
 export type CatchOrganizerCardProps = CatchOrganizerCardSystemProps | CatchOrganizerCardLegacyProps;
 
 /**
  * A Website v2 organiser card on paper: monogram, name and what they run,
- * the next plan, then a footnote across from an action.
+ * the next plan, then a footnote across from an action. On the white ground
+ * it is the playbook kit's Follow card.
  */
 export function CatchOrganizerCard(props: CatchOrganizerCardProps) {
   return props.monogramGround === undefined ? <SystemOrganizerCard {...props} /> : <PaperOrganizerCard {...props} />;
@@ -76,10 +83,10 @@ function SystemOrganizerCard({name, initials, logoUrl, color = "games", meta, fo
   );
 }
 
-function PaperOrganizerCard({action, footnote, href, initials, monogramGround, name, next, subtitle}: CatchOrganizerCardLegacyProps) {
+function PaperOrganizerCard({action, footnote, ground = "paper", href, initials, monogramGround, name, next, subtitle}: CatchOrganizerCardLegacyProps) {
   const title = <CatchLegacyText as="span" color="inherit" maxLines={2} variant="titleS">{name}</CatchLegacyText>;
   return (
-    <article className={styles.card} data-catch-theme="light" data-ground="paper">
+    <article className={styles.card} data-catch-theme="light" data-ground={ground}>
       <div className={styles.identity}>
         <CatchAvatar ground={monogramGround} initials={initials} name={name} recipe="monogram" size={52} />
         <div className={styles.names}>
@@ -89,11 +96,13 @@ function PaperOrganizerCard({action, footnote, href, initials, monogramGround, n
           <CatchLegacyText as="p" color="ink2" variant="bodyS">{subtitle}</CatchLegacyText>
         </div>
       </div>
-      <CatchLegacyText as="p" variant="bodyS">{next}</CatchLegacyText>
-      <div className={styles.foot}>
-        <CatchLegacyText as="span" color="ink2" variant="supportingStrong">{footnote}</CatchLegacyText>
-        {action}
-      </div>
+      <div className={styles.next}><CatchLegacyText as="p" variant="bodyS">{next}</CatchLegacyText></div>
+      {footnote || action ? (
+        <div className={styles.foot}>
+          {footnote ? <CatchLegacyText as="span" color="ink2" variant="supportingStrong">{footnote}</CatchLegacyText> : null}
+          {action}
+        </div>
+      ) : null}
     </article>
   );
 }

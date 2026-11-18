@@ -1441,6 +1441,12 @@ abstract class AppLocalizations {
   /// **'No bookings in this period.'**
   String get hostInsightsBookingsEmpty;
 
+  /// Insights notice above a report kept on screen after its background refresh failed or timed out; minutes is the report's age.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =0{Couldn\'\'t refresh. Updated just now} =1{Couldn\'\'t refresh. Updated 1 min ago} other{Couldn\'\'t refresh. Updated {minutes} min ago}}'**
+  String hostInsightsRefreshFailed({required int minutes});
+
   /// Insights stat label: the share of booked guests who had been to one of the organizer's events before.
   ///
   /// In en, this message translates to:

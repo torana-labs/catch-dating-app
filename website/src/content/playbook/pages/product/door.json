@@ -1,0 +1,163 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "product_door",
+  "route": "product_door",
+  "meta": {
+    "title": "The door | {{brand.name}} for hosts",
+    "description": "QR self check-in with no app to download, a searchable list, walk-ins you choose and door staff whose access ends with the night. Check-ins made without signal sync when you’re back online.",
+    "socialDescription": "Know who’s here in the first five minutes. The door on {{brand.name}}.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [{"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}}],
+      "current": "The door"
+    }
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "mint",
+      "kicker": "Product · the door",
+      "title": "Know who’s here in the first five minutes.",
+      "lead": "Guests scan in on their own phones, with no app to download. You see who’s in, who’s late and who’s new, let in the walk-ins you choose, and hand the door to a helper whose access ends with the night.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See running the night", "to": {"route": "product_night"}, "emphasis": "secondary"}
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Door · Friday Bandra Pub Crawl",
+          "subtitle": "Stop 1 · The Bombay Tap · 7:42 PM",
+          "stats": [
+            {"value": "31", "label": "checked in"},
+            {"value": "9", "label": "still to come"},
+            {"value": "2", "label": "walk-ins"}
+          ],
+          "rows": [
+            {"title": "Aanya Mehta", "detail": "First time with you", "tag": "Checked in"},
+            {"title": "Kabir Shah", "detail": "Regular", "tag": "Checked in 7:31"},
+            {"title": "Ira Desai · 2 places", "detail": "One booking, one pass", "tag": "Not here yet"},
+            {"title": "Rohan Kapoor", "detail": "Added at the door", "tag": "Walk-in"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "ways-through",
+      "ground": "white",
+      "kicker": "Four ways through the door",
+      "title": "However they arrive, they’re on the list.",
+      "align": "center",
+      "columns": 4,
+      "items": [
+        {"title": "Most guests scan in", "body": "A code at the door opens your event in their phone’s browser. They confirm with their number and they’re in.", "ground": "mint"},
+        {"title": "No phone? You tick them off", "body": "Search the list by name and check them in yourself. A group booking checks in together, on one pass.", "ground": "yellow"},
+        {"title": "Turned up unbooked? You let them in", "body": "Add a walk-in in a few seconds, if you have room. They’re on the list for the follow-up too.", "ground": "indigo"},
+        {"title": "Booked somewhere else? Bring the list", "body": "Import a guest list from a CSV or Excel file. On Luma Plus, connect Luma and refresh to bring in its latest guest list.", "ground": "pink"}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "guests-see",
+      "ground": "white",
+      "kicker": "What guests see",
+      "title": "Checked in, and pointed to the right person.",
+      "lead": "After they check in, guests see their group, table or team, depending on your format. Then the phone goes back in the pocket.",
+      "ticks": [
+        "Their group, seat, team or pod, depending on your format",
+        "A first hello, if you turn it on, so nobody stands at the door alone",
+        "First-timers flagged for you, so they get a proper hello"
+      ],
+      "media": {"kind": "capture", "slot": "guest-checked-in"}
+    },
+    {
+      "type": "split",
+      "id": "door-staff",
+      "ground": "ink",
+      "kicker": "Door staff",
+      "title": "Hand over the door, not your business.",
+      "lead": "Give a friend or a venue’s staff the door for one event. They can search the list and check people in, and that’s all. Their access ends when you say.",
+      "ticks": [
+        "Door access for one event, with an end time you set",
+        "No access to your other events, your contacts or your money",
+        "Take access back at any time"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Door staff",
+          "rows": [
+            {"title": "Meera · door", "tag": "Until 11 PM tonight"},
+            {"title": "Arjun · door", "tag": "Until 11 PM tonight"},
+            {"title": "Venue staff · The Bombay Tap", "tag": "Removed 9:10 PM"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "weak-signal",
+      "ground": "white",
+      "kicker": "Weak signal",
+      "title": "Basement bar? Check-ins still count.",
+      "lead": "If the signal drops while you’re checking people in, the check-ins are saved on your phone and sync when you’re back online. If two people checked in the same guest, {{brand.name}} shows you so you can sort it out.",
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Sync status",
+          "rows": [
+            {"title": "4 check-ins waiting to sync", "detail": "They’ll send when you’re back online.", "tag": "Waiting"},
+            {"title": "All check-ins synced", "detail": "7:58 PM", "tag": "Synced"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "after-the-door",
+      "ground": "paper",
+      "kicker": "After the door closes",
+      "title": "The list keeps working.",
+      "lead": "Who came and who didn’t goes into your guest records, so the people who showed up are the ones you thank and invite to the next one.",
+      "actions": [
+        {"label": "See guest records", "to": {"route": "product_guests"}, "emphasis": "secondary"}
+      ],
+      "media": {"kind": "capture", "slot": "host-door-in"}
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Questions",
+      "title": "About the door.",
+      "items": [
+        {"question": "Do guests need to download anything?", "answer": "No. The code at the door opens your event in their phone’s browser. They confirm with their phone number."},
+        {"question": "What if someone’s phone is dead?", "answer": "Search their name and check them in yourself."},
+        {"question": "How do group bookings check in?", "answer": "A group booking is one pass for the whole party, so the group checks in together."},
+        {"question": "Can I take walk-ins?", "answer": "Yes, if you choose to. Add them at the door and they’re on the list like everyone else."},
+        {"question": "Can more than one person run the door?", "answer": "Yes. Give each helper door access for the event, on their own phone. If two of you check in the same guest, {{brand.name}} shows you so you can sort it out."},
+        {"question": "What happens with no signal?", "answer": "Check-ins made without signal are saved on the phone, and sync when you’re back online."},
+        {"question": "I sell tickets on Luma. Can I still use the door?", "answer": "Yes. If you’re on Luma Plus, connect your Luma account and refresh the guest list whenever you want the latest. Or import a guest list from a CSV or Excel file."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "mint",
+      "kicker": "Free for 30 days · founding hosts get 90",
+      "title": "Open your next door on {{brand.name}}.",
+      "lead": "Bring your guest list from any tool. The door works the first night.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "How {{brand.name}} works", "to": {"route": "how_it_works"}, "emphasis": "secondary"}
+      ],
+      "media": {"kind": "capture", "slot": "host-today"}
+    }
+  ]
+}

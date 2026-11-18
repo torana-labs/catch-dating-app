@@ -33,6 +33,7 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
         SendEventBroadcastCallableRequest,
         SelfCheckInAttendanceCallableRequest,
         UpdateEventCallableRequest;
+import 'package:catch_platform/streams/combine_latest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -137,30 +138,56 @@ class EventRepository with EventRepositoryActions {
     ),
   );
 
-  Stream<List<Event>> watchEventsForOrganizer({
-    required String organizerId,
-  }) => withBackendErrorStream(
-    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,startTime:ASCENDING)
-    () => _db
+  /// The organizer's current events for its page and the Host's event
+  /// pickers, by start time: the live and coming ones (soonest ending first,
+  /// one directory page) and the most recently ended ones (one directory
+  /// page), each a bounded listener. The boundary is the repository clock
+  /// when the listener opens. Older history pages through
+  /// [fetchPastEventsPage]; cancelled events are not included.
+  Stream<List<Event>> watchEventsForOrganizer({required String organizerId}) {
+    final boundary = Timestamp.fromDate(_clock.now());
+    Query<Map<String, dynamic>> active() => _db
         .collection(_collectionPath)
         .where('publicationState', isEqualTo: 'published')
         .where('organizerId', isEqualTo: organizerId)
-        .orderBy('startTime')
-        .limit(ReadLimitPolicy.historyPage)
-        .snapshots()
-        .map(
-          (snap) => snap.docs
-              .map(publishedRichEvent)
-              .whereType<Event>()
-              .where((event) => !event.synthetic)
-              .toList(),
-        ),
-    context: const BackendErrorContext(
-      service: BackendService.firestore,
-      action: 'watch organizer events',
-      resource: _collectionPath,
-    ),
-  );
+        .where('status', isEqualTo: EventLifecycleStatus.active.name);
+    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:ASCENDING,__name__:ASCENDING)
+    final current = active()
+        .where('endTime', isGreaterThan: boundary)
+        .orderBy('endTime')
+        .orderBy(FieldPath.documentId)
+        .limit(ReadLimitPolicy.directoryPage);
+    // firestore-index: events (organizerId:ASCENDING,publicationState:ASCENDING,status:ASCENDING,endTime:DESCENDING,__name__:DESCENDING)
+    final recent = active()
+        .where('endTime', isLessThanOrEqualTo: boundary)
+        .orderBy('endTime', descending: true)
+        .orderBy(FieldPath.documentId, descending: true)
+        .limit(ReadLimitPolicy.directoryPage);
+    List<Event> events(QuerySnapshot<Map<String, dynamic>> snap) => [
+      for (final event in snap.docs.map(publishedRichEvent).whereType<Event>())
+        if (!event.synthetic) event,
+    ];
+    return withBackendErrorStream(
+      () => combineLatest(
+        current.snapshots().map(events),
+        recent.snapshots().map(events),
+        (coming, ended) {
+          final byId = {
+            for (final event in [...ended, ...coming]) event.id: event,
+          };
+          return List<Event>.unmodifiable(
+            byId.values.toList()
+              ..sort((a, b) => a.startTime.compareTo(b.startTime)),
+          );
+        },
+      ),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch organizer events',
+        resource: _collectionPath,
+      ),
+    );
+  }
 
   /// Fetches the organizer's nearest live and future events as a cursor page.
   ///
@@ -295,22 +322,6 @@ class EventRepository with EventRepositoryActions {
     );
   }
 
-  Stream<List<Event>> watchEventsForOrganizers({
-    required List<String> organizerIds,
-  }) =>
-      watchEventsForOrganizerIdsStream(
-        organizerIds: organizerIds,
-        eventsRef: _eventsRef,
-        context: const BackendErrorContext(
-          service: BackendService.firestore,
-          action: 'watch events for hosted organizers',
-          resource: _collectionPath,
-        ),
-      ).map(
-        (events) =>
-            events.where((event) => !event.synthetic).toList(growable: false),
-      );
-
   /// Generates a new unique Firestore document ID for an event without writing it.
   String generateId() => _eventsRef.doc().id;
 
@@ -411,14 +422,6 @@ Stream<EventVenueSession> eventVenueSession(Ref ref, String eventId) async* {
   }
 }
 
-@riverpod
-Stream<List<Event>> watchEventsForOrganizers(
-  Ref ref,
-  EventsForOrganizersQuery query,
-) => ref
-    .watch(eventRepositoryProvider)
-    .watchEventsForOrganizers(organizerIds: query.organizerIds);
-
 /// One organizer's events that end after the start of the given day.
 /// The day, not the instant, keys the listener, so it is reused all day.
 class ActiveOrganizerEventsQuery {
@@ -436,26 +439,6 @@ class ActiveOrganizerEventsQuery {
 
   @override
   int get hashCode => Object.hash(organizerId, endsAfter);
-}
-
-class EventsForOrganizersQuery {
-  EventsForOrganizersQuery._(Iterable<String> organizerIds)
-    : organizerIds = List.unmodifiable(organizerIds.toSet().toList()..sort());
-
-  factory EventsForOrganizersQuery(Iterable<String> organizerIds) =>
-      EventsForOrganizersQuery._(organizerIds);
-
-  static const _equality = ListEquality<String>();
-
-  final List<String> organizerIds;
-
-  @override
-  bool operator ==(Object other) =>
-      other is EventsForOrganizersQuery &&
-      _equality.equals(other.organizerIds, organizerIds);
-
-  @override
-  int get hashCode => _equality.hash(organizerIds);
 }
 
 class RecommendedEventsQuery {

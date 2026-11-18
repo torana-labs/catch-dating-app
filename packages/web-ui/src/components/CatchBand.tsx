@@ -11,8 +11,12 @@ export type CatchBandGround = Ground;
  */
 export type CatchBandSpacing = "none" | "compact" | "regular" | "spacious";
 
-/** `content` centres children at the page content width; `full` runs edge to edge. */
-export type CatchBandWidth = "content" | "full";
+/**
+ * `content` centres children at the page content width; `profile` at the
+ * organiser page's narrower 1080px (the WebOrgV2 board's .wrap); `full` runs
+ * edge to edge.
+ */
+export type CatchBandWidth = "content" | "profile" | "full";
 
 export type CatchBandElement = "section" | "div" | "header" | "footer" | "aside" | "main";
 

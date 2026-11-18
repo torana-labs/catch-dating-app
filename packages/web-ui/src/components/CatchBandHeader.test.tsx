@@ -107,6 +107,8 @@ describe("CatchBandHeader", () => {
     const {rerender} = render(<CatchBandHeader size="section" title="Headline" />);
     const heading = () => screen.getByRole("heading", {name: "Headline"});
     expect(heading().dataset).toMatchObject({variant: "display-hero", display: "section"});
+    rerender(<CatchBandHeader size="profile" title="Headline" />);
+    expect(heading().dataset).toMatchObject({variant: "display-hero", display: "profile"});
     rerender(<CatchBandHeader size="small" title="Headline" />);
     expect(heading().dataset).toMatchObject({variant: "display-section", display: "small"});
     rerender(<CatchBandHeader title="Headline" />);

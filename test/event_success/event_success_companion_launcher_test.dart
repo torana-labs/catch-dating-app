@@ -22,52 +22,54 @@ import '../test_pump_helpers.dart';
 
 void main() {
   group('EventSuccessCompanionLaunchRegistry', () {
-    test('does not launch from an initial attended snapshot', () {
+    test('the first open-bookings snapshot only records the set', () {
       final registry = EventSuccessCompanionLaunchRegistry();
-      final event = buildEvent();
-      final attended = buildEventParticipation(
-        event: event,
+      final signedUp = buildEventParticipation(
+        event: buildEvent(),
         uid: 'runner-1',
-        status: EventParticipationStatus.attended,
-      );
-
-      final transitions = registry.attendedTransitionsForUser(
-        uid: 'runner-1',
-        participations: [attended],
-      );
-
-      expect(transitions, isEmpty);
-    });
-
-    test('detects a signed-up to attended transition once', () {
-      final registry = EventSuccessCompanionLaunchRegistry();
-      final event = buildEvent();
-      final signedUp = buildEventParticipation(event: event, uid: 'runner-1');
-      final attended = buildEventParticipation(
-        event: event,
-        uid: 'runner-1',
-        status: EventParticipationStatus.attended,
       );
 
       expect(
-        registry.attendedTransitionsForUser(
+        registry.departedEventIdsForUser(
           uid: 'runner-1',
-          participations: [signedUp],
+          openBookings: [signedUp],
         ),
         isEmpty,
       );
+    });
 
-      final transitions = registry.attendedTransitionsForUser(
+    test('names a booking that leaves the open bookings once', () {
+      final registry = EventSuccessCompanionLaunchRegistry();
+      final event = buildEvent();
+      final other = buildEvent(id: 'other-event');
+      final signedUp = buildEventParticipation(event: event, uid: 'runner-1');
+      final waitlisted = buildEventParticipation(
+        event: other,
         uid: 'runner-1',
-        participations: [attended],
+        status: EventParticipationStatus.waitlisted,
       );
-      expect(transitions, [attended]);
 
+      registry.departedEventIdsForUser(
+        uid: 'runner-1',
+        openBookings: [signedUp, waitlisted],
+      );
       expect(
-        registry.attendedTransitionsForUser(
+        registry.departedEventIdsForUser(
           uid: 'runner-1',
-          participations: [attended],
+          openBookings: [waitlisted],
         ),
+        [event.id],
+      );
+      expect(
+        registry.departedEventIdsForUser(
+          uid: 'runner-1',
+          openBookings: [waitlisted],
+        ),
+        isEmpty,
+      );
+      // Another guest's set is separate.
+      expect(
+        registry.departedEventIdsForUser(uid: 'runner-2', openBookings: []),
         isEmpty,
       );
     });

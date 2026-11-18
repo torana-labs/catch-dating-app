@@ -51,6 +51,12 @@ export interface CatchCtaSectionProps extends Omit<HTMLAttributes<HTMLElement>, 
   capture?: ReactNode;
   /** The second column, usually a phone CatchScreenPreview. */
   media?: ReactNode;
+  /**
+   * A form in the second column in place of media, across the column's
+   * width (the homepage's refer panel, the canvas's .ref). The page owns its
+   * state and submit.
+   */
+  form?: ReactNode;
   /** The media runs to the band's bottom edge. Needs media. */
   flush?: boolean;
   /** The band's Website v2 ground; text takes its inks, and ink the dark theme. Defaults to the plain band. */
@@ -78,7 +84,7 @@ function BentoTile({tile, wide}: {tile: CatchCtaSectionTile; wide?: "start" | "e
  * The closing call to action of a website page (the playbook kit's final
  * band): a CatchBandHeader, D20 actions, store badges and a capture slot for
  * the page's own phone form, beside an optional media column, or in the
- * middle of a bento grid of tiles, on a Website v2 ground. The columns stack
+ * middle of a bento grid of tiles, or beside a form, on a Website v2 ground. The columns stack
  * below 840px. The band is a section named by
  * its headline.
  */
@@ -94,6 +100,7 @@ export function CatchCtaSection({
   stores,
   capture,
   media,
+  form,
   flush = false,
   ground,
   tiles,
@@ -142,10 +149,10 @@ export function CatchCtaSection({
       data-flush={isFlush ? "" : undefined}
       padding={isFlush ? "none" : undefined}
     >
-      {media != null ? (
+      {media != null || form != null ? (
         <CatchStack align={isFlush ? "end" : "center"} className={isFlush ? styles.flush : undefined} collapseBelow="expanded" direction="row" equal gap={64}>
           <div className={styles.text}>{copy}</div>
-          <div className={styles.media}>{media}</div>
+          {media != null ? <div className={styles.media}>{media}</div> : <div className={styles.form}>{form}</div>}
         </CatchStack>
       ) : copy}
     </CatchSurface>

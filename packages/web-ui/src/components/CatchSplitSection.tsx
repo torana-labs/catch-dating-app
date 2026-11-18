@@ -8,6 +8,7 @@ import {CatchButton} from "./CatchButton";
 import {CatchMarker} from "./CatchMarker";
 import {CatchMetricTile} from "./CatchMetricTile";
 import {CatchStack} from "./CatchStack";
+import {CatchStepCards} from "./CatchStepCards";
 import {CatchStepList, type CatchStepRowData} from "./CatchStepList";
 import {CatchSurface} from "./CatchSurface";
 import {CatchText} from "./CatchText";
@@ -111,20 +112,8 @@ export function CatchSplitSection({
   const hasSteps = steps != null && steps.length > 0;
   const hasChecks = checks != null && checks.length > 0;
   const timeline = hasSteps && steps.some((step) => step.marker != null);
-  const stepTitle = level === 1 ? "h2" : "h3";
   const stepList = !hasSteps ? null : timeline ? <CatchStepList steps={steps} /> : (
-    <ol className={styles.steps} data-on={ground === "ink" ? "night" : ground == null || ground === "white" || ground === "paper" ? "day" : "colour"} role="list">
-      {steps.map((step, index) => (
-        <li className={styles.step} key={`${index}:${step.title}`}>
-          <span aria-hidden="true" className={styles.stepNumber}>{index + 1}</span>
-          <span className={styles.stepCopy}>
-            <CatchText as={stepTitle} variant="title-bar">{step.title}</CatchText>
-            {step.body ? <CatchText as="p" className={styles.stepBody} tone="secondary" variant="body-small">{step.body}</CatchText> : null}
-            {step.tag?.trim() ? <CatchText as="p" className={styles.stepBody} variant="label-action">{step.tag}</CatchText> : null}
-          </span>
-        </li>
-      ))}
-    </ol>
+    <CatchStepCards headingLevel={level === 1 ? 2 : 3} on={ground === "ink" ? "night" : ground == null || ground === "white" || ground === "paper" ? "day" : "colour"} steps={steps} />
   );
   const checkList = hasChecks ? (
     <ul className={styles.checks}>

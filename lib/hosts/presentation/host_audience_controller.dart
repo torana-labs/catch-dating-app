@@ -11,7 +11,6 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_t
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -176,11 +175,6 @@ class HostAudienceController {
     required String campaignId,
   }) => _campaign.getCampaignReport(organizerId, campaignId);
 
-  Future<HostSendsPage> listSends({
-    required String organizerId,
-    String? cursor,
-  }) => _campaign.listCampaigns(organizerId, cursor: cursor);
-
   Future<HostManualSendTask> prepareManualSendTask({
     required String organizerId,
     required String contactId,
@@ -221,12 +215,6 @@ class HostAudienceController {
     organizerId: organizerId,
     cursor: cursor,
   );
-
-  Future<HostWhatsappThreadDetail> getWhatsappThread({
-    required String organizerId,
-    required String threadId,
-  }) =>
-      _whatsapp.getWhatsappThread(organizerId: organizerId, threadId: threadId);
 
   Future<void> sendWhatsappReply({
     required String organizerId,

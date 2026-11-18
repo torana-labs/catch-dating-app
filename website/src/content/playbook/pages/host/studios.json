@@ -1,0 +1,186 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_studios",
+  "route": "host_studios",
+  "meta": {
+    "title": "{{brand.name}} for studios | Workshops that bring people in, memberships that keep them",
+    "description": "Open workshops and socials for yoga, dance, fitness and craft studios, then memberships renewed by UPI Autopay, with member prices and first pick of every session.",
+    "socialDescription": "Turn first-timers into members. {{brand.name}} for yoga, dance, fitness and craft studios.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {"links": [{"label": "For hosts", "to": {"route": "host"}}], "current": "Studios"}
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "magenta",
+      "kicker": "{{brand.name}} for yoga, dance, fitness and craft studios",
+      "title": "Turn first-timers into members.",
+      "lead": "Open workshops and socials that bring new people through the door, then memberships that keep them: paid monthly by UPI Autopay, with classes included or cheaper and first pick of every session.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run a studio and have a question about hosting on {{brand.name}}."},
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {
+        "label": "Running wellness sessions for a company? Ask for a walkthrough",
+        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run wellness sessions for companies and would like a walkthrough."}
+      },
+      "chip": {
+        "title": "Sunday sound bath",
+        "rows": [
+          {"label": "Booked", "value": "22"},
+          {"label": "Members, included", "value": "14"},
+          {"label": "First-timers", "value": "8"}
+        ]
+      },
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Members",
+          "subtitle": "Still Water Yoga · Bandra",
+          "stats": [
+            {"value": "64", "label": "active"},
+            {"value": "9", "label": "new this month"},
+            {"value": "3", "label": "paused"}
+          ],
+          "rows": [
+            {"title": "Studio member", "detail": "Weekly classes included · book 48 hours early", "tag": "₹2,400 a month"},
+            {"title": "Workshop member", "detail": "Half price on every workshop", "tag": "₹800 a month"},
+            {"title": "Not members yet", "detail": "Came 4 or more times in 60 days", "tag": "11 people"}
+          ],
+          "note": "Invite the 11 regulars to join"
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "sound-familiar",
+      "ground": "white",
+      "kicker": "Sound familiar?",
+      "title": "Teaching is the easy part.",
+      "align": "center",
+      "columns": 3,
+      "items": [
+        {"title": "First-timers who never come back", "body": "A full workshop on Saturday, and none of them at a class the week after.", "fix": "After their first session they see what a member pays, and you see who came twice."},
+        {"title": "Chasing fees on WhatsApp", "body": "A screenshot of a UPI payment, a spreadsheet, and three reminders a month.", "fix": "Memberships renew by UPI Autopay or card, and members pause or cancel themselves."},
+        {"title": "Regulars who can’t get in", "body": "Your most loyal people find the class full because a newcomer booked first.", "fix": "Members book before everyone else, and some sessions are for members only."}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "memberships",
+      "ground": "white",
+      "kicker": "Memberships",
+      "title": "Regulars pay monthly. You stop chasing.",
+      "lead": "Make one plan or a few. Each has a monthly or annual price, an optional cap on members, and benefits that checkout applies by itself.",
+      "ticks": [
+        "A member price, or the session included",
+        "Members book first, or only members can book",
+        "Renewals by UPI Autopay, card or eNACH, paid to your own Razorpay account",
+        "Members pause and cancel themselves; you can pause everyone for a break"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Plans · Still Water Yoga",
+          "rows": [
+            {"title": "Studio member · ₹2,400 a month or ₹24,000 a year", "detail": "Weekly classes included · workshops at half price · book 48 hours early"},
+            {"title": "Workshop member · ₹800 a month", "detail": "Half price on every workshop · book 24 hours early"},
+            {"title": "Founding circle · ₹18,000 a year · 20 places", "detail": "Everything included · members-only full-moon sessions"}
+          ],
+          "actions": ["Add a plan", "See members"]
+        }
+      }
+    },
+    {
+      "type": "timeline",
+      "id": "newcomer",
+      "ground": "ink",
+      "kicker": "A newcomer at your studio",
+      "title": "From a first workshop to a member.",
+      "steps": [
+        {"time": "Saturday", "title": "They find your workshop", "body": "An open workshop on your page and in What’s on. They book and pay in their browser, no app."},
+        {"time": "At the door", "title": "Checked in, welcomed by name", "body": "Your door list shows who’s new and who’s a member, so the first-timers get a proper hello."},
+        {"time": "That evening", "title": "A thank-you, and what members pay", "body": "Photos and a note go out. At their next booking, checkout shows how much a membership would save them."},
+        {"time": "Week three", "title": "You see who keeps coming", "body": "{{brand.name}} lists everyone who’s been four or more times in 60 days and isn’t a member yet, ready for an invitation."},
+        {"time": "Every month", "title": "They renew without a reminder", "body": "UPI Autopay renews the membership. If they stop coming for 30 days, they show up in a list for you to check in with."}
+      ],
+      "media": {"kind": "capture", "slot": "host-live-tablet"}
+    },
+    {
+      "type": "checklist",
+      "id": "checklist",
+      "ground": "paper",
+      "kicker": "Buyer’s checklist",
+      "title": "What to look for in software for a studio.",
+      "lead": "Check these eight things, whichever tool you choose. {{brand.name}} does all of them.",
+      "items": [
+        {"title": "Monthly and annual memberships", "body": "Renewed by UPI Autopay or card."},
+        {"title": "Benefits applied at checkout", "body": "Member price or included."},
+        {"title": "Early booking for members", "body": "Or sessions only members can book."},
+        {"title": "Pause and cancel without you", "body": "Members manage it themselves."},
+        {"title": "Paid to your own account", "body": "Your Razorpay, your invoices."},
+        {"title": "Members marked at the door", "body": "And who’s new."},
+        {"title": "Lists that need a nudge", "body": "Lapsed, quiet, or regular but not a member."},
+        {"title": "A cap on what you pay", "body": "Never more than ₹10,000 per billing cycle."}
+      ]
+    },
+    {
+      "type": "pricing",
+      "id": "pricing",
+      "ground": "ink",
+      "kicker": "Pricing for studios",
+      "price": "5%",
+      "title": "of tickets and memberships, never more than ₹10,000 per billing cycle.",
+      "trial": "Free for 30 days from your first session, 90 for founding hosts. Payment gateway fees are separate.",
+      "examples": [
+        {"title": "30 members at ₹2,400", "value": "₹3,600 a billing cycle", "body": "5% of ₹72,000 in renewals."},
+        {"title": "80 members and four workshops", "value": "₹10,000 a billing cycle", "body": "The cap. Anything above it is yours."},
+        {"title": "A free open class", "value": "₹0", "body": "Free events stay free."}
+      ],
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Studio questions",
+      "title": "What hosts ask us.",
+      "items": [
+        {"question": "How do members pay?", "answer": "By UPI Autopay, card e-mandate or eNACH, monthly or yearly. By default renewals go straight to your own Razorpay account, and {{brand.name}} bills its 5% afterwards."},
+        {"question": "What can a membership include?", "answer": "A member price on sessions, up to 100% off so they’re included; early booking; and sessions only members can book. You can add perks you give in person, like a free mat or a guest pass."},
+        {"question": "Can members pause?", "answer": "Yes. Members pause or cancel at the end of their period themselves. You can also pause billing for everyone, for a month off or the monsoon."},
+        {
+          "question": "Can {{brand.name}} run my whole weekly timetable?",
+          "answer": "Each class is its own session on {{brand.name}}, so a busy timetable is more work than in a class-booking tool. Many studios start with workshops, socials and the classes members come to most."
+        },
+        {"question": "Do you sell class packs?", "answer": "Not yet. Memberships with a member price or included sessions cover most of what packs are used for."},
+        {"question": "Do members need an app?", "answer": "No. Members join, book and check in on your page in their phone’s browser."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "magenta",
+      "kicker": "Your next workshop",
+      "title": "Bring them in once. Keep them for years.",
+      "lead": "Start the free trial, or leave your number and we’ll send the studio setup guide on WhatsApp.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
+      ],
+      "leadForm": {"id": "studio_setup_guide", "requestKind": "guide", "format": "studios", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
+      "media": {"kind": "capture", "slot": "guest-explore"}
+    }
+  ]
+}

@@ -24,6 +24,10 @@ it("maps credential routes to a public family enum only", () => {
   expect(privateShellFamily("/account")).toBe("account");
   expect(privateShellFamily("/account/plans/")).toBeNull();
   expect(privateShellFamily("/private-shell/")).toBeNull();
+  // The billing portal is the private shell's; the host landing and its pages stay public.
+  expect(privateShellFamily("/host/billing/")).toBe("host");
+  expect(privateShellFamily("/host/billing")).toBe("host");
+  for (const path of ["/host/", "/host", "/host/run-clubs/", "/host/billing/plans/"]) expect(privateShellFamily(path)).toBeNull();
 });
 
 it("writes family metadata and falls back to the bare title for unknown families", () => {
@@ -35,6 +39,7 @@ it("writes family metadata and falls back to the bare title for unknown families
   // Every programme link shares one family title; no token or guest detail enters it.
   expect(privateShellHead("hotel")).toBe(privateShellHead("trip"));
   expect(privateShellHead("hotel").startsWith("<title>Your wedding link | Catch</title>")).toBe(true);
+  expect(privateShellHead("host").startsWith(`<title>Billing | Catch</title>`)).toBe(true);
   expect(privateShellHead(null)).toBe("<title>Catch</title>");
   expect(privateShellHead("constructor")).toBe("<title>Catch</title>");
 });

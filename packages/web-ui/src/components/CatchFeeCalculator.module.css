@@ -1,0 +1,103 @@
+/*
+ * The pricing calculator (playbook-panels.css .calc2, .rng, .rmm, .tiles2,
+ * .capped, .fine): a 13px label, the figure in the display face at 52px
+ * (40px on phones), the slider in coral, its ends at 12px in the tertiary
+ * night ink, the result tiles two across 12px apart on a translucent fill at
+ * 18px corners with 34px figures, the status in mint and 12px fine print.
+ * The thumb is a coral dot (the canvas's accent-colour thumb).
+ * It is drawn for the ink ground the fee band sits on.
+ */
+.calculator {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  --catch-theme-primary: var(--catch-palette-coral);
+}
+
+.label.label,
+.tileLabel.tileLabel {
+  margin: 0;
+  color: var(--catch-palette-night-secondary);
+  font-size: var(--catch-typography-role-body-meta-size);
+  font-weight: var(--catch-typography-role-label-action-weight);
+}
+
+.value.value {
+  margin: var(--catch-space-micro6) 0 var(--catch-space-micro14);
+  font-size: var(--catch-website-calculator-value-size);
+  font-weight: var(--catch-website-type-figure-weight);
+  line-height: 1;
+  letter-spacing: var(--catch-website-type-xs-tracking);
+}
+
+/* The slider's thumb is the canvas's coral (.rng, accent-color coral): a filled 20px dot with an ink-ground rim; the system slider keeps its focus ring. */
+.range input::-webkit-slider-thumb {
+  width: var(--catch-website-range-thumb-size);
+  height: var(--catch-website-range-thumb-size);
+  border: var(--catch-stroke-focus) solid var(--catch-ground-ink-fill);
+  background: var(--catch-palette-coral);
+}
+
+.range input::-moz-range-thumb {
+  width: var(--catch-website-range-thumb-size);
+  height: var(--catch-website-range-thumb-size);
+  border: var(--catch-stroke-focus) solid var(--catch-ground-ink-fill);
+  background: var(--catch-palette-coral);
+}
+
+
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  margin: var(--catch-space-s1) 0 var(--catch-space-s4);
+}
+
+.end.end,
+.tileNote.tileNote,
+.fine.fine {
+  color: var(--catch-palette-night-tertiary);
+  font-size: var(--catch-typography-role-label-badge-size);
+  line-height: var(--catch-website-type-body-line-height);
+}
+
+.tileNote.tileNote { color: var(--catch-palette-night-secondary); }
+
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--catch-space-s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--catch-space-s4);
+  border-radius: var(--catch-website-radius-tile);
+  background: var(--catch-website-color-fill-on-ink);
+}
+
+.tileValue.tileValue {
+  margin: var(--catch-space-micro6) 0 var(--catch-space-micro2);
+  font-size: var(--catch-website-calculator-tile-size);
+  font-weight: var(--catch-website-type-figure-weight);
+  line-height: 1;
+}
+
+.status.status {
+  margin: var(--catch-space-micro14) 0 0;
+  color: var(--catch-palette-mint);
+}
+
+.status:empty { margin: 0; }
+
+.fine.fine { margin: var(--catch-space-s2) 0 0; }
+
+@media (max-width: 599px) {
+  .value.value { font-size: var(--catch-website-calculator-compact-value-size); }
+  .tiles { grid-template-columns: 1fr; }
+}

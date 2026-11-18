@@ -344,6 +344,7 @@ abstract final class GeneratedCatchWebsiteTokens {
   static const double radiusSquare = 12.0;
   static const double radiusDevice = 44.0;
   static const double radiusCard = 22.0;
+  static const double radiusTile = 18.0;
   static const double heroTextPadBottom = 72.0;
   static const double heroCompactMediaMax = 340.0;
   static const double heroPhoneWidth = 360.0;
@@ -363,9 +364,30 @@ abstract final class GeneratedCatchWebsiteTokens {
   static const double tileCompactMinHeight = 160.0;
   static const double tileIconSize = 28.0;
   static const double tileBentoCompactMinHeight = 150.0;
+  static const double profileCoverHeight = 340.0;
+  static const double profileCompactCoverHeight = 180.0;
+  static const double profileMonogramOverlap = 62.0;
+  static const double profileCompactMonogramOverlap = 48.0;
+  static const double profileCopyMax = 640.0;
+  static const double profileActionsWidth = 420.0;
+  static const double profileContentMax = 1080.0;
+  static const double profileSectionGap = 56.0;
+  static const double profileCompactSectionGap = 44.0;
   static const double planMediaHeight = 150.0;
   static const double badgePadBlock = 5.0;
   static const double chipDotSize = 8.0;
+  static const double rangeThumbSize = 20.0;
+  static const double calculatorValueSize = 52.0;
+  static const double calculatorCompactValueSize = 40.0;
+  static const double calculatorTileSize = 34.0;
+  static const double capBarHeight = 56.0;
+  static const double routeCardMinHeight = 230.0;
+  static const double routeCardTallMinHeight = 300.0;
+  static const double routeCardTallTitleSize = 21.0;
+  static const double routeCardMediaHeight = 110.0;
+  static const double timelineTimeWidth = 84.0;
+  static const double timelineCompactTimeWidth = 64.0;
+  static const double timelineOnTitleSize = 18.0;
 }
 
 @immutable

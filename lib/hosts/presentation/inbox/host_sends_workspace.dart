@@ -4,10 +4,6 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
   late _HostSendFlow _flow;
   int _generation = 0;
   bool _sameScope(int generation) => mounted && generation == _generation;
-  String? _paginationBaseKey;
-  List<HostSendSummary> _additionalSends = const [];
-  String? _nextCursor;
-  bool _loadingMore = false;
   bool _busy = false;
 
   @override
@@ -24,10 +20,6 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
     if (oldWidget.organizer.id != widget.organizer.id) {
       _generation++;
       _flow = const _SendHistory();
-      _paginationBaseKey = null;
-      _additionalSends = const [];
-      _nextCursor = null;
-      _loadingMore = false;
       _busy = false;
     }
   }
@@ -87,25 +79,15 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
       _SendHistory() => _HostSendsHistory(
         organizerId: widget.organizer.id,
         busy: _busy,
-        loadingMore: _loadingMore,
-        paginationBaseKey: _paginationBaseKey,
-        additionalSends: _additionalSends,
-        nextCursor: _nextCursor,
         onNew: () => setState(() => _flow = const _SendIntent()),
         onOpen: _open,
-        onLoadMore: _loadMore,
       ),
     };
     final history = _HostSendsHistory(
       organizerId: widget.organizer.id,
       busy: _busy,
-      loadingMore: _loadingMore,
-      paginationBaseKey: _paginationBaseKey,
-      additionalSends: _additionalSends,
-      nextCursor: _nextCursor,
       onNew: () => setState(() => _flow = const _SendIntent()),
       onOpen: _open,
-      onLoadMore: _loadMore,
     );
     return HostNavigationWorkspace(
       spec: HostDirectoryWorkspace<_HostSendFlow>(
@@ -138,10 +120,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
 
   void _showHistory() {
     if (_busy) return;
-    setState(() {
-      _flow = const _SendHistory();
-      ref.invalidate(hostSendsProvider(widget.organizer.id));
-    });
+    setState(() => _flow = const _SendHistory());
   }
 
   Future<void> _open(HostSendSummary send) async {
@@ -188,7 +167,6 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
       },
     );
     if (!mounted || !_sameScope(generation) || !sent) return;
-    ref.invalidate(hostSendsProvider(widget.organizer.id));
     setState(() => _flow = const _SendHistory());
   }
 
@@ -237,7 +215,6 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
           ),
         );
     if (!mounted || !_sameScope(generation) || result == null) return;
-    ref.invalidate(hostSendsProvider(widget.organizer.id));
     setState(() => _flow = const _SendHistory());
     final suffix = result.isPartial
         ? context.l10n.hostsHostInboxScreenVisiblecopySomePushAttemptsFailed
@@ -279,53 +256,6 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
     }
   }
 
-  Future<void> _loadMore(
-    HostSendsPage firstPage,
-    String baseKey,
-    String cursor,
-  ) async {
-    final generation = _generation;
-    if (_loadingMore) return;
-    setState(() => _loadingMore = true);
-    try {
-      // provider-graph: ownership-widget-async:_HostSendsPageBodySliverState._loadMore:await:hostAudienceControllerProvider.listSends watch CAT156 -- Existing bounded review signal at _HostSendsPageBodySliverState._loadMore (await:hostAudienceControllerProvider.listSends). The method combines local completion publication with an awaited provider seam or declared Future callback. Its mutated fields/caller contract need focused classification: navigation, form/media/animation feedback may be mechanical, while loaded data, authorization, server pending/error or retry identity need a generated owner. This watch disposition does not certify compliance or declare a confirmed violation; inspect the exact responsibility before its CAT156 migration.
-      final nextPage = await ref
-          .read(hostAudienceControllerProvider)
-          .listSends(organizerId: widget.organizer.id, cursor: cursor);
-      if (!mounted || !_sameScope(generation)) return;
-      final existingKeys = <String>{
-        for (final send in firstPage.sends) '${send.runtimeType}:${send.id}',
-        if (_paginationBaseKey == baseKey)
-          for (final send in _additionalSends) '${send.runtimeType}:${send.id}',
-      };
-      setState(() {
-        if (_paginationBaseKey != baseKey) {
-          _paginationBaseKey = baseKey;
-          _additionalSends = const [];
-        }
-        _additionalSends = [
-          ..._additionalSends,
-          ...nextPage.sends.where(
-            (send) => existingKeys.add('${send.runtimeType}:${send.id}'),
-          ),
-        ];
-        _nextCursor = nextPage.nextCursor;
-      });
-    } on Object catch (error) {
-      if (mounted && _sameScope(generation)) {
-        showCatchNoticeError(
-          context,
-          error,
-          errorContext: AppErrorContext.organizer,
-        );
-      }
-    } finally {
-      if (mounted && _sameScope(generation)) {
-        setState(() => _loadingMore = false);
-      }
-    }
-  }
-
   Future<void> _runCampaignAction(
     Future<HostCampaign> Function(HostAudienceController) action,
   ) async {
@@ -337,9 +267,6 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
       final campaign = await action(ref.read(hostAudienceControllerProvider));
       if (mounted && _sameScope(generation)) {
         setState(() => _flow = _SendCampaign(campaign));
-      }
-      if (mounted && _sameScope(generation)) {
-        ref.invalidate(hostSendsProvider(widget.organizer.id));
       }
     } on Object catch (error) {
       if (mounted && _sameScope(generation)) {
@@ -365,28 +292,18 @@ class _HostSendsHistory extends ConsumerWidget {
   const _HostSendsHistory({
     required this.organizerId,
     required this.busy,
-    required this.loadingMore,
-    required this.paginationBaseKey,
-    required this.additionalSends,
-    required this.nextCursor,
     required this.onNew,
     required this.onOpen,
-    required this.onLoadMore,
   });
 
   final String organizerId;
   final bool busy;
-  final bool loadingMore;
-  final String? paginationBaseKey;
-  final List<HostSendSummary> additionalSends;
-  final String? nextCursor;
   final VoidCallback onNew;
   final ValueChanged<HostSendSummary> onOpen;
-  final void Function(HostSendsPage, String, String) onLoadMore;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sends = ref.watch(hostSendsProvider(organizerId));
+    final sends = ref.watch(hostSendPagesProvider(organizerId));
     final showWhatsappSetup =
         catchAsyncStateFromAsyncValue(
           ref.watch(hostMessagingSetupProvider(organizerId)),
@@ -433,17 +350,15 @@ class _HostSendsHistory extends ConsumerWidget {
             error,
             context: AppErrorContext.organizer,
             mode: CatchErrorStateMode.compact,
-            onRetry: () => ref.invalidate(hostSendsProvider(organizerId)),
+            onRetry: () => ref.invalidate(hostSendPagesProvider(organizerId)),
           ),
-          data: (page) => _HostSendsHistoryPage(
-            page: page,
+          data: (pages) => _HostSendsHistoryPage(
+            pages: pages,
             busy: busy,
-            loadingMore: loadingMore,
-            paginationBaseKey: paginationBaseKey,
-            additionalSends: additionalSends,
-            paginationNextCursor: nextCursor,
             onOpen: onOpen,
-            onLoadMore: onLoadMore,
+            onLoadMore: () => ref
+                .read(hostSendPagesProvider(organizerId).notifier)
+                .loadMore(),
           ),
         ),
       ],
@@ -453,33 +368,20 @@ class _HostSendsHistory extends ConsumerWidget {
 
 class _HostSendsHistoryPage extends StatelessWidget {
   const _HostSendsHistoryPage({
-    required this.page,
+    required this.pages,
     required this.busy,
-    required this.loadingMore,
-    required this.paginationBaseKey,
-    required this.additionalSends,
-    required this.paginationNextCursor,
     required this.onOpen,
     required this.onLoadMore,
   });
 
-  final HostSendsPage page;
+  final LivePages<HostSendSummary> pages;
   final bool busy;
-  final bool loadingMore;
-  final String? paginationBaseKey;
-  final List<HostSendSummary> additionalSends;
-  final String? paginationNextCursor;
   final ValueChanged<HostSendSummary> onOpen;
-  final void Function(HostSendsPage, String, String) onLoadMore;
+  final VoidCallback onLoadMore;
 
   @override
   Widget build(BuildContext context) {
-    final baseKey = _hostSendsBaseKey(page);
-    final hasCurrentPagination = paginationBaseKey == baseKey;
-    final sends = [...page.sends, if (hasCurrentPagination) ...additionalSends];
-    final nextCursor = hasCurrentPagination
-        ? paginationNextCursor
-        : page.nextCursor;
+    final sends = pages.items;
     if (sends.isEmpty) {
       return CatchEmptyState(
         title: context.l10n.hostSendsEmpty,
@@ -508,17 +410,24 @@ class _HostSendsHistoryPage extends StatelessWidget {
               ),
           ],
         ),
-        if (nextCursor != null)
+        if (pages.nextPageError case final error?)
+          CatchSection.content(
+            child: CatchLocalizedErrorState(
+              error,
+              context: AppErrorContext.organizer,
+              mode: CatchErrorStateMode.compact,
+              onRetry: onLoadMore,
+            ),
+          )
+        else if (pages.hasMore)
           CatchSection.content(
             child: CatchButton(
               label: context.l10n.hostSendsLoadMore,
               variant: CatchButtonVariant.secondary,
-              status: (loadingMore)
+              status: pages.loadingMore
                   ? CatchButtonStatus.loading
                   : CatchButtonStatus.idle,
-              onPressed: loadingMore
-                  ? null
-                  : () => onLoadMore(page, baseKey, nextCursor),
+              onPressed: pages.loadingMore ? null : onLoadMore,
             ),
           ),
       ],
@@ -724,11 +633,6 @@ class _HostSendsFollowerUpdateReport extends StatelessWidget {
     ],
   );
 }
-
-String _hostSendsBaseKey(HostSendsPage page) => [
-  page.nextCursor ?? '',
-  for (final send in page.sends) '${send.runtimeType}:${send.id}',
-].join('|');
 
 sealed class _HostSendFlow {
   const _HostSendFlow();

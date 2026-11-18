@@ -1,0 +1,119 @@
+/*
+ * A night, moment by moment (PlaybookHosts #night: .flush, .tl and .fmedia).
+ * Two columns 64px apart lined up at the foot, stacking below 840px. With
+ * media the band is flush: the columns take the panel's 88px at the top (40px
+ * on phones), the text keeps 88px under it (8px on phones) and the media
+ * meets the band's foot. The timeline runs 32px under the header down a 2px
+ * line in the night ink at 16%; each moment is 12px above and below and 24px
+ * in, its time in an 84px column (64px on phones) 12px from its title, at
+ * 14px in the secondary night ink. The chosen moment is a translucent row
+ * rounded on its right with a 2px coral edge, its title at 18px and its line
+ * under it.
+ */
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
+  gap: var(--catch-space-s16);
+}
+
+.columns[data-flush] { padding-top: var(--catch-website-panel-pad-block); }
+
+.text { min-width: 0; }
+
+.columns[data-flush] .text { padding-bottom: var(--catch-website-panel-pad-block); }
+
+.picker { margin-top: var(--catch-space-s6); }
+
+.timeline {
+  margin: var(--catch-space-s8) 0 0;
+  padding: 0;
+  border-left: var(--catch-stroke-focus) solid var(--catch-website-color-timeline-line);
+  list-style: none;
+}
+
+.moment { position: relative; }
+
+.row {
+  display: grid;
+  grid-template-columns: var(--catch-website-timeline-time-width) minmax(0, 1fr);
+  gap: var(--catch-space-s3);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--catch-space-s3) 0 var(--catch-space-s3) var(--catch-space-s6);
+  border: 0;
+  border-radius: 0 var(--catch-radius-md) var(--catch-radius-md) 0;
+  background: none;
+  color: var(--catch-palette-night-secondary);
+  font: inherit;
+  text-align: left;
+}
+
+button.row { cursor: pointer; }
+
+button.row:hover .title.title { color: var(--catch-palette-white); }
+
+button.row:focus-visible {
+  outline: var(--catch-stroke-focus) solid var(--catch-palette-night-ink);
+  outline-offset: calc(-1 * var(--catch-stroke-focus));
+}
+
+.moment[data-on] .row { background: var(--catch-website-color-fill-on-ink); }
+
+.moment[data-on]::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(-1 * var(--catch-stroke-focus));
+  width: var(--catch-stroke-focus);
+  background: var(--catch-palette-coral);
+  content: "";
+}
+
+.time.time {
+  color: inherit;
+  font-size: var(--catch-typography-role-body-small-size);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.title.title {
+  color: var(--catch-palette-night-ink);
+  font-size: var(--catch-typography-role-body-small-size);
+  font-weight: var(--catch-typography-role-label-action-weight);
+}
+
+.moment[data-on] .title.title { font-size: var(--catch-website-timeline-on-title-size); }
+
+.body.body {
+  margin-top: var(--catch-space-s2);
+  color: var(--catch-palette-night-secondary);
+  line-height: var(--catch-website-type-body-line-height);
+}
+
+.actions { margin-top: var(--catch-space-s7); }
+
+.media {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  align-self: stretch;
+  min-width: 0;
+}
+
+@media (max-width: 839px) {
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--catch-space-s7);
+  }
+}
+
+@media (max-width: 599px) {
+  .columns[data-flush] { padding-top: var(--catch-space-s10); }
+  .columns[data-flush] .text { padding-bottom: var(--catch-space-s2); }
+  .row { grid-template-columns: var(--catch-website-timeline-compact-time-width) minmax(0, 1fr); }
+}

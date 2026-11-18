@@ -1,0 +1,48 @@
+/*
+ * Step cards (.pg .steps): rows 6px apart, each a 20px-cornered card padded
+ * 14px by 18px, a 40px number column 14px from the copy. The number is an
+ * Archivo figure at 30px in coral (the ground's ink on a colour panel); the
+ * title is 17px bold and the body 14px, 4px under it. A filled card is white
+ * at 55% on white, paper and colour, and at 7% on the ink panel; with a
+ * current step only that card is filled (.steps li.on).
+ */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: var(--catch-website-steps-marker-width) minmax(0, 1fr);
+  gap: var(--catch-space-micro14);
+  padding: var(--catch-space-micro14) var(--catch-space-micro18);
+  border-radius: var(--catch-radius-lg);
+}
+
+.step[data-filled] { background: var(--catch-website-color-step-on-light); }
+
+.steps[data-on="night"] .step[data-filled] { background: var(--catch-website-color-step-on-ink); }
+
+.stepNumber {
+  color: var(--catch-palette-coral);
+  font-family: var(--catch-font-stack-display);
+  font-size: var(--catch-typography-role-display-section-size);
+  font-weight: var(--catch-website-type-figure-weight);
+  font-stretch: 78%;
+  font-variation-settings: "wdth" 78;
+  line-height: 1;
+}
+
+.steps[data-on="colour"] .stepNumber { color: var(--catch-theme-ink); }
+
+.stepCopy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.stepBody { margin-top: var(--catch-space-s1); }

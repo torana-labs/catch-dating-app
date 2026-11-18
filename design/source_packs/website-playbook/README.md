@@ -387,5 +387,61 @@ The canvas owns these values (blueprint D26). `tool/design/playbook/import_kit_t
 | `.frm .row` gap | `8px` | `space.s2` | match |
 | `.ref` gap | `48px` | `space.s12` | match |
 | `.ref` gap (phone) | `20px` | `space.s5` | match |
+| `.pg .price` font-size | `200px` | `website.type.price.size` | own |
+| `.pg .price` font-size (phone) | `130px` | `website.type.price.compactSize` | own |
+| `.pg .price` line-height | `.8` | `website.type.price.lineHeight` | own |
+| `.pg .price` letter-spacing | `-.05em` | `website.type.price.tracking` | own |
+| `.pg .price` font-weight | `800` | `website.type.figure.weight` | match |
+| `.pg .calc2 .sv` font | `52px` | `website.calculator.valueSize` | own |
+| `.pg .calc2 .sv` font-size (phone) | `40px` | `website.calculator.compactValueSize` | own |
+| `.pg .calc2 .sv` letter-spacing | `-.02em` | `website.type.xs.tracking` | match |
+| `.pg .calc2 small` font-size | `13px` | `typography.role.bodyMeta.size` | match |
+| `.pg .rmm` font-size | `12px` | `typography.role.labelBadge.size` | match |
+| `.pg .rmm` margin | `16px` | `space.s4` | match |
+| `.pg .tiles2` gap | `12px` | `space.s3` | match |
+| `.pg .tiles2>div` border-radius | `18px` | `website.radius.tile` | own |
+| `.pg .tiles2>div` padding | `16px` | `space.s4` | match |
+| `.pg .tiles2>div` background | `rgba(255,255,255,.06)` | `website.color.fillOnInk` | own |
+| `.pg .tiles2 b` font | `34px` | `website.calculator.tileSize` | own |
+| `.pg .capped` font-size | `14px` | `typography.role.bodySmall.size` | match |
+| `.pg .capped` margin | `14px` | `space.micro14` | match |
+| `.pg .fine` font-size | `12px` | `typography.role.labelBadge.size` | match |
+| `.pg .ink .incl span` background | `rgba(255,255,255,.08)` | `website.color.pillOnInk` | own |
+| `.pg .incl` gap | `8px` | `space.s2` | match |
+| `.pg .ex` gap | `12px` | `space.s3` | match |
+| `.pg .ex>div` border-radius | `20px` | `radius.lg` | match |
+| `.pg .ex>div` padding | `20px` | `space.s5` | match |
+| `.pg .ex b` font | `32px` | `website.type.example.size` | own |
+| `.ex` margin-top | `48px` | `space.s12` | match |
+| `.ex b` font | `30px` | `typography.role.displaySection.size` | match |
+| `.orgline` margin-top | `28px` | `space.s7` | match |
+| `.orgline` padding-top | `24px` | `space.s6` | match |
+| `.orgline` border-top | `rgba(246,239,230,.14)` | `website.color.lineOnInk` | own |
+| `.capbar` height | `56px` | `website.capBar.height` | own |
+| `.capbar` border-radius | `16px` | `radius.md` | match |
+| `.capbar` margin-top | `28px` | `space.s7` | match |
+| `.capbar span` padding | `14px` | `space.micro14` | match |
+| `.stg` border-radius | `24px` | `radius.xl` | match |
+| `.stg` padding | `24px` | `space.s6` | match |
+| `.stg` gap | `10px` | `space.micro10` | match |
+| `.stg` min-height | `230px` | `website.routeCard.minHeight` | own |
+| `.stg h3` font-size | `20px` | `typography.role.displayXs.size` | match |
+| `.stg p` font-size | `15px` | `typography.role.body.size` | match |
+| `.stg .go` font-size | `14px` | `typography.role.bodySmall.size` | match |
+| `.path` min-height | `300px` | `website.routeCard.tallMinHeight` | own |
+| `.path h3` font-size | `21px` | `website.routeCard.tallTitleSize` | own |
+| `.path h3` line-height | `1.2` | `website.type.tileTitle.lineHeight` | match |
+| `.path p` font-size | `14px` | `typography.role.bodySmall.size` | match |
+| `.path .n` font | `15px` | `typography.role.body.size` | match |
+| `.vid` height | `110px` | `website.routeCard.mediaHeight` | own |
+| `.vid` border-radius | `16px` | `radius.md` | match |
+| `.paths` gap | `16px` | `space.s4` | match |
+| `.tl` margin | `32px` | `space.s8` | match |
+| `.tl` border-left | `rgba(246,239,230,.16)` | `website.color.timelineLine` | own |
+| `.tl li` grid-template-columns | `84px` | `website.timeline.timeWidth` | own |
+| `.tl li` grid-template-columns (phone) | `64px` | `website.timeline.compactTimeWidth` | own |
+| `.tl li` gap | `12px` | `space.s3` | match |
+| `.tl li` font-size | `14px` | `typography.role.bodySmall.size` | match |
+| `.tl li.on b` font-size | `18px` | `website.timeline.onTitleSize` | own |
 
 <!-- kit-token-map:end -->

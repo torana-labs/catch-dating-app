@@ -45,6 +45,8 @@ import {
 import {PageShell} from "../shared/site";
 import type {PlaybookPageDocument} from "../content/playbook/playbookContract";
 import {loadPlaybookPage, resolvePlaybookPage, type PlaybookPageRef} from "../features/playbook/playbookPages";
+import {matchDiscoveryRoute} from "../features/discovery/discoveryModel";
+import {discoveryPageMeta, discoveryPageStatus} from "../features/discovery/discoveryRoute";
 import {SiteAccountProvider} from "../features/account/SignInSheet";
 import {PendingRequestProvider} from "../shared/pendingRequest";
 import {RouteLoadingState} from "../shared/ui/primitives";
@@ -83,6 +85,8 @@ const recoveryModules = import.meta.glob<Record<string, unknown>>([
   "../features/notFound/NotFoundPage.tsx",
   "../features/legal/LegalPage.tsx",
   "../features/playbook/PlaybookPage.tsx",
+  "../features/discovery/CityFormatPage.tsx",
+  "../features/discovery/NewToCityPage.tsx",
 ], {query: "?route-recovery"});
 
 function route<P extends object>(
@@ -191,6 +195,14 @@ const PlaybookPage = route(async () => ({
   default: (await import("../features/playbook/PlaybookPage")).PlaybookPage,
 }), "../features/playbook/PlaybookPage", "PlaybookPage");
 
+const CityFormatPage = route(async () => ({
+  default: (await import("../features/discovery/CityFormatPage")).CityFormatPage,
+}), "../features/discovery/CityFormatPage", "CityFormatPage");
+
+const NewToCityPage = route(async () => ({
+  default: (await import("../features/discovery/NewToCityPage")).NewToCityPage,
+}), "../features/discovery/NewToCityPage", "NewToCityPage");
+
 /**
  * The redesign page a path names, once loaded: undefined while it loads,
  * null when the path names none or its page cannot render yet (a section no
@@ -250,7 +262,9 @@ function CanonicalMarketingRouteShell() {
   const eventPage = useMemo(() => event ? eventPageFromListing(event.listing, event.eventId) : null, [event]);
   const listingRoute = getHostListingRouteForPath(location.pathname, listings);
   const listing = listingRoute?.listing ?? null;
-  // A redesign page resolves before the router: its path is reserved by the route checker.
+  // A city-by-format or new-to-the-city page resolves first, then a redesign page, both before the
+  // router: their paths are reserved by the route checker.
+  const discoveryRoute = useMemo(() => matchDiscoveryRoute(location.pathname), [location.pathname]);
   const playbookRef = useMemo(() => resolvePlaybookPage(location.pathname), [location.pathname]);
   const playbookPage = usePlaybookDocument(playbookRef);
   const routedPage = pageKeyForCurrentRoute(
@@ -258,19 +272,23 @@ function CanonicalMarketingRouteShell() {
     Boolean(listing),
     Boolean(event)
   );
-  const fallbackPage = routedPage === "playbook" && playbookPage === null ? "not_found" : routedPage;
+  const navigate = useNavigate();
+  // The static build has no server, so the homepage builds its cities from the live catalog.
+  const homeCatalog = useMemo(() => {
+    const now = Date.now();
+    const citySlug = discoveryRoute?.citySlug ?? cityForPath(location.pathname)?.slug ?? requestedHomeCity(location.search);
+    return homeCatalogFromPlans(websiteCities, websiteCities.map((city) =>
+      cityPlansFromListings(listings, city, websiteCities, now)), citySlug, now);
+  }, [discoveryRoute, listings, location.pathname, location.search]);
+  // Built from listings, a city has no format pages, so a city-by-format page shows its unavailable state.
+  const discoveryStatus = discoveryRoute ? discoveryPageStatus(discoveryRoute, homeCatalog) : null;
+  const fallbackPage = (routedPage === "playbook" && playbookPage === null) ||
+    (routedPage === "discovery" && discoveryStatus === "notFound") ? "not_found" : routedPage;
   const page: PageKey = event
     ? "event_detail"
     : listing
       ? "listing"
       : fallbackPage;
-  const navigate = useNavigate();
-  // The static build has no server, so the homepage builds its cities from the live catalog.
-  const homeCatalog = useMemo(() => {
-    const now = Date.now();
-    return homeCatalogFromPlans(websiteCities, websiteCities.map((city) =>
-      cityPlansFromListings(listings, city, websiteCities, now)), cityForPath(location.pathname)?.slug ?? requestedHomeCity(location.search), now);
-  }, [listings, location.search]);
   const routeKey = page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
       page === "household_rsvp" || page === "programme_link" ? page :
     `${location.pathname}${location.search}${location.hash}`;
@@ -280,6 +298,7 @@ function CanonicalMarketingRouteShell() {
     pageMetaForListing(listingRoute.listing, {
       noindexOverride: listingRoute.isLegacyPath,
     }) :
+    fallbackPage === "discovery" ? (discoveryRoute ? discoveryPageMeta(discoveryRoute, homeCatalog) : pageMeta.not_found) :
     fallbackPage === "playbook" ? (playbookPage && playbookRef ?
       pageMetaForPlaybook(playbookPage, playbookRef.match.canonicalPath) : pageMeta.not_found) :
     pageMetaForWeddingsPath(location.pathname) ?? pageMeta[fallbackPage];
@@ -297,7 +316,11 @@ function CanonicalMarketingRouteShell() {
           hash={page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" || page === "household_rsvp" ||
             page === "programme_link" ? "" : location.hash}
         />
-        {fallbackPage === "playbook" ? (
+        {fallbackPage === "discovery" && discoveryRoute ? (
+          discoveryRoute.kind === "cityFormat" ?
+            <CityFormatPage captures={marketingCaptures} catalog={homeCatalog} format={discoveryRoute.format} /> :
+            <NewToCityPage captures={marketingCaptures} catalog={homeCatalog} />
+        ) : fallbackPage === "playbook" ? (
           playbookPage ? <PlaybookPage captures={marketingCaptures} page={playbookPage} /> : <RouteLoadingState />
         ) : (
         <Routes>
@@ -306,7 +329,7 @@ function CanonicalMarketingRouteShell() {
           <Route path={marketingRoutePaths.sales_demo}
             element={<SalesDemoPage api={salesDemoApi} />} />
           <Route path={marketingRoutePaths.visitor_discovery}
-            element={<ExplorePage catalog={homeCatalog} />} />
+            element={<ExplorePage captures={marketingCaptures} catalog={homeCatalog} />} />
           <Route path={marketingRoutePaths.cities} element={<CitiesPage catalog={homeCatalog} />} />
           <Route
             path={marketingRoutePaths.home}
@@ -321,7 +344,7 @@ function CanonicalMarketingRouteShell() {
             element={<Navigate replace to={organizerDirectoryDestination(new URLSearchParams(location.search))} />}
           />
           {websiteCities.map((city) => (
-            <Route key={city.slug} path={`/${city.slug}/`} element={<ExplorePage catalog={homeCatalog} />} />
+            <Route key={city.slug} path={`/${city.slug}/`} element={<ExplorePage captures={marketingCaptures} catalog={homeCatalog} />} />
           ))}
           <Route
             path={marketingRoutePaths.organizer_listing}

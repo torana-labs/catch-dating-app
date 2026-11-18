@@ -68,7 +68,7 @@
           "id": {"type": "string", "pattern": "^[a-z0-9_\\-]+$"},
           "kind": {
             "type": "string",
-            "enum": ["static", "clientDynamic", "generatedFamily", "contentFamily"]
+            "enum": ["static", "clientDynamic", "generatedFamily", "contentFamily", "dataFamily"]
           },
           "path": {"type": "string"},
           "pathPattern": {"type": "string"},
@@ -80,23 +80,23 @@
           },
           "pageKey": {
             "type": "string",
-            "enum": ["home", "visitor_discovery", "cities", "host", "weddings", "organizers", "listing", "event_detail", "event_runtime", "event_rehearsal", "sales_demo", "event_assistance", "event_offer", "account", "host_billing", "event_booking", "event_invite", "household_rsvp", "programme_link", "public_form", "claim", "privacy", "terms", "help", "account_deletion", "refunds", "contact", "not_found", "playbook"]
+            "enum": ["home", "visitor_discovery", "cities", "host", "weddings", "organizers", "listing", "event_detail", "event_runtime", "event_rehearsal", "sales_demo", "event_assistance", "event_offer", "account", "host_billing", "event_booking", "event_invite", "household_rsvp", "programme_link", "public_form", "claim", "privacy", "terms", "help", "account_deletion", "refunds", "contact", "not_found", "playbook", "discovery"]
           },
           "source": {"type": "string"},
           "metaKey": {"type": "string"},
           "metaFactory": {"type": "string"},
           "staticOutput": {
             "type": "string",
-            "enum": ["postbuild", "generated-postbuild", "spa-rewrite", "content-postbuild"]
+            "enum": ["postbuild", "generated-postbuild", "spa-rewrite", "content-postbuild", "server-render"]
           },
           "httpStatus": {"type": "integer", "enum": [200, 404]},
           "indexing": {
             "type": "string",
-            "enum": ["index", "noindex-follow", "listing-controlled", "event-controlled", "owner-approval"]
+            "enum": ["index", "noindex-follow", "listing-controlled", "event-controlled", "owner-approval", "read-model-controlled"]
           },
           "sitemap": {
             "type": "string",
-            "enum": ["included", "excluded", "listing-controlled", "event-controlled", "owner-approval"]
+            "enum": ["included", "excluded", "listing-controlled", "event-controlled", "owner-approval", "read-model-controlled"]
           },
           "content": {
             "description": "contentFamily routes: the section folder its pages ship in (website/src/content/playbook/pages/<group>/) and the design board.",

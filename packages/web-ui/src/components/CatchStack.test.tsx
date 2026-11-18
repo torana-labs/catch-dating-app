@@ -22,6 +22,18 @@ describe("CatchStack", () => {
     expect(stack.dataset).toMatchObject({align: "baseline", direction: "row", equal: "", gap: "section", justify: "between", wrap: ""});
   });
 
+  it("takes the website's own gaps and a hairline above", () => {
+    render(
+      <>
+        <CatchStack data-testid="rail" gap={14} />
+        <CatchStack data-testid="main" dividerAbove gap="profile" />
+      </>,
+    );
+    expect(screen.getByTestId("rail").dataset.gap).toBe("14");
+    expect(screen.getByTestId("rail").hasAttribute("data-divider-above")).toBe(false);
+    expect(screen.getByTestId("main").dataset).toMatchObject({dividerAbove: "", gap: "profile"});
+  });
+
   it("stacks a row into a column below collapseBelow, keeping only a center or end alignment", () => {
     render(
       <CatchRoot size="compact">
@@ -60,8 +72,10 @@ describe("CatchStack", () => {
       <CatchRoot size="expanded">
         <CatchStack collapseBelow="expanded" data-testid="booking" direction="row" railWidth="narrow" stickyRail><main /><aside /></CatchStack>
         <CatchStack data-testid="organiser" direction="row" railSide="start" railWidth="wide"><aside /><main /></CatchStack>
+        <CatchStack data-testid="rating" direction="row" railSide="start" railWidth="sidebar"><div /><div /></CatchStack>
       </CatchRoot>,
     );
+    expect(screen.getByTestId("rating").dataset).toMatchObject({rail: "sidebar", railSide: "start"});
     expect(screen.getByTestId("booking").dataset).toMatchObject({rail: "narrow", railSide: "end", stickyRail: ""});
     expect(screen.getByTestId("organiser").dataset).toMatchObject({rail: "wide", railSide: "start"});
     expect(screen.getByTestId("organiser").hasAttribute("data-sticky-rail")).toBe(false);

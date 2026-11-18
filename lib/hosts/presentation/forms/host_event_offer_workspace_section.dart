@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_reads.dart';
 import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
@@ -30,8 +31,8 @@ class HostEventOfferWorkspaceSection extends StatelessWidget {
     this.responseId,
     this.recipientLabel,
     required this.offerScope,
-    required this.listOffers,
-    required this.getOffer,
+    required this.watchOffers,
+    required this.watchOffer,
     required this.prepareHandoff,
     required this.copyMessage,
     required this.openHandoff,
@@ -57,18 +58,8 @@ class HostEventOfferWorkspaceSection extends StatelessWidget {
   final String? responseId;
   final String? recipientLabel;
   final HostEventOfferScope offerScope;
-  final Future<Map<String, Object?>> Function({
-    required String organizerId,
-    required String eventId,
-    String? afterOfferId,
-  })
-  listOffers;
-  final Future<HostEventOffer> Function({
-    required String organizerId,
-    required String eventId,
-    required String contactId,
-  })
-  getOffer;
+  final HostEventOffersWatch watchOffers;
+  final HostEventOfferWatch watchOffer;
   final Future<HostOfferHandoff> Function({required HostEventOffer offer})
   prepareHandoff;
   final Future<void> Function(String text) copyMessage;
@@ -120,8 +111,8 @@ class HostEventOfferWorkspaceSection extends StatelessWidget {
             queryController: queryController,
             responseId: responseId,
             offerScope: offerScope,
-            listOffers: listOffers,
-            getOffer: getOffer,
+            watchOffers: watchOffers,
+            watchOffer: watchOffer,
             prepareHandoff: prepareHandoff,
             copyMessage: copyMessage,
             openHandoff: openHandoff,
@@ -559,14 +550,6 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                           ? null
                           : controller.refreshOffers,
                     ),
-                    if (snapshot.nextOfferCursor != null)
-                      CatchButton(
-                        label: context.l10n.hostFormResponsesLoadMore,
-                        variant: CatchButtonVariant.secondary,
-                        onPressed: snapshot.loading
-                            ? null
-                            : () => controller.fetchMoreOffers(),
-                      ),
                   ],
                 ),
               ),

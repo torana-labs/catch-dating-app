@@ -26,14 +26,12 @@ export interface PlaybookFixedRoute {
 /**
  * A family: one route, many pages. `pattern` names its parameters with
  * `:name`, and a parameter may share a segment with literal text
- * (`/new-to-:city/`). Each page of a family is registered by its instance key.
+ * (`/prefix-:name/`). Each page of a family is registered by its instance key.
  */
 export interface PlaybookFamilyRoute {
   readonly id: string;
   readonly group: PlaybookRouteGroup;
   readonly pattern: string;
-  /** City families: the `city` parameter must be a market city slug. */
-  readonly cityParam?: string;
 }
 
 export const playbookFixedRoutes = [
@@ -83,15 +81,18 @@ export const playbookFixedRoutes = [
   {id: "playbooks", group: "resources", path: "/playbooks/"},
 ] as const satisfies readonly PlaybookFixedRoute[];
 
-/** Families, matched in this order after every fixed path; the two-segment city family comes last. */
+/**
+ * Families, matched in this order after every fixed path. The guest
+ * discovery pages (/<city>/<format>/, /new-to-<city>/) are not playbook
+ * pages: they are bound to the city's cityPlans read model and matched
+ * before these (features/discovery/discoveryModel.ts, matchDiscoveryRoute).
+ */
 export const playbookFamilyRoutes = [
   {id: "host_first_event_plan", group: "host", pattern: "/host/first-event/:plan/"},
   {id: "story_detail", group: "resources", pattern: "/stories/:slug/"},
   {id: "compare_detail", group: "resources", pattern: "/compare/:slug/"},
   {id: "playbook_guide", group: "resources", pattern: "/playbooks/:slug/"},
   {id: "lp_campaign", group: "resources", pattern: "/lp/:campaign/"},
-  {id: "new_to_city", group: "discovery", pattern: "/new-to-:city/", cityParam: "city"},
-  {id: "city_format", group: "discovery", pattern: "/:city/:format/", cityParam: "city"},
 ] as const satisfies readonly PlaybookFamilyRoute[];
 
 /**
@@ -158,7 +159,7 @@ export function matchPlaybookRoute(pathname: string): PlaybookRouteMatch | null 
   return null;
 }
 
-/** The first path segment of a route as written: `host` for /host/run-clubs/, `new-to-` for /new-to-:city/. */
+/** The first path segment of a route as written: `host` for /host/run-clubs/, `prefix-` for /prefix-:name/. */
 export function playbookTopSegment(route: PlaybookFixedRoute | PlaybookFamilyRoute): string {
   const pattern = "path" in route ? route.path : route.pattern;
   return pattern.split("/")[1].split(":")[0];

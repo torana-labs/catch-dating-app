@@ -1,0 +1,178 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_supper_clubs",
+  "route": "host_supper_clubs",
+  "meta": {
+    "title": "{{brand.name}} for supper clubs | Applications, seating and paid bookings",
+    "description": "Applications that tell you who’s coming, payment before you buy the food, tables planned from what guests told you, and regulars hearing about the next dinner first.",
+    "socialDescription": "Seat strangers well, then invite them back. {{brand.name}} for supper clubs and long-table dinners.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {"links": [{"label": "For hosts", "to": {"route": "host"}}], "current": "Supper clubs"}
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "pink",
+      "kicker": "{{brand.name}} for supper clubs and long-table dinners",
+      "title": "Seat strangers well, then invite them back.",
+      "lead": "Applications that tell you who’s coming, payment before you buy the food, tables planned from what guests told you, and the people who’d come again hearing about the next dinner first.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run a supper club and have a question about hosting on {{brand.name}}."},
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {
+        "label": "Hosting dinners in a restaurant or for a company? Ask for a walkthrough",
+        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I host dinners in a restaurant or for a company and would like a walkthrough."}
+      },
+      "chip": {
+        "title": "Long Table Supper",
+        "rows": [
+          {"label": "Applied", "value": "41"},
+          {"label": "Approved and paid", "value": "24"},
+          {"label": "Waitlist", "value": "9"}
+        ]
+      },
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Seating",
+          "subtitle": "Long Table Supper · Khar West",
+          "stats": [
+            {"value": "23", "label": "seated"},
+            {"value": "4", "label": "tables"},
+            {"value": "1", "label": "late"}
+          ],
+          "rows": [
+            {"title": "Table 1", "detail": "Aanya, Kabir, Meher, Dev, Tara, Rohan", "tag": "6 seated"},
+            {"title": "Table 2", "detail": "Zara, Ishaan, Vikram, Ira and 2 more", "tag": "6 seated"},
+            {"title": "Table 3", "detail": "One seat for a late arrival", "tag": "5 of 6"}
+          ],
+          "note": "Dessert swap in 10 minutes · 8 people move"
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "sound-familiar",
+      "ground": "white",
+      "kicker": "Sound familiar?",
+      "title": "The cooking is the easy part.",
+      "align": "center",
+      "columns": 3,
+      "items": [
+        {"title": "A form that tells you nothing", "body": "Forty names and phone numbers, and no idea who will get on with whom.", "fix": "Applications with your own questions, approved one by one."},
+        {"title": "Seating at midnight before the dinner", "body": "Moving names around a spreadsheet so friends who came together are split and the quiet ones aren’t stranded.", "fix": "Tables suggested from what guests told you; adjust with a drag."},
+        {"title": "No-shows after you’ve bought the food", "body": "Two empty chairs and two plates of something you cooked for four hours.", "fix": "Paid at booking, refunds by your policy, and a waitlist for the gaps."}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "applications",
+      "ground": "white",
+      "kicker": "Applications",
+      "title": "Know who’s coming before you set the table.",
+      "lead": "Ask what you want to know. Approve with a tap; approved guests pay to confirm. Keep the table balanced and the evening yours.",
+      "ticks": ["Your questions, on your page", "Approve, decline or waitlist each person", "Paid at booking, by UPI or card"],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Application · Long Table Supper",
+          "rows": [
+            {"title": "What brings you to a supper club?", "detail": "New to Mumbai, want to meet people who like food."},
+            {"title": "Anything we should know about what you eat?", "detail": "Vegetarian."},
+            {"title": "Who are you coming with?", "detail": "One friend, Zara."}
+          ],
+          "actions": ["Approve", "Waitlist"]
+        }
+      }
+    },
+    {
+      "type": "timeline",
+      "id": "dinner",
+      "ground": "ink",
+      "kicker": "A dinner on {{brand.name}}",
+      "title": "From applications to the next dinner.",
+      "steps": [
+        {"time": "Tuesday", "title": "Tables planned from what people told you", "body": "{{brand.name}} suggests tables of six with something in common and someone new, and you adjust with a drag."},
+        {"time": "8:00 PM", "title": "One look at the phone, then dinner", "body": "Guests check in and see their seat once. After that nothing at dinner needs a phone."},
+        {"time": "8:20 PM", "title": "The whole room at a glance", "body": "Seat a late arrival or move someone with a tap; table sizes and anyone you’ve kept apart still hold."},
+        {"time": "9:10 PM", "title": "A new seat for dessert", "body": "{{brand.name}} suggests a dessert swap so everyone meets a few more people. A quiet table gets a conversation card."},
+        {"time": "Next morning", "title": "Invite them back", "body": "Guests say who they’d happily sit with again. The people who’d come back hear about the next dinner first."}
+      ],
+      "media": {"kind": "capture", "slot": "host-live-tablet"}
+    },
+    {
+      "type": "checklist",
+      "id": "checklist",
+      "ground": "paper",
+      "kicker": "Buyer’s checklist",
+      "title": "What to look for in supper club software.",
+      "lead": "Check these eight things, whichever tool you choose. {{brand.name}} does all of them.",
+      "items": [
+        {"title": "Applications with your questions", "body": "Approve each guest yourself."},
+        {"title": "Payment before you buy the food", "body": "UPI or card at booking."},
+        {"title": "A cancellation policy you set", "body": "Refunds follow it."},
+        {"title": "A waitlist that fills gaps", "body": "Offers go out when someone drops."},
+        {"title": "Seating suggested for you", "body": "From what guests told you."},
+        {"title": "A seat swap at dessert", "body": "Everyone meets a few more people."},
+        {"title": "Who’d come back", "body": "The next invitation goes to them first."},
+        {"title": "Early-bird pricing", "body": "The price can step up as seats fill."}
+      ]
+    },
+    {
+      "type": "pricing",
+      "id": "pricing",
+      "ground": "ink",
+      "kicker": "Pricing for supper clubs",
+      "price": "5%",
+      "title": "of ticket sales, never more than ₹10,000 per billing cycle.",
+      "trial": "Free for 30 days from your first dinner, 90 for founding hosts. Payment gateway fees are separate.",
+      "examples": [
+        {"title": "A 24-seat supper at ₹1,800", "value": "₹2,160 a dinner", "body": "5% of ₹43,200, paid when guests book."},
+        {"title": "Two dinners in a billing cycle", "value": "₹4,320 a billing cycle", "body": "Well under the ₹10,000 cap."},
+        {"title": "A free tasting for regulars", "value": "₹0", "body": "Free events stay free."}
+      ],
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Supper club questions",
+      "title": "What hosts ask us.",
+      "items": [
+        {"question": "Can I choose who comes?", "answer": "Yes. Turn on applications, ask your own questions, and approve, decline or waitlist each person. Approved guests pay to confirm."},
+        {"question": "How does the seating plan work?", "answer": "{{brand.name}} suggests tables of six with something in common and someone new, from what guests told you. Move anyone with a drag, and keep people apart if you need to."},
+        {"question": "What if someone cancels?", "answer": "Refunds follow the cancellation policy you set. If there’s a waitlist, the next person gets an offer for the seat."},
+        {"question": "Do guests need an app?", "answer": "No. Guests apply, pay and check in on your page in their phone’s browser."},
+        {"question": "Can early bookers pay less?", "answer": "Yes, with dynamic pricing: the price steps up by an amount you set as seats fill, up to a maximum."},
+        {"question": "Can I bring my guest list from another tool?", "answer": "Yes. Import it from any tool before your next dinner."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "pink",
+      "kicker": "Your next dinner",
+      "title": "Fill the table with the right people.",
+      "lead": "Start the free trial, or leave your number and we’ll send the supper club setup guide on WhatsApp.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
+      ],
+      "leadForm": {"id": "supper_club_setup_guide", "requestKind": "guide", "format": "supper-clubs", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
+      "media": {"kind": "capture", "slot": "guest-explore"}
+    }
+  ]
+}

@@ -67,6 +67,13 @@ describe("consolidated public sitemap", () => {
     expect(pageMeta.programme_link.robots).toBe("noindex, follow");
     expect(getPageKey("/hotels/")).toBe("not_found");
   });
+  it("routes the city-by-format and new-to-the-city pages under their own page key, before the playbook pages", () => {
+    expect(getPageKey("/mumbai/run-clubs/")).toBe("discovery");
+    expect(getPageKey("/new-to-mumbai/")).toBe("discovery");
+    expect(getPageKey("/mumbai/")).toBe("visitor_discovery");
+    expect(getPageKey("/mumbai/not-a-format/")).toBe("not_found");
+    expect(getPageKey("/new-to-atlantis/")).toBe("not_found");
+  });
   it("serves the signed-in account page under its own noindex page key", () => {
     expect(getPageKey("/account/")).toBe("account");
     expect(getPageKey("/account")).toBe("account");

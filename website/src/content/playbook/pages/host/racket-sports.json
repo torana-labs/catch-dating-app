@@ -1,0 +1,155 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_racket_sports",
+  "route": "host_racket_sports",
+  "meta": {
+    "title": "{{brand.name}} for racket sports | Pickleball, padel and badminton socials",
+    "description": "Players book with their level, rotations keep every match close, court time is counted for everyone, and the right players come back next week. Free events stay free.",
+    "socialDescription": "Close games, fair court time, a new partner every round. {{brand.name}} for pickleball, padel and badminton socials.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {"links": [{"label": "For hosts", "to": {"route": "host"}}], "current": "Racket sports"}
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "mint",
+      "kicker": "{{brand.name}} for pickleball, padel and badminton socials",
+      "title": "Close games, fair court time, a new partner every round.",
+      "lead": "Players book with their level, {{brand.name}} plans the rotations so every match is close, counts everyone’s minutes on court, and invites them to the right session next week.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run racket socials and have a question about hosting on {{brand.name}}."},
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {"label": "Run a venue with courts? See {{brand.name}} for venues", "to": {"route": "host_venues"}},
+      "chip": {
+        "title": "Pickleball Social · Sat",
+        "rows": [
+          {"label": "Booked", "value": "40"},
+          {"label": "Courts", "value": "3"},
+          {"label": "Round", "value": "4 of 8"}
+        ]
+      },
+      "media": {"kind": "capture", "slot": "host-formats-courts"}
+    },
+    {
+      "type": "tiles",
+      "id": "sound-familiar",
+      "ground": "white",
+      "kicker": "Sound familiar?",
+      "title": "The playing is the easy part.",
+      "align": "center",
+      "columns": 3,
+      "items": [
+        {"title": "Lopsided games", "body": "A first-timer paired with your strongest player, 11–1, and neither of them comes back.", "fix": "Every booking brings a level; rounds are planned so matches stay close."},
+        {"title": "The same four on court all night", "body": "Regulars hold a court while newcomers wait by the fence for a turn.", "fix": "{{brand.name}} counts minutes on court and puts whoever’s behind on next."},
+        {"title": "A WhatsApp poll for every session", "body": "Thirty “in”s, twenty-two players, and three walk-ins you didn’t plan for.", "fix": "Paid booking, a waitlist, and walk-ins joining the next round."}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "rotations",
+      "ground": "white",
+      "kicker": "Levels and rotations",
+      "title": "Partners rotate. Matches stay close.",
+      "lead": "Players pick a level when they book and confirm it at the door. {{brand.name}} plans each round across your courts so nobody plays with the same partner twice until they’ve played with everyone at their level.",
+      "ticks": [
+        "Your levels, your names for them",
+        "Doubles across as many courts as you have",
+        "Rounds as long as you want them",
+        "Walk-ins join the next round, not a queue"
+      ],
+      "media": {"kind": "capture", "slot": "host-formats-courts-setup"}
+    },
+    {
+      "type": "timeline",
+      "id": "session",
+      "ground": "ink",
+      "kicker": "A session on {{brand.name}}",
+      "title": "From bookings to next week’s session.",
+      "steps": [
+        {"time": "Friday", "title": "Levels in, courts balanced", "body": "Each booking brings a skill level. {{brand.name}} plans the rounds so every match is close and all forty players get about the same time on court."},
+        {"time": "4:45 PM", "title": "Check in, level confirmed", "body": "Players confirm their level at the door. Walk-ins join the next round, not a queue."},
+        {"time": "5:00 PM", "title": "A new partner every round", "body": "Between games, phones buzz with the next court and partner. Scores go in with a tap."},
+        {"time": "5:40 PM", "title": "Fair court time, counted", "body": "{{brand.name}} counts every player’s minutes on court. Anyone falling behind goes on next; anyone sitting out is pointed to the lounge, and to someone there to meet."},
+        {"time": "That evening", "title": "Standings, then the next session", "body": "Final standings go out with the photos. Players who want an easier or tougher session get that invitation next."}
+      ],
+      "media": {"kind": "capture", "slot": "host-live-tablet"}
+    },
+    {
+      "type": "checklist",
+      "id": "checklist",
+      "ground": "paper",
+      "kicker": "Buyer’s checklist",
+      "title": "What to look for in software for racket socials.",
+      "lead": "Check these eight things, whichever tool you choose. {{brand.name}} does all of them.",
+      "items": [
+        {"title": "Skill levels at booking", "body": "Confirmed again at the door."},
+        {"title": "Rotations planned for you", "body": "A new partner every round."},
+        {"title": "Fair court time", "body": "Minutes counted for every player."},
+        {"title": "Walk-ins handled", "body": "They join the next round."},
+        {"title": "Scores and standings", "body": "Entered with a tap, sent after."},
+        {"title": "Paid booking, by UPI or card", "body": "No more WhatsApp polls."},
+        {"title": "A waitlist that fills gaps", "body": "Offers go out when someone drops."},
+        {"title": "The right next session", "body": "Easier or tougher, by how they played."}
+      ]
+    },
+    {
+      "type": "pricing",
+      "id": "pricing",
+      "ground": "ink",
+      "kicker": "Pricing for racket socials",
+      "price": "5%",
+      "title": "of ticket sales, never more than ₹10,000 per billing cycle.",
+      "trial": "Free for 30 days from your first session, 90 for founding hosts. Payment gateway fees are separate.",
+      "examples": [
+        {"title": "40 players at ₹600", "value": "₹1,200 a session", "body": "5% of ₹24,000, paid when players book."},
+        {"title": "A session every week", "value": "₹4,800 to ₹6,000 a billing cycle", "body": "Four or five sessions in 30 days, well under the ₹10,000 cap."},
+        {"title": "A free beginners’ clinic", "value": "₹0", "body": "Free events stay free."}
+      ],
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Racket sports questions",
+      "title": "What hosts ask us.",
+      "items": [
+        {"question": "Does {{brand.name}} book courts?", "answer": "No. You bring the courts, at your venue or one you hire. {{brand.name}} runs the session on them: bookings, levels, rotations, court time and standings."},
+        {"question": "Which sports does it work for?", "answer": "Pickleball, padel, badminton and tennis doubles, or anything played in pairs on courts. You set the number of courts and the round length."},
+        {"question": "What if the levels are uneven?", "answer": "{{brand.name}} keeps matches as close as the players allow, and counts court time so nobody sits out more than their share."},
+        {"question": "What happens with walk-ins?", "answer": "Check them in at the door with a level. They join the next round, and court time stays fair."},
+        {"question": "Do players need an app?", "answer": "No. Players book, check in and see their next court in their phone’s browser."},
+        {
+          "question": "How is this different from a court-booking app?",
+          "answer": "Court-booking apps help players book courts and find games. {{brand.name}} helps you run a session for a group: levels, rotations, fair court time and bringing players back. Many hosts book the courts in one place and run the session on {{brand.name}}."
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "mint",
+      "kicker": "Your next session",
+      "title": "Every player gets a good game.",
+      "lead": "Start the free trial, or leave your number and we’ll send the racket social setup guide on WhatsApp.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
+      ],
+      "leadForm": {"id": "racket_social_setup_guide", "requestKind": "guide", "format": "racket-sports", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
+      "media": {"kind": "capture", "slot": "guest-explore"}
+    }
+  ]
+}

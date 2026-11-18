@@ -1,0 +1,187 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_communities",
+  "route": "host_communities",
+  "meta": {
+    "title": "{{brand.name}} for communities | Book clubs and hobby groups beyond the group chat",
+    "description": "A page people can find and follow, meetups they book and pay for in a minute, applications when you want to choose, and memberships for the regulars. Free meetups stay free.",
+    "socialDescription": "Your community is bigger than its group chat. {{brand.name}} for book clubs, hobby groups and creator communities.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {"links": [{"label": "For hosts", "to": {"route": "host"}}], "current": "Communities and book clubs"}
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "indigo",
+      "kicker": "{{brand.name}} for book clubs, hobby groups and creator communities",
+      "title": "Your community is bigger than its group chat.",
+      "lead": "A page people can find and follow, meetups they book and pay for in a minute, applications when you want to choose, and memberships for the regulars who come every month.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run a community and have a question about hosting on {{brand.name}}."},
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {
+        "label": "Running chapters in several cities? Ask for a walkthrough",
+        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run community chapters in several cities and would like a walkthrough."}
+      },
+      "chip": {
+        "title": "Monthly meetup",
+        "rows": [
+          {"label": "Booked", "value": "22"},
+          {"label": "Members", "value": "14"},
+          {"label": "First-timers", "value": "5"}
+        ]
+      },
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Your community",
+          "subtitle": "Chapter and Chai · Indore",
+          "stats": [
+            {"value": "840", "label": "followers"},
+            {"value": "52", "label": "members"},
+            {"value": "3", "label": "this month"}
+          ],
+          "rows": [
+            {"title": "Sat · Monthly meetup", "detail": "This month: a novel set in Indore", "tag": "22 of 25"},
+            {"title": "Sun · Silent reading hour", "detail": "Members book 48 hours early", "tag": "Free · 31"},
+            {"title": "Thu · Author evening", "detail": "12 applied for 20 seats", "tag": "Applications"}
+          ],
+          "note": "9 followers came to their first meetup this month"
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "sound-familiar",
+      "ground": "white",
+      "kicker": "Sound familiar?",
+      "title": "The conversation is the easy part.",
+      "align": "center",
+      "columns": 3,
+      "items": [
+        {
+          "title": "A group of 900 where nobody reads",
+          "body": "The meetup post is buried under forty good-morning messages by lunchtime.",
+          "fix": "Followers hear about each new meetup on {{brand.name}}, and app users get a reminder 15 minutes before it starts."
+        },
+        {"title": "₹300 at a time, chased by hand", "body": "“Paid!” in the group, a screenshot in your DMs, and three people you’re not sure about.", "fix": "They pay when they book, by UPI or card, next to their name."},
+        {"title": "No idea who your regulars are", "body": "Twenty-five said yes. Who came? Who came last month too? Who stopped coming?", "fix": "Guest records sort regulars, first-timers and people you haven’t seen lately."}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "page",
+      "ground": "white",
+      "kicker": "A home for the community",
+      "title": "A page that grows while you sleep.",
+      "lead": "Your page shows every meetup, your reviews, and a follow button. People who find you on Instagram or in What’s on can follow you, and they hear about each new meetup without you posting in five places.",
+      "ticks": [
+        "Followers hear about every new meetup",
+        "Reviews from people who came, with your replies",
+        "Free and paid meetups side by side",
+        "Applications for the evenings you want to keep small"
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Chapter and Chai · on {{brand.name}}",
+          "rows": [
+            {"title": "Next up", "detail": "Sat 14 Dec · Monthly meetup · ₹300 with chai"},
+            {"title": "Then", "detail": "Sun 15 Dec · Silent reading hour · free"},
+            {"title": "Recent review", "detail": "“Came alone, left with four people to swap books with.”"}
+          ],
+          "actions": ["Follow", "Become a member"]
+        }
+      }
+    },
+    {
+      "type": "timeline",
+      "id": "month",
+      "ground": "ink",
+      "kicker": "A book club on {{brand.name}}",
+      "title": "A month in your community.",
+      "steps": [
+        {"time": "1st of the month", "title": "Post the meetup once", "body": "It goes to your followers and on your page. Members get 48 hours to book before everyone else."},
+        {"time": "Week 2", "title": "Bookings come in, paid", "body": "No chasing. Share one link in the group chat and see who booked through it."},
+        {"time": "Day before", "title": "A note from you", "body": "Share where, when and this month’s book from your own WhatsApp. App users also get a reminder 15 minutes before it starts."},
+        {"time": "The meetup", "title": "Everyone checked in", "body": "They scan in at the door. You see who’s new and say hello properly."},
+        {"time": "Next morning", "title": "Thank them, and set the next one", "body": "Photos and a thank-you go out, reviews come in, and regulars who aren’t members yet get an invitation."}
+      ],
+      "media": {"kind": "capture", "slot": "host-live-tablet"}
+    },
+    {
+      "type": "checklist",
+      "id": "checklist",
+      "ground": "paper",
+      "kicker": "Buyer’s checklist",
+      "title": "What to look for when your community outgrows the group chat.",
+      "lead": "Check these eight things, whichever tool you choose. {{brand.name}} does all of them.",
+      "items": [
+        {"title": "A page people can follow", "body": "Each new meetup reaches them."},
+        {"title": "Paid booking, by UPI or card", "body": "No screenshots to match."},
+        {"title": "Free meetups stay free", "body": "No fee on free events."},
+        {"title": "Applications when you want them", "body": "For the small evenings."},
+        {"title": "Memberships for regulars", "body": "Monthly, with early booking."},
+        {"title": "Know your regulars", "body": "And who’s stopped coming."},
+        {"title": "Reviews with replies", "body": "Proof for people deciding."},
+        {"title": "Your list is yours", "body": "Export it any time."}
+      ]
+    },
+    {
+      "type": "pricing",
+      "id": "pricing",
+      "ground": "ink",
+      "kicker": "Pricing for communities",
+      "price": "5%",
+      "title": "of tickets and memberships, never more than ₹10,000 per billing cycle.",
+      "trial": "Free for 30 days from your first meetup, 90 for founding hosts. Payment gateway fees are separate.",
+      "examples": [
+        {"title": "A meetup of 25 at ₹300", "value": "₹375 a meetup", "body": "5% of ₹7,500."},
+        {"title": "50 members at ₹499 a month", "value": "₹1,248 a billing cycle", "body": "5% of ₹24,950 in renewals."},
+        {"title": "A free reading hour", "value": "₹0", "body": "Free events stay free."}
+      ],
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Community questions",
+      "title": "What hosts ask us.",
+      "items": [
+        {"question": "Do I have to leave our WhatsApp group?", "answer": "No. Keep it for chat. Put the meetups on {{brand.name}} and share one link in the group; bookings and payments happen there."},
+        {"question": "Most of our meetups are free. Is that OK?", "answer": "Yes. Free events stay free, forever. You only pay 5% when you sell tickets or memberships."},
+        {"question": "Can I keep some evenings small?", "answer": "Yes. Turn on applications, ask your own questions and approve each person."},
+        {"question": "How do memberships work?", "answer": "Make a plan with a monthly or yearly price. Members renew by UPI Autopay or card, and get the benefits you choose: a member price, free entry, or booking first."},
+        {"question": "Do members need an app?", "answer": "No. People follow, book, pay and check in on your page in their phone’s browser."},
+        {"question": "We run chapters in a few cities.", "answer": "Each chapter can have its own events on your page. Ask us for a walkthrough on WhatsApp and we’ll help you set it up."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "indigo",
+      "kicker": "Your next meetup",
+      "title": "Give your community a home.",
+      "lead": "Start the free trial, or leave your number and we’ll send the community setup guide on WhatsApp.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
+      ],
+      "leadForm": {"id": "community_setup_guide", "requestKind": "guide", "format": "communities", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
+      "media": {"kind": "capture", "slot": "guest-explore"}
+    }
+  ]
+}

@@ -1,0 +1,192 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_quiz_nights",
+  "route": "host_quiz_nights",
+  "meta": {
+    "title": "{{brand.name}} for quiz and game nights | Fair teams, live scores, the reveal",
+    "description": "Bookings, balanced teams, live scores and a reveal the whole room shares, then the same faces back next week. For quizmasters and the venues they play.",
+    "socialDescription": "Fair teams before the first question. {{brand.name}} for quiz and game nights.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {"links": [{"label": "For hosts", "to": {"route": "host"}}], "current": "Quiz and game nights"}
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "yellow",
+      "kicker": "{{brand.name}} for quiz and game nights",
+      "title": "Fair teams before the first question.",
+      "lead": "Bookings, balanced teams, live scores and a reveal the whole room shares. Then the same faces back next Tuesday.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run quiz nights and have a question about hosting on {{brand.name}}."},
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {
+        "label": "A venue with a weekly quiz, or a quizmaster at several venues? Ask for a walkthrough",
+        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run quiz nights at one or more venues and would like a walkthrough."}
+      },
+      "chip": {
+        "title": "Tuesday Trivia Night",
+        "rows": [
+          {"label": "Booked", "value": "30"},
+          {"label": "Came alone", "value": "7"},
+          {"label": "On a team", "value": "30"}
+        ]
+      },
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Round 4 of 6",
+          "subtitle": "Tuesday Trivia Night · Harbour Room",
+          "stats": [
+            {"value": "6", "label": "teams"},
+            {"value": "30", "label": "players"},
+            {"value": "4/6", "label": "scored"}
+          ],
+          "rows": [
+            {"title": "Quizzy Rascals", "detail": "Table 2 · 5 players · 2 came alone", "tag": "41"},
+            {"title": "Harbour Lights", "detail": "Table 5 · 5 players", "tag": "38"},
+            {"title": "Leaderboard", "detail": "Revealed after round 6", "tag": "hidden"}
+          ],
+          "note": "Half-time mix: one person per team moves on"
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "sound-familiar",
+      "ground": "white",
+      "kicker": "Sound familiar?",
+      "title": "The questions are the easy part.",
+      "align": "center",
+      "columns": 3,
+      "items": [
+        {"title": "The team of regulars who win every week", "body": "Same table, same names on the board. Newer teams stop coming back.", "fix": "Balanced teams of five, with no team stacked with regulars."},
+        {"title": "The person who came on their own", "body": "They hover by the bar while teams form, then leave after round two.", "fix": "Solo players are spread across teams and introduced by name before round one."},
+        {"title": "Scores on a whiteboard, arguments at the end", "body": "Everyone can see who’s winning by round three, and nobody trusts the maths.", "fix": "Scores entered live, standings hidden until a reveal on every phone and the screen."}
+      ]
+    },
+    {
+      "type": "timeline",
+      "id": "quiz-night",
+      "ground": "ink",
+      "kicker": "A quiz on {{brand.name}}",
+      "title": "From doors to the reveal.",
+      "steps": [
+        {"time": "7:00 PM", "title": "Fair teams before the first question", "body": "{{brand.name}} builds teams of five from who’s coming: people on their own spread across teams, friends kept together if they asked, and no team stacked with regulars."},
+        {"time": "7:30 PM", "title": "A team for everyone at the door", "body": "Guests check in and see their team and table. Anyone who came alone is introduced to their team by name before round one."},
+        {"time": "8:40 PM", "title": "Mix once at half-time", "body": "One person from each team moves on. Only the people moving get a buzz; everyone else stays in the game."},
+        {"time": "9:00 PM", "title": "Scores in, standings hidden", "body": "The quizmaster enters each round’s scores. Teams see their own; the leaderboard stays hidden, so the last round still matters."},
+        {"time": "9:40 PM", "title": "The reveal", "body": "A countdown on every phone and the big screen at once, then the final standings. The winners pick next week’s theme."}
+      ],
+      "media": {"kind": "capture", "slot": "host-live-scores"}
+    },
+    {
+      "type": "tiles",
+      "id": "two-hosts",
+      "ground": "white",
+      "kicker": "Two kinds of quiz host",
+      "title": "For quizmasters, and for the venues they play.",
+      "columns": 2,
+      "items": [
+        {
+          "title": "Quizmasters",
+          "body": "You bring the questions to different bars each week.",
+          "list": [
+            "One page for all your quiz nights, across venues",
+            "One record per player, wherever they played",
+            "Paid in rupees by UPI when players book, not cash at the door",
+            "Teams, scores and the reveal on your phone or an iPad"
+          ],
+          "ground": "yellow"
+        },
+        {
+          "title": "Venues",
+          "body": "You want a full room on a quiet weeknight.",
+          "list": [
+            "A weekly quiz that fills itself from last week’s players",
+            "See exactly who came through your venue’s link",
+            "Run it yourself, or host a quizmaster who uses {{brand.name}}"
+          ],
+          "link": {"label": "{{brand.name}} for venues", "to": {"route": "host_venues"}}
+        }
+      ]
+    },
+    {
+      "type": "checklist",
+      "id": "checklist",
+      "ground": "paper",
+      "kicker": "Buyer’s checklist",
+      "title": "What to look for in quiz night software.",
+      "lead": "Whatever you choose, check these eight things. {{brand.name}} does all of them.",
+      "items": [
+        {"title": "Teams balanced for you", "body": "From who’s coming, with no team stacked with regulars."},
+        {"title": "Solo players placed", "body": "Spread across teams and introduced by name."},
+        {"title": "Friends kept together", "body": "When they ask to be."},
+        {"title": "Live score entry", "body": "Round by round, by the quizmaster."},
+        {"title": "A hidden leaderboard and a reveal", "body": "On every phone and the big screen at once."},
+        {"title": "Paid tickets in rupees, by UPI", "body": "No cash at the door, no screenshots."},
+        {"title": "One record per player", "body": "Across every venue and every week."},
+        {"title": "A link for every venue and promoter", "body": "See who filled the room."}
+      ]
+    },
+    {
+      "type": "pricing",
+      "id": "pricing",
+      "ground": "ink",
+      "kicker": "Pricing for quiz nights",
+      "price": "5%",
+      "title": "of ticket sales, never more than ₹10,000 per billing cycle. Free quizzes stay free.",
+      "trial": "Free for 30 days from your first quiz, 90 for founding hosts. Payment gateway fees are separate.",
+      "examples": [
+        {"title": "A weekly pub quiz, 60 players at ₹499", "value": "₹1,497 a night", "body": "5% of ₹29,940, paid when players book."},
+        {"title": "A free quiz a venue runs to fill a Tuesday", "value": "₹0", "body": "Free events stay free, every week."},
+        {"title": "Three quizzes a week, 80 players at ₹500", "value": "₹10,000 a billing cycle", "body": "About ₹5,00,000 in sales over 30 days. The cap holds the fee to about 2% of that."}
+      ],
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Quiz night questions",
+      "title": "What quizmasters and venues ask us.",
+      "items": [
+        {
+          "question": "How are teams balanced?",
+          "answer": "{{brand.name}} builds teams of five from who’s coming: people on their own spread across teams, friends kept together if they asked, and no team stacked with regulars. You can move anyone before round one."
+        },
+        {"question": "Can friends play on the same team?", "answer": "Yes. Players who ask to be together are kept together, and {{brand.name}} balances the rest of the room around them."},
+        {"question": "Do players need to download an app?", "answer": "No. Players book on your page and join live moments, like their team and the reveal, in their phone’s browser."},
+        {"question": "Can I show the reveal on a screen?", "answer": "Yes. The countdown and final standings appear on every phone and the big screen at once."},
+        {"question": "Can a venue run a free quiz?", "answer": "Yes. Free events stay free on {{brand.name}}, every week. The 5% fee applies only to paid tickets."},
+        {"question": "Can I bring my player list from another tool?", "answer": "Yes. Import your list from any tool. Nothing changes for players until the night."}
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "yellow",
+      "kicker": "Your next quiz, sorted",
+      "title": "Fill next Tuesday.",
+      "lead": "Start the free trial, or leave your number and we’ll send the quiz night setup guide on WhatsApp.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
+      ],
+      "leadForm": {"id": "quiz_night_setup_guide", "requestKind": "guide", "format": "quiz-nights", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."},
+      "storeBadges": "host",
+      "media": {"kind": "capture", "slot": "guest-explore"}
+    }
+  ]
+}

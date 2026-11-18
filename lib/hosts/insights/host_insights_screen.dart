@@ -63,6 +63,7 @@ class _HostInsightsScreenState extends ConsumerState<HostInsightsScreen> {
 
     Widget? body;
     HostInsightsState? insights;
+    VoidCallback? retryRefresh;
     if (uidValue.hasError && uid == null) {
       body = CatchLocalizedErrorState(
         uidValue.error!,
@@ -113,6 +114,7 @@ class _HostInsightsScreenState extends ConsumerState<HostInsightsScreen> {
         );
       } else {
         insights = state;
+        retryRefresh = () => retryHostInsights(ref, request);
       }
     }
 
@@ -130,6 +132,7 @@ class _HostInsightsScreenState extends ConsumerState<HostInsightsScreen> {
               state: insights!,
               onRangeChanged: (range) => setState(() => _range = range),
               onOpenNight: (night) => _openNight(organizer, night),
+              onRetryRefresh: retryRefresh,
             ),
       ),
     );

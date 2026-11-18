@@ -28,7 +28,11 @@ const allowedFeatureImports = new Map([
   // Verified event text preferences are shared by registration and guest runtime.
   ["eventAssistance", new Set(["eventMessaging"])],
   ["eventRuntime", new Set(["eventMessaging"])],
-  ["home", new Set(["marketing", "organizers", "waitlist"])],
+  // The discovery pages (/<city>/<format>/, /new-to-<city>/) read the city
+  // catalog and chrome the city pages own, and send city alerts through the
+  // site lead client (features/marketing); Explore ends with their capture.
+  ["discovery", new Set(["home", "marketing"])],
+  ["home", new Set(["discovery", "marketing", "organizers", "waitlist"])],
   // The host billing portal signs owners in with the one shared sign-in sheet.
   ["hostBilling", new Set(["account"])],
   ["host", new Set(["marketing"])],

@@ -1,0 +1,168 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_creators",
+  "route": "host_creators",
+  "meta": {
+    "title": "{{brand.name}} for creators | Meetups your followers book and pay for",
+    "description": "A page for your bio link, meetups your audience books and pays for in a minute, a link for every post, and memberships for the people who come to everything.",
+    "socialDescription": "Your followers, in one room. {{brand.name}} for creators who host meetups.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {"links": [{"label": "For hosts", "to": {"route": "host"}}], "current": "Creators"}
+  },
+  "footer": {"variant": "host"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "magenta",
+      "kicker": "{{brand.name}} for creators who host meetups",
+      "title": "Your followers, in one room.",
+      "lead": "A page for your bio link, meetups your audience books and pays for in a minute, applications when you want to keep it small, and memberships for the people who come to everything.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {
+          "label": "Talk to us on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’m a creator who hosts meetups and have a question about hosting on {{brand.name}}."},
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {"label": "Hosting for a brand? See {{brand.name}} for brands", "to": {"route": "host_brands"}},
+      "chip": {
+        "title": "Street food walk",
+        "rows": [
+          {"label": "From your bio link", "value": "61%"},
+          {"label": "Booked", "value": "19 of 25"},
+          {"label": "Members", "value": "8"}
+        ]
+      },
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Mumbai Food Diaries",
+          "subtitle": "Creator · 48k on Instagram · 1,240 followers on {{brand.name}}",
+          "rows": [
+            {"title": "Street food walk · Mohammed Ali Road", "detail": "Sat 30 Nov · 25 seats", "tag": "6 left"},
+            {"title": "Members’ supper", "detail": "Members only · Thu 12 Dec", "tag": "Members"}
+          ],
+          "actions": ["Follow", "Share"]
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "sound-familiar",
+      "ground": "white",
+      "kicker": "Sound familiar?",
+      "title": "The audience is the easy part.",
+      "align": "center",
+      "columns": 3,
+      "items": [
+        {"title": "“DM me for details”", "body": "Two hundred DMs for twenty-five seats, and payments by screenshot.", "fix": "One link in your bio: seats left, paid at booking."},
+        {"title": "Followers aren’t guests", "body": "48k followers, and no idea who actually came last time.", "fix": "Every guest on your records, with who came back."},
+        {"title": "The same superfans miss out", "body": "Your regulars find it full because a stranger booked first.", "fix": "Members book first, or get members-only meetups."}
+      ]
+    },
+    {
+      "type": "split",
+      "id": "links",
+      "ground": "white",
+      "kicker": "Links for every post",
+      "title": "Know which post filled it.",
+      "lead": "Make a link for each reel, story and collab. {{brand.name}} shows visits, bookings and revenue for each, so you know what works.",
+      "ticks": ["A link per post, story or collab", "Bookings and revenue for each", "Followers who hear about the next meetup without you posting"],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Links · Street food walk",
+          "bars": [
+            {"label": "Bio link", "value": "11", "share": 100},
+            {"label": "Reel, 18 Nov", "value": "6", "share": 55},
+            {"label": "Collab story", "value": "2", "share": 18}
+          ]
+        }
+      }
+    },
+    {
+      "type": "timeline",
+      "id": "meetup",
+      "ground": "ink",
+      "kicker": "A meetup on {{brand.name}}",
+      "title": "From one post to a room of regulars.",
+      "steps": [
+        {"time": "Monday", "title": "Post the link", "body": "One link in your bio and stories. Followers on {{brand.name}} hear about it without you posting."},
+        {"time": "As they book", "title": "Bookings, or applications", "body": "Paid at booking. For small meetups, they apply and you choose."},
+        {"time": "Day before", "title": "A note from you", "body": "Share where to meet and what to expect from your own WhatsApp or stories. App users also get a reminder 15 minutes before it starts."},
+        {"time": "On the day", "title": "A door that’s quick", "body": "Everyone scans in. You see who’s new and who’s been to everything."},
+        {"time": "Next morning", "title": "Turn guests into regulars", "body": "Photos, reviews and the next meetup. Regulars who aren’t members get an invitation."}
+      ],
+      "media": {"kind": "capture", "slot": "host-live-tablet"}
+    },
+    {
+      "type": "checklist",
+      "id": "checklist",
+      "ground": "paper",
+      "kicker": "Buyer’s checklist",
+      "title": "What to look for when you host your audience.",
+      "lead": "Check these eight things, whichever tool you choose. {{brand.name}} does all of them.",
+      "items": [
+        {"title": "A page for your bio", "body": "Events, links and reviews."},
+        {"title": "Paid booking", "body": "UPI or card, no DMs."},
+        {"title": "Applications", "body": "For meetups you keep small."},
+        {"title": "Links per post", "body": "See what filled it."},
+        {"title": "Memberships", "body": "Superfans book first."},
+        {"title": "Followers", "body": "Hear about every meetup."},
+        {"title": "Guest records", "body": "Who came, who came back."},
+        {"title": "A cap on fees", "body": "Never more than ₹10,000 per billing cycle."}
+      ]
+    },
+    {
+      "type": "pricing",
+      "id": "pricing",
+      "ground": "ink",
+      "kicker": "Pricing for creators",
+      "price": "5%",
+      "title": "of tickets and memberships, never more than ₹10,000 per billing cycle.",
+      "trial": "Free for 30 days from your first meetup, 90 for founding hosts. Payment gateway fees are separate.",
+      "examples": [
+        {"title": "A 25-seat food walk at ₹1,200", "value": "₹1,500 a walk", "body": "5% of ₹30,000."},
+        {"title": "60 members at ₹299 a month", "value": "₹897 a billing cycle", "body": "5% of ₹17,940 in renewals."},
+        {"title": "A free meet-and-greet", "value": "₹0", "body": "Free events stay free."}
+      ],
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
+        {"label": "See full pricing", "to": {"route": "pricing"}, "emphasis": "secondary"}
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Creator questions",
+      "title": "What hosts ask us.",
+      "items": [
+        {"question": "Can I keep meetups small and choose who comes?", "answer": "Yes. Turn on applications, ask your questions and approve each person."},
+        {"question": "Can my followers become paying members?", "answer": "Yes. Make a plan with a monthly or yearly price; members renew by UPI Autopay or card."},
+        {"question": "Will I know which post worked?", "answer": "Yes. Make a link for each post or collab and see the visits, bookings and revenue from each."},
+        {"question": "Do guests need an app?", "answer": "No. They book and pay in their phone’s browser."},
+        {"question": "Can a brand sponsor my meetup?", "answer": "Yes. Give the brand its own link to share, and show them the bookings it brought. See {{brand.name}} for brands."},
+        {"question": "Can I import my list?", "answer": "Yes. Import a CSV or Excel file of past guests."}
+      ],
+      "action": {"label": "{{brand.name}} for brands", "to": {"route": "host_brands"}}
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "magenta",
+      "kicker": "Your next meetup",
+      "title": "Turn followers into regulars.",
+      "lead": "Start the free trial, or leave your number and we’ll send the creator setup guide on WhatsApp.",
+      "actions": [
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
+      ],
+      "leadForm": {"id": "creator_setup_guide", "requestKind": "guide", "format": "creators", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."}
+    }
+  ]
+}

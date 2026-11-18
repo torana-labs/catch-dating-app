@@ -136,6 +136,41 @@ void main() {
     expect(calls.nights.single.eventId, 'supper');
   });
 
+  testWidgets('a report kept after a failed refresh says so, with Retry', (
+    tester,
+  ) async {
+    final content = _content(HostInsightsRange.thirtyDays);
+    var retries = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: CatchRoot(
+          child: CatchScreen(
+            body: HostInsightsBody(
+              state: HostInsightsState(
+                status: content.status,
+                range: content.range,
+                stats: content.stats,
+                bars: content.bars,
+                refreshFailedMinutes: 4,
+              ),
+              onRangeChanged: (_) {},
+              onOpenNight: (_) {},
+              onRetryRefresh: () => retries++,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text("Couldn't refresh. Updated 4 min ago"), findsOneWidget);
+    expect(find.text('312'), findsOneWidget);
+    await tester.tap(find.text('Try again'));
+    expect(retries, 1);
+  });
+
   testWidgets('seven days counts bookings each day', (tester) async {
     await _pump(
       tester,
