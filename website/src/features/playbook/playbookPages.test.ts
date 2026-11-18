@@ -1,7 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import {describe, expect, it} from "vitest";
+import {citiesPageCopy} from "@content/citiesPage";
 import {websiteCities} from "@content/markets";
+import {hostPricingFacts} from "@content/pricing";
 import {validatePlaybookPage, type PlaybookDestination, type PlaybookPageDocument} from "@content/playbook/playbookContract";
 import {pendingPlaybookBindings} from "./playbookBindings";
 import {playbookRouteAliases} from "./playbookHrefs";
@@ -134,6 +136,33 @@ describe("playbook page indexes", () => {
     ]);
   });
 
+  it.each(["/about/", "/host/start/", "/host/first-event/", "/host/switch/", "/programmes/"])("renders %s: every section bound, brand resolved, noindex until approved", async (path) => {
+    const page = (await loadPlaybookPage(resolvePlaybookPage(path)!))!;
+    expect(page, path).not.toBeNull();
+    expect(JSON.stringify(page)).not.toMatch(/\{\{/u);
+    expect(page.meta.noindex).toBe(true);
+  });
+
+  it("publishes no price on the host ways in, About and /programmes/ beyond the fee cap pricing.ts works out", () => {
+    for (const {ref, raw} of loaded.filter(({ref}) => ["about", "host_start", "host_first_event", "host_switch", "programmes"].includes(ref.match.contentKey))) {
+      const amounts = new Set(JSON.stringify(raw).match(/₹[\d,]+/gu) ?? []);
+      for (const amount of amounts) expect(amount, ref.match.contentKey).toBe(hostPricingFacts.cap);
+    }
+  });
+
+  it("binds the cards section to the market's cities, and holds back the sources with no adapter yet", async () => {
+    const about = (await loadPlaybookPage(resolvePlaybookPage("/about/")!))!;
+    expect(about.sections.some((section) => section.type === "cards" && section.source.kind === "cities")).toBe(true);
+    const withSource = (source: {kind: "stories"} | {kind: "playbooks"} | {kind: "organisers"}) => ({...about, sections: about.sections.map((section) =>
+      section.type === "cards" ? {...section, source} : section)});
+    expect(pendingPlaybookBindings(withSource({kind: "stories"}))).toEqual(["cards:stories"]);
+    expect(pendingPlaybookBindings(withSource({kind: "playbooks"}))).toEqual(["cards:playbooks"]);
+    expect(pendingPlaybookBindings(withSource({kind: "organisers"}))).toEqual(["cards:organisers"]);
+    const filtered = {...about, sections: about.sections.map((section) => section.type === "cards" ?
+      {...section, filters: [{key: "open", label: citiesPageCopy.open}, {key: "soon", label: citiesPageCopy.soon}]} : section)};
+    expect(pendingPlaybookBindings(filtered)).toEqual(["cardsFilters"]);
+  });
+
   it("states the fee cap a month on every page, never per billing cycle (owner, 18 Nov 2026)", () => {
     for (const {ref, raw} of loaded) {
       expect(JSON.stringify(raw), ref.match.contentKey).not.toMatch(/billing cycle|\bcycle\b/iu);
@@ -143,8 +172,8 @@ describe("playbook page indexes", () => {
 
 describe("playbook route resolution", () => {
   it("404s a registered route whose content is not written, and an unknown family page", () => {
-    expect(matchPlaybookRoute("/host/first-event/")?.contentKey).toBe("host_first_event");
-    expect(resolvePlaybookPage("/host/first-event/")).toBeNull();
+    expect(matchPlaybookRoute("/refer/")?.contentKey).toBe("refer");
+    expect(resolvePlaybookPage("/refer/")).toBeNull();
     expect(resolvePlaybookPage("/stories/nobody/")).toBeNull();
     expect(resolvePlaybookPage("/mumbai/run-clubs/")).toBeNull();
     expect(resolvePlaybookPage("/new-to-mumbai/")).toBeNull();

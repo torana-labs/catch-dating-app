@@ -1,0 +1,356 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_switch",
+  "route": "host_switch",
+  "meta": {
+    "title": "Switch to {{brand.name}} | {{brand.stores.hostAppName}}",
+    "description": "Moving off WhatsApp polls, Google Forms and UPI screenshots, or another ticketing site? Send us your list and we’ll set it up with you, or import it yourself.",
+    "socialDescription": "Leave the spreadsheet. Keep your people.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          }
+        }
+      ],
+      "current": "Switch to {{brand.name}}"
+    }
+  },
+  "footer": {
+    "variant": "host"
+  },
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "coral",
+      "kicker": "Switching to {{brand.name}}",
+      "title": "Leave the spreadsheet. Keep your people.",
+      "lead": "Moving off WhatsApp polls, Google Forms and UPI screenshots, or another ticketing site? Send us your sheet and we’ll set it up with you, or import it yourself in {{brand.stores.hostAppName}}.",
+      "actions": [
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Send us your sheet on WhatsApp",
+          "to": {
+            "kind": "whatsapp",
+            "message": "Hi {{brand.name}}, I’d like help moving my guest list to {{brand.name}}."
+          },
+          "emphasis": "secondary"
+        }
+      ],
+      "aside": {
+        "label": "New to hosting? Read the first-event guide",
+        "to": {
+          "route": "host_first_event"
+        }
+      },
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "Sunday social run",
+          "subtitle": "Booked, paid and checked in",
+          "stats": [
+            {
+              "value": "28",
+              "label": "booked and paid"
+            },
+            {
+              "value": "26",
+              "label": "checked in"
+            },
+            {
+              "value": "7",
+              "label": "new"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "tabs",
+      "id": "moving-from",
+      "ground": "white",
+      "kicker": "What you’re moving from",
+      "title": "What changes, and what doesn’t.",
+      "items": [
+        {
+          "label": "WhatsApp and UPI",
+          "accent": "coral",
+          "title": "From a poll in the group",
+          "list": [
+            {
+              "time": "Today",
+              "title": "A poll for every event",
+              "body": "UPI screenshots matched by hand, and a headcount you only learn at the door."
+            },
+            {
+              "time": "On {{brand.name}}",
+              "title": "Bookings, paid at the time",
+              "body": "A waitlist, a cancellation policy, and messages to everyone from the app."
+            },
+            {
+              "time": "Guests",
+              "title": "One link instead of a poll",
+              "body": "They pay by UPI or card, and the group stays for chat and photos."
+            }
+          ]
+        },
+        {
+          "label": "Google Forms",
+          "accent": "indigo",
+          "title": "From a form and a sheet",
+          "list": [
+            {
+              "time": "Today",
+              "title": "A form for sign-ups or applications",
+              "body": "Payment chased separately, and a sheet to work out who’s confirmed."
+            },
+            {
+              "time": "On {{brand.name}}",
+              "title": "Your questions, as applications",
+              "body": "Past answers imported from a CSV or Excel export. Accept someone and offer them a place."
+            },
+            {
+              "time": "Guests",
+              "title": "The same questions, on your page",
+              "body": "One link to apply, with no form to find."
+            }
+          ]
+        },
+        {
+          "label": "Another ticketing site",
+          "accent": "mint",
+          "title": "From someone else’s site",
+          "list": [
+            {
+              "time": "Today",
+              "title": "Tickets sold on another site",
+              "body": "A door list you download before every event."
+            },
+            {
+              "time": "On {{brand.name}}",
+              "title": "Your guest lists, imported",
+              "body": "Your page, your followers, the door, the night and the follow-up."
+            },
+            {
+              "time": "Guests",
+              "title": "Booking on your page, with no app",
+              "body": "Check-in on their own phone, and an update from you about your next event."
+            }
+          ]
+        },
+        {
+          "label": "Instagram DMs",
+          "accent": "pink",
+          "title": "From “DM to book”",
+          "list": [
+            {
+              "time": "Today",
+              "title": "A lot of replies",
+              "body": "Payment details sent one by one, and names on a note on your phone."
+            },
+            {
+              "time": "On {{brand.name}}",
+              "title": "One page for your bio",
+              "body": "Bookings and payments together, and followers you can tell about your next event."
+            },
+            {
+              "time": "Guests",
+              "title": "Book from your bio",
+              "body": "No waiting for a reply, and the details in one place."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tiles",
+      "id": "two-ways",
+      "ground": "paper",
+      "kicker": "Two ways to move",
+      "title": "We help you move it, or you do it yourself.",
+      "columns": 2,
+      "items": [
+        {
+          "title": "We help you move it",
+          "body": "Free for every new host.",
+          "list": [
+            "Send us your sheet, form export or last guest list on WhatsApp",
+            "We set up your page and your next event with you",
+            "You check it, and put your next event on sale"
+          ],
+          "ground": "coral",
+          "link": {
+            "label": "Send us your sheet",
+            "to": {
+              "kind": "whatsapp",
+              "message": "Hi {{brand.name}}, here’s my guest list. Can you help me move it to {{brand.name}}?"
+            }
+          }
+        },
+        {
+          "title": "Import it yourself",
+          "body": "Self-serve, in a few steps.",
+          "list": [
+            "Export a CSV or Excel file from your sheet, form or ticketing site",
+            "In {{brand.stores.hostAppName}}, import it into your event",
+            "Match your columns, check the preview, and import"
+          ],
+          "ground": "white",
+          "link": {
+            "label": "Start free trial",
+            "to": {
+              "route": "host_start"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "checklist",
+      "id": "comes-with-you",
+      "ground": "white",
+      "kicker": "What comes with you",
+      "title": "Nothing gets left behind.",
+      "lead": "Your guests, their answers and your group all come along, and you can take your contacts out again whenever you want.",
+      "items": [
+        {
+          "title": "Past guest lists",
+          "body": "Import a CSV or Excel file."
+        },
+        {
+          "title": "Form answers",
+          "body": "Import past applications from a Google Forms export."
+        },
+        {
+          "title": "Your followers",
+          "body": "People follow your page with their phone number."
+        },
+        {
+          "title": "Your WhatsApp group",
+          "body": "Keep it for chat; bookings move to {{brand.name}}."
+        },
+        {
+          "title": "Your prices and policy",
+          "body": "Set once for each event, applied to every booking."
+        },
+        {
+          "title": "Your contacts, always",
+          "body": "Export them whenever you like."
+        }
+      ]
+    },
+    {
+      "type": "timeline",
+      "id": "first-month",
+      "ground": "ink",
+      "kicker": "Your first month on {{brand.name}}",
+      "title": "How a switch can go.",
+      "steps": [
+        {
+          "time": "Day 1",
+          "title": "Your page and next event, set up",
+          "body": "With us or on your own. Past guests and form answers imported."
+        },
+        {
+          "time": "Day 2",
+          "title": "One message to the group",
+          "body": "“From now on, book here.” Pin the link. The group stays for chat and photos."
+        },
+        {
+          "time": "Week 1",
+          "title": "Bookings come in, paid",
+          "body": "No more chasing screenshots. You see who’s booked, who’s paid and who’s on the waitlist."
+        },
+        {
+          "time": "The event",
+          "title": "A door list that’s right",
+          "body": "Guests scan in. You see who came, who didn’t and who’s new."
+        },
+        {
+          "time": "After",
+          "title": "Your guest records",
+          "body": "Who came and who didn’t, so you know who to thank and who to invite back."
+        }
+      ],
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Switching questions",
+      "title": "What switching hosts ask us.",
+      "items": [
+        {
+          "question": "Do I have to close my WhatsApp group?",
+          "answer": "No. Keep it for chat and photos and pin the booking link. Bookings and payments move to {{brand.name}}."
+        },
+        {
+          "question": "What can I import?",
+          "answer": "Guest lists from a CSV or Excel file, and past applications from a form export such as Google Forms. Match your columns, check the preview and import."
+        },
+        {
+          "question": "Will my guests have to download an app?",
+          "answer": "No. They book on your page in their phone’s browser."
+        },
+        {
+          "question": "I still have events on sale elsewhere.",
+          "answer": "Leave them there and put your next event on {{brand.name}}. You can import those guest lists afterwards."
+        },
+        {
+          "question": "Can I take my contacts out again?",
+          "answer": "Yes. Export your contacts from {{brand.stores.hostAppName}} whenever you like."
+        },
+        {
+          "question": "What does it cost?",
+          "answer": "Nothing for 30 days from your first event on {{brand.name}}, or 90 for founding hosts. Then 5% of ticket sales, never more than ₹10,000 a month. Help moving your list is free."
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Your next event",
+      "title": "Make it the first one without the spreadsheet.",
+      "lead": "Free for 30 days from your first event, or 90 for founding hosts.",
+      "actions": [
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Send us your sheet on WhatsApp",
+          "to": {
+            "kind": "whatsapp",
+            "message": "Hi {{brand.name}}, I’d like help moving my guest list to {{brand.name}}."
+          },
+          "emphasis": "secondary"
+        }
+      ],
+      "media": {
+        "kind": "capture",
+        "slot": "host-door-in"
+      }
+    }
+  ]
+}

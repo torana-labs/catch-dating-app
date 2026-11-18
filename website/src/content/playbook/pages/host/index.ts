@@ -26,4 +26,8 @@ export const hostPlaybookPages: PlaybookPageIndex = {
   host_colleges: {file: "colleges.json", load: () => import("./colleges.json")},
   host_brands: {file: "brands.json", load: () => import("./brands.json")},
   host_walkthrough: {file: "walkthrough.json", load: () => import("./walkthrough.json")},
+  host_start: {file: "start.json", load: () => import("./start.json")},
+  host_first_event: {file: "first-event.json", load: () => import("./first-event.json")},
+  host_switch: {file: "switch.json", load: () => import("./switch.json")},
+  programmes: {file: "programmes.json", load: () => import("./programmes.json")},
 };

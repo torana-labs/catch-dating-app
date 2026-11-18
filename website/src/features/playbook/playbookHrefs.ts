@@ -9,13 +9,11 @@ const routeHrefs: Readonly<Record<string, string>> = {
 
 /**
  * Where links to a page go until the page ships: the one place to switch
- * them. A page names `{"route": "host_start"}`, and until /host/start/ has
- * content the link lands on the host landing's start band. Remove an entry
- * when its page's content lands.
+ * them. A page may name `{"route": "<id>"}` before its content lands, with
+ * an entry here sending the link to a stand-in path; remove the entry when
+ * the page's content lands. /host/start/ shipped, so none is left.
  */
-export const playbookRouteAliases: Readonly<Record<string, string>> = {
-  host_start: "/host/#start",
-};
+export const playbookRouteAliases: Readonly<Record<string, string>> = {};
 
 /** A WhatsApp chat with the support number in the brand record, the message already typed. */
 export function playbookWhatsAppHref(message: string): string {

@@ -1,0 +1,73 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "host_start",
+  "route": "host_start",
+  "meta": {
+    "title": "Start your free trial | {{brand.stores.hostAppName}}",
+    "description": "Download {{brand.stores.hostAppName}}, set up your first event, and run it tonight if you like. Free for 30 days from your first event, or 90 for founding hosts.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "minimal",
+    "action": {
+      "label": "WhatsApp us",
+      "to": {
+        "kind": "whatsapp",
+        "message": "Hi {{brand.name}}, I have a question before I start with {{brand.stores.hostAppName}}."
+      }
+    }
+  },
+  "footer": {
+    "variant": "minimal"
+  },
+  "sections": [
+    {
+      "type": "split",
+      "id": "start",
+      "ground": "coral",
+      "pageTitle": true,
+      "kicker": "Free for 30 days · founding hosts get 90",
+      "title": "Start your free trial.",
+      "lead": "Download {{brand.stores.hostAppName}}, set up your first event, and run it tonight if you like. No call, no application.",
+      "ticks": [
+        "Download {{brand.stores.hostAppName}}, on iPhone, Android or iPad",
+        "Set up your page and your first event: pick a format, set the price, publish when you’re ready",
+        "Your free days start when doors open: no {{brand.name}} fee until then"
+      ],
+      "body": "On a laptop? Scan the code with your phone, or get the link on WhatsApp.",
+      "media": {
+        "kind": "qr",
+        "to": {
+          "route": "host_start"
+        },
+        "label": "Scan to get {{brand.stores.hostAppName}} on your phone"
+      }
+    },
+    {
+      "type": "cta",
+      "id": "get-app",
+      "ground": "paper",
+      "kicker": "Get {{brand.stores.hostAppName}}",
+      "title": "Download it, or get the link on WhatsApp.",
+      "lead": "Free for 30 days from your first event, or 90 for founding hosts. Then 5% of ticket sales, never more than ₹10,000 a month. Free events stay free.",
+      "storeBadges": "host",
+      "actions": [
+        {
+          "label": "Get the link on WhatsApp",
+          "to": {
+            "kind": "whatsapp",
+            "message": "Hi {{brand.name}}, please send me the {{brand.stores.hostAppName}} download link."
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Book a 15-minute walkthrough",
+          "to": {
+            "route": "host_walkthrough"
+          },
+          "emphasis": "secondary"
+        }
+      ]
+    }
+  ]
+}
