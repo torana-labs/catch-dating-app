@@ -19,8 +19,8 @@
       "workspaceRoute",
       "indexRoutes"
     ],
-    "imperativePageRouteCount": 31,
-    "imperativePageTargetCount": 26
+    "imperativePageRouteCount": 32,
+    "imperativePageTargetCount": 27
   },
   "routes": [
     {
@@ -1927,6 +1927,15 @@
       "ordinal": 1,
       "presentationExpression": "(_)=>HostOrganizerEventDefaultsScreen(organizerId:organizerId)",
       "presentationTarget": "HostOrganizerEventDefaultsScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/events/event_workspace_screen.dart:0dae1a4058f80c3dc5e455129d0a1866aa5a187c67e386318796ecce09f061ef:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostEventGuestSourcesScreen(request:request))",
+      "sourcePath": "lib/hosts/events/event_workspace_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostEventGuestSourcesScreen(request:request)",
+      "presentationTarget": "HostEventGuestSourcesScreen",
       "fullscreenDialogExpression": null
     },
     {

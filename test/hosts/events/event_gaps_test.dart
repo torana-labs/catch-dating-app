@@ -151,37 +151,40 @@ void main() {
   });
 
   group('Workspace', () {
-    testWidgets('links to sharing and moments; arrival opens moments', (
-      tester,
-    ) async {
-      final actions = <HostEventWorkspaceAction>[];
-      await _pump(
-        tester,
-        HostEventWorkspaceBody(
-          state: HostEventWorkspaceState(
-            status: HostEventWorkspaceStatus.ready,
-            event: tonightEvent,
-            planSteps: 5,
-            door: const ['Kabir Rao'],
-            doorChecked: true,
-            arrivalReady: true,
+    testWidgets(
+      'links to sharing, guest sources and moments; arrival opens moments',
+      (tester) async {
+        final actions = <HostEventWorkspaceAction>[];
+        await _pump(
+          tester,
+          HostEventWorkspaceBody(
+            state: HostEventWorkspaceState(
+              status: HostEventWorkspaceStatus.ready,
+              event: tonightEvent,
+              planSteps: 5,
+              door: const ['Kabir Rao'],
+              doorChecked: true,
+              arrivalReady: true,
+            ),
+            now: eventsNow,
+            onView: (_) {},
+            onAction: actions.add,
+            onRetry: () {},
           ),
-          now: eventsNow,
-          onView: (_) {},
-          onAction: actions.add,
-          onRetry: () {},
-        ),
-      );
+        );
 
-      await tester.tap(find.text('Share and invite links'));
-      await tester.tap(find.text('Moments'));
-      await tester.tap(find.text('Arrival message is ready'));
-      expect(actions, [
-        HostEventWorkspaceAction.share,
-        HostEventWorkspaceAction.moments,
-        HostEventWorkspaceAction.moments,
-      ]);
-    });
+        await tester.tap(find.text('Share and invite links'));
+        await tester.tap(find.text('Guest sources'));
+        await tester.tap(find.text('Moments'));
+        await tester.tap(find.text('Arrival message is ready'));
+        expect(actions, [
+          HostEventWorkspaceAction.share,
+          HostEventWorkspaceAction.sources,
+          HostEventWorkspaceAction.moments,
+          HostEventWorkspaceAction.moments,
+        ]);
+      },
+    );
 
     test('only an event nobody booked can be deleted', () {
       DateTime at(int hour) => DateTime(2026, 11, 3, hour);

@@ -14,6 +14,7 @@ enum HostEventWorkspaceAction {
   plan,
   publish,
   share,
+  sources,
   moments,
   closeOut,
   edit,
@@ -181,6 +182,14 @@ class HostEventWorkspaceBody extends StatelessWidget {
                 : l10n.hostEventsLinkShareBody,
             chevron: true,
             onTap: () => onAction(HostEventWorkspaceAction.share),
+          ),
+        if (!cancelled)
+          CatchIndexRow(
+            key: const ValueKey<String>('host-event-link-sources'),
+            title: l10n.hostEventsGuestSourcesTitle,
+            subtitle: l10n.hostEventsGuestSourcesBody,
+            chevron: true,
+            onTap: () => onAction(HostEventWorkspaceAction.sources),
           ),
         CatchIndexRow(
           key: const ValueKey<String>('host-event-link-moments'),

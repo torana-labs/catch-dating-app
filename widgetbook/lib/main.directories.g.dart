@@ -9716,6 +9716,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostEventGuestSourcesScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'A Catch night',
+                    builder:
+                        _widgetbook_workspace_hosts_host_event_gaps_use_cases
+                            .hostEventGuestSourcesScreenUseCase,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostEventInviteLinkRow',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

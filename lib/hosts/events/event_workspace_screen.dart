@@ -6,6 +6,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/hosts/events/access/event_door_screen.dart';
+import 'package:catch_dating_app/hosts/events/access/event_guest_sources_screen.dart';
 import 'package:catch_dating_app/hosts/events/access/event_share_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_guests_screen.dart';
@@ -296,6 +297,14 @@ class _HostEventWorkspaceActions {
           Navigator.of(context).push(
             MaterialPageRoute<void>(
               builder: (_) => HostEventShareScreen(request: request),
+            ),
+          ),
+        );
+      case HostEventWorkspaceAction.sources:
+        unawaited(
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => HostEventGuestSourcesScreen(request: request),
             ),
           ),
         );
