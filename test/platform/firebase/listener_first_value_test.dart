@@ -13,6 +13,7 @@ void main() {
       'stays open, and a late snapshot still fills the screen', () {
     fakeAsync((async) {
       final source = StreamController<int>();
+      addTearDown(source.close);
       final listener = StreamProvider.autoDispose<int>(
         (ref) =>
             source.stream.firstValueWithin(_deadline, clock: const AppClock()),
@@ -37,6 +38,7 @@ void main() {
       'data shows, silence never times out', () {
     fakeAsync((async) {
       final source = StreamController<int>();
+      addTearDown(source.close);
       final events = <Object>[];
       source.stream
           .firstValueWithin(_deadline, clock: const AppClock())
@@ -51,6 +53,7 @@ void main() {
   test('an error before the deadline passes through and ends the deadline', () {
     fakeAsync((async) {
       final source = StreamController<int>();
+      addTearDown(source.close);
       final errors = <Object>[];
       source.stream
           .firstValueWithin(_deadline, clock: const AppClock())
@@ -66,6 +69,7 @@ void main() {
   test('cancelling the listener cancels the deadline and the source', () {
     fakeAsync((async) {
       final source = StreamController<int>();
+      addTearDown(source.close);
       final subscription = source.stream
           .firstValueWithin(_deadline, clock: const AppClock())
           .listen((_) => fail('no event expected'));

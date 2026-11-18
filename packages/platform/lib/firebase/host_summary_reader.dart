@@ -4,8 +4,8 @@ import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/cache/cache_policies.dart';
 import 'package:catch_platform/errors/app_exception.dart';
 import 'package:catch_platform/errors/backend_error_util.dart';
-import 'package:catch_platform/firebase/live_paged_query.dart';
 import 'package:catch_platform/firebase/listener_first_value.dart';
+import 'package:catch_platform/firebase/live_paged_query.dart';
 import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
@@ -68,11 +68,11 @@ class HostSummaryReader {
   HostSummaryReader(
     this._firestore, {
     required this.actorId,
-    AppClock clock = const AppClock(),
-  }) : _clock = clock;
+    this.clock = const AppClock(),
+  });
   final FirebaseFirestore _firestore;
   final String? Function() actorId;
-  final AppClock _clock;
+  final AppClock clock;
   final _directories = <String, Future<Map<String, dynamic>?>>{};
 
   String _actor() {
@@ -136,7 +136,7 @@ class HostSummaryReader {
           .doc(organizerId)
           .snapshots()
           .where((doc) => doc.exists || !doc.metadata.isFromCache)
-          .firstValueWithin(_listenerFirstValue, clock: _clock),
+          .firstValueWithin(_listenerFirstValue, clock: clock),
       context: const BackendErrorContext(
         service: BackendService.firestore,
         action: 'watch Host directory readiness',
@@ -328,7 +328,7 @@ class HostSummaryReader {
         .doc(id)
         .snapshots()
         .where((doc) => doc.exists || !doc.metadata.isFromCache)
-        .firstValueWithin(_listenerFirstValue, clock: _clock)
+        .firstValueWithin(_listenerFirstValue, clock: clock)
         .map((doc) {
           final data = doc.data();
           if (data != null &&

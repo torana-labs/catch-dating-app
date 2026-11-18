@@ -1,6 +1,7 @@
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_platform/riverpod_ui/pending_write_observer.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -47,6 +48,22 @@ void main() {
     );
     return container;
   }
+
+  testWidgets('a write still running says so, and the notice leaves when it '
+      'settles', (tester) async {
+    final container = await mount(tester);
+    expect(find.text('Still working on it…'), findsNothing);
+
+    container.read(stillWorkingWritesProvider.notifier).add();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Still working on it…'), findsOneWidget);
+
+    container.read(stillWorkingWritesProvider.notifier).remove();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('Still working on it…'), findsNothing);
+  });
 
   for (final dark in [false, true]) {
     for (final scale in [1.0, 2.0]) {
