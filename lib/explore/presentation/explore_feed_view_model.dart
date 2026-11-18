@@ -115,6 +115,33 @@ String exploreFeedDayLabel(
   return EventFormatters.shortDate(day);
 }
 
+/// The organizer an Explore card or filter reads, built from the summary the
+/// event carries (copied from its public organizer by the Functions triggers),
+/// so nothing looks the organizer up by id. Only the summary's fields are
+/// filled, with no description, creation time or contact details. Null while
+/// the event has no summary; Explore treats that as a hidden organizer.
+Organizer? exploreOrganizerOf(Event event) {
+  final summary = event.organizerSummary;
+  if (summary == null) return null;
+  return Organizer(
+    id: event.organizerId,
+    synthetic: summary.synthetic,
+    name: summary.name,
+    description: '',
+    location: summary.location,
+    area: summary.area,
+    hostName: summary.hostName,
+    tags: summary.tags,
+    rating: summary.rating,
+    status: OrganizerLifecycleStatus.values.byName(summary.status.name),
+    archived: summary.archived,
+    appVisibility: OrganizerAppVisibility.values.byName(
+      summary.appVisibility.name,
+    ),
+    createdAt: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+  );
+}
+
 class ExploreEventItem {
   const ExploreEventItem({
     required this.event,

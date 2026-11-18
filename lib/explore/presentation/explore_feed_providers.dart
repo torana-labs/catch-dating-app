@@ -15,7 +15,6 @@ import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
 import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizer_follow_repository.dart';
-import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_discovery_window_controller.dart';
@@ -79,7 +78,6 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final city = ref.watch(selectedExploreCityProvider);
   final query = ref.watch(exploreSearchQueryProvider);
   final filters = ref.watch(exploreFiltersProvider);
-  final organizersAsync = ref.watch(exploreSourceOrganizersProvider);
   final uidAsync = ref.watch(uidProvider);
   final now = ref.watch(exploreDiscoveryReferenceNowProvider);
   final selectedTimeWindow = exploreTimeWindowFor(filters.timeFilter, now);
@@ -94,7 +92,6 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final deviceLocationAsync = distanceFilterKm == null
       ? const AsyncData<LocationCoordinate?>(null)
       : ref.watch(deviceLocationProvider);
-  final organizersState = catchAsyncStateFromAsyncValue(organizersAsync);
   final uidState = catchAsyncStateFromAsyncValue(uidAsync);
   final deviceLocationState = catchAsyncStateFromAsyncValue(
     deviceLocationAsync,
@@ -117,16 +114,8 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
 
   final searchState = catchAsyncStateFromAsyncValue(searchAsync);
 
-  if (organizersState.isLoading ||
-      uidState.isLoading ||
-      deviceLocationState.isLoading) {
+  if (uidState.isLoading || deviceLocationState.isLoading) {
     return const AsyncLoading();
-  }
-  if (organizersState.hasError) {
-    return AsyncError(
-      organizersState.error!,
-      organizersState.stackTrace ?? StackTrace.current,
-    );
   }
   if (uidState.hasError) {
     return AsyncError(
@@ -141,10 +130,6 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
     );
   }
 
-  final sourceOrganizers = organizersState.value ?? const <Organizer>[];
-  final sourceOrganizerIds = sourceOrganizers
-      .map((organizer) => organizer.id)
-      .toSet();
   final searchResult = searchState.value;
   final serverEventIds = searchResult?.eventIds.toSet();
   final serverOrganizerIds = searchResult?.organizerIds.toSet();
@@ -328,39 +313,13 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   for (final event in searchEventsState.value ?? const <Event>[]) {
     eventsById[event.id] = event;
   }
-  final extraOrganizerIds = <String>{
-    for (final organizerId in serverOrganizerIds ?? const <String>{})
-      if (!sourceOrganizerIds.contains(organizerId)) organizerId,
-    for (final event in eventsById.values)
-      if (!sourceOrganizerIds.contains(event.organizerId)) event.organizerId,
-  };
-  final extraOrganizersAsync = extraOrganizerIds.isEmpty
-      ? const AsyncData<List<Organizer>>([])
-      : ref.watch(
-          watchOrganizersForMessagingByIdsProvider(
-            OrganizersByIdQuery(extraOrganizerIds),
-          ),
-        );
-  final extraOrganizersState = catchAsyncStateFromAsyncValue(
-    extraOrganizersAsync,
-  );
-  if (extraOrganizersState.isLoading) return const AsyncLoading();
-  if (extraOrganizersState.hasError) {
-    return AsyncError(
-      extraOrganizersState.error!,
-      extraOrganizersState.stackTrace ?? StackTrace.current,
-    );
-  }
-  final organizerById = {
-    for (final organizer in sourceOrganizers) organizer.id: organizer,
-    for (final organizer in extraOrganizersState.value ?? const <Organizer>[])
-      organizer.id: organizer,
-  };
   final deviceLocation = deviceLocationState.value;
   final allItems = eventsById.values
       .where((event) => event.isUpcomingAt(now))
       .map((event) {
-        final organizer = organizerById[event.organizerId];
+        // The organizer comes from the summary the event carries; an event
+        // without one reads as a hidden organizer and is not listed.
+        final organizer = exploreOrganizerOf(event);
         final participation = participationByEventId[event.id];
         final isSignedUpSyntheticFixture =
             event.synthetic &&
