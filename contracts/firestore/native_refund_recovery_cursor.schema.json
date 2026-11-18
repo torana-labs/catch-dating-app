@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/native_refund_recovery_cursor.schema.json",
   "title": "NativeRefundRecoveryCursorDocument",
-  "description": "Server-only, project-bound progress for bounded payment recovery queues. Revision compare-and-set prevents stale concurrent invocations from moving discovery backward; a null cursor means wrap to the oldest eligible row.",
+  "description": "Server-only, project-bound progress for bounded payment recovery queues. Revision compare-and-set prevents stale concurrent invocations from moving discovery backward; a null cursor means wrap to the oldest eligible row. Kept: the scheduled native refund recovery sweep reads and writes it, and that sweep still refunds captured native Razorpay and Stripe payments for cancelled events and sign-ups. Native checkout itself was retired in #1861, so the sweep and this collection retire together once no captured native payment can still need a refund.",
   "type": "object",
   "additionalProperties": false,
   "required": [

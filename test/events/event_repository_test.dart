@@ -40,16 +40,13 @@ void main() {
       expect(generatedDoc.exists, isFalse);
     });
 
-    test('generateBroadcastRequestId does not write a receipt', () async {
+    test('generateBroadcastRequestId writes nothing', () async {
       final requestId = repository.generateBroadcastRequestId();
 
       expect(requestId, isNotEmpty);
+      expect(requestId, isNot(repository.generateBroadcastRequestId()));
       expect(
-        (await firestore
-                .collection('eventBroadcastRequests')
-                .doc(requestId)
-                .get())
-            .exists,
+        (await firestore.collection('events').doc(requestId).get()).exists,
         isFalse,
       );
     });
