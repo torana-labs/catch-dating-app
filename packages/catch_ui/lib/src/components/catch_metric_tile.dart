@@ -125,11 +125,15 @@ class CatchMetricTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: CatchSpacing.micro6,
         children: [
-          CatchText(
-            label,
-            variant: CatchTextVariant.labelKicker,
-            tone: CatchTextTone.secondary,
-          ),
+          // A tile reads its label first; the inline layout puts the number
+          // over its label, in the ink of what it sits on, as the system
+          // Stat does in spotlights, posters and strips.
+          if (!inline)
+            CatchText(
+              label,
+              variant: CatchTextVariant.labelKicker,
+              tone: CatchTextTone.secondary,
+            ),
           CatchText(
             value!,
             variant: inline
@@ -138,6 +142,7 @@ class CatchMetricTile extends StatelessWidget {
             numeric: true,
             maxLines: 1,
           ),
+          if (inline) CatchText(label, variant: CatchTextVariant.labelKicker),
           if (note != null)
             CatchText(
               note,
