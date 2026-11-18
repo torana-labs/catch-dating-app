@@ -72,8 +72,10 @@ class GuestEventCardsRepository {
     required String uid,
     required List<String> eventIds,
   }) {
-    final ids = {for (final eventId in eventIds) '${eventId}_$uid'}.toList()
-      ..sort();
+    final ids = {
+      for (final eventId in eventIds)
+        guestEventStatusId(eventId: eventId, uid: uid),
+    }.toList()..sort();
     if (ids.isEmpty) return Stream.value(const {});
     final chunks = chunkedForWhereIn(
       ids,
@@ -230,6 +232,11 @@ Stream<Map<String, GuestEventCard>> watchOwnEventCardsForEvents(
 ) => ref
     .watch(guestEventCardsRepositoryProvider)
     .watchOwnCardsForEvents(uid: query.uid, eventIds: query.eventIds);
+
+/// The id of one guest's status row for one event, as the status trigger
+/// writes it.
+String guestEventStatusId({required String eventId, required String uid}) =>
+    '${eventId}_$uid';
 
 /// One guest and a set of event ids: the key is order-free.
 @immutable
