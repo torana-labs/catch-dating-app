@@ -45,6 +45,7 @@
   "onAssistanceWhatsappBudgetChanged",
   "onAssistanceWhatsappPermissionChanged",
   "onEventParticipationRosterProjected",
+  "onHostApplicationGrantSummaryChanged",
   "onHostEventSetupViewBookingPaymentChanged",
   "onHostEventSetupViewPaymentChanged",
   "onHostEventSetupViewPendingOrderChanged",

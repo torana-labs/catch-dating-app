@@ -1930,10 +1930,6 @@ service cloud.firestore {
       allow list, write: if false;
     }
 
-    match /participantOrganizerDataGrants/{grantId} {
-      allow read, write: if false;
-    }
-
     // An event's booking-provider mapping holds no credential. A current
     // manager of its organizer gets it by its derived id (eem_ + sha256 of
     // the event id); an event without a mapping reads as missing. Nobody
