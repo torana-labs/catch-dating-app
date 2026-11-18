@@ -632,6 +632,7 @@ operations/
   src/admin/                       action catalog, client, local receipts
   src/command-client/              shared callable transport, receipts, argv, envelope
   src/catch-cli/                   product command CLI over contracts/commands
+  src/command-tools/               catalog commands as AI tools, preview-then-confirm
   src/platform/                    reusable execution and persistence ports
   src/platform/network/            guarded public-web page fetcher
   src/workflows/registry.mjs       workflow inventory and factories
@@ -755,6 +756,12 @@ instead of applying twice. Live calls need `CATCH_ID_TOKEN` and
 its clients: every command loads, carries the shared envelope, has a closed
 `input` object and an effect class every client can confirm.
 `functions/src/commands/catalog.test.ts` keeps it in step with the callables.
+
+`operations/src/command-tools/` turns the same catalog into AI tool
+definitions for an agent client (the later WhatsApp surface). A tool call only
+previews; the client applies a preview only on the person's own confirmation,
+always with the reviewed preview hash, and for messaging or money only when the
+confirmation names that exact hash. See its README for the protocol.
 
 Employees monitor these receipts at `/operations`. Manual execution continues
 in the owning admin route named by the catalog; the monitor is read-only and
