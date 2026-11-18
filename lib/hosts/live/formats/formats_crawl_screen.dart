@@ -42,6 +42,7 @@ class HostFormatsCrawlScreen extends ConsumerStatefulWidget {
     this.now,
     this.moving = false,
     this.onBack,
+    this.onOpenGuests,
   });
 
   final Organizer organizer;
@@ -55,6 +56,9 @@ class HostFormatsCrawlScreen extends ConsumerStatefulWidget {
 
   /// Null pops the nearest navigator.
   final VoidCallback? onBack;
+
+  /// Opens the door, where late guests are checked in; null hides Guests.
+  final VoidCallback? onOpenGuests;
 
   @override
   ConsumerState<HostFormatsCrawlScreen> createState() =>
@@ -133,6 +137,7 @@ class _HostFormatsCrawlScreenState extends ConsumerState<HostFormatsCrawlScreen>
             body: HostFormatsCrawlBody(
               state: state,
               now: now,
+              onGuests: widget.onOpenGuests,
               onMove: () => setState(() {
                 _moving = true;
                 _requestId = null;

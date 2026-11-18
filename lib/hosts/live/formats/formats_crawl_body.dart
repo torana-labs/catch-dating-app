@@ -21,6 +21,7 @@ class HostFormatsCrawlBody extends StatelessWidget {
     required this.onMessage,
     required this.onRetry,
     this.onSweep,
+    this.onGuests,
   });
 
   final HostFormatsCrawlState state;
@@ -33,6 +34,9 @@ class HostFormatsCrawlBody extends StatelessWidget {
 
   /// Opens the return sweep; null hides it.
   final VoidCallback? onSweep;
+
+  /// Opens the door, where a late guest is checked in; null hides Guests.
+  final VoidCallback? onGuests;
 
   /// Not here yet shows this many people; the note counts the rest.
   static const int missingShown = 5;
@@ -186,6 +190,15 @@ class HostFormatsCrawlBody extends StatelessWidget {
               ),
           ],
         ),
+        if (onGuests case final onGuests?)
+          CatchButton(
+            key: const ValueKey<String>('formats-crawl-guests'),
+            label: l10n.hostLiveViewGuests,
+            variant: CatchButtonVariant.secondary,
+            leading: CatchIcon(CatchIcons.people),
+            fullWidth: true,
+            onPressed: onGuests,
+          ),
         if (onSweep case final onSweep?)
           CatchButton(
             key: const ValueKey<String>('formats-crawl-sweep'),

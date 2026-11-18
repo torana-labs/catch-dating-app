@@ -35,6 +35,7 @@ class HostFormatsRunScreen extends ConsumerStatefulWidget {
     required this.organizer,
     required this.event,
     this.onBack,
+    this.onOpenGuests,
     this.now,
   });
 
@@ -43,6 +44,9 @@ class HostFormatsRunScreen extends ConsumerStatefulWidget {
 
   /// Null pops the nearest navigator.
   final VoidCallback? onBack;
+
+  /// Opens the door, where late guests are checked in; null hides Guests.
+  final VoidCallback? onOpenGuests;
 
   /// A fixed clock for previews and tests; null follows the app clock.
   final DateTime? now;
@@ -93,6 +97,7 @@ class _HostFormatsRunScreenState extends ConsumerState<HostFormatsRunScreen>
           marking: _marking,
           onAccounted: (person) => unawaited(_markAccounted(person)),
           onCall: (phone) => callHostFormatsGuest(ref, phone),
+          onGuests: widget.onOpenGuests,
           onClose: () => unawaited(
             Navigator.of(context).push(
               MaterialPageRoute<void>(

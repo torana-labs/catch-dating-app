@@ -147,6 +147,11 @@ class HostEventManageRouteScreen extends ConsumerWidget {
         final onBack =
             CatchWorkspaceBackScope.maybeOf(context) ??
             () => Navigator.of(context).maybePop();
+        void openGuests() => context.pushNamed(
+          Routes.hostEventRosterScreen.name,
+          pathParameters: {'organizerId': organizer.id, 'eventId': event.id},
+          extra: event,
+        );
         final plan = ref.watch(watchEventSuccessPlanProvider(event.id)).value;
         final destination = hostEventRouteDestination(
           section: initialSection,
@@ -165,26 +170,21 @@ class HostEventManageRouteScreen extends ConsumerWidget {
             organizer: organizer,
             event: event,
             onBack: onBack,
-            onOpenGuests: () => context.pushNamed(
-              Routes.hostEventRosterScreen.name,
-              pathParameters: {
-                'organizerId': organizer.id,
-                'eventId': event.id,
-              },
-              extra: event,
-            ),
+            onOpenGuests: openGuests,
             now: referenceNow,
           ),
           HostEventRouteDestination.runConsole => HostFormatsRunScreen(
             organizer: organizer,
             event: event,
             onBack: onBack,
+            onOpenGuests: openGuests,
             now: referenceNow,
           ),
           HostEventRouteDestination.crawlBoard => HostFormatsCrawlScreen(
             organizer: organizer,
             event: event,
             onBack: onBack,
+            onOpenGuests: openGuests,
             now: referenceNow,
           ),
           // Setup and guests return above; a night with a saved room layout

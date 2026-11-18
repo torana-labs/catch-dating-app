@@ -348,4 +348,28 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('formats-crawl-sweep')));
     expect(swept, 1);
   });
+
+  testWidgets('a run without a plan still opens the door and the sweep', (
+    tester,
+  ) async {
+    var guests = 0;
+    var closed = 0;
+    await _pump(
+      tester,
+      HostFormatsRunBody(
+        state: const HostFormatsRunState(status: HostFormatsRunStatus.noPlan),
+        now: _runStart,
+        onAccounted: (_) {},
+        onCall: (_) {},
+        onClose: () => closed++,
+        onRetry: () {},
+        onGuests: () => guests++,
+      ),
+    );
+
+    await tester.tap(find.byKey(const ValueKey('formats-run-guests')));
+    await tester.tap(find.byKey(const ValueKey('formats-run-close')));
+    expect(guests, 1);
+    expect(closed, 1);
+  });
 }

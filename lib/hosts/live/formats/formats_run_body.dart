@@ -25,6 +25,7 @@ class HostFormatsRunBody extends StatelessWidget {
     required this.onRetry,
     this.marking = const <String>{},
     this.location,
+    this.onGuests,
   });
 
   final HostFormatsRunState state;
@@ -32,6 +33,9 @@ class HostFormatsRunBody extends StatelessWidget {
 
   /// Marks a runner back.
   final ValueChanged<HostFormatsOut> onAccounted;
+
+  /// Opens the door, where a late runner is checked in; null hides Guests.
+  final VoidCallback? onGuests;
 
   /// Calls a runner on the number they gave.
   final ValueChanged<String> onCall;
@@ -62,11 +66,28 @@ class HostFormatsRunBody extends StatelessWidget {
           ),
         );
       case HostFormatsRunStatus.noPlan:
+        // Without a plan there are no steps or pods, but the door and the
+        // return sweep still work.
         return CatchPageBody(
           child: CatchEmptyState(
             icon: CatchIcons.route,
             title: l10n.hostFormatsRunNoPlanTitle,
             message: l10n.hostFormatsRunNoPlanBody,
+            actions: [
+              if (onGuests case final onGuests?)
+                CatchButton(
+                  key: const ValueKey<String>('formats-run-guests'),
+                  label: l10n.hostLiveViewGuests,
+                  leading: CatchIcon(CatchIcons.people),
+                  onPressed: onGuests,
+                ),
+              CatchButton(
+                key: const ValueKey<String>('formats-run-close'),
+                label: l10n.hostFormatsRunClose,
+                variant: CatchButtonVariant.secondary,
+                onPressed: onClose,
+              ),
+            ],
           ),
         );
       case HostFormatsRunStatus.running:
@@ -163,6 +184,15 @@ class HostFormatsRunBody extends StatelessWidget {
                 ),
           ],
         ),
+        if (onGuests case final onGuests?)
+          CatchButton(
+            key: const ValueKey<String>('formats-run-guests'),
+            label: l10n.hostLiveViewGuests,
+            variant: CatchButtonVariant.secondary,
+            leading: CatchIcon(CatchIcons.people),
+            fullWidth: true,
+            onPressed: onGuests,
+          ),
         CatchButton(
           key: const ValueKey<String>('formats-run-close'),
           label: sweep.out.isEmpty && sweep.checkedIn > 0
