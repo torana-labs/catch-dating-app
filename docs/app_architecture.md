@@ -1882,7 +1882,7 @@ longer exposes repeated cards, rows, boxes, chips, or fake screen/sliver
 adapters; callers must choose the real composition or the centered state
 viewport.
 
-Both primitives apply `InitialLoadPolicy.standard` (12 seconds) to the first
+Both primitives apply the first-load deadline of the read class (`CachePolicies.defaultFirstLoad`, 10 seconds, unless the freshness table gives the class its own) to the first
 user-visible resolution and to blocking retries that have no credible data.
 When the deadline expires, the skeleton becomes a branded timeout state. Every
 presentation call site must supply `onRetry`; the

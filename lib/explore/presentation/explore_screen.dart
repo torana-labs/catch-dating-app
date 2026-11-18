@@ -26,16 +26,18 @@ import 'package:catch_dating_app/routing/shell/app_shell_active_tab.dart';
 import 'package:catch_kernel/city_data.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/analytics/app_analytics.dart';
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/cache/cache_policies.dart';
 import 'package:catch_platform/cities/city_repository.dart';
 import 'package:catch_platform/device/device_location.dart';
 import 'package:catch_platform/device/external_links.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/errors/app_exception.dart';
-import 'package:catch_platform/firebase/initial_load_policy.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/riverpod_ui/failed_reads.dart';
+import 'package:catch_platform/riverpod_ui/provider_settled.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -704,23 +706,25 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     ref.invalidate(exploreFeedViewModelProvider);
     ref.invalidate(exploreRecommendationsProvider);
 
-    // The feed provider is a synchronous AsyncValue composition over several
-    // async repositories, so it has no `.future` to await. Hold the refresh
-    // indicator until the recomposed feed reaches either data or error.
-    final deadline = DateTime.now().add(InitialLoadPolicy.refresh);
-    while (DateTime.now().isBefore(deadline)) {
-      await Future<void>.delayed(InitialLoadPolicy.settlementPoll);
-      if (!mounted) return;
-      if (!ref.read(exploreFeedViewModelProvider).isLoading) return;
-    }
+    // The feed is a synchronous composition with no `.future`: wait for the
+    // recomposed feed to leave loading, at most the refresh deadline.
+    await untilSettled(
+      ref,
+      exploreFeedViewModelProvider,
+      isSettled: (feed) => !catchAsyncStateFromAsyncValue(feed).isLoading,
+      deadline: CachePolicies.discovery.refresh,
+    );
   }
 
   void _startInitialLoadDeadline() {
     _initialLoadDeadline?.cancel();
-    _initialLoadDeadline = Timer(InitialLoadPolicy.standard, () {
-      if (!mounted) return;
-      setState(() => _initialLoadTimedOut = true);
-    });
+    _initialLoadDeadline = ref.read(appClockProvider).timer(
+      CachePolicies.discovery.firstLoad,
+      () {
+        if (!mounted) return;
+        setState(() => _initialLoadTimedOut = true);
+      },
+    );
   }
 
   void _restartInitialLoadDeadline() {
