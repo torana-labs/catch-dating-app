@@ -83,3 +83,36 @@ describe("a website lead in the inbox", () => {
       snoozedUntil: null, note: "Sent the venue guide"}, "Closed. It stays in Done if you need it back.");
   });
 });
+
+describe("a host enquiry in the inbox", () => {
+  afterEach(cleanup);
+
+  const enquiry = {...stuck, itemId: "enquiry-meta-1", type: "enquiry", sourceKind: "salesInboundIntent",
+    sourceId: "meta-1", sourcePath: "salesInboundIntents/meta-1", title: "Meta Test Lead",
+    subtitle: "Wants to run events on Catch", cameFrom: "Host website",
+    state: {code: "new", label: "New", tone: "neutral"}};
+
+  it("closes as not a fit only with a note, and nothing is linked", () => {
+    const inbox = {...model(), items: [enquiry], linkEnquiry: vi.fn(),
+      detail: {item: enquiry, journey: [], canWork: true, canDecideClaim: false}} as unknown as InboxScreenModel;
+    render(<InboxScreen canFillIn={false} model={inbox} onSelect={vi.fn()} selectedItemId={enquiry.itemId} uid="uid-1" />);
+    fireEvent.click(screen.getByRole("button", {name: "Close"}));
+    expect(inbox.updateItem).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByRole("textbox", {name: /Note for the record/u}), {target: {value: "Meta test lead, not a host"}});
+    fireEvent.click(screen.getByRole("button", {name: "Close"}));
+    expect(inbox.updateItem).toHaveBeenCalledWith({itemId: enquiry.itemId, action: "dismiss", assigneeUid: null,
+      snoozedUntil: null, note: "Meta test lead, not a host"}, "Closed. It stays in Done if you need it back.");
+    expect(inbox.linkEnquiry).not.toHaveBeenCalled();
+  });
+
+  it("comes back to the inbox once closed", () => {
+    const closed = {...enquiry, status: "done", state: {code: "dismissed", label: "Dismissed", tone: "neutral"}};
+    const inbox = {...model(), items: [closed],
+      detail: {item: closed, journey: [], canWork: false, canDecideClaim: false}} as unknown as InboxScreenModel;
+    render(<InboxScreen canFillIn={false} model={inbox} onSelect={vi.fn()} selectedItemId={closed.itemId} uid="uid-1" />);
+    expect(screen.queryByRole("button", {name: "Close"})).toBeNull();
+    fireEvent.click(screen.getByRole("button", {name: "Back in the inbox"}));
+    expect(inbox.updateItem).toHaveBeenCalledWith({itemId: closed.itemId, action: "reopen", assigneeUid: null,
+      snoozedUntil: null, note: null}, "It's back in the inbox.");
+  });
+});

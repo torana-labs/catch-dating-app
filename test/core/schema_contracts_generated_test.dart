@@ -287,7 +287,7 @@ void main() {
       'ModerationFlagDocument',
       'DeletedUserTombstoneDocument',
       'RateLimitDocument',
-      'FunctionEventReceiptDocument',
+      'CommandReceiptDocument',
       'PublicRouteReservationDocument',
       'SeedEventManifestDocument',
       'OrganizerIntakeReviewDecisionDocument',
@@ -354,7 +354,7 @@ void main() {
       'firestore/moderation_flags.schema.json',
       'firestore/deleted_users.schema.json',
       'firestore/rate_limits.schema.json',
-      'firestore/function_event_receipts.schema.json',
+      'firestore/command_receipts.schema.json',
       'firestore/public_route_reservations.schema.json',
       'firestore/seed_events.schema.json',
       'firestore/organizer_intake_review_decisions.schema.json',
@@ -503,8 +503,8 @@ void main() {
         'valid/rate_limit_doc.json',
       ),
       _SchemaFixtureCase.valid(
-        'FunctionEventReceiptDocument',
-        'valid/function_event_receipt_doc.json',
+        'CommandReceiptDocument',
+        'valid/command_receipt_doc.json',
       ),
       _SchemaFixtureCase.valid(
         'SeedEventManifestDocument',

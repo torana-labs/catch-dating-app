@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "caseId": "TD-0043",
+  "reason": "impersonation",
+  "active": true,
+  "hashScheme": "hmac-sha256/listing-suppression-v1",
+  "identityHashes": [
+    "4e988c9eeab021208d178a5d292528a0c0aabf3c6990fbc2364079ac2a9ac59d",
+    "94ae6534a03329516170ce68a203abc71cd96d2e2127c9e0c3a865b632050475",
+    "a5105575640826459dd10015111d42a19a04f6805f99d28a5712e0e9f57012d9",
+    "ac7e8c157bf570e64e1c64b6560bafaca8397905fcd97ef3bd10de248feaa1ea",
+    "b611788f9c31118d6635a13ff8e3918cfe724e70484fc3fdc03c59790c973abf",
+    "fee864ddcd87be999701de7c2f9d1d963c74ab6b9e44e9b8a2ed55f81060fdd8"
+  ],
+  "identityKeyCounts": {
+    "labels": 2,
+    "links": 2,
+    "organizers": 1,
+    "slugs": 1
+  },
+  "createdAtMillis": 1795000000000,
+  "updatedAtMillis": 1795200000000,
+  "reviewAtMillis": 1889608000000,
+  "createdBy": "workflow:organizer-takedown",
+  "blockedIntakeCount": 3,
+  "lastBlockedAtMillis": 1795100000000,
+  "reviewFlags": [
+    {
+      "organizerId": "Xq7Lr2Vb9Tn4Hc6Md1Ks",
+      "source": "createOrganizer",
+      "flaggedAtMillis": 1795200000000
+    }
+  ]
+}

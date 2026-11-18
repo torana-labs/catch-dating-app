@@ -232,16 +232,10 @@ test("onMessageCreatedHandler updates match metadata and notifies recipient",
       unreadCounts: {"runner-1": 0, "runner-2": 1},
       status: "active",
     });
-    assert.deepEqual(
-      h.firestore.get("functionEventReceipts/onMessageCreated_event-1"),
-      {
-        handler: "onMessageCreated",
-        eventId: "event-1",
-        matchId: "match-1",
-        messageId: "message-1",
-        createdAt: {kind: "serverTimestamp"},
-      }
-    );
+    const receipt = h.firestore.get("commandReceipts/onMessageCreated_event-1");
+    assert.equal(receipt?.command, "onMessageCreated");
+    assert.deepEqual(Object.keys(receipt ?? {}).sort(),
+      ["command", "createdAt", "expiresAt"]);
     assert.equal(
       h.firestore.get("notifications/runner-2/items/message_match-1_message-1"),
       undefined

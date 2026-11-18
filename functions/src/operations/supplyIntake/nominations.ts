@@ -1,8 +1,9 @@
 /* eslint-disable max-len */
 import * as admin from "firebase-admin";
-import {CallableRequest, onCall} from "firebase-functions/v2/https";
+import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
-import {appCheckCallableOptions} from "../../shared/callableOptions";
+import {appCheckCallableOptionsWithSecrets} from "../../shared/callableOptions";
+import {listingSuppressionHmacKey} from "../../listingSuppressions/registry";
 import type {AdminNominateOrganizerCallablePayload} from "../../shared/generated/adminNominateOrganizerCallablePayload";
 import {validateAdminNominateOrganizerCallablePayload} from "../../shared/generated/validators/adminNominateOrganizerInput";
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
@@ -79,7 +80,12 @@ export async function adminNominateOrganizerHandler(request: CallableRequest<unk
     }
     return created;
   });
-  return {...result, status: "queued"};
+  if (result.suppressed) {
+    // Staff see which do-not-list case refused it; the case holds no names.
+    throw new HttpsError("failed-precondition", `This organizer is on the do-not-list registry (case ${result.suppressed.caseId}). ` +
+      "Nothing was queued.", {reason: "listing_suppressed", caseId: result.suppressed.caseId});
+  }
+  return {requestId: result.requestId, created: result.created, status: "queued"};
 }
 
 function normalizePayload(value: unknown): unknown {
@@ -96,8 +102,8 @@ function normalizePayload(value: unknown): unknown {
   };
 }
 
-export const adminNominateOrganizer = onCall(appCheckCallableOptions, (request) =>
-  adminNominateOrganizerHandler(request));
+export const adminNominateOrganizer = onCall(appCheckCallableOptionsWithSecrets([listingSuppressionHmacKey]),
+  (request) => adminNominateOrganizerHandler(request));
 
 /**
  * Website host applications and partner nominations already arrive as
@@ -105,11 +111,13 @@ export const adminNominateOrganizer = onCall(appCheckCallableOptions, (request) 
  * Each one that names an organizer or a link also becomes an intake request.
  */
 export const onSalesInboundIntentForIntake = onDocumentCreated({
-  document: "salesInboundIntents/{intentId}", retry: true, maxInstances: 2,
+  document: "salesInboundIntents/{intentId}", retry: true, maxInstances: 2, secrets: [listingSuppressionHmacKey],
 }, async (event) => {
   const db = admin.firestore();
   const now = new Date();
   const intake = requestFromSalesInboundIntent(event.params.intentId, event.data?.data() ?? {}, now);
   if (!intake) return;
+  // A do-not-list refusal is final (the service logs and counts it); only an
+  // unavailable check throws, so the platform retries it.
   await db.runTransaction((tx) => createSupplyIntakeRequest(tx, db, intake, now));
 });

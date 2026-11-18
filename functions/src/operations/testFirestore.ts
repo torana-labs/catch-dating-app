@@ -144,6 +144,9 @@ class FakeQuery {
         switch (operator) {
         case "array-contains": return Array.isArray(stored) &&
           stored.some((item) => isDeepStrictEqual(item, value));
+        case "array-contains-any": return Array.isArray(stored) &&
+          Array.isArray(value) && stored.some((item) =>
+          value.some((wanted) => isDeepStrictEqual(item, wanted)));
         case "==": return isDeepStrictEqual(stored, value);
         case "in": return Array.isArray(value) &&
           value.some((item) => isDeepStrictEqual(stored, item));

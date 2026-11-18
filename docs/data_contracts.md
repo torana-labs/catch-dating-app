@@ -1809,7 +1809,7 @@ left follows the schedule and the step runs), and `crawlStopChanges` (stops
 changed on the night by `changeEventCrawlStop`, keyed by itinerary item id;
 missing means the published route). Rules keep all four out of client
 creates and setup updates. Their replay receipts live in server-only
-`eventLiveCommandReceipts/{receiptId}`.
+`commandReceipts` (see Command Receipts).
 
 ### Event Close-Out And Guest Game History
 
@@ -1990,6 +1990,53 @@ come from JSON Schema; the boundary is the timestamp representation:
 `tool/contracts/check_firestore_contract.mjs` cross-checks that the Admin SDK
 projection has the expected fields for every collection with a
 `typescriptInterface` entry.
+
+### Command Receipts
+
+`commandReceipts/{command}_{id}` is the one replay-receipt collection (L8 of the
+November 2026 Firestore consolidation). A command that must not run twice
+(a callable a client may retry, a trigger or webhook the platform may
+redeliver) reads its receipt in the same transaction as its write, through
+`functions/src/shared/commandReceipts.ts`. An exact retry returns the stored
+result; a different request that reuses the id is rejected by the command.
+Everything else about a receipt is the shared module's job:
+
+- Shape (`contracts/firestore/command_receipts.schema.json`): `command`,
+  optional `requestHash` (SHA-256 of what the request asked for, the acting
+  user and target included), optional `result` (at most 4096 bytes, only what a
+  replay must return that live state cannot rebuild), `createdAt`, `expiresAt`.
+  No actor or personal field is stored; ids embed hashes, not identities.
+- Id: `{command}_{id}`. An id that is longer than 100 characters or holds
+  anything beyond letters, digits and `:._-` becomes `h` plus its SHA-256, so
+  the document id is always valid and bounded. Command names are camelCase with
+  no underscore.
+- Retention (`expiresAt`): `trigger` 7 days, `request` 30 days, `webhook` 30
+  days. A receipt past `expiresAt` counts as absent. The collection's Firestore
+  TTL policy (a `fieldOverrides` entry for `commandReceipts.expiresAt` in
+  `firestore.indexes.json`) was approved by the owner on 18 Nov 2026 for this
+  collection only and lands in a follow-up change. Seven other collections write `expiresAt` with no policy
+  and stay as they are: `eventRuntimeDataRequestReceipts`, `organizerAudienceProjectionReceipts`,
+  `organizerEntitlementReceipts`, `salesDemoReceipts`,
+  `transportOperationReceipts`, `eventLiveCommandReceipts` and
+  `instagramAccessTokens` (this one is not a receipt).
+- Server only: rules deny every client read and write.
+
+Only pure replay lives here: a receipt whose sole job is to let a retry return
+the same result. A receipt that proves a decision to someone later keeps its
+own collection and retention: consent (`organizerCommunicationPermissionReceipts`,
+`catchCommunicationPermissionReceipts`, `eventAssistanceConsentReceipts`,
+`eventApprovalNotificationReceipts`), money (`hostMembershipWebhookReceipts`,
+`eventMessagingBudget*Receipts`, `publicEventAdmissionReceipts`), admission and
+conversion proofs other commands read (`organizerFormAdmissionReceipts`,
+`organizerFormConversionReceipts`), merges and publications kept for audit
+(`organizerContactMergeReceipts`, `externalEventPublicationReceipts`), and
+provider-delivery evidence (`organizerCampaignWebhookReceipts`).
+
+Moved so far: `functionEventReceipts` and `eventLiveCommandReceipts`. They are no
+longer written or declared;
+their documents stay under the legal hold. Replay windows are short and an
+in-flight retry across the deploy only re-runs a revision-fenced or idempotent
+command, so nothing was copied forward.
 
 ### Public HTTP And Admin Callable Boundaries
 
@@ -4801,7 +4848,10 @@ drift with later catalog edits.
 authority over one programme, written by triggers on `programStaffGrants` and
 `organizerPrograms` (`onProgramAccessViewGrantChanged`,
 `onProgramAccessViewProgramChanged`) and created for existing owners and grants
-by the `program-access-views` copy-forward migration. The programme's creator
+by the `program-access-views` copy-forward migration, and repaired by
+`program-access-views-refresh` (a view that differs from what the triggers would
+compute now is rewritten under a last-update-time precondition; nothing is
+deleted). The programme's creator
 gets `role: manager` with no expiry; a staff member gets `role: staff` and the
 duties their grant proves: an `inactive` view when the grant is revoked,
 expired, malformed or lacks the owner-approval proof `requireProgramAccess`
@@ -4816,7 +4866,11 @@ instant of an assignment naming that id. `workPickup`, `workHotel` and
 `getProgramWorkAccess` resolves it (pickup points from every operational duty
 but the hotel desk, hotels from every operational duty, functions from door and
 guest-desk duties): key `*` for every one, otherwise one key per named id.
-Rules compare these with
+`assignments` repeats the live duty
+tuples with their scopes and own expiries, and `grantExpiresAtMillis` the grant's
+own expiry, as `getProgramWorkAccess` returns them, because a phone's policies
+need one assignment to cover both ends of a transport route, which the flattened
+maps cannot say. Rules compare these with
 `request.time` through `hasProgramDuty`, `programDutyCoversPickup`,
 `programDutyCoversHotel`, `programDutyCoversFunction` and `isProgramManager`;
 each dimension is checked alone, as the callables' `allowed*Ids` union them, so
@@ -4826,6 +4880,21 @@ They hold ids, duty names and instants and no name or phone digits, so account
 deletion and archive anonymization have nothing personal to scrub there. A
 phone enforces the same instants offline from the cached view and its clock.
 Commands re-check authority from the source documents.
+
+`programWorkSummaries/{programId}` and `programResourceViews/{programId}__{kind}__{resourceId}`
+(#1339) are the work shell's programme header and its pickup point, hotel and
+function labels, kept by triggers on `organizerPrograms`, `programPickupPoints`,
+`programHotels` and `programFunctions` and created for existing sources by the
+`program-work-views` copy-forward migration. Each holds exactly the fields
+`getProgramWorkAccess` returns and nothing else the source holds: no sender
+connection, entitlement or branding, no hotel reception contact or notes, no
+function venue notes, location, instructions or dress code, and no pickup point
+coordinates or instructions. Rules let any account with live access read the
+header by id, and read a resource by id when its `programAccessViews` work list
+reaches it; a query naming the programme and one kind lists every resource of
+that kind when the work list's `*` key is live (the owner always), and a scoped
+account reads its named ids one by one. With the access view they replace the
+callable, which stays deployed for older builds.
 
 `organizerCampaigns.recipientSource` names where recipients resolve:
 `savedAudience` (default, backed by `savedAudienceId`) or
@@ -5550,6 +5619,55 @@ host locks:
 | `organizers/{organizerId}.ownership` | organizer claim/create/update callables | `programmatic` before ownership, `claimed` after approval. |
 | `organizers/{organizerId}.publicPage.indexReview` | admin organizer indexing | Audit evidence for source quality, media rights, cadence, and owner/contact verification before a page becomes indexable. |
 | `reviews/{reviewId}.ownerResponse` | `setReviewResponse` | Server-owned owner response rendered by app and website review surfaces. |
+
+## Listing Suppressions
+
+`listingSuppressions/{caseId}` is the do-not-list registry: one document per
+takedown case (`caseId` is the opaque `TD-nnnn` id, never a name or slug),
+written by the organiser takedown tool's `suppress` mode
+(`tool/data/organizer_takedown.mjs`; operator runbook in
+`docs/release_operations.md`, "Organiser takedown"). It is server-only: rules
+deny every client, including Admin claims, because even a keyed hash confirms
+whether a guessed organiser is suppressed.
+
+- **What it stores.** `identityHashes` are HMAC-SHA256 hashes, under the
+  Secret Manager key `LISTING_SUPPRESSION_HMAC_KEY`, of identity keys derived by
+  `operations/src/workflows/supply-intake/organizer-matching/suppression.mjs`:
+  `label:` keys for business names, aliases and handles (lowercase letters and
+  digits, with and without stop words, so a name, an `@handle` and a domain's
+  first label agree), the organizer-matching identity keys of links
+  (`instagram:`, `luma:calendar:`, `domain:`, `url:` for shared hosts),
+  `organizer:` ids and `slug:` slugs. No name, handle, link or domain is stored
+  in clear, and `identityKeyCounts` gives only how many of each kind. The key is
+  never in the repository; Functions bind it with `defineSecret` and the tool
+  reads it from Secret Manager. Rotating it invalidates every stored hash, so a
+  rotation must rehash every case from its case file while the case files are
+  still held.
+- **Other fields.** `reason` is the takedown request type
+  (`removeAndDoNotList`, `trademark`, `copyright`, `privacy`, `courtOrder`,
+  `impersonation`); `active` (false lifts the suppression);
+  `createdAtMillis`, `reviewAtMillis` (three years for a business by default),
+  `createdBy`; `blockedIntakeCount`/`lastBlockedAtMillis`; and `reviewFlags`
+  (self-created organizers that matched, newest 50).
+- **Enforcement.** `createSupplyIntakeRequest`, the one entry point for every
+  nomination, host application, message nomination, event refresh and
+  instant draft, hashes the request's seed name, links, `@handles` and links
+  in its notes, and refresh target, and looks them up with
+  `array-contains-any`. A match writes nothing but the case's
+  `blockedIntakeCount`; staff front doors (`adminNominateOrganizer`,
+  `adminRefreshOrganizerEvents`) refuse with `failed-precondition` naming the
+  case id, the website instant draft refuses without naming anything, and
+  triggers drop the request and log the case id (never the identity).
+  `approveListing` repeats the check on the approved name, slug, built links
+  and the request (a backstop for identity the worker found after intake and
+  for cases written after intake). `createOrganizer` does not block a host's
+  own workspace (it starts private and unpublished, and the real organiser may
+  be the one signing up); it records a `reviewFlags` entry on the case for
+  staff review.
+- **Failure policy.** With no active case nothing can match and no key is read.
+  While an active case exists, a missing or short key fails intake and listing
+  approval closed (`unavailable`, nothing queued or published); organizer
+  creation proceeds and logs an error, since it only flags.
 
 ## Organizer Growth Facts
 

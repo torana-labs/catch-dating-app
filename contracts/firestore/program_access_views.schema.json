@@ -28,6 +28,8 @@
     "workPickup",
     "workHotel",
     "workFunction",
+    "assignments",
+    "grantExpiresAtMillis",
     "revision",
     "version"
   ],
@@ -120,6 +122,23 @@
     "workFunction": {
       "$ref": "#/definitions/expiryMap",
       "description": "The functions the work shell lists for this account, as the work-access callable resolves them: key \"*\" when some live operational duty covers every one, otherwise one key per named id; each value is the latest exclusive expiry of a duty reaching it. Hotel desk duties reach hotels only; programAdmin reaches none; functions come from door and guest-desk duties."
+    },
+    "assignments": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/programStaffGrantedDuty"
+      },
+      "description": "The staff member's live duty assignments with their resource scopes and own expiries, as getProgramWorkAccess returns them in duties; empty for the owner and for an inactive view. Phones need the tuples because a transport route needs one assignment to cover both ends, which the flattened maps cannot say."
+    },
+    "grantExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "The grant's own expiry, as getProgramWorkAccess returns it; null for the owner and for an inactive view."
     },
     "revision": {
       "type": "integer",

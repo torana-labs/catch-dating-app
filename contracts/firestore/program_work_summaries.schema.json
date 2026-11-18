@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_work_summaries.schema.json",
+  "title": "ProgramWorkSummaryDocument",
+  "description": "Server-maintained, staff-readable header of one programme for the work shell: exactly the programme fields getProgramWorkAccess returns (title, kind, zone, status, capabilities and the transport vehicle classes), without the sender connection, entitlement, branding, request hash or any other programme field. Written by a trigger on organizerPrograms. Any account with live access to the programme reads it, through its programAccessViews document. Never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programWorkSummaries",
+  "x-firestore-path": "programWorkSummaries/{programId}",
+  "x-document-id-field": "programId",
+  "x-owner": "Programme read model projector (programWorkViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "title",
+    "kind",
+    "timezone",
+    "status",
+    "capabilities",
+    "vehicleClasses",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "kind": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programKind"
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "status": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programStatus"
+    },
+    "capabilities": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/programCapability"
+      }
+    },
+    "vehicleClasses": {
+      "type": "array",
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/programVehicleClass"
+      }
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

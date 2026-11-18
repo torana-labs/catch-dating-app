@@ -271,6 +271,26 @@ service cloud.firestore {
             || programView(programId).workFunction.get(functionId, 0) > request.time.toMillis()));
     }
 
+    // Every pickup point, hotel or function, for a listing query: the work
+    // key '*' is live. A scoped account reads its named ids one by one.
+    function programWorkListsAllPickups(programId) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && programView(programId).workPickup.get('*', 0) > request.time.toMillis());
+    }
+
+    function programWorkListsAllHotels(programId) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && programView(programId).workHotel.get('*', 0) > request.time.toMillis());
+    }
+
+    function programWorkListsAllFunctions(programId) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && programView(programId).workFunction.get('*', 0) > request.time.toMillis());
+    }
+
     function programDutyCoversFunction(programId, duty, functionId) {
       return isProgramManager(programId)
         || (hasProgramAccessView(programId)
@@ -824,8 +844,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Written exclusively by idempotent Cloud Function trigger handlers.
-    match /functionEventReceipts/{receiptId} {
+    // One replay-receipt collection for every command that dedupes its
+    // retries (callables, triggers, webhooks). Only Cloud Functions touch it;
+    // a retry reads its own receipt in the command's transaction.
+    match /commandReceipts/{receiptId} {
       allow read, write: if false;
     }
 
@@ -1043,6 +1065,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /bannedIdentities/{identityId} {
+      allow read, write: if false;
+    }
+    // Do-not-list registry (keyed hashes only). Server-only: the organizer
+    // takedown tool writes cases and Functions read them with the Admin SDK.
+    match /listingSuppressions/{caseId} {
       allow read, write: if false;
     }
     match /blockedSignupAttempts/{attemptId} {
@@ -2453,6 +2480,33 @@ service cloud.firestore {
       allow list, write: if false;
     }
 
+    // The work shell's programme header: any account with live access to the
+    // programme reads it by id. Never listed.
+    match /programWorkSummaries/{programId} {
+      allow get: if hasProgramAccessView(programId);
+      allow list, write: if false;
+    }
+
+    // The work shell's pickup point, hotel and function labels. A named
+    // resource is read by id when the account's work list reaches it; every
+    // resource of one kind is listed by a query naming the programme and the
+    // kind when the account's work list reaches them all.
+    match /programResourceViews/{viewId} {
+      allow get: if (resource.data.kind == 'pickupPoint'
+          && programWorkCoversPickup(resource.data.programId, resource.data.resourceId))
+        || (resource.data.kind == 'hotel'
+          && programWorkCoversHotel(resource.data.programId, resource.data.resourceId))
+        || (resource.data.kind == 'function'
+          && programWorkCoversFunction(resource.data.programId, resource.data.resourceId));
+      allow list: if (resource.data.kind == 'pickupPoint'
+          && programWorkListsAllPickups(resource.data.programId))
+        || (resource.data.kind == 'hotel'
+          && programWorkListsAllHotels(resource.data.programId))
+        || (resource.data.kind == 'function'
+          && programWorkListsAllFunctions(resource.data.programId));
+      allow write: if false;
+    }
+
     match /programStaffInvites/{inviteId} {
       allow read, write: if false;
     }
@@ -3117,12 +3171,6 @@ service cloud.firestore {
         && isOrganizerHostForEvent(eventId)
         && isEventSuccessPlanUpdateAllowed(eventId);
       allow delete: if false;
-    }
-
-    // Run-of-show edits, close-out and crawl changes replay through these
-    // receipts; only their callables touch them.
-    match /eventLiveCommandReceipts/{receiptId} {
-      allow read, write: if false;
     }
 
     // The night's close-out, written only by setEventCloseOut. The event's

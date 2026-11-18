@@ -197,8 +197,9 @@ function timeline(item: InboxItem, journey: readonly JourneyStep[]): CatchSectio
  * launch access is decided here; listings and events open a sheet to review
  * and publish; stuck intake still opens the old review. Events and stuck intake
  * can be dismissed, with a reason, and come back. A website lead is answered on
- * WhatsApp and closed with what was said. Every type can be picked up or
- * snoozed for a day.
+ * WhatsApp and closed with what was said. A host enquiry is linked to its host,
+ * or closed with why it is junk, a test or not a fit; it comes back the same
+ * way. Every type can be picked up or snoozed for a day.
  */
 function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
   controller: InboxScreenModel;
@@ -271,7 +272,11 @@ function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
       dock = <CatchDock recipe="pane"
         primary={{label: chosen ? `Link to ${chosen.name}` : "Pick the host first", isLoading: busy,
           onPressed: chosen ? () => void controller.linkEnquiry({intentId: item.sourceId, organizerId: chosen.organizerId}, chosen.name) : null}}
+        danger={{label: "Close", onPressed: noteText ? () => void controller.updateItem({itemId: item.itemId,
+          action: "dismiss", assigneeUid: null, snoozedUntil: null, note: noteText},
+        "Closed. It stays in Done if you need it back.") : null}}
         secondary={{label: item.assigneeUid === uid ? "Snooze a day" : "Pick it up", onPressed: item.assigneeUid === uid ? snooze : pickUp}}
+        note={{label: "Note for the record", placeholder: "Why it's not a fit. Required to close.", value: note, onChanged: setNote}}
         next={`Linking opens their Sales work; it doesn't approve a claim · ${next.toLowerCase()}`} />;
     } else if (item.type === "lead") {
       // Nothing is sent automatically yet: staff reply first, then close it.

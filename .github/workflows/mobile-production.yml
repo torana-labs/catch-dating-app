@@ -1,7 +1,9 @@
 name: Mobile Production
 
 # Ships a build that testers already have. iOS submits that TestFlight build
-# for App Store review as a phased release, released by hand after approval.
+# for App Store review as a phased release that goes public automatically on
+# approval; run again for a version already submitted, it switches that version
+# to release on approval, or releases it now if Apple approved it.
 # Android promotes that internal-track version code to production as a staged
 # rollout. Nothing is rebuilt or re-uploaded, so production gets the exact
 # bytes testers used. The prod-mobile-release environment requires a reviewer's

@@ -5,6 +5,7 @@ import type {
   ProgramAccessViewDocument,
   ProgramStaffGrantDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {
   activeProgramDuties,
   programOwnerAuthorizationDeadline,
@@ -38,6 +39,8 @@ const emptyMaps = () => ({
   workPickup: {} as ExpiryMap,
   workHotel: {} as ExpiryMap,
   workFunction: {} as ExpiryMap,
+  assignments: [] as ProgramAccessViewDocument["assignments"],
+  grantExpiresAtMillis: null as number | null,
 });
 
 /** Key standing for every pickup point, hotel or function in a work map. */
@@ -117,6 +120,12 @@ export function staffProgramAccessView(program: OrganizerProgramDocument,
     for (const assignment of held) foldAssignment(maps, duty, assignment);
   }
   foldWork(maps, duties);
+  maps.assignments = duties.map((assignment) => ({duty: assignment.duty,
+    pickupPointIds: assignment.pickupPointIds, hotelIds: assignment.hotelIds,
+    ...(assignment.functionIds === undefined ? {} :
+      {functionIds: assignment.functionIds}),
+    expiresAtMillis: assignment.expiresAtMillis}));
+  maps.grantExpiresAtMillis = staffTimestampMillis(grant.expiresAt);
   return {...base, status: "active", activeFromMillis,
     expiresAtMillis: Math.max(...duties.map((a) => a.expiresAtMillis)),
     ...maps};

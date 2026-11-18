@@ -105,8 +105,8 @@ const validateDeleteSavedEventClientWrite =
   contractValidator("DeleteSavedEventClientWrite");
 const validateDeletedUserTombstoneDocument =
   contractValidator("DeletedUserTombstoneDocument");
-const validateFunctionEventReceiptDocument =
-  contractValidator("FunctionEventReceiptDocument");
+const validateCommandReceiptDocument =
+  contractValidator("CommandReceiptDocument");
 const validateFetchSwipeCandidatesCallableResponse =
   contractValidator<FetchSwipeCandidatesCallableResponse>(
     "FetchSwipeCandidatesCallableResponse"
@@ -436,8 +436,8 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/rate_limit_doc.json")
   );
   assertValid(
-    validateFunctionEventReceiptDocument as Validator,
-    readFixture("fixtures/valid/function_event_receipt_doc.json")
+    validateCommandReceiptDocument as Validator,
+    readFixture("fixtures/valid/command_receipt_doc.json")
   );
   assertValid(
     validateSeedEventManifestDocument as Validator,
