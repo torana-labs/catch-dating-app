@@ -8,6 +8,7 @@
     "node": ">=20.11"
   },
   "bin": {
+    "catch": "./src/catch-cli/main.mjs",
     "catch-admin": "./src/admin-cli/main.mjs",
     "catch-operations": "./src/cli/main.mjs"
   },
@@ -20,12 +21,13 @@
     "boundaries": "node scripts/check-boundaries.mjs",
     "admin:check": "node scripts/check-admin-action-catalog.mjs",
     "admin:loop": "node src/admin-cli/main.mjs loop --all --pretty",
-    "check": "npm run runtime:check && npm run test && npm run boundaries && npm run manifests && npm run admin:check && npm run smoke",
+    "check": "npm run runtime:check && npm run test && npm run boundaries && npm run manifests && npm run admin:check && npm run commands:check && npm run smoke",
     "manifests": "node scripts/check-workflow-manifest.mjs",
-    "smoke": "node src/cli/main.mjs help && node src/admin-cli/main.mjs help",
+    "smoke": "node src/cli/main.mjs help && node src/admin-cli/main.mjs help && node src/catch-cli/main.mjs help",
     "test": "node scripts/run-tests.mjs",
     "runtime:generate": "node scripts/generate-event-assistance-runtime.mjs",
-    "runtime:check": "node scripts/generate-event-assistance-runtime.mjs --check"
+    "runtime:check": "node scripts/generate-event-assistance-runtime.mjs --check",
+    "commands:check": "node scripts/check-command-catalog.mjs"
   },
   "devDependencies": {
     "typescript": "6.0.3"

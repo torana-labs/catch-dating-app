@@ -612,6 +612,7 @@ operations/
   src/admin-cli/                   catalog-driven admin callable client
   src/admin/                       action catalog, client, local receipts
   src/command-client/              shared callable transport, receipts, argv, envelope
+  src/catch-cli/                   product command CLI over contracts/commands
   src/platform/                    reusable execution and persistence ports
   src/platform/network/            guarded public-web page fetcher
   src/workflows/registry.mjs       workflow inventory and factories
@@ -698,6 +699,43 @@ recovery evidence. If the remote start fails, no business action runs. If the
 business action succeeds but the terminal receipt fails, the CLI reports
 `ADMIN_ACTION_RECEIPT_INCOMPLETE` with `actionCompleted: true` and the local
 receipt path so an agent cannot safely retry as if nothing happened.
+
+## Product Command CLI
+
+`operations/src/catch-cli/main.mjs` (`catch`) is the CLI surface of the product
+commands in `contracts/commands/catalog.json`: the same callables, envelope and
+schemas the website try-it tools, Catch Host and later WhatsApp use. It shares
+`operations/src/command-client/` (transport, App Check, receipts, flags,
+envelope) with the admin action CLI and carries no business logic.
+
+```sh
+node operations/src/catch-cli/main.mjs commands --pretty
+node operations/src/catch-cli/main.mjs describe workspace.ensure --pretty
+node operations/src/catch-cli/main.mjs run workspace.ensure --input input.json --project PROJECT_ID
+node operations/src/catch-cli/main.mjs run workspace.ensure --input input.json --apply \
+  --preview-hash <previewHash> --project PROJECT_ID
+```
+
+`--input`/`--json` carry only the command's `input`; the CLI adds `mode`,
+`idempotencyKey`, `surface: "cli"` and `confirm`. Every command previews unless
+`--apply` is set, and `--dry-run` validates locally without calling anything.
+What apply needs comes from the command's effect class, through
+`operations/src/command-client/confirmation-policy.mjs`: `publishes` needs
+`--confirm <commandId>`; `messages-guests` and `moves-money` also need
+`--preview-hash` from the reviewed preview. A preview hash is passed through as
+`confirm` whenever one is given, so apply refuses when the result changed since
+the preview. A `running` preview (an asynchronous read) can be polled with
+`--idempotency-key <key> --wait`. The server's `commandReceipts` record each
+applied command; the CLI also writes a local hash-only receipt. An apply whose
+outcome is unknown (timeout, lost connection) reports `actionCompleted: null`
+and the idempotency key: re-running with that key replays the stored result
+instead of applying twice. Live calls need `CATCH_ID_TOKEN` and
+`CATCH_APP_CHECK_TOKEN` for a phone-verified account.
+
+`operations/scripts/check-command-catalog.mjs` keeps the catalog in step with
+its clients: every command loads, carries the shared envelope, has a closed
+`input` object and an effect class every client can confirm.
+`functions/src/commands/catalog.test.ts` keeps it in step with the callables.
 
 Employees monitor these receipts at `/operations`. Manual execution continues
 in the owning admin route named by the catalog; the monitor is read-only and

@@ -75,10 +75,23 @@ operations/
   src/admin-cli/                 stable admin-action JSON command surface
   src/admin/                     catalog, callable client, receipt storage
   src/command-client/            shared core for catalog-driven callable CLIs
+  src/catch-cli/                 product command CLI (contracts/commands)
   src/platform/                  runs, leases, budgets, ledger, storage, models
   src/workflows/registry.mjs     workflow definitions and factories
   src/workflows/supply-intake/   the reference workflow and source profiles
   test/                          deterministic engine and workflow tests
+```
+
+## Product command CLI
+
+`catch` calls the product commands in `contracts/commands/catalog.json` with
+the shared command envelope. It previews by default; see
+`docs/operations_platform.md#product-command-cli` for apply and confirmation.
+
+```sh
+node operations/src/catch-cli/main.mjs commands --pretty
+node operations/src/catch-cli/main.mjs run workspace.ensure \
+  --json '{"organizerName":"Lantern Social Club","marketId":"in-indore"}' --dry-run
 ```
 
 ## Admin action CLI
