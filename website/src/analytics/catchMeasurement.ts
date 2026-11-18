@@ -40,7 +40,8 @@ export function acquisitionRoute(path: string): AcquisitionRoute | null {
 
 // Pages whose path carries a private token, an organiser's own page or an
 // organiser's form. They never load, capture for or send to an advertising tag.
-const nonPublicPrefixes = ["/organizers", "/join/", "/rehearse/", "/invite/", "/rsvp/", "/f/", "/claim/"];
+const tokenAndFormPrefixes = ["/join/", "/rehearse/", "/invite/", "/rsvp/", "/f/", "/claim/"];
+const nonPublicPrefixes = ["/organizers", ...tokenAndFormPrefixes];
 const eventPagePattern = /^\/events\/[A-Za-z0-9_:-]{1,180}\/$/u;
 const publicPagePattern = /^\/(?:[a-z0-9][a-z0-9-]{0,80}\/){0,4}$/u;
 
@@ -57,6 +58,45 @@ export function publicAdPage(path: string): string | null {
   if (normalized === "/claim/") return normalized;
   if (isPrivateEventUpdatePath(normalized) || nonPublicPrefixes.some((prefix) => normalized.startsWith(prefix))) return null;
   return eventPagePattern.test(normalized) || publicPagePattern.test(normalized) ? normalized : null;
+}
+
+/** Where organiser-owned tags may run (#2063): its public page or a public event page. */
+export interface OrganizerTagPage {
+  kind: "organizer" | "event";
+  /** The normalised path, with a trailing slash. */
+  path: string;
+}
+
+// Organiser profile routes: /organizers/:slug/ and /organizers/:citySlug/:slug/.
+const organizerPagePattern = /^\/organizers\/(?:[a-z0-9][a-z0-9-]{0,80}\/){1,2}$/u;
+// Segments that name a flow rather than a profile. A profile path containing
+// one fails closed even if a slug happens to spell it.
+const organizerFlowSegments: ReadonlySet<string> = new Set(["claim", "f", "form", "forms", "offer", "offers", "otp",
+  "verify", "booking", "receipt", "receipts", "account", "demo", "join", "invite", "rsvp", "rehearse", "owner",
+  "manage", "edit", "settings", "admin", "token"]);
+
+/**
+ * The page class organiser-owned tags may use, or null. It is the route side
+ * of the eligibility rule only: the organiser's published public page
+ * (`/organizers/:slug/`, `/organizers/:citySlug/:slug/`, not the directory)
+ * and public event pages (`/events/:eventId/`). The server's public tracking
+ * projection still decides whether that organiser and event are published,
+ * active and non-dating. Private routes (`privateRoutes.ts`), claim, forms,
+ * offers, OTP, booking receipts, account, demo and token links fail closed,
+ * as does any address with a query or a non-anchor hash.
+ */
+export function organizerAdPage(path: string, search = "", hash = ""): OrganizerTagPage | null {
+  if (typeof path !== "string" || typeof search !== "string" || typeof hash !== "string") return null;
+  if (search !== "" && search !== "?") return null;
+  if (!/^(?:#[A-Za-z0-9_-]*)?$/u.test(hash)) return null;
+  if (isPrivateEventUpdatePath(path)) return null;
+  const normalized = `${path.replace(/\/+$/u, "")}/`;
+  if (isPrivateEventUpdatePath(normalized) || tokenAndFormPrefixes.some((prefix) => normalized.startsWith(prefix))) return null;
+  if (eventPagePattern.test(normalized)) return {kind: "event", path: normalized};
+  if (!organizerPagePattern.test(normalized)) return null;
+  const segments = normalized.split("/").filter(Boolean).slice(1);
+  if (segments.some((segment) => organizerFlowSegments.has(segment))) return null;
+  return {kind: "organizer", path: normalized};
 }
 
 // Closed campaign vocabulary; expand only with a reviewed campaign, never query text.
