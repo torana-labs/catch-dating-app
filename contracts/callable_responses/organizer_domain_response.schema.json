@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_domain_response.schema.json",
+  "title": "OrganizerDomainCallableResponse",
+  "description": "What requestOrganizerDomain, getOrganizerDomain, checkOrganizerDomain and removeOrganizerDomain return: the caller's management rights and a bounded view of the organiser's current customDomains record. It never carries provider ids, raw provider status, review reasons, suspension actors, createdByUid or history.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "role", "canManage", "manageBlockedReason", "domain"],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "role": {
+      "type": "string",
+      "description": "The caller's organiser team role. Managers see the domain read-only.",
+      "enum": ["owner", "manager"]
+    },
+    "canManage": {
+      "type": "boolean",
+      "description": "Whether the caller may request, check or remove a domain now."
+    },
+    "manageBlockedReason": {
+      "type": "string",
+      "description": "none when canManage is true. notOwner: only an owner manages the domain. unclaimed: the organiser is not claimed or verified. featureDisabled: the custom-domains switch is off.",
+      "enum": ["none", "notOwner", "unclaimed", "featureDisabled"]
+    },
+    "domain": {
+      "description": "The organiser's current record that is not removed or expired, or null when there is none. removeOrganizerDomain returns the record it removed so the app can list the DNS records to delete.",
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hostname",
+            "registrableDomain",
+            "status",
+            "generation",
+            "dnsInstructions",
+            "apexRedirect",
+            "reviewState",
+            "problemCode",
+            "liveUrl",
+            "reservedAtMillis",
+            "pendingExpiresAtMillis",
+            "verifiedAtMillis",
+            "activatedAtMillis",
+            "lastCheckedAtMillis",
+            "lapsedAtMillis",
+            "lapseRemovalAtMillis",
+            "nextCheckAllowedAtMillis"
+          ],
+          "properties": {
+            "hostname": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/servedHostname"},
+            "registrableDomain": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/registrableDomain"},
+            "status": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/status"},
+            "generation": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/generation"},
+            "dnsInstructions": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/dnsInstructions"},
+            "apexRedirect": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/apexRedirect"},
+            "reviewState": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/reviewState"},
+            "problemCode": {
+              "type": ["string", "null"],
+              "description": "Why the domain is not live, for the app's reason-and-fix copy. Null when nothing needs the owner.",
+              "enum": [
+                null,
+                "dnsTxtMissing",
+                "dnsCnameMissing",
+                "dnsCnameMismatch",
+                "otherCdnDetected",
+                "caaBlocked",
+                "providerError",
+                "leaseExpired",
+                "heldForReview",
+                "suspended"
+              ]
+            },
+            "liveUrl": {
+              "type": ["string", "null"],
+              "description": "https://<hostname>/ while active; null otherwise.",
+              "maxLength": 262,
+              "pattern": "^https://(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.){2,}[a-z]{2,63}/$"
+            },
+            "reservedAtMillis": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/millis"},
+            "pendingExpiresAtMillis": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/nullableMillis"},
+            "verifiedAtMillis": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/nullableMillis"},
+            "activatedAtMillis": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/nullableMillis"},
+            "lastCheckedAtMillis": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/nullableMillis"},
+            "lapsedAtMillis": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/nullableMillis"},
+            "lapseRemovalAtMillis": {
+              "$ref": "../shared/custom_domain_common.schema.json#/definitions/nullableMillis",
+              "description": "When a lapsed domain is removed unless DNS recovers (lapsedAtMillis plus the 14-day grace)."
+            },
+            "nextCheckAllowedAtMillis": {
+              "$ref": "../shared/custom_domain_common.schema.json#/definitions/nullableMillis",
+              "description": "When checkOrganizerDomain will next accept a Check now; null when it accepts one now."
+            }
+          }
+        }
+      ]
+    }
+  }
+}

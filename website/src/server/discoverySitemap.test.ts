@@ -24,17 +24,20 @@ function reader(docs: Record<string, unknown>, fail = false): PublicReader {
 }
 
 describe("readIndexedDiscoveryPaths", () => {
-  it("lists only the format pages each city's document indexes, and nothing for a city without one", async () => {
+  it("lists only the format pages each city's document indexes, and none for a city without one", async () => {
     const formatPages = indore.formatPages as Record<string, {indexing: string}>;
     expect(formatPages.runClubs.indexing).toBe("index, follow");
-    await expect(readIndexedDiscoveryPaths(reader({[`cityPlans/${indoreCity.marketSlug}`]: indore})))
-      .resolves.toEqual(["/indore/run-clubs/"]);
-    await expect(readIndexedDiscoveryPaths(reader({}))).resolves.toEqual([]);
+    const paths = await readIndexedDiscoveryPaths(reader({[`cityPlans/${indoreCity.marketSlug}`]: indore}));
+    expect(paths.filter((path) => !path.startsWith("/new-to-"))).toEqual(["/indore/run-clubs/"]);
+    const withoutDocuments = await readIndexedDiscoveryPaths(reader({}));
+    expect(withoutDocuments.filter((path) => !path.startsWith("/new-to-"))).toEqual([]);
   });
 
-  it("never lists a new-to-the-city page", async () => {
+  it("lists every website city's new-to-the-city page, with or without its document (owner approval, 18 Nov 2026)", async () => {
+    const newToCity = websiteCities.map((city) => `/new-to-${city.slug}/`);
     const paths = await readIndexedDiscoveryPaths(reader({[`cityPlans/${indoreCity.marketSlug}`]: indore}));
-    expect(paths.some((path) => path.startsWith("/new-to-"))).toBe(false);
+    expect(paths.filter((path) => path.startsWith("/new-to-"))).toEqual(newToCity);
+    await expect(readIndexedDiscoveryPaths(reader({}))).resolves.toEqual(newToCity);
   });
 
   it("throws when the documents cannot be read, so the sitemap answers 503", async () => {

@@ -13,10 +13,20 @@ function row(id: string, status = "checkoutReady", failsWrite = false) {
       if (failsWrite) throw new Error("Write unavailable");
     }}};
 }
-function database(batches: Array<Array<ReturnType<typeof row>>>) {
+function database(batches: Array<Array<ReturnType<typeof row>>>,
+  queries: unknown[][][] = []) {
   let cursor = 0;
-  const query = {where: () => query, orderBy: () => query,
-    limit: () => query, get: async () => ({docs: batches[cursor++] ?? []})};
+  // Like Firestore, every where() returns a new query that keeps its filters.
+  const build = (filters: unknown[][]): unknown => ({
+    where: (...filter: unknown[]) => build([...filters, filter]),
+    orderBy: () => build(filters),
+    limit: () => build(filters),
+    get: async () => {
+      queries.push(filters);
+      return {docs: batches[cursor++] ?? []};
+    },
+  });
+  const query = build([]);
   return {collection: () => query,
     runTransaction: async (callback: (tx: unknown) => Promise<unknown>) =>
       callback({get: async () => ({data: () => ({settlement: {
@@ -57,6 +67,22 @@ test("failed expiry, provider and touch do not starve other offer payments",
     assert.ok(reconciled.includes("admitted"));
     assert.equal((pending[1].updates[0].updatedAt as Timestamp).toMillis(),
       10000);
+  });
+
+test("every recovery query reads only offer payments from the shared ledger",
+  async () => {
+    const queries: unknown[][][] = [];
+    await reconcileOfferPayments({
+      db: database([[], [], []], queries), nowMillis: 10000}, {
+      clock: () => 0,
+      release: async () => "admitted",
+      execution: async () => ({reconcile: async () => ({} as Payment)}),
+    });
+    // The purpose-led indexes cannot serve a query without the purpose.
+    assert.equal(queries.length, 3);
+    for (const filters of queries) {
+      assert.deepEqual(filters[0], ["purpose", "==", "offer"]);
+    }
   });
 
 test("exhausted offer sweep leaves remaining jobs untouched", async () => {

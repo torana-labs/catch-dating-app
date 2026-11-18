@@ -56,6 +56,12 @@ test("a website enquiry after a paid campaign is ads, else came to us", () => {
   assert.equal(listing({originKind: "sales_inbound_intent",
     submittedBy: {role: "system", uid: null}, intent: {source: "website",
       acquisitionAttribution: touch("referral")}}).channel, "came_to_us");
+  // A Facebook or Instagram lead form is a paid ad by construction.
+  const leadForm = listing({originKind: "sales_inbound_intent",
+    submittedBy: {role: "system", uid: null},
+    intent: {source: "meta_lead_ad"}});
+  assert.equal(leadForm.channel, "ads");
+  assert.equal(leadForm.channelSource.campaign, "meta_lead_ads");
   assert.equal(paidCampaign(undefined), null);
   assert.equal(paidCampaign({firstTouch: {values: {utm_medium: "cpc"}}}),
     "cpc");

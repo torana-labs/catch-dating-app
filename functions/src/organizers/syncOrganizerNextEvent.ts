@@ -4,6 +4,10 @@ import type {
   EventDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {isEventPubliclyAccessible} from "../events/eventPublicationAccess";
+import {
+  eventNeedsOrganizerSummary,
+  reconcileEventOrganizerSummary,
+} from "./eventOrganizerSummary";
 
 interface SyncOrganizerNextEventDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -96,6 +100,11 @@ export const syncOrganizerNextEvent = onDocumentWritten(
   async (event) => {
     const before = event.data?.before.data() as EventDocument | undefined;
     const after = event.data?.after.data() as EventDocument | undefined;
+    // The organizer summary Explore reads is written on create, an
+    // organizerId change or a missing summary; its own write does not match.
+    if (eventNeedsOrganizerSummary(before, after)) {
+      await reconcileEventOrganizerSummary(event.params.eventId);
+    }
     await syncOrganizerNextEventHandler(before, after);
   }
 );

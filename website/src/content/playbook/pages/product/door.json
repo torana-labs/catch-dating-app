@@ -6,7 +6,7 @@
     "title": "The door | {{brand.name}} for hosts",
     "description": "QR self check-in with no app to download, a searchable list, walk-ins you choose and door staff whose access ends with the night. Check-ins made without signal sync when you’re back online.",
     "socialDescription": "Know who’s here in the first five minutes. The door on {{brand.name}}.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

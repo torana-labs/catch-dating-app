@@ -28,10 +28,13 @@ const changed = (before: Data, after: Data, fields: string[]) =>
     JSON.stringify(before?.[field] ?? null) !==
       JSON.stringify(after?.[field] ?? null));
 
-/** Event fields that move with every booking and decide no guest step. */
+/**
+ * Event fields that move with every booking and decide no guest step, and the
+ * trigger-owned organizerSummary, which no guest list shows.
+ */
 const bookingCounters = new Set(["bookedCount", "checkedInCount",
   "waitlistedCount", "genderCounts", "cohortCounts", "waitlistedCohortCounts",
-  "updatedAt"]);
+  "updatedAt", "organizerSummary"]);
 
 /**
  * Whether an event write changed anything besides its booking counters.

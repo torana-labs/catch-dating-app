@@ -1,0 +1,286 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/custom_domains.schema.json",
+  "title": "CustomDomainDocument",
+  "description": "One exact hostname Catch serves for an organiser (#1110), stored at customDomains/{hostname}. The single registry for organiser pages and, after the forms migration, organiser forms. The hostname is the document id, so a record that is not removed or expired blocks every other organiser; a new owner must prove control with a fresh TXT challenge in a new generation. Server-only: clients never read or write it, and owners see it through the owner domain callables.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "customDomains",
+  "x-firestore-path": "customDomains/{hostname}",
+  "x-document-id-field": "hostname",
+  "x-owner": "custom domain registry in Functions: requestOrganizerDomain, checkOrganizerDomain and removeOrganizerDomain owner callables, the scheduled reconcileCustomDomains, Admin moderation callables, organiser lifecycle hooks and the form domain operator CLI. No client reads or writes.",
+  "required": [
+    "hostname",
+    "registrableDomain",
+    "target",
+    "status",
+    "generation",
+    "revision",
+    "ownershipChallenge",
+    "expectedCname",
+    "apexRedirect",
+    "provider",
+    "providerHostnameId",
+    "providerStatus",
+    "dnsInstructions",
+    "reservedAtMillis",
+    "pendingExpiresAtMillis",
+    "verifiedAtMillis",
+    "activatedAtMillis",
+    "lastCheckedAtMillis",
+    "lastHealthyAtMillis",
+    "lapsedAtMillis",
+    "consecutiveProbeFailures",
+    "review",
+    "suspension",
+    "createdByUid",
+    "history"
+  ],
+  "properties": {
+    "hostname": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/servedHostname",
+      "x-catch-ownership": "server-only"
+    },
+    "registrableDomain": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/registrableDomain",
+      "x-catch-ownership": "server-only"
+    },
+    "target": {
+      "description": "What the hostname serves. organizerPage serves the organiser page at /; form serves one public organiser form (the generalised organizerFormDomains binding).",
+      "x-catch-ownership": "server-only",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "organizerId"],
+          "properties": {
+            "kind": {"const": "organizerPage"},
+            "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "organizerId", "formId", "publicFormId"],
+          "properties": {
+            "kind": {"const": "form"},
+            "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+            "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+            "publicFormId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{20,80}$"}
+          }
+        }
+      ]
+    },
+    "status": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/status",
+      "x-catch-ownership": "server-only"
+    },
+    "generation": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/generation",
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "description": "Increments on every write, for optimistic concurrency in registry transactions.",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "ownershipChallenge": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/ownershipChallenge",
+      "x-catch-ownership": "server-only"
+    },
+    "expectedCname": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/cnameTarget",
+      "x-catch-ownership": "server-only"
+    },
+    "apexRedirect": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/apexRedirect",
+      "x-catch-ownership": "server-only"
+    },
+    "provider": {
+      "type": "string",
+      "description": "The edge that terminates TLS for the hostname. cloudflareSaas is the launch provider; firebaseHosting remains for forms already onboarded through the Hosting adapter.",
+      "enum": ["cloudflareSaas", "firebaseHosting"],
+      "x-catch-ownership": "server-only"
+    },
+    "providerHostnameId": {
+      "type": ["string", "null"],
+      "description": "The provider's id for the custom hostname (a Cloudflare custom hostname id). Null until the provider hostname is created, and again after it is deleted.",
+      "minLength": 1,
+      "maxLength": 253,
+      "pattern": "^[A-Za-z0-9._:-]+$",
+      "x-catch-ownership": "server-only"
+    },
+    "providerStatus": {
+      "description": "The provider's last observed hostname and certificate state, copied by the reconciler. Raw provider values are kept as bounded tokens rather than an enum so a provider adding a state cannot break reads. Null before the provider hostname exists.",
+      "x-catch-ownership": "server-only",
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["hostname", "ssl", "errors", "observedAtMillis"],
+          "properties": {
+            "hostname": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]{0,63}$"},
+            "ssl": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]{0,63}$"},
+            "errors": {
+              "type": "array",
+              "description": "Provider verification and certificate errors, truncated. Never raw tokens or request bodies.",
+              "maxItems": 10,
+              "items": {"type": "string", "minLength": 1, "maxLength": 500}
+            },
+            "observedAtMillis": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/millis"}
+          }
+        }
+      ]
+    },
+    "dnsInstructions": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/dnsInstructions",
+      "x-catch-ownership": "server-only"
+    },
+    "reservedAtMillis": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/millis",
+      "x-catch-ownership": "server-only"
+    },
+    "pendingExpiresAtMillis": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/nullableMillis",
+      "description": "End of the 7-day pendingDns lease. Required while pendingDns; null once DNS is verified.",
+      "x-catch-ownership": "server-only"
+    },
+    "verifiedAtMillis": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/nullableMillis",
+      "x-catch-ownership": "server-only"
+    },
+    "activatedAtMillis": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/nullableMillis",
+      "x-catch-ownership": "server-only"
+    },
+    "lastCheckedAtMillis": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/nullableMillis",
+      "description": "Last DNS or provider probe. The reconciler orders its work by this field.",
+      "x-catch-ownership": "server-only"
+    },
+    "lastHealthyAtMillis": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/nullableMillis",
+      "description": "Last probe that found the TXT challenge, the exact CNAME and an active provider hostname and certificate.",
+      "x-catch-ownership": "server-only"
+    },
+    "lapsedAtMillis": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/nullableMillis",
+      "description": "When DNS stopped proving the domain. A lapsed record never serves; after 14 days it is removed, and if DNS recovers sooner it returns to active without a new challenge.",
+      "x-catch-ownership": "server-only"
+    },
+    "consecutiveProbeFailures": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000,
+      "x-catch-ownership": "server-only"
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "reason"],
+      "x-catch-ownership": "server-only",
+      "properties": {
+        "state": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/reviewState"},
+        "reason": {
+          "type": ["string", "null"],
+          "description": "Why the record was held, for Admin only (for example the blocklist entry it nearly matched).",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      }
+    },
+    "suspension": {
+      "description": "Set while an admin has suspended the domain; the origin then answers 410 within the 60-second registry cache. Null in every other status.",
+      "x-catch-ownership": "server-only",
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["reason", "byUid", "atMillis"],
+          "properties": {
+            "reason": {"type": "string", "minLength": 1, "maxLength": 500},
+            "byUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+            "atMillis": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/millis"}
+          }
+        }
+      ]
+    },
+    "createdByUid": {
+      "type": ["string", "null"],
+      "description": "The organiser owner who reserved this generation. Null when the form domain operator CLI reserved it.",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "history": {
+      "type": "array",
+      "description": "The latest status transitions, oldest first, bounded to 30 entries.",
+      "maxItems": 30,
+      "x-catch-ownership": "server-only",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["atMillis", "from", "to", "actor", "actorUid", "reason"],
+        "properties": {
+          "atMillis": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/millis"},
+          "from": {
+            "oneOf": [
+              {"type": "null"},
+              {"$ref": "../shared/custom_domain_common.schema.json#/definitions/status"}
+            ]
+          },
+          "to": {"$ref": "../shared/custom_domain_common.schema.json#/definitions/status"},
+          "actor": {
+            "type": "string",
+            "description": "owner: the organiser owner's callable. reconciler: the scheduled reconcile or a Check now. admin: Admin moderation. lifecycle: organiser archive, unclaim or ownership transfer. operator: the form domain operator CLI.",
+            "enum": ["owner", "reconciler", "admin", "lifecycle", "operator"]
+          },
+          "actorUid": {
+            "type": ["string", "null"],
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "reason": {
+            "type": ["string", "null"],
+            "minLength": 1,
+            "maxLength": 500
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "pendingDns"}}},
+      "then": {"properties": {"pendingExpiresAtMillis": {"type": "integer"}}}
+    },
+    {
+      "if": {"properties": {"status": {"enum": ["verified", "provisioning", "active", "lapsed"]}}},
+      "then": {"properties": {"verifiedAtMillis": {"type": "integer"}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "active"}}},
+      "then": {
+        "properties": {
+          "activatedAtMillis": {"type": "integer"},
+          "providerHostnameId": {"type": "string"},
+          "lapsedAtMillis": {"type": "null"},
+          "review": {"properties": {"state": {"enum": ["none", "approved"]}}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "lapsed"}}},
+      "then": {"properties": {"lapsedAtMillis": {"type": "integer"}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "suspended"}}},
+      "then": {"properties": {"suspension": {"type": "object"}}},
+      "else": {"properties": {"suspension": {"type": "null"}}}
+    }
+  ]
+}

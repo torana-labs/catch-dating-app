@@ -116,7 +116,7 @@ final class HostCommunicationPlanProvider
 }
 
 String _$hostCommunicationPlanHash() =>
-    r'0016da0a0bbb96af415ab2ce970be773e36ae2aa';
+    r'2738739ced9cd19b6552bc0fd5ff9cc3727a393a';
 
 final class HostCommunicationPlanFamily extends $Family
     with
@@ -201,7 +201,7 @@ final class HostManualSendTasksProvider
 }
 
 String _$hostManualSendTasksHash() =>
-    r'a35228af129d514b58634457bc61e46a5bed1ae9';
+    r'27167ae7cfa6973d8e826d90a29565346b29264b';
 
 final class HostManualSendTasksFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<HostManualSendTaskPage>, String> {

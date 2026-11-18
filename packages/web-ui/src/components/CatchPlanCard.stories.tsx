@@ -48,6 +48,36 @@ export const Plans: Story = {
   ),
 };
 
+const badged: CatchPlanCardProps[] = [
+  {badge: "Women-led", posterLabel: "Run club", availability: "22 going", detail: "Her Pace · Bandra", format: "run", href: "#her-pace",
+    label: "Run clubs · Tue 6:30 AM", photoUrl: "/assets/events/social-run-music-hero-960.jpg", price: "Free", title: "Women’s Evening Run",
+    date: {weekday: "Tue", day: "25", month: "Nov"}},
+  {badge: "Women-led", posterLabel: "Pickleball", availability: "9 left", detail: "Dink and Drink · Andheri West", format: "courts", href: "#courts-badge",
+    label: "Pickleball · Sat 5:00 PM", price: "₹600", title: "Pickleball Social", date: {weekday: "Sat", day: "22", month: "Nov"}},
+  {badge: "Women-led", posterLabel: "Supper club", availability: "2 left", detail: "Khar Table · Khar West", format: "dinner", href: "#supper-badge",
+    label: "Dinners · Thu 8:30 PM", photoUrl: "/assets/marketing/home-dinner.jpg", price: "₹1,800", title: "Strangers’ Supper"},
+  {badge: "Women-led", posterLabel: "Quiz night", availability: "6 left", detail: "The Quizzicals · Khar Social", format: "games", href: "#quiz-badge",
+    label: "Games and quizzes · Thu 7:30 PM", price: "Free", title: "Thursday Evening Pub Quiz"},
+];
+
+/**
+ * The badge on the media's corner (the board's "Women only" pill), here the
+ * read model's women-led tag: on the dated canvas card with a photo and a
+ * poster, and on the undated card, which is a row on phones.
+ */
+export const WithBadge: Story = {
+  parameters: {catchComponent: {id: "shared_plan_card", routeIds: storyRoutes, states: ["badge"]}},
+  render: () => (
+    <StoryPage>
+      <CatchBand aria-label="Plan cards with a badge" ground="paper" pb="compact" pt="compact">
+        <CatchGrid columns={4} compactColumns={1}>
+          {badged.map((plan) => <CatchPlanCard key={plan.href} {...plan} />)}
+        </CatchGrid>
+      </CatchBand>
+    </StoryPage>
+  ),
+};
+
 /** The board's plan grid beside the library rendering, at both widths. */
 export const BoardReference: Story = {
   parameters: {catchComponent: {id: "shared_plan_card", routeIds: storyRoutes, states: ["board-reference"]}},

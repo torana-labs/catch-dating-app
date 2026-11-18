@@ -67,8 +67,8 @@ describe("the host fee model", () => {
     expect(pricingPageFeeExamples.map(hostFeeExample).map((example) => example.value))
       .toEqual(["₹0", "₹300 a session", "₹2,160 a dinner", "₹1,497 a night", "₹640 a session", "₹1,500 a class"]);
     expect(pricingPageCycleExamples.map(hostFeeCycleExample)).toEqual([
-      {title: "₹1,00,000 in a billing cycle", value: "₹5,000", body: "5% of sales."},
-      {title: "₹5,00,000 in a billing cycle", value: "₹10,000", body: "An effective rate of 2%."},
+      {title: "₹1,00,000 in a month", value: "₹5,000", body: "5% of sales."},
+      {title: "₹5,00,000 in a month", value: "₹10,000", body: "An effective rate of 2%."},
     ]);
   });
 });
@@ -76,11 +76,13 @@ describe("the host fee model", () => {
 describe("pricing copy", () => {
   const pricingCopy = [hostFeeCalculatorCopy, hostPricingLines, hostLandingCopy];
 
-  it("says per billing cycle, never a month", () => {
+  it("says a month, never per billing cycle (owner, 18 Nov 2026)", () => {
     for (const text of strings(pricingCopy)) {
-      expect(text, text).not.toMatch(/\b(a|per|this|in a|each) month\b|\bmonthly\b|\bmonth’s\b/iu);
+      expect(text, text).not.toMatch(/billing cycle|\bcycle\b/iu);
     }
-    expect(hostPricingLines.rateTitle).toBe("of ticket sales. Never more than ₹10,000 per billing cycle.");
+    expect(hostPricingLines.rateTitle).toBe("of ticket sales. Never more than ₹10,000 a month.");
+    expect(hostPricingLines.terms).toContain("never more than ₹10,000 a month");
+    expect(hostFeeCalculatorCopy.sales).toBe("Your ticket sales in a month");
   });
 
   it("states the price only from the fee model", () => {
@@ -89,7 +91,7 @@ describe("pricing copy", () => {
     expect(host.pricing.title).toContain(hostPricingFacts.cap);
     expect(host.hero.terms).toContain(`${hostPricingFacts.trialDays} days`);
     expect(host.pricing.examples).toEqual(hostLandingFeeExamples.map(hostFeeExample));
-    expect(hostPricingLines.organisations).toBe("Venues and companies pay the same 5%, with the same ₹10,000 cap per billing cycle.");
+    expect(hostPricingLines.organisations).toBe("Venues and companies pay the same 5%, with the same ₹10,000 monthly cap.");
   });
 
   it("promises no day-before reminder: the default is a push 15 minutes before, and WhatsApp needs the host's own sender", () => {

@@ -344,54 +344,54 @@ final class HostFormsControllerProvider
 String _$hostFormsControllerHash() =>
     r'f03b4f93e3fa5e51b077347f0d87d0deced7e5b8';
 
-/// How many forms the directory listens to for one request; it grows by
-/// the request's page size each time the list asks for more.
+/// The request's forms, a page at a time, every row shown live. Each page is
+/// its own listener, so asking for more reads only the new page. A title
+/// search is one bounded listener with no further page.
 
-@ProviderFor(HostFormsWindow)
-final hostFormsWindowProvider = HostFormsWindowFamily._();
+@ProviderFor(HostFormsDirectoryPages)
+final hostFormsDirectoryPagesProvider = HostFormsDirectoryPagesFamily._();
 
-/// How many forms the directory listens to for one request; it grows by
-/// the request's page size each time the list asks for more.
-final class HostFormsWindowProvider
-    extends $NotifierProvider<HostFormsWindow, int> {
-  /// How many forms the directory listens to for one request; it grows by
-  /// the request's page size each time the list asks for more.
-  HostFormsWindowProvider._({
-    required HostFormsWindowFamily super.from,
+/// The request's forms, a page at a time, every row shown live. Each page is
+/// its own listener, so asking for more reads only the new page. A title
+/// search is one bounded listener with no further page.
+final class HostFormsDirectoryPagesProvider
+    extends
+        $StreamNotifierProvider<
+          HostFormsDirectoryPages,
+          LivePages<HostFormSummary>
+        > {
+  /// The request's forms, a page at a time, every row shown live. Each page is
+  /// its own listener, so asking for more reads only the new page. A title
+  /// search is one bounded listener with no further page.
+  HostFormsDirectoryPagesProvider._({
+    required HostFormsDirectoryPagesFamily super.from,
     required HostFormListRequest super.argument,
   }) : super(
          retry: null,
-         name: r'hostFormsWindowProvider',
+         name: r'hostFormsDirectoryPagesProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$hostFormsWindowHash();
+  String debugGetCreateSourceHash() => _$hostFormsDirectoryPagesHash();
 
   @override
   String toString() {
-    return r'hostFormsWindowProvider'
+    return r'hostFormsDirectoryPagesProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  HostFormsWindow create() => HostFormsWindow();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(int value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<int>(value),
-    );
-  }
+  HostFormsDirectoryPages create() => HostFormsDirectoryPages();
 
   @override
   bool operator ==(Object other) {
-    return other is HostFormsWindowProvider && other.argument == argument;
+    return other is HostFormsDirectoryPagesProvider &&
+        other.argument == argument;
   }
 
   @override
@@ -400,56 +400,69 @@ final class HostFormsWindowProvider
   }
 }
 
-String _$hostFormsWindowHash() => r'f815cf2cdad71f1614f1a227b924ff002b0d7e1a';
+String _$hostFormsDirectoryPagesHash() =>
+    r'8a39b5b12960713b9b64c3d2b5216c987500e9b0';
 
-/// How many forms the directory listens to for one request; it grows by
-/// the request's page size each time the list asks for more.
+/// The request's forms, a page at a time, every row shown live. Each page is
+/// its own listener, so asking for more reads only the new page. A title
+/// search is one bounded listener with no further page.
 
-final class HostFormsWindowFamily extends $Family
+final class HostFormsDirectoryPagesFamily extends $Family
     with
         $ClassFamilyOverride<
-          HostFormsWindow,
-          int,
-          int,
-          int,
+          HostFormsDirectoryPages,
+          AsyncValue<LivePages<HostFormSummary>>,
+          LivePages<HostFormSummary>,
+          Stream<LivePages<HostFormSummary>>,
           HostFormListRequest
         > {
-  HostFormsWindowFamily._()
+  HostFormsDirectoryPagesFamily._()
     : super(
         retry: null,
-        name: r'hostFormsWindowProvider',
+        name: r'hostFormsDirectoryPagesProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  /// How many forms the directory listens to for one request; it grows by
-  /// the request's page size each time the list asks for more.
+  /// The request's forms, a page at a time, every row shown live. Each page is
+  /// its own listener, so asking for more reads only the new page. A title
+  /// search is one bounded listener with no further page.
 
-  HostFormsWindowProvider call(HostFormListRequest request) =>
-      HostFormsWindowProvider._(argument: request, from: this);
+  HostFormsDirectoryPagesProvider call(HostFormListRequest request) =>
+      HostFormsDirectoryPagesProvider._(argument: request, from: this);
 
   @override
-  String toString() => r'hostFormsWindowProvider';
+  String toString() => r'hostFormsDirectoryPagesProvider';
 }
 
-/// How many forms the directory listens to for one request; it grows by
-/// the request's page size each time the list asks for more.
+/// The request's forms, a page at a time, every row shown live. Each page is
+/// its own listener, so asking for more reads only the new page. A title
+/// search is one bounded listener with no further page.
 
-abstract class _$HostFormsWindow extends $Notifier<int> {
+abstract class _$HostFormsDirectoryPages
+    extends $StreamNotifier<LivePages<HostFormSummary>> {
   late final _$args = ref.$arg as HostFormListRequest;
   HostFormListRequest get request => _$args;
 
-  int build(HostFormListRequest request);
+  Stream<LivePages<HostFormSummary>> build(HostFormListRequest request);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<int, int>;
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<LivePages<HostFormSummary>>,
+              LivePages<HostFormSummary>
+            >;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<int, int>,
-              int,
+              AnyNotifier<
+                AsyncValue<LivePages<HostFormSummary>>,
+                LivePages<HostFormSummary>
+              >,
+              AsyncValue<LivePages<HostFormSummary>>,
               Object?,
               Object?
             >;
@@ -457,107 +470,19 @@ abstract class _$HostFormsWindow extends $Notifier<int> {
   }
 }
 
-/// The first rows of the request's form list, as a listener.
-
-@ProviderFor(hostFormsListener)
-final hostFormsListenerProvider = HostFormsListenerFamily._();
-
-/// The first rows of the request's form list, as a listener.
-
-final class HostFormsListenerProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<HostFormWindow>,
-          HostFormWindow,
-          Stream<HostFormWindow>
-        >
-    with $FutureModifier<HostFormWindow>, $StreamProvider<HostFormWindow> {
-  /// The first rows of the request's form list, as a listener.
-  HostFormsListenerProvider._({
-    required HostFormsListenerFamily super.from,
-    required (HostFormListRequest, int) super.argument,
-  }) : super(
-         retry: null,
-         name: r'hostFormsListenerProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
-
-  @override
-  String debugGetCreateSourceHash() => _$hostFormsListenerHash();
-
-  @override
-  String toString() {
-    return r'hostFormsListenerProvider'
-        ''
-        '$argument';
-  }
-
-  @$internal
-  @override
-  $StreamProviderElement<HostFormWindow> $createElement(
-    $ProviderPointer pointer,
-  ) => $StreamProviderElement(pointer);
-
-  @override
-  Stream<HostFormWindow> create(Ref ref) {
-    final argument = this.argument as (HostFormListRequest, int);
-    return hostFormsListener(ref, argument.$1, argument.$2);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is HostFormsListenerProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
-  }
-}
-
-String _$hostFormsListenerHash() => r'd9ee6609a0f2f0c754a9723a975979dc66c07e0e';
-
-/// The first rows of the request's form list, as a listener.
-
-final class HostFormsListenerFamily extends $Family
-    with
-        $FunctionalFamilyOverride<
-          Stream<HostFormWindow>,
-          (HostFormListRequest, int)
-        > {
-  HostFormsListenerFamily._()
-    : super(
-        retry: null,
-        name: r'hostFormsListenerProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// The first rows of the request's form list, as a listener.
-
-  HostFormsListenerProvider call(HostFormListRequest request, int limit) =>
-      HostFormsListenerProvider._(argument: (request, limit), from: this);
-
-  @override
-  String toString() => r'hostFormsListenerProvider';
-}
-
 /// The forms directory, live: a form the server adds, changes or removes
-/// shows at once, and the list opens offline from the device cache. More
-/// rows mean a larger listener; a larger listener that fails keeps the rows
-/// already shown and reports the failure under them.
+/// shows at once, and the list opens offline from the device cache. A page
+/// that fails to open keeps the rows already shown and reports the failure
+/// under them.
 
 @ProviderFor(HostFormsDirectoryController)
 final hostFormsDirectoryControllerProvider =
     HostFormsDirectoryControllerFamily._();
 
 /// The forms directory, live: a form the server adds, changes or removes
-/// shows at once, and the list opens offline from the device cache. More
-/// rows mean a larger listener; a larger listener that fails keeps the rows
-/// already shown and reports the failure under them.
+/// shows at once, and the list opens offline from the device cache. A page
+/// that fails to open keeps the rows already shown and reports the failure
+/// under them.
 final class HostFormsDirectoryControllerProvider
     extends
         $AsyncNotifierProvider<
@@ -565,9 +490,9 @@ final class HostFormsDirectoryControllerProvider
           HostFormsDirectoryState
         > {
   /// The forms directory, live: a form the server adds, changes or removes
-  /// shows at once, and the list opens offline from the device cache. More
-  /// rows mean a larger listener; a larger listener that fails keeps the rows
-  /// already shown and reports the failure under them.
+  /// shows at once, and the list opens offline from the device cache. A page
+  /// that fails to open keeps the rows already shown and reports the failure
+  /// under them.
   HostFormsDirectoryControllerProvider._({
     required HostFormsDirectoryControllerFamily super.from,
     required HostFormListRequest super.argument,
@@ -606,12 +531,12 @@ final class HostFormsDirectoryControllerProvider
 }
 
 String _$hostFormsDirectoryControllerHash() =>
-    r'd29c90db680171a459f32150f0a7a925ca209121';
+    r'bc98f4b2aec35ad9666bdcdce0c35840a94d80bd';
 
 /// The forms directory, live: a form the server adds, changes or removes
-/// shows at once, and the list opens offline from the device cache. More
-/// rows mean a larger listener; a larger listener that fails keeps the rows
-/// already shown and reports the failure under them.
+/// shows at once, and the list opens offline from the device cache. A page
+/// that fails to open keeps the rows already shown and reports the failure
+/// under them.
 
 final class HostFormsDirectoryControllerFamily extends $Family
     with
@@ -632,9 +557,9 @@ final class HostFormsDirectoryControllerFamily extends $Family
       );
 
   /// The forms directory, live: a form the server adds, changes or removes
-  /// shows at once, and the list opens offline from the device cache. More
-  /// rows mean a larger listener; a larger listener that fails keeps the rows
-  /// already shown and reports the failure under them.
+  /// shows at once, and the list opens offline from the device cache. A page
+  /// that fails to open keeps the rows already shown and reports the failure
+  /// under them.
 
   HostFormsDirectoryControllerProvider call(HostFormListRequest request) =>
       HostFormsDirectoryControllerProvider._(argument: request, from: this);
@@ -644,9 +569,9 @@ final class HostFormsDirectoryControllerFamily extends $Family
 }
 
 /// The forms directory, live: a form the server adds, changes or removes
-/// shows at once, and the list opens offline from the device cache. More
-/// rows mean a larger listener; a larger listener that fails keeps the rows
-/// already shown and reports the failure under them.
+/// shows at once, and the list opens offline from the device cache. A page
+/// that fails to open keeps the rows already shown and reports the failure
+/// under them.
 
 abstract class _$HostFormsDirectoryController
     extends $AsyncNotifier<HostFormsDirectoryState> {

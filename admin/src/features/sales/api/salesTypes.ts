@@ -267,7 +267,7 @@ export interface SalesListOpportunitiesInput {
 export type SalesInboundStatus = "needs_identity_review" | "linked" | "dismissed";
 
 export interface SalesInboundIntent {
-  source?: "website" | "partner";
+  source?: "website" | "partner" | "meta_lead_ad";
   intentId: string;
   revision: number;
   status: SalesInboundStatus;

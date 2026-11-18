@@ -48,8 +48,10 @@
     "source": {
       "enum": [
         "website",
-        "partner"
-      ]
+        "partner",
+        "meta_lead_ad"
+      ],
+      "description": "website: a form on the Catch website; partner: a partner nomination; meta_lead_ad: a Facebook or Instagram lead form (metaLead names it)."
     },
     "submissionId": {
       "type": "string",
@@ -572,6 +574,58 @@
               "type": "null"
             }
           ]
+        }
+      }
+    },
+    "metaLead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "leadgenId",
+        "pageId",
+        "formId",
+        "adId",
+        "campaignId",
+        "leadCreatedAt"
+      ],
+      "description": "The Meta lead-form lead this intent came from. Present exactly on meta_lead_ad intents; leadgenId is the lead_id Meta conversion-leads events refer to.",
+      "properties": {
+        "leadgenId": {
+          "type": "string",
+          "pattern": "^[0-9]{10,20}$"
+        },
+        "pageId": {
+          "type": "string",
+          "pattern": "^[0-9]{5,20}$"
+        },
+        "formId": {
+          "type": "string",
+          "pattern": "^[0-9]{5,20}$"
+        },
+        "adId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9]{5,20}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "campaignId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9]{5,20}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "leadCreatedAt": {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
         }
       }
     }
@@ -1259,6 +1313,32 @@
           "required": [
             "lead"
           ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "const": "meta_lead_ad"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "metaLead"
+        ],
+        "properties": {
+          "hostLead": false,
+          "acquisitionAttribution": false,
+          "leadKind": false,
+          "programme": false,
+          "programmeApplication": false
+        }
+      },
+      "else": {
+        "properties": {
+          "metaLead": false
         }
       }
     }

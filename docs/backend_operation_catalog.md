@@ -283,8 +283,8 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `onCancelledNativeEventRefunds` / `onBookingCancellationRefund` / `recoverNativeCancellationRefunds` | Firestore update/write and schedule | Native guest/host cancellation, rejected booking and late capture | Persisted refund intent, exact provider attempts and confirmed returned amount | Event and payment authority rechecked in transactions; paged event staging, original platform/provider binding, Stripe destination reversal, bounded oldest-due recovery without purchase-age cutoff, lease and idempotency fencing. Uncertain expired Stripe requests and definite mismatches require review. |
 | `cancelEvent` | Callable | `HostEventManageScreen` | event cancellation fields, organizer next-event projection, canonical schedule-lock release, durable native refund staging, participant notifications | Current organizer-manager cancellation; exact replay resumes staging while retaining history. Provider acceptance alone does not mark a refund complete. |
 | `deleteEvent` | Callable | `HostEventManageScreen` | event delete and organizer next-event refresh | Hard delete only for unused published events, whatever created them; private events belong to progressive setup and events with history are cancelled. |
-| `syncOrganizerNextEvent` | Firestore trigger on `events/{eventId}` write | Backend | canonical organizer and legacy club next-event projections | Compatibility-named trigger that queries `events.organizerId` and recomputes the organizer projection. |
-| `syncPublicOrganizer` | Firestore trigger on `organizers/{organizerId}` writes | Backend | `publicOrganizers/{organizerId}` set/delete | Sole owner of the public organizer projection (#1221). Rebuilds the copy from the current organizer in a transaction, copying an allowlist of public fields; contact details, host defaults, provenance, intake, admin search, ownership, claim and source evidence never leave `organizers`. Organizers that are neither discoverable nor hosted, or that fail the public contract, have no projection. Existing organizers are backfilled with `node functions/scripts/backfill-public-organizers.cjs --project <id> [--apply]` after `npm --prefix functions run build`; it writes only `publicOrganizers`. |
+| `syncOrganizerNextEvent` | Firestore trigger on `events/{eventId}` write | Backend | canonical organizer and legacy club next-event projections | Compatibility-named trigger that queries `events.organizerId` and recomputes the organizer projection. Also writes `events/{eventId}.organizerSummary` from `publicOrganizers` when the event is created, its `organizerId` changes or the summary is missing (transactional, writes only that field and only on change). |
+| `syncPublicOrganizer` | Firestore trigger on `organizers/{organizerId}` writes | Backend | `publicOrganizers/{organizerId}` set/delete; `events/{eventId}.organizerSummary` | Sole owner of the public organizer projection (#1221). Rebuilds the copy from the current organizer in a transaction, copying an allowlist of public fields; contact details, host defaults, provenance, intake, admin search, ownership, claim and source evidence never leave `organizers`. Organizers that are neither discoverable nor hosted, or that fail the public contract, have no projection. When a change alters a field the events' `organizerSummary` holds, it rewrites that summary on the organizer's events whose `endTime` is in the future (200 per page, only where it differs; ended events keep theirs). Existing organizers are backfilled with `node functions/scripts/backfill-public-organizers.cjs --project <id> [--apply]` after `npm --prefix functions run build`; it writes only `publicOrganizers`. |
 | `signUpForFreeEvent` | Callable | `PaymentRepository.bookFreeEvent` | `eventParticipations/{eventId_uid}`, event booking/pair aggregate projections, optional `crossPathsPairHolds/{holdId}`, optional Cross Paths event plan, `notifications/{uid}/items/{notificationId}` | Delegates core booking to `signUpUserForEvent`, whose final transaction rechecks persisted host review rather than a preflight approval hint; an active caller-owned companion hold uses its frozen quote and converts atomically into a canonical booking plus event plan after live attendee consent/participation and safety revalidation. |
 | `createRazorpayHostPaymentAccount` / `refreshRazorpayHostPaymentAccount` | Callable | `HostPaymentAccountController` from Host Payments | `hostPaymentAccounts/{uid}_razorpay` plus Razorpay Route linked account, stakeholder, product configuration, and settlement details | Organizer-owner-only, App-Check-protected and rate-limited. Catch persists only provider ids and activation/requirement state; PAN, bank, stakeholder, and contact KYC values are submitted directly to Razorpay and are not stored in Firestore. Provider ids are checkpointed after creation so retries continue the same Route account/product. Route activation remains an external Razorpay gate. |
 | `createStripeHostOnboardingLink` / `refreshStripeHostPaymentAccount` | Callable | `HostPaymentAccountController` from Host Payments | canonical `hostPaymentAccounts/{uid}_stripe`, legacy `hostPaymentAccounts/{uid}` fallback, and Stripe Connect account/onboarding links | Organizer-owner-only provider seam for non-INR payouts. New writes are provider-scoped; legacy Stripe account documents remain readable and refreshable during migration. |
@@ -526,6 +526,46 @@ collects guest IDs (`collectsGuestIds`, from the accommodation capability).
 board state) and the programme's active WhatsApp sender;
 `listOrganizerPrograms` rows add bounded guest, flying-in and replied
 counts; `updateOrganizerProgram` sets or clears optional `branding`.
+
+## Programme read paths (#1339)
+
+The owner approved moving the programme screens from read callables to
+Firestore listeners on 18 November 2026. Each read is decided on its own, in
+batches by screen area: the access view and rules helpers first, then the live
+board and door, arrivals, departures and hotel, guests and staff, and last
+WhatsApp, photos and the lists. Every old callable stays deployed for older
+builds and is listed as retire-later when its screen moves.
+
+`getProgramWorkAccess` moves to a listener on the caller's own
+`programAccessViews/{programId__uid}` document. A trigger keeps the view from
+the staff grant and the programme: the owner-approval proof, the grant expiry
+and each assignment's expiry are folded into per-duty instants, so the view is
+what `requireProgramAccess` and `activeProgramDuties` decide, without the
+clock. Security rules answer every programme read model from that one view
+(`hasProgramDuty`, `programDutyCoversPickup`, `programDutyCoversHotel`,
+`programDutyCoversFunction`, `isProgramManager`), comparing the instants with
+`request.time`. Rules enforce online; a phone offline enforces the same
+instants itself from its cached view and its clock, and stops showing cached
+rows when the duty or grant has expired, been revoked or been narrowed.
+Commands still re-check authority from the source documents.
+
+**Read path decision (Nov 2026, #1339): server-trust.** `getProgramTransportPlan`
+stays a callable: it groups waiting parties into vehicles with an algorithm
+that depends on the current time (wait overdue, dispatch-by) and on every
+party, hotel and vehicle class, and a second copy of that logic on the phone
+would drift from the server's.
+
+**Read path decision (Nov 2026, #1339): server-trust.** `listProgramIdTracker` and
+`getProgramGuestIdStatus` stay callables: they depend on guest ID documents and
+their review state, which the client must not hold.
+
+**Read path decision (Nov 2026, #1339): server-trust.** `getProgramHotelHandover`
+stays a callable: it reads guest ID documents the client must not hold and
+records the handover in the same call.
+
+**Read path decision (Nov 2026, #1339): server-trust.** `getProgramAssistantSettings`
+stays a callable: it reads the assistant's settings and credential
+references, which no client may hold.
 
 ## Programme WhatsApp threads, replies and the assistant settings
 

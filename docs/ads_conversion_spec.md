@@ -304,6 +304,30 @@ cancelled when the owner's account is deleted or the event is older than seven
 days, and retried with backoff up to five attempts, since both platforms
 deduplicate on the event ID.
 
+## Meta host lead forms
+
+Host campaigns on Meta use instant lead forms. `metaLeadgenWebhook` answers
+Meta's verify handshake and checks `X-Hub-Signature-256` with the app secret,
+then files each `leadgen` change as a `metaLeadgenEvents/{leadgenId}` receipt,
+so redeliveries are no-ops. `onMetaLeadgenEventCreated` fetches the lead with
+the CatchAds token (it needs `leads_retrieval` and the page's lead access) and
+files it as a `salesInboundIntents` record with `source: meta_lead_ad`,
+`status: needs_identity_review` and a `metaLead` block naming the lead, form,
+ad and campaign. The webhook stays closed (503) until
+`META_LEADGEN_CREDENTIAL_VERSION` pins `CATCH_META_LEADGEN_WEBHOOK`, a JSON
+secret holding the Meta app secret and the verify token, and only pages in
+`META_LEADGEN_PAGE_IDS` are taken. Receipts
+keep only hashed phone and email, for 180 days; the lead's answers live on the
+sales intent under existing Sales privacy rules. An organizer created from such
+an intent counts as the `ads` channel (`meta_lead_ads`).
+
+When a host who came from a lead form signs up or qualifies, the queued Meta
+event carries the matched lead (hashed phone, then email) as `user_data.lead_id`
+with `custom_data.event_source: crm` and `lead_event_source: Catch`, which makes
+it a conversion-leads CRM stage Meta can optimise lead campaigns on. Meta's
+conversion-leads setup also asks for the initial lead stage; sending that stage
+is not built yet.
+
 ## Customer lists
 
 A scheduled uploader may share hashed contact lists with Meta (custom audiences)

@@ -18,7 +18,8 @@ function fixture(count: number) {
   }, get: async () => {
     queries++;
     assert.equal(pageLimit, 50);
-    assert.deepEqual(filters.splice(0), [["eventId", "==", "event1"],
+    assert.deepEqual(filters.splice(0), [
+      ["purpose", "==", "offer"], ["eventId", "==", "event1"],
       ["status", "in", ["admitted", "cancelled"]]]);
     const docs = [...rows].filter(([, row]) => ["admitted",
       "cancelled"].includes(row.status))

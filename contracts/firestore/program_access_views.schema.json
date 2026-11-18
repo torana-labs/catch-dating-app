@@ -1,0 +1,144 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_access_views.schema.json",
+  "title": "ProgramAccessViewDocument",
+  "description": "Server-maintained, rules-readable summary of one account's current authority over one program: the programme owner as manager, or a staff member's active duties with the owner-approval proof and every expiry already folded in. Security rules read it with one get() to authorize direct reads of programme read models; the phone shows it as work access. Written by triggers on programStaffGrants and organizerPrograms. Holds ids, duty names and expiry instants only: no name, phone number or free text. Never the grant's identity fields and never mutation authority; commands re-check authority from the source documents.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programAccessViews",
+  "x-firestore-path": "programAccessViews/{accessId}",
+  "x-document-id-field": "accessId",
+  "x-owner": "Programme read model projector (programAccessViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "uid",
+    "ownerUid",
+    "role",
+    "status",
+    "activeFromMillis",
+    "expiresAtMillis",
+    "duties",
+    "pickupAll",
+    "pickupScoped",
+    "hotelAll",
+    "hotelScoped",
+    "functionAll",
+    "functionScoped",
+    "workPickup",
+    "workHotel",
+    "workFunction",
+    "revision",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The account the view describes; the document id is programId__uid."
+    },
+    "ownerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The programme's immutable creator; read models carry it so rules can recognise the owner without a lookup."
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "manager",
+        "staff"
+      ],
+      "description": "manager is the programme owner and holds every duty; staff hold the duties below."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "description": "inactive when the grant is revoked, unapproved by the owner, expired or malformed. Rules deny an inactive view; the phone treats it as no access."
+    },
+    "activeFromMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "The owner approval instant; authority is not live before it. 0 for the owner and legacy creator-issued grants."
+    },
+    "expiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "description": "Exclusive end of the last live duty, bounded by the grant expiry and the owner's authorization deadline. Null for the owner."
+    },
+    "duties": {
+      "$ref": "#/definitions/expiryMap",
+      "description": "Duty name to the latest exclusive expiry at which the duty is held in some scope, with the coordinator duty counted for every duty but programAdmin."
+    },
+    "pickupAll": {
+      "$ref": "#/definitions/expiryMap",
+      "description": "Duty name to the latest expiry of an assignment that covers every pickup point."
+    },
+    "pickupScoped": {
+      "$ref": "#/definitions/expiryMap",
+      "description": "Key duty__pickupPointId to the latest expiry of an assignment that names that pickup point."
+    },
+    "hotelAll": {
+      "$ref": "#/definitions/expiryMap",
+      "description": "Duty name to the latest expiry of an assignment that covers every hotel."
+    },
+    "hotelScoped": {
+      "$ref": "#/definitions/expiryMap",
+      "description": "Key duty__hotelId to the latest expiry of an assignment that names that hotel."
+    },
+    "functionAll": {
+      "$ref": "#/definitions/expiryMap",
+      "description": "Duty name to the latest expiry of an assignment that covers every function."
+    },
+    "functionScoped": {
+      "$ref": "#/definitions/expiryMap",
+      "description": "Key duty__functionId to the latest expiry of an assignment that names that function."
+    },
+    "workPickup": {
+      "$ref": "#/definitions/expiryMap",
+      "description": "The pickup points the work shell lists for this account, as the work-access callable resolves them: key \"*\" when some live operational duty covers every one, otherwise one key per named id; each value is the latest exclusive expiry of a duty reaching it. Hotel desk duties reach hotels only; programAdmin reaches none; functions come from door and guest-desk duties."
+    },
+    "workHotel": {
+      "$ref": "#/definitions/expiryMap",
+      "description": "The hotels the work shell lists for this account, as the work-access callable resolves them: key \"*\" when some live operational duty covers every one, otherwise one key per named id; each value is the latest exclusive expiry of a duty reaching it. Hotel desk duties reach hotels only; programAdmin reaches none; functions come from door and guest-desk duties."
+    },
+    "workFunction": {
+      "$ref": "#/definitions/expiryMap",
+      "description": "The functions the work shell lists for this account, as the work-access callable resolves them: key \"*\" when some live operational duty covers every one, otherwise one key per named id; each value is the latest exclusive expiry of a duty reaching it. Hotel desk duties reach hotels only; programAdmin reaches none; functions come from door and guest-desk duties."
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "The source grant's revision; 0 for the owner. Phones compare it to see authority narrow or widen."
+    },
+    "version": {
+      "const": 1
+    }
+  },
+  "definitions": {
+    "expiryMap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 9007199254740991
+      }
+    }
+  }
+}

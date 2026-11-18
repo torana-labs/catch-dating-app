@@ -6,7 +6,7 @@
     "title": "Running the night | {{brand.name}} for hosts",
     "description": "Pace groups, seating plans, quiz teams, court rotations and pub crawl routes, built for each format. A live console for you, and no app for your guests.",
     "socialDescription": "Run the night, not just the RSVP. Follow one evening on {{brand.name}}, format by format.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

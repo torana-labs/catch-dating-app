@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/request_organizer_domain_payload.schema.json",
+  "title": "RequestOrganizerDomainCallablePayload",
+  "description": "An organiser owner reserves a hostname for the organiser page (#1110). Only an owner of a claimed or verified organiser with no other non-removed domain may call it, while the custom-domains switch is on. Returns OrganizerDomainCallableResponse with the DNS instructions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "hostname"],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "hostname": {
+      "type": "string",
+      "description": "The domain as the owner typed it. The server normalises it, then rejects anything that is not a servedHostname or that the blocklist holds.",
+      "minLength": 1,
+      "maxLength": 253
+    }
+  },
+  "x-normalization": [
+    "trim whitespace and lowercase the hostname",
+    "drop one trailing dot",
+    "reject schemes, ports, paths, wildcards, IP addresses and IDN or punycode labels",
+    "compute the registrable domain from the Public Suffix List; a bare registrable domain becomes www.<domain> with a registrar apex redirect"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "organizerId": "organizer-1",
+  "role": "manager",
+  "canManage": false,
+  "manageBlockedReason": "notOwner",
+  "domain": {
+    "hostname": "www.example-club.test",
+    "registrableDomain": "example-club.test",
+    "status": "active",
+    "generation": 1,
+    "dnsInstructions": [
+      {
+        "type": "CNAME",
+        "name": "www.example-club.test",
+        "value": "domains.example.net",
+        "purpose": "routing"
+      },
+      {
+        "type": "TXT",
+        "name": "_catch-verify.www.example-club.test",
+        "value": "catch-verification=Qx7Lr2Vb9Tn4Hc6Md1Ks8Wp3Yf5Ga0Ze",
+        "purpose": "ownership"
+      },
+      {
+        "type": "TXT",
+        "name": "_cf-custom-hostname.www.example-club.test",
+        "value": "4b1c7d2e-9f3a-4e6b-8c5d-1a2b3c4d5e6f",
+        "purpose": "certificate"
+      },
+      {
+        "type": "redirect",
+        "name": "example-club.test",
+        "value": "https://www.example-club.test/",
+        "purpose": "apexRedirect"
+      }
+    ],
+    "apexRedirect": {
+      "hostname": "example-club.test",
+      "mode": "registrar"
+    },
+    "reviewState": "none",
+    "problemCode": null,
+    "liveUrl": "https://www.example-club.test/",
+    "reservedAtMillis": 1763366400000,
+    "pendingExpiresAtMillis": null,
+    "verifiedAtMillis": 1763370000000,
+    "activatedAtMillis": 1763373600000,
+    "lastCheckedAtMillis": 1763367000000,
+    "lapsedAtMillis": null,
+    "lapseRemovalAtMillis": null,
+    "nextCheckAllowedAtMillis": null
+  }
+}

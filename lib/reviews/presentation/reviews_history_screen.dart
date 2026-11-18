@@ -38,7 +38,14 @@ class ReviewsHistoryScreen extends ConsumerWidget {
         uid != null &&
             reviews != null &&
             ReviewsHistoryState.eventIdsFor(reviews).isNotEmpty
-        ? ref.watch(watchOwnEventCardsByIdProvider(uid))
+        ? ref.watch(
+            watchOwnEventCardsForEventsProvider(
+              OwnEventCardsQuery(
+                uid: uid,
+                eventIds: ReviewsHistoryState.eventIdsFor(reviews),
+              ),
+            ),
+          )
         : const AsyncData<Map<String, GuestEventCard>>({});
 
     final state = uidAsync.when<ReviewsHistoryState>(

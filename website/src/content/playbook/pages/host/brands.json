@@ -6,7 +6,7 @@
     "title": "{{brand.name}} for brands | Community events you can measure",
     "description": "Run your own community nights or back hosts who already have the crowd. Every partner, creator and post gets its own link, with bookings, attendance and repeat guests for each.",
     "socialDescription": "Know exactly who your events reached. {{brand.name}} for brands that run community events.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
@@ -120,7 +120,7 @@
       "ground": "ink",
       "kicker": "Pricing for brands",
       "price": "5%",
-      "title": "of ticket sales, never more than ₹10,000 per billing cycle.",
+      "title": "of ticket sales, never more than ₹10,000 a month.",
       "trial": "The same 5% and the same cap as every host. Free events stay free. Payment gateway fees are separate. Multi-city series and programmes: ask for a walkthrough and we’ll plan it with you.",
       "examples": [
         {"title": "Free community runs", "value": "₹0", "body": "Free events stay free."},

@@ -6483,8 +6483,8 @@ List<Object> _reviewsHistoryProviderOverrides({
           if (eventIds.contains(event.id)) event,
       ]);
   overrides.add(
-    watchOwnEventCardsByIdProvider(
-      viewerUid,
+    watchOwnEventCardsForEventsProvider(
+      OwnEventCardsQuery(uid: viewerUid, eventIds: eventIds),
     ).overrideWithValue(_captureCardsById(effectiveEvents)),
   );
 
@@ -6827,8 +6827,8 @@ List<Object> _paymentHistoryProviderOverrides({
           if (eventIds.contains(event.id)) event,
       ]);
   overrides.add(
-    watchOwnEventCardsByIdProvider(
-      viewerUid,
+    watchOwnEventCardsForEventsProvider(
+      OwnEventCardsQuery(uid: viewerUid, eventIds: eventIds),
     ).overrideWithValue(_captureCardsById(effectiveEvents)),
   );
 

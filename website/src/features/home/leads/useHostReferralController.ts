@@ -32,7 +32,7 @@ function referralProblems(answers: Answers): Partial<Record<HostReferralField, s
  * before anything is sent; the page's city goes with it.
  */
 export function useHostReferralController(city: HomeLeadCity, submission?: WebsiteLeadSubmission) {
-  const lead = useWebsiteLeadController(submission);
+  const lead = useWebsiteLeadController({kind: "referral", formId: copy.refer.entry}, submission);
   const [answers, setAnswers] = useState<Answers>(empty);
   const [problems, setProblems] = useState<Partial<Record<HostReferralField, string>>>({});
   const [sentHost, setSentHost] = useState("");

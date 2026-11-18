@@ -8,55 +8,53 @@ part of 'host_form_operations_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// How many rows a live response request listens to; it grows by the
-/// request's page size each time the list asks for more.
+/// A response request's entries, a page at a time, every row shown live.
+/// Each page is its own listener, so asking for more reads only the new
+/// page.
 
-@ProviderFor(HostFormResponsesWindow)
-final hostFormResponsesWindowProvider = HostFormResponsesWindowFamily._();
+@ProviderFor(HostFormResponsePages)
+final hostFormResponsePagesProvider = HostFormResponsePagesFamily._();
 
-/// How many rows a live response request listens to; it grows by the
-/// request's page size each time the list asks for more.
-final class HostFormResponsesWindowProvider
-    extends $NotifierProvider<HostFormResponsesWindow, int> {
-  /// How many rows a live response request listens to; it grows by the
-  /// request's page size each time the list asks for more.
-  HostFormResponsesWindowProvider._({
-    required HostFormResponsesWindowFamily super.from,
+/// A response request's entries, a page at a time, every row shown live.
+/// Each page is its own listener, so asking for more reads only the new
+/// page.
+final class HostFormResponsePagesProvider
+    extends
+        $StreamNotifierProvider<
+          HostFormResponsePages,
+          LivePages<HostFormInboxEntry>
+        > {
+  /// A response request's entries, a page at a time, every row shown live.
+  /// Each page is its own listener, so asking for more reads only the new
+  /// page.
+  HostFormResponsePagesProvider._({
+    required HostFormResponsePagesFamily super.from,
     required HostFormResponseListRequest super.argument,
   }) : super(
          retry: null,
-         name: r'hostFormResponsesWindowProvider',
+         name: r'hostFormResponsePagesProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$hostFormResponsesWindowHash();
+  String debugGetCreateSourceHash() => _$hostFormResponsePagesHash();
 
   @override
   String toString() {
-    return r'hostFormResponsesWindowProvider'
+    return r'hostFormResponsePagesProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  HostFormResponsesWindow create() => HostFormResponsesWindow();
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(int value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<int>(value),
-    );
-  }
+  HostFormResponsePages create() => HostFormResponsePages();
 
   @override
   bool operator ==(Object other) {
-    return other is HostFormResponsesWindowProvider &&
-        other.argument == argument;
+    return other is HostFormResponsePagesProvider && other.argument == argument;
   }
 
   @override
@@ -65,57 +63,71 @@ final class HostFormResponsesWindowProvider
   }
 }
 
-String _$hostFormResponsesWindowHash() =>
-    r'59972f5261d22cd2574730ae76b739b17711345a';
+String _$hostFormResponsePagesHash() =>
+    r'64a1da6b3abcfa14da02f29263b1bb4a486e888c';
 
-/// How many rows a live response request listens to; it grows by the
-/// request's page size each time the list asks for more.
+/// A response request's entries, a page at a time, every row shown live.
+/// Each page is its own listener, so asking for more reads only the new
+/// page.
 
-final class HostFormResponsesWindowFamily extends $Family
+final class HostFormResponsePagesFamily extends $Family
     with
         $ClassFamilyOverride<
-          HostFormResponsesWindow,
-          int,
-          int,
-          int,
+          HostFormResponsePages,
+          AsyncValue<LivePages<HostFormInboxEntry>>,
+          LivePages<HostFormInboxEntry>,
+          Stream<LivePages<HostFormInboxEntry>>,
           HostFormResponseListRequest
         > {
-  HostFormResponsesWindowFamily._()
+  HostFormResponsePagesFamily._()
     : super(
         retry: null,
-        name: r'hostFormResponsesWindowProvider',
+        name: r'hostFormResponsePagesProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  /// How many rows a live response request listens to; it grows by the
-  /// request's page size each time the list asks for more.
+  /// A response request's entries, a page at a time, every row shown live.
+  /// Each page is its own listener, so asking for more reads only the new
+  /// page.
 
-  HostFormResponsesWindowProvider call(HostFormResponseListRequest request) =>
-      HostFormResponsesWindowProvider._(argument: request, from: this);
+  HostFormResponsePagesProvider call(HostFormResponseListRequest request) =>
+      HostFormResponsePagesProvider._(argument: request, from: this);
 
   @override
-  String toString() => r'hostFormResponsesWindowProvider';
+  String toString() => r'hostFormResponsePagesProvider';
 }
 
-/// How many rows a live response request listens to; it grows by the
-/// request's page size each time the list asks for more.
+/// A response request's entries, a page at a time, every row shown live.
+/// Each page is its own listener, so asking for more reads only the new
+/// page.
 
-abstract class _$HostFormResponsesWindow extends $Notifier<int> {
+abstract class _$HostFormResponsePages
+    extends $StreamNotifier<LivePages<HostFormInboxEntry>> {
   late final _$args = ref.$arg as HostFormResponseListRequest;
   HostFormResponseListRequest get request => _$args;
 
-  int build(HostFormResponseListRequest request);
+  Stream<LivePages<HostFormInboxEntry>> build(
+    HostFormResponseListRequest request,
+  );
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<int, int>;
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<LivePages<HostFormInboxEntry>>,
+              LivePages<HostFormInboxEntry>
+            >;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<int, int>,
-              int,
+              AnyNotifier<
+                AsyncValue<LivePages<HostFormInboxEntry>>,
+                LivePages<HostFormInboxEntry>
+              >,
+              AsyncValue<LivePages<HostFormInboxEntry>>,
               Object?,
               Object?
             >;
@@ -123,64 +135,63 @@ abstract class _$HostFormResponsesWindow extends $Notifier<int> {
   }
 }
 
-/// The first rows of a response request the read model serves, as a
-/// listener.
+/// A form page's version scope and answer filter options, read once. Shared
+/// by every sort, status and date slice of the same form page.
 
-@ProviderFor(hostFormResponsesListener)
-final hostFormResponsesListenerProvider = HostFormResponsesListenerFamily._();
+@ProviderFor(hostFormResponseScope)
+final hostFormResponseScopeProvider = HostFormResponseScopeFamily._();
 
-/// The first rows of a response request the read model serves, as a
-/// listener.
+/// A form page's version scope and answer filter options, read once. Shared
+/// by every sort, status and date slice of the same form page.
 
-final class HostFormResponsesListenerProvider
+final class HostFormResponseScopeProvider
     extends
         $FunctionalProvider<
-          AsyncValue<HostFormResponseWindow>,
-          HostFormResponseWindow,
-          Stream<HostFormResponseWindow>
+          AsyncValue<HostFormResponseScope?>,
+          HostFormResponseScope?,
+          FutureOr<HostFormResponseScope?>
         >
     with
-        $FutureModifier<HostFormResponseWindow>,
-        $StreamProvider<HostFormResponseWindow> {
-  /// The first rows of a response request the read model serves, as a
-  /// listener.
-  HostFormResponsesListenerProvider._({
-    required HostFormResponsesListenerFamily super.from,
-    required (HostFormResponseListRequest, int) super.argument,
+        $FutureModifier<HostFormResponseScope?>,
+        $FutureProvider<HostFormResponseScope?> {
+  /// A form page's version scope and answer filter options, read once. Shared
+  /// by every sort, status and date slice of the same form page.
+  HostFormResponseScopeProvider._({
+    required HostFormResponseScopeFamily super.from,
+    required HostFormResponseScopeKey super.argument,
   }) : super(
          retry: null,
-         name: r'hostFormResponsesListenerProvider',
+         name: r'hostFormResponseScopeProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$hostFormResponsesListenerHash();
+  String debugGetCreateSourceHash() => _$hostFormResponseScopeHash();
 
   @override
   String toString() {
-    return r'hostFormResponsesListenerProvider'
+    return r'hostFormResponseScopeProvider'
         ''
-        '$argument';
+        '($argument)';
   }
 
   @$internal
   @override
-  $StreamProviderElement<HostFormResponseWindow> $createElement(
+  $FutureProviderElement<HostFormResponseScope?> $createElement(
     $ProviderPointer pointer,
-  ) => $StreamProviderElement(pointer);
+  ) => $FutureProviderElement(pointer);
 
   @override
-  Stream<HostFormResponseWindow> create(Ref ref) {
-    final argument = this.argument as (HostFormResponseListRequest, int);
-    return hostFormResponsesListener(ref, argument.$1, argument.$2);
+  FutureOr<HostFormResponseScope?> create(Ref ref) {
+    final argument = this.argument as HostFormResponseScopeKey;
+    return hostFormResponseScope(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is HostFormResponsesListenerProvider &&
-        other.argument == argument;
+    return other is HostFormResponseScopeProvider && other.argument == argument;
   }
 
   @override
@@ -189,46 +200,41 @@ final class HostFormResponsesListenerProvider
   }
 }
 
-String _$hostFormResponsesListenerHash() =>
-    r'8a86f9e5d28cd2295ac6b88227b725e94b3f8baa';
+String _$hostFormResponseScopeHash() =>
+    r'717f5470b6f36017a377f1b7941b0396e2bca9aa';
 
-/// The first rows of a response request the read model serves, as a
-/// listener.
+/// A form page's version scope and answer filter options, read once. Shared
+/// by every sort, status and date slice of the same form page.
 
-final class HostFormResponsesListenerFamily extends $Family
+final class HostFormResponseScopeFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          Stream<HostFormResponseWindow>,
-          (HostFormResponseListRequest, int)
+          FutureOr<HostFormResponseScope?>,
+          HostFormResponseScopeKey
         > {
-  HostFormResponsesListenerFamily._()
+  HostFormResponseScopeFamily._()
     : super(
         retry: null,
-        name: r'hostFormResponsesListenerProvider',
+        name: r'hostFormResponseScopeProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  /// The first rows of a response request the read model serves, as a
-  /// listener.
+  /// A form page's version scope and answer filter options, read once. Shared
+  /// by every sort, status and date slice of the same form page.
 
-  HostFormResponsesListenerProvider call(
-    HostFormResponseListRequest request,
-    int limit,
-  ) => HostFormResponsesListenerProvider._(
-    argument: (request, limit),
-    from: this,
-  );
+  HostFormResponseScopeProvider call(HostFormResponseScopeKey key) =>
+      HostFormResponseScopeProvider._(argument: key, from: this);
 
   @override
-  String toString() => r'hostFormResponsesListenerProvider';
+  String toString() => r'hostFormResponseScopeProvider';
 }
 
 /// A response list. A request the response read model serves is live: an
 /// answer submitted, reviewed or offered elsewhere shows at once, and more
-/// rows mean a larger listener. Answer, identity, contact and text filters
-/// page through the callable, their recorded search exception.
+/// rows open one more page listener. Answer, identity, contact and text
+/// filters page through the callable, their recorded search exception.
 
 @ProviderFor(HostFormResponsesController)
 final hostFormResponsesControllerProvider =
@@ -236,8 +242,8 @@ final hostFormResponsesControllerProvider =
 
 /// A response list. A request the response read model serves is live: an
 /// answer submitted, reviewed or offered elsewhere shows at once, and more
-/// rows mean a larger listener. Answer, identity, contact and text filters
-/// page through the callable, their recorded search exception.
+/// rows open one more page listener. Answer, identity, contact and text
+/// filters page through the callable, their recorded search exception.
 final class HostFormResponsesControllerProvider
     extends
         $AsyncNotifierProvider<
@@ -246,8 +252,8 @@ final class HostFormResponsesControllerProvider
         > {
   /// A response list. A request the response read model serves is live: an
   /// answer submitted, reviewed or offered elsewhere shows at once, and more
-  /// rows mean a larger listener. Answer, identity, contact and text filters
-  /// page through the callable, their recorded search exception.
+  /// rows open one more page listener. Answer, identity, contact and text
+  /// filters page through the callable, their recorded search exception.
   HostFormResponsesControllerProvider._({
     required HostFormResponsesControllerFamily super.from,
     required HostFormResponseListRequest super.argument,
@@ -286,12 +292,12 @@ final class HostFormResponsesControllerProvider
 }
 
 String _$hostFormResponsesControllerHash() =>
-    r'f6f0609b4d0a8560411525551af5282d3804a9b6';
+    r'e22af8d9eaf8562137a22cffed96f02ae10f980e';
 
 /// A response list. A request the response read model serves is live: an
 /// answer submitted, reviewed or offered elsewhere shows at once, and more
-/// rows mean a larger listener. Answer, identity, contact and text filters
-/// page through the callable, their recorded search exception.
+/// rows open one more page listener. Answer, identity, contact and text
+/// filters page through the callable, their recorded search exception.
 
 final class HostFormResponsesControllerFamily extends $Family
     with
@@ -313,8 +319,8 @@ final class HostFormResponsesControllerFamily extends $Family
 
   /// A response list. A request the response read model serves is live: an
   /// answer submitted, reviewed or offered elsewhere shows at once, and more
-  /// rows mean a larger listener. Answer, identity, contact and text filters
-  /// page through the callable, their recorded search exception.
+  /// rows open one more page listener. Answer, identity, contact and text
+  /// filters page through the callable, their recorded search exception.
 
   HostFormResponsesControllerProvider call(
     HostFormResponseListRequest request,
@@ -326,8 +332,8 @@ final class HostFormResponsesControllerFamily extends $Family
 
 /// A response list. A request the response read model serves is live: an
 /// answer submitted, reviewed or offered elsewhere shows at once, and more
-/// rows mean a larger listener. Answer, identity, contact and text filters
-/// page through the callable, their recorded search exception.
+/// rows open one more page listener. Answer, identity, contact and text
+/// filters page through the callable, their recorded search exception.
 
 abstract class _$HostFormResponsesController
     extends $AsyncNotifier<HostFormResponsesState> {

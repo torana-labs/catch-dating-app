@@ -4,9 +4,9 @@
   "route": "host_nightlife",
   "meta": {
     "title": "{{brand.name}} for nightlife | Social nights and pub crawls",
-    "description": "Promoter links that show who sold what, groups that keep changing so everyone meets someone, leads who move each group between venues, and a count at every stop.",
+    "description": "Promoter links that show who sold what, groups that keep changing so everyone meets someone, a lead and a sweep who keep the group together between venues, and a count of who left every stop.",
     "socialDescription": "A room full of strangers, mixing by the second drink. {{brand.name}} for social nights and pub crawls.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
@@ -20,7 +20,7 @@
       "ground": "magenta",
       "kicker": "{{brand.name}} for social nights, bar nights and pub crawls",
       "title": "A room full of strangers, mixing by the second drink.",
-      "lead": "Promoter links that show who sold what, groups that keep changing so everyone meets someone, leads who move each group between venues, and a count of everyone at every stop.",
+      "lead": "Promoter links that show who sold what, groups that keep changing so everyone meets someone, a lead and a sweep who keep the group together between venues, and a count of who left every stop.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
         {
@@ -54,7 +54,7 @@
       "items": [
         {"title": "Everyone stands with their friends", "body": "Fifty people, eleven circles, and the people who came alone by the bar.", "fix": "Small groups that change through the night, with one icebreaker at a time."},
         {"title": "Promoters say they sold it out", "body": "Five promoters, one total, and a payout based on screenshots.", "fix": "A link for each promoter, with bookings and revenue against it."},
-        {"title": "Losing people between bars", "body": "Forty leave stop two; thirty-one arrive at stop three, and you don’t know who.", "fix": "Each group lead confirms who left and who arrived, at every stop."}
+        {"title": "Losing people between bars", "body": "Forty leave stop two; thirty-one arrive at stop three, and you don’t know who.", "fix": "Your lead confirms who left each stop and where you’re heading next."}
       ]
     },
     {
@@ -63,7 +63,7 @@
       "ground": "white",
       "kicker": "Social nights",
       "title": "Groups that change, so nobody stays in a corner.",
-      "lead": "{{brand.name}} puts guests into small groups and changes them a few times through the night. Between rounds, phones buzz with the next group and one thing to talk about. Then the phones go away.",
+      "lead": "{{brand.name}} puts guests into small groups and changes them a few times through the night. Between rounds, phones show the next group and one thing to talk about. Then the phones go away.",
       "ticks": [
         "Groups mixed by what guests told you, and who came alone",
         "Rounds as long as you want them",
@@ -78,11 +78,11 @@
       "kicker": "A pub crawl on {{brand.name}}",
       "title": "Four stops, nobody lost.",
       "steps": [
-        {"time": "Thursday", "title": "Plan the route", "body": "Four stops, groups of ten and a lead for each, shared with your team and the venues before the night."},
-        {"time": "7:30 PM", "title": "A first hello at the first bar", "body": "Guests check in and get one icebreaker to do with someone in their group, so the group is mixing before the first move."},
-        {"time": "8:42 PM", "title": "Move groups between venues", "body": "Phones come out on the move: where you’re heading and who’s with you. Each lead confirms who left and who arrived."},
-        {"time": "10:30 PM", "title": "Late arrivals find the group", "body": "Someone arriving late gets the stop you’re at now, not the first one, and their lead sees them coming."},
-        {"time": "11:15 PM", "title": "The return sweep", "body": "At the last stop, leads mark everyone as home or still out. Anyone not accounted for shows up on your screen."}
+        {"time": "Thursday", "title": "Plan the route", "body": "Set the stops, and give your helpers a lead or sweep role for the night."},
+        {"time": "7:30 PM", "title": "A first hello at the first bar", "body": "Guests check in and get one icebreaker to do with someone in the group, so people are mixing before the first move."},
+        {"time": "8:42 PM", "title": "Move between venues", "body": "When the group leaves a stop, your lead confirms who left and where you’re heading next."},
+        {"time": "10:30 PM", "title": "Late arrivals find the group", "body": "Someone arriving late is pointed to the stop you’ve confirmed you’re at, not the first one."},
+        {"time": "11:15 PM", "title": "The end-of-night sweep", "body": "At the last stop, mark everyone accounted for. Anyone not marked stays on your list before you close the night."}
       ],
       "media": {"kind": "capture", "slot": "host-formats-crawl"}
     },
@@ -96,12 +96,12 @@
       "items": [
         {"title": "A link for every promoter", "body": "Bookings and revenue for each."},
         {"title": "Groups that change", "body": "Everyone meets someone new."},
-        {"title": "Group leads", "body": "Each confirms who’s with them."},
-        {"title": "A count at every stop", "body": "Who left, who arrived."},
-        {"title": "Late arrivals routed", "body": "To the stop you’re at now."},
+        {"title": "A lead and a sweep", "body": "Roles for your helpers on the night."},
+        {"title": "A count at every stop", "body": "Who left, and where you’re heading."},
+        {"title": "Late arrivals routed", "body": "To the stop you’ve confirmed."},
         {"title": "Paid booking and a waitlist", "body": "No guest list on a napkin."},
         {"title": "Early-bird pricing", "body": "The price steps up as it fills."},
-        {"title": "A sweep at the end", "body": "Everyone home, or flagged."}
+        {"title": "A sweep at the end", "body": "Everyone accounted for before you close."}
       ]
     },
     {
@@ -110,12 +110,12 @@
       "ground": "ink",
       "kicker": "Pricing for social nights",
       "price": "5%",
-      "title": "of ticket sales, never more than ₹10,000 per billing cycle.",
+      "title": "of ticket sales, never more than ₹10,000 a month.",
       "trial": "Free for 30 days from your first night, 90 for founding hosts. Payment gateway fees are separate.",
       "examples": [
         {"title": "A 40-person crawl at ₹1,499", "value": "₹2,998 a night", "body": "5% of ₹59,960."},
-        {"title": "Four crawls in a billing cycle", "value": "₹10,000 a billing cycle", "body": "The cap. Everything above it is yours."},
-        {"title": "A fifth night in the same cycle", "value": "₹0 more", "body": "You’ve already hit the cap."}
+        {"title": "Four crawls in a month", "value": "₹10,000 a month", "body": "The cap. Everything above it is yours."},
+        {"title": "A fifth night in the same month", "value": "₹0 more", "body": "You’ve already hit the cap."}
       ],
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
@@ -131,10 +131,10 @@
       "items": [
         {"question": "Can I pay promoters on what they sell?", "answer": "Each promoter gets their own link, and {{brand.name}} shows the visits, bookings and revenue from it. How you pay them is up to you."},
         {"question": "How do the groups work at a social night?", "answer": "{{brand.name}} puts guests into small groups from what they told you when they booked, and changes them a few times through the night. You set how many rounds and how long."},
-        {"question": "Who runs each group on a crawl?", "answer": "A group lead from your team, on their own phone. They see their group, confirm who left and who arrived, and get late arrivals sent their way."},
-        {"question": "What if someone leaves early?", "answer": "Their lead marks them as gone home. At the end, anyone not accounted for shows up on your screen."},
+        {"question": "Who keeps the group together on a crawl?", "answer": "A lead and a sweep from your team, on their own phones. Your lead confirms who left each stop and where you’re heading next, and late arrivals are pointed to that stop."},
+        {"question": "What if someone leaves early?", "answer": "Mark them accounted for. Anyone not marked stays on your list before you close the night."},
         {"question": "Do guests need an app?", "answer": "No. They book, check in and see their group in their phone’s browser."},
-        {"question": "Can the venues see the plan?", "answer": "Share the route and timings with your team and venues before the night."}
+        {"question": "Can the venues see the plan?", "answer": "Your lead and sweep see the stops on their own phones. Share the timings with your venues as you do today."}
       ]
     },
     {
@@ -142,7 +142,7 @@
       "id": "start",
       "ground": "magenta",
       "kicker": "Your next night",
-      "title": "Everyone mixing. Everyone home.",
+      "title": "Everyone mixing. Everyone accounted for.",
       "lead": "Start the free trial, or leave your number and we’ll send the social night setup guide on WhatsApp.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}

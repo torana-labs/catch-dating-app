@@ -151,6 +151,41 @@ test("client error signals are coarse and require analytics consent", () => {
   });
 });
 
+test("lead form events carry only the closed lead form payload, and only after analytics consent", () => {
+  window.localStorage.clear();
+  window.dataLayer = [];
+  const form = {kind: "referral", formId: "home-refer", fullName: "Private Person", phone: "+919876543210"};
+
+  assert.equal(analytics.trackWebsiteLeadFormEvent("viewed", form), false);
+  analytics.setMarketingConsent("essential");
+  assert.equal(analytics.trackWebsiteLeadFormEvent("submitted", form), false);
+  assert.equal(window.dataLayer.some((entry) => String(entry.event).startsWith("lead_form_")), false);
+
+  analytics.setMarketingConsent("analytics");
+  for (const stage of ["viewed", "submitted", "succeeded"]) {
+    assert.equal(analytics.trackWebsiteLeadFormEvent(stage, form), true);
+  }
+  assert.equal(analytics.trackWebsiteLeadFormEvent("failed", form, "busy"), true);
+  const page = {content_version: "website_copy_v2", lead_kind: "referral", form_id: "home-refer", page_path: "/host/"};
+  assert.deepEqual(window.dataLayer.filter((entry) => String(entry.event).startsWith("lead_form_")), [
+    {event: "lead_form_viewed", ...page},
+    {event: "lead_form_submitted", ...page},
+    {event: "lead_form_succeeded", ...page},
+    {event: "lead_form_failed", ...page, problem: "busy"},
+  ]);
+  for (const entry of window.dataLayer) assert.ok(String(entry.event ?? "").length <= 40);
+  assert.doesNotMatch(JSON.stringify(window.dataLayer), /Private Person|9876543210|source=contract/u);
+
+  // Outside the vocabulary nothing is recorded.
+  window.dataLayer = [];
+  assert.equal(analytics.trackWebsiteLeadFormEvent("opened", form), false);
+  assert.equal(analytics.trackWebsiteLeadFormEvent("viewed", {...form, kind: "newsletter"}), false);
+  assert.equal(analytics.trackWebsiteLeadFormEvent("viewed", {...form, formId: "Private Person"}), false);
+  assert.equal(analytics.trackWebsiteLeadFormEvent("failed", form), false);
+  assert.equal(analytics.trackWebsiteLeadFormEvent("failed", form, "the server said no"), false);
+  assert.deepEqual(window.dataLayer, []);
+});
+
 test("private event updates do not enter analytics or attribution storage", () => {
   const previous = window.location;
   window.localStorage.clear();

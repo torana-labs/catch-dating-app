@@ -1,4 +1,5 @@
 import {Timestamp} from "firebase-admin/firestore";
+import type {GuestPaymentPurpose} from "../guestPayments";
 
 /** Successful rows leave the query; retries cannot truncate old event
  * refunds. */
@@ -9,6 +10,8 @@ export async function queueCancelledEventPaymentRefunds(
   },
   deps: {
     collection: string;
+    /** Only this flow's payments; the ledger also holds other purposes. */
+    purpose: GuestPaymentPurpose;
     now: () => number;
     cancel: (input: {
       db: FirebaseFirestore.Firestore;
@@ -26,6 +29,7 @@ export async function queueCancelledEventPaymentRefunds(
     if (event?.status !== "cancelled") return {queued, review};
     const page = await db
       .collection(deps.collection)
+      .where("purpose", "==", deps.purpose)
       .where("eventId", "==", eventId)
       .where("status", "in", ["admitted", "cancelled"])
       .limit(50)
