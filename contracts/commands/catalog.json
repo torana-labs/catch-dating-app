@@ -19,6 +19,18 @@
       "surfaces": ["website", "catch_host", "cli"],
       "linkAllowance": null,
       "summary": "Give a phone-verified caller their one try-it workspace: a private organizer they own, which every try-it tool writes into."
+    },
+    {
+      "commandId": "guests.import-list",
+      "version": 1,
+      "callable": "importGuestList",
+      "payloadSchema": "contracts/callables/import_guest_list_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/import_guest_list_response.schema.json",
+      "effect": "draft",
+      "caller": "organizer_manager",
+      "surfaces": ["catch_host", "cli"],
+      "linkAllowance": null,
+      "summary": "Read one guest-list file (CSV, XLSX or vCard) for an event with the converter for its format, show what would be added or updated, and save exactly the reviewed preview to the event's private guest list. The caller manages the event's organizer and has a phone verified by code."
     }
   ]
 }

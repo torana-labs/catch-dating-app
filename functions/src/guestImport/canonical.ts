@@ -78,6 +78,8 @@ export interface CanonicalGuestRead {
   /** Headers after the converter's reshape (e.g. a joined name column). */
   headers: string[];
   mapping: GuestColumnMapping;
+  /** Fields whose column the host chose instead of the converter. */
+  correctedFields: GuestField[];
   rows: CanonicalGuestRow[];
   skipped: SkippedGuestRow[];
   /** Data rows beyond the row limit, not read. */

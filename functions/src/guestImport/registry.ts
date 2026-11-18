@@ -5,6 +5,8 @@ import type {
   CanonicalGuestRead,
   CanonicalGuestRow,
   ExternalRosterProvider,
+  GuestColumnMapping,
+  GuestField,
   GuestListConverter,
   NormalizedRosterImportRow,
   PreparedRosterImport,
@@ -133,7 +135,9 @@ export function normalizeRosterMatrix(
 export function readGuestTable(
   matrix: string[][],
   options: {providerHint?: ExternalRosterProvider;
-    converterId?: RosterAdapterId} = {}
+    converterId?: RosterAdapterId;
+    /** The host's column choices; null unmaps a field. */
+    mapping?: Partial<GuestColumnMapping>} = {}
 ): CanonicalGuestRead {
   if (matrix.length < 2) throw new Error("roster_missing_rows");
   if (matrix[0].length > MAX_GUEST_COLUMNS) {
@@ -150,7 +154,25 @@ export function readGuestTable(
     headers,
     rows: matrix.slice(1).filter((row) => row.some((value) => value.trim())),
   }, adapter);
-  const mapping = suggestGuestMapping(normalized.headers, converter);
+  const suggested = suggestGuestMapping(normalized.headers, converter);
+  const mapping = {...suggested};
+  const correctedFields: GuestField[] = [];
+  for (const field of guestFields) {
+    const chosen = options.mapping?.[field];
+    if (chosen === undefined) continue;
+    if (chosen !== null && (!Number.isSafeInteger(chosen) || chosen < 0 ||
+        chosen >= normalized.headers.length)) {
+      throw new Error("roster_invalid_mapping");
+    }
+    if (chosen !== suggested[field]) correctedFields.push(field);
+    mapping[field] = chosen;
+  }
+  const chosenColumns = Object.values(mapping)
+    .filter((column): column is number => column !== null);
+  if (options.mapping &&
+      new Set(chosenColumns).size !== chosenColumns.length) {
+    throw new Error("roster_duplicate_mapped_column");
+  }
   const nameIndex = mapping.displayName;
   if (nameIndex === null) throw new Error("roster_missing_name_column");
   const rows: CanonicalGuestRow[] = [];
@@ -195,8 +217,8 @@ export function readGuestTable(
     }
     rows.push({sourceRowNumber, value, fields, rawCells});
   }
-  return {adapter, headers: normalized.headers, mapping, rows, skipped,
-    truncatedCount: normalized.rows.length - index};
+  return {adapter, headers: normalized.headers, mapping, correctedFields,
+    rows, skipped, truncatedCount: normalized.rows.length - index};
 }
 
 /**

@@ -817,7 +817,8 @@
     "ProgramAssistantSettingsCallableResponse",
     "SignProgramPhotoUrlsCallablePayload",
     "ProgramPhotoUrlsCallableResponse",
-    "EnsureTryItWorkspaceCallablePayload"
+    "EnsureTryItWorkspaceCallablePayload",
+    "ImportGuestListCallablePayload"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",
@@ -1048,6 +1049,7 @@
     "ValidateOrganizerFormDraftCallableResponse",
     "WithdrawOrganizerFormResponseCallableResponse",
     "WithdrawParticipantMessagingPermissionCallableResponse",
-    "EnsureTryItWorkspaceCallableResponse"
+    "EnsureTryItWorkspaceCallableResponse",
+    "ImportGuestListCallableResponse"
   ]
 }

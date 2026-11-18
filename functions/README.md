@@ -519,6 +519,7 @@ enter previews.
 | `ensureTryItWorkspace` | `src/commands/ensureTryItWorkspace.ts` | Command `workspace.ensure`: gives a phone-verified caller their one private try-it organizer workspace. |
 | `expireTryItWorkspaces` | `src/commands/workspaceExpiry.ts` | Daily: removes try-it workspaces unused for 30 days, unless kept. |
 | `followOrganizerByPhone` | `src/organizers/followOrganizerByPhone.ts` | Not yet described. |
+| `importGuestList` | `src/commands/importGuestList.ts` | Command `guests.import-list`: reads one guest-list file (CSV, XLSX or vCard) on the server with the converter for its format, reviews it through the host roster intake session and saves exactly the reviewed preview. |
 | `getOrganizerOwnerView` | `src/organizerInsights/ownerView.ts` | The website owner view for an organiser's team: role, capabilities, 30 days of organizerInsights, links, about, photos and follower-message usage. |
 | `getProgramAssistantSettings` | `src/programs/programWhatsapp/callables.ts` | Programme assistant settings (defaults when unsaved), the wedding's WhatsApp number and the staff for escalations; managers and coordinators. |
 | `getProgramDeparturesRoster` | `src/transport/programDepartures.ts` | Not yet described. |

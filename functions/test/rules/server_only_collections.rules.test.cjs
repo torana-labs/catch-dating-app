@@ -39,6 +39,7 @@ const SERVER_ONLY = [
   "eventSeatVerifiedPhones",
   "externalEventPublicationReceipts",
   "formCommunicationConsentIntents",
+  "guestImportHeaderShapes",
   "hostAcquisitionConsents",
   "hostAcquisitionDeliveries",
   "hostOrganizerActivations",
