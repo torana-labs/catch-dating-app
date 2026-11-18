@@ -20,15 +20,32 @@ export const paletteNeutrals = [
   "inkGround",
 ] as const;
 
-/** Every palette colour, in token order: the neutrals, then each accent with its deep and ink. */
+/**
+ * The page colours the product pages added (17 Nov 2026): sky, between mint
+ * and indigo, and a soft tint of each accent and of sky for secondary tiles.
+ * They are grounds only, never text accents, so they have no deep shade.
+ */
+export const pageGrounds = ["sky", "coralSoft", "pinkSoft", "yellowSoft", "mintSoft", "indigoSoft", "magentaSoft", "skySoft"] as const;
+export type PageGround = (typeof pageGrounds)[number];
+/** The soft tints: secondary tiles only, never a band. */
+export const softGrounds = ["coralSoft", "pinkSoft", "yellowSoft", "mintSoft", "indigoSoft", "magentaSoft", "skySoft"] as const satisfies readonly PageGround[];
+
+/** Every palette colour, in token order: the neutrals, each accent with its deep and ink, then sky with its ink and the soft tints. */
 export const paletteColors = [
   ...paletteNeutrals,
   ...paletteAccents.flatMap((accent) => [accent, `${accent}Deep`, `${accent}Ink`] as const),
+  "sky",
+  "skyInk",
+  ...softGrounds,
 ] as const;
 export type PaletteColor = (typeof paletteColors)[number];
 
+/** The grounds the apps share: Flutter's palette grounds, and the avatar's monogram grounds. */
 export const grounds = ["white", "paper", "ink", ...paletteAccents] as const;
-export type Ground = (typeof grounds)[number];
+export type SharedGround = (typeof grounds)[number];
+/** Every Website v2 ground, in token order: the shared grounds, then the page grounds. */
+export const websiteGrounds = [...grounds, ...pageGrounds] as const;
+export type Ground = (typeof websiteGrounds)[number];
 export const groundRoles = ["fill", "ink", "inkSecondary"] as const;
 export type GroundRole = (typeof groundRoles)[number];
 
@@ -67,7 +84,7 @@ export function catchFormatAccentOf(activityKind: string): PaletteAccent | null 
 const kebab = (name: string) => name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
 export const paletteVar = (color: PaletteColor) => `--catch-palette-${kebab(color)}`;
-export const groundVar = (ground: Ground, role: GroundRole) => `--catch-ground-${ground}-${kebab(role)}`;
+export const groundVar = (ground: Ground, role: GroundRole) => `--catch-ground-${kebab(ground)}-${kebab(role)}`;
 export const formatVar = (format: Format, role: (typeof formatRoles)[number]) =>
   `--catch-format-${kebab(format)}-${kebab(role)}`;
 
@@ -82,6 +99,14 @@ export function groundTextColors(ground: Ground): readonly PaletteColor[] {
       return ["ink", "inkSecondary", ...paletteAccents.map((accent) => `${accent}Deep` as const)];
     case "ink":
       return ["nightInk", "nightSecondary", "nightTertiary", ...paletteAccents];
+    case "coralSoft":
+    case "pinkSoft":
+    case "yellowSoft":
+    case "mintSoft":
+    case "indigoSoft":
+    case "magentaSoft":
+    case "skySoft":
+      return ["ink", "inkSecondary"];
     default:
       return ["ink", `${ground}Ink`];
   }

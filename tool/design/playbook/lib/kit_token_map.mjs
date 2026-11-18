@@ -52,6 +52,33 @@ export const colorMap = [
   color("#5CCB9F", "palette.mint", ".pg .m-mint", {roles: ["ground.mint.fill"]}),
   color("#8C9BF2", "palette.indigo", ".pg .m-indigo", {roles: ["ground.indigo.fill"]}),
   color("#E58AC8", "palette.magenta", ".pg .m-magenta", {roles: ["ground.magenta.fill"]}),
+  // Palette extension (17 Nov, product pages v2): sky fills the mint–indigo
+  // gap, and soft tints colour secondary tiles.
+  color("#5EC2E6", "palette.sky", ".pg .m-sky", {
+    roles: ["ground.sky.fill"],
+    description: "Sky: a page colour between mint and indigo, for a band or a tile. Canvas-owned (product pages v2).",
+  }),
+  color("#FDE7DF", "palette.coralSoft", ".pg .tile.s-coral", {
+    roles: ["ground.coralSoft.fill"], description: "A soft coral tint for a secondary tile. Canvas-owned (product pages v2).",
+  }),
+  color("#FDE4EA", "palette.pinkSoft", ".pg .tile.s-pink", {
+    roles: ["ground.pinkSoft.fill"], description: "A soft pink tint for a secondary tile. Canvas-owned (product pages v2).",
+  }),
+  color("#FFF4D6", "palette.yellowSoft", ".pg .tile.s-yellow", {
+    roles: ["ground.yellowSoft.fill"], description: "A soft yellow tint for a secondary tile. Canvas-owned (product pages v2).",
+  }),
+  color("#DDF3EA", "palette.mintSoft", ".pg .tile.s-mint", {
+    roles: ["ground.mintSoft.fill"], description: "A soft mint tint for a secondary tile. Canvas-owned (product pages v2).",
+  }),
+  color("#E8EBFD", "palette.indigoSoft", ".pg .tile.s-indigo", {
+    roles: ["ground.indigoSoft.fill"], description: "A soft indigo tint for a secondary tile. Canvas-owned (product pages v2).",
+  }),
+  color("#FBE4F3", "palette.magentaSoft", ".pg .tile.s-magenta", {
+    roles: ["ground.magentaSoft.fill"], description: "A soft magenta tint for a secondary tile. Canvas-owned (product pages v2).",
+  }),
+  color("#DDF1F8", "palette.skySoft", ".pg .tile.s-sky", {
+    roles: ["ground.skySoft.fill"], description: "A soft sky tint for a secondary tile. Canvas-owned (product pages v2).",
+  }),
   color("#1B171B", "palette.inkGround", ".pg .ink, .pg .foot, .pg .offer", {
     roles: ["ground.ink.fill"],
     description: "The ink ground: dark panels, the offer strip and the footer card. Canvas-owned (Website · conversion playbook).",

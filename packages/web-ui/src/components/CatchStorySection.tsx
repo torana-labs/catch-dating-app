@@ -10,7 +10,7 @@ import {CatchMetricTile} from "./CatchMetricTile";
 import {CatchStack} from "./CatchStack";
 import {CatchSurface} from "./CatchSurface";
 import {CatchText} from "./CatchText";
-import type {Ground} from "./palette";
+import type {Ground, SharedGround} from "./palette";
 import styles from "./CatchStorySection.module.css";
 
 /** Who tells the story: a photo, or initials on a Website v2 ground. */
@@ -20,7 +20,7 @@ export interface CatchStorySectionAvatar {
   /** Defaults to the initials of the title. */
   initials?: string;
   /** The initials' ground; defaults to coral. */
-  ground?: Ground;
+  ground?: SharedGround;
 }
 
 /** A measured result: what it is, the figure, and where the figure comes from. */

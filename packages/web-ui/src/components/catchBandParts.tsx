@@ -44,7 +44,7 @@ export interface CatchBandFootnote {
 /**
  * The CatchSurface band colour each Website v2 ground takes: the accents are
  * the format colours that share their fill (coral is run, pink dinner, yellow
- * games, mint courts, magenta nights out), indigo is the web band colour,
+ * games, mint courts, magenta nights out), indigo and sky are the web band colours,
  * paper is the tile band and white the plain ground.
  */
 const bandColors: Readonly<Record<Ground, CatchSurfaceColor | CatchWebBandColor | undefined>> = {
@@ -57,6 +57,15 @@ const bandColors: Readonly<Record<Ground, CatchSurfaceColor | CatchWebBandColor 
   mint: "courts",
   indigo: "indigo",
   magenta: "nightsOut",
+  sky: "sky",
+  // The soft tints colour secondary tiles, never a band; a band given one is the tile band.
+  coralSoft: "tile",
+  pinkSoft: "tile",
+  yellowSoft: "tile",
+  mintSoft: "tile",
+  indigoSoft: "tile",
+  magentaSoft: "tile",
+  skySoft: "tile",
 };
 
 /**
