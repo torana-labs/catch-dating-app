@@ -427,28 +427,13 @@
       "path": "tool/architecture/move_to_contexts.mjs",
       "command": "node tool/architecture/move_to_contexts.mjs --plan",
       "safety": "local",
-      "status": "active",
-      "description": "Moves legacy domain/ and data/ files into lib/contexts/<context>/ as tool/architecture/context_map.json places them, rewrites every Dart directive and whole-path mention, writes each context's public API file, and proves a move commit is mechanical (--verify). --imports-only updates another branch after the move lands.",
+      "status": "internal",
+      "description": "Library: contracts:organizer-nomenclature reaches rewriteDartDirectives and rewritePathMentions through the rename libraries. The context move is finished: --check reports no legacy file waiting, lib/domain and lib/data are gone, and context_map.json has no moveTo entry. The catch_arch_* lints and audit:context-map enforce placement. Its CLI still prints the plan and --verify proves an old move commit. Moves legacy domain/ and data/ files into lib/contexts/<context>/ as tool/architecture/context_map.json places them, rewrites every Dart directive and whole-path mention, writes each context's public API file, and proves a move commit is mechanical (--verify). --imports-only updates another branch after the move lands.",
       "checks": [
         "node --test tool/architecture/move_to_contexts.test.mjs",
         "node --check tool/architecture/move_to_contexts.mjs"
       ],
-      "role": "generator",
-      "alsoEnforces": [
-        "CONTEXT-MAP-001"
-      ],
-      "impactPaths": [
-        "tool/architecture/move_to_contexts.mjs",
-        "tool/architecture/move_to_contexts.test.mjs",
-        "tool/architecture/check_context_map.mjs",
-        "tool/architecture/context_map.json"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator"
     },
     {
       "id": "architecture:organizer-rename",
@@ -456,28 +441,13 @@
       "path": "tool/architecture/rename_to_organizer.mjs",
       "command": "node tool/architecture/rename_to_organizer.mjs --plan",
       "safety": "local",
-      "status": "active",
-      "description": "Renames Club to Organizer in Flutter code: Dart file and folder names, identifiers, code references in comments, localization keys, and the registries and tools that name them. Names the generated schema contracts declare, string literals and the club subtype stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
+      "status": "internal",
+      "description": "Library: contracts:organizer-nomenclature imports clubNameFindings and fails on anything this rename would still change. The Club-to-Organizer rename of Flutter code is finished. Renames Club to Organizer in Flutter code: Dart file and folder names, identifiers, code references in comments, localization keys, and the registries and tools that name them. Names the generated schema contracts declare, string literals and the club subtype stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
       "checks": [
         "node --test tool/architecture/rename_to_organizer.test.mjs",
         "node --check tool/architecture/rename_to_organizer.mjs"
       ],
-      "role": "generator",
-      "alsoEnforces": [
-        "ORGANIZER-AUTHORITY-001"
-      ],
-      "impactPaths": [
-        "tool/architecture/rename_to_organizer.mjs",
-        "tool/architecture/rename_to_organizer.test.mjs",
-        "tool/architecture/move_to_contexts.mjs",
-        "tool/lib/dart_source.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator"
     },
     {
       "id": "architecture:ui-composition-contracts",
@@ -534,29 +504,13 @@
       "path": "tool/architecture/rename_wire_to_organizer.mjs",
       "command": "node tool/architecture/rename_wire_to_organizer.mjs --plan",
       "safety": "local",
-      "status": "active",
-      "description": "Renames the club names the contracts declare (fields, enum values, collections, titles) across contracts, TypeScript, rules, indexes, fixtures and Dart strings, and TypeScript identifiers and file names. A club field beside its organizer twin collapses into the twin. The club subtype, BigQuery columns, copy and URLs stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
+      "status": "internal",
+      "description": "Library: contracts:organizer-nomenclature imports wireNameFindings and fails on anything this rename would still change. The Club-to-Organizer rename on the wire is finished. Renames the club names the contracts declare (fields, enum values, collections, titles) across contracts, TypeScript, rules, indexes, fixtures and Dart strings, and TypeScript identifiers and file names. A club field beside its organizer twin collapses into the twin. The club subtype, BigQuery columns, copy and URLs stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
       "checks": [
         "node --test tool/architecture/rename_wire_to_organizer.test.mjs",
         "node --check tool/architecture/rename_wire_to_organizer.mjs"
       ],
-      "role": "generator",
-      "alsoEnforces": [
-        "ORGANIZER-AUTHORITY-001"
-      ],
-      "impactPaths": [
-        "tool/architecture/rename_wire_to_organizer.mjs",
-        "tool/architecture/rename_wire_to_organizer.test.mjs",
-        "tool/architecture/rename_to_organizer.mjs",
-        "tool/architecture/move_to_contexts.mjs",
-        "tool/lib/dart_source.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator"
     },
     {
       "id": "audit:app-architecture-exhibits",
@@ -2065,7 +2019,15 @@
         "apps/**/*.dart",
         "packages/**/*.dart",
         "functions/src/**/*.ts",
-        "contracts/**/*.json"
+        "contracts/**/*.json",
+        "tool/architecture/move_to_contexts.mjs",
+        "tool/architecture/move_to_contexts.test.mjs",
+        "tool/architecture/check_context_map.mjs",
+        "tool/architecture/context_map.json",
+        "tool/architecture/rename_to_organizer.mjs",
+        "tool/architecture/rename_to_organizer.test.mjs",
+        "tool/architecture/rename_wire_to_organizer.mjs",
+        "tool/architecture/rename_wire_to_organizer.test.mjs"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -2077,6 +2039,9 @@
       "checks": [
         "node --check tool/check_organizer_nomenclature.mjs",
         "node --test tool/check_organizer_nomenclature.test.mjs",
+        "node --test tool/architecture/rename_wire_to_organizer.test.mjs",
+        "node --test tool/architecture/rename_to_organizer.test.mjs",
+        "node --test tool/architecture/move_to_contexts.test.mjs",
         "node tool/check_organizer_nomenclature.mjs"
       ],
       "role": "gate",
@@ -2331,15 +2296,13 @@
       "id": "copy:mobile-simple-migration",
       "category": "generator",
       "path": "tool/copy/migrate_simple_mobile_copy.dart",
-      "command": "dart run tool/copy/migrate_simple_mobile_copy.dart",
       "safety": "local",
-      "status": "active",
+      "status": "retired",
       "description": "Migrates eligible user-visible literals from clean Flutter files into the typed ARB catalog while preserving copy whitespace.",
-      "checks": [
-        "dart analyze tool/copy/migrate_simple_mobile_copy.dart",
-        "dart run tool/copy/migrate_simple_mobile_copy.dart"
-      ],
-      "role": "generator"
+      "role": "generator",
+      "retiredOn": "2026-11-18",
+      "reason": "The literal-to-ARB migration is finished. copy:mobile-ownership fails on any unmanaged Flutter product copy and its baseline is empty, so nothing is left to migrate. Its CI step was a dry run that always exited 0 (about 111 s a nightly run).",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "copy:native-sync",
@@ -3464,103 +3427,49 @@
       "id": "design:legacy-dock-rename",
       "category": "design",
       "path": "tool/design/codemods/legacy_dock.mjs",
-      "command": "node tool/design/codemods/legacy_dock.mjs --check",
       "safety": "local-readonly",
-      "status": "active",
-      "role": "generator",
+      "status": "retired",
       "description": "Moves the pre-redesign catch_ui dock's callers (its utility, primary, pageAction and primaryContent recipes) from CatchDock to CatchLegacyDock, and the moved file's path, under the same trees as the top bar rename, now that CatchDock takes the system's placements. One-shot: --check, --dry-run and the rename run by hand on branches cut before the first caller of the system dock; CI runs only its tests.",
-      "checks": [
-        "node --check tool/design/codemods/legacy_dock.mjs",
-        "node --test tool/design/codemods/legacy_dock.test.mjs"
-      ],
-      "impactPaths": [
-        "tool/design/codemods/legacy_dock.mjs",
-        "tool/design/codemods/legacy_dock.test.mjs",
-        "tool/design/codemods/lib/legacy_rename.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator",
+      "retiredOn": "2026-11-18",
+      "reason": "The redesign P2.1 rename landed on main: the pre-redesign components live on as CatchLegacy*, and the system components now own the old names, so this codemod's --check reports correct callers and running it would break them. design:library-shims ratchets the legacy residue. Its callers moved to CatchLegacyDock (catch_legacy_dock.dart).",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "design:legacy-library-rename",
       "category": "design",
       "path": "tool/design/rename_legacy_library_symbols.mjs",
-      "command": "node tool/design/rename_legacy_library_symbols.mjs --check",
       "safety": "local-readonly",
-      "status": "active",
-      "role": "generator",
+      "status": "retired",
       "description": "Redesign P2.1 (Flutter): renames the pre-redesign catch_ui callers of CatchSurface, CatchText and CatchTextVariant to CatchLegacySurface, CatchLegacyText and CatchLegacyTextVariant, and the moved files' paths, under lib, apps, packages/*/lib and test, test, integration_test, widgetbook/lib and tool/ui_capture. One-shot: --check and the rename run by hand on branches cut before the first caller of the system components; CI runs only its tests.",
-      "checks": [
-        "node --check tool/design/rename_legacy_library_symbols.mjs",
-        "node --test tool/design/rename_legacy_library_symbols.test.mjs"
-      ],
-      "impactPaths": [
-        "tool/design/rename_legacy_library_symbols.mjs",
-        "tool/design/rename_legacy_library_symbols.test.mjs",
-        "tool/design/check_library_shims.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator",
+      "retiredOn": "2026-11-18",
+      "reason": "The redesign P2.1 rename landed on main: the pre-redesign components live on as CatchLegacy*, and the system components now own the old names, so this codemod's --check reports correct callers and running it would break them. design:library-shims ratchets the legacy residue. Its callers moved to CatchLegacySurface, CatchLegacyText and CatchLegacyTextVariant.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "design:legacy-top-bar-rename",
       "category": "design",
       "path": "tool/design/codemods/legacy_top_bar.mjs",
-      "command": "node tool/design/codemods/legacy_top_bar.mjs --check",
       "safety": "local-readonly",
-      "status": "active",
-      "role": "generator",
+      "status": "retired",
       "description": "Moves the pre-redesign catch_ui top bar's callers (its route, screen, primaryRail, brand and identity recipes) from CatchTopBar to CatchLegacyTopBar, and the moved file's path, under lib, apps, packages/*/lib and test, test, integration_test, widgetbook/lib and tool/ui_capture, now that CatchTopBar takes the system's six variants. One-shot: --check, --dry-run and the rename run by hand on branches cut before the first caller of the system top bar; CI runs only its tests.",
-      "checks": [
-        "node --check tool/design/codemods/legacy_top_bar.mjs",
-        "node --check tool/design/codemods/lib/legacy_rename.mjs",
-        "node --test tool/design/codemods/legacy_top_bar.test.mjs"
-      ],
-      "impactPaths": [
-        "tool/design/codemods/legacy_top_bar.mjs",
-        "tool/design/codemods/legacy_top_bar.test.mjs",
-        "tool/design/codemods/lib/legacy_rename.mjs",
-        "tool/design/rename_legacy_library_symbols.mjs",
-        "tool/design/check_library_shims.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator",
+      "retiredOn": "2026-11-18",
+      "reason": "The redesign P2.1 rename landed on main: the pre-redesign components live on as CatchLegacy*, and the system components now own the old names, so this codemod's --check reports correct callers and running it would break them. design:library-shims ratchets the legacy residue. Its callers moved to CatchLegacyTopBar (catch_legacy_top_bar.dart).",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "design:legacy-web-library-rename",
       "category": "design",
       "path": "tool/design/rename_legacy_web_library_symbols.mjs",
-      "command": "node tool/design/rename_legacy_web_library_symbols.mjs --check",
       "safety": "local-readonly",
-      "status": "active",
-      "role": "generator",
+      "status": "retired",
       "description": "Redesign P2.1 (web): renames the pre-redesign web-ui callers of CatchSurface, CatchText and CatchIcon (and their props and variant types) to the CatchLegacy* names, and the barrel's CatchGround to CatchBandGround, under admin/src, website/src and packages/web-ui/src. One-shot: --check and the rename run by hand on branches cut before the first caller of the system components; CI runs only its tests.",
-      "checks": [
-        "node --check tool/design/rename_legacy_web_library_symbols.mjs",
-        "node --test tool/design/rename_legacy_web_library_symbols.test.mjs"
-      ],
-      "impactPaths": [
-        "tool/design/rename_legacy_web_library_symbols.mjs",
-        "tool/design/rename_legacy_web_library_symbols.test.mjs"
-      ],
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      }
+      "role": "generator",
+      "retiredOn": "2026-11-18",
+      "reason": "The redesign P2.1 rename landed on main: the pre-redesign components live on as CatchLegacy*, and the system components now own the old names, so this codemod's --check reports correct callers and running it would break them. design:library-shims ratchets the legacy residue. Its web-ui callers moved to CatchLegacySurface, CatchLegacyText and CatchLegacyIcon.",
+      "lastCommit": "65239fc6ec7e7823b60bcf7d214a6fc0c6ac4ffa"
     },
     {
       "id": "design:library-shims",

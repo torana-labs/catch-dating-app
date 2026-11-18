@@ -3088,9 +3088,9 @@ new roots may neither name nor import one. P2.1 gave the system names to
 became `CatchLegacySurface`, `CatchLegacyText` and `CatchLegacyTextVariant`;
 the first two are the legacy members of `catch.surface` and `catch.text`, and
 `CatchMetadataText` and `CatchCountText`, which the system Text absorbs, carry
-the qualifier where they are recorded. `tool/design/rename_legacy_library_symbols.mjs`
-renamed the callers; a branch cut before that rename re-runs it to resolve its
-conflicts.
+the qualifier where they are recorded. A codemod renamed the callers and is
+retired (`node tool/run.mjs list --closed`); a branch cut before that rename
+recovers it with `git show <lastCommit>:tool/design/rename_legacy_library_symbols.mjs`.
 
 ### Contexts as packages
 
