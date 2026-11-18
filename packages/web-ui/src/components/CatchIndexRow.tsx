@@ -116,7 +116,7 @@ export function CatchIndexRow({
   wrap,
   selected = false,
   semanticLabel,
-  titleVariant = "titleL",
+  titleVariant,
   titleMaxLines = 1,
 }: CatchIndexRowProps) {
   const {ground} = useCatch();
@@ -135,7 +135,9 @@ export function CatchIndexRow({
   const leadKind = time ? "time" : leading != null ? "custom" : date ? "date" : icon ? "icon" : marker ? "marker" : rank != null ? "rank" : undefined;
   const interactive = href !== undefined || onTap != null;
   const showChevron = chevron ?? (system && href !== undefined && trailing == null && action == null && !date);
-  const titleNode = system
+  // Every row title reads at the system row size, as Flutter's does; a
+  // caller's titleVariant still wins.
+  const titleNode = system || titleVariant === undefined
     ? <span className={styles.title}>{title}</span>
     : <CatchLegacyText as="span" color="ink" maxLines={titleMaxLines} variant={titleVariant}>{title}</CatchLegacyText>;
   const content = (
