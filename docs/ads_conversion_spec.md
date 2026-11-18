@@ -328,6 +328,16 @@ it a conversion-leads CRM stage Meta can optimise lead campaigns on. Meta's
 conversion-leads setup also asks for the initial lead stage; sending that stage
 is not built yet.
 
+The forms and campaigns themselves are code: `tool/ads/meta_campaigns.json`,
+applied by `node tool/ads/apply_meta_campaigns.mjs` (plan) and `--apply`
+(create). The tool creates every campaign, ad set and ad PAUSED, and the owner
+enables them in Ads Manager. A form may only ask the standard questions and the
+custom keys `onMetaLeadgenEventCreated` reads (`club_name`, `instagram_handle`,
+`event_cadence`), so no answer is dropped on the way to Sales; choice answers
+reach the intent as their option keys (`every_week`). Meta forms cannot be
+edited and archived names stay taken, so a copy change is a new form version.
+Images are the Host store-listing screenshots, cropped to 4:5.
+
 ## Customer lists
 
 A scheduled uploader may share hashed contact lists with Meta (custom audiences)
