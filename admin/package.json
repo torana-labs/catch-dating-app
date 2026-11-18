@@ -42,7 +42,7 @@
     "@catch/brand": "0.1.0",
     "@catch/web-config": "0.1.0",
     "@catch/web-ui": "0.1.0",
-    "@tanstack/react-query": "^5.105.3",
+    "@tanstack/react-query": "^5.107.1",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "firebase": "^12.19.0",
@@ -52,21 +52,21 @@
     "react-router": "^8.5.1"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^10.6.5",
-    "@storybook/addon-vitest": "^10.6.5",
-    "@storybook/react-vite": "^10.6.5",
+    "@storybook/addon-a11y": "^10.6.7",
+    "@storybook/addon-vitest": "^10.6.7",
+    "@storybook/react-vite": "^10.6.7",
     "@testing-library/react": "^16.3.3",
-    "@testing-library/user-event": "^14.6.8",
+    "@testing-library/user-event": "^14.6.9",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@vitejs/plugin-react": "^6.2.1",
+    "@vitejs/plugin-react": "^6.3.0",
     "@vitest/browser-playwright": "^4.1.12",
     "jsdom": "^28.1.0",
-    "playwright": "^1.64.1",
+    "playwright": "^1.65.0",
     "storybook": "^10.6.2",
     "stylelint": "17.16.0",
     "typescript": "^6.0.3",
-    "vite": "^8.3.5",
+    "vite": "^8.3.7",
     "vitest": "^4.1.11"
   }
 }
