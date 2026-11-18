@@ -43,9 +43,9 @@ async function call<Request extends object, Response>(name: string, payload: Req
 }
 
 const sampleNames = [
-  ["Harbor Social Club", "Mumbai", "social"],
+  ["Quayside Supper Club", "Mumbai", "social"],
   ["Northside Walks", "Delhi", "walks"],
-  ["The Sunday Table", "Bengaluru", "dinners"],
+  ["The Saffron Table", "Bengaluru", "dinners"],
   ["Meetup Circle", "Pune", "community"],
   ["City Stories", "Hyderabad", "culture"],
   ["Mango Grove Events", "Jaipur", "music"],

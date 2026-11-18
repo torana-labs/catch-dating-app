@@ -16,8 +16,8 @@ describe("CatchSection", () => {
     const onAll = vi.fn();
     const {container} = render(
       <CatchSection action={{label: "All 14", onPressed: onAll}} count={14} title="Oldest first">
-        <CatchIndexRow onTap={() => undefined} title="Afterfly" />
-        <CatchIndexRow onTap={() => undefined} selected title="Bhag Club" />
+        <CatchIndexRow onTap={() => undefined} title="Moonmoth" />
+        <CatchIndexRow onTap={() => undefined} selected title="Brindle Club" />
       </CatchSection>,
     );
     expect(screen.getByRole("heading", {level: 2}).textContent).toBe("Oldest first 14");
@@ -88,7 +88,7 @@ describe("CatchDock pane, CatchEmptyState done and CatchDialog", () => {
     render(
       <CatchDock
         danger={{label: "Reject", onPressed: reject}}
-        next="Then: Harbor Social · 3 left"
+        next="Then: Quayside Supper · 3 left"
         note={{label: "Why?", value: "", onChanged: onNote}}
         primary={{label: "Approve", onPressed: approve}}
         recipe="pane"
@@ -101,7 +101,7 @@ describe("CatchDock pane, CatchEmptyState done and CatchDialog", () => {
     fireEvent.click(screen.getByRole("button", {name: "Approve"}));
     expect(reject).toHaveBeenCalledOnce();
     expect(approve).toHaveBeenCalledOnce();
-    expect(screen.getByText("Then: Harbor Social · 3 left")).toBeTruthy();
+    expect(screen.getByText("Then: Quayside Supper · 3 left")).toBeTruthy();
   });
 
   it("marks a cleared queue as done with a success mark", () => {

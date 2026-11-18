@@ -930,7 +930,6 @@ describe("firestore.rules", () => {
         ["eventChatProfileShares", "share-1"],
         ["eventChatRooms", "event-1"],
         ["eventChatMemberships", "member-1"],
-        ["eventChatAccessReceipts", "receipt-1"],
         ["participantProfileClaimReceipts", "receipt-1"],
         ["catchCommunicationPermissionReceipts", "permission-1"],
         ["organizerContactOrigins", "origin-1"],

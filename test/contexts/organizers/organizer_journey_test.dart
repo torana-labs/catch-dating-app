@@ -4,14 +4,14 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('a journey reads its steps and what comes next', () {
     final journey = OrganizerJourney.fromJson({
-      'organizerId': 'afterfly',
-      'organizerName': 'Afterfly',
+      'organizerId': 'moonmoth',
+      'organizerName': 'Moonmoth',
       'waitingClaim': true,
       'steps': [
         {
           'kind': 'nominated',
           'atMillis': 1761609600000,
-          'detail': 'https://luma.com/afterfly',
+          'detail': 'https://luma.com/moonmoth',
         },
         {'kind': 'listed', 'atMillis': null, 'detail': null},
       ],

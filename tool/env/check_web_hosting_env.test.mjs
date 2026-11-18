@@ -8,7 +8,6 @@ const scriptPath = fileURLToPath(
 );
 
 const validMarketingEnv = {
-  VITE_GTM_ID: "GTM-K7KLNQXP",
   VITE_FIREBASE_API_KEY: "api-key",
   VITE_FIREBASE_AUTH_DOMAIN: "catch.example",
   VITE_FIREBASE_PROJECT_ID: "catch-dating-app-64e51",
@@ -25,14 +24,15 @@ test("store links are not build configuration: brand.json owns them", () => {
   assert.equal(retired.status, 0, "retired store-link variables are ignored");
 });
 
-test("marketing deploy requires a valid GTM container id", () => {
-  const missing = runMarketing({VITE_GTM_ID: ""});
-  assert.equal(missing.status, 1);
-  assert.match(missing.stderr, /VITE_GTM_ID is required/u);
+test("no tag manager container is build configuration", () => {
+  assert.equal(runMarketing({VITE_GTM_ID: ""}).status, 0, "no container id is required");
+  assert.equal(runMarketing({VITE_GTM_ID: "anything"}).status, 0, "a retired container id is ignored");
+});
 
-  const invalid = runMarketing({VITE_GTM_ID: "G-CH7WMQY5FV"});
-  assert.equal(invalid.status, 1);
-  assert.match(invalid.stderr, /must be a Google Tag Manager container id/u);
+test("marketing deploy still requires the App Check site key", () => {
+  const missing = runMarketing({VITE_WEBSITE_APPCHECK_SITE_KEY: ""});
+  assert.equal(missing.status, 1);
+  assert.match(missing.stderr, /VITE_WEBSITE_APPCHECK_SITE_KEY is required/u);
 });
 
 function runMarketing(overrides = {}) {

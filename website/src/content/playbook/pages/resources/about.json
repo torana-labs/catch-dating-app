@@ -1,0 +1,192 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "about",
+  "route": "about",
+  "meta": {
+    "title": "About {{brand.name}}",
+    "description": "{{brand.name}} gives the hosts behind run clubs, supper clubs, quiz nights and courts better tools, so more nights happen and more people come back.",
+    "socialDescription": "We help the people who bring strangers together.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [
+        {
+          "label": "{{brand.name}}",
+          "to": {
+            "route": "home"
+          }
+        }
+      ],
+      "current": "About"
+    }
+  },
+  "footer": {
+    "variant": "host"
+  },
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "coral",
+      "kicker": "About {{brand.name}}",
+      "title": "We help the people who bring strangers together.",
+      "lead": "Run clubs, supper clubs, quiz nights and courts are where a lot of people make friends in a new city. {{brand.name}} gives the hosts behind them better tools, so more nights happen and more people come back.",
+      "actions": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "What’s on",
+          "to": {
+            "route": "visitor_discovery"
+          },
+          "emphasis": "secondary"
+        }
+      ],
+      "media": {
+        "kind": "capture",
+        "slot": "guest-join-phone"
+      }
+    },
+    {
+      "type": "split",
+      "id": "why",
+      "ground": "white",
+      "kicker": "Why we built it",
+      "title": "The best nights run on a host’s spare evenings.",
+      "body": "Most of the nights people remember are run by one person with a WhatsApp group, a form and a spreadsheet. We build the tools that take that work off their hands: bookings, the door, the night itself and the follow-up.",
+      "ticks": [
+        "Bookings and payments, with waitlists and applications",
+        "A door that checks guests in on their own phones",
+        "Live tools for each format, from pace groups to quiz teams",
+        "Reviews, reports and the people to invite back"
+      ],
+      "actions": [
+        {
+          "label": "How {{brand.name}} works",
+          "to": {
+            "route": "how_it_works"
+          },
+          "emphasis": "secondary"
+        }
+      ]
+    },
+    {
+      "type": "tiles",
+      "id": "beliefs",
+      "ground": "ink",
+      "kicker": "What we believe",
+      "title": "The rules we build by.",
+      "columns": 2,
+      "items": [
+        {
+          "title": "Free events stay free",
+          "body": "If nobody pays to come, nobody pays us. When you sell tickets, we keep 5% of ticket sales, never more than ₹10,000 a month."
+        },
+        {
+          "title": "Your guests are yours",
+          "body": "Your list, your page, your followers. Export your contacts whenever you want."
+        },
+        {
+          "title": "A person, not a help centre",
+          "body": "Message us on WhatsApp and someone from the team replies."
+        },
+        {
+          "title": "People before phones",
+          "body": "The phone comes out at the door and between rounds. The rest of the night is for the people in the room."
+        }
+      ]
+    },
+    {
+      "type": "cards",
+      "id": "where",
+      "ground": "paper",
+      "kicker": "Where we are",
+      "title": "Where you’ll find us.",
+      "lead": "Open cities show what’s on this week. In the rest, ask us to tell you when your city opens.",
+      "source": {
+        "kind": "cities"
+      },
+      "columns": 3,
+      "actions": [
+        {
+          "label": "Want us in your city? Tell us",
+          "to": {
+            "kind": "whatsapp",
+            "message": "Hi {{brand.name}}, I’d like {{brand.name}} in my city."
+          },
+          "emphasis": "secondary"
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Questions",
+      "title": "About {{brand.name}}.",
+      "items": [
+        {
+          "question": "Who runs {{brand.name}}?",
+          "answer": "{{brand.name}} is built and operated by {{brand.operator.legalName}}, based in Indore."
+        },
+        {
+          "question": "How does {{brand.name}} make money?",
+          "answer": "Hosts pay 5% of ticket sales, never more than ₹10,000 a month. Free events are free. Programmes such as offsites and retreats are priced per programme."
+        },
+        {
+          "question": "Do guests need an app?",
+          "answer": "No. Guests book, pay and check in on the host’s page, in their phone’s browser."
+        },
+        {
+          "question": "Can I talk to someone?",
+          "answer": "Yes. Message us on WhatsApp and a person replies."
+        },
+        {
+          "question": "How do I report a problem with a host or a plan?",
+          "answer": "Message us on WhatsApp, or use the Help page. Our Safety page explains how we handle reports."
+        }
+      ],
+      "action": {
+        "label": "How we handle safety",
+        "to": {
+          "route": "safety"
+        }
+      }
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Host something?",
+      "title": "Bring people together with {{brand.name}}.",
+      "lead": "Free for 30 days from your first event, or 90 for founding hosts. Free events stay free.",
+      "actions": [
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "How {{brand.name}} works",
+          "to": {
+            "route": "how_it_works"
+          },
+          "emphasis": "secondary"
+        }
+      ],
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
+    }
+  ]
+}

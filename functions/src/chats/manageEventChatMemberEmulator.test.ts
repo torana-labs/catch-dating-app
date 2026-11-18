@@ -87,9 +87,6 @@ test("manager moderation fences old access and requires a fresh rejoin",
         ref("eventChatRooms", eventId), ref("users", person)]) {
         batch.delete(path);
       }
-      const receipts = await db.collection("eventChatAccessReceipts")
-        .where("eventId", "==", eventId).limit(100).get();
-      for (const row of receipts.docs) batch.delete(row.ref);
       await batch.commit();
       await deleteApp(app);
     }

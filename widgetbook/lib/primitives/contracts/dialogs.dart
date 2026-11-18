@@ -129,7 +129,7 @@ Widget catchDialogContractStates(BuildContext context) {
           child: CatchField.read(
             copy: catchFieldCopy(context.l10n),
             title: 'Club',
-            body: 'Bandra Social Run',
+            body: 'Harbour Line Social Run',
           ),
         ),
       ),

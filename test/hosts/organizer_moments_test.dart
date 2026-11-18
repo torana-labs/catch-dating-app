@@ -77,7 +77,7 @@ void main() {
             'kind': 'sendTemplate',
             'connectionId': 'conn_1',
             'templateId': 'tpl_1',
-            'variables': {'venue': 'Taj'},
+            'variables': {'venue': 'Haveli'},
           },
           status: 'armed',
           approval: {
@@ -116,7 +116,7 @@ void main() {
 
       expect(moment.action.kind, OrganizerMomentActionKind.sendTemplate);
       expect(moment.action.templateId, 'tpl_1');
-      expect(moment.action.variables, {'venue': 'Taj'});
+      expect(moment.action.variables, {'venue': 'Haveli'});
     });
 
     test('parses a triggered staff-attention definition', () {

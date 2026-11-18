@@ -6,6 +6,7 @@
       "docs:metadata",
       "meta:tool-manifest",
       "meta:brand-literals",
+      "meta:third-party-names",
       "meta:repository-root-hygiene",
       "operations:boundaries",
       "contracts:market-lists"
@@ -120,6 +121,31 @@
       "impactPaths": [
         "tool/ads/google_campaigns.json",
         "tool/ads/apply_google_campaigns.test.mjs"
+      ],
+      "role": "operator",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
+      "id": "ads:meta-campaigns",
+      "category": "marketing",
+      "path": "tool/ads/apply_meta_campaigns.mjs",
+      "command": "node tool/ads/apply_meta_campaigns.mjs",
+      "safety": "remote-write",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "description": "Plans, and with --apply creates, the Meta lead forms and lead campaigns in tool/ads/meta_campaigns.json for ad account 3245368689001899. Every campaign, ad set and ad is created PAUSED for the owner to enable; existing forms and campaigns are left unchanged, and a failed run deletes what it made. The plan asks Meta to validate the campaign without making anything.",
+      "checks": [
+        "node --check tool/ads/apply_meta_campaigns.mjs",
+        "node --test tool/ads/apply_meta_campaigns.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/ads/meta_campaigns.json",
+        "tool/ads/apply_meta_campaigns.test.mjs"
       ],
       "role": "operator",
       "ciRequirements": {
@@ -573,6 +599,19 @@
       "safety": "local",
       "status": "active",
       "description": "Scans backend error handling migration candidates.",
+      "impactPaths": [
+        "tool/audit/backend_error_candidates.dart",
+        "lib/**/*.dart",
+        "packages/platform/lib/**/*.dart",
+        "test/**/*.dart"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter"
+        ]
+      },
       "checks": [
         "dart analyze tool/audit/backend_error_candidates.dart",
         "dart tool/audit/backend_error_candidates.dart --check"
@@ -851,7 +890,8 @@
         "test/tool/provider_graph_test.dart",
         "tool/architecture/provider_graph_baseline.json",
         "lib/**/*.dart",
-        "apps/*/lib/**/*.dart"
+        "apps/*/lib/**/*.dart",
+        "packages/platform/lib/**/*.dart"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -1334,32 +1374,6 @@
       ]
     },
     {
-      "id": "ci:host-measurement-preview",
-      "category": "ci",
-      "path": "tool/ci/host_measurement_preview.mjs",
-      "command": "node --test tool/ci/host_measurement_preview.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/host_measurement_preview.test.mjs",
-        ".github/workflows/host-measurement-preview.yml",
-        "website/measurement-hosting.json",
-        "website/measurement-runtime/**"
-      ],
-      "description": "Verifies the fixed preview-only measurement runtime, accepted main CI, exact static bytes and serving privacy headers; production tracking remains disabled.",
-      "checks": [
-        "node --check tool/ci/host_measurement_preview.mjs",
-        "node --test tool/ci/host_measurement_preview.test.mjs website/scripts/next/measurementRuntime.test.mjs"
-      ],
-      "role": "gate"
-    },
-    {
       "id": "ci:ios-build-inputs",
       "category": "ci",
       "path": "tool/ci/ios_build_inputs.mjs",
@@ -1453,6 +1467,56 @@
       "checks": [
         "node --check tool/ci/main_red_alert.mjs",
         "node --test tool/ci/main_red_alert.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:organizer-takedown-workflow",
+      "category": "ci",
+      "path": "tool/ci/organizer_takedown_workflow.test.mjs",
+      "command": "node --test tool/ci/organizer_takedown_workflow.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/organizer-takedown.yml",
+        "tool/ci/organizer_takedown_workflow.test.mjs"
+      ],
+      "description": "Keeps the organiser takedown workflow dispatch-only from main, keyless and least-privileged, with only environment, mode and an opaque TD case id as inputs, no artifacts, a counts-only summary, and --allow-prod only for prod writes.",
+      "checks": [
+        "node --check tool/ci/organizer_takedown_workflow.test.mjs",
+        "node --test tool/ci/organizer_takedown_workflow.test.mjs"
+      ],
+      "role": "gate"
+    },
+    {
+      "id": "ci:pr-text-guard",
+      "category": "ci",
+      "path": "tool/ci/pr_text_guard.mjs",
+      "command": "node --test tool/ci/pr_text_guard.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        ".github/workflows/pr-text-guard.yml",
+        "tool/ci/pr_text_guard.test.mjs",
+        "tool/check_third_party_names.mjs",
+        "tool/third_party_names_allowlist.json"
+      ],
+      "description": "Keeps the PR text guard keyless and read-only on pull_request, running the base commit's guard without the pull request's code, and failing when a title, body or commit message @-mentions a non-collaborator or names a social account outside the fictional allowlist without repeating the matched text.",
+      "checks": [
+        "node --check tool/ci/pr_text_guard.mjs",
+        "node --test tool/ci/pr_text_guard.test.mjs"
       ],
       "role": "gate"
     },
@@ -1707,6 +1771,19 @@
       "safety": "local-readonly",
       "status": "active",
       "description": "Checks repository-owned composite Firestore query contracts against firestore.indexes.json, rejects uncontracted composite query builders, and blocks duplicate composite definitions and non-deployable single-field plus __name__ pseudo-composites.",
+      "impactPaths": [
+        "firestore.indexes.json",
+        "lib/**/data/**/*repository*.dart",
+        "packages/platform/lib/**/data/**/*repository*.dart",
+        "functions/src/programs/**/*.ts",
+        "functions/src/transport/**/*.ts"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
       "checks": [
         "node --check tool/contracts/check_firestore_query_indexes.mjs",
         "node --test tool/contracts/check_firestore_query_indexes.test.mjs",
@@ -1950,6 +2027,24 @@
       "safety": "local",
       "status": "active",
       "description": "Keeps organizers canonical across contracts, Flutter, React, Functions, routes, media, and product copy while club remains a subtype. Flutter Dart file names, identifiers and localization keys must say organizer: what tool/architecture/rename_to_organizer.mjs would still rename fails, apart from the club subtype and names the generated schema contracts declare. Contract names, TypeScript identifiers and file names must say organizer too: what tool/architecture/rename_wire_to_organizer.mjs would still rename fails, apart from the club subtype and BigQuery columns.",
+      "impactPaths": [
+        "docs/migrations/clubs_to_organizers.md",
+        "firebase.json",
+        "lib/**/*.dart",
+        "test/**/*.dart",
+        "integration_test/**/*.dart",
+        "apps/**/*.dart",
+        "packages/**/*.dart",
+        "functions/src/**/*.ts",
+        "contracts/**/*.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
       "checks": [
         "node --check tool/check_organizer_nomenclature.mjs",
         "node --test tool/check_organizer_nomenclature.test.mjs",
@@ -2108,7 +2203,12 @@
       "path": "tool/copy/check_l10n_key_usage.mjs",
       "impactPaths": [
         "tool/copy/check_l10n_key_usage.test.mjs",
-        "tool/copy/fixtures/l10n_key_usage/**"
+        "tool/copy/fixtures/l10n_key_usage/**",
+        "packages/l10n/lib/app_en.arb",
+        "lib/**/*.dart",
+        "packages/platform/lib/**/*.dart",
+        "apps/*/lib/**/*.dart",
+        "tool/lib/flutter_source_roots.mjs"
       ],
       "command": "node tool/copy/check_l10n_key_usage.mjs --check",
       "safety": "local-readonly",
@@ -2364,6 +2464,52 @@
         "tool/data/lib/firestore_consolidation_migrations.mjs",
         "tool/data/lib/copy_forward.mjs",
         "functions/src/events/eventPolicy.ts"
+      ],
+      "role": "generator"
+    },
+    {
+      "id": "data:migrate-form-domains",
+      "category": "data",
+      "path": "tool/data/migrate_form_domains_to_custom_domains.mjs",
+      "command": "node tool/data/migrate_form_domains_to_custom_domains.mjs --env <dev|staging|prod> [--apply [--retire-legacy]]",
+      "safety": "remote-destructive-apply-guarded",
+      "status": "active",
+      "description": "One-time fold of the retired organizerFormDomains registry into customDomains (#1110): a read-only count and conversion plan by default, idempotent copies on --apply that never overwrite a differing record, and deletion of exactly copied legacy documents with --retire-legacy.",
+      "checks": [
+        "node --check tool/data/migrate_form_domains_to_custom_domains.mjs",
+        "node --test tool/data/migrate_form_domains_to_custom_domains.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/migrate_form_domains_to_custom_domains.test.mjs",
+        "functions/src/customDomains/legacyFormDomainMigration.ts",
+        "contracts/migrations/organizer_form_domains_to_custom_domains.json"
+      ]
+    },
+    {
+      "id": "data:organizer-takedown",
+      "category": "data",
+      "path": "tool/data/organizer_takedown.mjs",
+      "command": "node tool/data/organizer_takedown.mjs --env <dev|prod> --case-id TD-nnnn --mode <plan|preserve|apply|suppress|verify|bigquery>",
+      "safety": "remote-destructive-apply-guarded",
+      "status": "active",
+      "description": "Preserve-then-delete takedown of one organiser case read from the restricted preservation bucket: counts-only plan, SHA-256 preservation export, deletion across every store with audit-log redaction, do-not-list suppression entry, verification and BigQuery cleanup.",
+      "checks": [
+        "node --check tool/data/organizer_takedown.mjs",
+        "npm --prefix functions run build && node --test tool/data/organizer_takedown.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/organizer_takedown.test.mjs",
+        "tool/data/lib/organizer_takedown/actions.mjs",
+        "tool/data/lib/organizer_takedown/bigquery.mjs",
+        "tool/data/lib/organizer_takedown/inventory.mjs",
+        "tool/data/lib/organizer_takedown/plan.mjs",
+        "tool/data/lib/organizer_takedown/suppression.mjs",
+        "functions/src/listingSuppressions/registry.ts",
+        "tool/data/fixtures/organizer_takedown/fakes.mjs",
+        "tool/data/fixtures/organizer_takedown/world.mjs",
+        "operations/src/workflows/supply-intake/organizer-matching/suppression.mjs",
+        "operations/src/workflows/supply-intake/organizer-matching/normalize.mjs",
+        "contracts/firestore/listing_suppressions.schema.json"
       ],
       "role": "generator"
     },
@@ -4976,8 +5122,8 @@
       ],
       "impactPaths": [
         "tool/firebase/form_domain_operator.test.mjs",
-        "functions/src/organizers/organizerFormDomainRegistry.ts",
-        "functions/src/organizers/organizerFormDomainCallables.ts",
+        "functions/src/customDomains/domainRegistry.ts",
+        "functions/src/customDomains/domainPolicy.ts",
         ".github/workflows/_backend-deploy.yml"
       ],
       "ciRequirements": {
@@ -6787,6 +6933,32 @@
           ],
           "instruction": "Every root entry must match exactly one manifest classification. Cleanup is dry-run first and mutates only an explicit allowlisted scope; tracked files, protected paths, worktrees, symlinks, path escapes, and machine-local Markdown links are rejected."
         }
+      ]
+    },
+    {
+      "id": "meta:third-party-names",
+      "category": "meta",
+      "path": "tool/check_third_party_names.mjs",
+      "command": "node tool/check_third_party_names.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "tool/third_party_names_allowlist.json",
+        "tool/check_third_party_names.test.mjs",
+        "packages/brand/brand.json"
+      ],
+      "role": "gate",
+      "description": "Keeps real third-party organisers out of the public repository, since they live only in the production database: fails when an Instagram, Facebook, Luma or Meetup URL in any tracked file, or an @handle in a fixture, story, test, doc, design pack, sample or demo file, names an account that is not on the fictional allowlist, and when committed generated listing data holds a record built from public sources. Findings print file, line and rule only, never the matched text.",
+      "checks": [
+        "node --check tool/check_third_party_names.mjs",
+        "node --test tool/check_third_party_names.test.mjs",
+        "node tool/check_third_party_names.mjs"
       ]
     },
     {

@@ -31,7 +31,7 @@
       ],
       "aside": {
         "label": "Planning a multi-day offsite with travel and rooms? Ask for a walkthrough",
-        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I’m planning a multi-day offsite and would like a walkthrough."}
+        "to": {"route": "host_walkthrough"}
       },
       "chip": {
         "title": "New-joiner social",
@@ -150,7 +150,7 @@
         {"question": "Is it really free?", "answer": "Yes, if nobody pays to attend. {{brand.name}} charges 5% only when people buy tickets, and free events stay free."},
         {"question": "Can we keep it to our company?", "answer": "Yes. Make the event invite-only: it stays off public pages and only people with your private link can RSVP."},
         {"question": "Do colleagues need an app?", "answer": "No. They RSVP, check in and see their group in their phone’s browser."},
-        {"question": "Can you run a multi-day offsite?", "answer": "Yes, with programmes: arrivals, transport, rooms, forms and messages for everyone attending. Ask us for a walkthrough on WhatsApp and we’ll set it up with you."},
+        {"question": "Can you run a multi-day offsite?", "answer": "Yes, with programmes: arrivals, transport, rooms, forms and messages for everyone attending. Ask us for a walkthrough and we’ll set it up with you."},
         {"question": "Can we hire a host to run it?", "answer": "Not through {{brand.name}} yet. Many quiz, supper and run hosts on {{brand.name}} run private events; message them from their page."},
         {"question": "What does the report show?", "answer": "Who RSVP’d and came, and, if you ask for feedback, ratings and how many new people they met. It never shows anyone’s private answers."}
       ]

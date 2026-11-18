@@ -931,7 +931,7 @@ export function observeFunctionBinding({requirement, consumer, functions, projec
   if (requirement.kind === "secret-version") {
     const entries = fn.serviceConfig?.secretEnvironmentVariables;
     const bindings = Array.isArray(entries) ? entries.filter((entry) => entry?.key === requirement.name) : [];
-    if (bindings.length !== 1) return fail("selected-secret-binding-missing");
+    if (bindings.length !== 1) return {...fail("selected-secret-binding-missing"), serviceAccount};
     const binding = bindings[0];
     reference = `projects/${binding.projectId}/secrets/${binding.secret}/versions/${binding.version}`;
     const selected = parseSecretReference(reference, projectId, projectNumber);
@@ -1050,7 +1050,8 @@ export function classifyForbiddenSecretAccess({serviceAccount, secret, result}) 
     metadata: {serviceAccount, grants, evidenceScope: "secret-policy-only", effectiveAccessVerified: false}});
 }
 
-function classifyFirstDeploySecretVersion({base, consumer, phase, projectId, projectNumber, result}) {
+function classifyFirstDeploySecretVersion({base, consumer, phase, projectId, projectNumber, result,
+  reasonPrefix = "first-deploy"}) {
   const metadata = {consumer, phase, source: "secret-manager"};
   const failure = classifyCommandFailure(result);
   if (failure) return readinessResult({...base, metadata, ...failure});
@@ -1062,7 +1063,7 @@ function classifyFirstDeploySecretVersion({base, consumer, phase, projectId, pro
   const enabled = payload.state === "ENABLED";
   return readinessResult({...base, metadata: {...metadata, reference: version.reference},
     status: enabled ? "ready" : "not-ready",
-    reason: enabled ? "first-deploy-latest-version-enabled" : "first-deploy-latest-version-not-enabled"});
+    reason: enabled ? `${reasonPrefix}-latest-version-enabled` : `${reasonPrefix}-latest-version-not-enabled`});
 }
 
 function assessSecretBindings({requirement, targets, projectId, projectNumber,
@@ -1101,13 +1102,20 @@ function assessSecretBindings({requirement, targets, projectId, projectNumber,
     // must exist and be enabled, and the runtime account the source names
     // must already hold its role: the deployer cannot grant it. The
     // post-deploy check still requires the Function.
-    if (phase === "deployed" && !candidate && observed.reason === "function-binding-missing" &&
-        requirement.kind === "secret-version") {
+    // An existing Function that gains a new required secret in this deploy
+    // has no live binding for it either, and only this deploy can add one.
+    // It is checked the same way, against the runtime account the live
+    // Function already uses. The post-deploy check still requires the binding.
+    const newSecretOnExisting = observed.reason === "selected-secret-binding-missing";
+    if (phase === "deployed" && !candidate && requirement.kind === "secret-version" &&
+        (observed.reason === "function-binding-missing" || newSecretOnExisting)) {
       results.push(classifyFirstDeploySecretVersion({base, consumer, phase, projectId, projectNumber,
+        reasonPrefix: newSecretOnExisting ? "new-secret-binding" : "first-deploy",
         result: executeMetadataCommand(metadataOnlyCommand(["secrets", "versions", "describe", "latest",
           `--secret=${requirement.name}`, `--project=${projectId}`, "--format=json(name,state)", "--quiet"]),
         runCommand)}));
-      const serviceAccount = firstDeployIdentity?.({projectId, projectNumber, consumer}) ?? null;
+      const serviceAccount = newSecretOnExisting ? observed.serviceAccount :
+        firstDeployIdentity?.({projectId, projectNumber, consumer}) ?? null;
       const runtimeRequirement = {...requirement, id, runtimeRoles: requirement.runtimeRolesByConsumer?.[consumer] ??
         requirement.runtimeRoles ?? ["roles/secretmanager.secretAccessor"]};
       results.push(classifySecretRuntimeAccess({serviceAccount, requirement: runtimeRequirement,

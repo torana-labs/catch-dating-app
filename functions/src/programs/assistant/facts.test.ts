@@ -27,7 +27,7 @@ test("the fact pack holds the household's own itinerary, stay, travel and RSVP",
   assert.equal(pack.stays[0].room, "216");
   assert.equal(pack.travel.length, 1);
   assert.equal(pack.travel[0].pickup, "UDR arrivals, Gate 2");
-  assert.equal(pack.travel[0].goesTo, "Taj Fateh Prakash");
+  assert.equal(pack.travel[0].goesTo, "Lakeview Haveli");
 });
 
 test("the fact pack never carries another household's guests, rooms or flights", () => {
@@ -35,8 +35,8 @@ test("the fact pack never carries another household's guests, rooms or flights",
   for (const leaked of ["Iyer", "230", "6E201", "Cancelled brunch", "puja"]) {
     assert.ok(!text.includes(leaked), `fact pack leaked ${leaked}`);
   }
-  assert.match(text, /Neha Mehra: Taj Fateh Prakash \(City Palace, Udaipur\), room 216/u);
-  assert.match(text, /pickup at UDR arrivals, Gate 2, then to Taj Fateh Prakash/u);
+  assert.match(text, /Neha Mehra: Lakeview Haveli \(City Palace, Udaipur\), room 216/u);
+  assert.match(text, /pickup at UDR arrivals, Gate 2, then to Lakeview Haveli/u);
   assert.match(text, /Pickup instructions: Pooja meets you with a sign/u);
 });
 

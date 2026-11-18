@@ -1,6 +1,8 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
+import {citiesPageCopy} from "@content/citiesPage";
 import {interpolateContent as fill} from "@content/interpolate";
+import {websiteCities} from "@content/markets";
 import {playbookCopy} from "@content/playbook/playbookCopy";
 import {websiteLeadCopy} from "@content/websiteLead";
 import {loadPlaybookPage, resolvePlaybookPage} from "./playbookPages";
@@ -30,10 +32,10 @@ describe("playbook page", () => {
     expect(screen.getByRole("contentinfo")).toBeTruthy();
   });
 
-  it("sends the trial to the host start band until /host/start/ ships, and WhatsApp to a typed chat in a new tab", () => {
+  it("sends the trial to /host/start/, and WhatsApp to a typed chat in a new tab", () => {
     render(<PlaybookPage captures={captures} page={page} />);
     const hero = within(document.getElementById("top")!);
-    expect(hero.getByRole("link", {name: "Start free trial"}).getAttribute("href")).toBe("/host/#start");
+    expect(hero.getByRole("link", {name: "Start free trial"}).getAttribute("href")).toBe("/host/start/");
     const whatsapp = hero.getByRole("link", {name: "Talk to us on WhatsApp"});
     expect(whatsapp.getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/u);
     expect(whatsapp.getAttribute("target")).toBe("_blank");
@@ -92,6 +94,68 @@ describe("playbook page", () => {
       const chats = band.queryAllByRole("link").filter((link) => /^https:\/\/wa\.me\//u.test(link.getAttribute("href") ?? ""));
       expect(chats).toEqual([]);
     }
+  });
+
+  it("asks for a walkthrough on its request page: the minimal header with WhatsApp beside it, and a walkthrough lead", async () => {
+    const walkthrough = (await loadPlaybookPage(resolvePlaybookPage("/host/walkthrough/")!))!;
+    const posts: {requestKind: string; fullName: string; lead: {entry: string; walkthrough: unknown}}[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      posts.push(JSON.parse(String(init?.body)));
+      return new Response(JSON.stringify({ok: true, alreadyJoined: false, lead: {leadId: "0".repeat(64), requestKind: "walkthrough", isNew: true}}), {status: 200});
+    }));
+    render(<PlaybookPage captures={captures} page={walkthrough} />);
+    expect(screen.getByRole("heading", {level: 1}).textContent).toBe("Book a 15-minute walkthrough.");
+    expect(screen.queryByRole("navigation", {name: /breadcrumb/iu})).toBeNull();
+    expect(within(screen.getByRole("banner")).getByRole("link", {name: "WhatsApp us"}).getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/u);
+    const form = within(screen.getByRole("form", {name: "Book my walkthrough"}));
+    fireEvent.click(form.getByRole("button", {name: "Book my walkthrough"}));
+    expect(await form.findByText(playbookCopy.leadForm.required.preferredTime)).toBeTruthy();
+    expect(posts).toHaveLength(0);
+    for (const [name, value] of [[/Your name/u, "Asha Rao"], [/Organisation/u, "Sunday Runners"], [/What you run/u, "A run club, three chapters"],
+      [/A weekday time/u, "Tue 4pm"], [/WhatsApp number/u, "98765 43210"]] as const) {
+      fireEvent.change(form.getByRole("textbox", {name}), {target: {value}});
+    }
+    fireEvent.click(form.getByRole("button", {name: "Book my walkthrough"}));
+    expect(await screen.findByText(playbookCopy.leadForm.sent.walkthrough)).toBeTruthy();
+    expect(posts).toHaveLength(1);
+    expect(posts[0]).toMatchObject({requestKind: "walkthrough", fullName: "Asha Rao", lead: {entry: "walkthrough_request",
+      walkthrough: {preferredTime: "Tue 4pm", organisation: "Sunday Runners", whatYouRun: "A run club, three chapters"}}});
+  });
+
+  it("sends every walkthrough action on the host pages to the request page, not WhatsApp", async () => {
+    for (const path of ["/host/run-clubs/", "/host/demo/"]) {
+      const host = (await loadPlaybookPage(resolvePlaybookPage(path)!))!;
+      const {unmount} = render(<PlaybookPage captures={captures} page={host} />);
+      const main = within(screen.getByRole("main"));
+      const walkthroughs = main.getAllByRole("link", {name: /walkthrough/iu});
+      expect(walkthroughs.length, path).toBeGreaterThan(0);
+      for (const link of walkthroughs) expect(link.getAttribute("href"), path).toBe("/host/walkthrough/");
+      unmount();
+    }
+  });
+
+  it("draws About's cities band from the market catalog: an open city links its page, the rest the launch notice", async () => {
+    const about = (await loadPlaybookPage(resolvePlaybookPage("/about/")!))!;
+    render(<PlaybookPage captures={captures} page={about} />);
+    const band = within(document.getElementById("where")!);
+    const listed = websiteCities.filter((city) => city.status !== "paused");
+    expect(band.getAllByRole("heading", {level: 3}).map((heading) => heading.textContent)).toEqual(listed.map((city) => city.label));
+    for (const city of listed) {
+      const live = city.status === "live";
+      const links = band.getAllByRole("link", {name: live ? citiesPageCopy.seeWhatsOn : citiesPageCopy.getNotified});
+      expect(links.map((link) => link.getAttribute("href"))).toContain(live ? `/${city.slug}/` : `/?city=${city.slug}#whats-on`);
+    }
+  });
+
+  it("starts the trial on its own page: the minimal header, a QR code of the page and the host app's store badges", async () => {
+    const start = (await loadPlaybookPage(resolvePlaybookPage("/host/start/")!))!;
+    render(<PlaybookPage captures={captures} page={start} />);
+    expect(screen.getByRole("heading", {level: 1}).textContent).toBe("Start your free trial.");
+    expect(screen.queryByRole("navigation", {name: /breadcrumb/iu})).toBeNull();
+    expect(screen.getByRole("img", {name: /Scan to get/u})).toBeTruthy();
+    const band = within(document.getElementById("get-app")!);
+    expect(band.getByRole("link", {name: "Download on the App Store"}).getAttribute("href")).toMatch(/^https:\/\/apps\.apple\.com\//u);
+    expect(band.getByRole("link", {name: "Book a 15-minute walkthrough"}).getAttribute("href")).toBe("/host/walkthrough/");
   });
 
   it("states its questions as FAQPage and its breadcrumb as BreadcrumbList", () => {

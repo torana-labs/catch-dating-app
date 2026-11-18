@@ -6,6 +6,7 @@ export const inboxScopeLabels: Record<Exclude<InboxScope, "working">, string> = 
 
 export const inboxTypeLabel: Record<InboxType, string> = {
   listing: "Listing", event: "Event", claim: "Claim", enquiry: "Enquiry", lead: "Website lead", access: "Launch access", stuck: "Stuck",
+  takedown: "Listing request",
 };
 
 const hour = 3_600_000;

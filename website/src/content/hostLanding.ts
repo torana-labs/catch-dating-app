@@ -9,7 +9,7 @@ import {interpolateContent as fill} from "./interpolate.ts";
 // The active market pack, by its file: Node smoke scripts import this module directly.
 import {inMarket as activeMarket} from "./markets/in.ts";
 import {hostFeeExample, hostLandingFeeExamples, hostPricingFacts, hostPricingLines} from "./pricing.ts";
-import {whatsappChatCopy} from "./site.ts";
+import {hostWalkthroughHref, whatsappChatCopy} from "./site.ts";
 
 /** An event property each night moment relies on, named on its badge. */
 export type HostNightProperty = "phones" | "groups" | "rhythm" | "tracks" | "ends";
@@ -58,7 +58,7 @@ const no: HostCompareCell = {text: "No", status: "no"};
 const notPublished: HostCompareCell = {text: "Not published", status: "unknown"};
 
 /** Where a link on the page goes: a band on this page, or a WhatsApp chat with the message typed. */
-export type HostLandingTarget = {anchor: string} | {whatsapp: string};
+export type HostLandingTarget = {anchor: string} | {whatsapp: string} | {href: string};
 
 export const hostLandingCopy = {
   /** The page's sections, in page order, in the bar that takes the site top bar's place once it scrolls away. */
@@ -79,7 +79,7 @@ export const hostLandingCopy = {
     start: startTrial,
     /** A person on WhatsApp, one tap from the headline (leak 7). */
     talk: "Talk to us on WhatsApp",
-    /** Organisations ask for a walkthrough on WhatsApp until walkthrough booking exists. */
+    /** Organisations ask for a walkthrough on its request page. */
     walkthrough: "Running a venue, studio or company? Book a 15-minute walkthrough",
     terms: hostPricingLines.terms,
   },
@@ -105,7 +105,7 @@ export const hostLandingCopy = {
       {
         ground: "ink", title: "Several nights a week, or a team of hosts?",
         body: "Team roles and one record for every guest. A person helps you set up.",
-        link: "Book a 15-minute walkthrough", to: {whatsapp: whatsappChatCopy.walkthroughMessage},
+        link: "Book a 15-minute walkthrough", to: {href: hostWalkthroughHref},
       },
     ] satisfies readonly {ground: "coral" | "mint" | "ink"; title: string; body: string; link: string; to: HostLandingTarget}[],
   },
@@ -170,7 +170,7 @@ export const hostLandingCopy = {
       {ground: "coral", kicker: "Ready now", title: "Start your free trial", body: `Download ${brand.stores.hostAppName} and publish your first event tonight. No call, no application.`, link: startTrial, to: {anchor: "start"}},
       {ground: "paper", kicker: "Want to see it", title: "Follow a night", body: "Pick a format and follow its evening, from the first booking to the morning after.", link: "See a night", to: {anchor: "night"}},
       {ground: "mint", kicker: "Want a person", title: "Talk to us on WhatsApp", body: "A real person who knows hosting. We reply on WhatsApp, usually within an hour.", link: "Open WhatsApp", to: {whatsapp: whatsappChatCopy.hostQuestionMessage}},
-      {ground: "ink", kicker: "Want a meeting", title: "Book a 15-minute walkthrough", body: "For venues, studios, companies and multi-day programmes. We’ll set it up with you.", link: "Book on WhatsApp", to: {whatsapp: whatsappChatCopy.walkthroughMessage}},
+      {ground: "ink", kicker: "Want a meeting", title: "Book a 15-minute walkthrough", body: "For venues, studios, companies and multi-day programmes. We’ll set it up with you.", link: "Book a walkthrough", to: {href: hostWalkthroughHref}},
     ] satisfies readonly {ground: "coral" | "paper" | "mint" | "ink"; kicker: string; title: string; body: string; link: string; to: HostLandingTarget}[],
   },
   faq: {
@@ -235,7 +235,7 @@ export const hostLandingCopy = {
 export const hostNightFormats: readonly HostNightFormat[] = [
   {
     format: "run", accent: "coral", title: "Run clubs", tileTitle: "Run and walk clubs", tile: "Pace pods, a first hello, free runs stay free.", photo: "/assets/events/social-run-music-hero-960.jpg",
-    event: "Sunday Social Run", where: "Carter Road Runners · Carter Road, Bandra",
+    event: "Sunday Social Run", where: "Driftwood Bay Runners · Carter Road, Bandra",
     lead: `People are moving, so phones stay in pockets. ${brand.name} does its work before the start and after the finish.`,
     badges: {phones: "Phones away while running", groups: "Grouped by pace", rhythm: "One route, start to finish", tracks: "Counts who’s back", ends: "Ends with the finish sweep"},
     moments: [

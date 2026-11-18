@@ -261,7 +261,7 @@ async function run(env = process.env) {
     const mock = path.join(fixtureRoot, "controller.ts");
     const entry = path.join(fixtureRoot, "entry.tsx");
     const html = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div><script type="module" src="/@fs${entry}"></script></body></html>`;
-    const wrapper = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;padding:24px;background:#f5f1eb;font:16px sans-serif}main{max-width:760px;margin:auto}iframe{display:block;width:100%;height:500px;border:0;border-radius:12px;background:white}</style></head><body><main><p>LOCAL SYNTHETIC EMBED PREVIEW</p><h1>Saket Run Club application</h1><p>Fixture host page; no applicant or payment service is connected.</p><iframe title="Saket Run Club RSVP" src="/__rsvp_evidence?embed=1&embedId=fixture_1"></iframe><script src="/form-embed-resize.js"></script></main></body></html>`;
+    const wrapper = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;padding:24px;background:#f5f1eb;font:16px sans-serif}main{max-width:760px;margin:auto}iframe{display:block;width:100%;height:500px;border:0;border-radius:12px;background:white}</style></head><body><main><p>LOCAL SYNTHETIC EMBED PREVIEW</p><h1>Neemwood Run Club application</h1><p>Fixture host page; no applicant or payment service is connected.</p><iframe title="Neemwood Run Club RSVP" src="/__rsvp_evidence?embed=1&embedId=fixture_1"></iframe><script src="/form-embed-resize.js"></script></main></body></html>`;
     await writeFile(mock, domainMode ? domainFixtureModule() : `const noop = () => {}; export function usePublicFormController() { return {...window.__rsvpController, updateAnswer: noop, blurQuestion: noop, uploadAnswer: noop, nextSection: noop, previousSection: noop, updateConsent: noop, updateMessagingChoice: noop, setSectionIndex: noop, setStage: noop, submit: noop}; }\n`);
     const domainEntry = `import React from "react";
 import {createRoot} from "react-dom/client";
@@ -308,9 +308,9 @@ createRoot(document.getElementById("root")).render(<QueryClientProvider client={
     await mkdir(path.dirname(output), {recursive: true});
     staging = await mkdtemp(path.join(path.dirname(output), ".rsvp-capture-"));
     const fixture = {
-      organizer: {name: "Saket Run Club"},
+      organizer: {name: "Neemwood Run Club"},
       messagingOffer: {termsVersion: "form-whatsapp-v2", organizerOperationsWhatsapp: "Application updates", organizerMarketingWhatsapp: "Organizer future events", catchMarketingWhatsapp: "Catch future experiences"},
-      definition: {title: "Saket Run Club RSVP", description: "A synthetic customer preview of the RSVP flow.", appearance: {preset: "editorial"}, sections: [], consent: {retentionCopy: "Kept until you withdraw.", consentCopy: "Share my answers with Saket Run Club"}, payment: {amountPaise: 20000, description: "Event fee", refundPolicy: "Refunded if cancelled"}},
+      definition: {title: "Neemwood Run Club RSVP", description: "A synthetic customer preview of the RSVP flow.", appearance: {preset: "editorial"}, sections: [], consent: {retentionCopy: "Kept until you withdraw.", consentCopy: "Share my answers with Neemwood Run Club"}, payment: {amountPaise: 20000, description: "Event fee", refundPolicy: "Refunded if cancelled"}},
     };
     const noop = null; // Functions are supplied inside the browser, not serialized.
     const base = {form: fixture, answers: {}, errors: {}, uploads: {}, visibleSections: [], sectionIndex: 0, consentAccepted: false, messagingChoices: {organizerOperationsWhatsapp: false, organizerMarketingWhatsapp: false, catchMarketingWhatsapp: false}, messagingEndpointAvailable: true, status: {message: "", tone: ""}, pending: false, updateConsent: noop, updateMessagingChoice: noop, setSectionIndex: noop, setStage: noop, submit: noop};

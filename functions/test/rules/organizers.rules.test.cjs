@@ -1248,19 +1248,6 @@ describe("firestore.rules", () => {
         createdAt: Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z")),
         updatedAt: Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z")),
       });
-      await seed(["organizerEntitlementReceipts", "organizer-1_op-1"], {
-        schemaVersion: 1,
-        receiptId: "organizer-1_op-1",
-        operationId: "op-1",
-        organizerId: "organizer-1",
-        actorUid: "admin-1",
-        action: "grant",
-        contentHash: "sha256:abc123",
-        resultRevision: 1,
-        grantId: "grant-1",
-        createdAt: Timestamp.fromDate(new Date("2026-09-01T10:00:00.000Z")),
-        expiresAt: Timestamp.fromDate(new Date("2026-10-01T10:00:00.000Z")),
-      });
 
       const clients = [
         testEnv.unauthenticatedContext().firestore(),
@@ -1278,13 +1265,6 @@ describe("firestore.rules", () => {
           db, "organizerEntitlements", "organizer-1"), {
           organizerId: "organizer-1",
           grants: [],
-        }));
-        await assertFails(getDoc(doc(
-          db, "organizerEntitlementReceipts", "organizer-1_op-1")));
-        await assertFails(setDoc(doc(
-          db, "organizerEntitlementReceipts", "organizer-1_op-2"), {
-          organizerId: "organizer-1",
-          action: "grant",
         }));
       }
     });
@@ -1422,10 +1402,6 @@ describe("firestore.rules", () => {
         organizerId: "organizer-1",
         title: "Private form metadata",
       });
-      await seed(["organizerFormDomains", "apply.example.test"], {
-        organizerId: "organizer-1", hostname: "apply.example.test",
-        ownershipChallenge: "private-challenge",
-      });
       await seed(["organizerFormDrafts", "form-1"], {
         organizerId: "organizer-1",
         formId: "form-1",
@@ -1441,7 +1417,6 @@ describe("firestore.rules", () => {
         const db = authedDb(uid);
         for (const [collectionName, documentId] of [
           ["organizerForms", "form-1"],
-          ["organizerFormDomains", "apply.example.test"],
           ["organizerFormDrafts", "form-1"],
           ["organizerFormVersions", "form-1_v1"],
         ]) {
@@ -1473,6 +1448,20 @@ describe("firestore.rules", () => {
         createdByUid: "owner-1",
       };
       await seed(["customDomains", "www.example-club.test"], record);
+      // Form domains live in the same registry since organizerFormDomains
+      // was folded into it; the retired path stays denied by default.
+      await seed(["customDomains", "apply.example-club.example"], {
+        ...record,
+        hostname: "apply.example-club.example",
+        registrableDomain: "example-club.example",
+        target: {kind: "form", organizerId: "organizer-1", formId: "form-1",
+          publicFormId: "pf_Ab12Cd34Ef56Gh78Ij90"},
+        createdByUid: null,
+      });
+      await seed(["organizerFormDomains", "apply.example-club.example"], {
+        organizerId: "organizer-1", hostname: "apply.example-club.example",
+        ownershipChallenge: "private-challenge",
+      });
 
       for (const db of [
         authedDb("owner-1"),
@@ -1494,6 +1483,16 @@ describe("firestore.rules", () => {
           hostname: "www.hijack.example",
           status: "pendingDns",
         }));
+        for (const [collectionName, documentId] of [
+          ["customDomains", "apply.example-club.example"],
+          ["organizerFormDomains", "apply.example-club.example"],
+        ]) {
+          const formRef = doc(db, collectionName, documentId);
+          await assertFails(getDoc(formRef));
+          await assertFails(updateDoc(formRef, {status: "active"}));
+          await assertFails(deleteDoc(formRef));
+        }
+        await assertFails(getDocs(collection(db, "organizerFormDomains")));
       }
     });
 

@@ -79,7 +79,7 @@ export const Reference: Story = {
         <CatchBand aria-label="How a night works" ground="ink" pb="compact" pt="spacious">
           <StoryHeading
             eyebrow="How a night works"
-            lead="Hosts plan the first ten minutes so you don't have to. Here's a Sunday run with Carter Road Runners."
+            lead="Hosts plan the first ten minutes so you don't have to. Here's a Sunday run with Driftwood Bay Runners."
             title="Come on your own. Leave knowing a few more people."
           />
         </CatchBand>

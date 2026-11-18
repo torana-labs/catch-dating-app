@@ -12,7 +12,7 @@ export const MAX_NOMINATION_URLS = 10;
 export const MAX_NOMINATION_NOTES = 2000;
 
 const urlPattern = /\bhttps?:\/\/[^\s<>"'`]+/giu;
-// A bare host with a path, such as "lu.ma/afterfly" or "instagram.com/afterfly".
+// A bare host with a path, such as "lu.ma/moonmoth" or "instagram.com/moonmoth".
 // The path is required so prose like "e.g." or "catch.app" is never a link.
 const bareUrlPattern = /(?<![\w@./-])(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,}\/[^\s<>"'`]*/giu;
 // Instagram handles: letters, digits, dots and underscores, at most 30. An

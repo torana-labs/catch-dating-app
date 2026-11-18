@@ -7,7 +7,6 @@ import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import type {EventChatMembershipDocument as Membership,
-  EventChatAccessReceiptDocument as Receipt,
   EventParticipationDocument, EventAttendeeDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {validateManageEventChatMemberCallablePayload} from
@@ -15,6 +14,12 @@ import {validateManageEventChatMemberCallablePayload} from
 import type {ManageEventChatMemberCallableResponse as Result} from
   "../shared/generated/manageEventChatMemberCallableResponse";
 import {chatHash} from "./eventChatMessageShared";
+import {
+  eventChatReceiptRef,
+  eventChatRequestHash,
+  replayEventChatReceipt,
+  writeEventChatReceipt,
+} from "./eventChatReceipts";
 import {eventChatMembershipId, hasEventChatAdmission,
   readEventChatAccess, requireEventChatActor} from "./eventChatAccess";
 
@@ -42,26 +47,21 @@ export async function manageEventChatMemberHandler(
   await deps.rateLimit(db, uid, "manageEventChatMember", {
     maxRequests: 10, windowMs: 60 * 1000,
   });
-  const receiptRef = db.collection("eventChatAccessReceipts")
-    .doc(chatHash(["memberManagement", uid, data.requestId]));
-  const payloadHash = chatHash([data.eventId, data.targetUid,
-    data.action, data.expectedRevision]);
+  const receiptRef = eventChatReceiptRef(db, "manageEventChatMember",
+    chatHash(["memberManagement", uid, data.requestId]));
+  const requestHash = eventChatRequestHash(uid, data.eventId,
+    chatHash([data.eventId, data.targetUid, data.action,
+      data.expectedRevision]));
   return db.runTransaction(async (tx) => {
     const actor = await readEventChatAccess(db, tx, data.eventId, uid);
     if (!actor.view.canManage) {
       throw new HttpsError("permission-denied", "This action is unavailable.");
     }
     const receiptSnap = await tx.get(receiptRef);
-    if (receiptSnap.exists) {
-      const receipt = requireDoc<Receipt>(receiptSnap,
-        "EventChatAccessReceiptDocument");
-      if (receipt.uid !== uid || receipt.eventId !== data.eventId ||
-          receipt.payloadHash !== payloadHash) {
-        throw new HttpsError("already-exists",
-          "This request was already used.");
-      }
-      return {revision: receipt.revision, replayed: true};
-    }
+    const prior = replayEventChatReceipt(receiptSnap.data(), {
+      command: "manageEventChatMember", requestHash,
+      nowMillis: deps.now().toMillis()});
+    if (prior) return {revision: prior.revision as number, replayed: true};
     const memberRef = db.collection("eventChatMemberships")
       .doc(eventChatMembershipId(data.eventId, data.targetUid));
     const snap = await tx.get(memberRef);
@@ -112,8 +112,8 @@ export async function manageEventChatMemberHandler(
       removedAt: data.action === "reinstate" ? null : now,
       removedByUid: data.action === "reinstate" ? null : uid,
       updatedAt: now} satisfies Membership);
-    tx.create(receiptRef, {eventId: data.eventId, uid, payloadHash, revision,
-      createdAt: now} satisfies Receipt);
+    writeEventChatReceipt(tx, receiptRef, {command: "manageEventChatMember",
+      requestHash, revision, nowMillis: now.toMillis()});
     return {revision, replayed: false};
   });
 }

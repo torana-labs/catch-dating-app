@@ -49,8 +49,8 @@ test("fresh completed query coverage skips duplicate work and cites its run",
     const request = queryRequest({
       kind: "candidate_verification",
       runKey:
-        "web_search|after fly events|indore|" +
-        "social_run_club|afterfly",
+        "web_search|moon moth events|indore|" +
+        "social_run_club|moonmoth",
     });
     const coverage = createFreshnessCoverage({
       request,
@@ -82,12 +82,12 @@ test("per-source cadence blocks an early refetch without hiding due sources",
   async () => {
     const policy = await loadSupplyFreshnessPolicy();
     const recent = sourceRequest({
-      entityId: "afterfly",
-      surfaceId: "afterfly-luma",
+      entityId: "moonmoth",
+      surfaceId: "moonmoth-luma",
     });
     const due = sourceRequest({
-      entityId: "afterfly",
-      surfaceId: "afterfly-partiful",
+      entityId: "moonmoth",
+      surfaceId: "moonmoth-partiful",
     });
     const coverage = createFreshnessCoverage({
       request: recent,
@@ -105,11 +105,11 @@ test("per-source cadence blocks an early refetch without hiding due sources",
 
     assert.deepEqual(
       result.skippedFresh.map((entry) => entry.surfaceId),
-      ["afterfly-luma"]
+      ["moonmoth-luma"]
     );
     assert.deepEqual(
       result.scheduled.map((entry) => entry.surfaceId),
-      ["afterfly-partiful"]
+      ["moonmoth-partiful"]
     );
     assert.equal(
       result.skippedFresh[0].cadence.nextEligibleAt,

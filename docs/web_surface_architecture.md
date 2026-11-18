@@ -323,22 +323,23 @@ direct Catch link remains available if the site blocks scripts or if embedding
 is unsupported. Site-specific CSP, keyboard, mobile scroll, checkout popups,
 and browser storage need real browser validation before a client page goes live.
 
-`organizerFormDomainRegistry.ts` is the server-side ownership and
-routing policy for a future Catch-served customer subdomain. It stores one
-exact hostname per record, binds it to a published organizer form, issues a
-fresh TXT challenge for every reservation, requires a matching CNAME and
-current DNS probe, and requires trusted certificate readiness before activation.
-An unverified reservation expires after 48 hours; reclaim rotates both the
-challenge and generation, while verified and active bindings do not expire
-into another organizer's control. Reservations are limited per organizer and
-per caller.
-Resolution also rechecks form ownership and publication. Revocation stops
+The custom domain registry (`functions/src/customDomains/domainRegistry.ts`,
+`customDomains/{hostname}`) is the server-side ownership and routing policy for
+a Catch-served customer subdomain, for organiser pages and forms alike. It
+stores one exact hostname per record, binds a form record to a published
+organizer form, issues a fresh TXT challenge for every reservation, requires a
+matching CNAME and current DNS probe, and requires trusted certificate
+evidence for the exact provider hostname before activation. An unverified
+reservation expires after 7 days; reclaim rotates both the challenge and
+generation, while verified and active bindings do not expire into another
+organizer's control. An organiser holds at most one live domain.
+Resolution also rechecks form ownership and publication. Removal stops
 resolution; reassignment starts with a rotated challenge and generation.
 The public `/api/form-domain` endpoint resolves only active, still-owned
 bindings, and the React host gate shows only the bound form. Unknown or
-revoked hosts cannot render other marketing or form routes. Manager callables
-use Auth, App Check and per-user limits for reservation, verification and
-revocation. `FORM_DOMAIN_CNAME_TARGET` is deployment-owned and defaults to an
+removed hosts cannot render other marketing or form routes. No client callable
+writes the registry yet; form domains are onboarded only through the trusted
+operator CLI. `FORM_DOMAIN_CNAME_TARGET` is deployment-owned and defaults to an
 unusable placeholder. Only the trusted hosting operator can mark certificate
 readiness and activate a verified record. No custom hostname is enabled by
 these source changes alone: DNS/TLS provisioning, the exact Firebase Hosting
@@ -554,7 +555,14 @@ answer within five seconds. `website/scripts/next/deployedSmoke.mjs` rejects a
 Cloudflare challenges GitHub's runners, so run that probe by hand from your own
 machine.
 
-There is no server-side cross-request or process cache. Firebase Hosting's CDN
+There is no server-side cross-request cache for browsers. The one exception is
+Cloud Monitoring's uptime check (user agent `GoogleStackdriverMonitoring-UptimeChecks`),
+which made about 1,700 of the 1,800 daily `/api/public-catalog` calls and reads
+the whole catalog each time: its calls share one read every two minutes per instance
+(`readPublicCatalogForProbe`), so the check still proves Firestore answers
+without paying for the read every 50 seconds. Every other caller, including the
+browser's live check and the release gates, reads live, and the response stays
+`private, no-store`. Firebase Hosting's CDN
 keeps the rendered HTML of home, Explore, organiser and event pages for up to
 60 seconds
 ([marketing website architecture](marketing_website_architecture.md#nextjs-public-rendering-migration)).
@@ -1167,7 +1175,7 @@ remediation table above.
      `getHostListingForPath`.
    - `website/src/App.tsx` builds hydrated listing metadata from
      `pageMetaForListing`.
-   - `website/dist/organizers/indore/afterfly-run-club/index.html` is static
+   - `website/dist/organizers/indore/moonmoth-run-club/index.html` is static
      `noindex, follow`, while `website/src/generated/hostListings.json` marks
      the canonical listing `index, follow`.
 

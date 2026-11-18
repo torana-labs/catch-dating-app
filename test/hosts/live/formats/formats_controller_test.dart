@@ -166,7 +166,7 @@ void main() {
       expect(state.groups.first.here, 5);
       expect(state.missing.map((m) => m.name), ['Ritu Kapoor', 'Sam Thomas']);
       expect(state.currentIndex(crawlNow), 1);
-      expect(state.nextStop(crawlNow)?.stop.title, 'Bonobo');
+      expect(state.nextStop(crawlNow)?.stop.title, 'Copperleaf');
       expect(state.stopStatus(0, crawlNow), LivePlanStepStatus.done);
       expect(state.stopStatus(1, crawlNow), LivePlanStepStatus.now);
       expect(state.stopStatus(2, crawlNow), LivePlanStepStatus.next);

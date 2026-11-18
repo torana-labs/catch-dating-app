@@ -1134,7 +1134,10 @@ These checks don't prove that a visitor at catchdates.com sees correct page cont
 ## Custom form domain onboarding
 
 The trusted operator command is `node tool/firebase/form_domain_operator.mjs`.
-It defaults to status and read-only plans. A future client supplies a dedicated
+It defaults to status and read-only plans. Form domains are `customDomains`
+records with `target.kind: "form"` on the `firebaseHosting` provider, the same
+registry as organiser page domains (#1110), so the same Public Suffix List,
+blocklist and one-domain-per-organiser rules apply. A future client supplies a dedicated
 subdomain and controls its DNS; no client domain is required to ship this tooling.
 Source/CI acceptance does not establish a deployed website, provider readiness or
 successful browser submission for a particular client.
@@ -1178,14 +1181,18 @@ operator. ADC authenticates the operator independently. Keep one operator and
 console writer at a time for shared Auth/Enterprise configuration; those APIs
 provide no compare-and-swap protection. Bucket CORS updates use metageneration.
 
-1. `--action reserve` requires an owned, published form. On apply, record the
+1. `--action reserve` requires an owned, published form and a host the
+   blocklist does not refuse; the plan prints the screening verdict, and a
+   held host cannot activate until its review is approved. On apply, record the
    returned generation, TXT challenge and expected CNAME. Configure those DNS
    records through the client's DNS owner. Preserve the TXT proof after activation.
 2. `--action verify --generation <generation>` reads public DNS itself. The
-   pending reservation expires after 48 hours; expired or revoked reservations
+   pending reservation expires after 7 days; expired or removed reservations
    need a new reservation/challenge, never reuse an old generation.
 3. `--action provision --generation <generation>` creates only the exact missing
-   Hosting custom domain. Existing domains are never repointed or deleted. Follow
+   Hosting custom domain and, on apply, moves the record to `provisioning`
+   with that exact Hosting resource. Existing domains are never repointed or
+   deleted. Follow
    Hosting's `requiredDnsUpdates` from status, then rerun status until ownership,
    Hosting and the unexpired certificate are active. Operation completion alone
    does not prove TLS readiness. Catch's TXT and exact CNAME must also remain valid.
@@ -1208,7 +1215,8 @@ command may have changed one provider field. The adapters re-read and converge
 on exact existing entries rather than clearing shared configuration. Never infer
 success from a previous plan or a Hosting operation handle.
 
-Rollback uses `--action revoke --generation <generation>` first, then
+Rollback uses `--action revoke --generation <generation>` (a `removed`
+transition in the registry) first, then
 `--action remove-origins --generation <generation> --site-key <public-key>`.
 Both retain the exact organizer/form and manager arguments and apply guards.
 Revocation immediately disables registry routing even if the form is unpublished.
@@ -1222,6 +1230,28 @@ claim all provider trust is removed when `providerTrustRemoved` is false. Hostin
 resource deletion and client DNS removal are separate explicit operator actions;
 this command never deletes the Hosting domain. Reassignment requires a fresh
 reservation and DNS proof after coordinating remaining provider/DNS ownership.
+
+### Folding the retired `organizerFormDomains` registry
+
+Before the Functions release that ships the shared registry reaches an
+environment, count the legacy collection there. The dry run is read-only and
+prints the legacy count and each document's planned `customDomains` record:
+
+```sh
+bash tool/git/bootstrap_worktree.sh --target functions
+npm --prefix functions run build
+node tool/data/migrate_form_domains_to_custom_domains.mjs --env dev
+node tool/data/migrate_form_domains_to_custom_domains.mjs --env staging
+node tool/data/migrate_form_domains_to_custom_domains.mjs --env prod
+```
+
+A legacy count of 0 needs nothing more. Otherwise resolve every `blocked` row
+(a host the Public Suffix List policy refuses, an unready active record, or a
+different `customDomains` record already on the host), then run `--apply` to
+copy and, after checking the copies, `--apply --retire-legacy` to delete the
+exactly copied legacy documents. Production writes also need `--allow-prod`.
+Re-running either step is safe: copied records are recognised and never
+overwritten. Record the per-environment counts in the release PR.
 
 ## Public Provider IDs and Server-Side Search Secrets
 
@@ -1666,7 +1696,8 @@ What a deploy costs (measured 13 Nov 2026):
 
 When it runs:
 
-- **Daily, dev then prod:** at 03:00 IST the workflow deploys the newest `main`
+- **Daily, dev then prod:** at 02:43 IST (21:13 UTC; GitHub can start a
+  scheduled run hours late) the workflow deploys the newest `main`
   commit whose CI run succeeded (not `main`'s head, which may still be under
   test) to dev, then to prod once dev succeeds. It skips when prod already has
   that commit. It also skips until prod's last delivered deploy recorded
@@ -2301,9 +2332,9 @@ any of these console or DNS gates.
 
 `Deploy backend` never deploys Hosting or forwards Vite variables. The
 marketing, Host, and admin workflows own their production Hosting builds and the
-`prod-hosting` environment described above. `VITE_GTM_ID` remains optional
-until the production GTM container exists; paid-acquisition readiness still
-requires setting it and validating consent-aware tags. Marketing store links
+`prod-hosting` environment described above. The marketing build takes no tag
+manager container id; paid-acquisition tags follow
+[`ads_conversion_spec.md`](ads_conversion_spec.md). Marketing store links
 go live through a `brand.json` edit and a normal website release, not a GitHub
 Environment variable.
 
@@ -3484,6 +3515,223 @@ rerunning the dry run shows any that accumulate. Publish the privacy-policy
 wording that says this data was deleted only after the prod purge, Storage and
 BigQuery steps are all done.
 
+### Organiser takedown
+
+When an organiser asks to be removed (or a trademark, copyright, privacy,
+court-order or impersonation request requires it), Catch preserves the
+records, deletes them from every live store, and blocks re-listing. The tool
+is `tool/data/organizer_takedown.mjs`; it runs through the dispatch-only
+`Organiser takedown` workflow (`.github/workflows/organizer-takedown.yml`).
+The registry it writes is described in
+[data contracts](data_contracts.md#listing-suppressions); the bucket in
+[infrastructure as code](infrastructure_as_code.md#takedown-preservation-bucket).
+
+**Nothing about the organiser goes into GitHub.** This repository is public:
+Actions inputs, logs, step summaries and artifacts are readable by anyone.
+Never put an organiser name, handle, slug, URL or document id in a workflow
+input, issue, PR, commit or chat that is pasted into one. Every case has an
+opaque id, `TD-` and four digits (for example `TD-0001`), which is the only
+thing the workflow takes. Organiser ids can contain the name (older slug-style
+ids such as `<name>-run-club-<city>`), so they count as identifying too. The
+tool prints counts only; manifests and snapshots go to the restricted bucket,
+never to an artifact.
+
+#### Before the first production run (one-time)
+
+1. **Create the HMAC key** in dev, staging and prod **before deploying the
+   Functions that bind it** (the deploy parity check refuses a deploy whose
+   bound secret does not exist). Generate the value on the owner's machine and
+   never print it:
+
+   ```bash
+   for project in catchdates-dev catchdates-staging catch-dating-app-64e51; do
+     openssl rand -base64 48 | tr -d '\n' |
+       gcloud secrets create LISTING_SUPPRESSION_HMAC_KEY --project="$project" \
+         --replication-policy=automatic --data-file=-
+   done
+   ```
+
+   The Functions deploy grants the runtime identity access to the version it
+   binds. Do not rotate this key: every stored hash is computed under it, so a
+   rotation must first rehash every case from its case file while the case
+   files are still held. Keep a sealed offline copy with the owner.
+2. **Rerun `infra/bootstrap/bootstrap.sh`** once so the Terraform plan and
+   apply roles carry the bucket permissions, then let `infra-plan` and
+   `infra-apply` create `catchdates-dev-takedown-preservation` and
+   `catch-dating-app-64e51-takedown-preservation` with the deploy identity's
+   object create and read grants.
+3. **Grant the deploy identity what the tool needs.** Nothing in this
+   repository grants these; an owner adds them, scoped as tightly as GCP
+   allows, and may remove the BigQuery ones after the case:
+   - `roles/secretmanager.secretAccessor` on `LISTING_SUPPRESSION_HMAC_KEY`
+     only (suppress and verify hash with it), to
+     `github-actions-deploy@<project>.iam.gserviceaccount.com`;
+   - Firestore read, write and delete (`roles/datastore.user`), which the
+     deploy identity already used for the deck-era purge;
+   - on the app Storage bucket (`<project>.firebasestorage.app`): object list,
+     get and delete (`roles/storage.objectAdmin` on that bucket, or a custom
+     role with `storage.objects.list/get/delete`);
+   - BigQuery: `roles/bigquery.jobUser` on the project, and
+     `roles/bigquery.dataEditor` on exactly these tables:
+     `catch_analytics.organizers_raw_changelog`, `events_raw_changelog`,
+     `reviews_raw_changelog`, `saved_events_raw_changelog`,
+     `event_participations_raw_changelog`, `event_invite_links_raw_changelog`,
+     `organizer_growth_events`, `host_analytics_events`, and
+     `catch_marketplace_metrics.event_success_scorecards_raw_changelog` and
+     `event_success_feedback_raw_changelog`; plus what the host mart refresh
+     (`tool/analytics/deploy_host_analytics_bigquery.sh --refresh-only`)
+     already needs on the mart tables.
+4. **Check the `prod` GitHub environment requires a reviewer**, as for the
+   deck-era purge. The workflow runs every mode in that environment.
+
+#### Writing the case file
+
+The owner writes the case file from their own machine, never from CI, to
+`gs://<project>-takedown-preservation/cases/<caseId>/case.json`. It is the
+case record (what was requested, by whom, when, on what basis) and the list
+of what the case covers. Example with fictional values:
+
+```json
+{
+  "schemaVersion": 1,
+  "caseId": "TD-0001",
+  "requestType": "removeAndDoNotList",
+  "receivedAt": "2026-11-01T09:00:00Z",
+  "reviewAt": null,
+  "record": {
+    "requestedBy": "The organiser, by email to support",
+    "requested": "Remove the listing, preserve then delete, do not list again",
+    "legalBasis": "Organiser request; see the counsel file"
+  },
+  "targets": {
+    "organizerIds": ["<organizer document id>"],
+    "names": ["Example Trail Runners", "Example Runs"],
+    "handles": ["@exampletrailrunners"],
+    "domains": ["example-trail.example"],
+    "urls": ["https://lu.ma/example-trail"],
+    "slugs": ["example-trail-runners"],
+    "supplyIntakeRequestIds": []
+  }
+}
+```
+
+```bash
+gcloud storage cp case.json gs://catch-dating-app-64e51-takedown-preservation/cases/TD-0001/case.json
+```
+
+`requestType` is one of `removeAndDoNotList`, `trademark`, `copyright`,
+`privacy`, `courtOrder` or `impersonation`; it becomes the suppression's
+reason. `reviewAt` defaults to three years after the suppression is written.
+`record` is free-form and never read by the tool. The bucket's retention
+policy refuses overwrites, so a correction is a new file, `case-01.json`,
+`case-02.json` and so on; the tool reads the highest number.
+
+What the tool matches: organisers by the listed ids, exact Instagram handle
+and slug lookups, and any organiser that shares a link, id or slug key with
+the case (an organiser that shares only a name is counted, never included:
+add its id if it belongs). Supply Intake requests approved as, or targeting,
+a case organiser, or whose seed name, links or handles match the case.
+
+#### Running it
+
+Dispatch from `main`, one mode at a time, reading each summary before the
+next. Dev first when the case exists there.
+
+```bash
+gh workflow run organizer-takedown.yml --ref main -f environment=prod -f mode=plan -f case_id=TD-0001
+gh workflow run organizer-takedown.yml --ref main -f environment=prod -f mode=preserve -f case_id=TD-0001
+gh workflow run organizer-takedown.yml --ref main -f environment=prod -f mode=suppress -f case_id=TD-0001
+gh workflow run organizer-takedown.yml --ref main -f environment=prod -f mode=apply -f case_id=TD-0001
+gh workflow run organizer-takedown.yml --ref main -f environment=prod -f mode=verify -f case_id=TD-0001
+# At least 90 minutes after apply:
+gh workflow run organizer-takedown.yml --ref main -f environment=prod -f mode=bigquery -f case_id=TD-0001
+gh workflow run organizer-takedown.yml --ref main -f environment=prod -f mode=verify -f case_id=TD-0001
+```
+
+1. **plan** (dry run) prints counts per store and disposition: `delete`,
+   `redact` (admin audit logs keep the action and lose the target), and
+   `retain_*` (money records, safety reports, the support conversation that
+   is the legal record of the request, and the Sales privacy fence). It also
+   counts peers' recommendation rails, Storage objects, name-only organiser
+   matches and stores it could not scan. Any scan error stops preserve and
+   apply.
+2. **preserve** copies every planned document with its subcollections, every
+   peer page it will patch and every Storage object to
+   `cases/<caseId>/preserve/<time>/` (`firestore.ndjson`, `storage/…`) with a
+   `manifest.json` holding a SHA-256 for each record, object and file. Record
+   the manifest's SHA-256 (from the bucket, not the log) on the case.
+3. **suppress** writes `listingSuppressions/<caseId>` with keyed hashes of
+   the case targets plus the names, handles, links and slugs preserve read
+   from the organisers. From then on Supply Intake refuses the organiser and
+   listing approval refuses its listings. Run it before apply so nothing can
+   be re-nominated in between.
+4. **apply** refuses unless the latest preserve covers every record it would
+   delete or redact. It patches peers' rails, redacts audit logs, deletes
+   children before parents and the organisers last, deletes the Storage
+   snapshots and images, writes `cases/<caseId>/apply/<time>.json`, and plans
+   again. The deletes fire the derived rebuilds: public pages, event pages and
+   city plans (page triggers), `publicOrganizers` and Algolia (organizer
+   triggers); matching admin inbox items are deleted directly, and the
+   nightly reconcile settles the rest. A rerun is safe and finds nothing.
+5. **verify** fails unless nothing is left to delete, redact or patch, no
+   Storage object remains, no city plan names a case organiser, the
+   suppression is active and covers every key, and (in prod) every preserved
+   public path answers 404 or 410 and none is in the sitemap. It prints the
+   backup expiry dates. If the page-build marker reappears (a trigger
+   rewrote it after apply), run apply again. The website serves 404 for a
+   removed page; a 410 needs a website change, not this tool.
+6. **bigquery** waits until 90 minutes after apply and refuses tables whose
+   streaming buffer may still hold the apply's rows. For each export
+   changelog and streamed table above it counts the rows, exports them to
+   `cases/<caseId>/bigquery/<time>/`, dry-runs and runs the fixed
+   parameterised delete, recounts, and fails if any remain. The workflow then
+   refreshes the host analytics marts.
+
+Then, by hand: confirm in the Algolia console that the organiser and its
+events are gone; request removal of the old URLs in Google Search Console;
+check the admin inbox shows nothing for the case.
+
+Not covered by the tool, review by hand: raw WhatsApp or Instagram nomination
+messages (`catchWhatsappWebhookEvents`, `catchWhatsappIngressEvidence`,
+`catchWhatsappClarifications`, `organizerClaimInstagramMessages`) if the
+nomination came by message; `organizerPolicyGapReviewDecisions` and
+`adminActionExecutions` (no organiser field to match on); retained money,
+safety and support records; nested collections under parents the case does
+not delete; Cloud Logging (Functions log organiser ids; default retention);
+external caches; and git history, which is rewritten only after the hold ends
+and counsel agrees.
+
+#### Backups and the confirmation
+
+Deleted Firestore data stays restorable for **7 days** (point-in-time
+recovery) and in **daily backups for 14 days**
+(`infra/firebase/firestore_recovery.tf`). BigQuery keeps deleted rows for its
+7-day time travel and 7-day fail-safe windows. So the data is gone from every
+backup 14 days after apply; verify prints the exact dates. State this in the
+confirmation:
+
+> We have removed every listing and record about [organisation] from Catch's
+> live systems on [apply date]. Copies remain only in our encrypted, rotating
+> backups, which expire automatically; the last of them expires on
+> [apply date + 14 days], after which the data is gone from every backup. As
+> you asked, we have kept a sealed, access-restricted copy of the records,
+> held only for [the hold period: 180 days / until the matter is resolved]
+> and then destroyed, and a minimal do-not-list entry (keyed hashes of your
+> business names, handles and domains, no content) so that you are not listed
+> again.
+
+#### Ending the hold
+
+At the end of the 180-day hold (or when counsel closes the matter), the owner
+deletes `cases/<caseId>/` from the preservation bucket (the retention policy
+allows it then; a temporary hold placed for a longer matter must be released
+first with `gcloud storage objects update --no-temporary-hold`) and certifies
+the destruction. The suppression entry stays, reviewed every three years; to
+lift it (for example the organiser later claims its page on its own
+instruction), an owner sets `active` to false on `listingSuppressions/<caseId>`.
+Self-created organisers that matched a case are listed in its `reviewFlags`;
+review them (they start private and unpublished).
+
 ## Smoke Tests
 
 After a backend deploy, smoke test:
@@ -3642,7 +3890,9 @@ analysis in the same run did not, and a runner cancellation on 2 Nov failed a
 merge-queue group on its own. A nightly smoke failure fails the scheduled run
 like any other nightly job, so the Main CI alert and the nightly issue still
 report it. Goldens and the Headless journeys keep running wherever the lane is
-selected. Golden pixel comparisons are report
+selected. Pull requests also run the Headless journeys in the Flutter lane
+(`flutter-ci.yml`, Linux), so a broken app-shell journey fails the PR instead
+of ejecting it from the merge queue. Golden pixel comparisons are report
 only: the job summary lists goldens beyond the 0.30% hosted-macOS raster
 tolerance (0.60% for the Widgetbook corpus) or without a baseline, and their
 images are retained as artifacts, while the comparator's known-good/known-bad
@@ -3707,8 +3957,11 @@ both from `main` only:
   approval-free `prod-mobile` environment.
 - `Mobile Production` (`.github/workflows/mobile-production.yml`) ships a
   build testers already have. On iOS it submits that TestFlight build for App
-  Store review as a phased release, which is released by hand after approval.
-  On Android it promotes that internal-track version code to production as a
+  Store review as a phased release that goes public automatically once Apple
+  approves it (since 2026-11-18; before that it waited to be released by
+  hand). Running it again for a version already submitted switches that
+  version to release on approval, or releases it at once if Apple has approved
+  it and it waits for a developer release. On Android it promotes that internal-track version code to production as a
   staged rollout. It rebuilds nothing. It uses the `prod-mobile-release`
   environment, which requires a reviewer's approval. App Store Connect refuses
   a submission whose version carries no "What's New", so each iOS release

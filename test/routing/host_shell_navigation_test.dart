@@ -30,8 +30,8 @@ import '../test_pump_helpers.dart';
 
 const _uid = 'host-user';
 final _organizer = buildOrganizer(
-  id: 'saket-run-club',
-  name: 'Saket Run Club',
+  id: 'neemwood-run-club',
+  name: 'Neemwood Run Club',
   ownerUserId: _uid,
 );
 final _secondOrganizer = buildOrganizer(

@@ -20,12 +20,12 @@ test("the instant platforms are exactly the Supply Intake platforms with an adap
 
 test("event links say what Supply Intake can read, and why a person follows up otherwise", () => {
   const event = (url: string) => classifyDraftLink("event_link", parseDraftLink(url));
-  assert.deepEqual(event("https://lu.ma/afterfly"), {provider: "luma", support: "instant", reason: null});
+  assert.deepEqual(event("https://lu.ma/moonmoth"), {provider: "luma", support: "instant", reason: null});
   assert.deepEqual(event("https://luma.com/e/abc"), {provider: "luma", support: "instant", reason: null});
   assert.deepEqual(event("https://www.district.in/events/x"), {provider: "district", support: "instant", reason: null});
   assert.deepEqual(event("https://urbanaut.app/spot/x"), {provider: "urbanaut", support: "instant", reason: null});
-  assert.deepEqual(event("https://afterfly.in/events"), {provider: null, support: "best_effort", reason: "generic_event_markup"});
-  assert.deepEqual(event("https://www.instagram.com/afterfly.run/"),
+  assert.deepEqual(event("https://moonmoth.example/events"), {provider: null, support: "best_effort", reason: "generic_event_markup"});
+  assert.deepEqual(event("https://www.instagram.com/moonmoth.run/"),
     {provider: "instagram", support: "best_effort", reason: "instagram_business_discovery"});
   assert.deepEqual(event("https://www.instagram.com/p/Cx1/"),
     {provider: "instagram", support: "staff_follow_up", reason: "instagram_post_not_read"});

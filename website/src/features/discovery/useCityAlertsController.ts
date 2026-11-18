@@ -1,6 +1,7 @@
 import {type FormEvent, useRef, useState} from "react";
 import {trackMarketingEvent} from "../../analytics";
 import type {WebsiteLeadSubmission} from "../../shared/api/websiteLead";
+import {useLeadFormViewed} from "../marketing/useWebsiteLeadController";
 import {createSiteLeadSubmission} from "../marketing/websiteLead";
 import {cityAlertForm, type CityAlertInterest, type CityAlertPlace} from "./cityAlertsModel";
 
@@ -10,10 +11,13 @@ type Phase = "idle" | "sending" | "sent";
  * Owns one "Get new plans in {city} on WhatsApp" form: the number, the
  * sending and sent states, and the lead client's words for a failure. The
  * submission lives as long as the form, so a retry of the same number is the
- * same lead; every send carries the site's App Check token.
+ * same lead; every send carries the site's App Check token. The form's
+ * viewed event names its kind and entry; the site lead submission records
+ * the rest of its lead form events.
  */
 export function useCityAlertsController(place: CityAlertPlace, interests: readonly CityAlertInterest[],
   makeSubmission: () => WebsiteLeadSubmission = createSiteLeadSubmission) {
+  useLeadFormViewed({kind: "city_alerts", formId: place.entry});
   const [submission] = useState(makeSubmission);
   const [phone, setPhone] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");

@@ -16,7 +16,7 @@ void main() {
     await tester.pumpWidget(
       host(
         const CatchRail(
-          label: 'More from Afterfly',
+          label: 'More from Moonmoth',
           itemWidth: 200,
           children: [Text('Run'), Text('Supper'), Text('Trivia')],
         ),
@@ -24,7 +24,7 @@ void main() {
       ),
     );
     expect(find.byType(SingleChildScrollView), findsOneWidget);
-    expect(find.bySemanticsLabel('More from Afterfly'), findsOneWidget);
+    expect(find.bySemanticsLabel('More from Moonmoth'), findsOneWidget);
     expect(tester.getSize(find.text('Run')).width, lessThanOrEqualTo(200));
   });
 

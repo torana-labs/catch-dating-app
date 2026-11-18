@@ -377,7 +377,7 @@ HostCrmSummary _emptyCrmSummary(String organizerId) => HostCrmSummary(
 
 Organizer _hostTeamOrganizerWithoutProfile() => buildOrganizer(
   id: 'owned-club',
-  name: 'Saket Run Club',
+  name: 'Neemwood Run Club',
   hostUserId: 'other-host',
   ownerUserId: 'other-host',
   hostProfiles: const [],

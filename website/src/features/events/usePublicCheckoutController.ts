@@ -22,6 +22,7 @@ import { interpolateContent as fill } from "@content/interpolate";
 import type { FormStatus } from "../../shared/forms/types";
 import type { ManagePublicEventCheckoutCallablePayload as Command } from "../../shared/contracts/generated/managePublicEventCheckoutCallablePayload";
 import { currentCheckoutAdContext } from "../../analytics/adContext";
+import { trackBookingConfirmed, trackCheckoutOpened } from "../../analytics";
 import {
   assertPublicCheckoutResponse,
   type PublicQuote,
@@ -54,6 +55,16 @@ function refusalMessage(error: unknown, fallback: string): string {
   if (guestNamesRefused(error))
     return publicCheckoutFlowCopy.places.guestNamesError;
   return fallback;
+}
+/** The booking as the ad tags see it: the event, the payment record, the amount and places. */
+function adBooking(payment: PublicPayment) {
+  return {
+    eventId: payment.eventId,
+    paymentId: payment.paymentId,
+    amountPaise: payment.amountPaise,
+    places: payment.placeCount ?? 1,
+    mode: payment.mode,
+  };
 }
 /** Ad-click identifiers ride only on a new attempt; absent when there are none. */
 function adContextField() {
@@ -283,6 +294,11 @@ export function usePublicCheckoutController(
     }, 15_000);
     return () => window.clearInterval(timer);
   }, [payment, check]);
+  // The confirmed booking: the ad tags count it once, and only for a checkout
+  // this browser opened (trackCheckoutOpened below).
+  useEffect(() => {
+    if (payment?.status === "admitted") trackBookingConfirmed(adBooking(payment));
+  }, [payment]);
   const pay = () =>
     run(async (epoch) => {
       if (!user || admission || (!quote && !payment?.checkout)) return;
@@ -394,6 +410,7 @@ export function usePublicCheckoutController(
       }
       if (!current(epoch) || !result?.payment?.checkout) return;
       const ready = result.payment;
+      trackCheckoutOpened(adBooking(ready));
       checkout.current = new AbortController();
       const callback = await openRazorpayCheckout(
         ready.checkout!,

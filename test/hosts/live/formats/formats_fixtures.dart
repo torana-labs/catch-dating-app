@@ -344,16 +344,16 @@ final crawlEvent = buildEvent(
   eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.barCrawl),
   itinerary: [
     _stop('canteen', 'The Canteen', 0, 19.0590, 72.8295),
-    _stop('totos', 'Toto’s Garage', 52, 19.0640, 72.8330),
+    _stop('gearbox', 'Gearbox Tavern', 52, 19.0640, 72.8330),
     _stop(
-      'bonobo',
-      'Bonobo',
+      'copperleaf',
+      'Copperleaf',
       125,
       19.0670,
       72.8360,
       address: 'Kenilworth Mall, upstairs',
     ),
-    _stop('antisocial', 'Antisocial', 210, 19.0700, 72.8400),
+    _stop('undertow', 'Undertow Cellar', 210, 19.0700, 72.8400),
   ],
 );
 

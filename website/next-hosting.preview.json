@@ -173,9 +173,9 @@
         }
       },
       {
-        "source": "/api/host-acquisition-consent",
+        "source": "/api/listing-request",
         "function": {
-          "functionId": "hostAcquisitionConsent",
+          "functionId": "submitListingRequest",
           "region": "asia-south1"
         }
       },

@@ -6,8 +6,8 @@ afterEach(cleanup);
 
 describe("CatchSplit", () => {
   it("renders the start column before the end column, evenly, by default", () => {
-    render(<CatchSplit end={<p>Coming up</p>} start={<p>Carter Road Runners</p>} />);
-    const start = screen.getByText("Carter Road Runners").parentElement!;
+    render(<CatchSplit end={<p>Coming up</p>} start={<p>Driftwood Bay Runners</p>} />);
+    const start = screen.getByText("Driftwood Bay Runners").parentElement!;
     const end = screen.getByText("Coming up").parentElement!;
     expect(start.dataset.column).toBe("start");
     expect(end.dataset.column).toBe("end");

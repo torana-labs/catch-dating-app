@@ -16,11 +16,10 @@ import {validateCallableWithAjv} from "../shared/validation";
 import {sendEventBroadcastHandler} from "../events/sendEventBroadcast";
 import {nextRevision, requireEventManager} from "./liveControl";
 import {
-  buildLiveCommandReceipt,
-  liveCommandReceiptId,
   liveCommandReceiptRef,
   liveCommandRequestHash,
   matchingLiveCommandReceipt,
+  writeLiveCommandReceipt,
 } from "./liveCommandReceipts";
 
 /**
@@ -99,9 +98,8 @@ export async function changeEventCrawlStopHandler(
     throw new HttpsError("not-found", "That stop is not on tonight's route.");
   }
   const planRef = db.collection("eventSuccessPlans").doc(payload.eventId);
-  const receiptId = liveCommandReceiptId("changeEventCrawlStop", uid,
+  const receiptRef = liveCommandReceiptRef(db, "changeEventCrawlStop", uid,
     payload.eventId, payload.requestId);
-  const receiptRef = liveCommandReceiptRef(db, receiptId);
   const command: Record<string, unknown> = {...payload};
   delete command.requestId;
   const requestHash = liveCommandRequestHash("changeEventCrawlStop", command);
@@ -113,9 +111,9 @@ export async function changeEventCrawlStopHandler(
       transaction.get(planRef),
       transaction.get(receiptRef),
     ]);
+    const now = deps.nowMillis();
     const receipt = matchingLiveCommandReceipt(receiptSnap.data(), {
-      receiptId, command: "changeEventCrawlStop", eventId: payload.eventId,
-      actorUid: uid, requestHash,
+      command: "changeEventCrawlStop", requestHash, nowMillis: now,
     });
     if (receipt) return {revision: receipt.appliedRevision, replayed: true};
     if (!planSnap.exists) {
@@ -136,7 +134,6 @@ export async function changeEventCrawlStopHandler(
         {reason: "staleLiveControlRevision"});
     }
     const appliedRevision = nextRevision(revision);
-    const now = deps.nowMillis();
     const current = Array.isArray(plan.crawlStopChanges) ?
       plan.crawlStopChanges as CrawlStopChange[] : [];
     transaction.update(planRef, {
@@ -149,12 +146,11 @@ export async function changeEventCrawlStopHandler(
       liveControlRevision: appliedRevision,
       updatedAt: deps.serverTimestamp(),
     });
-    transaction.create(receiptRef, buildLiveCommandReceipt({
-      receiptId, command: "changeEventCrawlStop", eventId: payload.eventId,
-      actorUid: uid, requestHash, appliedRevision,
+    writeLiveCommandReceipt(transaction, receiptRef, {
+      command: "changeEventCrawlStop", requestHash, appliedRevision,
       result: broadcastRequestId ? {broadcastRequestId} : undefined,
-      nowMillis: now, timestampFromMillis: deps.timestampFromMillis,
-    }));
+      nowMillis: now,
+    });
     return {revision: appliedRevision, replayed: false};
   });
 

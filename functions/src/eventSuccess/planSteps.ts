@@ -15,11 +15,10 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {nextRevision, requireEventManager} from "./liveControl";
 import {
-  buildLiveCommandReceipt,
-  liveCommandReceiptId,
   liveCommandReceiptRef,
   liveCommandRequestHash,
   matchingLiveCommandReceipt,
+  writeLiveCommandReceipt,
 } from "./liveCommandReceipts";
 
 /**
@@ -157,9 +156,8 @@ export async function saveEventPlanStepHandler(
   });
   await requireEventManager(db, payload.eventId, uid);
   const planRef = db.collection("eventSuccessPlans").doc(payload.eventId);
-  const receiptId = liveCommandReceiptId("saveEventPlanStep", uid,
+  const receiptRef = liveCommandReceiptRef(db, "saveEventPlanStep", uid,
     payload.eventId, payload.requestId);
-  const receiptRef = liveCommandReceiptRef(db, receiptId);
   const command: Record<string, unknown> = {...payload};
   delete command.requestId;
   const requestHash = liveCommandRequestHash("saveEventPlanStep", command);
@@ -169,9 +167,9 @@ export async function saveEventPlanStepHandler(
       transaction.get(planRef),
       transaction.get(receiptRef),
     ]);
+    const now = deps.nowMillis();
     const receipt = matchingLiveCommandReceipt(receiptSnap.data(), {
-      receiptId, command: "saveEventPlanStep", eventId: payload.eventId,
-      actorUid: uid, requestHash,
+      command: "saveEventPlanStep", requestHash, nowMillis: now,
     });
     if (receipt) {
       return {
@@ -215,13 +213,10 @@ export async function saveEventPlanStepHandler(
         nonNegativeInt(plan.activeStepIndex));
     }
     transaction.update(planRef, update);
-    transaction.create(receiptRef, buildLiveCommandReceipt({
-      receiptId, command: "saveEventPlanStep", eventId: payload.eventId,
-      actorUid: uid, requestHash, appliedRevision,
-      result: {stepCount: after.length},
-      nowMillis: deps.nowMillis(),
-      timestampFromMillis: deps.timestampFromMillis,
-    }));
+    writeLiveCommandReceipt(transaction, receiptRef, {
+      command: "saveEventPlanStep", requestHash, appliedRevision,
+      result: {stepCount: after.length}, nowMillis: now,
+    });
     return {
       eventId: payload.eventId,
       liveControlRevision: appliedRevision,

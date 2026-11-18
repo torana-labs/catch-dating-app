@@ -54,7 +54,7 @@ final _functions = [
     name: 'Sangeet',
     startsAt: _now.add(const Duration(hours: 3)),
     endsAt: _now.add(const Duration(hours: 6)),
-    venueName: 'The Leela Ballroom',
+    venueName: 'The Lakeshore Ballroom',
     status: ProgramFunctionStatus.scheduled,
     invitationMode: 'selectedGuests',
     checkInEnabled: true,
@@ -104,8 +104,8 @@ final _stations = [
 
 final _hotels = [
   const ProgramHotel(
-    hotelId: 'hotel_taj',
-    name: 'Taj Palace',
+    hotelId: 'hotel_harbourview',
+    name: 'Harbourview Palace',
     address: '2 Sardar Patel Marg, Chanakyapuri',
     receptionContact: '+91 11 2611 0202',
     active: true,
@@ -146,12 +146,12 @@ final _deskAccess = ProgramWorkAccess(
   grantExpiresAt: _now.add(const Duration(hours: 8)),
   capabilities: const {},
   pickupPoints: const [],
-  hotels: const [ProgramHotel(hotelId: 'hotel_taj', name: 'Taj Palace')],
+  hotels: const [ProgramHotel(hotelId: 'hotel_harbourview', name: 'Harbourview Palace')],
   functions: [
     ProgramFunction(
       functionId: _functionId,
       name: 'Sangeet',
-      venueName: 'The Leela Ballroom',
+      venueName: 'The Lakeshore Ballroom',
       startsAt: _now.add(const Duration(hours: 3)),
       endsAt: _now.add(const Duration(hours: 6)),
       checkInEnabled: true,
@@ -537,7 +537,7 @@ Widget programGuestGroupEditDialogStates(BuildContext context) {
         label: 'new group',
         child: _DialogFrame(
           child: ProgramGuestGroupEditDialog(
-            hotels: [ProgramHotel(hotelId: 'hotel_taj', name: 'Taj Palace')],
+            hotels: [ProgramHotel(hotelId: 'hotel_harbourview', name: 'Harbourview Palace')],
           ),
         ),
       ),

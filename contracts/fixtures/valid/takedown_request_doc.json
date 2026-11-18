@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "requestId": "lr-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "reference": "LR-ABCDEFGH",
+  "clientRequestId": "0f3c2a9e5b1d4c7e8a6b2d9f1e3c5a70",
+  "requestHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "requestType": "removeAndDoNotList",
+  "target": {
+    "kind": "organizer",
+    "id": "lantern-lane-social",
+    "path": null
+  },
+  "requester": {
+    "name": "Asha Verma",
+    "role": "owner",
+    "email": "asha@lanternlane.example",
+    "phone": null,
+    "organisation": "Lantern Lane Social"
+  },
+  "verification": {
+    "proofMethod": "domainEmail",
+    "officialDomain": "lanternlane.example"
+  },
+  "declarations": {
+    "accurate": true,
+    "authorised": true,
+    "contactConsent": true
+  },
+  "context": null,
+  "consent": {
+    "purpose": "listingRequest",
+    "version": "listing-request-v1",
+    "decidedAt": {
+      "_seconds": 1795068000,
+      "_nanoseconds": 0
+    }
+  },
+  "sourcePage": "/listings/request/",
+  "status": "actioned",
+  "outcome": "removedAndSuppressed",
+  "declineReason": null,
+  "caseId": "TD-0001",
+  "infoRequests": [
+    {
+      "template": "replyFromDomainEmail",
+      "at": {
+        "_seconds": 1795071600,
+        "_nanoseconds": 0
+      },
+      "byUid": "staff-mira"
+    }
+  ],
+  "appeal": null,
+  "deciderUid": "staff-mira",
+  "acknowledgedAt": {
+    "_seconds": 1795069800,
+    "_nanoseconds": 0
+  },
+  "ackDueAt": {
+    "_seconds": 1795154400,
+    "_nanoseconds": 0
+  },
+  "actionDueAt": {
+    "_seconds": 1795154400,
+    "_nanoseconds": 0
+  },
+  "resolveDueAt": {
+    "_seconds": 1795672800,
+    "_nanoseconds": 0
+  },
+  "decidedAt": {
+    "_seconds": 1795075200,
+    "_nanoseconds": 0
+  },
+  "closedAt": null,
+  "history": [
+    {
+      "at": {
+        "_seconds": 1795068000,
+        "_nanoseconds": 0
+      },
+      "action": "received",
+      "byUid": null,
+      "status": "received",
+      "detail": null
+    },
+    {
+      "at": {
+        "_seconds": 1795069800,
+        "_nanoseconds": 0
+      },
+      "action": "acknowledged",
+      "byUid": "staff-mira",
+      "status": "acknowledged",
+      "detail": null
+    },
+    {
+      "at": {
+        "_seconds": 1795071600,
+        "_nanoseconds": 0
+      },
+      "action": "infoRequested",
+      "byUid": "staff-mira",
+      "status": "verifying",
+      "detail": "replyFromDomainEmail"
+    },
+    {
+      "at": {
+        "_seconds": 1795075200,
+        "_nanoseconds": 0
+      },
+      "action": "actioned",
+      "byUid": "staff-mira",
+      "status": "actioned",
+      "detail": "removedAndSuppressed \u00b7 TD-0001"
+    }
+  ],
+  "createdAt": {
+    "_seconds": 1795068000,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1795075200,
+    "_nanoseconds": 0
+  }
+}

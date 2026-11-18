@@ -8,10 +8,10 @@ describe("CatchPlanCard", () => {
   it("is one link reading the label, title, host, price and places left, with a hidden poster", () => {
     const click = vi.fn();
     const {container} = render(
-      <CatchPlanCard availability="6 left" detail="The Quizzicals · Khar Social" format="games" href="/events/quiz/"
+      <CatchPlanCard availability="6 left" detail="The Harbour Line Quizzers · Lantern Lane Tavern" format="games" href="/events/quiz/"
         label="Games and quizzes · Thu 7:30 PM" onClick={click} posterLabel="Quiz night" price="Free" title="Thursday Evening Pub Quiz" />,
     );
-    const link = screen.getByRole("link", {name: "Games and quizzes · Thu 7:30 PM Thursday Evening Pub Quiz The Quizzicals · Khar Social Free 6 left"});
+    const link = screen.getByRole("link", {name: "Games and quizzes · Thu 7:30 PM Thursday Evening Pub Quiz The Harbour Line Quizzers · Lantern Lane Tavern Free 6 left"});
     expect(link.getAttribute("href")).toBe("/events/quiz/");
     const poster = container.querySelector("[aria-hidden='true']") as HTMLElement;
     expect(poster.textContent).toBe("Quiz night");
@@ -34,9 +34,9 @@ describe("CatchPlanCard", () => {
   });
 
   it("with a date, takes the canvas card: the date square beside the title, the label read but not shown", () => {
-    render(<CatchPlanCard date={{weekday: "Sun", day: "23", month: "Nov"}} detail="Carter Road Runners · Bandra" format="run" href="/events/run/"
-      label="Run clubs · Sun 6:30 AM" posterLabel="Run club" price="Free" availability="18 left" title="Carter Road Social Run" />);
-    const card = screen.getByRole("link", {name: /Carter Road Social Run/});
+    render(<CatchPlanCard date={{weekday: "Sun", day: "23", month: "Nov"}} detail="Driftwood Bay Runners · Bandra" format="run" href="/events/run/"
+      label="Run clubs · Sun 6:30 AM" posterLabel="Run club" price="Free" availability="18 left" title="Salt Air Social Run" />);
+    const card = screen.getByRole("link", {name: /Salt Air Social Run/});
     expect(card.dataset.layout).toBe("kit");
     const date = card.querySelector("time") as HTMLElement;
     expect(date.dataset).toMatchObject({size: "sm", ground: "coral"});

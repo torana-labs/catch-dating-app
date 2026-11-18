@@ -53,7 +53,7 @@ execFileSync(process.execPath, [path.join(__dirname, "../../../scripts/copy-oper
 const NOW = "2026-10-20T08:00:00.000Z";
 const SERVER_TIME = {_seconds: 1792483200, _nanoseconds: 0};
 const AUTO_ACTOR = "supply-intake-auto-publish";
-const CALENDAR = "https://luma.com/blrdroid";
+const CALENDAR = "https://luma.com/bytebanyan";
 const PAGES = path.resolve(__dirname, "../../../../operations/src/workflows/supply-intake/fixtures/pages");
 
 class MemoryWriter implements ProjectionImportWriter {
@@ -132,8 +132,8 @@ async function completeIntake(db: FakeFirestore, request: SupplyIntakeRequest, e
 async function harness({editEvent, approve = true}: {editEvent?: EventEdit; approve?: boolean} = {}) {
   const db = new FakeFirestore();
   const now = () => new Date(NOW);
-  const request = {schemaVersion: 1, requestId: "nom-blrdroid-1", kind: "nomination",
-    market: "mumbai", seed: {name: "BlrDroid", urls: [CALENDAR], notes: null, categories: ["tech"]},
+  const request = {schemaVersion: 1, requestId: "nom-bytebanyan-1", kind: "nomination",
+    market: "mumbai", seed: {name: "ByteBanyan", urls: [CALENDAR], notes: null, categories: ["tech"]},
     submittedBy: {role: "associate", uid: "associate-1", partnerId: null}, submittedAt: NOW,
     origin: null} as SupplyIntakeRequest & {origin: null};
   const {result, requestPath} = await completeIntake(db, request, editEvent);
@@ -148,8 +148,8 @@ async function harness({editEvent, approve = true}: {editEvent?: EventEdit; appr
   let organizerId: string | null = null;
   if (approve) {
     const approval = await adminApproveOrganizerListingHandler({auth: {uid: "admin-1", token: {admin: true}},
-      rawRequest: {headers: {}}, data: {requestId: "approve-blrdroid-1", listingWorkItemId: result.listingWorkItemId,
-        contentHash: result.listing.contentHash, name: "BlrDroid Community", publicSlug: "blrdroid",
+      rawRequest: {headers: {}}, data: {requestId: "approve-bytebanyan-1", listingWorkItemId: result.listingWorkItemId,
+        contentHash: result.listing.contentHash, name: "ByteBanyan Community", publicSlug: "bytebanyan",
         marketId: "in-mh-mumbai", organizerType: "community", note: "Checked the Luma calendar.",
         checklist: {identityReviewed: true, surfaceInventoryReviewed: true, ownerSafeCopyReviewed: true,
           marketScopeReviewed: true, mediaRightsReviewed: true, crawlDisabledReviewed: true,
@@ -168,7 +168,7 @@ async function harness({editEvent, approve = true}: {editEvent?: EventEdit; appr
 
 const externalEvents = (db: FakeFirestore) => db.entries().filter(([key]) => key.startsWith("externalEvents/"));
 const staffPayload = (eventWorkItemIds: string[], overrides: Record<string, unknown> = {}) => ({
-  intakeRequestId: "nom-blrdroid-1", eventWorkItemIds, executionMode: "apply", idempotencyKey: "staff-publish-0001",
+  intakeRequestId: "nom-bytebanyan-1", eventWorkItemIds, executionMode: "apply", idempotencyKey: "staff-publish-0001",
   reviewNote: "Checked each event on Luma.", blockerResolutions: [],
   checklist: {outboundLinksReviewed: true, noCatchBookingPaymentsWaitlist: true, ownerSafeCopyReviewed: true},
   ...overrides,

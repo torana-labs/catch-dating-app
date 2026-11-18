@@ -52,21 +52,21 @@ final plannerFunctions = [
     'Mehendi',
     DateTime(2026, 12, 12, 16),
     3,
-    'Lawns, Taj Fateh Prakash',
+    'Lawns, Lakeview Haveli',
   ),
   _function(
     'sangeet',
     'Sangeet',
     DateTime(2026, 12, 12, 20),
     3,
-    'Durbar hall, Taj Fateh Prakash',
+    'Durbar hall, Lakeview Haveli',
   ),
   _function(
     'haldi',
     'Haldi',
     DateTime(2026, 12, 13, 10),
     2,
-    'Pool deck, Leela Palace',
+    'Pool deck, Lakeshore Palace',
     selected: true,
   ),
   _function(
@@ -81,20 +81,20 @@ final plannerFunctions = [
     'Reception',
     DateTime(2026, 12, 14, 19),
     4,
-    'Leela Palace ballroom',
+    'Lakeshore Palace ballroom',
   ),
 ];
 
 const plannerHotels = [
   ProgramHotel(
-    hotelId: 'taj',
-    name: 'Taj Fateh Prakash',
+    hotelId: 'haveli',
+    name: 'Lakeview Haveli',
     address: 'City Palace Complex, Udaipur',
     revision: 1,
   ),
   ProgramHotel(
     hotelId: 'leela',
-    name: 'Leela Palace',
+    name: 'Lakeshore Palace',
     address: 'Lake Pichola, Udaipur',
     revision: 1,
   ),
@@ -290,8 +290,8 @@ ArrivalsRosterRow _leg(
   readiness: readiness,
   claimedByDisplay: null,
   claimedByMe: false,
-  destinationHotelId: 'taj',
-  destinationLabel: 'Taj Fateh Prakash',
+  destinationHotelId: 'haveli',
+  destinationLabel: 'Lakeview Haveli',
   requiredCapabilities: const {},
   dedicatedVehicle: false,
   revision: 1,
@@ -370,8 +370,8 @@ final plannerTravel = HostProgrammeTravelState(
       TransportGroupSuggestion(
         legIds: const ['l1', 'l2'],
         partyIds: const ['l1', 'l2'],
-        destinationHotelId: 'taj',
-        destinationLabel: 'Taj Fateh Prakash',
+        destinationHotelId: 'haveli',
+        destinationLabel: 'Lakeview Haveli',
         readiness: TransportGroupReadiness.expected,
         vehicleClassId: 'innova',
         vehicleClassLabel: 'Innova · 6 seats',
@@ -397,8 +397,8 @@ ProgramTripSummary _trip(
 ) => ProgramTripSummary(
   tripId: id,
   pickupPointId: 'udr',
-  destinationHotelId: 'taj',
-  destinationLabel: 'Taj Fateh Prakash',
+  destinationHotelId: 'haveli',
+  destinationLabel: 'Lakeview Haveli',
   vehicleClassId: 'innova',
   vehicleClassLabel: 'Innova',
   manifestSource: TransportManifestSource.dispatchSnapshot,
@@ -424,7 +424,7 @@ final plannerTrips = ProgramTripList(
   trips: [
     _trip(
       'T-041',
-      'Shree Travels',
+      'Lantern Lane Travels',
       'RJ 27 TA 4471',
       6,
       TransportTripStatus.arrived,
@@ -432,7 +432,7 @@ final plannerTrips = ProgramTripList(
     ),
     _trip(
       'T-042',
-      'Shree Travels',
+      'Lantern Lane Travels',
       'RJ 27 TB 1180',
       5,
       TransportTripStatus.arrived,
@@ -440,7 +440,7 @@ final plannerTrips = ProgramTripList(
     ),
     _trip(
       'T-043',
-      'Royal Cabs',
+      'Salt Air Cabs',
       'RJ 27 CA 9021',
       4,
       TransportTripStatus.voided,
@@ -448,7 +448,7 @@ final plannerTrips = ProgramTripList(
     ),
     _trip(
       'T-044',
-      'Taj transfers',
+      'Haveli transfers',
       'RJ 27 PA 0007',
       6,
       TransportTripStatus.enRoute,
@@ -456,7 +456,7 @@ final plannerTrips = ProgramTripList(
     ),
     _trip(
       'T-045',
-      'Shree Travels',
+      'Lantern Lane Travels',
       'RJ 27 TA 4471',
       3,
       TransportTripStatus.enRoute,
@@ -487,11 +487,11 @@ ProgramStay _stay(String id, String name, String block, String room) =>
 
 final plannerRooms = HostProgrammeRoomsState(
   programme: plannerState,
-  hotelId: 'taj',
+  hotelId: 'haveli',
   rooms: ProgramHotelRooms(
     programId: plannerProgramId,
-    hotelId: 'taj',
-    hotelName: 'Taj Fateh Prakash',
+    hotelId: 'haveli',
+    hotelName: 'Lakeview Haveli',
     accessExpiresAt: null,
     generatedAt: plannerNow,
     roomBlocks: [

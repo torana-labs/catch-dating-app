@@ -1,0 +1,218 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_arrival_views.schema.json",
+  "title": "ProgramArrivalViewDocument",
+  "description": "Server-maintained arrivals roster row of one inbound journey that is still expected, ready or disrupted: exactly the row getProgramArrivalsRoster returned (guest name, party, flight, curb time resolved from the transport settings, readiness, claimant and destination), plus the claimant's account id in place of the caller's claimedByMe flag and the pickup and hotel keys rules match. Written by triggers on programTravelLegs, programTravelParties, programGuests, programHotels, programStaffGrants and the programme's transport settings. Readable by accounts whose airport greeter, transport dispatcher or coordinator assignments cover the journey's pickup point and hotel together (programAccessViews arrivalRoutes), and the programme owner. Never a phone number or other contact field, and never identity, permission or mutation authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programArrivalViews",
+  "x-firestore-path": "programArrivalViews/{legId}",
+  "x-document-id-field": "legId",
+  "x-owner": "Programme read model projector (programArrivalViewTriggers)",
+  "required": [
+    "programId",
+    "organizerId",
+    "legId",
+    "guestId",
+    "partyId",
+    "pickupPointId",
+    "pickupKey",
+    "hotelKey",
+    "guestDisplayName",
+    "partyLabel",
+    "partyGuestIds",
+    "passengers",
+    "luggageUnits",
+    "flightNumber",
+    "originIata",
+    "arrivalTerminal",
+    "flightStatus",
+    "curbAtMillis",
+    "curbSource",
+    "unavailableReason",
+    "readiness",
+    "claimedByDisplay",
+    "claimedByUid",
+    "destinationHotelId",
+    "destinationLabel",
+    "requiredCapabilities",
+    "dedicatedVehicle",
+    "revision",
+    "version"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "legId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "guestId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "partyId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "pickupPointId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "pickupKey": {
+      "type": "string",
+      "description": "The pickup point id, or ~ when the journey has none; rules match it against the account's arrival routes."
+    },
+    "hotelKey": {
+      "type": "string",
+      "description": "The destination hotel id, or ~ when the journey has none."
+    },
+    "guestDisplayName": {
+      "type": "string"
+    },
+    "partyLabel": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "partyGuestIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 50
+    },
+    "passengers": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "luggageUnits": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "flightNumber": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "originIata": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "arrivalTerminal": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "flightStatus": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "enroute",
+        "landed",
+        "delayed",
+        "cancelled",
+        "diverted",
+        "unknown"
+      ]
+    },
+    "curbAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "curbSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "ready",
+        "manual",
+        "actualLanding",
+        "estimatedLanding",
+        "scheduledLanding",
+        null
+      ]
+    },
+    "unavailableReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "cancelled",
+        "diverted",
+        "missingTiming",
+        null
+      ]
+    },
+    "readiness": {
+      "type": "string",
+      "enum": [
+        "expected",
+        "ready",
+        "dispatched",
+        "arrived",
+        "disrupted",
+        "noShow"
+      ]
+    },
+    "claimedByDisplay": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "claimedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The claiming staff member's account id, so a phone can tell its own claims; internal staff only."
+    },
+    "destinationHotelId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "destinationLabel": {
+      "type": "string"
+    },
+    "requiredCapabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "wheelchairAccessible",
+          "extraLuggage",
+          "childSeat"
+        ]
+      },
+      "maxItems": 3
+    },
+    "dedicatedVehicle": {
+      "type": "boolean"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "version": {
+      "const": 1
+    }
+  }
+}

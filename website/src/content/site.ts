@@ -22,7 +22,6 @@ export const whatsappChatCopy = {
   hostLinkMessage: `Hi ${brand.name}, please send me the ${brand.stores.hostAppName} link.`,
   hostQuestionMessage: `Hi ${brand.name}, I have a question about hosting on ${brand.name}.`,
   generalMessage: `Hi ${brand.name}, I have a question.`,
-  walkthroughMessage: `Hi ${brand.name}, I'd like a walkthrough of ${brand.name}.`,
   chat: "Chat on WhatsApp",
 } as const;
 
@@ -62,6 +61,10 @@ const hostStartLink = {href: "/host/#start", label: "Start free trial"} as const
 const weddingsLink = {href: "/weddings/", label: "Weddings"} as const;
 const claimLink = {href: "/claim/", label: "Claim your page"} as const;
 const helpLink = {href: "/help/", label: "Help"} as const;
+/** The listing request form (/listings/request/): ask to correct, claim or remove a public listing. */
+const reportListingLink = {href: "/listings/request/", label: "Report or remove a listing"} as const;
+/** The walkthrough request page (/host/walkthrough/): a lead form staff answer on WhatsApp. */
+export const hostWalkthroughHref = "/host/walkthrough/";
 
 // One authored owner for the public header and footer on every route.
 export const publicSiteCopy = {
@@ -140,8 +143,13 @@ export const siteFooterCopy = {
     {href: "/#app", label: guestAppActionLabel},
   ],
   hosts: [hostLandingLink, hostPricingLink, hostStartLink, weddingsLink, claimLink],
-  /** The legal links in reading order: help first, then the policies, then contact. */
-  helpOrder: ["/help/", "/privacy/", "/terms/", "/refunds/", "/contact/"],
+  /**
+   * The legal links in reading order: help first, then the policies, then
+   * contact, then the quiet listing request link.
+   */
+  helpOrder: ["/help/", "/privacy/", "/terms/", "/refunds/", "/contact/", reportListingLink.href],
+  /** The footer's own links beyond the legal ones, which helpOrder and brandOrder may name. */
+  extraLinks: [reportListingLink],
   /** The host footer's columns. */
   host: {
     product: [
@@ -151,14 +159,13 @@ export const siteFooterCopy = {
       weddingsLink,
     ],
     getStarted: [hostStartLink, hostPricingLink, claimLink],
-    brandOrder: ["/explore/", "/help/", "/contact/"],
+    brandOrder: ["/explore/", "/help/", "/contact/", reportListingLink.href],
     legalOrder: ["/privacy/", "/terms/", "/refunds/"],
   },
   /**
    * The help band across the top of the footer on guest and host pages, not
    * on ad landing pages or one-job flows. It states no hours. Guest pages add
-   * Help; host pages add the walkthrough, which asks for one on WhatsApp until
-   * walkthrough booking exists.
+   * Help; host pages add the walkthrough request page.
    */
   helpBand: {
     title: "We reply on WhatsApp, usually within an hour.",
@@ -166,7 +173,7 @@ export const siteFooterCopy = {
     guestMessage: whatsappChatCopy.generalMessage,
     hostMessage: whatsappChatCopy.hostQuestionMessage,
     guestHelp: helpLink,
-    walkthrough: {label: "Book a walkthrough", message: whatsappChatCopy.walkthroughMessage},
+    walkthrough: {href: hostWalkthroughHref, label: "Book a walkthrough"},
   },
   /** A city not yet open: "Pune · soon". */
   soon: "soon",

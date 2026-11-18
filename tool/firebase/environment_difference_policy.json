@@ -85,7 +85,6 @@
     "VITE_FIREBASE_MESSAGING_SENDER_ID": {"class": "identity"},
     "VITE_FIREBASE_PROJECT_ID": {"class": "identity"},
     "VITE_FIREBASE_STORAGE_BUCKET": {"class": "identity"},
-    "VITE_GTM_ID": {"class": "identity"},
     "VITE_WEBSITE_APPCHECK_SITE_KEY": {"class": "identity"},
     "WEBSITE_AUTO_ROLLBACK": {"class": "feature-gate"},
     "catch_whatsapp_support_enabled": {"class": "feature-gate"},

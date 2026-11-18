@@ -133,7 +133,7 @@ test("payment records map into billable payments", () => {
 
 const paidBill = (overrides: Partial<OrganizerBillDocument> = {}):
   OrganizerBillDocument => ({schemaVersion: 1, billId: "org_2026-10",
-  organizerId: "org", organizerName: "Afterfly", month: "2026-10",
+  organizerId: "org", organizerName: "Moonmoth", month: "2026-10",
   periodStartMillis: october.startMillis, periodEndMillis: october.endMillis,
   revision: 3, status: "paid", ...bill([payment({amountMinor: 200_000})]),
   terms: {platformRevision: 1, organizerRevision: 0, ownTerms: false},

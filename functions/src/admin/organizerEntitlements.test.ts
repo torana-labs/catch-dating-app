@@ -3,8 +3,6 @@ import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {validateOrganizerEntitlementsDocument} from
   "../shared/generated/validators/organizerEntitlementsDocument";
-import {validateOrganizerEntitlementReceiptDocument} from
-  "../shared/generated/validators/organizerEntitlementReceiptDocument";
 import {
   adminGrantOrganizerEntitlementHandler,
   adminRevokeOrganizerEntitlementGrantHandler,
@@ -12,6 +10,8 @@ import {
 import {getOrganizerEntitlementHandler} from
   "../entitlements/organizerEntitlementRead";
 
+const receiptPath = "commandReceipts/adminOrganizerEntitlement_" +
+  "organizer-1_op-aaaaaaaaaaaaaaaaaaaa";
 type FakeData = Record<string, unknown>;
 type DocMap = Record<string, FakeData | undefined>;
 const now = 1_800_000_000_000;
@@ -189,10 +189,10 @@ test("grant creates the entitlement doc, receipt and audit entry", async () => {
   assert.equal(grants[0].grantedBy, "finance-1");
   assert.equal(grants[0].quantityConsumed, 0);
   assert.deepEqual(grants[0].validFrom, ts(now));
-  const receipt = firestore.get(
-    "organizerEntitlementReceipts/organizer-1_op-aaaaaaaaaaaaaaaaaaaa");
-  assert.equal(validateOrganizerEntitlementReceiptDocument(receipt), true);
-  assert.equal(receipt?.action, "grant");
+  const receipt = firestore.get(receiptPath);
+  assert.equal(receipt?.command, "adminOrganizerEntitlement");
+  assert.deepEqual(receipt?.result, {resultRevision: 1,
+    grantId: "grant_op-aaaaaaaaaaaaaaaaaaaa"});
   assert.equal(firestore.auditLogs().length, 1);
   assert.deepEqual(rateLimitActions, ["adminGrantOrganizerEntitlement"]);
 });
@@ -222,8 +222,7 @@ test("grant identity survives receipt expiry, including revoked grants",
     const {deps} = depsFor(firestore);
     const first = await adminGrantOrganizerEntitlementHandler(
       callableRequest(grantPayload), deps);
-    delete firestore.docs[
-      "organizerEntitlementReceipts/organizer-1_op-aaaaaaaaaaaaaaaaaaaa"];
+    delete firestore.docs[receiptPath];
     const replay = await adminGrantOrganizerEntitlementHandler(
       callableRequest(grantPayload), deps);
     assert.deepEqual(replay, {...first, replayed: true});

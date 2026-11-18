@@ -29,6 +29,9 @@ export type MarketingRouteId =
   | "public_form"
   | "claim"
   | "claim_lookup"
+  | "listing_request"
+  | "listing_policy"
+  | "takedown_policy"
   | "privacy"
   | "terms"
   | "help"
@@ -73,6 +76,9 @@ export const marketingRouteDefinitions = [
   {id: "public_form", path: "/f/:publicFormId"},
   {id: "claim", path: "/claim"},
   {id: "claim_lookup", path: "/claim/:listing"},
+  {id: "listing_request", path: "/listings/request/"},
+  {id: "listing_policy", path: "/listings/policy/"},
+  {id: "takedown_policy", path: "/listings/notice-and-takedown/"},
   {id: "privacy", path: "/privacy/*"},
   {id: "terms", path: "/terms/*"},
   {id: "help", path: "/help/*"},

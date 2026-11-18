@@ -124,7 +124,7 @@ Future<void> _editHostTeamProfileField(
 
 Organizer _hostTeamOrganizer() => buildOrganizer(
   id: 'owned-club',
-  name: 'Saket Run Club',
+  name: 'Neemwood Run Club',
   ownerUserId: _hostUid,
   hostProfiles: const [
     OrganizerHostProfile(

@@ -155,7 +155,7 @@ test("organizer nomenclature gate rejects club in the warehouse except the colum
   }}));
   write(root, "functions/src/analytics/writer.ts", [
     "export const row = {club_id: id, organizer_name: name};",
-    "export const fixture = {organizerId: \"club-1\", name: \"Saket Run Club\"};",
+    "export const fixture = {organizerId: \"club-1\", name: \"Neemwood Run Club\"};",
   ].join("\n"));
 
   const findings = checkOrganizerNomenclature({root}).findings

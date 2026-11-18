@@ -403,6 +403,7 @@ test("Flutter CI runs every package suite and Widgetbook in one job without mask
   const environment = {
     ...process.env, TEST_PLAN_RESULT: "success", GATES_RESULT: "success",
     APP_PACKAGES_RESULT: "success", COVERAGE_RESULT: "success", TESTS_RESULT: "success",
+    JOURNEYS_RESULT: "skipped",
   };
   for (const variable of ["TEST_PLAN_RESULT", "GATES_RESULT", "APP_PACKAGES_RESULT", "TESTS_RESULT"]) {
     for (const [result, expected] of [["success", 0], ["failure", 1], ["skipped", 1], ["cancelled", 1]]) {
@@ -412,6 +413,31 @@ test("Flutter CI runs every package suite and Widgetbook in one job without mask
       assert.equal(check.status, expected, `${variable}=${result}: ${check.stderr}`);
     }
   }
+  // Pull requests must pass the app-shell journeys; queue groups and main run
+  // them in the visual lane, so the skipped job is fine there.
+  assert.match(namedStep(flutter, "Check Flutter CI results"),
+    /JOURNEYS_RESULT: \$\{\{ needs\['pr-headless-journeys'\]\.result \}\}/u);
+  for (const [event, result, expected] of [
+    ["pull_request", "success", 0], ["pull_request", "skipped", 1], ["pull_request", "failure", 1],
+    ["pull_request", "cancelled", 1], ["merge_group", "skipped", 0], ["push", "skipped", 0],
+    ["merge_group", "failure", 1],
+  ]) {
+    const check = spawnSync("bash", ["-e", "-c", aggregate.run], {
+      env: {...environment, EVENT_NAME: event, JOURNEYS_RESULT: result},
+      encoding: "utf8",
+    });
+    assert.equal(check.status, expected, `${event} journeys=${result}: ${check.stderr}`);
+  }
+});
+
+test("pull requests run the app-shell journeys the queue-only visual lane also runs", () => {
+  const flutter = workflow("flutter-ci.yml");
+  const job = flutter.slice(flutter.indexOf("  pr-headless-journeys:"));
+  assert.match(job, /if: \$\{\{ github\.event_name == 'pull_request' \}\}/u);
+  assert.match(job, /runs-on: ubuntu-latest/u);
+  assert.match(job, /run: bash tool\/test_app_shell_integration\.sh/u);
+  assert.match(workflow("visual-integration-ci.yml"), /run: bash tool\/test_app_shell_integration\.sh/u);
+  assert.match(flutter, /needs:\n(?:      - .*\n)*      - pr-headless-journeys/u);
 });
 
 test("Catch UI package source and test changes select the owning Flutter lane", () => {

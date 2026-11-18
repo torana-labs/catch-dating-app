@@ -1,11 +1,12 @@
 /* eslint-disable max-len */
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
-import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
+import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {defaultListingApprovalDeps, type ListingApprovalDeps} from "../admin/organizerListingApproval";
 import {supplyIntakeCollections} from "../operations/supplyIntake/worker";
 import {chooseDraftCity, materializeInstantDraft, type InstantDraftState} from "./materialize";
 import {clientAddress} from "./request";
+import {listingSuppressionHmacKey} from "../listingSuppressions/registry";
 import {
   DRAFT_POLL_MS,
   limiterKey,
@@ -54,8 +55,9 @@ export async function getInstantDraftHandler(request: CallableRequest<unknown>,
   return respond(base, state, await preview(db, state, after));
 }
 
-export const getInstantDraft = onCall(appCheckCallableOptionsWithLimits({maxInstances: 10}),
-  (request) => getInstantDraftHandler(request));
+// Saving the draft approves the listing, which checks the do-not-list registry.
+export const getInstantDraft = onCall(appCheckCallableOptionsWithSecrets([listingSuppressionHmacKey],
+  {maxInstances: 10}), (request) => getInstantDraftHandler(request));
 
 function respond(base: Pick<GetInstantDraftResponse, "draftId" | "requestKind" | "link" | "followUp">,
   state: InstantDraftState, draft: GetInstantDraftResponse["draft"]): GetInstantDraftResponse {

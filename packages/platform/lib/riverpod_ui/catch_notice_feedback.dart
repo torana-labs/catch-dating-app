@@ -1,5 +1,6 @@
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/errors/write_outcome.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
@@ -77,7 +78,7 @@ void listenToCatchMutationErrors(
       if (previous?.isPending == true && current is MutationError) {
         showCatchNoticeError(
           context,
-          current.error,
+          writeFailure(current.error),
           errorContext: errorContext,
         );
       }

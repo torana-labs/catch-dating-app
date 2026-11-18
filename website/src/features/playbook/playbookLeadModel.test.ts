@@ -22,6 +22,8 @@ type FieldName = NonNullable<PlaybookLeadForm["fields"]>[number]["name"];
 const fields = (...names: FieldName[]) => names.map((name) => ({name, label: name}));
 const venue: PlaybookLeadForm = {...guide, id: "venue_list_space", requestKind: "venue", format: undefined, fields: fields("orgName", "area", "capacity", "nights")};
 const demo: PlaybookLeadForm = {...guide, id: "demo_request", requestKind: "demo", format: undefined, fields: fields("name", "whatYouHost")};
+const walkthrough: PlaybookLeadForm = {...guide, id: "walkthrough_request", requestKind: "walkthrough", format: undefined,
+  fields: fields("name", "orgName", "whatYouHost", "preferredTime")};
 
 /** The guide names the lead contract lists for lead.guide.format, read from its description. */
 function contractGuideFormats(): string[] {
@@ -72,14 +74,18 @@ describe("playbook guide formats", () => {
 });
 
 describe("playbookSendableLeadKind", () => {
-  it("takes the guide, venue and demo forms the intake can file", () => {
+  it("takes the guide, venue, demo and walkthrough forms the intake can file", () => {
     expect(playbookSendableLeadKind(guide)).toBe("guide");
     expect(playbookSendableLeadKind(venue)).toBe("venue");
     expect(playbookSendableLeadKind(demo)).toBe("demo");
+    expect(playbookSendableLeadKind(walkthrough)).toBe("walkthrough");
+    expect(playbookSendableLeadKind({...walkthrough, fields: fields("name", "preferredTime")})).toBe("walkthrough");
   });
 
   it("refuses a kind no form sends, a guide without a known tag, a missing needed field and a field the kind does not carry", () => {
+    expect(playbookSendableLeadKind({...guide, requestKind: "story"})).toBeNull();
     expect(playbookSendableLeadKind({...guide, requestKind: "walkthrough"})).toBeNull();
+    expect(playbookSendableLeadKind({...walkthrough, fields: fields("name", "orgName")})).toBeNull();
     expect(playbookSendableLeadKind({...guide, format: "weddings"})).toBeNull();
     expect(playbookSendableLeadKind({...guide, format: undefined})).toBeNull();
     expect(playbookSendableLeadKind({...venue, fields: venue.fields!.filter((field) => field.name !== "capacity")})).toBeNull();
@@ -97,6 +103,8 @@ describe("playbookLeadProblems", () => {
     });
     expect(playbookLeadProblems(demo, {name: "A", whatYouHost: "Quiz", phone: "98765 43210"})).toEqual({name: playbookCopy.leadForm.required.name});
     expect(playbookLeadProblems(guide, {phone: "98765 43210"})).toEqual({});
+    expect(playbookLeadProblems(walkthrough, {name: "Asha", orgName: "Sunday Runners", whatYouHost: "Run club", phone: "98765 43210"}))
+      .toEqual({preferredTime: playbookCopy.leadForm.required.preferredTime});
   });
 });
 
@@ -129,5 +137,18 @@ describe("playbookLeadRequest", () => {
     expect(lead).toMatchObject({kind: "demo", fullName: "Asha Rao", answers: {whatYouHost: "A monthly supper club for 24"}});
     expect(body).toMatchObject({requestKind: "demo", fullName: "Asha Rao", lead: {consent: {purpose: "leadFollowUp"}, demo: {whatYouHost: "A monthly supper club for 24"}}});
     expect(isJoinWaitlistHttpRequest(body)).toBe(true);
+  });
+
+  it("files a walkthrough with the person's name, the time they asked for, their organisation and what they run", () => {
+    const {lead, body} = send(walkthrough, {name: " Asha  Rao ", orgName: "Sunday Runners", whatYouHost: "A run club, three chapters",
+      preferredTime: " Tue  16:00 ", phone: "98765 43210"});
+    expect(lead).toMatchObject({kind: "walkthrough", fullName: "Asha Rao", entry: "walkthrough_request",
+      answers: {preferredTime: "Tue 16:00", organisation: "Sunday Runners", whatYouRun: "A run club, three chapters"}});
+    expect(body).toMatchObject({requestKind: "walkthrough", fullName: "Asha Rao", lead: {consent: {purpose: "leadFollowUp"},
+      walkthrough: {preferredTime: "Tue 16:00", organisation: "Sunday Runners", whatYouRun: "A run club, three chapters"}}});
+    expect(isJoinWaitlistHttpRequest(body)).toBe(true);
+    const short = playbookLeadRequest({...walkthrough, fields: fields("name", "preferredTime")}, "walkthrough", {name: "Asha", preferredTime: "Wed 11:00",
+      phone: "98765 43210"}, "/host/walkthrough/");
+    expect(short.answers).toEqual({preferredTime: "Wed 11:00"});
   });
 });

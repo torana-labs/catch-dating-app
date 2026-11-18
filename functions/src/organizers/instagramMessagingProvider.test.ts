@@ -20,9 +20,9 @@ function recordingFetch(status: number, body: unknown) {
 test("the username lookup asks graph.instagram.com for one field",
   async () => {
     const {calls, fetchImpl} = recordingFetch(200,
-      {username: "Carter_Runs", id: "901"});
+      {username: "Driftwood_Runs", id: "901"});
     const provider = new InstagramGraphProvider(config, fetchImpl);
-    assert.equal(await provider.lookupUsername("901"), "carter_runs");
+    assert.equal(await provider.lookupUsername("901"), "driftwood_runs");
     assert.equal(calls[0].url,
       "https://graph.instagram.com/v26.0/901?fields=username");
     // The token is a header, never part of the URL.

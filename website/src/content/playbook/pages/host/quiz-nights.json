@@ -31,7 +31,7 @@
       ],
       "aside": {
         "label": "A venue with a weekly quiz, or a quizmaster at several venues? Ask for a walkthrough",
-        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run quiz nights at one or more venues and would like a walkthrough."}
+        "to": {"route": "host_walkthrough"}
       },
       "chip": {
         "title": "Tuesday Trivia Night",

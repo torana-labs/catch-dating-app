@@ -14,8 +14,8 @@ Map<String, Object?> _idRow(
   String? kind,
   String? last4,
   String room = '214',
-  String hotelId = 'taj',
-  String hotelName = 'Taj Fateh Prakash',
+  String hotelId = 'haveli',
+  String hotelName = 'Lakeview Haveli',
   bool viewed = false,
 }) => {
   'guestId': guestId,
@@ -32,7 +32,7 @@ Map<String, Object?> _idRow(
   'askAgainNote': status == 'askedAgain' ? 'The photo is blurred' : null,
   'hotelViews': [
     if (viewed)
-      {'hotelId': 'taj', 'hotelName': 'Taj Fateh Prakash', 'atMillis': _viewed},
+      {'hotelId': 'haveli', 'hotelName': 'Lakeview Haveli', 'atMillis': _viewed},
   ],
   'frontUrl': null,
   'backUrl': null,
@@ -52,8 +52,8 @@ final plannerIdTrackerData = <String, Object?>{
     'passports': 4,
   },
   'hotels': [
-    {'hotelId': 'taj', 'name': 'Taj Fateh Prakash', 'staying': 162},
-    {'hotelId': 'leela', 'name': 'Leela Palace', 'staying': 124},
+    {'hotelId': 'haveli', 'name': 'Lakeview Haveli', 'staying': 162},
+    {'hotelId': 'leela', 'name': 'Lakeshore Palace', 'staying': 124},
   ],
   'rows': [
     _idRow('kamla', 'Kamla Mehra', 'submitted', kind: 'aadhaar', last4: '4821'),
@@ -74,7 +74,7 @@ final plannerIdTrackerData = <String, Object?>{
       last4: 'K882',
       room: '118',
       hotelId: 'leela',
-      hotelName: 'Leela Palace',
+      hotelName: 'Lakeshore Palace',
     ),
     _idRow(
       'sunita',
@@ -111,7 +111,7 @@ Map<String, Object?> _billLine(
 final plannerVendorBillData = <String, Object?>{
   'programId': plannerProgramId,
   'vendorId': 'shree',
-  'vendorName': 'Shree Travels',
+  'vendorName': 'Lantern Lane Travels',
   'currency': 'INR',
   'bill': {
     'invoiceNumber': '2026-118',
@@ -121,34 +121,34 @@ final plannerVendorBillData = <String, Object?>{
     'lines': [
       _billLine(
         1,
-        'T-041 · 11 Dec · Airport to the Taj',
+        'T-041 · 11 Dec · Airport to the Haveli',
         2000,
         2000,
         'matches',
       ),
       _billLine(
         2,
-        'T-042 · 11 Dec · Airport to the Taj',
+        'T-042 · 11 Dec · Airport to the Haveli',
         2000,
         2000,
         'matches',
       ),
       _billLine(
         3,
-        'T-057 · 11 Dec · Airport to the Leela',
+        'T-057 · 11 Dec · Airport to the Lakeshore',
         2400,
         2000,
         'amountDiffers',
       ),
-      _billLine(4, 'T-063 · 12 Dec · Station to the Taj', 2400, null, 'noTrip'),
+      _billLine(4, 'T-063 · 12 Dec · Station to the Haveli', 2400, null, 'noTrip'),
       _billLine(
         5,
-        'T-041 · 11 Dec · Airport to the Taj',
+        'T-041 · 11 Dec · Airport to the Haveli',
         2400,
         null,
         'duplicate',
       ),
-      _billLine(6, 'T-070 · 13 Dec · Taj to the palace', 1800, 1800, 'matches'),
+      _billLine(6, 'T-070 · 13 Dec · Haveli to the palace', 1800, 1800, 'matches'),
     ],
     'totals': {
       'billedMinor': 1300000,
@@ -169,7 +169,7 @@ final plannerVendorBillData = <String, Object?>{
       'tripId': 'trip-9',
       'departedAtMillis': DateTime(2026, 12, 14, 11).millisecondsSinceEpoch,
       'plateDisplay': 'RJ 27 TA 4471',
-      'destinationLabel': 'Taj to the airport',
+      'destinationLabel': 'Haveli to the airport',
       'recordedMinor': 180000,
     },
   ],

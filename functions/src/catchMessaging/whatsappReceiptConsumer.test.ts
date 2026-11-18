@@ -156,13 +156,14 @@ test("inbound messages reach the router; STOPs and statuses never do",
       routed.push(receipt.text ?? "");
     };
     assert.equal(await processCatchWhatsappReceipt(f.db,
-      inbound("wamid.nomination", "@afterfly.in"), scope, time + 3000, route),
+      inbound("wamid.nomination", "@moonmoth.example"), scope, time + 3000,
+      route),
     "unchanged");
     assert.equal(await processCatchWhatsappReceipt(f.db,
       inbound("wamid.stop", "STOP"), scope, time + 3000, route), "applied");
     await processCatchWhatsappReceipt(f.db, f.receipt("delivered"), scope,
       time + 3000, route);
-    assert.deepEqual(routed, ["@afterfly.in"]);
+    assert.deepEqual(routed, ["@moonmoth.example"]);
   });
 
 test("dispatch lookup is scoped and rejects ambiguous ownership",

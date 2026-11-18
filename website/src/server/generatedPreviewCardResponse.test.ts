@@ -7,12 +7,12 @@ vi.mock("./generatedPreviewCardImage", () => ({renderGeneratedPreviewCard: mocks
 import {generatedPreviewCardResponse} from "./generatedPreviewCardResponse";
 import {generatedPreviewCardFor, generatedPreviewCardVersion} from "./generatedPreviewCards";
 
-const organizerName = "Bandra Run Club";
-const listing = {id: "o1", name: organizerName, city: "Mumbai", path: "/organizers/mumbai/bandra-run-club/", category: "Social run", formats: []};
+const organizerName = "Sandbar Run Club";
+const listing = {id: "o1", name: organizerName, city: "Mumbai", path: "/organizers/mumbai/sandbar-run-club/", category: "Social run", formats: []};
 const organizerRoute = {listingRoute: {listing, isLegacyPath: false}, event: null};
 const brandCard = `/assets/og/default.png?v=${previewCards.cards.default.version}`;
-const request = (query = "") => new Request(`http://localhost/og/organizers/mumbai/bandra-run-club/card.png${query}`);
-const segments = ["organizers", "mumbai", "bandra-run-club", "card.png"];
+const request = (query = "") => new Request(`http://localhost/og/organizers/mumbai/sandbar-run-club/card.png${query}`);
+const segments = ["organizers", "mumbai", "sandbar-run-club", "card.png"];
 
 beforeEach(() => {
   mocks.route.mockResolvedValue(organizerRoute);
@@ -22,7 +22,7 @@ beforeEach(() => {
 it("draws the page's own public record and caches the linked version for an hour", async () => {
   const version = generatedPreviewCardVersion(generatedPreviewCardFor(organizerRoute as never)!);
   const response = await generatedPreviewCardResponse(request(`?v=${version}`), segments);
-  expect(mocks.route).toHaveBeenCalledWith("/organizers/mumbai/bandra-run-club/");
+  expect(mocks.route).toHaveBeenCalledWith("/organizers/mumbai/sandbar-run-club/");
   expect(mocks.render).toHaveBeenCalledWith(expect.objectContaining({title: organizerName, lines: ["Mumbai"]}));
   expect(response.headers.get("content-type")).toBe("image/png");
   expect(response.headers.get("cache-control")).toBe("public, max-age=3600, s-maxage=3600");

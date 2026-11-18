@@ -15,7 +15,9 @@ const scriptPath = fileURLToPath(new URL("./generateOrganizerListings.mjs", impo
 
 test("listing schema rejects stale publication and review target contradictions", () => {
   const listing = JSON.parse(fs.readFileSync(
-    fileURLToPath(new URL("../src/generated/hostListings.json", import.meta.url)),
+    // The committed projection is empty; the fictional story fixture models a
+    // listing built from public sources.
+    fileURLToPath(new URL("../src/stories/fixtures/syntheticHostListings.json", import.meta.url)),
     "utf8"
   ))[0];
   assert.equal(validateWebsiteHostListingProjection(listing), true);
@@ -54,7 +56,7 @@ test("production output excludes demo listings while explicit story output inclu
     false
   );
   assert.equal(
-    productionListings.some((listing) => listing.id === "bhag"),
+    productionListings.some((listing) => listing.id === "brindle"),
     false,
     "waitlist-market organizer listings must not enter the deployable projection"
   );

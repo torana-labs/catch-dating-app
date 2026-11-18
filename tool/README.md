@@ -1290,29 +1290,6 @@ and superseded work separately from queue and approval waits. Public
 standard-runner usage and private billed usage must not be conflated when
 reporting savings.
 
-## Host measurement preview runtime
-
-The manual `Host measurement preview runtime` workflow publishes only the two
-reviewed PR726 assets to `catch-host-measurement.web.app`. The
-`ci:host-measurement-preview` binds their configuration/content hashes and
-rejects extra files and symlinks before deploy. After deploy, serving acceptance
-allows only the pinned Hosting client's generated hash cache and validates its
-two gzip-upload hashes against the reviewed runtime before checking public
-bytes and privacy headers.
-The release helper requires current main, its successful same-source main CI,
-the exact workflow caller and a first-attempt dispatch before existing Hosting
-OIDC authentication and again at the deployment boundary. No source build,
-Functions, IAM, credential installation or production-parent permission is part
-of this release. The existing website preview is a separate deployment.
-
-The runtime accepts messages only from the reviewed `next-candidate` origin and
-sends only consented internal/debug Analytics events. Publication proves serving
-bytes, not provider receipt or live advertising attribution. A failed deployment
-requires inspecting its retained evidence before a new dispatch; no automatic
-deploy retry or rollback is provided. Production measurement and ad launch
-remain separately held. Run `node tool/run.mjs check ci:host-measurement-preview`
-for the offline release-boundary tests.
-
 ## Generated Contract Outputs
 
 The schema contract outputs are generated, not tracked: `packages/platform/lib/schema_contracts/generated`, `lib/contexts/*/data/generated`, `functions/src/shared/generated` (except `brand.ts` and `notificationCopyEn.ts`), `admin/src/generated/contracts`, `tool/contracts/generated` and `website/src/shared/contracts/generated`. Bootstrapping a worktree generates them. Run `npm run generate:contracts` after a pull that touches `contracts/**` or the generator, and the IDE analyzer needs the Dart tree present. The pre-commit hook regenerates them when you stage an input.

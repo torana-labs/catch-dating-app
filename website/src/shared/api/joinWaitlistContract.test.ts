@@ -18,7 +18,7 @@ describe("joinWaitlistContract", () => {
       city: "Mumbai",
       role: "host",
       hostApplication: {
-        organizationName: "Sunday Table",
+        organizationName: "Saffron Table",
         formats: ["Dinner"],
         bookingPlatform: "Luma",
         guestListFormat: "CSV export",

@@ -30,10 +30,10 @@ test("canonical website metadata satisfies the runtime content contract", () => 
   });
   assert.equal(
     formatContentTemplate(content.listing.titleTemplate, {
-      name: "AFTER FLY",
+      name: "MOON MOTH",
       city: "Indore",
     }),
-    "AFTER FLY | Indore events & reviews | Catch"
+    "MOON MOTH | Indore events & reviews | Catch"
   );
 });
 

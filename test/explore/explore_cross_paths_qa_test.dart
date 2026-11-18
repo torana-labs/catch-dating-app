@@ -20,6 +20,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart' as event_test;
 import '../organizers/organizers_test_helpers.dart';
+import '../support/event_organizer_summary_fixture.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
@@ -66,13 +67,12 @@ void main() {
           watchSavedEventsForUserProvider(
             user.uid,
           ).overrideWith((ref) => Stream.value(const <SavedEvent>[])),
-          watchOrganizersForMessagingByIdsProvider(
-            OrganizersByIdQuery([organizer.id]),
-          ).overrideWith((ref) => Stream.value([organizer])),
           // Discovery returns the city's synthetic events; the feed keeps
           // only the one this viewer is booked on.
           eventDiscoveryRepositoryProvider.overrideWithValue(
-            _FakeEventDiscoveryRepository([qaEvent, otherQaEvent]),
+            _FakeEventDiscoveryRepository(
+              eventsCarrying(organizer, [qaEvent, otherQaEvent]),
+            ),
           ),
           externalEventRepositoryProvider.overrideWithValue(
             _FakeExternalEventRepository(),

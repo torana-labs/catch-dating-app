@@ -34,7 +34,7 @@
       ],
       "aside": {
         "label": "Running several chapters or a brand-partner series? Ask for a walkthrough",
-        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run several run club chapters and would like a walkthrough."}
+        "to": {"route": "host_walkthrough"}
       },
       "chip": {
         "title": "Sunday Social Run",
@@ -48,7 +48,7 @@
         "kind": "excerpt",
         "card": {
           "title": "Pace pods",
-          "subtitle": "Carter Road Social Run · Sun 8 Nov",
+          "subtitle": "Salt Air Social Run · Sun 8 Nov",
           "stats": [
             {"value": "12", "label": "runners"},
             {"value": "3", "label": "pods"},

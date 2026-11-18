@@ -264,9 +264,17 @@ The site has a first-party analytics layer in `src/analytics.ts` and records
 host-visible organizer metrics through `recordOrganizerAnalyticsEvent` in
 `src/firebase.ts`.
 
-- Production deploys use `GTM-K7KLNQXP` unless the `prod-hosting`
-  `VITE_GTM_ID` variable explicitly overrides it. The environment gate requires
-  a valid container id, and the browser loads GTM only after analytics consent.
+- No tag manager loads, and the build takes no container id. The diagnostic
+  events in this list stay on the local `dataLayer` bus; no tag reads it.
+- The first-party Google tag (GA4 and Google Ads) and Meta Pixel load only
+  after the visitor picks "Allow analytics and marketing", only on public pages
+  of the production site, through `src/analytics/adTags.ts`. It sends
+  `page_view`, `view_item` on public event pages, `begin_checkout` and
+  `purchase` for live paid checkouts, and the host website-lead conversion
+  (Meta `Lead`) for accepted host lead forms, each with an `event_id`.
+  Withdrawing the choice revokes both tags. The contract, including what each
+  event carries, is "First-party browser transport" in
+  [`docs/ads_conversion_spec.md`](../docs/ads_conversion_spec.md).
 - `.github/workflows/website-production-observability.yml` probes the public
   launch routes every 15 minutes without a paid monitoring service. The same
   status, canonical-metadata, and content checks run immediately after a
@@ -284,8 +292,6 @@ host-visible organizer metrics through `recordOrganizerAnalyticsEvent` in
   phone numbers never enter them. A referral from a signed-in visitor also
   sends the account's Firebase ID token as `Authorization: Bearer`, so the
   intake credits the referrer; a signed-out referral sends none.
-- Configure GA4, Google Ads, Meta Pixel, LinkedIn Insight Tag, and other pixels in
-  GTM against the pushed `dataLayer` events.
 - Set `VITE_WEBSITE_APPCHECK_SITE_KEY` and the Firebase web config in
   production so organizer listing views, saves, contact clicks, claim clicks,
   outbound clicks, and event views can be accepted by the App Check-protected
