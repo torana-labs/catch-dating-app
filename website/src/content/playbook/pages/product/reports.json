@@ -4,9 +4,9 @@
   "route": "product_reports",
   "meta": {
     "title": "Reports, payouts and team | {{brand.name}} for hosts",
-    "description": "A report after every event, payouts into your own Razorpay account by default, one bill per billing cycle capped at ₹10,000, and team access you control.",
+    "description": "A report after every event, payouts into your own Razorpay account by default, one bill a month capped at ₹10,000, and team access you control.",
     "socialDescription": "Know what worked, get paid, share the work. Reports, payouts and team on {{brand.name}}.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
@@ -74,7 +74,7 @@
         {"figure": "1", "figureNote": "Booking", "title": "Guest pays by UPI or card", "ground": "ink", "body": "Straight into your Razorpay account."},
         {"figure": "2", "figureNote": "Settlement", "title": "Razorpay pays your bank", "ground": "ink", "body": "On Razorpay’s usual schedule for your account."},
         {"figure": "3", "figureNote": "Refunds", "title": "By your policy", "ground": "ink", "body": "Refunds follow the cancellation policy you set."},
-        {"figure": "4", "figureNote": "{{brand.name}}’s fee", "title": "Billed afterwards", "ground": "ink", "body": "5% of net sales, never more than ₹10,000, in one bill per 30-day billing cycle."}
+        {"figure": "4", "figureNote": "{{brand.name}}’s fee", "title": "Billed afterwards", "ground": "ink", "body": "5% of net sales, never more than ₹10,000, in one bill a month."}
       ]
     },
     {
@@ -83,7 +83,7 @@
       "ground": "white",
       "kicker": "One bill, in arrears",
       "title": "No surprises from us.",
-      "lead": "Your first bill comes after your free trial ends. Each one shows what you sold, what was refunded, and the 5%, never more than ₹10,000 per billing cycle.",
+      "lead": "Your first bill comes after your free trial ends. Each one shows what you sold, what was refunded, and the 5%, never more than ₹10,000 a month.",
       "ticks": [
         "Nothing to pay during your trial",
         "Free events never appear on a bill",
@@ -92,13 +92,13 @@
       "media": {
         "kind": "excerpt",
         "card": {
-          "title": "{{brand.name}} bill · one billing cycle",
+          "title": "{{brand.name}} bill · one month",
           "rows": [
             {"title": "Sunday social runs × 4", "value": "₹0"},
             {"title": "Coached 10K × 2 · ₹48,000", "value": "₹2,400"},
             {"title": "Memberships · ₹36,000", "value": "₹1,800"},
             {"title": "Refunds · −₹3,000", "value": "−₹150"},
-            {"title": "{{brand.name}} fee this billing cycle", "value": "₹4,050"}
+            {"title": "{{brand.name}} fee this month", "value": "₹4,050"}
           ]
         }
       }
@@ -137,7 +137,7 @@
         {"question": "When is my report ready?", "answer": "After the event, in {{brand.stores.hostAppName}}. Open the event to see who came, who was new, what you sold and what guests said."},
         {"question": "Do I need a Razorpay account?", "answer": "To sell tickets, yes, and we’ll help you set it up. Razorpay’s KYC check usually takes 1 to 2 working days. Free events don’t need one."},
         {"question": "When do I get my money?", "answer": "By default, guests pay into your Razorpay account, and Razorpay sends it to your bank on its usual schedule for your account. {{brand.name}} doesn’t hold it."},
-        {"question": "How does {{brand.name}} charge me?", "answer": "One bill after each 30-day billing cycle: 5% of ticket sales, memberships and form fees, net of refunds, never more than ₹10,000 per billing cycle. Nothing during your trial."},
+        {"question": "How does {{brand.name}} charge me?", "answer": "One bill a month: 5% of ticket sales, memberships and form fees, net of refunds, never more than ₹10,000 a month. Nothing during your trial."},
         {"question": "Can more than one person run my events?", "answer": "Yes. Add co-hosts and managers to your team, and give helpers door access for a single event."},
         {"question": "Can I export my numbers?", "answer": "Yes. Each event’s report downloads its guest list, check-ins, bookings and payments as CSV files, and you can export your guest contacts any time."}
       ]

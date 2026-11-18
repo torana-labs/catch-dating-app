@@ -4,9 +4,9 @@
   "route": "host_supper_clubs",
   "meta": {
     "title": "{{brand.name}} for supper clubs | Applications, seating and paid bookings",
-    "description": "Applications that tell you who’s coming, payment before you buy the food, tables planned from what guests told you, and regulars hearing about the next dinner first.",
-    "socialDescription": "Seat strangers well, then invite them back. {{brand.name}} for supper clubs and long-table dinners.",
-    "noindex": true
+    "description": "Applications that tell you who’s coming, payment before you buy the food, tables planned from your guest list, and feedback from every guest after.",
+    "socialDescription": "Seat strangers well, then hear how it went. {{brand.name}} for supper clubs and long-table dinners.",
+    "noindex": false
   },
   "header": {
     "variant": "host",
@@ -19,8 +19,8 @@
       "id": "top",
       "ground": "pink",
       "kicker": "{{brand.name}} for supper clubs and long-table dinners",
-      "title": "Seat strangers well, then invite them back.",
-      "lead": "Applications that tell you who’s coming, payment before you buy the food, tables planned from what guests told you, and the people who’d come again hearing about the next dinner first.",
+      "title": "Seat strangers well, then hear how it went.",
+      "lead": "Applications that tell you who’s coming, payment before you buy the food, tables planned from your guest list, and feedback from every guest after.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
         {
@@ -70,7 +70,7 @@
       "columns": 3,
       "items": [
         {"title": "A form that tells you nothing", "body": "Forty names and phone numbers, and no idea who will get on with whom.", "fix": "Applications with your own questions, approved one by one."},
-        {"title": "Seating at midnight before the dinner", "body": "Moving names around a spreadsheet so friends who came together are split and the quiet ones aren’t stranded.", "fix": "Tables suggested from what guests told you; adjust with a drag."},
+        {"title": "Seating at midnight before the dinner", "body": "Moving names around a spreadsheet so friends who came together are split and the quiet ones aren’t stranded.", "fix": "Tables suggested from your guest list, friends kept side by side; adjust with a tap."},
         {"title": "No-shows after you’ve bought the food", "body": "Two empty chairs and two plates of something you cooked for four hours.", "fix": "Paid at booking, refunds by your policy, and a waitlist for the gaps."}
       ]
     },
@@ -100,13 +100,13 @@
       "id": "dinner",
       "ground": "ink",
       "kicker": "A dinner on {{brand.name}}",
-      "title": "From applications to the next dinner.",
+      "title": "From applications to the feedback.",
       "steps": [
-        {"time": "Tuesday", "title": "Tables planned from what people told you", "body": "{{brand.name}} suggests tables of six with something in common and someone new, and you adjust with a drag."},
+        {"time": "Tuesday", "title": "Tables planned from who’s coming", "body": "{{brand.name}} suggests tables from your guest list, keeping friends who booked together side by side, and you adjust with a tap."},
         {"time": "8:00 PM", "title": "One look at the phone, then dinner", "body": "Guests check in and see their seat once. After that nothing at dinner needs a phone."},
         {"time": "8:20 PM", "title": "The whole room at a glance", "body": "Seat a late arrival or move someone with a tap; table sizes and anyone you’ve kept apart still hold."},
-        {"time": "9:10 PM", "title": "A new seat for dessert", "body": "{{brand.name}} suggests a dessert swap so everyone meets a few more people. A quiet table gets a conversation card."},
-        {"time": "Next morning", "title": "Invite them back", "body": "Guests say who they’d happily sit with again. The people who’d come back hear about the next dinner first."}
+        {"time": "9:10 PM", "title": "A new seat for dessert", "body": "{{brand.name}} can re-seat the room so everyone meets a few more people. A quiet table gets a conversation card."},
+        {"time": "Next morning", "title": "Hear how it went", "body": "Guests get a feedback prompt, and can say privately who they talked to. You see the totals, never who named whom."}
       ],
       "media": {"kind": "capture", "slot": "host-live-tablet"}
     },
@@ -122,9 +122,9 @@
         {"title": "Payment before you buy the food", "body": "UPI or card at booking."},
         {"title": "A cancellation policy you set", "body": "Refunds follow it."},
         {"title": "A waitlist that fills gaps", "body": "Offers go out when someone drops."},
-        {"title": "Seating suggested for you", "body": "From what guests told you."},
+        {"title": "Seating suggested for you", "body": "From your guest list."},
         {"title": "A seat swap at dessert", "body": "Everyone meets a few more people."},
-        {"title": "Who’d come back", "body": "The next invitation goes to them first."},
+        {"title": "Feedback after dinner", "body": "Totals for you, never who named whom."},
         {"title": "Early-bird pricing", "body": "The price can step up as seats fill."}
       ]
     },
@@ -134,11 +134,11 @@
       "ground": "ink",
       "kicker": "Pricing for supper clubs",
       "price": "5%",
-      "title": "of ticket sales, never more than ₹10,000 per billing cycle.",
+      "title": "of ticket sales, never more than ₹10,000 a month.",
       "trial": "Free for 30 days from your first dinner, 90 for founding hosts. Payment gateway fees are separate.",
       "examples": [
         {"title": "A 24-seat supper at ₹1,800", "value": "₹2,160 a dinner", "body": "5% of ₹43,200, paid when guests book."},
-        {"title": "Two dinners in a billing cycle", "value": "₹4,320 a billing cycle", "body": "Well under the ₹10,000 cap."},
+        {"title": "Two dinners in a month", "value": "₹4,320 a month", "body": "Well under the ₹10,000 cap."},
         {"title": "A free tasting for regulars", "value": "₹0", "body": "Free events stay free."}
       ],
       "actions": [
@@ -154,7 +154,7 @@
       "title": "What hosts ask us.",
       "items": [
         {"question": "Can I choose who comes?", "answer": "Yes. Turn on applications, ask your own questions, and approve, decline or waitlist each person. Approved guests pay to confirm."},
-        {"question": "How does the seating plan work?", "answer": "{{brand.name}} suggests tables of six with something in common and someone new, from what guests told you. Move anyone with a drag, and keep people apart if you need to."},
+        {"question": "How does the seating plan work?", "answer": "{{brand.name}} suggests tables from your guest list, keeping friends who booked together side by side. Move anyone with a tap, and keep people apart if you need to."},
         {"question": "What if someone cancels?", "answer": "Refunds follow the cancellation policy you set. If there’s a waitlist, the next person gets an offer for the seat."},
         {"question": "Do guests need an app?", "answer": "No. Guests apply, pay and check in on your page in their phone’s browser."},
         {"question": "Can early bookers pay less?", "answer": "Yes, with dynamic pricing: the price steps up by an amount you set as seats fill, up to a maximum."},

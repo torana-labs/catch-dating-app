@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/bookings.dart'
-    show watchOwnEventCardsByIdProvider;
+    show watchOwnEventCardsForEventsProvider;
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
@@ -521,10 +521,8 @@ class _ReviewsScope extends StatelessWidget {
           widgetbookUtilityViewerUid,
         ).overrideWith((ref) => reviewsStream ?? Stream.value(_reviews)),
         if (eventIds.isNotEmpty)
-          watchOwnEventCardsByIdProvider(
-            widgetbookUtilityViewerUid,
-          ).overrideWith(
-            (ref) =>
+          watchOwnEventCardsForEventsProvider.overrideWith(
+            (ref, query) =>
                 (eventsStream ?? Stream.value([widgetbookUtilityEvent])).map(
                   (events) => {
                     for (final event in events)

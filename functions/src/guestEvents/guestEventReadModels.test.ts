@@ -235,5 +235,8 @@ test("rows refresh only for the guests a write can change", () => {
     {bookedCount: 2, name: "a"}), false);
   assert.equal(eventTermsChanged({bookedCount: 1, name: "a"},
     {bookedCount: 1, name: "b"}), true);
+  // The organizer summary is trigger-owned and no guest list shows it.
+  assert.equal(eventTermsChanged({name: "a"},
+    {name: "a", organizerSummary: {name: "Club"}}), false);
   assert.equal(guestEventStatusId("e", "u"), "e_u");
 });

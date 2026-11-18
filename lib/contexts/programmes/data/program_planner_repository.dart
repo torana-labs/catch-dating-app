@@ -167,7 +167,7 @@ ProgramPlannerRepository programPlannerRepository(Ref ref) =>
 Future<ProgramPlannedMessages> programPlannedMessages(
   Ref ref,
   String programId,
-) => ref.read(programPlannerRepositoryProvider).listMessages(programId);
+) => ref.watch(programPlannerRepositoryProvider).listMessages(programId);
 
 /// The planner home: the organiser's programmes with their overview
 /// numbers, from the first `listOrganizerPrograms` page.
@@ -175,4 +175,4 @@ Future<ProgramPlannedMessages> programPlannedMessages(
 Future<OrganizerProgramInventoryPage> programmesOverview(
   Ref ref,
   String organizerId,
-) => ref.read(programInventoryRepositoryProvider).listPage(organizerId);
+) => ref.watch(programInventoryRepositoryProvider).listPage(organizerId);

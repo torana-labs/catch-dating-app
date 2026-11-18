@@ -30,6 +30,8 @@ export function hostDeliveryRecords(input: {
   organizer: Record<string, unknown> | undefined;
   owner: Record<string, unknown> | undefined;
   nowMillis: number;
+  /** The Meta lead-form lead this host came from, if one matched. */
+  metaLeadId?: string | null;
 }): Delivery[] {
   const uid = conversionOwner(input.organizer);
   if (!uid || !input.owner || input.owner.deletedAt) return [];
@@ -54,6 +56,7 @@ export function hostDeliveryRecords(input: {
       emailSha256,
       externalIdSha256: hashedOrganizerId(input.organizerId),
     },
+    metaLeadId: input.metaLeadId ?? null,
     valueMinor: null,
     currency: "INR",
     status: "pending" as const,
@@ -86,10 +89,12 @@ export async function enqueueHostConversions(input: {
   const uid = conversionOwner(organizer);
   if (!uid) return 0;
   const owner = (await input.db.collection("users").doc(uid).get()).data();
+  const metaLeadId = await matchingMetaLead(input.db, owner, organizer);
   let created = 0;
   for (const conversion of input.conversions) {
     for (const record of hostDeliveryRecords({organizerId: input.organizerId,
-      conversion, organizer, owner, nowMillis: input.nowMillis})) {
+      conversion, organizer, owner, nowMillis: input.nowMillis,
+      metaLeadId})) {
       try {
         await input.db.collection(AD_CONVERSION_DELIVERIES)
           .doc(record.deliveryId).create(record);
@@ -100,6 +105,33 @@ export async function enqueueHostConversions(input: {
     }
   }
   return created;
+}
+
+/**
+ * The Meta lead-form lead an owner came from: a processed lead whose hashed
+ * phone, then email, matches the owner's. Null when there is none.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {object|undefined} owner Owner's user document.
+ * @param {object|undefined} organizer Organizer document.
+ * @return {Promise<string|null>} Meta lead ID.
+ */
+export async function matchingMetaLead(db: FirebaseFirestore.Firestore,
+  owner: Record<string, unknown> | undefined,
+  organizer: Record<string, unknown> | undefined): Promise<string | null> {
+  const keys: Array<["phoneSha256" | "emailSha256", string | null]> = [
+    ["phoneSha256", hashedPhone(owner?.phoneNumber)],
+    ["emailSha256", hashedEmail(owner?.email) ?? hashedEmail(organizer?.email)],
+  ];
+  for (const [field, digest] of keys) {
+    if (!digest) continue;
+    const rows = await db.collection("metaLeadgenEvents")
+      .where(field, "==", digest).limit(5).get();
+    const lead = rows.docs.map((doc) => doc.data())
+      .find((row) => row.status === "processed" &&
+        typeof row.leadgenId === "string");
+    if (lead) return lead.leadgenId as string;
+  }
+  return null;
 }
 
 /** Backoff after a retryable outcome: 5, 10, 20, 40 minutes. */

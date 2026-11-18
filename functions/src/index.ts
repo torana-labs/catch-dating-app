@@ -748,6 +748,9 @@ export {
   grantProgramStaff,
   revokeProgramStaff,
 } from "./programs/programStaff";
+export {onProgramAccessViewGrantChanged,
+  onProgramAccessViewProgramChanged} from
+  "./programs/programAccessViewTriggers";
 export {listMyHostAssignments} from "./hostWork/listMyHostAssignments";
 export {
   inviteProgramStaff,
@@ -1159,6 +1162,9 @@ export {
   onAdConversionGrowthFactsWritten,
   sendAdConversions,
 } from "./acquisition/adConversions/worker";
+export {metaLeadgenWebhook} from "./acquisition/metaLeadgen/webhook";
+export {onMetaLeadgenEventCreated} from
+  "./acquisition/metaLeadgen/processing";
 export {
   onOrganizerGrowthOrganizerWritten,
   onOrganizerGrowthClaimRequestCreated,

@@ -77,6 +77,19 @@ function functionsChatDirectory() {
   return chatDirectoryModule;
 }
 
+let organizerSummaryModule = null;
+function functionsOrganizerSummary() {
+  try {
+    organizerSummaryModule ??= createFunctionsRequire()("./lib/organizers/eventOrganizerSummary.js");
+  } catch (error) {
+    throw new Error(
+      "The event-organizer-summary migration needs compiled Functions; " +
+      `run \`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return organizerSummaryModule;
+}
+
 /** One clock per run, so a row reached from two sources is identical. */
 const chatDirectoryNowMillis = Date.now();
 
@@ -302,6 +315,34 @@ function organizerPostOwner(ref) {
     organizer.id : null;
 }
 
+let programAccessViewModule = null;
+function functionsProgramAccessView() {
+  try {
+    programAccessViewModule ??= createFunctionsRequire()(
+      "./lib/programs/programAccessView.js");
+  } catch (error) {
+    throw new Error(
+      "The program-access-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programAccessViewModule;
+}
+
+const programAccessNowMillis = Date.now();
+
+/** An account's programme authority view from current sources, read only. */
+async function programAccessViewRow(db, programId, uid) {
+  const {readProgramAccessView} = functionsProgramAccessView();
+  try {
+    return await db.runTransaction((tx) =>
+      readProgramAccessView(db, tx, programId, uid, programAccessNowMillis));
+  } catch {
+    // A source that fails its contract gets no view, as in the trigger.
+    return null;
+  }
+}
+
 const profilePromptCatalog = JSON.parse(fs.readFileSync(
   new URL("../../../contracts/catalogs/profile_prompts.json", import.meta.url), "utf8"));
 const defaultPrompt = profilePromptCatalog.prompts.find(
@@ -335,6 +376,31 @@ export const MIGRATIONS = [
         kind: "fill",
         collection: "events",
         fill: (data) => eventSchemaFill(data, functionsMarket),
+      },
+    ],
+  },
+  {
+    name: "event-organizer-summary",
+    description:
+      "Explore reads the organizer's name, place, host name, tags, rating and " +
+      "visibility from events/{eventId}.organizerSummary (#1340) instead of " +
+      "looking organizers up by id. Every event whose summary is missing or " +
+      "differs from its organizer's public projection (publicOrganizers) gets " +
+      "the summary the event and organizer triggers write; an organizer with " +
+      "no public projection gets the hidden summary. Only organizerSummary is " +
+      "written, with a last-update-time precondition. No other field changes " +
+      "and nothing is deleted; a rerun writes nothing. Build Functions first.",
+    steps: [
+      {
+        kind: "fill",
+        collection: "events",
+        refresh: ["organizerSummary"],
+        fill: async (data, id, db) => {
+          if (!validId(data.organizerId)) return null;
+          const {organizerSummaryFrom} = functionsOrganizerSummary();
+          const organizer = await db.collection("publicOrganizers").doc(data.organizerId).get();
+          return {organizerSummary: organizerSummaryFrom(organizer.exists ? organizer.data() : undefined)};
+        },
       },
     ],
   },
@@ -772,6 +838,40 @@ export const MIGRATIONS = [
         skipReason: "the account is deleted",
         targetId: (id) => validId(id) ? id : null,
         transform: (data, id, db) => intakeProfileViewRow(db, id),
+      },
+    ],
+  },
+  {
+    name: "program-access-views",
+    description:
+      "Programme staff screens read programAccessViews (#1339) instead of " +
+      "the getProgramWorkAccess callable, and security rules authorize " +
+      "direct programme reads from them. Every programme owner and every " +
+      "staff grant without a view gets one, with the owner-approval proof " +
+      "and every expiry folded in, as the new triggers write it. Revoked " +
+      "or unapproved grants get an inactive view. Existing views are never " +
+      "replaced; programmes and grants are never changed. Build Functions " +
+      "first.",
+    steps: [
+      {
+        source: "organizerPrograms",
+        target: "programAccessViews",
+        skipReason: "no creator recorded",
+        targetId: (id, data) => validId(id) &&
+          typeof data.createdBy === "string" && validId(data.createdBy) ?
+          `${id}__${data.createdBy}` : null,
+        transform: (data, id, db) =>
+          programAccessViewRow(db, id, data.createdBy),
+      },
+      {
+        source: "programStaffGrants",
+        target: "programAccessViews",
+        skipReason: "not a grant of an existing programme, or the owner's own",
+        targetId: (id, data) => validId(data.programId) &&
+          validId(data.uid) && id === `${data.programId}__${data.uid}` ?
+          id : null,
+        transform: (data, id, db) =>
+          programAccessViewRow(db, data.programId, data.uid),
       },
     ],
   },

@@ -305,6 +305,44 @@ test("guest-event-cards only fills what is missing and never replaces", async ()
     null);
 });
 
+test("event-organizer-summary fills missing and stale summaries and nothing else", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "event-organizer-summary");
+  const publicOrganizer = {name: "Bandra Run Club", description: "x", location: "mumbai",
+    area: "Bandra", hostName: "Asha", tags: ["running"], rating: 4.6, status: "active",
+    archived: false, appVisibility: "discoverable", followerCount: 99};
+  const summary = {name: "Bandra Run Club", location: "mumbai", area: "Bandra", hostName: "Asha",
+    tags: ["running"], rating: 4.6, synthetic: false, appVisibility: "discoverable",
+    status: "active", archived: false};
+  const hidden = {name: "", location: "", area: "", hostName: null, tags: [], rating: 0,
+    synthetic: false, appVisibility: "hidden", status: "archived", archived: true};
+  const db = fakeDb({
+    "publicOrganizers/o1": publicOrganizer,
+    "events/missing": {organizerId: "o1", name: "Run", bookedCount: 3},
+    "events/stale": {organizerId: "o1", name: "Run", organizerSummary: {...summary, rating: 3}},
+    "events/current": {organizerId: "o1", name: "Run", organizerSummary: summary},
+    "events/ghost": {organizerId: "gone", name: "Run"},
+    "events/broken": {name: "no organizer"},
+  });
+  const before = JSON.stringify(db.data);
+
+  const plan = await planMigration(db, migration);
+  assert.deepEqual(plan.totals, {scanned: 5, toCreate: 3, alreadyCopied: 0, conflicts: 0, skipped: 0});
+  // A dry run reads and writes nothing.
+  assert.equal(JSON.stringify(db.data), before);
+
+  await applyMigrationPlan(db, plan);
+  assert.deepEqual(db.data["events/missing"], {organizerId: "o1", name: "Run", bookedCount: 3,
+    organizerSummary: summary});
+  assert.deepEqual(db.data["events/stale"].organizerSummary, summary);
+  assert.deepEqual(db.data["events/ghost"].organizerSummary, hidden);
+  assert.equal(db.data["events/broken"].organizerSummary, undefined);
+  assert.deepEqual(Object.keys(db.data["events/current"]).sort(), ["name", "organizerId", "organizerSummary"]);
+  assert.equal(Object.keys(db.data).length, 6);
+
+  // A rerun finds nothing to write.
+  assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
 test("host-form-version-filters creates each missing view once", async () => {
   const migration = MIGRATIONS.find((entry) => entry.name === "host-form-version-filters");
   const definition = {sections: [{sectionId: "one", questions: [
@@ -430,6 +468,41 @@ test("participant-form-profile-views creates only available rows, once", async (
   assert.equal(db.data["participantFormProfileViews/r1"], undefined);
   assert.equal(db.data["participantIntakeProfiles/u1"].revision, 2);
   assert.equal((await planMigration(db, migration)).totals.toCreate, 0);
+});
+
+test("program-access-views creates each owner and staff view once", async () => {
+  const migration = MIGRATIONS.find((entry) => entry.name === "program-access-views");
+  const at = (millis) => ({toMillis: () => millis, seconds: Math.floor(millis / 1000), nanoseconds: 0});
+  const later = Math.floor((Date.now() + 86_400_000) / 1000) * 1000;
+  const grant = (uid, overrides = {}) => ({organizerId: "o1", programId: "p1", uid,
+    displayName: "Arjun", phoneLastFour: "0001", status: "active", createdBy: "owner-1",
+    duties: [{duty: "hotelDesk", pickupPointIds: [], hotelIds: ["h1"], expiresAtMillis: later}],
+    expiresAt: at(later), revokedBy: null, revokedAt: null, revision: 2, ...overrides});
+  const db = fakeDb({
+    "organizerPrograms/p1": {organizerId: "o1", createdBy: "owner-1", status: "active"},
+    "organizerPrograms/p2": {organizerId: "o1", status: "active"},
+    "programStaffGrants/p1__desk-1": grant("desk-1"),
+    "programStaffGrants/p1__revoked-1": grant("revoked-1", {status: "revoked",
+      revokedBy: "owner-1", revokedAt: at(5)}),
+    "programStaffGrants/p9__orphan-1": {...grant("orphan-1"), programId: "p9"},
+    "programStaffGrants/p1__mismatch": grant("desk-1"),
+  });
+  const plan = await planMigration(db, migration);
+  assert.equal(plan.totals.toCreate, 3);
+  await applyMigrationPlan(db, plan);
+  assert.equal(db.data["programAccessViews/p1__owner-1"].role, "manager");
+  const desk = db.data["programAccessViews/p1__desk-1"];
+  assert.equal(desk.status, "active");
+  assert.deepEqual(desk.hotelScoped, {"hotelDesk__h1": later});
+  assert.deepEqual(desk.workHotel, {h1: later});
+  assert.equal(db.data["programAccessViews/p1__revoked-1"].status, "inactive");
+  // No identity fields travel, and nothing is created for an orphan grant.
+  assert.equal(JSON.stringify(desk).includes("Arjun"), false);
+  assert.equal(db.data["programAccessViews/p9__orphan-1"], undefined);
+  assert.equal(db.data["programStaffGrants/p1__desk-1"].revision, 2);
+  const again = await planMigration(db, migration);
+  assert.equal(again.totals.toCreate, 0);
+  assert.equal(again.totals.alreadyCopied, 3);
 });
 
 test("host-whatsapp-thread-views creates each retained thread's view once", async () => {

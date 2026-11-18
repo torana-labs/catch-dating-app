@@ -1123,12 +1123,14 @@
     {
       "id": "functions.reference.ad-conversions-meta",
       "sourcePaths": [
-        "functions/src/acquisition/adConversions/worker.ts"
+        "functions/src/acquisition/adConversions/worker.ts",
+        "functions/src/acquisition/metaLeadgen/processing.ts"
       ],
       "owner": "host-acquisition",
       "credentialClass": "provider-token",
       "consumers": [
-        "sendAdConversions"
+        "sendAdConversions",
+        "onMetaLeadgenEventCreated"
       ],
       "binding": {
         "kind": "parameter",
@@ -1137,6 +1139,28 @@
         "parameter": "AD_CONVERSIONS_META_TOKEN_VERSION",
         "optional": true,
         "secret": "CATCH_META_ADS_TOKEN"
+      },
+      "activationPolicy": "blank-current-reference-unconfigured",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": false
+    },
+    {
+      "id": "functions.reference.meta-leadgen-webhook",
+      "sourcePaths": [
+        "functions/src/acquisition/metaLeadgen/webhook.ts"
+      ],
+      "owner": "host-acquisition",
+      "credentialClass": "provider-secret",
+      "consumers": [
+        "metaLeadgenWebhook"
+      ],
+      "binding": {
+        "kind": "parameter",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "parameter": "META_LEADGEN_CREDENTIAL_VERSION",
+        "optional": true,
+        "secret": "CATCH_META_LEADGEN_WEBHOOK"
       },
       "activationPolicy": "blank-current-reference-unconfigured",
       "rotationCompatibility": "provider-overlap",

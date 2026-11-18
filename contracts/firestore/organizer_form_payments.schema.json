@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_form_payments.schema.json",
   "title": "OrganizerFormPaymentDocument",
-  "description": "Durable form fee ledger. Frozen answers remain in the revision-bound response draft; payment is separate from application review and event admission.",
+  "description": "Form-fee payment: a document in the single guest-payment ledger guestPayments/{paymentId} with purpose form (every guest checkout shares that ledger; purpose names the flow). Durable form fee ledger. Frozen answers remain in the revision-bound response draft; payment is separate from application review and event admission.",
   "type": "object",
   "additionalProperties": false,
   "required": [
