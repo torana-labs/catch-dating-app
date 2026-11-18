@@ -611,6 +611,7 @@ operations/
   src/cli/                         stable JSON command surface
   src/admin-cli/                   catalog-driven admin callable client
   src/admin/                       action catalog, client, local receipts
+  src/command-client/              shared callable transport, receipts, argv, envelope
   src/platform/                    reusable execution and persistence ports
   src/platform/network/            guarded public-web page fetcher
   src/workflows/registry.mjs       workflow inventory and factories
