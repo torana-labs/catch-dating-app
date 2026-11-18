@@ -35,6 +35,10 @@ export interface HostNightFormat {
   tile: string;
   /** A photo for the format tile, when the site has one. */
   photo?: string;
+  /** The format's own page for hosts (/host/<type>/), which the tile links to. */
+  page: string;
+  /** The tile's link, naming that page. */
+  pageLink: string;
   event: string;
   where: string;
   lead: string;
@@ -84,12 +88,31 @@ export const hostLandingCopy = {
     terms: hostPricingLines.terms,
   },
   ways: {
-    kicker: "Every kind of host",
+    kicker: "Find your page",
     title: "Built for whatever you bring people together for.",
-    body: `A pace group, a seating plan and a group walking to the next bar are different jobs. ${brand.name} knows which one you’re running. Pick one to follow its night.`,
+    body: "Every kind of host gets a page written for their nights, with stories, pricing and questions from people like them.",
     label: "Event formats",
-    /** Each format card's link: it picks the format and lands on its night. */
-    more: "Follow its night",
+    /**
+     * More formats after the five cards, and the organisations, each to its
+     * own page (the board's chips under "By format" and "By organisation").
+     */
+    chips: [
+      {label: "Yoga, spin and fitness studios", href: "/host/studios/", dot: "indigo"},
+      {label: "Workshops and classes", href: "/host/workshops/", dot: "yellow"},
+      {label: "Book clubs, language exchanges, open mics", href: "/host/communities/", dot: "pink"},
+      {label: "Cycling, treks and weekend trips", href: "/host/outdoors/", dot: "mint"},
+    ] satisfies readonly {label: string; href: string; dot: "indigo" | "yellow" | "pink" | "mint"}[],
+    organisationsTitle: "By organisation",
+    organisations: [
+      {label: "Cafés, bars and breweries", href: "/host/venues/"},
+      {label: "Courts, turfs and clubhouses", href: "/host/facilities/"},
+      {label: "Companies, co-living and co-working", href: "/host/teams/"},
+      {label: "Colleges and alumni societies", href: "/host/colleges/"},
+      {label: "Creators with an audience", href: "/host/creators/"},
+      {label: "Brands", href: "/host/brands/"},
+      {label: "Weddings", href: "/weddings/"},
+      {label: "Offsites, retreats and birthdays", href: "/programmes/"},
+    ] satisfies readonly {label: string; href: string}[],
     stagesTitle: "Where you are today",
     stages: [
       {
@@ -235,6 +258,7 @@ export const hostLandingCopy = {
 export const hostNightFormats: readonly HostNightFormat[] = [
   {
     format: "run", accent: "coral", title: "Run clubs", tileTitle: "Run and walk clubs", tile: "Pace pods, a first hello, free runs stay free.", photo: "/assets/events/social-run-music-hero-960.jpg",
+    page: "/host/run-clubs/", pageLink: "For run clubs",
     event: "Sunday Social Run", where: "Driftwood Bay Runners · Carter Road, Bandra",
     lead: `People are moving, so phones stay in pockets. ${brand.name} does its work before the start and after the finish.`,
     badges: {phones: "Phones away while running", groups: "Grouped by pace", rhythm: "One route, start to finish", tracks: "Counts who’s back", ends: "Ends with the finish sweep"},
@@ -248,6 +272,7 @@ export const hostNightFormats: readonly HostNightFormat[] = [
   },
   {
     format: "courts", accent: "mint", title: "Pickleball", tileTitle: "Racket sports", tile: "Pickleball, padel, tennis and badminton, rotated by level.",
+    page: "/host/racket-sports/", pageLink: "For racket sports",
     event: "Pickleball Social", where: "Dink and Drink · Andheri West · 40 players, 3 courts",
     lead: `Forty players, three courts. Phones come out between games, and ${brand.name} makes sure everyone gets their share of court time.`,
     badges: {phones: "Phones out between games", groups: "Doubles on three courts", rhythm: "15-minute rounds", tracks: "Counts court time", ends: "Ends with standings"},
@@ -261,6 +286,7 @@ export const hostNightFormats: readonly HostNightFormat[] = [
   },
   {
     format: "dinner", accent: "pink", title: "Dinners", tileTitle: "Supper clubs", tile: "Applications, seating and payment before the table is set.", photo: "/assets/marketing/home-dinner.jpg",
+    page: "/host/supper-clubs/", pageLink: "For supper clubs",
     event: "Long Table Supper", where: "Khar Table · Khar West",
     lead: `Phones are within reach all evening, and the point is to leave them there. ${brand.name} sets the table, then gets out of the way.`,
     badges: {phones: "Phones barely needed", groups: "Tables of six", rhythm: "Three courses", tracks: "Knows who sits where", ends: "Ends with feedback"},
@@ -274,6 +300,7 @@ export const hostNightFormats: readonly HostNightFormat[] = [
   },
   {
     format: "games", accent: "yellow", title: "Games and quizzes", tileTitle: "Quiz and game nights", tile: "Teams, rounds and live scores that fill Tuesday.",
+    page: "/host/quiz-nights/", pageLink: "For quiz nights",
     event: "Tuesday Trivia Night", where: "Lantern Lane Social · Harbour Room, Bandra West",
     lead: `Heads are down during rounds and up between them. ${brand.name} only speaks in the gaps, and keeps the scores.`,
     badges: {phones: "Phones out between rounds", groups: "Balanced teams of five", rhythm: "Six rounds", tracks: "Scores hidden till the end", ends: "Ends with the reveal"},
@@ -287,6 +314,7 @@ export const hostNightFormats: readonly HostNightFormat[] = [
   },
   {
     format: "nightsOut", accent: "magenta", title: "Pub crawls", tileTitle: "Nights out", tile: "Crawls and socials, with a link for every promoter.",
+    page: "/host/nightlife/", pageLink: "For nightlife",
     event: "Friday Bandra Pub Crawl", where: "Night Shift Socials · four stops in Bandra",
     lead: `The night moves, so the plan has to travel with it. Phones come out between stops, and ${brand.name} keeps count of everyone along the way.`,
     badges: {phones: "Phones out between stops", groups: "One group, with a lead and a sweep", rhythm: "Four stops", tracks: "Counts who left each stop", ends: "Ends with everyone accounted for"},

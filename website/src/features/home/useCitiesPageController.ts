@@ -1,6 +1,7 @@
 import {citiesPageCopy as copy} from "@content/citiesPage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {countryName, websiteCities} from "@content/markets";
+import {cityDiscoveryLinks} from "../discovery/discoveryModel";
 import {cityFooterNote, cityGroups} from "./homeModel";
 import type {HomeCatalog, HomeCity} from "./homeTypes";
 import {cityPagePath} from "./sections/cityChrome";
@@ -45,6 +46,8 @@ export function useCitiesPageController(catalog: HomeCatalog, navigate: (href: s
   }));
   return {
     city: catalog.selected,
+    /** The selected city's new-to-the-city page and format pages that exist, for the header and footer. */
+    discovery: cityDiscoveryLinks(catalog),
     cities: catalog.cities,
     groups,
     unavailable: catalog.phase === "unavailable",

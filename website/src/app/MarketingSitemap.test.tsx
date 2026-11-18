@@ -25,8 +25,8 @@ describe("consolidated public sitemap", () => {
     expect(container.querySelector("form")).toBeNull();
     const starts = screen.getAllByRole("link", {name: hostLandingCopy.sections.start});
     expect(starts.length).toBeGreaterThan(0);
-    // The page's own buttons stay on the page; the host footer's link names the page too.
-    for (const link of starts) expect(["#start", "/host/#start"]).toContain(link.getAttribute("href"));
+    // The page's own buttons stay on the page; the host footer's link opens the start page.
+    for (const link of starts) expect(["#start", "/host/start/"]).toContain(link.getAttribute("href"));
     expect(starts.filter((link) => link.getAttribute("href") === "#start").length).toBeGreaterThan(0);
   });
   it("retires the pilot application: Catch Host's trial starts in the app, from the start band", () => {

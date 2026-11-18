@@ -177,7 +177,7 @@ export function ExplorePageSections({captures = {}, explore}: {captures?: Captur
   const capture = explore.state === "quiet" || explore.state === "empty" || explore.state === "soon";
   const screen = captureSlot(captures, "guest-explore");
   return (
-    <CitySiteChrome cities={explore.cities} city={explore.city}
+    <CitySiteChrome cities={explore.cities} city={explore.city} discovery={explore.discovery}
       dock={<DiscoveryDock href={`#${resultsAnchor}`} label={discoveryPagesCopy.dock.explore} message={explore.notifyMessage} />}
       exploreHref={explore.exploreHref} onChooseCity={explore.chooseCity} showWhatsOn={explore.showWhatsOn}>
       <ExploreResults explore={explore} />

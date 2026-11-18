@@ -9,7 +9,7 @@ import {cityPagePath} from "../home/sections/cityChrome";
 import {cityAlertsAnchor} from "./CityAlertsCapture";
 import {cityAlertInterests} from "./cityAlertsModel";
 import {discoveryPlanCard} from "./discoveryCards";
-import {newcomerFormats, newcomerPlans, newToCityPath, showWhatsOnFor} from "./discoveryModel";
+import {cityDiscoveryLinks, newcomerFormats, newcomerPlans, newToCityPath, showWhatsOnFor} from "./discoveryModel";
 
 /** The plans band's anchor, which the hero's first action scrolls to. */
 export const newcomerPlansAnchor = "solo";
@@ -27,6 +27,8 @@ export function useNewToCityPageController(catalog: HomeCatalog, navigate: (href
   const first = found.plans[0];
   return {
     city,
+    /** The city's new-to-the-city page and format pages that exist, for the header and footer. */
+    discovery: cityDiscoveryLinks(catalog),
     cities: catalog.cities,
     unavailable: catalog.phase === "unavailable",
     exploreHref: cityPagePath(city.slug),

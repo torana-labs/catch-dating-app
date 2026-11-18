@@ -30,7 +30,7 @@ import {captureSlot} from "../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import {useAppDownloadCtas} from "../marketing/useAppDownloadCtas";
 import {PricingFeeBand} from "../marketing/PricingBands";
-import {hostLandingHref, hostNightHref, useHostLandingController, type HostLandingController} from "./useHostLandingController";
+import {hostLandingHref, useHostLandingController, type HostLandingController} from "./useHostLandingController";
 
 type Host = HostLandingController;
 
@@ -104,9 +104,11 @@ function Hero({captures}: {captures: CaptureSlots}) {
 }
 
 /**
- * Every kind of host: a format card for each night the page follows, each
- * linking to that night below. The retired routes' anchors (#features,
- * #use-cases) land here, on the content that replaced them.
+ * Find your page: a card for each format the page follows, each to that
+ * format's page for hosts, then chips to the other formats' pages and, under
+ * "By organisation", to the organisation pages, weddings and programmes (the
+ * board's band). The retired routes' anchors (#features, #use-cases) land
+ * here, on the content that replaced them.
  */
 function Ways() {
   const ways = copy.ways;
@@ -115,11 +117,13 @@ function Ways() {
       <RetiredAnchor id="features" />
       <RetiredAnchor id="use-cases" />
       <CatchCardGrid
+          chipGroups={[{title: ways.organisationsTitle, chips: ways.organisations}]}
+          chips={ways.chips}
           columns={5}
           ground="paper"
           id="ways"
           items={hostNightFormats.map((item) => ({
-            id: item.format, title: item.tileTitle, body: item.tile, more: ways.more, href: hostNightHref(item.format),
+            id: item.format, title: item.tileTitle, body: item.tile, more: item.pageLink, href: item.page,
             ground: item.accent, format: item.format, photoUrl: item.photo ?? null,
           }))}
           kicker={ways.kicker}
@@ -309,7 +313,7 @@ function Start({captures}: {captures: CaptureSlots}) {
 
 /**
  * The host landing, band for band as the PlaybookHosts board: the coral
- * hero, every kind of host (format cards that lead to their night), where
+ * hero, find your page (each format and organisation to its page), where
  * you are today, on the night, the comparison, the fee band with the shared
  * calculator, the ways to start, the FAQ and the yellow free-trial start.
  * The legacy route anchors (#features, #use-cases, #how-it-works,

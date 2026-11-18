@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import {describe, expect, it} from "vitest";
 import {citiesPageCopy} from "@content/citiesPage";
+import {hostLandingCopy, hostNightFormats} from "@content/hostLanding";
+import {siteFooterCopy, siteHeaderCopy} from "@content/site";
 import {websiteCities} from "@content/markets";
 import {hostPricingFacts} from "@content/pricing";
 import {
@@ -84,6 +86,20 @@ describe("playbook page indexes", () => {
         const ok = to.route in siteRouteHrefs || to.route in playbookRouteAliases || fixedWithContent.has(to.route);
         expect(ok, `${ref.match.contentKey} links ${to.route}, which has no page yet and no alias`).toBe(true);
       }
+    }
+  });
+
+  it("links the site chrome and the host landing only to pages that render, and reaches every shipped page from them", () => {
+    const hostMenu = siteHeaderCopy.host.nav.flatMap((entry) => "links" in entry ? entry.links : [entry]);
+    const hostFooter = siteFooterCopy.host.columns.flatMap((column) => column.links);
+    const landing = [...hostNightFormats.map((item) => ({href: item.page})), ...hostLandingCopy.ways.chips, ...hostLandingCopy.ways.organisations];
+    const hrefs = [...hostMenu, ...hostFooter, ...landing].map((link) => link.href.split("#")[0]);
+    const siteRoutes = new Set<string>([...Object.values(siteRouteHrefs), "/explore/"]);
+    for (const href of hrefs) expect(siteRoutes.has(href) || resolvePlaybookPage(href) !== null, `${href} has no page`).toBe(true);
+    // Every page that ships (the 15 organiser types, the product pages, About, Safety, the ways in) is one press from a host page.
+    const linked = new Set(hrefs);
+    for (const route of playbookFixedRoutes.filter((candidate) => fixedWithContent.has(candidate.id))) {
+      expect(linked.has(route.path), `${route.path} is linked from no menu, host footer or /host/`).toBe(true);
     }
   });
 
