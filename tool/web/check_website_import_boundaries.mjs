@@ -412,12 +412,12 @@ function runSelfTest() {
   assert.equal(webUiDeepImport("@catch/web-ui/artwork", {".": {}, "./artwork": {}}), false);
   assert.equal(webUiDeepImport("@catch/web-ui/src/components/CatchText", {".": {}, "./artwork": {}}), true);
   // Analytics services may share pure contracts, never UI or feature state.
-  assert.deepEqual(layerFor("analytics/hostServerConsent.ts"), {name: "service"});
-  assert.deepEqual(layerFor("shared/contracts/generated/hostAcquisitionConsentHttpRequest.ts"), {name: "contract"});
-  assert.equal(violationFor("analytics/hostServerConsent.ts", {name: "service"}, {name: "contract"}), null);
-  assert.equal(violationFor("analytics/hostServerConsent.ts", {name: "service"}, {name: "service"}), null);
+  assert.deepEqual(layerFor("analytics/adContext.ts"), {name: "service"});
+  assert.deepEqual(layerFor("shared/contracts/generated/managePublicEventCheckoutCallablePayload.ts"), {name: "contract"});
+  assert.equal(violationFor("analytics/adContext.ts", {name: "service"}, {name: "contract"}), null);
+  assert.equal(violationFor("analytics/adContext.ts", {name: "service"}, {name: "service"}), null);
   for (const layer of ["app", "feature", "shared", "content"]) {
-    assert.match(violationFor("analytics/hostServerConsent.ts", {name: "service"}, {name: layer}), /must stay independent/);
+    assert.match(violationFor("analytics/adContext.ts", {name: "service"}, {name: layer}), /must stay independent/);
   }
   for (const layer of ["app", "feature", "shared", "content", "service", "server"]) {
     assert.ok(violationFor("shared/contracts/generated/test.ts", {name: "contract"}, {name: layer}));

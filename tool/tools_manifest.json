@@ -1359,32 +1359,6 @@
       ]
     },
     {
-      "id": "ci:host-measurement-preview",
-      "category": "ci",
-      "path": "tool/ci/host_measurement_preview.mjs",
-      "command": "node --test tool/ci/host_measurement_preview.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/host_measurement_preview.test.mjs",
-        ".github/workflows/host-measurement-preview.yml",
-        "website/measurement-hosting.json",
-        "website/measurement-runtime/**"
-      ],
-      "description": "Verifies the fixed preview-only measurement runtime, accepted main CI, exact static bytes and serving privacy headers; production tracking remains disabled.",
-      "checks": [
-        "node --check tool/ci/host_measurement_preview.mjs",
-        "node --test tool/ci/host_measurement_preview.test.mjs website/scripts/next/measurementRuntime.test.mjs"
-      ],
-      "role": "gate"
-    },
-    {
       "id": "ci:ios-build-inputs",
       "category": "ci",
       "path": "tool/ci/ios_build_inputs.mjs",

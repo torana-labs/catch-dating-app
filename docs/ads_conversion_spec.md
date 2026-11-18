@@ -10,8 +10,8 @@ Catch acquisition uses one typed contract in
 `website/src/analytics/catchMeasurement.ts`, integrated through the existing
 `website/src/analytics.ts` consent and lifecycle owner. The fixed Google and Meta
 adapters in `website/src/shared/analytics/catchProviders.ts` accept synthetic destinations only. The production
-controller has a disabled configured transport; no provider, credentials, tag,
-customer list, spend, policy change, or backend deployment is enabled by default.
+controller has no transport injected, so no browser tag loads; no provider,
+credential, customer list, spend or policy change is enabled by default.
 This document is the contract each change to that state must follow; the
 `Status` column of the event map records what is wired today.
 
@@ -24,7 +24,7 @@ approved these rules on 2026-11-17:
 
 | Decision | Rule |
 | --- | --- |
-| Browser transport | First-party Google tag (`gtag.js`) and Meta Pixel (`fbevents.js`) loaded on the Catch web origin after marketing consent. The preview iframe transport in `catchLiveTransport.ts` is superseded and is removed when the first-party transport ships. GTM stays out. |
+| Browser transport | First-party Google tag (`gtag.js`) and Meta Pixel (`fbevents.js`) loaded on the Catch web origin after marketing consent. The October 2026 preview iframe transport was superseded and removed on 18 November 2026. GTM stays out. |
 | Consent | Browser tags need the website marketing choice. Server-side conversions and customer lists rely on the notice shown at checkout, account creation and Host setup, and on the privacy policy, with an ad-matching opt-out that stops both. |
 | Purchase value | The ticket amount the guest paid, in INR, from the admitted payment record. |
 | Ad policy | The post-event matching feature makes Catch a dating service under Meta's and Google's ad policies. Ads never mention matching until Meta's written permission and Google's dating certification are granted. |
@@ -34,54 +34,25 @@ Two rules from the host-only version stay in force for both programmes: no
 matching, dating-interest, gender, age, photo, message or Cross Paths data
 enters any advertising payload, and organiser-owned pixels stay disabled.
 
-### Host server permission preparation
+### Retired October 2026 pilot pieces
 
-`functions/src/acquisition/consentHttp.ts` owns the separate
-`/api/host-acquisition-consent` grant/withdrawal handshake. Its activation gate
-is off. A new versioned purpose, a 32-byte random capability and a recent choice
-are required; old intake analytics fields do not authorize server advertising.
-Only a domain-separated capability hash is stored. Consent expires 30 days
-after the original choice, and an exact retry cannot extend that expiry.
-Withdrawal creates an irreversible tombstone for that capability, including
-when it arrives before a delayed grant. Fresh permission uses a new capability.
-The expiry worker transactionally rechecks at most 500 records every 15 minutes;
-withdrawal tombstones outlive the grant and delivery windows.
+The owner approved removing the October 2026 pilot pipeline on 18 November
+2026, because the decisions above supersede it. None of it ran in production:
 
-The Meta policy prepares only a website `Lead` with the accepted Host receipt,
-a canonical application URL, a hashed random browser identifier, browser user
-agent and an optional real consented click. Contact details, answers, account
-identifiers and guest information are excluded. Dispatch requires current
-permission, at most five attempts and an age below 24 hours. Uncertain provider
-outcomes are held for reconciliation. An HTTP 200 alone does not confirm receipt.
-The accepting intake transaction can prepare a private delivery only for a new
-Host receipt and current server advertising permission; the source gate remains
-off. The worker reserves one attempt, rechecks the original Sales intent and
-current permission immediately before dispatch, and clears browser context on
-terminal outcomes. Withdrawal or deletion cannot retract a request already
-sent to the provider. Explicit throttling may retry with backoff, up to five
-attempts within 24 hours; timeouts and interrupted sends remain uncertain.
-The expiry worker removes at most 500 expired delivery records per run.
+- the preview iframe Google transport (`catchLiveTransport.ts`, the
+  `catch-host-measurement` Hosting site and its runtime files), which ran only
+  on one preview origin;
+- the Host server permission handshake (`hostAcquisitionConsent` at
+  `/api/host-acquisition-consent`, its `expireHostAcquisitionConsent` worker
+  and the browser `hostMeasurement` packet), whose gate was off;
+- the website `Lead` Meta dispatcher (`metaDispatcher.ts`), which was never
+  exported, and the consent-bound `acquisitionAttribution` snapshot on Host
+  intake.
 
-The browser permission owner immediately stops local use on a changed choice,
-persists pending withdrawal across reload, and will not grant fresh permission
-until that withdrawal is acknowledged. It never queues conversion events.
-The owner is connected to the browser consent and submission lifecycle. Its
-separate activation mode invalidates prior Google-only choices. Only an
-acknowledged current advertising grant can add the closed measurement packet to
-a Host submission. Attribution retains the actual first observation time of a
-Meta click; revisiting a URL does not refresh that click's timestamp.
-Withdrawal clears queued browser context in bounded transactions.
-
-`metaSender.ts` prepares a fixed Graph v26.0 Catch pixel endpoint, a ten-second
-timeout, no redirects, no automatic network retry, and a bounded response body.
-The disabled scheduled dispatcher examines at most 20 due entries per minute,
-with current authority rechecked for each row. Its due-work index, exported
-deployment binding, approved server credential and real destination receipt
-remain unfinished; this is not a deployed delivery service. The future credential is declared
-under the explicit `host-acquisition-meta` readiness capability while the
-dispatcher is unexported. A later export must add its exact Function consumer
-to the readiness requirement and pass source-bound credential checks before
-release; ordinary current Function deployments do not request this credential.
+The server queue under [Server delivery](#server-delivery) and the Meta lead
+forms replace them. The consent banner, the closed campaign vocabulary and the
+click-identifier capture in `catchMeasurement.ts` stay for the first-party
+transport.
 
 ### Host app permission preparation
 
@@ -114,108 +85,43 @@ The two private pilot collections participate in the existing Sales privacy
 inventory. A permanent organiser restriction blocks both new reviews and
 activation receipts after cleanup. Direct browser reads and writes stay denied.
 
-### Catch Host pilot destination configuration
+### Google destinations
 
-This section describes the preview transport that the first-party transport
-(next section) replaces. It stays accurate until that change removes the files
-it names.
-
-`analytics/catchLiveTransport.ts` owns the prepared, default-disabled Google
-transport. Its fixed destinations are GA4 `G-HZFG0DL2DK` (property
-`559735544`) and Ads `AW-18526407471/dUL7CNKBn6MdEK-WioJF` (customer
-`1016806229`, conversion action `7858536658`, accepted organiser lead).
-The Ads action is secondary, counts one conversion per click, and has no
-assigned monetary lead value. Account configuration is not proof of event receipt.
-
-The preview runtime is hosted separately at `https://catch-host-measurement.web.app`
-with `allow-scripts allow-same-origin` and `no-referrer`. Its actual origin and
-exact preview parent are checked before initialization. Cross-origin browser
-isolation prevents parent DOM, storage and diagnostic-bus access; this runtime
-must never be served from the Catch application origin. The old opaque sandbox
-blocked Google's own cookie-access check, aborting collection despite a successful
-script load and correctly queued events.
-
-`website/measurement-hosting.json` publishes only the two static files in
-`website/measurement-runtime/` to the dedicated site. Its CSP permits the fixed
-Google script and Analytics collection endpoints, and only the reviewed preview
-parent may embed it. There are no rewrites, application APIs, credentials or
-production parent permission. No arbitrary preview host, localhost or query flag
-can activate the transport. The approved empty site was created and read back on
-2026-10-21. Exact-source content deployment and provider receipt remain pending;
-configuration in Git is not a deployed Hosting release.
-
-The runtime loads Google's SDK only after a validated analytics event and supplies
-canonical page context, a closed parameter projection, a random consented client
-ID and session ID. Automatic views, Google signals, ad personalization and URL
-passthrough are disabled. All advertising consent purposes stay denied, including
-when a caller supplies marketing permission. Preview sends no Ads conversion or
-click identifiers. GA4 events carry `debug_mode: true` and `traffic_type: internal`.
-Only the four currently wired events are accepted; accepted leads are deduplicated
-by their opaque server receipt. Account-side derived events require separate audit.
-
-Google's own `catch_host`-prefixed cookies use host-only scope, Secure and
-SameSite=None. Their maximum lifetime is the remaining portion of the original
-random client ID's 30-day lifetime, with cookie refresh disabled. They cannot read
-or write Catch-site cookies. A fresh `google-preview-v2` consent choice is required;
-v1 or disabled-mode choices cannot silently authorize this repair. Browser privacy
-settings may suppress third-party cookies or requests; do not bypass that choice.
-
-On withdrawal, downgrade or lifecycle shutdown, the parent stops accepting events
-and discards its bounded startup queue. A channel- and origin-checked stop message
-disables the destination, tightens the frame CSP to block further networking and
-clears owned cookies before acknowledging frame removal. A one-second fallback
-removes an unresponsive frame; in that exceptional case cookie deletion is not
-confirmed and the fixed expiry remains the backstop. Already sent requests cannot
-be retracted. Initialization also clears previous SDK cookies, and pagehide performs
-cleanup. Sibling frames share this dedicated cookie origin; their event identities
-remain supplied by the separate consent owner, never inferred from SDK cookies.
-
-The first-party browser context is Host-scoped for at most 30 days and is created
-only when the transport is enabled and a fresh version-4 choice permits analytics.
-The random session ID rotates after 30 minutes of inactivity; client and campaign
-context have a fixed 30-day lifetime. The prepared context can retain validated
-click identifiers with marketing permission, but this preview runtime never sends
-them. Closed GA4 campaign labels map to campaign_source/medium/name/content.
-Production Google and Meta transports remain disabled.
-
-Real Chromium testing of the replacement source with collection intercepted
-verified page views, one accepted-lead event, parent isolation, private canary
-exclusion, bounded Secure cookies and acknowledged withdrawal with zero remaining
-cookies or subsequent requests. This proves browser behavior, not Google receipt.
-A browser privacy-toggle experiment did not actually suppress cookies and is not
-blocked-cookie compatibility proof. Safari/native/browser privacy acceptance,
-real deployed preview receipt and live ad-click attribution remain open. On
-2026-10-21, the Google tag's Allow user-provided data capabilities setting was
-disabled and its saved off state independently reopened; enhanced measurement
-was also observed off. Do not enable automated bidding or claim
-campaign attribution from a form response or intercepted request. Production
-activation requires separate permission, refreshed copy and consent, exact-source
-deployment and live acceptance. Ad launch remains a separate approval.
+GA4 `G-HZFG0DL2DK` (property `559735544`) and Google Ads customer `1016806229`
+are the Catch destinations. The accepted organiser lead action
+`AW-18526407471/dUL7CNKBn6MdEK-WioJF` (conversion action `7858536658`) is
+secondary, counts one conversion per click and has no assigned monetary value.
+Account configuration is not proof of event receipt. On 2026-10-21 the Google
+tag's user-provided data setting was off and enhanced measurement was off; the
+first-party transport changes the first setting only when it ships.
 
 ### First-party browser transport
 
-One module under `website/src/analytics/` owns both browser tags on the Catch
-web origin. It loads `gtag.js` (GA4 `G-HZFG0DL2DK`, Ads customer `1016806229`)
-and `fbevents.js` (dataset `1844810253539672`) only after a current marketing
-choice, and loads GA4 alone for an analytics-only choice. Consent Mode defaults
-are set before either script loads: all four purposes denied, then updated from
-the receipt. Google's user-provided data setting and Meta advanced matching are
-on, fed only with the hashed phone and email of a booker or signed-in user on the
-confirmation page.
+Not built yet. This is the approved design. One module under
+`website/src/analytics/` will own both browser tags on the Catch web origin. It
+will load `gtag.js` (GA4 `G-HZFG0DL2DK`, Ads customer `1016806229`) and
+`fbevents.js` (dataset `1844810253539672`) only after a current marketing
+choice, and GA4 alone for an analytics-only choice. Consent Mode defaults are
+set before either script loads: all four purposes denied, then updated from the
+receipt. Google's user-provided data setting and Meta advanced matching will be
+on, fed only with the hashed phone and email of a booker or signed-in user on
+the confirmation page.
 
-The module maps the closed event allowlist below to each tag; it never reads or
-replays the diagnostic `dataLayer` bus. Withdrawal or downgrade stops both tags
-immediately, revokes Consent Mode purposes and clears the Catch-owned `_fbp`,
-`_fbc` and Google cookies it set. Requests already sent cannot be retracted.
+The module will map the closed event allowlist below to each tag; it never
+reads or replays the diagnostic `dataLayer` bus. Withdrawal or downgrade stops
+both tags immediately, revokes Consent Mode purposes and clears the Catch-owned
+`_fbp`, `_fbc` and Google cookies it set. Requests already sent cannot be
+retracted. It is injected into the measurement controller in `analytics.ts` and
+adds its own measurement mode in `catchMeasurement.ts`.
 
 ## Boundary and current delivery
 
 The local `dataLayer` is a compatibility diagnostic bus, not an advertising export.
 Do not attach GTM to it or forward/replay it: it contains local search, city,
 raw CTA, claim and review diagnostics that are outside the outbound contract.
-`VITE_GTM_ID`, including the historical GTM-K7KLNQXP fallback, cannot load a tag.
-Only the first-party transport module calls `gtag` or `fbq`; no other code path
-loads or calls a tag.
+The build takes no tag manager container id. No code path loads or calls a tag
+today; once it ships, only the first-party transport module calls `gtag` or
+`fbq`.
 
 Catch-owned acquisition and organizer-owned public-page tracking are separate.
 Organizer publication remains hard-disabled with false/null public settings;
@@ -237,10 +143,10 @@ outcomes.
 
 | Contract event | GA4 name | Meta name | Google Ads outcome | Sent from | Authoritative source | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| `page_view` | `page_view` | `PageView` | No | Browser | Allowlisted acquisition SPA visit; one per lifecycle visit; first consent starts the current visit without replaying earlier pages. | Wired (preview transport) |
-| `cta_click` | `cta_click` | `CatchCtaClick` | No | Browser | Existing shared CTA helper; only a same-origin, allowlisted destination. Label and raw URL stay local. | Wired (preview transport) |
-| `acquisition_start` | `acquisition_start` | `CatchAcquisitionStart` | No | Browser | First form interaction in member waitlist, host lead or host operating application; first explicit claim lookup or selection, or the first code, review or review-request action in the claim panel (once per claim page). | Wired (preview transport) |
-| `lead_accepted` | `generate_lead` | `Lead` | Secondary, organizer only | Browser and server | Validated successful `/api/join-waitlist` response with `ok: true`, authoritative `hostLead.isNew: true` with a stable server event ID, and unchanged submission-time permission. Member waitlist compatibility still uses `alreadyJoined: false`. | Wired (browser preview; server gated off) |
+| `page_view` | `page_view` | `PageView` | No | Browser | Allowlisted acquisition SPA visit; one per lifecycle visit; first consent starts the current visit without replaying earlier pages. | Contract only (no transport) |
+| `cta_click` | `cta_click` | `CatchCtaClick` | No | Browser | Existing shared CTA helper; only a same-origin, allowlisted destination. Label and raw URL stay local. | Contract only (no transport) |
+| `acquisition_start` | `acquisition_start` | `CatchAcquisitionStart` | No | Browser | First form interaction in member waitlist, host lead or host operating application; first explicit claim lookup or selection, or the first code, review or review-request action in the claim panel (once per claim page). | Contract only (no transport) |
+| `lead_accepted` | `generate_lead` | `Lead` | Secondary, organizer only | Browser | Validated successful `/api/join-waitlist` response with `ok: true`, authoritative `hostLead.isNew: true` with a stable server event ID, and unchanged submission-time permission. Member waitlist compatibility still uses `alreadyJoined: false`. | Contract only (no transport) |
 | `event_viewed` | `view_item` | `ViewContent` | No | Browser | Public event page rendered for a published, public event; parameters are the opaque event ID, category, market and ticket price. | Unwired |
 | `checkout_started` | `begin_checkout` | `InitiateCheckout` | Interim primary while purchase volume is low | Browser | Checkout opened for a paid public event after the server created the order; value is ticket price times seats. | Unwired |
 | `purchase` | `purchase` | `Purchase` | Primary, guest | Server, with browser twin | `finalizePublicPayment` admits a paid seat: positive INR amount, the `publicEventPayments` ID as event and transaction ID. Pending, failed, refunded and free outcomes are rejected. | Unwired |
@@ -267,9 +173,8 @@ planning proposals and are not an approved advertising export.
 
 One server queue sends every server event in the map to Meta's Conversions API
 and to Google through the Data Manager API (the Google Ads API no longer accepts
-new offline-conversion integrations). It generalises the existing
-`functions/src/acquisition/metaDispatcher.ts`: a trigger on the authoritative
-record writes one pending delivery per destination, keyed by the event ID, and a
+new offline-conversion integrations). It replaced the retired website `Lead`
+dispatcher: a trigger on the authoritative record writes one pending delivery per destination, keyed by the event ID, and a
 scheduled worker sends it with bounded retries and an age limit, recording the
 provider response. An HTTP 200 alone does not confirm receipt.
 
@@ -350,8 +255,8 @@ since the previous one, within seven days at most.
 ## Consent and lifecycle
 
 The persistent `catch_marketing_consent_v4` receipt records version 4, choice,
-analytics/marketing booleans, update time and the measurement mode (disabled,
-Google preview, Google live or Host server live). A mode change requires a fresh choice; permission
+analytics/marketing booleans, update time and the measurement mode (`disabled`
+until a transport ships). A mode change requires a fresh choice; permission
 chosen while integrations were disabled cannot silently activate providers. The banner offers essential only,
 analytics, and explicit analytics plus marketing, with a persistent Privacy choices
 control for withdrawal. Advertising remains disabled regardless of the choice
@@ -388,8 +293,7 @@ An accepted lead uses the permission captured when that request began. Accepting
 mid-request cannot convert earlier activity; revoke/reaccept invalidates the old
 receipt even within the same millisecond. The historical HTTP consent remains analytics-only. Its
 historical `marketingAnalytics.consent` is not a versioned server advertising
-permission. The prepared, disabled `hostMeasurement` packet uses the separate versioned
-server permission handshake described above.
+permission, and a Host submission carries no advertising packet.
 
 Consent Mode compatibility records stay local. Before any real Google transport,
 review and apply default/update semantics for `analytics_storage`, `ad_storage`,
@@ -426,49 +330,20 @@ attribution payload; unknown labels and search terms are discarded. Separately,
 version-4 choice. Click identifiers are excluded for analytics-only choices,
 clear on a changed consent revision/private route, and never enter the diagnostic
 bus or existing lead HTTP payload. Storage failures drop the context. Host-to-`/claim` retains the approved touch.
-New campaigns require a reviewed vocabulary change. There is no URL-passthrough, customer-matching, cross-device implementation or
-deployed Meta delivery. The versioned server handoff is prepared and disabled. The preview and deterministic tests are acceptance
-steps, not proof of a paid click being attributed.
+New campaigns require a reviewed vocabulary change. There is no URL-passthrough
+or cross-device implementation. Deterministic tests are acceptance steps, not
+proof of a paid click being attributed.
 
-The prepared dispatcher reads at most 20 pending/sending records through the
-`hostAcquisitionDeliveries` status/nextAttemptAt composite index. Deploy and
-verify this index before exporting the scheduled dispatcher. Its runtime secret,
-`CATCH_HOST_META_CONVERSIONS_TOKEN`, must belong to a dedicated Catch identity;
-shared business conversion identities are unsuitable. The dispatcher remains
-unexported and both server measurement and Meta delivery gates remain false
-until credential access, synthetic provider acceptance and activation receive
-their separate reviews. Index source alone does not establish readiness.
+### Host intake attribution
 
-### Receipt-bound first-party reporting
+Host intake no longer writes `salesInboundIntents.acquisitionAttribution`: the
+consent-bound snapshot was retired with the server permission handshake, whose
+gate was off. Reports that read the field (`organizerGrowthFacts`) treat a
+missing snapshot as unassigned; do not backfill it from the waitlist row or a
+consumer conversion record. The legacy mutable waitlist attribution field is
+null for Host submissions; consumer handling is unchanged.
 
-Host intake prepares `salesInboundIntents.acquisitionAttribution` only for a
-new authoritative Host receipt when the disabled server-measurement gate is
-explicitly enabled and the same transaction reads current analytics permission.
-It keeps allowlisted campaign labels, exact acquisition paths and touch times;
-URLs, referrers, search terms, click identifiers and contact data are discarded.
-Touches must follow that consent choice, precede acceptance and fall inside
-30 days. Expiry remains the original consent expiry and cannot be renewed by a
-submission or replay. Advertising permission is not required for this private
-analytics snapshot and is never inferred from it.
-
-The legacy mutable waitlist attribution field is null for Host submissions;
-consumer handling is unchanged. Exact replay returns before a write and later
-Host submissions cannot replace the original new-receipt snapshot. Historical
-records without a valid snapshot stay unassigned; do not backfill from the
-current waitlist row or an earlier consumer conversion record.
-
-Withdrawal and scheduled expiry clear only this optional attribution field in
-bounded, transactionally rechecked batches. Operational application history is
-preserved. The withdrawal request clears one batch of at most 500 snapshots;
-its tombstone records `attributionCleanupPending` until the 15-minute expiry
-worker drains the remainder, one bounded batch per run, well before snapshot
-expiry. A revoked capability cannot create new snapshots, so a short final
-page lets the worker clear that flag under a transactional recheck. Existing Sales privacy deletion removes the containing intent.
-Any report reader must check current consent, snapshot expiry and current Sales
-privacy restrictions before using a snapshot; cleanup completion is not an
-authorization signal. Cohort joins and qualification/response history remain
-separate implementation work. This capture preparation enables no collection,
-provider delivery, reporting endpoint or production measurement.
+### Host response calendar
 
 The approved response calendar is Monday-Saturday, 09:00-18:00 Asia/Kolkata,
 excluding Sundays only. One business day means nine working hours from the
@@ -521,9 +396,9 @@ consent and opt-out model, the eligible routes and the event map above on
 2026-11-17. Each destination is switched on only after a synthetic staging run
 shows provider receipt (Meta Test Events, Google conversion diagnostics),
 consent changes, URL/title/referrer isolation, SPA shutdown, dedupe and the exact
-network payloads. GTM is optional only if a controlled integration needs it; it
-must never consume the existing bus wholesale. Organizer pixels require their
-own publication and policy approval and stay disabled.
+network payloads. GTM stays out; nothing may consume the existing bus
+wholesale. Organizer pixels require their own publication and policy approval
+and stay disabled.
 
 Authorities each server event needs: admitted payment (`finalizePublicPayment`),
 admitted free registration, organizer creation receipt, approved claim receipt,

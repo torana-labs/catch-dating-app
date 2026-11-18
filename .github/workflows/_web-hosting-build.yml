@@ -259,7 +259,6 @@ jobs:
       - name: Validate production marketing environment before build
         if: ${{ inputs.surface == 'marketing' }}
         env:
-          VITE_GTM_ID: ${{ vars.VITE_GTM_ID || 'GTM-K7KLNQXP' }}
           VITE_WEBSITE_APPCHECK_SITE_KEY: ${{ vars.VITE_WEBSITE_APPCHECK_SITE_KEY }}
           VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -326,7 +325,6 @@ jobs:
       - name: Build the exact production marketing bytes once
         if: ${{ inputs.surface == 'marketing' }}
         env:
-          VITE_GTM_ID: ${{ vars.VITE_GTM_ID || 'GTM-K7KLNQXP' }}
           VITE_WEBSITE_APPCHECK_SITE_KEY: ${{ vars.VITE_WEBSITE_APPCHECK_SITE_KEY }}
           VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}

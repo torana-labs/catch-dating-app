@@ -69,7 +69,6 @@ export const notCalledByCi = {
   ".github/workflows/deck-era-purge.yml": "operations: dispatch only",
   ".github/workflows/demo-ops-ci.yml": "its own pull_request and push triggers validate it",
   ".github/workflows/dependabot-auto-merge.yml": "its own pull_request trigger, Dependabot PRs only",
-  ".github/workflows/host-measurement-preview.yml": "deploy: dispatch only",
   ".github/workflows/host-website.yml": "deploy: push to main and dispatch",
   ".github/workflows/infra-apply.yml": "deploy: push to main and dispatch",
   ".github/workflows/infra-drift.yml": "operations: schedule and dispatch",
