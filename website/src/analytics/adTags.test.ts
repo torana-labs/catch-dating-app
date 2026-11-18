@@ -1,6 +1,6 @@
 import {beforeEach, describe, expect, it} from "vitest";
 import {brand} from "@catch/brand";
-import {catchAdDestinations, createAdTags, type AdBooking} from "./adTags";
+import {createAdTags, type AdBooking} from "./adTags";
 
 type Globals = {catchTagLayer?: ArrayLike<unknown>[]; fbq?: {queue: ArrayLike<unknown>[]; disablePushState?: boolean}; _fbq?: unknown};
 const globals = () => window as unknown as Globals;
@@ -55,7 +55,7 @@ describe("first-party Google tag and Meta Pixel", () => {
     const controller = tags();
     controller.sync(consent("accepted"));
     expect(scripts()).toEqual([
-      `https://www.googletagmanager.com/gtag/js?id=${catchAdDestinations.googleAnalytics}&l=catchTagLayer`,
+      "https://www.googletagmanager.com/gtag/js?id=G-HZFG0DL2DK&l=catchTagLayer",
       "https://connect.facebook.net/en_US/fbevents.js",
     ]);
     const commands = google();

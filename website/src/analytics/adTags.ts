@@ -23,7 +23,7 @@ import {approvedCampaignLabels, currentConsentVersion, publicAdPage, type Measur
  */
 
 /** Catch's own advertising destinations: account configuration, not secrets. */
-export const catchAdDestinations = Object.freeze({
+const catchAdDestinations = Object.freeze({
   /** GA4 property 559735544. */
   googleAnalytics: "G-HZFG0DL2DK",
   /** Google Ads tag for customer 1016806229. */
@@ -43,7 +43,7 @@ const googleCookieOptions = {cookie_expires: 30 * 24 * 60 * 60, cookie_flags: "S
 const checkoutsKey = "catch_ad_checkouts_v1";
 
 /** Website lead kinds that are a host enquiry (city alerts and referrals are not). */
-export const hostLeadKinds: ReadonlySet<string> = new Set(["guide", "walkthrough", "demo", "venue", "story", "org_contact"]);
+const hostLeadKinds: ReadonlySet<string> = new Set(["guide", "walkthrough", "demo", "venue", "story", "org_contact"]);
 
 const deniedConsent = {ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied"};
 const grantedConsent = {ad_storage: "granted", analytics_storage: "granted", ad_user_data: "granted", ad_personalization: "denied"};
@@ -109,7 +109,6 @@ function globals(): TagGlobals {
 /** gtag.js reads Arguments objects from its layer, exactly as Google's snippet pushes them. */
 function gtag(..._args: unknown[]) {
   const layer = globals().catchTagLayer ?? (globals().catchTagLayer = []);
-  // eslint-disable-next-line prefer-rest-params
   layer.push(arguments);
 }
 
@@ -122,7 +121,6 @@ function installPixelStub(): Fbq {
   const existing = globals().fbq;
   if (existing) return existing;
   const stub = function () {
-    // eslint-disable-next-line prefer-rest-params
     const args = arguments as unknown as unknown[];
     if (stub.callMethod) stub.callMethod(...args);
     else stub.queue.push(args);
@@ -190,7 +188,7 @@ const validBooking = (booking: AdBooking) => booking?.mode === "live" && eventId
   paymentIdPattern.test(booking.paymentId) && validAmount(booking.amountPaise, 100) &&
   Number.isSafeInteger(booking.places) && booking.places >= 1 && booking.places <= 20;
 
-export interface AdTagOptions {
+interface AdTagOptions {
   /** Which hostnames may load the tags; the production site by default. */
   hostAllowed?: (hostname: string) => boolean;
   /** A new opaque event id. */
