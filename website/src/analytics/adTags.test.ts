@@ -27,8 +27,8 @@ beforeEach(() => {
 });
 
 describe("first-party Google tag and Meta Pixel", () => {
-  it.each([null, consent("essential"), consent("analytics"), consent("accepted", 4)])(
-    "loads no tag without a current marketing choice (%o)", (choice) => {
+  it.each([null, consent("essential"), consent("analytics", 4), consent("accepted", 4)])(
+    "loads no tag without a current analytics or marketing choice (%o)", (choice) => {
       const controller = tags();
       controller.sync(choice);
       expect(scripts()).toEqual([]);
@@ -77,7 +77,44 @@ describe("first-party Google tag and Meta Pixel", () => {
     expect(metaEvents("PageView")).toEqual([["track", "PageView", {}, {eventID: "catch_1800000000000_generated1"}]]);
   });
 
-  it("revokes both tags, stops every send and removes their cookies when the choice is withdrawn", () => {
+  it("loads Google Analytics alone for an analytics-only choice: no Ads tag, no Pixel, no contact data", () => {
+    window.history.replaceState(null, "", "/host/");
+    const controller = tags();
+    controller.sync(consent("analytics"));
+    expect(scripts()).toEqual(["https://www.googletagmanager.com/gtag/js?id=G-HZFG0DL2DK&l=catchTagLayer"]);
+    expect(globals().fbq).toBeUndefined();
+    expect(google().slice(0, 2)).toEqual([
+      ["consent", "default", {ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied"}],
+      ["consent", "update", {ad_storage: "denied", analytics_storage: "granted", ad_user_data: "denied", ad_personalization: "denied"}],
+    ]);
+    expect(google().filter(([command]) => command === "config").map(([, id]) => id)).toEqual(["G-HZFG0DL2DK"]);
+    expect(controller.pageView()).toBe(true);
+    expect(googleEvents("page_view")).toHaveLength(1);
+    expect(controller.pageView("meta")).toBe(false);
+    expect(controller.hostLead({kind: "demo", leadId: "lead_synthetic_1", phone: "+919800000000"})).toBe(true);
+    expect(googleEvents("generate_lead")).toHaveLength(1);
+    expect(googleEvents("conversion")).toEqual([]);
+    expect(google().filter(([command, key]) => command === "set" && key === "user_data")).toEqual([]);
+    expect(globals().fbq).toBeUndefined();
+  });
+
+  it("an upgrade to marketing adds the ad tags and only the Pixel's view of the current page", () => {
+    window.history.replaceState(null, "", "/host/");
+    const controller = tags();
+    controller.sync(consent("analytics"));
+    controller.pageView();
+    controller.sync(consent("accepted", 5, "2026-11-18T11:00:00.000Z"));
+    expect(scripts()).toEqual([
+      "https://www.googletagmanager.com/gtag/js?id=G-HZFG0DL2DK&l=catchTagLayer",
+      "https://connect.facebook.net/en_US/fbevents.js",
+    ]);
+    expect(google().filter(([command]) => command === "config").map(([, id]) => id)).toEqual(["G-HZFG0DL2DK", "AW-18526407471"]);
+    expect(controller.pageView("meta")).toBe(true);
+    expect(googleEvents("page_view")).toHaveLength(1);
+    expect(metaEvents("PageView")).toHaveLength(1);
+  });
+
+  it("downgrading to analytics revokes only the ad tags; withdrawing revokes everything", () => {
     window.history.replaceState(null, "", "/events/synthetic-run/");
     const controller = tags();
     controller.sync(consent("accepted"));
@@ -86,8 +123,17 @@ describe("first-party Google tag and Meta Pixel", () => {
     document.cookie = "keep=1; path=/";
     controller.sync(consent("analytics", 5, "2026-11-18T11:00:00.000Z"));
     expect(google().at(-1)).toEqual(["consent", "update",
-      {ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied"}]);
+      {ad_storage: "denied", analytics_storage: "granted", ad_user_data: "denied", ad_personalization: "denied"}]);
     expect(meta().at(-1)).toEqual(["consent", "revoke"]);
+    expect(document.cookie).not.toMatch(/_fbp/u);
+    expect(document.cookie).toMatch(/_ga=/u);
+    const metaBefore = meta().length;
+    expect(controller.pageView()).toBe(true);
+    expect(controller.viewItem({eventId: "synthetic-run", activityKind: "socialRun", city: "Pune", amountPaise: 45000})).toBe(true);
+    expect(meta().length).toBe(metaBefore);
+    controller.sync(consent("essential", 5, "2026-11-18T11:30:00.000Z"));
+    expect(google().at(-1)).toEqual(["consent", "update",
+      {ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied"}]);
     expect(document.cookie).not.toMatch(/_fbp|_ga/u);
     expect(document.cookie).toContain("keep=1");
     const before = [google().length, meta().length];

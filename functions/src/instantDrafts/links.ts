@@ -55,7 +55,7 @@ export const FORM_PROVIDERS: ReadonlyArray<{id: string; hosts: readonly string[]
  * surfaces, chat invitations, and shortened links whose target is unknown.
  * Instagram profiles are read through Business Discovery, never fetched.
  */
-const CLOSED_SITES: ReadonlyArray<{reason: string; hosts: readonly string[]}> = [
+export const CLOSED_SITES: ReadonlyArray<{reason: string; hosts: readonly string[]}> = [
   {reason: "signed_in_site", hosts: ["facebook.com", "fb.me", "fb.com", "linkedin.com", "x.com", "twitter.com"]},
   {reason: "chat_invite", hosts: ["wa.me", "whatsapp.com", "t.me", "telegram.me", "discord.gg", "discord.com"]},
   {reason: "short_link", hosts: ["bit.ly", "tinyurl.com", "t.co", "goo.gl", "rb.gy", "cutt.ly"]},
@@ -108,6 +108,6 @@ export function classifyDraftLink(requestKind: DraftRequestKind, url: URL): Draf
   return {provider: null, support: "best_effort", reason: "generic_event_markup"};
 }
 
-function matchesHost(host: string, hosts: readonly string[]): boolean {
+export function matchesHost(host: string, hosts: readonly string[]): boolean {
   return hosts.some((candidate) => host === candidate || host.endsWith(`.${candidate}`));
 }
