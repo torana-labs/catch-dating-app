@@ -2,9 +2,12 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/get_program_whatsapp_thread_payload.schema.json",
   "title": "GetProgramWhatsappThreadCallablePayload",
-  "description": "Read one programme WhatsApp thread with its retained messages and household. Reading marks it read. Managers and communications staff.",
+  "description": "Read one programme WhatsApp thread with its retained messages and household. Reading marks it read. Managers and communications staff. The same payload (programId, threadId) marks a thread read without reading it: markProgramWhatsappThreadRead.",
   "type": "object",
   "additionalProperties": false,
+  "x-callable-aliases": [
+    "markProgramWhatsappThreadRead"
+  ],
   "required": [
     "programId",
     "threadId"

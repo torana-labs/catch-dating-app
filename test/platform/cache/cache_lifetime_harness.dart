@@ -169,7 +169,7 @@ void cacheLifetimeHarness(CacheHarnessSubject subject) {
         first.close();
         run.async.elapse(freshGap);
         run.settle();
-        expect(run.container.exists(owner), isTrue);
+        expect(run.container.read(owner.exists), isTrue);
 
         final returning = run.listen(owner);
         final shown = run.container.read(owner);
@@ -223,13 +223,13 @@ void cacheLifetimeHarness(CacheHarnessSubject subject) {
         if (policy.isSessionLifetime) {
           run.async.elapse(_hour * 3);
           run.settle();
-          expect(run.container.exists(owner), isTrue);
+          expect(run.container.read(owner.exists), isTrue);
           run.signIn('u2');
         } else {
           run.async.elapse(policy.retain! + _second);
         }
         run.settle();
-        expect(run.container.exists(owner), isFalse);
+        expect(run.container.read(owner.exists), isFalse);
 
         final next = run.listen(owner);
         expect(run.container.read(owner).hasValue, isFalse);
@@ -249,14 +249,14 @@ void cacheLifetimeHarness(CacheHarnessSubject subject) {
         hidden.pause();
         run.async.elapse((policy.retain ?? _hour) * 3);
         run.settle();
-        expect(run.container.exists(owner), isTrue);
+        expect(run.container.read(owner.exists), isTrue);
         expect(run.backend.requestsFor('a'), 1);
 
         hidden.resume();
         final shown = run.container.read(owner);
         expect(subject.dataOf(shown.requireValue), kept);
         run.settle();
-        expect(run.container.exists(owner), isTrue);
+        expect(run.container.read(owner.exists), isTrue);
         final staleOnResume =
             policy.staleAfter != null &&
             policy.staleAfter! <= (policy.retain ?? _hour) * 3;
@@ -267,7 +267,7 @@ void cacheLifetimeHarness(CacheHarnessSubject subject) {
         run.settle();
         run.async.elapse(_half(policy.retain ?? _hour));
         run.settle();
-        expect(run.container.exists(owner), isTrue);
+        expect(run.container.read(owner.exists), isTrue);
       });
     });
 

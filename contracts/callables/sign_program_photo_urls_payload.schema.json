@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/sign_program_photo_urls_payload.schema.json",
+  "title": "SignProgramPhotoUrlsCallablePayload",
+  "description": "Short-lived read URLs for programme photos the phone already listed from programPhotos, and optionally the guest page cover. Signs only photos of this programme that the server reads itself; an unknown id is left out. Managers and communications staff.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "photoIds"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "photoIds": {
+      "type": "array",
+      "maxItems": 60,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 64,
+        "pattern": "^[A-Za-z]+_[a-f0-9]{40}$"
+      }
+    },
+    "includeCover": {
+      "type": "boolean",
+      "description": "Also sign the programme's cover photo."
+    }
+  }
+}

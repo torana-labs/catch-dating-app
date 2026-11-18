@@ -1058,8 +1058,8 @@ const _widgetBuilderOwnerSignatures = <String>{
 bool _isWidgetBuilderArgumentName(String name) =>
     _widgetBuilderArgumentNames.contains(name);
 
-bool _isWidgetBuilderArgument(NamedExpression node) {
-  if (!_isWidgetBuilderArgumentName(node.name.label.name)) return false;
+bool _isWidgetBuilderArgument(NamedArgument node) {
+  if (!_isWidgetBuilderArgumentName(node.name.lexeme)) return false;
   final invocation = node.parent?.parent;
   final signature = switch (invocation) {
     final InstanceCreationExpression creation => _instanceCreationSignature(
@@ -1308,14 +1308,14 @@ final class _LayoutOwnerTerminalGraph {
     required Set<AstNode> visiting,
   }) {
     if (!allowTransparentWrappers) return false;
-    final named = arguments.arguments.whereType<NamedExpression>().toList();
+    final named = arguments.arguments.whereType<NamedArgument>().toList();
     final builders = named
         .where(
           (argument) =>
               _widgetBuilderOwnerSignatures.contains(signature) &&
-              _isWidgetBuilderArgumentName(argument.name.label.name),
+              _isWidgetBuilderArgumentName(argument.name.lexeme),
         )
-        .map((argument) => argument.expression)
+        .map((argument) => argument.argumentExpression)
         .toList();
     if (builders.isNotEmpty) {
       return builders.every(
@@ -1326,11 +1326,10 @@ final class _LayoutOwnerTerminalGraph {
 
     final content = named
         .where(
-          (argument) => _transparentWidgetArgumentNames.contains(
-            argument.name.label.name,
-          ),
+          (argument) =>
+              _transparentWidgetArgumentNames.contains(argument.name.lexeme),
         )
-        .map((argument) => argument.expression)
+        .map((argument) => argument.argumentExpression)
         .toList();
     return content.isNotEmpty &&
         content.every(
@@ -1529,14 +1528,14 @@ final class _StandardBodyGeometryNodeVisitor extends RecursiveAstVisitor<void> {
   final bool withinStandardContent;
 
   @override
-  void visitNamedExpression(NamedExpression node) {
-    if (node.expression case final FunctionExpression callback) {
+  void visitNamedArgument(NamedArgument node) {
+    if (node.argumentExpression case final FunctionExpression callback) {
       if (_isWidgetBuilderArgument(node)) {
         callback.body.accept(this);
       }
       return;
     }
-    super.visitNamedExpression(node);
+    super.visitNamedArgument(node);
   }
 
   @override
@@ -1600,10 +1599,10 @@ final class _StandardBodyGeometryNodeVisitor extends RecursiveAstVisitor<void> {
 
 Expression? _namedArgumentExpression(ArgumentList arguments, String name) =>
     arguments.arguments
-        .whereType<NamedExpression>()
-        .where((argument) => argument.name.label.name == name)
+        .whereType<NamedArgument>()
+        .where((argument) => argument.name.lexeme == name)
         .firstOrNull
-        ?.expression;
+        ?.argumentExpression;
 
 bool _isPositionedStackOverlay(Expression expression) {
   Expression current = expression;
@@ -1691,14 +1690,14 @@ final class _LayoutTerminalDependencyVisitor extends RecursiveAstVisitor<void> {
   final Set<String> names = <String>{};
 
   @override
-  void visitNamedExpression(NamedExpression node) {
-    if (node.expression case final FunctionExpression callback) {
+  void visitNamedArgument(NamedArgument node) {
+    if (node.argumentExpression case final FunctionExpression callback) {
       if (_isWidgetBuilderArgument(node)) {
         callback.body.accept(this);
       }
       return;
     }
-    super.visitNamedExpression(node);
+    super.visitNamedArgument(node);
   }
 
   @override
@@ -2621,8 +2620,8 @@ final class _DirectRouteFactoryCallProjection
   }
 
   @override
-  void visitNamedExpression(NamedExpression node) {
-    if (node.expression is FunctionExpression) {
+  void visitNamedArgument(NamedArgument node) {
+    if (node.argumentExpression is FunctionExpression) {
       final invocation = node.parent?.parent;
       final signature = switch (invocation) {
         final InstanceCreationExpression creation =>
@@ -2630,12 +2629,12 @@ final class _DirectRouteFactoryCallProjection
         final MethodInvocation method => _methodInvocationSignature(method),
         _ => null,
       };
-      if (!_isWidgetBuilderArgumentName(node.name.label.name) ||
+      if (!_isWidgetBuilderArgumentName(node.name.lexeme) ||
           !_widgetBuilderOwnerSignatures.contains(signature)) {
         return;
       }
     }
-    super.visitNamedExpression(node);
+    super.visitNamedArgument(node);
   }
 
   @override
@@ -2647,9 +2646,9 @@ final class _DirectRouteFactoryCallProjection
     final construction = factories[element];
     if (construction == null || element is! ExecutableElement) return;
     final arguments = node.argumentList.arguments;
-    if (arguments.any((argument) => argument is! NamedExpression)) return;
-    final named = arguments.cast<NamedExpression>();
-    final names = named.map((argument) => argument.name.label.name).toList();
+    if (arguments.any((argument) => argument is! NamedArgument)) return;
+    final named = arguments.cast<NamedArgument>();
+    final names = named.map((argument) => argument.name.lexeme).toList();
     if (names.toSet().length != names.length ||
         names.any(
           (name) => !element.formalParameters.any((p) => p.name == name),
@@ -3021,7 +3020,7 @@ CompilationUnitMember? _namedDeclaration(CompilationUnit unit, String symbol) {
     } else if (declaration is EnumDeclaration) {
       declarationName = declaration.namePart.typeName.lexeme;
     } else if (declaration is ExtensionTypeDeclaration) {
-      declarationName = declaration.primaryConstructor.typeName.lexeme;
+      declarationName = declaration.namePart.typeName.lexeme;
     } else if (declaration is FunctionDeclaration) {
       declarationName = declaration.name.lexeme;
     }
@@ -3420,15 +3419,15 @@ final class _GoRoutePresentationVisitor extends RecursiveAstVisitor<void> {
               (element.displayName == 'HostWorkspaceDestination' &&
                   element.library.uri.toString() ==
                       'package:catch_dating_app/routing/go_router.dart' &&
-                  node.argumentList.arguments.whereType<NamedExpression>().any(
+                  node.argumentList.arguments.whereType<NamedArgument>().any(
                     (argument) =>
-                        argument.name.label.name == 'root' &&
+                        argument.name.lexeme == 'root' &&
                         const {
                           'HostWorkspaceRoot.today',
                           'HostWorkspaceRoot.events',
                           'HostWorkspaceRoot.people',
                           'HostWorkspaceRoot.organizer',
-                        }.contains(argument.expression.toSource()),
+                        }.contains(argument.argumentExpression.toSource()),
                   )),
           argumentList: node.argumentList,
         );
@@ -3538,8 +3537,8 @@ Map<String, Expression> _namedArguments(ArgumentList? argumentList) {
   final arguments = <String, Expression>{};
   if (argumentList == null) return arguments;
   for (final argument in argumentList.arguments) {
-    if (argument is NamedExpression) {
-      arguments[argument.name.label.name] = argument.expression;
+    if (argument is NamedArgument) {
+      arguments[argument.name.lexeme] = argument.argumentExpression;
     }
   }
   return arguments;
@@ -3979,14 +3978,14 @@ final class _ResolvedLayoutOwnerTerminalProof {
     required Set<AstNode> visitingNodes,
     required Set<_ReachTarget> visitingTargets,
   }) async {
-    final named = arguments.arguments.whereType<NamedExpression>().toList();
+    final named = arguments.arguments.whereType<NamedArgument>().toList();
     final builders = named
         .where(
           (argument) =>
               _widgetBuilderOwnerSignatures.contains(signature) &&
-              _isWidgetBuilderArgumentName(argument.name.label.name),
+              _isWidgetBuilderArgumentName(argument.name.lexeme),
         )
-        .map((argument) => argument.expression)
+        .map((argument) => argument.argumentExpression)
         .toList();
     if (builders.isNotEmpty) {
       for (final builder in builders) {
@@ -4003,11 +4002,10 @@ final class _ResolvedLayoutOwnerTerminalProof {
     }
     final content = named
         .where(
-          (argument) => _transparentWidgetArgumentNames.contains(
-            argument.name.label.name,
-          ),
+          (argument) =>
+              _transparentWidgetArgumentNames.contains(argument.name.lexeme),
         )
-        .map((argument) => argument.expression)
+        .map((argument) => argument.argumentExpression)
         .toList();
     if (content.isEmpty) return null;
     for (final child in content) {
@@ -4233,18 +4231,18 @@ final class _LayoutOwnerInstantiationVisitor extends RecursiveAstVisitor<void> {
       <LayoutOwnerInstantiation>[];
 
   @override
-  void visitNamedExpression(NamedExpression node) {
+  void visitNamedArgument(NamedArgument node) {
     if (includeAllFunctionBodies) {
-      super.visitNamedExpression(node);
+      super.visitNamedArgument(node);
       return;
     }
-    if (node.expression case final FunctionExpression callback) {
+    if (node.argumentExpression case final FunctionExpression callback) {
       if (_isWidgetBuilderArgument(node)) {
         callback.body.accept(this);
       }
       return;
     }
-    super.visitNamedExpression(node);
+    super.visitNamedArgument(node);
   }
 
   @override
@@ -4254,7 +4252,7 @@ final class _LayoutOwnerInstantiationVisitor extends RecursiveAstVisitor<void> {
       return;
     }
     // Positional and behavior callbacks cannot supply the rendered screen
-    // terminal. Widget-builder callbacks are visited by visitNamedExpression.
+    // terminal. Widget-builder callbacks are visited by visitNamedArgument.
   }
 
   @override
@@ -4281,8 +4279,8 @@ final class _LayoutOwnerInstantiationVisitor extends RecursiveAstVisitor<void> {
   void _add(String signature, ArgumentList argumentList) {
     final namedArguments = <String, String>{};
     for (final argument in argumentList.arguments) {
-      if (argument is NamedExpression) {
-        namedArguments[argument.name.label.name] = argument.expression
+      if (argument is NamedArgument) {
+        namedArguments[argument.name.lexeme] = argument.argumentExpression
             .toSource();
       }
     }

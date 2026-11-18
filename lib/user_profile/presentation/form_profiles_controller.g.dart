@@ -176,7 +176,7 @@ final class FormProfileClaimControllerProvider
 }
 
 String _$formProfileClaimControllerHash() =>
-    r'1a411748fc84c0f4243ca4b5d9f273a86c453002';
+    r'6f36472f807ec4d0df4bfce31fb41ad452d8acee';
 
 abstract class _$FormProfileClaimController extends $Notifier<void> {
   void build();

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'profile_photo.dart';
@@ -9,6 +9,7 @@ part of 'profile_photo.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $ProfilePhotoCopyWith<ProfilePhoto> get copyWith => _$ProfilePhotoCopyWithImpl<P
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfilePhoto&&(identical(other.id, id) || other.id == id)&&(identical(other.url, url) || other.url == url)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.storagePath, storagePath) || other.storagePath == storagePath)&&(identical(other.thumbnailStoragePath, thumbnailStoragePath) || other.thumbnailStoragePath == thumbnailStoragePath)&&(identical(other.position, position) || other.position == position)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.prompt, prompt) || other.prompt == prompt)&&(identical(other.moderation, moderation) || other.moderation == moderation));
+  final _this = this as ProfilePhoto;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfilePhoto&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.url, _this.url) || other.url == _this.url)&&(identical(other.thumbnailUrl, _this.thumbnailUrl) || other.thumbnailUrl == _this.thumbnailUrl)&&(identical(other.storagePath, _this.storagePath) || other.storagePath == _this.storagePath)&&(identical(other.thumbnailStoragePath, _this.thumbnailStoragePath) || other.thumbnailStoragePath == _this.thumbnailStoragePath)&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt)&&(identical(other.prompt, _this.prompt) || other.prompt == _this.prompt)&&(identical(other.moderation, _this.moderation) || other.moderation == _this.moderation));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,url,thumbnailUrl,storagePath,thumbnailStoragePath,position,createdAt,updatedAt,prompt,moderation);
+int get hashCode {
+  final _this = this as ProfilePhoto;
+  return Object.hash(runtimeType,_this.id,_this.url,_this.thumbnailUrl,_this.storagePath,_this.thumbnailStoragePath,_this.position,_this.createdAt,_this.updatedAt,_this.prompt,_this.moderation);
+}
 
 @override
 String toString() {
-  return 'ProfilePhoto(id: $id, url: $url, thumbnailUrl: $thumbnailUrl, storagePath: $storagePath, thumbnailStoragePath: $thumbnailStoragePath, position: $position, createdAt: $createdAt, updatedAt: $updatedAt, prompt: $prompt, moderation: $moderation)';
+  final _this = this as ProfilePhoto;
+  return 'ProfilePhoto(id: ${_this.id}, url: ${_this.url}, thumbnailUrl: ${_this.thumbnailUrl}, storagePath: ${_this.storagePath}, thumbnailStoragePath: ${_this.thumbnailStoragePath}, position: ${_this.position}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt}, prompt: ${_this.prompt}, moderation: ${_this.moderation})';
 }
 
 
@@ -66,7 +72,7 @@ class _$ProfilePhotoCopyWithImpl<$Res>
 /// Create a copy of ProfilePhoto
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? url = null,Object? thumbnailUrl = null,Object? storagePath = null,Object? thumbnailStoragePath = null,Object? position = null,Object? createdAt = null,Object? updatedAt = null,Object? prompt = freezed,Object? moderation = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(ProfilePhoto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
 as String,thumbnailUrl: null == thumbnailUrl ? _self.thumbnailUrl : thumbnailUrl // ignore: cast_nullable_to_non_nullable
@@ -269,16 +275,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfilePhoto&&(identical(other.id, id) || other.id == id)&&(identical(other.url, url) || other.url == url)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.storagePath, storagePath) || other.storagePath == storagePath)&&(identical(other.thumbnailStoragePath, thumbnailStoragePath) || other.thumbnailStoragePath == thumbnailStoragePath)&&(identical(other.position, position) || other.position == position)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.prompt, prompt) || other.prompt == prompt)&&(identical(other.moderation, moderation) || other.moderation == moderation));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfilePhoto&&(identical(other.id, id) || other.id == id)&&(identical(other.url, url) || other.url == url)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.storagePath, storagePath) || other.storagePath == storagePath)&&(identical(other.thumbnailStoragePath, thumbnailStoragePath) || other.thumbnailStoragePath == thumbnailStoragePath)&&(identical(other.position, position) || other.position == position)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.prompt, prompt) || other.prompt == prompt)&&(identical(other.moderation, moderation) || other.moderation == moderation));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,url,thumbnailUrl,storagePath,thumbnailStoragePath,position,createdAt,updatedAt,prompt,moderation);
+int get hashCode {
+    return Object.hash(runtimeType,id,url,thumbnailUrl,storagePath,thumbnailStoragePath,position,createdAt,updatedAt,prompt,moderation);
+}
 
 @override
 String toString() {
-  return 'ProfilePhoto(id: $id, url: $url, thumbnailUrl: $thumbnailUrl, storagePath: $storagePath, thumbnailStoragePath: $thumbnailStoragePath, position: $position, createdAt: $createdAt, updatedAt: $updatedAt, prompt: $prompt, moderation: $moderation)';
+    return 'ProfilePhoto(id: $id, url: $url, thumbnailUrl: $thumbnailUrl, storagePath: $storagePath, thumbnailStoragePath: $thumbnailStoragePath, position: $position, createdAt: $createdAt, updatedAt: $updatedAt, prompt: $prompt, moderation: $moderation)';
 }
 
 
@@ -366,16 +374,21 @@ $ProfilePhotoModerationCopyWith<ProfilePhotoModeration> get copyWith => _$Profil
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfilePhotoModeration&&(identical(other.status, status) || other.status == status)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.reviewedAt, reviewedAt) || other.reviewedAt == reviewedAt));
+  final _this = this as ProfilePhotoModeration;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfilePhotoModeration&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.reason, _this.reason) || other.reason == _this.reason)&&(identical(other.reviewedAt, _this.reviewedAt) || other.reviewedAt == _this.reviewedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,status,reason,reviewedAt);
+int get hashCode {
+  final _this = this as ProfilePhotoModeration;
+  return Object.hash(runtimeType,_this.status,_this.reason,_this.reviewedAt);
+}
 
 @override
 String toString() {
-  return 'ProfilePhotoModeration(status: $status, reason: $reason, reviewedAt: $reviewedAt)';
+  final _this = this as ProfilePhotoModeration;
+  return 'ProfilePhotoModeration(status: ${_this.status}, reason: ${_this.reason}, reviewedAt: ${_this.reviewedAt})';
 }
 
 
@@ -404,7 +417,7 @@ class _$ProfilePhotoModerationCopyWithImpl<$Res>
 /// Create a copy of ProfilePhotoModeration
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? reason = freezed,Object? reviewedAt = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(ProfilePhotoModeration(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,reason: freezed == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
 as String?,reviewedAt: freezed == reviewedAt ? _self.reviewedAt : reviewedAt // ignore: cast_nullable_to_non_nullable
@@ -569,16 +582,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfilePhotoModeration&&(identical(other.status, status) || other.status == status)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.reviewedAt, reviewedAt) || other.reviewedAt == reviewedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfilePhotoModeration&&(identical(other.status, status) || other.status == status)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.reviewedAt, reviewedAt) || other.reviewedAt == reviewedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,status,reason,reviewedAt);
+int get hashCode {
+    return Object.hash(runtimeType,status,reason,reviewedAt);
+}
 
 @override
 String toString() {
-  return 'ProfilePhotoModeration(status: $status, reason: $reason, reviewedAt: $reviewedAt)';
+    return 'ProfilePhotoModeration(status: $status, reason: $reason, reviewedAt: $reviewedAt)';
 }
 
 

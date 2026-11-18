@@ -61,7 +61,7 @@ class CatchFeedbackRules extends MultiAnalysisRule {
     registry.addPrefixedIdentifier(this, visitor);
     registry.addPropertyAccess(this, visitor);
     registry.addNamedType(this, visitor);
-    registry.addNamedExpression(this, visitor);
+    registry.addNamedArgument(this, visitor);
   }
 }
 
@@ -200,5 +200,6 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
   void visitNamedType(NamedType node) => _check(node, node.element);
 
   @override
-  void visitNamedExpression(NamedExpression node) => _check(node, node.element);
+  void visitNamedArgument(NamedArgument node) =>
+      _check(node, node.correspondingParameter);
 }

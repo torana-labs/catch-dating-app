@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'profile_prompts.dart';
@@ -9,6 +9,7 @@ part of 'profile_prompts.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $ProfilePromptAnswerCopyWith<ProfilePromptAnswer> get copyWith => _$ProfilePromp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfilePromptAnswer&&(identical(other.promptId, promptId) || other.promptId == promptId)&&(identical(other.prompt, prompt) || other.prompt == prompt)&&(identical(other.answer, answer) || other.answer == answer));
+  final _this = this as ProfilePromptAnswer;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfilePromptAnswer&&(identical(other.promptId, _this.promptId) || other.promptId == _this.promptId)&&(identical(other.prompt, _this.prompt) || other.prompt == _this.prompt)&&(identical(other.answer, _this.answer) || other.answer == _this.answer));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,promptId,prompt,answer);
+int get hashCode {
+  final _this = this as ProfilePromptAnswer;
+  return Object.hash(runtimeType,_this.promptId,_this.prompt,_this.answer);
+}
 
 @override
 String toString() {
-  return 'ProfilePromptAnswer(promptId: $promptId, prompt: $prompt, answer: $answer)';
+  final _this = this as ProfilePromptAnswer;
+  return 'ProfilePromptAnswer(promptId: ${_this.promptId}, prompt: ${_this.prompt}, answer: ${_this.answer})';
 }
 
 
@@ -66,7 +72,7 @@ class _$ProfilePromptAnswerCopyWithImpl<$Res>
 /// Create a copy of ProfilePromptAnswer
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? promptId = null,Object? prompt = null,Object? answer = null,}) {
-  return _then(_self.copyWith(
+  return _then(ProfilePromptAnswer(
 promptId: null == promptId ? _self.promptId : promptId // ignore: cast_nullable_to_non_nullable
 as String,prompt: null == prompt ? _self.prompt : prompt // ignore: cast_nullable_to_non_nullable
 as String,answer: null == answer ? _self.answer : answer // ignore: cast_nullable_to_non_nullable
@@ -231,16 +237,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfilePromptAnswer&&(identical(other.promptId, promptId) || other.promptId == promptId)&&(identical(other.prompt, prompt) || other.prompt == prompt)&&(identical(other.answer, answer) || other.answer == answer));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfilePromptAnswer&&(identical(other.promptId, promptId) || other.promptId == promptId)&&(identical(other.prompt, prompt) || other.prompt == prompt)&&(identical(other.answer, answer) || other.answer == answer));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,promptId,prompt,answer);
+int get hashCode {
+    return Object.hash(runtimeType,promptId,prompt,answer);
+}
 
 @override
 String toString() {
-  return 'ProfilePromptAnswer(promptId: $promptId, prompt: $prompt, answer: $answer)';
+    return 'ProfilePromptAnswer(promptId: $promptId, prompt: $prompt, answer: $answer)';
 }
 
 
@@ -297,16 +305,21 @@ $PhotoPromptAnswerCopyWith<PhotoPromptAnswer> get copyWith => _$PhotoPromptAnswe
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PhotoPromptAnswer&&(identical(other.photoIndex, photoIndex) || other.photoIndex == photoIndex)&&(identical(other.promptId, promptId) || other.promptId == promptId)&&(identical(other.prompt, prompt) || other.prompt == prompt)&&(identical(other.caption, caption) || other.caption == caption));
+  final _this = this as PhotoPromptAnswer;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PhotoPromptAnswer&&(identical(other.photoIndex, _this.photoIndex) || other.photoIndex == _this.photoIndex)&&(identical(other.promptId, _this.promptId) || other.promptId == _this.promptId)&&(identical(other.prompt, _this.prompt) || other.prompt == _this.prompt)&&(identical(other.caption, _this.caption) || other.caption == _this.caption));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,photoIndex,promptId,prompt,caption);
+int get hashCode {
+  final _this = this as PhotoPromptAnswer;
+  return Object.hash(runtimeType,_this.photoIndex,_this.promptId,_this.prompt,_this.caption);
+}
 
 @override
 String toString() {
-  return 'PhotoPromptAnswer(photoIndex: $photoIndex, promptId: $promptId, prompt: $prompt, caption: $caption)';
+  final _this = this as PhotoPromptAnswer;
+  return 'PhotoPromptAnswer(photoIndex: ${_this.photoIndex}, promptId: ${_this.promptId}, prompt: ${_this.prompt}, caption: ${_this.caption})';
 }
 
 
@@ -335,7 +348,7 @@ class _$PhotoPromptAnswerCopyWithImpl<$Res>
 /// Create a copy of PhotoPromptAnswer
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? photoIndex = null,Object? promptId = null,Object? prompt = null,Object? caption = null,}) {
-  return _then(_self.copyWith(
+  return _then(PhotoPromptAnswer(
 photoIndex: null == photoIndex ? _self.photoIndex : photoIndex // ignore: cast_nullable_to_non_nullable
 as int,promptId: null == promptId ? _self.promptId : promptId // ignore: cast_nullable_to_non_nullable
 as String,prompt: null == prompt ? _self.prompt : prompt // ignore: cast_nullable_to_non_nullable
@@ -502,16 +515,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PhotoPromptAnswer&&(identical(other.photoIndex, photoIndex) || other.photoIndex == photoIndex)&&(identical(other.promptId, promptId) || other.promptId == promptId)&&(identical(other.prompt, prompt) || other.prompt == prompt)&&(identical(other.caption, caption) || other.caption == caption));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PhotoPromptAnswer&&(identical(other.photoIndex, photoIndex) || other.photoIndex == photoIndex)&&(identical(other.promptId, promptId) || other.promptId == promptId)&&(identical(other.prompt, prompt) || other.prompt == prompt)&&(identical(other.caption, caption) || other.caption == caption));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,photoIndex,promptId,prompt,caption);
+int get hashCode {
+    return Object.hash(runtimeType,photoIndex,promptId,prompt,caption);
+}
 
 @override
 String toString() {
-  return 'PhotoPromptAnswer(photoIndex: $photoIndex, promptId: $promptId, prompt: $prompt, caption: $caption)';
+    return 'PhotoPromptAnswer(photoIndex: $photoIndex, promptId: $promptId, prompt: $prompt, caption: $caption)';
 }
 
 

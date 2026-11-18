@@ -191,7 +191,7 @@ void main() {
     expect(find.byType(EventRehearsalStaffSection), findsNothing);
     expect(find.byType(EventRehearsalSimulatorBody), findsNothing);
     expect(
-      container.exists(eventRehearsalStaffControllerProvider('session-1')),
+      container.read(eventRehearsalStaffControllerProvider('session-1').exists),
       isFalse,
     );
     Navigator.of(tester.element(guestSheet)).pop();

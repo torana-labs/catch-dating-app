@@ -656,6 +656,72 @@ records the handover in the same call.
 stays a callable: it reads the assistant's settings and credential
 references, which no client may hold.
 
+`listProgramWhatsappThreads` and `getProgramWhatsappThread` move to listeners
+(batch 5). The inbox reads `programWhatsappThreadViews`, one row per thread:
+exactly the summary the list returned, without the clock-dependent
+`serviceWindowOpen` (the phone derives it from `lastInboundAtMillis`), plus
+the household's label, primary contact name and guest count from the thread
+header. The Needs you, Handled and All counts are the phone's tally of its own
+rows. A thread's messages are read directly from `programWhatsappMessages`
+(a query naming the programme and the thread, newest first). Managers and the
+communications duty read both under rules; the phone hash, sender connection,
+who took the thread over and the reply reservations stay on server-only
+documents, and the views and messages go with the archived programme's
+retention sweep. A planner reply names its author by `authorUid`, which the
+phone resolves against the staff list it already reads (the callable returned
+the grant's display name). Opening a thread used to mark it read; that write is
+now `markProgramWhatsappThreadRead` (same payload, same access, a no-op on an
+archived programme or an already read thread), which answers the thread's
+handling and its new revision: use that revision as the next
+`setProgramWhatsappThreadHandling` `expectedRevision`, because a view lags its
+thread by a trigger. `listProgramWhatsappCannedReplies` becomes a direct read of
+`programWhatsappCannedReplies` by the same duty (the phone drops archived rows
+unless asked and orders by `sortOrder`, then label); saving stays
+`upsertProgramWhatsappCannedReply`. Both read callables stay deployed for older
+builds, retire-later.
+
+**Read path decision (Nov 2026, #1339): server-trust.** The `sender` block of
+`listProgramWhatsappThreads` (the wedding's number as displayed, its
+connection id and health) stays on that callable: it resolves a bound or
+first-active connection from `organizerSenderConnections`, which holds
+credentials references and stays server-only, and no view of it exists yet. The
+inbox header asks the callable for it (`limit: 1`) until a sender read model is
+approved.
+
+`listProgramPhotos` splits in two. Photo records are read directly:
+`programPhotos` is readable by managers and the communications duty (a query
+naming the programme), so albums, counts, captions and visibility come from the
+phone's own grouping, and function names come from the work shell's function
+labels. The one thing a phone cannot make is a short-lived URL, so
+`signProgramPhotoUrls` (managers and communications staff, at most 60 photo ids
+and optionally the cover) reads each named photo itself, signs only files that
+belong to this programme and returns URLs that expire within ten minutes. It
+never signs a path the phone names, and Storage rules stay closed to client
+reads (a download URL carries a token that does not expire). `listProgramPhotos`
+stays deployed for older builds, retire-later.
+
+`listOrganizerPrograms` and `getOrganizerProgram` move to
+`organizerProgramViews`: the programme object, its creator, the function count
+and the function, pickup point and hotel setup lists, kept by triggers on the
+programme and those three collections. Rules admit exactly what
+`requireProgramSetupAccess` admits: the creator (listing by `createdBy`), the
+organizer's current managers (listing by `organizerId`) and a live
+`programAdmin` duty (one programme by id); a deleted account reads nothing. A
+function's expected and checked-in counts are not in the view (they move with
+every check-in); the phone reads them from `programResourceViews`. The list is
+the organizer's programmes ordered on the phone by start. Both callables stay
+deployed for older builds, retire-later.
+
+**Read path decision (Nov 2026, #1339): server-trust.** The guest, flying-in and
+replied counts of a `listOrganizerPrograms` row, and the guest, household,
+inbound journey and active staff counts of `getOrganizerProgram`, stay on those
+callables. They are tallies over every guest, household and journey of the
+programme, which change with each RSVP, import and flight update; stored copies
+would need a counter that every one of those writes contends on, or a recount of
+thousands of documents per write. The screens paint the listener data first and
+ask the callable (`listOrganizerPrograms` with `programId` for one row) for the
+counts.
+
 ## Programme WhatsApp threads, replies and the assistant settings
 
 Wedding guests message the programme's own WhatsApp number (an organiser

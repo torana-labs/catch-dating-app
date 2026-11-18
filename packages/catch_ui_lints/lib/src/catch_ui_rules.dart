@@ -610,7 +610,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
       allowRawControlConstructors: _isRawChromeExceptionPath(path),
     );
     registry.addInstanceCreationExpression(this, visitor);
-    registry.addNamedExpression(this, visitor);
+    registry.addNamedArgument(this, visitor);
     registry.addBinaryExpression(this, visitor);
     registry.addMethodDeclaration(this, visitor);
     registry.addFunctionDeclaration(this, visitor);
@@ -1083,24 +1083,27 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }
 
   @override
-  void visitNamedExpression(NamedExpression node) {
-    final name = node.name.label.name;
+  void visitNamedArgument(NamedArgument node) {
+    final name = node.name.lexeme;
     if (isCatchUiLetterSpacingArgument(node)) {
       _reportAtNode(node, CatchUiLayoutRules.noRawLetterSpacing);
     }
 
     if (!isZeroDrawingPath &&
         _spacingNamedArguments.contains(name) &&
-        _isPositiveNumberLiteral(node.expression) &&
+        _isPositiveNumberLiteral(node.argumentExpression) &&
         _isSpacingContext(node)) {
       rule.reportAtNode(
-        node.expression,
+        node.argumentExpression,
         diagnosticCode: CatchUiLayoutRules.rawUiSpacing,
       );
     }
 
     if (_isRawContentDimensionNamedArgument(node)) {
-      _reportAtNode(node.expression, CatchUiLayoutRules.noRawContentDimension);
+      _reportAtNode(
+        node.argumentExpression,
+        CatchUiLayoutRules.noRawContentDimension,
+      );
     }
 
     // The scan runs on the files that predate D24; what it found there when it
@@ -1108,21 +1111,24 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     if (isUiSystemScannerPath &&
         !isNewRootLegacyPath &&
         _isRawIconSizeNamedArgument(node)) {
-      _reportAtNode(node.expression, CatchUiLayoutRules.noRawIconSize);
+      _reportAtNode(node.argumentExpression, CatchUiLayoutRules.noRawIconSize);
     }
 
     if (isUiSystemScannerPath &&
         !isNewRootLegacyPath &&
         _isRawAlphaNamedArgument(node)) {
-      _reportAtNode(node.expression, CatchUiLayoutRules.noRawAlpha);
+      _reportAtNode(node.argumentExpression, CatchUiLayoutRules.noRawAlpha);
     }
 
     if (isUiSystemScannerPath && _isRawShadowNamedArgument(node)) {
-      _reportAtNode(node.expression, CatchUiLayoutRules.noRawShadow);
+      _reportAtNode(node.argumentExpression, CatchUiLayoutRules.noRawShadow);
     }
 
     if (isSizingScannerPath && _isRawStrokeNamedArgument(node)) {
-      _reportAtNode(node.expression, CatchUiLayoutRules.noRawStrokeWidth);
+      _reportAtNode(
+        node.argumentExpression,
+        CatchUiLayoutRules.noRawStrokeWidth,
+      );
     }
   }
 
@@ -1309,9 +1315,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     if (_isCatchFieldImplementationPath) return true;
     var current = node.parent;
     while (current != null) {
-      if (current is NamedExpression &&
-          (current.name.label.name == 'fieldRows' ||
-              current.name.label.name == 'fields')) {
+      if (current is NamedArgument &&
+          (current.name.lexeme == 'fieldRows' ||
+              current.name.lexeme == 'fields')) {
         return true;
       }
       if (current is InstanceCreationExpression) {
@@ -1336,10 +1342,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool _topBarHasRawActionComposition(InstanceCreationExpression node) {
     for (final argument in node.argumentList.arguments) {
-      if (argument is! NamedExpression) continue;
-      final name = argument.name.label.name;
+      if (argument is! NamedArgument) continue;
+      final name = argument.name.lexeme;
       if (name != 'actions' && name != 'leading') continue;
-      final text = argument.expression.toSource();
+      final text = argument.argumentExpression.toSource();
       if (text.contains('CatchTopBarActionRow')) continue;
       if (RegExp(r'\b(?:Row|Wrap)\s*\(').hasMatch(text)) return true;
     }
@@ -1394,7 +1400,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     }
     final names = <String>{
       for (final argument in node.argumentList.arguments)
-        if (argument is NamedExpression) argument.name.label.name,
+        if (argument is NamedArgument) argument.name.lexeme,
     };
     return !names.contains('loading') || !names.contains('error');
   }
@@ -1504,7 +1510,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         return false;
       }
       return node.argumentList.arguments.any(
-        (argument) => _isNumberAtLeast(argument, 4),
+        (argument) => argument is Expression && _isNumberAtLeast(argument, 4),
       );
     }
 
@@ -1517,31 +1523,31 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     return false;
   }
 
-  bool _isRawContentDimensionNamedArgument(NamedExpression node) {
+  bool _isRawContentDimensionNamedArgument(NamedArgument node) {
     if (!isSizingScannerPath) return false;
 
-    final name = node.name.label.name;
+    final name = node.name.lexeme;
     if (name != 'height' && name != 'width' && name != 'dimension') {
       return false;
     }
-    if (!_isNumberAtLeast(node.expression, 4)) return false;
+    if (!_isNumberAtLeast(node.argumentExpression, 4)) return false;
     return !_isIconConstructorContext(node);
   }
 
-  bool _isRawIconSizeNamedArgument(NamedExpression node) {
-    final name = node.name.label.name;
-    if (name == 'iconSize') return _isNumberAtLeast(node.expression, 4);
+  bool _isRawIconSizeNamedArgument(NamedArgument node) {
+    final name = node.name.lexeme;
+    if (name == 'iconSize') return _isNumberAtLeast(node.argumentExpression, 4);
     if (name != 'size') return false;
-    if (!_isNumberAtLeast(node.expression, 4)) return false;
+    if (!_isNumberAtLeast(node.argumentExpression, 4)) return false;
 
     final constructorType = _ancestorConstructorType(node);
     return constructorType == 'Icon' || constructorType == 'IconThemeData';
   }
 
-  bool _isRawAlphaNamedArgument(NamedExpression node) {
-    final name = node.name.label.name;
+  bool _isRawAlphaNamedArgument(NamedArgument node) {
+    final name = node.name.lexeme;
     if (name != 'alpha' && name != 'opacity') return false;
-    return _isNumberBetween(node.expression, min: 0, max: 1);
+    return _isNumberBetween(node.argumentExpression, min: 0, max: 1);
   }
 
   bool _isRawShadowConstructor(
@@ -1551,17 +1557,21 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     return typeName == 'BoxShadow';
   }
 
-  bool _isRawShadowNamedArgument(NamedExpression node) {
-    final name = node.name.label.name;
-    if (name == 'elevation') return _isNumberAtLeast(node.expression, 1);
-    if (name == 'shadowColor') return _isRawColorExpression(node.expression);
+  bool _isRawShadowNamedArgument(NamedArgument node) {
+    final name = node.name.lexeme;
+    if (name == 'elevation') {
+      return _isNumberAtLeast(node.argumentExpression, 1);
+    }
+    if (name == 'shadowColor') {
+      return _isRawColorExpression(node.argumentExpression);
+    }
     return false;
   }
 
-  bool _isRawStrokeNamedArgument(NamedExpression node) {
+  bool _isRawStrokeNamedArgument(NamedArgument node) {
     if (_isInsideCustomPainter(node)) return false;
 
-    final name = node.name.label.name;
+    final name = node.name.lexeme;
     final constructorType = _ancestorConstructorType(node);
     if (constructorType == null) return false;
 
@@ -1571,17 +1581,17 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
           constructorType != 'CatchBorderSpec') {
         return false;
       }
-      return _containsPositiveNumberLiteral(node.expression);
+      return _containsPositiveNumberLiteral(node.argumentExpression);
     }
 
     if (name == 'borderWidth' || name == 'strokeWidth') {
-      return _containsPositiveNumberLiteral(node.expression);
+      return _containsPositiveNumberLiteral(node.argumentExpression);
     }
 
     if (name == 'thickness') {
       return constructorType == 'Divider' ||
               constructorType == 'VerticalDivider'
-          ? _containsPositiveNumberLiteral(node.expression)
+          ? _containsPositiveNumberLiteral(node.argumentExpression)
           : false;
     }
 
@@ -1768,8 +1778,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   Expression? _namedArgument(InstanceCreationExpression node, String name) {
     for (final argument in node.argumentList.arguments) {
-      if (argument is NamedExpression && argument.name.label.name == name) {
-        return argument.expression;
+      if (argument is NamedArgument && argument.name.lexeme == name) {
+        return argument.argumentExpression;
       }
     }
     return null;
@@ -1789,12 +1799,12 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   void _checkSizedBoxSpacing(InstanceCreationExpression node) {
     for (final argument in node.argumentList.arguments) {
-      if (argument is! NamedExpression) continue;
-      final name = argument.name.label.name;
+      if (argument is! NamedArgument) continue;
+      final name = argument.name.lexeme;
       if ((name == 'height' || name == 'width') &&
-          _isPositiveNumberLiteral(argument.expression)) {
+          _isPositiveNumberLiteral(argument.argumentExpression)) {
         rule.reportAtNode(
-          argument.expression,
+          argument.argumentExpression,
           diagnosticCode: CatchUiLayoutRules.rawUiSpacing,
         );
       }
@@ -1810,16 +1820,16 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
     if (isZeroDrawingPath) return;
     for (final argument in node.argumentList.arguments) {
-      if (argument is NamedExpression) {
-        if (_isPositiveNumberLiteral(argument.expression)) {
+      if (argument is NamedArgument) {
+        if (_isPositiveNumberLiteral(argument.argumentExpression)) {
           rule.reportAtNode(
-            argument.expression,
+            argument.argumentExpression,
             diagnosticCode: CatchUiLayoutRules.rawUiSpacing,
           );
         }
-      } else if (_isPositiveNumberLiteral(argument)) {
+      } else if (_isPositiveNumberLiteral(argument.argumentExpression)) {
         rule.reportAtNode(
-          argument,
+          argument.argumentExpression,
           diagnosticCode: CatchUiLayoutRules.rawUiSpacing,
         );
       }
@@ -1828,10 +1838,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool _edgeInsetsUsesLowLevelSpacing(InstanceCreationExpression node) {
     for (final argument in node.argumentList.arguments) {
-      final expression = argument is NamedExpression
-          ? argument.expression
-          : argument;
-      if (_usesCatchSpacing(expression)) return true;
+      if (_usesCatchSpacing(argument.argumentExpression)) return true;
     }
     return false;
   }
@@ -1839,7 +1846,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   bool _isNamedInsetContract(InstanceCreationExpression node) {
     var current = node.parent;
     while (current != null) {
-      if (current is VariableDeclaration || current is DefaultFormalParameter) {
+      if (current is VariableDeclaration ||
+          current is FormalParameterDefaultClause) {
         return true;
       }
       if (current is Statement ||
@@ -1926,20 +1934,17 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     return null;
   }
 
-  Expression? _firstPositiveNumberArgument(NodeList<Expression> nodes) {
+  Expression? _firstPositiveNumberArgument(NodeList<Argument> nodes) {
     for (final node in nodes) {
-      if (node is NamedExpression &&
-          _isPositiveNumberLiteral(node.expression)) {
-        return node.expression;
-      }
-      if (_isPositiveNumberLiteral(node)) return node;
+      final expression = node.argumentExpression;
+      if (_isPositiveNumberLiteral(expression)) return expression;
     }
     return null;
   }
 
-  Expression? _firstRawRadiusConstructorArgument(NodeList<Expression> nodes) {
+  Expression? _firstRawRadiusConstructorArgument(NodeList<Argument> nodes) {
     for (final node in nodes) {
-      final expression = node is NamedExpression ? node.expression : node;
+      final expression = node.argumentExpression;
       if (expression is! InstanceCreationExpression) continue;
       if (_constructorTypeName(expression) != 'Radius') continue;
       final constructorName = _constructorMemberName(expression);
@@ -1956,7 +1961,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool _isBorderRadiusRadiusArgument(InstanceCreationExpression node) {
     final parent = node.parent;
-    final borderRadius = parent is NamedExpression
+    final borderRadius = parent is NamedArgument
         ? parent.parent?.parent
         : parent?.parent;
     if (borderRadius is! InstanceCreationExpression) return false;
@@ -1996,7 +2001,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool _isFontFamilyNamedArgument(SimpleStringLiteral node) {
     final parent = node.parent;
-    return parent is NamedExpression && parent.name.label.name == 'fontFamily';
+    return parent is NamedArgument && parent.name.lexeme == 'fontFamily';
   }
 
   bool _isRawAssetPathLiteral(SimpleStringLiteral node) {
@@ -2145,10 +2150,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   ListLiteral? _childrenArgument(InstanceCreationExpression node) {
     for (final argument in node.argumentList.arguments) {
-      if (argument is NamedExpression &&
-          argument.name.label.name == 'children' &&
-          argument.expression is ListLiteral) {
-        return argument.expression as ListLiteral;
+      if (argument is NamedArgument &&
+          argument.name.lexeme == 'children' &&
+          argument.argumentExpression is ListLiteral) {
+        return argument.argumentExpression as ListLiteral;
       }
     }
     return null;
@@ -2208,8 +2213,8 @@ bool isCatchUiDirectFontBuilderInvocation(MethodInvocation node) {
   return target is SimpleIdentifier && target.name == 'CatchFonts';
 }
 
-bool isCatchUiLetterSpacingArgument(NamedExpression node) {
-  return node.name.label.name == 'letterSpacing';
+bool isCatchUiLetterSpacingArgument(NamedArgument node) {
+  return node.name.lexeme == 'letterSpacing';
 }
 
 bool _isPositiveNumberLiteral(Expression expression) {

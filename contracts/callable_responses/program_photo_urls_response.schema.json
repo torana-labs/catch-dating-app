@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_photo_urls_response.schema.json",
+  "title": "ProgramPhotoUrlsCallableResponse",
+  "description": "Signed read URLs for the photos asked for, and the cover when asked. They expire together at urlsExpireAtMillis; ask again after.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "urls",
+    "coverUrl",
+    "urlsExpireAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "urls": {
+      "type": "array",
+      "maxItems": 60,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "photoId",
+          "url"
+        ],
+        "properties": {
+          "photoId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z]+_[a-f0-9]{40}$"
+          },
+          "url": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        }
+      }
+    },
+    "coverUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 4096
+    },
+    "urlsExpireAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+}

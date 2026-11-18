@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'event_preferences_editor.dart';
@@ -9,6 +9,7 @@ part of 'event_preferences_editor.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $EventPreferencesEditorStateCopyWith<EventPreferencesEditorState> get copyWith =
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventPreferencesEditorState&&(identical(other.event, event) || other.event == event)&&(identical(other.configuration, configuration) || other.configuration == configuration)&&(identical(other.defaults, defaults) || other.defaults == defaults)&&(identical(other.privatePending, privatePending) || other.privatePending == privatePending)&&(identical(other.offerPending, offerPending) || other.offerPending == offerPending)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.saving, saving) || other.saving == saving)&&(identical(other.previewing, previewing) || other.previewing == previewing)&&(identical(other.previewAvailable, previewAvailable) || other.previewAvailable == previewAvailable)&&(identical(other.draftIntents, draftIntents) || other.draftIntents == draftIntents)&&(identical(other.review, review) || other.review == review)&&(identical(other.published, published) || other.published == published)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable));
+  final _this = this as EventPreferencesEditorState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventPreferencesEditorState&&(identical(other.event, _this.event) || other.event == _this.event)&&(identical(other.configuration, _this.configuration) || other.configuration == _this.configuration)&&(identical(other.defaults, _this.defaults) || other.defaults == _this.defaults)&&(identical(other.privatePending, _this.privatePending) || other.privatePending == _this.privatePending)&&(identical(other.offerPending, _this.offerPending) || other.offerPending == _this.offerPending)&&(identical(other.displayName, _this.displayName) || other.displayName == _this.displayName)&&const DeepCollectionEquality().equals(other.error, _this.error)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.saving, _this.saving) || other.saving == _this.saving)&&(identical(other.previewing, _this.previewing) || other.previewing == _this.previewing)&&(identical(other.previewAvailable, _this.previewAvailable) || other.previewAvailable == _this.previewAvailable)&&(identical(other.draftIntents, _this.draftIntents) || other.draftIntents == _this.draftIntents)&&(identical(other.review, _this.review) || other.review == _this.review)&&(identical(other.published, _this.published) || other.published == _this.published)&&(identical(other.actorAvailable, _this.actorAvailable) || other.actorAvailable == _this.actorAvailable));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,event,configuration,defaults,privatePending,offerPending,displayName,const DeepCollectionEquality().hash(error),loading,saving,previewing,previewAvailable,draftIntents,review,published,actorAvailable);
+int get hashCode {
+  final _this = this as EventPreferencesEditorState;
+  return Object.hash(runtimeType,_this.event,_this.configuration,_this.defaults,_this.privatePending,_this.offerPending,_this.displayName,const DeepCollectionEquality().hash(_this.error),_this.loading,_this.saving,_this.previewing,_this.previewAvailable,_this.draftIntents,_this.review,_this.published,_this.actorAvailable);
+}
 
 @override
 String toString() {
-  return 'EventPreferencesEditorState(event: $event, configuration: $configuration, defaults: $defaults, privatePending: $privatePending, offerPending: $offerPending, displayName: $displayName, error: $error, loading: $loading, saving: $saving, previewing: $previewing, previewAvailable: $previewAvailable, draftIntents: $draftIntents, review: $review, published: $published, actorAvailable: $actorAvailable)';
+  final _this = this as EventPreferencesEditorState;
+  return 'EventPreferencesEditorState(event: ${_this.event}, configuration: ${_this.configuration}, defaults: ${_this.defaults}, privatePending: ${_this.privatePending}, offerPending: ${_this.offerPending}, displayName: ${_this.displayName}, error: ${_this.error}, loading: ${_this.loading}, saving: ${_this.saving}, previewing: ${_this.previewing}, previewAvailable: ${_this.previewAvailable}, draftIntents: ${_this.draftIntents}, review: ${_this.review}, published: ${_this.published}, actorAvailable: ${_this.actorAvailable})';
 }
 
 
@@ -63,7 +69,7 @@ class _$EventPreferencesEditorStateCopyWithImpl<$Res>
 /// Create a copy of EventPreferencesEditorState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? event = freezed,Object? configuration = freezed,Object? defaults = freezed,Object? privatePending = freezed,Object? offerPending = freezed,Object? displayName = freezed,Object? error = freezed,Object? loading = null,Object? saving = null,Object? previewing = null,Object? previewAvailable = null,Object? draftIntents = freezed,Object? review = freezed,Object? published = null,Object? actorAvailable = null,}) {
-  return _then(_self.copyWith(
+  return _then(EventPreferencesEditorState(
 event: freezed == event ? _self.event : event // ignore: cast_nullable_to_non_nullable
 as PrivateEventBasicSummary?,configuration: freezed == configuration ? _self.configuration : configuration // ignore: cast_nullable_to_non_nullable
 as EventOfferConfiguration?,defaults: freezed == defaults ? _self.defaults : defaults // ignore: cast_nullable_to_non_nullable
@@ -248,16 +254,18 @@ _$EventPreferencesEditorStateCopyWith<_EventPreferencesEditorState> get copyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventPreferencesEditorState&&(identical(other.event, event) || other.event == event)&&(identical(other.configuration, configuration) || other.configuration == configuration)&&(identical(other.defaults, defaults) || other.defaults == defaults)&&(identical(other.privatePending, privatePending) || other.privatePending == privatePending)&&(identical(other.offerPending, offerPending) || other.offerPending == offerPending)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.saving, saving) || other.saving == saving)&&(identical(other.previewing, previewing) || other.previewing == previewing)&&(identical(other.previewAvailable, previewAvailable) || other.previewAvailable == previewAvailable)&&(identical(other.draftIntents, draftIntents) || other.draftIntents == draftIntents)&&(identical(other.review, review) || other.review == review)&&(identical(other.published, published) || other.published == published)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventPreferencesEditorState&&(identical(other.event, event) || other.event == event)&&(identical(other.configuration, configuration) || other.configuration == configuration)&&(identical(other.defaults, defaults) || other.defaults == defaults)&&(identical(other.privatePending, privatePending) || other.privatePending == privatePending)&&(identical(other.offerPending, offerPending) || other.offerPending == offerPending)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.saving, saving) || other.saving == saving)&&(identical(other.previewing, previewing) || other.previewing == previewing)&&(identical(other.previewAvailable, previewAvailable) || other.previewAvailable == previewAvailable)&&(identical(other.draftIntents, draftIntents) || other.draftIntents == draftIntents)&&(identical(other.review, review) || other.review == review)&&(identical(other.published, published) || other.published == published)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,event,configuration,defaults,privatePending,offerPending,displayName,const DeepCollectionEquality().hash(error),loading,saving,previewing,previewAvailable,draftIntents,review,published,actorAvailable);
+int get hashCode {
+    return Object.hash(runtimeType,event,configuration,defaults,privatePending,offerPending,displayName,const DeepCollectionEquality().hash(error),loading,saving,previewing,previewAvailable,draftIntents,review,published,actorAvailable);
+}
 
 @override
 String toString() {
-  return 'EventPreferencesEditorState(event: $event, configuration: $configuration, defaults: $defaults, privatePending: $privatePending, offerPending: $offerPending, displayName: $displayName, error: $error, loading: $loading, saving: $saving, previewing: $previewing, previewAvailable: $previewAvailable, draftIntents: $draftIntents, review: $review, published: $published, actorAvailable: $actorAvailable)';
+    return 'EventPreferencesEditorState(event: $event, configuration: $configuration, defaults: $defaults, privatePending: $privatePending, offerPending: $offerPending, displayName: $displayName, error: $error, loading: $loading, saving: $saving, previewing: $previewing, previewAvailable: $previewAvailable, draftIntents: $draftIntents, review: $review, published: $published, actorAvailable: $actorAvailable)';
 }
 
 

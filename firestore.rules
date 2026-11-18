@@ -2401,6 +2401,23 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // One programme's setup view (#1339): the programme and its function,
+    // pickup point and hotel setup lists. It admits exactly the accounts
+    // requireProgramSetupAccess admits: the creator and the organizer's
+    // current managers (each lists their own programmes by a query naming
+    // the creator or the organizer), and a live programAdmin duty reads its
+    // one programme by id. A deleted account reads nothing.
+    match /organizerProgramViews/{programId} {
+      allow get: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && (resource.data.createdBy == request.auth.uid
+          || isHostSummaryManager(resource.data.organizerId)
+          || hasProgramDuty(programId, 'programAdmin'));
+      allow list: if isAuthed() && !isDeletedUser(request.auth.uid)
+        && (resource.data.createdBy == request.auth.uid
+          || isHostSummaryManager(resource.data.organizerId));
+      allow write: if false;
+    }
+
     match /programFunctions/{functionId} {
       allow read, write: if false;
     }
@@ -2641,8 +2658,13 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Photo records (#1339): the manager and the communications duty list one
+    // programme's photos by a query naming the programme. The record holds no
+    // file bytes and Storage denies every client read; the phone gets a
+    // short-lived signed URL from signProgramPhotoUrls.
     match /programPhotos/{programPhotoId} {
-      allow read, write: if false;
+      allow get, list: if hasProgramDuty(resource.data.programId, 'communications');
+      allow write: if false;
     }
 
     match /programWhatsappEndpointIndex/{endpointIndexId} {
@@ -2653,16 +2675,33 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // The inbox row of one thread (#1339): the latest message preview and the
+    // household's names are personal data, so only the programme's managers
+    // and communications duty read them, listing by a query naming the
+    // programme. The phone hash, the sender connection and who took the
+    // thread over stay on the server-only thread.
+    match /programWhatsappThreadViews/{threadId} {
+      allow get, list: if hasProgramDuty(resource.data.programId, 'communications');
+      allow write: if false;
+    }
+
+    // Message bodies are personal data: the same readers list one thread's
+    // messages by a query naming the programme and the thread. Only the
+    // inbound router, the reply callables and the assistant write them.
     match /programWhatsappMessages/{programWhatsappMessageId} {
-      allow read, write: if false;
+      allow get, list: if hasProgramDuty(resource.data.programId, 'communications');
+      allow write: if false;
     }
 
     match /programWhatsappReplyOperations/{programWhatsappReplyOperationId} {
       allow read, write: if false;
     }
 
+    // Saved replies are planner text: the same readers list one programme's.
+    // Saving stays upsertProgramWhatsappCannedReply.
     match /programWhatsappCannedReplies/{programWhatsappCannedReplyId} {
-      allow read, write: if false;
+      allow get, list: if hasProgramDuty(resource.data.programId, 'communications');
+      allow write: if false;
     }
 
     match /programAssistantSettings/{programId} {

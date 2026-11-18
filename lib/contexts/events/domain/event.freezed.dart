@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'event.dart';
@@ -9,6 +9,7 @@ part of 'event.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $EventCopyWith<Event> get copyWith => _$EventCopyWithImpl<Event>(this as Event, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Event&&(identical(other.id, id) || other.id == id)&&(identical(other.synthetic, synthetic) || other.synthetic == synthetic)&&(identical(other.seedPrefix, seedPrefix) || other.seedPrefix == seedPrefix)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.sourceVenueId, sourceVenueId) || other.sourceVenueId == sourceVenueId)&&(identical(other.name, name) || other.name == name)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.eventTimezone, eventTimezone) || other.eventTimezone == eventTimezone)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.meetingLocation, meetingLocation) || other.meetingLocation == meetingLocation)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&const DeepCollectionEquality().equals(other.itinerary, itinerary)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&const DeepCollectionEquality().equals(other.eventPhotos, eventPhotos)&&(identical(other.eventFormat, eventFormat) || other.eventFormat == eventFormat)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.bookedCount, bookedCount) || other.bookedCount == bookedCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.waitlistedCount, waitlistedCount) || other.waitlistedCount == waitlistedCount)&&(identical(other.crossPathsPairHeldCount, crossPathsPairHeldCount) || other.crossPathsPairHeldCount == crossPathsPairHeldCount)&&(identical(other.crossPathsPairConfirmedCount, crossPathsPairConfirmedCount) || other.crossPathsPairConfirmedCount == crossPathsPairConfirmedCount)&&const DeepCollectionEquality().equals(other.crossPathsPairHeldCohortCounts, crossPathsPairHeldCohortCounts)&&(identical(other.crossPathsDiscoveryEnabled, crossPathsDiscoveryEnabled) || other.crossPathsDiscoveryEnabled == crossPathsDiscoveryEnabled)&&(identical(other.status, status) || other.status == status)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.cancellationReason, cancellationReason) || other.cancellationReason == cancellationReason)&&(identical(other.setupRevision, setupRevision) || other.setupRevision == setupRevision)&&(identical(other.publicRegistrationEnabled, publicRegistrationEnabled) || other.publicRegistrationEnabled == publicRegistrationEnabled)&&(identical(other.publicRegistrationMode, publicRegistrationMode) || other.publicRegistrationMode == publicRegistrationMode)&&(identical(other.publicRegistrationRevision, publicRegistrationRevision) || other.publicRegistrationRevision == publicRegistrationRevision)&&(identical(other.listing, listing) || other.listing == listing)&&(identical(other.showGuestList, showGuestList) || other.showGuestList == showGuestList)&&(identical(other.priceHiddenUntilBookingOpens, priceHiddenUntilBookingOpens) || other.priceHiddenUntilBookingOpens == priceHiddenUntilBookingOpens)&&(identical(other.planVisibleToGuests, planVisibleToGuests) || other.planVisibleToGuests == planVisibleToGuests)&&(identical(other.organizerSummary, organizerSummary) || other.organizerSummary == organizerSummary)&&(identical(other.externalBooking, externalBooking) || other.externalBooking == externalBooking)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventOrigin, eventOrigin) || other.eventOrigin == eventOrigin)&&(identical(other.runtimeAccess, runtimeAccess) || other.runtimeAccess == runtimeAccess)&&const DeepCollectionEquality().equals(other.genderCounts, genderCounts)&&const DeepCollectionEquality().equals(other.cohortCounts, cohortCounts)&&const DeepCollectionEquality().equals(other.waitlistedCohortCounts, waitlistedCohortCounts));
+  final _this = this as Event;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Event&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.synthetic, _this.synthetic) || other.synthetic == _this.synthetic)&&(identical(other.seedPrefix, _this.seedPrefix) || other.seedPrefix == _this.seedPrefix)&&(identical(other.organizerId, _this.organizerId) || other.organizerId == _this.organizerId)&&(identical(other.sourceVenueId, _this.sourceVenueId) || other.sourceVenueId == _this.sourceVenueId)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.startTime, _this.startTime) || other.startTime == _this.startTime)&&(identical(other.eventTimezone, _this.eventTimezone) || other.eventTimezone == _this.eventTimezone)&&(identical(other.endTime, _this.endTime) || other.endTime == _this.endTime)&&(identical(other.meetingPoint, _this.meetingPoint) || other.meetingPoint == _this.meetingPoint)&&(identical(other.meetingLocation, _this.meetingLocation) || other.meetingLocation == _this.meetingLocation)&&(identical(other.startingPointLat, _this.startingPointLat) || other.startingPointLat == _this.startingPointLat)&&(identical(other.startingPointLng, _this.startingPointLng) || other.startingPointLng == _this.startingPointLng)&&(identical(other.locationDetails, _this.locationDetails) || other.locationDetails == _this.locationDetails)&&const DeepCollectionEquality().equals(other.itinerary, _this.itinerary)&&(identical(other.photoUrl, _this.photoUrl) || other.photoUrl == _this.photoUrl)&&const DeepCollectionEquality().equals(other.eventPhotos, _this.eventPhotos)&&(identical(other.eventFormat, _this.eventFormat) || other.eventFormat == _this.eventFormat)&&(identical(other.distanceKm, _this.distanceKm) || other.distanceKm == _this.distanceKm)&&(identical(other.pace, _this.pace) || other.pace == _this.pace)&&(identical(other.capacityLimit, _this.capacityLimit) || other.capacityLimit == _this.capacityLimit)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.priceInPaise, _this.priceInPaise) || other.priceInPaise == _this.priceInPaise)&&(identical(other.currency, _this.currency) || other.currency == _this.currency)&&(identical(other.bookedCount, _this.bookedCount) || other.bookedCount == _this.bookedCount)&&(identical(other.checkedInCount, _this.checkedInCount) || other.checkedInCount == _this.checkedInCount)&&(identical(other.waitlistedCount, _this.waitlistedCount) || other.waitlistedCount == _this.waitlistedCount)&&(identical(other.crossPathsPairHeldCount, _this.crossPathsPairHeldCount) || other.crossPathsPairHeldCount == _this.crossPathsPairHeldCount)&&(identical(other.crossPathsPairConfirmedCount, _this.crossPathsPairConfirmedCount) || other.crossPathsPairConfirmedCount == _this.crossPathsPairConfirmedCount)&&const DeepCollectionEquality().equals(other.crossPathsPairHeldCohortCounts, _this.crossPathsPairHeldCohortCounts)&&(identical(other.crossPathsDiscoveryEnabled, _this.crossPathsDiscoveryEnabled) || other.crossPathsDiscoveryEnabled == _this.crossPathsDiscoveryEnabled)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.cancelledAt, _this.cancelledAt) || other.cancelledAt == _this.cancelledAt)&&(identical(other.cancellationReason, _this.cancellationReason) || other.cancellationReason == _this.cancellationReason)&&(identical(other.setupRevision, _this.setupRevision) || other.setupRevision == _this.setupRevision)&&(identical(other.publicRegistrationEnabled, _this.publicRegistrationEnabled) || other.publicRegistrationEnabled == _this.publicRegistrationEnabled)&&(identical(other.publicRegistrationMode, _this.publicRegistrationMode) || other.publicRegistrationMode == _this.publicRegistrationMode)&&(identical(other.publicRegistrationRevision, _this.publicRegistrationRevision) || other.publicRegistrationRevision == _this.publicRegistrationRevision)&&(identical(other.listing, _this.listing) || other.listing == _this.listing)&&(identical(other.showGuestList, _this.showGuestList) || other.showGuestList == _this.showGuestList)&&(identical(other.priceHiddenUntilBookingOpens, _this.priceHiddenUntilBookingOpens) || other.priceHiddenUntilBookingOpens == _this.priceHiddenUntilBookingOpens)&&(identical(other.planVisibleToGuests, _this.planVisibleToGuests) || other.planVisibleToGuests == _this.planVisibleToGuests)&&(identical(other.organizerSummary, _this.organizerSummary) || other.organizerSummary == _this.organizerSummary)&&(identical(other.externalBooking, _this.externalBooking) || other.externalBooking == _this.externalBooking)&&(identical(other.constraints, _this.constraints) || other.constraints == _this.constraints)&&(identical(other.eventPolicy, _this.eventPolicy) || other.eventPolicy == _this.eventPolicy)&&(identical(other.eventOrigin, _this.eventOrigin) || other.eventOrigin == _this.eventOrigin)&&(identical(other.runtimeAccess, _this.runtimeAccess) || other.runtimeAccess == _this.runtimeAccess)&&const DeepCollectionEquality().equals(other.genderCounts, _this.genderCounts)&&const DeepCollectionEquality().equals(other.cohortCounts, _this.cohortCounts)&&const DeepCollectionEquality().equals(other.waitlistedCohortCounts, _this.waitlistedCohortCounts));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,synthetic,seedPrefix,organizerId,sourceVenueId,name,startTime,eventTimezone,endTime,meetingPoint,meetingLocation,startingPointLat,startingPointLng,locationDetails,const DeepCollectionEquality().hash(itinerary),photoUrl,const DeepCollectionEquality().hash(eventPhotos),eventFormat,distanceKm,pace,capacityLimit,description,priceInPaise,currency,bookedCount,checkedInCount,waitlistedCount,crossPathsPairHeldCount,crossPathsPairConfirmedCount,const DeepCollectionEquality().hash(crossPathsPairHeldCohortCounts),crossPathsDiscoveryEnabled,status,cancelledAt,cancellationReason,setupRevision,publicRegistrationEnabled,publicRegistrationMode,publicRegistrationRevision,listing,showGuestList,priceHiddenUntilBookingOpens,planVisibleToGuests,organizerSummary,externalBooking,constraints,eventPolicy,eventOrigin,runtimeAccess,const DeepCollectionEquality().hash(genderCounts),const DeepCollectionEquality().hash(cohortCounts),const DeepCollectionEquality().hash(waitlistedCohortCounts)]);
+int get hashCode {
+  final _this = this as Event;
+  return Object.hashAll([runtimeType,_this.id,_this.synthetic,_this.seedPrefix,_this.organizerId,_this.sourceVenueId,_this.name,_this.startTime,_this.eventTimezone,_this.endTime,_this.meetingPoint,_this.meetingLocation,_this.startingPointLat,_this.startingPointLng,_this.locationDetails,const DeepCollectionEquality().hash(_this.itinerary),_this.photoUrl,const DeepCollectionEquality().hash(_this.eventPhotos),_this.eventFormat,_this.distanceKm,_this.pace,_this.capacityLimit,_this.description,_this.priceInPaise,_this.currency,_this.bookedCount,_this.checkedInCount,_this.waitlistedCount,_this.crossPathsPairHeldCount,_this.crossPathsPairConfirmedCount,const DeepCollectionEquality().hash(_this.crossPathsPairHeldCohortCounts),_this.crossPathsDiscoveryEnabled,_this.status,_this.cancelledAt,_this.cancellationReason,_this.setupRevision,_this.publicRegistrationEnabled,_this.publicRegistrationMode,_this.publicRegistrationRevision,_this.listing,_this.showGuestList,_this.priceHiddenUntilBookingOpens,_this.planVisibleToGuests,_this.organizerSummary,_this.externalBooking,_this.constraints,_this.eventPolicy,_this.eventOrigin,_this.runtimeAccess,const DeepCollectionEquality().hash(_this.genderCounts),const DeepCollectionEquality().hash(_this.cohortCounts),const DeepCollectionEquality().hash(_this.waitlistedCohortCounts)]);
+}
 
 @override
 String toString() {
-  return 'Event(id: $id, synthetic: $synthetic, seedPrefix: $seedPrefix, organizerId: $organizerId, sourceVenueId: $sourceVenueId, name: $name, startTime: $startTime, eventTimezone: $eventTimezone, endTime: $endTime, meetingPoint: $meetingPoint, meetingLocation: $meetingLocation, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, itinerary: $itinerary, photoUrl: $photoUrl, eventPhotos: $eventPhotos, eventFormat: $eventFormat, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, currency: $currency, bookedCount: $bookedCount, checkedInCount: $checkedInCount, waitlistedCount: $waitlistedCount, crossPathsPairHeldCount: $crossPathsPairHeldCount, crossPathsPairConfirmedCount: $crossPathsPairConfirmedCount, crossPathsPairHeldCohortCounts: $crossPathsPairHeldCohortCounts, crossPathsDiscoveryEnabled: $crossPathsDiscoveryEnabled, status: $status, cancelledAt: $cancelledAt, cancellationReason: $cancellationReason, setupRevision: $setupRevision, publicRegistrationEnabled: $publicRegistrationEnabled, publicRegistrationMode: $publicRegistrationMode, publicRegistrationRevision: $publicRegistrationRevision, listing: $listing, showGuestList: $showGuestList, priceHiddenUntilBookingOpens: $priceHiddenUntilBookingOpens, planVisibleToGuests: $planVisibleToGuests, organizerSummary: $organizerSummary, externalBooking: $externalBooking, constraints: $constraints, eventPolicy: $eventPolicy, eventOrigin: $eventOrigin, runtimeAccess: $runtimeAccess, genderCounts: $genderCounts, cohortCounts: $cohortCounts, waitlistedCohortCounts: $waitlistedCohortCounts)';
+  final _this = this as Event;
+  return 'Event(id: ${_this.id}, synthetic: ${_this.synthetic}, seedPrefix: ${_this.seedPrefix}, organizerId: ${_this.organizerId}, sourceVenueId: ${_this.sourceVenueId}, name: ${_this.name}, startTime: ${_this.startTime}, eventTimezone: ${_this.eventTimezone}, endTime: ${_this.endTime}, meetingPoint: ${_this.meetingPoint}, meetingLocation: ${_this.meetingLocation}, startingPointLat: ${_this.startingPointLat}, startingPointLng: ${_this.startingPointLng}, locationDetails: ${_this.locationDetails}, itinerary: ${_this.itinerary}, photoUrl: ${_this.photoUrl}, eventPhotos: ${_this.eventPhotos}, eventFormat: ${_this.eventFormat}, distanceKm: ${_this.distanceKm}, pace: ${_this.pace}, capacityLimit: ${_this.capacityLimit}, description: ${_this.description}, priceInPaise: ${_this.priceInPaise}, currency: ${_this.currency}, bookedCount: ${_this.bookedCount}, checkedInCount: ${_this.checkedInCount}, waitlistedCount: ${_this.waitlistedCount}, crossPathsPairHeldCount: ${_this.crossPathsPairHeldCount}, crossPathsPairConfirmedCount: ${_this.crossPathsPairConfirmedCount}, crossPathsPairHeldCohortCounts: ${_this.crossPathsPairHeldCohortCounts}, crossPathsDiscoveryEnabled: ${_this.crossPathsDiscoveryEnabled}, status: ${_this.status}, cancelledAt: ${_this.cancelledAt}, cancellationReason: ${_this.cancellationReason}, setupRevision: ${_this.setupRevision}, publicRegistrationEnabled: ${_this.publicRegistrationEnabled}, publicRegistrationMode: ${_this.publicRegistrationMode}, publicRegistrationRevision: ${_this.publicRegistrationRevision}, listing: ${_this.listing}, showGuestList: ${_this.showGuestList}, priceHiddenUntilBookingOpens: ${_this.priceHiddenUntilBookingOpens}, planVisibleToGuests: ${_this.planVisibleToGuests}, organizerSummary: ${_this.organizerSummary}, externalBooking: ${_this.externalBooking}, constraints: ${_this.constraints}, eventPolicy: ${_this.eventPolicy}, eventOrigin: ${_this.eventOrigin}, runtimeAccess: ${_this.runtimeAccess}, genderCounts: ${_this.genderCounts}, cohortCounts: ${_this.cohortCounts}, waitlistedCohortCounts: ${_this.waitlistedCohortCounts})';
 }
 
 
@@ -66,7 +72,7 @@ class _$EventCopyWithImpl<$Res>
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? synthetic = null,Object? seedPrefix = freezed,Object? organizerId = null,Object? sourceVenueId = freezed,Object? name = null,Object? startTime = null,Object? eventTimezone = freezed,Object? endTime = null,Object? meetingPoint = null,Object? meetingLocation = freezed,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? locationDetails = freezed,Object? itinerary = null,Object? photoUrl = freezed,Object? eventPhotos = null,Object? eventFormat = null,Object? distanceKm = null,Object? pace = null,Object? capacityLimit = null,Object? description = null,Object? priceInPaise = null,Object? currency = null,Object? bookedCount = freezed,Object? checkedInCount = freezed,Object? waitlistedCount = freezed,Object? crossPathsPairHeldCount = null,Object? crossPathsPairConfirmedCount = null,Object? crossPathsPairHeldCohortCounts = null,Object? crossPathsDiscoveryEnabled = null,Object? status = null,Object? cancelledAt = freezed,Object? cancellationReason = freezed,Object? setupRevision = freezed,Object? publicRegistrationEnabled = null,Object? publicRegistrationMode = freezed,Object? publicRegistrationRevision = null,Object? listing = null,Object? showGuestList = null,Object? priceHiddenUntilBookingOpens = null,Object? planVisibleToGuests = null,Object? organizerSummary = freezed,Object? externalBooking = freezed,Object? constraints = null,Object? eventPolicy = freezed,Object? eventOrigin = freezed,Object? runtimeAccess = freezed,Object? genderCounts = null,Object? cohortCounts = null,Object? waitlistedCohortCounts = null,}) {
-  return _then(_self.copyWith(
+  return _then(Event(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,synthetic: null == synthetic ? _self.synthetic : synthetic // ignore: cast_nullable_to_non_nullable
 as bool,seedPrefix: freezed == seedPrefix ? _self.seedPrefix : seedPrefix // ignore: cast_nullable_to_non_nullable
@@ -328,7 +334,7 @@ return $default(_that.id,_that.synthetic,_that.seedPrefix,_that.organizerId,_tha
 @JsonSerializable()
 
 class _Event implements Event {
-  const _Event({@JsonKey(includeToJson: false) required this.id, @JsonKey(includeToJson: false) this.synthetic = false, @JsonKey(includeToJson: false) this.seedPrefix, required this.organizerId, @JsonKey(includeIfNull: false) this.sourceVenueId, this.name = '', @TimestampConverter() required this.startTime, @JsonKey(includeIfNull: false) this.eventTimezone, @TimestampConverter() required this.endTime, required this.meetingPoint, @JsonKey(includeIfNull: false) this.meetingLocation, this.startingPointLat, this.startingPointLng, this.locationDetails, final  List<EventItineraryItem> itinerary = const [], @JsonKey(includeIfNull: false) this.photoUrl, final  List<UploadedPhoto> eventPhotos = const [], this.eventFormat = const EventFormatSnapshot.socialRun(), required this.distanceKm, required this.pace, required this.capacityLimit, required this.description, required this.priceInPaise, this.currency = defaultCurrencyCode, @JsonKey(includeIfNull: false) this.bookedCount, @JsonKey(includeIfNull: false) this.checkedInCount, @JsonKey(includeIfNull: false) this.waitlistedCount, this.crossPathsPairHeldCount = 0, this.crossPathsPairConfirmedCount = 0, final  Map<String, int> crossPathsPairHeldCohortCounts = const {}, this.crossPathsDiscoveryEnabled = false, this.status = EventLifecycleStatus.active, @NullableTimestampConverter() this.cancelledAt, this.cancellationReason, @JsonKey(includeIfNull: false) this.setupRevision, this.publicRegistrationEnabled = false, @JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed) this.publicRegistrationMode, this.publicRegistrationRevision = 0, @JsonKey(unknownEnumValue: EventListing.listed) this.listing = EventListing.listed, this.showGuestList = true, this.priceHiddenUntilBookingOpens = false, this.planVisibleToGuests = true, @JsonKey(includeIfNull: false) this.organizerSummary, @JsonKey(includeIfNull: false) this.externalBooking, this.constraints = const EventConstraints(), @JsonKey(includeIfNull: false) this.eventPolicy, @JsonKey(includeIfNull: false) this.eventOrigin, @JsonKey(includeIfNull: false) this.runtimeAccess, final  Map<String, int> genderCounts = const {}, final  Map<String, int> cohortCounts = const {}, final  Map<String, int> waitlistedCohortCounts = const {}}): _itinerary = itinerary,_eventPhotos = eventPhotos,_crossPathsPairHeldCohortCounts = crossPathsPairHeldCohortCounts,_genderCounts = genderCounts,_cohortCounts = cohortCounts,_waitlistedCohortCounts = waitlistedCohortCounts;
+  const _Event({@JsonKey(includeToJson: false) required this.id, @JsonKey(includeToJson: false) this.synthetic = false, @JsonKey(includeToJson: false) this.seedPrefix, required this.organizerId, @JsonKey(includeIfNull: false) this.sourceVenueId, this.name = '', @TimestampConverter() required this.startTime, @JsonKey(includeIfNull: false) this.eventTimezone, @TimestampConverter() required this.endTime, required this.meetingPoint, @JsonKey(includeIfNull: false) this.meetingLocation, this.startingPointLat, this.startingPointLng, this.locationDetails,  List<EventItineraryItem> itinerary = const [], @JsonKey(includeIfNull: false) this.photoUrl,  List<UploadedPhoto> eventPhotos = const [], this.eventFormat = const EventFormatSnapshot.socialRun(), required this.distanceKm, required this.pace, required this.capacityLimit, required this.description, required this.priceInPaise, this.currency = defaultCurrencyCode, @JsonKey(includeIfNull: false) this.bookedCount, @JsonKey(includeIfNull: false) this.checkedInCount, @JsonKey(includeIfNull: false) this.waitlistedCount, this.crossPathsPairHeldCount = 0, this.crossPathsPairConfirmedCount = 0,  Map<String, int> crossPathsPairHeldCohortCounts = const {}, this.crossPathsDiscoveryEnabled = false, this.status = EventLifecycleStatus.active, @NullableTimestampConverter() this.cancelledAt, this.cancellationReason, @JsonKey(includeIfNull: false) this.setupRevision, this.publicRegistrationEnabled = false, @JsonKey(includeIfNull: false, unknownEnumValue: EventPublicRegistrationMode.closed) this.publicRegistrationMode, this.publicRegistrationRevision = 0, @JsonKey(unknownEnumValue: EventListing.listed) this.listing = EventListing.listed, this.showGuestList = true, this.priceHiddenUntilBookingOpens = false, this.planVisibleToGuests = true, @JsonKey(includeIfNull: false) this.organizerSummary, @JsonKey(includeIfNull: false) this.externalBooking, this.constraints = const EventConstraints(), @JsonKey(includeIfNull: false) this.eventPolicy, @JsonKey(includeIfNull: false) this.eventOrigin, @JsonKey(includeIfNull: false) this.runtimeAccess,  Map<String, int> genderCounts = const {},  Map<String, int> cohortCounts = const {},  Map<String, int> waitlistedCohortCounts = const {}}): _itinerary = itinerary,_eventPhotos = eventPhotos,_crossPathsPairHeldCohortCounts = crossPathsPairHeldCohortCounts,_genderCounts = genderCounts,_cohortCounts = cohortCounts,_waitlistedCohortCounts = waitlistedCohortCounts;
   factory _Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -432,16 +438,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Event&&(identical(other.id, id) || other.id == id)&&(identical(other.synthetic, synthetic) || other.synthetic == synthetic)&&(identical(other.seedPrefix, seedPrefix) || other.seedPrefix == seedPrefix)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.sourceVenueId, sourceVenueId) || other.sourceVenueId == sourceVenueId)&&(identical(other.name, name) || other.name == name)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.eventTimezone, eventTimezone) || other.eventTimezone == eventTimezone)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.meetingLocation, meetingLocation) || other.meetingLocation == meetingLocation)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&const DeepCollectionEquality().equals(other._itinerary, _itinerary)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&const DeepCollectionEquality().equals(other._eventPhotos, _eventPhotos)&&(identical(other.eventFormat, eventFormat) || other.eventFormat == eventFormat)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.bookedCount, bookedCount) || other.bookedCount == bookedCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.waitlistedCount, waitlistedCount) || other.waitlistedCount == waitlistedCount)&&(identical(other.crossPathsPairHeldCount, crossPathsPairHeldCount) || other.crossPathsPairHeldCount == crossPathsPairHeldCount)&&(identical(other.crossPathsPairConfirmedCount, crossPathsPairConfirmedCount) || other.crossPathsPairConfirmedCount == crossPathsPairConfirmedCount)&&const DeepCollectionEquality().equals(other._crossPathsPairHeldCohortCounts, _crossPathsPairHeldCohortCounts)&&(identical(other.crossPathsDiscoveryEnabled, crossPathsDiscoveryEnabled) || other.crossPathsDiscoveryEnabled == crossPathsDiscoveryEnabled)&&(identical(other.status, status) || other.status == status)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.cancellationReason, cancellationReason) || other.cancellationReason == cancellationReason)&&(identical(other.setupRevision, setupRevision) || other.setupRevision == setupRevision)&&(identical(other.publicRegistrationEnabled, publicRegistrationEnabled) || other.publicRegistrationEnabled == publicRegistrationEnabled)&&(identical(other.publicRegistrationMode, publicRegistrationMode) || other.publicRegistrationMode == publicRegistrationMode)&&(identical(other.publicRegistrationRevision, publicRegistrationRevision) || other.publicRegistrationRevision == publicRegistrationRevision)&&(identical(other.listing, listing) || other.listing == listing)&&(identical(other.showGuestList, showGuestList) || other.showGuestList == showGuestList)&&(identical(other.priceHiddenUntilBookingOpens, priceHiddenUntilBookingOpens) || other.priceHiddenUntilBookingOpens == priceHiddenUntilBookingOpens)&&(identical(other.planVisibleToGuests, planVisibleToGuests) || other.planVisibleToGuests == planVisibleToGuests)&&(identical(other.organizerSummary, organizerSummary) || other.organizerSummary == organizerSummary)&&(identical(other.externalBooking, externalBooking) || other.externalBooking == externalBooking)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventOrigin, eventOrigin) || other.eventOrigin == eventOrigin)&&(identical(other.runtimeAccess, runtimeAccess) || other.runtimeAccess == runtimeAccess)&&const DeepCollectionEquality().equals(other._genderCounts, _genderCounts)&&const DeepCollectionEquality().equals(other._cohortCounts, _cohortCounts)&&const DeepCollectionEquality().equals(other._waitlistedCohortCounts, _waitlistedCohortCounts));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Event&&(identical(other.id, id) || other.id == id)&&(identical(other.synthetic, synthetic) || other.synthetic == synthetic)&&(identical(other.seedPrefix, seedPrefix) || other.seedPrefix == seedPrefix)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.sourceVenueId, sourceVenueId) || other.sourceVenueId == sourceVenueId)&&(identical(other.name, name) || other.name == name)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.eventTimezone, eventTimezone) || other.eventTimezone == eventTimezone)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.meetingLocation, meetingLocation) || other.meetingLocation == meetingLocation)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&const DeepCollectionEquality().equals(other.itinerary, _itinerary)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&const DeepCollectionEquality().equals(other.eventPhotos, _eventPhotos)&&(identical(other.eventFormat, eventFormat) || other.eventFormat == eventFormat)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.bookedCount, bookedCount) || other.bookedCount == bookedCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.waitlistedCount, waitlistedCount) || other.waitlistedCount == waitlistedCount)&&(identical(other.crossPathsPairHeldCount, crossPathsPairHeldCount) || other.crossPathsPairHeldCount == crossPathsPairHeldCount)&&(identical(other.crossPathsPairConfirmedCount, crossPathsPairConfirmedCount) || other.crossPathsPairConfirmedCount == crossPathsPairConfirmedCount)&&const DeepCollectionEquality().equals(other.crossPathsPairHeldCohortCounts, _crossPathsPairHeldCohortCounts)&&(identical(other.crossPathsDiscoveryEnabled, crossPathsDiscoveryEnabled) || other.crossPathsDiscoveryEnabled == crossPathsDiscoveryEnabled)&&(identical(other.status, status) || other.status == status)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.cancellationReason, cancellationReason) || other.cancellationReason == cancellationReason)&&(identical(other.setupRevision, setupRevision) || other.setupRevision == setupRevision)&&(identical(other.publicRegistrationEnabled, publicRegistrationEnabled) || other.publicRegistrationEnabled == publicRegistrationEnabled)&&(identical(other.publicRegistrationMode, publicRegistrationMode) || other.publicRegistrationMode == publicRegistrationMode)&&(identical(other.publicRegistrationRevision, publicRegistrationRevision) || other.publicRegistrationRevision == publicRegistrationRevision)&&(identical(other.listing, listing) || other.listing == listing)&&(identical(other.showGuestList, showGuestList) || other.showGuestList == showGuestList)&&(identical(other.priceHiddenUntilBookingOpens, priceHiddenUntilBookingOpens) || other.priceHiddenUntilBookingOpens == priceHiddenUntilBookingOpens)&&(identical(other.planVisibleToGuests, planVisibleToGuests) || other.planVisibleToGuests == planVisibleToGuests)&&(identical(other.organizerSummary, organizerSummary) || other.organizerSummary == organizerSummary)&&(identical(other.externalBooking, externalBooking) || other.externalBooking == externalBooking)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventOrigin, eventOrigin) || other.eventOrigin == eventOrigin)&&(identical(other.runtimeAccess, runtimeAccess) || other.runtimeAccess == runtimeAccess)&&const DeepCollectionEquality().equals(other.genderCounts, _genderCounts)&&const DeepCollectionEquality().equals(other.cohortCounts, _cohortCounts)&&const DeepCollectionEquality().equals(other.waitlistedCohortCounts, _waitlistedCohortCounts));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,synthetic,seedPrefix,organizerId,sourceVenueId,name,startTime,eventTimezone,endTime,meetingPoint,meetingLocation,startingPointLat,startingPointLng,locationDetails,const DeepCollectionEquality().hash(_itinerary),photoUrl,const DeepCollectionEquality().hash(_eventPhotos),eventFormat,distanceKm,pace,capacityLimit,description,priceInPaise,currency,bookedCount,checkedInCount,waitlistedCount,crossPathsPairHeldCount,crossPathsPairConfirmedCount,const DeepCollectionEquality().hash(_crossPathsPairHeldCohortCounts),crossPathsDiscoveryEnabled,status,cancelledAt,cancellationReason,setupRevision,publicRegistrationEnabled,publicRegistrationMode,publicRegistrationRevision,listing,showGuestList,priceHiddenUntilBookingOpens,planVisibleToGuests,organizerSummary,externalBooking,constraints,eventPolicy,eventOrigin,runtimeAccess,const DeepCollectionEquality().hash(_genderCounts),const DeepCollectionEquality().hash(_cohortCounts),const DeepCollectionEquality().hash(_waitlistedCohortCounts)]);
+int get hashCode {
+    return Object.hashAll([runtimeType,id,synthetic,seedPrefix,organizerId,sourceVenueId,name,startTime,eventTimezone,endTime,meetingPoint,meetingLocation,startingPointLat,startingPointLng,locationDetails,const DeepCollectionEquality().hash(_itinerary),photoUrl,const DeepCollectionEquality().hash(_eventPhotos),eventFormat,distanceKm,pace,capacityLimit,description,priceInPaise,currency,bookedCount,checkedInCount,waitlistedCount,crossPathsPairHeldCount,crossPathsPairConfirmedCount,const DeepCollectionEquality().hash(_crossPathsPairHeldCohortCounts),crossPathsDiscoveryEnabled,status,cancelledAt,cancellationReason,setupRevision,publicRegistrationEnabled,publicRegistrationMode,publicRegistrationRevision,listing,showGuestList,priceHiddenUntilBookingOpens,planVisibleToGuests,organizerSummary,externalBooking,constraints,eventPolicy,eventOrigin,runtimeAccess,const DeepCollectionEquality().hash(_genderCounts),const DeepCollectionEquality().hash(_cohortCounts),const DeepCollectionEquality().hash(_waitlistedCohortCounts)]);
+}
 
 @override
 String toString() {
-  return 'Event(id: $id, synthetic: $synthetic, seedPrefix: $seedPrefix, organizerId: $organizerId, sourceVenueId: $sourceVenueId, name: $name, startTime: $startTime, eventTimezone: $eventTimezone, endTime: $endTime, meetingPoint: $meetingPoint, meetingLocation: $meetingLocation, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, itinerary: $itinerary, photoUrl: $photoUrl, eventPhotos: $eventPhotos, eventFormat: $eventFormat, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, currency: $currency, bookedCount: $bookedCount, checkedInCount: $checkedInCount, waitlistedCount: $waitlistedCount, crossPathsPairHeldCount: $crossPathsPairHeldCount, crossPathsPairConfirmedCount: $crossPathsPairConfirmedCount, crossPathsPairHeldCohortCounts: $crossPathsPairHeldCohortCounts, crossPathsDiscoveryEnabled: $crossPathsDiscoveryEnabled, status: $status, cancelledAt: $cancelledAt, cancellationReason: $cancellationReason, setupRevision: $setupRevision, publicRegistrationEnabled: $publicRegistrationEnabled, publicRegistrationMode: $publicRegistrationMode, publicRegistrationRevision: $publicRegistrationRevision, listing: $listing, showGuestList: $showGuestList, priceHiddenUntilBookingOpens: $priceHiddenUntilBookingOpens, planVisibleToGuests: $planVisibleToGuests, organizerSummary: $organizerSummary, externalBooking: $externalBooking, constraints: $constraints, eventPolicy: $eventPolicy, eventOrigin: $eventOrigin, runtimeAccess: $runtimeAccess, genderCounts: $genderCounts, cohortCounts: $cohortCounts, waitlistedCohortCounts: $waitlistedCohortCounts)';
+    return 'Event(id: $id, synthetic: $synthetic, seedPrefix: $seedPrefix, organizerId: $organizerId, sourceVenueId: $sourceVenueId, name: $name, startTime: $startTime, eventTimezone: $eventTimezone, endTime: $endTime, meetingPoint: $meetingPoint, meetingLocation: $meetingLocation, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, itinerary: $itinerary, photoUrl: $photoUrl, eventPhotos: $eventPhotos, eventFormat: $eventFormat, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, currency: $currency, bookedCount: $bookedCount, checkedInCount: $checkedInCount, waitlistedCount: $waitlistedCount, crossPathsPairHeldCount: $crossPathsPairHeldCount, crossPathsPairConfirmedCount: $crossPathsPairConfirmedCount, crossPathsPairHeldCohortCounts: $crossPathsPairHeldCohortCounts, crossPathsDiscoveryEnabled: $crossPathsDiscoveryEnabled, status: $status, cancelledAt: $cancelledAt, cancellationReason: $cancellationReason, setupRevision: $setupRevision, publicRegistrationEnabled: $publicRegistrationEnabled, publicRegistrationMode: $publicRegistrationMode, publicRegistrationRevision: $publicRegistrationRevision, listing: $listing, showGuestList: $showGuestList, priceHiddenUntilBookingOpens: $priceHiddenUntilBookingOpens, planVisibleToGuests: $planVisibleToGuests, organizerSummary: $organizerSummary, externalBooking: $externalBooking, constraints: $constraints, eventPolicy: $eventPolicy, eventOrigin: $eventOrigin, runtimeAccess: $runtimeAccess, genderCounts: $genderCounts, cohortCounts: $cohortCounts, waitlistedCohortCounts: $waitlistedCohortCounts)';
 }
 
 
@@ -615,16 +623,21 @@ $EventOriginCopyWith<EventOrigin> get copyWith => _$EventOriginCopyWithImpl<Even
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventOrigin&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.bookingAuthority, bookingAuthority) || other.bookingAuthority == bookingAuthority)&&(identical(other.rosterAuthority, rosterAuthority) || other.rosterAuthority == rosterAuthority)&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.externalEventId, externalEventId) || other.externalEventId == externalEventId)&&(identical(other.externalEventUrl, externalEventUrl) || other.externalEventUrl == externalEventUrl)&&(identical(other.sourceExternalEventId, sourceExternalEventId) || other.sourceExternalEventId == sourceExternalEventId)&&(identical(other.adapterVersion, adapterVersion) || other.adapterVersion == adapterVersion)&&(identical(other.connectedAt, connectedAt) || other.connectedAt == connectedAt)&&(identical(other.connectedBy, connectedBy) || other.connectedBy == connectedBy));
+  final _this = this as EventOrigin;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventOrigin&&(identical(other.mode, _this.mode) || other.mode == _this.mode)&&(identical(other.bookingAuthority, _this.bookingAuthority) || other.bookingAuthority == _this.bookingAuthority)&&(identical(other.rosterAuthority, _this.rosterAuthority) || other.rosterAuthority == _this.rosterAuthority)&&(identical(other.provider, _this.provider) || other.provider == _this.provider)&&(identical(other.externalEventId, _this.externalEventId) || other.externalEventId == _this.externalEventId)&&(identical(other.externalEventUrl, _this.externalEventUrl) || other.externalEventUrl == _this.externalEventUrl)&&(identical(other.sourceExternalEventId, _this.sourceExternalEventId) || other.sourceExternalEventId == _this.sourceExternalEventId)&&(identical(other.adapterVersion, _this.adapterVersion) || other.adapterVersion == _this.adapterVersion)&&(identical(other.connectedAt, _this.connectedAt) || other.connectedAt == _this.connectedAt)&&(identical(other.connectedBy, _this.connectedBy) || other.connectedBy == _this.connectedBy));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,mode,bookingAuthority,rosterAuthority,provider,externalEventId,externalEventUrl,sourceExternalEventId,adapterVersion,connectedAt,connectedBy);
+int get hashCode {
+  final _this = this as EventOrigin;
+  return Object.hash(runtimeType,_this.mode,_this.bookingAuthority,_this.rosterAuthority,_this.provider,_this.externalEventId,_this.externalEventUrl,_this.sourceExternalEventId,_this.adapterVersion,_this.connectedAt,_this.connectedBy);
+}
 
 @override
 String toString() {
-  return 'EventOrigin(mode: $mode, bookingAuthority: $bookingAuthority, rosterAuthority: $rosterAuthority, provider: $provider, externalEventId: $externalEventId, externalEventUrl: $externalEventUrl, sourceExternalEventId: $sourceExternalEventId, adapterVersion: $adapterVersion, connectedAt: $connectedAt, connectedBy: $connectedBy)';
+  final _this = this as EventOrigin;
+  return 'EventOrigin(mode: ${_this.mode}, bookingAuthority: ${_this.bookingAuthority}, rosterAuthority: ${_this.rosterAuthority}, provider: ${_this.provider}, externalEventId: ${_this.externalEventId}, externalEventUrl: ${_this.externalEventUrl}, sourceExternalEventId: ${_this.sourceExternalEventId}, adapterVersion: ${_this.adapterVersion}, connectedAt: ${_this.connectedAt}, connectedBy: ${_this.connectedBy})';
 }
 
 
@@ -653,7 +666,7 @@ class _$EventOriginCopyWithImpl<$Res>
 /// Create a copy of EventOrigin
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? mode = null,Object? bookingAuthority = null,Object? rosterAuthority = null,Object? provider = null,Object? externalEventId = freezed,Object? externalEventUrl = freezed,Object? sourceExternalEventId = freezed,Object? adapterVersion = freezed,Object? connectedAt = freezed,Object? connectedBy = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(EventOrigin(
 mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
 as EventOriginMode,bookingAuthority: null == bookingAuthority ? _self.bookingAuthority : bookingAuthority // ignore: cast_nullable_to_non_nullable
 as EventBookingAuthority,rosterAuthority: null == rosterAuthority ? _self.rosterAuthority : rosterAuthority // ignore: cast_nullable_to_non_nullable
@@ -832,16 +845,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventOrigin&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.bookingAuthority, bookingAuthority) || other.bookingAuthority == bookingAuthority)&&(identical(other.rosterAuthority, rosterAuthority) || other.rosterAuthority == rosterAuthority)&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.externalEventId, externalEventId) || other.externalEventId == externalEventId)&&(identical(other.externalEventUrl, externalEventUrl) || other.externalEventUrl == externalEventUrl)&&(identical(other.sourceExternalEventId, sourceExternalEventId) || other.sourceExternalEventId == sourceExternalEventId)&&(identical(other.adapterVersion, adapterVersion) || other.adapterVersion == adapterVersion)&&(identical(other.connectedAt, connectedAt) || other.connectedAt == connectedAt)&&(identical(other.connectedBy, connectedBy) || other.connectedBy == connectedBy));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventOrigin&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.bookingAuthority, bookingAuthority) || other.bookingAuthority == bookingAuthority)&&(identical(other.rosterAuthority, rosterAuthority) || other.rosterAuthority == rosterAuthority)&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.externalEventId, externalEventId) || other.externalEventId == externalEventId)&&(identical(other.externalEventUrl, externalEventUrl) || other.externalEventUrl == externalEventUrl)&&(identical(other.sourceExternalEventId, sourceExternalEventId) || other.sourceExternalEventId == sourceExternalEventId)&&(identical(other.adapterVersion, adapterVersion) || other.adapterVersion == adapterVersion)&&(identical(other.connectedAt, connectedAt) || other.connectedAt == connectedAt)&&(identical(other.connectedBy, connectedBy) || other.connectedBy == connectedBy));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,mode,bookingAuthority,rosterAuthority,provider,externalEventId,externalEventUrl,sourceExternalEventId,adapterVersion,connectedAt,connectedBy);
+int get hashCode {
+    return Object.hash(runtimeType,mode,bookingAuthority,rosterAuthority,provider,externalEventId,externalEventUrl,sourceExternalEventId,adapterVersion,connectedAt,connectedBy);
+}
 
 @override
 String toString() {
-  return 'EventOrigin(mode: $mode, bookingAuthority: $bookingAuthority, rosterAuthority: $rosterAuthority, provider: $provider, externalEventId: $externalEventId, externalEventUrl: $externalEventUrl, sourceExternalEventId: $sourceExternalEventId, adapterVersion: $adapterVersion, connectedAt: $connectedAt, connectedBy: $connectedBy)';
+    return 'EventOrigin(mode: $mode, bookingAuthority: $bookingAuthority, rosterAuthority: $rosterAuthority, provider: $provider, externalEventId: $externalEventId, externalEventUrl: $externalEventUrl, sourceExternalEventId: $sourceExternalEventId, adapterVersion: $adapterVersion, connectedAt: $connectedAt, connectedBy: $connectedBy)';
 }
 
 
@@ -905,16 +920,21 @@ $EventOrganizerSummaryCopyWith<EventOrganizerSummary> get copyWith => _$EventOrg
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventOrganizerSummary&&(identical(other.name, name) || other.name == name)&&(identical(other.location, location) || other.location == location)&&(identical(other.area, area) || other.area == area)&&(identical(other.hostName, hostName) || other.hostName == hostName)&&const DeepCollectionEquality().equals(other.tags, tags)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.synthetic, synthetic) || other.synthetic == synthetic)&&(identical(other.appVisibility, appVisibility) || other.appVisibility == appVisibility)&&(identical(other.status, status) || other.status == status)&&(identical(other.archived, archived) || other.archived == archived));
+  final _this = this as EventOrganizerSummary;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventOrganizerSummary&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.location, _this.location) || other.location == _this.location)&&(identical(other.area, _this.area) || other.area == _this.area)&&(identical(other.hostName, _this.hostName) || other.hostName == _this.hostName)&&const DeepCollectionEquality().equals(other.tags, _this.tags)&&(identical(other.rating, _this.rating) || other.rating == _this.rating)&&(identical(other.synthetic, _this.synthetic) || other.synthetic == _this.synthetic)&&(identical(other.appVisibility, _this.appVisibility) || other.appVisibility == _this.appVisibility)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.archived, _this.archived) || other.archived == _this.archived));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,location,area,hostName,const DeepCollectionEquality().hash(tags),rating,synthetic,appVisibility,status,archived);
+int get hashCode {
+  final _this = this as EventOrganizerSummary;
+  return Object.hash(runtimeType,_this.name,_this.location,_this.area,_this.hostName,const DeepCollectionEquality().hash(_this.tags),_this.rating,_this.synthetic,_this.appVisibility,_this.status,_this.archived);
+}
 
 @override
 String toString() {
-  return 'EventOrganizerSummary(name: $name, location: $location, area: $area, hostName: $hostName, tags: $tags, rating: $rating, synthetic: $synthetic, appVisibility: $appVisibility, status: $status, archived: $archived)';
+  final _this = this as EventOrganizerSummary;
+  return 'EventOrganizerSummary(name: ${_this.name}, location: ${_this.location}, area: ${_this.area}, hostName: ${_this.hostName}, tags: ${_this.tags}, rating: ${_this.rating}, synthetic: ${_this.synthetic}, appVisibility: ${_this.appVisibility}, status: ${_this.status}, archived: ${_this.archived})';
 }
 
 
@@ -943,7 +963,7 @@ class _$EventOrganizerSummaryCopyWithImpl<$Res>
 /// Create a copy of EventOrganizerSummary
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? location = null,Object? area = null,Object? hostName = freezed,Object? tags = null,Object? rating = null,Object? synthetic = null,Object? appVisibility = null,Object? status = null,Object? archived = null,}) {
-  return _then(_self.copyWith(
+  return _then(EventOrganizerSummary(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,location: null == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
 as String,area: null == area ? _self.area : area // ignore: cast_nullable_to_non_nullable
@@ -1095,7 +1115,7 @@ return $default(_that.name,_that.location,_that.area,_that.hostName,_that.tags,_
 @JsonSerializable()
 
 class _EventOrganizerSummary implements EventOrganizerSummary {
-  const _EventOrganizerSummary({required this.name, required this.location, required this.area, this.hostName, final  List<String> tags = const [], required this.rating, this.synthetic = false, required this.appVisibility, required this.status, required this.archived}): _tags = tags;
+  const _EventOrganizerSummary({required this.name, required this.location, required this.area, this.hostName,  List<String> tags = const [], required this.rating, this.synthetic = false, required this.appVisibility, required this.status, required this.archived}): _tags = tags;
   factory _EventOrganizerSummary.fromJson(Map<String, dynamic> json) => _$EventOrganizerSummaryFromJson(json);
 
 @override final  String name;
@@ -1128,16 +1148,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventOrganizerSummary&&(identical(other.name, name) || other.name == name)&&(identical(other.location, location) || other.location == location)&&(identical(other.area, area) || other.area == area)&&(identical(other.hostName, hostName) || other.hostName == hostName)&&const DeepCollectionEquality().equals(other._tags, _tags)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.synthetic, synthetic) || other.synthetic == synthetic)&&(identical(other.appVisibility, appVisibility) || other.appVisibility == appVisibility)&&(identical(other.status, status) || other.status == status)&&(identical(other.archived, archived) || other.archived == archived));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventOrganizerSummary&&(identical(other.name, name) || other.name == name)&&(identical(other.location, location) || other.location == location)&&(identical(other.area, area) || other.area == area)&&(identical(other.hostName, hostName) || other.hostName == hostName)&&const DeepCollectionEquality().equals(other.tags, _tags)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.synthetic, synthetic) || other.synthetic == synthetic)&&(identical(other.appVisibility, appVisibility) || other.appVisibility == appVisibility)&&(identical(other.status, status) || other.status == status)&&(identical(other.archived, archived) || other.archived == archived));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,location,area,hostName,const DeepCollectionEquality().hash(_tags),rating,synthetic,appVisibility,status,archived);
+int get hashCode {
+    return Object.hash(runtimeType,name,location,area,hostName,const DeepCollectionEquality().hash(_tags),rating,synthetic,appVisibility,status,archived);
+}
 
 @override
 String toString() {
-  return 'EventOrganizerSummary(name: $name, location: $location, area: $area, hostName: $hostName, tags: $tags, rating: $rating, synthetic: $synthetic, appVisibility: $appVisibility, status: $status, archived: $archived)';
+    return 'EventOrganizerSummary(name: $name, location: $location, area: $area, hostName: $hostName, tags: $tags, rating: $rating, synthetic: $synthetic, appVisibility: $appVisibility, status: $status, archived: $archived)';
 }
 
 
@@ -1201,16 +1223,21 @@ $EventExternalBookingCopyWith<EventExternalBooking> get copyWith => _$EventExter
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventExternalBooking&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.url, url) || other.url == url));
+  final _this = this as EventExternalBooking;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventExternalBooking&&(identical(other.provider, _this.provider) || other.provider == _this.provider)&&(identical(other.url, _this.url) || other.url == _this.url));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,provider,url);
+int get hashCode {
+  final _this = this as EventExternalBooking;
+  return Object.hash(runtimeType,_this.provider,_this.url);
+}
 
 @override
 String toString() {
-  return 'EventExternalBooking(provider: $provider, url: $url)';
+  final _this = this as EventExternalBooking;
+  return 'EventExternalBooking(provider: ${_this.provider}, url: ${_this.url})';
 }
 
 
@@ -1239,7 +1266,7 @@ class _$EventExternalBookingCopyWithImpl<$Res>
 /// Create a copy of EventExternalBooking
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? provider = null,Object? url = null,}) {
-  return _then(_self.copyWith(
+  return _then(EventExternalBooking(
 provider: null == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
 as ExternalBookingProvider,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
 as String,
@@ -1402,16 +1429,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventExternalBooking&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.url, url) || other.url == url));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventExternalBooking&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.url, url) || other.url == url));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,provider,url);
+int get hashCode {
+    return Object.hash(runtimeType,provider,url);
+}
 
 @override
 String toString() {
-  return 'EventExternalBooking(provider: $provider, url: $url)';
+    return 'EventExternalBooking(provider: $provider, url: $url)';
 }
 
 
@@ -1467,16 +1496,21 @@ $EventRuntimeAccessCopyWith<EventRuntimeAccess> get copyWith => _$EventRuntimeAc
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventRuntimeAccess&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.publicRuntimeId, publicRuntimeId) || other.publicRuntimeId == publicRuntimeId)&&(identical(other.walkInPolicy, walkInPolicy) || other.walkInPolicy == walkInPolicy)&&(identical(other.termsVersion, termsVersion) || other.termsVersion == termsVersion));
+  final _this = this as EventRuntimeAccess;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventRuntimeAccess&&(identical(other.enabled, _this.enabled) || other.enabled == _this.enabled)&&(identical(other.publicRuntimeId, _this.publicRuntimeId) || other.publicRuntimeId == _this.publicRuntimeId)&&(identical(other.walkInPolicy, _this.walkInPolicy) || other.walkInPolicy == _this.walkInPolicy)&&(identical(other.termsVersion, _this.termsVersion) || other.termsVersion == _this.termsVersion));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enabled,publicRuntimeId,walkInPolicy,termsVersion);
+int get hashCode {
+  final _this = this as EventRuntimeAccess;
+  return Object.hash(runtimeType,_this.enabled,_this.publicRuntimeId,_this.walkInPolicy,_this.termsVersion);
+}
 
 @override
 String toString() {
-  return 'EventRuntimeAccess(enabled: $enabled, publicRuntimeId: $publicRuntimeId, walkInPolicy: $walkInPolicy, termsVersion: $termsVersion)';
+  final _this = this as EventRuntimeAccess;
+  return 'EventRuntimeAccess(enabled: ${_this.enabled}, publicRuntimeId: ${_this.publicRuntimeId}, walkInPolicy: ${_this.walkInPolicy}, termsVersion: ${_this.termsVersion})';
 }
 
 
@@ -1505,7 +1539,7 @@ class _$EventRuntimeAccessCopyWithImpl<$Res>
 /// Create a copy of EventRuntimeAccess
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? enabled = null,Object? publicRuntimeId = freezed,Object? walkInPolicy = null,Object? termsVersion = null,}) {
-  return _then(_self.copyWith(
+  return _then(EventRuntimeAccess(
 enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,publicRuntimeId: freezed == publicRuntimeId ? _self.publicRuntimeId : publicRuntimeId // ignore: cast_nullable_to_non_nullable
 as String?,walkInPolicy: null == walkInPolicy ? _self.walkInPolicy : walkInPolicy // ignore: cast_nullable_to_non_nullable
@@ -1672,16 +1706,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventRuntimeAccess&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.publicRuntimeId, publicRuntimeId) || other.publicRuntimeId == publicRuntimeId)&&(identical(other.walkInPolicy, walkInPolicy) || other.walkInPolicy == walkInPolicy)&&(identical(other.termsVersion, termsVersion) || other.termsVersion == termsVersion));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventRuntimeAccess&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.publicRuntimeId, publicRuntimeId) || other.publicRuntimeId == publicRuntimeId)&&(identical(other.walkInPolicy, walkInPolicy) || other.walkInPolicy == walkInPolicy)&&(identical(other.termsVersion, termsVersion) || other.termsVersion == termsVersion));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enabled,publicRuntimeId,walkInPolicy,termsVersion);
+int get hashCode {
+    return Object.hash(runtimeType,enabled,publicRuntimeId,walkInPolicy,termsVersion);
+}
 
 @override
 String toString() {
-  return 'EventRuntimeAccess(enabled: $enabled, publicRuntimeId: $publicRuntimeId, walkInPolicy: $walkInPolicy, termsVersion: $termsVersion)';
+    return 'EventRuntimeAccess(enabled: $enabled, publicRuntimeId: $publicRuntimeId, walkInPolicy: $walkInPolicy, termsVersion: $termsVersion)';
 }
 
 

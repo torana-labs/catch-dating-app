@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'event_itinerary.dart';
@@ -9,6 +9,7 @@ part of 'event_itinerary.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $EventItineraryItemCopyWith<EventItineraryItem> get copyWith => _$EventItinerary
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventItineraryItem&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.offsetMinutes, offsetMinutes) || other.offsetMinutes == offsetMinutes)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.routeDistanceMeters, routeDistanceMeters) || other.routeDistanceMeters == routeDistanceMeters));
+  final _this = this as EventItineraryItem;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventItineraryItem&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.kind, _this.kind) || other.kind == _this.kind)&&(identical(other.offsetMinutes, _this.offsetMinutes) || other.offsetMinutes == _this.offsetMinutes)&&(identical(other.durationMinutes, _this.durationMinutes) || other.durationMinutes == _this.durationMinutes)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.location, _this.location) || other.location == _this.location)&&(identical(other.routeDistanceMeters, _this.routeDistanceMeters) || other.routeDistanceMeters == _this.routeDistanceMeters));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,kind,offsetMinutes,durationMinutes,title,description,location,routeDistanceMeters);
+int get hashCode {
+  final _this = this as EventItineraryItem;
+  return Object.hash(runtimeType,_this.id,_this.kind,_this.offsetMinutes,_this.durationMinutes,_this.title,_this.description,_this.location,_this.routeDistanceMeters);
+}
 
 @override
 String toString() {
-  return 'EventItineraryItem(id: $id, kind: $kind, offsetMinutes: $offsetMinutes, durationMinutes: $durationMinutes, title: $title, description: $description, location: $location, routeDistanceMeters: $routeDistanceMeters)';
+  final _this = this as EventItineraryItem;
+  return 'EventItineraryItem(id: ${_this.id}, kind: ${_this.kind}, offsetMinutes: ${_this.offsetMinutes}, durationMinutes: ${_this.durationMinutes}, title: ${_this.title}, description: ${_this.description}, location: ${_this.location}, routeDistanceMeters: ${_this.routeDistanceMeters})';
 }
 
 
@@ -66,7 +72,7 @@ class _$EventItineraryItemCopyWithImpl<$Res>
 /// Create a copy of EventItineraryItem
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? kind = null,Object? offsetMinutes = null,Object? durationMinutes = freezed,Object? title = null,Object? description = freezed,Object? location = freezed,Object? routeDistanceMeters = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(EventItineraryItem(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as EventItineraryKind,offsetMinutes: null == offsetMinutes ? _self.offsetMinutes : offsetMinutes // ignore: cast_nullable_to_non_nullable
@@ -253,16 +259,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventItineraryItem&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.offsetMinutes, offsetMinutes) || other.offsetMinutes == offsetMinutes)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.routeDistanceMeters, routeDistanceMeters) || other.routeDistanceMeters == routeDistanceMeters));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventItineraryItem&&(identical(other.id, id) || other.id == id)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.offsetMinutes, offsetMinutes) || other.offsetMinutes == offsetMinutes)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.routeDistanceMeters, routeDistanceMeters) || other.routeDistanceMeters == routeDistanceMeters));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,kind,offsetMinutes,durationMinutes,title,description,location,routeDistanceMeters);
+int get hashCode {
+    return Object.hash(runtimeType,id,kind,offsetMinutes,durationMinutes,title,description,location,routeDistanceMeters);
+}
 
 @override
 String toString() {
-  return 'EventItineraryItem(id: $id, kind: $kind, offsetMinutes: $offsetMinutes, durationMinutes: $durationMinutes, title: $title, description: $description, location: $location, routeDistanceMeters: $routeDistanceMeters)';
+    return 'EventItineraryItem(id: $id, kind: $kind, offsetMinutes: $offsetMinutes, durationMinutes: $durationMinutes, title: $title, description: $description, location: $location, routeDistanceMeters: $routeDistanceMeters)';
 }
 
 

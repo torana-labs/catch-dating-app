@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'chats_list_view_model.dart';
@@ -9,6 +9,7 @@ part of 'chats_list_view_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $ChatsListViewModelCopyWith<ChatsListViewModel> get copyWith => _$ChatsListViewM
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatsListViewModel&&const DeepCollectionEquality().equals(other.newMatches, newMatches)&&const DeepCollectionEquality().equals(other.conversations, conversations)&&(identical(other.totalThreadCount, totalThreadCount) || other.totalThreadCount == totalThreadCount)&&(identical(other.sourceWindowMayHaveMore, sourceWindowMayHaveMore) || other.sourceWindowMayHaveMore == sourceWindowMayHaveMore));
+  final _this = this as ChatsListViewModel;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatsListViewModel&&const DeepCollectionEquality().equals(other.newMatches, _this.newMatches)&&const DeepCollectionEquality().equals(other.conversations, _this.conversations)&&(identical(other.totalThreadCount, _this.totalThreadCount) || other.totalThreadCount == _this.totalThreadCount)&&(identical(other.sourceWindowMayHaveMore, _this.sourceWindowMayHaveMore) || other.sourceWindowMayHaveMore == _this.sourceWindowMayHaveMore));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(newMatches),const DeepCollectionEquality().hash(conversations),totalThreadCount,sourceWindowMayHaveMore);
+int get hashCode {
+  final _this = this as ChatsListViewModel;
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.newMatches),const DeepCollectionEquality().hash(_this.conversations),_this.totalThreadCount,_this.sourceWindowMayHaveMore);
+}
 
 @override
 String toString() {
-  return 'ChatsListViewModel(newMatches: $newMatches, conversations: $conversations, totalThreadCount: $totalThreadCount, sourceWindowMayHaveMore: $sourceWindowMayHaveMore)';
+  final _this = this as ChatsListViewModel;
+  return 'ChatsListViewModel(newMatches: ${_this.newMatches}, conversations: ${_this.conversations}, totalThreadCount: ${_this.totalThreadCount}, sourceWindowMayHaveMore: ${_this.sourceWindowMayHaveMore})';
 }
 
 
@@ -63,7 +69,7 @@ class _$ChatsListViewModelCopyWithImpl<$Res>
 /// Create a copy of ChatsListViewModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? newMatches = null,Object? conversations = null,Object? totalThreadCount = null,Object? sourceWindowMayHaveMore = null,}) {
-  return _then(_self.copyWith(
+  return _then(ChatsListViewModel(
 newMatches: null == newMatches ? _self.newMatches : newMatches // ignore: cast_nullable_to_non_nullable
 as List<ChatThreadPreview>,conversations: null == conversations ? _self.conversations : conversations // ignore: cast_nullable_to_non_nullable
 as List<ChatThreadPreview>,totalThreadCount: null == totalThreadCount ? _self.totalThreadCount : totalThreadCount // ignore: cast_nullable_to_non_nullable
@@ -209,7 +215,7 @@ return $default(_that.newMatches,_that.conversations,_that.totalThreadCount,_tha
 
 
 class _ChatsListViewModel extends ChatsListViewModel {
-  const _ChatsListViewModel({required final  List<ChatThreadPreview> newMatches, required final  List<ChatThreadPreview> conversations, required this.totalThreadCount, this.sourceWindowMayHaveMore = false}): _newMatches = newMatches,_conversations = conversations,super._();
+  const _ChatsListViewModel({required  List<ChatThreadPreview> newMatches, required  List<ChatThreadPreview> conversations, required this.totalThreadCount, this.sourceWindowMayHaveMore = false}): _newMatches = newMatches,_conversations = conversations,super._();
   
 
  final  List<ChatThreadPreview> _newMatches;
@@ -239,16 +245,18 @@ _$ChatsListViewModelCopyWith<_ChatsListViewModel> get copyWith => __$ChatsListVi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatsListViewModel&&const DeepCollectionEquality().equals(other._newMatches, _newMatches)&&const DeepCollectionEquality().equals(other._conversations, _conversations)&&(identical(other.totalThreadCount, totalThreadCount) || other.totalThreadCount == totalThreadCount)&&(identical(other.sourceWindowMayHaveMore, sourceWindowMayHaveMore) || other.sourceWindowMayHaveMore == sourceWindowMayHaveMore));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatsListViewModel&&const DeepCollectionEquality().equals(other.newMatches, _newMatches)&&const DeepCollectionEquality().equals(other.conversations, _conversations)&&(identical(other.totalThreadCount, totalThreadCount) || other.totalThreadCount == totalThreadCount)&&(identical(other.sourceWindowMayHaveMore, sourceWindowMayHaveMore) || other.sourceWindowMayHaveMore == sourceWindowMayHaveMore));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_newMatches),const DeepCollectionEquality().hash(_conversations),totalThreadCount,sourceWindowMayHaveMore);
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_newMatches),const DeepCollectionEquality().hash(_conversations),totalThreadCount,sourceWindowMayHaveMore);
+}
 
 @override
 String toString() {
-  return 'ChatsListViewModel(newMatches: $newMatches, conversations: $conversations, totalThreadCount: $totalThreadCount, sourceWindowMayHaveMore: $sourceWindowMayHaveMore)';
+    return 'ChatsListViewModel(newMatches: $newMatches, conversations: $conversations, totalThreadCount: $totalThreadCount, sourceWindowMayHaveMore: $sourceWindowMayHaveMore)';
 }
 
 

@@ -111,7 +111,7 @@ void main() {
         contains(scope),
       );
       expect(
-        container.exists(eventRehearsalHelpControllerProvider(scope)),
+        container.read(eventRehearsalHelpControllerProvider(scope).exists),
         isTrue,
       );
       subscription = container.listen(

@@ -2445,6 +2445,15 @@ reads the source from the preview's artifact name. Before 1 Nov 2026 only
 main's current head could be previewed, so a train whose validation main moved
 past released nothing. With the merge queue busy, no train released for hours.
 
+The preview builds the source with the configuration the source declares:
+`website/scripts/next/previewBuildConfig.mjs` passes only the `ARG`s in the
+source's own `website/Dockerfile` that have values, and first runs the
+source's own production-eligibility check (`tool/env/check_web_hosting_env.mjs`,
+as its `next.config.mjs` does) with the environment the build will see. A
+rejected configuration stops the build step with the source's reasons instead
+of producing an image whose production stage answers 503 on every public page
+(18 Nov 2026: a source older than a retired build variable did exactly that).
+
 These gates stay. The preview and the promotion each require the source's
 own successful CI with Marketing validation and captures. The source must be
 on main and not older than the live release (`deployed/prod-website`). Both
@@ -3581,8 +3590,13 @@ never to an artifact.
      `event_success_feedback_raw_changelog`; plus what the host mart refresh
      (`tool/analytics/deploy_host_analytics_bigquery.sh --refresh-only`)
      already needs on the mart tables.
-4. **Check the `prod` GitHub environment requires a reviewer**, as for the
-   deck-era purge. The workflow runs every mode in that environment.
+4. **Check the `prod-takedown` GitHub environment requires a reviewer** and
+   allows only `main`. Every prod mode first waits there in a credential-free
+   `approve` job; the takedown job then signs in through `prod`, which stays
+   approval-free so releases and deploys are not held. GitHub creates an
+   environment unprotected on first use, so create `prod-takedown` with its
+   reviewer before any prod run, and confirm a run waits there before relying
+   on it.
 
 #### Writing the case file
 
@@ -3679,7 +3693,11 @@ gh workflow run organizer-takedown.yml --ref main -f environment=prod -f mode=ve
    public path answers 404 or 410 and none is in the sitemap. It prints the
    backup expiry dates. If the page-build marker reappears (a trigger
    rewrote it after apply), run apply again. The website serves 404 for a
-   removed page; a 410 needs a website change, not this tool.
+   removed page; a 410 needs a website change, not this tool. Cloudflare
+   answers the runner's requests for organiser pages with a 403 bot
+   challenge, which verify counts as still served: when every other count is
+   clear, open each preserved organiser path in a browser and record on the
+   case that it shows the not-found page.
 6. **bigquery** waits until 90 minutes after apply and refuses tables whose
    streaming buffer may still hold the apply's rows. For each export
    changelog and streamed table above it counts the rows, exports them to

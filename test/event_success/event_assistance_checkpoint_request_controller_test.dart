@@ -212,7 +212,7 @@ void main() {
       final original = repository.writes.single.change;
       subscription.close();
       await container.pump();
-      expect(container.exists(command), isTrue);
+      expect(container.read(command.exists), isTrue);
       repository.deliver();
       await settleReview();
       container.listen(command, (_, _) {});

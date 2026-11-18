@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'event_invite_link.dart';
@@ -9,6 +9,7 @@ part of 'event_invite_link.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $EventInviteLinkCopyWith<EventInviteLink> get copyWith => _$EventInviteLinkCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventInviteLink&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.hostUid, hostUid) || other.hostUid == hostUid)&&(identical(other.label, label) || other.label == label)&&(identical(other.source, source) || other.source == source)&&(identical(other.openCount, openCount) || other.openCount == openCount)&&(identical(other.requestCount, requestCount) || other.requestCount == requestCount)&&(identical(other.confirmedCount, confirmedCount) || other.confirmedCount == confirmedCount)&&(identical(other.paidCount, paidCount) || other.paidCount == paidCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.catcherCount, catcherCount) || other.catcherCount == catcherCount)&&(identical(other.matchCount, matchCount) || other.matchCount == matchCount)&&(identical(other.chatStartedCount, chatStartedCount) || other.chatStartedCount == chatStartedCount)&&(identical(other.disabledAt, disabledAt) || other.disabledAt == disabledAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  final _this = this as EventInviteLink;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventInviteLink&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.eventId, _this.eventId) || other.eventId == _this.eventId)&&(identical(other.organizerId, _this.organizerId) || other.organizerId == _this.organizerId)&&(identical(other.hostUid, _this.hostUid) || other.hostUid == _this.hostUid)&&(identical(other.label, _this.label) || other.label == _this.label)&&(identical(other.source, _this.source) || other.source == _this.source)&&(identical(other.openCount, _this.openCount) || other.openCount == _this.openCount)&&(identical(other.requestCount, _this.requestCount) || other.requestCount == _this.requestCount)&&(identical(other.confirmedCount, _this.confirmedCount) || other.confirmedCount == _this.confirmedCount)&&(identical(other.paidCount, _this.paidCount) || other.paidCount == _this.paidCount)&&(identical(other.checkedInCount, _this.checkedInCount) || other.checkedInCount == _this.checkedInCount)&&(identical(other.catcherCount, _this.catcherCount) || other.catcherCount == _this.catcherCount)&&(identical(other.matchCount, _this.matchCount) || other.matchCount == _this.matchCount)&&(identical(other.chatStartedCount, _this.chatStartedCount) || other.chatStartedCount == _this.chatStartedCount)&&(identical(other.disabledAt, _this.disabledAt) || other.disabledAt == _this.disabledAt)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.updatedAt, _this.updatedAt) || other.updatedAt == _this.updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,hostUid,label,source,openCount,requestCount,confirmedCount,paidCount,checkedInCount,catcherCount,matchCount,chatStartedCount,disabledAt,createdAt,updatedAt);
+int get hashCode {
+  final _this = this as EventInviteLink;
+  return Object.hash(runtimeType,_this.id,_this.eventId,_this.organizerId,_this.hostUid,_this.label,_this.source,_this.openCount,_this.requestCount,_this.confirmedCount,_this.paidCount,_this.checkedInCount,_this.catcherCount,_this.matchCount,_this.chatStartedCount,_this.disabledAt,_this.createdAt,_this.updatedAt);
+}
 
 @override
 String toString() {
-  return 'EventInviteLink(id: $id, eventId: $eventId, organizerId: $organizerId, hostUid: $hostUid, label: $label, source: $source, openCount: $openCount, requestCount: $requestCount, confirmedCount: $confirmedCount, paidCount: $paidCount, checkedInCount: $checkedInCount, catcherCount: $catcherCount, matchCount: $matchCount, chatStartedCount: $chatStartedCount, disabledAt: $disabledAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+  final _this = this as EventInviteLink;
+  return 'EventInviteLink(id: ${_this.id}, eventId: ${_this.eventId}, organizerId: ${_this.organizerId}, hostUid: ${_this.hostUid}, label: ${_this.label}, source: ${_this.source}, openCount: ${_this.openCount}, requestCount: ${_this.requestCount}, confirmedCount: ${_this.confirmedCount}, paidCount: ${_this.paidCount}, checkedInCount: ${_this.checkedInCount}, catcherCount: ${_this.catcherCount}, matchCount: ${_this.matchCount}, chatStartedCount: ${_this.chatStartedCount}, disabledAt: ${_this.disabledAt}, createdAt: ${_this.createdAt}, updatedAt: ${_this.updatedAt})';
 }
 
 
@@ -66,7 +72,7 @@ class _$EventInviteLinkCopyWithImpl<$Res>
 /// Create a copy of EventInviteLink
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? organizerId = null,Object? hostUid = null,Object? label = null,Object? source = freezed,Object? openCount = null,Object? requestCount = null,Object? confirmedCount = null,Object? paidCount = null,Object? checkedInCount = null,Object? catcherCount = null,Object? matchCount = null,Object? chatStartedCount = null,Object? disabledAt = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
-  return _then(_self.copyWith(
+  return _then(EventInviteLink(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
 as String,organizerId: null == organizerId ? _self.organizerId : organizerId // ignore: cast_nullable_to_non_nullable
@@ -259,16 +265,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventInviteLink&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.hostUid, hostUid) || other.hostUid == hostUid)&&(identical(other.label, label) || other.label == label)&&(identical(other.source, source) || other.source == source)&&(identical(other.openCount, openCount) || other.openCount == openCount)&&(identical(other.requestCount, requestCount) || other.requestCount == requestCount)&&(identical(other.confirmedCount, confirmedCount) || other.confirmedCount == confirmedCount)&&(identical(other.paidCount, paidCount) || other.paidCount == paidCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.catcherCount, catcherCount) || other.catcherCount == catcherCount)&&(identical(other.matchCount, matchCount) || other.matchCount == matchCount)&&(identical(other.chatStartedCount, chatStartedCount) || other.chatStartedCount == chatStartedCount)&&(identical(other.disabledAt, disabledAt) || other.disabledAt == disabledAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventInviteLink&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.hostUid, hostUid) || other.hostUid == hostUid)&&(identical(other.label, label) || other.label == label)&&(identical(other.source, source) || other.source == source)&&(identical(other.openCount, openCount) || other.openCount == openCount)&&(identical(other.requestCount, requestCount) || other.requestCount == requestCount)&&(identical(other.confirmedCount, confirmedCount) || other.confirmedCount == confirmedCount)&&(identical(other.paidCount, paidCount) || other.paidCount == paidCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.catcherCount, catcherCount) || other.catcherCount == catcherCount)&&(identical(other.matchCount, matchCount) || other.matchCount == matchCount)&&(identical(other.chatStartedCount, chatStartedCount) || other.chatStartedCount == chatStartedCount)&&(identical(other.disabledAt, disabledAt) || other.disabledAt == disabledAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,organizerId,hostUid,label,source,openCount,requestCount,confirmedCount,paidCount,checkedInCount,catcherCount,matchCount,chatStartedCount,disabledAt,createdAt,updatedAt);
+int get hashCode {
+    return Object.hash(runtimeType,id,eventId,organizerId,hostUid,label,source,openCount,requestCount,confirmedCount,paidCount,checkedInCount,catcherCount,matchCount,chatStartedCount,disabledAt,createdAt,updatedAt);
+}
 
 @override
 String toString() {
-  return 'EventInviteLink(id: $id, eventId: $eventId, organizerId: $organizerId, hostUid: $hostUid, label: $label, source: $source, openCount: $openCount, requestCount: $requestCount, confirmedCount: $confirmedCount, paidCount: $paidCount, checkedInCount: $checkedInCount, catcherCount: $catcherCount, matchCount: $matchCount, chatStartedCount: $chatStartedCount, disabledAt: $disabledAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'EventInviteLink(id: $id, eventId: $eventId, organizerId: $organizerId, hostUid: $hostUid, label: $label, source: $source, openCount: $openCount, requestCount: $requestCount, confirmedCount: $confirmedCount, paidCount: $paidCount, checkedInCount: $checkedInCount, catcherCount: $catcherCount, matchCount: $matchCount, chatStartedCount: $chatStartedCount, disabledAt: $disabledAt, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 

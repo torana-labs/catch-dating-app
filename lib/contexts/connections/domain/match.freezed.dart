@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'match.dart';
@@ -9,6 +9,7 @@ part of 'match.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $MatchCopyWith<Match> get copyWith => _$MatchCopyWithImpl<Match>(this as Match, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Match&&(identical(other.id, id) || other.id == id)&&(identical(other.user1Id, user1Id) || other.user1Id == user1Id)&&(identical(other.user2Id, user2Id) || other.user2Id == user2Id)&&const DeepCollectionEquality().equals(other.eventIds, eventIds)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt)&&(identical(other.lastMessagePreview, lastMessagePreview) || other.lastMessagePreview == lastMessagePreview)&&(identical(other.lastMessageSenderId, lastMessageSenderId) || other.lastMessageSenderId == lastMessageSenderId)&&const DeepCollectionEquality().equals(other.unreadCounts, unreadCounts)&&(identical(other.status, status) || other.status == status)&&(identical(other.blockedBy, blockedBy) || other.blockedBy == blockedBy)&&(identical(other.blockedAt, blockedAt) || other.blockedAt == blockedAt)&&(identical(other.conversationType, conversationType) || other.conversationType == conversationType)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.crossPathsInvitationId, crossPathsInvitationId) || other.crossPathsInvitationId == crossPathsInvitationId)&&(identical(other.eventPlanExpiresAt, eventPlanExpiresAt) || other.eventPlanExpiresAt == eventPlanExpiresAt)&&(identical(other.closedAt, closedAt) || other.closedAt == closedAt));
+  final _this = this as Match;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Match&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.user1Id, _this.user1Id) || other.user1Id == _this.user1Id)&&(identical(other.user2Id, _this.user2Id) || other.user2Id == _this.user2Id)&&const DeepCollectionEquality().equals(other.eventIds, _this.eventIds)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.lastMessageAt, _this.lastMessageAt) || other.lastMessageAt == _this.lastMessageAt)&&(identical(other.lastMessagePreview, _this.lastMessagePreview) || other.lastMessagePreview == _this.lastMessagePreview)&&(identical(other.lastMessageSenderId, _this.lastMessageSenderId) || other.lastMessageSenderId == _this.lastMessageSenderId)&&const DeepCollectionEquality().equals(other.unreadCounts, _this.unreadCounts)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.blockedBy, _this.blockedBy) || other.blockedBy == _this.blockedBy)&&(identical(other.blockedAt, _this.blockedAt) || other.blockedAt == _this.blockedAt)&&(identical(other.conversationType, _this.conversationType) || other.conversationType == _this.conversationType)&&(identical(other.organizerId, _this.organizerId) || other.organizerId == _this.organizerId)&&(identical(other.crossPathsInvitationId, _this.crossPathsInvitationId) || other.crossPathsInvitationId == _this.crossPathsInvitationId)&&(identical(other.eventPlanExpiresAt, _this.eventPlanExpiresAt) || other.eventPlanExpiresAt == _this.eventPlanExpiresAt)&&(identical(other.closedAt, _this.closedAt) || other.closedAt == _this.closedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,user1Id,user2Id,const DeepCollectionEquality().hash(eventIds),createdAt,lastMessageAt,lastMessagePreview,lastMessageSenderId,const DeepCollectionEquality().hash(unreadCounts),status,blockedBy,blockedAt,conversationType,organizerId,crossPathsInvitationId,eventPlanExpiresAt,closedAt);
+int get hashCode {
+  final _this = this as Match;
+  return Object.hash(runtimeType,_this.id,_this.user1Id,_this.user2Id,const DeepCollectionEquality().hash(_this.eventIds),_this.createdAt,_this.lastMessageAt,_this.lastMessagePreview,_this.lastMessageSenderId,const DeepCollectionEquality().hash(_this.unreadCounts),_this.status,_this.blockedBy,_this.blockedAt,_this.conversationType,_this.organizerId,_this.crossPathsInvitationId,_this.eventPlanExpiresAt,_this.closedAt);
+}
 
 @override
 String toString() {
-  return 'Match(id: $id, user1Id: $user1Id, user2Id: $user2Id, eventIds: $eventIds, createdAt: $createdAt, lastMessageAt: $lastMessageAt, lastMessagePreview: $lastMessagePreview, lastMessageSenderId: $lastMessageSenderId, unreadCounts: $unreadCounts, status: $status, blockedBy: $blockedBy, blockedAt: $blockedAt, conversationType: $conversationType, organizerId: $organizerId, crossPathsInvitationId: $crossPathsInvitationId, eventPlanExpiresAt: $eventPlanExpiresAt, closedAt: $closedAt)';
+  final _this = this as Match;
+  return 'Match(id: ${_this.id}, user1Id: ${_this.user1Id}, user2Id: ${_this.user2Id}, eventIds: ${_this.eventIds}, createdAt: ${_this.createdAt}, lastMessageAt: ${_this.lastMessageAt}, lastMessagePreview: ${_this.lastMessagePreview}, lastMessageSenderId: ${_this.lastMessageSenderId}, unreadCounts: ${_this.unreadCounts}, status: ${_this.status}, blockedBy: ${_this.blockedBy}, blockedAt: ${_this.blockedAt}, conversationType: ${_this.conversationType}, organizerId: ${_this.organizerId}, crossPathsInvitationId: ${_this.crossPathsInvitationId}, eventPlanExpiresAt: ${_this.eventPlanExpiresAt}, closedAt: ${_this.closedAt})';
 }
 
 
@@ -66,7 +72,7 @@ class _$MatchCopyWithImpl<$Res>
 /// Create a copy of Match
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? user1Id = null,Object? user2Id = null,Object? eventIds = null,Object? createdAt = null,Object? lastMessageAt = freezed,Object? lastMessagePreview = freezed,Object? lastMessageSenderId = freezed,Object? unreadCounts = null,Object? status = null,Object? blockedBy = freezed,Object? blockedAt = freezed,Object? conversationType = null,Object? organizerId = freezed,Object? crossPathsInvitationId = freezed,Object? eventPlanExpiresAt = freezed,Object? closedAt = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(Match(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,user1Id: null == user1Id ? _self.user1Id : user1Id // ignore: cast_nullable_to_non_nullable
 as String,user2Id: null == user2Id ? _self.user2Id : user2Id // ignore: cast_nullable_to_non_nullable
@@ -225,7 +231,7 @@ return $default(_that.id,_that.user1Id,_that.user2Id,_that.eventIds,_that.create
 @JsonSerializable()
 
 class _Match extends Match {
-  const _Match({@JsonKey(includeToJson: false) required this.id, required this.user1Id, required this.user2Id, @JsonKey(readValue: _readEventIds) final  List<String> eventIds = const <String>[], @TimestampConverter() required this.createdAt, @NullableTimestampConverter() this.lastMessageAt, this.lastMessagePreview, this.lastMessageSenderId, final  Map<String, int> unreadCounts = const {}, this.status = MatchStatus.active, this.blockedBy, @NullableTimestampConverter() this.blockedAt, @JsonKey(unknownEnumValue: MatchConversationType.match) this.conversationType = MatchConversationType.match, this.organizerId, this.crossPathsInvitationId, @NullableTimestampConverter() this.eventPlanExpiresAt, @NullableTimestampConverter() this.closedAt}): _eventIds = eventIds,_unreadCounts = unreadCounts,super._();
+  const _Match({@JsonKey(includeToJson: false) required this.id, required this.user1Id, required this.user2Id, @JsonKey(readValue: _readEventIds)  List<String> eventIds = const <String>[], @TimestampConverter() required this.createdAt, @NullableTimestampConverter() this.lastMessageAt, this.lastMessagePreview, this.lastMessageSenderId,  Map<String, int> unreadCounts = const {}, this.status = MatchStatus.active, this.blockedBy, @NullableTimestampConverter() this.blockedAt, @JsonKey(unknownEnumValue: MatchConversationType.match) this.conversationType = MatchConversationType.match, this.organizerId, this.crossPathsInvitationId, @NullableTimestampConverter() this.eventPlanExpiresAt, @NullableTimestampConverter() this.closedAt}): _eventIds = eventIds,_unreadCounts = unreadCounts,super._();
   factory _Match.fromJson(Map<String, dynamic> json) => _$MatchFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -271,16 +277,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Match&&(identical(other.id, id) || other.id == id)&&(identical(other.user1Id, user1Id) || other.user1Id == user1Id)&&(identical(other.user2Id, user2Id) || other.user2Id == user2Id)&&const DeepCollectionEquality().equals(other._eventIds, _eventIds)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt)&&(identical(other.lastMessagePreview, lastMessagePreview) || other.lastMessagePreview == lastMessagePreview)&&(identical(other.lastMessageSenderId, lastMessageSenderId) || other.lastMessageSenderId == lastMessageSenderId)&&const DeepCollectionEquality().equals(other._unreadCounts, _unreadCounts)&&(identical(other.status, status) || other.status == status)&&(identical(other.blockedBy, blockedBy) || other.blockedBy == blockedBy)&&(identical(other.blockedAt, blockedAt) || other.blockedAt == blockedAt)&&(identical(other.conversationType, conversationType) || other.conversationType == conversationType)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.crossPathsInvitationId, crossPathsInvitationId) || other.crossPathsInvitationId == crossPathsInvitationId)&&(identical(other.eventPlanExpiresAt, eventPlanExpiresAt) || other.eventPlanExpiresAt == eventPlanExpiresAt)&&(identical(other.closedAt, closedAt) || other.closedAt == closedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Match&&(identical(other.id, id) || other.id == id)&&(identical(other.user1Id, user1Id) || other.user1Id == user1Id)&&(identical(other.user2Id, user2Id) || other.user2Id == user2Id)&&const DeepCollectionEquality().equals(other.eventIds, _eventIds)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt)&&(identical(other.lastMessagePreview, lastMessagePreview) || other.lastMessagePreview == lastMessagePreview)&&(identical(other.lastMessageSenderId, lastMessageSenderId) || other.lastMessageSenderId == lastMessageSenderId)&&const DeepCollectionEquality().equals(other.unreadCounts, _unreadCounts)&&(identical(other.status, status) || other.status == status)&&(identical(other.blockedBy, blockedBy) || other.blockedBy == blockedBy)&&(identical(other.blockedAt, blockedAt) || other.blockedAt == blockedAt)&&(identical(other.conversationType, conversationType) || other.conversationType == conversationType)&&(identical(other.organizerId, organizerId) || other.organizerId == organizerId)&&(identical(other.crossPathsInvitationId, crossPathsInvitationId) || other.crossPathsInvitationId == crossPathsInvitationId)&&(identical(other.eventPlanExpiresAt, eventPlanExpiresAt) || other.eventPlanExpiresAt == eventPlanExpiresAt)&&(identical(other.closedAt, closedAt) || other.closedAt == closedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,user1Id,user2Id,const DeepCollectionEquality().hash(_eventIds),createdAt,lastMessageAt,lastMessagePreview,lastMessageSenderId,const DeepCollectionEquality().hash(_unreadCounts),status,blockedBy,blockedAt,conversationType,organizerId,crossPathsInvitationId,eventPlanExpiresAt,closedAt);
+int get hashCode {
+    return Object.hash(runtimeType,id,user1Id,user2Id,const DeepCollectionEquality().hash(_eventIds),createdAt,lastMessageAt,lastMessagePreview,lastMessageSenderId,const DeepCollectionEquality().hash(_unreadCounts),status,blockedBy,blockedAt,conversationType,organizerId,crossPathsInvitationId,eventPlanExpiresAt,closedAt);
+}
 
 @override
 String toString() {
-  return 'Match(id: $id, user1Id: $user1Id, user2Id: $user2Id, eventIds: $eventIds, createdAt: $createdAt, lastMessageAt: $lastMessageAt, lastMessagePreview: $lastMessagePreview, lastMessageSenderId: $lastMessageSenderId, unreadCounts: $unreadCounts, status: $status, blockedBy: $blockedBy, blockedAt: $blockedAt, conversationType: $conversationType, organizerId: $organizerId, crossPathsInvitationId: $crossPathsInvitationId, eventPlanExpiresAt: $eventPlanExpiresAt, closedAt: $closedAt)';
+    return 'Match(id: $id, user1Id: $user1Id, user2Id: $user2Id, eventIds: $eventIds, createdAt: $createdAt, lastMessageAt: $lastMessageAt, lastMessagePreview: $lastMessagePreview, lastMessageSenderId: $lastMessageSenderId, unreadCounts: $unreadCounts, status: $status, blockedBy: $blockedBy, blockedAt: $blockedAt, conversationType: $conversationType, organizerId: $organizerId, crossPathsInvitationId: $crossPathsInvitationId, eventPlanExpiresAt: $eventPlanExpiresAt, closedAt: $closedAt)';
 }
 
 

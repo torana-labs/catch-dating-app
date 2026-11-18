@@ -815,6 +815,8 @@
     "ProgramWhatsappCannedRepliesCallableResponse",
     "ProgramWhatsappCannedReplyCallableResponse",
     "ProgramAssistantSettingsCallableResponse",
+    "SignProgramPhotoUrlsCallablePayload",
+    "ProgramPhotoUrlsCallableResponse",
     "EnsureTryItWorkspaceCallablePayload"
   ],
   "types": [

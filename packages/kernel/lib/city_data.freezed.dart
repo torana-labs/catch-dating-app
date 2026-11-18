@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'city_data.dart';
@@ -9,6 +9,7 @@ part of 'city_data.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -48,16 +49,21 @@ $CityDataCopyWith<CityData> get copyWith => _$CityDataCopyWithImpl<CityData>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CityData&&(identical(other.name, name) || other.name == name)&&(identical(other.cityId, cityId) || other.cityId == cityId)&&(identical(other.marketId, marketId) || other.marketId == marketId)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.label, label) || other.label == label)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.countryIsoCode, countryIsoCode) || other.countryIsoCode == countryIsoCode)&&(identical(other.currencyCode, currencyCode) || other.currencyCode == currencyCode)&&(identical(other.dialCode, dialCode) || other.dialCode == dialCode)&&(identical(other.timeZone, timeZone) || other.timeZone == timeZone)&&(identical(other.launchStatus, launchStatus) || other.launchStatus == launchStatus)&&(identical(other.profileSelectable, profileSelectable) || other.profileSelectable == profileSelectable)&&(identical(other.hostCreatable, hostCreatable) || other.hostCreatable == hostCreatable)&&(identical(other.eventCreatable, eventCreatable) || other.eventCreatable == eventCreatable)&&(identical(other.exploreVisible, exploreVisible) || other.exploreVisible == exploreVisible)&&(identical(other.lifecycle, lifecycle) || other.lifecycle == lifecycle)&&(identical(other.websiteListed, websiteListed) || other.websiteListed == websiteListed)&&(identical(other.launchDate, launchDate) || other.launchDate == launchDate));
+  final _this = this as CityData;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CityData&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.cityId, _this.cityId) || other.cityId == _this.cityId)&&(identical(other.marketId, _this.marketId) || other.marketId == _this.marketId)&&(identical(other.slug, _this.slug) || other.slug == _this.slug)&&(identical(other.label, _this.label) || other.label == _this.label)&&(identical(other.latitude, _this.latitude) || other.latitude == _this.latitude)&&(identical(other.longitude, _this.longitude) || other.longitude == _this.longitude)&&(identical(other.countryIsoCode, _this.countryIsoCode) || other.countryIsoCode == _this.countryIsoCode)&&(identical(other.currencyCode, _this.currencyCode) || other.currencyCode == _this.currencyCode)&&(identical(other.dialCode, _this.dialCode) || other.dialCode == _this.dialCode)&&(identical(other.timeZone, _this.timeZone) || other.timeZone == _this.timeZone)&&(identical(other.launchStatus, _this.launchStatus) || other.launchStatus == _this.launchStatus)&&(identical(other.profileSelectable, _this.profileSelectable) || other.profileSelectable == _this.profileSelectable)&&(identical(other.hostCreatable, _this.hostCreatable) || other.hostCreatable == _this.hostCreatable)&&(identical(other.eventCreatable, _this.eventCreatable) || other.eventCreatable == _this.eventCreatable)&&(identical(other.exploreVisible, _this.exploreVisible) || other.exploreVisible == _this.exploreVisible)&&(identical(other.lifecycle, _this.lifecycle) || other.lifecycle == _this.lifecycle)&&(identical(other.websiteListed, _this.websiteListed) || other.websiteListed == _this.websiteListed)&&(identical(other.launchDate, _this.launchDate) || other.launchDate == _this.launchDate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,name,cityId,marketId,slug,label,latitude,longitude,countryIsoCode,currencyCode,dialCode,timeZone,launchStatus,profileSelectable,hostCreatable,eventCreatable,exploreVisible,lifecycle,websiteListed,launchDate]);
+int get hashCode {
+  final _this = this as CityData;
+  return Object.hashAll([runtimeType,_this.name,_this.cityId,_this.marketId,_this.slug,_this.label,_this.latitude,_this.longitude,_this.countryIsoCode,_this.currencyCode,_this.dialCode,_this.timeZone,_this.launchStatus,_this.profileSelectable,_this.hostCreatable,_this.eventCreatable,_this.exploreVisible,_this.lifecycle,_this.websiteListed,_this.launchDate]);
+}
 
 @override
 String toString() {
-  return 'CityData(name: $name, cityId: $cityId, marketId: $marketId, slug: $slug, label: $label, latitude: $latitude, longitude: $longitude, countryIsoCode: $countryIsoCode, currencyCode: $currencyCode, dialCode: $dialCode, timeZone: $timeZone, launchStatus: $launchStatus, profileSelectable: $profileSelectable, hostCreatable: $hostCreatable, eventCreatable: $eventCreatable, exploreVisible: $exploreVisible, lifecycle: $lifecycle, websiteListed: $websiteListed, launchDate: $launchDate)';
+  final _this = this as CityData;
+  return 'CityData(name: ${_this.name}, cityId: ${_this.cityId}, marketId: ${_this.marketId}, slug: ${_this.slug}, label: ${_this.label}, latitude: ${_this.latitude}, longitude: ${_this.longitude}, countryIsoCode: ${_this.countryIsoCode}, currencyCode: ${_this.currencyCode}, dialCode: ${_this.dialCode}, timeZone: ${_this.timeZone}, launchStatus: ${_this.launchStatus}, profileSelectable: ${_this.profileSelectable}, hostCreatable: ${_this.hostCreatable}, eventCreatable: ${_this.eventCreatable}, exploreVisible: ${_this.exploreVisible}, lifecycle: ${_this.lifecycle}, websiteListed: ${_this.websiteListed}, launchDate: ${_this.launchDate})';
 }
 
 
@@ -86,7 +92,7 @@ class _$CityDataCopyWithImpl<$Res>
 /// Create a copy of CityData
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? cityId = null,Object? marketId = null,Object? slug = null,Object? label = null,Object? latitude = null,Object? longitude = null,Object? countryIsoCode = null,Object? currencyCode = null,Object? dialCode = null,Object? timeZone = null,Object? launchStatus = null,Object? profileSelectable = null,Object? hostCreatable = null,Object? eventCreatable = null,Object? exploreVisible = null,Object? lifecycle = null,Object? websiteListed = null,Object? launchDate = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(CityData(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,cityId: null == cityId ? _self.cityId : cityId // ignore: cast_nullable_to_non_nullable
 as String,marketId: null == marketId ? _self.marketId : marketId // ignore: cast_nullable_to_non_nullable
@@ -303,16 +309,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CityData&&(identical(other.name, name) || other.name == name)&&(identical(other.cityId, cityId) || other.cityId == cityId)&&(identical(other.marketId, marketId) || other.marketId == marketId)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.label, label) || other.label == label)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.countryIsoCode, countryIsoCode) || other.countryIsoCode == countryIsoCode)&&(identical(other.currencyCode, currencyCode) || other.currencyCode == currencyCode)&&(identical(other.dialCode, dialCode) || other.dialCode == dialCode)&&(identical(other.timeZone, timeZone) || other.timeZone == timeZone)&&(identical(other.launchStatus, launchStatus) || other.launchStatus == launchStatus)&&(identical(other.profileSelectable, profileSelectable) || other.profileSelectable == profileSelectable)&&(identical(other.hostCreatable, hostCreatable) || other.hostCreatable == hostCreatable)&&(identical(other.eventCreatable, eventCreatable) || other.eventCreatable == eventCreatable)&&(identical(other.exploreVisible, exploreVisible) || other.exploreVisible == exploreVisible)&&(identical(other.lifecycle, lifecycle) || other.lifecycle == lifecycle)&&(identical(other.websiteListed, websiteListed) || other.websiteListed == websiteListed)&&(identical(other.launchDate, launchDate) || other.launchDate == launchDate));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CityData&&(identical(other.name, name) || other.name == name)&&(identical(other.cityId, cityId) || other.cityId == cityId)&&(identical(other.marketId, marketId) || other.marketId == marketId)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.label, label) || other.label == label)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.countryIsoCode, countryIsoCode) || other.countryIsoCode == countryIsoCode)&&(identical(other.currencyCode, currencyCode) || other.currencyCode == currencyCode)&&(identical(other.dialCode, dialCode) || other.dialCode == dialCode)&&(identical(other.timeZone, timeZone) || other.timeZone == timeZone)&&(identical(other.launchStatus, launchStatus) || other.launchStatus == launchStatus)&&(identical(other.profileSelectable, profileSelectable) || other.profileSelectable == profileSelectable)&&(identical(other.hostCreatable, hostCreatable) || other.hostCreatable == hostCreatable)&&(identical(other.eventCreatable, eventCreatable) || other.eventCreatable == eventCreatable)&&(identical(other.exploreVisible, exploreVisible) || other.exploreVisible == exploreVisible)&&(identical(other.lifecycle, lifecycle) || other.lifecycle == lifecycle)&&(identical(other.websiteListed, websiteListed) || other.websiteListed == websiteListed)&&(identical(other.launchDate, launchDate) || other.launchDate == launchDate));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,name,cityId,marketId,slug,label,latitude,longitude,countryIsoCode,currencyCode,dialCode,timeZone,launchStatus,profileSelectable,hostCreatable,eventCreatable,exploreVisible,lifecycle,websiteListed,launchDate]);
+int get hashCode {
+    return Object.hashAll([runtimeType,name,cityId,marketId,slug,label,latitude,longitude,countryIsoCode,currencyCode,dialCode,timeZone,launchStatus,profileSelectable,hostCreatable,eventCreatable,exploreVisible,lifecycle,websiteListed,launchDate]);
+}
 
 @override
 String toString() {
-  return 'CityData(name: $name, cityId: $cityId, marketId: $marketId, slug: $slug, label: $label, latitude: $latitude, longitude: $longitude, countryIsoCode: $countryIsoCode, currencyCode: $currencyCode, dialCode: $dialCode, timeZone: $timeZone, launchStatus: $launchStatus, profileSelectable: $profileSelectable, hostCreatable: $hostCreatable, eventCreatable: $eventCreatable, exploreVisible: $exploreVisible, lifecycle: $lifecycle, websiteListed: $websiteListed, launchDate: $launchDate)';
+    return 'CityData(name: $name, cityId: $cityId, marketId: $marketId, slug: $slug, label: $label, latitude: $latitude, longitude: $longitude, countryIsoCode: $countryIsoCode, currencyCode: $currencyCode, dialCode: $dialCode, timeZone: $timeZone, launchStatus: $launchStatus, profileSelectable: $profileSelectable, hostCreatable: $hostCreatable, eventCreatable: $eventCreatable, exploreVisible: $exploreVisible, lifecycle: $lifecycle, websiteListed: $websiteListed, launchDate: $launchDate)';
 }
 
 

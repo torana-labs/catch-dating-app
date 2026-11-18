@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'host_manager_event_setup_defaults_controller.dart';
@@ -9,6 +9,7 @@ part of 'host_manager_event_setup_defaults_controller.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $HostManagerEventSetupDefaultsStateCopyWith<HostManagerEventSetupDefaultsState> 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HostManagerEventSetupDefaultsState&&(identical(other.current, current) || other.current == current)&&(identical(other.pending, pending) || other.pending == pending)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.saving, saving) || other.saving == saving)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable));
+  final _this = this as HostManagerEventSetupDefaultsState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HostManagerEventSetupDefaultsState&&(identical(other.current, _this.current) || other.current == _this.current)&&(identical(other.pending, _this.pending) || other.pending == _this.pending)&&const DeepCollectionEquality().equals(other.error, _this.error)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.saving, _this.saving) || other.saving == _this.saving)&&(identical(other.actorAvailable, _this.actorAvailable) || other.actorAvailable == _this.actorAvailable));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,current,pending,const DeepCollectionEquality().hash(error),loading,saving,actorAvailable);
+int get hashCode {
+  final _this = this as HostManagerEventSetupDefaultsState;
+  return Object.hash(runtimeType,_this.current,_this.pending,const DeepCollectionEquality().hash(_this.error),_this.loading,_this.saving,_this.actorAvailable);
+}
 
 @override
 String toString() {
-  return 'HostManagerEventSetupDefaultsState(current: $current, pending: $pending, error: $error, loading: $loading, saving: $saving, actorAvailable: $actorAvailable)';
+  final _this = this as HostManagerEventSetupDefaultsState;
+  return 'HostManagerEventSetupDefaultsState(current: ${_this.current}, pending: ${_this.pending}, error: ${_this.error}, loading: ${_this.loading}, saving: ${_this.saving}, actorAvailable: ${_this.actorAvailable})';
 }
 
 
@@ -63,7 +69,7 @@ class _$HostManagerEventSetupDefaultsStateCopyWithImpl<$Res>
 /// Create a copy of HostManagerEventSetupDefaultsState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? current = freezed,Object? pending = freezed,Object? error = freezed,Object? loading = null,Object? saving = null,Object? actorAvailable = null,}) {
-  return _then(_self.copyWith(
+  return _then(HostManagerEventSetupDefaultsState(
 current: freezed == current ? _self.current : current // ignore: cast_nullable_to_non_nullable
 as ManagerEventSetupDefaults?,pending: freezed == pending ? _self.pending : pending // ignore: cast_nullable_to_non_nullable
 as ManagerEventSetupDefaultsUpdateRequest?,error: freezed == error ? _self.error : error ,loading: null == loading ? _self.loading : loading // ignore: cast_nullable_to_non_nullable
@@ -230,16 +236,18 @@ _$HostManagerEventSetupDefaultsStateCopyWith<_HostManagerEventSetupDefaultsState
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HostManagerEventSetupDefaultsState&&(identical(other.current, current) || other.current == current)&&(identical(other.pending, pending) || other.pending == pending)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.saving, saving) || other.saving == saving)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _HostManagerEventSetupDefaultsState&&(identical(other.current, current) || other.current == current)&&(identical(other.pending, pending) || other.pending == pending)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.saving, saving) || other.saving == saving)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,current,pending,const DeepCollectionEquality().hash(error),loading,saving,actorAvailable);
+int get hashCode {
+    return Object.hash(runtimeType,current,pending,const DeepCollectionEquality().hash(error),loading,saving,actorAvailable);
+}
 
 @override
 String toString() {
-  return 'HostManagerEventSetupDefaultsState(current: $current, pending: $pending, error: $error, loading: $loading, saving: $saving, actorAvailable: $actorAvailable)';
+    return 'HostManagerEventSetupDefaultsState(current: $current, pending: $pending, error: $error, loading: $loading, saving: $saving, actorAvailable: $actorAvailable)';
 }
 
 

@@ -122,8 +122,8 @@ class _RowVisitor extends SimpleAstVisitor<void> {
     checkInternal(node, element);
     if (isUi(element, 'CatchField')) {
       final structured = node.argumentList.arguments
-          .whereType<NamedExpression>()
-          .any((argument) => argument.name.label.name == 'content');
+          .whereType<NamedArgument>()
+          .any((argument) => argument.name.lexeme == 'content');
       var hasBoundary = owns(const {'/lib/src/components/catch_field.dart'});
       for (
         var ancestor = node.parent;
@@ -160,13 +160,13 @@ class _RowVisitor extends SimpleAstVisitor<void> {
               const {'ColoredBox', 'DecoratedBox'}.contains(type) ||
               type == 'Container' &&
                   ancestor.argumentList.arguments
-                      .whereType<NamedExpression>()
+                      .whereType<NamedArgument>()
                       .any(
                         (a) => const {
                           'color',
                           'decoration',
                           'foregroundDecoration',
-                        }.contains(a.name.label.name),
+                        }.contains(a.name.lexeme),
                       );
           if (flutter &&
               (statePaint ||
@@ -230,10 +230,10 @@ class _RowVisitor extends SimpleAstVisitor<void> {
               parent?.library.uri.toString().startsWith('package:flutter/') ==
                   true) {
             final padding = ancestor.argumentList.arguments
-                .whereType<NamedExpression>()
-                .where((argument) => argument.name.label.name == 'padding')
+                .whereType<NamedArgument>()
+                .where((argument) => argument.name.lexeme == 'padding')
                 .firstOrNull
-                ?.expression;
+                ?.argumentExpression;
             if (padding != null && !_verticalOnly(padding)) {
               rule.reportAtNode(
                 node,
@@ -261,8 +261,8 @@ class _RowVisitor extends SimpleAstVisitor<void> {
       return false;
     }
     if (!const {'only', 'symmetric'}.contains(element?.name)) return false;
-    return padding.argumentList.arguments.whereType<NamedExpression>().every(
-      (a) => const {'top', 'bottom', 'vertical'}.contains(a.name.label.name),
+    return padding.argumentList.arguments.whereType<NamedArgument>().every(
+      (a) => const {'top', 'bottom', 'vertical'}.contains(a.name.lexeme),
     );
   }
 }

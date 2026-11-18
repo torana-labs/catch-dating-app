@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'host_form_admission_controller.dart';
@@ -9,6 +9,7 @@ part of 'host_form_admission_controller.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -25,16 +26,21 @@ $HostFormAdmissionStateCopyWith<HostFormAdmissionState> get copyWith => _$HostFo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HostFormAdmissionState&&(identical(other.preview, preview) || other.preview == preview)&&(identical(other.pending, pending) || other.pending == pending)&&(identical(other.receipt, receipt) || other.receipt == receipt)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.busy, busy) || other.busy == busy)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable));
+  final _this = this as HostFormAdmissionState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HostFormAdmissionState&&(identical(other.preview, _this.preview) || other.preview == _this.preview)&&(identical(other.pending, _this.pending) || other.pending == _this.pending)&&(identical(other.receipt, _this.receipt) || other.receipt == _this.receipt)&&const DeepCollectionEquality().equals(other.error, _this.error)&&(identical(other.busy, _this.busy) || other.busy == _this.busy)&&(identical(other.actorAvailable, _this.actorAvailable) || other.actorAvailable == _this.actorAvailable));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,preview,pending,receipt,const DeepCollectionEquality().hash(error),busy,actorAvailable);
+int get hashCode {
+  final _this = this as HostFormAdmissionState;
+  return Object.hash(runtimeType,_this.preview,_this.pending,_this.receipt,const DeepCollectionEquality().hash(_this.error),_this.busy,_this.actorAvailable);
+}
 
 @override
 String toString() {
-  return 'HostFormAdmissionState(preview: $preview, pending: $pending, receipt: $receipt, error: $error, busy: $busy, actorAvailable: $actorAvailable)';
+  final _this = this as HostFormAdmissionState;
+  return 'HostFormAdmissionState(preview: ${_this.preview}, pending: ${_this.pending}, receipt: ${_this.receipt}, error: ${_this.error}, busy: ${_this.busy}, actorAvailable: ${_this.actorAvailable})';
 }
 
 
@@ -63,7 +69,7 @@ class _$HostFormAdmissionStateCopyWithImpl<$Res>
 /// Create a copy of HostFormAdmissionState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? preview = freezed,Object? pending = freezed,Object? receipt = freezed,Object? error = freezed,Object? busy = null,Object? actorAvailable = null,}) {
-  return _then(_self.copyWith(
+  return _then(HostFormAdmissionState(
 preview: freezed == preview ? _self.preview : preview // ignore: cast_nullable_to_non_nullable
 as HostFormAdmissionPreview?,pending: freezed == pending ? _self.pending : pending // ignore: cast_nullable_to_non_nullable
 as PendingFormAdmission?,receipt: freezed == receipt ? _self.receipt : receipt // ignore: cast_nullable_to_non_nullable
@@ -230,16 +236,18 @@ _$HostFormAdmissionStateCopyWith<_HostFormAdmissionState> get copyWith => __$Hos
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HostFormAdmissionState&&(identical(other.preview, preview) || other.preview == preview)&&(identical(other.pending, pending) || other.pending == pending)&&(identical(other.receipt, receipt) || other.receipt == receipt)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.busy, busy) || other.busy == busy)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _HostFormAdmissionState&&(identical(other.preview, preview) || other.preview == preview)&&(identical(other.pending, pending) || other.pending == pending)&&(identical(other.receipt, receipt) || other.receipt == receipt)&&const DeepCollectionEquality().equals(other.error, error)&&(identical(other.busy, busy) || other.busy == busy)&&(identical(other.actorAvailable, actorAvailable) || other.actorAvailable == actorAvailable));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,preview,pending,receipt,const DeepCollectionEquality().hash(error),busy,actorAvailable);
+int get hashCode {
+    return Object.hash(runtimeType,preview,pending,receipt,const DeepCollectionEquality().hash(error),busy,actorAvailable);
+}
 
 @override
 String toString() {
-  return 'HostFormAdmissionState(preview: $preview, pending: $pending, receipt: $receipt, error: $error, busy: $busy, actorAvailable: $actorAvailable)';
+    return 'HostFormAdmissionState(preview: $preview, pending: $pending, receipt: $receipt, error: $error, busy: $busy, actorAvailable: $actorAvailable)';
 }
 
 

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'onboarding_controller.dart';
@@ -9,6 +9,7 @@ part of 'onboarding_controller.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
@@ -24,23 +25,29 @@ $OnboardingDataCopyWith<OnboardingData> get copyWith => _$OnboardingDataCopyWith
 
 @override
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  final _this = this as OnboardingData;
   properties
     ..add(DiagnosticsProperty('type', 'OnboardingData'))
-    ..add(DiagnosticsProperty('step', step))..add(DiagnosticsProperty('phoneVerified', phoneVerified))..add(DiagnosticsProperty('profileDraft', profileDraft))..add(DiagnosticsProperty('operationPending', operationPending));
+    ..add(DiagnosticsProperty('step', _this.step))..add(DiagnosticsProperty('phoneVerified', _this.phoneVerified))..add(DiagnosticsProperty('profileDraft', _this.profileDraft))..add(DiagnosticsProperty('operationPending', _this.operationPending));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingData&&(identical(other.step, step) || other.step == step)&&(identical(other.phoneVerified, phoneVerified) || other.phoneVerified == phoneVerified)&&(identical(other.profileDraft, profileDraft) || other.profileDraft == profileDraft)&&(identical(other.operationPending, operationPending) || other.operationPending == operationPending));
+  final _this = this as OnboardingData;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingData&&(identical(other.step, _this.step) || other.step == _this.step)&&(identical(other.phoneVerified, _this.phoneVerified) || other.phoneVerified == _this.phoneVerified)&&(identical(other.profileDraft, _this.profileDraft) || other.profileDraft == _this.profileDraft)&&(identical(other.operationPending, _this.operationPending) || other.operationPending == _this.operationPending));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,step,phoneVerified,profileDraft,operationPending);
+int get hashCode {
+  final _this = this as OnboardingData;
+  return Object.hash(runtimeType,_this.step,_this.phoneVerified,_this.profileDraft,_this.operationPending);
+}
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'OnboardingData(step: $step, phoneVerified: $phoneVerified, profileDraft: $profileDraft, operationPending: $operationPending)';
+  final _this = this as OnboardingData;
+  return 'OnboardingData(step: ${_this.step}, phoneVerified: ${_this.phoneVerified}, profileDraft: ${_this.profileDraft}, operationPending: ${_this.operationPending})';
 }
 
 
@@ -69,7 +76,7 @@ class _$OnboardingDataCopyWithImpl<$Res>
 /// Create a copy of OnboardingData
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? step = null,Object? phoneVerified = null,Object? profileDraft = null,Object? operationPending = null,}) {
-  return _then(_self.copyWith(
+  return _then(OnboardingData(
 step: null == step ? _self.step : step // ignore: cast_nullable_to_non_nullable
 as OnboardingStep,phoneVerified: null == phoneVerified ? _self.phoneVerified : phoneVerified // ignore: cast_nullable_to_non_nullable
 as bool,profileDraft: null == profileDraft ? _self.profileDraft : profileDraft // ignore: cast_nullable_to_non_nullable
@@ -241,23 +248,25 @@ _$OnboardingDataCopyWith<_OnboardingData> get copyWith => __$OnboardingDataCopyW
 
 @override
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  properties
+    properties
     ..add(DiagnosticsProperty('type', 'OnboardingData'))
     ..add(DiagnosticsProperty('step', step))..add(DiagnosticsProperty('phoneVerified', phoneVerified))..add(DiagnosticsProperty('profileDraft', profileDraft))..add(DiagnosticsProperty('operationPending', operationPending));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingData&&(identical(other.step, step) || other.step == step)&&(identical(other.phoneVerified, phoneVerified) || other.phoneVerified == phoneVerified)&&(identical(other.profileDraft, profileDraft) || other.profileDraft == profileDraft)&&(identical(other.operationPending, operationPending) || other.operationPending == operationPending));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingData&&(identical(other.step, step) || other.step == step)&&(identical(other.phoneVerified, phoneVerified) || other.phoneVerified == phoneVerified)&&(identical(other.profileDraft, profileDraft) || other.profileDraft == profileDraft)&&(identical(other.operationPending, operationPending) || other.operationPending == operationPending));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,step,phoneVerified,profileDraft,operationPending);
+int get hashCode {
+    return Object.hash(runtimeType,step,phoneVerified,profileDraft,operationPending);
+}
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'OnboardingData(step: $step, phoneVerified: $phoneVerified, profileDraft: $profileDraft, operationPending: $operationPending)';
+    return 'OnboardingData(step: $step, phoneVerified: $phoneVerified, profileDraft: $profileDraft, operationPending: $operationPending)';
 }
 
 

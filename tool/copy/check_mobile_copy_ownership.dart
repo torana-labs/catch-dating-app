@@ -410,8 +410,8 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
       if (parent is ConditionalExpression && parent.condition == current) {
         return null;
       }
-      if (parent is NamedExpression) {
-        final name = parent.name.label.name;
+      if (parent is NamedArgument) {
+        final name = parent.name.lexeme;
         if (_technicalArgumentNames.contains(name)) return null;
         final argumentList = parent.parent;
         final invocation = argumentList is ArgumentList
@@ -461,8 +461,8 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
         return null;
       }
       if (parent is IndexExpression) return null;
-      if (parent is DefaultFormalParameter) {
-        final name = parent.parameter.name?.lexeme;
+      if (parent is FormalParameterDefaultClause) {
+        final name = (parent.parent as FormalParameter?)?.name?.lexeme;
         if (name != null && _isCopyMemberName(name)) {
           return 'default:$name';
         }

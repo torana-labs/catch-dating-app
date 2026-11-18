@@ -533,10 +533,11 @@ enter previews.
 | `issueProgramWebLink` | `src/programs/programWebLinks.ts` | Not yet described. |
 | `listEventHostPhotos` | `src/events/eventHostPhotos.ts` | Host photos as signed URLs for checked-in guests and the host team. |
 | `listProgramIdTracker` | `src/programs/guestIds.ts` | ID tracker: staying guests with ID status and signed images. |
-| `listProgramPhotos` | `src/programs/photos.ts` | Programme photo albums, photos and the cover as signed URLs. |
+| `listProgramPhotos` | `src/programs/photos.ts` | Programme photo albums, photos and the cover as signed URLs (older builds; current builds list programPhotos and call signProgramPhotoUrls). |
 | `listProgramWhatsappCannedReplies` | `src/programs/programWhatsapp/callables.ts` | A programme's saved WhatsApp replies in order. |
 | `listProgramWhatsappThreads` | `src/programs/programWhatsapp/callables.ts` | The programme guest inbox: threads by Needs you, Handled or All with counts and the wedding's number. |
 | `manageOrganizerOwnerPage` | `src/organizerInsights/ownerPage.ts` | Owner view writes: owner links (add, reorder, pin, schedule), the photo order, and Message followers at most twice a calendar month. |
+| `markProgramWhatsappThreadRead` | `src/programs/programWhatsapp/callables.ts` | Marks one programme WhatsApp thread read (the write half of opening it); managers and communications staff; answers the thread's handling and new revision. |
 | `onEventChatDirectoryAttendeeWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds the linked person's chat directory row when a roster row's link or status changes |
 | `onEventChatDirectoryEventWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds every chat directory row of an event when its name, status, organizer or start changes |
 | `onEventChatDirectoryMembershipWritten` | `src/chats/eventChatDirectory.ts` | Rebuilds the person's `eventChatDirectoryEntries` row when their chat membership changes |
@@ -555,6 +556,10 @@ enter previews.
 | `onGuestEventStatusParticipationWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest's `guestEventStatuses` row when their Catch booking status changes |
 | `onGuestEventStatusPaymentWritten` | `src/guestEvents/triggers.ts` | Rebuilds the guest's `guestEventStatuses` row when a website or offer payment changes |
 | `onHostDirectoryOrganizerCreated` | `src/hostReadModels/directoryActivation.ts` | Activates every Host directory read model (contacts, responses, forms, groups, events) for a new organizer |
+| `onOrganizerProgramFunctionChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a function's programme when the function changes |
+| `onOrganizerProgramHotelChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a hotel's programme when the hotel changes |
+| `onOrganizerProgramPickupPointChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites the setup view of a pickup point's programme when the point changes |
+| `onOrganizerProgramViewChanged` | `src/programs/organizerProgramViewTriggers.ts` | Rewrites a programme's setup view when its settings, dates, status, branding or retention dates change |
 | `onProgramAccessViewGrantChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites that account's programme access view when a staff grant changes |
 | `onProgramAccessViewProgramChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites the owner's view, and every staff view when the creator or organizer changes, when a programme changes |
 | `onProgramAlertLegChanged` | `src/programs/programLiveBoardViewTriggers.ts` | Rewrites a journey's live board alerts and the programme's travel counts when its status changes |
@@ -587,6 +592,9 @@ enter previews.
 | `onProgramTripViewChanged` | `src/programs/programTripViewTriggers.ts` | Rewrites a transport trip's view when it is created, arrives, is cancelled or voided |
 | `onProgramVendorViewChanged` | `src/programs/programArrivalViewTriggers.ts` | Rewrites a vendor's per-programme views when its name, active flag or bound programmes change |
 | `onProgramWhatsappInboundMessageCreated` | `src/programs/programWhatsapp/inboundTrigger.ts` | Runs the wedding assistant (handleProgramWhatsappInbound) for each stored inbound guest message; replies through sendProgramServiceReply or passes the thread to the planner. |
+| `onProgramWhatsappThreadViewHouseholdChanged` | `src/programs/programWhatsapp/threadViewTriggers.ts` | Rewrites a household's thread view when its label, contact name, members or side change |
+| `onProgramWhatsappThreadViewProgramChanged` | `src/programs/programWhatsapp/threadViewTriggers.ts` | Rewrites every thread view of a programme when its side labels change |
+| `onProgramWhatsappThreadViewThreadChanged` | `src/programs/programWhatsapp/threadViewTriggers.ts` | Rewrites a thread's inbox view when its message, handling, language or read state changes |
 | `onProgramWorkSummaryChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a programme's work shell header when the programme changes |
 | `onSavedEventCardCreated` | `src/guestEvents/triggers.ts` | Writes a new saved-event edge's list card from its event |
 | `previewProgramAssistantReply` | `src/programs/assistant/preview.ts` | The wedding assistant's Try it: the same policy, fact pack, model and budget as a guest message, nothing sent. |
@@ -596,6 +604,7 @@ enter previews.
 | `rollupOrganizerInsightsDaily` | `src/organizerInsights/insightsRollup.ts` | Nightly organizerInsights roll-up per organiser-day from the host analytics marts and organizerFollows. |
 | `sendProgramWhatsappReply` | `src/programs/programWhatsapp/callables.ts` | Free-text planner reply inside the 24-hour window, reserved before the Meta call and failing closed; takes the thread over. |
 | `setProgramWhatsappThreadHandling` | `src/programs/programWhatsapp/callables.ts` | Takes a guest thread over from the assistant or hands it back, optionally marking it handled. |
+| `signProgramPhotoUrls` | `src/programs/photos.ts` | Short-lived signed URLs for programme photos listed from programPhotos, and the cover; signs only this programme's own files. Managers and communications staff. |
 | `submitProgramGuestId` | `src/programs/guestIds.ts` | A household saves a member's ID through its RSVP link. |
 | `updateProgramAssistantSettings` | `src/programs/programWhatsapp/callables.ts` | Changes the programme assistant settings under a revision fence; escalation staff must be active programme staff. |
 | `upsertProgramHamper` | `src/programs/hampers.ts` | Marks a room's welcome hamper placed (porter link or hotel desk). |

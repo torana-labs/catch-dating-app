@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'payment.dart';
@@ -9,6 +9,7 @@ part of 'payment.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $PaymentCopyWith<Payment> get copyWith => _$PaymentCopyWithImpl<Payment>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Payment&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.paymentId, paymentId) || other.paymentId == paymentId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.signUpFailed, signUpFailed) || other.signUpFailed == signUpFailed)&&(identical(other.cancellationRefund, cancellationRefund) || other.cancellationRefund == cancellationRefund)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  final _this = this as Payment;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Payment&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&(identical(other.orderId, _this.orderId) || other.orderId == _this.orderId)&&(identical(other.paymentId, _this.paymentId) || other.paymentId == _this.paymentId)&&(identical(other.eventId, _this.eventId) || other.eventId == _this.eventId)&&(identical(other.amount, _this.amount) || other.amount == _this.amount)&&(identical(other.currency, _this.currency) || other.currency == _this.currency)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.signUpFailed, _this.signUpFailed) || other.signUpFailed == _this.signUpFailed)&&(identical(other.cancellationRefund, _this.cancellationRefund) || other.cancellationRefund == _this.cancellationRefund)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,orderId,paymentId,eventId,amount,currency,status,signUpFailed,cancellationRefund,createdAt);
+int get hashCode {
+  final _this = this as Payment;
+  return Object.hash(runtimeType,_this.id,_this.userId,_this.orderId,_this.paymentId,_this.eventId,_this.amount,_this.currency,_this.status,_this.signUpFailed,_this.cancellationRefund,_this.createdAt);
+}
 
 @override
 String toString() {
-  return 'Payment(id: $id, userId: $userId, orderId: $orderId, paymentId: $paymentId, eventId: $eventId, amount: $amount, currency: $currency, status: $status, signUpFailed: $signUpFailed, cancellationRefund: $cancellationRefund, createdAt: $createdAt)';
+  final _this = this as Payment;
+  return 'Payment(id: ${_this.id}, userId: ${_this.userId}, orderId: ${_this.orderId}, paymentId: ${_this.paymentId}, eventId: ${_this.eventId}, amount: ${_this.amount}, currency: ${_this.currency}, status: ${_this.status}, signUpFailed: ${_this.signUpFailed}, cancellationRefund: ${_this.cancellationRefund}, createdAt: ${_this.createdAt})';
 }
 
 
@@ -66,7 +72,7 @@ class _$PaymentCopyWithImpl<$Res>
 /// Create a copy of Payment
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? orderId = null,Object? paymentId = null,Object? eventId = null,Object? amount = null,Object? currency = null,Object? status = null,Object? signUpFailed = null,Object? cancellationRefund = freezed,Object? createdAt = null,}) {
-  return _then(_self.copyWith(
+  return _then(Payment(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,orderId: null == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
@@ -259,16 +265,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Payment&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.paymentId, paymentId) || other.paymentId == paymentId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.signUpFailed, signUpFailed) || other.signUpFailed == signUpFailed)&&(identical(other.cancellationRefund, cancellationRefund) || other.cancellationRefund == cancellationRefund)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Payment&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.paymentId, paymentId) || other.paymentId == paymentId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.signUpFailed, signUpFailed) || other.signUpFailed == signUpFailed)&&(identical(other.cancellationRefund, cancellationRefund) || other.cancellationRefund == cancellationRefund)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,orderId,paymentId,eventId,amount,currency,status,signUpFailed,cancellationRefund,createdAt);
+int get hashCode {
+    return Object.hash(runtimeType,id,userId,orderId,paymentId,eventId,amount,currency,status,signUpFailed,cancellationRefund,createdAt);
+}
 
 @override
 String toString() {
-  return 'Payment(id: $id, userId: $userId, orderId: $orderId, paymentId: $paymentId, eventId: $eventId, amount: $amount, currency: $currency, status: $status, signUpFailed: $signUpFailed, cancellationRefund: $cancellationRefund, createdAt: $createdAt)';
+    return 'Payment(id: $id, userId: $userId, orderId: $orderId, paymentId: $paymentId, eventId: $eventId, amount: $amount, currency: $currency, status: $status, signUpFailed: $signUpFailed, cancellationRefund: $cancellationRefund, createdAt: $createdAt)';
 }
 
 
@@ -345,16 +353,21 @@ $PaymentCancellationRefundCopyWith<PaymentCancellationRefund> get copyWith => _$
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentCancellationRefund&&(identical(other.state, state) || other.state == state)&&(identical(other.targetAmountMinor, targetAmountMinor) || other.targetAmountMinor == targetAmountMinor)&&(identical(other.confirmedAmountMinor, confirmedAmountMinor) || other.confirmedAmountMinor == confirmedAmountMinor));
+  final _this = this as PaymentCancellationRefund;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentCancellationRefund&&(identical(other.state, _this.state) || other.state == _this.state)&&(identical(other.targetAmountMinor, _this.targetAmountMinor) || other.targetAmountMinor == _this.targetAmountMinor)&&(identical(other.confirmedAmountMinor, _this.confirmedAmountMinor) || other.confirmedAmountMinor == _this.confirmedAmountMinor));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,state,targetAmountMinor,confirmedAmountMinor);
+int get hashCode {
+  final _this = this as PaymentCancellationRefund;
+  return Object.hash(runtimeType,_this.state,_this.targetAmountMinor,_this.confirmedAmountMinor);
+}
 
 @override
 String toString() {
-  return 'PaymentCancellationRefund(state: $state, targetAmountMinor: $targetAmountMinor, confirmedAmountMinor: $confirmedAmountMinor)';
+  final _this = this as PaymentCancellationRefund;
+  return 'PaymentCancellationRefund(state: ${_this.state}, targetAmountMinor: ${_this.targetAmountMinor}, confirmedAmountMinor: ${_this.confirmedAmountMinor})';
 }
 
 
@@ -383,7 +396,7 @@ class _$PaymentCancellationRefundCopyWithImpl<$Res>
 /// Create a copy of PaymentCancellationRefund
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? state = null,Object? targetAmountMinor = null,Object? confirmedAmountMinor = null,}) {
-  return _then(_self.copyWith(
+  return _then(PaymentCancellationRefund(
 state: null == state ? _self.state : state // ignore: cast_nullable_to_non_nullable
 as PaymentCancellationRefundState,targetAmountMinor: null == targetAmountMinor ? _self.targetAmountMinor : targetAmountMinor // ignore: cast_nullable_to_non_nullable
 as int,confirmedAmountMinor: null == confirmedAmountMinor ? _self.confirmedAmountMinor : confirmedAmountMinor // ignore: cast_nullable_to_non_nullable
@@ -548,16 +561,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PaymentCancellationRefund&&(identical(other.state, state) || other.state == state)&&(identical(other.targetAmountMinor, targetAmountMinor) || other.targetAmountMinor == targetAmountMinor)&&(identical(other.confirmedAmountMinor, confirmedAmountMinor) || other.confirmedAmountMinor == confirmedAmountMinor));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PaymentCancellationRefund&&(identical(other.state, state) || other.state == state)&&(identical(other.targetAmountMinor, targetAmountMinor) || other.targetAmountMinor == targetAmountMinor)&&(identical(other.confirmedAmountMinor, confirmedAmountMinor) || other.confirmedAmountMinor == confirmedAmountMinor));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,state,targetAmountMinor,confirmedAmountMinor);
+int get hashCode {
+    return Object.hash(runtimeType,state,targetAmountMinor,confirmedAmountMinor);
+}
 
 @override
 String toString() {
-  return 'PaymentCancellationRefund(state: $state, targetAmountMinor: $targetAmountMinor, confirmedAmountMinor: $confirmedAmountMinor)';
+    return 'PaymentCancellationRefund(state: $state, targetAmountMinor: $targetAmountMinor, confirmedAmountMinor: $confirmedAmountMinor)';
 }
 
 

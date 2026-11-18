@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'chat_message.dart';
@@ -9,6 +9,7 @@ part of 'chat_message.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $ChatMessageCopyWith<ChatMessage> get copyWith => _$ChatMessageCopyWithImpl<Chat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.senderId, senderId) || other.senderId == senderId)&&(identical(other.text, text) || other.text == text)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.sentAt, sentAt) || other.sentAt == sentAt));
+  final _this = this as ChatMessage;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatMessage&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.senderId, _this.senderId) || other.senderId == _this.senderId)&&(identical(other.text, _this.text) || other.text == _this.text)&&(identical(other.imageUrl, _this.imageUrl) || other.imageUrl == _this.imageUrl)&&(identical(other.sentAt, _this.sentAt) || other.sentAt == _this.sentAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,senderId,text,imageUrl,sentAt);
+int get hashCode {
+  final _this = this as ChatMessage;
+  return Object.hash(runtimeType,_this.id,_this.senderId,_this.text,_this.imageUrl,_this.sentAt);
+}
 
 @override
 String toString() {
-  return 'ChatMessage(id: $id, senderId: $senderId, text: $text, imageUrl: $imageUrl, sentAt: $sentAt)';
+  final _this = this as ChatMessage;
+  return 'ChatMessage(id: ${_this.id}, senderId: ${_this.senderId}, text: ${_this.text}, imageUrl: ${_this.imageUrl}, sentAt: ${_this.sentAt})';
 }
 
 
@@ -66,7 +72,7 @@ class _$ChatMessageCopyWithImpl<$Res>
 /// Create a copy of ChatMessage
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? senderId = null,Object? text = null,Object? imageUrl = freezed,Object? sentAt = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(ChatMessage(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,senderId: null == senderId ? _self.senderId : senderId // ignore: cast_nullable_to_non_nullable
 as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
@@ -235,16 +241,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.senderId, senderId) || other.senderId == senderId)&&(identical(other.text, text) || other.text == text)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.sentAt, sentAt) || other.sentAt == sentAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatMessage&&(identical(other.id, id) || other.id == id)&&(identical(other.senderId, senderId) || other.senderId == senderId)&&(identical(other.text, text) || other.text == text)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.sentAt, sentAt) || other.sentAt == sentAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,senderId,text,imageUrl,sentAt);
+int get hashCode {
+    return Object.hash(runtimeType,id,senderId,text,imageUrl,sentAt);
+}
 
 @override
 String toString() {
-  return 'ChatMessage(id: $id, senderId: $senderId, text: $text, imageUrl: $imageUrl, sentAt: $sentAt)';
+    return 'ChatMessage(id: $id, senderId: $senderId, text: $text, imageUrl: $imageUrl, sentAt: $sentAt)';
 }
 
 

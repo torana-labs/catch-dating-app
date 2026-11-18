@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'user_profile.dart';
@@ -9,6 +9,7 @@ part of 'user_profile.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $RunningPreferencesCopyWith<RunningPreferences> get copyWith => _$RunningPrefere
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RunningPreferences&&(identical(other.paceMinSecsPerKm, paceMinSecsPerKm) || other.paceMinSecsPerKm == paceMinSecsPerKm)&&(identical(other.paceMaxSecsPerKm, paceMaxSecsPerKm) || other.paceMaxSecsPerKm == paceMaxSecsPerKm)&&const DeepCollectionEquality().equals(other.preferredDistances, preferredDistances)&&const DeepCollectionEquality().equals(other.runningReasons, runningReasons)&&const DeepCollectionEquality().equals(other.preferredRunTimes, preferredRunTimes)&&(identical(other.version, version) || other.version == version));
+  final _this = this as RunningPreferences;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RunningPreferences&&(identical(other.paceMinSecsPerKm, _this.paceMinSecsPerKm) || other.paceMinSecsPerKm == _this.paceMinSecsPerKm)&&(identical(other.paceMaxSecsPerKm, _this.paceMaxSecsPerKm) || other.paceMaxSecsPerKm == _this.paceMaxSecsPerKm)&&const DeepCollectionEquality().equals(other.preferredDistances, _this.preferredDistances)&&const DeepCollectionEquality().equals(other.runningReasons, _this.runningReasons)&&const DeepCollectionEquality().equals(other.preferredRunTimes, _this.preferredRunTimes)&&(identical(other.version, _this.version) || other.version == _this.version));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,paceMinSecsPerKm,paceMaxSecsPerKm,const DeepCollectionEquality().hash(preferredDistances),const DeepCollectionEquality().hash(runningReasons),const DeepCollectionEquality().hash(preferredRunTimes),version);
+int get hashCode {
+  final _this = this as RunningPreferences;
+  return Object.hash(runtimeType,_this.paceMinSecsPerKm,_this.paceMaxSecsPerKm,const DeepCollectionEquality().hash(_this.preferredDistances),const DeepCollectionEquality().hash(_this.runningReasons),const DeepCollectionEquality().hash(_this.preferredRunTimes),_this.version);
+}
 
 @override
 String toString() {
-  return 'RunningPreferences(paceMinSecsPerKm: $paceMinSecsPerKm, paceMaxSecsPerKm: $paceMaxSecsPerKm, preferredDistances: $preferredDistances, runningReasons: $runningReasons, preferredRunTimes: $preferredRunTimes, version: $version)';
+  final _this = this as RunningPreferences;
+  return 'RunningPreferences(paceMinSecsPerKm: ${_this.paceMinSecsPerKm}, paceMaxSecsPerKm: ${_this.paceMaxSecsPerKm}, preferredDistances: ${_this.preferredDistances}, runningReasons: ${_this.runningReasons}, preferredRunTimes: ${_this.preferredRunTimes}, version: ${_this.version})';
 }
 
 
@@ -66,7 +72,7 @@ class _$RunningPreferencesCopyWithImpl<$Res>
 /// Create a copy of RunningPreferences
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? paceMinSecsPerKm = null,Object? paceMaxSecsPerKm = null,Object? preferredDistances = null,Object? runningReasons = null,Object? preferredRunTimes = null,Object? version = null,}) {
-  return _then(_self.copyWith(
+  return _then(RunningPreferences(
 paceMinSecsPerKm: null == paceMinSecsPerKm ? _self.paceMinSecsPerKm : paceMinSecsPerKm // ignore: cast_nullable_to_non_nullable
 as int,paceMaxSecsPerKm: null == paceMaxSecsPerKm ? _self.paceMaxSecsPerKm : paceMaxSecsPerKm // ignore: cast_nullable_to_non_nullable
 as int,preferredDistances: null == preferredDistances ? _self.preferredDistances : preferredDistances // ignore: cast_nullable_to_non_nullable
@@ -214,7 +220,7 @@ return $default(_that.paceMinSecsPerKm,_that.paceMaxSecsPerKm,_that.preferredDis
 @JsonSerializable()
 
 class _RunningPreferences implements RunningPreferences {
-  const _RunningPreferences({this.paceMinSecsPerKm = defaultPaceMinSecsPerKm, this.paceMaxSecsPerKm = defaultPaceMaxSecsPerKm, final  List<PreferredDistance> preferredDistances = const [], final  List<RunReason> runningReasons = const [], final  List<PreferredRunTime> preferredRunTimes = const [], @JsonKey(name: 'version') this.version = 0}): _preferredDistances = preferredDistances,_runningReasons = runningReasons,_preferredRunTimes = preferredRunTimes;
+  const _RunningPreferences({this.paceMinSecsPerKm = defaultPaceMinSecsPerKm, this.paceMaxSecsPerKm = defaultPaceMaxSecsPerKm,  List<PreferredDistance> preferredDistances = const [],  List<RunReason> runningReasons = const [],  List<PreferredRunTime> preferredRunTimes = const [], @JsonKey(name: 'version') this.version = 0}): _preferredDistances = preferredDistances,_runningReasons = runningReasons,_preferredRunTimes = preferredRunTimes;
   factory _RunningPreferences.fromJson(Map<String, dynamic> json) => _$RunningPreferencesFromJson(json);
 
 @override@JsonKey() final  int paceMinSecsPerKm;
@@ -255,16 +261,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RunningPreferences&&(identical(other.paceMinSecsPerKm, paceMinSecsPerKm) || other.paceMinSecsPerKm == paceMinSecsPerKm)&&(identical(other.paceMaxSecsPerKm, paceMaxSecsPerKm) || other.paceMaxSecsPerKm == paceMaxSecsPerKm)&&const DeepCollectionEquality().equals(other._preferredDistances, _preferredDistances)&&const DeepCollectionEquality().equals(other._runningReasons, _runningReasons)&&const DeepCollectionEquality().equals(other._preferredRunTimes, _preferredRunTimes)&&(identical(other.version, version) || other.version == version));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RunningPreferences&&(identical(other.paceMinSecsPerKm, paceMinSecsPerKm) || other.paceMinSecsPerKm == paceMinSecsPerKm)&&(identical(other.paceMaxSecsPerKm, paceMaxSecsPerKm) || other.paceMaxSecsPerKm == paceMaxSecsPerKm)&&const DeepCollectionEquality().equals(other.preferredDistances, _preferredDistances)&&const DeepCollectionEquality().equals(other.runningReasons, _runningReasons)&&const DeepCollectionEquality().equals(other.preferredRunTimes, _preferredRunTimes)&&(identical(other.version, version) || other.version == version));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,paceMinSecsPerKm,paceMaxSecsPerKm,const DeepCollectionEquality().hash(_preferredDistances),const DeepCollectionEquality().hash(_runningReasons),const DeepCollectionEquality().hash(_preferredRunTimes),version);
+int get hashCode {
+    return Object.hash(runtimeType,paceMinSecsPerKm,paceMaxSecsPerKm,const DeepCollectionEquality().hash(_preferredDistances),const DeepCollectionEquality().hash(_runningReasons),const DeepCollectionEquality().hash(_preferredRunTimes),version);
+}
 
 @override
 String toString() {
-  return 'RunningPreferences(paceMinSecsPerKm: $paceMinSecsPerKm, paceMaxSecsPerKm: $paceMaxSecsPerKm, preferredDistances: $preferredDistances, runningReasons: $runningReasons, preferredRunTimes: $preferredRunTimes, version: $version)';
+    return 'RunningPreferences(paceMinSecsPerKm: $paceMinSecsPerKm, paceMaxSecsPerKm: $paceMaxSecsPerKm, preferredDistances: $preferredDistances, runningReasons: $runningReasons, preferredRunTimes: $preferredRunTimes, version: $version)';
 }
 
 
@@ -324,16 +332,21 @@ $ActivityPreferencesCopyWith<ActivityPreferences> get copyWith => _$ActivityPref
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActivityPreferences&&(identical(other.running, running) || other.running == running));
+  final _this = this as ActivityPreferences;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActivityPreferences&&(identical(other.running, _this.running) || other.running == _this.running));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,running);
+int get hashCode {
+  final _this = this as ActivityPreferences;
+  return Object.hash(runtimeType,_this.running);
+}
 
 @override
 String toString() {
-  return 'ActivityPreferences(running: $running)';
+  final _this = this as ActivityPreferences;
+  return 'ActivityPreferences(running: ${_this.running})';
 }
 
 
@@ -362,7 +375,7 @@ class _$ActivityPreferencesCopyWithImpl<$Res>
 /// Create a copy of ActivityPreferences
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? running = null,}) {
-  return _then(_self.copyWith(
+  return _then(ActivityPreferences(
 running: null == running ? _self.running : running // ignore: cast_nullable_to_non_nullable
 as RunningPreferences,
   ));
@@ -532,16 +545,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActivityPreferences&&(identical(other.running, running) || other.running == running));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActivityPreferences&&(identical(other.running, running) || other.running == running));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,running);
+int get hashCode {
+    return Object.hash(runtimeType,running);
+}
 
 @override
 String toString() {
-  return 'ActivityPreferences(running: $running)';
+    return 'ActivityPreferences(running: $running)';
 }
 
 
@@ -605,16 +620,21 @@ $UserProfileCopyWith<UserProfile> get copyWith => _$UserProfileCopyWithImpl<User
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfile&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.name, name) || other.name == name)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.profileComplete, profileComplete) || other.profileComplete == profileComplete)&&(identical(other.email, email) || other.email == email)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&const DeepCollectionEquality().equals(other.profilePrompts, profilePrompts)&&const DeepCollectionEquality().equals(other.profilePhotos, profilePhotos)&&(identical(other.city, city) || other.city == city)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&const DeepCollectionEquality().equals(other.interestedInGenders, interestedInGenders)&&(identical(other.minAgePreference, minAgePreference) || other.minAgePreference == minAgePreference)&&(identical(other.maxAgePreference, maxAgePreference) || other.maxAgePreference == maxAgePreference)&&(identical(other.height, height) || other.height == height)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.company, company) || other.company == company)&&(identical(other.education, education) || other.education == education)&&(identical(other.religion, religion) || other.religion == religion)&&const DeepCollectionEquality().equals(other.languages, languages)&&(identical(other.relationshipGoal, relationshipGoal) || other.relationshipGoal == relationshipGoal)&&(identical(other.drinking, drinking) || other.drinking == drinking)&&(identical(other.smoking, smoking) || other.smoking == smoking)&&(identical(other.workout, workout) || other.workout == workout)&&(identical(other.diet, diet) || other.diet == diet)&&(identical(other.children, children) || other.children == children)&&(identical(other.activityPreferences, activityPreferences) || other.activityPreferences == activityPreferences)&&(identical(other.prefsNewCatches, prefsNewCatches) || other.prefsNewCatches == prefsNewCatches)&&(identical(other.prefsMessages, prefsMessages) || other.prefsMessages == prefsMessages)&&(identical(other.prefsEventReminders, prefsEventReminders) || other.prefsEventReminders == prefsEventReminders)&&(identical(other.prefsRunStatusUpdates, prefsRunStatusUpdates) || other.prefsRunStatusUpdates == prefsRunStatusUpdates)&&(identical(other.prefsOrganizerUpdates, prefsOrganizerUpdates) || other.prefsOrganizerUpdates == prefsOrganizerUpdates)&&(identical(other.prefsWeeklyDigest, prefsWeeklyDigest) || other.prefsWeeklyDigest == prefsWeeklyDigest)&&(identical(other.prefsShowOnMap, prefsShowOnMap) || other.prefsShowOnMap == prefsShowOnMap)&&(identical(other.prefsShowInCrossPaths, prefsShowInCrossPaths) || other.prefsShowInCrossPaths == prefsShowInCrossPaths)&&(identical(other.prefsCrossPathsInvitations, prefsCrossPathsInvitations) || other.prefsCrossPathsInvitations == prefsCrossPathsInvitations));
+  final _this = this as UserProfile;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfile&&(identical(other.uid, _this.uid) || other.uid == _this.uid)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.firstName, _this.firstName) || other.firstName == _this.firstName)&&(identical(other.lastName, _this.lastName) || other.lastName == _this.lastName)&&(identical(other.displayName, _this.displayName) || other.displayName == _this.displayName)&&(identical(other.dateOfBirth, _this.dateOfBirth) || other.dateOfBirth == _this.dateOfBirth)&&(identical(other.gender, _this.gender) || other.gender == _this.gender)&&(identical(other.phoneNumber, _this.phoneNumber) || other.phoneNumber == _this.phoneNumber)&&(identical(other.countryCode, _this.countryCode) || other.countryCode == _this.countryCode)&&(identical(other.profileComplete, _this.profileComplete) || other.profileComplete == _this.profileComplete)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.instagramHandle, _this.instagramHandle) || other.instagramHandle == _this.instagramHandle)&&const DeepCollectionEquality().equals(other.profilePrompts, _this.profilePrompts)&&const DeepCollectionEquality().equals(other.profilePhotos, _this.profilePhotos)&&(identical(other.city, _this.city) || other.city == _this.city)&&(identical(other.latitude, _this.latitude) || other.latitude == _this.latitude)&&(identical(other.longitude, _this.longitude) || other.longitude == _this.longitude)&&const DeepCollectionEquality().equals(other.interestedInGenders, _this.interestedInGenders)&&(identical(other.minAgePreference, _this.minAgePreference) || other.minAgePreference == _this.minAgePreference)&&(identical(other.maxAgePreference, _this.maxAgePreference) || other.maxAgePreference == _this.maxAgePreference)&&(identical(other.height, _this.height) || other.height == _this.height)&&(identical(other.occupation, _this.occupation) || other.occupation == _this.occupation)&&(identical(other.company, _this.company) || other.company == _this.company)&&(identical(other.education, _this.education) || other.education == _this.education)&&(identical(other.religion, _this.religion) || other.religion == _this.religion)&&const DeepCollectionEquality().equals(other.languages, _this.languages)&&(identical(other.relationshipGoal, _this.relationshipGoal) || other.relationshipGoal == _this.relationshipGoal)&&(identical(other.drinking, _this.drinking) || other.drinking == _this.drinking)&&(identical(other.smoking, _this.smoking) || other.smoking == _this.smoking)&&(identical(other.workout, _this.workout) || other.workout == _this.workout)&&(identical(other.diet, _this.diet) || other.diet == _this.diet)&&(identical(other.children, _this.children) || other.children == _this.children)&&(identical(other.activityPreferences, _this.activityPreferences) || other.activityPreferences == _this.activityPreferences)&&(identical(other.prefsNewCatches, _this.prefsNewCatches) || other.prefsNewCatches == _this.prefsNewCatches)&&(identical(other.prefsMessages, _this.prefsMessages) || other.prefsMessages == _this.prefsMessages)&&(identical(other.prefsEventReminders, _this.prefsEventReminders) || other.prefsEventReminders == _this.prefsEventReminders)&&(identical(other.prefsRunStatusUpdates, _this.prefsRunStatusUpdates) || other.prefsRunStatusUpdates == _this.prefsRunStatusUpdates)&&(identical(other.prefsOrganizerUpdates, _this.prefsOrganizerUpdates) || other.prefsOrganizerUpdates == _this.prefsOrganizerUpdates)&&(identical(other.prefsWeeklyDigest, _this.prefsWeeklyDigest) || other.prefsWeeklyDigest == _this.prefsWeeklyDigest)&&(identical(other.prefsShowOnMap, _this.prefsShowOnMap) || other.prefsShowOnMap == _this.prefsShowOnMap)&&(identical(other.prefsShowInCrossPaths, _this.prefsShowInCrossPaths) || other.prefsShowInCrossPaths == _this.prefsShowInCrossPaths)&&(identical(other.prefsCrossPathsInvitations, _this.prefsCrossPathsInvitations) || other.prefsCrossPathsInvitations == _this.prefsCrossPathsInvitations));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,uid,name,firstName,lastName,displayName,dateOfBirth,gender,phoneNumber,countryCode,profileComplete,email,instagramHandle,const DeepCollectionEquality().hash(profilePrompts),const DeepCollectionEquality().hash(profilePhotos),city,latitude,longitude,const DeepCollectionEquality().hash(interestedInGenders),minAgePreference,maxAgePreference,height,occupation,company,education,religion,const DeepCollectionEquality().hash(languages),relationshipGoal,drinking,smoking,workout,diet,children,activityPreferences,prefsNewCatches,prefsMessages,prefsEventReminders,prefsRunStatusUpdates,prefsOrganizerUpdates,prefsWeeklyDigest,prefsShowOnMap,prefsShowInCrossPaths,prefsCrossPathsInvitations]);
+int get hashCode {
+  final _this = this as UserProfile;
+  return Object.hashAll([runtimeType,_this.uid,_this.name,_this.firstName,_this.lastName,_this.displayName,_this.dateOfBirth,_this.gender,_this.phoneNumber,_this.countryCode,_this.profileComplete,_this.email,_this.instagramHandle,const DeepCollectionEquality().hash(_this.profilePrompts),const DeepCollectionEquality().hash(_this.profilePhotos),_this.city,_this.latitude,_this.longitude,const DeepCollectionEquality().hash(_this.interestedInGenders),_this.minAgePreference,_this.maxAgePreference,_this.height,_this.occupation,_this.company,_this.education,_this.religion,const DeepCollectionEquality().hash(_this.languages),_this.relationshipGoal,_this.drinking,_this.smoking,_this.workout,_this.diet,_this.children,_this.activityPreferences,_this.prefsNewCatches,_this.prefsMessages,_this.prefsEventReminders,_this.prefsRunStatusUpdates,_this.prefsOrganizerUpdates,_this.prefsWeeklyDigest,_this.prefsShowOnMap,_this.prefsShowInCrossPaths,_this.prefsCrossPathsInvitations]);
+}
 
 @override
 String toString() {
-  return 'UserProfile(uid: $uid, name: $name, firstName: $firstName, lastName: $lastName, displayName: $displayName, dateOfBirth: $dateOfBirth, gender: $gender, phoneNumber: $phoneNumber, countryCode: $countryCode, profileComplete: $profileComplete, email: $email, instagramHandle: $instagramHandle, profilePrompts: $profilePrompts, profilePhotos: $profilePhotos, city: $city, latitude: $latitude, longitude: $longitude, interestedInGenders: $interestedInGenders, minAgePreference: $minAgePreference, maxAgePreference: $maxAgePreference, height: $height, occupation: $occupation, company: $company, education: $education, religion: $religion, languages: $languages, relationshipGoal: $relationshipGoal, drinking: $drinking, smoking: $smoking, workout: $workout, diet: $diet, children: $children, activityPreferences: $activityPreferences, prefsNewCatches: $prefsNewCatches, prefsMessages: $prefsMessages, prefsEventReminders: $prefsEventReminders, prefsRunStatusUpdates: $prefsRunStatusUpdates, prefsOrganizerUpdates: $prefsOrganizerUpdates, prefsWeeklyDigest: $prefsWeeklyDigest, prefsShowOnMap: $prefsShowOnMap, prefsShowInCrossPaths: $prefsShowInCrossPaths, prefsCrossPathsInvitations: $prefsCrossPathsInvitations)';
+  final _this = this as UserProfile;
+  return 'UserProfile(uid: ${_this.uid}, name: ${_this.name}, firstName: ${_this.firstName}, lastName: ${_this.lastName}, displayName: ${_this.displayName}, dateOfBirth: ${_this.dateOfBirth}, gender: ${_this.gender}, phoneNumber: ${_this.phoneNumber}, countryCode: ${_this.countryCode}, profileComplete: ${_this.profileComplete}, email: ${_this.email}, instagramHandle: ${_this.instagramHandle}, profilePrompts: ${_this.profilePrompts}, profilePhotos: ${_this.profilePhotos}, city: ${_this.city}, latitude: ${_this.latitude}, longitude: ${_this.longitude}, interestedInGenders: ${_this.interestedInGenders}, minAgePreference: ${_this.minAgePreference}, maxAgePreference: ${_this.maxAgePreference}, height: ${_this.height}, occupation: ${_this.occupation}, company: ${_this.company}, education: ${_this.education}, religion: ${_this.religion}, languages: ${_this.languages}, relationshipGoal: ${_this.relationshipGoal}, drinking: ${_this.drinking}, smoking: ${_this.smoking}, workout: ${_this.workout}, diet: ${_this.diet}, children: ${_this.children}, activityPreferences: ${_this.activityPreferences}, prefsNewCatches: ${_this.prefsNewCatches}, prefsMessages: ${_this.prefsMessages}, prefsEventReminders: ${_this.prefsEventReminders}, prefsRunStatusUpdates: ${_this.prefsRunStatusUpdates}, prefsOrganizerUpdates: ${_this.prefsOrganizerUpdates}, prefsWeeklyDigest: ${_this.prefsWeeklyDigest}, prefsShowOnMap: ${_this.prefsShowOnMap}, prefsShowInCrossPaths: ${_this.prefsShowInCrossPaths}, prefsCrossPathsInvitations: ${_this.prefsCrossPathsInvitations})';
 }
 
 
@@ -643,7 +663,7 @@ class _$UserProfileCopyWithImpl<$Res>
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? name = null,Object? firstName = null,Object? lastName = null,Object? displayName = null,Object? dateOfBirth = freezed,Object? gender = freezed,Object? phoneNumber = null,Object? countryCode = null,Object? profileComplete = null,Object? email = null,Object? instagramHandle = freezed,Object? profilePrompts = null,Object? profilePhotos = null,Object? city = freezed,Object? latitude = freezed,Object? longitude = freezed,Object? interestedInGenders = null,Object? minAgePreference = null,Object? maxAgePreference = null,Object? height = freezed,Object? occupation = freezed,Object? company = freezed,Object? education = freezed,Object? religion = freezed,Object? languages = null,Object? relationshipGoal = freezed,Object? drinking = freezed,Object? smoking = freezed,Object? workout = freezed,Object? diet = freezed,Object? children = freezed,Object? activityPreferences = null,Object? prefsNewCatches = null,Object? prefsMessages = null,Object? prefsEventReminders = null,Object? prefsRunStatusUpdates = null,Object? prefsOrganizerUpdates = null,Object? prefsWeeklyDigest = null,Object? prefsShowOnMap = null,Object? prefsShowInCrossPaths = null,Object? prefsCrossPathsInvitations = null,}) {
-  return _then(_self.copyWith(
+  return _then(UserProfile(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
@@ -836,7 +856,7 @@ return $default(_that.uid,_that.name,_that.firstName,_that.lastName,_that.displa
 @JsonSerializable()
 
 class _UserProfile extends UserProfile {
-  const _UserProfile({@JsonKey(includeToJson: false) required this.uid, required this.name, this.firstName = '', this.lastName = '', this.displayName = '', @JsonKey(includeIfNull: false)@NullableTimestampConverter() this.dateOfBirth, @JsonKey(includeIfNull: false) this.gender, required this.phoneNumber, this.countryCode = defaultCountryDialCode, required this.profileComplete, this.email = '', this.instagramHandle, final  List<ProfilePromptAnswer> profilePrompts = const [], final  List<ProfilePhoto> profilePhotos = const [], this.city, this.latitude, this.longitude, final  List<Gender> interestedInGenders = const [], this.minAgePreference = 18, this.maxAgePreference = maximumPreferredMatchAge, this.height, this.occupation, this.company, this.education, this.religion, final  List<Language> languages = const [], this.relationshipGoal, this.drinking, this.smoking, this.workout, this.diet, this.children, this.activityPreferences = const ActivityPreferences(), this.prefsNewCatches = true, this.prefsMessages = true, this.prefsEventReminders = true, this.prefsRunStatusUpdates = true, this.prefsOrganizerUpdates = true, this.prefsWeeklyDigest = false, this.prefsShowOnMap = true, this.prefsShowInCrossPaths = false, this.prefsCrossPathsInvitations = false}): _profilePrompts = profilePrompts,_profilePhotos = profilePhotos,_interestedInGenders = interestedInGenders,_languages = languages,super._();
+  const _UserProfile({@JsonKey(includeToJson: false) required this.uid, required this.name, this.firstName = '', this.lastName = '', this.displayName = '', @JsonKey(includeIfNull: false)@NullableTimestampConverter() this.dateOfBirth, @JsonKey(includeIfNull: false) this.gender, required this.phoneNumber, this.countryCode = defaultCountryDialCode, required this.profileComplete, this.email = '', this.instagramHandle,  List<ProfilePromptAnswer> profilePrompts = const [],  List<ProfilePhoto> profilePhotos = const [], this.city, this.latitude, this.longitude,  List<Gender> interestedInGenders = const [], this.minAgePreference = 18, this.maxAgePreference = maximumPreferredMatchAge, this.height, this.occupation, this.company, this.education, this.religion,  List<Language> languages = const [], this.relationshipGoal, this.drinking, this.smoking, this.workout, this.diet, this.children, this.activityPreferences = const ActivityPreferences(), this.prefsNewCatches = true, this.prefsMessages = true, this.prefsEventReminders = true, this.prefsRunStatusUpdates = true, this.prefsOrganizerUpdates = true, this.prefsWeeklyDigest = false, this.prefsShowOnMap = true, this.prefsShowInCrossPaths = false, this.prefsCrossPathsInvitations = false}): _profilePrompts = profilePrompts,_profilePhotos = profilePhotos,_interestedInGenders = interestedInGenders,_languages = languages,super._();
   factory _UserProfile.fromJson(Map<String, dynamic> json) => _$UserProfileFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String uid;
@@ -919,16 +939,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfile&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.name, name) || other.name == name)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.profileComplete, profileComplete) || other.profileComplete == profileComplete)&&(identical(other.email, email) || other.email == email)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&const DeepCollectionEquality().equals(other._profilePrompts, _profilePrompts)&&const DeepCollectionEquality().equals(other._profilePhotos, _profilePhotos)&&(identical(other.city, city) || other.city == city)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&const DeepCollectionEquality().equals(other._interestedInGenders, _interestedInGenders)&&(identical(other.minAgePreference, minAgePreference) || other.minAgePreference == minAgePreference)&&(identical(other.maxAgePreference, maxAgePreference) || other.maxAgePreference == maxAgePreference)&&(identical(other.height, height) || other.height == height)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.company, company) || other.company == company)&&(identical(other.education, education) || other.education == education)&&(identical(other.religion, religion) || other.religion == religion)&&const DeepCollectionEquality().equals(other._languages, _languages)&&(identical(other.relationshipGoal, relationshipGoal) || other.relationshipGoal == relationshipGoal)&&(identical(other.drinking, drinking) || other.drinking == drinking)&&(identical(other.smoking, smoking) || other.smoking == smoking)&&(identical(other.workout, workout) || other.workout == workout)&&(identical(other.diet, diet) || other.diet == diet)&&(identical(other.children, children) || other.children == children)&&(identical(other.activityPreferences, activityPreferences) || other.activityPreferences == activityPreferences)&&(identical(other.prefsNewCatches, prefsNewCatches) || other.prefsNewCatches == prefsNewCatches)&&(identical(other.prefsMessages, prefsMessages) || other.prefsMessages == prefsMessages)&&(identical(other.prefsEventReminders, prefsEventReminders) || other.prefsEventReminders == prefsEventReminders)&&(identical(other.prefsRunStatusUpdates, prefsRunStatusUpdates) || other.prefsRunStatusUpdates == prefsRunStatusUpdates)&&(identical(other.prefsOrganizerUpdates, prefsOrganizerUpdates) || other.prefsOrganizerUpdates == prefsOrganizerUpdates)&&(identical(other.prefsWeeklyDigest, prefsWeeklyDigest) || other.prefsWeeklyDigest == prefsWeeklyDigest)&&(identical(other.prefsShowOnMap, prefsShowOnMap) || other.prefsShowOnMap == prefsShowOnMap)&&(identical(other.prefsShowInCrossPaths, prefsShowInCrossPaths) || other.prefsShowInCrossPaths == prefsShowInCrossPaths)&&(identical(other.prefsCrossPathsInvitations, prefsCrossPathsInvitations) || other.prefsCrossPathsInvitations == prefsCrossPathsInvitations));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfile&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.name, name) || other.name == name)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.profileComplete, profileComplete) || other.profileComplete == profileComplete)&&(identical(other.email, email) || other.email == email)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&const DeepCollectionEquality().equals(other.profilePrompts, _profilePrompts)&&const DeepCollectionEquality().equals(other.profilePhotos, _profilePhotos)&&(identical(other.city, city) || other.city == city)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&const DeepCollectionEquality().equals(other.interestedInGenders, _interestedInGenders)&&(identical(other.minAgePreference, minAgePreference) || other.minAgePreference == minAgePreference)&&(identical(other.maxAgePreference, maxAgePreference) || other.maxAgePreference == maxAgePreference)&&(identical(other.height, height) || other.height == height)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.company, company) || other.company == company)&&(identical(other.education, education) || other.education == education)&&(identical(other.religion, religion) || other.religion == religion)&&const DeepCollectionEquality().equals(other.languages, _languages)&&(identical(other.relationshipGoal, relationshipGoal) || other.relationshipGoal == relationshipGoal)&&(identical(other.drinking, drinking) || other.drinking == drinking)&&(identical(other.smoking, smoking) || other.smoking == smoking)&&(identical(other.workout, workout) || other.workout == workout)&&(identical(other.diet, diet) || other.diet == diet)&&(identical(other.children, children) || other.children == children)&&(identical(other.activityPreferences, activityPreferences) || other.activityPreferences == activityPreferences)&&(identical(other.prefsNewCatches, prefsNewCatches) || other.prefsNewCatches == prefsNewCatches)&&(identical(other.prefsMessages, prefsMessages) || other.prefsMessages == prefsMessages)&&(identical(other.prefsEventReminders, prefsEventReminders) || other.prefsEventReminders == prefsEventReminders)&&(identical(other.prefsRunStatusUpdates, prefsRunStatusUpdates) || other.prefsRunStatusUpdates == prefsRunStatusUpdates)&&(identical(other.prefsOrganizerUpdates, prefsOrganizerUpdates) || other.prefsOrganizerUpdates == prefsOrganizerUpdates)&&(identical(other.prefsWeeklyDigest, prefsWeeklyDigest) || other.prefsWeeklyDigest == prefsWeeklyDigest)&&(identical(other.prefsShowOnMap, prefsShowOnMap) || other.prefsShowOnMap == prefsShowOnMap)&&(identical(other.prefsShowInCrossPaths, prefsShowInCrossPaths) || other.prefsShowInCrossPaths == prefsShowInCrossPaths)&&(identical(other.prefsCrossPathsInvitations, prefsCrossPathsInvitations) || other.prefsCrossPathsInvitations == prefsCrossPathsInvitations));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,uid,name,firstName,lastName,displayName,dateOfBirth,gender,phoneNumber,countryCode,profileComplete,email,instagramHandle,const DeepCollectionEquality().hash(_profilePrompts),const DeepCollectionEquality().hash(_profilePhotos),city,latitude,longitude,const DeepCollectionEquality().hash(_interestedInGenders),minAgePreference,maxAgePreference,height,occupation,company,education,religion,const DeepCollectionEquality().hash(_languages),relationshipGoal,drinking,smoking,workout,diet,children,activityPreferences,prefsNewCatches,prefsMessages,prefsEventReminders,prefsRunStatusUpdates,prefsOrganizerUpdates,prefsWeeklyDigest,prefsShowOnMap,prefsShowInCrossPaths,prefsCrossPathsInvitations]);
+int get hashCode {
+    return Object.hashAll([runtimeType,uid,name,firstName,lastName,displayName,dateOfBirth,gender,phoneNumber,countryCode,profileComplete,email,instagramHandle,const DeepCollectionEquality().hash(_profilePrompts),const DeepCollectionEquality().hash(_profilePhotos),city,latitude,longitude,const DeepCollectionEquality().hash(_interestedInGenders),minAgePreference,maxAgePreference,height,occupation,company,education,religion,const DeepCollectionEquality().hash(_languages),relationshipGoal,drinking,smoking,workout,diet,children,activityPreferences,prefsNewCatches,prefsMessages,prefsEventReminders,prefsRunStatusUpdates,prefsOrganizerUpdates,prefsWeeklyDigest,prefsShowOnMap,prefsShowInCrossPaths,prefsCrossPathsInvitations]);
+}
 
 @override
 String toString() {
-  return 'UserProfile(uid: $uid, name: $name, firstName: $firstName, lastName: $lastName, displayName: $displayName, dateOfBirth: $dateOfBirth, gender: $gender, phoneNumber: $phoneNumber, countryCode: $countryCode, profileComplete: $profileComplete, email: $email, instagramHandle: $instagramHandle, profilePrompts: $profilePrompts, profilePhotos: $profilePhotos, city: $city, latitude: $latitude, longitude: $longitude, interestedInGenders: $interestedInGenders, minAgePreference: $minAgePreference, maxAgePreference: $maxAgePreference, height: $height, occupation: $occupation, company: $company, education: $education, religion: $religion, languages: $languages, relationshipGoal: $relationshipGoal, drinking: $drinking, smoking: $smoking, workout: $workout, diet: $diet, children: $children, activityPreferences: $activityPreferences, prefsNewCatches: $prefsNewCatches, prefsMessages: $prefsMessages, prefsEventReminders: $prefsEventReminders, prefsRunStatusUpdates: $prefsRunStatusUpdates, prefsOrganizerUpdates: $prefsOrganizerUpdates, prefsWeeklyDigest: $prefsWeeklyDigest, prefsShowOnMap: $prefsShowOnMap, prefsShowInCrossPaths: $prefsShowInCrossPaths, prefsCrossPathsInvitations: $prefsCrossPathsInvitations)';
+    return 'UserProfile(uid: $uid, name: $name, firstName: $firstName, lastName: $lastName, displayName: $displayName, dateOfBirth: $dateOfBirth, gender: $gender, phoneNumber: $phoneNumber, countryCode: $countryCode, profileComplete: $profileComplete, email: $email, instagramHandle: $instagramHandle, profilePrompts: $profilePrompts, profilePhotos: $profilePhotos, city: $city, latitude: $latitude, longitude: $longitude, interestedInGenders: $interestedInGenders, minAgePreference: $minAgePreference, maxAgePreference: $maxAgePreference, height: $height, occupation: $occupation, company: $company, education: $education, religion: $religion, languages: $languages, relationshipGoal: $relationshipGoal, drinking: $drinking, smoking: $smoking, workout: $workout, diet: $diet, children: $children, activityPreferences: $activityPreferences, prefsNewCatches: $prefsNewCatches, prefsMessages: $prefsMessages, prefsEventReminders: $prefsEventReminders, prefsRunStatusUpdates: $prefsRunStatusUpdates, prefsOrganizerUpdates: $prefsOrganizerUpdates, prefsWeeklyDigest: $prefsWeeklyDigest, prefsShowOnMap: $prefsShowOnMap, prefsShowInCrossPaths: $prefsShowInCrossPaths, prefsCrossPathsInvitations: $prefsCrossPathsInvitations)';
 }
 
 

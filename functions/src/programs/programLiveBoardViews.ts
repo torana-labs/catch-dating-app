@@ -1,3 +1,7 @@
+/* firestore-index: programTravelLegs (
+  programId:ASCENDING,
+  kind:ASCENDING
+) */
 import * as admin from "firebase-admin";
 import {isDeepStrictEqual} from "node:util";
 import * as logger from "firebase-functions/logger";
