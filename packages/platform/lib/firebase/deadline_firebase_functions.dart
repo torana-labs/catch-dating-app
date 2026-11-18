@@ -16,8 +16,8 @@ const writeStillWorkingAfter = Duration(seconds: 8);
 
 /// [FirebaseFunctions] with [callableDefaultTimeout] on every call that sets
 /// no options of its own. Everything else is the plugin's.
-final class CatchFirebaseFunctions implements FirebaseFunctions {
-  CatchFirebaseFunctions(this._functions);
+final class DeadlineFirebaseFunctions implements FirebaseFunctions {
+  DeadlineFirebaseFunctions(this._functions);
 
   final FirebaseFunctions _functions;
 

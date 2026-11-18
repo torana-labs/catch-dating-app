@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_platform/firebase/catch_firebase_functions.dart';
+import 'package:catch_platform/firebase/deadline_firebase_functions.dart';
 import 'package:catch_platform/riverpod_ui/pending_write_observer.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';

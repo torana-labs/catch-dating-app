@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_platform/cache/app_clock.dart';
-import 'package:catch_platform/firebase/catch_firebase_functions.dart';
+import 'package:catch_platform/firebase/deadline_firebase_functions.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

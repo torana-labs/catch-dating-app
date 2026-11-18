@@ -1,4 +1,4 @@
-import 'package:catch_platform/firebase/catch_firebase_functions.dart';
+import 'package:catch_platform/firebase/deadline_firebase_functions.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -6,7 +6,7 @@ void main() {
   test('a call without options gets the default timeout; its own options '
       'win', () {
     final plugin = _RecordingFunctions();
-    final functions = CatchFirebaseFunctions(plugin);
+    final functions = DeadlineFirebaseFunctions(plugin);
 
     functions.httpsCallable('setOrganizerTrackingSettings');
     expect(plugin.timeouts, [callableDefaultTimeout]);

@@ -1,4 +1,4 @@
-import 'package:catch_platform/firebase/catch_firebase_functions.dart';
+import 'package:catch_platform/firebase/deadline_firebase_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,9 +24,9 @@ FirebaseStorage firebaseStorage(Ref ref) => FirebaseStorage.instance;
 
 // keepalive: FirebaseFunctions is region-bound app infrastructure reused by
 // repository facades. Every call without its own options gets the app's
-// default callable timeout (CatchFirebaseFunctions).
+// default callable timeout (DeadlineFirebaseFunctions).
 @Riverpod(keepAlive: true)
-FirebaseFunctions firebaseFunctions(Ref ref) => CatchFirebaseFunctions(
+FirebaseFunctions firebaseFunctions(Ref ref) => DeadlineFirebaseFunctions(
   FirebaseFunctions.instanceFor(region: firebaseFunctionsRegion),
 );
 
