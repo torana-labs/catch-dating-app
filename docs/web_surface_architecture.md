@@ -677,7 +677,7 @@ only `firebase.ts` to import the generated callable types.
   that no unit test imports, while aggregate coverage stays informational rather
   than becoming a brittle percentage gate.
 - Admin Storybook uses named feature chunks plus a separate generated-intake
-  data chunk. `web:admin-storybook-bundle-budget` ratchets Catch-authored chunks
+  data chunk. `web:admin-storybook`'s build ratchets Catch-authored chunks
   independently of Storybook, axe, and other framework/vendor runtime; route
   coverage remains registry-complete rather than being removed to hit a budget.
 - Admin feature route/workspace entries stay below 900 lines and feature-private

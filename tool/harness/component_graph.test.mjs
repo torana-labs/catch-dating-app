@@ -318,7 +318,7 @@ test("backend-only delivery controls validate the backend without granting mutat
       assert.deepEqual(result.operations.ciTargets,
         ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], file);
       for (const check of ["agent:harness-v2", "ci:delivery-core",
-        "firebase:affected-function-targets"]) {
+        "firebase:plan-function-deploy"]) {
         assert.ok(result.operations.checkIds.includes(check), `${file}: ${check}`);
       }
     }
@@ -376,7 +376,7 @@ test("Hosting promotion controls select only their React callers and affected To
       // the environment difference policy guard owns them too.
       // Every CI configuration edit reruns the caller-closure proof.
       assert.deepEqual(tools.toolIds, ["agent:harness-v2", "ci:web-hosting-delivery-workflow",
-        "ci:web-hosting-freshness", "meta:nx-workflow-callers", ...toolsManifest.ciImpact.mandatoryCheckIds,
+        "meta:nx-workflow-callers", ...toolsManifest.ciImpact.mandatoryCheckIds,
         ...(file.startsWith(".github/workflows/") ? ["firebase:environment-parity"] : [])].sort());
       assert.deepEqual(tools.setupRequirements, ["node", "root-npm"]);
       assert.equal(tools.repositoryView, "full");
@@ -415,7 +415,7 @@ test("Hosting promotion control routing preserves mixed Host and Functions owner
         assert.deepEqual(alone([control]), ["node", "root-npm"]);
         assert.deepEqual(tools.setupRequirements,
           supportedToolSetupRequirements.filter((requirement) => needed.has(requirement)));
-        assert.ok(tools.toolIds.includes("ci:web-hosting-freshness"));
+        assert.ok(tools.toolIds.includes("ci:web-hosting-delivery-workflow"));
         assert.ok(tools.toolIds.includes("ci:web-hosting-delivery-workflow"));
         if (companion.startsWith("apps/host/") && ["pr", "merge_group"].includes(mode)) {
           assert.ok(result.operations.ciTargets.includes("flutter"));

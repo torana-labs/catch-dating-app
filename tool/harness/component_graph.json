@@ -180,10 +180,10 @@
     },
     "backend-delivery-control": {
       "direct": {
-        "pr": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "firebase:affected-function-targets"]},
-        "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "firebase:affected-function-targets"]},
-        "main": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "firebase:affected-function-targets"]},
-        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "firebase:affected-function-targets"]}
+        "pr": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "firebase:plan-function-deploy"]},
+        "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "firebase:plan-function-deploy"]},
+        "main": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "firebase:plan-function-deploy"]},
+        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "firebase:plan-function-deploy"]}
       },
       "affected": {}
     },
