@@ -332,6 +332,37 @@ CandidateDisposition _dispositionFor({
     );
   }
 
+  // #1956 moved the bootstrap failure checks here from lib/app_bootstrap.dart.
+  if (path == 'packages/platform/lib/firebase/firebase_bootstrap.dart' &&
+      rule.id == 'raw_firebase_exception_type') {
+    return const CandidateDisposition(
+      status: CandidateStatus.intentional,
+      reason: 'bootstrap duplicate-app / Remote Config failure classifiers',
+    );
+  }
+
+  // #1956 moved these Firestore calls out of their callers into thin seams.
+  // Every caller still wraps them and logs through normalizeBackendError.
+  if (path == 'packages/platform/lib/firebase/push_installation_store.dart' &&
+      rule.id == 'direct_firestore_write') {
+    return const CandidateDisposition(
+      status: CandidateStatus.verified,
+      reason:
+          'FcmService calls save/delete inside try/catch or attempt(), '
+          'both logging via normalizeBackendError',
+    );
+  }
+
+  if (path == 'packages/platform/lib/firebase/config_documents.dart' &&
+      rule.id == 'direct_firestore_read') {
+    return const CandidateDisposition(
+      status: CandidateStatus.verified,
+      reason:
+          'CityRepository.fetchCities and liveBrand call read inside '
+          'try/catch that logs via normalizeBackendError',
+    );
+  }
+
   if (path == 'lib/contexts/profiles/data/image_upload_repository.dart' &&
       rule.id == 'raw_firebase_exception_type') {
     return const CandidateDisposition(
