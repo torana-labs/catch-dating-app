@@ -42,7 +42,6 @@ import {playbookCustomSections, type PlaybookCustomSectionProps} from "./custom/
 import {brand} from "../../content/brand";
 import {citiesPageCopy} from "../../content/citiesPage";
 import {websiteCities} from "../../content/markets";
-import {cityPagePath} from "../home/sections/cityChrome";
 import {playbookHref} from "./playbookHrefs";
 import type {PlaybookPageController} from "./usePlaybookPageController";
 
@@ -427,7 +426,7 @@ function playbookCityCards(): CatchCardGridCity[] {
       live,
       status: live ? citiesPageCopy.open : citiesPageCopy.soon,
       action: live ?
-        {href: cityPagePath(city.slug), label: citiesPageCopy.seeWhatsOn} :
+        {href: `/${encodeURIComponent(city.slug)}/`, label: citiesPageCopy.seeWhatsOn} :
         {href: `/?${new URLSearchParams({city: city.slug})}#whats-on`, label: citiesPageCopy.getNotified},
     };
   });

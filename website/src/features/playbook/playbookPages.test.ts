@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {describe, expect, it} from "vitest";
+import {citiesPageCopy} from "@content/citiesPage";
 import {websiteCities} from "@content/markets";
 import {hostPricingFacts} from "@content/pricing";
 import {validatePlaybookPage, type PlaybookDestination, type PlaybookPageDocument} from "@content/playbook/playbookContract";
@@ -158,7 +159,7 @@ describe("playbook page indexes", () => {
     expect(pendingPlaybookBindings(withSource({kind: "playbooks"}))).toEqual(["cards:playbooks"]);
     expect(pendingPlaybookBindings(withSource({kind: "organisers"}))).toEqual(["cards:organisers"]);
     const filtered = {...about, sections: about.sections.map((section) => section.type === "cards" ?
-      {...section, filters: [{key: "open", label: "Open"}, {key: "soon", label: "Soon"}]} : section)};
+      {...section, filters: [{key: "open", label: citiesPageCopy.open}, {key: "soon", label: citiesPageCopy.soon}]} : section)};
     expect(pendingPlaybookBindings(filtered)).toEqual(["cardsFilters"]);
   });
 
