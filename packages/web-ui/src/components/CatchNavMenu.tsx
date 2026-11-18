@@ -1,11 +1,13 @@
 "use client";
 
 import {
+  type CSSProperties,
   type FocusEvent,
   type KeyboardEvent,
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
   useSyncExternalStore,
@@ -26,10 +28,23 @@ export interface CatchNavMenuLink {
   current?: boolean;
 }
 
+/** A titled column of links in a wide panel, such as the "For hosts" menu's Product and By format. */
+export interface CatchNavMenuSection {
+  /** The column's heading. Resolved copy. */
+  title: string;
+  links: readonly CatchNavMenuLink[];
+}
+
 export interface CatchNavMenuProps {
   /** The trigger's visible label, which names the group of links. Resolved copy. */
   label: string;
-  links: readonly CatchNavMenuLink[];
+  /** The panel's links as one plain list. */
+  links?: readonly CatchNavMenuLink[];
+  /**
+   * Titled columns side by side in a wider panel, in place of `links` (the
+   * playbook's "For hosts" menu); each column's list is named by its title.
+   */
+  sections?: readonly CatchNavMenuSection[];
   /** Marks the trigger as the section the current page belongs to. */
   current?: boolean;
   /** Which trigger edge the panel lines up with. Defaults to start. */
@@ -63,6 +78,23 @@ function linksIn(panel: HTMLElement | null) {
   return panel ? [...panel.querySelectorAll<HTMLAnchorElement>("a[href]")] : [];
 }
 
+/** The gutter a wide panel keeps from the window's edges, in px. */
+const windowGutter = 16;
+
+/**
+ * Moves an open panel back inside the window: a sectioned panel is wider
+ * than the trigger's room on a narrow laptop, so it shifts toward the start
+ * until its far edge clears the gutter, never past the near one.
+ */
+function keepInWindow(panel: HTMLElement | null) {
+  if (!panel || typeof window === "undefined") return;
+  panel.style.removeProperty("translate");
+  const {left, right} = panel.getBoundingClientRect();
+  const overflow = right - (window.innerWidth - windowGutter);
+  const shift = overflow > 0 ? Math.min(overflow, Math.max(0, left - windowGutter)) : 0;
+  if (shift > 0) panel.style.setProperty("translate", `${-shift}px 0`);
+}
+
 /**
  * A desktop site navigation menu: a disclosure button, the group's label with
  * a chevron, that shows and hides a panel of links under it (the playbook
@@ -70,11 +102,13 @@ function linksIn(panel: HTMLElement | null) {
  * controls the panel. Escape closes the panel and returns focus to the button;
  * a press outside it or focus leaving it closes it. Arrow Down on the button
  * opens it at the first link; in the panel, the arrow keys, Home and End move
- * between links. The links are a plain list, not an ARIA menu, so each keeps
- * its link semantics. Below 600px it renders nothing, and the header's phone
- * menu carries the links.
+ * between links, across columns in a sectioned panel. The links are plain
+ * lists, not an ARIA menu, so each keeps its link semantics; a sectioned
+ * panel names each column's list by its title and stays inside the window.
+ * Below 600px it renders nothing, and the header's phone menu carries the
+ * links.
  */
-export function CatchNavMenu({label, links, current = false, align = "start", onLinkPressed, appearance = "button"}: CatchNavMenuProps) {
+export function CatchNavMenu({label, links, sections, current = false, align = "start", onLinkPressed, appearance = "button"}: CatchNavMenuProps) {
   const compact = useSyncExternalStore(subscribeCompact, compactNow, compactOnServer);
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
@@ -83,6 +117,10 @@ export function CatchNavMenu({label, links, current = false, align = "start", on
   const focusFirst = useRef(false);
   const panelId = `${useId()}-panel`;
   const {ground} = useCatch();
+
+  useLayoutEffect(() => {
+    if (open && sections) keepInWindow(panel.current);
+  }, [open, sections]);
 
   const close = useCallback((returnFocus: boolean) => {
     setOpen(false);
@@ -137,6 +175,11 @@ export function CatchNavMenu({label, links, current = false, align = "start", on
     else if (event.key === "End") move(rows.length - 1);
   };
 
+  const follow = (link: CatchNavMenuLink) => {
+    onLinkPressed?.(link);
+    close(false);
+  };
+
   const onBlur = (event: FocusEvent<HTMLDivElement>) => {
     const next = event.relatedTarget as Node | null;
     if (open && next && !event.currentTarget.contains(next)) close(false);
@@ -161,26 +204,37 @@ export function CatchNavMenu({label, links, current = false, align = "start", on
         <span className={styles.label}>{label}</span>
         <span aria-hidden="true" className={styles.chevron} data-open={open || undefined}><CatchIcon name="expand" size={16} /></span>
       </button>
-      <div className={styles.panel} hidden={!open} id={panelId} ref={panel}>
-        <ul className={styles.links}>
-          {links.map((link) => (
-            <li key={`${link.href}-${link.label}`}>
-              <a
-                aria-current={link.current ? "page" : undefined}
-                className={styles.link}
-                href={link.href}
-                onClick={() => {
-                  onLinkPressed?.(link);
-                  close(false);
-                }}
-              >
-                <CatchText variant="title-row">{link.label}</CatchText>
-                {link.sublabel ? <>{" "}<CatchText tone="secondary" variant="body-small">{link.sublabel}</CatchText></> : null}
-              </a>
-            </li>
-          ))}
-        </ul>
+      <div
+        className={styles.panel}
+        data-sections={sections ? "" : undefined}
+        hidden={!open}
+        id={panelId}
+        ref={panel}
+        style={sections ? {"--catch-nav-menu-sections": sections.length} as CSSProperties : undefined}
+      >
+        {sections ? sections.map((section, index) => (
+          <div className={styles.section} key={section.title}>
+            <CatchText as="p" className={styles.sectionTitle} id={`${panelId}-${index}`} tone="secondary" variant="label-kicker">{section.title}</CatchText>
+            <LinkList labelledBy={`${panelId}-${index}`} links={section.links} onFollow={follow} />
+          </div>
+        )) : <LinkList links={links ?? []} onFollow={follow} />}
       </div>
     </div>
+  );
+}
+
+/** A list of the menu's links; in a sectioned panel its column heading names it. */
+function LinkList({labelledBy, links, onFollow}: {labelledBy?: string; links: readonly CatchNavMenuLink[]; onFollow: (link: CatchNavMenuLink) => void}) {
+  return (
+    <ul aria-labelledby={labelledBy} className={styles.links}>
+      {links.map((link) => (
+        <li key={`${link.href}-${link.label}`}>
+          <a aria-current={link.current ? "page" : undefined} className={styles.link} href={link.href} onClick={() => onFollow(link)}>
+            <CatchText variant="title-row">{link.label}</CatchText>
+            {link.sublabel ? <>{" "}<CatchText tone="secondary" variant="body-small">{link.sublabel}</CatchText></> : null}
+          </a>
+        </li>
+      ))}
+    </ul>
   );
 }

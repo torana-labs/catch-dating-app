@@ -18,6 +18,8 @@ export interface CatchTopBarAction {
    * phone menu leaves it out, so pass its pages in menuExtras.
    */
   menu?: ReactNode;
+  /** site: in the phone menu, a divider above this entry, such as the first page of a dropdown's column. */
+  startsSection?: boolean;
 }
 
 /** site: the header's contact link, such as WhatsApp: a mark with a short label the phone drops. */
@@ -146,7 +148,7 @@ export function CatchTopBar({variant = "tool", title, kicker, back, action, acti
                       <span aria-hidden="true" className={styles.menuBars}><span /><span /><span /></span>
                     </button>
                   )}
-                  items={menuItems.map((link) => ({value: link.label, label: link.label}))}
+                  items={menuItems.map((link) => ({value: link.label, label: link.label, startsSection: link.startsSection}))}
                   label={linksLabel}
                   onSelected={(value) => {
                     const link = menuItems.find((item) => item.label === value);

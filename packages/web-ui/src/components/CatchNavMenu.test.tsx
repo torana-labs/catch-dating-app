@@ -170,6 +170,46 @@ describe("CatchNavMenu", () => {
     expect(trigger().dataset.on).toBe("ground");
   });
 
+  it("sets sections as titled columns, each list named by its title, and walks every link in reading order", () => {
+    render(
+      <CatchNavMenu
+        label="Sectioned group"
+        sections={[
+          {title: "First column", links: [{href: "/a/", label: "Page A"}, {href: "/b/", label: "Page B"}]},
+          {title: "Second column", links: [{href: "/c/", label: "Page C"}]},
+        ]}
+      />,
+    );
+    const button = screen.getByRole("button", {name: "Sectioned group"});
+    button.focus();
+    fireEvent.keyDown(button, {key: "ArrowDown"});
+    const sectioned = document.getElementById(button.getAttribute("aria-controls") ?? "") as HTMLElement;
+    expect(sectioned.hasAttribute("data-sections")).toBe(true);
+    expect(screen.getAllByRole("list").map((list) => list.getAttribute("aria-labelledby") && document.getElementById(list.getAttribute("aria-labelledby")!)?.textContent))
+      .toEqual(["First column", "Second column"]);
+    expect(screen.getByRole("list", {name: "Second column"}).textContent).toBe("Page C");
+    const [a, b, c] = screen.getAllByRole("link");
+    expect(document.activeElement).toBe(a);
+    fireEvent.keyDown(a, {key: "ArrowDown"});
+    fireEvent.keyDown(b, {key: "ArrowDown"});
+    expect(document.activeElement).toBe(c);
+    fireEvent.keyDown(c, {key: "Escape"});
+    expect(button.getAttribute("aria-expanded")).toBe("false");
+    expect(document.activeElement).toBe(button);
+  });
+
+  it("moves a sectioned panel back inside the window when it would cross the far edge", () => {
+    vi.stubGlobal("innerWidth", 1000);
+    const rect = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({left: 300, right: 1200, top: 0, bottom: 0, width: 900, height: 0, x: 300, y: 0, toJSON: () => ({})});
+    render(<CatchNavMenu label="Wide group" sections={[{title: "Only column", links: [{href: "/a/", label: "Page A"}]}]} />);
+    const button = screen.getByRole("button", {name: "Wide group"});
+    fireEvent.click(button);
+    const wide = document.getElementById(button.getAttribute("aria-controls") ?? "") as HTMLElement;
+    // 1200 − (1000 − 16) = 216px back toward the start, still 84px from the near edge's gutter.
+    expect(wide.style.getPropertyValue("translate")).toBe("-216px 0");
+    rect.mockRestore();
+  });
+
   it("renders nothing on a compact window, where the phone menu carries the links", () => {
     stubMatchMedia(true);
     renderMenu();

@@ -218,6 +218,18 @@
   text-decoration: none;
 }
 
+/* A titled chip row after the chips: its kicker, then the row, both close under what comes before. */
+.chipGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s3);
+  margin: calc(var(--catch-space-s5) - var(--catch-space-s7)) 0 0;
+}
+
+.chipGroup > .chips { margin: 0; }
+
+.chipGroupTitle { margin: 0; }
+
 .dot {
   composes: ground from "./grounds.module.css";
   flex: none;
