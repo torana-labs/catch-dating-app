@@ -5,6 +5,8 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/organizers/data/organizers_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer.dart';
+import 'package:catch_dating_app/hosts/events/access/event_door_screen.dart';
+import 'package:catch_dating_app/hosts/events/access/event_share_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_close_out_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_guests_screen.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_screen.dart';
@@ -59,10 +61,16 @@ class HostEventWorkspaceScreen extends ConsumerWidget {
     final cancelling = ref
         .watch(HostEventBookingController.hostCancelEventMutation)
         .isPending;
+    final deleting = ref
+        .watch(HostEventBookingController.deleteEventMutation)
+        .isPending;
     listenToCatchMutationErrors(
       context,
       ref,
-      mutations: [HostEventBookingController.hostCancelEventMutation],
+      mutations: [
+        HostEventBookingController.hostCancelEventMutation,
+        HostEventBookingController.deleteEventMutation,
+      ],
       errorContext: AppErrorContext.event,
     );
     final event = state.event;
@@ -92,6 +100,7 @@ class HostEventWorkspaceScreen extends ConsumerWidget {
                 canCancel:
                     event.status == EventLifecycleStatus.active &&
                     event.endTime.isAfter(now ?? DateTime.now()),
+                canDelete: !deleting && hostEventCanDelete(event),
                 onSelected: actions.act,
               ),
           ],
@@ -108,7 +117,7 @@ class HostEventWorkspaceScreen extends ConsumerWidget {
             : HostEventWorkspaceBody(
                 state: state,
                 now: now ?? DateTime.now(),
-                cancelling: cancelling,
+                cancelling: cancelling || deleting,
                 onView: actions.view,
                 onAction: actions.act,
                 onRetry: () => retryHostEventWorkspaceReads(ref, request),
@@ -126,14 +135,28 @@ String hostEventKicker(Event event) {
 }
 
 /// The workspace's Event actions menu: edit, duplicate and cancel.
+/// Whether the event can be deleted rather than cancelled: it is not
+/// cancelled and nobody has booked, checked in or joined the waitlist. The
+/// server checks again and refuses an event with bookings, payments or
+/// reviews.
+bool hostEventCanDelete(Event event) =>
+    !event.isCancelled &&
+    event.signedUpCount == 0 &&
+    event.attendedCount == 0 &&
+    event.waitlistCount == 0;
+
 class HostEventWorkspaceMenu extends StatelessWidget {
   const HostEventWorkspaceMenu({
     super.key,
     required this.canCancel,
     required this.onSelected,
+    this.canDelete = false,
   });
 
   final bool canCancel;
+
+  /// Nobody has booked yet, so the event can be deleted outright.
+  final bool canDelete;
   final ValueChanged<HostEventWorkspaceAction> onSelected;
 
   @override
@@ -151,10 +174,22 @@ class HostEventWorkspaceMenu extends StatelessWidget {
           label: l10n.hostEventsMenuDuplicate,
           icon: CatchIcons.copy,
         ),
+        CatchMenuItem(
+          value: HostEventWorkspaceAction.chat,
+          label: l10n.hostEventsMenuChat,
+          icon: CatchIcons.chat,
+        ),
         if (canCancel)
           CatchMenuItem(
             value: HostEventWorkspaceAction.cancel,
             label: l10n.hostEventsMenuCancel,
+            icon: CatchIcons.delete,
+            danger: true,
+          ),
+        if (canDelete)
+          CatchMenuItem(
+            value: HostEventWorkspaceAction.delete,
+            label: l10n.hostEventsMenuDelete,
             icon: CatchIcons.delete,
             danger: true,
           ),
@@ -256,6 +291,26 @@ class _HostEventWorkspaceActions {
           Routes.hostEventPublicationScreen.name,
           pathParameters: _path,
         );
+      case HostEventWorkspaceAction.share:
+        unawaited(
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => HostEventShareScreen(request: request),
+            ),
+          ),
+        );
+      case HostEventWorkspaceAction.moments:
+        context.pushNamed(
+          Routes.hostAppEventMomentsScreen.name,
+          pathParameters: _path,
+          extra: event,
+        );
+      case HostEventWorkspaceAction.chat:
+        context.pushNamed(
+          Routes.eventChatScreen.name,
+          pathParameters: {'eventId': event.id},
+          queryParameters: {'organizerId': organizerId},
+        );
       case HostEventWorkspaceAction.closeOut:
         unawaited(
           Navigator.of(context).push(
@@ -286,9 +341,19 @@ class _HostEventWorkspaceActions {
           ),
         );
       case HostEventWorkspaceAction.team:
-        context.pushNamed(
-          Routes.hostOrganizerTeamScreen.name,
-          queryParameters: {'organizerId': organizerId},
+        unawaited(
+          Navigator.of(context)
+              .push(
+                MaterialPageRoute<void>(
+                  builder: (_) => HostEventDoorScreen(request: request),
+                ),
+              )
+              // A grant made there shows on the Team row.
+              .then((_) {
+                if (context.mounted) {
+                  ref.invalidate(hostEventWorkspaceStaffProvider(request));
+                }
+              }),
         );
       case HostEventWorkspaceAction.practise:
         context.pushNamed(
@@ -298,7 +363,46 @@ class _HostEventWorkspaceActions {
         );
       case HostEventWorkspaceAction.cancel:
         unawaited(_cancel(event));
+      case HostEventWorkspaceAction.delete:
+        unawaited(_delete(event));
     }
+  }
+
+  Future<void> _delete(Event event) async {
+    final l10n = context.l10n;
+    final confirmed = await showCatchAdaptiveDialog<bool>(
+      context: context,
+      title: l10n.hostEventsDeleteTitle,
+      message: l10n.hostEventsDeleteBody,
+      actions: [
+        CatchDialogAction(
+          label: l10n.hostEventsCancelKeep,
+          value: false,
+          isDefault: true,
+        ),
+        CatchDialogAction(
+          label: l10n.hostEventsDeleteConfirm,
+          value: true,
+          isDestructive: true,
+        ),
+      ],
+    );
+    if (confirmed != true || !context.mounted) return;
+    final done = l10n.hostEventsDeleted;
+    final router = GoRouter.of(context);
+    try {
+      await HostEventBookingController.deleteEventMutation.run(
+        ref,
+        (tx) => tx
+            .get(hostEventManageActionsProvider)
+            .deleteUnusedEvent(event: event),
+      );
+    } on Object {
+      // The delete mutation's error notice, set up in build, says why.
+      return;
+    }
+    if (context.mounted) showCatchNotice(context, done);
+    router.goNamed(Routes.hostEventsScreen.name);
   }
 
   Future<void> _cancel(Event event) async {

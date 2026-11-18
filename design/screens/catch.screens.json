@@ -1965,6 +1965,19 @@
       ],
       "reason": "The event workspace pushes the guest lists beside the door as a system pushed screen."
     },
+    "HostEventDoorScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/events/access/event_door_screen.dart",
+          "symbol": "HostEventDoorScreen",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The event workspace pushes the event's door access as a system pushed screen."
+    },
     "HostEventPlanScreen": {
       "owners": [
         {
@@ -1977,6 +1990,32 @@
         }
       ],
       "reason": "The event workspace pushes the plan as a system pushed screen."
+    },
+    "HostEventReviewsScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/insights/host_event_reviews_screen.dart",
+          "symbol": "HostEventReviewsScreen",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The event report pushes every review of the event as a system pushed screen."
+    },
+    "HostEventShareScreen": {
+      "owners": [
+        {
+          "file": "lib/hosts/events/access/event_share_screen.dart",
+          "symbol": "_HostEventShareScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        }
+      ],
+      "reason": "The event workspace pushes share and invite links as a system pushed screen."
     },
     "HostFormatsCourtsScreen": {
       "owners": [
