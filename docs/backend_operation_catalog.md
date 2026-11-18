@@ -529,6 +529,46 @@ board state) and the programme's active WhatsApp sender;
 `listOrganizerPrograms` rows add bounded guest, flying-in and replied
 counts; `updateOrganizerProgram` sets or clears optional `branding`.
 
+## Programme read paths (#1339)
+
+The owner approved moving the programme screens from read callables to
+Firestore listeners on 18 November 2026. Each read is decided on its own, in
+batches by screen area: the access view and rules helpers first, then the live
+board and door, arrivals, departures and hotel, guests and staff, and last
+WhatsApp, photos and the lists. Every old callable stays deployed for older
+builds and is listed as retire-later when its screen moves.
+
+`getProgramWorkAccess` moves to a listener on the caller's own
+`programAccessViews/{programId__uid}` document. A trigger keeps the view from
+the staff grant and the programme: the owner-approval proof, the grant expiry
+and each assignment's expiry are folded into per-duty instants, so the view is
+what `requireProgramAccess` and `activeProgramDuties` decide, without the
+clock. Security rules answer every programme read model from that one view
+(`hasProgramDuty`, `programDutyCoversPickup`, `programDutyCoversHotel`,
+`programDutyCoversFunction`, `isProgramManager`), comparing the instants with
+`request.time`. Rules enforce online; a phone offline enforces the same
+instants itself from its cached view and its clock, and stops showing cached
+rows when the duty or grant has expired, been revoked or been narrowed.
+Commands still re-check authority from the source documents.
+
+**Read path decision (Nov 2026, #1339): server-trust.** `getProgramTransportPlan`
+stays a callable: it groups waiting parties into vehicles with an algorithm
+that depends on the current time (wait overdue, dispatch-by) and on every
+party, hotel and vehicle class, and a second copy of that logic on the phone
+would drift from the server's.
+
+**Read path decision (Nov 2026, #1339): server-trust.** `listProgramIdTracker` and
+`getProgramGuestIdStatus` stay callables: they depend on guest ID documents and
+their review state, which the client must not hold.
+
+**Read path decision (Nov 2026, #1339): server-trust.** `getProgramHotelHandover`
+stays a callable: it reads guest ID documents the client must not hold and
+records the handover in the same call.
+
+**Read path decision (Nov 2026, #1339): server-trust.** `getProgramAssistantSettings`
+stays a callable: it reads the assistant's settings and credential
+references, which no client may hold.
+
 ## Programme WhatsApp threads, replies and the assistant settings
 
 Wedding guests message the programme's own WhatsApp number (an organiser

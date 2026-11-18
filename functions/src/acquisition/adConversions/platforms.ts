@@ -33,6 +33,8 @@ export function metaEvent(delivery: Delivery) {
     event_time: Math.floor(delivery.occurredAt.toMillis() / 1000),
     action_source: "system_generated",
     user_data: {
+      // A conversion-leads CRM stage names its lead; Meta matches it first.
+      ...(delivery.metaLeadId ? {lead_id: delivery.metaLeadId} : {}),
       ...(m.phoneSha256 ? {ph: [m.phoneSha256]} : {}),
       ...(m.emailSha256 ? {em: [m.emailSha256]} : {}),
       external_id: [m.externalIdSha256],
@@ -40,6 +42,8 @@ export function metaEvent(delivery: Delivery) {
     },
     custom_data: {
       content_category: "host",
+      ...(delivery.metaLeadId ?
+        {event_source: "crm", lead_event_source: "Catch"} : {}),
       ...(delivery.valueMinor !== null ? {
         value: delivery.valueMinor / 100, currency: delivery.currency,
       } : {}),

@@ -76,6 +76,8 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'AD_CONVERSIONS_META_TOKEN_VERSION=" "',
     'AD_CONVERSIONS_META_TEST_EVENT_CODE=" "',
     'AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT=" "',
+    'META_LEADGEN_CREDENTIAL_VERSION=" "',
+    'META_LEADGEN_PAGE_IDS=" "',
     "",
   ].join("\n"));
   assert.equal(fs.statSync(result.outputPath).mode & 0o777, 0o600);
@@ -141,6 +143,8 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'AD_CONVERSIONS_META_TOKEN_VERSION=" "',
     'AD_CONVERSIONS_META_TEST_EVENT_CODE=" "',
     'AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT=" "',
+    'META_LEADGEN_CREDENTIAL_VERSION=" "',
+    'META_LEADGEN_PAGE_IDS=" "',
     "",
   ].join("\n"));
 });
@@ -817,4 +821,23 @@ test("ad conversions stay off unless a mode and both credentials are set", () =>
   /must be a service account in this project/);
   assert.throws(() => materialize({AD_CONVERSIONS_META_TEST_EVENT_CODE: "test1"}),
     /must be a Meta test-event code/);
+});
+
+test("the lead-form credential pins this project; pages are numeric", () => {
+  const materialize = (config) => {
+    const functionsDir = fixture();
+    prepareFunctionsParamsForDeploy({functionsDir, projectId: "catchdates-dev",
+      environment: {...publicIds, ...config}});
+    return fs.readFileSync(path.join(functionsDir, ".env.catchdates-dev"), "utf8");
+  };
+  const credential = "projects/catchdates-dev/secrets/CATCH_META_LEADGEN_WEBHOOK/versions/1";
+  const on = materialize({META_LEADGEN_CREDENTIAL_VERSION: credential,
+    META_LEADGEN_PAGE_IDS: "123456789, 987654321"});
+  assert.match(on, /^META_LEADGEN_PAGE_IDS="123456789,987654321"$/m);
+  assert.match(on, new RegExp(`^META_LEADGEN_CREDENTIAL_VERSION="${credential}"$`, "m"));
+  assert.throws(() => materialize({META_LEADGEN_CREDENTIAL_VERSION:
+    "projects/other/secrets/CATCH_META_LEADGEN_WEBHOOK/versions/1"}),
+  /must pin CATCH_META_LEADGEN_WEBHOOK/);
+  assert.throws(() => materialize({META_LEADGEN_PAGE_IDS: "my-page"}),
+    /comma-separated Facebook page IDs/);
 });

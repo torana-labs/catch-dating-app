@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_intake_field_corrections.schema.json",
   "title": "OrganizerIntakeFieldCorrectionDocument",
-  "description": "Immutable, server-owned field correction captured when an admin first changes a source-seeded organizer value. Each correction owns a deterministic replay fixture id.",
+  "description": "Immutable, server-owned field correction captured when an admin first changes a source-seeded organizer value. Each correction owns a deterministic replay fixture id. Kept without a reader on purpose: it is the audit trail of admin edits to source-seeded organizer values, read for disputes and replay only, like adminAuditLogs.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "organizerIntakeFieldCorrections",

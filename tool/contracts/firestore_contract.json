@@ -3246,6 +3246,28 @@
       ]
     },
     {
+      "id": "programAccessViews",
+      "path": "programAccessViews/{accessId}",
+      "rulesMatch": "/programAccessViews/{accessId}",
+      "typescriptInterface": "ProgramAccessViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_access.rules.test.cjs",
+      "rulesTestNames": [
+        "lets an account read only its own access view"
+      ],
+      "owner": "Programme read model projector: programAccessViewTriggers",
+      "read": "an account gets only its own view by the derived id programId__uid while it is not deleted; never listed. Other programme read models authorize through it with one get()",
+      "write": "server only; written from the staff grant (and the owner-approval proof it carries) and from the programme's creator",
+      "exportedFunctions": [
+        "onProgramAccessViewGrantChanged",
+        "onProgramAccessViewProgramChanged"
+      ],
+      "migrationNotes": [
+        "Mirrors requireProgramAccess without the clock: expiries, the grant expiry and the owner's authorization deadline are folded into per-duty instants that rules compare with request.time. The program-access-views copy-forward migration creates views for owners and grants that predate the triggers.",
+        "The view holds ids, duty names and instants only, never the grant's name or phone digits, so account deletion and archive anonymization have no personal data to scrub in it; it keeps the uid the grant keeps."
+      ]
+    },
+    {
       "id": "programStaffGrants",
       "path": "programStaffGrants/{grantId}",
       "rulesMatch": "/programStaffGrants/{grantId}",

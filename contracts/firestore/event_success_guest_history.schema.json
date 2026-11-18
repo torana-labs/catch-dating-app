@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_success_guest_history.schema.json",
   "title": "EventSuccessGuestHistoryDocument",
-  "description": "One guest's game history for one night, projected from eventSuccessStandings by trigger: each recorded round with the guest's team or pair and where it stood after that round, and the final standing. The guest reads only their own; nothing else writes it.",
+  "description": "One guest's game history for one night, projected from eventSuccessStandings by trigger: each recorded round with the guest's team or pair and where it stood after that round, and the final standing. The guest reads only their own; nothing else writes it. Kept although no screen reads it yet: the rules let the guest read their own row for the game history screen that #1606 prepared the backend for. Retire it with its trigger if that screen is dropped.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "eventSuccessGuestHistory",

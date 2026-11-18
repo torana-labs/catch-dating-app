@@ -203,7 +203,7 @@ test("target and capability filtering selects only relevant prerequisites", () =
   );
   // The event-assistance guest keyring is read only by dormant Functions.
   // The ad conversions Meta token is an optional pinned reference.
-  assert.equal(selected("dev", ["functions"]).length, 34);
+  assert.equal(selected("dev", ["functions"]).length, 35);
   for (const environment of ["dev", "staging", "prod"]) {
     for (const [target, secrets] of [
       ["refreshProgramTravelLeg", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
