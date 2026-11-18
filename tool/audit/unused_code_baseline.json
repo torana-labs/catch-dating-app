@@ -29,7 +29,6 @@
     "export functions/src/organizers/organizerAudienceModel.ts organizerIdentityHashVersion",
     "export functions/src/organizers/organizerAudienceProjection.ts applyOrganizerAudienceSummaryDelta",
     "export functions/src/organizers/organizerAudienceProjection.ts rebuildOrganizerAudienceSummary",
-    "export functions/src/organizers/organizerFormDomainRegistry.ts assertOrganizerFormDomainBinding",
     "export functions/src/organizers/organizerPosts.ts buildOrganizerFollowerDelivery",
     "export functions/src/salesAssistant/gateway.ts firebaseAssistantGatewayDeps",
     "export functions/src/search/exploreSearch.ts organizersIndexName",

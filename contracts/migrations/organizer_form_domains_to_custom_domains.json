@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "logicalName": "customDomain",
+  "legacyStoragePath": "organizerFormDomains/{hostname}",
+  "currentStoragePath": "customDomains/{hostname}",
+  "candidatePrimaryStoragePath": "customDomains/{hostname}",
+  "selectedFutureName": "customDomains",
+  "currentPhase": "retire_old_local",
+  "reason": "Owner decision on #1110 (18 Nov 2026): one registry for every hostname Catch serves. Form domains become customDomains records with target.kind form on the firebaseHosting provider, so the organiser-page and form paths share policy, generation fencing and the one-domain-per-organiser limit.",
+  "phases": [
+    {
+      "id": "new_primary",
+      "status": "complete",
+      "description": "resolvePublicFormDomain, the form registry transactions and tool/firebase/form_domain_operator.mjs read and write customDomains only."
+    },
+    {
+      "id": "retire_old",
+      "status": "complete",
+      "description": "The organizerFormDomains schema, Firestore contract entry and rules match are removed; the retired path stays denied by default and the rules test asserts it."
+    },
+    {
+      "id": "count_and_backfill",
+      "status": "pending",
+      "description": "Operator runs tool/data/migrate_form_domains_to_custom_domains.mjs read-only per environment (dev, staging, prod) to count organizerFormDomains. An empty collection needs nothing; otherwise --apply copies each document, then --apply --retire-legacy deletes exact copies. The manager callable was retired on 16 Nov 2026 and no client domain was provisioned, so zero documents are expected but must be measured before deploy."
+    }
+  ],
+  "knownConsumers": [
+    "functions/src/customDomains/domainRegistry.ts",
+    "functions/src/customDomains/formDomainHttp.ts",
+    "functions/src/customDomains/legacyFormDomainMigration.ts",
+    "tool/firebase/form_domain_operator.mjs",
+    "tool/data/migrate_form_domains_to_custom_domains.mjs"
+  ],
+  "guards": [
+    "functions/test/rules/organizers.rules.test.cjs keeps both customDomains form records and the retired organizerFormDomains path denied to every client.",
+    "legacyFormDomainMigration.test.ts proves the empty-collection no-op, idempotent re-runs, no overwrite of a differing customDomains record and deletion only of exact copies."
+  ]
+}

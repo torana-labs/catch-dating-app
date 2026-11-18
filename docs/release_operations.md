@@ -1134,7 +1134,10 @@ These checks don't prove that a visitor at catchdates.com sees correct page cont
 ## Custom form domain onboarding
 
 The trusted operator command is `node tool/firebase/form_domain_operator.mjs`.
-It defaults to status and read-only plans. A future client supplies a dedicated
+It defaults to status and read-only plans. Form domains are `customDomains`
+records with `target.kind: "form"` on the `firebaseHosting` provider, the same
+registry as organiser page domains (#1110), so the same Public Suffix List,
+blocklist and one-domain-per-organiser rules apply. A future client supplies a dedicated
 subdomain and controls its DNS; no client domain is required to ship this tooling.
 Source/CI acceptance does not establish a deployed website, provider readiness or
 successful browser submission for a particular client.
@@ -1178,14 +1181,18 @@ operator. ADC authenticates the operator independently. Keep one operator and
 console writer at a time for shared Auth/Enterprise configuration; those APIs
 provide no compare-and-swap protection. Bucket CORS updates use metageneration.
 
-1. `--action reserve` requires an owned, published form. On apply, record the
+1. `--action reserve` requires an owned, published form and a host the
+   blocklist does not refuse; the plan prints the screening verdict, and a
+   held host cannot activate until its review is approved. On apply, record the
    returned generation, TXT challenge and expected CNAME. Configure those DNS
    records through the client's DNS owner. Preserve the TXT proof after activation.
 2. `--action verify --generation <generation>` reads public DNS itself. The
-   pending reservation expires after 48 hours; expired or revoked reservations
+   pending reservation expires after 7 days; expired or removed reservations
    need a new reservation/challenge, never reuse an old generation.
 3. `--action provision --generation <generation>` creates only the exact missing
-   Hosting custom domain. Existing domains are never repointed or deleted. Follow
+   Hosting custom domain and, on apply, moves the record to `provisioning`
+   with that exact Hosting resource. Existing domains are never repointed or
+   deleted. Follow
    Hosting's `requiredDnsUpdates` from status, then rerun status until ownership,
    Hosting and the unexpired certificate are active. Operation completion alone
    does not prove TLS readiness. Catch's TXT and exact CNAME must also remain valid.
@@ -1208,7 +1215,8 @@ command may have changed one provider field. The adapters re-read and converge
 on exact existing entries rather than clearing shared configuration. Never infer
 success from a previous plan or a Hosting operation handle.
 
-Rollback uses `--action revoke --generation <generation>` first, then
+Rollback uses `--action revoke --generation <generation>` (a `removed`
+transition in the registry) first, then
 `--action remove-origins --generation <generation> --site-key <public-key>`.
 Both retain the exact organizer/form and manager arguments and apply guards.
 Revocation immediately disables registry routing even if the form is unpublished.
@@ -1222,6 +1230,28 @@ claim all provider trust is removed when `providerTrustRemoved` is false. Hostin
 resource deletion and client DNS removal are separate explicit operator actions;
 this command never deletes the Hosting domain. Reassignment requires a fresh
 reservation and DNS proof after coordinating remaining provider/DNS ownership.
+
+### Folding the retired `organizerFormDomains` registry
+
+Before the Functions release that ships the shared registry reaches an
+environment, count the legacy collection there. The dry run is read-only and
+prints the legacy count and each document's planned `customDomains` record:
+
+```sh
+bash tool/git/bootstrap_worktree.sh --target functions
+npm --prefix functions run build
+node tool/data/migrate_form_domains_to_custom_domains.mjs --env dev
+node tool/data/migrate_form_domains_to_custom_domains.mjs --env staging
+node tool/data/migrate_form_domains_to_custom_domains.mjs --env prod
+```
+
+A legacy count of 0 needs nothing more. Otherwise resolve every `blocked` row
+(a host the Public Suffix List policy refuses, an unready active record, or a
+different `customDomains` record already on the host), then run `--apply` to
+copy and, after checking the copies, `--apply --retire-legacy` to delete the
+exactly copied legacy documents. Production writes also need `--allow-prod`.
+Re-running either step is safe: copied records are recognised and never
+overwritten. Record the per-environment counts in the release PR.
 
 ## Public Provider IDs and Server-Side Search Secrets
 

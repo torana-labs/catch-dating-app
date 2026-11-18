@@ -71,9 +71,9 @@ function operatorFixture({action = "activate", apply = false} = {}) {
     expectedCname: "catchdates-forms-dev.web.app", appId: "1:1234567890:web:abcdef",
     bucket: "catchdates-dev.firebasestorage.app", siteKey: "test_enterprise_public_site_key"};
   const clock = 1_700_000_000_000;
-  let record = {hostname: args.hostname, organizerId: "org", formId: "form", publicFormId: "public",
-    generation: 1, status: "verified", expectedCname: target.expectedCname,
-    ownershipChallenge: "challenge", pendingExpiresAtMillis: clock + 1000};
+  let record = {hostname: args.hostname, target: {kind: "form", organizerId: "org", formId: "form",
+    publicFormId: "public"}, provider: "firebaseHosting", generation: 1, status: "provisioning",
+  expectedCname: target.expectedCname, ownershipChallenge: "challenge", pendingExpiresAtMillis: null};
   const state = {
     auth: {name: `projects/${target.projectNumber}/config`, authorizedDomains: [target.hostname]},
     app: {name: `projects/${target.projectNumber}/apps/${target.appId}/recaptchaEnterpriseConfig`, siteKey: target.siteKey},
@@ -87,14 +87,20 @@ function operatorFixture({action = "activate", apply = false} = {}) {
   let guard = async () => {};
   let probe = {hostname: target.hostname, checkedAtMillis: clock, txtValues: ["challenge"], cnameTarget: target.expectedCname};
   const registry = {
-    assertOrganizerFormDomainBinding: async (_db, expected, uid, statuses) => {
+    assertFormCustomDomainBinding: async (_db, expected, uid, statuses) => {
       await guard();
       assert.equal(uid, "manager");
       if (record.generation !== expected.generation || !statuses.includes(record.status)) throw new Error("binding changed");
       return record;
     },
-    probeFormDomain: async () => probe,
-    activateOrganizerFormDomain: async (_db, input, now) => {
+    probeCustomDomain: async () => probe,
+    firebaseHostingProviderHostnameId: (siteId, hostname) => `${siteId}:${hostname}`,
+    markCustomDomainProvisioning: async (_db, input) => {
+      assert.equal(input.fence.generation, 1);
+      assert.equal(input.providerHostnameId, `${target.siteId}:${target.hostname}`);
+      writes.push("provisioning"); record = {...record, status: "provisioning"};
+    },
+    activateFormCustomDomain: async (_db, input, now) => {
       assert.equal(input.expected.generation, 1);
       assert.equal(input.trustedProjectId, target.projectId);
       assert.equal(input.certificate.projectId, target.projectId);
@@ -102,13 +108,16 @@ function operatorFixture({action = "activate", apply = false} = {}) {
       assert.equal(input.certificate.observedAtMillis, now());
       writes.push("activate"); record = {...record, status: "active"};
     },
-    revokeOrganizerFormDomain: async (_db, _host, _org, _uid, _authority, expected) => {
-      assert.equal(expected.generation, 1); writes.push("revoke"); record = {...record, status: "revoked"};
+    removeCustomDomain: async (_db, input) => {
+      assert.equal(input.fence.generation, 1); assert.equal(input.actor.kind, "operator");
+      assert.equal(input.actor.uid, "manager");
+      writes.push("revoke"); record = {...record, status: "removed"};
     },
   };
   const policy = {
-    normalizeCustomFormHost: (host) => host.endsWith(`.${brand.web.domain}`) ? null : host,
-    parseOrganizerFormDomain: (value) => value,
+    parseServedHostname: (host) => host.endsWith(`.${brand.web.domain}`) ? null :
+      {hostname: host, registrableDomain: host.split(".").slice(1).join(".")},
+    parseCustomDomain: (value) => value,
     hasCurrentDomainOwnership: (current, proof) => proof?.txtValues.includes(current.ownershipChallenge) &&
       proof.cnameTarget === current.expectedCname,
   };
@@ -149,7 +158,7 @@ test("activation refuses unready hosting, origin grants, wrong bindings and chan
     if (change === "origin") h.state.auth.authorizedDomains = [];
     if (change === "dns") h.setProbe(null);
     if (change === "generation") h.setRecord({generation: 2});
-    if (change === "form") h.setRecord({formId: "other"});
+    if (change === "form") h.setRecord({target: {kind: "form", organizerId: "org", formId: "other", publicFormId: "public"}});
     if (change === "authority") h.setGuard(async () => {throw new Error("manager revoked");});
     if (change === "reserved-host") h.target.hostname = `forms.${brand.web.domain}`;
     await assert.rejects(h.run);
@@ -165,9 +174,52 @@ test("revocation precedes origin removal and exact generation is retained", asyn
   h.args.action = "revoke";
   const result = await h.run();
   assert.deepEqual(h.writes, ["revoke"]);
-  assert.equal(result.registry.status, "revoked");
+  assert.equal(result.registry.status, "removed");
   assert.equal(result.nextAction, "remove-origins");
   assert.ok(h.calls.every((call) => call.method === "GET"));
+});
+
+test("provision records the exact Hosting resource in the shared registry only on apply", async () => {
+  const h = operatorFixture({action: "provision"});
+  h.setRecord({status: "verified"});
+  const planned = await h.run();
+  assert.deepEqual(h.writes, []);
+  assert.equal(planned.registry.status, "verified");
+  h.args.apply = true;
+  const applied = await h.run();
+  assert.deepEqual(h.writes, ["provisioning"]);
+  assert.equal(applied.registry.status, "provisioning");
+  assert.ok(h.calls.every((call) => call.method === "GET"));
+});
+
+test("reserve screens the host and refuses one the registry still holds", async () => {
+  const h = operatorFixture({action: "reserve"});
+  delete h.args.generation;
+  const reservations = [];
+  const db = {collection: (name) => ({doc: () => ({get: async () => name === "organizerForms" ?
+    {exists: true, get: (field) => ({status: "published", organizerId: "org"})[field]} :
+    {exists: false, data: () => undefined}})})};
+  const run = (policy, apply = false) => runDomainOperator({...h.args, apply}, {target: h.target, db,
+    registry: {reserveCustomDomain: async (_db, input) => {
+      reservations.push(input); return {status: "pendingDns"};
+    }},
+    policy: {parseServedHostname: (host) => ({hostname: host, registrableDomain: "client.example"}),
+      parseCustomDomain: (value) => value ?? null, holdsHostname: () => true,
+      screenHostname: () => ({verdict: "allow"}), ...policy},
+    request: async (config) => ({status: 200, data: config.url.includes("cloudresourcemanager") ?
+      {name: `projects/${h.target.projectNumber}`, projectId: h.target.projectId, state: "ACTIVE"} :
+      config.url.endsWith(h.target.parent) ? {name: h.target.parent,
+        defaultUrl: `https://${h.target.siteId}.web.app`} : h.state.hosting}),
+    now: () => 1_700_000_000_000, assertManager: async () => {}});
+  const plan = await run({});
+  assert.equal(plan.nextAction, "reserve-with-apply");
+  assert.deepEqual(plan.screening, {verdict: "allow"});
+  await assert.rejects(run({screenHostname: () => ({verdict: "reject", reason: "blocklisted"})}, true),
+    /blocklisted/);
+  const applied = await run({}, true);
+  assert.equal(applied.nextAction, "publish-dns-then-verify");
+  assert.deepEqual(reservations.map((input) => [input.provider, input.target.kind,
+    input.actor.kind, input.actor.uid]), [["firebaseHosting", "form", "operator", "manager"]]);
 });
 
 test("production protection follows the resolved project even for a dev alias", async () => {

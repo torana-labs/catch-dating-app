@@ -2468,6 +2468,24 @@
       "role": "generator"
     },
     {
+      "id": "data:migrate-form-domains",
+      "category": "data",
+      "path": "tool/data/migrate_form_domains_to_custom_domains.mjs",
+      "command": "node tool/data/migrate_form_domains_to_custom_domains.mjs --env <dev|staging|prod> [--apply [--retire-legacy]]",
+      "safety": "remote-destructive-apply-guarded",
+      "status": "active",
+      "description": "One-time fold of the retired organizerFormDomains registry into customDomains (#1110): a read-only count and conversion plan by default, idempotent copies on --apply that never overwrite a differing record, and deletion of exactly copied legacy documents with --retire-legacy.",
+      "checks": [
+        "node --check tool/data/migrate_form_domains_to_custom_domains.mjs",
+        "node --test tool/data/migrate_form_domains_to_custom_domains.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/data/migrate_form_domains_to_custom_domains.test.mjs",
+        "functions/src/customDomains/legacyFormDomainMigration.ts",
+        "contracts/migrations/organizer_form_domains_to_custom_domains.json"
+      ]
+    },
+    {
       "id": "data:organizer-takedown",
       "category": "data",
       "path": "tool/data/organizer_takedown.mjs",
@@ -5104,8 +5122,8 @@
       ],
       "impactPaths": [
         "tool/firebase/form_domain_operator.test.mjs",
-        "functions/src/organizers/organizerFormDomainRegistry.ts",
-        "functions/src/organizers/organizerFormDomainCallables.ts",
+        "functions/src/customDomains/domainRegistry.ts",
+        "functions/src/customDomains/domainPolicy.ts",
         ".github/workflows/_backend-deploy.yml"
       ],
       "ciRequirements": {

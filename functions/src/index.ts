@@ -296,7 +296,7 @@ export {
   withdrawOrganizerFormResponse,
 } from "./organizers/organizerFormResponses";
 export {resolvePublicFormDomain} from
-  "./organizers/organizerFormDomainHttp";
+  "./customDomains/formDomainHttp";
 export {
   getOrganizerFormAnalytics,
   getOrganizerFormResponseDetail,

@@ -323,22 +323,23 @@ direct Catch link remains available if the site blocks scripts or if embedding
 is unsupported. Site-specific CSP, keyboard, mobile scroll, checkout popups,
 and browser storage need real browser validation before a client page goes live.
 
-`organizerFormDomainRegistry.ts` is the server-side ownership and
-routing policy for a future Catch-served customer subdomain. It stores one
-exact hostname per record, binds it to a published organizer form, issues a
-fresh TXT challenge for every reservation, requires a matching CNAME and
-current DNS probe, and requires trusted certificate readiness before activation.
-An unverified reservation expires after 48 hours; reclaim rotates both the
-challenge and generation, while verified and active bindings do not expire
-into another organizer's control. Reservations are limited per organizer and
-per caller.
-Resolution also rechecks form ownership and publication. Revocation stops
+The custom domain registry (`functions/src/customDomains/domainRegistry.ts`,
+`customDomains/{hostname}`) is the server-side ownership and routing policy for
+a Catch-served customer subdomain, for organiser pages and forms alike. It
+stores one exact hostname per record, binds a form record to a published
+organizer form, issues a fresh TXT challenge for every reservation, requires a
+matching CNAME and current DNS probe, and requires trusted certificate
+evidence for the exact provider hostname before activation. An unverified
+reservation expires after 7 days; reclaim rotates both the challenge and
+generation, while verified and active bindings do not expire into another
+organizer's control. An organiser holds at most one live domain.
+Resolution also rechecks form ownership and publication. Removal stops
 resolution; reassignment starts with a rotated challenge and generation.
 The public `/api/form-domain` endpoint resolves only active, still-owned
 bindings, and the React host gate shows only the bound form. Unknown or
-revoked hosts cannot render other marketing or form routes. Manager callables
-use Auth, App Check and per-user limits for reservation, verification and
-revocation. `FORM_DOMAIN_CNAME_TARGET` is deployment-owned and defaults to an
+removed hosts cannot render other marketing or form routes. No client callable
+writes the registry yet; form domains are onboarded only through the trusted
+operator CLI. `FORM_DOMAIN_CNAME_TARGET` is deployment-owned and defaults to an
 unusable placeholder. Only the trusted hosting operator can mark certificate
 readiness and activate a verified record. No custom hostname is enabled by
 these source changes alone: DNS/TLS provisioning, the exact Firebase Hosting

@@ -125,7 +125,7 @@
   "lib/catchMessaging/whatsappReplyHandlers.test.js",
   "lib/catchMessaging/whatsappEndpointStops.test.js",
   "lib/programs/programActivity.emulator.test.js",
-  "lib/organizers/organizerFormDomainRegistry.emulator.test.js",
+  "lib/customDomains/domainRegistry.emulator.test.js",
   "lib/publicPages/rebuild.emulator.test.js",
   "lib/cityPlans/rebuild.emulator.test.js",
   "lib/foundingHosts/foundingHostGrant.emulator.test.js"
