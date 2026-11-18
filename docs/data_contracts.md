@@ -4945,6 +4945,46 @@ reaches it; a query naming the programme and one kind lists every resource of
 that kind when the work list's `*` key is live (the owner always), and a scoped
 account reads its named ids one by one. With the access view they replace the
 callable, which stays deployed for older builds.
+`programDoorFunctions/{functionId}`, `programDoorRows/{functionId}__{guestId}`
+and `programDoorJournalViews/{journalId}` (#1339) are the door of one function,
+kept by triggers on `programFunctions`, `programFunctionGuests`,
+`programGuests`, `programHouseholds`, `programDoorJournal` and
+`programStaffGrants`, and created for existing sources by the
+`program-door-views` copy-forward migration. The header holds exactly the
+function fields `getProgramFunctionDoorView` returned (venue notes, dress code
+and instructions included, since only door duty holders read it). A row is one
+guest at one function with the callable's roster fields: display name, whether
+invited, RSVP and attendance state, party size, household label and the
+response note, and never a phone number, email or other contact field. An
+`allGuests` function has a row for every programme guest, a `selectedGuests`
+function for each guest with a join row, and a guest neither invited nor
+checked in has none. A journal view is one door activity entry with the guest's
+name, the action, time, party size, note and the acting staff member's label,
+without the actor's account id or the device id; once the source is
+anonymized its view drops the name, note and label. The phone computes the
+header counts (heads expected and checked in, parties, no-shows, walk-ins) from
+the rows it lists and reads the newest 60 journal views by an ordered query.
+Rules let accounts whose function check-in or function lead duty covers the
+function, and the programme owner, get these by id or list them with a query
+naming `programId` and `functionId`; coordinators hold both duties in their
+`programAccessViews` document. The door's offline outbox and journal writes are
+unchanged: only the read moves.
+
+`programAlertViews/{programId}__{alertId}` and
+`programTravelCountViews/{programId}` (#1339) are the live board's alerts and
+travel counts, kept by triggers on `organizerMomentSends`,
+`programTravelLegs` and `programAlerts` and created by the
+`program-live-board-views` migration. An alert is one document: a staff
+attention send stamped for a duty (one per run and duty, from the earliest
+send, ending 24 hours after it) or a cancelled or diverted flight or disrupted
+inbound journey (no duty, no end), merged with who took or finished it. It
+carries `duty`, `expiresAtMillis`, the resolution state and the assignee's
+account id, so a phone can tell its own alerts; clients hide an alert past
+`expiresAtMillis`, and the retention sweep's delete of the resolutions clears
+the assignee. A function lead reads the alerts stamped for a duty it holds
+(one listener per duty); full reach (coordinators and the owner) reads every
+alert and the counts. The phone computes the schedule's phases from its clock.
+`listProgramStaffAttention` reads the same alerts (source `staffAttention`).
 
 `organizerCampaigns.recipientSource` names where recipients resolve:
 `savedAudience` (default, backed by `savedAudienceId`) or

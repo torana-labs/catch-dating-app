@@ -560,6 +560,18 @@ checks (`phone_import_adapter` before the import commit, and the import route's
 access refresh) keep calling `getProgramWorkAccess` live: each is the review
 before a write, and the current wedding-wide guest grant it confirms must come
 from the server, never a cache.
+`getProgramFunctionDoorView` moves to the door read models
+(`programDoorFunctions`, `programDoorRows`, `programDoorJournalViews`):
+function-scoped, readable when the account's function check-in or function
+lead duty covers the function, with no contact fields; the door's offline
+outbox and journal writes are unchanged. `getProgramLiveBoard` and
+`listProgramStaffAttention` move to `programAlertViews` (duty-tagged alerts
+with their resolution, readable by duty, travel alerts by full reach only),
+`programTravelCountViews` and the function labels of `programResourceViews`;
+the phone computes the schedule phases from its clock. `resolveProgramAlert`,
+`recordProgramDoorJournal` and `createProgramWalkIn` stay commands with their
+revision and request-id fences. All three callables stay deployed for older
+builds, retire-later.
 
 **Read path decision (Nov 2026, #1339): server-trust.** `getProgramTransportPlan`
 stays a callable: it groups waiting parties into vehicles with an algorithm

@@ -45,7 +45,7 @@
       "leadForm": "Catch Host | Organisers | v2",
       "landingPath": "/host/",
       "targeting": {
-        "cities": ["1017930", "1023040", "1024627", "1025436", "1026297", "1035921", "2678292"],
+        "adProgramme": "host",
         "ageMin": 21,
         "advantageAudience": true
       },

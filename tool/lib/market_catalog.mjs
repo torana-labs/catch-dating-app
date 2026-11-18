@@ -21,6 +21,9 @@ export const cityLifecycles = Object.freeze([
   "paused",
 ]);
 
+/** Ad programmes a city can be switched on for, in `ads`. */
+export const adProgrammes = Object.freeze(["host", "guest"]);
+
 export const appSurfaceFlags = Object.freeze([
   "profileSelectable",
   "hostCreatable",
@@ -122,6 +125,26 @@ export function marketCatalogErrors(catalog) {
     if (city.launchDate !== undefined && !isCalendarDate(city.launchDate)) {
       errors.push(`${id}: launchDate ${city.launchDate} is not a real date.`);
     }
+    if (city.ads !== undefined) {
+      const ads = city.ads;
+      const on = adProgrammes.filter((programme) => ads[programme] === "on");
+      for (const programme of adProgrammes) {
+        if (ads[programme] !== "on" && ads[programme] !== "off") {
+          errors.push(`${id}: ads.${programme} must be "on" or "off".`);
+        }
+      }
+      if (on.length > 0 && (!ads.metaCityKeys?.length || !ads.googleGeoTargetIds?.length)) {
+        errors.push(`${id}: ads switched on need metaCityKeys and googleGeoTargetIds.`);
+      }
+      if (ads.guest === "on" && city.lifecycle !== "live") {
+        errors.push(`${id}: guest ads need lifecycle live, not ${city.lifecycle}.`);
+      }
+      if (ads.host === "on" && city.lifecycle === "hidden") {
+        errors.push(`${id}: a hidden city cannot run host ads.`);
+      }
+      for (const key of ads.metaCityKeys ?? []) claim(`meta:${key}`, id, "Meta city key");
+      for (const geo of ads.googleGeoTargetIds ?? []) claim(`google:${geo}`, id, "Google location");
+    }
   }
 
   for (const country of countries.values()) {
@@ -141,6 +164,25 @@ export function marketCatalogErrors(catalog) {
     }
   }
   return errors;
+}
+
+/**
+ * Where one ad programme runs, read from each city's `ads` block. This is the
+ * only source of ad targeting: tool/ads builds Meta and Google locations from
+ * it, so adding or pausing a city's ads is a change to the catalog alone.
+ */
+export function adTargetingFromCatalog(catalog, programme) {
+  if (!adProgrammes.includes(programme)) {
+    throw new Error(`Unknown ad programme ${programme}; use ${adProgrammes.join(" or ")}.`);
+  }
+  const cities = (catalog.cities ?? []).filter((city) => city.ads?.[programme] === "on");
+  return {
+    programme,
+    marketIds: cities.map((city) => city.marketId),
+    labels: cities.map((city) => city.label),
+    metaCityKeys: cities.flatMap((city) => city.ads.metaCityKeys),
+    googleGeoTargetIds: cities.flatMap((city) => city.ads.googleGeoTargetIds),
+  };
 }
 
 export function assertValidMarketCatalog(catalog) {
