@@ -4,7 +4,7 @@ import {
   suppressionHashes,
   suppressionKeysForIdentity,
   usableSuppressionSecret,
-} from "../../../../operations/src/workflows/supply-intake/organizer-matching/suppression.mjs";
+} from "./suppression.mjs";
 import {BIGQUERY_CHANGELOGS} from "./inventory.mjs";
 import {TakedownError, outstanding} from "./plan.mjs";
 

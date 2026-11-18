@@ -102,13 +102,20 @@ jobs:
           cache-dependency-path: functions/package-lock.json
 
       # The tool reads Firestore, Storage and Secret Manager through the
-      # Functions dependencies and loads the shared suppression module from
-      # the repository, so no build is needed.
+      # Functions dependencies and loads the do-not-list key derivation from
+      # the Functions build, so it hashes exactly as the intake checks do.
       - name: Install the Functions dependencies
         shell: bash
         run: |
           set -euo pipefail
           bash tool/git/bootstrap_worktree.sh --target functions
+
+      - name: Build Functions
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm --prefix functions run build
+          test -f functions/lib/listingSuppressions/registry.js
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0

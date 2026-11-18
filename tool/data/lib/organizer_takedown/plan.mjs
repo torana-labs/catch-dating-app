@@ -3,7 +3,7 @@ import {
   isSuppressionCaseId,
   suppressionKeysForIdentity,
   suppressionKeysForIntakeRequest,
-} from "../../../../operations/src/workflows/supply-intake/organizer-matching/suppression.mjs";
+} from "./suppression.mjs";
 import {dispositionFor} from "./inventory.mjs";
 
 // The takedown closure: every Firestore document and Storage object that

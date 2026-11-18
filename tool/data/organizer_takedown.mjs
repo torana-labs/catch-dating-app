@@ -6,7 +6,7 @@ import {createRequire} from "node:module";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {parseCommonArgs} from "../lib/cli_args.mjs";
 import {assertProdWriteAllowed, isFirebaseProductionTarget, resolveFirebaseProjectId} from "../lib/firebase_project.mjs";
-import {isSuppressionCaseId} from "../../operations/src/workflows/supply-intake/organizer-matching/suppression.mjs";
+import {isSuppressionCaseId} from "./lib/organizer_takedown/suppression.mjs";
 import {readSchemaInventory} from "./lib/organizer_takedown/inventory.mjs";
 import {TakedownError, buildTakedownPlan, outstanding, parseCaseFile, summarizePlan} from "./lib/organizer_takedown/plan.mjs";
 import {
@@ -30,7 +30,9 @@ import {cleanBigQuery} from "./lib/organizer_takedown/bigquery.mjs";
  * gs://<project>-takedown-preservation/cases/<caseId>/case.json (or a later
  * correction, case-NN.json), never from the
  * command line, because GitHub shows workflow inputs and logs publicly.
- * Output is counts only: no ids, paths, names, handles or URLs.
+ * Output is counts only: no ids, paths, names, handles or URLs. Build Functions
+ * first (npm --prefix functions run build): the do-not-list key derivation is
+ * loaded from functions/lib/listingSuppressions/registry.js.
  *
  * Modes, in order:
  *   plan      dry run: what each store holds for the case (counts)

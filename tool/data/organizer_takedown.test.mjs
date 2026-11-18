@@ -11,7 +11,7 @@ import {statements} from "./lib/organizer_takedown/bigquery.mjs";
 import {
   suppressionHashes,
   suppressionKeysForIntakeRequest,
-} from "../../operations/src/workflows/supply-intake/organizer-matching/suppression.mjs";
+} from "./lib/organizer_takedown/suppression.mjs";
 import {createFakeBucket, createFakeFetch, createFakeFirestore, fakeFieldValues} from "./fixtures/organizer_takedown/fakes.mjs";
 import {
   CASE_ID,

@@ -57,12 +57,15 @@ test("uploads no artifact: manifests and snapshots stay in the preservation buck
   assert.doesNotMatch(workflow, /--json|--debug/u, "the tool runs counts-only, never with full errors");
 });
 
-test("installs the Functions family and signs in before the tool runs", () => {
+test("installs and builds Functions and signs in before the tool runs", () => {
   const install = step("Install the Functions dependencies");
   assert.match(install.run, /\nbash tool\/git\/bootstrap_worktree\.sh --target functions$/u);
+  const build = step("Build Functions");
+  assert.match(build.run, /\nnpm --prefix functions run build\n/u);
+  assert.match(build.run, /\ntest -f functions\/lib\/listingSuppressions\/registry\.js$/u);
   const names = steps.map((candidate) => candidate.name ?? candidate.uses ?? "");
   for (const before of ["Run only from main", "Check the inputs", "Install the Functions dependencies",
-    "Authenticate to Google Cloud"]) {
+    "Build Functions", "Authenticate to Google Cloud"]) {
     assert.ok(names.indexOf(before) < names.indexOf("Run the takedown"), before);
   }
   const gcloud = steps.find((candidate) => candidate.uses?.startsWith("google-github-actions/setup-gcloud@"));

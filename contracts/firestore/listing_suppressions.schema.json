@@ -42,7 +42,7 @@
       "type": "boolean"
     },
     "hashScheme": {
-      "description": "How identityHashes were computed: HMAC-SHA256 under LISTING_SUPPRESSION_HMAC_KEY of 'hmac-sha256/listing-suppression-v1', a newline and the identity key (operations/src/workflows/supply-intake/organizer-matching/suppression.mjs).",
+      "description": "How identityHashes were computed: HMAC-SHA256 under LISTING_SUPPRESSION_HMAC_KEY of 'hmac-sha256/listing-suppression-v1', a newline and the identity key, as the shared Supply Intake organizer-matching suppression module derives it.",
       "const": "hmac-sha256/listing-suppression-v1"
     },
     "identityHashes": {

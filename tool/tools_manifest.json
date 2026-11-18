@@ -2401,7 +2401,7 @@
       "description": "Preserve-then-delete takedown of one organiser case read from the restricted preservation bucket: counts-only plan, SHA-256 preservation export, deletion across every store with audit-log redaction, do-not-list suppression entry, verification and BigQuery cleanup.",
       "checks": [
         "node --check tool/data/organizer_takedown.mjs",
-        "node --test tool/data/organizer_takedown.test.mjs"
+        "npm --prefix functions run build && node --test tool/data/organizer_takedown.test.mjs"
       ],
       "impactPaths": [
         "tool/data/organizer_takedown.test.mjs",
@@ -2409,6 +2409,8 @@
         "tool/data/lib/organizer_takedown/bigquery.mjs",
         "tool/data/lib/organizer_takedown/inventory.mjs",
         "tool/data/lib/organizer_takedown/plan.mjs",
+        "tool/data/lib/organizer_takedown/suppression.mjs",
+        "functions/src/listingSuppressions/registry.ts",
         "tool/data/fixtures/organizer_takedown/fakes.mjs",
         "tool/data/fixtures/organizer_takedown/world.mjs",
         "operations/src/workflows/supply-intake/organizer-matching/suppression.mjs",
