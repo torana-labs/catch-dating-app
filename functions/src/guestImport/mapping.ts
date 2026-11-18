@@ -4,6 +4,7 @@
 
 import type {
   GuestColumnMapping,
+  GuestField,
   GuestListConverter,
   GuestStatus,
 } from "./canonical";
@@ -64,23 +65,59 @@ export function orderArrivalGroupAliases(): ReadonlySet<string> {
 
 /**
  * Maps the table's columns to guest fields for [converter] (null for a file
- * no converter recognised).
+ * no converter recognised). A converter's own aliases are tried first, then
+ * the shared ones, then (for form exports) words in the question text.
  * @return {GuestColumnMapping} Column index per field.
  */
 export function suggestGuestMapping(headers: string[],
   converter: GuestListConverter | null): GuestColumnMapping {
-  return {
-    displayName: findHeader(headers, fullNameAliases),
-    phone: findHeader(headers, phoneAliases),
-    email: findHeader(headers, emailAliases),
-    externalReference: findHeader(headers,
-      converter?.externalReferenceAliases ?? genericExternalReferenceAliases),
-    arrivalGroup: findHeader(headers,
-      converter?.arrivalGroupAliases ?? genericArrivalGroupAliases),
-    ticketType: findHeader(headers, ticketTypeAliases),
-    status: findHeader(headers, statusAliases),
+  const shared: Record<GuestField, ReadonlySet<string>> = {
+    displayName: fullNameAliases,
+    phone: phoneAliases,
+    email: emailAliases,
+    externalReference: converter?.externalReferenceAliases ??
+      genericExternalReferenceAliases,
+    arrivalGroup: converter?.arrivalGroupAliases ??
+      genericArrivalGroupAliases,
+    ticketType: ticketTypeAliases,
+    status: statusAliases,
   };
+  const mapping = {} as GuestColumnMapping;
+  for (const field of guestFields) {
+    const own = converter?.aliases?.[field];
+    mapping[field] = (own ? findHeader(headers, own) : null) ??
+      findHeader(headers, shared[field]);
+  }
+  const words = converter?.questionWords;
+  if (!words) return mapping;
+  const used = new Set(Object.values(mapping)
+    .filter((index): index is number => index !== null));
+  for (const field of guestFields) {
+    const fieldWords = words[field];
+    if (mapping[field] !== null || !fieldWords) continue;
+    const index = headers.findIndex((header, column) => {
+      if (used.has(column)) return false;
+      const normalized = normalizeHeader(header);
+      return fieldWords.some((word) => normalized.includes(word)) &&
+        !(field === "displayName" && nameStopWords.some((word) =>
+          normalized.includes(word)));
+    });
+    if (index >= 0) {
+      mapping[field] = index;
+      used.add(index);
+    }
+  }
+  return mapping;
 }
+
+/** Mapping order. Earlier fields claim a question column first. */
+export const guestFields: readonly GuestField[] = ["displayName", "phone",
+  "email", "externalReference", "arrivalGroup", "ticketType", "status"];
+
+/** A question about someone else's name, or a brand, is not the guest's. */
+const nameStopWords = ["company", "brand", "business", "organisation",
+  "organization", "event", "user", "instagram", "handle", "college",
+  "school", "friend", "referr", "emergency", "team"];
 
 /** Reads a status cell. Anything unrecognised counts as registered. */
 export function rosterStatus(value: string | null): GuestStatus {
