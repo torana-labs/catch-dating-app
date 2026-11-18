@@ -76,12 +76,6 @@ jobs:
         run: GITHUB_SHA="$RELEASE_SHA" node "$RELEASE_SOURCE/tool/marketing/import_hosted_captures.mjs" --import
       - name: Build with public configuration and no cloud credentials
         env:
-          # Retired with the ads pilot (#2046), but sources older than it
-          # still declare it and require it to be production-eligible; none
-          # loads a tag with it. Only a source whose Dockerfile declares it
-          # receives it. Remove it, and its test in previewBuildConfig.test.mjs,
-          # once live (deployed/prod-website) contains 22633273a.
-          VITE_GTM_ID: GTM-K7KLNQXP
           VITE_WEBSITE_APPCHECK_SITE_KEY: ${{ vars.VITE_WEBSITE_APPCHECK_SITE_KEY }}
           VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -17,7 +18,7 @@ function workflowBuildEnvironment() {
   const env = buildStep.slice(buildStep.indexOf("env:"), buildStep.indexOf("run: |"));
   const keys = [...env.matchAll(/^\s+(VITE_[A-Z0-9_]*):/gmu)].map(match => match[1]);
   assert.ok(keys.length > 0, "The build step supplies the public build configuration");
-  const fixture = {VITE_FIREBASE_PROJECT_ID: "catch-dating-app-64e51", VITE_GTM_ID: "GTM-FIXTURE"};
+  const fixture = {VITE_FIREBASE_PROJECT_ID: "catch-dating-app-64e51"};
   return {PATH: process.env.PATH, ...Object.fromEntries(keys.map(key => [key, fixture[key] ?? `public-fixture-${key}`]))};
 }
 
@@ -57,24 +58,36 @@ test("the preview builds the current source as production-eligible", () => {
   assert.ok(!args.includes("VITE_GTM_ID"), "A source that does not declare the retired id never receives it");
 });
 
-// The 18 Nov 2026 outage: main's preview stopped supplying VITE_GTM_ID while
-// the train still released a source that required it, so the image built,
-// logged nothing and answered 503 on /host/. Delete this test together with
-// the workflow's VITE_GTM_ID once live contains 22633273a.
-test("the preview still builds a releasable source from before the ads retirement as production-eligible", () => {
+// The 18 Nov 2026 outage: main's preview stopped supplying VITE_GTM_ID (#2046
+// retired it) while the train still released a source that required it, so
+// the image built, logged nothing and answered 503 on /host/. Such a source
+// must now stop the build step with its own reason, before any image exists.
+test("a source from before the ads retirement stops the build step with its own reason, not a 503 image", () => {
   const source = preRetirementSource();
+  const bin = fs.mkdtempSync(path.join(os.tmpdir(), "catch-preview-docker-"));
+  const built = path.join(bin, "built");
+  fs.writeFileSync(path.join(bin, "docker"), `#!/bin/sh\ntouch ${JSON.stringify(built)}\n`, {mode: 0o755});
   try {
-    assert.ok(sourceBuildArgs(source, workflowBuildEnvironment()).includes("VITE_GTM_ID"));
+    const env = workflowBuildEnvironment();
+    assert.ok(!("VITE_GTM_ID" in env), "The preview no longer supplies the retired tag manager id");
+    const run = buildStep.slice(buildStep.indexOf("run: |") + "run: |".length).split("\n")
+      .map(line => line.replace(/^ {10}/u, "")).join("\n");
+    const result = spawnSync("bash", ["-c", run], {cwd: repositoryRoot, encoding: "utf8",
+      env: {...env, PATH: `${bin}:${process.env.PATH}`, RELEASE_SOURCE: source, RELEASE_SHA: "a".repeat(40)}});
+    assert.notEqual(result.status, 0, "The build step must fail");
+    assert.match(result.stderr, /production-eligibility check rejects/u);
+    assert.match(result.stderr, /VITE_GTM_ID is required for marketing hosting deploys/u);
+    assert.ok(!fs.existsSync(built), "No image is built for a configuration the source rejects");
   } finally {
     fs.rmSync(source, {recursive: true, force: true});
+    fs.rmSync(bin, {recursive: true, force: true});
   }
 });
 
 test("a configuration the source's own check rejects stops the preview before docker build", () => {
   const source = preRetirementSource();
   try {
-    const {VITE_GTM_ID: _retired, ...withoutRetired} = workflowBuildEnvironment();
-    assert.throws(() => sourceBuildArgs(source, withoutRetired),
+    assert.throws(() => sourceBuildArgs(source, workflowBuildEnvironment()),
       error => /production-eligibility check rejects/u.test(error.message) && /503/u.test(error.message) &&
         /VITE_GTM_ID is required/u.test(error.message));
     assert.throws(() => sourceBuildArgs(repositoryRoot, {...workflowBuildEnvironment(), VITE_FIREBASE_API_KEY: ""}),
