@@ -1401,6 +1401,33 @@ export const MIGRATIONS = [
     ],
   },
   {
+    name: "program-whatsapp-author-labels",
+    description:
+      "The programme inbox shows who wrote each planner reply without " +
+      "reading the staff list (#1339), so each reply writes its author's " +
+      "display name beside the message. Every planner reply written before " +
+      "that gets authorLabel from its author's staff grant. Replies whose " +
+      "author has no grant or no name (the owner) are left as they are, and " +
+      "so is every field a message already holds; guest and assistant " +
+      "messages are never touched.",
+    steps: [
+      {
+        kind: "fill",
+        collection: "programWhatsappMessages",
+        fill: async (data, id, db) => {
+          if (data.direction !== "outbound" || data.author !== "planner") return null;
+          if (!validId(data.programId) || !validId(data.authorUid)) return null;
+          if (typeof data.authorLabel === "string" && data.authorLabel) return null;
+          const grant = (await db.collection("programStaffGrants")
+            .doc(`${data.programId}__${data.authorUid}`).get()).data();
+          const name = typeof grant?.displayName === "string" ? grant.displayName.trim() : "";
+          return grant?.programId === data.programId && name ?
+            {authorLabel: name.slice(0, 120)} : null;
+        },
+      },
+    ],
+  },
+  {
     name: "organizer-program-views",
     description:
       "The planner's programme list and setup read organizerProgramViews " +
