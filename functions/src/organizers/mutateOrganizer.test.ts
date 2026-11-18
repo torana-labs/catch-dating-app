@@ -173,3 +173,34 @@ test("an admin lock refuses the Host's women-led declaration", async () => {
     organizerId: "club-1", fields: {womenLed: false}}), store.deps);
   assert.deepEqual(store.rows["organizers/club-1"].womenLed, lock);
 });
+
+test("an imported page publishes only once its identity is verified",
+  async () => {
+    const provenance = (verification: string) => ({importProvenance: {
+      requestId: "tryit-0123456789abcdef0123", listingId: "listing-1",
+      contentHash: "b".repeat(64), sourceUrls: [],
+      identities: [{platform: "luma", url: "https://luma.com/neemwood"}],
+      verification, importedAt: "EARLIER"}});
+    const store = organizerStore({"organizers/club-1":
+      teamOrganizer(provenance("unverified"))});
+    await assert.rejects(updateOrganizerHandler(hostRequest("owner-1", {
+      organizerId: "club-1", fields: {publicListingEnabled: true}}),
+    store.deps), (error) => (error as {code?: string}).code ===
+      "failed-precondition" && (error as {details?: {reason?: string}})
+      .details?.reason === "import_verification_required");
+    assert.equal(store.updates.length, 0);
+    // Other edits still save while the import waits for verification.
+    await updateOrganizerHandler(hostRequest("owner-1", {
+      organizerId: "club-1", fields: {description: "Saturday runs."}}),
+    store.deps);
+    assert.equal(store.rows["organizers/club-1"].description, "Saturday runs.");
+
+    for (const verification of ["verified", "not_needed"]) {
+      const ready = organizerStore({"organizers/club-1":
+        teamOrganizer(provenance(verification))});
+      await updateOrganizerHandler(hostRequest("owner-1", {
+        organizerId: "club-1", fields: {publicListingEnabled: true}}),
+      {...ready.deps, reserveCanonicalRoute: async () => undefined});
+      assert.equal(ready.updates.length, 1, verification);
+    }
+  });

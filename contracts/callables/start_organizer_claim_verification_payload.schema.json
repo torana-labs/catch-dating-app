@@ -8,6 +8,7 @@
   "required": ["organizerId", "method"],
   "properties": {
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "method": {"type": "string", "enum": ["instagramMessage", "lumaDescription"]}
+    "method": {"type": "string", "enum": ["instagramMessage", "lumaDescription"]},
+    "purpose": {"description": "What the proof is for. claim (the default): claim the listing. importVerification: the owner proves an identity imported from a third party's public page, so the page can be published.", "type": "string", "enum": ["claim", "importVerification"]}
   }
 }
