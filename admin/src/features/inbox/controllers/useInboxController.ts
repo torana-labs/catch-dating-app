@@ -216,10 +216,8 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
     isWorking: update.isPending || recommend.isPending || claimDecision.isPending || accessDecision.isPending ||
       enquiryLink.isPending,
     refresh,
-    /** For panels that take their own steps, such as a listing request: refresh the queue and report. */
+    /** For panels that take their own steps, such as a listing request: refresh the queue after one. */
     refreshItem: () => void refresh(),
-    reportError: onError,
-    reportNotice: onNotice,
   };
 }
 

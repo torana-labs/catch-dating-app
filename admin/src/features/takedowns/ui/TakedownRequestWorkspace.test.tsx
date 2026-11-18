@@ -3,7 +3,7 @@ import {cleanup, fireEvent, render, screen, waitFor} from "@testing-library/reac
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {sampleTakedownDetail, type TakedownDetail, type TakedownStep} from "../api/takedownRepository";
 import {activeDeadline, deadlineLabel, takedownInfoTemplates} from "../controllers/takedownLabels";
-import {TakedownRequestPanel} from "./TakedownRequestPanel";
+import {TakedownRequestWorkspace} from "./TakedownRequestWorkspace";
 
 const repository = vi.hoisted(() => ({
   detail: null as TakedownDetail | null,
@@ -26,7 +26,7 @@ function draw(detail: TakedownDetail) {
   const notices: string[] = [];
   const client = new QueryClient({defaultOptions: {queries: {retry: false}, mutations: {retry: false}}});
   render(<QueryClientProvider client={client}>
-    <TakedownRequestPanel now={now} onError={() => undefined} onNotice={(notice) => notices.push(notice)} requestId={detail.request.requestId} />
+    <TakedownRequestWorkspace now={now} onError={() => undefined} onNotice={(notice) => notices.push(notice)} requestId={detail.request.requestId} />
   </QueryClientProvider>);
   return {notices};
 }
@@ -39,7 +39,7 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 
-describe("takedown request panel", () => {
+describe("takedown request workspace", () => {
   it("shows the request, the type's verification fields and the deadline that applies now", async () => {
     draw(sampleTakedownDetail);
     expect(await screen.findByText("Remove and don't list again")).toBeTruthy();

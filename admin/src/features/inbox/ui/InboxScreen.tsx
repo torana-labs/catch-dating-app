@@ -17,7 +17,7 @@ import {
   type CatchSectionStep,
   type CatchTableColumn,
 } from "@catch/web-ui";
-import {useMemo, useState} from "react";
+import {Fragment, useMemo, useState, type ReactNode} from "react";
 import {launchMarkets} from "../../../shared/config/launchMarkets";
 import type {
   ClaimEvidence,
@@ -42,7 +42,6 @@ import {
 } from "../controllers/listingEventPublish";
 import {inboxTypeLabels, type InboxController} from "../controllers/useInboxController";
 import {inboxScopeLabels, inboxTypeLabel, queueNote, waitingLabel, waitingTone} from "../controllers/inboxLabels";
-import {TakedownRequestPanel} from "../../takedowns/ui/TakedownRequestPanel";
 
 interface Row {
   key: string;
@@ -327,8 +326,7 @@ function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
       {item.type === "claim" && controller.claimEvidenceFailed ? <CatchEmptyState title="Their evidence could not be loaded" message="Try again before deciding." /> : null}
       {picker}
       {item.type === "takedown" ? (
-        <TakedownRequestPanel key={item.sourceId} onChanged={controller.refreshItem} onError={controller.reportError ?? noReport} onNotice={controller.reportNotice ?? noReport}
-          requestId={item.sourceId} />
+        <Fragment key={item.sourceId}>{controller.takedownPanel?.({requestId: item.sourceId, onChanged: controller.refreshItem ?? noReport}) ?? null}</Fragment>
       ) : null}
       <CatchSection title="How it got here" timeline={timeline(item, journey)} dividers="none" />
       {controller.listingReviewFailed || controller.eventReviewFailed ? <CatchEmptyState title="The review could not be opened" message="It may have been decided already. Try again." /> : null}
@@ -558,8 +556,10 @@ function EventPublishSheet({controller, intakeRequestId, review, onClose}: {
 }
 
 /** What the inbox screen draws from: the controller, with the open item as plain data. */
-export type InboxScreenModel = Omit<InboxController, "detail" | "page" | "refresh" | "city" | "setCity" | "refreshItem" | "reportError" |
-  "reportNotice"> & Partial<Pick<InboxController, "refreshItem" | "reportError" | "reportNotice">> & {
+export type InboxScreenModel = Omit<InboxController, "detail" | "page" | "refresh" | "city" | "setCity" | "refreshItem"> &
+  Partial<Pick<InboxController, "refreshItem">> & {
+  /** Draws a listing request's own panel (the app shell passes the takedowns feature's). */
+  takedownPanel?: (input: {requestId: string; onChanged: () => void}) => ReactNode;
   detail: InboxItemDetail | null;
   detailError: boolean;
 };

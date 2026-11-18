@@ -121,7 +121,7 @@ function Steps({controller, request}: {controller: TakedownRequestController; re
  * type's verification fields, the deadlines, and the fixed steps open now.
  * Replies go by email; each step records what was done.
  */
-export function TakedownRequestPanel({requestId, onError, onNotice, onChanged, now = Date.now()}: {
+export function TakedownRequestWorkspace({requestId, onError, onNotice, onChanged, now = Date.now()}: {
   requestId: string;
   onError: (message: string | null) => void;
   onNotice: (message: string) => void;
