@@ -180,8 +180,14 @@ export function validateToolLifecycle(tools, {exists, read = null}) {
       if (!file) errors.push(`${id}: runbook must be a repository path, optionally with a #anchor.`);
       else if (!exists(file)) errors.push(`${id}: runbook ${file} does not exist.`);
       else if (read && tool.runbook.includes("#") && file.endsWith(".md")) {
+        // read returns null where the checkout cannot supply the content (the
+        // sparse, blobless Tools preflight); the full-checkout
+        // meta:tool-manifest run still checks the anchor.
+        const source = read(file);
         const anchor = tool.runbook.slice(tool.runbook.indexOf("#") + 1);
-        if (!markdownAnchors(read(file)).has(anchor)) errors.push(`${id}: runbook ${file} has no heading #${anchor}.`);
+        if (source != null && !markdownAnchors(source).has(anchor)) {
+          errors.push(`${id}: runbook ${file} has no heading #${anchor}.`);
+        }
       }
     }
     if (tool.status === "active" && tool.role === "operator" && tool.runbook === undefined) {

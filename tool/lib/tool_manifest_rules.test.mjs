@@ -166,6 +166,14 @@ test("an active operator names a runbook that exists, and its anchor must be a h
   assert.deepEqual(lifecycle([{...operator, status: "internal"}]), []);
 });
 
+test("a runbook whose content the checkout cannot supply is checked for existence only", () => {
+  const operator = gate({id: "fixture:operator", role: "operator", runbook: "docs/runbook.md#not-a-heading"});
+  const sparse = (tools) => validateToolLifecycle(tools, {exists: (file) => files.has(file), read: () => null});
+  assert.deepEqual(sparse([operator]), []);
+  assert.deepEqual(sparse([{...operator, runbook: "docs/missing.md#x"}]),
+    ["fixture:operator: runbook docs/missing.md does not exist."]);
+});
+
 test("markdown anchors follow GitHub's heading slugs", () => {
   assert.deepEqual([...markdownAnchors("# A `code` Title!\n## Same\n## Same\ntext # not a heading")],
     ["a-code-title", "same", "same-1"]);

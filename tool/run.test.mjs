@@ -593,6 +593,45 @@ test("a retired tool stays listed with its reason, never runs, and needs no file
   assert.match(direct.stderr, /Unknown or inactive tool ids: fixture:old-codemod/u);
 });
 
+test("the sparse, blobless Tools preflight checks runbook paths but leaves anchors to the full checkout", (context) => {
+  const fixture = createRunnerFixture(context);
+  fs.mkdirSync(path.join(fixture, "docs"), {recursive: true});
+  fs.writeFileSync(path.join(fixture, "docs/runbook.md"), "# Runbook\n\n## Deploy Backend\n");
+  mutateFixtureManifest(fixture, (manifest) => {
+    Object.assign(fixtureCheck(manifest), {role: "operator", runbook: "docs/runbook.md#not-a-heading"});
+  });
+  runGit(fixture, ["add", "."]);
+  runGit(fixture, ["commit", "-m", "operator with a runbook"]);
+  // The full checkout reads the document and rejects the missing heading.
+  const full = run(["check", "--manifest-only"], {cwd: fixture});
+  assert.equal(full.status, 1);
+  assert.match(full.stderr, /runbook docs\/runbook\.md has no heading #not-a-heading/u);
+
+  // Like tools-ci.yml's preflight: blobless, sparse to tool/, and no way to
+  // fetch a missing blob.
+  const clone = fs.mkdtempSync(path.join(os.tmpdir(), "catch-runner-sparse-"));
+  context.after(() => fs.rmSync(clone, {recursive: true, force: true}));
+  const uploadPack = "git -c uploadpack.allowFilter=true upload-pack";
+  runGit(os.tmpdir(), ["clone", "-q", "--filter=blob:none", "--no-checkout", `--upload-pack=${uploadPack}`,
+    `file://${fixture}`, clone]);
+  runGit(clone, ["sparse-checkout", "set", "--no-cone", "/tool/"]);
+  runGit(clone, ["-c", `remote.origin.uploadpack=${uploadPack}`, "checkout", "-q", "HEAD"]);
+  runGit(clone, ["remote", "set-url", "origin", "file:///nonexistent-promisor"]);
+  assert.equal(fs.existsSync(path.join(clone, "docs/runbook.md")), false);
+
+  // affected-tools, which the preflight runs, validates through the same
+  // validateManifest as this command.
+  const sparse = run(["check", "--manifest-only"], {cwd: clone});
+  assert.equal(sparse.status, 0, sparse.stderr);
+  // A runbook path missing from the tree still fails there.
+  mutateFixtureManifest(clone, (manifest) => {
+    fixtureCheck(manifest).runbook = "docs/missing.md";
+  });
+  const missing = run(["check", "--manifest-only"], {cwd: clone});
+  assert.equal(missing.status, 1);
+  assert.match(missing.stderr, /runbook docs\/missing\.md does not exist/u);
+});
+
 test("manifest validation rejects a retired tool without its record", (context) => {
   const fixture = createRunnerFixture(context);
   mutateFixtureManifest(fixture, (manifest) => {

@@ -503,7 +503,7 @@ function validateManifest(manifest, componentGraph) {
 
   errors.push(...validateToolLifecycle(manifest.tools, {
     exists: (file) => repositorySnapshot().exists(file),
-    read: (file) => repositorySnapshot().readText(file),
+    read: readUnlessSparseOmitted,
   }));
 
   const activeById = new Map(
@@ -557,6 +557,19 @@ function discoverManagedScripts() {
     if (relativePath.endsWith(".test.mjs")) return false;
     return true;
   });
+}
+
+// Runbook anchors need document content. The Tools preflight checks out a
+// sparse, blobless tree, so a document outside its closure has a path but no
+// local blob; skip the anchor there, and let the full-checkout
+// meta:tool-manifest run check it.
+function readUnlessSparseOmitted(file) {
+  try {
+    return repositorySnapshot().readText(file);
+  } catch (error) {
+    if (String(error?.message).startsWith("Sparse-omitted repository content")) return null;
+    throw error;
+  }
 }
 
 function repositorySnapshot() {
