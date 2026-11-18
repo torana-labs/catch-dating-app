@@ -2990,6 +2990,26 @@
       ]
     },
     {
+      "id": "takedownRequests",
+      "path": "takedownRequests/{requestId}",
+      "rulesMatch": "/takedownRequests/{requestId}",
+      "typescriptInterface": "TakedownRequestDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/takedown_requests.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps takedownRequests server-only for every client, staff claims included"
+      ],
+      "owner": "submitListingRequest (public intake) and adminUpdateTakedownRequest",
+      "read": "server only; Admin reads through adminGetTakedownRequest and the Admin Inbox projection",
+      "write": "server only: submitListingRequest creates (App Check, hashed rate limits, idempotent per requester email and client request id); adminUpdateTakedownRequest takes the fixed steps",
+      "exportedFunctions": [
+        "submitListingRequest",
+        "adminGetTakedownRequest",
+        "adminUpdateTakedownRequest",
+        "onTakedownRequestWrittenSyncInbox"
+      ]
+    },
+    {
       "id": "moderationFlags",
       "path": "moderationFlags/{flagId}",
       "rulesMatch": "/moderationFlags/{flagId}",

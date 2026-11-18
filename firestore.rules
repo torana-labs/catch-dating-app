@@ -958,6 +958,11 @@ service cloud.firestore {
     match /bannedIdentities/{identityId} {
       allow read, write: if false;
     }
+    // Structured listing requests from /listings/request/: written by
+    // submitListingRequest and worked through adminUpdateTakedownRequest only.
+    match /takedownRequests/{requestId} {
+      allow read, write: if false;
+    }
     match /blockedSignupAttempts/{attemptId} {
       allow read, write: if false;
     }

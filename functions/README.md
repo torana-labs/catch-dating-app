@@ -407,6 +407,7 @@ enter previews.
 | `onAccessApplicationWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `accessApplications` onWrite — projects the launch access item and journey steps |
 | `onExternalEventWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `externalEvents` onWrite — projects the imported event's inbox item and journey steps |
 | `onWalkthroughBookingWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `walkthroughBookings` onWrite — projects the booking's confirm-on-WhatsApp task (`src/walkthroughs/inbox.ts`) and journey steps |
+| `onTakedownRequestWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `takedownRequests` onWrite — projects the listing request's `takedown` task (`src/takedownRequests/inbox.ts`): acknowledge, verify and decide, or decide the appeal, with the next deadline |
 | `onUserWrittenIndexPeople` | `src/admin/peopleSearch.ts` | `users` onWrite — keeps `adminPeopleIndex/{uid}` (name prefixes, phone digits) for logged people search |
 | `onSwipeCreated` | `src/matching/` | `profileDecisions/{id}/outgoing/{id}` onCreate — mutual-like → match |
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
@@ -495,6 +496,8 @@ enter previews.
 | `bookWalkthrough` | `src/walkthroughs/publicCallables.ts` | A prospective host books one slot with their code-verified WhatsApp number: transactional on the slot hold, idempotent per request id, rate limited; opens an Admin Inbox task, staff confirm on WhatsApp |
 | `manageWalkthroughBooking` | `src/walkthroughs/publicCallables.ts` | Read, cancel or move a walkthrough booking with its manage token or its verified phone |
 | `adminSetWalkthroughAvailability`, `adminListWalkthroughBookings`, `adminUpdateWalkthroughBooking` | `src/walkthroughs/adminCallables.ts` | Admin and owner set the walkthrough staff calendar (weekly India-time windows, slot length, lead time, closed dates), list bookings with each verified number, and confirm or cancel one |
+| `submitListingRequest` | `src/takedownRequests/intake.ts` | Public HTTP (App Check, hashed network and email limits): one structured listing request from `/listings/request/`, idempotent per requester email and client request id; records deadlines, sends nothing |
+| `adminGetTakedownRequest`, `adminUpdateTakedownRequest` | `src/takedownRequests/admin.ts` | Admin, owner and support open a listing request and take its fixed steps; admins and the owner decide; one appeal decided by someone else |
 | `adminGetCityInterest` | `src/cityInterest/` | Interest by city from the `cityInterest` counters: people per city in all and over the last 7 and 30 days against the days before |
 | `adminGetMarketplace` | `src/marketplace/` | Marketplace from the warehouse's raw Firestore export views: events a week, places filled, no-shows and waitlists by city; guests by first-booking month and whether they came back; bookings each week; organizers going quiet with their sales owner |
 | `hostAcquisitionConsent` | `src/acquisition/` | Default-disabled versioned Host measurement grant and capability withdrawal |
