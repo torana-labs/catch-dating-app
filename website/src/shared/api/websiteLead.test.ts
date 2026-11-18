@@ -16,11 +16,14 @@ import {
 } from "./websiteLead";
 
 const getWebsiteAppCheckToken = vi.hoisted(() => vi.fn(async (): Promise<string | null> => "site-token"));
-vi.mock("../../firebase", () => ({getWebsiteAppCheckToken}));
+const getWebsiteReferrerIdToken = vi.hoisted(() => vi.fn(async (): Promise<string | null> => null));
+vi.mock("../../firebase", () => ({getWebsiteAppCheckToken, getWebsiteReferrerIdToken}));
 
 afterEach(() => {
   vi.unstubAllGlobals();
   getWebsiteAppCheckToken.mockClear();
+  getWebsiteReferrerIdToken.mockReset();
+  getWebsiteReferrerIdToken.mockResolvedValue(null);
 });
 
 const shared = {phone: "98123 45678", consentVersion: "lead-2026-11", sourcePage: "/run-clubs/?utm_source=ig#form", entry: "rc-wa"};
@@ -133,6 +136,36 @@ describe("createWebsiteLeadSubmission", () => {
     expect(post).toHaveBeenCalledTimes(2);
     for (const call of post.mock.calls as unknown as [string, RequestInit][]) {
       expect(call[1].headers).toEqual({"Content-Type": "application/json"});
+    }
+  });
+
+  it("credits a signed-in referrer with the account's ID token, and only on a referral", async () => {
+    getWebsiteReferrerIdToken.mockResolvedValue("referrer-id-token");
+    const post = vi.fn(async () => receipt());
+    await submission(post).submit(forms.referral);
+    await submission(post).submit(forms.guide);
+    await submission(post).submit(forms.city_alerts);
+    const headers = (post.mock.calls as unknown as [string, RequestInit][]).map(([, init]) => init.headers);
+    expect(headers).toEqual([
+      {"Content-Type": "application/json", "X-Firebase-AppCheck": "site-token", Authorization: "Bearer referrer-id-token"},
+      {"Content-Type": "application/json", "X-Firebase-AppCheck": "site-token"},
+      {"Content-Type": "application/json", "X-Firebase-AppCheck": "site-token"},
+    ]);
+    // Other kinds never load the account.
+    expect(getWebsiteReferrerIdToken).toHaveBeenCalledOnce();
+    // The token rides only in the header, never in the lead's body.
+    expect(JSON.stringify(sentBodies(post)[0])).not.toContain("referrer-id-token");
+    expect(contractAccepts(sentBodies(post)[0])).toBe(true);
+  });
+
+  it("sends a signed-out referral as before, without an Authorization header, even when reading the account fails", async () => {
+    const post = vi.fn(async () => receipt());
+    await submission(post).submit(forms.referral);
+    getWebsiteReferrerIdToken.mockRejectedValueOnce(new Error("auth unavailable"));
+    await submission(post).submit(forms.referral);
+    expect(getWebsiteReferrerIdToken).toHaveBeenCalledTimes(2);
+    for (const call of post.mock.calls as unknown as [string, RequestInit][]) {
+      expect(call[1].headers).toEqual({"Content-Type": "application/json", "X-Firebase-AppCheck": "site-token"});
     }
   });
 

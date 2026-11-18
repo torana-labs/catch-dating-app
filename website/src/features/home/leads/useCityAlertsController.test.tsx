@@ -1,6 +1,7 @@
 import {act, renderHook} from "@testing-library/react";
 import type {FormEvent} from "react";
-import {describe, expect, it, vi} from "vitest";
+import {afterEach, describe, expect, it, vi} from "vitest";
+import {setMarketingConsent} from "../../../analytics";
 import {createSiteLeadSubmission} from "../../marketing/websiteLead";
 import {useCityAlertsController} from "./useCityAlertsController";
 
@@ -18,6 +19,11 @@ function siteSubmission(...responses: Response[]) {
   const body = (call: number) => JSON.parse(String(post.mock.calls[call][1]?.body));
   return {submission, post, body};
 }
+
+afterEach(() => {
+  localStorage.clear();
+  window.dataLayer = [];
+});
 
 describe("useCityAlertsController", () => {
   it("sends the number as a city alerts lead for the page's city under the new-plans consent, with App Check", async () => {
@@ -59,5 +65,22 @@ describe("useCityAlertsController", () => {
     expect(post).toHaveBeenCalledTimes(3);
     expect(new Set([0, 1, 2].map((call) => body(call).lead.requestId))).toEqual(new Set(["request000000000001"]));
     expect(result.current).toMatchObject({sent: true, sendProblem: null});
+  });
+
+  it("records the bar's lead form events after analytics consent, without the number or city", async () => {
+    setMarketingConsent("analytics");
+    window.dataLayer = [];
+    const {submission} = siteSubmission(reply(429), accepted());
+    const {result} = renderHook(() => useCityAlertsController({label: "Mumbai", slug: "mumbai"}, submission));
+    act(() => result.current.setPhone("98765 43210"));
+    await act(() => result.current.handleSubmit(submitEvent()));
+    await act(() => result.current.handleSubmit(submitEvent()));
+    const form = {content_version: "website_copy_v2", lead_kind: "city_alerts", form_id: "home-thin-week", page_path: "/"};
+    expect((window.dataLayer ?? []).filter((entry) => !Array.isArray(entry) && String(entry.event).startsWith("lead_form_"))).toEqual([
+      {event: "lead_form_viewed", ...form},
+      {event: "lead_form_submitted", ...form}, {event: "lead_form_failed", ...form, problem: "busy"},
+      {event: "lead_form_submitted", ...form}, {event: "lead_form_succeeded", ...form},
+    ]);
+    expect(JSON.stringify(window.dataLayer)).not.toMatch(/98765|Mumbai|mumbai/u);
   });
 });
