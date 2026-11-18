@@ -714,6 +714,99 @@
       }
     },
     {
+      "id": "listing_request",
+      "kind": "static",
+      "path": "/listings/request/",
+      "pageKey": "listing_requests",
+      "source": "website/src/features/listingRequests/ListingRequestPage.tsx",
+      "metaKey": "listing_requests",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "Structured listing request form (takedown plan, section 7): step 1 a fixed request type (claim, correct a fact, remove and don't list again, trademark, copyright, privacy, impersonation, court or government order), step 2 that type's fixed fields with the target prefilled from ?organizer= or ?event= when opened from a listing, step 3 the fixed declarations, then the reference and what happens next. Posts to /api/listing-request (submitListingRequest). Noindex, out of the sitemap, disallowed in robots.txt, and no analytics.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "type",
+          "details",
+          "declarations",
+          "sent"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "type",
+            "details",
+            "declarations",
+            "sent"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
+      "id": "listing_policy",
+      "kind": "static",
+      "path": "/listings/policy/",
+      "pageKey": "listing_requests",
+      "source": "website/src/features/listingRequests/ListingPolicyPage.tsx",
+      "metaKey": "listing_policy",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "DRAFT Listing Policy for counsel review: what Catch lists, sources, not-affiliated labels and how to claim or remove. Unlinked, noindex and out of the sitemap, with the draft banner, until counsel approves.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "draft"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "draft"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
+      "id": "takedown_policy",
+      "kind": "static",
+      "path": "/listings/notice-and-takedown/",
+      "pageKey": "listing_requests",
+      "source": "website/src/features/listingRequests/ListingPolicyPage.tsx",
+      "metaKey": "takedown_policy",
+      "staticOutput": "postbuild",
+      "indexing": "noindex-follow",
+      "sitemap": "excluded",
+      "notes": "DRAFT Notice and Takedown Policy with the Grievance Officer section (details from the brand config) for counsel review: the request types, channel, verification, timelines, counter-notice, appeal and repeat abuse. Unlinked, noindex and out of the sitemap, with the draft banner, until counsel approves.",
+      "review": {
+        "priority": "p1",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "draft"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "draft"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
       "id": "claim_lookup",
       "kind": "clientDynamic",
       "pathPattern": "/claim/:listing/",

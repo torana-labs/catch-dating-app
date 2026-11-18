@@ -31,6 +31,7 @@ const inboxKey = ["inbox"] as const;
 
 export const inboxTypeLabels: Record<InboxType, string> = {
   listing: "Listings", event: "Events", claim: "Claims", enquiry: "Enquiries", lead: "Leads", access: "Launch access", stuck: "Stuck",
+  takedown: "Listing requests",
 };
 
 /**
@@ -215,6 +216,10 @@ export function useInboxController({onError, onNotice, selectedItemId, onSelect}
     isWorking: update.isPending || recommend.isPending || claimDecision.isPending || accessDecision.isPending ||
       enquiryLink.isPending,
     refresh,
+    /** For panels that take their own steps, such as a listing request: refresh the queue and report. */
+    refreshItem: () => void refresh(),
+    reportError: onError,
+    reportNotice: onNotice,
   };
 }
 

@@ -1,5 +1,6 @@
 import {catchAvatarInitialsOf, catchFormatAccentOf, catchFormatOf, type CatchBandGround, type CatchFormat, type CatchIconName} from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../content/organizerPage";
+import {listingRequestCopy} from "../../content/listingRequest";
 import type {OrganizerPageEvent, OrganizerPageRecord, OrganizerPageReview} from "./organizerPage";
 import {brand} from "@catch/brand";
 
@@ -143,6 +144,8 @@ export interface OrganizerPageView {
     built: string;
   };
   footer: {line: string; link: string; href: string};
+  /** Report or remove this listing: the listing request form with this organiser filled in. */
+  report: {label: string; href: string};
 }
 
 const defaultZone = "Asia/Kolkata";
@@ -256,6 +259,7 @@ export function organizerPageView(record: OrganizerPageRecord, readAt: number): 
     footer: generated ?
       {line: copy.footer.generated(sourceNames), link: copy.footer.generatedLink, href: "/help/"} :
       {line: copy.footer.claimed, link: copy.footer.claimedLink, href: "/host/"},
+    report: {label: listingRequestCopy.reportLink, href: `/listings/request/?organizer=${encodeURIComponent(record.organizerId)}`},
   };
 }
 
