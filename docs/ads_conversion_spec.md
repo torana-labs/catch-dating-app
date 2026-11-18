@@ -464,7 +464,10 @@ shows provider receipt (Meta Test Events, Google conversion diagnostics),
 consent changes, URL/title/referrer isolation, SPA shutdown, dedupe and the exact
 network payloads. GTM stays out; nothing may consume the existing bus
 wholesale. Organizer pixels require their own publication and policy approval
-and stay disabled.
+and stay disabled: the versioned publication policy record
+(`organizerTrackingPublicationPolicy.ts`, version 1) cites the owner's
+18 Nov 2026 decision on #2063 and keeps publication off until the owner's
+policy sign-off.
 
 Authorities each server event needs: admitted payment (`finalizePublicPayment`),
 admitted free registration, organizer creation receipt, approved claim receipt,

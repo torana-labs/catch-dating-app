@@ -1150,9 +1150,15 @@ denied. No OAuth grant, credentials, arbitrary JavaScript or GTM is accepted.
 
 `readPublicOrganizerTrackingSettings` verifies published organizer eligibility,
 canonical event ownership and published active events before returning a minimal
-projection. Current immutable publication policy is disabled pending policy and
-live integration review; IDs are never returned publicly. Canonical social,
-singles/mixer and unknown event classifications remain excluded. Saving an ID
+projection. Publication is decided by the versioned, code-owned record in
+`functions/src/analytics/organizerTrackingPublicationPolicy.ts`. Version 1 cites
+the owner's 18 Nov 2026 decision on #2063 (the technical checklist belongs to the
+command layer, the owner signs off policy) and keeps `publicationAllowed: false`;
+every `enabled` field and the public projection read it, and IDs are never
+returned publicly. Its exclusion lists keep canonical social, singles/mixer and
+unknown event classifications out. Only a reviewed new version citing the
+owner's policy sign-off, together with the public response contract, can widen
+it. Saving an ID
 does not constitute connecting a provider or permission to transmit advertising
 activity. These exports do not establish deployment or production enablement.
 
