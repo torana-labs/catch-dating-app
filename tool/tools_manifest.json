@@ -2324,6 +2324,24 @@
       "role": "generator"
     },
     {
+      "id": "data:cleanup-retired-collections",
+      "category": "data",
+      "path": "tool/data/cleanup_retired_collections.mjs",
+      "command": "node tool/data/cleanup_retired_collections.mjs --env <dev|prod>",
+      "safety": "remote-destructive-apply-guarded",
+      "status": "active",
+      "description": "Deletes leftover documents in retired collections from a hard-coded allowlist, skipping anything tied to the Bhag Run Club notice; dry run by default, backs up before deleting.",
+      "checks": [
+        "node --check tool/data/cleanup_retired_collections.mjs",
+        "firebase emulators:exec --project demo-catch-cleanup --only firestore \"node --test tool/data/cleanup_retired_collections.test.mjs\""
+      ],
+      "impactPaths": [
+        "tool/data/cleanup_retired_collections.test.mjs",
+        "tool/data/lib/retired_collections_cleanup.mjs"
+      ],
+      "role": "generator"
+    },
+    {
       "id": "data:delete-reviews",
       "category": "data",
       "path": "tool/data/delete_firestore_reviews.mjs",
