@@ -1,0 +1,71 @@
+/*
+ * Worked examples (.pg .ex): a grid 12px apart. Day cards (white or paper
+ * bands) are white with the card ring at 20px corners, 20px inside, a 15px
+ * title, 32px figures and the body in the list ink. Ink cards (PlaybookHosts
+ * .ex) take the translucent fill, 18px inside, a 14px title, 30px figures and
+ * the body in the secondary night ink at 13px.
+ */
+.examples {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--catch-space-s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.examples[data-columns="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.example {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--catch-space-s5);
+  border-radius: var(--catch-radius-lg);
+  background: var(--catch-palette-white);
+  box-shadow: var(--catch-website-shadow-card-ring);
+  color: var(--catch-website-color-ink-list);
+}
+
+.examples[data-on="ink"] .example {
+  padding: var(--catch-space-micro18);
+  background: var(--catch-website-color-fill-on-ink);
+  box-shadow: none;
+  color: var(--catch-palette-night-secondary);
+}
+
+.title.title {
+  color: var(--catch-palette-ink);
+  font-size: var(--catch-typography-role-body-size);
+}
+
+.examples[data-on="ink"] .title.title {
+  color: var(--catch-ground-ink-ink);
+  font-size: var(--catch-typography-role-body-small-size);
+}
+
+.value.value {
+  margin: var(--catch-space-micro10) 0 var(--catch-space-micro6);
+  color: var(--catch-palette-ink);
+  font-size: var(--catch-website-type-example-size);
+  font-weight: var(--catch-website-type-figure-weight);
+  line-height: 1;
+}
+
+.examples[data-on="ink"] .value.value {
+  margin-top: var(--catch-space-s2);
+  color: var(--catch-ground-ink-ink);
+  font-size: var(--catch-typography-role-display-section-size);
+}
+
+.body.body {
+  color: inherit;
+  line-height: var(--catch-website-type-tile-body-line-height);
+}
+
+.examples[data-on="ink"] .body.body { font-size: var(--catch-typography-role-body-meta-size); }
+
+@media (max-width: 599px) {
+  .examples,
+  .examples[data-columns="2"] { grid-template-columns: minmax(0, 1fr); }
+}

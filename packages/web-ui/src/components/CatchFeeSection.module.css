@@ -1,0 +1,80 @@
+/*
+ * The fee band (PlaybookHosts .pg #pricing and PlaybookPricing's opening
+ * panel, on playbook-panels.css): two columns 64px apart lined up at the top,
+ * stacking below 840px. The rate is the canvas's .price: the display face at
+ * 200px (130px on phones), line height .8, tracked -.05em, in coral; its
+ * headline the small display size 18px under it (14px under a page
+ * headline, which sits 28px over the rate). Label pills (.incl) are 13px on
+ * a translucent fill; worked examples (.ex) three across 12px apart, 48px
+ * under the columns, on the same fill at 20px corners with 30px figures; the
+ * foot line (.orgline) sits 28px under them over a hairline.
+ */
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--catch-space-s16);
+}
+
+.copy,
+.calculator { min-width: 0; }
+
+.rate.rate {
+  margin: 0;
+  color: var(--catch-palette-coral);
+  font-size: var(--catch-website-type-price-size);
+  font-weight: var(--catch-website-type-figure-weight);
+  line-height: var(--catch-website-type-price-line-height);
+  letter-spacing: var(--catch-website-type-price-tracking);
+}
+
+.rate[data-after-title] { margin-top: var(--catch-space-s7); }
+
+.rateTitle.rateTitle { margin: var(--catch-space-micro18) 0 0; }
+
+.rate[data-after-title] + .rateTitle.rateTitle { margin-top: var(--catch-space-micro14); }
+
+
+.lead.lead { margin: var(--catch-space-s4) 0 0; }
+
+.labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--catch-space-s2);
+  margin: var(--catch-space-s6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.label {
+  padding: var(--catch-space-micro6) var(--catch-space-s3);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-website-color-pill-on-ink);
+  color: var(--catch-ground-ink-ink);
+}
+
+.actions { margin-top: var(--catch-space-s7); }
+
+.examples { margin-top: var(--catch-space-s12); }
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s4);
+  margin-top: var(--catch-space-s7);
+  padding-top: var(--catch-space-s6);
+  border-top: var(--catch-stroke-hairline) solid var(--catch-website-color-line-on-ink);
+}
+
+@media (max-width: 839px) {
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--catch-space-s7);
+  }
+}
+
+@media (max-width: 599px) {
+  .rate.rate { font-size: var(--catch-website-type-price-compact-size); }
+}

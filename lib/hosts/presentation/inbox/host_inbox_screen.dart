@@ -22,7 +22,6 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_person_page
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_program_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_page_body.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';

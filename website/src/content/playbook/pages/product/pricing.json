@@ -1,0 +1,219 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "pricing",
+  "route": "pricing",
+  "meta": {
+    "title": "Pricing for hosts | 5% of ticket sales, capped per billing cycle | {{brand.name}}",
+    "description": "One plan for every host: 5% of ticket sales, net of refunds, never more than ₹10,000 per 30-day billing cycle. Free events stay free, and your first 30 days from your first event are free.",
+    "socialDescription": "Free events stay free. Paid events: 5% of ticket sales, never more than ₹10,000 per billing cycle.",
+    "noindex": true
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          }
+        }
+      ],
+      "current": "Pricing"
+    }
+  },
+  "footer": {
+    "variant": "host"
+  },
+  "sections": [
+    {
+      "type": "custom",
+      "id": "fee",
+      "ground": "ink",
+      "component": "pricingCalculator",
+      "kicker": "Pricing · one plan for every host",
+      "title": "Free events stay free.",
+      "pageTitle": true,
+      "labels": [
+        {
+          "key": "start",
+          "text": "Start free trial"
+        },
+        {
+          "key": "talk",
+          "text": "Talk to us on WhatsApp"
+        },
+        {
+          "key": "talkMessage",
+          "text": "Hi {{brand.name}}, I have a question about pricing for hosts."
+        }
+      ]
+    },
+    {
+      "type": "custom",
+      "id": "examples",
+      "ground": "white",
+      "component": "pricingExamples",
+      "kicker": "What hosts like you pay",
+      "title": "Worked out for your kind of night.",
+      "labels": [
+        {
+          "key": "foot",
+          "text": "Payment gateway fees are added by your payment provider and aren’t included above."
+        }
+      ]
+    },
+    {
+      "type": "custom",
+      "id": "cap",
+      "ground": "paper",
+      "component": "pricingCap",
+      "kicker": "The cap",
+      "title": "Sell more, pay a smaller share.",
+      "lead": "The fee grows with your sales until it reaches ₹10,000 in a billing cycle, which happens at ₹2,00,000 of ticket sales. Everything you sell after that in the same 30-day cycle carries no {{brand.name}} fee."
+    },
+    {
+      "type": "custom",
+      "id": "included",
+      "ground": "white",
+      "component": "pricingIncluded",
+      "kicker": "Included",
+      "title": "One plan, everything in it.",
+      "lead": "No tiers to compare and no features held back for a bigger plan.",
+      "labels": [
+        {
+          "key": "label",
+          "text": "What every host gets"
+        },
+        {
+          "key": "page",
+          "text": "Your page"
+        },
+        {
+          "key": "bookings",
+          "text": "Bookings and waitlists"
+        },
+        {
+          "key": "applications",
+          "text": "Applications"
+        },
+        {
+          "key": "payments",
+          "text": "Payments by UPI"
+        },
+        {
+          "key": "checkIn",
+          "text": "QR and self check-in"
+        },
+        {
+          "key": "live",
+          "text": "Live tools for each format"
+        },
+        {
+          "key": "hello",
+          "text": "A first hello for newcomers"
+        },
+        {
+          "key": "guests",
+          "text": "One record per guest"
+        },
+        {
+          "key": "messages",
+          "text": "Messages and reminders"
+        },
+        {
+          "key": "links",
+          "text": "Links for promoters and posts"
+        },
+        {
+          "key": "reports",
+          "text": "Reports after each event"
+        },
+        {
+          "key": "apps",
+          "text": "iPhone, Android and iPad apps"
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "trial",
+      "ground": "coral",
+      "kicker": "Free trial · founding hosts",
+      "title": "30 days free. 90 if you’re early.",
+      "lead": "Your free days start at your first event, not when you sign up. Founding hosts get 90 days.",
+      "actions": [
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        }
+      ]
+    },
+    {
+      "type": "custom",
+      "id": "organisations",
+      "ground": "white",
+      "component": "pricingOrganisations",
+      "kicker": "Venues, companies and programmes",
+      "title": "Running several nights a week, or buying for a team?",
+      "lead": "Venues and companies pay the same 5%, with the same ₹10,000 cap per billing cycle. For venues with a weekly calendar, companies and shared spaces, and multi-day programmes, we’ll set {{brand.name}} up with you and talk through the right setup.",
+      "labels": [
+        {
+          "key": "walkthrough",
+          "text": "Book a 15-minute walkthrough"
+        },
+        {
+          "key": "walkthroughMessage",
+          "text": "Hi {{brand.name}}, I'd like a walkthrough of {{brand.name}}."
+        },
+        {
+          "key": "weddings",
+          "text": "Weddings are priced by headcount"
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "id": "faq",
+      "ground": "white",
+      "kicker": "Questions about cost",
+      "title": "The small print, in plain words.",
+      "items": [
+        {
+          "question": "When does the free trial start?",
+          "answer": "At your first event, not when you sign up. For 30 days from then (90 for founding hosts), {{brand.name}} charges nothing on what you sell."
+        },
+        {
+          "question": "What counts toward the 5%?",
+          "answer": "Ticket sales through {{brand.name}}, net of refunds. Free events count for nothing."
+        },
+        {
+          "question": "How does the ₹10,000 cap work?",
+          "answer": "The fee stops growing once it reaches ₹10,000 in a 30-day billing cycle. That happens at ₹2,00,000 of ticket sales; anything you sell after that in the same cycle carries no {{brand.name}} fee. The cap starts again with each cycle."
+        },
+        {
+          "question": "Do venues and companies pay more?",
+          "answer": "No. Venues and companies pay the same 5%, with the same ₹10,000 cap per billing cycle."
+        },
+        {
+          "question": "Who pays payment gateway fees?",
+          "answer": "They’re separate from the {{brand.name}} fee. Your payment provider charges them at its own rate."
+        },
+        {
+          "question": "How are weddings priced?",
+          "answer": "Weddings and multi-day programmes are priced per wedding, by headcount, as a guided pilot."
+        }
+      ],
+      "action": {
+        "label": "Ask us on WhatsApp",
+        "to": {
+          "kind": "whatsapp",
+          "message": "Hi {{brand.name}}, I have a question about pricing for hosts."
+        }
+      }
+    }
+  ]
+}

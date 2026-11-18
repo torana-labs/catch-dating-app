@@ -57,7 +57,7 @@ export interface SiteNavGroupCopy {
 const whatsOnLink = {href: "/explore/", label: "What’s on"} as const;
 const forHostsLink = {href: "/host/", label: "For hosts"} as const;
 const hostLandingLink = {href: "/host/", label: `${brand.name} for hosts`} as const;
-const hostPricingLink = {href: "/host/#pricing", label: "Pricing"} as const;
+const hostPricingLink = {href: "/pricing/", label: "Pricing"} as const;
 const hostStartLink = {href: "/host/#start", label: "Start free trial"} as const;
 const weddingsLink = {href: "/weddings/", label: "Weddings"} as const;
 const claimLink = {href: "/claim/", label: "Claim your page"} as const;
@@ -99,10 +99,8 @@ export const siteHeaderCopy = {
     action: {href: "/#app", label: guestAppActionLabel},
   },
   /**
-   * Host pages: What's on, the For hosts pages, Pricing and Resources, then
-   * WhatsApp and the free trial. Pricing is the one bar link that opens a
-   * section (the pricing band of /host/), by the owner's call on 16 Nov,
-   * until /pricing/ ships.
+   * Host pages: What's on, the For hosts pages, Pricing (/pricing/) and
+   * Resources, then WhatsApp and the free trial.
    */
   host: {
     nav: [

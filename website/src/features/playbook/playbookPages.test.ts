@@ -92,11 +92,26 @@ describe("playbook page indexes", () => {
     }
   });
 
-  it("holds back a page whose pricing calculator has no component yet", async () => {
+  it("binds the pricing calculator from the custom registry", async () => {
     const page = (await loadPlaybookPage(resolvePlaybookPage("/host/run-clubs/")!))!;
     const withCalculator = {...page, sections: page.sections.map((section) =>
       section.type === "pricing" ? {...section, calculator: "pricingCalculator" as const} : section)};
-    expect(pendingPlaybookBindings(withCalculator)).toEqual(["custom:pricingCalculator"]);
+    expect(pendingPlaybookBindings(withCalculator)).toEqual([]);
+  });
+
+  it("holds back a page whose custom section has no component yet", async () => {
+    const page = (await loadPlaybookPage(resolvePlaybookPage("/host/run-clubs/")!))!;
+    const withTool = {...page, sections: [...page.sections, {type: "custom" as const, id: "tool", ground: "white" as const, component: "noShowCalculator" as const}]};
+    expect(pendingPlaybookBindings(withTool)).toEqual(["custom:noShowCalculator"]);
+  });
+
+  it("renders /pricing/ from its content: the fee band, the cap and what is included bound, noindex until approved", async () => {
+    const ref = resolvePlaybookPage("/pricing/")!;
+    expect(ref.match.contentKey).toBe("pricing");
+    const page = (await loadPlaybookPage(ref))!;
+    expect(page.sections.flatMap((section) => section.type === "custom" ? [section.component] : [])).toEqual(["pricingCalculator", "pricingExamples", "pricingCap", "pricingIncluded", "pricingOrganisations"]);
+    expect(pendingPlaybookBindings(page)).toEqual([]);
+    expect(page.meta.noindex).toBe(true);
   });
 
   it("renders the run-clubs sample: no pending bindings, brand resolved, noindex until approved", async () => {

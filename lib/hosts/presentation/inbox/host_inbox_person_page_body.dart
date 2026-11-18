@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
@@ -5,7 +6,6 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_catch_pages
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_program_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -99,14 +99,14 @@ class HostInboxPersonPageBody extends ConsumerWidget {
       ref.watch(hostInboxCatchViewModelProvider),
     );
     final whatsapp = catchAsyncStateFromAsyncValue(
-      ref.watch(hostInboxWhatsappPagesProvider(organizerId)),
+      ref.watch(hostWhatsappThreadPagesProvider(organizerId)),
     );
     final participations = scope.eventId == null
         ? null
         : catchAsyncStateFromAsyncValue(
             ref.watch(watchEventParticipationsForEventProvider(scope.eventId!)),
           ).value;
-    final whatsappThreads = whatsapp.value?.threads ?? const [];
+    final whatsappThreads = whatsapp.value?.items ?? const [];
     final people = composeHostInboxPeople(
       organizerId: organizerId,
       scope: scope,

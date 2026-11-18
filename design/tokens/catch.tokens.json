@@ -5637,6 +5637,58 @@
           ],
           "alpha": 0.78
         }
+      },
+      "fillOnInk": {
+        "$type": "color",
+        "$description": "The translucent fill of a tile on the ink ground: calculator results and worked examples.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.06
+        }
+      },
+      "pillOnInk": {
+        "$type": "color",
+        "$description": "A label pill on the ink ground, such as what the plan includes.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.08
+        }
+      },
+      "lineOnInk": {
+        "$type": "color",
+        "$description": "The hairline over the fee band's foot line on the ink ground.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9647058824,
+            0.937254902,
+            0.9019607843
+          ],
+          "alpha": 0.14
+        }
+      },
+      "timelineLine": {
+        "$type": "color",
+        "$description": "The line the night timeline runs down, on the ink ground.",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9647058824,
+            0.937254902,
+            0.9019607843
+          ],
+          "alpha": 0.16
+        }
       }
     },
     "type": {
@@ -5790,6 +5842,47 @@
           "$type": "number",
           "$description": "An app tile's line leading.",
           "$value": 1.4
+        }
+      },
+      "price": {
+        "size": {
+          "$type": "dimension",
+          "$description": "The fee band's rate, the giant coral figure.",
+          "$value": {
+            "value": 200,
+            "unit": "px"
+          }
+        },
+        "compactSize": {
+          "$type": "dimension",
+          "$description": "The fee band's rate on phones.",
+          "$value": {
+            "value": 130,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$description": "The fee band's rate leading.",
+          "$value": 0.8
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$description": "The fee band's rate tracking.",
+          "$value": {
+            "value": -0.05,
+            "unit": "em"
+          }
+        }
+      },
+      "example": {
+        "size": {
+          "$type": "dimension",
+          "$description": "A worked example's figure on white.",
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          }
         }
       }
     },
@@ -5987,6 +6080,14 @@
         "$description": "The corners of a small white card on a panel, such as the hero's notify card.",
         "$value": {
           "value": 22,
+          "unit": "px"
+        }
+      },
+      "tile": {
+        "$type": "dimension",
+        "$description": "A result tile in the fee calculator.",
+        "$value": {
+          "value": 18,
           "unit": "px"
         }
       }
@@ -6456,6 +6557,112 @@
         "$description": "A chip's colour dot.",
         "$value": {
           "value": 8,
+          "unit": "px"
+        }
+      }
+    },
+    "range": {
+      "thumbSize": {
+        "$type": "dimension",
+        "$description": "The range slider's thumb: a filled dot the size of the canvas's system slider thumb.",
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        }
+      }
+    },
+    "calculator": {
+      "valueSize": {
+        "$type": "dimension",
+        "$description": "The fee calculator's sales figure.",
+        "$value": {
+          "value": 52,
+          "unit": "px"
+        }
+      },
+      "compactValueSize": {
+        "$type": "dimension",
+        "$description": "The fee calculator's sales figure on phones.",
+        "$value": {
+          "value": 40,
+          "unit": "px"
+        }
+      },
+      "tileSize": {
+        "$type": "dimension",
+        "$description": "A fee calculator result figure.",
+        "$value": {
+          "value": 34,
+          "unit": "px"
+        }
+      }
+    },
+    "capBar": {
+      "height": {
+        "$type": "dimension",
+        "$description": "The cap chart's bar on /pricing/.",
+        "$value": {
+          "value": 56,
+          "unit": "px"
+        }
+      }
+    },
+    "routeCard": {
+      "minHeight": {
+        "$type": "dimension",
+        "$description": "A link route card's least height (the host landing's stage cards).",
+        "$value": {
+          "value": 230,
+          "unit": "px"
+        }
+      },
+      "tallMinHeight": {
+        "$type": "dimension",
+        "$description": "A button route card's least height (the host landing's ways to start).",
+        "$value": {
+          "value": 300,
+          "unit": "px"
+        }
+      },
+      "tallTitleSize": {
+        "$type": "dimension",
+        "$description": "A button route card's title.",
+        "$value": {
+          "value": 21,
+          "unit": "px"
+        }
+      },
+      "mediaHeight": {
+        "$type": "dimension",
+        "$description": "The picture in a button route card.",
+        "$value": {
+          "value": 110,
+          "unit": "px"
+        }
+      }
+    },
+    "timeline": {
+      "timeWidth": {
+        "$type": "dimension",
+        "$description": "The night timeline's time column.",
+        "$value": {
+          "value": 84,
+          "unit": "px"
+        }
+      },
+      "compactTimeWidth": {
+        "$type": "dimension",
+        "$description": "The night timeline's time column on phones.",
+        "$value": {
+          "value": 64,
+          "unit": "px"
+        }
+      },
+      "onTitleSize": {
+        "$type": "dimension",
+        "$description": "The chosen moment's title in the night timeline.",
+        "$value": {
+          "value": 18,
           "unit": "px"
         }
       }

@@ -5,8 +5,6 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_communication_r
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_manual_send_task.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
-import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
@@ -22,6 +20,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_page_body.dart';
 import 'package:catch_platform/app_config.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:catch_platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -388,16 +387,11 @@ class _HostInboxFrame extends StatelessWidget {
         ).overrideWithValue(
           AsyncData(_messagingSetup(HostInboxSurfaceFixtures.organizer.id)),
         ),
-        hostSendsProvider(
+        hostSendPagesProvider(
           HostInboxSurfaceFixtures.organizer.id,
-        ).overrideWithValue(
-          AsyncData(
-            HostSendsPage(
-              organizerId: HostInboxSurfaceFixtures.organizer.id,
-              sends: const [],
-              nextCursor: null,
-            ),
-          ),
+        ).overrideWithBuild(
+          (ref, notifier) =>
+              Stream.value(const LivePages(items: [], hasMore: false)),
         ),
         hostManualSendTasksProvider(
           HostInboxSurfaceFixtures.organizer.id,
@@ -410,16 +404,11 @@ class _HostInboxFrame extends StatelessWidget {
             ),
           ),
         ),
-        hostWhatsappThreadsProvider(
+        hostWhatsappThreadPagesProvider(
           HostInboxSurfaceFixtures.organizer.id,
-        ).overrideWithValue(
-          AsyncData(
-            HostWhatsappThreadPage(
-              organizerId: HostInboxSurfaceFixtures.organizer.id,
-              threads: const [],
-              nextCursor: null,
-            ),
-          ),
+        ).overrideWithBuild(
+          (ref, notifier) =>
+              Stream.value(const LivePages(items: [], hasMore: false)),
         ),
         watchOrganizerPostRemainingWeeklyQuotaProvider(
           HostInboxSurfaceFixtures.organizer.id,

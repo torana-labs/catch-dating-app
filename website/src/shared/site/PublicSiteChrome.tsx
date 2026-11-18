@@ -322,6 +322,7 @@ export function PublicSiteFooter({
   exploreHref,
   footnotes,
   helpBand = true,
+  helpTitle = siteFooterCopy.helpBand.title,
   navLabel = siteFooterCopy.nav,
   tagline = siteFooterCopy.tagline,
   variant = "guest",
@@ -336,6 +337,8 @@ export function PublicSiteFooter({
   footnotes?: readonly string[];
   /** The band across the top: a person answers on WhatsApp. */
   helpBand?: boolean;
+  /** The help band's headline; a page may name its own topic ("Questions about hosting? A person answers."). */
+  helpTitle?: string;
   /** The footer nav's name; only a page showing several footers needs another. */
   navLabel?: string;
   tagline?: string;
@@ -354,7 +357,7 @@ export function PublicSiteFooter({
       footnotes={footnotes}
       groups={groups}
       headerActions={helpBand ? <FooterHelpActions variant={variant} /> : undefined}
-      headerTitle={helpBand ? siteFooterCopy.helpBand.title : undefined}
+      headerTitle={helpBand ? helpTitle : undefined}
       navLabel={navLabel}
       note={publicSiteCopy.footerOperator}
       onLinkPressed={trackFooter}

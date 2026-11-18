@@ -15,7 +15,6 @@ const routeHrefs: Readonly<Record<string, string>> = {
  */
 export const playbookRouteAliases: Readonly<Record<string, string>> = {
   host_start: "/host/#start",
-  pricing: "/host/#pricing",
 };
 
 /** A WhatsApp chat with the support number in the brand record, the message already typed. */

@@ -29,6 +29,11 @@ export const kitFiles = {
   // bento app band, the refer panel). It lends declarations only; its one-off
   // inks are not kit colours, so it is left out of the hex coverage check.
   home: "design/source_packs/website-playbook/oneoff/PlaybookHome.dc.html",
+  // The host landing's and the pricing page's own stylesheets: the route and
+  // stage cards, the night timeline, the fee band's foot line and the cap bar.
+  // Like the homepage board, they lend declarations only.
+  hosts: "design/source_packs/website-playbook/oneoff/PlaybookHosts.dc.html",
+  pricing: "design/source_packs/website-playbook/oneoff/PlaybookPricing.dc.html",
 };
 
 /** The kit's phone arrangement: `@container pg (max-width: 600px)`. */
@@ -139,6 +144,8 @@ const decl = (file, selector, property, token, extra = {}) => ({file, selector, 
 const P = (selector, property, token, extra) => decl("panels", selector, property, token, extra);
 const H = (selector, property, token, extra) => decl("home", selector, property, token, extra);
 const K = (selector, property, token, extra) => decl("kit", selector, property, token, extra);
+const S = (selector, property, token, extra) => decl("hosts", selector, property, token, extra);
+const R = (selector, property, token, extra) => decl("pricing", selector, property, token, extra);
 const match = {mode: "match"};
 const onPhone = {container: phone};
 
@@ -555,4 +562,66 @@ export const declarationMap = [
   // The refer panel.
   H(".ref", "gap", "space.s12", match),
   H(".ref", "gap", "space.s5", {...match, ...onPhone}),
+
+  // The fee band and its calculator (the host landing's pricing band and /pricing/'s opening panel).
+  P(".pg .price", "font-size", "website.type.price.size", {description: "The fee band's rate, the giant coral figure."}),
+  P(".pg .price", "font-size", "website.type.price.compactSize", {...onPhone, description: "The fee band's rate on phones."}),
+  P(".pg .price", "line-height", "website.type.price.lineHeight", {description: "The fee band's rate leading."}),
+  P(".pg .price", "letter-spacing", "website.type.price.tracking", {description: "The fee band's rate tracking."}),
+  P(".pg .price", "font-weight", "website.type.figure.weight", match),
+  P(".pg .calc2 .sv", "font", "website.calculator.valueSize", {pick: {regex: " (\\d+px)/"}, description: "The fee calculator's sales figure."}),
+  P(".pg .calc2 .sv", "font-size", "website.calculator.compactValueSize", {...onPhone, description: "The fee calculator's sales figure on phones."}),
+  P(".pg .calc2 .sv", "letter-spacing", "website.type.xs.tracking", match),
+  P(".pg .calc2 small", "font-size", "typography.role.bodyMeta.size", match),
+  P(".pg .rmm", "font-size", "typography.role.labelBadge.size", match),
+  P(".pg .rmm", "margin", "space.s4", {...match, pick: {part: 2}}),
+  P(".pg .tiles2", "gap", "space.s3", match),
+  P(".pg .tiles2>div", "border-radius", "website.radius.tile", {description: "A result tile in the fee calculator."}),
+  P(".pg .tiles2>div", "padding", "space.s4", match),
+  P(".pg .tiles2>div", "background", "website.color.fillOnInk", {description: "The translucent fill of a tile on the ink ground: calculator results and worked examples."}),
+  P(".pg .tiles2 b", "font", "website.calculator.tileSize", {pick: {regex: " (\\d+px)/"}, description: "A fee calculator result figure."}),
+  P(".pg .capped", "font-size", "typography.role.bodySmall.size", match),
+  P(".pg .capped", "margin", "space.micro14", {...match, pick: {part: 0}}),
+  P(".pg .fine", "font-size", "typography.role.labelBadge.size", match),
+  P(".pg .ink .incl span", "background", "website.color.pillOnInk", {description: "A label pill on the ink ground, such as what the plan includes."}),
+  P(".pg .incl", "gap", "space.s2", match),
+  P(".pg .ex", "gap", "space.s3", match),
+  P(".pg .ex>div", "border-radius", "radius.lg", match),
+  P(".pg .ex>div", "padding", "space.s5", match),
+  P(".pg .ex b", "font", "website.type.example.size", {pick: {regex: " (\\d+px)/"}, description: "A worked example's figure on white."}),
+  S(".ex", "margin-top", "space.s12", match),
+  S(".ex b", "font", "typography.role.displaySection.size", {...match, pick: {regex: " (\\d+px)/"}}),
+  S(".orgline", "margin-top", "space.s7", match),
+  S(".orgline", "padding-top", "space.s6", match),
+  S(".orgline", "border-top", "website.color.lineOnInk", {pick: {regex: "(rgba\\([^)]*\\))"}, description: "The hairline over the fee band's foot line on the ink ground."}),
+  R(".capbar", "height", "website.capBar.height", {description: "The cap chart's bar on /pricing/."}),
+  R(".capbar", "border-radius", "radius.md", match),
+  R(".capbar", "margin-top", "space.s7", match),
+  R(".capbar span", "padding", "space.micro14", {...match, pick: {part: 1}}),
+
+  // The host landing's route cards (.stg, where you are today; .path, however you like to start).
+  S(".stg", "border-radius", "radius.xl", match),
+  S(".stg", "padding", "space.s6", match),
+  S(".stg", "gap", "space.micro10", match),
+  S(".stg", "min-height", "website.routeCard.minHeight", {description: "A link route card's least height (the host landing's stage cards)."}),
+  S(".stg h3", "font-size", "typography.role.displayXs.size", match),
+  S(".stg p", "font-size", "typography.role.body.size", match),
+  S(".stg .go", "font-size", "typography.role.bodySmall.size", match),
+  S(".path", "min-height", "website.routeCard.tallMinHeight", {description: "A button route card's least height (the host landing's ways to start)."}),
+  S(".path h3", "font-size", "website.routeCard.tallTitleSize", {description: "A button route card's title."}),
+  S(".path h3", "line-height", "website.type.tileTitle.lineHeight", match),
+  S(".path p", "font-size", "typography.role.bodySmall.size", match),
+  S(".path .n", "font", "typography.role.body.size", {...match, pick: {regex: " (\\d+px)/"}}),
+  S(".vid", "height", "website.routeCard.mediaHeight", {description: "The picture in a button route card."}),
+  S(".vid", "border-radius", "radius.md", match),
+  S(".paths", "gap", "space.s4", match),
+
+  // The host landing's night timeline (.tl).
+  S(".tl", "margin", "space.s8", {...match, pick: {part: 0}}),
+  S(".tl", "border-left", "website.color.timelineLine", {pick: {regex: "(rgba\\([^)]*\\))"}, description: "The line the night timeline runs down, on the ink ground."}),
+  S(".tl li", "grid-template-columns", "website.timeline.timeWidth", {pick: {part: 0}, description: "The night timeline's time column."}),
+  S(".tl li", "grid-template-columns", "website.timeline.compactTimeWidth", {...onPhone, pick: {part: 0}, description: "The night timeline's time column on phones."}),
+  S(".tl li", "gap", "space.s3", match),
+  S(".tl li", "font-size", "typography.role.bodySmall.size", match),
+  S(".tl li.on b", "font-size", "website.timeline.onTitleSize", {description: "The chosen moment's title in the night timeline."}),
 ];

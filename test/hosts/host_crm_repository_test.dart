@@ -1053,116 +1053,118 @@ void main() {
     expect(campaign.blockers, {'audience_changed'});
   });
 
-  test('parses mixed reverse-chronological Sends rows', () {
-    final page = HostSendsPage.fromCallableData({
-      'organizerId': 'organizer-1',
-      'sends': <Object?>[
-        {
-          'kind': 'announcement',
-          'broadcastId': 'broadcast-1',
-          'eventId': 'event-1',
-          'eventName': 'Friday run',
-          'audience': 'booked',
-          'recipientCount': 18,
-          'sentAtMillis': 3000,
-          'partialFailure': true,
-          'activityAtMillis': 3000,
-        },
-        {
-          'kind': 'campaign',
-          'campaignId': 'campaign-1',
-          'name': 'Regulars invite',
-          'status': 'scheduled',
-          'savedAudienceId': 'audience-1',
-          'savedAudienceName': 'Regulars',
-          'segmentIds': <Object?>['regular'],
-          'templateId': 'template-1',
-          'templateName': 'Event invite',
-          'audienceCounts': {'total': 12, 'reachable': 10},
-          'deliveryCounts': {'pending': 10},
-          'scheduledAtMillis': 5000,
-          'dispatchedAtMillis': null,
-          'activityAtMillis': 2000,
-        },
-        {
-          'kind': 'followerUpdate',
-          'postId': 'post-1',
-          'eventId': null,
-          'audience': 'followers',
-          'status': 'active',
-          'deliveryStatus': 'completed',
-          'recipientCount': 10,
-          'excludedCount': 1,
-          'activityAvailableCount': 9,
-          'pushAttemptedCount': 8,
-          'pushAcceptedCount': 8,
-          'pushFailedCount': 0,
-          'pushUnknownCount': 0,
-          'createdAtMillis': 1000,
-          'activityAtMillis': 1000,
-        },
-      ],
-      'nextCursor': 'next-page',
-    });
+  test('parses each kind of Sends row', () {
+    final sends = <Map<Object?, Object?>>[
+      {
+        'kind': 'announcement',
+        'broadcastId': 'broadcast-1',
+        'eventId': 'event-1',
+        'eventName': 'Friday run',
+        'audience': 'booked',
+        'recipientCount': 18,
+        'sentAtMillis': 3000,
+        'partialFailure': true,
+        'activityAtMillis': 3000,
+      },
+      {
+        'kind': 'campaign',
+        'campaignId': 'campaign-1',
+        'name': 'Regulars invite',
+        'status': 'scheduled',
+        'savedAudienceId': 'audience-1',
+        'savedAudienceName': 'Regulars',
+        'segmentIds': <Object?>['regular'],
+        'templateId': 'template-1',
+        'templateName': 'Event invite',
+        'audienceCounts': {'total': 12, 'reachable': 10},
+        'deliveryCounts': {'pending': 10},
+        'scheduledAtMillis': 5000,
+        'dispatchedAtMillis': null,
+        'activityAtMillis': 2000,
+      },
+      {
+        'kind': 'followerUpdate',
+        'postId': 'post-1',
+        'eventId': null,
+        'audience': 'followers',
+        'status': 'active',
+        'deliveryStatus': 'completed',
+        'recipientCount': 10,
+        'excludedCount': 1,
+        'activityAvailableCount': 9,
+        'pushAttemptedCount': 8,
+        'pushAcceptedCount': 8,
+        'pushFailedCount': 0,
+        'pushUnknownCount': 0,
+        'createdAtMillis': 1000,
+        'activityAtMillis': 1000,
+      },
+    ].map(HostSendSummary.fromMap).toList();
 
-    expect(page.sends.first, isA<HostAnnouncementSendSummary>());
-    expect(
-      (page.sends.first as HostAnnouncementSendSummary).partialFailure,
-      isTrue,
-    );
-    expect(page.sends[1], isA<HostCampaignSendSummary>());
-    expect((page.sends[1] as HostCampaignSendSummary).scheduledAt, isNotNull);
-    expect(page.sends.last, isA<HostFollowerUpdateSendSummary>());
-    final followerUpdate = page.sends.last as HostFollowerUpdateSendSummary;
+    expect(sends.first, isA<HostAnnouncementSendSummary>());
+    expect((sends.first as HostAnnouncementSendSummary).partialFailure, isTrue);
+    expect(sends[1], isA<HostCampaignSendSummary>());
+    expect((sends[1] as HostCampaignSendSummary).scheduledAt, isNotNull);
+    expect(sends.last, isA<HostFollowerUpdateSendSummary>());
+    final followerUpdate = sends.last as HostFollowerUpdateSendSummary;
     expect(followerUpdate.postId, 'post-1');
     expect(followerUpdate.audience, 'followers');
     expect(followerUpdate.eventId, isNull);
-    expect(page.nextCursor, 'next-page');
   });
 
-  test('parses WhatsApp channel facets and service-window state', () {
-    final page = HostWhatsappThreadPage.fromCallableData({
+  test('reads WhatsApp thread views with the reader\'s service window', () {
+    final view = <Object?, Object?>{
       'organizerId': 'organizer-1',
-      'threads': [
-        {
-          'threadId': 'owt_${List.filled(48, 'a').join()}',
-          'contactId': 'contact-1',
-          'displayName': 'Asha Rao',
-          'eventIds': ['event-1'],
-          'lastMessageBody': 'Where is the entrance?',
-          'lastMessageDirection': 'inbound',
-          'lastMessageAtMillis': 1700000000000,
-          'lastInboundAtMillis': 1700000000000,
-          'serviceWindowExpiresAtMillis': 1700086400000,
-          'serviceWindowOpen': true,
-        },
-      ],
-      'nextCursor': null,
-    });
-    final thread = page.threads.single;
-    expect(thread.eventIds, ['event-1']);
-    expect(thread.lastMessageDirection, HostWhatsappMessageDirection.inbound);
-    expect(thread.serviceWindowOpen, isTrue);
-
-    final detail = HostWhatsappThreadDetail.fromCallableData({
-      'organizerId': 'organizer-1',
-      'threadId': thread.threadId,
-      'contactId': thread.contactId,
-      'displayName': thread.displayName,
+      'threadId': 'owt_${List.filled(48, 'a').join()}',
+      'contactId': 'contact-1',
+      'linkedUid': null,
+      'displayName': 'Asha Rao',
+      'eventIds': ['event-1'],
+      'lastMessageBody': 'Where is the entrance?',
+      'lastMessageDirection': 'inbound',
+      'lastMessageAtMillis': 1700000000000,
       'lastInboundAtMillis': 1700000000000,
       'serviceWindowExpiresAtMillis': 1700086400000,
-      'serviceWindowOpen': false,
-      'messages': [
-        {
-          'messageId': 'owm_${List.filled(48, 'b').join()}',
-          'direction': 'inbound',
-          'body': 'Where is the entrance?',
-          'occurredAtMillis': 1700000000000,
-        },
+      'expiresAtMillis': 1731536000000,
+      'version': 1,
+    };
+    final open = HostWhatsappThreadSummary.fromView(
+      view,
+      now: DateTime.fromMillisecondsSinceEpoch(1700000600000),
+    );
+    expect(open.eventIds, ['event-1']);
+    expect(open.lastMessageDirection, HostWhatsappMessageDirection.inbound);
+    expect(open.serviceWindowOpen, isTrue);
+    expect(
+      open.isRetainedAt(DateTime.fromMillisecondsSinceEpoch(1731536000000)),
+      isFalse,
+    );
+    final closed = HostWhatsappThreadSummary.fromView(
+      view,
+      now: DateTime.fromMillisecondsSinceEpoch(1700086400000),
+    );
+    expect(closed.serviceWindowOpen, isFalse);
+
+    // A customer message newer than the view reopens the window and becomes
+    // the reply fence.
+    final later = DateTime.fromMillisecondsSinceEpoch(1700100000000);
+    final detail = HostWhatsappThreadDetail.fromView(
+      organizerId: 'organizer-1',
+      summary: closed,
+      messages: [
+        HostWhatsappMessage(
+          messageId: 'owm_${List.filled(48, 'b').join()}',
+          direction: HostWhatsappMessageDirection.inbound,
+          body: 'Are you still there?',
+          occurredAt: later,
+        ),
       ],
-      'messagesTruncated': false,
-    });
-    expect(detail.messages.single.body, 'Where is the entrance?');
-    expect(detail.serviceWindowOpen, isFalse);
+      messagesTruncated: false,
+      now: later.add(const Duration(minutes: 1)),
+    );
+    expect(detail.lastInboundAt, later);
+    expect(detail.serviceWindowOpen, isTrue);
+    expect(detail.serviceWindowExpiresAt, later.add(hostWhatsappServiceWindow));
+    expect(detail.messages.single.body, 'Are you still there?');
   });
 }

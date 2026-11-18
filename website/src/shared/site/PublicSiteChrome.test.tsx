@@ -93,7 +93,7 @@ describe("canonical public chrome", () => {
     const banner = within(screen.getByRole("banner"));
     // Resources holds one page today, so it is a plain link to Help, not a dropdown.
     expect(within(banner.getByRole("navigation", {name: "Primary"})).getAllByRole("link").map((link) => [link.textContent, link.getAttribute("href")]))
-      .toEqual([["What’s on", "/explore/"], ["Pricing", "/host/#pricing"], ["Help", "/help/"]]);
+      .toEqual([["What’s on", "/explore/"], ["Pricing", "/pricing/"], ["Help", "/help/"]]);
     expect(banner.queryByRole("button", {name: "Resources"})).toBeNull();
     const forHosts = banner.getByRole("button", {name: "For hosts"});
     // The canvas sets the dropdown among the page links, after What's on.
@@ -223,6 +223,13 @@ describe("canonical public chrome", () => {
     expect(host.queryByRole("link", {name: siteFooterCopy.helpBand.guestHelp.label})).toBeNull();
   });
 
+  it("lets a page name the help band's topic, keeping its actions", () => {
+    render(<PublicSiteFooter helpTitle="Questions about hosting? A person answers." variant="host" />);
+    expect(screen.getByRole("heading", {level: 2, name: "Questions about hosting? A person answers."})).toBeTruthy();
+    expect(screen.queryByText(siteFooterCopy.helpBand.title)).toBeNull();
+    expect(screen.getByRole("link", {name: siteFooterCopy.helpBand.whatsapp})).toBeTruthy();
+  });
+
   it("leaves the help band out of one-job flows", () => {
     render(<PublicSiteFooter helpBand={false} />);
     expect(screen.queryByText(siteFooterCopy.helpBand.title)).toBeNull();
@@ -236,7 +243,7 @@ describe("canonical public chrome", () => {
     expect(nav.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent)).toEqual(["Product", "Get started", "Catch", "Legal"]);
     expect(nav.getAllByRole("link").map((link) => [link.textContent, link.getAttribute("href")])).toEqual([
       ["Catch for hosts", "/host/"], ["How Catch works", "/host/#night"], ["Ways to use Catch", "/host/#ways"], ["Weddings", "/weddings/"],
-      ["Start free trial", "/host/#start"], ["Pricing", "/host/#pricing"], ["Claim your page", "/claim/"],
+      ["Start free trial", "/host/#start"], ["Pricing", "/pricing/"], ["Claim your page", "/claim/"],
       ["What’s on", "/explore/"], ["Help", "/help/"], ["Contact", "/contact/"],
       ["Privacy", "/privacy/"], ["Terms", "/terms/"], ["Refunds", "/refunds/"],
     ]);

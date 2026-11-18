@@ -2,125 +2,126 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart';
+import 'package:catch_platform/cache/app_clock.dart';
+import 'package:catch_platform/firebase/live_pages.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test_pump_helpers.dart';
 import 'host_inbox_test_fixtures.dart';
 
-class _Repository extends Fake implements HostWhatsappRepository {
-  final requested = <String?>[];
-  final pending = <Completer<HostWhatsappThreadPage>>[];
+final _now = DateTime(2026, 9, 12);
+
+class _Pager implements LivePager<HostWhatsappThreadSummary> {
+  // ignore: close_sinks, closed when the provider container disposes.
+  final controller = StreamController<LivePages<HostWhatsappThreadSummary>>();
+  var loadMoreCalls = 0;
+
   @override
-  Future<HostWhatsappThreadPage> listWhatsappThreads(
+  Stream<LivePages<HostWhatsappThreadSummary>> get pages => controller.stream;
+
+  @override
+  void loadMore() => loadMoreCalls++;
+}
+
+class _Repository extends Fake implements HostWhatsappRepository {
+  final pager = _Pager();
+  final organizers = <String>[];
+
+  @override
+  LivePager<HostWhatsappThreadSummary> watchWhatsappThreads(
     String organizerId, {
-    String? cursor,
-    int limit = 50,
+    int pageSize = 50,
   }) {
-    requested.add(cursor);
-    final response = Completer<HostWhatsappThreadPage>();
-    pending.add(response);
-    return response.future;
+    organizers.add(organizerId);
+    return pager;
   }
 }
 
-void main() {
-  for (final failure in ['scope', 'cursor', 'network']) {
-    test(
-      'pagination retains authorized rows after $failure failure and retries',
-      () async {
-        final repository = _Repository();
-        final first = HostWhatsappThreadPage(
-          organizerId: 'org',
-          threads: [wa('one', 'person')],
-          nextCursor: 'next',
-        );
-        final container = ProviderContainer(
-          overrides: [
-            hostWhatsappRepositoryProvider.overrideWithValue(repository),
-            hostWhatsappThreadsProvider(
-              'org',
-            ).overrideWith((ref) async => first),
-          ],
-        );
-        addTearDown(container.dispose);
-        final provider = hostInboxWhatsappPagesProvider('org');
-        final subscription = container.listen(provider, (_, _) {});
-        addTearDown(subscription.close);
-        await container.read(provider.future);
-        final notifier = container.read(provider.notifier);
-        final loading = notifier.loadMore();
-        await notifier
-            .loadMore(); // A second click cannot issue another request.
-        expect(repository.requested, ['next']);
-        if (failure == 'network') {
-          repository.pending.last.completeError(StateError('offline'));
-        } else {
-          repository.pending.last.complete(
-            HostWhatsappThreadPage(
-              organizerId: failure == 'scope' ? 'other' : 'org',
-              threads: [wa('unauthorized', 'other')],
-              nextCursor: failure == 'cursor' ? 'next' : null,
-            ),
-          );
-        }
-        await loading;
-        var state = await container.read(provider.future);
-        expect(state.threads.map((thread) => thread.threadId), ['one']);
-        expect(state.error, isNotNull);
-        expect(state.nextCursor, 'next');
-        final retry = notifier.loadMore();
-        repository.pending.last.complete(
-          HostWhatsappThreadPage(
-            organizerId: 'org',
-            threads: [wa('one', 'person'), wa('two', 'second')],
-            nextCursor: null,
-          ),
-        );
-        await retry;
-        state = await container.read(provider.future);
-        expect(state.threads.map((thread) => thread.threadId), ['one', 'two']);
-        expect(state.error, isNull);
-        expect(state.nextCursor, isNull);
-      },
+HostWhatsappThreadSummary _retained(String id, DateTime until) =>
+    HostWhatsappThreadSummary(
+      threadId: id,
+      contactId: 'contact-$id',
+      displayName: 'Person $id',
+      eventIds: const [],
+      lastMessageBody: 'Hello',
+      lastMessageDirection: HostWhatsappMessageDirection.inbound,
+      lastMessageAt: _now,
+      lastInboundAt: _now,
+      serviceWindowExpiresAt: _now.add(hostWhatsappServiceWindow),
+      serviceWindowOpen: true,
+      retainedUntil: until,
     );
-  }
 
-  test('refresh invalidates an in-flight older page', () async {
-    final repository = _Repository();
-    var first = HostWhatsappThreadPage(
-      organizerId: 'org',
-      threads: [wa('old', 'person')],
-      nextCursor: 'next',
-    );
-    final container = ProviderContainer(
+void main() {
+  late _Repository repository;
+  late ProviderContainer container;
+
+  setUp(() {
+    repository = _Repository();
+    container = ProviderContainer(
       overrides: [
         hostWhatsappRepositoryProvider.overrideWithValue(repository),
-        hostWhatsappThreadsProvider('org').overrideWith((ref) async => first),
+        appClockProvider.overrideWithValue(AppClock.custom(() => _now)),
       ],
     );
     addTearDown(container.dispose);
-    final provider = hostInboxWhatsappPagesProvider('org');
+  });
+
+  test('the inbox hides threads past retention and keeps rows on a failed '
+      'next page', () async {
+    final provider = hostWhatsappThreadPagesProvider('org');
     final subscription = container.listen(provider, (_, _) {});
     addTearDown(subscription.close);
-    await container.read(provider.future);
-    final request = container.read(provider.notifier).loadMore();
-    first = HostWhatsappThreadPage(
-      organizerId: 'org',
-      threads: [wa('new', 'person')],
-      nextCursor: null,
-    );
-    container.invalidate(hostWhatsappThreadsProvider('org'));
-    await container.read(provider.future);
-    repository.pending.single.complete(
-      HostWhatsappThreadPage(
-        organizerId: 'org',
-        threads: [wa('stale', 'person')],
-        nextCursor: null,
+    expect(repository.organizers, ['org']);
+
+    repository.pager.controller.add(
+      LivePages(
+        items: [
+          wa('one', 'person'),
+          _retained('expired', _now),
+          _retained('kept', _now.add(const Duration(days: 1))),
+        ],
+        hasMore: true,
       ),
     );
-    await request;
-    final state = await container.read(provider.future);
-    expect(state.threads.map((thread) => thread.threadId), ['new']);
+    await flushTestEventQueue();
+    var pages = container.read(provider).requireValue;
+    expect(pages.items.map((thread) => thread.threadId), ['one', 'kept']);
+    expect(pages.hasMore, isTrue);
+
+    container.read(provider.notifier).loadMore();
+    expect(repository.pager.loadMoreCalls, 1);
+    repository.pager.controller.add(
+      LivePages(
+        items: [wa('one', 'person')],
+        hasMore: true,
+        nextPageError: StateError('offline'),
+      ),
+    );
+    await flushTestEventQueue();
+    pages = container.read(provider).requireValue;
+    expect(pages.items.map((thread) => thread.threadId), ['one']);
+    expect(pages.nextPageError, isA<StateError>());
+    expect(pages.hasMore, isTrue);
+  });
+
+  test('Messages reads the threads opened so far', () async {
+    final subscription = container.listen(
+      hostWhatsappThreadsProvider('org'),
+      (_, _) {},
+    );
+    addTearDown(subscription.close);
+    repository.pager.controller.add(
+      LivePages(items: [wa('one', 'person')], hasMore: false),
+    );
+    await flushTestEventQueue();
+    expect(
+      container
+          .read(hostWhatsappThreadsProvider('org'))
+          .requireValue
+          .map((thread) => thread.threadId),
+      ['one'],
+    );
   });
 }
