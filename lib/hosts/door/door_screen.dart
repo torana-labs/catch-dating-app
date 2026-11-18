@@ -13,7 +13,6 @@ import 'package:catch_dating_app/hosts/door/door_body.dart';
 import 'package:catch_dating_app/hosts/door/door_controller.dart';
 import 'package:catch_dating_app/hosts/door/door_scan_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
-import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart'
     show HostManualAttendeeSheet, HostRuntimeClaimList;
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
@@ -108,14 +107,16 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
     final l10n = context.l10n;
     setState(() => _reviewingClaim = claim.uid);
     try {
-      await ref
-          .read(hostOperationalRosterControllerProvider)
-          .reviewRuntimeClaim(
-            eventId: widget.eventId,
-            uid: claim.uid,
-            decision: decision,
-            attendeeId: attendeeId,
-          );
+      await DoorSession.reviewClaimMutation.run(
+        ref,
+        (tx) => tx
+            .get(doorSessionProvider(widget.eventId).notifier)
+            .reviewClaim(
+              uid: claim.uid,
+              decision: decision,
+              attendeeId: attendeeId,
+            ),
+      );
       if (!mounted) return;
       showCatchNotice(
         context,
