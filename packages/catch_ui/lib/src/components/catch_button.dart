@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_button_content_row.dart';
 import 'package:catch_ui/src/components/catch_count_badge.dart';
+import 'package:catch_ui/src/foundations/catch_root.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
@@ -539,12 +540,34 @@ class _CatchButtonState extends State<CatchButton> {
         border: Colors.transparent,
       );
     }
+    // On a tile or a format-colour spotlight the system draws a secondary
+    // button as a white pill with no outline; on a night tile, a faint
+    // cream fill. On the page it keeps its outline.
+    final ground = CatchRootScope.groundOf(context);
+    final filledSecondary =
+        widget.variant == CatchButtonVariant.secondary &&
+        (ground == CatchGround.tile ||
+            ground == CatchGround.colour ||
+            ground == CatchGround.nightTile);
+    if (filledSecondary) {
+      palette = ground == CatchGround.nightTile
+          ? palette.copyWith(
+              background: t.ink.withValues(alpha: CatchOpacity.tabBarPillFill),
+              border: Colors.transparent,
+            )
+          : palette.copyWith(
+              background: CatchTokens.editorialWhite,
+              foreground: CatchTokens.light.ink,
+              border: Colors.transparent,
+            );
+    }
     palette = palette.copyWith(
       background: widget.backgroundColor,
       foreground: widget.foregroundColor,
       border: widget.borderColor,
     );
-    final outlined = widget.variant == CatchButtonVariant.secondary;
+    final outlined =
+        widget.variant == CatchButtonVariant.secondary && !filledSecondary;
     final engaged = _enabled && (_hovered || _pressed);
     // Outlines share the control border and turn full ink while engaged.
     final border = CatchBorder.resolve(
