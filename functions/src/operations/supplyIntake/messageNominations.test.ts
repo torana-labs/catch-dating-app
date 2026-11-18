@@ -56,7 +56,7 @@ const requestsIn = (db: FakeFirestore) => db.entries().filter(([key]) => key.sta
 test("a nominator over the hourly limit queues nothing", async () => {
   const db = new FakeFirestore();
   const nominatorId = registerNominator(db);
-  const parsed = await (await packagedMessageParser()).parseNominationMessage("@afterfly.in");
+  const parsed = await (await packagedMessageParser()).parseNominationMessage("@moonmoth.example");
   const nominator = {nominatorId, role: "associate" as const, uid: "associate-1", partnerId: null, defaultMarket: "mumbai"};
   const limited = await queueMessageNominations(deps(db, {limited: true}), {messageKey: EVENT_ID,
     receivedAtMillis: NOW.getTime(), nominator, parsed});
@@ -71,7 +71,7 @@ test("a nominator over the hourly limit queues nothing", async () => {
 test("a partner's nomination credits the partner and unknown cities wait for staff", () => {
   const [request] = requestsFromNominationMessage({messageKey: EVENT_ID, receivedAt: NOW,
     nominator: {nominatorId: "whatsapp-x", role: "partner", uid: "partner-1", partnerId: "partner-1", defaultMarket: null},
-    parsed: {nominations: [{urls: ["https://luma.com/afterfly"], notes: "great vibes"}], unreadable: [], droppedNominations: 0}});
+    parsed: {nominations: [{urls: ["https://luma.com/moonmoth"], notes: "great vibes"}], unreadable: [], droppedNominations: 0}});
   assert.deepEqual([request.market, request.submittedBy], ["unassigned",
     {role: "partner", uid: "partner-1", partnerId: "partner-1"}]);
 });
