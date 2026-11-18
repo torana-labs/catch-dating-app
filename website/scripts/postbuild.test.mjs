@@ -175,6 +175,9 @@ test("postbuild writes route metadata, robots, and an indexable-only sitemap", (
   assert.doesNotMatch(sitemap, /afterfly-run-club/);
   assert.doesNotMatch(sitemap, /noindex-sample/);
   assert.doesNotMatch(sitemap, /published-suppressed/);
+  // Discovery pages have no static output; only the Next sitemap lists the indexed format pages.
+  assert.doesNotMatch(sitemap, /new-to-/u);
+  assert.doesNotMatch(sitemap, /example\.test\/mumbai\/[a-z-]+\/<\/loc>/u);
   assert.equal(
     fs.existsSync(
       path.join(distRoot, "organizers", "published-suppressed", "index.html")

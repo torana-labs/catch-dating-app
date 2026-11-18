@@ -253,6 +253,55 @@ function intakeProfileViewRow(db, uid) {
   return db.runTransaction((tx) => participantIntakeProfileView(db, tx, uid));
 }
 
+let whatsappThreadViewModule = null;
+let sendSummaryModule = null;
+function functionsHostInboxViews() {
+  try {
+    const load = createFunctionsRequire();
+    whatsappThreadViewModule ??= load(
+      "./lib/hostReadModels/whatsappThreadViewStore.js");
+    sendSummaryModule ??= load("./lib/hostReadModels/sendSummaryStore.js");
+  } catch (error) {
+    throw new Error(
+      "The host-whatsapp-thread-views and host-send-summaries migrations " +
+      "need compiled Functions; run `npm --prefix functions run build` " +
+      `first (${error.message}).`,
+    );
+  }
+  return {threads: whatsappThreadViewModule, sends: sendSummaryModule};
+}
+
+const hostInboxNowMillis = Date.now();
+
+/** A WhatsApp thread's manager view from current sources, read only. */
+async function whatsappThreadViewRow(db, threadId) {
+  const {readHostWhatsappThreadView} = functionsHostInboxViews().threads;
+  try {
+    return await db.runTransaction((tx) =>
+      readHostWhatsappThreadView(db, tx, threadId, hostInboxNowMillis));
+  } catch {
+    // A thread that fails its contract gets no view, as in the trigger.
+    return null;
+  }
+}
+
+/** A Send's manager row from current sources, read only. */
+async function sendSummaryRow(db, source) {
+  const {readHostSendSummary} = functionsHostInboxViews().sends;
+  try {
+    return await db.runTransaction((tx) => readHostSendSummary(db, tx, source));
+  } catch {
+    return null;
+  }
+}
+
+/** The organizer that owns an organizers/{organizerId}/posts document. */
+function organizerPostOwner(ref) {
+  const organizer = ref?.parent?.parent;
+  return organizer?.parent?.id === "organizers" && validId(organizer.id) ?
+    organizer.id : null;
+}
+
 const profilePromptCatalog = JSON.parse(fs.readFileSync(
   new URL("../../../contracts/catalogs/profile_prompts.json", import.meta.url), "utf8"));
 const defaultPrompt = profilePromptCatalog.prompts.find(
@@ -723,6 +772,66 @@ export const MIGRATIONS = [
         skipReason: "the account is deleted",
         targetId: (id) => validId(id) ? id : null,
         transform: (data, id, db) => intakeProfileViewRow(db, id),
+      },
+    ],
+  },
+  {
+    name: "host-whatsapp-thread-views",
+    description:
+      "The Host inbox reads hostWhatsappThreadViews through a listener " +
+      "(#1339) instead of the listOrganizerWhatsappThreads callable. Every " +
+      "retained organizerWhatsappThreads document without a view gets one, " +
+      "with the summary the callable returns, as the new triggers write it. " +
+      "Threads whose retention has passed get none. Existing views are never " +
+      "replaced; threads, messages and contacts are never changed. Build " +
+      "Functions first.",
+    steps: [
+      {
+        source: "organizerWhatsappThreads",
+        target: "hostWhatsappThreadViews",
+        skipReason: "no owner or contact, or its retention has passed",
+        targetId: (id) => validId(id) ? id : null,
+        transform: (data, id, db) => whatsappThreadViewRow(db, id),
+      },
+    ],
+  },
+  {
+    name: "host-send-summaries",
+    description:
+      "Host Sends history and the automation message picker read " +
+      "hostSendSummaries through listeners (#1339) instead of the " +
+      "listOrganizerCampaigns callable. Every campaign, announcement summary " +
+      "and organizer follower post without a row gets one, with the row the " +
+      "callable returns, as the new triggers write it. A follower update's " +
+      "WhatsApp leg campaign gets none. Existing rows are never replaced; " +
+      "campaigns, summaries, posts, delivery operations, templates and saved " +
+      "audiences are never changed. Build Functions first.",
+    steps: [
+      {
+        source: "organizerCampaigns",
+        target: "hostSendSummaries",
+        skipReason: "no owner, or a follower update's WhatsApp leg",
+        targetId: (id) => validId(id) ? `campaign_${id}` : null,
+        transform: (data, id, db) => sendSummaryRow(db,
+          {kind: "campaign", campaignId: id}),
+      },
+      {
+        source: "organizerBroadcastSummaries",
+        target: "hostSendSummaries",
+        skipReason: "no owner",
+        targetId: (id) => validId(id) ? `announcement_${id}` : null,
+        transform: (data, id, db) => sendSummaryRow(db,
+          {kind: "announcement", broadcastId: id}),
+      },
+      {
+        source: "organizers/*/posts",
+        collectionGroup: "posts",
+        target: "hostSendSummaries",
+        skipReason: "not an organizer post",
+        targetId: (id, data, db, ref) => validId(id) && organizerPostOwner(ref) ?
+          `followerUpdate_${id}` : null,
+        transform: (data, id, db, ref) => sendSummaryRow(db,
+          {kind: "followerUpdate", organizerId: organizerPostOwner(ref), postId: id}),
       },
     ],
   },

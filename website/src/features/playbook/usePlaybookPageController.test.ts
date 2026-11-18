@@ -54,14 +54,16 @@ describe("usePlaybookPageController", () => {
     expect(result.current.link({...trialAction, to: {route: "host", anchor: "pricing"}})).toEqual({label: trialAction.label, href: "/host/#pricing"});
   });
 
-  it("renders a lead form only from a filled slot, telling it where it sits", () => {
+  it("renders a lead form only from its kind's filled slot, telling it where it sits", () => {
     const empty = renderHook(() => usePlaybookPageController(page));
     expect(empty.result.current.leadForm(form, "start")).toBeNull();
     expect(empty.result.current.leadForm(undefined, "start")).toBeNull();
 
     const slot = vi.fn(() => "form");
-    const filled = renderHook(() => usePlaybookPageController(page, {run_club_setup_guide: slot}));
+    const filled = renderHook(() => usePlaybookPageController(page, {guide: slot}));
     expect(filled.result.current.leadForm(form, "start")).toBe("form");
     expect(slot).toHaveBeenCalledWith({form, pageId: "host_run_clubs", sectionId: "start"});
+    const other = renderHook(() => usePlaybookPageController(page, {venue: slot}));
+    expect(other.result.current.leadForm(form, "start")).toBeNull();
   });
 });

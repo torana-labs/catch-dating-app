@@ -9,6 +9,7 @@ import type {MarketCity} from "../content/markets/types";
 import {explorePageCopy} from "../content/explorePage";
 import type {PlaybookPageDocument} from "../content/playbook/playbookContract";
 import {resolvePlaybookPage} from "../features/playbook/playbookPages";
+import {matchDiscoveryRoute} from "../features/discovery/discoveryModel";
 
 export type PageKey =
   | "sales_demo"
@@ -39,7 +40,8 @@ export type PageKey =
   | "refunds"
   | "contact"
   | "not_found"
-  | "playbook";
+  | "playbook"
+  | "discovery";
 
 export interface PageMeta {
   title: string;
@@ -56,7 +58,7 @@ export function isLegalPageKey(page: PageKey): page is PublishedLegalPageKey {
     page === "refunds" || page === "contact";
 }
 
-export const pageMeta: Record<Exclude<PageKey, "listing" | "event_detail" | "playbook">, PageMeta> =
+export const pageMeta: Record<Exclude<PageKey, "listing" | "event_detail" | "playbook" | "discovery">, PageMeta> =
   websiteMeta.routes;
 
 /**
@@ -150,6 +152,8 @@ export function getPageKey(
   if (["/host", "/host/"].includes(pathname)) return "host";
   if (["/weddings", "/weddings/", "/weddings/apply", "/weddings/apply/"].includes(pathname)) return "weddings";
   if (pathname.startsWith("/organizers")) return "organizers";
+  // A city-by-format or new-to-the-city page (/mumbai/run-clubs/, /new-to-mumbai/), before the playbook pages.
+  if (matchDiscoveryRoute(pathname)) return "discovery";
   // A redesign page whose content is registered; a registered route without content stays not_found.
   if (resolvePlaybookPage(pathname)) return "playbook";
   if (pathname === "/cities" || pathname === "/cities/") return "cities";

@@ -10,4 +10,6 @@ import type {PlaybookPageIndex} from "../../playbookContract.ts";
  * in features/playbook/playbookRoutes.ts and design/website/routes.json.
  */
 export const resourcesPlaybookPages: PlaybookPageIndex = {
+  safety: {file: "safety.json", load: () => import("./safety.json")},
+  host_demo: {file: "host-demo.json", load: () => import("./host-demo.json")},
 };

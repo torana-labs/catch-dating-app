@@ -12,9 +12,12 @@ import {isDeepStrictEqual} from "node:util";
  * collections stay in place until the owner lifts the hold.
  *
  * A copy step is {source, target, targetId(id, data), transform(data, id)}:
- * - `source` is a top-level collection id;
+ * - `source` is a top-level collection id, or `collectionGroup` names a
+ *   subcollection id read across every parent (`source` then labels it);
  * - `targetId` returns the target document id, or null to skip;
  * - `transform` returns the target document data, or null to skip.
+ * Both also receive the Firestore handle and the source document reference,
+ * so a collection-group step can read its parent ids from the path.
  *
  * A fill step is {kind: "fill", collection, fill(data, id)}: `fill` returns
  * fields to add to the same document, or null. Only fields the document does
@@ -50,12 +53,15 @@ async function planStep(db, step) {
     conflicts: [],
     skipped: [],
   };
-  for await (const doc of pagedDocs(db.collection(step.source))) {
+  const sourceRef = step.collectionGroup ?
+    db.collectionGroup(step.collectionGroup) : db.collection(step.source);
+  for await (const doc of pagedDocs(sourceRef)) {
     result.scanned += 1;
     const data = doc.data();
     // Ids and transforms may be async and may read (never write) other data.
-    const targetId = await step.targetId(doc.id, data, db);
-    const next = targetId === null ? null : await step.transform(data, doc.id, db);
+    const targetId = await step.targetId(doc.id, data, db, doc.ref);
+    const next = targetId === null ? null :
+      await step.transform(data, doc.id, db, doc.ref);
     if (targetId === null || next === null) {
       result.skipped.push({sourcePath: doc.ref.path, reason: step.skipReason ?? "not migrated"});
       continue;

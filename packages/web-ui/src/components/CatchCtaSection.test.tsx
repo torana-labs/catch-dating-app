@@ -46,6 +46,17 @@ describe("CatchCtaSection", () => {
     expect(screen.getByTestId("media")).toBeTruthy();
   });
 
+  it("sets a form beside the copy in place of media", () => {
+    render(
+      <CatchRoot size="expanded" theme="day">
+        <CatchCtaSection form={<form aria-label="Sample form" />} ground="mint" title="Headline" />
+      </CatchRoot>,
+    );
+    const row = screen.getByRole("region").querySelector("[data-direction='row']");
+    expect(row).not.toBeNull();
+    expect(row!.contains(screen.getByRole("form", {name: "Sample form"}))).toBe(true);
+  });
+
   it("takes the dark theme on the ink ground", () => {
     render(<CatchCtaSection ground="ink" title="Headline" />);
     expect(screen.getByRole("region").querySelector("[data-catch-theme='dark']")).not.toBeNull();

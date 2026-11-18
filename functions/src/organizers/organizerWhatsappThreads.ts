@@ -256,21 +256,15 @@ export async function listOrganizerWhatsappThreadsHandler(
     if (thread.organizerId !== data.organizerId) {
       throw new HttpsError("internal", "WhatsApp thread scope is invalid.");
     }
-    const contact = contacts.get(thread.contactId);
+    const summary = whatsappThreadSummary(
+      document.id,
+      thread,
+      contacts.get(thread.contactId),
+    );
     return {
-      threadId: document.id,
-      contactId: thread.contactId,
-      linkedUid: verifiedWhatsappContactUid(contact, data.organizerId),
-      displayName: contact?.organizerId === data.organizerId ?
-        contact.displayNameOverride ?? contact.displayName : "Customer",
-      eventIds: thread.eventIds,
-      lastMessageBody: thread.lastMessageBody,
-      lastMessageDirection: thread.lastMessageDirection,
-      lastMessageAtMillis: thread.lastMessageAt.toMillis(),
-      lastInboundAtMillis: thread.lastInboundAt.toMillis(),
-      serviceWindowExpiresAtMillis: thread.serviceWindowExpiresAt.toMillis(),
+      ...summary,
       serviceWindowOpen: isWhatsappServiceWindowOpen(
-        thread.lastInboundAt.toMillis(),
+        summary.lastInboundAtMillis,
         nowMillis
       ),
     };
@@ -332,8 +326,7 @@ export async function getOrganizerWhatsappThreadHandler(
     threadId: data.threadId,
     contactId: thread.contactId,
     linkedUid: verifiedWhatsappContactUid(contact, data.organizerId),
-    displayName: contact?.organizerId === data.organizerId ?
-      contact.displayNameOverride ?? contact.displayName : "Customer",
+    displayName: whatsappContactDisplayName(contact, data.organizerId),
     lastInboundAtMillis: thread.lastInboundAt.toMillis(),
     serviceWindowExpiresAtMillis: thread.serviceWindowExpiresAt.toMillis(),
     serviceWindowOpen: isWhatsappServiceWindowOpen(
@@ -805,6 +798,46 @@ export const sendOrganizerWhatsappReply = onCall(
   },
   (request) => sendOrganizerWhatsappReplyHandler(request)
 );
+
+/** The name a manager sees for a thread's contact. */
+export function whatsappContactDisplayName(
+  contact: OrganizerContactDocument | undefined,
+  organizerId: string,
+): string {
+  return contact?.organizerId === organizerId ?
+    contact.displayNameOverride ?? contact.displayName : "Customer";
+}
+
+/**
+ * One retained thread as a manager sees it in the inbox list, without the
+ * time-dependent service-window flag. The list callable and the
+ * hostWhatsappThreadViews read model both use it, so they cannot drift.
+ * @param {string} threadId The thread document id.
+ * @param {OrganizerWhatsappThreadDocument} thread The thread document.
+ * @param {OrganizerContactDocument|undefined} contact Its contact, if any.
+ * @return {object} The summary fields.
+ */
+export function whatsappThreadSummary(
+  threadId: string,
+  thread: OrganizerWhatsappThreadDocument,
+  contact: OrganizerContactDocument | undefined,
+): Omit<
+  ListOrganizerWhatsappThreadsCallableResponse["threads"][number],
+  "serviceWindowOpen" | "linkedUid"
+> & {linkedUid: string | null} {
+  return {
+    threadId,
+    contactId: thread.contactId,
+    linkedUid: verifiedWhatsappContactUid(contact, thread.organizerId),
+    displayName: whatsappContactDisplayName(contact, thread.organizerId),
+    eventIds: thread.eventIds,
+    lastMessageBody: thread.lastMessageBody,
+    lastMessageDirection: thread.lastMessageDirection,
+    lastMessageAtMillis: thread.lastMessageAt.toMillis(),
+    lastInboundAtMillis: thread.lastInboundAt.toMillis(),
+    serviceWindowExpiresAtMillis: thread.serviceWindowExpiresAt.toMillis(),
+  };
+}
 
 /** Identity is an explicit CRM assertion, never a name or phone heuristic. */
 export function verifiedWhatsappContactUid(

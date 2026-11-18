@@ -79,13 +79,52 @@ export const homePageCopy = {
   },
   /** The phone action bar. */
   dock: {label: "Quick actions", plans: "See plans"},
-  /** "Know a host": a guest introduces a host on WhatsApp. */
+  /**
+   * "Know a host": a guest introduces a host through the website's referral
+   * lead (the board's two host fields, plus the referrer's name, number and
+   * how they know the host, which the referral intake needs). The board's
+   * "your next ticket is on us" waits for its terms.
+   */
   refer: {
     eyebrow: `Bring a host to ${brand.name}`,
     title: "Know a host who’d be great here?",
-    lead: "Introduce them on WhatsApp, and we’ll take it from there.",
+    lead: "Introduce them, and we’ll take it from there.",
     action: "Introduce them",
-    message: `Hi ${brand.name}, I’d like to introduce a host.`,
+    retry: "Try again",
+    name: "Your name",
+    phone: "Your WhatsApp number",
+    hostName: "Host or club name",
+    hostLink: "Their Instagram or website",
+    relationship: "How do you know them?",
+    /** Under a field left empty when Introduce them is tapped. */
+    required: {
+      fullName: "Enter your name.",
+      hostName: "Enter the host or club’s name.",
+      hostLink: "Add their Instagram handle or website.",
+      relationship: "Say how you know them.",
+    },
+    consent: "Tapping Introduce them means we’ll message you on WhatsApp about this introduction.",
+    /** Names this wording on every stored consent; change it whenever the wording changes. */
+    consentVersion: "host-referral-whatsapp-v1",
+    /** Which form on the page, as the lead records it. */
+    entry: "home-refer",
+    privacy: "Privacy policy",
+    sent: "Thanks for introducing {host}. We’ll message you on WhatsApp about it.",
+  },
+  /** A thin week's notify bar under the plans: new plans in the city on WhatsApp (a city alerts lead). */
+  alerts: {
+    title: "Want to hear first?",
+    body: "New {city} plans on WhatsApp, about once a week.",
+    phone: "Your WhatsApp number",
+    action: "Notify me",
+    retry: "Try again",
+    consent: "Tapping Notify me means we’ll message you about new plans in {city}, and nothing else.",
+    /** Names this wording on every stored consent; change it whenever the wording changes. */
+    consentVersion: "city-new-plans-whatsapp-v1",
+    /** Which form on the page, as the lead records it. */
+    entry: "home-thin-week",
+    privacy: "Privacy policy",
+    sent: "Done. We’ll message you on WhatsApp when new {city} plans go up.",
   },
   /** A city that has not opened leads with hosts. */
   launchHero: {

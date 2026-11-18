@@ -17,13 +17,13 @@ export interface PlaybookLeadFormProps {
 }
 
 /**
- * The lead forms a page may show, by the form id its content names
- * (`run_club_setup_guide`). A form renders only when its slot is filled, so
- * no page shows a form that submits to nowhere; the page's actions carry the
- * WhatsApp way meanwhile. The PR that builds a form's backend fills its slot
- * in ./playbookLeadForms.ts.
+ * The lead forms a page may show, by the request kind its content names
+ * (`guide`). A form renders only when its kind's slot is filled and the slot
+ * draws it, so no page shows a form that submits to nowhere; the page's
+ * actions carry the WhatsApp way beside it, or alone. ./playbookLeadForms.ts
+ * fills the slots of the kinds the website lead intake takes.
  */
-export type PlaybookLeadFormSlots = {readonly [formId: string]: (props: PlaybookLeadFormProps) => ReactNode};
+export type PlaybookLeadFormSlots = {readonly [Kind in PlaybookLeadForm["requestKind"]]?: (props: PlaybookLeadFormProps) => ReactNode};
 
 /** The analytics label of one action: the page, the section and the action's words. */
 export function playbookCtaLabel(pageId: string, sectionId: string, label: string): string {
@@ -37,7 +37,7 @@ export interface PlaybookPageController {
   readonly actions: (items: readonly PlaybookAction[] | undefined, sectionId: string) => CatchBandAction[] | undefined;
   /** An action drawn as a plain link, where the kit has no click to tag. */
   readonly link: (item: PlaybookAction) => CatchBandLink;
-  /** The section's lead form, or null while its slot is empty. */
+  /** The section's lead form, or null while its kind's slot is empty or cannot draw it. */
   readonly leadForm: (form: PlaybookLeadForm | undefined, sectionId: string) => ReactNode;
 }
 
@@ -60,7 +60,7 @@ export function usePlaybookPageController(page: PlaybookPageDocument, leadForms:
       actions: (items, sectionId) => items?.map((item) => action(item, sectionId)),
       link: (item) => ({label: item.label, href: playbookHref(item.to)}),
       leadForm: (form, sectionId) => {
-        const slot = form ? leadForms[form.id] : undefined;
+        const slot = form ? leadForms[form.requestKind] : undefined;
         return form && slot ? slot({form, pageId: page.id, sectionId}) : null;
       },
     };

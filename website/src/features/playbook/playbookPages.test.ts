@@ -111,8 +111,8 @@ describe("playbook page indexes", () => {
 
 describe("playbook route resolution", () => {
   it("404s a registered route whose content is not written, and an unknown family page", () => {
-    expect(matchPlaybookRoute("/host/racket-sports/")?.contentKey).toBe("host_racket_sports");
-    expect(resolvePlaybookPage("/host/racket-sports/")).toBeNull();
+    expect(matchPlaybookRoute("/host/first-event/")?.contentKey).toBe("host_first_event");
+    expect(resolvePlaybookPage("/host/first-event/")).toBeNull();
     expect(resolvePlaybookPage("/stories/nobody/")).toBeNull();
     expect(resolvePlaybookPage("/mumbai/run-clubs/")).toBeNull();
     expect(resolvePlaybookPage("/new-to-mumbai/")).toBeNull();

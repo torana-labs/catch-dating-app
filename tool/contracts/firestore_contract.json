@@ -1175,7 +1175,8 @@
         "onHostRequestViewEventWritten",
         "onHostRequestViewProfileWritten",
         "onHostRequestViewContactSummaryWritten",
-        "onHostRequestViewContactWritten"
+        "onHostRequestViewContactWritten",
+        "onHostWhatsappThreadViewContactChanged"
       ],
       "migrationNotes": [
         "Contacts are organizer-scoped operational records, never Consumer profiles.",
@@ -1346,6 +1347,55 @@
       ],
       "migrationNotes": [
         "answerFilterOptions equals what listOrganizerFormResponses returns for the version. The host-form-version-filters copy-forward migration creates views for versions published before the trigger."
+      ]
+    },
+    {
+      "id": "hostWhatsappThreadViews",
+      "path": "hostWhatsappThreadViews/{threadId}",
+      "rulesMatch": "/hostWhatsappThreadViews/{threadId}",
+      "typescriptInterface": "HostWhatsappThreadViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "lets current managers read WhatsApp thread views and one thread's messages"
+      ],
+      "owner": "Host read model projector: hostReadModels WhatsApp thread view triggers",
+      "read": "current organizer managers get and list (organizerId equality) while their account is not deleted; a view not written yet reads as missing",
+      "write": "server only; written from the thread and its contact, deleted with the thread",
+      "exportedFunctions": [
+        "onHostWhatsappThreadViewThreadChanged",
+        "onHostWhatsappThreadViewContactChanged",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "The view equals the listOrganizerWhatsappThreads summary without the clock-dependent serviceWindowOpen flag. The host-whatsapp-thread-views copy-forward migration creates views for threads retained before the triggers.",
+        "Account deletion unlinks linkedUid on the views as it does on contacts."
+      ]
+    },
+    {
+      "id": "hostSendSummaries",
+      "path": "hostSendSummaries/{sendId}",
+      "rulesMatch": "/hostSendSummaries/{sendId}",
+      "typescriptInterface": "HostSendSummaryDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
+      "rulesTestNames": [
+        "lets current managers list Sends rows and nothing else"
+      ],
+      "owner": "Host read model projector: hostReadModels send summary triggers",
+      "read": "current organizer managers get and list (organizerId equality) while their account is not deleted",
+      "write": "server only; written from each campaign, announcement summary and follower post with its delivery operation, and on template and saved audience renames",
+      "exportedFunctions": [
+        "onHostSendCampaignChanged",
+        "onHostSendAnnouncementChanged",
+        "onHostSendFollowerPostChanged",
+        "onHostSendFollowerDeliveryChanged",
+        "onHostSendTemplateChanged",
+        "onHostSendSavedAudienceChanged"
+      ],
+      "migrationNotes": [
+        "row equals what listOrganizerCampaigns returns for the Send. The host-send-summaries copy-forward migration creates rows for Sends recorded before the triggers.",
+        "Approval, dispatch, cancellation and getOrganizerCampaignReport stay callables: the report's revision is their write fence."
       ]
     },
     {
@@ -2052,15 +2102,16 @@
       "dartModel": "lib/contexts/audience/domain/crm/host_whatsapp_thread.dart",
       "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
       "owner": "organizer WhatsApp inbox and reply callables",
-      "read": "server only; managers receive a sanitized callable projection",
+      "read": "server only; managers read hostWhatsappThreadViews, and older Host builds the sanitized callable projection",
       "write": "server only",
       "exportedFunctions": [
         "listOrganizerWhatsappThreads",
         "getOrganizerWhatsappThread",
-        "sendOrganizerWhatsappReply"
+        "sendOrganizerWhatsappReply",
+        "onHostWhatsappThreadViewThreadChanged"
       ],
       "migrationNotes": [
-        "Thread summaries use a rolling 12-month TTL and are never directly readable by clients."
+        "Thread summaries use a rolling 12-month TTL and are never directly readable by clients; hostWhatsappThreadViews carries the manager summary."
       ]
     },
     {
@@ -2069,16 +2120,20 @@
       "rulesMatch": "/organizerWhatsappMessages/{messageId}",
       "typescriptInterface": "OrganizerWhatsappMessageDocument",
       "dartModel": "lib/contexts/audience/domain/crm/host_whatsapp_thread.dart",
-      "rulesTestFile": "functions/test/rules/organizers.rules.test.cjs",
+      "rulesTestFile": "functions/test/rules/host_summary_reads.rules.test.cjs",
       "owner": "organizer WhatsApp inbox and reply callables",
-      "read": "server only; managers receive bounded retained bodies through a callable",
+      "read": "current organizer managers get and list one thread's messages (organizerId and threadId equality); older Host builds use the bounded callable",
       "write": "server only",
       "exportedFunctions": [
         "getOrganizerWhatsappThread",
         "sendOrganizerWhatsappReply"
       ],
       "migrationNotes": [
-        "Inbound and outbound bodies expire after 12 months; per-thread and per-contact deletion are intentionally out of scope."
+        "Inbound and outbound bodies expire after 12 months; per-thread and per-contact deletion are intentionally out of scope.",
+        "Bodies are personal data. Since #1339 the organizer's current managers read them under rules for the inbox listener; the fields are the ones the callable returned plus contact, sender connection, provider message and replying manager ids, none of them credentials."
+      ],
+      "rulesTestNames": [
+        "lets current managers read WhatsApp thread views and one thread's messages"
       ]
     },
     {
@@ -2446,7 +2501,8 @@
       "write": "server only",
       "exportedFunctions": [
         "createOrganizerPost",
-        "dispatchPendingOrganizerFollowerUpdates"
+        "dispatchPendingOrganizerFollowerUpdates",
+        "onHostSendFollowerDeliveryChanged"
       ],
       "operations": [
         {
@@ -2553,7 +2609,8 @@
       "exportedFunctions": [
         "sendEventBroadcast",
         "listOrganizerCampaigns",
-        "getOrganizerContactDetail"
+        "getOrganizerContactDetail",
+        "onHostSendAnnouncementChanged"
       ],
       "operations": [
         {
@@ -2571,7 +2628,7 @@
       ],
       "migrationNotes": [
         "The projection contains bounded organizer contact ids and delivery availability, never message bodies or raw provider receipts.",
-        "Sends listing and per-contact history are manager-authorized callable reads; clients never query the collection directly."
+        "Per-contact history is a manager-authorized callable read and clients never query the collection directly; the Sends history reads hostSendSummaries."
       ]
     },
     {

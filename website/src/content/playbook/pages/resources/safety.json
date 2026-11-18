@@ -1,0 +1,161 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "safety",
+  "route": "safety",
+  "meta": {
+    "title": "Safety and trust | {{brand.name}}",
+    "description": "What’s in place before, during and after every plan: how hosts prove their page is theirs, how reviews are labelled, the code of conduct, and how to report something.",
+    "socialDescription": "Feel good about going on your own.",
+    "noindex": true
+  },
+  "header": {"variant": "guest"},
+  "footer": {"variant": "guest"},
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "pink",
+      "kicker": "Safety and trust",
+      "title": "Feel good about going on your own.",
+      "lead": "Going to a plan on your own should feel easy. Here’s what’s in place before, during and after every plan, and what to do if something isn’t right.",
+      "actions": [
+        {"label": "See what’s on", "to": {"route": "visitor_discovery"}, "emphasis": "primary"},
+        {"label": "Read the code of conduct", "to": {"anchor": "conduct"}, "emphasis": "secondary"}
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "How reviews are labelled",
+          "subtitle": "On every host’s page",
+          "rows": [
+            {"title": "Booked on {{brand.name}}", "detail": "The reviewer booked this plan on {{brand.name}}.", "tag": "Booked on {{brand.name}}"},
+            {"title": "Unverified", "detail": "Anyone can review a page. Reviews from people who didn’t book here say so.", "tag": "Unverified"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "every-plan",
+      "ground": "white",
+      "kicker": "Every plan",
+      "title": "Before, during and after.",
+      "columns": 3,
+      "items": [
+        {
+          "title": "Before",
+          "list": [
+            "Hosts prove their page is theirs before it carries their mark. Pages built from public sources say Unclaimed until then",
+            "Honest plan pages: who’s hosting, where you meet and what’s included",
+            "Reviews from people who booked are marked “Booked on {{brand.name}}”. Everyone else’s are marked Unverified"
+          ]
+        },
+        {
+          "title": "During",
+          "list": [
+            "A host who is there: every plan has a host on the night",
+            "A group, not a crowd: a team, a table or a pace group, and a first hello",
+            "A quieter way to ask: with Help me say hi, you ask the host for an introduction, privately"
+          ]
+        },
+        {
+          "title": "After",
+          "list": [
+            "Your name stays off public pages: they show how many are going, not who",
+            "Only your host sees the guest list for their plan",
+            "Review and report: rate the plan, and tell us privately if anything wasn’t right"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "split",
+      "id": "verification",
+      "ground": "white",
+      "kicker": "How hosts are checked",
+      "title": "A host proves the page is theirs.",
+      "lead": "Some host pages start from public sources, like an Instagram account or a Luma calendar. Until the host proves the page is theirs, it says Unclaimed, and nothing on it was supplied or approved by them.",
+      "steps": [
+        {"label": "1", "title": "A code from their Instagram", "body": "The host sends us a one-time code from the page’s own Instagram account. It only works from that account, for 30 minutes."},
+        {"label": "2", "title": "Or a code on their Luma calendar", "body": "The host pastes the code into their Luma calendar’s description, and we read it on their public calendar."},
+        {"label": "3", "title": "Or a review by our team", "body": "No Instagram or Luma? The host sends links that show the page is theirs, like their website or a post that names them, and our team checks them."}
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "What a host page can say",
+          "rows": [
+            {"title": "Unclaimed", "detail": "Built from public sources. The host hasn’t confirmed it yet."},
+            {"title": "Claim under review", "detail": "The host asked for a review, and our team is checking."},
+            {"title": "Owner verified", "detail": "The host proved the page is theirs."}
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "conduct",
+      "ground": "paper",
+      "kicker": "Code of conduct",
+      "title": "What everyone agrees to.",
+      "lead": "Everyone who uses {{brand.name}} agrees to our terms of use. These are the parts about how people treat each other, in the terms’ own words.",
+      "actions": [{"label": "Read the full terms", "to": {"route": "terms"}, "emphasis": "secondary"}],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "The code, in short",
+          "rows": [
+            {"title": "Hosts", "detail": "Run the event as described. Honour the cancellation policy you chose. Treat every guest lawfully and respectfully."},
+            {"title": "Guests", "detail": "Treat people lawfully and respectfully. No harassment, threats, stalking, discrimination or exploitation. Don’t impersonate anyone, and don’t expose anyone’s private information."}
+          ]
+        }
+      }
+    },
+    {
+      "type": "split",
+      "id": "report",
+      "ground": "ink",
+      "kicker": "If something isn’t right",
+      "title": "Tell someone. We look into every report.",
+      "callout": {"figure": "112", "text": "In an emergency, call India’s emergency number first."},
+      "steps": [
+        {"label": "1", "title": "On the night, tell your host", "body": "They’re there to help, and can move groups or step in."},
+        {"label": "2", "title": "Report it to us", "body": "Message us on WhatsApp, or use the Help page. Only our team sees your report."},
+        {"label": "3", "title": "We review it and follow up", "body": "We look into every report and follow up with you."}
+      ],
+      "actions": [
+        {
+          "label": "Report on WhatsApp",
+          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I want to report something that happened at a plan."},
+          "emphasis": "primary"
+        },
+        {"label": "Help and safety", "to": {"route": "help"}, "emphasis": "secondary"}
+      ],
+      "media": {
+        "kind": "excerpt",
+        "card": {
+          "title": "What to tell us",
+          "rows": [
+            {"title": "The plan and the host", "detail": "The event, and the host’s page"},
+            {"title": "When it happened", "detail": "The approximate time is enough"},
+            {"title": "What happened", "detail": "Keep any messages, receipts or screenshots"}
+          ]
+        }
+      }
+    },
+    {
+      "type": "faq",
+      "id": "questions",
+      "ground": "white",
+      "kicker": "Questions",
+      "title": "Good to know.",
+      "items": [
+        {"question": "Who can see that I’m going?", "answer": "Public plan pages show how many people are going, not who. Your host sees the guest list for their plan."},
+        {"question": "Are hosts checked?", "answer": "A host proves their page is theirs with a code from its Instagram account or Luma calendar, or our team checks links they send. Until then, a page built from public sources says Unclaimed."},
+        {"question": "Can I really come on my own?", "answer": "Yes. Hosts plan a group, a team or a first hello so nobody stands on their own."},
+        {"question": "How do I report something?", "answer": "Tell your host on the night, then message us on WhatsApp or use the Help page. Only our team sees your report. In an emergency, call 112."},
+        {"question": "What happens to a review I leave?", "answer": "It appears on the host’s page. If you booked the plan on {{brand.name}}, it’s marked “Booked on {{brand.name}}”; otherwise it’s marked Unverified. Hosts can reply."}
+      ]
+    }
+  ]
+}

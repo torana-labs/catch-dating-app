@@ -13,6 +13,7 @@ import 'package:catch_dating_app/events/shared/event_invite_share_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_l10n/generated/app_localizations.dart';
+import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/device/clipboard.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -67,6 +68,11 @@ abstract interface class HostEventManageActions {
   Future<void> deleteUnusedEvent({required Event event});
 }
 
+/// Each action reads everything it needs from [_ref] before its first
+/// `await`: the provider is auto-disposed, and a widget that reads it without
+/// listening can let it go while the action waits, after which the Ref throws.
+/// The Firestore listeners an action changes (invite links, the event, its
+/// roster) deliver the write themselves, so no action invalidates them.
 class HostEventManageController implements HostEventManageActions {
   HostEventManageController(this._ref);
 
@@ -85,20 +91,19 @@ class HostEventManageController implements HostEventManageActions {
     required String inviteCode,
     required HostInviteLinkDraft draft,
   }) async {
-    final response = await _ref
-        .read(eventRepositoryProvider)
-        .createInviteLink(
-          eventId: event.id,
-          label: draft.label,
-          source: draft.source,
-        );
+    final events = _ref.read(eventRepositoryProvider);
+    final clipboard = _ref.read(clipboardControllerProvider);
+    final response = await events.createInviteLink(
+      eventId: event.id,
+      label: draft.label,
+      source: draft.source,
+    );
     final url = hostInviteLinkUrl(
       event: event,
       inviteCode: inviteCode,
       inviteLinkId: response.inviteToken,
     );
-    await _ref.read(clipboardControllerProvider).copyText(url);
-    _ref.invalidate(watchEventInviteLinksProvider(event.id));
+    await clipboard.copyText(url);
     return response.label;
   }
 
@@ -108,15 +113,18 @@ class HostEventManageController implements HostEventManageActions {
     required String inviteCode,
     required EventInviteLink link,
   }) async {
-    final token = await _ref
-        .read(eventRepositoryProvider)
-        .getInviteLinkToken(eventId: event.id, inviteLinkId: link.id);
+    final events = _ref.read(eventRepositoryProvider);
+    final clipboard = _ref.read(clipboardControllerProvider);
+    final token = await events.getInviteLinkToken(
+      eventId: event.id,
+      inviteLinkId: link.id,
+    );
     final url = hostInviteLinkUrl(
       event: event,
       inviteCode: inviteCode,
       inviteLinkId: token,
     );
-    await _ref.read(clipboardControllerProvider).copyText(url);
+    await clipboard.copyText(url);
     return link.label;
   }
 
@@ -128,7 +136,6 @@ class HostEventManageController implements HostEventManageActions {
     await _ref
         .read(eventRepositoryProvider)
         .disableInviteLink(eventId: event.id, inviteLinkId: link.id);
-    _ref.invalidate(watchEventInviteLinksProvider(event.id));
     return link.label;
   }
 
@@ -160,6 +167,8 @@ class HostEventManageController implements HostEventManageActions {
     required Map<String, (String, String?)> profiles,
     Rect? origin,
   }) async {
+    final clock = _ref.read(appClockProvider);
+    final share = _ref.read(externalShareControllerProvider);
     final reportData = await _loadReportExportData(
       viewModel: viewModel,
       profiles: profiles,
@@ -168,9 +177,9 @@ class HostEventManageController implements HostEventManageActions {
       event: viewModel.event,
       participations: reportData.participations,
       namesByUid: reportData.namesByUid,
-      exportedAt: DateTime.now(),
+      exportedAt: clock.now(),
     );
-    await _shareExport(export: export, origin: origin);
+    await _shareExport(share, export: export, origin: origin);
   }
 
   @override
@@ -179,6 +188,8 @@ class HostEventManageController implements HostEventManageActions {
     required Map<String, (String, String?)> profiles,
     Rect? origin,
   }) async {
+    final clock = _ref.read(appClockProvider);
+    final share = _ref.read(externalShareControllerProvider);
     final reportData = await _loadReportExportData(
       viewModel: viewModel,
       profiles: profiles,
@@ -187,31 +198,20 @@ class HostEventManageController implements HostEventManageActions {
       event: viewModel.event,
       participations: reportData.participations,
       namesByUid: reportData.namesByUid,
-      exportedAt: DateTime.now(),
+      exportedAt: clock.now(),
     );
-    await _shareExport(export: export, origin: origin);
+    await _shareExport(share, export: export, origin: origin);
   }
 
   @override
-  Future<void> cancelHostedEvent({required Event event}) async {
-    await _ref
-        .read(hostEventBookingControllerProvider.notifier)
-        .cancelHostedEvent(event: event);
-    _invalidateHostedEvent(event.id);
-  }
+  Future<void> cancelHostedEvent({required Event event}) => _ref
+      .read(hostEventBookingControllerProvider.notifier)
+      .cancelHostedEvent(event: event);
 
   @override
-  Future<void> deleteUnusedEvent({required Event event}) async {
-    await _ref
-        .read(hostEventBookingControllerProvider.notifier)
-        .deleteHostedEvent(event: event);
-    _invalidateHostedEvent(event.id);
-  }
-
-  void _invalidateHostedEvent(String eventId) {
-    _ref.invalidate(watchEventProvider(eventId));
-    _ref.invalidate(watchEventParticipationRosterProvider(eventId));
-  }
+  Future<void> deleteUnusedEvent({required Event event}) => _ref
+      .read(hostEventBookingControllerProvider.notifier)
+      .deleteHostedEvent(event: event);
 
   Future<
     ({List<EventParticipation> participations, Map<String, String> namesByUid})
@@ -220,16 +220,15 @@ class HostEventManageController implements HostEventManageActions {
     required AttendanceSheetViewModel viewModel,
     required Map<String, (String, String?)> profiles,
   }) async {
-    final participations = await _ref
-        .read(eventParticipationRepositoryProvider)
+    final participationReads = _ref.read(eventParticipationRepositoryProvider);
+    final publicProfiles = _ref.read(publicProfileRepositoryProvider);
+    final participations = await participationReads
         .fetchHostReportParticipationsForEvent(eventId: viewModel.event.id);
     final profileIds = _uniqueOrdered([
       ...participations.map((participation) => participation.uid),
       ...profiles.keys,
     ]);
-    final exportProfiles = await _ref
-        .read(publicProfileRepositoryProvider)
-        .fetchPublicProfiles(profileIds);
+    final exportProfiles = await publicProfiles.fetchPublicProfiles(profileIds);
     final namesByUid = <String, String>{
       for (final entry in profiles.entries) entry.key: entry.value.$1,
       for (final profile in exportProfiles) profile.uid: profile.name,
@@ -237,19 +236,18 @@ class HostEventManageController implements HostEventManageActions {
     return (participations: participations, namesByUid: namesByUid);
   }
 
-  Future<void> _shareExport({
+  Future<void> _shareExport(
+    ExternalShareController share, {
     required HostReportExport export,
     required Rect? origin,
   }) {
-    return _ref
-        .read(externalShareControllerProvider)
-        .shareCsvFile(
-          csv: export.csv,
-          fileName: export.fileName,
-          subject: export.subject,
-          text: export.subject,
-          origin: origin,
-        );
+    return share.shareCsvFile(
+      csv: export.csv,
+      fileName: export.fileName,
+      subject: export.subject,
+      text: export.subject,
+      origin: origin,
+    );
   }
 }
 

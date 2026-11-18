@@ -42,6 +42,9 @@ const postbuildPath = fromRepo("website/scripts/postbuild.mjs");
 const routingPath = fromRepo("website/src/features/organizers/routing.ts");
 const appPath = fromRepo("website/src/app/App.tsx");
 const routeRegistryPath = fromRepo("website/src/app/routeRegistry.ts");
+const publicRoutePath = fromRepo("website/src/server/publicRoute.ts");
+const discoveryRoutePath = fromRepo("website/src/features/discovery/discoveryRoute.ts");
+const sitemapRoutePath = fromRepo("website/app/sitemap.xml/route.ts");
 const hostListingsPath = fromRepo("website/src/generated/hostListings.json");
 const storiesRoot = fromRepo("website/src/stories");
 
@@ -76,6 +79,9 @@ const routingSource = readText(routingPath);
 const appSource = readText(appPath);
 const routeRegistrySource = readText(routeRegistryPath);
 const appRoutingSource = `${appSource}\n${routeRegistrySource}`;
+const publicRouteSource = readText(publicRoutePath);
+const discoveryRouteSource = readText(discoveryRoutePath);
+const sitemapRouteSource = readText(sitemapRoutePath);
 const routeStoryDeclarations = collectStoryRouteDeclarations(storiesRoot);
 
 validateContractShape(contract);
@@ -215,14 +221,15 @@ function validateRoute(route, storyDeclarations) {
     return;
   }
   const label = route.id ?? "<missing-id>";
-  const allowedKinds = new Set(["static", "clientDynamic", "generatedFamily", "contentFamily"]);
-  const allowedOutputs = new Set(["postbuild", "generated-postbuild", "spa-rewrite", "content-postbuild"]);
+  const allowedKinds = new Set(["static", "clientDynamic", "generatedFamily", "contentFamily", "dataFamily"]);
+  const allowedOutputs = new Set(["postbuild", "generated-postbuild", "spa-rewrite", "content-postbuild", "server-render"]);
   const allowedIndexing = new Set([
     "index",
     "noindex-follow",
     "listing-controlled",
     "event-controlled",
     "owner-approval",
+    "read-model-controlled",
   ]);
   const allowedSitemap = new Set([
     "included",
@@ -230,6 +237,7 @@ function validateRoute(route, storyDeclarations) {
     "listing-controlled",
     "event-controlled",
     "owner-approval",
+    "read-model-controlled",
   ]);
 
   if (!route.id) errors.push("route missing id.");
@@ -257,6 +265,8 @@ function validateRoute(route, storyDeclarations) {
       errors.push(`${label}: generated route needs pathPattern or pathPatterns.`);
     }
     if (route.path) errors.push(`${label}: generated route should not declare exact path.`);
+  } else if (route.kind === "dataFamily") {
+    for (const finding of dataFamilyRouteErrors(route)) errors.push(`${label}: ${finding}`);
   } else if (!route.path && !route.pathPattern) {
     errors.push(`${label}: route needs path or pathPattern.`);
   }
@@ -335,6 +345,7 @@ function validatePageKey(route) {
     "contact",
     "not_found",
     "playbook",
+    "discovery",
   ]);
   if (!allowedPageKeys.has(route.pageKey)) {
     errors.push(`${route.id}: invalid pageKey ${route.pageKey}.`);
@@ -344,6 +355,18 @@ function validatePageKey(route) {
     errors.push(`${route.id}: the playbook pageKey is for contentFamily routes, and they use only it.`);
   }
   if (route.pageKey === "playbook") return;
+  if ((route.pageKey === "discovery") !== (route.kind === "dataFamily")) {
+    errors.push(`${route.id}: the discovery pageKey is for dataFamily routes, and they use only it.`);
+  }
+  if (route.pageKey === "discovery") {
+    if (!appRoutingSource.includes("matchDiscoveryRoute(location.pathname)")) {
+      errors.push(`${route.id}: App.tsx must match discovery pages before its router.`);
+    }
+    if (!pageMetaSource.includes('if (matchDiscoveryRoute(pathname)) return "discovery";')) {
+      errors.push(`${route.id}: getPageKey must return discovery for a discovery page.`);
+    }
+    return;
+  }
   if (route.pageKey === "listing") {
     if (!appRoutingSource.includes("getHostListingRouteForPath")) {
       errors.push(`${route.id}: App.tsx must resolve generated listing routes first.`);
@@ -486,7 +509,8 @@ function validateMeta(route) {
     }
   }
 
-  if (route.metaFactory && !pageMetaSource.includes(`function ${route.metaFactory}`)) {
+  const metaFactorySource = route.kind === "dataFamily" ? discoveryRouteSource : pageMetaSource;
+  if (route.metaFactory && !metaFactorySource.includes(`function ${route.metaFactory}`)) {
     errors.push(`${route.id}: missing meta factory ${route.metaFactory}.`);
   }
   if (route.id === "organizer_listing_legacy" && !pageMetaSource.includes("noindexOverride")) {
@@ -538,6 +562,17 @@ function validateStaticOutput(route) {
     }
     if (!pageMetaSource.includes("if (resolvePlaybookPage(pathname)) return \"playbook\";")) {
       errors.push(`${route.id}: getPageKey must return playbook for a registered playbook page.`);
+    }
+  }
+  if (route.staticOutput === "server-render") {
+    if (route.kind !== "dataFamily") {
+      errors.push(`${route.id}: only dataFamily routes are server-rendered without static output.`);
+    }
+    if (!publicRouteSource.includes("matchDiscoveryRoute(pathname)")) {
+      errors.push(`${route.id}: publicRoute.ts must match discovery pages before the playbook pages.`);
+    }
+    if (route.sitemap === "read-model-controlled" && !sitemapRouteSource.includes("readIndexedDiscoveryPaths")) {
+      errors.push(`${route.id}: sitemap.xml must list the format pages the read model indexes.`);
     }
   }
   if (route.staticOutput === "spa-rewrite") {
@@ -719,18 +754,39 @@ function hostingSourceCovers(source, routePath) {
 }
 
 /**
+ * The discovery routes (/<city>/<format>/, /new-to-<city>/): pages bound to
+ * a city's cityPlans read model and rendered by the Next server only. Each
+ * has a pattern, its metadata factory and no static output; it is indexed
+ * as the read model decides or once the owner approves it, and its sitemap
+ * entry follows its indexing.
+ */
+function dataFamilyRouteErrors(route) {
+  const findings = [];
+  if (!route.pathPattern || route.path || route.pathPatterns) findings.push("data route needs exactly one pathPattern.");
+  if (!route.metaFactory) findings.push("data route needs a metaFactory.");
+  if (route.staticOutput !== "server-render") findings.push("data routes use staticOutput server-render.");
+  if (!["read-model-controlled", "owner-approval"].includes(route.indexing)) {
+    findings.push("data routes are indexed as their read model decides (read-model-controlled) or on the owner's approval (owner-approval).");
+  }
+  if (route.sitemap !== route.indexing) findings.push(`sitemap must be ${route.indexing} to follow its indexing.`);
+  return findings;
+}
+
+/**
  * The redesign's content routes: routes.json and
  * website/src/features/playbook/playbookRoutes.ts list the same routes, each
  * waits for the owner's approval before it is indexed (ad landing pages
  * never are), no path collides with another route, a Hosting redirect or
  * rewrite, and no top-level segment of any route is a market city slug
- * (cityForPath and the /<city>/<format>/ family read a bare first segment as
- * a city).
+ * (cityForPath and the /<city>/<format>/ discovery route read a bare first
+ * segment as a city). A discovery route matches only a market city's paths,
+ * so a content path cannot collide with it.
  */
 function contentFamilyRouteErrors({routes, fixed, families, siteHrefs, citySlugs, hosting}) {
   const findings = [];
   const contentRoutes = routes.filter((route) => route?.kind === "contentFamily");
   const otherRoutes = routes.filter((route) => route?.kind !== "contentFamily");
+  const collidable = otherRoutes.filter((route) => route?.kind !== "dataFamily");
   const registered = new Map([
     ...fixed.map((route) => [route.id, {path: route.path, group: route.group}]),
     ...families.map((route) => [route.id, {pathPattern: route.pattern, group: route.group}]),
@@ -766,7 +822,7 @@ function contentFamilyRouteErrors({routes, fixed, families, siteHrefs, citySlugs
       findings.push(`${route.id}: only ad landing pages (lp_campaign) are always noindex.`);
     }
     for (const routePath of routePathOrPatterns(route).filter(() => route.path)) {
-      for (const other of otherRoutes) {
+      for (const other of collidable) {
         const patterns = other.path ? [other.path] : routePatterns(other);
         if (patterns.some((pattern) => matchesRoutePattern(routePath, pattern) && pattern.startsWith("/"))) {
           findings.push(`${route.id}: ${routePath} collides with route ${other.id}.`);
@@ -1301,7 +1357,7 @@ export const OrganizerSearch = {
   assert.match(
     contentFamilyRouteErrors({
       ...contentInputs,
-      routes: [...contentInputs.routes, {id: "new_to_city", kind: "contentFamily", pathPattern: "/new-to-:city/"}],
+      routes: [...contentInputs.routes, {id: "new_to_city", kind: "dataFamily", pathPattern: "/new-to-:city/"}],
       citySlugs: ["new-to-goa"],
     }).join("\n"),
     /a market city slug starts with new-/u
@@ -1321,11 +1377,25 @@ export const OrganizerSearch = {
     /collides with route claim_lookup/u
   );
   assert.match(contentFamilyRouteErrors({...contentInputs, siteHrefs: {host: "/hosts/"}}).join("\n"), /siteRouteHrefs.host/u);
+  assert.deepEqual(contentFamilyRouteErrors({
+    ...contentInputs,
+    routes: [...contentInputs.routes, {id: "city_format", kind: "dataFamily", pathPattern: "/:city/:format/"}],
+  }), []);
+  const dataRoute = {
+    id: "city_format", kind: "dataFamily", pathPattern: "/:city/:format/", metaFactory: "cityFormatPageMeta",
+    staticOutput: "server-render", indexing: "read-model-controlled", sitemap: "read-model-controlled",
+  };
+  assert.deepEqual(dataFamilyRouteErrors(dataRoute), []);
+  assert.deepEqual(dataFamilyRouteErrors({...dataRoute, indexing: "owner-approval", sitemap: "owner-approval"}), []);
+  assert.match(dataFamilyRouteErrors({...dataRoute, indexing: "index", sitemap: "included"}).join("\n"), /read model decides/u);
+  assert.match(dataFamilyRouteErrors({...dataRoute, sitemap: "excluded"}).join("\n"), /follow its indexing/u);
+  assert.match(dataFamilyRouteErrors({...dataRoute, staticOutput: "content-postbuild"}).join("\n"), /server-render/u);
   assert.equal(matchPlaybookRoute("/host/run-clubs")?.contentKey, "host_run_clubs");
   // A catalog city, read from the market pack rather than named here.
   const catalogSlug = inMarket.cities[0].slug;
-  assert.equal(matchPlaybookRoute(`/new-to-${catalogSlug}/`)?.contentKey, `new_to_city/${catalogSlug}`);
-  assert.equal(matchPlaybookRoute(`/${catalogSlug}/run-clubs/`)?.contentKey, `city_format/${catalogSlug}/run-clubs`);
+  // The discovery pages are matched before the playbook pages, never as one.
+  assert.equal(matchPlaybookRoute(`/new-to-${catalogSlug}/`), null);
+  assert.equal(matchPlaybookRoute(`/${catalogSlug}/run-clubs/`), null);
   console.log("Website route checker self-test passed.");
 }
 

@@ -1113,6 +1113,13 @@ export {onHostProviderConnectionViewConnectionChanged,
   "./hostReadModels/providerConnectionViewTriggers";
 export {onHostFormVersionFilterSourceChanged} from
   "./hostReadModels/formVersionFilterTriggers";
+export {onHostWhatsappThreadViewThreadChanged,
+  onHostWhatsappThreadViewContactChanged} from
+  "./hostReadModels/whatsappThreadViewTriggers";
+export {onHostSendCampaignChanged, onHostSendAnnouncementChanged,
+  onHostSendFollowerPostChanged, onHostSendFollowerDeliveryChanged,
+  onHostSendTemplateChanged, onHostSendSavedAudienceChanged} from
+  "./hostReadModels/sendSummaryTriggers";
 export {onHostRequestViewParticipationWritten, onHostRequestViewEventWritten,
   onHostRequestViewProfileWritten, onHostRequestViewContactSummaryWritten,
   onHostRequestViewContactWritten} from
