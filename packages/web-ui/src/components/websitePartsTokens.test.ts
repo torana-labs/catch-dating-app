@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import {fileURLToPath} from "node:url";
 import {describe, expect, it} from "vitest";
-import {grounds} from "./palette";
+import {websiteGrounds} from "./palette";
 
 // The Website v2 parts (CAT-249) draw only with generated tokens. These tests
 // read the stylesheets so a literal colour or a misspelt token cannot ship.
@@ -73,7 +73,7 @@ describe("Website v2 part tokens", () => {
 
   it("draws grounds in one module that covers every palette ground", () => {
     const styled = [...sheets.grounds.matchAll(/\.ground\[data-ground="(\w+)"\]/g)].map((match) => match[1]);
-    expect(styled).toEqual([...grounds]);
+    expect(styled).toEqual([...websiteGrounds]);
     for (const name of ["CatchDateTile", "CatchLinkTile"]) {
       expect(sheets[name]).toContain('composes: ground from "./grounds.module.css"');
       expect(sheets[name]).not.toMatch(/--catch-ground-\w+-(fill|ink)/);

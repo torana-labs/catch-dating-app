@@ -13,7 +13,13 @@ import {
   type SendOutcome,
   afterAttempt,
   enqueueHostConversions,
+  optedOutCancellation,
 } from "./deliveries";
+import {
+  anyAdMatchingOptedOut,
+  hostContactDigests,
+  isAdMatchingOptedOut,
+} from "../adMatching/optOuts";
 import {newHostConversions} from "./hostConversions";
 import {sendGoogle, sendMeta} from "./platforms";
 
@@ -53,7 +59,10 @@ export interface WorkerDeps {
 
 /**
  * Whether the record may still be sent: the owner's account exists and is
- * not deleted, and the event is within the platforms' window.
+ * not deleted, the event is within the platforms' window, and none of the
+ * record's keys, the host's current phone and emails, or its attached lead's
+ * keys is opted out of ad matching. An opted-out record is dropped whole,
+ * never sent without the opted-out key.
  * @param {WorkerDeps} deps Worker dependencies.
  * @param {Delivery} delivery Queue record.
  * @return {Promise<string|null>} A cancellation code, or null to send.
@@ -64,6 +73,17 @@ async function cancellation(deps: WorkerDeps, delivery: Delivery):
   const owner = (await deps.db.collection("users").doc(delivery.uid).get())
     .data();
   if (!owner || owner.deletedAt) return "account_deleted";
+  const organizer = (await deps.db.collection("organizers")
+    .doc(delivery.organizerId).get()).data();
+  if (await anyAdMatchingOptedOut(deps.db,
+    [delivery.matching, ...hostContactDigests(owner, organizer)])) {
+    return "opted_out";
+  }
+  if (delivery.metaLeadId) {
+    const lead = (await deps.db.collection("metaLeadgenEvents")
+      .doc(delivery.metaLeadId).get()).data();
+    if (lead && await isAdMatchingOptedOut(deps.db, lead)) return "opted_out";
+  }
   return null;
 }
 
@@ -106,6 +126,11 @@ export async function runAdConversionWorker(deps: WorkerDeps):
   for (const doc of due) {
     const delivery = doc.data() as Delivery;
     const cancelled = await cancellation(deps, delivery);
+    if (cancelled === "opted_out") {
+      await doc.ref.update(optedOutCancellation(delivery, deps.now()));
+      logger.info("Ad conversion opted out", {deliveryId: delivery.deliveryId});
+      continue;
+    }
     if (cancelled) {
       await doc.ref.update({status: "cancelled", lastOutcome: cancelled,
         updatedAt: Timestamp.fromMillis(deps.now())});
@@ -155,7 +180,13 @@ export async function runAdConversionWorker(deps: WorkerDeps):
   return attempted;
 }
 
-async function readPinnedSecret(version: string): Promise<string> {
+/**
+ * Reads a pinned Secret Manager version in this project. The host
+ * customer-list job reads the same CatchAds token through it.
+ * @param {string} version Full secret version name.
+ * @return {Promise<string>} Secret value.
+ */
+export async function readPinnedSecret(version: string): Promise<string> {
   const project = getApp().options.projectId || process.env.GCLOUD_PROJECT;
   if (!project || !version.startsWith(`projects/${project}/secrets/`)) {
     throw new Error("Ad conversion credential project mismatch");

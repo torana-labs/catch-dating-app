@@ -13,7 +13,7 @@ import {
   type Ground,
   groundTextColors,
   groundVar,
-  grounds,
+  websiteGrounds,
   nightSurfaceTextColors,
   type PaletteColor,
   paletteColors,
@@ -129,7 +129,7 @@ function NightSurface() {
 export const Grounds: Story = {
   render: () => (
     <>
-      {grounds.map((ground) => <GroundPanel ground={ground} key={ground} />)}
+      {websiteGrounds.map((ground) => <GroundPanel ground={ground} key={ground} />)}
     </>
   ),
 };

@@ -1,7 +1,7 @@
 {
   "$schema": "catch.design-source-pack/v1",
   "id": "website-playbook",
-  "importedAt": "2026-11-16",
+  "importedAt": "2026-11-18",
   "upstream": {
     "label": "Catch directions design canvas, Website · conversion playbook page",
     "kind": "design-canvas",
@@ -76,7 +76,7 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "7c5ac27daf5eeba4cc2404b721fe396de44b8631d86802976074db59a16af830"
+      "sha256": "1bbebb10987f22292b48d52ce6c08fa9640eaac4ddc8544bf4da6cf75108b08a"
     },
     {
       "path": "kit/KitArticle.dc.html",
@@ -96,7 +96,7 @@
     },
     {
       "path": "kit/KitFinal.dc.html",
-      "sha256": "bb47c3644696c407b250bae71a7b38b44bbd6d81f6dc6800f402965dc9469391"
+      "sha256": "7b146132eb70696c62191120065b131f5800833149d6e589d9bc2a7ad15966e9"
     },
     {
       "path": "kit/KitFlow.dc.html",
@@ -104,7 +104,7 @@
     },
     {
       "path": "kit/KitFooter.dc.html",
-      "sha256": "1a0ec7b62e0a3b2ea70fea7e3d9766ef365ea98ef4af52a283b14c891cfed2d4"
+      "sha256": "3c7b47277e5544edb78b3bb54ab5adde5f78e6a16f6b6076914e6f4056387b64"
     },
     {
       "path": "kit/KitHeader.dc.html",
@@ -156,7 +156,7 @@
     },
     {
       "path": "kit/playbook-panels.css",
-      "sha256": "4ed99ecba916419813eda0d942ced1d037940c439befa525f19f35490d4f3a01"
+      "sha256": "d29c1cc8b28bf31f4a5d392e272e93eed63a467ab821c3b12421924982fe4e50"
     },
     {
       "path": "oneoff/PlaybookCompare.dc.html",

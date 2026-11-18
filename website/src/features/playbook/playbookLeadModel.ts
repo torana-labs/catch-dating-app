@@ -73,11 +73,13 @@ export function playbookGuideFormat(slug: string | undefined): WebsiteLeadGuideF
 
 /**
  * The form's kind when the intake can take what it asks for, or null: a
- * kind no form sends yet, a field its kind does not carry, a field its kind
+ * link or text input, a kind no form sends yet, a field its kind does not carry, a field its kind
  * needs that it does not show, or a guide without a known format tag. A null
  * form does not render, and the page's WhatsApp actions stand alone.
  */
 export function playbookSendableLeadKind(form: PlaybookLeadForm): PlaybookSendableLeadKind | null {
+  // A link or text input is a try-it tool's: no backend reads one until its command ships.
+  if ((form.input ?? "tel") !== "tel") return null;
   if (!isSendableKind(form.requestKind)) return null;
   const kind = form.requestKind;
   const rule: {needs: readonly string[]; may: readonly string[]} = kindFields[kind];

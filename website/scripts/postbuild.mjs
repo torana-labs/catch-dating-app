@@ -8,7 +8,7 @@ import {
   staticRouteMeta,
 } from "../../tool/marketing/website_meta_contract.mjs";
 import {applyBrand, brand} from "@catch/brand";
-import {validatedPlaybookPage} from "../src/content/playbook/playbookContract.ts";
+import {livePlaybookPage, validatedPlaybookPage} from "../src/content/playbook/playbookContract.ts";
 import {pendingPlaybookBindings} from "../src/features/playbook/playbookBindings.ts";
 import {alwaysNoindexPlaybookRoutes, registeredPlaybookPages} from "../src/features/playbook/playbookPages.ts";
 import {playbookStructuredData} from "../src/features/playbook/playbookStructuredData.ts";
@@ -169,7 +169,8 @@ for (const event of publicEvents) {
 // pages the backend indexes.
 for (const ref of registeredPlaybookPages()) {
   const file = path.join(websiteRoot, "src", "content", "playbook", "pages", ref.match.route.group, ref.entry.file);
-  const page = validatedPlaybookPage(JSON.parse(fs.readFileSync(file, "utf8")));
+  // Its live sections only (show-when-live), as the render draws it.
+  const page = livePlaybookPage(validatedPlaybookPage(JSON.parse(fs.readFileSync(file, "utf8"))));
   if (pendingPlaybookBindings(page).length > 0) continue;
   const branded = applyBrand(page);
   const noindex = branded.meta.noindex || alwaysNoindexPlaybookRoutes.has(branded.route);

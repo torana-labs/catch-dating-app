@@ -1,17 +1,20 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/audience/parts/host_door_guest_row.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_staff_presence_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
+import 'package:catch_dating_app/contexts/events/data/event_runtime_claim_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_runtime_claim_request.dart';
 import 'package:catch_dating_app/contexts/events/parts/event_catch_format.dart';
 import 'package:catch_dating_app/hosts/door/door_body.dart';
 import 'package:catch_dating_app/hosts/door/door_controller.dart';
 import 'package:catch_dating_app/hosts/door/door_scan_screen.dart';
 import 'package:catch_dating_app/hosts/door/door_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_section.dart'
-    show HostManualAttendeeSheet;
+    show HostManualAttendeeSheet, HostRuntimeClaimList;
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/connectivity_service.dart';
@@ -92,6 +95,42 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
     super.dispose();
   }
 
+  /// The guest whose claim review is on its way.
+  String? _reviewingClaim;
+
+  Future<void> _reviewClaim(
+    EventRuntimeClaimRequest claim,
+    EventRuntimeClaimDecision decision, {
+    String? attendeeId,
+  }) async {
+    if (_reviewingClaim != null) return;
+    final l10n = context.l10n;
+    setState(() => _reviewingClaim = claim.uid);
+    try {
+      await DoorSession.reviewClaimMutation.run(
+        ref,
+        (tx) => tx
+            .get(doorSessionProvider(widget.eventId).notifier)
+            .reviewClaim(
+              uid: claim.uid,
+              decision: decision,
+              attendeeId: attendeeId,
+            ),
+      );
+      if (!mounted) return;
+      showCatchNotice(
+        context,
+        decision == EventRuntimeClaimDecision.approve
+            ? l10n.hostsOperationalRosterClaimApproved
+            : l10n.hostsOperationalRosterClaimRejected,
+      );
+    } on Object catch (error) {
+      if (mounted) showCatchNoticeError(context, error);
+    } finally {
+      if (mounted) setState(() => _reviewingClaim = null);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -118,6 +157,34 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
         ),
       );
     }
+    // Web guests waiting to be matched to a name on the list, with Approve
+    // (choosing the guest) and Reject, through the existing runtime claim
+    // review; none while nobody is waiting.
+    final pendingClaims =
+        ref
+            .watch(watchPendingEventRuntimeClaimsProvider(widget.eventId))
+            .value ??
+        const <EventRuntimeClaimRequest>[];
+    final claims = pendingClaims.isEmpty
+        ? null
+        : HostRuntimeClaimList(
+            key: const ValueKey<String>('door-claims'),
+            claims: pendingClaims,
+            attendees:
+                ref.watch(watchEventAttendeesProvider(widget.eventId)).value ??
+                const <EventAttendee>[],
+            pendingUid: _reviewingClaim,
+            onApprove: (claim, attendeeId) => unawaited(
+              _reviewClaim(
+                claim,
+                EventRuntimeClaimDecision.approve,
+                attendeeId: attendeeId,
+              ),
+            ),
+            onReject: (claim) => unawaited(
+              _reviewClaim(claim, EventRuntimeClaimDecision.reject),
+            ),
+          );
     final event = state.event ?? widget.initialEvent;
     final format = event == null
         ? null
@@ -137,6 +204,7 @@ class _DoorScreenState extends ConsumerState<DoorScreen> {
             onScan: _openScanner,
             onRetrySync: () => unawaited(_guard(_session.flushOutbox)),
             onDiscardRefused: () => unawaited(_guard(_session.discardRefused)),
+            claims: claims,
           );
     return CatchRoot(
       theme: CatchThemeMode.night,

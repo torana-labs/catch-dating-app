@@ -4,6 +4,8 @@ import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {AdminPendingOperationProvider} from
   "../../../shared/pendingOperation";
 import {resetSampleSupport} from "../../../shared/api/sampleSupport";
+import {resetSampleAdMatchingOptOuts} from
+  "../api/adMatchingOptOutRepository";
 import {SupportRouteScreen} from "./SupportRouteScreen";
 
 function mount(conversationId: string | null = null) {
@@ -21,7 +23,10 @@ function mount(conversationId: string | null = null) {
 }
 
 describe("SupportScreen", () => {
-  beforeEach(() => resetSampleSupport());
+  beforeEach(() => {
+    resetSampleSupport();
+    resetSampleAdMatchingOptOuts();
+  });
   afterEach(cleanup);
 
   it("lists conversations longest waiting first and opens one in the URL",
@@ -50,4 +55,14 @@ describe("SupportScreen", () => {
       // late update after teardown is an unhandled "window is not defined".
       await waitFor(() => expect(onNotice).toHaveBeenCalled());
     });
+
+  it("stops ad matching for the conversation's number", async () => {
+    const {onNotice} = mount(`whatsapp-${"a1".padEnd(64, "0")}`);
+    const phone = await screen.findByLabelText("Phone number");
+    expect((phone as HTMLInputElement).value).toMatch(/^\+91/u);
+    fireEvent.click(screen.getByRole("button", {name: "Stop ad matching"}));
+    await waitFor(() => expect(onNotice).toHaveBeenCalledWith(
+      "Ad matching stopped for the phone number."));
+    await screen.findByText("Ad matching is off for the phone number.");
+  });
 });

@@ -69,7 +69,7 @@ void main() {
       HostMembershipsState(program: _program(), plans: const []),
       commands: commands,
     );
-    expect(find.text('OFF'), findsOneWidget);
+    expect(find.text('Off'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('host-memberships-enable')));
     expect(commands, [HostMembershipProgramCommand.enable]);
 
@@ -150,7 +150,7 @@ void main() {
       commands: commands,
       opened: opened,
     );
-    expect(find.text('TEST MODE'), findsOneWidget);
+    expect(find.text('Test mode'), findsOneWidget);
     expect(find.text('12'), findsOneWidget);
     expect(find.textContaining('On sale'), findsOneWidget);
     await tester.tap(

@@ -195,6 +195,30 @@
   --catch-theme-ink2: var(--catch-color-dark-ink2);
 }
 
+/* sky (product pages v2, 17 Nov 2026), the second web-only band colour, drawn as indigo is. */
+.surface[data-block="band"][data-band="sky"] {
+  --catch-surface-fill: var(--catch-ground-sky-fill);
+  background: var(--catch-ground-sky-fill);
+  color: var(--catch-ground-sky-ink);
+}
+
+.surface[data-block="band"][data-band="sky"] > * {
+  --catch-accent: var(--catch-ground-sky-fill);
+  --catch-accent-ink: var(--catch-palette-sky-ink);
+  --catch-theme-ink: var(--catch-ground-sky-ink);
+  --catch-theme-ink2: var(--catch-ground-sky-ink-secondary);
+}
+
+.surface[data-block="band"][data-band="sky"] .surface[data-block="floating"] {
+  --catch-theme-ink: var(--catch-color-light-ink);
+  --catch-theme-ink2: var(--catch-color-light-ink2);
+}
+
+:global([data-catch-theme="dark"]) .surface[data-block="band"][data-band="sky"] .surface[data-block="floating"] {
+  --catch-theme-ink: var(--catch-color-dark-ink);
+  --catch-theme-ink2: var(--catch-color-dark-ink2);
+}
+
 /* A device that bleeds off the band's bottom edge (CatchDeviceFrame bleed, L3) is clipped there too. */
 .surface[data-block="band"]:has([data-bleed]) {
   overflow: clip;

@@ -17,8 +17,10 @@ let testEnv;
 // contract checker requires each to have a rules match; this proves the match
 // denies everyone.
 const SERVER_ONLY = [
+  "adAudienceRuns",
   "adConversionContexts",
   "adConversionDeliveries",
+  "adMatchingOptOuts",
   "adminAuditLogs",
   "adminRoleAssignments",
   "catchWhatsappAppAuthorities",

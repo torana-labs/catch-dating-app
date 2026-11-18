@@ -17,6 +17,7 @@ class HostEventGuest {
     this.uid,
     this.photoUrl,
     this.insight,
+    this.offered = false,
   });
 
   /// Stable across rebuilds: the attendee id, or the account for a guest
@@ -28,6 +29,9 @@ class HostEventGuest {
   final String? uid;
   final String? photoUrl;
   final HostEventRosterInsight? insight;
+
+  /// A waitlisted guest who holds an open or accepted place offer.
+  final bool offered;
 }
 
 /// Everything the guests screen shows, as plain values.
@@ -58,6 +62,17 @@ class HostEventGuestsState {
   int get booked => listOf(HostEventGuestList.booked).length;
 
   /// Places still free; null when the event sets no capacity.
+  /// Waiting guests to offer the places left to, first in line first: those
+  /// with an account and no open offer, as many as there are places.
+  List<String> get offerAllUids {
+    final left = placesLeft ?? 0;
+    if (left <= 0) return const <String>[];
+    return [
+      for (final guest in listOf(HostEventGuestList.waitlist))
+        if (guest.uid case final uid? when !guest.offered) uid,
+    ].take(left).toList(growable: false);
+  }
+
   int? get placesLeft {
     final capacity = event?.capacityLimit ?? 0;
     return capacity <= 0 ? null : (capacity - booked).clamp(0, capacity);

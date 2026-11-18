@@ -2,6 +2,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_analytics_metric_tile.dart';
 import 'package:catch_dating_app/contexts/insights/parts/host_event_review_row.dart';
+import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/hosts/insights/host_event_report_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -17,6 +18,7 @@ class HostEventReportBody extends StatelessWidget {
     super.key,
     required this.state,
     required this.onAllReviews,
+    this.onReview,
     required this.onInviteAll,
     required this.onChoose,
     required this.onDownload,
@@ -25,6 +27,9 @@ class HostEventReportBody extends StatelessWidget {
 
   final HostEventReportState state;
   final VoidCallback onAllReviews;
+
+  /// Opens one review to reply to it; null leaves the rows still.
+  final ValueChanged<Review>? onReview;
   final VoidCallback onInviteAll;
   final VoidCallback onChoose;
   final ValueChanged<HostEventReportDownload> onDownload;
@@ -135,6 +140,7 @@ class HostEventReportBody extends StatelessWidget {
                   comment: review.comment,
                   anonymous: review.isAnonymous,
                   bookedOnCatch: review.source == 'catchEvent',
+                  onTap: onReview == null ? null : () => onReview!(review),
                 ),
             ],
           ),

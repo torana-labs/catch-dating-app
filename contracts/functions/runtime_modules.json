@@ -56,6 +56,7 @@
     "AdminListSupplyNominatorsCallablePayload",
     "AdminListSupportConversationsCallablePayload",
     "AdminListSupportSavedRepliesCallablePayload",
+    "AdminManageAdMatchingOptOutCallablePayload",
     "AdminManageFoundingHostOffersCallablePayload",
     "AdminManageFoundingHostOffersCallableResponse",
     "AdminManageMoneySettingsCallablePayload",
@@ -817,7 +818,8 @@
     "ProgramAssistantSettingsCallableResponse",
     "SignProgramPhotoUrlsCallablePayload",
     "ProgramPhotoUrlsCallableResponse",
-    "EnsureTryItWorkspaceCallablePayload"
+    "EnsureTryItWorkspaceCallablePayload",
+    "ImportOrganizerFromLinkCallablePayload"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",
@@ -828,6 +830,7 @@
     "AdminDecideSafetyAppealCallableResponse",
     "AdminDecideSafetyTriageItemCallableResponse",
     "AdminGetInboxItemCallableResponse",
+    "AdminManageAdMatchingOptOutCallableResponse",
     "AdminGetTakedownRequestCallableResponse",
     "AdminGetOrganizerListingReviewCallableResponse",
     "AdminGetOrganizerOverviewCallableResponse",
@@ -1048,6 +1051,7 @@
     "ValidateOrganizerFormDraftCallableResponse",
     "WithdrawOrganizerFormResponseCallableResponse",
     "WithdrawParticipantMessagingPermissionCallableResponse",
-    "EnsureTryItWorkspaceCallableResponse"
+    "EnsureTryItWorkspaceCallableResponse",
+    "ImportOrganizerFromLinkCallableResponse"
   ]
 }

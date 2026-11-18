@@ -11,7 +11,6 @@ import type {RateLimitConfig} from "../shared/rateLimit";
 import {isAccountReadyUserProfile} from "../shared/profileReadiness";
 import type {
   OrganizerClaimInstagramCodeDocument,
-  OrganizerClaimRequestDocument,
   OrganizerClaimVerificationDocument,
   OrganizerDocument,
   UserProfileDocument,
@@ -30,17 +29,11 @@ import {validateStartOrganizerClaimVerificationCallablePayload} from
   "../shared/generated/validators/startOrganizerClaimVerificationInput";
 import {validateGetOrganizerClaimVerificationOptionsCallablePayload} from
   "../shared/generated/validators/getOrganizerClaimVerificationOptionsInput";
-import {
-  assertCanBeClaimed,
-  organizerClaimRequestId,
-  prepareOrganizerClaimApproval,
-} from "./organizerClaimApproval";
-import {listingInstagramUsername, listingLumaCalendarUrl,
-  normalizeInstagramUsername} from "./organizerClaimSources";
+import {normalizeInstagramUsername} from "./organizerClaimSources";
 import {extractClaimCode} from "./instagramClaimProtocol";
 import type {InstagramInboundMessage} from "./instagramClaimProtocol";
 import type {InstagramMessagingProvider} from "./instagramMessagingProvider";
-import {defaultLumaClaimPageReader, lumaClaimMarker} from "./lumaClaimPage";
+import {defaultLumaClaimPageReader} from "./lumaClaimPage";
 import type {LumaClaimPageReader} from "./lumaClaimPage";
 import type {ConfirmOrganizerClaimVerificationCallablePayload} from
   "../shared/generated/confirmOrganizerClaimVerificationCallablePayload";
@@ -48,6 +41,15 @@ import type {ConfirmOrganizerClaimVerificationCallableResponse} from
   "../shared/generated/confirmOrganizerClaimVerificationCallableResponse";
 import {validateConfirmOrganizerClaimVerificationCallablePayload} from
   "../shared/generated/validators/confirmOrganizerClaimVerificationInput";
+import {
+  VERIFICATION_METHODS,
+  verificationMethod,
+  type VerificationMethodEnvironment,
+} from "./identityVerification/methods";
+import {
+  verificationPurpose,
+  type VerifiedProof,
+} from "./identityVerification/purposes";
 
 type ClaimMethod = StartOrganizerClaimVerificationCallablePayload["method"];
 // The receipt also records nomination replies (instagramInboundRouter.ts);
@@ -130,6 +132,17 @@ export const defaultClaimVerificationDeps: ClaimVerificationDeps = {
   checkRateLimit: defaultCheckRateLimit,
 };
 
+/** The environment the method registry reads (issue #2096). */
+function methodEnvironment(deps: ClaimVerificationDeps):
+  VerificationMethodEnvironment {
+  const config = deps.config();
+  return {
+    instagramEnabled: config.instagramEnabled,
+    catchInstagramHandle: config.catchInstagramHandle,
+    lumaEnabled: () => deps.lumaPages().enabled(),
+  };
+}
+
 export async function getOrganizerClaimVerificationOptionsHandler(
   request: CallableRequest<unknown>,
   deps: ClaimVerificationDeps = defaultClaimVerificationDeps
@@ -147,29 +160,24 @@ export async function getOrganizerClaimVerificationOptionsHandler(
     throw new HttpsError("not-found", "Organizer listing not found.");
   }
   const organizer = requireDoc<OrganizerDocument>(snap, "OrganizerDocument");
-  assertCanBeClaimed(organizer);
+  verificationPurpose("claim").assertEligible(organizer, uid);
   const config = deps.config();
-  const instagram = listingInstagramUsername(organizer);
-  const luma = listingLumaCalendarUrl(organizer);
-  const lumaEnabled = await deps.lumaPages().enabled();
+  const env = methodEnvironment(deps);
+  const methods = await Promise.all(VERIFICATION_METHODS.map(
+    async (method) => {
+      const offered = await method.offered(env);
+      const proofTarget = method.proofTarget(organizer);
+      return {
+        method: method.id,
+        available: offered && proofTarget !== null,
+        proofTarget,
+        unavailableReason: !offered ? "turnedOff" as const :
+          proofTarget === null ? "noSourceOnListing" as const : null,
+      };
+    }));
   return {
     organizerId: data.organizerId,
-    methods: [
-      {
-        method: "instagramMessage",
-        available: config.instagramEnabled && instagram !== null,
-        proofTarget: instagram,
-        unavailableReason: !config.instagramEnabled ? "turnedOff" :
-          instagram === null ? "noSourceOnListing" : null,
-      },
-      {
-        method: "lumaDescription",
-        available: lumaEnabled && luma !== null,
-        proofTarget: luma,
-        unavailableReason: !lumaEnabled ? "turnedOff" :
-          luma === null ? "noSourceOnListing" : null,
-      },
-    ],
+    methods,
     catchInstagramHandle: config.instagramEnabled ?
       config.catchInstagramHandle : null,
   };
@@ -185,11 +193,10 @@ export async function startOrganizerClaimVerificationHandler(
   >(request, validateStartOrganizerClaimVerificationCallablePayload,
     normalizePayload);
   const config = deps.config();
-  const instagram = data.method === "instagramMessage";
-  const switchedOn = instagram ?
-    config.instagramEnabled && config.catchInstagramHandle !== null :
-    await deps.lumaPages().enabled();
-  if (!switchedOn) {
+  const method = verificationMethod(data.method);
+  const purpose = verificationPurpose("claim");
+  const instagram = method.reservesCode;
+  if (!(await method.startable(methodEnvironment(deps)))) {
     throw new HttpsError("failed-precondition",
       "This way of checking is not switched on yet.");
   }
@@ -221,18 +228,15 @@ export async function startOrganizerClaimVerificationHandler(
     }
     const organizer = requireDoc<OrganizerDocument>(organizerSnap,
       "OrganizerDocument");
-    assertCanBeClaimed(organizer);
+    purpose.assertEligible(organizer, requesterUid);
     if (!userSnap.exists || !isAccountReadyUserProfile(
       requireDoc<UserProfileDocument>(userSnap, "UserProfileDocument"))) {
       throw new HttpsError("failed-precondition",
         "Finish your Catch account before you claim a page.");
     }
-    const proofTarget = instagram ? listingInstagramUsername(organizer) :
-      listingLumaCalendarUrl(organizer);
+    const proofTarget = method.proofTarget(organizer);
     if (!proofTarget) {
-      throw new HttpsError("failed-precondition", instagram ?
-        "This listing has no Instagram account to check." :
-        "This listing has no Luma calendar to check.");
+      throw new HttpsError("failed-precondition", method.noTargetMessage);
     }
     const existing = attemptSnap.exists ?
       requireDoc<OrganizerClaimVerificationDocument>(attemptSnap,
@@ -421,7 +425,7 @@ async function approveInstagramClaim(
         attempt?.attemptId ?? null);
       return {outcome: stale ?? "unknownCode", proofTarget: null};
     }
-    const verified = await stageVerifiedClaim(tx, db, deps, attempt, {
+    const verified = await stageVerified(tx, db, deps, attempt, {
       source: "instagramMessage",
       observedIdentity: username,
       messageKey: message.messageKey,
@@ -442,21 +446,13 @@ async function approveInstagramClaim(
   });
 }
 
-interface VerifiedProof {
-  source: "instagramMessage" | "lumaDescription";
-  observedIdentity: string;
-  messageKey: string | null;
-  decisionReason: string;
-  proofUrl: string;
-}
-
 /**
- * Approves the attempt's claim through the shared ownership path and records
- * the evidence. Returns the approved request id, or null when the listing
- * can no longer be claimed this way; nothing is written then. Call it after
- * the caller's own reads.
+ * Stages what a verified proof unlocks, through the attempt's purpose (a
+ * claim approves ownership), and records the evidence on the attempt.
+ * Returns the outcome, or null when the purpose can no longer be met this
+ * way; nothing is written then. Call it after the caller's own reads.
  */
-async function stageVerifiedClaim(
+async function stageVerified(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
   deps: ClaimVerificationDeps,
@@ -464,50 +460,18 @@ async function stageVerifiedClaim(
   proof: VerifiedProof,
   transitionId: string,
   recordedAt: string
-): Promise<string | null> {
-  const organizerSnap = await tx.get(
-    db.collection("organizers").doc(attempt.organizerId));
-  const requestId = organizerClaimRequestId(attempt.organizerId,
-    attempt.requesterUid);
-  const requestSnap = await tx.get(
-    db.collection("organizerClaimRequests").doc(requestId));
-  const pendingRequest = requestSnap.exists &&
-    requireDoc<OrganizerClaimRequestDocument>(requestSnap,
-      "OrganizerClaimRequestDocument").status === "pending";
-  let stageApproval: () => void;
-  try {
-    if (!organizerSnap.exists) {
-      throw new HttpsError("not-found", "Organizer listing not found.");
-    }
-    stageApproval = await prepareOrganizerClaimApproval(tx, db, {
-      requestId,
-      organizerId: attempt.organizerId,
-      requesterUid: attempt.requesterUid,
-      organizer: requireDoc<OrganizerDocument>(organizerSnap,
-        "OrganizerDocument"),
-      decidedByUid: null,
-      decisionReason: proof.decisionReason,
-      notificationActorUid: attempt.requesterUid,
-      // A request the requester already sent to staff review is approved as
-      // it stands; otherwise the verified claim creates its own.
-      newRequest: pendingRequest ? null :
-        {requesterRole: "owner", proofUrls: [proof.proofUrl]},
-      supersedeOtherPendingClaim: true,
-      transitionId,
-      recordedAt,
-      serverTimestamp: deps.serverTimestamp,
-    });
-  } catch (error) {
-    if (error instanceof HttpsError) return null;
-    throw error;
-  }
-  stageApproval();
+): Promise<{claimRequestId: string | null} | null> {
+  const outcome = await verificationPurpose(
+    (attempt as {purpose?: string | null}).purpose).stageVerified(
+    tx, db, attempt, proof,
+    {serverTimestamp: deps.serverTimestamp, transitionId, recordedAt});
+  if (!outcome) return null;
   const timestamp = deps.serverTimestamp();
   tx.update(db.collection(collections.attempts).doc(attempt.attemptId), {
     status: "verified",
     verifiedAt: timestamp,
     updatedAt: timestamp,
-    claimRequestId: requestId,
+    claimRequestId: outcome.claimRequestId,
     evidence: {
       source: proof.source,
       observedIdentity: proof.observedIdentity,
@@ -516,7 +480,7 @@ async function stageVerifiedClaim(
     },
     lastRejection: null,
   });
-  return requestId;
+  return outcome;
 }
 
 /**
@@ -544,7 +508,8 @@ export async function confirmOrganizerClaimVerificationHandler(
   if (!attempt || attempt.requesterUid !== uid) {
     throw new HttpsError("not-found", "Claim attempt not found.");
   }
-  if (attempt.method !== "lumaDescription") {
+  const method = verificationMethod(attempt.method);
+  if (method.completion !== "pageCheck") {
     throw new HttpsError("failed-precondition",
       "An Instagram claim completes when your message arrives.");
   }
@@ -565,7 +530,7 @@ export async function confirmOrganizerClaimVerificationHandler(
   }
   const reading = await pages.read({
     url: attempt.proofTarget,
-    marker: lumaClaimMarker(attempt.code),
+    marker: method.proofText(attempt.code),
     runKey: `organizer-claim:${attempt.attemptId}:${deps.now()}`,
   });
   if (!reading.showsMarker) {
@@ -592,7 +557,7 @@ export async function confirmOrganizerClaimVerificationHandler(
     }
     if (current.status !== "awaitingProof" || current.code !== attempt.code ||
         current.expiresAt.toMillis() <= deps.now()) return respond("expired");
-    const requestId = await stageVerifiedClaim(tx, db, deps, current, {
+    const outcome = await stageVerified(tx, db, deps, current, {
       source: "lumaDescription",
       observedIdentity: reading.finalUrl ?? current.proofTarget,
       messageKey: null,
@@ -600,7 +565,7 @@ export async function confirmOrganizerClaimVerificationHandler(
         current.proofTarget}.`,
       proofUrl: current.proofTarget,
     }, transitionId, recordedAt);
-    return requestId ? respond("verified", null, requestId) :
+    return outcome ? respond("verified", null, outcome.claimRequestId) :
       respond("claimUnavailable");
   });
 }
@@ -705,8 +670,7 @@ function startResponse(
     organizerId: attempt.organizerId,
     method: attempt.method,
     code: attempt.code,
-    proofText: attempt.method === "lumaDescription" ?
-      lumaClaimMarker(attempt.code) : attempt.code,
+    proofText: verificationMethod(attempt.method).proofText(attempt.code),
     proofTarget: attempt.proofTarget,
     catchInstagramHandle: catchHandle,
     expiresAt: attempt.expiresAt.toDate().toISOString(),
