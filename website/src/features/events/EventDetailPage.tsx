@@ -1,5 +1,6 @@
 import {CatchBand, CatchNotice, CatchNoticeRegion, CatchRoot, CatchStack, type CatchNoticeData} from "@catch/web-ui";
 import {useEffect, useMemo, useRef, useState, type ReactNode} from "react";
+import {trackEventPageViewed} from "../../analytics";
 import {eventPageCopy as copy, guestEventCopy} from "../../content/events";
 import {recordEventInviteLinkOpen} from "../../firebase";
 import {eventInviteSessionId, eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
@@ -39,6 +40,15 @@ export function EventDetailPage({page, listing, mapImageUrl}: {
   }, [eventId, inviteToken]);
   const notices = useNotice();
   const paid = page.item.source === "catch" && page.item.event.registrationMode === "paid";
+  // The ad tags' view of this page: the event, its activity, the organiser's
+  // city and the Catch ticket price when the page shows one.
+  const activityKind = page.item.event.activityKind;
+  const city = page.organizer.city;
+  const ticketPaise = page.item.source === "catch" && paid && !page.item.event.priceHidden ?
+    page.item.event.amountPaise ?? null : null;
+  useEffect(() => {
+    trackEventPageViewed({eventId, activityKind, city, amountPaise: ticketPaise});
+  }, [eventId, activityKind, city, ticketPaise]);
 
   async function share() {
     const url = `${window.location.origin}${view.path}`;

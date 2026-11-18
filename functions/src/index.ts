@@ -771,6 +771,8 @@ export {onProgramTripViewChanged, onProgramHotelInboundLegChanged,
   onProgramHotelInboundPartyChanged, onProgramTripGuestChanged,
   onProgramHotelInboundSettingsChanged} from
   "./programs/programTripViewTriggers";
+export {onProgramStaffViewGrantChanged, onProgramStaffViewProgramChanged} from
+  "./programs/programStaffViewTriggers";
 export {listMyHostAssignments} from "./hostWork/listMyHostAssignments";
 export {
   inviteProgramStaff,

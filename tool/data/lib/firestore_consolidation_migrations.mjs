@@ -483,6 +483,37 @@ async function newTripView(db, collection, id, build) {
   }
 }
 
+let programStaffViewModule = null;
+function functionsProgramStaffViews() {
+  try {
+    programStaffViewModule ??= createFunctionsRequire()(
+      "./lib/programs/programStaffViews.js");
+  } catch (error) {
+    throw new Error(
+      "The program-staff-views migration needs compiled Functions; run " +
+      `\`npm --prefix functions run build\` first (${error.message}).`,
+    );
+  }
+  return programStaffViewModule;
+}
+
+const programStaffNowMillis = Date.now();
+
+/** A staff view from current sources, or null when it exists or cannot be built. */
+async function newStaffView(db, programId, uid) {
+  const existing = await db.collection("programStaffViews")
+    .doc(`${programId}__${uid}`).get();
+  if (existing.exists) return null;
+  try {
+    return await db.runTransaction((tx) =>
+      functionsProgramStaffViews().readProgramStaffView(db, tx, programId, uid,
+        programStaffNowMillis));
+  } catch {
+    // A source that fails its contract gets no view, as in the trigger.
+    return null;
+  }
+}
+
 const profilePromptCatalog = JSON.parse(fs.readFileSync(
   new URL("../../../contracts/catalogs/profile_prompts.json", import.meta.url), "utf8"));
 const defaultPrompt = profilePromptCatalog.prompts.find(
@@ -1293,6 +1324,27 @@ export const MIGRATIONS = [
         transform: (data, id, db) => newTripView(db, "programHotelInboundViews", id,
           (tx) => functionsProgramTripViews()
             .readProgramHotelInboundView(db, tx, id)),
+      },
+    ],
+  },
+  {
+    name: "program-staff-views",
+    description:
+      "The administrators' staff list reads programStaffViews through a " +
+      "listener (#1339) instead of the listProgramStaff callable. Every " +
+      "staff grant without a row gets one, with the callable's member fields " +
+      "and the facts its status derives from (revoked, owner approval, when " +
+      "the live duties start and end). Rows the triggers have already " +
+      "written are left alone; grants and programmes are never changed. " +
+      "Build Functions first.",
+    steps: [
+      {
+        source: "programStaffGrants",
+        target: "programStaffViews",
+        skipReason: "not a grant of an existing programme, or already viewed",
+        targetId: (id, data) => validId(data.programId) && validId(data.uid) &&
+          id === `${data.programId}__${data.uid}` ? id : null,
+        transform: (data, id, db) => newStaffView(db, data.programId, data.uid),
       },
     ],
   },

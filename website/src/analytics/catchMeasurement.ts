@@ -1,4 +1,5 @@
 import {brand} from "@catch/brand";
+import {isPrivateEventUpdatePath} from "./privateRoutes.ts";
 
 /** Catch acquisition boundary. This module never reads the DOM or the local bus. */
 export const catchMeasurementVersion = 1 as const;
@@ -10,12 +11,17 @@ export interface MeasurementConsent {
   updatedAt: string;
 }
 
-/** The live transport a stored consent choice was made under. No browser
- * transport is wired yet, so every origin is "disabled". The first-party
- * transport adds its mode here; a choice made under another mode asks again. */
-export type CatchMeasurementMode = "disabled";
+/** The stored consent receipt version. Version 5 is the first under which a
+ * marketing choice loads the first-party Google tag and Meta Pixel
+ * (`adTags.ts`); every earlier choice asks again. */
+export const currentConsentVersion = 5 as const;
+
+/** The live transport a stored consent choice was made under. The first-party
+ * Google tag and Meta Pixel (`adTags.ts`) are "first_party_tags"; a choice
+ * made under another mode asks again. */
+export type CatchMeasurementMode = "disabled" | "first_party_tags";
 export function catchMeasurementMode(): CatchMeasurementMode {
-  return "disabled";
+  return "first_party_tags";
 }
 
 const routes = {
@@ -30,6 +36,27 @@ export function acquisitionRoute(path: string): AcquisitionRoute | null {
   if (typeof path !== "string") return null;
   const normalized = path === "/" ? path : `${path.replace(/\/$/u, "")}/`;
   return Object.hasOwn(routes, normalized) ? normalized as AcquisitionRoute : null;
+}
+
+// Pages whose path carries a private token, an organiser's own page or an
+// organiser's form. They never load, capture for or send to an advertising tag.
+const nonPublicPrefixes = ["/organizers", "/join/", "/rehearse/", "/invite/", "/rsvp/", "/f/", "/claim/"];
+const eventPagePattern = /^\/events\/[A-Za-z0-9_:-]{1,180}\/$/u;
+const publicPagePattern = /^\/(?:[a-z0-9][a-z0-9-]{0,80}\/){0,4}$/u;
+
+/**
+ * The public page a path names, normalised with a trailing slash, or null.
+ * Public pages are the static marketing, discovery, campaign and city pages
+ * and public event pages (docs/ads_conversion_spec.md, Payload and
+ * attribution). Private routes (`privateRoutes.ts`), organiser pages,
+ * organiser forms, dynamic claim lookups and token links are never public.
+ */
+export function publicAdPage(path: string): string | null {
+  if (typeof path !== "string" || isPrivateEventUpdatePath(path)) return null;
+  const normalized = path === "/" ? path : `${path.replace(/\/+$/u, "")}/`;
+  if (normalized === "/claim/") return normalized;
+  if (isPrivateEventUpdatePath(normalized) || nonPublicPrefixes.some((prefix) => normalized.startsWith(prefix))) return null;
+  return eventPagePattern.test(normalized) || publicPagePattern.test(normalized) ? normalized : null;
 }
 
 // Closed campaign vocabulary; expand only with a reviewed campaign, never query text.
@@ -83,7 +110,7 @@ const opaqueId = (id: unknown): id is string =>
 export function safeAcquisitionEvent(input: CatchAcquisitionEvent, context: MeasurementContext): SafeAcquisitionEvent | null {
   if (!input || typeof input !== "object") return null;
   const path = acquisitionRoute(context.path);
-  if (!path || path === "/" || context.consent?.version !== 4 || context.consent.analytics !== true) return null;
+  if (!path || path === "/" || context.consent?.version !== currentConsentVersion || context.consent.analytics !== true) return null;
   const parameters: Record<string, string | number> = {
     contract_version: catchMeasurementVersion,
     page_path: path,
@@ -173,7 +200,7 @@ export function createCatchMeasurementController(transport?: CatchProviderTransp
     const previous = context;
     context = next;
     if (previous.path !== next.path || previous.consent?.updatedAt !== next.consent?.updatedAt) destroy();
-    const allowed = acquisitionRoute(next.path) && next.path !== "/" && next.consent?.version === 4;
+    const allowed = acquisitionRoute(next.path) && next.path !== "/" && next.consent?.version === currentConsentVersion;
     for (const provider of ["google", "meta"] as const) {
       const permitted = allowed && next.consent?.analytics === true &&
         (provider === "google" || next.consent.marketing === true);
@@ -212,6 +239,8 @@ export interface CatchBrowserAttribution {
   gclid?: string;
   gbraid?: string;
   wbraid?: string;
+  /** When the current Google click identifier was first seen (epoch ms). */
+  googleClickCapturedAt?: number;
   fbclid?: string;
   fbclidCapturedAt?: number;
 }
@@ -223,8 +252,10 @@ interface StoredContext extends CatchBrowserAttribution {
 export const catchAttributionKey = "catch_acquisition_context_v2";
 export const catchAttributionMaxAgeMs = 30 * 24 * 60 * 60 * 1000;
 const clickKeys = ["gclid", "gbraid", "wbraid", "fbclid"] as const;
+const googleClickKeys = ["gclid", "gbraid", "wbraid"] as const;
 const clickId = (value: unknown): value is string => typeof value === "string" &&
   /^[A-Za-z0-9_-]{10,512}$/u.test(value);
+const capturedAt = (value: unknown) => Number.isSafeInteger(value) && Number(value) > 0 ? Number(value) : undefined;
 
 /** Rebuild stored/message values; no arbitrary query keys, URLs or identifiers. */
 export function safeBrowserAttribution(value: unknown, marketing: boolean): CatchBrowserAttribution | null {
@@ -235,12 +266,30 @@ export function safeBrowserAttribution(value: unknown, marketing: boolean): Catc
       Number(input.sessionId) > 9_999_999_999) return null;
   const result: CatchBrowserAttribution = {clientId: input.clientId, sessionId: Number(input.sessionId)};
   if (marketing) for (const key of clickKeys) if (clickId(input[key])) result[key] = input[key];
-  if (result.fbclid && Number.isSafeInteger(input.fbclidCapturedAt) && Number(input.fbclidCapturedAt) > 0) {
-    result.fbclidCapturedAt = Number(input.fbclidCapturedAt);
-  }
+  const googleAt = capturedAt(input.googleClickCapturedAt);
+  if (googleAt && googleClickKeys.some((key) => result[key])) result.googleClickCapturedAt = googleAt;
+  const metaAt = capturedAt(input.fbclidCapturedAt);
+  if (result.fbclid && metaAt) result.fbclidCapturedAt = metaAt;
   return result;
 }
 
+/** Only the click identifiers (and when each was first seen) of a context. */
+function clickFields(context: CatchBrowserAttribution | null): Partial<CatchBrowserAttribution> {
+  const clicks: Partial<CatchBrowserAttribution> = {};
+  for (const key of clickKeys) if (context?.[key]) clicks[key] = context[key];
+  if (context?.googleClickCapturedAt) clicks.googleClickCapturedAt = context.googleClickCapturedAt;
+  if (context?.fbclidCapturedAt) clicks.fbclidCapturedAt = context.fbclidCapturedAt;
+  return clicks;
+}
+
+/**
+ * The browser's acquisition context under a current choice. Click identifiers
+ * (gclid, gbraid, wbraid, fbclid) and when each was first seen are read only
+ * under an explicit marketing choice, on public pages (`publicAdPage`). The
+ * context lives for 30 days from the latest ad click, survives navigation,
+ * including private pages (which neither read nor clear it), and is cleared
+ * when the choice is withdrawn or analytics is refused.
+ */
 export function browserAttribution(input: {
   enabled: boolean; path: string; search: string; consent: MeasurementConsent | null;
   storage: Pick<Storage, "getItem" | "setItem" | "removeItem">;
@@ -249,33 +298,44 @@ export function browserAttribution(input: {
   const {storage, consent, now} = input;
   const clear = () => { try { storage.removeItem(catchAttributionKey); } catch { /* Optional storage. */ } };
   // No collection before the reviewed transport is activated, or under old copy.
-  if (!input.enabled || !acquisitionRoute(input.path) || input.path === "/" || consent?.version !== 4 || !consent.analytics) {
+  if (!input.enabled || consent?.version !== currentConsentVersion || !consent.analytics) {
     clear(); return null;
   }
+  // Private and organiser pages never read the address or touch stored context.
+  if (!publicAdPage(input.path)) return null;
   try {
     const stored = JSON.parse(storage.getItem(catchAttributionKey) ?? "null") as StoredContext | null;
     const age = stored ? now - stored.createdAt : NaN;
-    const valid = stored && stored.consentRevision === consent.updatedAt && Number.isFinite(age) &&
-      age >= 0 && age < catchAttributionMaxAgeMs ? safeBrowserAttribution(stored, consent.marketing) : null;
-    const context: StoredContext = valid ? {...valid, createdAt: stored!.createdAt, consentRevision: consent.updatedAt,
-      lastSeenAt: now, sessionId: Number.isFinite(stored!.lastSeenAt) && now - stored!.lastSeenAt < 30 * 60 * 1000 ?
+    const valid = stored && Number.isFinite(age) && age >= 0 && age < catchAttributionMaxAgeMs ?
+      safeBrowserAttribution(stored, consent.marketing) : null;
+    // A changed choice starts a new analytics identity; click identifiers carry
+    // over only while marketing is still allowed (withdrawal clears them first).
+    const context: StoredContext = valid && stored!.consentRevision === consent.updatedAt ? {...valid,
+      createdAt: stored!.createdAt, consentRevision: consent.updatedAt, lastSeenAt: now,
+      sessionId: Number.isFinite(stored!.lastSeenAt) && now - stored!.lastSeenAt < 30 * 60 * 1000 ?
         valid.sessionId : Math.floor(now / 1000)} : {
+      ...clickFields(valid),
       clientId: `${input.random() >>> 0}.${Math.floor(now / 1000)}`,
-      sessionId: Math.floor(now / 1000), createdAt: now, lastSeenAt: now, consentRevision: consent.updatedAt,
+      sessionId: Math.floor(now / 1000), createdAt: valid ? stored!.createdAt : now, lastSeenAt: now,
+      consentRevision: consent.updatedAt,
     };
     // Read identifiers only after explicit marketing permission. New Google ad
     // touches replace the previous Google touch; Meta is retained independently.
+    // Each new ad click restarts the 30-day lifetime.
     if (consent.marketing) {
       const params = new URLSearchParams(input.search);
-      const google = clickKeys.filter(key => key !== "fbclid" && clickId(params.get(key)));
-      if (google.length) {
+      const google = googleClickKeys.filter(key => clickId(params.get(key)));
+      if (google.length && google.some((key) => params.get(key) !== context[key])) {
         delete context.gclid; delete context.gbraid; delete context.wbraid;
         for (const key of google) context[key] = params.get(key)!;
+        context.googleClickCapturedAt = now;
+        context.createdAt = now;
       }
       const metaClick = params.get("fbclid");
       if (clickId(metaClick) && metaClick !== context.fbclid) {
         context.fbclid = metaClick;
         context.fbclidCapturedAt = now;
+        context.createdAt = now;
       }
     }
     storage.setItem(catchAttributionKey, JSON.stringify(context));

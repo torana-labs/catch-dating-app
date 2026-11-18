@@ -2,7 +2,7 @@ name: Firestore Data Validation
 
 on:
   schedule:
-    - cron: '30 20 * * *'
+    - cron: '13 20 * * *' # 01:43 IST; off the :00/:30 minutes GitHub delays most
   workflow_dispatch:
     inputs:
       environment:

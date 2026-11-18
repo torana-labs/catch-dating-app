@@ -1,10 +1,11 @@
 import {activeMarket} from "@content/markets";
 import {websiteLeadCopy} from "@content/websiteLead";
-import {trackWebsiteLeadFormEvent} from "../../analytics";
+import {getMarketingConsent, trackHostLeadAccepted, trackWebsiteLeadFormEvent} from "../../analytics";
 import {
   createWebsiteLeadSubmission,
   type WebsiteLeadSubmission,
   type WebsiteLeadSubmissionOptions,
+  websiteLeadPhone,
 } from "../../shared/api/websiteLead";
 
 /**
@@ -15,7 +16,9 @@ import {
  * referral the signed-in referrer's ID token), and records the lead form
  * events after analytics consent: submitted, then succeeded or failed with
  * the lead client's problem, each naming only the lead kind, the form id
- * (the lead's entry) and the page.
+ * (the lead's entry) and the page. An accepted host enquiry also reaches the
+ * Google and Meta tags under the marketing choice the send started with
+ * (`trackHostLeadAccepted`), with the number just typed for ad matching.
  */
 export function createSiteLeadSubmission(
   overrides: Omit<WebsiteLeadSubmissionOptions, "messages" | "dialCode"> = {},
@@ -25,10 +28,14 @@ export function createSiteLeadSubmission(
     reset: () => lead.reset(),
     async submit(form) {
       const identity = {kind: form.kind, formId: form.entry};
+      const submissionConsent = getMarketingConsent();
       trackWebsiteLeadFormEvent("submitted", identity);
       const outcome = await lead.submit(form);
-      if (outcome.status === "sent") trackWebsiteLeadFormEvent("succeeded", identity);
-      else trackWebsiteLeadFormEvent("failed", identity, outcome.status);
+      if (outcome.status === "sent") {
+        trackWebsiteLeadFormEvent("succeeded", identity);
+        trackHostLeadAccepted({kind: form.kind, leadId: outcome.leadId,
+          phone: websiteLeadPhone(form.phone, activeMarket.dialCode)}, submissionConsent);
+      } else trackWebsiteLeadFormEvent("failed", identity, outcome.status);
       return outcome;
     },
   };
