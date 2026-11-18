@@ -50,6 +50,15 @@ class ProgramVehicleClass {
   final int luggageCapacity;
   final Set<ProgramVehicleCapability> capabilities;
   final int sortOrder;
+
+  Map<String, Object?> toCallableData() => {
+    'id': id,
+    'label': label,
+    'passengerCapacity': passengerCapacity,
+    'luggageCapacity': luggageCapacity,
+    'capabilities': capabilities.map((c) => c.name).toList()..sort(),
+    'sortOrder': sortOrder,
+  };
 }
 
 class ProgramDutyAssignment {
@@ -78,6 +87,14 @@ class ProgramDutyAssignment {
   final Set<String> pickupPointIds;
   final Set<String> hotelIds;
   final Set<String> functionIds;
+
+  Map<String, Object?> toCallableData() => {
+    'duty': duty.name,
+    'pickupPointIds': pickupPointIds.toList()..sort(),
+    'hotelIds': hotelIds.toList()..sort(),
+    'functionIds': functionIds.toList()..sort(),
+    'expiresAtMillis': expiresAt?.millisecondsSinceEpoch,
+  };
 
   /// Null is an ungranted request scope or a legacy assignment, never authority.
   final DateTime? expiresAt;
@@ -139,6 +156,14 @@ class ProgramStation {
   final String? instructions;
   final bool? active;
   final int? revision;
+
+  Map<String, Object?> toCallableData() => {
+    'pickupPointId': pickupPointId,
+    'label': label,
+    'kind': kind,
+    'iataCode': iataCode,
+    'terminal': terminal,
+  };
 }
 
 class ProgramHotel {
@@ -166,6 +191,8 @@ class ProgramHotel {
   final String? receptionContact;
   final bool? active;
   final int? revision;
+
+  Map<String, Object?> toCallableData() => {'hotelId': hotelId, 'name': name};
 }
 
 enum ProgramFunctionStatus { scheduled, completed, cancelled }
@@ -204,6 +231,18 @@ class ProgramFunction {
   final ProgramFunctionStatus status;
   final int expectedCount;
   final int checkedInCount;
+
+  Map<String, Object?> toCallableData() => {
+    'functionId': functionId,
+    'name': name,
+    'venueName': venueName,
+    'startsAtMillis': startsAt.millisecondsSinceEpoch,
+    'endsAtMillis': endsAt.millisecondsSinceEpoch,
+    'checkInEnabled': checkInEnabled,
+    'status': status.name,
+    'expectedCount': expectedCount,
+    'checkedInCount': checkedInCount,
+  };
 }
 
 class ProgramWorkAccess {
@@ -277,6 +316,25 @@ class ProgramWorkAccess {
   final List<ProgramVehicleClass> vehicleClasses;
 
   bool get isManager => actorRole == ProgramActorRole.manager;
+
+  /// The shape the work-access callable returned, which the persisted-read
+  /// store keeps for offline cold starts of screens that still read callables.
+  Map<String, Object?> toCallableData() => {
+    'programId': programId,
+    'organizerId': organizerId,
+    'title': title,
+    'kind': kind.name,
+    'timezone': timezone,
+    'status': status.name,
+    'actorRole': actorRole.name,
+    'duties': [for (final duty in duties) duty.toCallableData()],
+    'grantExpiresAtMillis': grantExpiresAt?.millisecondsSinceEpoch,
+    'capabilities': capabilities.toList()..sort(),
+    'pickupPoints': [for (final p in pickupPoints) p.toCallableData()],
+    'hotels': [for (final h in hotels) h.toCallableData()],
+    'functions': [for (final f in functions) f.toCallableData()],
+    'vehicleClasses': [for (final v in vehicleClasses) v.toCallableData()],
+  };
 
   /// Next point at which the visible work choices must be recalculated.
   DateTime? nextAccessChangeAt(DateTime now) {

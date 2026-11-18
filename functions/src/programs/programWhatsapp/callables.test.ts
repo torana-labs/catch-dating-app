@@ -7,6 +7,7 @@ import {deps, now, request} from "../../shared/testing/programFixtures";
 import {
   getProgramWhatsappThreadHandler,
   listProgramWhatsappThreadsHandler,
+  markProgramWhatsappThreadReadHandler,
   sendProgramWhatsappReplyHandler,
 } from "./callables";
 import {routeProgramWhatsappInbound} from "./inbound";
@@ -68,6 +69,36 @@ test("opening a thread shows the household and marks it read", async () => {
   assert.equal(db.getDoc("programWhatsappThreads/program-1_household-1")!
     .unreadCount, 0);
 });
+
+test("marking a thread read is a command with the inbox's access rules",
+  async () => {
+    const db = await seeded();
+    const path = "programWhatsappThreads/program-1_household-1";
+    const before = db.getDoc(path)!.revision as number;
+    const read = await markProgramWhatsappThreadReadHandler(request({
+      programId: "program-1", threadId: "program-1_household-1"},
+    "manager-1"), deps(db));
+    assert.equal(db.getDoc(path)!.unreadCount, 0);
+    assert.equal(read.revision, before + 1);
+    assert.equal(read.state, "needsYou");
+    const again = await markProgramWhatsappThreadReadHandler(request({
+      programId: "program-1", threadId: "program-1_household-1"},
+    "manager-1"), deps(db));
+    assert.equal(again.revision, before + 1, "a read thread is untouched");
+    await assert.rejects(markProgramWhatsappThreadReadHandler(request({
+      programId: "program-1", threadId: "program-1_household-1"},
+    "stranger"), deps(db)), code("permission-denied"));
+    await assert.rejects(markProgramWhatsappThreadReadHandler(request({
+      programId: "program-1", threadId: "program-1_nobody"},
+    "manager-1"), deps(db)), code("not-found"));
+    db.updateDoc(path, {unreadCount: 2});
+    db.updateDoc("organizerPrograms/program-1", {status: "archived"});
+    await markProgramWhatsappThreadReadHandler(request({
+      programId: "program-1", threadId: "program-1_household-1"},
+    "manager-1"), deps(db));
+    assert.equal(db.getDoc(path)!.unreadCount, 2,
+      "an archived programme stays read-only");
+  });
 
 test("the planner's reply goes through the reservation path", async () => {
   const db = await seeded();

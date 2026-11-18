@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/contexts/live/parts/live_need_row.dart';
 import 'package:catch_dating_app/contexts/live/parts/live_plan_step_row.dart';
 import 'package:catch_dating_app/contexts/live/parts/live_score_row.dart';
+import 'package:catch_dating_app/hosts/live/live_night_alerts_state.dart';
 import 'package:catch_dating_app/hosts/live/live_state.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/time/time_formatters.dart';
@@ -35,6 +36,7 @@ class HostLiveBody extends StatelessWidget {
     this.onPause,
     this.onResume,
     this.changingStep = false,
+    this.alerts = const HostLiveNightAlerts(),
   });
 
   final HostLiveState state;
@@ -59,6 +61,10 @@ class HostLiveBody extends StatelessWidget {
 
   /// A step command is on its way.
   final bool changingStep;
+
+  /// Guests left out and open intro requests; each kind shows as one row
+  /// in Needs you now that opens the full list.
+  final HostLiveNightAlerts alerts;
 
   /// Needs you now shows this many rows; All N opens the rest.
   static const int needsShown = 2;
@@ -126,14 +132,45 @@ class HostLiveBody extends StatelessWidget {
     final needs = CatchSection(
       title: l10n.hostLiveNeedsTitle,
       note: state.needsChecking ? l10n.hostLiveNeedsChecking : null,
-      action: state.needs.length > needsShown
+      action: state.needs.length > needsShown || !alerts.isEmpty
           ? CatchSectionAction(
-              label: l10n.hostLiveNeedsAll(count: state.needs.length),
+              label: l10n.hostLiveNeedsAll(
+                count:
+                    state.needs.length +
+                    alerts.leftOut.length +
+                    alerts.intros.length,
+              ),
               onPressed: onAllNeeds,
             )
           : null,
       empty: state.needsChecking ? null : l10n.hostLiveNeedsEmpty,
       children: [
+        if (alerts.leftOut.isNotEmpty)
+          CatchIndexRow(
+            key: const ValueKey<String>('host-live-left-out'),
+            title: l10n.eventSuccessControlRoomExclusionAlertTitle,
+            subtitle: l10n.eventSuccessControlRoomExclusionAlertBody(
+              count: alerts.leftOut.length,
+              minutes: alerts.leftOutMinutes,
+            ),
+            marker: CatchIndexRowTone.warning,
+            chevron: true,
+            density: expanded
+                ? CatchIndexRowSize.compact
+                : CatchIndexRowSize.roomy,
+            onTap: onAllNeeds,
+          ),
+        if (alerts.intros.isNotEmpty)
+          CatchIndexRow(
+            key: const ValueKey<String>('host-live-intros'),
+            title: l10n.eventSuccessEventSuccessHostSharedTextHelpMeSayHi,
+            value: '${alerts.intros.length}',
+            chevron: true,
+            density: expanded
+                ? CatchIndexRowSize.compact
+                : CatchIndexRowSize.roomy,
+            onTap: onAllNeeds,
+          ),
         for (final need in state.needs.take(needsShown))
           HostLiveNeedRow(
             key: ValueKey<String>('host-live-need-${need.id}'),

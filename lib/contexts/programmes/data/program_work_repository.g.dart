@@ -57,14 +57,18 @@ final class ProgramWorkRepositoryProvider
 String _$programWorkRepositoryHash() =>
     r'1afd99f8840d6c75a4c222e78cf1b1ab9211f42b';
 
-/// An invitation must be claimed online; an existing program may reopen from
-/// a bounded snapshot of its previously verified access.
+/// The work shell's access through listeners (#1339), gated on the account's
+/// authority; an invitation is still claimed online. Callable-reading screens
+/// keep their offline cold start: each delivery refreshes the saved work
+/// access they bound a snapshot by, and a denial clears it.
 
 @ProviderFor(programWorkEntry)
 final programWorkEntryProvider = ProgramWorkEntryFamily._();
 
-/// An invitation must be claimed online; an existing program may reopen from
-/// a bounded snapshot of its previously verified access.
+/// The work shell's access through listeners (#1339), gated on the account's
+/// authority; an invitation is still claimed online. Callable-reading screens
+/// keep their offline cold start: each delivery refreshes the saved work
+/// access they bound a snapshot by, and a denial clears it.
 
 final class ProgramWorkEntryProvider
     extends
@@ -76,8 +80,10 @@ final class ProgramWorkEntryProvider
     with
         $FutureModifier<ProgramReadView<ProgramWorkAccess>>,
         $FutureProvider<ProgramReadView<ProgramWorkAccess>> {
-  /// An invitation must be claimed online; an existing program may reopen from
-  /// a bounded snapshot of its previously verified access.
+  /// The work shell's access through listeners (#1339), gated on the account's
+  /// authority; an invitation is still claimed online. Callable-reading screens
+  /// keep their offline cold start: each delivery refreshes the saved work
+  /// access they bound a snapshot by, and a denial clears it.
   ProgramWorkEntryProvider._({
     required ProgramWorkEntryFamily super.from,
     required (String, String?) super.argument,
@@ -122,10 +128,12 @@ final class ProgramWorkEntryProvider
   }
 }
 
-String _$programWorkEntryHash() => r'50b7414a9ad3e95964a784acc5674c5edca7c87f';
+String _$programWorkEntryHash() => r'1517d312d676f6aca053b96e4cc20e42d076d236';
 
-/// An invitation must be claimed online; an existing program may reopen from
-/// a bounded snapshot of its previously verified access.
+/// The work shell's access through listeners (#1339), gated on the account's
+/// authority; an invitation is still claimed online. Callable-reading screens
+/// keep their offline cold start: each delivery refreshes the saved work
+/// access they bound a snapshot by, and a denial clears it.
 
 final class ProgramWorkEntryFamily extends $Family
     with
@@ -142,8 +150,10 @@ final class ProgramWorkEntryFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// An invitation must be claimed online; an existing program may reopen from
-  /// a bounded snapshot of its previously verified access.
+  /// The work shell's access through listeners (#1339), gated on the account's
+  /// authority; an invitation is still claimed online. Callable-reading screens
+  /// keep their offline cold start: each delivery refreshes the saved work
+  /// access they bound a snapshot by, and a denial clears it.
 
   ProgramWorkEntryProvider call(String programId, String? inviteId) =>
       ProgramWorkEntryProvider._(argument: (programId, inviteId), from: this);
@@ -1280,8 +1290,16 @@ final class ProgramAssistantSettingsFamily extends $Family
   String toString() => r'programAssistantSettingsProvider';
 }
 
+/// The door of one function, live (#1339): the function's header, roster
+/// rows and newest journal entries through listeners, gated on the account's
+/// authority. The same type as the callable read it replaces.
+
 @ProviderFor(programFunctionDoorView)
 final programFunctionDoorViewProvider = ProgramFunctionDoorViewFamily._();
+
+/// The door of one function, live (#1339): the function's header, roster
+/// rows and newest journal entries through listeners, gated on the account's
+/// authority. The same type as the callable read it replaces.
 
 final class ProgramFunctionDoorViewProvider
     extends
@@ -1291,6 +1309,9 @@ final class ProgramFunctionDoorViewProvider
           FutureOr<ProgramDoorView>
         >
     with $FutureModifier<ProgramDoorView>, $FutureProvider<ProgramDoorView> {
+  /// The door of one function, live (#1339): the function's header, roster
+  /// rows and newest journal entries through listeners, gated on the account's
+  /// authority. The same type as the callable read it replaces.
   ProgramFunctionDoorViewProvider._({
     required ProgramFunctionDoorViewFamily super.from,
     required (String, String) super.argument,
@@ -1337,7 +1358,11 @@ final class ProgramFunctionDoorViewProvider
 }
 
 String _$programFunctionDoorViewHash() =>
-    r'f73a6dc0c0bbd06be491ede77e443b26c2281059';
+    r'a990d1ac20f3995f2662fae12a3ca6da5feb9b30';
+
+/// The door of one function, live (#1339): the function's header, roster
+/// rows and newest journal entries through listeners, gated on the account's
+/// authority. The same type as the callable read it replaces.
 
 final class ProgramFunctionDoorViewFamily extends $Family
     with
@@ -1351,6 +1376,10 @@ final class ProgramFunctionDoorViewFamily extends $Family
         isAutoDispose: true,
       );
 
+  /// The door of one function, live (#1339): the function's header, roster
+  /// rows and newest journal entries through listeners, gated on the account's
+  /// authority. The same type as the callable read it replaces.
+
   ProgramFunctionDoorViewProvider call(String programId, String functionId) =>
       ProgramFunctionDoorViewProvider._(
         argument: (programId, functionId),
@@ -1361,9 +1390,15 @@ final class ProgramFunctionDoorViewFamily extends $Family
   String toString() => r'programFunctionDoorViewProvider';
 }
 
+/// The door for the screen: the live door, which opens offline from the
+/// device cache while the account's duty holds.
+
 @ProviderFor(programFunctionDoorViewWithSnapshot)
 final programFunctionDoorViewWithSnapshotProvider =
     ProgramFunctionDoorViewWithSnapshotFamily._();
+
+/// The door for the screen: the live door, which opens offline from the
+/// device cache while the account's duty holds.
 
 final class ProgramFunctionDoorViewWithSnapshotProvider
     extends
@@ -1375,6 +1410,8 @@ final class ProgramFunctionDoorViewWithSnapshotProvider
     with
         $FutureModifier<ProgramReadView<ProgramDoorView>>,
         $FutureProvider<ProgramReadView<ProgramDoorView>> {
+  /// The door for the screen: the live door, which opens offline from the
+  /// device cache while the account's duty holds.
   ProgramFunctionDoorViewWithSnapshotProvider._({
     required ProgramFunctionDoorViewWithSnapshotFamily super.from,
     required (String, String) super.argument,
@@ -1422,7 +1459,10 @@ final class ProgramFunctionDoorViewWithSnapshotProvider
 }
 
 String _$programFunctionDoorViewWithSnapshotHash() =>
-    r'033a5625589ab42a2286a690e161d5a8678b4c47';
+    r'cd529530b08892ae2f7daad24a1fb133ab57cca9';
+
+/// The door for the screen: the live door, which opens offline from the
+/// device cache while the account's duty holds.
 
 final class ProgramFunctionDoorViewWithSnapshotFamily extends $Family
     with
@@ -1438,6 +1478,9 @@ final class ProgramFunctionDoorViewWithSnapshotFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// The door for the screen: the live door, which opens offline from the
+  /// device cache while the account's duty holds.
 
   ProgramFunctionDoorViewWithSnapshotProvider call(
     String programId,
@@ -1546,12 +1589,16 @@ final class ProgramDeparturesRosterViewFamily extends $Family
   String toString() => r'programDeparturesRosterViewProvider';
 }
 
-/// The live board, from the live read or a bounded offline snapshot.
+/// The live board (#1339): function labels, the alerts this account may
+/// read and the travel counts through listeners, gated on the account's
+/// authority, with the schedule phased by the app clock.
 
 @ProviderFor(programLiveBoardView)
 final programLiveBoardViewProvider = ProgramLiveBoardViewFamily._();
 
-/// The live board, from the live read or a bounded offline snapshot.
+/// The live board (#1339): function labels, the alerts this account may
+/// read and the travel counts through listeners, gated on the account's
+/// authority, with the schedule phased by the app clock.
 
 final class ProgramLiveBoardViewProvider
     extends
@@ -1563,7 +1610,9 @@ final class ProgramLiveBoardViewProvider
     with
         $FutureModifier<ProgramReadView<ProgramLiveBoard>>,
         $FutureProvider<ProgramReadView<ProgramLiveBoard>> {
-  /// The live board, from the live read or a bounded offline snapshot.
+  /// The live board (#1339): function labels, the alerts this account may
+  /// read and the travel counts through listeners, gated on the account's
+  /// authority, with the schedule phased by the app clock.
   ProgramLiveBoardViewProvider._({
     required ProgramLiveBoardViewFamily super.from,
     required String super.argument,
@@ -1609,9 +1658,11 @@ final class ProgramLiveBoardViewProvider
 }
 
 String _$programLiveBoardViewHash() =>
-    r'54efdc4c0a01e01ca505dca9629f86908b73c04f';
+    r'dcf30ae562f7ed16b475de188146fa7d4ccb1518';
 
-/// The live board, from the live read or a bounded offline snapshot.
+/// The live board (#1339): function labels, the alerts this account may
+/// read and the travel counts through listeners, gated on the account's
+/// authority, with the schedule phased by the app clock.
 
 final class ProgramLiveBoardViewFamily extends $Family
     with
@@ -1628,7 +1679,9 @@ final class ProgramLiveBoardViewFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// The live board, from the live read or a bounded offline snapshot.
+  /// The live board (#1339): function labels, the alerts this account may
+  /// read and the travel counts through listeners, gated on the account's
+  /// authority, with the schedule phased by the app clock.
 
   ProgramLiveBoardViewProvider call(String programId) =>
       ProgramLiveBoardViewProvider._(argument: programId, from: this);
