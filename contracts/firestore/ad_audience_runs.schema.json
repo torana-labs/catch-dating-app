@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/ad_audience_runs.schema.json",
+  "title": "AdAudienceRunDocument",
+  "description": "Server-only receipt of the latest customer-list run for one ad-platform audience (docs/ads_conversion_spec.md, Customer lists). Counts and timing only: no phone, email, digest or account ID. Overwritten by each run.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "adAudienceRuns",
+  "x-firestore-path": "adAudienceRuns/{audienceKey}",
+  "x-document-id-field": "audienceKey",
+  "x-owner": "ad customer-list job",
+  "required": [
+    "schemaVersion",
+    "audienceKey",
+    "destination",
+    "platformAudienceId",
+    "status",
+    "outcome",
+    "startedAt",
+    "finishedAt",
+    "candidates",
+    "members",
+    "uploaded",
+    "invalid",
+    "excluded",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "audienceKey": {
+      "enum": [
+        "meta_active_hosts"
+      ],
+      "description": "meta_active_hosts: the Meta customer-file audience of owners of organizers with a first booked event."
+    },
+    "destination": {
+      "enum": [
+        "meta"
+      ]
+    },
+    "platformAudienceId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9]{5,25}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The platform's audience ID, once the job has found or created it."
+    },
+    "status": {
+      "enum": [
+        "replaced",
+        "emptied",
+        "failed"
+      ],
+      "description": "replaced: the whole list was replaced; emptied: no one qualified, so the audience was deleted; failed: the platform refused or could not be reached, and the outcome names why."
+    },
+    "outcome": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]{1,60}$",
+      "description": "Short outcome code; provider response bodies are never stored."
+    },
+    "startedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "finishedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "candidates": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000000,
+      "description": "Organizers whose growth facts show a first booked event."
+    },
+    "members": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000000,
+      "description": "Distinct rows uploaded after every exclusion: one per owner, an owner of several organizers counted once."
+    },
+    "uploaded": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000000,
+      "description": "Rows the platform reported receiving."
+    },
+    "invalid": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000000,
+      "description": "Rows the platform reported as invalid."
+    },
+    "excluded": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "notOwned",
+        "deleted",
+        "staff",
+        "test",
+        "restricted",
+        "underAge",
+        "optedOut",
+        "noContact"
+      ],
+      "properties": {
+        "notOwned": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "deleted": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "staff": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "test": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "restricted": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "underAge": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "optedOut": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "noContact": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000000
+        }
+      },
+      "description": "Dropped by first reason: organizers that are not real owned businesses (notOwned), then owners with a deleted account, staff, a test or demo account, a safety restriction, under 18, opted out of ad matching, or no phone or email."
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    }
+  }
+}

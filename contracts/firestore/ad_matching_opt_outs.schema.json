@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/ad_matching_opt_outs.schema.json",
+  "title": "AdMatchingOptOutDocument",
+  "description": "Server-only record that one phone number or email is opted out of ad matching (docs/ads_conversion_spec.md, Ad-matching notice and opt-out). Keyed by a domain-separated SHA-256 of the digest the ad platforms receive, so the conversion queue and the customer-list job can check it from the digests they hold. The raw phone or email is never stored. Permanent until staff remove it; a removal keeps the record with who removed it.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "adMatchingOptOuts",
+  "x-firestore-path": "adMatchingOptOuts/{optOutId}",
+  "x-document-id-field": "optOutId",
+  "x-owner": "ad-matching opt-out",
+  "required": [
+    "schemaVersion",
+    "optOutId",
+    "kind",
+    "source",
+    "status",
+    "note",
+    "createdAt",
+    "createdByUid",
+    "removedAt",
+    "removedByUid",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "optOutId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of `catch-ad-matching-opt-out-v1:{kind}:{digest}`, where the digest is the SHA-256 of the E.164 phone or of the trimmed, lowercased email."
+    },
+    "kind": {
+      "enum": [
+        "phone",
+        "email"
+      ]
+    },
+    "source": {
+      "enum": [
+        "support",
+        "admin"
+      ],
+      "description": "support: recorded from a person's request to Catch support; admin: recorded by staff on Catch's own decision."
+    },
+    "status": {
+      "enum": [
+        "active",
+        "removed"
+      ],
+      "description": "Only an active record stops ad matching."
+    },
+    "note": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Short staff note, such as the support conversation it came from. Never the phone number or email."
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "createdByUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "description": "The staff member who recorded the opt-out."
+    },
+    "removedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "removedByUid": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The staff member who removed the opt-out."
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    }
+  }
+}

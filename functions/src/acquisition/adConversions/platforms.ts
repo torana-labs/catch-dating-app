@@ -35,7 +35,9 @@ export function metaEvent(delivery: Delivery) {
     user_data: {
       // A conversion-leads CRM stage names its lead; Meta matches it first.
       ...(delivery.metaLeadId ? {lead_id: delivery.metaLeadId} : {}),
-      ...(m.phoneSha256 ? {ph: [m.phoneSha256]} : {}),
+      // Meta hashes the number as digits only; a record queued before that
+      // digest existed sends no phone rather than one Meta cannot match.
+      ...(m.metaPhoneSha256 ? {ph: [m.metaPhoneSha256]} : {}),
       ...(m.emailSha256 ? {em: [m.emailSha256]} : {}),
       external_id: [m.externalIdSha256],
       country: [COUNTRY_SHA256],

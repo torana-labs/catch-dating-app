@@ -9,8 +9,10 @@ import {
   hashedEmail,
   hashedOrganizerId,
   hashedPhone,
+  hashedPhoneForMeta,
   hostConversionEventId,
 } from "./hostConversions";
+import {isAdMatchingOptedOut} from "../adMatching/optOuts";
 
 export const AD_CONVERSION_DELIVERIES = "adConversionDeliveries";
 export const MAX_DELIVERY_ATTEMPTS = 5;
@@ -20,7 +22,9 @@ export type Delivery = AdConversionDeliveryDocument;
 /**
  * Builds one queue record per destination. Pure: contact details are hashed
  * here and only digests are returned, so raw phone or email never reach the
- * queue.
+ * queue. An opted-out owner's records are born cancelled with outcome
+ * `opted_out` and no contact digests, so the conversion is never sent and a
+ * retried trigger cannot queue it again.
  * @param {object} input Conversion, organizer, owner and time.
  * @return {Delivery[]} Records to create, or none.
  */
@@ -32,6 +36,8 @@ export function hostDeliveryRecords(input: {
   nowMillis: number;
   /** The Meta lead-form lead this host came from, if one matched. */
   metaLeadId?: string | null;
+  /** The owner's phone or email is opted out of ad matching. */
+  optedOut?: boolean;
 }): Delivery[] {
   const uid = conversionOwner(input.organizer);
   if (!uid || !input.owner || input.owner.deletedAt) return [];
@@ -42,6 +48,7 @@ export function hostDeliveryRecords(input: {
   if (!phoneSha256 && !emailSha256) return [];
   const eventId = hostConversionEventId(input.organizerId, input.conversion);
   const now = Timestamp.fromMillis(input.nowMillis);
+  const optedOut = input.optedOut === true;
   return AD_DESTINATIONS.map((destination) => ({
     schemaVersion: 1 as const,
     deliveryId: `${destination}_${eventId}`,
@@ -52,18 +59,20 @@ export function hostDeliveryRecords(input: {
     uid,
     occurredAt: now,
     matching: {
-      phoneSha256,
-      emailSha256,
+      phoneSha256: optedOut ? null : phoneSha256,
+      emailSha256: optedOut ? null : emailSha256,
+      metaPhoneSha256: optedOut ? null :
+        hashedPhoneForMeta(input.owner?.phoneNumber),
       externalIdSha256: hashedOrganizerId(input.organizerId),
     },
-    metaLeadId: input.metaLeadId ?? null,
+    metaLeadId: optedOut ? null : input.metaLeadId ?? null,
     valueMinor: null,
     currency: "INR",
-    status: "pending" as const,
+    status: optedOut ? "cancelled" as const : "pending" as const,
     attempts: 0,
     nextAttemptAt: now,
     lastAttemptAt: null,
-    lastOutcome: null,
+    lastOutcome: optedOut ? "opted_out" : null,
     createdAt: now,
     updatedAt: now,
     expiresAt: Timestamp.fromMillis(
@@ -89,12 +98,18 @@ export async function enqueueHostConversions(input: {
   const uid = conversionOwner(organizer);
   if (!uid) return 0;
   const owner = (await input.db.collection("users").doc(uid).get()).data();
-  const metaLeadId = await matchingMetaLead(input.db, owner, organizer);
+  // Checked once per enqueue and again by the worker before each send.
+  const optedOut = await isAdMatchingOptedOut(input.db, {
+    phoneSha256: hashedPhone(owner?.phoneNumber),
+    emailSha256: hashedEmail(owner?.email) ?? hashedEmail(organizer?.email),
+  });
+  const metaLeadId = optedOut ? null :
+    await matchingMetaLead(input.db, owner, organizer);
   let created = 0;
   for (const conversion of input.conversions) {
     for (const record of hostDeliveryRecords({organizerId: input.organizerId,
       conversion, organizer, owner, nowMillis: input.nowMillis,
-      metaLeadId})) {
+      metaLeadId, optedOut})) {
       try {
         await input.db.collection(AD_CONVERSION_DELIVERIES)
           .doc(record.deliveryId).create(record);
@@ -109,7 +124,8 @@ export async function enqueueHostConversions(input: {
 
 /**
  * The Meta lead-form lead an owner came from: a processed lead whose hashed
- * phone, then email, matches the owner's. Null when there is none.
+ * phone, then email, matches the owner's. A lead carrying any opted-out
+ * identifier is never attached. Null when there is none.
  * @param {FirebaseFirestore.Firestore} db Firestore.
  * @param {object|undefined} owner Owner's user document.
  * @param {object|undefined} organizer Organizer document.
@@ -129,9 +145,61 @@ export async function matchingMetaLead(db: FirebaseFirestore.Firestore,
     const lead = rows.docs.map((doc) => doc.data())
       .find((row) => row.status === "processed" &&
         typeof row.leadgenId === "string");
-    if (lead) return lead.leadgenId as string;
+    if (!lead) continue;
+    if (await isAdMatchingOptedOut(db, lead)) return null;
+    return lead.leadgenId as string;
   }
   return null;
+}
+
+/**
+ * Cancels pending deliveries that carry an opted-out digest, at once rather
+ * than at the next send, and strips their contact digests.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {object} digests Phone and email digests just opted out.
+ * @param {number} nowMillis Current time.
+ * @return {Promise<number>} Deliveries cancelled.
+ */
+export async function cancelOptedOutDeliveries(db: FirebaseFirestore.Firestore,
+  digests: {phoneSha256: string | null; emailSha256: string | null},
+  nowMillis: number): Promise<number> {
+  const seen = new Set<string>();
+  let cancelled = 0;
+  for (const [field, digest] of [
+    ["matching.phoneSha256", digests.phoneSha256],
+    ["matching.emailSha256", digests.emailSha256],
+  ] as const) {
+    if (!digest) continue;
+    const rows = await db.collection(AD_CONVERSION_DELIVERIES)
+      .where(field, "==", digest).limit(100).get();
+    for (const doc of rows.docs) {
+      const delivery = doc.data() as Delivery;
+      if (seen.has(doc.id) || delivery.status !== "pending") continue;
+      seen.add(doc.id);
+      await doc.ref.update(optedOutCancellation(delivery, nowMillis));
+      cancelled += 1;
+    }
+  }
+  return cancelled;
+}
+
+/**
+ * The update that cancels a delivery for an opt-out: no contact digest or
+ * lead stays on the record.
+ * @param {Delivery} delivery Queue record.
+ * @param {number} nowMillis Current time.
+ * @return {Partial<Delivery>} Fields to update.
+ */
+export function optedOutCancellation(delivery: Delivery,
+  nowMillis: number): Partial<Delivery> {
+  return {
+    status: "cancelled",
+    lastOutcome: "opted_out",
+    matching: {...delivery.matching, phoneSha256: null, emailSha256: null,
+      metaPhoneSha256: null},
+    metaLeadId: null,
+    updatedAt: Timestamp.fromMillis(nowMillis),
+  };
 }
 
 /** Backoff after a retryable outcome: 5, 10, 20, 40 minutes. */
