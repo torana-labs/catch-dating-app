@@ -55,9 +55,12 @@ export interface CatchAvatarVeiledProps extends CatchAvatarFrame {
   recipe: "veiled";
 }
 
+/** The grounds a monogram's initials sit on: the palette grounds the apps share. */
+export type CatchMonogramGround = SharedGround;
+
 /** `CatchAvatar.monogram`: initials on a palette ground. */
 export interface CatchAvatarMonogramProps extends CatchAvatarFrame {
-  ground: SharedGround;
+  ground: CatchMonogramGround;
   initials?: string;
   name?: string;
   recipe: "monogram";
