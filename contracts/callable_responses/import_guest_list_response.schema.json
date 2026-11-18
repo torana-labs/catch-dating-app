@@ -38,7 +38,7 @@
         "mapping": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["displayName", "phone", "email", "externalReference", "arrivalGroup", "ticketType", "status"],
+          "required": ["displayName", "phone", "email", "externalReference", "arrivalGroup", "ticketType", "status", "city", "revenueAmount", "revenueCurrency"],
           "properties": {
             "displayName": {"$ref": "#/definitions/column"},
             "phone": {"$ref": "#/definitions/column"},
@@ -46,7 +46,10 @@
             "externalReference": {"$ref": "#/definitions/column"},
             "arrivalGroup": {"$ref": "#/definitions/column"},
             "ticketType": {"$ref": "#/definitions/column"},
-            "status": {"$ref": "#/definitions/column"}
+            "status": {"$ref": "#/definitions/column"},
+            "city": {"$ref": "#/definitions/column"},
+            "revenueAmount": {"$ref": "#/definitions/column"},
+            "revenueCurrency": {"$ref": "#/definitions/column"}
           }
         },
         "needsMapping": {"type": "boolean"},

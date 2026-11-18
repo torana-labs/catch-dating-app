@@ -63,6 +63,8 @@ export interface CanonicalGuestRow {
   value: NormalizedRosterImportRow;
   fields: Partial<Record<GuestField, GuestFieldSource>>;
   rawCells: string[];
+  /** Reasons the row needs a look before it can be saved. */
+  issues?: string[];
 }
 
 /** A source row the converter did not turn into a guest, and why. */

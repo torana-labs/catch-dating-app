@@ -39,7 +39,20 @@
             "externalReference": {"$ref": "#/definitions/column"},
             "arrivalGroup": {"$ref": "#/definitions/column"},
             "ticketType": {"$ref": "#/definitions/column"},
-            "status": {"$ref": "#/definitions/column"}
+            "status": {"$ref": "#/definitions/column"},
+            "city": {"$ref": "#/definitions/column"},
+            "revenueAmount": {"$ref": "#/definitions/column"},
+            "revenueCurrency": {"$ref": "#/definitions/column"}
+          }
+        },
+        "fallbackRevenue": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["amountMinor", "currency"],
+          "description": "The ticket price for guests the file gives no amount for, recorded as the host's estimate (as Catch Host's import sheet does).",
+          "properties": {
+            "amountMinor": {"type": "integer", "minimum": 0, "maximum": 100000000},
+            "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}
           }
         },
         "excludedRowIds": {"type": "array", "maxItems": 250, "uniqueItems": true,

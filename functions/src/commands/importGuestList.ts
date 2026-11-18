@@ -27,6 +27,10 @@ import {columnShapes, type ColumnShape} from "../guestImport/columnShapes";
 import {readGuestFile, type GuestFileRead} from "../guestImport/file";
 import {countUnrecognisedHeaderShape} from "../guestImport/headerShapes";
 import {guestIntakeInput} from "../guestImport/intakeRows";
+import {
+  suggestExtraMapping,
+  type GuestExtraMapping,
+} from "../guestImport/mapping";
 import {readGuestTable} from "../guestImport/registry";
 import {
   suggestGuestMergesAndTags,
@@ -114,6 +118,7 @@ export async function importGuestListHandler(
   // never its contents.
   const requestInput = {eventId: input.eventId, fileFingerprint,
     fileName: input.file.fileName, mapping: input.mapping ?? null,
+    fallbackRevenue: input.fallbackRevenue ?? null,
     excludedRowIds: [...(input.excludedRowIds ?? [])].sort()};
 
   const eventSnap = await db.collection("events").doc(input.eventId).get();
@@ -132,11 +137,29 @@ export async function importGuestListHandler(
   const headers = uniqueHeaders(file.matrix[0]).slice(0, 41);
   const shapes = columnShapes(headers, file.matrix.slice(1));
 
+  const {city, revenueAmount, revenueCurrency, ...canonicalMapping} =
+    input.mapping ?? {};
+  const suggestedExtra = suggestExtraMapping(headers);
+  const extraMapping: GuestExtraMapping = {
+    city: city === undefined ? suggestedExtra.city : city,
+    revenueAmount: revenueAmount === undefined ?
+      suggestedExtra.revenueAmount : revenueAmount,
+    revenueCurrency: revenueCurrency === undefined ?
+      suggestedExtra.revenueCurrency : revenueCurrency,
+  };
+  if (Object.values(extraMapping).some((column) => column !== null &&
+      column >= headers.length)) {
+    throw refusal("roster_invalid_mapping");
+  }
   let read: CanonicalGuestRead;
   try {
     read = readGuestTable(file.matrix, {
       converterId: file.converterId ?? undefined,
-      mapping: input.mapping as Partial<GuestColumnMapping> | undefined,
+      mapping: input.mapping ?
+        canonicalMapping as Partial<GuestColumnMapping> : undefined,
+      reviewStatuses: true,
+      reservedColumns: Object.values(extraMapping)
+        .filter((column): column is number => column !== null),
     });
   } catch (error) {
     const code = errorCode(error);
@@ -157,7 +180,8 @@ export async function importGuestListHandler(
   }
 
   const intakeDeps = deps.intake();
-  const intake = guestIntakeInput(read);
+  const intake = guestIntakeInput(read, {extraMapping,
+    fallbackRevenue: input.fallbackRevenue ?? null});
   const review = await asHttps(async () => {
     let draft = await startHostRosterIntake(intakeDeps, {
       hostUid: caller.uid, organizerId, eventId: input.eventId,
@@ -190,7 +214,8 @@ export async function importGuestListHandler(
   if (data.mode === "preview") {
     return describe({status: review.draft.state === "applied" ? "applied" :
       "previewed", previewHash, receiptId: null, file, read, shapes,
-    review, preview, eventId: input.eventId, imported: null, suggestions});
+    review, preview, eventId: input.eventId, imported: null, suggestions,
+    extraMapping});
   }
 
   const requestHash = commandRequestHash(COMMAND_ID, caller.uid,
@@ -214,7 +239,8 @@ export async function importGuestListHandler(
     data.idempotencyKey);
   const applied = describe({status: "applied", previewHash, receiptId, file,
     read, shapes, review, preview, eventId: input.eventId, imported,
-    receiptImportId: review.receipt?.importId ?? null, suggestions});
+    receiptImportId: review.receipt?.importId ?? null, suggestions,
+    extraMapping});
   return db.runTransaction(async (tx) => {
     const now = deps.now();
     const again = await replayCommand<Response>(tx, db, {
@@ -290,6 +316,7 @@ function describe(params: {
   imported: EventAttendeeImportResult | null;
   receiptImportId?: string | null;
   suggestions: GuestSuggestion[];
+  extraMapping: GuestExtraMapping;
 }): Response {
   const {status, preview, read, review, imported} = params;
   const counts = {...preview.counts, skipped: read.skipped.length};
@@ -336,7 +363,8 @@ function describe(params: {
     updatedCount: imported.updatedCount,
     skippedCount: imported.skippedCount} : null;
   const mapping = emptyMapping();
-  for (const [field, column] of Object.entries(read.mapping)) {
+  for (const [field, column] of Object.entries({...read.mapping,
+    ...params.extraMapping})) {
     if (field in mapping) mapping[field as keyof Mapping] = column;
   }
   return {
@@ -385,7 +413,7 @@ function converterLabel(id: string): string {
 function emptyMapping(): Mapping {
   return {displayName: null, phone: null, email: null,
     externalReference: null, arrivalGroup: null, ticketType: null,
-    status: null};
+    status: null, city: null, revenueAmount: null, revenueCurrency: null};
 }
 
 function errorCode(error: unknown): string {

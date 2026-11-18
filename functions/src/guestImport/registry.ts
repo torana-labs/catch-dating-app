@@ -23,7 +23,12 @@ import {poshConverter} from "./converters/posh";
 import {townscriptConverter} from "./converters/townscript";
 import {typeformConverter} from "./converters/typeform";
 import {vcardConverter} from "./converters/vcard";
-import {guestFields, rosterStatus, suggestGuestMapping} from "./mapping";
+import {
+  guestFields,
+  reviewStatus,
+  rosterStatus,
+  suggestGuestMapping,
+} from "./mapping";
 import {
   normalizeHeader,
   nullableValueAt,
@@ -137,7 +142,15 @@ export function readGuestTable(
   options: {providerHint?: ExternalRosterProvider;
     converterId?: RosterAdapterId;
     /** The host's column choices; null unmaps a field. */
-    mapping?: Partial<GuestColumnMapping>} = {}
+    mapping?: Partial<GuestColumnMapping>;
+    /**
+     * Read status cells as the review stage does (reviewStatus): cancelled
+     * guests are skipped and unknown words flag the row. The forwarded
+     * roster keeps its original reading.
+     */
+    reviewStatuses?: boolean;
+    /** Columns used by fields outside the canonical row. */
+    reservedColumns?: number[]} = {}
 ): CanonicalGuestRead {
   if (matrix.length < 2) throw new Error("roster_missing_rows");
   if (matrix[0].length > MAX_GUEST_COLUMNS) {
@@ -167,7 +180,8 @@ export function readGuestTable(
     if (chosen !== suggested[field]) correctedFields.push(field);
     mapping[field] = chosen;
   }
-  const chosenColumns = Object.values(mapping)
+  const chosenColumns = [...Object.values(mapping),
+    ...(options.reservedColumns ?? [])]
     .filter((column): column is number => column !== null);
   if (options.mapping &&
       new Set(chosenColumns).size !== chosenColumns.length) {
@@ -190,12 +204,14 @@ export function readGuestTable(
       continue;
     }
     const statusCell = nullableValueAt(row, mapping.status);
-    const status = converter?.statusFor ? converter.statusFor(statusCell) :
-      rosterStatus(statusCell);
-    if (status === "excluded") {
+    const read = converter?.statusFor ? converter.statusFor(statusCell) :
+      options.reviewStatuses ? reviewStatus(statusCell) :
+        rosterStatus(statusCell);
+    if (read === "excluded") {
       skipped.push({sourceRowNumber, reason: "excluded-status", rawCells});
       continue;
     }
+    const status = read === "unknown" ? "registered" : read;
     const value: NormalizedRosterImportRow = {
       rowId: String(sourceRowNumber),
       displayName,
@@ -215,7 +231,8 @@ export function readGuestTable(
       }
       fields[field] = {column, header: normalized.headers[column]};
     }
-    rows.push({sourceRowNumber, value, fields, rawCells});
+    rows.push({sourceRowNumber, value, fields, rawCells,
+      ...(read === "unknown" ? {issues: ["unknown-status"]} : {})});
   }
   return {adapter, headers: normalized.headers, mapping, correctedFields,
     rows, skipped, truncatedCount: normalized.rows.length - index};

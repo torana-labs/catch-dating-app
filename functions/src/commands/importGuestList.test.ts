@@ -191,3 +191,35 @@ test("preview suggests merges and tags, each with its reason", async () => {
   ]);
   assert.ok(preview.summary.lines.some((line) => line.startsWith("1 guest looks like someone already in your contacts")));
 });
+
+test("city, revenue and statuses read as Catch Host's import sheet reads them", async () => {
+  const {db, deps} = harness();
+  const csv = "Name,Phone,City,Amount,Currency,Status\n" +
+    "Asha Sample,9876543210,mumbai,\"1,499.50\",inr,Confirmed\n" +
+    "Ravi Sample,9876543211,Atlantis,499,INR,Going\n" +
+    "Mira Sample,9876543212,,,,Refunded\n" +
+    "Kabir Sample,9876543213,,,,Maybe later\n" +
+    "Zoya Sample,9876543214,,,,\n";
+  const preview = await importGuestListHandler(call(envelope("preview", csv, {}, {
+    fallbackRevenue: {amountMinor: 50000, currency: "INR"}})), deps);
+  valid(validate.response, preview, "parity");
+  assert.deepEqual(preview.result.mapping, {displayName: 0, phone: 1, email: null,
+    externalReference: null, arrivalGroup: null, ticketType: null, status: 5,
+    city: 2, revenueAmount: 3, revenueCurrency: 4});
+  assert.deepEqual(preview.result.skipped, [{sourceRowNumber: 4, reason: "excluded-status"}]);
+  const byRow = new Map(preview.result.rows.map((row) => [row.rowId, row]));
+  assert.equal(byRow.get("2")?.kind, "add");
+  assert.equal(byRow.get("3")?.issueCode, "invalid-city");
+  assert.equal(byRow.get("5")?.issueCode, "unknown-status");
+  const stored = db.read(`hostRosterIntakeSessions/${preview.result.sessionId}`) as {
+    draft: {rows: Array<{value: Record<string, unknown>; fields: Record<string, {origin: string}>}>}};
+  const asha = stored.draft.rows.find((row) => row.value.rowId === "2")!;
+  assert.equal(asha.value.cityMarketId, "in-mh-mumbai");
+  assert.equal(asha.value.revenueAmountMinor, 149950);
+  assert.equal(asha.value.revenueCurrency, "INR");
+  assert.equal(asha.value.revenueSource, "hostImport");
+  const zoya = stored.draft.rows.find((row) => row.value.rowId === "6")!;
+  assert.equal(zoya.value.revenueAmountMinor, 50000);
+  assert.equal(zoya.value.revenueSource, "hostEstimate");
+  assert.equal(zoya.fields.revenueAmountMinor.origin, "hostCorrection");
+});

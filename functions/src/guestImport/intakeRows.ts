@@ -9,7 +9,9 @@ import type {
   HostRosterIntakeRow,
   HostRosterSourceField,
 } from "../events/hostRosterIntakeCore";
+import {marketForIdOrAlias} from "../locations/marketConfig";
 import type {CanonicalGuestRead, GuestField} from "./canonical";
+import {parseRevenueAmountMinor, type GuestExtraMapping} from "./mapping";
 
 /** The review session's bounds for each mapped value. */
 const MAX_LENGTH: Record<Exclude<GuestField, "status">, number> = {
@@ -34,17 +36,28 @@ export interface GuestIntakeInput {
  * cut and the row flagged "value-too-long", so it needs a look before apply.
  * @return {GuestIntakeInput} Headers, mapping and rows for the session.
  */
-export function guestIntakeInput(read: CanonicalGuestRead): GuestIntakeInput {
+export function guestIntakeInput(read: CanonicalGuestRead,
+  options: {
+    /** City and revenue columns (Catch Host's reader maps these too). */
+    extraMapping?: GuestExtraMapping;
+    /** The host's ticket price for rows the file gives no amount for. */
+    fallbackRevenue?: {amountMinor: number; currency: string} | null;
+  } = {}): GuestIntakeInput {
+  const extra = options.extraMapping ??
+    {city: null, revenueAmount: null, revenueCurrency: null};
   const headers = read.headers.map((header) =>
     header.slice(0, MAX_HEADER_LENGTH));
   const mapping: Record<string, number> = {};
   for (const [field, column] of Object.entries(read.mapping)) {
     if (column !== null) mapping[field] = column;
   }
+  for (const [field, column] of Object.entries(extra)) {
+    if (column !== null) mapping[field] = column;
+  }
   const corrected = new Set(read.correctedFields);
   const rows = read.rows.map((row): HostRosterIntakeRow => {
-    const issues: string[] = [];
-    const value = {...row.value};
+    const issues: string[] = [...(row.issues ?? [])];
+    const value: HostRosterIntakeRow["value"] = {...row.value};
     for (const [field, max] of Object.entries(MAX_LENGTH) as Array<
       [Exclude<GuestField, "status">, number]>) {
       const current = value[field];
@@ -63,8 +76,53 @@ export function guestIntakeInput(read: CanonicalGuestRead): GuestIntakeInput {
         confidence: null};
       fields[field] = provenance;
     }
+    const source = (column: number | null, origin:
+      HostRosterSourceField["origin"] = "upload"): HostRosterSourceField =>
+      ({column: column ?? -1, header: column === null ? "Host entry" :
+        headers[column] ?? "Column", origin, confidence: null});
+    const cell = (column: number | null) => column === null ? null :
+      (row.rawCells[column] ?? "").trim() || null;
+
+    const rawCity = cell(extra.city);
+    if (rawCity) {
+      const market = marketForIdOrAlias(rawCity);
+      if (market) {
+        value.cityMarketId = market.marketId;
+        fields.cityMarketId = source(extra.city);
+      } else {
+        issues.push("invalid-city");
+      }
+    }
+    const rawAmount = cell(extra.revenueAmount);
+    const mappedAmount = rawAmount === null ? null :
+      parseRevenueAmountMinor(rawAmount);
+    if (rawAmount !== null && mappedAmount === null) {
+      issues.push("invalid-revenue-amount");
+    }
+    const fallback = options.fallbackRevenue ?? null;
+    const amount = mappedAmount ?? (rawAmount === null && fallback ?
+      fallback.amountMinor : null);
+    if (amount !== null) {
+      const currency = cell(extra.revenueCurrency)?.toUpperCase() ??
+        fallback?.currency ?? null;
+      if (!currency || !/^[A-Z]{3}$/u.test(currency)) {
+        issues.push("missing-revenue-currency");
+      } else {
+        value.revenueAmountMinor = amount;
+        value.revenueCurrency = currency;
+        value.revenueSource = mappedAmount !== null ? "hostImport" :
+          "hostEstimate";
+        fields.revenueAmountMinor = mappedAmount !== null ?
+          source(extra.revenueAmount) : source(null, "hostCorrection");
+        fields.revenueCurrency = extra.revenueCurrency !== null &&
+          cell(extra.revenueCurrency) ? source(extra.revenueCurrency) :
+          source(null, "hostCorrection");
+        fields.revenueSource = fields.revenueAmountMinor;
+      }
+    }
     return {value, sourceRowNumber: row.sourceRowNumber, fields,
-      rawCells: row.rawCells, ...(issues.length ? {issues} : {})};
+      rawCells: row.rawCells,
+      ...(issues.length ? {issues: [...new Set(issues)].slice(0, 10)} : {})};
   });
   return {headers, mapping, rows};
 }
