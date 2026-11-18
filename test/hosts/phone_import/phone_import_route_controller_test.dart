@@ -189,6 +189,15 @@ class _Fixture {
       uidProvider.overrideWithValue(const AsyncData('manager-account')),
       authRepositoryProvider.overrideWithValue(AuthRepository(auth)),
       programWorkRepositoryProvider.overrideWithValue(work),
+      // The work shell reads access through listeners now (#1339); the
+      // phone import itself still rechecks the live callable before review.
+      programWorkEntryProvider(_programId, null).overrideWith(
+        (ref) async => (
+          value: ProgramWorkAccess.fromCallableData(access),
+          snapshotAt: null,
+          snapshotExpiresAt: null,
+        ),
+      ),
       programSetupRepositoryProvider.overrideWithValue(
         ProgramSetupRepository(functions),
       ),
@@ -325,7 +334,9 @@ void main() {
     expect(find.text('Action unavailable'), findsNothing);
     expect(f.assignments.calls, 0);
     expect(f.organizers.requestedIds, isEmpty);
-    expect(f.functions.calls.length, 3);
+    // The guests screen reads access through listeners; both calls are the
+    // phone import's own live access checks.
+    expect(f.functions.calls.length, 2);
     expect(
       f.functions.calls.every(
         (c) =>
