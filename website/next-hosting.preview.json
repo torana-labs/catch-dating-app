@@ -173,6 +173,13 @@
         }
       },
       {
+        "source": "/api/listing-request",
+        "function": {
+          "functionId": "submitListingRequest",
+          "region": "asia-south1"
+        }
+      },
+      {
         "source": "/api/host-acquisition-consent",
         "function": {
           "functionId": "hostAcquisitionConsent",

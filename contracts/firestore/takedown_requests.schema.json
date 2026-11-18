@@ -1,0 +1,299 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/takedown_requests.schema.json",
+  "title": "TakedownRequestDocument",
+  "description": "One structured listing request from the public form at /listings/request/: its fixed type, target, requester, type-specific verification, declarations, the deadlines that drive the Admin Inbox (acknowledge 24 h; act and resolve per type), the status, the fixed outcome or decline reason, one appeal, and the takedown case id when the organiser takedown tool ran. It records requests only: removal and the do-not-list registry are the takedown tool's. Server-only; never a Sales record.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "takedownRequests",
+  "x-firestore-path": "takedownRequests/{requestId}",
+  "x-document-id-field": "requestId",
+  "x-owner": "submitListingRequest and adminUpdateTakedownRequest",
+  "required": [
+    "schemaVersion",
+    "requestId",
+    "reference",
+    "clientRequestId",
+    "requestHash",
+    "requestType",
+    "target",
+    "requester",
+    "verification",
+    "declarations",
+    "context",
+    "consent",
+    "sourcePage",
+    "status",
+    "outcome",
+    "declineReason",
+    "caseId",
+    "infoRequests",
+    "appeal",
+    "deciderUid",
+    "acknowledgedAt",
+    "ackDueAt",
+    "actionDueAt",
+    "resolveDueAt",
+    "decidedAt",
+    "closedAt",
+    "history",
+    "createdAt",
+    "updatedAt"
+  ],
+  "definitions": {
+    "historyEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "at",
+        "action",
+        "byUid",
+        "status",
+        "detail"
+      ],
+      "properties": {
+        "at": {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+        },
+        "action": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/historyAction"
+        },
+        "byUid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        },
+        "status": {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/status"
+        },
+        "detail": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        }
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "requestId": {
+      "$ref": "../shared/takedown_request_common.schema.json#/definitions/requestId"
+    },
+    "reference": {
+      "$ref": "../shared/takedown_request_common.schema.json#/definitions/reference"
+    },
+    "clientRequestId": {
+      "$ref": "../shared/takedown_request_common.schema.json#/definitions/clientRequestId"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the normalized submission; a retry with other answers under the same id is refused."
+    },
+    "requestType": {
+      "$ref": "../shared/takedown_request_common.schema.json#/definitions/requestType"
+    },
+    "target": {
+      "$ref": "../shared/takedown_request_common.schema.json#/definitions/target"
+    },
+    "requester": {
+      "$ref": "../shared/takedown_request_common.schema.json#/definitions/storedRequester"
+    },
+    "verification": {
+      "$ref": "../shared/takedown_request_common.schema.json#/definitions/verification"
+    },
+    "declarations": {
+      "$ref": "../shared/takedown_request_common.schema.json#/definitions/declarations"
+    },
+    "context": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 280
+    },
+    "consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "version",
+        "decidedAt"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "listingRequest"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "decidedAt": {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+        }
+      }
+    },
+    "sourcePage": {
+      "$ref": "../shared/takedown_request_common.schema.json#/definitions/sourcePage"
+    },
+    "status": {
+      "$ref": "../shared/takedown_request_common.schema.json#/definitions/status"
+    },
+    "outcome": {
+      "oneOf": [
+        {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/outcome"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "declineReason": {
+      "oneOf": [
+        {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/declineReason"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "caseId": {
+      "oneOf": [
+        {
+          "$ref": "../shared/takedown_request_common.schema.json#/definitions/caseId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "infoRequests": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "template",
+          "at",
+          "byUid"
+        ],
+        "properties": {
+          "template": {
+            "$ref": "../shared/takedown_request_common.schema.json#/definitions/infoTemplate"
+          },
+          "at": {
+            "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+          },
+          "byUid": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    "appeal": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "recordedAt",
+            "recordedByUid",
+            "dueAt",
+            "decision",
+            "decidedAt",
+            "decidedByUid"
+          ],
+          "properties": {
+            "recordedAt": {
+              "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+            },
+            "recordedByUid": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "dueAt": {
+              "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+            },
+            "decision": {
+              "oneOf": [
+                {
+                  "$ref": "../shared/takedown_request_common.schema.json#/definitions/appealDecision"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "decidedAt": {
+              "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+            },
+            "decidedByUid": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 128
+            }
+          }
+        }
+      ],
+      "description": "One appeal per request, within 30 days of the decision; a reviewer other than the decider decides it within 7 days."
+    },
+    "deciderUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "acknowledgedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "ackDueAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "24 hours after receipt (IT Rules 2021, Rule 3(2))."
+    },
+    "actionDueAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "When the interim step is due: suspend within 24 h (remove and don't list, impersonation), disable within 36 h (copyright), 3 h for an order. Null for other types."
+    },
+    "resolveDueAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "When the request must be resolved: 2 days for a claim, 7 days otherwise."
+    },
+    "decidedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "closedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "history": {
+      "type": "array",
+      "maxItems": 60,
+      "items": {
+        "$ref": "#/definitions/historyEntry"
+      }
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    }
+  }
+}

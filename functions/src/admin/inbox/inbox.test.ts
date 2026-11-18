@@ -184,6 +184,31 @@ test("staff close a lead with what they replied, and it can come back", async ()
   assert.equal(reopened.item.state.code, "reply_on_whatsapp");
 });
 
+test("staff close a host enquiry that is not a fit with a note, keep the intent, and can bring it back", async () => {
+  const h = harness();
+  const intent = {source: "meta_lead_ad", status: "needs_identity_review", fullName: "Meta Test Lead",
+    city: "mumbai", createdAt: "2026-10-30T10:00:00.000Z"};
+  h.db.write("salesInboundIntents/meta-1", intent);
+  await h.sync("salesInboundIntent", "meta-1", intent);
+  const update = (data: Record<string, unknown>) => adminUpdateInboxItemHandler(h.request({itemId: "enquiry-meta-1",
+    assigneeUid: null, snoozedUntil: null, note: null, ...data}), h.deps);
+  await assert.rejects(update({action: "dismiss"}), /Say why/);
+  const closed = await update({action: "dismiss", note: "Meta test lead, not a real host."});
+  assert.deepEqual([closed.item.status, closed.item.state.code, closed.item.assigneeUid], ["done", "dismissed", null]);
+  const journey = await adminGetInboxItemHandler(h.request({itemId: "enquiry-meta-1"}), h.deps);
+  assert.equal(journey.journey.at(-1)?.title, "Closed");
+  assert.equal(journey.journey.at(-1)?.detail, "Meta test lead, not a real host.");
+  const done = await h.list({scope: "done"});
+  valid(validateList, done);
+  assert.ok(done.items.some((item) => item.itemId === "enquiry-meta-1"), "it waits in Done");
+  // Nothing is deleted: the intent stays as captured, and a later write leaves the item closed.
+  assert.deepEqual(h.db.read("salesInboundIntents/meta-1"), intent);
+  await h.sync("salesInboundIntent", "meta-1", intent);
+  assert.equal((h.db.read("adminInboxItems/enquiry-meta-1") as {status: string}).status, "done");
+  const reopened = await update({action: "reopen"});
+  assert.deepEqual([reopened.item.status, reopened.item.state.code], ["waiting", "new"]);
+});
+
 const listingEvent = (overrides: Partial<ListingEventFacts> = {}): ListingEventFacts => ({
   intakeRequestId: "req-1", approvedAt: "2026-10-29T10:00:00.000Z", organizerName: "Afterfly", citySlug: "mumbai",
   eventWorkItemId: "wi-event-1", eventId: "ext-afterfly-mixer", title: "Singles mixer night", startAt: "2026-11-07T14:00:00.000Z",

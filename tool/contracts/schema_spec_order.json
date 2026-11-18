@@ -893,7 +893,7 @@
   "DeletedUserTombstoneDocument",
   "RateLimitDocument",
   "HostAnalyticsSnapshotDocument",
-  "FunctionEventReceiptDocument",
+  "CommandReceiptDocument",
   "PublicRouteReservationDocument",
   "SeedEventManifestDocument",
   "OrganizerIntakeReviewDecisionDocument",

@@ -18,6 +18,11 @@ import {
   ConversationPushRole,
   resolveConversationPushTokens,
 } from "../shared/conversationPushTargets";
+import {
+  classifyCommandReceipt,
+  commandReceiptRef,
+  writeCommandReceipt,
+} from "../shared/commandReceipts";
 import {organizerManagerUserIds} from "../shared/organizerHosts";
 import {buildChatSignalFacts} from "../marketplace/signalBuilders";
 import {
@@ -80,9 +85,7 @@ export async function onMessageCreatedHandler(
   const db = deps.firestore();
   const eventId = event.id ?? `${matchId}_${messageId}`;
   const matchRef = db.collection("matches").doc(matchId);
-  const receiptRef = db
-    .collection("functionEventReceipts")
-    .doc(`onMessageCreated_${eventId}`);
+  const receiptRef = commandReceiptRef(db, "onMessageCreated", eventId);
 
   let recipientId: string | null = null;
   let shouldNotify = false;
@@ -110,7 +113,11 @@ export async function onMessageCreatedHandler(
       tx.get(senderProfileRef),
     ]);
 
-    if (receiptSnap.exists || !matchDoc.exists) {
+    const nowMillis = Date.now();
+    const receipt = classifyCommandReceipt(receiptSnap, {
+      command: "onMessageCreated", nowMillis,
+    });
+    if (receipt.kind !== "none" || !matchDoc.exists) {
       return;
     }
 
@@ -174,12 +181,8 @@ export async function onMessageCreatedHandler(
       [`unreadCounts.${recipientId}`]: 1,
     });
 
-    tx.create(receiptRef, {
-      handler: "onMessageCreated",
-      eventId,
-      matchId,
-      messageId,
-      createdAt: deps.serverTimestamp(),
+    writeCommandReceipt(tx, receiptRef, {
+      command: "onMessageCreated", retention: "trigger", nowMillis,
     });
 
     shouldNotify = pushContext.allowed;

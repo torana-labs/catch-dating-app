@@ -60,6 +60,10 @@ test("changeEventCrawlStop records the stop and sends one message",
       {auth: {uid: "host-1"}, data} as never, deps as never);
     assert.equal(replay.replayed, true);
     assert.equal(replay.liveControlRevision, 7);
+    await assert.rejects(changeEventCrawlStopHandler({auth: {uid: "host-1"},
+      data: {...data, stop: {title: "Elsewhere", address: null}},
+    } as never, deps as never),
+    code("already-exists"));
     assert.equal(broadcasts.length, 2, "the replay replays the broadcast");
     assert.equal(
       (broadcasts[1] as {requestId: string}).requestId,

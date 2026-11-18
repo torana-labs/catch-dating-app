@@ -1,0 +1,22 @@
+{
+  "components": [
+    {
+      "id": "workspace_takedown_request",
+      "kind": "route",
+      "owner": "features/takedowns",
+      "source": "admin/src/features/takedowns/ui/TakedownRequestWorkspace.tsx",
+      "exportName": "TakedownRequestWorkspace",
+      "css": [],
+      "preview": {
+        "status": "not-required",
+        "states": [
+          "received",
+          "verifying",
+          "decided",
+          "appealed"
+        ]
+      },
+      "notes": "A listing request inside the Intake inbox's selected takedown item, injected by the app shell: the request on CatchMetaRow, its deadlines on a CatchSection of CatchIndexRows, and only the fixed steps open at its status (acknowledge, ask for more with a fixed template, action with an allowed outcome and the takedown case id, decline with a fixed reason, record and decide the one appeal, close) as CatchField selects and CatchButtons. Covered by TakedownRequestWorkspace.test.tsx; it reads live data through adminGetTakedownRequest."
+    }
+  ]
+}

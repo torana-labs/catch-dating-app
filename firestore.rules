@@ -844,8 +844,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Written exclusively by idempotent Cloud Function trigger handlers.
-    match /functionEventReceipts/{receiptId} {
+    // One replay-receipt collection for every command that dedupes its
+    // retries (callables, triggers, webhooks). Only Cloud Functions touch it;
+    // a retry reads its own receipt in the command's transaction.
+    match /commandReceipts/{receiptId} {
       allow read, write: if false;
     }
 
@@ -1063,6 +1065,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /bannedIdentities/{identityId} {
+      allow read, write: if false;
+    }
+    // Structured listing requests from /listings/request/: written by
+    // submitListingRequest and worked through adminUpdateTakedownRequest only.
+    match /takedownRequests/{requestId} {
       allow read, write: if false;
     }
     // Do-not-list registry (keyed hashes only). Server-only: the organizer
@@ -3167,12 +3174,6 @@ service cloud.firestore {
         && isOrganizerHostForEvent(eventId)
         && isEventSuccessPlanUpdateAllowed(eventId);
       allow delete: if false;
-    }
-
-    // Run-of-show edits, close-out and crawl changes replay through these
-    // receipts; only their callables touch them.
-    match /eventLiveCommandReceipts/{receiptId} {
-      allow read, write: if false;
     }
 
     // The night's close-out, written only by setEventCloseOut. The event's

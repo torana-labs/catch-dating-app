@@ -1809,7 +1809,7 @@ left follows the schedule and the step runs), and `crawlStopChanges` (stops
 changed on the night by `changeEventCrawlStop`, keyed by itinerary item id;
 missing means the published route). Rules keep all four out of client
 creates and setup updates. Their replay receipts live in server-only
-`eventLiveCommandReceipts/{receiptId}`.
+`commandReceipts` (see Command Receipts).
 
 ### Event Close-Out And Guest Game History
 
@@ -1990,6 +1990,53 @@ come from JSON Schema; the boundary is the timestamp representation:
 `tool/contracts/check_firestore_contract.mjs` cross-checks that the Admin SDK
 projection has the expected fields for every collection with a
 `typescriptInterface` entry.
+
+### Command Receipts
+
+`commandReceipts/{command}_{id}` is the one replay-receipt collection (L8 of the
+November 2026 Firestore consolidation). A command that must not run twice
+(a callable a client may retry, a trigger or webhook the platform may
+redeliver) reads its receipt in the same transaction as its write, through
+`functions/src/shared/commandReceipts.ts`. An exact retry returns the stored
+result; a different request that reuses the id is rejected by the command.
+Everything else about a receipt is the shared module's job:
+
+- Shape (`contracts/firestore/command_receipts.schema.json`): `command`,
+  optional `requestHash` (SHA-256 of what the request asked for, the acting
+  user and target included), optional `result` (at most 4096 bytes, only what a
+  replay must return that live state cannot rebuild), `createdAt`, `expiresAt`.
+  No actor or personal field is stored; ids embed hashes, not identities.
+- Id: `{command}_{id}`. An id that is longer than 100 characters or holds
+  anything beyond letters, digits and `:._-` becomes `h` plus its SHA-256, so
+  the document id is always valid and bounded. Command names are camelCase with
+  no underscore.
+- Retention (`expiresAt`): `trigger` 7 days, `request` 30 days, `webhook` 30
+  days. A receipt past `expiresAt` counts as absent. The collection's Firestore
+  TTL policy (a `fieldOverrides` entry for `commandReceipts.expiresAt` in
+  `firestore.indexes.json`) was approved by the owner on 18 Nov 2026 for this
+  collection only and lands in a follow-up change. Seven other collections write `expiresAt` with no policy
+  and stay as they are: `eventRuntimeDataRequestReceipts`, `organizerAudienceProjectionReceipts`,
+  `organizerEntitlementReceipts`, `salesDemoReceipts`,
+  `transportOperationReceipts`, `eventLiveCommandReceipts` and
+  `instagramAccessTokens` (this one is not a receipt).
+- Server only: rules deny every client read and write.
+
+Only pure replay lives here: a receipt whose sole job is to let a retry return
+the same result. A receipt that proves a decision to someone later keeps its
+own collection and retention: consent (`organizerCommunicationPermissionReceipts`,
+`catchCommunicationPermissionReceipts`, `eventAssistanceConsentReceipts`,
+`eventApprovalNotificationReceipts`), money (`hostMembershipWebhookReceipts`,
+`eventMessagingBudget*Receipts`, `publicEventAdmissionReceipts`), admission and
+conversion proofs other commands read (`organizerFormAdmissionReceipts`,
+`organizerFormConversionReceipts`), merges and publications kept for audit
+(`organizerContactMergeReceipts`, `externalEventPublicationReceipts`), and
+provider-delivery evidence (`organizerCampaignWebhookReceipts`).
+
+Moved so far: `functionEventReceipts` and `eventLiveCommandReceipts`. They are no
+longer written or declared;
+their documents stay under the legal hold. Replay windows are short and an
+in-flight retry across the deploy only re-runs a revision-fenced or idempotent
+command, so nothing was copied forward.
 
 ### Public HTTP And Admin Callable Boundaries
 
@@ -3723,6 +3770,51 @@ Retained organizer roster history is unlinked by setting `linkedUid` and
 `linkedAt` to null; any separately retained operational contact field remains
 subject to the organizer's stated booking/records purpose rather than Catch
 account or marketing permission.
+
+### Listing Requests
+
+The website's `/listings/request/` form posts one structured request to
+`submitListingRequest` (`/api/listing-request`, `contracts/http/listing_request_*`).
+The request types are fixed: `claim`, `correctFact`, `removeAndDoNotList`,
+`trademark`, `copyright`, `privacy`, `impersonation` and `legalOrder`. Each
+type takes only its own verification fields (`contracts/shared/takedown_request_common.schema.json`):
+an official-channel proof for claim, removal and impersonation (an Instagram
+code to the official handle, a reply from an email at the official domain, or
+for removal a letter on letterhead), the field, correction and evidence link
+for a fact, the registration number, class and country or the year of first
+use and evidence for a trademark, the work, original and ownership basis for
+copyright (Rule 75's fields), the data kinds and identity match for privacy (no
+identity documents), and the issuer, reference and date of an order. Every
+request names its target (an organiser or event id, or a page URL on Catch's
+own site, stored as its path), the requester (name, role, email, optional phone
+and organisation), the fixed declarations (accurate, authorised, contact
+consent; good faith for trademark, copyright and impersonation; not licensed
+for copyright), the consent version and an optional context line capped at 280
+characters. There is no free-text demand. Who may file each type is checked on
+the server.
+
+Each request is one server-only `takedownRequests/{lr-<sha256(email, clientRequestId)>}`
+document with a short `reference` the requester quotes. It carries the
+deadlines the Admin Inbox works to, modelled on safety reports:
+`ackDueAt` 24 hours after receipt; `actionDueAt` for the interim step (suspend
+within 24 hours for removal and impersonation, disable within 36 hours for
+copyright, 3 hours for an order, null otherwise); and `resolveDueAt` (2 days
+for a claim, 7 days otherwise). `status` moves `received` → `acknowledged` →
+`verifying` → `actioned` or `declined` → `appealed` → `closed`. An actioned
+request records one outcome its type allows; removing or suspending a page
+also records the takedown tool's opaque `caseId` (`TD-0001`), never a name or
+slug. A declined request records one fixed reason. One appeal is allowed
+within 30 days of the decision, due 7 days after it is recorded and decided by
+someone other than the decider; upheld closes the request and overturned
+reopens it for a new decision. Every step is a `history` entry and an audit
+log. The intake follows Website Leads: App Check, hashed network (10 an hour)
+and email (5 an hour) limits, one record per email and client request id, 409
+on changed answers. It is never a `salesInboundIntents` row. Nothing is sent
+automatically; staff acknowledge and reply by email and record the step.
+Removal itself, preservation and the do-not-list registry belong to the
+organiser takedown tool. The Admin Inbox projects each request as a `takedown`
+item (`sourceKind` `takedownRequest`) that waits until decided and returns on
+appeal.
 
 ### Person Data Lenses And Canonical Fields
 

@@ -17,7 +17,7 @@ import {
   type CatchSectionStep,
   type CatchTableColumn,
 } from "@catch/web-ui";
-import {useMemo, useState} from "react";
+import {Fragment, useMemo, useState, type ReactNode} from "react";
 import {launchMarkets} from "../../../shared/config/launchMarkets";
 import type {
   ClaimEvidence,
@@ -58,7 +58,8 @@ const columns: CatchTableColumn<Row>[] = [
   {key: "waiting", label: "Waiting", width: "92px", sort: "asc", align: "end"},
 ];
 
-const types: InboxType[] = ["listing", "event", "claim", "enquiry", "lead", "access", "stuck"];
+const noReport = () => undefined;
+const types: InboxType[] = ["listing", "event", "claim", "enquiry", "lead", "access", "stuck", "takedown"];
 const toneOf = (tone: InboxItem["state"]["tone"]) =>
   tone === "success" || tone === "warning" || tone === "danger" ? tone : undefined;
 
@@ -197,8 +198,9 @@ function timeline(item: InboxItem, journey: readonly JourneyStep[]): CatchSectio
  * launch access is decided here; listings and events open a sheet to review
  * and publish; stuck intake still opens the old review. Events and stuck intake
  * can be dismissed, with a reason, and come back. A website lead is answered on
- * WhatsApp and closed with what was said. Every type can be picked up or
- * snoozed for a day.
+ * WhatsApp and closed with what was said. A host enquiry is linked to its host,
+ * or closed with why it is junk, a test or not a fit; it comes back the same
+ * way. Every type can be picked up or snoozed for a day.
  */
 function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
   controller: InboxScreenModel;
@@ -271,7 +273,11 @@ function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
       dock = <CatchDock recipe="pane"
         primary={{label: chosen ? `Link to ${chosen.name}` : "Pick the host first", isLoading: busy,
           onPressed: chosen ? () => void controller.linkEnquiry({intentId: item.sourceId, organizerId: chosen.organizerId}, chosen.name) : null}}
+        danger={{label: "Close", onPressed: noteText ? () => void controller.updateItem({itemId: item.itemId,
+          action: "dismiss", assigneeUid: null, snoozedUntil: null, note: noteText},
+        "Closed. It stays in Done if you need it back.") : null}}
         secondary={{label: item.assigneeUid === uid ? "Snooze a day" : "Pick it up", onPressed: item.assigneeUid === uid ? snooze : pickUp}}
+        note={{label: "Note for the record", placeholder: "Why it's not a fit. Required to close.", value: note, onChanged: setNote}}
         next={`Linking opens their Sales work; it doesn't approve a claim · ${next.toLowerCase()}`} />;
     } else if (item.type === "lead") {
       // Nothing is sent automatically yet: staff reply first, then close it.
@@ -282,6 +288,9 @@ function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
         secondary={holdIt}
         note={{label: "What you replied", placeholder: "Sent the guide on WhatsApp", value: note, onChanged: setNote, required: true}}
         next={`Reply on WhatsApp first; nothing is sent for you · ${next.toLowerCase()}`} />;
+    } else if (item.type === "takedown") {
+      // A listing request takes its own fixed steps in the panel below; here it can be picked up or snoozed.
+      dock = <CatchDock recipe="pane" primary={holdIt} next={`Reply by email; nothing is sent for you · ${next.toLowerCase()}`} />;
     } else if (item.type === "event") {
       const ref = item.listingEvent ?? null;
       dock = <CatchDock recipe="pane"
@@ -321,6 +330,9 @@ function InboxInspector({controller, detail, uid, onClose, canFillIn}: {
       {evidence ? <ClaimChecks evidence={evidence} /> : null}
       {item.type === "claim" && controller.claimEvidenceFailed ? <CatchEmptyState title="Their evidence could not be loaded" message="Try again before deciding." /> : null}
       {picker}
+      {item.type === "takedown" ? (
+        <Fragment key={item.sourceId}>{controller.takedownPanel?.({requestId: item.sourceId, onChanged: controller.refreshItem ?? noReport}) ?? null}</Fragment>
+      ) : null}
       <CatchSection title="How it got here" timeline={timeline(item, journey)} dividers="none" />
       {controller.listingReviewFailed || controller.eventReviewFailed ? <CatchEmptyState title="The review could not be opened" message="It may have been decided already. Try again." /> : null}
       {dock}
@@ -549,7 +561,10 @@ function EventPublishSheet({controller, intakeRequestId, review, onClose}: {
 }
 
 /** What the inbox screen draws from: the controller, with the open item as plain data. */
-export type InboxScreenModel = Omit<InboxController, "detail" | "page" | "refresh" | "city" | "setCity"> & {
+export type InboxScreenModel = Omit<InboxController, "detail" | "page" | "refresh" | "city" | "setCity" | "refreshItem"> &
+  Partial<Pick<InboxController, "refreshItem">> & {
+  /** Draws a listing request's own panel (the app shell passes the takedowns feature's). */
+  takedownPanel?: (input: {requestId: string; onChanged: () => void}) => ReactNode;
   detail: InboxItemDetail | null;
   detailError: boolean;
 };

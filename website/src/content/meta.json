@@ -48,6 +48,27 @@
       "twitterDescription": "Meet the clubs, communities and hosts bringing people together on Catch.",
       "robots": "noindex, follow"
     },
+    "listing_requests": {
+      "title": "Claim, correct or remove a listing | Catch",
+      "description": "Ask Catch to claim, correct or remove an organiser or event page, or report a trademark, copyright, privacy or impersonation problem.",
+      "canonicalPath": "/listings/request/",
+      "twitterDescription": "Claim, correct or remove a listing on Catch.",
+      "robots": "noindex, follow"
+    },
+    "listing_policy": {
+      "title": "Listing Policy (draft) | Catch",
+      "description": "Draft for legal review: what Catch lists, where the facts come from, and how organisers claim, correct or remove a page.",
+      "canonicalPath": "/listings/policy/",
+      "twitterDescription": "Draft Listing Policy.",
+      "robots": "noindex, follow"
+    },
+    "takedown_policy": {
+      "title": "Notice and Takedown Policy (draft) | Catch",
+      "description": "Draft for legal review: the listing request types, what each needs, timelines, appeals and the grievance officer.",
+      "canonicalPath": "/listings/notice-and-takedown/",
+      "twitterDescription": "Draft Notice and Takedown Policy.",
+      "robots": "noindex, follow"
+    },
     "claim": {
       "title": "Claim your organizer page | Catch",
       "description": "Find an unclaimed organizer profile, verify ownership, and request access to Catch host tools.",
