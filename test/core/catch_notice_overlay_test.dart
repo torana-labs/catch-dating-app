@@ -56,12 +56,12 @@ void main() {
 
     container.read(stillWorkingWritesProvider.notifier).add();
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 400));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 400));
     expect(find.text('Still working on it…'), findsOneWidget);
 
     container.read(stillWorkingWritesProvider.notifier).remove();
     await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
+    await pumpFeatureUiFor(tester, const Duration(seconds: 1));
     expect(find.text('Still working on it…'), findsNothing);
   });
 
