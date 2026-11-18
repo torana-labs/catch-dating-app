@@ -144,14 +144,9 @@
       "ground": "indigo",
       "kicker": "Your quiet hours",
       "title": "Turn off-peak into the best night of the week.",
-      "lead": "Start the free trial, or message us on WhatsApp and we’ll send you the facility setup guide.",
+      "lead": "Start the free trial, or leave your number and we’ll send the facility setup guide on WhatsApp.",
       "actions": [
-        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
-        {
-          "label": "Get the setup guide on WhatsApp",
-          "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, please send me the facility setup guide."},
-          "emphasis": "secondary"
-        }
+        {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"}
       ],
       "leadForm": {"id": "facility_setup_guide", "requestKind": "guide", "format": "facilities", "label": "Your WhatsApp number", "submitLabel": "Send the guide", "note": "We’ll message you on WhatsApp with the guide."}
     }
