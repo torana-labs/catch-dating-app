@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/bookings.dart'
-    show watchOwnEventCardsByIdProvider;
+    show watchOwnEventCardsForEventsProvider;
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/guest_event_card.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
@@ -158,8 +158,8 @@ class _ReviewsHistoryFrame extends StatelessWidget {
             effectiveUid,
           ).overrideWith((ref) => _streamFor(reviews)),
         if (effectiveUid != null && eventIds.isNotEmpty)
-          watchOwnEventCardsByIdProvider(effectiveUid).overrideWith(
-            (ref) => _streamFor(
+          watchOwnEventCardsForEventsProvider.overrideWith(
+            (ref, query) => _streamFor(
               events.whenData(
                 (values) => {
                   for (final event in values)
