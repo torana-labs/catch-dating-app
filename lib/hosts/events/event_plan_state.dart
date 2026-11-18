@@ -38,6 +38,12 @@ class HostEventPlanState {
     this.editable = false,
     this.stepsEditable = false,
     this.liveControlRevision = 0,
+    this.readinessIssues = const <String>[],
+    this.capacityMin,
+    this.capacityMax,
+    this.targetAttendees,
+    this.layoutId,
+    this.organizerId,
     this.error,
   });
 
@@ -71,6 +77,22 @@ class HostEventPlanState {
 
   /// The plan's fence for the next step edit.
   final int liveControlRevision;
+
+  /// What the plan still lacks before the night, as the old setup listed it.
+  final List<String> readinessIssues;
+
+  /// The format's recommended attendance, when it has one.
+  final int? capacityMin;
+  final int? capacityMax;
+
+  /// How many guests the plan is set for.
+  final int? targetAttendees;
+
+  /// The saved room layout, when the night seats guests by one.
+  final String? layoutId;
+
+  /// The organizer whose saved room layouts the plan picks from.
+  final String? organizerId;
   final Object? error;
 
   /// Guests sit in teams or at tables.
