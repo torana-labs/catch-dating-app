@@ -37,6 +37,7 @@ import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/riverpod_ui/failed_reads.dart';
+import 'package:catch_platform/riverpod_ui/provider_settled.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -705,32 +706,14 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     ref.invalidate(exploreFeedViewModelProvider);
     ref.invalidate(exploreRecommendationsProvider);
 
-    await _feedSettled();
-  }
-
-  /// Completes when the recomposed feed reaches data or an error, or when the
-  /// discovery refresh deadline runs out. The feed is a synchronous
-  /// composition of its reads, so it settles the moment they do; this
-  /// listens for that instead of polling.
-  Future<void> _feedSettled() {
-    final settled = Completer<void>();
-    void settle() {
-      if (!settled.isCompleted) settled.complete();
-    }
-
-    final subscription = ref.listenManual(exploreFeedViewModelProvider, (
-      _,
-      next,
-    ) {
-      if (!catchAsyncStateFromAsyncValue(next).isLoading) settle();
-    }, fireImmediately: true);
-    final deadline = ref
-        .read(appClockProvider)
-        .timer(CachePolicies.discovery.refresh, settle);
-    return settled.future.whenComplete(() {
-      deadline.cancel();
-      subscription.close();
-    });
+    // The feed is a synchronous composition with no `.future`: wait for the
+    // recomposed feed to leave loading, at most the refresh deadline.
+    await untilSettled(
+      ref,
+      exploreFeedViewModelProvider,
+      isSettled: (feed) => !catchAsyncStateFromAsyncValue(feed).isLoading,
+      deadline: CachePolicies.discovery.refresh,
+    );
   }
 
   void _startInitialLoadDeadline() {
