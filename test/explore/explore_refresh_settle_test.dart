@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
 import 'explore_device_location_fakes.dart';
 
 const _cities = [
@@ -65,7 +66,7 @@ void main() {
           .then((_) => done = true),
     );
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 500));
     expect(done, isTrue);
   });
 
@@ -85,15 +86,16 @@ void main() {
           .then((_) => done = true),
     );
     await tester.pump();
-    await tester.pump(
+    await pumpFeatureUiFor(
+      tester,
       CachePolicies.discovery.refresh - const Duration(seconds: 1),
     );
     expect(done, isFalse);
     // The indicator starts the refresh a moment after show(), so the deadline
     // runs from then; give it a few seconds past the nominal deadline.
-    await tester.pump(const Duration(seconds: 2));
-    await tester.pump(const Duration(seconds: 3));
-    await tester.pumpAndSettle();
+    await pumpFeatureUiFor(tester, const Duration(seconds: 2));
+    await pumpFeatureUiFor(tester, const Duration(seconds: 3));
+    await pumpFeatureUiFor(tester, const Duration(seconds: 1));
     expect(done, isTrue);
   });
 }
