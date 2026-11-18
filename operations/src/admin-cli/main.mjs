@@ -9,31 +9,23 @@ import {
   FirebaseAdminCallableClient,
 } from "../admin/callable-client.mjs";
 import {AdminActionReceiptStore} from "../admin/receipt-store.mjs";
+import {
+  isMainModule,
+  parseCommandLine,
+  positiveInteger as sharedPositiveInteger,
+} from "../command-client/argv.mjs";
+import {runCli, successEnvelope} from "../command-client/envelope.mjs";
+import {executeWithReceipts} from "../command-client/execution.mjs";
+import {isIndeterminateTransportError} from "../command-client/transport.mjs";
 import {hashValue} from "../platform/canonical-json.mjs";
-import {asOperationsError, OperationsError} from "../platform/errors.mjs";
+import {OperationsError} from "../platform/errors.mjs";
 
 const cliDirectory = path.dirname(fileURLToPath(import.meta.url));
 const operationsRoot = path.resolve(cliDirectory, "..", "..");
 const defaultRepoRoot = path.resolve(operationsRoot, "..");
 
-if (isMain()) {
-  main(process.argv.slice(2)).then(({envelope, pretty}) => {
-    process.stdout.write(`${JSON.stringify(envelope, null, pretty ? 2 : 0)}\n`);
-  }).catch((error) => {
-    const normalized = asOperationsError(error);
-    process.stderr.write(`${JSON.stringify({
-      schemaVersion: 1,
-      program: "catch-admin",
-      command: process.argv[2] ?? "help",
-      ok: false,
-      error: {
-        code: normalized.code,
-        message: normalized.message,
-        details: normalized.details,
-      },
-    })}\n`);
-    process.exitCode = normalized.exitCode;
-  });
+if (isMainModule(import.meta.url)) {
+  runCli({program: "catch-admin", argv: process.argv.slice(2), main});
 }
 
 export async function main(argv, dependencies = {}) {
@@ -70,14 +62,11 @@ export async function main(argv, dependencies = {}) {
   }
   return {
     pretty,
-    envelope: {
-      schemaVersion: 1,
+    envelope: successEnvelope({
       program: "catch-admin",
       command: parsed.command,
-      ok: true,
       data,
-      warnings: [],
-    },
+    }),
   };
 }
 
@@ -128,119 +117,31 @@ export async function runAction({
     requestHash,
     startedAt,
   };
-  try {
-    await recordRemote(client, {
+  const {response, responseHash, receiptPath} = await executeWithReceipts({
+    client,
+    callable: action.callable,
+    payload,
+    executionId,
+    receiptStore,
+    baseReceipt,
+    now,
+    hash: hashValue,
+    isIndeterminate: isIndeterminateCallableError,
+    remoteRecorder: (update) => recordRemote(client, {
       executionId,
       actionId: action.actionId,
       callable: action.callable,
-      status: "started",
       requestHash,
       target,
       cliVersion: catalog.catalogVersion,
-    });
-  } catch (error) {
-    const normalized = asOperationsError(error);
-    const receiptPath = await receiptStore.put({
-      ...baseReceipt,
-      status: "failed",
-      finishedAt: now().toISOString(),
-      error: {code: normalized.code, message: normalized.message},
-      remoteReceiptStatus: "not-started",
-    });
-    throw new OperationsError(
-      "ADMIN_ACTION_RECEIPT_START_FAILED",
-      "The remote receipt could not start, so the admin action was not invoked.",
-      {
-        cause: error,
-        details: {
-          actionCompleted: false,
-          executionId,
-          receiptPath,
-          remoteErrorCode: normalized.code,
-        },
-        exitCode: normalized.exitCode,
-      }
-    );
-  }
-  let response;
-  try {
-    response = await client.invoke(action.callable, payload, {executionId});
-  } catch (error) {
-    const normalized = asOperationsError(error);
-    const finishedAt = now().toISOString();
-    const terminalStatus = isIndeterminateCallableError(normalized) ?
-      "indeterminate" : "failed";
-    const remoteFailureRecorded = await recordTerminalBestEffort(client, {
-      executionId,
-      actionId: action.actionId,
-      callable: action.callable,
-      status: terminalStatus,
-      requestHash,
-      target,
-      errorCode: normalized.code,
-      errorMessage: normalized.message,
-      cliVersion: catalog.catalogVersion,
-    });
-    const receiptPath = await receiptStore.put({
-      ...baseReceipt,
-      status: terminalStatus,
-      finishedAt,
-      error: {code: normalized.code, message: normalized.message},
-      remoteReceiptStatus: remoteFailureRecorded ?
-        terminalStatus : "started-only",
-    });
-    throw new OperationsError(normalized.code, normalized.message, {
-      cause: error,
-      details: {
-        ...normalized.details,
-        actionCompleted: terminalStatus === "indeterminate" ? null : false,
-        executionId,
-        receiptPath,
-        remoteReceiptStatus: remoteFailureRecorded ?
-          terminalStatus : "started-only",
-      },
-      exitCode: normalized.exitCode,
-    });
-  }
-  const responseHash = hashValue(response);
-  let remoteReceiptError = null;
-  try {
-    await recordRemote(client, {
-      executionId,
-      actionId: action.actionId,
-      callable: action.callable,
-      status: "succeeded",
-      requestHash,
-      responseHash,
-      target,
-      cliVersion: catalog.catalogVersion,
-    });
-  } catch (error) {
-    remoteReceiptError = asOperationsError(error);
-  }
-  const finishedAt = now().toISOString();
-  const receiptPath = await receiptStore.put({
-    ...baseReceipt,
-    status: "succeeded",
-    responseHash,
-    finishedAt,
-    remoteReceiptStatus: remoteReceiptError ? "started-only" : "succeeded",
+      ...update,
+    }),
+    codes: {
+      receiptStartFailed: "ADMIN_ACTION_RECEIPT_START_FAILED",
+      receiptIncomplete: "ADMIN_ACTION_RECEIPT_INCOMPLETE",
+      subject: "admin action",
+    },
   });
-  if (remoteReceiptError) {
-    throw new OperationsError(
-      "ADMIN_ACTION_RECEIPT_INCOMPLETE",
-      "The admin action succeeded, but its remote receipt did not become terminal.",
-      {
-        cause: remoteReceiptError,
-        details: {
-          actionCompleted: true,
-          executionId,
-          receiptPath,
-          remoteErrorCode: remoteReceiptError.code,
-        },
-      }
-    );
-  }
   return {
     mode: "live",
     executionId,
@@ -367,23 +268,8 @@ async function recordRemote(client, payload) {
   });
 }
 
-async function recordTerminalBestEffort(client, payload) {
-  try {
-    await recordRemote(client, payload);
-    return true;
-  } catch {
-    // The primary callable failure remains authoritative; the local receipt
-    // preserves the failed attempt when the remote receipt cannot advance.
-    return false;
-  }
-}
-
 function isIndeterminateCallableError(error) {
-  return [
-    "ADMIN_CALLABLE_TIMEOUT",
-    "ADMIN_CALLABLE_NETWORK_ERROR",
-    "ADMIN_CALLABLE_INVALID_RESPONSE",
-  ].includes(error.code) || error.code.startsWith("ADMIN_CALLABLE_HTTP_");
+  return isIndeterminateTransportError(error, "ADMIN_CALLABLE");
 }
 
 function requireAction(catalog, actionId) {
@@ -431,77 +317,27 @@ function valueAt(value, key) {
 }
 
 function parseArguments(argv) {
-  const values = [...argv];
-  const command = values.shift() ?? "help";
-  if (["help", "--help", "-h"].includes(command)) {
-    return {command: "help", subject: null, flags: parseFlags(values)};
-  }
-  const takesSubject = new Set(["describe", "workflow", "loop", "run"]);
-  const subject = takesSubject.has(command) && values[0] &&
-      !values[0].startsWith("--") ? values.shift() : null;
-  return {command, subject, flags: parseFlags(values)};
-}
-
-function parseFlags(argv) {
-  const booleans = new Set([
-    "--all", "--apply", "--dry-run", "--example", "--include-internal",
-    "--pretty",
-  ]);
-  const values = new Set([
-    "--app-check-token", "--base-url", "--confirm", "--confirm-target",
-    "--execution-id", "--id-token", "--input", "--json", "--kind",
-    "--project", "--receipt-dir", "--region", "--repo-root", "--timeout-ms",
-    "--workflow",
-  ]);
-  const flags = {};
-  for (let index = 0; index < argv.length; index += 1) {
-    const flag = argv[index];
-    if (booleans.has(flag)) flags[camel(flag)] = true;
-    else if (values.has(flag)) {
-      const value = argv[index + 1];
-      if (!value || value.startsWith("--")) {
-        throw new OperationsError(
-          "ADMIN_CLI_ARGUMENT_INVALID",
-          `${flag} requires a value.`,
-          {exitCode: 2}
-        );
-      }
-      flags[camel(flag)] = value;
-      index += 1;
-    } else {
-      throw new OperationsError(
-        "ADMIN_CLI_ARGUMENT_INVALID",
-        `Unknown argument: ${flag}.`,
-        {exitCode: 2}
-      );
-    }
-  }
-  if (flags.apply && flags.dryRun) {
-    throw new OperationsError(
-      "ADMIN_CLI_ARGUMENT_INVALID",
-      "--apply and --dry-run cannot be combined.",
-      {exitCode: 2}
-    );
-  }
-  return flags;
-}
-
-function camel(flag) {
-  return flag.slice(2).replace(/-([a-z])/gu, (_match, letter) =>
-    letter.toUpperCase());
+  return parseCommandLine(argv, {
+    subjectCommands: ["describe", "workflow", "loop", "run"],
+    booleans: [
+      "--all", "--apply", "--dry-run", "--example", "--include-internal",
+      "--pretty",
+    ],
+    values: [
+      "--app-check-token", "--base-url", "--confirm", "--confirm-target",
+      "--execution-id", "--id-token", "--input", "--json", "--kind",
+      "--project", "--receipt-dir", "--region", "--repo-root", "--timeout-ms",
+      "--workflow",
+    ],
+    exclusive: [["--apply", "--dry-run"]],
+    codePrefix: "ADMIN_CLI",
+  });
 }
 
 function positiveInteger(value, fallback, minimum, maximum) {
-  if (value === undefined) return fallback;
-  const parsed = Number(value);
-  if (!Number.isInteger(parsed) || parsed < minimum || parsed > maximum) {
-    throw new OperationsError(
-      "ADMIN_CLI_ARGUMENT_INVALID",
-      `Expected an integer between ${minimum} and ${maximum}.`,
-      {exitCode: 2}
-    );
-  }
-  return parsed;
+  return sharedPositiveInteger(value, fallback, minimum, maximum, {
+    codePrefix: "ADMIN_CLI",
+  });
 }
 
 function helpData() {
@@ -518,8 +354,4 @@ function helpData() {
     safety: "Reads execute unless --dry-run is set. Mutations are dry-run unless --apply and the catalog confirmation policy are satisfied.",
     authentication: "Live calls require CATCH_ADMIN_ID_TOKEN and CATCH_ADMIN_APP_CHECK_TOKEN (or matching flags).",
   };
-}
-
-function isMain() {
-  return process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 }
