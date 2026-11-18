@@ -26,6 +26,7 @@ class HostFormatsRunBody extends StatelessWidget {
     this.marking = const <String>{},
     this.location,
     this.onGuests,
+    this.onTools,
   });
 
   final HostFormatsRunState state;
@@ -36,6 +37,10 @@ class HostFormatsRunBody extends StatelessWidget {
 
   /// Opens the door, where a late runner is checked in; null hides Guests.
   final VoidCallback? onGuests;
+
+  /// Opens night tools: settings, departures, pace groups and the full
+  /// help and delivery queues; null hides it.
+  final VoidCallback? onTools;
 
   /// Calls a runner on the number they gave.
   final ValueChanged<String> onCall;
@@ -184,6 +189,15 @@ class HostFormatsRunBody extends StatelessWidget {
                 ),
           ],
         ),
+        if (onTools case final onTools?)
+          CatchButton(
+            key: const ValueKey<String>('formats-run-tools'),
+            label: l10n.hostLiveTools,
+            variant: CatchButtonVariant.secondary,
+            leading: CatchIcon(CatchIcons.settings),
+            fullWidth: true,
+            onPressed: onTools,
+          ),
         if (onGuests case final onGuests?)
           CatchButton(
             key: const ValueKey<String>('formats-run-guests'),

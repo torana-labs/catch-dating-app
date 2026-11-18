@@ -21,6 +21,7 @@ import 'package:catch_dating_app/hosts/live/live_room_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_scores_screen.dart';
 import 'package:catch_dating_app/hosts/live/live_state.dart';
 import 'package:catch_dating_app/hosts/live/live_step_controller.dart';
+import 'package:catch_dating_app/hosts/live/live_tools_screen.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -162,6 +163,7 @@ class _HostLiveScreenState extends ConsumerState<HostLiveScreen> {
             onFinish: () => actions.finish(state),
             onOpenNeed: (need) => actions.openNeed(state, need),
             onAllNeeds: actions.openNeeds,
+            onTools: () => openHostLiveTools(context, event),
             onEnterScores: () => actions.openView(HostLiveView.scores),
             onMessage: actions.messageEveryone,
             onRetry: () => retryHostLiveReads(ref, event),

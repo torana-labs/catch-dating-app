@@ -13,6 +13,7 @@ import 'package:catch_dating_app/hosts/live/formats/formats_ticker.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_top_bar.dart';
 import 'package:catch_dating_app/hosts/live/formats/widgets/formats_crawl_change_sheet.dart';
 import 'package:catch_dating_app/hosts/live/formats/widgets/formats_crawl_move_sheet.dart';
+import 'package:catch_dating_app/hosts/live/live_tools_screen.dart';
 import 'package:catch_dating_app/hosts/people/compose_controller.dart';
 import 'package:catch_dating_app/hosts/people/compose_state.dart';
 import 'package:catch_l10n/l10n.dart';
@@ -138,6 +139,7 @@ class _HostFormatsCrawlScreenState extends ConsumerState<HostFormatsCrawlScreen>
               state: state,
               now: now,
               onGuests: widget.onOpenGuests,
+              onTools: () => openHostLiveTools(context, widget.event),
               onMove: () => setState(() {
                 _moving = true;
                 _requestId = null;
