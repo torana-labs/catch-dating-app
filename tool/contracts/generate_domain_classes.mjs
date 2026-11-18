@@ -255,6 +255,14 @@ const SPECS = [
   {
     "name": "EventRuntimeWalkInPolicy",
     "schemaPointer": "/properties/runtimeAccess/properties/walkInPolicy"
+  },
+  {
+    "name": "EventOrganizerVisibility",
+    "schemaPointer": "/properties/organizerSummary/properties/appVisibility"
+  },
+  {
+    "name": "EventOrganizerLifecycle",
+    "schemaPointer": "/properties/organizerSummary/properties/status"
   }
 ],
   "classes": [
@@ -497,6 +505,13 @@ const SPECS = [
           "default": "true"
         },
         {
+          "name": "organizerSummary",
+          "dartType": "EventOrganizerSummary",
+          "jsonKey": {
+            "includeIfNull": false
+          }
+        },
+        {
           "name": "externalBooking",
           "dartType": "EventExternalBooking",
           "jsonKey": {
@@ -597,6 +612,54 @@ const SPECS = [
         {
           "name": "connectedBy",
           "dartType": "String"
+        }
+      ]
+    },
+    {
+      "name": "EventOrganizerSummary",
+      "pointer": "/properties/organizerSummary",
+      "fields": [
+        {
+          "name": "name",
+          "dartType": "String"
+        },
+        {
+          "name": "location",
+          "dartType": "String"
+        },
+        {
+          "name": "area",
+          "dartType": "String"
+        },
+        {
+          "name": "hostName",
+          "dartType": "String"
+        },
+        {
+          "name": "tags",
+          "dartType": "List<String>",
+          "default": "[]"
+        },
+        {
+          "name": "rating",
+          "dartType": "double"
+        },
+        {
+          "name": "synthetic",
+          "dartType": "bool",
+          "default": "false"
+        },
+        {
+          "name": "appVisibility",
+          "dartType": "EventOrganizerVisibility"
+        },
+        {
+          "name": "status",
+          "dartType": "EventOrganizerLifecycle"
+        },
+        {
+          "name": "archived",
+          "dartType": "bool"
         }
       ]
     },

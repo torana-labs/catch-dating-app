@@ -67,7 +67,7 @@ final class ExploreRecommendedEventsProvider
 }
 
 String _$exploreRecommendedEventsHash() =>
-    r'8ce9cd42e40b25f492d44f955439814b464f8c9d';
+    r'4497b9f912b73377c64d97e3c552a01c25fe45fe';
 
 final class ExploreRecommendedEventsFamily extends $Family
     with
