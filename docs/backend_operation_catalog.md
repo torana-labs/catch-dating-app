@@ -81,6 +81,12 @@ workspace, never a separate demo path. Every command:
 Functions exports in step. The first command is `workspace.ensure`
 (`ensureTryItWorkspace`, below).
 
+The `catch` CLI (`operations/src/catch-cli/main.mjs`) is the CLI client: it
+previews by default and its effect-class confirmation rules live in
+`operations/src/command-client/confirmation-policy.mjs`.
+`operations/scripts/check-command-catalog.mjs` keeps the catalog in step with
+its clients ([Product Command CLI](operations_platform.md#product-command-cli)).
+
 ## Rehearsal completion summary
 
 The completion transaction alone stamps `eventRehearsalMilestones/{organizerId}`
