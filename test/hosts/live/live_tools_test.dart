@@ -65,6 +65,8 @@ void main() {
     );
     expect(hostLiveTools(paced), contains(HostLiveTool.groups));
     expect(hostLiveTools(paced), isNot(contains(HostLiveTool.movement)));
+    // A plan with conversation cues shows them first.
+    expect(hostLiveTools(liveEvent, cues: true).first, HostLiveTool.cues);
   });
 
   testWidgets('the live console opens night tools', (tester) async {
