@@ -5823,7 +5823,7 @@ final _hostManageLongLabelInviteLinks = <EventInviteLink>[
   ),
 ];
 final _hostLiveReferenceOrganizer = _dashboardHostOrganizer.copyWith(
-  name: 'Bandra Social',
+  name: 'Harbour Line Social',
 );
 final _hostManageReferenceOrganizer = _hostLiveReferenceOrganizer.copyWith(
   ownerUserId: captureViewerUid,
@@ -5842,16 +5842,16 @@ final _hostManageReferenceEvent = _hostEvent.copyWith(
   organizerId: _hostManageReferenceOrganizer.id,
   startTime: DateTime(2026, 6, 9, 20),
   endTime: DateTime(2026, 6, 9, 22),
-  meetingPoint: 'The Daily Bar',
+  meetingPoint: 'The Salt Air Bar',
   meetingLocation: const EventMeetingLocation(
-    name: 'The Daily Bar',
+    name: 'The Salt Air Bar',
     address: 'Bandra West, Mumbai',
     latitude: 19.0607,
     longitude: 72.8362,
   ),
   startingPointLat: 19.0607,
   startingPointLng: 72.8362,
-  locationDetails: 'The Daily Bar',
+  locationDetails: 'The Salt Air Bar',
   eventFormat: EventFormatSnapshot.custom(
     label: 'trivia night',
     interactionModel: EventInteractionModel.teamRotations,
@@ -6068,16 +6068,16 @@ UploadedPhoto _hostMediaReviewPhoto(String id, int position, String assetPath) {
 final _hostLiveReferenceEvent = _hostEvent.copyWith(
   startTime: DateTime(2026, 6, 9, 20),
   endTime: DateTime(2026, 6, 9, 22),
-  meetingPoint: 'The Daily Bar',
+  meetingPoint: 'The Salt Air Bar',
   meetingLocation: const EventMeetingLocation(
-    name: 'The Daily Bar',
+    name: 'The Salt Air Bar',
     address: 'Bandra West, Mumbai',
     latitude: 19.0607,
     longitude: 72.8362,
   ),
   startingPointLat: 19.0607,
   startingPointLng: 72.8362,
-  locationDetails: 'The Daily Bar',
+  locationDetails: 'The Salt Air Bar',
   eventFormat: const EventFormatSnapshot(
     activityKind: ActivityKind.pubQuiz,
     interactionModel: EventInteractionModel.hostLedProgram,
@@ -6394,7 +6394,7 @@ final _reviewHistoryEvents = [
     organizer: _dashboardHostOrganizer,
     startTime: DateTime(2026, 5, 18, 20),
     endTime: DateTime(2026, 5, 18, 22),
-    meetingPoint: 'Pali Village Cafe',
+    meetingPoint: 'Lantern Lane Cafe',
     activityKind: ActivityKind.dinner,
     distanceKm: 0,
     checkedInCount: 12,
@@ -11482,7 +11482,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => LocationPickerScreen(
       countryIsoCode: 'IN',
       initialCenter: const LocationCoordinate(19.076, 72.8777),
-      initialSearchQuery: 'Bandra Social',
+      initialSearchQuery: 'Harbour Line Social',
       initialSearchError: obviousOfflineException(),
       usePlatformMapView: false,
       loadMapTiles: false,

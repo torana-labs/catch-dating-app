@@ -146,15 +146,15 @@
     },
     {
       "path": "explorations/host-redesign/CatchForOrganizers-v2.html",
-      "sha256": "01433cc31ff39698c642e58b134108d67ababd61c4d4f346d82728afea92d52c"
+      "sha256": "e87c7121f133effd2e96ea7a8e608e6b08e27695c6024b5db2538eb92906f18f"
     },
     {
       "path": "explorations/host-redesign/CatchForOrganizers.html",
-      "sha256": "cad8fd9cf7950cbe799945611d07abe56ecad4045b43394577c2ae81aeef06a9"
+      "sha256": "6634f442876a16eea838c0dfd0cf44cdfd80f564427856e35582096939949e5a"
     },
     {
       "path": "explorations/host-redesign/Flows.html",
-      "sha256": "54a01838c160a2da1ffdfabd18177bb8c4c8261cb1a202c5c3391026f2fd2076"
+      "sha256": "b088fb1fc0e4f4eadbd22bff456ad4d182d9078bdaa2430b0be6b62b64de8668"
     },
     {
       "path": "explorations/host-redesign/NEW_WIDGETS.md",
@@ -414,7 +414,7 @@
     },
     {
       "path": "templates/hosts-inbox/Inbox.dc.html",
-      "sha256": "7ac0e7f09ac388e7713dd79674a61b88a2143112db0695e6c82f08f93d7d41e8"
+      "sha256": "32022ed35f81c70f736c27937118a14a4a482cb7c72a798d037fd7f0f014e3f9"
     },
     {
       "path": "templates/hosts-inbox/support.js",
@@ -430,7 +430,7 @@
     },
     {
       "path": "templates/hosts-insights/Insights.dc.html",
-      "sha256": "1168d92c7dfc01bf824318d648b496cf90c6d4ce7b7e6f07c9aa0703df98517a"
+      "sha256": "ed4a2d6b2523d4bf3da16030a4290a65561c789fd48a296c3d390601013aed0a"
     },
     {
       "path": "templates/hosts-insights/support.js",
@@ -446,7 +446,7 @@
     },
     {
       "path": "templates/hosts-manage/Manage.dc.html",
-      "sha256": "b694fb2515a696733ac627cc3f855bc96461443ef5a536473c0bd157e3bca1ba"
+      "sha256": "3f0fd7c454734790058a1babb27a393ed53ca10d9805eb45195b0e37fea1eb60"
     },
     {
       "path": "templates/hosts-manage/support.js",
@@ -462,7 +462,7 @@
     },
     {
       "path": "templates/hosts-organizer/Organizer.dc.html",
-      "sha256": "0be99934278aa816beefe84f5e82809af4e26346e944294708f025e4718da0a8"
+      "sha256": "ba8c5ffcd708df646484b415b7aa966a4d5e96e92cad505b5d13a29c04ecc5b5"
     },
     {
       "path": "templates/hosts-organizer/support.js",
@@ -498,7 +498,7 @@
     },
     {
       "path": "templates/hosts-today/Today.dc.html",
-      "sha256": "78a437895a79cc4c63f47a0a8643c627c95a145afa8b4385178a02634b53efcf"
+      "sha256": "b7031f2e2c7e6e8b4074bb64d97184bc167b452c23aec13bb30636f3c2eaa80e"
     }
   ]
 }

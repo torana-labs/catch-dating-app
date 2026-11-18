@@ -4,12 +4,12 @@
   "name": "Sangeet",
   "startsAt": {"_seconds": 1786800600, "_nanoseconds": 0},
   "endsAt": {"_seconds": 1786815000, "_nanoseconds": 0},
-  "venueName": "Courtyard Lawn, Taj West End",
+  "venueName": "Courtyard Lawn, Garden West Hotel",
   "venueNotes": "Enter through Gate 2; valet at the main porch.",
   "venueLocation": {
-    "name": "Taj West End",
+    "name": "Garden West Hotel",
     "address": "Race Course Road, Bengaluru",
-    "placeId": "ChIJtajwestend",
+    "placeId": "ChIJgardenwesthotel",
     "latitude": 12.9986,
     "longitude": 77.5806,
     "notes": "Lawn is behind the main block."

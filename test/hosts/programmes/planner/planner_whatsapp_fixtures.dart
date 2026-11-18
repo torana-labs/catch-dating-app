@@ -48,7 +48,7 @@ final plannerWhatsappInboxData = <String, Object?>{
     _row(
       'mehra',
       'The Mehra family',
-      'Can our driver stay at the Taj too?',
+      'Can our driver stay at the Haveli too?',
       'needsYou',
       _at(9, 58),
       escalation: 'notInFacts',
@@ -133,7 +133,7 @@ final plannerWhatsappThread = ProgramWhatsappThread.fromCallableData({
       'm3',
       'inbound',
       'guest',
-      'Can our driver stay at the Taj too?',
+      'Can our driver stay at the Haveli too?',
       _at(9, 58),
     ),
   ],

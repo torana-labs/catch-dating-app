@@ -2,11 +2,11 @@ import 'package:catch_dating_app/contexts/programmes/domain/host_work_assignment
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 
 /// The boards' wedding weekend: Aditi and Kabir's wedding in Udaipur, the
-/// airport pickup, the Taj desk, the Sangeet door and its lead.
+/// airport pickup, the Haveli desk, the Sangeet door and its lead.
 
 const staffProgramId = 'aditi-kabir';
 const staffStationId = 'udr';
-const staffHotelId = 'taj';
+const staffHotelId = 'haveli';
 const staffSangeetId = 'sangeet';
 
 /// Friday 11 December, 12:20 PM: the airport and hotel boards.
@@ -103,7 +103,7 @@ final staffFunctions = [
   ),
 ];
 
-/// Pooja Nair: airport greeter and dispatcher at Udaipur airport, the Taj
+/// Pooja Nair: airport greeter and dispatcher at Udaipur airport, the Haveli
 /// desk, the Sangeet and Reception doors, and lead for the Sangeet.
 ProgramWorkAccess staffAccess({List<ProgramFunction>? functions}) =>
     ProgramWorkAccess(
@@ -135,7 +135,7 @@ ProgramWorkAccess staffAccess({List<ProgramFunction>? functions}) =>
         ),
       ],
       hotels: const [
-        ProgramHotel(hotelId: staffHotelId, name: 'Taj Fateh Prakash'),
+        ProgramHotel(hotelId: staffHotelId, name: 'Lakeview Haveli'),
       ],
       functions: functions ?? staffFunctions,
       vehicleClasses: staffVehicles,
@@ -151,7 +151,7 @@ ArrivalsRosterRow staffArrival(
   String? flight,
   String? origin,
   DateTime? curbAt,
-  String destination = 'Taj Fateh Prakash',
+  String destination = 'Lakeview Haveli',
   String? destinationHotelId = staffHotelId,
   bool mine = false,
   String? claimedBy,
@@ -216,7 +216,7 @@ ProgramArrivalsRoster staffRoster() => ProgramArrivalsRoster(
       'Ananya Rao',
       1,
       curbAt: DateTime(2026, 12, 11, 11, 50),
-      destination: 'Leela Palace',
+      destination: 'Lakeshore Palace',
       destinationHotelId: 'leela',
     ),
     staffArrival(
@@ -227,7 +227,7 @@ ProgramArrivalsRoster staffRoster() => ProgramArrivalsRoster(
       flight: '6E 2134',
       origin: 'DEL',
       curbAt: DateTime(2026, 12, 11, 12, 5),
-      destination: 'Leela Palace',
+      destination: 'Lakeshore Palace',
       destinationHotelId: 'leela',
     ),
     staffArrival(
@@ -287,7 +287,7 @@ ProgramTransportPlan staffPlan() => ProgramTransportPlan(
       ['mehra', 'kapoor'],
       'innova',
       'Innova',
-      'Taj Fateh Prakash',
+      'Lakeview Haveli',
       staffHotelId,
       6,
       TransportGroupReadiness.ready,
@@ -296,7 +296,7 @@ ProgramTransportPlan staffPlan() => ProgramTransportPlan(
       ['rao', 'delhi'],
       'tempo',
       'Tempo Traveller',
-      'Leela Palace',
+      'Lakeshore Palace',
       'leela',
       4,
       TransportGroupReadiness.expected,
@@ -308,13 +308,13 @@ ProgramTransportPlan staffPlan() => ProgramTransportPlan(
 const staffVendors = [
   ProgramVendorOption(
     vendorId: 'shree',
-    name: 'Shree Travels',
+    name: 'Lantern Lane Travels',
     active: true,
     boundToProgram: true,
   ),
   ProgramVendorOption(
     vendorId: 'royal',
-    name: 'Royal Cabs',
+    name: 'Salt Air Cabs',
     active: true,
     boundToProgram: true,
   ),
@@ -330,13 +330,13 @@ ProgramTripSummary _trip(
   tripId: id,
   pickupPointId: staffStationId,
   destinationHotelId: staffHotelId,
-  destinationLabel: 'Taj Fateh Prakash',
+  destinationLabel: 'Lakeview Haveli',
   vehicleClassId: 'innova',
   vehicleClassLabel: vehicle,
   manifestSource: TransportManifestSource.dispatchSnapshot,
   plateDisplay: plate,
   vendorId: 'shree',
-  vendorName: 'Shree Travels',
+  vendorName: 'Lantern Lane Travels',
   status: TransportTripStatus.enRoute,
   passengerCount: names.length,
   departedAt: DateTime(2026, 12, 11, 12),
@@ -351,7 +351,7 @@ ProgramHotelInbound staffInbound() => ProgramHotelInbound(
   programId: staffProgramId,
   accessExpiresAt: _grantEnds,
   hotelId: staffHotelId,
-  hotelName: 'Taj Fateh Prakash',
+  hotelName: 'Lakeview Haveli',
   generatedAt: staffDayNow,
   trips: [
     _trip('t1', 'Innova', 'RJ 27 TA 4471', 25, [
@@ -406,7 +406,7 @@ ProgramStay _stay(
 ProgramHotelRooms staffRooms() => ProgramHotelRooms(
   programId: staffProgramId,
   hotelId: staffHotelId,
-  hotelName: 'Taj Fateh Prakash',
+  hotelName: 'Lakeview Haveli',
   accessExpiresAt: _grantEnds,
   generatedAt: staffDayNow,
   roomBlocks: [
@@ -534,7 +534,7 @@ ProgramStaffAttention staffAttention() => ProgramStaffAttention(
       momentId: 'm2',
       duty: 'functionLead',
       severity: 'warning',
-      title: 'The Iyers reach the Taj after the Sangeet starts',
+      title: 'The Iyers reach the Haveli after the Sangeet starts',
       createdAt: DateTime(2026, 12, 12, 19, 40),
     ),
     ProgramStaffAttentionItem(
