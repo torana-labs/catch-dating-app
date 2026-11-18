@@ -1,0 +1,57 @@
+{
+  "hostname": "www.xn--catchdtes-k4a.com",
+  "registrableDomain": "xn--catchdtes-k4a.com",
+  "target": {
+    "kind": "form",
+    "organizerId": "organizer-1",
+    "formId": "form-1",
+    "publicFormId": "pf_Ab12Cd34Ef56Gh78Ij90"
+  },
+  "status": "pendingDns",
+  "generation": 1,
+  "revision": 1,
+  "ownershipChallenge": "catch-verification=Qx7Lr2Vb9Tn4Hc6Md1Ks8Wp3Yf5Ga0Ze",
+  "expectedCname": "domains.example-saas.net",
+  "apexRedirect": null,
+  "provider": "firebaseHosting",
+  "providerHostnameId": null,
+  "providerStatus": null,
+  "dnsInstructions": [
+    {
+      "type": "CNAME",
+      "name": "apply.myrunclub.co.in",
+      "value": "domains.example-saas.net",
+      "purpose": "routing"
+    },
+    {
+      "type": "TXT",
+      "name": "_catch-verify.apply.myrunclub.co.in",
+      "value": "catch-verification=Qx7Lr2Vb9Tn4Hc6Md1Ks8Wp3Yf5Ga0Ze",
+      "purpose": "ownership"
+    }
+  ],
+  "reservedAtMillis": 1763366400000,
+  "pendingExpiresAtMillis": 1763971200000,
+  "verifiedAtMillis": null,
+  "activatedAtMillis": null,
+  "lastCheckedAtMillis": null,
+  "lastHealthyAtMillis": null,
+  "lapsedAtMillis": null,
+  "consecutiveProbeFailures": 0,
+  "review": {
+    "state": "none",
+    "reason": null
+  },
+  "suspension": null,
+  "createdByUid": null,
+  "history": [
+    {
+      "atMillis": 1763366400000,
+      "from": null,
+      "to": "pendingDns",
+      "actor": "operator",
+      "actorUid": null,
+      "reason": null
+    }
+  ]
+}

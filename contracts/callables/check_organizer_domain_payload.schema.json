@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/check_organizer_domain_payload.schema.json",
+  "title": "CheckOrganizerDomainCallablePayload",
+  "description": "Check now: an organiser owner asks Catch to probe DNS and the provider for this exact generation instead of waiting for the reconciler. Rate limited per organiser. Returns OrganizerDomainCallableResponse.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "hostname", "generation"],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "hostname": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/servedHostname"
+    },
+    "generation": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/generation"
+    }
+  }
+}

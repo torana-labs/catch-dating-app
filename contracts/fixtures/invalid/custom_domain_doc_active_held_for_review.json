@@ -1,0 +1,99 @@
+{
+  "hostname": "www.myrunclub.com",
+  "registrableDomain": "myrunclub.com",
+  "target": {
+    "kind": "organizerPage",
+    "organizerId": "organizer-1"
+  },
+  "status": "active",
+  "generation": 1,
+  "revision": 6,
+  "ownershipChallenge": "catch-verification=Qx7Lr2Vb9Tn4Hc6Md1Ks8Wp3Yf5Ga0Ze",
+  "expectedCname": "domains.example-saas.net",
+  "apexRedirect": {
+    "hostname": "myrunclub.com",
+    "mode": "registrar"
+  },
+  "provider": "cloudflareSaas",
+  "providerHostnameId": "0d89c70d-ad9f-4843-b99f-6cc0252067e9",
+  "providerStatus": {
+    "hostname": "active",
+    "ssl": "active",
+    "errors": [],
+    "observedAtMillis": 1763452800000
+  },
+  "dnsInstructions": [
+    {
+      "type": "CNAME",
+      "name": "www.myrunclub.com",
+      "value": "domains.example-saas.net",
+      "purpose": "routing"
+    },
+    {
+      "type": "TXT",
+      "name": "_catch-verify.www.myrunclub.com",
+      "value": "catch-verification=Qx7Lr2Vb9Tn4Hc6Md1Ks8Wp3Yf5Ga0Ze",
+      "purpose": "ownership"
+    },
+    {
+      "type": "TXT",
+      "name": "_cf-custom-hostname.www.myrunclub.com",
+      "value": "4b1c7d2e-9f3a-4e6b-8c5d-1a2b3c4d5e6f",
+      "purpose": "certificate"
+    },
+    {
+      "type": "redirect",
+      "name": "myrunclub.com",
+      "value": "https://www.myrunclub.com/",
+      "purpose": "apexRedirect"
+    }
+  ],
+  "reservedAtMillis": 1763366400000,
+  "pendingExpiresAtMillis": null,
+  "verifiedAtMillis": 1763370000000,
+  "activatedAtMillis": 1763373600000,
+  "lastCheckedAtMillis": 1763452800000,
+  "lastHealthyAtMillis": 1763452800000,
+  "lapsedAtMillis": null,
+  "consecutiveProbeFailures": 0,
+  "review": {
+    "state": "held",
+    "reason": "Near match: catchdates"
+  },
+  "suspension": null,
+  "createdByUid": "owner-1",
+  "history": [
+    {
+      "atMillis": 1763366400000,
+      "from": null,
+      "to": "pendingDns",
+      "actor": "owner",
+      "actorUid": "owner-1",
+      "reason": null
+    },
+    {
+      "atMillis": 1763370000000,
+      "from": "pendingDns",
+      "to": "verified",
+      "actor": "reconciler",
+      "actorUid": null,
+      "reason": null
+    },
+    {
+      "atMillis": 1763370000000,
+      "from": "verified",
+      "to": "provisioning",
+      "actor": "reconciler",
+      "actorUid": null,
+      "reason": null
+    },
+    {
+      "atMillis": 1763373600000,
+      "from": "provisioning",
+      "to": "active",
+      "actor": "reconciler",
+      "actorUid": null,
+      "reason": null
+    }
+  ]
+}

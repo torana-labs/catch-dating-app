@@ -1,0 +1,53 @@
+{
+  "organizerId": "organizer-1",
+  "role": "owner",
+  "canManage": true,
+  "manageBlockedReason": "none",
+  "domain": {
+    "hostname": "www.myrunclub.com",
+    "registrableDomain": "myrunclub.com",
+    "status": "pendingDns",
+    "generation": 1,
+    "dnsInstructions": [
+      {
+        "type": "CNAME",
+        "name": "www.myrunclub.com",
+        "value": "domains.example-saas.net",
+        "purpose": "routing"
+      },
+      {
+        "type": "TXT",
+        "name": "_catch-verify.www.myrunclub.com",
+        "value": "catch-verification=Qx7Lr2Vb9Tn4Hc6Md1Ks8Wp3Yf5Ga0Ze",
+        "purpose": "ownership"
+      },
+      {
+        "type": "TXT",
+        "name": "_cf-custom-hostname.www.myrunclub.com",
+        "value": "4b1c7d2e-9f3a-4e6b-8c5d-1a2b3c4d5e6f",
+        "purpose": "certificate"
+      },
+      {
+        "type": "redirect",
+        "name": "myrunclub.com",
+        "value": "https://www.myrunclub.com/",
+        "purpose": "apexRedirect"
+      }
+    ],
+    "apexRedirect": {
+      "hostname": "myrunclub.com",
+      "mode": "registrar"
+    },
+    "reviewState": "none",
+    "problemCode": "dnsCnameMissing",
+    "liveUrl": null,
+    "reservedAtMillis": 1763366400000,
+    "pendingExpiresAtMillis": 1763971200000,
+    "verifiedAtMillis": null,
+    "activatedAtMillis": null,
+    "lastCheckedAtMillis": 1763367000000,
+    "lapsedAtMillis": null,
+    "lapseRemovalAtMillis": null,
+    "nextCheckAllowedAtMillis": 1763367060000
+  }
+}

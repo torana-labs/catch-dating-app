@@ -1458,6 +1458,45 @@ describe("firestore.rules", () => {
       )));
     });
 
+    it("keeps the custom domain registry server-only", async () => {
+      await seed(["organizers", "organizer-1"], organizer({
+        ownerUserId: "owner-1",
+        hostUserIds: ["owner-1", "manager-1"],
+      }));
+      const record = {
+        hostname: "www.myrunclub.com",
+        registrableDomain: "myrunclub.com",
+        target: {kind: "organizerPage", organizerId: "organizer-1"},
+        status: "active",
+        generation: 1,
+        ownershipChallenge: "catch-verification=Qx7Lr2Vb9Tn4Hc6Md1Ks8Wp3Yf5Ga0Ze",
+        createdByUid: "owner-1",
+      };
+      await seed(["customDomains", "www.myrunclub.com"], record);
+
+      for (const db of [
+        authedDb("owner-1"),
+        authedDb("manager-1"),
+        authedDb("guest-1"),
+        testEnv.unauthenticatedContext().firestore(),
+      ]) {
+        const ref = doc(db, "customDomains", "www.myrunclub.com");
+        await assertFails(getDoc(ref));
+        await assertFails(getDocs(query(
+          collection(db, "customDomains"),
+          where("target.organizerId", "==", "organizer-1"),
+        )));
+        await assertFails(getDocs(collection(db, "customDomains")));
+        await assertFails(updateDoc(ref, {status: "removed"}));
+        await assertFails(deleteDoc(ref));
+        await assertFails(setDoc(doc(db, "customDomains", "www.hijack.example"), {
+          ...record,
+          hostname: "www.hijack.example",
+          status: "pendingDns",
+        }));
+      }
+    });
+
     it("keeps organizer tracking settings server-only", async () => {
       await seed(["organizerTrackingSettings", "organizer-1"], {
         organizerId: "organizer-1", revision: 1, metaPixelId: "123456",

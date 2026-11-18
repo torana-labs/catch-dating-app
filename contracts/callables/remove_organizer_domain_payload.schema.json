@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/remove_organizer_domain_payload.schema.json",
+  "title": "RemoveOrganizerDomainCallablePayload",
+  "description": "An organiser owner removes this exact generation of the domain: the provider hostname is deleted, the page projection is cleared and the record becomes removed. Re-adding the hostname needs a new generation and challenge. Returns OrganizerDomainCallableResponse carrying the removed record and the DNS records to delete.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId", "hostname", "generation"],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,119}$"
+    },
+    "hostname": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/servedHostname"
+    },
+    "generation": {
+      "$ref": "../shared/custom_domain_common.schema.json#/definitions/generation"
+    }
+  }
+}

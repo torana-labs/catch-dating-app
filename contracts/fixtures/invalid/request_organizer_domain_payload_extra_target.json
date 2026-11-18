@@ -1,0 +1,7 @@
+{
+  "organizerId": "organizer-1",
+  "hostname": "www.myrunclub.com",
+  "target": {
+    "kind": "organizerPage"
+  }
+}

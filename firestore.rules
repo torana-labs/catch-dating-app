@@ -1687,6 +1687,12 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Custom domain registry (#1110). Server-only: owners use the domain
+    // callables and the website server reads active records with the Admin SDK.
+    match /customDomains/{hostname} {
+      allow read, write: if false;
+    }
+
     match /organizerFormDomains/{hostname} {
       allow read, write: if false;
     }
