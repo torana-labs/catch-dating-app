@@ -223,7 +223,7 @@ function repositorySources(repoRoot) {
     .filter((file) => file.includes(`${path.sep}data${path.sep}`))
     .filter((file) => path.basename(file).includes("repository"))
     .filter((file) => !file.endsWith(".g.dart")) : [];
-  const backend = ["programs", "transport"].flatMap((directory) => {
+  const backend = ["customDomains", "programs", "transport"].flatMap((directory) => {
     const root = path.join(repoRoot, "functions/src", directory);
     return fs.existsSync(root) ? walk(root).filter((file) =>
       file.endsWith(".ts") && !file.endsWith(".test.ts")) : [];

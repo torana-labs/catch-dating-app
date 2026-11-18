@@ -1,6 +1,6 @@
 import {strict as assert} from "node:assert";
 import {describe, it} from "node:test";
-import {resolvePublicFormDomainRequest} from "./organizerFormDomainHttp";
+import {resolvePublicFormDomainRequest} from "./formDomainHttp";
 import {BRAND} from "../shared/generated/brand";
 
 describe("public custom-domain resolution", () => {
@@ -8,15 +8,15 @@ describe("public custom-domain resolution", () => {
     const lookedUp: string[] = [];
     const resolve = async (host: string) => {
       lookedUp.push(host);
-      return host === "apply.client.example" ? "public-a" : null;
+      return host === "apply.example-club.example" ? "public-a" : null;
     };
     assert.deepEqual(await resolvePublicFormDomainRequest(
-      "GET", "apply.client.example", resolve), {
-      status: 200, body: {hostname: "apply.client.example",
+      "GET", "apply.example-club.example", resolve), {
+      status: 200, body: {hostname: "apply.example-club.example",
         publicFormId: "public-a"},
     });
     assert.deepEqual(await resolvePublicFormDomainRequest(
-      "GET", "apply.client.example:443", resolve), {
+      "GET", "apply.example-club.example:443", resolve), {
       status: 404, body: {error: "Form unavailable"},
     });
     assert.deepEqual(await resolvePublicFormDomainRequest(
@@ -24,9 +24,9 @@ describe("public custom-domain resolution", () => {
       status: 404, body: {error: "Form unavailable"},
     });
     assert.deepEqual(await resolvePublicFormDomainRequest(
-      "POST", "apply.client.example", resolve), {
+      "POST", "apply.example-club.example", resolve), {
       status: 405, body: {error: "Method not allowed"},
     });
-    assert.deepEqual(lookedUp, ["apply.client.example"]);
+    assert.deepEqual(lookedUp, ["apply.example-club.example"]);
   });
 });

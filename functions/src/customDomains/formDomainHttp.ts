@@ -1,14 +1,13 @@
 import * as admin from "firebase-admin";
 import {onRequest} from "firebase-functions/v2/https";
-import {normalizeCustomFormHost} from "./organizerFormDomains";
 import {checkIpRateLimit} from "../shared/rateLimit";
-import {
-  probeFormDomain, resolveOrganizerFormDomain,
-} from "./organizerFormDomainRegistry";
+import {parseServedHostname} from "./domainPolicy";
+import {probeCustomDomain, resolveFormCustomDomain} from "./domainRegistry";
 
 /**
  * A hostname parameter is an untrusted lookup key, never tenant authority.
- * This endpoint discloses only the public ID of an active, DNS-verified form.
+ * This endpoint discloses only the public ID of an active, DNS-verified form
+ * from the customDomains registry.
  * The website must compare the echoed hostname to window.location.hostname.
  */
 export async function resolvePublicFormDomainRequest(
@@ -21,7 +20,7 @@ export async function resolvePublicFormDomainRequest(
     return {status: 405, body: {error: "Method not allowed"}};
   }
   if (typeof requestedHost !== "string" ||
-      normalizeCustomFormHost(requestedHost) !== requestedHost) {
+      parseServedHostname(requestedHost)?.hostname !== requestedHost) {
     return {status: 404, body: {error: "Form unavailable"}};
   }
   const publicFormId = await resolve(requestedHost);
@@ -44,8 +43,8 @@ export const resolvePublicFormDomain = onRequest(
       const result = await resolvePublicFormDomainRequest(
         request.method, request.query.hostname,
         async (hostname) => {
-          const resolved = await resolveOrganizerFormDomain(
-            admin.firestore(), hostname, () => probeFormDomain(hostname),
+          const resolved = await resolveFormCustomDomain(
+            admin.firestore(), hostname, () => probeCustomDomain(hostname),
             Date.now);
           return resolved?.publicFormId ?? null;
         }

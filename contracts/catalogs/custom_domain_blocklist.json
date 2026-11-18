@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "kind": "customDomainBlocklist",
+  "description": "Hostnames and terms the custom domain registry (#1110) refuses or holds for Admin review. Functions adds Catch's own domains and brand label from the brand config, so they are not repeated here. Matching runs on every DNS label after lowercasing and removing hyphens. A reject term refuses the hostname when a label equals it or the registrable label contains it, and holds for review any lookalike: the term after digit and letter-pair confusables (0 for o, 1 for l, rn for m), or one edit away. A review term holds the hostname for review when any label contains it. Entries here are generic or fictional; real brand names belong in an access-controlled Admin list, never in this public repository.",
+  "providerSuffixes": [
+    "appspot.com",
+    "cloudfunctions.net",
+    "firebaseapp.com",
+    "pages.dev",
+    "run.app",
+    "web.app",
+    "workers.dev"
+  ],
+  "terms": [
+    {"term": "examplebank", "category": "bank", "action": "reject"},
+    {"term": "examplepay", "category": "payment", "action": "reject"},
+    {"term": "examplewallet", "category": "payment", "action": "reject"},
+    {"term": "examplemail", "category": "brand", "action": "reject"},
+    {"term": "login", "category": "credential", "action": "review"},
+    {"term": "signin", "category": "credential", "action": "review"},
+    {"term": "password", "category": "credential", "action": "review"},
+    {"term": "verify", "category": "credential", "action": "review"},
+    {"term": "secure", "category": "credential", "action": "review"},
+    {"term": "wallet", "category": "payment", "action": "review"},
+    {"term": "banking", "category": "bank", "action": "review"},
+    {"term": "payment", "category": "payment", "action": "review"}
+  ]
+}
