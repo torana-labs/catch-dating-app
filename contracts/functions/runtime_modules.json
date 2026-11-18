@@ -276,7 +276,6 @@
     "EventHostPhotosCallableResponse",
     "EventIdCallablePayload",
     "EventJoinRequestDecisionCallablePayload",
-    "EventLiveCommandReceiptDocument",
     "EventMembershipRulesDocument",
     "EventMessagingBudgetApplicationReceiptDocument",
     "EventMessagingBudgetDecisionDocument",

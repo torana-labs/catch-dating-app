@@ -1,6 +1,7 @@
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {logger} from "firebase-functions";
+import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import type {CreateOrganizerCallablePayload} from
   "../shared/generated/createOrganizerCallablePayload";
@@ -32,6 +33,12 @@ import {reserveOrganizerCanonicalRoute} from
   "../admin/organizerPublishingGuards";
 import {organizerSupplyCapabilitiesFor} from
   "../shared/organizerSupplyCapabilities";
+import {
+  checkListingSuppression,
+  listingSuppressionHmacKey,
+  reviewFlagPatch,
+  suppressionModule,
+} from "../listingSuppressions/registry";
 
 interface CreateOrganizerDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -101,6 +108,27 @@ export async function createOrganizerHandler(
       throw new HttpsError(
         "failed-precondition",
         "This account cannot create organizers."
+      );
+    }
+    // A host creating their own workspace is flagged, never blocked, when it
+    // matches a do-not-list case: the workspace starts private and
+    // unpublished, and the real organizer may be the one signing up. Staff
+    // review the flag on the case. A missing registry key only logs here.
+    const suppressionKeys = (await suppressionModule())
+      .suppressionKeysForIdentity({
+        names: data.name,
+        handles: data.instagramHandle ?? null,
+        organizerIds: organizerId,
+      });
+    const suppression = await checkListingSuppression(
+      tx,
+      db,
+      suppressionKeys
+    );
+    if (suppression.state === "unavailable") {
+      logger.error(
+        "createOrganizer could not check the do-not-list registry.",
+        {organizerId}
       );
     }
 
@@ -223,6 +251,14 @@ export async function createOrganizerHandler(
       organizerPhotos,
       followerCount: 0,
     });
+    if (suppression.state === "suppressed") {
+      tx.update(
+        suppression.match.ref,
+        reviewFlagPatch(suppression.match, organizerId, new Date())
+      );
+      logger.warn("Self-created organizer flagged by the do-not-list " +
+        "registry.", {organizerId, caseId: suppression.match.caseId});
+    }
     tx.set(teamRef, activeOrganizerTeamMembershipPatch({
       organizerId,
       uid: ownerUid,
@@ -241,7 +277,7 @@ export async function createOrganizerHandler(
 }
 
 export const createOrganizer = onCall(
-  appCheckCallableOptions,
+  appCheckCallableOptionsWithSecrets([listingSuppressionHmacKey]),
   (request) => createOrganizerHandler(request)
 );
 

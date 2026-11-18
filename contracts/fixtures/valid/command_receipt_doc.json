@@ -1,0 +1,16 @@
+{
+  "command": "setEventAttendeeAttendance",
+  "requestHash": "8f2a6f0c1d4e5b7a9c3e1f2d4b6a8c0e1f3a5b7c9d1e3f5a7b9c1d3e5f7a9b1c",
+  "result": {
+    "acceptedRevision": 3,
+    "changed": true
+  },
+  "createdAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "expiresAt": {
+    "_seconds": 1781308800,
+    "_nanoseconds": 0
+  }
+}

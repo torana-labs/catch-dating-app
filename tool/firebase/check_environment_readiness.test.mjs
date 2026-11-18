@@ -63,8 +63,8 @@ test("checked manifest validates offline without invoking gcloud", () => {
   );
 
   assert.equal(execution.exitCode, 0);
-  assert.equal(execution.report.secretCount, 23);
-  assert.equal(execution.report.requirementCount, 28);
+  assert.equal(execution.report.secretCount, 24);
+  assert.equal(execution.report.requirementCount, 29);
   assert.equal(commandCalls, 0);
 });
 
@@ -199,7 +199,7 @@ test("target and capability filtering selects only relevant prerequisites", () =
     selected("dev", ["functions"]).filter(
       (entry) => entry.kind === "secret-version",
     ).length,
-    21,
+    22,
   );
   // The event-assistance guest keyring is read only by dormant Functions.
   // The ad conversions Meta token is an optional pinned reference.
@@ -293,7 +293,7 @@ test("Catch webhook requires its own secrets and active receipt TTL", () => {
   }
 });
 
-test("Instagram claim webhook requires its three secrets", () => {
+test("Instagram claim webhook requires its three secrets and the do-not-list key", () => {
   for (const environment of ["dev", "staging", "prod"]) {
     const requirements = selectReadinessRequirements({
       manifest, environment, targets: ["functions:instagramClaimWebhook"],
@@ -303,8 +303,11 @@ test("Instagram claim webhook requires its three secrets", () => {
       "CATCH_INSTAGRAM_ACCESS_TOKEN",
       "CATCH_INSTAGRAM_APP_SECRET",
       "CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN",
+      // Message nominations reach the Supply Intake do-not-list check.
+      "LISTING_SUPPRESSION_HMAC_KEY",
     ]);
-    assert(requirements.every((entry) => entry.owner === "organizer-claims"));
+    assert(requirements.every((entry) => entry.owner ===
+      (entry.name === "LISTING_SUPPRESSION_HMAC_KEY" ? "organizer-takedown" : "organizer-claims")));
     // Code checks expiry itself; TTL only prunes, so starting needs nothing.
     assert.deepEqual(selectReadinessRequirements({
       manifest, environment,
@@ -1734,6 +1737,12 @@ test("a new consumer may be deployed before it exists; the post-deploy check sti
     runCommand: (spec) => {
       commands.push(spec.args);
       if (spec.args[0] === "functions") return metadata([]);
+      if (spec.args[0] === "secrets" && spec.args[1] === "versions" && spec.args[3] === "latest" &&
+          !spec.args.includes("--secret=ALGOLIA_SEARCH_API_KEY")) {
+        // Other secrets the consumer binds (the do-not-list key) are already enabled.
+        const secret = spec.args.find((arg) => arg.startsWith("--secret=")).slice(9);
+        return metadata({name: `projects/catchdates-dev/secrets/${secret}/versions/1`, state: "ENABLED"});
+      }
       if (spec.args[0] === "secrets" && spec.args[1] === "versions" && spec.args[3] === "latest") {
         return metadata({name: "projects/catchdates-dev/secrets/ALGOLIA_SEARCH_API_KEY/versions/4", state: latestState,
           payload: "never-persist-me"});
@@ -1773,7 +1782,11 @@ test("a new consumer may be deployed before it exists; the post-deploy check sti
     paramsSha256: "c".repeat(64), functions: [{consumer: "onMessageNominationListingReady",
       serviceAccount: "123-compute@developer.gserviceaccount.com"}],
     bindings: [{requirementId: "functions.reference.catch-auto-reply", consumer: "onMessageNominationListingReady",
-      serviceAccount: "123-compute@developer.gserviceaccount.com", reference: null, active: false}]};
+      serviceAccount: "123-compute@developer.gserviceaccount.com", reference: null, active: false},
+    // Auto-publishing approves listings, so the Function also binds the do-not-list key.
+    {requirementId: "functions.secret.listing-suppression-hmac-key", consumer: "onMessageNominationListingReady",
+      serviceAccount: "123-compute@developer.gserviceaccount.com",
+      reference: "projects/catchdates-dev/secrets/LISTING_SUPPRESSION_HMAC_KEY/versions/1", active: true}]};
   assert.equal(run(["functions:onMessageNominationListingReady"], candidate).exitCode, 1,
     "after the deploy the Function must exist");
 });
