@@ -2,6 +2,8 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {defineSecret} from "firebase-functions/params";
 import {onRequest} from "firebase-functions/v2/https";
+import {listingSuppressionHmacKey} from
+  "../listingSuppressions/registry";
 import {defaultSupportInboxDeps, recordSupportInbound} from
   "../supportInbox/conversations";
 import {routeInstagramInbound} from
@@ -108,7 +110,9 @@ async function handleInstagramMessages(messages: InstagramInboundMessage[]) {
 }
 
 export const instagramClaimWebhook = onRequest({
-  secrets: [appSecret, instagramAccessToken, verifyToken], maxInstances: 2,
+  // listingSuppressionHmacKey: message nominations reach the do-not-list check.
+  secrets: [appSecret, instagramAccessToken, verifyToken,
+    listingSuppressionHmacKey], maxInstances: 2,
   concurrency: 10, invoker: "public",
 }, async (request, response) => {
   const result = await handleInstagramClaimWebhook({

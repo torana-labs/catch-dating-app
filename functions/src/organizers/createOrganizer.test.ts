@@ -30,8 +30,11 @@ class FakeFirestore {
   constructor(private readonly docs: Record<string, FakeData | undefined>) {}
 
   collection(path: string) {
+    // Only the do-not-list probe queries; this registry is always empty.
+    const query = {limit: () => query, where: () => query, emptyQuery: true};
     return {
       doc: (id = "GeneratedAutoId000001") => new FakeDocRef(`${path}/${id}`),
+      where: () => query,
     };
   }
 
@@ -60,7 +63,8 @@ class FakeTransaction {
 
   constructor(private readonly firestore: FakeFirestore) {}
 
-  async get(ref: FakeDocRef) {
+  async get(ref: FakeDocRef | {emptyQuery: true}) {
+    if ("emptyQuery" in ref) return {empty: true, docs: []};
     return new FakeSnapshot(this.firestore.get(ref.path));
   }
 

@@ -6,6 +6,12 @@ import type {Firestore} from "firebase-admin/firestore";
 
 type Data = Record<string, unknown>;
 
+interface TestQuery {
+  where: (field: string, op: string, value: unknown) => TestQuery;
+  limit: (count: number) => TestQuery;
+  get: () => Promise<{empty: boolean; size: number; docs: unknown[]}>;
+}
+
 export class TestDocStore {
   records = new Map<string, Data>();
   private tail: Promise<unknown> = Promise.resolve();
@@ -15,7 +21,32 @@ export class TestDocStore {
   }
 
   collection(name: string) {
-    return {doc: (id: string) => this.ref(`${name}/${id}`)};
+    return {doc: (id: string) => this.ref(`${name}/${id}`),
+      where: (field: string, op: string, value: unknown) =>
+        this.query(name, [[field, op, value]])};
+  }
+
+  /** Equality and array-contains-any filters, for the do-not-list lookup. */
+  query(name: string, filters: Array<[string, string, unknown]>,
+    max = Infinity): TestQuery {
+    const matches = (data: Data) => filters.every(([field, op, value]) =>
+      op === "==" ? data[field] === value :
+        op === "array-contains-any" && Array.isArray(data[field]) &&
+          Array.isArray(value) &&
+          (data[field] as unknown[]).some((item) => value.includes(item)));
+    return {
+      where: (field, op, value) =>
+        this.query(name, [...filters, [field, op, value]], max),
+      limit: (count) => this.query(name, filters, count),
+      get: async () => {
+        const docs = [...this.records.keys()]
+          .filter((path) => path.startsWith(`${name}/`) &&
+            path.split("/").length === 2 && matches(this.records.get(path)!))
+          .slice(0, max).map((path) => ({...this.snapshot(path),
+            ref: this.ref(path)}));
+        return {empty: docs.length === 0, size: docs.length, docs};
+      },
+    };
   }
 
   ref(path: string) {
@@ -44,7 +75,7 @@ export class TestDocStore {
   }
 
   async runTransaction<T>(work: (tx: {
-    get: (ref: {path: string}) => Promise<ReturnType<TestDocStore["snapshot"]>>;
+    get: (ref: {path: string} | TestQuery) => Promise<unknown>;
     create: (ref: {path: string}, data: Data) => void;
     set: (ref: {path: string}, data: Data) => void;
     update: (ref: {path: string}, data: Data) => void;
@@ -52,7 +83,8 @@ export class TestDocStore {
     const run = this.tail.then(async () => {
       const writes = new Map<string, Data>();
       const result = await work({
-        get: async (ref) => this.snapshot(ref.path),
+        get: async (ref) => "path" in ref ? this.snapshot(ref.path) :
+          ref.get(),
         create: (ref, data) => {
           if (this.records.has(ref.path) || writes.has(ref.path)) {
             throw Object.assign(new Error("already exists"), {code: 6});

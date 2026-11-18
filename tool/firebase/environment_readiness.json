@@ -397,6 +397,31 @@
       "rotationCompatibility": "identity-migration"
     },
     {
+      "id": "functions.secret.listing-suppression-hmac-key",
+      "kind": "secret-version",
+      "name": "LISTING_SUPPRESSION_HMAC_KEY",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "organizer-takedown",
+      "sourcePaths": [
+        "functions/src/listingSuppressions/registry.ts"
+      ],
+      "credentialClass": "identity-hmac",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "identity-migration"
+    },
+    {
       "id": "firestore.ttl.cross-paths-suggestion-exposures",
       "kind": "firestore-ttl",
       "collectionGroup": "crossPathsSuggestionExposures",
