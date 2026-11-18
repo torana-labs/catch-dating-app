@@ -1,3 +1,9 @@
+/* firestore-index: programStays (
+  programId:ASCENDING,
+  organizerId:ASCENDING,
+  hotelId:ASCENDING,
+  guestId:ASCENDING
+) */
 import {isDeepStrictEqual} from "node:util";
 import * as logger from "firebase-functions/logger";
 import type {

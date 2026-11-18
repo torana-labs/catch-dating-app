@@ -1,3 +1,7 @@
+/* firestore-index: programDoorJournal (
+  programId:ASCENDING,
+  actorUid:ASCENDING
+) */
 import * as admin from "firebase-admin";
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import {
