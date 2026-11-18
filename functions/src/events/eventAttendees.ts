@@ -832,7 +832,7 @@ export async function registerPublicEventHandler(
   const eventRef = db.collection("events").doc(payload.eventId);
   const attendeeId = eventAttendeeId(payload.eventId, `phone:${phone}`);
   const attendeeRef = db.collection("eventAttendees").doc(attendeeId);
-  const onboardingDraftRef = db.collection("onboarding_drafts").doc(uid);
+  const onboardingDraftRef = db.collection("onboardingDrafts").doc(uid);
 
   return db.runTransaction(async (tx) => {
     const eventSnap = await tx.get(eventRef);

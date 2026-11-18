@@ -32,22 +32,29 @@ describe("firestore.rules", () => {
       };
 
       await assertSucceeds(
-        setDoc(doc(authedDb("runner-1"), "onboarding_drafts", "runner-1"), draft),
+        setDoc(doc(authedDb("runner-1"), "onboardingDrafts", "runner-1"), draft),
       );
       await assertSucceeds(
-        setDoc(doc(authedDb("runner-1"), "onboarding_drafts", "runner-1"), {
+        setDoc(doc(authedDb("runner-1"), "onboardingDrafts", "runner-1"), {
           ...draft,
           futureStepPayload: {canEvolveWithoutRulesDeploy: true},
         }),
       );
       await assertSucceeds(
+        getDoc(doc(authedDb("runner-1"), "onboardingDrafts", "runner-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-2"), "onboardingDrafts", "runner-1")),
+      );
+      await assertSucceeds(
+        deleteDoc(doc(authedDb("runner-1"), "onboardingDrafts", "runner-1")),
+      );
+      // The pre-rename collection has no rules block: it is closed to clients.
+      await assertFails(
         getDoc(doc(authedDb("runner-1"), "onboarding_drafts", "runner-1")),
       );
       await assertFails(
-        getDoc(doc(authedDb("runner-2"), "onboarding_drafts", "runner-1")),
-      );
-      await assertSucceeds(
-        deleteDoc(doc(authedDb("runner-1"), "onboarding_drafts", "runner-1")),
+        setDoc(doc(authedDb("runner-1"), "onboarding_drafts", "runner-1"), draft),
       );
     });
   });

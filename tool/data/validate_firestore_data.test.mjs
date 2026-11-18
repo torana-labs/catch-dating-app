@@ -28,7 +28,7 @@ function doc(docPath, data) {
 function collections(overrides = {}) {
   return Object.fromEntries(["users", "hostProfiles", "publicProfiles",
     "organizers", "organizerFollows", "events", "eventParticipations", "savedEvents",
-    "reviews", "matches", "onboarding_drafts", "scheduleLocks", "outgoing", "messages"]
+    "reviews", "matches", "onboardingDrafts", "scheduleLocks", "outgoing", "messages"]
     .map((name) => [name, overrides[name] ?? []]));
 }
 function reportFor(overrides, maxDocs = 5000, options = {}) {

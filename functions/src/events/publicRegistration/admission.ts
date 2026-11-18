@@ -151,7 +151,7 @@ export async function finalizePublicPayment(input: {
       const [ledger, reservation, draft] = await Promise.all([
         seats.ledger(eventId),
         seats.reservation(eventId, p.canonicalSeatKey),
-        tx.get(db.collection("onboarding_drafts").doc(uid)),
+        tx.get(db.collection("onboardingDrafts").doc(uid)),
       ]);
       assertCurrentReadySeatSnapshot({
         event,
@@ -284,7 +284,7 @@ export async function finalizePublicPayment(input: {
       });
       if (!draft.exists) {
         tx.create(
-          db.collection("onboarding_drafts").doc(uid),
+          db.collection("onboardingDrafts").doc(uid),
           onboardingDraftSeed({displayName, phoneE164: p.phoneE164}),
         );
       }

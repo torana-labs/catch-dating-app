@@ -593,7 +593,7 @@ export async function submitEventRuntimeProfileHandler(
   const participantRef = db.collection("eventRuntimeParticipants")
     .doc(eventRuntimeParticipantId(resolved.eventId, uid));
   const planRef = db.collection("eventSuccessPlans").doc(resolved.eventId);
-  const draftRef = db.collection("onboarding_drafts").doc(uid);
+  const draftRef = db.collection("onboardingDrafts").doc(uid);
   const userRef = db.collection("users").doc(uid);
 
   return db.runTransaction(async (tx) => {

@@ -206,6 +206,13 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         organizerId: "club-1",
         actorUid: "runner-1",
       },
+      "onboardingDrafts/runner-1": {
+        firstName: "Asha",
+        phoneNumber: "9876543210",
+        countryCode: "+91",
+        step: 1,
+        draftVersion: 2,
+      },
       "onboarding_drafts/runner-1": {
         firstName: "Asha",
         phoneNumber: "9876543210",
@@ -474,6 +481,9 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   );
   assert.ok(harness.deletedPublicDocs.includes(
     "users/runner-1/pushInstallations/device-1"));
+  assert.ok(
+    harness.deletedPublicDocs.includes("onboardingDrafts/runner-1")
+  );
   assert.ok(
     harness.deletedPublicDocs.includes("onboarding_drafts/runner-1")
   );

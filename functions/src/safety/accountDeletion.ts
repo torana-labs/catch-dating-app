@@ -92,6 +92,9 @@ export async function requestAccountDeletionHandler(
   writer.delete(db.collection("hostProfiles").doc(uid));
   writer.delete(db.collection("publicProfiles").doc(uid));
   writer.delete(db.collection("crossPathsShowcaseEligibility").doc(uid));
+  writer.delete(db.collection("onboardingDrafts").doc(uid));
+  // The pre-rename copy stays after the copy-forward migration and holds the
+  // same name and phone, so deletion removes it too.
   writer.delete(db.collection("onboarding_drafts").doc(uid));
 
   await queueRelationshipCleanup({

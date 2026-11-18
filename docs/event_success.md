@@ -4075,7 +4075,7 @@ and Host surfaces never expose the answer.
 Existing private Consumer values may prefill the event form but must be
 confirmed. Event answers never overwrite `users/{uid}`. When the participant
 explicitly selects `saveAsCatchPrefill`, the server fills only missing
-`onboarding_drafts/{uid}` fields, records field provenance, and never creates
+`onboardingDrafts/{uid}` fields, records field provenance, and never creates
 `users`, `publicProfiles`, marketing consent or an `eventParticipation`.
 
 ### Runtime access state machine

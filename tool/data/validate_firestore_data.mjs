@@ -167,7 +167,7 @@ export async function loadCollections(firestore, maxDocs, {includeScheduleLocks 
     "savedEvents",
     "reviews",
     "matches",
-    "onboarding_drafts",
+    "onboardingDrafts",
   ];
   const result = {};
   for (const collectionName of topLevel) {
@@ -280,7 +280,7 @@ export function validateAll(collections, currentReport, {checkScheduleLocks = fa
   for (const doc of collections.messages) {
     validateMessage(doc, matches, currentReport);
   }
-  for (const doc of collections.onboarding_drafts) {
+  for (const doc of collections.onboardingDrafts) {
     validateOnboardingDraft(doc, currentReport);
   }
   validateOrganizerFollowerCountAggregates(

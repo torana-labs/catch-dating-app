@@ -229,7 +229,7 @@ test("public OTP registration denies private basics before roster reads",
     }), (error) => error instanceof HttpsError &&
       error.code === "failed-precondition" &&
       error.message.includes("not open for public registration"));
-    assert.equal(firestore.get("onboarding_drafts/guest-1"), undefined);
+    assert.equal(firestore.get("onboardingDrafts/guest-1"), undefined);
   });
 
 test("ready OTP links an imported external-ID guest at full capacity",

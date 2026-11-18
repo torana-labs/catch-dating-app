@@ -10,7 +10,7 @@ part 'onboarding_draft_repository.g.dart';
 class OnboardingDraftRepository {
   const OnboardingDraftRepository(this._db);
 
-  static const _collectionPath = 'onboarding_drafts';
+  static const _collectionPath = 'onboardingDrafts';
 
   final FirebaseFirestore _db;
 

@@ -960,7 +960,7 @@ test("profile submission requires sensitive consent and seeds only a draft",
       h.deps
     );
     assert.equal(result.status, "ready");
-    const draft = h.firestore.get("onboarding_drafts/runner-1");
+    const draft = h.firestore.get("onboardingDrafts/runner-1");
     assert.equal(draft?.firstName, "Asha Shah");
     assert.equal(draft?.phoneNumber, "9876543210");
     assert.equal(draft?.gender, "woman");
