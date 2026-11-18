@@ -486,6 +486,32 @@
           "expression": "CatchScreen",
           "bodyGeometry": "standard",
           "topEdge": "safe-area"
+        },
+        {
+          "routes": [
+            "hostAppEventManageScreen",
+            "hostAppAttendanceSheet",
+            "hostAppEventSuccessScreen"
+          ],
+          "file": "lib/hosts/events/event_workspace_screen.dart",
+          "symbol": "HostEventWorkspaceScreen",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
+        },
+        {
+          "routes": [
+            "hostAppEventManageScreen",
+            "hostAppAttendanceSheet",
+            "hostAppEventSuccessScreen"
+          ],
+          "file": "lib/hosts/events/event_guests_screen.dart",
+          "symbol": "_HostEventGuestsScreenState",
+          "family": "pushed-route",
+          "expression": "CatchScreen",
+          "bodyGeometry": "standard",
+          "topEdge": "safe-area"
         }
       ],
       "reason": "Host management and operator routes are governed pushed routes across route-state and loaded owners."
