@@ -192,7 +192,7 @@
       "$ref": "../shared/public_page_common.schema.json#/definitions/listing"
     },
     "customDomain": {
-      "description": "The organiser's own domain while its customDomains record is active (#1110). The catchdates.com page then keeps serving as the fallback with a cross-domain canonical to origin and leaves the Catch sitemap. Null when no domain is active; pages built before custom domains shipped omit it, and readers treat absence as null.",
+      "description": "The organiser's own domain while its customDomains record is active (#1110). The page on the Catch site then keeps serving as the fallback with a cross-domain canonical to origin and leaves the Catch sitemap. Null when no domain is active; pages built before custom domains shipped omit it, and readers treat absence as null.",
       "oneOf": [
         {"type": "null"},
         {

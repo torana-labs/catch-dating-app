@@ -58,7 +58,7 @@
   "consecutiveProbeFailures": 0,
   "review": {
     "state": "held",
-    "reason": "Near match: catchdates"
+    "reason": "Near match: a blocklisted brand"
   },
   "suspension": null,
   "createdByUid": "owner-1",
