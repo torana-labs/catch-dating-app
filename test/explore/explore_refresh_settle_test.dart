@@ -86,16 +86,26 @@ void main() {
           .then((_) => done = true),
     );
     await tester.pump();
-    await pumpFeatureUiFor(
-      tester,
-      CachePolicies.discovery.refresh - const Duration(seconds: 1),
-    );
-    expect(done, isFalse);
-    // The indicator starts the refresh a moment after show(), so the deadline
-    // runs from then; give it a few seconds past the nominal deadline.
-    await pumpFeatureUiFor(tester, const Duration(seconds: 2));
-    await pumpFeatureUiFor(tester, const Duration(seconds: 3));
-    await pumpFeatureUiFor(tester, const Duration(seconds: 1));
+    // One-second steps: the indicator starts the refresh a moment after
+    // show(), so the deadline runs from then. It must not end early and must
+    // end within a few seconds of the deadline.
+    var elapsed = Duration.zero;
+    while (!done && elapsed < CachePolicies.discovery.refresh * 2) {
+      await pumpFeatureUiFor(tester, const Duration(seconds: 1));
+      elapsed += const Duration(seconds: 1);
+    }
     expect(done, isTrue);
+    expect(
+      elapsed,
+      greaterThanOrEqualTo(
+        CachePolicies.discovery.refresh - const Duration(seconds: 1),
+      ),
+    );
+    expect(
+      elapsed,
+      lessThanOrEqualTo(
+        CachePolicies.discovery.refresh + const Duration(seconds: 3),
+      ),
+    );
   });
 }
