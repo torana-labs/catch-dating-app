@@ -3262,6 +3262,50 @@
       ]
     },
     {
+      "id": "programWorkSummaries",
+      "path": "programWorkSummaries/{programId}",
+      "rulesMatch": "/programWorkSummaries/{programId}",
+      "typescriptInterface": "ProgramWorkSummaryDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_work_shell.rules.test.cjs",
+      "rulesTestNames": [
+        "lets any live account with access read the header, and no one else"
+      ],
+      "owner": "Programme read model projector: programWorkViewTriggers",
+      "read": "any account with live access to the programme gets it by id through its programAccessViews document, while not deleted; never listed",
+      "write": "server only; written from the programme",
+      "exportedFunctions": [
+        "onProgramWorkSummaryChanged"
+      ],
+      "migrationNotes": [
+        "Exactly the programme fields getProgramWorkAccess returns: title, kind, zone, status, capabilities and vehicle classes. The program-work-views copy-forward migration creates summaries for programmes that predate the trigger.",
+        "The sender connection, entitlement, branding and request hash stay in organizerPrograms."
+      ]
+    },
+    {
+      "id": "programResourceViews",
+      "path": "programResourceViews/{viewId}",
+      "rulesMatch": "/programResourceViews/{viewId}",
+      "typescriptInterface": "ProgramResourceViewDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/rules/program_work_shell.rules.test.cjs",
+      "rulesTestNames": [
+        "reads a named resource only when the account's work list reaches it"
+      ],
+      "owner": "Programme read model projector: programWorkViewTriggers",
+      "read": "an account gets a named resource when its programAccessViews work list reaches it, and lists a kind (query on programId and kind) when the list reaches every one; never while deleted",
+      "write": "server only; written from programPickupPoints, programHotels and programFunctions",
+      "exportedFunctions": [
+        "onProgramPickupPointViewChanged",
+        "onProgramHotelViewChanged",
+        "onProgramFunctionViewChanged"
+      ],
+      "migrationNotes": [
+        "Labels only, as getProgramWorkAccess returns them. A hotel's reception contact and notes, a function's venue notes, location, instructions and dress code, and a pickup point's coordinates and instructions are never copied. The program-work-views copy-forward migration creates views for resources that predate the triggers.",
+        "No personal data: nothing for account deletion to scrub; archive anonymization reaches the views through the source triggers."
+      ]
+    },
+    {
       "id": "programStaffGrants",
       "path": "programStaffGrants/{grantId}",
       "rulesMatch": "/programStaffGrants/{grantId}",

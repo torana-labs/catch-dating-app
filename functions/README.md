@@ -554,9 +554,13 @@ enter previews.
 | `onHostDirectoryOrganizerCreated` | `src/hostReadModels/directoryActivation.ts` | Activates every Host directory read model (contacts, responses, forms, groups, events) for a new organizer |
 | `onProgramAccessViewGrantChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites that account's programme access view when a staff grant changes |
 | `onProgramAccessViewProgramChanged` | `src/programs/programAccessViewTriggers.ts` | Rewrites the owner's view, and every staff view when the creator or organizer changes, when a programme changes |
+| `onProgramFunctionViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a function's work shell label and counts when it changes |
 | `onProgramGuestWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a guest's phone or household changes. |
+| `onProgramHotelViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a hotel's work shell label when it changes |
 | `onProgramHouseholdWhatsappEndpointWritten` | `src/programs/programWhatsapp/endpointIndex.ts` | Keeps programWhatsappEndpointIndex current when a household's primary phone changes. |
+| `onProgramPickupPointViewChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a pickup point's work shell label when it changes |
 | `onProgramWhatsappInboundMessageCreated` | `src/programs/programWhatsapp/inboundTrigger.ts` | Runs the wedding assistant (handleProgramWhatsappInbound) for each stored inbound guest message; replies through sendProgramServiceReply or passes the thread to the planner. |
+| `onProgramWorkSummaryChanged` | `src/programs/programWorkViewTriggers.ts` | Rewrites a programme's work shell header when the programme changes |
 | `onSavedEventCardCreated` | `src/guestEvents/triggers.ts` | Writes a new saved-event edge's list card from its event |
 | `previewProgramAssistantReply` | `src/programs/assistant/preview.ts` | The wedding assistant's Try it: the same policy, fact pack, model and budget as a guest message, nothing sent. |
 | `reconcileFoundingHostPlacesDaily` | `src/foundingHosts/foundingHostTriggers.ts` | Daily 04:25 India time: takes the founding places the trigger missed for organizers that gained an owner in the last three days, still one per owner per city. |

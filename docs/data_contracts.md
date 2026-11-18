@@ -4801,7 +4801,10 @@ drift with later catalog edits.
 authority over one programme, written by triggers on `programStaffGrants` and
 `organizerPrograms` (`onProgramAccessViewGrantChanged`,
 `onProgramAccessViewProgramChanged`) and created for existing owners and grants
-by the `program-access-views` copy-forward migration. The programme's creator
+by the `program-access-views` copy-forward migration, and repaired by
+`program-access-views-refresh` (a view that differs from what the triggers would
+compute now is rewritten under a last-update-time precondition; nothing is
+deleted). The programme's creator
 gets `role: manager` with no expiry; a staff member gets `role: staff` and the
 duties their grant proves: an `inactive` view when the grant is revoked,
 expired, malformed or lacks the owner-approval proof `requireProgramAccess`
@@ -4816,7 +4819,11 @@ instant of an assignment naming that id. `workPickup`, `workHotel` and
 `getProgramWorkAccess` resolves it (pickup points from every operational duty
 but the hotel desk, hotels from every operational duty, functions from door and
 guest-desk duties): key `*` for every one, otherwise one key per named id.
-Rules compare these with
+`assignments` repeats the live duty
+tuples with their scopes and own expiries, and `grantExpiresAtMillis` the grant's
+own expiry, as `getProgramWorkAccess` returns them, because a phone's policies
+need one assignment to cover both ends of a transport route, which the flattened
+maps cannot say. Rules compare these with
 `request.time` through `hasProgramDuty`, `programDutyCoversPickup`,
 `programDutyCoversHotel`, `programDutyCoversFunction` and `isProgramManager`;
 each dimension is checked alone, as the callables' `allowed*Ids` union them, so
@@ -4826,6 +4833,21 @@ They hold ids, duty names and instants and no name or phone digits, so account
 deletion and archive anonymization have nothing personal to scrub there. A
 phone enforces the same instants offline from the cached view and its clock.
 Commands re-check authority from the source documents.
+
+`programWorkSummaries/{programId}` and `programResourceViews/{programId}__{kind}__{resourceId}`
+(#1339) are the work shell's programme header and its pickup point, hotel and
+function labels, kept by triggers on `organizerPrograms`, `programPickupPoints`,
+`programHotels` and `programFunctions` and created for existing sources by the
+`program-work-views` copy-forward migration. Each holds exactly the fields
+`getProgramWorkAccess` returns and nothing else the source holds: no sender
+connection, entitlement or branding, no hotel reception contact or notes, no
+function venue notes, location, instructions or dress code, and no pickup point
+coordinates or instructions. Rules let any account with live access read the
+header by id, and read a resource by id when its `programAccessViews` work list
+reaches it; a query naming the programme and one kind lists every resource of
+that kind when the work list's `*` key is live (the owner always), and a scoped
+account reads its named ids one by one. With the access view they replace the
+callable, which stays deployed for older builds.
 
 `organizerCampaigns.recipientSource` names where recipients resolve:
 `savedAudience` (default, backed by `savedAudienceId`) or

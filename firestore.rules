@@ -271,6 +271,26 @@ service cloud.firestore {
             || programView(programId).workFunction.get(functionId, 0) > request.time.toMillis()));
     }
 
+    // Every pickup point, hotel or function, for a listing query: the work
+    // key '*' is live. A scoped account reads its named ids one by one.
+    function programWorkListsAllPickups(programId) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && programView(programId).workPickup.get('*', 0) > request.time.toMillis());
+    }
+
+    function programWorkListsAllHotels(programId) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && programView(programId).workHotel.get('*', 0) > request.time.toMillis());
+    }
+
+    function programWorkListsAllFunctions(programId) {
+      return isProgramManager(programId)
+        || (hasProgramAccessView(programId)
+          && programView(programId).workFunction.get('*', 0) > request.time.toMillis());
+    }
+
     function programDutyCoversFunction(programId, duty, functionId) {
       return isProgramManager(programId)
         || (hasProgramAccessView(programId)
@@ -2456,6 +2476,33 @@ service cloud.firestore {
         && accessId == programStaffGrantDocId(resource.data.programId, request.auth.uid)
         && resource.data.uid == request.auth.uid;
       allow list, write: if false;
+    }
+
+    // The work shell's programme header: any account with live access to the
+    // programme reads it by id. Never listed.
+    match /programWorkSummaries/{programId} {
+      allow get: if hasProgramAccessView(programId);
+      allow list, write: if false;
+    }
+
+    // The work shell's pickup point, hotel and function labels. A named
+    // resource is read by id when the account's work list reaches it; every
+    // resource of one kind is listed by a query naming the programme and the
+    // kind when the account's work list reaches them all.
+    match /programResourceViews/{viewId} {
+      allow get: if (resource.data.kind == 'pickupPoint'
+          && programWorkCoversPickup(resource.data.programId, resource.data.resourceId))
+        || (resource.data.kind == 'hotel'
+          && programWorkCoversHotel(resource.data.programId, resource.data.resourceId))
+        || (resource.data.kind == 'function'
+          && programWorkCoversFunction(resource.data.programId, resource.data.resourceId));
+      allow list: if (resource.data.kind == 'pickupPoint'
+          && programWorkListsAllPickups(resource.data.programId))
+        || (resource.data.kind == 'hotel'
+          && programWorkListsAllHotels(resource.data.programId))
+        || (resource.data.kind == 'function'
+          && programWorkListsAllFunctions(resource.data.programId));
+      allow write: if false;
     }
 
     match /programStaffInvites/{inviteId} {
