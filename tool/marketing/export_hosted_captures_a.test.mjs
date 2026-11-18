@@ -13,141 +13,8 @@ import {fromRepo} from "../lib/repo_paths.mjs";
 import {canonicalInventory, exportHostedCaptures, MAX_CAPTURES, resolveCaptureRequest} from "./export_hosted_captures.mjs";
 import {planHostedCaptures} from "./lib/capture_seeds.mjs";
 import {brand} from "@catch/brand";
+import {editProvenance, evaluate, fixture, flutterVersion, labelEvent, packBundle, preserveAndAdvance, producerWorkflowIds, repository, requestOptions, seedHarness, webStubs, writeCaptureCatalog} from "./lib/hosted_capture_support.test.mjs";
 
-const repository = "owner/repo";
-const flutterVersion = fs.readFileSync(fromRepo("tool/ci/toolchain.env"), "utf8")
-  .match(/^FLUTTER_VERSION=(.+)$/mu)[1];
-function labelEvent() {
-  return {repository: {full_name: repository}, action: "labeled", label: {name: "capture:requested"},
-    number: 543, pull_request: {number: 543, state: "open", draft: true,
-      head: {sha: "a".repeat(40), repo: {full_name: repository}},
-      base: {sha: "b".repeat(40), ref: "main", repo: {full_name: repository}}}};
-}
-const requestOptions = event => ({eventName: "pull_request", event, repository,
-  runSha: "c".repeat(40), workflowDefinitionSha: "d".repeat(40)});
-function evaluate(expression, options) {
-  return vm.runInNewContext(expression, {
-    github: {event_name: options.eventName, event: options.event, repository: options.repository,
-      sha: options.runSha, workflow_sha: options.workflowDefinitionSha, run_id: "123", run_attempt: "2"},
-    env: {CAPTURE_SOURCE_SHA: options.sourceSha},
-    inputs: {automatic_source_sha: "", ...options.event.inputs}, cancelled: () => false,
-    needs: {native_probe: {result: options.probeResult ?? "skipped", outputs: {}}},
-    contains: (values, value) => values.includes(value), fromJSON: JSON.parse,
-  }, {timeout: 1000});
-}
-
-function fixture(t, {web = false, catalog = null} = {}) {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "hosted-captures-"));
-  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
-  const root = path.join(directory, "source");
-  const write = (file, bytes) => {
-    const destination = path.join(root, file);
-    fs.mkdirSync(path.dirname(destination), {recursive: true});
-    fs.writeFileSync(destination, bytes);
-    return destination;
-  };
-  for (const file of ["tool/lib/repo_paths.mjs", "tool/lib/dart_call_blocks.mjs", "tool/ui_capture/run_captures.mjs",
-    "tool/ui_capture/lib/capture_catalog_sources.mjs",
-    "tool/marketing/export_app_screenshots.mjs", "tool/marketing/export_hosted_captures.mjs",
-    "tool/marketing/import_hosted_captures.mjs",
-    "tool/design/generate_widget_catalog.mjs", "tool/design/generate_widget_classification.mjs",
-    "tool/design/component_concepts.mjs", "tool/design/lib/component_naming.mjs",
-    "tool/design/lib/new_widget_inventory_declarations.mjs", "tool/design/lib/production_widget_roots.mjs",
-    "design/components/catch.components.schema.json",
-    "tool/marketing/lib/capture_provenance.mjs", "tool/marketing/lib/capture_seeds.mjs",
-    "tool/marketing/lib/web_capture_inputs.mjs", "tool/marketing/lib/web_capture_render.mjs",
-    "tool/marketing/lib/web_capture_screen.mjs", "tool/marketing/lib/capture_devices.mjs",
-    "tool/ci/wait_main_marketing_validation.mjs", "tool/ci/required_ci_floor.mjs",
-    "tool/marketing/sync_website_media.mjs", "tool/ci/toolchain.env"]) {
-    write(file, fs.readFileSync(fromRepo(file)));
-  }
-  const manifest = JSON.parse(fs.readFileSync(fromRepo("tool/marketing/capture_manifest.json"), "utf8"));
-  // The fixture renders app captures through stubs that write one phone PNG,
-  // so it keeps twelve generic-phone app captures, whatever the real manifest
-  // grows to; web captures join only where a test asks for them, with a small
-  // website of their own.
-  manifest.captures = manifest.captures
-    .filter(capture => capture.kind !== "web-capture" && capture.device === "generic-phone").slice(0, 12);
-  const png = fs.readFileSync(fromRepo(manifest.captures[0].sourcePath));
-  if (web) {
-    manifest.captures.push({...manifest.captures[0], id: "guest-join-phone", kind: "web-capture", audience: "guest",
-      fixtureKey: undefined, routeId: "event_runtime", address: brand.web.domain,
-      story: {file: "website/src/stories/WebCaptures.stories.tsx", id: "marketing-website-web-captures--join-phone-check-in"},
-      sourcePath: "artifacts/marketing/app-screenshots/guest-join-phone.png",
-      websitePath: "website/public/assets/app-screenshots/guest-join-phone.png"});
-    write("package.json", JSON.stringify({workspaces: ["website"]}));
-    write("package-lock.json", JSON.stringify({packages: {"node_modules/playwright": {version: "1.64.0"},
-      "node_modules/playwright-core": {version: "1.64.0"}}}));
-    write("design/website/routes.json", JSON.stringify({routes: [{id: "event_runtime"}]}));
-    write("website/.storybook/preview.ts", 'import "../src/styles.css";\n');
-    write("website/vite.config.ts", "export default {};\n");
-    write("website/src/styles.css", "h1 { letter-spacing: -.065em; }\n");
-    write("website/src/stories/WebCaptures.stories.tsx", "export const JoinPhoneCheckIn = {};\n");
-  }
-  write("tool/marketing/capture_manifest.json", JSON.stringify(manifest));
-  write("tool/marketing/app_screenshots_design_context.json", "{}");
-  write("website/public/assets/app-screenshots/manifest.json", "{}");
-  for (const capture of manifest.captures) {
-    write(capture.sourcePath, png);
-    write(capture.websitePath, png);
-  }
-  writeCaptureCatalog(write, manifest.captures.filter(c => c.kind !== "web-capture")
-    .map((c, i) => ({id: `screen_${i}`, fixtureKey: c.fixtureKey})));
-  write("test/ui_captures/capture_runner_test.dart", "import 'package:catch_dating_app/leaf.dart';\n");
-  write("test/ui_captures/flutter_test_config.dart", "");
-  write("tool/marketing/frame_device_capture.dart", "");
-  write("lib/leaf.dart", "const title = 'Today';\n");
-  write("pubspec.yaml", "name: catch_dating_app\n");
-  write("pubspec.lock", 'packages:\n  image:\n    version: "4.5.4"\n');
-  write("packages/sample/pubspec.yaml", "name: sample\n");
-  write("tool/demo/demo_seed/scenarios/sample.json", "{}");
-  write("tool/demo/demo_seed/personas/sample.json", "{}");
-  write("test/goldens/baseline.png", png);
-  write("website/src/generated/hostListings.json", "{}\n");
-  write("website/src/generated/hostListings.demo.json", "{}\n");
-  write("website/src/generated/other.ts", "export const authored = true;\n");
-  write("docs/widget_catalog.md", "# Authored guidance\n<!-- BEGIN GENERATED WIDGET INVENTORY -->\nold rows\n<!-- END GENERATED WIDGET INVENTORY -->\nAuthored footer\n");
-  write(".gitignore", "/artifacts/marketing/app-screenshots/raw/\n");
-  if (catalog) write("tool/harness/component_graph.json", JSON.stringify(catalog));
-  const git = (...args) => {
-    const result = spawnSync("git", args, {cwd: root, encoding: "utf8"});
-    assert.equal(result.status, 0, result.stderr);
-    return result.stdout.trim();
-  };
-  git("init", "-q");
-  git("add", ".");
-  git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid", "commit", "-qm", "fixture");
-  const bin = path.join(directory, "bin");
-  fs.mkdirSync(bin);
-  const calls = path.join(directory, "calls.jsonl");
-  const executable = (name, script) => {
-    const file = path.join(bin, name);
-    fs.writeFileSync(file, `#!${process.execPath}\n${script}\n`);
-    fs.chmodSync(file, 0o755);
-  };
-  executable("flutter", `const fs = require('node:fs'); const args = process.argv.slice(2);
-    if (args.includes('--version')) process.stdout.write(JSON.stringify({frameworkVersion:${JSON.stringify(flutterVersion)}}));
-    else {
-      // A coverage render reports the files that capture executed.
-      const coverage = args.find(a => a.startsWith('--coverage-path='));
-      if (coverage) { fs.mkdirSync(require('node:path').dirname(coverage.slice(16)), {recursive: true});
-        fs.writeFileSync(coverage.slice(16), 'SF:lib/leaf.dart\\nDA:1,1\\nend_of_record\\n'); }
-      fs.appendFileSync(${JSON.stringify(calls)}, JSON.stringify({command:'flutter', args, ids: process.env.CAPTURE_IDS})+'\\n');
-    }`);
-  executable("dart", `const fs = require('node:fs'); const args = process.argv.slice(2);
-    fs.writeFileSync(args[args.indexOf('--output')+1], Buffer.from(${JSON.stringify(png.toString("base64"))},'base64'));
-    fs.appendFileSync(${JSON.stringify(calls)}, JSON.stringify({command:'dart', args})+'\\n');`);
-  executable("sw_vers", "process.stdout.write('macOS test fixture');");
-  const previousPath = process.env.PATH;
-  process.env.PATH = `${bin}${path.delimiter}${previousPath}`;
-  t.after(() => { process.env.PATH = previousPath; });
-  const sfFont = path.join(directory, "native.ttf");
-  fs.writeFileSync(sfFont, "test font, never exported");
-  const options = {sourceDir: root, sourceSha: git("rev-parse", "HEAD"),
-    workflowSha: "a".repeat(40), outputDir: path.join(directory, "bundle"),
-    repository: "owner/repo", runId: "123", runAttempt: "2", platform: "darwin", sfFont};
-  return {root, write, git, calls, options, executable, manifest};
-}
 
 test("real canonical wrappers export all 12 with exact provenance and complete byte inventory", t => {
   const f = fixture(t);
@@ -188,27 +55,6 @@ test("real canonical wrappers export all 12 with exact provenance and complete b
   assert.throws(() => exportHostedCaptures(f.options), /new absolute directory/);
 });
 
-test("earlier renders of the same inputs package on Linux without Flutter or the native font", t => {
-  const f = fixture(t);
-  const rendered = exportHostedCaptures(f.options);
-  const seeds = new Map(rendered.captures.map(c => [c.id, fs.readFileSync(path.join(f.options.outputDir, c.sourcePath))]));
-  f.git("checkout", "--", ".");
-  fs.rmSync(f.calls, {force: true});
-  f.executable("flutter", "process.exit(9);");
-  const outputDir = path.join(path.dirname(f.options.outputDir), "reused");
-  const result = exportHostedCaptures({...f.options, outputDir, platform: "linux", sfFont: "/missing/font.ttf",
-    mode: "reuse", seeds});
-  assert.equal(result.mode, "reuse");
-  assert.equal(result.toolchain.flutter, null);
-  assert.ok(!fs.existsSync(f.calls), "reuse must not render or frame anything");
-  assert.equal(result.captures.length, f.manifest.captures.length);
-  for (const capture of result.captures) {
-    assert.equal(capture.disposition, "reused");
-    assert.deepEqual(capture.provenance, rendered.captures.find(c => c.id === capture.id).provenance);
-  }
-  assert.ok(!result.commands.some(args => args.includes("--ids")), "no render command");
-  assert.equal(new Set(result.captures.map(c => c.provenance.nativeFontSha256)).size, 1);
-});
 
 test("reuse fails closed when any capture would need rendering", t => {
   const f = fixture(t);
@@ -220,18 +66,6 @@ test("reuse fails closed when any capture would need rendering", t => {
   assert.throws(() => exportHostedCaptures({...f.options, mode: "replay"}), /render or reuse/);
 });
 
-test("mutable refs, source mismatch, dirty inputs and Linux fail before rendering", t => {
-  const f = fixture(t);
-  for (const sourceSha of ["main", "543a4512e862", "$(false)"]) {
-    assert.throws(() => exportHostedCaptures({...f.options, sourceSha}), /immutable/);
-  }
-  assert.throws(() => exportHostedCaptures({...f.options, sourceSha: "b".repeat(40)}), /does not match/);
-  assert.throws(() => exportHostedCaptures({...f.options, platform: "linux"}), /requires macOS/);
-  f.write("lib/leaf.dart", "dirty source");
-  assert.throws(() => exportHostedCaptures(f.options), /must be clean/);
-  assert.ok(!fs.existsSync(f.calls));
-  assert.ok(!fs.existsSync(f.options.outputDir));
-});
 
 test("the manifest sets the capture count; the inventory rejects duplicates and traversal paths", t => {
   const f = fixture(t);
@@ -250,6 +84,7 @@ test("the manifest sets the capture count; the inventory rejects duplicates and 
   }
 });
 
+
 test("tracked symlink cannot redirect final capture writes", t => {
   const f = fixture(t);
   const file = f.manifest.captures[0].sourcePath;
@@ -262,21 +97,6 @@ test("tracked symlink cannot redirect final capture writes", t => {
   assert.equal(fs.readFileSync(f.options.sfFont, "utf8"), "test font, never exported");
 });
 
-test("render failure cannot package stale captures", t => {
-  const f = fixture(t);
-  f.executable("flutter", `if (process.argv.includes('--version')) process.stdout.write(JSON.stringify({frameworkVersion:${JSON.stringify(flutterVersion)}})); else process.exit(1);`);
-  assert.throws(() => exportHostedCaptures(f.options), /failed/);
-  assert.ok(!fs.existsSync(f.options.outputDir));
-  for (const c of f.manifest.captures) assert.ok(!fs.existsSync(path.join(f.root, c.sourcePath)));
-});
-
-test("golden mutation fails publication even when canonical capture checks pass", t => {
-  const f = fixture(t);
-  const dart = fs.readFileSync(path.join(path.dirname(f.calls), "bin/dart"), "utf8");
-  f.executable("dart", dart.split("\n").slice(1).join("\n") + "\nrequire('node:fs').writeFileSync('test/goldens/baseline.png','mutated');");
-  assert.throws(() => exportHostedCaptures(f.options), /changed source or goldens/);
-  assert.ok(!fs.existsSync(f.options.outputDir));
-});
 
 test("hosted workflow keeps manual dispatch and limits PR events to explicit capture requests", () => {
   const source = fs.readFileSync(fromRepo(".github/workflows/marketing-captures.yml"), "utf8");
@@ -347,6 +167,7 @@ test("hosted workflow keeps manual dispatch and limits PR events to explicit cap
   }
 });
 
+
 test("label request binds exact PR head, base controller and distinct workflow/event provenance", () => {
   const event = labelEvent();
   event.inputs = {source_sha: "e".repeat(40)};
@@ -362,6 +183,7 @@ test("label request binds exact PR head, base controller and distinct workflow/e
   assert.equal(result.workflowSha, manual.runSha);
   assert.equal(result.prNumber, undefined);
 });
+
 
 test("automatic CI captures bind the tested merge source instead of the PR head", () => {
   const event = labelEvent();
@@ -387,6 +209,7 @@ test("automatic CI captures bind the tested merge source instead of the PR head"
   }
 });
 
+
 test("automatic main, merge-group and manual validation bind the caller event source", () => {
   const base = {...requestOptions({repository: {full_name: repository}}),
     automaticSourceSha: "c".repeat(40), workflowRef: `${repository}/.github/workflows/ci.yml@refs/heads/main`};
@@ -398,6 +221,7 @@ test("automatic main, merge-group and manual validation bind the caller event so
     assert.throws(() => resolveCaptureRequest({...base, eventName}));
   }
 });
+
 
 test("reusable producer exports one immutable binding and selects the caller SHA in its actual expressions", () => {
   const source = fs.readFileSync(fromRepo(".github/workflows/marketing-captures.yml"), "utf8");
@@ -415,6 +239,7 @@ test("reusable producer exports one immutable binding and selects the caller SHA
   assert.match(identity.run, /artifactId: e\.ARTIFACT_ID, artifactDigest:/u);
   assert.match(identity.run, /runId: e\.GITHUB_RUN_ID, runAttempt: e\.GITHUB_RUN_ATTEMPT/u);
 });
+
 
 test("unrelated, forked, closed, malformed and mutable capture requests are refused", () => {
   for (const mutate of [
@@ -446,6 +271,7 @@ test("unrelated, forked, closed, malformed and mutable capture requests are refu
       inputs: {source_sha}}), eventName: "workflow_dispatch"}), /immutable/);
   }
 });
+
 
 test("actual job guard and source-keyed concurrency exclude unrelated PR metadata and forks", () => {
   const source = fs.readFileSync(fromRepo(".github/workflows/marketing-captures.yml"), "utf8");
@@ -479,6 +305,7 @@ test("actual job guard and source-keyed concurrency exclude unrelated PR metadat
   assert.match(source, /      cancel-in-progress: false\n/u);
 });
 
+
 test("capture label never starts CI or replaces the Required CI context", () => {
   const ci = fs.readFileSync(fromRepo(".github/workflows/ci.yml"), "utf8");
   const types = ci.match(/^  pull_request:\n    types: \[(.*)\]$/mu)?.[1].split(", ");
@@ -488,6 +315,7 @@ test("capture label never starts CI or replaces the Required CI context", () => 
   }
   assert.match(ci.slice(ci.indexOf("  required:\n")), /^    name: Required CI$/mu);
 });
+
 
 test("actual artifact name includes exact selected source SHA for both dispatch and PR labels", () => {
   const source = fs.readFileSync(fromRepo(".github/workflows/marketing-captures.yml"), "utf8");
@@ -505,36 +333,6 @@ test("actual artifact name includes exact selected source SHA for both dispatch 
   }
 });
 
-test("actual request-check step verifies controller checkout and event binding before rendering", t => {
-  const f = fixture(t);
-  const event = labelEvent(); event.pull_request.base.sha = f.options.sourceSha;
-  const eventPath = path.join(path.dirname(f.options.outputDir), "event.json");
-  fs.writeFileSync(eventPath, JSON.stringify(event));
-  const source = fs.readFileSync(fromRepo(".github/workflows/marketing-captures.yml"), "utf8");
-  const step = extractSteps(source).find(s => s.name === "Validate capture request and controller identity");
-  const env = {...process.env, GITHUB_EVENT_NAME: "pull_request", GITHUB_EVENT_PATH: eventPath,
-    GITHUB_REPOSITORY: repository, GITHUB_SHA: "c".repeat(40),
-    CAPTURE_SOURCE_SHA: event.pull_request.head.sha, CAPTURE_WORKFLOW_SHA: event.pull_request.base.sha,
-    CAPTURE_WORKFLOW_DEFINITION_SHA: "d".repeat(40)};
-  const run = (overrides = {}) => spawnSync("bash", ["-c", step.run], {
-    cwd: f.root, env: {...env, ...overrides}, encoding: "utf8"});
-  const accepted = run();
-  assert.equal(accepted.status, 0, accepted.stderr);
-  const request = JSON.parse(accepted.stdout);
-  assert.equal(request.sourceSha, event.pull_request.head.sha);
-  assert.equal(request.workflowSha, f.options.sourceSha);
-  assert.notEqual(request.workflowSha, env.GITHUB_SHA);
-  assert.match(run({CAPTURE_SOURCE_SHA: "e".repeat(40)}).stderr, /environment differs/);
-  assert.match(run({CAPTURE_WORKFLOW_SHA: "e".repeat(40)}).stderr, /environment differs/);
-  event.pull_request.base.sha = "e".repeat(40);
-  fs.writeFileSync(eventPath, JSON.stringify(event));
-  assert.match(run({CAPTURE_WORKFLOW_SHA: event.pull_request.base.sha}).stderr, /controller checkout/);
-  event.pull_request.head.repo.full_name = "fork/repo";
-  fs.writeFileSync(eventPath, JSON.stringify(event));
-  assert.match(run().stderr, /same-repository/);
-  assert.ok(!fs.existsSync(f.calls));
-  assert.ok(!fs.existsSync(f.options.outputDir));
-});
 
 test("runner output path is initialized on the runner, never in job-level env", t => {
   const source = fs.readFileSync(fromRepo(".github/workflows/marketing-captures.yml"), "utf8");
@@ -568,13 +366,6 @@ test("runner output path is initialized on the runner, never in job-level env", 
 });
 
 
-function preserveAndAdvance(f, message) {
-  f.git("add", ".");
-  f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid", "commit", "-qm", message);
-  f.options.sourceSha = f.git("rev-parse", "HEAD");
-  f.options.outputDir += "-next";
-}
-
 test("hosted reuse preserves original render SHA and bytes under a new verified source", t => {
   const f = fixture(t);
   const original = exportHostedCaptures(f.options);
@@ -593,51 +384,6 @@ test("hosted reuse preserves original render SHA and bytes under a new verified 
   }
 });
 
-test("one corrupted capture rerenders alone while the other eleven retain original provenance", t => {
-  const f = fixture(t);
-  exportHostedCaptures(f.options);
-  f.write(f.manifest.captures[0].sourcePath, "corrupt PNG");
-  preserveAndAdvance(f, "Corrupt one image");
-  const before = fs.readFileSync(f.calls, "utf8").trim().split("\n").length;
-  const result = exportHostedCaptures(f.options);
-  assert.equal(result.captures.filter(c => c.disposition === "rendered").length, 1);
-  assert.equal(result.captures.filter(c => c.disposition === "reused").length, 11);
-  assert.equal(fs.readFileSync(f.calls, "utf8").trim().split("\n").length - before, 2);
-});
-
-test("valid image bytes from an unrelated render revision are reused by fingerprint", t => {
-  const f = fixture(t);
-  const rendered = exportHostedCaptures(f.options);
-  preserveAndAdvance(f, "Preserve rendered captures");
-  const unrelated = f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid",
-    "commit-tree", f.git("rev-parse", "HEAD^{tree}"), "-m", "Unrelated history with identical files");
-  f.git("reset", "--hard", unrelated);
-  f.options.sourceSha = unrelated;
-  const calls = fs.readFileSync(f.calls, "utf8");
-  const result = exportHostedCaptures(f.options);
-  assert.ok(result.captures.every(c => c.disposition === "reused"));
-  // Reused PNGs keep the revision that rendered them; they are never restamped.
-  assert.ok(result.captures.every(c => c.provenance.sourceRevision === rendered.sourceSha));
-  assert.equal(fs.readFileSync(f.calls, "utf8"), calls, "reuse renders nothing");
-});
-
-test("changed transitive inputs and changed native font invalidate reuse", t => {
-  const f = fixture(t);
-  exportHostedCaptures(f.options);
-  f.write("lib/leaf.dart", "const title = 'Changed';\n");
-  preserveAndAdvance(f, "Change render dependency");
-  assert.ok(exportHostedCaptures(f.options).captures.every(c => c.disposition === "rendered"));
-  preserveAndAdvance(f, "Preserve new captures");
-  fs.writeFileSync(f.options.sfFont, "new font version");
-  assert.ok(exportHostedCaptures(f.options).captures.every(c => c.disposition === "rendered"));
-});
-
-test("a successful no-op framer cannot package an invalidated capture", t => {
-  const f = fixture(t);
-  f.executable("dart", "process.exit(0);");
-  assert.throws(() => exportHostedCaptures(f.options), /failed/);
-  assert.ok(!fs.existsSync(f.options.outputDir));
-});
 
 test("a reuse bundle verifies like a render bundle and cannot pass off renders or a renderer", async t => {
   const f = fixture(t);
@@ -667,73 +413,6 @@ test("a reuse bundle verifies like a render bundle and cannot pass off renders o
   }
 });
 
-test("a release import refuses images rendered from older capture inputs", async t => {
-  const f = fixture(t);
-  const sha = f.options.sourceSha;
-  const request = {eventName: "merge_group", mode: "automatic", sourceSha: sha, workflowSha: sha, eventSha: sha, runHeadSha: sha,
-    workflowRef: `${f.options.repository}/.github/workflows/ci.yml@refs/heads/gh-readonly-queue/main/pr-1-${"b".repeat(40)}`,
-    workflowDefinitionSha: sha};
-  const options = {...f.options, workflowSha: sha, request};
-  const rendered = exportHostedCaptures(options);
-  const seeds = new Map(rendered.captures.map(c => [c.id, fs.readFileSync(path.join(options.outputDir, c.sourcePath))]));
-  f.git("checkout", "--", ".");
-  const outputDir = path.join(path.dirname(options.outputDir), "reused");
-  const receipt = exportHostedCaptures({...options, outputDir, platform: "linux", mode: "reuse", seeds});
-  const files = new Map([...receipt.files.map(file => [file.path, fs.readFileSync(path.join(outputDir, file.path))]),
-    ["capture-receipt.json", fs.readFileSync(path.join(outputDir, "capture-receipt.json"))]]);
-  // The app moved on, and the same images are offered for the new commit with
-  // every identity field current. Only the capture inputs can give them away.
-  f.write("lib/leaf.dart", "const title = 'Changed';\n");
-  f.git("add", "lib/leaf.dart");
-  f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid", "commit", "-qm", "Change render dependency");
-  const next = f.git("rev-parse", "HEAD");
-  const stale = structuredClone(receipt);
-  Object.assign(stale, {sourceSha: next, workflowSha: next, workflowDefinitionSha: next, sourceTree: f.git("rev-parse", "HEAD^{tree}")});
-  Object.assign(stale.request, {sourceSha: next, workflowSha: next, workflowDefinitionSha: next, eventSha: next, runHeadSha: next});
-  for (const capture of stale.captures) capture.verifiedSourceSha = next;
-  files.set("capture-receipt.json", Buffer.from(JSON.stringify(stale)));
-  const binding = {repository: options.repository, sourceSha: next, workflowRef: request.workflowRef, workflowSha: next,
-    workflowDefinitionSha: next, eventSha: next, runHeadSha: next, runId: receipt.runId, runAttempt: receipt.runAttempt,
-    artifactId: "100", artifactDigest: `sha256:${"0".repeat(64)}`};
-  const consumer = await import(pathToFileURL(path.join(f.root, "tool/marketing/import_hosted_captures.mjs")));
-  assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /Capture inputs changed/);
-});
-
-test("the consumer allows untracked only what the verified commit's catalog marks as regenerated", async t => {
-  const f = fixture(t, {catalog: {compileCodegen: [
-    {id: "regenerated", tracked: false, outputs: ["website/src/shared/contracts/generated/**", "lib/contexts/*/data/generated/**"]},
-    {id: "committed", outputs: ["website/src/committed/**"]},
-  ]}});
-  const sha = f.options.sourceSha;
-  const workflowRef = `${f.options.repository}/.github/workflows/ci.yml@refs/heads/main`;
-  f.options.workflowSha = sha;
-  f.options.request = {eventName: "push", sourceSha: sha, workflowRef, workflowSha: sha, workflowDefinitionSha: sha,
-    eventSha: sha, runHeadSha: sha};
-  const receipt = exportHostedCaptures(f.options);
-  const consumer = await import(pathToFileURL(path.join(f.root, "tool/marketing/import_hosted_captures.mjs")));
-  const files = new Map([...receipt.files.map(file => [file.path, fs.readFileSync(path.join(f.options.outputDir, file.path))]),
-    ["capture-receipt.json", fs.readFileSync(path.join(f.options.outputDir, "capture-receipt.json"))]]);
-  const binding = {repository: f.options.repository, sourceSha: sha, workflowRef, workflowSha: sha, workflowDefinitionSha: sha,
-    eventSha: sha, runHeadSha: sha, runId: receipt.runId, runAttempt: receipt.runAttempt,
-    artifactId: "100", artifactDigest: `sha256:${"0".repeat(64)}`};
-  f.write("website/src/shared/contracts/generated/nested/record.ts", "regenerated");
-  f.write("lib/contexts/events/data/generated/event.g.dart", "regenerated");
-  assert.equal(consumer.verifyCaptureFiles({files, binding}).receipt.captures.length, 12);
-  for (const refused of [
-    "website/src/committed/output.ts", // a generator whose outputs are committed
-    "website/src/shared/contracts/record.ts", // beside the tree
-    "website/src/shared/contracts/generated_extra/record.ts", // a name that only starts the same
-    "lib/contexts/events/data/record.dart", // beside the wildcard's tree
-  ]) {
-    f.write(refused, "authored");
-    assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /Untracked consumer source/, refused);
-    fs.rmSync(path.join(f.root, refused));
-  }
-  // The working copy of the catalog can't widen what the commit says.
-  const committed = fs.readFileSync(path.join(f.root, "tool/harness/component_graph.json"), "utf8");
-  f.write("tool/harness/component_graph.json", committed.replace("website/src/committed/**", "website/src/**"));
-  assert.throws(() => consumer.verifyCaptureFiles({files, binding}), /authored source differs/);
-});
 
 test("actual exporter bundle verifies before import and survives unchanged into website dist", async t => {
   const f = fixture(t);
@@ -879,143 +558,6 @@ sys.stdout.buffer.write(output.getvalue())`, f.options.outputDir], {maxBuffer: 6
   assert.throws(() => consumer.verifyBuiltCaptureBytes({binding}), /Built website capture differs/);
 });
 
-function packBundle(directory) {
-  const packed = spawnSync("python3", ["-c", `import io, pathlib, sys, zipfile
-root = pathlib.Path(sys.argv[1])
-output = io.BytesIO()
-with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
-    for file in sorted(root.rglob('*')):
-        if file.is_file(): archive.write(file, file.relative_to(root).as_posix())
-sys.stdout.buffer.write(output.getvalue())`, directory], {maxBuffer: 64 * 1024 * 1024});
-  assert.equal(packed.status, 0, packed.stderr?.toString());
-  return packed.stdout;
-}
-
-const producerWorkflowIds = {"ci.yml": 7, "marketing-website.yml": 8, "marketing-captures.yml": 9};
-
-// A fake GitHub holding one producer run whose bundle rendered this source.
-function seedHarness(t, runOverrides = {}, artifactOverrides = {}, {omit = [], tamper = {}} = {}) {
-  const f = fixture(t);
-  exportHostedCaptures(f.options);
-  for (const id of omit) {
-    fs.rmSync(path.join(f.options.outputDir, f.manifest.captures.find(c => c.id === id).sourcePath));
-  }
-  for (const [id, edit] of Object.entries(tamper)) {
-    editProvenance(path.join(f.options.outputDir, f.manifest.captures.find(c => c.id === id).sourcePath), edit);
-  }
-  const zip = packBundle(f.options.outputDir);
-  f.git("checkout", "--", ".");
-  const run = {id: 70, run_attempt: 1, workflow_id: 7, path: ".github/workflows/ci.yml", event: "merge_group",
-    head_branch: `gh-readonly-queue/main/pr-9-${"b".repeat(40)}`, head_sha: "c".repeat(40),
-    repository: {id: 1}, head_repository: {id: 1}, created_at: "2026-10-24T09:00:00Z", ...runOverrides};
-  const artifact = {id: 80, name: `canonical-marketing-${run.head_sha}-${run.id}-${run.run_attempt}`, expired: false,
-    workflow_run: {id: run.id}, digest: `sha256:${crypto.createHash("sha256").update(zip).digest("hex")}`, ...artifactOverrides};
-  const endpoints = [];
-  const request = async (endpoint, options = {}) => {
-    endpoints.push(endpoint);
-    if (endpoint === "repos/owner/repo") return {id: 1};
-    for (const [file, id] of Object.entries(producerWorkflowIds)) {
-      if (endpoint.endsWith(`/workflows/${file}`)) return {id};
-      if (endpoint.includes(`/workflows/${id}/runs?`)) return {workflow_runs: run.workflow_id === id ? [run] : []};
-    }
-    if (endpoint.endsWith(`/runs/${run.id}/artifacts?per_page=100`)) return {artifacts: [artifact]};
-    if (endpoint.endsWith(`/artifacts/${artifact.id}/zip`)) { assert.equal(options.binary, true); return zip; }
-    throw new Error(`Unexpected endpoint ${endpoint}`);
-  };
-  const plan = (eventName = "pull_request", nativeProbe = null) => planHostedCaptures({sourceDir: f.root,
-    sourceSha: f.options.sourceSha, repository: "owner/repo", eventName, request, nativeProbe});
-  return {...f, plan, endpoints};
-}
-
-test("a change that leaves capture inputs alone is planned entirely from an earlier main-line bundle", async t => {
-  const h = seedHarness(t);
-  const plan = await h.plan();
-  assert.deepEqual([plan.render, plan.renderIds], [false, []]);
-  assert.deepEqual(plan.seedIds.sort(), h.manifest.captures.map(c => c.id).sort());
-  assert.deepEqual(plan.seedSources.map(s => s.event), ["merge_group"]);
-});
-
-test("committed captures whose render commit is missing or unrelated reuse by fingerprint", async t => {
-  const f = fixture(t);
-  const rendered = exportHostedCaptures(f.options);
-  preserveAndAdvance(f, "Preserve current-input captures");
-  const calls = fs.readFileSync(f.calls, "utf8");
-  const request = async endpoint => {
-    if (endpoint === "repos/owner/repo") return {id: 1};
-    for (const [file, id] of Object.entries(producerWorkflowIds)) {
-      if (endpoint.endsWith(`/workflows/${file}`)) return {id};
-      if (endpoint.includes(`/workflows/${id}/runs?`)) return {workflow_runs: []};
-    }
-    throw new Error(`Unexpected endpoint ${endpoint}`);
-  };
-  const plan = (sourceDir, sourceSha) => planHostedCaptures({sourceDir, sourceSha,
-    repository: "owner/repo", eventName: "pull_request", request});
-  assert.equal((await plan(f.root, f.options.sourceSha)).render, false,
-    "a valid committed ancestor still reuses without an artifact");
-  // A fresh repository with the same files models a squash snapshot whose
-  // PNGs still record the original, unavailable PR render commit.
-  const fresh = path.join(path.dirname(f.root), "squashed-source");
-  fs.cpSync(f.root, fresh, {recursive: true,
-    filter: source => !path.relative(f.root, source).split(path.sep).includes(".git")});
-  const git = (...args) => {
-    const result = spawnSync("git", args, {cwd: fresh, encoding: "utf8"});
-    assert.equal(result.status, 0, result.stderr);
-    return result.stdout.trim();
-  };
-  git("init", "-q");
-  git("add", ".");
-  git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid", "commit", "-qm", "Squashed source snapshot");
-  const sha = git("rev-parse", "HEAD");
-  const inputs = spawnSync(process.execPath,
-    ["tool/marketing/export_app_screenshots.mjs", "--plan", "--inputs-only"], {cwd: fresh, encoding: "utf8"});
-  assert.equal(inputs.status, 0, inputs.stderr);
-  assert.ok(JSON.parse(inputs.stdout).every(capture => !capture.render), "all render inputs remain current");
-  assert.notEqual(spawnSync("git", ["cat-file", "-e", `${rendered.sourceSha}^{commit}`], {cwd: fresh}).status, 0);
-  // Owner decision (12 Nov 2026): an exact input fingerprint replaces the
-  // ancestry rule, so a squash-merged PR render is reused, not re-rendered.
-  for (const state of ["missing", "unrelated"]) {
-    if (state === "unrelated") git("fetch", "--no-tags", f.root, rendered.sourceSha);
-    const result = await plan(fresh, sha);
-    assert.equal(result.render, false, state);
-    assert.deepEqual(result.renderIds, [], state);
-  }
-  assert.equal(fs.readFileSync(f.calls, "utf8"), calls, "planning never renders or reframes");
-});
-
-for (const [label, runOverrides, artifactOverrides] of [
-  ["a fork pull request run", {event: "pull_request", head_branch: "feature", head_repository: {id: 2}}, {}],
-  ["another repository's run", {repository: {id: 2}}, {}],
-  ["another workflow", {path: ".github/workflows/other.yml"}, {}],
-  ["a bundle whose bytes differ from its digest", {}, {digest: `sha256:${"0".repeat(64)}`}],
-  ["an expired bundle", {}, {expired: true}],
-  ["a bundle from another attempt", {}, {name: `canonical-marketing-${"c".repeat(40)}-70-2`}],
-]) {
-  test(`${label} never seeds a capture`, async t => {
-    const h = seedHarness(t, runOverrides, artifactOverrides);
-    const plan = await h.plan();
-    assert.equal(plan.render, true);
-    assert.deepEqual(plan.seedIds, []);
-    assert.equal(h.git("status", "--porcelain"), "", "rejected candidates leave the source untouched");
-  });
-}
-
-for (const [label, runOverrides] of [
-  ["a same-repository pull request render", {event: "pull_request", head_branch: "feature"}],
-  ["a Marketing Website release render", {event: "push", head_branch: "main", workflow_id: 8, path: ".github/workflows/marketing-website.yml"}],
-  ["a labelled capture run", {event: "pull_request", head_branch: "feature", workflow_id: 9, path: ".github/workflows/marketing-captures.yml"}],
-]) {
-  test(`${label} seeds captures whose fingerprints match`, async t => {
-    const h = seedHarness(t, runOverrides);
-    const plan = await h.plan();
-    assert.deepEqual([plan.render, plan.renderIds], [false, []]);
-    assert.deepEqual(plan.seedIds.sort(), h.manifest.captures.map(c => c.id).sort());
-  });
-}
-
-test("a run whose workflow id does not match its path never seeds a capture", async t => {
-  const h = seedHarness(t, {workflow_id: 8});
-  assert.deepEqual((await h.plan()).seedIds, []);
-});
 
 test("a capture the earlier bundle lacks, such as a new manifest slot, renders alone", async t => {
   const added = "host-today";
@@ -1026,23 +568,6 @@ test("a capture the earlier bundle lacks, such as a new manifest slot, renders a
   assert.ok(!plan.seedIds.includes(added));
 });
 
-test("the nightly reuses unless the native font or macOS runner image changed, and fails closed", async t => {
-  const image = "macos-26-arm64/20261101.1";
-  const previous = process.env.ImageVersion;
-  process.env.ImageVersion = image; // The renders record the runner image they ran on.
-  t.after(() => { if (previous === undefined) delete process.env.ImageVersion; else process.env.ImageVersion = previous; });
-  const h = seedHarness(t);
-  const font = crypto.createHash("sha256").update(fs.readFileSync(h.options.sfFont)).digest("hex");
-  const all = h.manifest.captures.map(c => c.id).sort();
-  let plan = await h.plan("schedule", {fontSha256: font, runnerImage: image});
-  assert.deepEqual([plan.render, plan.nativeChanged, plan.seedIds.length], [false, false, all.length]);
-  for (const probe of [{fontSha256: "0".repeat(64), runnerImage: image}, {fontSha256: font, runnerImage: "macos-26-arm64/20261201.1"},
-    {fontSha256: font, runnerImage: null}, null]) {
-    h.git("checkout", "--", ".");
-    plan = await h.plan("schedule", probe);
-    assert.deepEqual([plan.nativeChanged, plan.renderIds.sort()], [true, all], JSON.stringify(probe));
-  }
-});
 
 test("the plan command runs end to end as the workflow calls it", t => {
   const f = fixture(t);
@@ -1070,58 +595,6 @@ test("the plan command runs end to end as the workflow calls it", t => {
   assert.match(fs.readFileSync(summary, "utf8"), /Reused from earlier CI bundles: none/);
 });
 
-// A built Storybook index and a Playwright stand-in that records how pages
-// are opened; the fixture's dart stub frames whatever the renderer hands it.
-function webStubs(directory) {
-  const storybookDir = path.join(directory, "storybook");
-  fs.mkdirSync(storybookDir, {recursive: true});
-  fs.writeFileSync(path.join(storybookDir, "iframe.html"), "<!doctype html>");
-  fs.writeFileSync(path.join(storybookDir, "index.json"), JSON.stringify({entries: {
-    "marketing-website-web-captures--join-phone-check-in": {type: "story", importPath: "./src/stories/WebCaptures.stories.tsx"}}}));
-  const playwrightDir = path.join(directory, "playwright");
-  const module = path.join(playwrightDir, "node_modules", "playwright");
-  fs.mkdirSync(module, {recursive: true});
-  fs.writeFileSync(path.join(module, "package.json"), JSON.stringify({name: "playwright", version: "1.64.0"}));
-  const contexts = path.join(directory, "contexts.jsonl");
-  fs.writeFileSync(path.join(module, "index.mjs"), `import fs from "node:fs";
-const page = {goto: async () => {}, waitForSelector: async () => {}, addStyleTag: async () => {}, evaluate: async () => {},
-  waitForTimeout: async () => {}, setContent: async () => {}, screenshot: async () => Buffer.from("png"),
-  locator: () => ({waitFor: async () => {}, isVisible: async () => false, textContent: async () => ""})};
-export const devices = {"iPhone 17 Pro": {viewport: {width: 402, height: 681}, deviceScaleFactor: 3, isMobile: true, hasTouch: true}};
-export const webkit = {launch: async () => ({close: async () => {}, newContext: async options => {
-  fs.appendFileSync(${JSON.stringify(contexts)}, JSON.stringify(options) + "\\n");
-  return {newPage: async () => page, close: async () => {}};
-}})};
-`);
-  return {storybookDir, playwrightDir, contexts};
-}
-
-test("an app-only Linux render plan prepares web tools for a native-font change on macOS", async t => {
-  const f = fixture(t, {web: true});
-  const directory = path.dirname(f.options.outputDir);
-  const webTools = webStubs(directory);
-  exportHostedCaptures({...f.options, ...webTools});
-  f.git("add", ".");
-  f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid", "commit", "-qm", "preserve rendered captures");
-  const request = async endpoint => endpoint === "repos/owner/repo" ? {id: 1} :
-    endpoint.endsWith("/workflows/ci.yml") ? {id: 7} : {workflow_runs: []};
-  const plan = () => planHostedCaptures({sourceDir: f.root, sourceSha: f.git("rev-parse", "HEAD"),
-    repository: "owner/repo", eventName: "pull_request", request});
-  const fresh = await plan();
-  assert.deepEqual([fresh.render, fresh.webRender], [false, false], "reuse needs no web tooling");
-  f.write("lib/leaf.dart", "const title = 'Updated app';\n");
-  f.git("add", "lib/leaf.dart");
-  f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid", "commit", "-qm", "change only app capture inputs");
-  const appOnly = await plan();
-  assert.ok(appOnly.renderIds.length > 0);
-  assert.ok(!appOnly.renderIds.includes("guest-join-phone"));
-  assert.equal(appOnly.webRender, true, "macOS can invalidate the otherwise-current web capture's font");
-  fs.writeFileSync(f.options.sfFont, "updated macOS native font");
-  const rendered = exportHostedCaptures({...f.options, ...webTools,
-    sourceSha: f.git("rev-parse", "HEAD"), outputDir: path.join(directory, "font-updated")});
-  assert.equal(rendered.captures.find(c => c.id === "guest-join-phone").disposition, "rendered");
-  assert.equal(new Set(rendered.captures.map(c => c.provenance.nativeFontSha256)).size, 1);
-});
 
 test("a web capture renders on macOS from a Linux-built Storybook with WebKit, then reuses on Linux", t => {
   const f = fixture(t, {web: true});
@@ -1152,55 +625,3 @@ test("a web capture renders on macOS from a Linux-built Storybook with WebKit, t
   assert.equal(reused.toolchain.playwright, null);
   assert.equal(reused.toolchain.storybookIndexSha256, null);
 });
-
-// The catalog as the exporter reads it: an index that resolves each marketing
-// id lazily, plus one entry file per marketing capture.
-function writeCaptureCatalog(write, entries) {
-  const variable = id => `${id.replace(/_([a-z0-9])/gu, (_, c) => c.toUpperCase())}Capture`;
-  for (const entry of entries) {
-    write(`test/ui_captures/catalog/entries/${entry.id}.dart`, `final ${variable(entry.id)} = ScreenCaptureEntry(id: '${entry.id}', routeIds: const <String>['today'],
-      marketingFixtureKeys: const <String>['${entry.fixtureKey}'], device: CaptureDevice.iphone17Pro);\n`);
-  }
-  write("test/ui_captures/catalog/screen_capture_catalog.dart", `${entries.map(entry => `import 'entries/${entry.id}.dart';\n`).join("")}
-final marketingScreenCaptures = <String, ScreenCaptureEntry Function()>{
-${entries.map(entry => `  '${entry.id}': () => ${variable(entry.id)},\n`).join("")}};\n`);
-  write("test/ui_captures/catalog/screen_capture_entry.dart", "class ScreenCaptureEntry {}\n");
-}
-
-// Rewrites a PNG's caPt provenance record, keeping the PNG structurally valid.
-function editProvenance(file, edit) {
-  const bytes = fs.readFileSync(file);
-  const out = [bytes.subarray(0, 8)];
-  for (let offset = 8; offset < bytes.length;) {
-    const length = bytes.readUInt32BE(offset);
-    const type = bytes.toString("ascii", offset + 4, offset + 8);
-    const end = offset + length + 12;
-    if (type === "caPt") {
-      const data = Buffer.from(JSON.stringify(edit(JSON.parse(bytes.toString("utf8", offset + 8, end - 4)))));
-      const payload = Buffer.concat([Buffer.from(type), data]);
-      let crc = 0xffffffff;
-      for (const byte of payload) { crc ^= byte; for (let bit = 0; bit < 8; bit++) crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0); }
-      const head = Buffer.alloc(4); head.writeUInt32BE(data.length);
-      const tail = Buffer.alloc(4); tail.writeUInt32BE((crc ^ 0xffffffff) >>> 0);
-      out.push(head, payload, tail);
-    } else out.push(bytes.subarray(offset, end));
-    offset = end;
-  }
-  fs.writeFileSync(file, Buffer.concat(out));
-}
-
-for (const [label, edit] of [
-  ["claims a fingerprint its recorded list does not produce", record => ({...record,
-    inputFiles: deflateRawSync(Buffer.from(inflateRawSync(Buffer.from(record.inputFiles, "base64")).toString("utf8")
-      .split("\n").filter(file => file !== "lib/leaf.dart").join("\n"))).toString("base64")})],
-  ["claims a fingerprint the current files do not produce", record => ({...record, inputSha256: "0".repeat(64)})],
-]) {
-  test(`a bundle PNG that ${label} is recomputed by the consumer and never seeds`, async t => {
-    const forged = "host-today";
-    const h = seedHarness(t, {}, {}, {tamper: {[forged]: edit}});
-    const plan = await h.plan();
-    assert.deepEqual(plan.renderIds, [forged]);
-    assert.ok(!plan.seedIds.includes(forged));
-    assert.equal(plan.seedIds.length, h.manifest.captures.length - 1);
-  });
-}
