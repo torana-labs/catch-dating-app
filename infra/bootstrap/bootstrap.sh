@@ -69,18 +69,21 @@ PLAN_ROLE=catchPlatformPlanReader
 APPLY_ROLE=catchPlatformApplier
 # Read the Firebase Android apps Terraform imports (get, list), their App
 # Check Play Integrity configs, and Firestore database settings and backup
-# schedules, and alert policies, uptime checks and notification channels.
-# No Firestore documents (no datastore.entities.*), Storage data, Auth users,
-# secrets or IAM.
-PLAN_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.projects.get,firebaseappcheck.playIntegrityConfig.get,datastore.databases.get,datastore.databases.getMetadata,datastore.backupSchedules.get,datastore.backupSchedules.list,monitoring.alertPolicies.get,monitoring.alertPolicies.list,monitoring.uptimeCheckConfigs.get,monitoring.uptimeCheckConfigs.list,monitoring.notificationChannels.get,monitoring.notificationChannels.list
+# schedules, alert policies, uptime checks and notification channels, and the
+# takedown preservation bucket's settings and IAM policy (bucket metadata,
+# never objects). No Firestore documents (no datastore.entities.*), Storage
+# data, Auth users or secrets.
+PLAN_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.projects.get,firebaseappcheck.playIntegrityConfig.get,datastore.databases.get,datastore.databases.getMetadata,datastore.backupSchedules.get,datastore.backupSchedules.list,monitoring.alertPolicies.get,monitoring.alertPolicies.list,monitoring.uptimeCheckConfigs.get,monitoring.uptimeCheckConfigs.list,monitoring.notificationChannels.get,monitoring.notificationChannels.list,storage.buckets.get,storage.buckets.getIamPolicy
 # The same reads plus updating an existing app's fingerprints and its Play
 # Integrity config, updating a Firestore database's settings, and creating
 # or updating its backup schedules. Deliberately no firebase.clients.create/
 # delete, no firebaseappcheck.services.update (App Check enforcement), no
 # datastore.databases.create/delete and no datastore.backupSchedules.delete.
 # Alert policies and uptime checks may be created and updated, never deleted;
-# notification channels are only read.
-APPLY_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.clients.update,firebase.projects.get,firebaseappcheck.playIntegrityConfig.get,firebaseappcheck.playIntegrityConfig.update,datastore.databases.get,datastore.databases.getMetadata,datastore.databases.update,datastore.backupSchedules.get,datastore.backupSchedules.list,datastore.backupSchedules.create,datastore.backupSchedules.update,monitoring.alertPolicies.get,monitoring.alertPolicies.list,monitoring.alertPolicies.create,monitoring.alertPolicies.update,monitoring.uptimeCheckConfigs.get,monitoring.uptimeCheckConfigs.list,monitoring.uptimeCheckConfigs.create,monitoring.uptimeCheckConfigs.update,monitoring.notificationChannels.get,monitoring.notificationChannels.list
+# notification channels are only read. The takedown preservation bucket may
+# be created and its settings and IAM updated, never deleted (no
+# storage.buckets.delete, no object permissions).
+APPLY_PERMISSIONS=firebase.clients.get,firebase.clients.list,firebase.clients.update,firebase.projects.get,firebaseappcheck.playIntegrityConfig.get,firebaseappcheck.playIntegrityConfig.update,datastore.databases.get,datastore.databases.getMetadata,datastore.databases.update,datastore.backupSchedules.get,datastore.backupSchedules.list,datastore.backupSchedules.create,datastore.backupSchedules.update,monitoring.alertPolicies.get,monitoring.alertPolicies.list,monitoring.alertPolicies.create,monitoring.alertPolicies.update,monitoring.uptimeCheckConfigs.get,monitoring.uptimeCheckConfigs.list,monitoring.uptimeCheckConfigs.create,monitoring.uptimeCheckConfigs.update,monitoring.notificationChannels.get,monitoring.notificationChannels.list,storage.buckets.create,storage.buckets.get,storage.buckets.update,storage.buckets.getIamPolicy,storage.buckets.setIamPolicy
 
 # Forms payment secrets. Secret IAM conditions see secret names with the
 # project number. Custom roles live here, not in Terraform: an identity that
