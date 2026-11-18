@@ -31,7 +31,7 @@
       ],
       "aside": {
         "label": "Teaching for a company team? Ask for a walkthrough",
-        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I teach workshops for company teams and would like a walkthrough."}
+        "to": {"route": "host_walkthrough"}
       },
       "chip": {
         "title": "Saturday wheel-throwing",

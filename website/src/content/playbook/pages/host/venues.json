@@ -31,7 +31,7 @@
       ],
       "aside": {
         "label": "Running nights at several outlets? Ask for a walkthrough",
-        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run nights at several outlets and would like a walkthrough."}
+        "to": {"route": "host_walkthrough"}
       },
       "chip": {
         "title": "Tuesday pub quiz",
@@ -220,7 +220,7 @@
         {"question": "We have no one to run the night. Can a host do it?", "answer": "Yes. List your space and we’ll introduce you to hosts as matching starts. Until then, you can invite a host you know to run a night at your venue on {{brand.name}}."},
         {"question": "Can we sell a ticket that includes food or a drink?", "answer": "Yes. Set the price and say what’s included on the page. The kitchen sees the numbers before the night."},
         {"question": "Can promoters be paid on what they bring?", "answer": "Each promoter gets their own link, and {{brand.name}} shows the bookings and revenue from it. How you pay them is up to you."},
-        {"question": "We have more than one outlet.", "answer": "Each outlet can have its own page. Ask us for a walkthrough on WhatsApp and we’ll set up the team for you."},
+        {"question": "We have more than one outlet.", "answer": "Each outlet can have its own page. Ask us for a walkthrough and we’ll set up the team for you."},
         {"question": "Do guests need an app?", "answer": "No. Guests book, pay and check in on your page in their phone’s browser."}
       ]
     },

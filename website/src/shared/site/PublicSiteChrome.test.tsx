@@ -215,9 +215,8 @@ describe("canonical public chrome", () => {
     unmount();
     render(<PublicSiteFooter variant="host" />);
     const host = band(within(screen.getByRole("contentinfo")));
-    // Walkthrough booking doesn't exist yet, so the walkthrough asks for one on WhatsApp.
-    expect(host.getByRole("link", {name: siteFooterCopy.helpBand.walkthrough.label}).getAttribute("href"))
-      .toContain(encodeURIComponent(siteFooterCopy.helpBand.walkthrough.message));
+    // The walkthrough goes to its request page, a tracked lead form.
+    expect(host.getByRole("link", {name: siteFooterCopy.helpBand.walkthrough.label}).getAttribute("href")).toBe("/host/walkthrough/");
     expect(host.getByRole("link", {name: siteFooterCopy.helpBand.whatsapp}).getAttribute("href"))
       .toContain(encodeURIComponent(siteFooterCopy.helpBand.hostMessage));
     expect(host.queryByRole("link", {name: siteFooterCopy.helpBand.guestHelp.label})).toBeNull();

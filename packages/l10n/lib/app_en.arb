@@ -8420,6 +8420,14 @@
     "x-owner": "product",
     "x-surface": "core.widgets.catch_notice"
   },
+  "coreWriteStillWorking": "Still working on it…",
+  "@coreWriteStillWorking": {
+    "description": "Notice shown while a save or other change has been running for more than eight seconds.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.widgets.catch_notice",
+    "x-max-chars": 32
+  },
   "coreCatchPersonAvatarTextCount": "+{count}",
   "@coreCatchPersonAvatarTextCount": {
     "description": "Product copy supplied by packages/platform/lib/l10n/catch_ui_copy.dart (avatar count).",
@@ -19210,6 +19218,20 @@
   "coreAppErrorMessageVisiblecopyTheRequestTimedOut": "The request timed out. Please try again.",
   "@coreAppErrorMessageVisiblecopyTheRequestTimedOut": {
     "description": "Product copy used by packages/platform/lib/errors/app_error_message.dart (visibleCopy).",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.app_error_message"
+  },
+  "coreAppErrorMessageListenerNothingSaved": "You''re offline and nothing is saved on this device yet. Try again when you''re connected.",
+  "@coreAppErrorMessageListenerNothingSaved": {
+    "description": "Error copy when a live list or record gave no first answer in time and nothing is saved on the device for it yet.",
+    "x-audience": "shared",
+    "x-owner": "product",
+    "x-surface": "core.app_error_message"
+  },
+  "coreWriteOutcomeUnknown": "We couldn''t confirm this change. It may still go through, so check before you try again.",
+  "@coreWriteOutcomeUnknown": {
+    "description": "Error copy when a save or other change timed out: the server may still finish it, so the person should check before repeating it.",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"

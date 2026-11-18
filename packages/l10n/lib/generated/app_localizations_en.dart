@@ -4564,6 +4564,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coreCatchNoticeTooltipDismiss => 'Dismiss';
 
   @override
+  String get coreWriteStillWorking => 'Still working on it…';
+
+  @override
   String coreCatchPersonAvatarTextCount({required Object count}) {
     return '+$count';
   }
@@ -10810,6 +10813,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get coreAppErrorMessageVisiblecopyTheRequestTimedOut =>
       'The request timed out. Please try again.';
+
+  @override
+  String get coreAppErrorMessageListenerNothingSaved =>
+      'You\'re offline and nothing is saved on this device yet. Try again when you\'re connected.';
+
+  @override
+  String get coreWriteOutcomeUnknown =>
+      'We couldn\'t confirm this change. It may still go through, so check before you try again.';
 
   @override
   String get coreAppErrorMessageVisiblecopyTooManyAttemptsPlease =>

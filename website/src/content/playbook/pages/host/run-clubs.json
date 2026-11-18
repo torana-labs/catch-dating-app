@@ -34,7 +34,7 @@
       ],
       "aside": {
         "label": "Running several chapters or a brand-partner series? Ask for a walkthrough",
-        "to": {"kind": "whatsapp", "message": "Hi {{brand.name}}, I run several run club chapters and would like a walkthrough."}
+        "to": {"route": "host_walkthrough"}
       },
       "chip": {
         "title": "Sunday Social Run",

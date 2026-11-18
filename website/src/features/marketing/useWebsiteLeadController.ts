@@ -11,8 +11,10 @@ const idle: LeadState = {phase: "idle", problem: null, message: ""};
  * Records, once per form and after analytics consent, that a website lead
  * form was shown: its lead kind and form id (the lead's entry), never an
  * answer. The site lead submission records the rest of the form's events.
+ * Forms that keep their own send state (the discovery pages' city alerts)
+ * call it directly.
  */
-function useLeadFormViewed({kind, formId}: WebsiteLeadFormIdentity) {
+export function useLeadFormViewed({kind, formId}: WebsiteLeadFormIdentity) {
   const recorded = useRef<string | null>(null);
   useEffect(() => {
     const key = `${kind}:${formId}`;

@@ -4,9 +4,13 @@ import {afterEach, describe, expect, it, vi} from "vitest";
 import {createWebsiteLeadSubmission, type WebsiteLeadOutcome, type WebsiteLeadSubmission} from "../../shared/api/websiteLead";
 import {useCityAlertsController} from "./useCityAlertsController";
 
-vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent: vi.fn()}));
+const trackWebsiteLeadFormEvent = vi.hoisted(() => vi.fn());
+vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent: vi.fn(), trackWebsiteLeadFormEvent}));
 vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => "site-token")}));
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  trackWebsiteLeadFormEvent.mockReset();
+});
 
 const place = {citySlug: "mumbai", cityLabel: "Mumbai", sourcePage: "/mumbai/", entry: "ex-wa"};
 const submitEvent = () => ({preventDefault: vi.fn()}) as unknown as FormEvent<HTMLFormElement>;
@@ -25,6 +29,14 @@ describe("useCityAlertsController", () => {
     expect(submission.submit).toHaveBeenCalledWith(expect.objectContaining({
       kind: "city_alerts", phone: "98000 00000", city: "Mumbai", entry: "ex-wa", sourcePage: "/mumbai/", answers: {interests: ["runs"]}}));
     expect(result.current.sent).toBe(true);
+  });
+
+  it("records the form's viewed event once, by its kind and entry, never the number or city", async () => {
+    const submission = stub({status: "sent", leadId: "f".repeat(64), isNew: true});
+    const {result, rerender} = renderHook(() => useCityAlertsController(place, ["runs"], () => submission));
+    act(() => result.current.setPhone("98000 00000"));
+    rerender();
+    expect(trackWebsiteLeadFormEvent).toHaveBeenCalledExactlyOnceWith("viewed", {kind: "city_alerts", formId: "ex-wa"});
   });
 
   it("shows the lead client's words for a failure and clears them when the number changes", async () => {

@@ -24,7 +24,7 @@ import {
 } from "@catch/web-ui";
 import {hostLandingCopy as copy, hostNightFormats} from "@content/hostLanding";
 import {brand} from "@content/brand";
-import {whatsappChatCopy, whatsappChatHref} from "@content/site";
+import {hostWalkthroughHref, whatsappChatCopy, whatsappChatHref} from "@content/site";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {captureSlot} from "../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
@@ -87,7 +87,7 @@ function Hero({captures}: {captures: CaptureSlots}) {
       id="top-hero"
       kicker={hero.kicker}
       lead={hero.body}
-      link={{label: hero.walkthrough, href: whatsappChatHref(whatsappChatCopy.walkthroughMessage)}}
+      link={{label: hero.walkthrough, href: hostWalkthroughHref}}
       media={today ? <CatchAppCaptureImage {...today} bezel bleed caption={undefined} size="hero" tilt="left" /> : undefined}
       note={hero.terms}
       // A phone already has the stores a tap away (the start band and the dock); the card is for a laptop.
@@ -286,7 +286,7 @@ function Start({captures}: {captures: CaptureSlots}) {
           <CatchStack align="center" direction="row" gap={8} wrap>
             <CatchText variant="body-small">{start.personLead}</CatchText>
             <CatchButton href={whatsappChatHref(whatsappChatCopy.hostQuestionMessage)} label={start.personWhatsapp} newTab size="sm" variant="quiet" />
-            <CatchButton href={whatsappChatHref(whatsappChatCopy.walkthroughMessage)} label={start.personWalkthrough} newTab size="sm" variant="quiet" />
+            <CatchButton href={hostWalkthroughHref} label={start.personWalkthrough} size="sm" variant="quiet" />
           </CatchStack>
           <CatchStack align="center" direction="row" gap={8} wrap>
             <CatchText variant="body-small">{start.weddingsLead}</CatchText>
