@@ -4,9 +4,9 @@
 // ₹10,000 per 30-day billing cycle; 30 days free from the first event, 90
 // for founding hosts; venues and companies pay the same. Every figure a page
 // shows is worked out here from these facts, never typed as a string, so a
-// change to the rate or the cap reaches every page at once. Say "per billing
-// cycle", never "a month": the cap resets with each 30-day cycle, not on the
-// calendar.
+// change to the rate or the cap reaches every page at once. Marketing pages
+// say "a month", never "per billing cycle" (owner, 18 Nov 2026); the host
+// billing page states the 30-day cycle itself.
 import {brand} from "./brand.ts";
 import {interpolateContent as fill} from "./interpolate.ts";
 // The active market pack, by its file: Node smoke scripts import the host copy, and this module, directly.
@@ -152,14 +152,14 @@ export function hostFeeCycleExample(input: HostFeeCycleExampleInput): HostFeeExa
 
 /** The words the fee calculator shows, filled from the facts. */
 export const hostFeeCalculatorCopy = {
-  sales: "Your ticket sales this billing cycle",
+  sales: "Your ticket sales in a month",
   min: formatPricingMoney(hostFeeSalesRange.min),
   max: formatPricingMoney(hostFeeSalesRange.max),
   fee: `${brand.name} fee`,
   feeNote: "after your trial",
   effective: "Your effective rate",
-  effectiveNote: "of this billing cycle’s ticket sales",
-  capped: fill("Capped. You pay {cap} however much more you sell this billing cycle.", {cap: facts.cap}),
+  effectiveNote: "of that month’s ticket sales",
+  capped: fill("Capped. You pay {cap} however much more you sell that month.", {cap: facts.cap}),
   trial: fill("In your first {trialDays} days from your first event: {zero}, whatever you sell.", {trialDays: facts.trialDays, zero: facts.zero}),
   gateway: "Payment gateway fees are separate. Your payment provider charges them at its own rate.",
 } as const;
@@ -167,27 +167,27 @@ export const hostFeeCalculatorCopy = {
 /** The cap chart's two stretches: where the fee is charged, and the rest of the cycle. */
 export const hostFeeCapChartCopy = {
   charged: fill("{rate} on the first {capReachedAt}", {rate: facts.rate, capReachedAt: facts.capReachedAt}),
-  free: `No ${brand.name} fee on the rest of the billing cycle`,
+  free: `No ${brand.name} fee on the rest of the month`,
 } as const;
 
 /** The price in one line, as each page states it. */
 export const hostPricingLines = {
   /** The rate's headline: what the 5% is of, and its cap. */
-  rateTitle: fill("of ticket sales. Never more than {cap} per billing cycle.", {cap: facts.cap}),
+  rateTitle: fill("of ticket sales. Never more than {cap} a month.", {cap: facts.cap}),
   /** The same, for a band that adds that free events stay free. */
-  rateTitleFree: fill("of ticket sales. Never more than {cap} per billing cycle. Free events stay free.", {cap: facts.cap}),
+  rateTitleFree: fill("of ticket sales. Never more than {cap} a month. Free events stay free.", {cap: facts.cap}),
   /** How the fee works, in a sentence or two. */
   body: fill(
-    "Free for {trialDays} days from your first event. After that, {brand} keeps {rate} of what you sell, net of refunds, and stops at {cap} per {cycleDays}-day billing cycle.",
-    {trialDays: facts.trialDays, brand: brand.name, rate: facts.rate, cap: facts.cap, cycleDays: facts.cycleDays},
+    "Free for {trialDays} days from your first event. After that, {brand} keeps {rate} of what you sell, net of refunds, and stops at {cap} a month.",
+    {trialDays: facts.trialDays, brand: brand.name, rate: facts.rate, cap: facts.cap},
   ),
   /** The terms in one line, under a hero's actions. */
   terms: fill(
-    "Free for {trialDays} days from your first event · then {rate} of ticket sales, never more than {cap} per billing cycle · iPhone, Android and iPad",
+    "Free for {trialDays} days from your first event · then {rate} of ticket sales, never more than {cap} a month · iPhone, Android and iPad",
     {trialDays: facts.trialDays, rate: facts.rate, cap: facts.cap},
   ),
   /** Venues and companies pay the same. */
-  organisations: fill("Venues and companies pay the same {rate}, with the same {cap} cap per billing cycle.", {rate: facts.rate, cap: facts.cap}),
+  organisations: fill("Venues and companies pay the same {rate}, with the same {cap} monthly cap.", {rate: facts.rate, cap: facts.cap}),
 } as const;
 
 /** The /host/ pricing band's three worked examples. */
@@ -207,8 +207,8 @@ export const pricingPageFeeExamples: readonly HostFeeExampleInput[] = [
   {title: "Pottery workshop, {seats} seats at {price}", value: "{fee} a class", body: "{rate} of {sales}.", seats: 12, price: 2_500},
 ];
 
-/** /pricing/'s two billing cycles either side of the cap: the pricing band's examples. */
+/** /pricing/'s two months either side of the cap: the pricing band's examples. */
 export const pricingPageCycleExamples: readonly HostFeeCycleExampleInput[] = [
-  {sales: 100_000, title: "{price} in a billing cycle", value: "{fee}", body: "{rate} of sales."},
-  {sales: 500_000, title: "{price} in a billing cycle", value: "{fee}", body: "An effective rate of {effectiveRate}."},
+  {sales: 100_000, title: "{price} in a month", value: "{fee}", body: "{rate} of sales."},
+  {sales: 500_000, title: "{price} in a month", value: "{fee}", body: "An effective rate of {effectiveRate}."},
 ];

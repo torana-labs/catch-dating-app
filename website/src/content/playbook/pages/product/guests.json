@@ -6,7 +6,7 @@
     "title": "Guest records | {{brand.name}} for hosts",
     "description": "Everyone who has booked, checked in or been imported, in one list, sorted into groups with plain rules: first-timers, regulars, lapsed regulars, advocates and more. Export any time.",
     "socialDescription": "Know your regulars by name, not by spreadsheet. Guest records on {{brand.name}}.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

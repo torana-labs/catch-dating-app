@@ -6,7 +6,7 @@
     "title": "Messages | {{brand.name}} for hosts",
     "description": "Event messages for every booking, a push reminder before the start, announcements to up to 500 guests, follower updates, and WhatsApp campaigns from your own WhatsApp Business number.",
     "socialDescription": "The right message, to the right people. Event messages, announcements and WhatsApp campaigns on {{brand.name}}.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

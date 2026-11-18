@@ -128,7 +128,7 @@ export const hostLandingCopy = {
     rows: [
       {label: "Free events stay free", cells: [yes, yes, yes, notPublished, {text: "Organiser subscription", status: "no"}]},
       {label: "Fee on paid tickets", cells: [
-        {text: fill("{rate}, never more than {cap} per billing cycle", {rate: facts.rate, cap: facts.cap})},
+        {text: fill("{rate}, never more than {cap} a month", {rate: facts.rate, cap: facts.cap})},
         {text: "None, but you chase every payment"},
         {text: "5% (0% on a US$59-a-month plan), plus card fees"},
         {text: "Negotiated per event; no public rate"},
@@ -185,8 +185,8 @@ export const hostLandingCopy = {
         {trialDays: facts.trialDays, brand: brand.name, foundingTrialDays: facts.foundingTrialDays},
       )},
       {title: "What happens when the trial ends?", body: fill(
-        "{brand} keeps {rate} of ticket sales, net of refunds, and never more than {cap} per {cycleDays}-day billing cycle. Free events stay free. Payment gateway fees are separate.",
-        {brand: brand.name, rate: facts.rate, cap: facts.cap, cycleDays: facts.cycleDays},
+        "{brand} keeps {rate} of ticket sales, net of refunds, and never more than {cap} a month. Free events stay free. Payment gateway fees are separate.",
+        {brand: brand.name, rate: facts.rate, cap: facts.cap},
       )},
       {title: "Do I need to talk to anyone to start?", body: `No. Download ${brand.stores.hostAppName}, set up your page and publish when you are ready. If you would like a person, WhatsApp us or book a 15-minute walkthrough.`},
       {title: "Do my guests need to download an app?", body: "No. Guests book on your page and join live moments in their phone’s browser."},
@@ -243,7 +243,7 @@ export const hostNightFormats: readonly HostNightFormat[] = [
       {time: "6:20 AM", property: "phones", title: "Check in, then pocket the phone", slot: "host-door-in", body: `Runners check in at the meeting point and see their pod once. While the run is on, ${brand.name} sends them nothing.`},
       {time: "6:30 AM", property: "groups", title: "A first hello at the start line", slot: "host-formats-mix", body: "Each pod gets one question to answer together before they set off, so the first kilometre already has a conversation in it."},
       {time: "7:15 AM", property: "tracks", title: "Nobody left on the road", slot: "host-live-console", body: "At the finish, you or your sweep mark each runner back. Anyone not marked stays on your list until you close the run."},
-      {time: "Sunday evening", property: "ends", title: "The next run, already easier", slot: "host-post-event-report", body: "Runners get a feedback prompt after the finish, and your report shows who came for the first time and who came back."},
+      {time: "Sunday evening", property: "ends", title: "The next run, already easier", slot: "host-post-event-report", body: "Finishers get the photos and a feedback prompt, and your report shows who came for the first time and who came back."},
     ],
   },
   {

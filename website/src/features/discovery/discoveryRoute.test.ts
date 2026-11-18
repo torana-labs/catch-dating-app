@@ -35,8 +35,9 @@ describe("cityFormatPageMeta", () => {
 });
 
 describe("newToCityPageMeta", () => {
-  it("stays out of search until the owner approves the page", () => {
-    expect(newToCityPageMeta(mumbaiDiscoveryCatalog)).toMatchObject({canonicalPath: "/new-to-mumbai/", robots: "noindex, follow"});
+  it("is indexed in every listed city, quiet or not (owner approval, 18 Nov 2026)", () => {
+    expect(newToCityPageMeta(mumbaiDiscoveryCatalog)).toMatchObject({canonicalPath: "/new-to-mumbai/", robots: "index, follow"});
+    expect(newToCityPageMeta(puneDiscoveryCatalog)).toMatchObject({canonicalPath: "/new-to-pune/", robots: "index, follow"});
   });
 });
 

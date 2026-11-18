@@ -4,9 +4,9 @@
   "route": "host_facilities",
   "meta": {
     "title": "{{brand.name}} for sports facilities | Socials that fill off-peak hours",
-    "description": "Run socials on your own courts with levels, rotations and fair court time, sell memberships to the regulars, and see which coach, partner or post brought people in.",
+    "description": "Run socials on your own courts with levels, rotations and court time for everyone, sell memberships to the regulars, and see which coach, partner or post brought people in.",
     "socialDescription": "Socials that fill your off-peak hours. {{brand.name}} for courts, turfs, pools and clubhouses.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
@@ -20,7 +20,7 @@
       "ground": "indigo",
       "kicker": "{{brand.name}} for courts, turfs, pools and clubhouses",
       "title": "Socials that fill your off-peak hours.",
-      "lead": "Run socials on your own courts with levels, rotations and fair court time. Sell memberships to the regulars. And see which coach, partner or post brought people in.",
+      "lead": "Run socials on your own courts with levels, rotations and court time for everyone. Sell memberships to the regulars. And see which coach, partner or post brought people in.",
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},
         {
@@ -62,13 +62,13 @@
       "id": "rotations",
       "ground": "white",
       "kicker": "Levels and rotations",
-      "title": "Partners rotate. Matches stay close.",
-      "lead": "Players book with a level. {{brand.name}} plans each round across your courts so nobody plays with the same partner twice until they’ve played with everyone at their level.",
+      "title": "Partners rotate. Everyone gets on court.",
+      "lead": "Players give their level before the session. {{brand.name}} plans each round across your courts so nobody plays with the same partner twice until the rotation runs out.",
       "ticks": [
         "As many courts as you have",
         "Rounds as long as you want them",
         "Court time counted for every player",
-        "Walk-ins join the next round"
+        "Late arrivals join the next round"
       ],
       "media": {"kind": "capture", "slot": "host-formats-courts-setup"}
     },
@@ -79,11 +79,11 @@
       "kicker": "A social on {{brand.name}}",
       "title": "From empty courts to a waitlist.",
       "steps": [
-        {"time": "Friday", "title": "Levels in, courts balanced", "body": "Each booking brings a level. Rounds are planned so every match is close."},
-        {"time": "3:00 PM", "title": "Check in, level confirmed", "body": "Players confirm their level at the desk. Walk-ins join the next round."},
-        {"time": "3:15 PM", "title": "A new partner every round", "body": "Phones buzz with the next court and partner between games."},
-        {"time": "4:00 PM", "title": "Fair court time", "body": "Anyone falling behind goes on next; anyone sitting out is pointed to the café."},
-        {"time": "That evening", "title": "Standings, and the next session", "body": "Standings go out with the photos; non-members who keep coming get a membership invitation."}
+        {"time": "Friday", "title": "Levels in, courts planned", "body": "Players give their level before the session. Rounds are planned so everyone gets about the same time on court."},
+        {"time": "3:00 PM", "title": "Check in, then play", "body": "Players check in at the desk. Anyone arriving late joins the next round."},
+        {"time": "3:15 PM", "title": "A new partner every round", "body": "Phones show the next court and partner between games."},
+        {"time": "4:00 PM", "title": "Court time, counted", "body": "You see every player’s minutes on court and on the bench. Anyone sitting out is pointed to the café to mix."},
+        {"time": "That evening", "title": "Standings, then the photos", "body": "Reveal the final standings at the end, and the photos follow. Your guest records show which non-members keep coming."}
       ],
       "media": {"kind": "capture", "slot": "host-live-tablet"}
     },
@@ -95,14 +95,14 @@
       "title": "What to look for in software for facility socials.",
       "lead": "Check these eight things, whichever tool you choose. {{brand.name}} does all of them.",
       "items": [
-        {"title": "Levels and rotations", "body": "Close matches, new partners."},
-        {"title": "Fair court time", "body": "Counted for every player."},
+        {"title": "Levels and rotations", "body": "A new partner every round."},
+        {"title": "Court time, counted", "body": "For every player."},
         {"title": "Paid booking and a waitlist", "body": "For the sessions that fill."},
         {"title": "Memberships", "body": "Member prices or entry included."},
         {"title": "A link per coach and partner", "body": "See who brings players."},
-        {"title": "Walk-ins handled", "body": "They join the next round."},
+        {"title": "Late arrivals handled", "body": "They join the next round."},
         {"title": "Guest records", "body": "Who’s regular, who’s lapsed."},
-        {"title": "A cap on fees", "body": "Never more than ₹10,000 per billing cycle."}
+        {"title": "A cap on fees", "body": "Never more than ₹10,000 a month."}
       ]
     },
     {
@@ -111,12 +111,12 @@
       "ground": "ink",
       "kicker": "Pricing for facilities",
       "price": "5%",
-      "title": "of tickets and memberships, never more than ₹10,000 per billing cycle.",
+      "title": "of tickets and memberships, never more than ₹10,000 a month.",
       "trial": "Free for 30 days from your first social, 90 for founding hosts. Payment gateway fees are separate.",
       "examples": [
         {"title": "A 32-player social at ₹500", "value": "₹800 a session", "body": "5% of ₹16,000."},
-        {"title": "120 members at ₹1,500 a month", "value": "₹9,000 a billing cycle", "body": "5% of ₹1,80,000 in renewals."},
-        {"title": "Socials and members together", "value": "₹10,000 a billing cycle", "body": "The cap. Everything above it is yours."}
+        {"title": "120 members at ₹1,500 a month", "value": "₹9,000 a month", "body": "5% of ₹1,80,000 in renewals."},
+        {"title": "Socials and members together", "value": "₹10,000 a month", "body": "The cap. Everything above it is yours."}
       ],
       "actions": [
         {"label": "Start free trial", "to": {"route": "host_start"}, "emphasis": "primary"},

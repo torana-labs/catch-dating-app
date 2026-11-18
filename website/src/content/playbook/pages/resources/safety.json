@@ -6,7 +6,7 @@
     "title": "Safety and trust | {{brand.name}}",
     "description": "What’s in place before, during and after every plan: how hosts prove their page is theirs, how reviews are labelled, the code of conduct, and how to report something.",
     "socialDescription": "Feel good about going on your own.",
-    "noindex": true
+    "noindex": false
   },
   "header": {"variant": "guest"},
   "footer": {"variant": "guest"},
