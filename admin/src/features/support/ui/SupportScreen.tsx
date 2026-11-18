@@ -23,6 +23,10 @@ import {
 } from "../controllers/supportLabels";
 import type {SupportInboxController} from
   "../controllers/useSupportInboxController";
+import {
+  adMatchingStatusLabel,
+  type AdMatchingOptOutController,
+} from "../controllers/useAdMatchingOptOutController";
 
 interface SupportRow {
   key: string;
@@ -62,6 +66,7 @@ function row(item: SupportSummary, nowMs: number): SupportRow {
  * channel; the WhatsApp reply trial stays one link away.
  */
 export function SupportScreen({
+  adMatching,
   detailOpen,
   inbox,
   nowMs,
@@ -69,6 +74,8 @@ export function SupportScreen({
   onSelect,
   userUid,
 }: {
+  /** Records a person's request to stop ad matching. */
+  adMatching: AdMatchingOptOutController;
   /** The URL names a conversation; on narrow screens it replaces the list. */
   detailOpen: boolean;
   inbox: SupportInboxController;
@@ -86,8 +93,8 @@ export function SupportScreen({
   return (
     <CatchPaneLayout
       detail={inbox.detail ? (
-        <ConversationDetail detail={inbox.detail} inbox={inbox} nowMs={nowMs}
-          userUid={userUid} />
+        <ConversationDetail adMatching={adMatching} detail={inbox.detail}
+          inbox={inbox} nowMs={nowMs} userUid={userUid} />
       ) : undefined}
       detailOpen={detailOpen && inbox.detail !== null}
       main={
@@ -156,11 +163,13 @@ function timeLabel(ms: number): string {
 }
 
 function ConversationDetail({
+  adMatching,
   detail,
   inbox,
   nowMs,
   userUid,
 }: {
+  adMatching: AdMatchingOptOutController;
   detail: SupportDetail;
   inbox: SupportInboxController;
   nowMs: number;
@@ -263,7 +272,92 @@ function ConversationDetail({
             )}
           </CatchGap>
         </CatchGap>
+        <AdMatchingOptOutPanel
+          controller={adMatching}
+          initialEmail={conversation.channel === "email" ?
+            conversation.contactAddress : ""}
+          initialPhone={conversation.channel === "whatsapp" ?
+            conversation.contactAddress : ""}
+          key={conversation.conversationId}
+        />
       </CatchGap>
     </>
+  );
+}
+
+/**
+ * Ad matching, in a support conversation: when someone asks Catch to stop
+ * sending their data to advertising partners, record it here. Starts from
+ * the conversation's own number or email; the operator can add the other.
+ */
+function AdMatchingOptOutPanel({
+  controller,
+  initialEmail,
+  initialPhone,
+}: {
+  controller: AdMatchingOptOutController;
+  initialEmail: string;
+  initialPhone: string;
+}) {
+  const [phone, setPhone] = useState(initialPhone);
+  const [email, setEmail] = useState(initialEmail);
+  const [note, setNote] = useState("");
+  const busy = controller.isSaving;
+  const ready = (phone.trim() || email.trim()) && !busy;
+  const contact = {phone, email, note};
+  const status = adMatchingStatusLabel(controller.result);
+  return (
+    <CatchGap size="related">
+      <CatchLegacyText as="h2" variant="sectionTitle">Ad matching</CatchLegacyText>
+      <CatchLegacyText as="p" color="ink2" variant="bodyM">
+        If they ask Catch to stop sharing their details with advertising
+        partners, record it here. Catch stops sending their details at once
+        and removes them from any shared list within seven days.
+      </CatchLegacyText>
+      <CatchField
+        maxLength={32}
+        onChanged={(value) => {
+          setPhone(value);
+          controller.clear();
+        }}
+        recipe="input"
+        title="Phone number"
+        value={phone}
+      />
+      <CatchField
+        maxLength={254}
+        onChanged={(value) => {
+          setEmail(value);
+          controller.clear();
+        }}
+        recipe="input"
+        title="Email"
+        value={email}
+      />
+      <CatchField
+        helperText="Where the request came from. Leave the number and email out."
+        maxLength={200}
+        onChanged={setNote}
+        recipe="input"
+        title="Note"
+        value={note}
+      />
+      {status ? (
+        <CatchLegacyText as="p" color="ink" variant="supportingStrong">
+          {status}
+        </CatchLegacyText>
+      ) : null}
+      <CatchGap direction="horizontal" size="related" wrap>
+        <CatchButton label="Stop ad matching"
+          onPressed={ready ? () => void controller.record(contact) : null}
+          size="sm" />
+        <CatchButton label="Check"
+          onPressed={ready ? () => void controller.check(contact) : null}
+          size="sm" variant="secondary" />
+        <CatchButton label="Resume ad matching"
+          onPressed={ready ? () => void controller.remove(contact) : null}
+          size="sm" variant="secondary" />
+      </CatchGap>
+    </CatchGap>
   );
 }

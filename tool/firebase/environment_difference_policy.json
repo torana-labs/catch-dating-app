@@ -8,6 +8,7 @@
     "retired": "A removed switch. It may not reappear in source, the Remote Config template or a workflow outside its allowedIn sources; live leftovers are reported for cleanup."
   },
   "switches": {
+    "AD_AUDIENCES_MODE": {"class": "feature-gate", "note": "Host customer list upload to Meta (docs/ads_conversion_spec.md, Customer lists). Off everywhere; when prod is switched to live, that difference needs an allowedDifferences entry, since dev and staging never upload."},
     "AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT": {"class": "identity"},
     "AD_CONVERSIONS_META_TEST_EVENT_CODE": {"class": "identity"},
     "AD_CONVERSIONS_META_TOKEN_VERSION": {"class": "identity"},

@@ -76,6 +76,7 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'AD_CONVERSIONS_META_TOKEN_VERSION=" "',
     'AD_CONVERSIONS_META_TEST_EVENT_CODE=" "',
     'AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT=" "',
+    'AD_AUDIENCES_MODE="off"',
     'META_LEADGEN_CREDENTIAL_VERSION=" "',
     'META_LEADGEN_PAGE_IDS=" "',
     "",
@@ -143,6 +144,7 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'AD_CONVERSIONS_META_TOKEN_VERSION=" "',
     'AD_CONVERSIONS_META_TEST_EVENT_CODE=" "',
     'AD_CONVERSIONS_GOOGLE_SERVICE_ACCOUNT=" "',
+    'AD_AUDIENCES_MODE="off"',
     'META_LEADGEN_CREDENTIAL_VERSION=" "',
     'META_LEADGEN_PAGE_IDS=" "',
     "",
@@ -821,6 +823,27 @@ test("ad conversions stay off unless a mode and both credentials are set", () =>
   /must be a service account in this project/);
   assert.throws(() => materialize({AD_CONVERSIONS_META_TEST_EVENT_CODE: "test1"}),
     /must be a Meta test-event code/);
+});
+
+test("the host customer list stays off unless live with the Meta token", () => {
+  const materialize = (config) => {
+    const functionsDir = fixture();
+    prepareFunctionsParamsForDeploy({functionsDir, projectId: "catchdates-dev",
+      environment: {...publicIds, ...config}});
+    return fs.readFileSync(path.join(functionsDir, ".env.catchdates-dev"), "utf8");
+  };
+  const token = "projects/catchdates-dev/secrets/CATCH_META_ADS_TOKEN/versions/1";
+  assert.match(materialize({}), /^AD_AUDIENCES_MODE="off"$/m);
+  assert.match(materialize({AD_AUDIENCES_MODE: " "}), /^AD_AUDIENCES_MODE="off"$/m);
+  // Independent of the conversion queue's mode.
+  assert.match(materialize({AD_AUDIENCES_MODE: "live",
+    AD_CONVERSIONS_META_TOKEN_VERSION: token}), /^AD_AUDIENCES_MODE="live"$/m);
+  assert.throws(() => materialize({AD_AUDIENCES_MODE: "live"}),
+    /AD_AUDIENCES_MODE live requires AD_CONVERSIONS_META_TOKEN_VERSION/);
+  for (const value of ["on", "validate", "LIVE"]) {
+    assert.throws(() => materialize({AD_AUDIENCES_MODE: value}),
+      /AD_AUDIENCES_MODE must be off or live/);
+  }
 });
 
 test("the lead-form credential pins this project; pages are numeric", () => {

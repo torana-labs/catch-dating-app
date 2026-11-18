@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_manage_ad_matching_opt_out_payload.schema.json",
+  "title": "AdminManageAdMatchingOptOutCallablePayload",
+  "description": "Checks, records or removes an ad-matching opt-out for a phone number and/or email (docs/ads_conversion_spec.md). The values are hashed on the server and never stored or returned.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action",
+    "phone",
+    "email",
+    "source",
+    "note"
+  ],
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "check",
+        "record",
+        "remove"
+      ]
+    },
+    "phone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 32,
+      "description": "With or without the country code; a ten-digit number is Indian."
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 3,
+      "maxLength": 254
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "support",
+        "admin"
+      ]
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Short note such as the support conversation; it may not contain a phone number or email."
+    }
+  },
+  "x-callable-aliases": [
+    "adminManageAdMatchingOptOut"
+  ]
+}

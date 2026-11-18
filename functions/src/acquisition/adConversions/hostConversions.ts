@@ -66,10 +66,20 @@ export function hostConversionEventId(organizerId: string,
 export const sha256Hex = (value: string) =>
   createHash("sha256").update(value, "utf8").digest("hex");
 
-/** E.164 only; anything else is not a matching key. */
+const E164 = /^\+[1-9][0-9]{7,14}$/u;
+
+/** E.164 only; anything else is not a matching key. Google's Data Manager
+ * and the ad-matching opt-out key both take this digest. */
 export function hashedPhone(value: unknown): string | null {
-  return typeof value === "string" && /^\+[1-9][0-9]{7,14}$/u.test(value) ?
+  return typeof value === "string" && E164.test(value) ?
     sha256Hex(value) : null;
+}
+
+/** Meta's phone key: the same E.164 number as digits only, country code
+ * first, with no "+" (Meta hashes "919876543210", not "+919876543210"). */
+export function hashedPhoneForMeta(value: unknown): string | null {
+  return typeof value === "string" && E164.test(value) ?
+    sha256Hex(value.slice(1)) : null;
 }
 
 /** Trimmed and lowercased, as both platforms normalise email. */

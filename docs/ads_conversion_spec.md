@@ -242,11 +242,21 @@ where the map gives one, the canonical page URL, and the click context saved
 with the authoritative record: `gclid`, `gbraid`, `wbraid`, `fbc`, `fbp`, client
 IP address and user agent. Matching keys are normalised and SHA-256 hashed on the
 server before they leave it: phone in E.164, email when present, first name,
-city and country `in`. Raw contact details never leave the server.
+city and country `in`. Google takes the phone digest of the E.164 number with
+its plus sign; Meta takes the digest of the same number as digits only, country
+code first and no plus (`hashedPhone` and `hashedPhoneForMeta` in
+`hostConversions.ts`). Raw contact details never leave the server.
 
-A delivery is created only when the person has not opted out of ad matching and
-the account is not deleted or restricted. Opt-out or deletion cancels pending
-deliveries; requests already accepted by a provider cannot be retracted.
+A delivery is sent only when the person has not opted out of ad matching (see
+[Ad-matching notice and opt-out](#ad-matching-notice-and-opt-out)) and the
+account is not deleted. The queue checks the opt-out record at enqueue, where an
+opted-out owner's records are written already `cancelled` with outcome
+`opted_out` and no contact digests or lead, and again immediately before each
+send, for the record's phone and email, the host's current phone, account
+email and organizer email, and the identifiers on an attached Meta lead. An opted-out record is dropped whole: it is never sent with the
+opted-out key stripped. Recording an opt-out in Admin also cancels matching
+pending records at once, and account deletion deletes the owner's records.
+Requests already accepted by a provider cannot be retracted.
 Credentials are dedicated Catch identities held in Secret Manager; shared
 business identities are unsuitable.
 
@@ -304,12 +314,60 @@ Images are the Host store-listing screenshots, cropped to 4:5.
 
 ## Customer lists
 
-A scheduled uploader may share hashed contact lists with Meta (custom audiences)
-and Google (Customer Match): paid bookers with their booking value, repeat
-attendees, active hosts and unqualified host leads, used as lookalike seeds and
-exclusions. Every upload drops deleted, restricted, under-18, staff, test and
-opted-out accounts, and a later upload removes anyone who opted out or deleted
-since the previous one, within seven days at most.
+Hashed contact lists may be shared with Meta (custom audiences) and Google
+(Customer Match) as lookalike seeds and exclusions. Every list drops deleted,
+restricted, under-18, staff, test and opted-out accounts, and each upload
+replaces the whole list, so anyone who opted out or deleted since the previous
+upload leaves it, within seven days at most. One list is built.
+
+### Active hosts on Meta
+
+`syncMetaHostAudience` (`functions/src/acquisition/adAudiences/`) runs daily at
+04:20 India time and maintains one customer-file custom audience, "Catch |
+Active hosts", in Catch's Meta ad account `3245368689001899` (subtype `CUSTOM`,
+`customer_file_source` `USER_PROVIDED_ONLY`). The job finds it by name and
+creates it when missing.
+
+- **Members.** The owners of organizers whose growth facts show a first booked
+  event (`organizerGrowthFacts.milestones.firstEventAt`), where the organizer
+  is a real owned business (`userCreated`, `claimed` or `transferred`; synthetic
+  and demo organizers excluded, as for the conversion queue).
+- **Exclusions.** An owner is dropped whole, never uploaded without the key that
+  disqualified them: a deleted account (tombstoned user or no Auth account),
+  staff (an Admin role claim, current or retired, or an active
+  `adminRoleAssignments` record), a test or demo account (`synthetic`,
+  `demoOps`, `demoOpsId`, `seedPrefix` or `scenario`), sign-in disabled or a
+  restricted, suspended or banned safety standing, under 18 by date of birth,
+  an opted-out phone, account email or organizer email, or no contact key.
+- **Upload.** Rows are `[EMAIL, PHONE]`: the SHA-256 of the trimmed, lowercased
+  email (the owner's, else the organizer's) and of the E.164 phone as digits
+  only, an empty string for a missing key. Each run replaces the whole list
+  through `/{audience_id}/usersreplace` in one session of 10,000-row batches,
+  so removals and opt-outs leave Meta within a day. When no one qualifies, the
+  job deletes the audience, since a replace needs at least one row.
+- **Never uploaded.** Gender, age, orientation, matching, dating or
+  attendance-pairing data; date of birth is read only to exclude under-18s.
+- **Receipt.** `adAudienceRuns/meta_active_hosts` keeps the latest run's
+  status, outcome code, timing, the platform audience ID and counts (candidates,
+  members, rows received and invalid, exclusions by reason). It never holds an
+  identifier or digest.
+- **Gate.** `AD_AUDIENCES_MODE` is `off` (the default, and the setting in every
+  environment until the owner turns it on) or `live`. Off, the job only
+  deletes an audience an earlier live run left (the receipt names it), so a
+  list that would miss later opt-outs never lingers; otherwise it reads the
+  receipt and sends nothing. Live needs `AD_CONVERSIONS_META_TOKEN_VERSION`,
+  the CatchAds system-user token with `ads_management`, whose custom audience
+  terms are accepted. The deploy params tool rejects any other value and a live
+  mode without the token. A failed delete keeps the audience ID on the
+  receipt, and the next daily run tries again.
+
+### Google Customer Match (deferred)
+
+Google lists are not built: the Ads account is not yet eligible for Customer
+Match, which needs about 90 days of account history and spend. The host
+membership above is the seam: a Google uploader would reuse
+`loadHostAudienceMembers` with Google's E.164 phone digest (`hashedPhone`) and
+its own replace semantics, behind its own gate.
 
 ## Consent and lifecycle
 
@@ -332,11 +390,25 @@ on a short notice, linked to the privacy policy, shown where the person gives th
 data: the public checkout, app account creation and Host setup. The privacy
 policy names Google and Meta, what is shared, the hashing, and how to opt out.
 
-The opt-out is one record per person. Signed-in users store it on their account;
-guests who booked without an account are keyed by the SHA-256 hash of their E.164
-phone, so a request by email or phone covers past and future bookings. The
-server delivery queue and the customer-list uploader read this record before
-every send. Account deletion counts as an opt-out.
+The opt-out is one record per identifier in `adMatchingOptOuts`, server-only
+like the queue. Its ID is the SHA-256 of
+`catch-ad-matching-opt-out-v1:{kind}:{digest}`, where the digest is the one the
+platforms receive for that phone (E.164) or email (trimmed, lowercased), so a
+request by phone or email covers past and future bookings and accounts, signed
+in or not. The record keeps the kind, the source (`support` or `admin`), who
+recorded it and when, an optional short note, and, once removed, who removed it
+and when; never the raw phone or email. It is permanent until staff remove it.
+
+Support, safety, ops and the owner record it from the support conversation in
+Admin (`adminManageAdMatchingOptOut`): they check, record or remove an opt-out
+for the phone and/or email a request names. The server hashes both and answers
+only with the kinds named, changed and now opted out. The conversion queue
+checks the record at enqueue and before every send (see
+[Server delivery](#server-delivery)), and the customer-list job drops opted-out
+people from the next daily replace. That meets the privacy policy's promise to
+stop new records and remove the person from shared lists within seven days.
+Account deletion counts as an opt-out: the deleted account's queued conversions
+are deleted with it, and it leaves every list at the next replace.
 
 Unset/essential permission starts no measurement session. Analytics alone keeps
 first-party analytics and campaign labels, and loads no Google or Meta tag.

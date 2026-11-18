@@ -5,8 +5,10 @@ import {
   conversionOwner,
   hashedEmail,
   hashedPhone,
+  hashedPhoneForMeta,
   hostConversionEventId,
   newHostConversions,
+  sha256Hex,
 } from "./hostConversions";
 import {afterAttempt, hostDeliveryRecords} from "./deliveries";
 import {
@@ -63,6 +65,10 @@ test("only real owned organizers have a conversion owner", () => {
 test("contact keys are normalised and hashed, or dropped", () => {
   assert.equal(hashedPhone("+919876543210")?.length, 64);
   assert.equal(hashedPhone("98765 43210"), null);
+  // Google takes E.164 with its plus; Meta takes the digits only.
+  assert.equal(hashedPhone("+919876543210"), sha256Hex("+919876543210"));
+  assert.equal(hashedPhoneForMeta("+919876543210"), sha256Hex("919876543210"));
+  assert.equal(hashedPhoneForMeta("9876543210"), null);
   assert.equal(hashedEmail("  Host@Example.COM "),
     hashedEmail("host@example.com"));
   assert.equal(hashedEmail("not-an-email"), null);
@@ -97,6 +103,22 @@ test("one record per destination, holding only digests", () => {
     owner: {phoneNumber: "", email: ""}, nowMillis: now}), []);
 });
 
+test("an opted-out owner's records are born cancelled without digests",
+  () => {
+    const records = hostDeliveryRecords({organizerId: "org-1",
+      conversion: "organizer_qualified", organizer, owner, nowMillis: now,
+      metaLeadId: "1234567890123", optedOut: true});
+    assert.equal(records.length, 2);
+    for (const record of records) {
+      assert.equal(record.status, "cancelled");
+      assert.equal(record.lastOutcome, "opted_out");
+      assert.equal(record.matching.phoneSha256, null);
+      assert.equal(record.matching.emailSha256, null);
+      assert.equal(record.matching.metaPhoneSha256, null);
+      assert.equal(record.metaLeadId, null);
+    }
+  });
+
 test("wire payloads carry hashed keys and the shared event ID", () => {
   const [meta, google] = hostDeliveryRecords({organizerId: "org-1",
     conversion: "organizer_qualified", organizer, owner, nowMillis: now});
@@ -104,7 +126,10 @@ test("wire payloads carry hashed keys and the shared event ID", () => {
   assert.equal(event.event_name, "QualifiedHost");
   assert.equal(event.event_id, meta.eventId);
   assert.equal(event.action_source, "system_generated");
-  assert.deepEqual(event.user_data.ph, [meta.matching.phoneSha256]);
+  assert.deepEqual(event.user_data.ph, [sha256Hex("919876543210")]);
+  // A record queued before the Meta digest existed sends Meta no phone.
+  assert.equal(metaEvent({...meta, matching: {...meta.matching,
+    metaPhoneSha256: undefined}}).user_data.ph, undefined);
   assert.equal(event.custom_data.content_category, "host");
   const body = googleIngestBody(google, true);
   assert.equal(body.validateOnly, true);
