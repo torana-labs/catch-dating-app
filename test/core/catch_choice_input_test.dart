@@ -1,6 +1,5 @@
 import 'dart:ui' show CheckedState, Tristate;
 
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -170,8 +169,8 @@ void main() {
         expect(tester.state(find.byKey(key)), same(state));
         data = tester.getSemantics(find.byKey(key)).getSemanticsData();
         expect(data.flagsCollection.isInMutuallyExclusiveGroup, isFalse);
-        final icon = tester.widget<Icon>(find.byIcon(CatchIcons.check));
-        expect(icon.size, CatchFieldTokens.chipSelectedGlyphExtent);
+        // A selected chip shows by its fill, with no tick.
+        expect(find.byIcon(CatchIcons.check), findsNothing);
         rebuild(() => enabled = false);
         await pumpFeatureUi(tester);
         data = tester.getSemantics(find.byKey(key)).getSemanticsData();

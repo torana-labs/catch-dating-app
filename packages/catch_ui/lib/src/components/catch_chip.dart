@@ -410,15 +410,9 @@ class _CatchChipState extends State<CatchChip> {
         shadow = widget._selected
             ? CatchElevation.segmentedSelected(t)
             : CatchElevation.none;
-        leading =
-            widget._variant == _CatchChipVariant.choice &&
-                widget._mode == CatchChipMode.multiple &&
-                widget._selected
-            ? Icon(
-                CatchIcons.check,
-                size: CatchFieldTokens.chipSelectedGlyphExtent,
-              )
-            : dot != null
+        // A selected chip shows by its fill, as the system draws it, not
+        // by a tick; a format chip keeps its dot.
+        leading = dot != null
             ? _ChipDot(
                 color: dot.accent,
                 ring: widget._selected && !formatFill ? foreground : null,

@@ -597,12 +597,13 @@ void _registerProfileChoiceEditorsTests() {
     );
     expect(selectedLanguageChip.selected, isTrue);
     expect(selectedLanguageChip.mode, CatchChipMode.multiple);
+    // A selected chip shows by its fill, with no tick.
     expect(
       find.descendant(
         of: _catchChip(Language.english.label),
         matching: find.byIcon(CatchIcons.check),
       ),
-      findsOneWidget,
+      findsNothing,
     );
 
     await tester.tap(_catchChip(Language.english.label));

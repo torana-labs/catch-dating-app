@@ -490,22 +490,9 @@ void _registerCatchPrimitivesCompositionTests() {
       final unselectedChip = find.widgetWithText(CatchChip, cityLabel('delhi'));
 
       expect(_chipSelected(tester, selectedChip), isTrue);
-      expect(
-        find.descendant(
-          of: selectedChip,
-          matching: find.byIcon(CatchIcons.check),
-        ),
-        findsOneWidget,
-      );
       expect(_chipSelected(tester, unselectedChip), isFalse);
-      expect(
-        find.descendant(
-          of: unselectedChip,
-          matching: find.byIcon(CatchIcons.check),
-        ),
-        findsNothing,
-      );
-      expect(find.byIcon(CatchIcons.check), findsOneWidget);
+      // A selected chip shows by its fill, with no tick.
+      expect(find.byIcon(CatchIcons.check), findsNothing);
     },
   );
 
