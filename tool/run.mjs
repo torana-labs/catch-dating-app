@@ -22,6 +22,7 @@ import {
   closedToolStatuses,
   validateToolLifecycle,
   validateToolOrder,
+  validateToolPaths,
   validateToolRoles,
   validateToolRules,
 } from "./lib/tool_manifest_rules.mjs";
@@ -501,6 +502,10 @@ function validateManifest(manifest, componentGraph) {
     errors.push(error.message);
   }
 
+  errors.push(...validateToolPaths(manifest.tools, {
+    exists: (file) => repositorySnapshot().exists(file),
+    isTrackedFolder: (directory) => repositorySnapshot().listFiles({prefix: `${directory}/`}).length > 0,
+  }));
   errors.push(...validateToolLifecycle(manifest.tools, {
     exists: (file) => repositorySnapshot().exists(file),
     read: readUnlessSparseOmitted,

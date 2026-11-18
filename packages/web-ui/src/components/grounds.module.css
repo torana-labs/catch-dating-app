@@ -63,3 +63,51 @@
   --catch-on-ground-ink: var(--catch-ground-magenta-ink);
   --catch-on-ground-ink-secondary: var(--catch-ground-magenta-ink-secondary);
 }
+
+.ground[data-ground="sky"] {
+  --catch-on-ground-fill: var(--catch-ground-sky-fill);
+  --catch-on-ground-ink: var(--catch-ground-sky-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-sky-ink-secondary);
+}
+
+.ground[data-ground="coralSoft"] {
+  --catch-on-ground-fill: var(--catch-ground-coral-soft-fill);
+  --catch-on-ground-ink: var(--catch-ground-coral-soft-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-coral-soft-ink-secondary);
+}
+
+.ground[data-ground="pinkSoft"] {
+  --catch-on-ground-fill: var(--catch-ground-pink-soft-fill);
+  --catch-on-ground-ink: var(--catch-ground-pink-soft-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-pink-soft-ink-secondary);
+}
+
+.ground[data-ground="yellowSoft"] {
+  --catch-on-ground-fill: var(--catch-ground-yellow-soft-fill);
+  --catch-on-ground-ink: var(--catch-ground-yellow-soft-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-yellow-soft-ink-secondary);
+}
+
+.ground[data-ground="mintSoft"] {
+  --catch-on-ground-fill: var(--catch-ground-mint-soft-fill);
+  --catch-on-ground-ink: var(--catch-ground-mint-soft-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-mint-soft-ink-secondary);
+}
+
+.ground[data-ground="indigoSoft"] {
+  --catch-on-ground-fill: var(--catch-ground-indigo-soft-fill);
+  --catch-on-ground-ink: var(--catch-ground-indigo-soft-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-indigo-soft-ink-secondary);
+}
+
+.ground[data-ground="magentaSoft"] {
+  --catch-on-ground-fill: var(--catch-ground-magenta-soft-fill);
+  --catch-on-ground-ink: var(--catch-ground-magenta-soft-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-magenta-soft-ink-secondary);
+}
+
+.ground[data-ground="skySoft"] {
+  --catch-on-ground-fill: var(--catch-ground-sky-soft-fill);
+  --catch-on-ground-ink: var(--catch-ground-sky-soft-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-sky-soft-ink-secondary);
+}

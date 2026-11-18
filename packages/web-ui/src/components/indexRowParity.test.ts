@@ -36,8 +36,9 @@ describe("CatchIndexRow parity", () => {
     expect(css).toContain("gap: var(--catch-space-micro2);");
     expect(row).toContain("...[gapH6, footer!]");
     expect(css).toContain("margin-top: calc(var(--catch-space-micro6) - var(--catch-space-micro2));");
-    expect(row).toContain("CatchTextStyles.titleL(context, color: t.ink)");
-    expect(ts).toContain('titleVariant = "titleL"');
+    expect(row).toContain("if (titleStyle == null) {");
+    expect(row).toContain("CatchTextVariant.titleRow.style(sizeClass)");
+    expect(ts).toContain("system || titleVariant === undefined");
     expect(row).toContain("this.titleMaxLines = 1,");
     expect(ts).toContain("titleMaxLines = 1,");
   });

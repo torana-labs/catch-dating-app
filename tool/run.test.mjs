@@ -11,6 +11,7 @@ import {
   validateToolPlatforms,
 } from "./lib/tool_platform.mjs";
 import {changedManifestToolIds, planAffectedToolChecks} from "./lib/tool_impact.mjs";
+import {checkPathArguments} from "./lib/tool_manifest_rules.mjs";
 
 const repositoryRoot = process.cwd();
 const require = createRequire(import.meta.url);
@@ -345,7 +346,12 @@ for (const [ownerId, proofPath] of restoredProofOwners) {
     // generator, provider operation or scanner after the sentinel fails.
     assert.equal(owner.checks[0], `node --test ${proofPath}`);
     const fixture = createRunnerFixture(context);
-    for (const [file, source] of [[owner.path, "export {};"],
+    // Only the sentinel may decide the outcome: the other files its checks name
+    // get inert placeholders, and selection-only impactPaths are dropped, so the
+    // manifest's path rule passes in this isolated fixture.
+    delete owner.impactPaths;
+    const named = checkPathArguments(owner.checks);
+    for (const [file, source] of [...named.map((file) => [file, "export {};"]), [owner.path, "export {};"],
       [proofPath, "throw new Error('owner-execution-sentinel');"]]) {
       fs.mkdirSync(path.dirname(path.join(fixture, file)), {recursive: true});
       fs.writeFileSync(path.join(fixture, file), source);
@@ -630,6 +636,18 @@ test("the sparse, blobless Tools preflight checks runbook paths but leaves ancho
   const missing = run(["check", "--manifest-only"], {cwd: clone});
   assert.equal(missing.status, 1);
   assert.match(missing.stderr, /runbook docs\/missing\.md does not exist/u);
+});
+
+test("manifest validation rejects a check that names a missing test file", (context) => {
+  const fixture = createRunnerFixture(context);
+  mutateFixtureManifest(fixture, (manifest) => {
+    fixtureCheck(manifest).checks.push("node --test tool/renamed.test.mjs");
+    fixtureCheck(manifest).impactPaths = ["tool/gone.mjs"];
+  });
+  const result = run(["check", "--manifest-only"], {cwd: fixture});
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /fixture:check: check names tool\/renamed\.test\.mjs, which does not exist/u);
+  assert.match(result.stderr, /fixture:check: impactPath tool\/gone\.mjs does not exist/u);
 });
 
 test("manifest validation rejects a retired tool without its record", (context) => {

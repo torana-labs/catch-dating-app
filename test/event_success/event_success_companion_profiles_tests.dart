@@ -378,7 +378,7 @@ void _registerEventSuccessCompanionProfilesTests() {
       ),
     );
 
-    expect(find.text('ROTATION REVEAL'), findsWidgets);
+    expect(find.text('Rotation reveal'), findsWidgets);
     expect(find.text('No names shown yet'), findsWidgets);
     expect(find.textContaining('Next reveal in'), findsOneWidget);
     expect(find.textContaining('Rhea'), findsNothing);

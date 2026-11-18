@@ -168,6 +168,30 @@
         }
       }
     },
+    "tryItImport": {
+      "description": "Present only on a request the command organizer.import-from-link created (origin try_it_import). It names the phone-verified account and the try-it workspace organizer the link fills. The request is never approved into a listing: the command reads the finished listing back, shows the visitor what would change, and on apply writes the reviewed fields into that workspace. appliedAt is set once, when the visitor applies it; imported events stay work items until the owner publishes the page.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "uid", "organizerId", "commandKey", "link", "appliedAt"],
+      "properties": {
+        "schemaVersion": {"const": 1},
+        "uid": {"type": "string", "pattern": "^[A-Za-z0-9_-]{3,128}$"},
+        "organizerId": {"type": "string", "pattern": "^[A-Za-z0-9]{20}$"},
+        "commandKey": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "link": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["url", "provider", "support", "reason"],
+          "properties": {
+            "url": {"type": "string", "minLength": 8, "maxLength": 2000},
+            "provider": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]{0,59}$"},
+            "support": {"type": "string", "enum": ["instant", "best_effort", "staff_follow_up"]},
+            "reason": {"type": ["string", "null"], "pattern": "^[a-z][a-z0-9_]{0,79}$"}
+          }
+        },
+        "appliedAt": {"type": ["string", "null"], "format": "date-time"}
+      }
+    },
     "createdAt": {"type": "string", "format": "date-time"},
     "updatedAt": {"type": "string", "format": "date-time"}
   },

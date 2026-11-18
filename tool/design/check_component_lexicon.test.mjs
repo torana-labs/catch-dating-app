@@ -88,5 +88,9 @@ test("website surface checks work without Dart while full API checks fail closed
   const manifest = readJson("tool/tools_manifest.json");
   const gate = manifest.tools.find(({id}) => id === "design:component-lexicon");
   assert.ok(gate.ciRequirements.setup.includes("flutter-pub"));
-  assert.ok(gate.checks.includes("node tool/design/check_component_lexicon.mjs"));
+  // CI runs the full check, not --surfaces-only: this test file is a gate
+  // check, and its first test runs the checker with no arguments on the real
+  // repository and requires it to pass.
+  assert.ok(gate.checks.includes("node --test tool/design/check_component_lexicon.test.mjs"));
+  assert.equal(gate.checks.some((check) => check.includes("--surfaces-only")), false);
 });

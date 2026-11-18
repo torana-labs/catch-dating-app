@@ -19,9 +19,10 @@ export type CatchSurfaceElement = "div" | "section" | "article" | "aside" | "li"
 /**
  * Band colours the website has beyond the shared vocabulary (which is pinned
  * to the Flutter enums): indigo, the quiet colour for a band that is not about
- * one format, such as the host landing's ways to use Catch (proposal L2).
+ * one format, such as the host landing's ways to use Catch (proposal L2), and
+ * sky, a product page's own colour (product pages v2, 17 Nov 2026).
  */
-export const catchWebBandColors = ["indigo"] as const;
+export const catchWebBandColors = ["indigo", "sky"] as const;
 export type CatchWebBandColor = (typeof catchWebBandColors)[number];
 
 const isWebBandColor = (color: string | undefined): color is CatchWebBandColor =>
@@ -35,7 +36,7 @@ export interface CatchSurfaceProps extends Omit<HTMLAttributes<HTMLElement>, "co
    * width; with a color it is an inset panel (D26), without one it runs flush.
    */
   block?: CatchSurfaceBlock;
-  /** Spotlight: a format or ink. Band: a format, ink, tile or indigo. Ignored for other blocks. */
+  /** Spotlight: a format or ink. Band: a format, ink, tile, indigo or sky. Ignored for other blocks. */
   color?: CatchSurfaceColor | CatchWebBandColor;
   /** sm 12, md 16, lg 20 or none. Defaults by block: plain none, spotlight and floating lg, a nested tile sm, else md; a band's is vertical. */
   padding?: CatchSurfacePadding;

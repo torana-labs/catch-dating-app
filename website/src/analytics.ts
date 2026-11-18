@@ -174,8 +174,12 @@ export function setMarketingConsent(choice: ConsentChoice) {
   if (consent.analytics && (previous?.version !== currentConsentVersion || !previous.analytics)) {
     measurement.track({name: "page_view", visitId: createMarketingEventId("catch")});
   }
-  // The tags start with the current page; they never replay earlier ones.
-  if (consent.marketing && (previous?.version !== currentConsentVersion || !previous.marketing)) adTags.pageView();
+  // The tags start with the current page; they never replay earlier ones. First
+  // permission sends its view; an analytics-to-marketing upgrade adds only the
+  // Pixel's view, because Google Analytics has already seen this page.
+  const before = previous?.version === currentConsentVersion ? previous : null;
+  if (consent.analytics && !before?.analytics) adTags.pageView();
+  else if (consent.marketing && !before?.marketing) adTags.pageView("meta");
   trackMarketingEvent("consent_updated", {
     analytics_consent: consent.analytics, marketing_consent: consent.marketing,
   });

@@ -213,7 +213,7 @@ outcome, hashes, sizes and budget window.
 
 #### Front doors
 
-Six front doors create requests today, all through one in-transaction
+Seven front doors create requests today, all through one in-transaction
 service (`functions/src/operations/supplyIntake/requests.ts`). Each door
 derives its request id deterministically, so a retried submission finds its
 own request, and the same id with different content is refused rather than
@@ -368,6 +368,25 @@ overwritten. Every request records its `origin`.
   becomes `expired`: the Admin Inbox item closes as "Draft removed, never
   claimed", the draft page answers `expired`, and approving the old listing
   again is refused.
+
+- **Try-it imports.** The command `organizer.import-from-link`
+  (`importOrganizerFromLink`, `functions/src/commands/`; the command layer is
+  described in `docs/backend_operation_catalog.md`, "Product commands") lets a
+  phone-verified visitor fill their own try-it workspace from one public link:
+  an Instagram profile, a Luma calendar, a Linktree page or their website. Its
+  first preview writes a `self_submission` with origin `try_it_import` and the
+  private `tryItImport` state (the account, its workspace organizer and the
+  link), keyed on the caller and their idempotency key. It reads from the
+  instant draft page allowance (`pageAllowanceFor`) and never appears in the
+  Admin Inbox. The request is never approved into a listing: when the worker
+  finishes, the command reads the listing back, drops the visitor's own
+  workspace from the duplicate check, and either routes a unique strong match
+  to that organizer's claim or shows what apply would write. Apply fills only
+  what the workspace lacks (the name only on request), writes the source links
+  as `publicSources` and records `importProvenance`; an imported Instagram or
+  Luma identity stays `unverified`, and the page cannot be published until it
+  is proven (owner decision, 18 Nov 2026). The listing's events stay work
+  items until the owner publishes the page.
 
 Free-text cities resolve to the market slug Supply Intake keys work by
 (`mumbai`, `bengaluru`). An unknown city becomes `unassigned` for staff to

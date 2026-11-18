@@ -126,17 +126,6 @@ class ProgramSetupRepository {
     parse: ProgramMutationResult.fromCallableData,
   );
 
-  Future<ProgramStaffList> listStaff(String programId, {String? cursor}) =>
-      _call(
-        name: 'listProgramStaff',
-        payload: ListProgramStaffCallableRequest(
-          programId: programId,
-          cursor: cursor,
-        ).toJson(),
-        action: 'load program staff',
-        parse: ProgramStaffList.fromCallableData,
-      );
-
   /// Grants are keyed by verified phone number; the callable resolves the
   /// phone to a UID and writes one grant per staff member.
   Future<ProgramMutationResult> grantStaff({
@@ -618,15 +607,6 @@ class ProgramSetupRepository {
 @riverpod
 ProgramSetupRepository programSetupRepository(Ref ref) =>
     ProgramSetupRepository(ref.watch(firebaseFunctionsProvider));
-
-@riverpod
-Future<ProgramStaffList> programStaffList(
-  Ref ref,
-  String programId, {
-  String? cursor,
-}) => ref
-    .read(programSetupRepositoryProvider)
-    .listStaff(programId, cursor: cursor);
 
 @riverpod
 Future<List<OrganizerProgramSummary>> organizerProgramList(

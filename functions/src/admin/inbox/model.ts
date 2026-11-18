@@ -176,7 +176,9 @@ const submitterLabels: Record<string, string> = {
 
 function projectSupplyIntakeRequest(sourceId: string, data: Data): InboxProjection | null {
   const request = record(data.request);
-  if (!request || request.kind === "event_refresh") return null;
+  // An event refresh, and a link a visitor imports into their own try-it
+  // workspace, are never staff's to review.
+  if (!request || request.kind === "event_refresh" || record(request.origin)?.kind === "try_it_import") return null;
   const seed = record(request.seed);
   const submittedBy = record(request.submittedBy);
   const origin = record(request.origin);

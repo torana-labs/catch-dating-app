@@ -19,8 +19,8 @@
       "workspaceRoute",
       "indexRoutes"
     ],
-    "imperativePageRouteCount": 28,
-    "imperativePageTargetCount": 23
+    "imperativePageRouteCount": 32,
+    "imperativePageTargetCount": 27
   },
   "routes": [
     {
@@ -1930,6 +1930,24 @@
       "fullscreenDialogExpression": null
     },
     {
+      "siteId": "material-page:lib/hosts/events/event_workspace_screen.dart:0dae1a4058f80c3dc5e455129d0a1866aa5a187c67e386318796ecce09f061ef:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostEventGuestSourcesScreen(request:request))",
+      "sourcePath": "lib/hosts/events/event_workspace_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostEventGuestSourcesScreen(request:request)",
+      "presentationTarget": "HostEventGuestSourcesScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/events/event_workspace_screen.dart:188f0f413e335316218d77e5d3a5e2248f6af46e5b7dd4cd6145c197a3fb3fa9:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostEventDoorScreen(request:request))",
+      "sourcePath": "lib/hosts/events/event_workspace_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostEventDoorScreen(request:request)",
+      "presentationTarget": "HostEventDoorScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
       "siteId": "material-page:lib/hosts/events/event_workspace_screen.dart:1dfe4e3aeacb6314fc55b96a1d3d575063ad93a78180921458dcfdecc2222345:1",
       "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostEventGuestsScreen(request:request))",
       "sourcePath": "lib/hosts/events/event_workspace_screen.dart",
@@ -1948,6 +1966,15 @@
       "fullscreenDialogExpression": null
     },
     {
+      "siteId": "material-page:lib/hosts/events/event_workspace_screen.dart:8f100bab057716f7aba4023cdc43cef5af34a63f041a1c242d739ec8945f88b1:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostEventShareScreen(request:request))",
+      "sourcePath": "lib/hosts/events/event_workspace_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostEventShareScreen(request:request)",
+      "presentationTarget": "HostEventShareScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
       "siteId": "material-page:lib/hosts/events/event_workspace_screen.dart:e4f3ecb5f9639d7f492fbe75691e6a3b6c6c5660410a2698efe1fc8384632fc6:1",
       "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostEventPlanScreen(request:request))",
       "sourcePath": "lib/hosts/events/event_workspace_screen.dart",
@@ -1963,6 +1990,15 @@
       "ordinal": 1,
       "presentationExpression": "(_)=>HostEventRehearsalScreen(organizerId:organizerId,sessionId:sessionId)",
       "presentationTarget": "HostEventRehearsalScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/insights/host_event_report_screen.dart:64fa911493404ff024a864e0aaae2699e8c8cc5901e6a50c922752515c3dc17f:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostEventReviewsScreen(eventId:event.id,eventTitle:event.title))",
+      "sourcePath": "lib/hosts/insights/host_event_report_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostEventReviewsScreen(eventId:event.id,eventTitle:event.title)",
+      "presentationTarget": "HostEventReviewsScreen",
       "fullscreenDialogExpression": null
     },
     {

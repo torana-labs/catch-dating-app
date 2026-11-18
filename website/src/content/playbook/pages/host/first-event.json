@@ -275,9 +275,10 @@
       ],
       "actions": [
         {
-          "label": "See the night, format by format",
+          "label": "See the room, format by format",
           "to": {
-            "route": "product_night"
+            "route": "product_room",
+            "anchor": "formats"
           },
           "emphasis": "secondary"
         }

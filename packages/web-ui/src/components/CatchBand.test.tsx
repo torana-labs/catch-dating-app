@@ -1,7 +1,7 @@
 import {cleanup, render, screen} from "@testing-library/react";
 import {afterEach, describe, expect, expectTypeOf, it} from "vitest";
 import {CatchBand, type CatchBandProps} from "./CatchBand";
-import {grounds} from "./palette";
+import {websiteGrounds} from "./palette";
 
 afterEach(cleanup);
 
@@ -16,7 +16,7 @@ describe("CatchBand", () => {
     expect(inner.dataset).toMatchObject({pb: "regular", pt: "regular", width: "content"});
   });
 
-  for (const ground of grounds) {
+  for (const ground of websiteGrounds) {
     it(`resolves the ${ground} ground through the ${ground === "ink" ? "dark" : "light"} theme`, () => {
       render(<CatchBand aria-label={ground} ground={ground}>Copy</CatchBand>);
       const band = screen.getByRole("region", {name: ground});
