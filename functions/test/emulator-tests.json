@@ -18,6 +18,7 @@
   "test/rules/relationship_documents.rules.test.cjs",
   "test/rules/reviews.rules.test.cjs",
   "test/rules/safety_privacy_rules.rules.test.cjs",
+  "test/rules/server_only_collections.rules.test.cjs",
   "test/rules/swipes.rules.test.cjs",
   "test/rules/users.rules.test.cjs",
   "test/salesPrivate.rules.test.cjs",

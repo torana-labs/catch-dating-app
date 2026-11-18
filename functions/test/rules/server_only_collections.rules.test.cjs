@@ -46,6 +46,7 @@ const SERVER_ONLY = [
   "launchWaitlist",
   "marketingConversionEvents",
   "marketingOpsDashboards",
+  "metaLeadgenEvents",
   "nativeRefundRecoveryCursors",
   "organizerIntakeCurationDecisions",
   "organizerIntakeFieldCorrections",
