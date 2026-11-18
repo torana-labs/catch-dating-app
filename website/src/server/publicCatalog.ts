@@ -218,7 +218,36 @@ export async function assembleRouteCatalog(
   return assemblePublicCatalog(db, readAt);
 }
 
+/**
+ * Remembers one successful read for `ttlMs` and shares one in-flight read
+ * between callers. A failed read is never remembered.
+ */
+export function memoizeFor<T>(ttlMs: number, read: () => Promise<T>, now: () => number = Date.now): () => Promise<T> {
+  let entry: {at: number; value: Promise<T>} | null = null;
+  return () => {
+    const current = entry;
+    if (current && now() - current.at < ttlMs) return current.value;
+    const next = {at: now(), value: read()};
+    entry = next;
+    next.value.catch(() => {if (entry === next) entry = null;});
+    return next.value;
+  };
+}
+
+/**
+ * Cloud Monitoring's uptime check calls the catalog route about 1,700 times a
+ * day, 94% of its traffic, and reads every published organizer and event for
+ * each call. It only needs a 200 that proves Firestore answers, so its calls
+ * share one read per minute per instance. Browsers never use this: they
+ * withhold a catalog 30 seconds after its read, so their live check reads
+ * fresh. `readAt` stays the real read time.
+ */
+export const PUBLIC_CATALOG_PROBE_MEMO_MS = 60_000;
+
 /** React cache deduplicates within one render only. No cross-request or offline cache. */
 export const readRouteCatalog = cache(async (pathname: string) =>
   assembleRouteCatalog(await publicReader(), pathname, Date.now()));
 export const readPublicCatalog = cache(async () => assemblePublicCatalog(await publicReader(), Date.now()));
+/** The catalog for uptime probes only: at most one real read a minute per instance. */
+export const readPublicCatalogForProbe = memoizeFor(PUBLIC_CATALOG_PROBE_MEMO_MS,
+  async () => assemblePublicCatalog(await publicReader(), Date.now()));
