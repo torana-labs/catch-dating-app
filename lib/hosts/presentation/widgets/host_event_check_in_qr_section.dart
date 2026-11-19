@@ -103,6 +103,22 @@ class _HostEventCheckInQrSectionState
                   : CatchButtonStatus.idle,
               onPressed: _sharing ? null : () => _shareRuntimeLink(runtimeLink),
             ),
+            gapH10,
+            CatchButton(
+              key: const ValueKey('host_event_door_poster'),
+              label: context.l10n.hostsDoorPosterAction,
+              leading: Icon(CatchIcons.qrCode),
+              size: CatchButtonSize.md,
+              variant: CatchButtonVariant.secondary,
+              onPressed: () => unawaited(
+                showHostDoorPoster(
+                  context,
+                  eventName: widget.event.name,
+                  joinLink: runtimeLink,
+                  share: ref.read(externalShareControllerProvider),
+                ),
+              ),
+            ),
           ],
         ],
       ),

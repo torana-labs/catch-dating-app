@@ -11703,6 +11703,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsOperationalRosterAddWalkIn => 'Add walk-in';
 
   @override
+  String get hostsDoorPosterAction => 'Door poster';
+
+  @override
+  String get hostsDoorPosterTitle => 'Door poster';
+
+  @override
+  String get hostsDoorPosterSubtitle =>
+      'Print it or show it at the entrance. Guests get ready while they queue; you still check them in with your live code or by hand.';
+
+  @override
+  String get hostsDoorPosterHeadline => 'On the guest list? Get ready here';
+
+  @override
+  String get hostsDoorPosterStepJoin =>
+      'Scan to confirm your phone and find your name.';
+
+  @override
+  String get hostsDoorPosterStepCheckIn =>
+      'At the door, scan the host’s live code to check in.';
+
+  @override
+  String get hostsDoorPosterFileName => 'catch-door-poster.png';
+
+  @override
+  String get hostsDoorPosterShare => 'Share poster';
+
+  @override
   String get hostsOperationalRosterForwardCsv => 'Forward CSV';
 
   @override

@@ -14,6 +14,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_display_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_row_state.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_door_poster_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/participant_table.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/catch_async_state.dart';
