@@ -312,8 +312,7 @@ export const weddingsCopy = {
   },
   foot: {
     title: `${brand.name} for weddings`,
-    body: `Part of ${brand.name}. For planners running weddings and destination events in India. Illustrative interface, fictional data.`,
-    applyBody: `Part of ${brand.name}. For planners running weddings and destination events in India.`,
+    body: `Part of ${brand.name}. For planners running weddings and destination events in India.`,
   },
 } as const;
 
