@@ -37,16 +37,16 @@ export function listingFormatLabel(format: ListingFormat): string {
 
 /**
  * The formats a listing's Supply Intake categories carry: a nomination sends
- * them as snake_case categories (run_clubs, quiz_nights).
+ * them as snake_case categories (functions/src/admin/listingProgram/formats.ts).
  */
+const categoryFormats: Readonly<Record<string, ListingFormat>> = {
+  run_clubs: "runClubs", racket_sports: "racketSports", pickleball: "pickleball", padel: "padel", tennis: "tennis",
+  badminton: "badminton", supper_clubs: "supper", quiz_nights: "quizNights", studios: "studios", workshops: "workshops",
+  book_clubs: "books", outdoors: "outdoors",
+};
+
 export function listingFormatsFromCategories(categories: readonly string[]): ListingFormat[] {
-  const camel = new Set(categories.map((category) => category.replace(/_([a-z])/gu, (_, letter: string) => letter.toUpperCase())));
-  const alias: Partial<Record<string, ListingFormat>> = {supperClubs: "supper", bookClubs: "books"};
-  const found = new Set<ListingFormat>();
-  for (const value of camel) {
-    const format = (listingFormats as string[]).includes(value) ? value as ListingFormat : alias[value];
-    if (format) found.add(format);
-  }
+  const found = new Set(categories.flatMap((category) => Object.hasOwn(categoryFormats, category) ? [categoryFormats[category]] : []));
   return listingFormats.filter((format) => found.has(format)).slice(0, maxListingFormats);
 }
 
