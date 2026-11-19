@@ -163,7 +163,8 @@
 .row[data-density] .leading { align-items: center; justify-content: center; }
 .row[data-catch-row-lead="marker"] .leading { width: 12px; }
 .row[data-catch-row-lead="time"] .leading { justify-content: flex-start; gap: var(--catch-space-s3); }
-.time { width: 40px; }
+/* At least the width of "9:30", and wider for "10:30 pm" or "+120 min" rather than breaking it. */
+.time { min-width: 40px; white-space: nowrap; }
 .rank { width: 28px; text-align: center; }
 
 .icon {
