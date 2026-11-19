@@ -41,7 +41,9 @@
   display: none;
   flex-direction: column;
   box-sizing: border-box;
-  max-width: calc(100% - 300px - var(--catch-space-s12) - var(--catch-space-s11) - var(--catch-space-s4));
+  /* Ends a gap short of the device, whichever slot it starts in; fit-content wraps its text there. */
+  right: calc(300px + var(--catch-space-s12) + var(--catch-space-s4));
+  width: fit-content;
   padding: var(--catch-space-micro10) var(--catch-space-micro14);
   border-radius: var(--catch-radius-md);
   box-shadow: var(--catch-elevation-raised);
