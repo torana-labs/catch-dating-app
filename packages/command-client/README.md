@@ -8,13 +8,18 @@ relative path, for example
 
 Clients today:
 
+- `tool/firebase` probes (synthetic backend, Storage rules canary, callable
+  dependency and platform availability checks), for tokens and callable URLs;
+  each keeps its own request handling and errors, because each tests something
+  different;
 - `operations/src/admin-cli` (`catch-admin`), over `contracts/admin/actions/`;
 - `operations/src/catch-cli` (`catch`), over `contracts/commands/catalog.json`;
 - `operations/src/command-tools`, which turns catalog commands into AI tools.
 
 | Module | Owns |
 |---|---|
-| `src/transport.mjs` | HTTPS callable envelope, ID token and App Check headers, timeout, error codes under the caller's prefix, indeterminate-outcome classification |
+| `src/transport.mjs` | `callableUrl` (the address the `tool/firebase` probes call), HTTPS callable envelope, ID token and App Check headers, timeout, error codes under the caller's prefix, indeterminate-outcome classification |
+| `src/tokens.mjs` | Custom-token to ID-token and App Check debug exchanges over Google's REST endpoints, with a caller-supplied error factory; the `tool/firebase` probes use them |
 | `src/execution.mjs` | Local receipt around one live call, optional remote start/terminal receipt, `actionCompleted: null` for unknown outcomes |
 | `src/receipt-store.mjs` | Immutable local receipts, one file per execution id |
 | `src/argv.mjs` | Declared-flag parsing (unknown flags fail), exclusive pairs, `isMainModule` |

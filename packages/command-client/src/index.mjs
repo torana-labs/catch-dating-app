@@ -9,4 +9,5 @@ export {successEnvelope, failureEnvelope, runCli} from "./envelope.mjs";
 export {OperationsError, invariant, asOperationsError} from "./errors.mjs";
 export {executeWithReceipts} from "./execution.mjs";
 export {LocalReceiptStore} from "./receipt-store.mjs";
-export {CallableTransport, callableBaseUrl, isIndeterminateTransportError} from "./transport.mjs";
+export {CallableTransport, callableBaseUrl, callableUrl, isIndeterminateTransportError} from "./transport.mjs";
+export {exchangeAppCheckDebugToken, exchangeCustomToken} from "./tokens.mjs";

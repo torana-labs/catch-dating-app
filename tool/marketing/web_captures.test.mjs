@@ -72,7 +72,7 @@ function fixture(t) {
     placeholderPath: "website/public/assets/app-screenshots/placeholders/guest-join-phone.svg",
     alt: "Check-in page in iPhone Safari", caption: "Guests check in in the browser.", walkthroughStep: "Check in", pages: ["/host/"]};
   const writeManifest = (entry = capture) => write("tool/marketing/capture_manifest.json",
-    JSON.stringify({version: 1, updated: "2026-10-25", previewDisclosure: "Fictional app preview.", captures: [entry]}));
+    JSON.stringify({version: 1, updated: "2026-10-25", captures: [entry]}));
   writeManifest();
   write("fonts/native.ttf", "native font fixture");
   const git = write("bin/git", `#!${process.execPath}\nprocess.stdout.write("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\n");\n`);
@@ -223,23 +223,20 @@ function png(width = 1020, height = 1964) {
     chunk("IDAT", deflateSync(pixels)), chunk("IEND", Buffer.alloc(0))]);
 }
 
-test("capture devices: the generic phone frames without an island, and the Dart framer agrees on sizes", async () => {
+test("capture devices: the generic phone is an unframed screen, and the Dart framer agrees on sizes", async () => {
   const {captureDevice, deviceFrameSpec, framedSize} = await import("./lib/capture_devices.mjs");
   const {safariScreen, safariScreenHtml} = await import("./lib/web_capture_screen.mjs");
   const generic = deviceFrameSpec("generic-phone");
   assert.deepEqual(generic.logicalSize, {width: 402, height: 874});
   assert.deepEqual(generic.safeArea, {top: 62, right: 0, bottom: 34, left: 0});
   assert.equal(generic.frame.dynamicIsland, null);
-  // The website's CatchDeviceFrame phone: bezel 0.028 and outer radius 0.165 of the frame width.
-  const {frameInset, outerRadius, screenRadius, logicalWidth} = captureDevice("generic-phone");
-  const frameWidth = logicalWidth + 2 * frameInset;
-  assert.ok(Math.abs(frameInset / frameWidth - 0.028) < 0.001);
-  assert.ok(Math.abs(outerRadius / frameWidth - 0.165) < 0.002);
-  assert.equal(screenRadius, outerRadius - frameInset);
+  // The website's CatchDeviceFrame draws the only phone frame, so the PNG is the 2x screen alone.
+  assert.deepEqual(framedSize("generic-phone"), {width: 804, height: 1748});
+  assert.equal(captureDevice("generic-phone").kind, "phone");
   assert.ok(deviceFrameSpec("iphone-17-pro").frame.dynamicIsland);
   const dartSizes = Object.fromEntries([...fs.readFileSync(fromRepo("tool/marketing/frame_device_capture_test.dart"), "utf8")
     .matchAll(/'([a-z0-9-]+)': \(width: (\d+), height: (\d+)/gu)].map(([, id, width, height]) => [id, {width: +width, height: +height}]));
-  assert.deepEqual(dartSizes, {"generic-phone": framedSize("generic-phone"), "iphone-17-pro": framedSize("iphone-17-pro")});
+  assert.deepEqual(dartSizes, {"iphone-17-pro": framedSize("iphone-17-pro")});
   assert.throws(() => captureDevice("iphone-15"), /Unsupported marketing capture device/u);
   // Safari's status bar fills the generic phone's 62pt safe area, with a clean 9:41.
   assert.equal(safariScreen("generic-phone").statusBar, 62);
@@ -249,18 +246,25 @@ test("capture devices: the generic phone frames without an island, and the Dart 
   assert.match(html, /<span class="time">9:41<\/span>/u);
 });
 
-test("unframed devices render as plain screens: the Dart framer passes them through and web captures skip Safari's bars", async () => {
-  const {framedSize, isFramedCaptureDevice} = await import("./lib/capture_devices.mjs");
+test("unframed devices render as plain screens: the Dart framer passes them through, and only phone web captures draw Safari's bars", async () => {
+  const {framedSize, isFramedCaptureDevice, isPhoneCaptureDevice} = await import("./lib/capture_devices.mjs");
   const {screenContext} = await import("./lib/web_capture_render.mjs");
   assert.deepEqual(framedSize("desktop-browser"), {width: 2880, height: 1800});
   assert.deepEqual(framedSize("generic-tablet"), {width: 2388, height: 1668});
   assert.equal(isFramedCaptureDevice("desktop-browser"), false);
-  assert.equal(isFramedCaptureDevice("generic-phone"), true);
+  assert.equal(isFramedCaptureDevice("generic-tablet"), false);
+  assert.equal(isFramedCaptureDevice("generic-phone"), false);
+  assert.equal(isFramedCaptureDevice("iphone-17-pro"), true);
+  // Safari's bars follow the device kind, not the frame: the unframed generic phone still draws them.
+  assert.equal(isPhoneCaptureDevice("generic-phone"), true);
+  assert.equal(isPhoneCaptureDevice("generic-tablet"), false);
+  assert.equal(isPhoneCaptureDevice("desktop-browser"), false);
   // frame_device_capture_test.dart passes the same native sizes through.
   const dartTest = fs.readFileSync(fromRepo("tool/marketing/frame_device_capture_test.dart"), "utf8");
   const passThrough = Object.fromEntries([...dartTest.matchAll(/\('([a-z-]+)', (\d+), (\d+)\)/gu)]
     .map(([, id, width, height]) => [id, {width: +width, height: +height}]));
-  assert.deepEqual(passThrough, {"generic-tablet": framedSize("generic-tablet"), "desktop-browser": framedSize("desktop-browser")});
+  assert.deepEqual(passThrough, {"generic-phone": framedSize("generic-phone"), "generic-tablet": framedSize("generic-tablet"),
+    "desktop-browser": framedSize("desktop-browser")});
   // The Flutter render uses the same screens.
   const flutterDevices = fs.readFileSync(fromRepo("test/ui_captures/support/capture_device.dart"), "utf8");
   assert.match(flutterDevices, /id: 'generic-tablet',\s*size: Size\(1194, 834\)/u);

@@ -119,7 +119,7 @@ function NewToCityPageSections({captures, page}: {captures: CaptureSlots; page: 
       />
       <CatchFaqSection items={page.faq.items} kicker={page.faq.kicker} title={page.faq.title} />
       <CityAlertsCapture ground="pink" interests={page.notify.interests} kicker={page.notify.kicker} place={page.notify.place} title={page.notify.title}
-        media={checkedIn ? <CatchAppCaptureImage {...checkedIn} bezel caption={undefined} size="md" /> : undefined} />
+        media={checkedIn ? <CatchAppCaptureImage {...checkedIn} caption={undefined} size="md" /> : undefined} />
     </CitySiteChrome>
   );
 }

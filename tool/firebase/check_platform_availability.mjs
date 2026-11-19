@@ -20,6 +20,7 @@ import path from "node:path";
 import {pathToFileURL} from "node:url";
 import {resolveFirebaseProjectId} from "../lib/firebase_project.mjs";
 import {fromRepo} from "../lib/repo_paths.mjs";
+import {callableUrl} from "../../packages/command-client/src/transport.mjs";
 
 export const DEFAULT_REGION = "asia-south1";
 
@@ -62,7 +63,7 @@ export function decide(classifications) {
 }
 
 export async function probeCallable({projectId, region = DEFAULT_REGION, callable, fetchImpl = fetch, timeoutMs = 15_000}) {
-  const url = `https://${region}-${projectId}.cloudfunctions.net/${callable}`;
+  const url = callableUrl({projectId, region, name: callable});
   try {
     const response = await fetchImpl(url, {
       method: "POST",

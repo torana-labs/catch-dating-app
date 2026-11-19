@@ -196,7 +196,9 @@ export const playbookLeadInputs = ["tel", "url", "text"] as const;
 
 /** What a lead form asks for: its request kind and extra fields, as the website enquiry intake takes them. */
 export const playbookLeadRequestKinds = ["guide", "walkthrough", "demo", "venue", "story", "referral", "org_contact", "city_alerts", "tool"] as const;
-export const playbookLeadFieldNames = ["name", "preferredTime", "whatYouHost", "area", "capacity", "nights", "orgType", "orgName"] as const;
+export const playbookLeadFieldNames = [
+  "name", "preferredTime", "whatYouHost", "area", "capacity", "nights", "orgType", "orgName", "hostName", "hostLink", "relationship",
+] as const;
 
 /**
  * A phone-number capture: the request it files, an optional format tag, any

@@ -27,6 +27,7 @@ import {
   readWebConfig,
   redact,
 } from "./probe_chat_storage_rules.mjs";
+import {callableUrl} from "../../packages/command-client/src/transport.mjs";
 
 const functionsRegion = "asia-south1";
 const directoryPage = 30;
@@ -280,7 +281,7 @@ export async function probeCallableStep({
   validators,
 }) {
   const response = await fetchImpl(
-    `https://${functionsRegion}-${projectId}.cloudfunctions.net/${step.name}`,
+    callableUrl({projectId, region: functionsRegion, name: step.name}),
     {
       method: "POST",
       redirect: "manual",

@@ -129,13 +129,13 @@ function CityFormatPageSections({captures, page}: {captures: CaptureSlots; page:
           <CityFormatOrganisers page={page} />
           {page.firstTime ? (
             <CatchSplitSection kicker={page.firstTime.kicker} kickerAccent="indigo" ticks={page.firstTime.ticks} title={page.firstTime.title}
-              media={checkedIn ? <CatchAppCaptureImage {...checkedIn} bezel caption={undefined} size="sm" /> : undefined} />
+              media={checkedIn ? <CatchAppCaptureImage {...checkedIn} caption={undefined} size="sm" /> : undefined} />
           ) : null}
         </> : <CityFormatThin page={page} />}
         <CatchCardGrid items={[]} kicker={page.more.kicker} kickerAccent="coral" kind="plan" links={page.more.links} title={page.more.title} />
         <CatchFaqSection items={page.faq.items} kicker={page.faq.kicker} title={page.faq.title} />
         <CityAlertsCapture interests={page.notify.interests} kicker={page.notify.kicker} place={page.notify.place} title={page.notify.title}
-          media={explore ? <CatchAppCaptureImage {...explore} bezel caption={undefined} size="md" /> : undefined} />
+          media={explore ? <CatchAppCaptureImage {...explore} caption={undefined} size="md" /> : undefined} />
       </>}
     </CitySiteChrome>
   );
