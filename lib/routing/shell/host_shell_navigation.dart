@@ -1,4 +1,5 @@
 import 'package:catch_l10n/l10n.dart';
+import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
@@ -61,3 +62,69 @@ CatchTabBarPlacement hostShellPlacement(CatchWindowSize size) => switch (size) {
   CatchWindowSize.medium => CatchTabBarPlacement.rail,
   CatchWindowSize.expanded => CatchTabBarPlacement.sidebar,
 };
+
+/// A weddings company's destinations on the rail and sidebar (RbProgHome):
+/// its weddings and its crew.
+enum HostPlannerDestination { weddings, crew }
+
+/// The weddings navigation's items. Guest messages and billing across
+/// weddings join once those views exist.
+List<CatchTabBarItem<HostPlannerDestination>> hostPlannerDestinations({
+  required AppLocalizations l10n,
+}) => [
+  CatchTabBarItem(
+    id: HostPlannerDestination.weddings,
+    icon: CatchIcons.celebrate,
+    label: l10n.hostPlannerNavigationWeddings,
+  ),
+  CatchTabBarItem(
+    id: HostPlannerDestination.crew,
+    icon: CatchIcons.people,
+    label: l10n.hostPlannerNavigationCrew,
+  ),
+];
+
+/// "New wedding", the weddings navigation's primary action.
+CatchTabBarAction hostPlannerNewWedding({
+  required AppLocalizations l10n,
+  required VoidCallback? onPressed,
+}) => CatchTabBarAction(
+  label: l10n.hostPlannerNavigationNewWedding,
+  icon: CatchIcons.add,
+  onPressed: onPressed,
+);
+
+/// Where a weddings navigation destination opens for an organiser.
+String hostPlannerDestinationLocation(
+  HostPlannerDestination destination,
+  String organizerId,
+) => switch (destination) {
+  HostPlannerDestination.weddings => Uri(
+    path: Routes.hostProgramsScreen.path,
+    queryParameters: {'view': 'home', 'organizerId': organizerId},
+  ).toString(),
+  HostPlannerDestination.crew => Uri(
+    path: Routes.hostOrganizerTeamScreen.path,
+    queryParameters: {'organizerId': organizerId},
+  ).toString(),
+};
+
+/// Whether [location] is a Host tab's own home, which the weddings
+/// navigation replaces with the weddings. A selected record stays.
+bool hostPlannerOpensWeddingsFrom(Uri location) =>
+    {
+      Routes.hostTodayScreen.path,
+      Routes.hostEventsScreen.path,
+      Routes.hostAudienceScreen.path,
+      Routes.hostInboxScreen.path,
+      Routes.hostOrganizerScreen.path,
+    }.contains(location.path) &&
+    !location.queryParameters.containsKey('eventId');
+
+/// Whether the weddings navigation replaces the Host tabs: a weddings
+/// company with room for a rail or sidebar. Phones keep the four Host tabs.
+bool hostShowsPlannerNavigation({
+  required CatchWindowSize size,
+  required bool hasWeddingsPlan,
+}) =>
+    hasWeddingsPlan && hostShellPlacement(size) != CatchTabBarPlacement.bottom;

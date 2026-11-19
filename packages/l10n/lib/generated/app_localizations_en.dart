@@ -423,6 +423,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostNavigationNewEvent => 'New event';
 
   @override
+  String get hostPlannerNavigationLabel => 'Weddings';
+
+  @override
+  String get hostPlannerNavigationWeddings => 'Weddings';
+
+  @override
+  String get hostPlannerNavigationCrew => 'Crew';
+
+  @override
+  String get hostPlannerNavigationNewWedding => 'New wedding';
+
+  @override
   String get hostOnboardingSignInKicker => 'Catch Host';
 
   @override
