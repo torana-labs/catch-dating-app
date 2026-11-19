@@ -164,3 +164,12 @@ export const listingRequestCopy = {
   },
   consentVersion: "listing-request-v1",
 } as const;
+
+/**
+ * The form's address with a listing filled in: `?organizer=<id>` or
+ * `?event=<id>`, which the form reads to prefill its target
+ * (features/listingRequests prefillFromSearch). Every "Report" link uses it.
+ */
+export function listingRequestHref(target: {kind: "organizer" | "event"; id: string}): string {
+  return `/listings/request/?${target.kind}=${encodeURIComponent(target.id)}`;
+}

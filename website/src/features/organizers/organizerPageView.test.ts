@@ -1,5 +1,5 @@
 import {describe, expect, it} from "vitest";
-import {organizerPageCopy as copy} from "../../content/organizerPage";
+import {organizerPageCopy as copy, unclaimedListingCopy} from "../../content/organizerPage";
 import {
   claimedOrganizerPage,
   emptyCalendarOrganizerPage,
@@ -25,6 +25,7 @@ describe("organizerPageView", () => {
     expect(header).toMatchObject({verified: true, monogram: "LL", monogramGround: "coral", accent: "coral",
       coverUrl: "/assets/events/social-run-music-hero-960.jpg", meta: "Bandra West, Mumbai"});
     expect(header.tag).toBeUndefined();
+    expect(header.tagActions).toBeUndefined();
     expect(header.labels).toEqual([]);
     expect(copy.stats.reviews(120)).toBe("★ · 120 verified reviews");
     expect(copy.stats.hosted(12)).toBe("nights hosted");
@@ -37,10 +38,27 @@ describe("organizerPageView", () => {
 
   it("heads a generated page with its tag, where it came from and who is waiting", () => {
     const {header} = view(generatedOrganizerPage);
-    expect(header).toMatchObject({verified: false, tag: "Built from public pages · not claimed yet", monogramGround: "paper",
+    expect(header).toMatchObject({verified: false, tag: "Unclaimed · Not affiliated with Catch. Built from public pages.", monogramGround: "paper",
       coverUrl: null, meta: "Colaba, Mumbai · summarised from Luma and Instagram"});
     // No verified review yet, so there is no rating: unverified reviews never make an average.
     expect(header.stats.map((stat) => [stat.value, stat.label])).toEqual([["38", copy.stats.waiting]]);
+  });
+
+  it("puts Claim and Report or remove beside a generated page's tag, the report carrying the organiser's id", () => {
+    expect(unclaimedListingCopy.tag).toBe("Unclaimed · Not affiliated with Catch. Built from public pages.");
+    expect(view(generatedOrganizerPage).header.tagActions).toEqual({
+      claim: {label: "Claim this page", href: "/claim/harbour-line-run-club/"},
+      report: {label: "Report or remove", semanticsLabel: "Report or remove this listing", href: "/listings/request/?organizer=harbour-line-run-club"},
+    });
+    // While a claim is reviewed there is nothing to claim, but the listing can still be reported.
+    const pending = view({...generatedOrganizerPage, claim: {...generatedOrganizerPage.claim, state: "claimPending"}}).header;
+    expect(pending.tag).toBe(unclaimedListingCopy.tag);
+    expect(pending.tagActions).toEqual({claim: null, report: expect.objectContaining({href: "/listings/request/?organizer=harbour-line-run-club"})});
+    // An id is encoded into the address the request form reads.
+    const odd = view({...generatedOrganizerPage, organizerId: "a b&c"});
+    expect(odd.header.tagActions?.report.href).toBe("/listings/request/?organizer=a%20b%26c");
+    expect(odd.footer.href).toBe("/listings/request/?organizer=a%20b%26c");
+    expect(odd.claim?.removeHref).toBe("/listings/request/?organizer=a%20b%26c");
   });
 
   it("shows the women-led label only when the record is women-led", () => {
@@ -179,7 +197,8 @@ describe("organizerPageView", () => {
     expect(claimed.distribution[0]).toEqual({stars: 5, count: 142, label: copy.starsRow(5, 142)});
     const generated = view(generatedOrganizerPage).reviews;
     expect(generated.items.every((item) => item.note === "Harbour Line Run Club hasn’t claimed this page, so they can’t reply yet.")).toBe(true);
-    expect(generated.policy).toBe("Anyone can review this page. Reviews stay unverified until guests book through Catch.");
+    // An unclaimed page takes no new reviews: the read model disables writing them until the organiser claims it.
+    expect(generated.policy).toBe("This page doesn’t take new reviews until the organiser claims it. Reviews marked Unverified weren’t booked on Catch.");
     expect(view(noReviewsOrganizerPage).reviews).toMatchObject({readable: true, items: [], average: null,
       unrated: "No rating yet. The rating counts only reviews from people who booked on Catch."});
   });
@@ -197,12 +216,14 @@ describe("organizerPageView", () => {
       host: {name: "Kabir Rao", role: "Founder · pace lead", initials: "KR"}});
   });
 
-  it("pitches the claim on a generated page only, with the people already waiting", () => {
+  it("offers the claim on a generated page only, with the way to ask for removal", () => {
     expect(view(claimedOrganizerPage).claim).toBeNull();
     expect(view(generatedOrganizerPage).claim).toEqual({
-      href: "/claim/harbour-line-run-club/", pending: false, followers: "38 people", reviewers: "2 people", reviewVerb: "left reviews",
-      built: "We built this page from your public Luma and Instagram pages. Claim it free and make it yours.",
+      href: "/claim/harbour-line-run-club/", pending: false, removeHref: "/listings/request/?organizer=harbour-line-run-club",
     });
+    expect(copy.claim).toMatchObject({title: "Run this club?",
+      body: "Claim this page to edit it, add events and take bookings, or ask us to remove it."});
+    expect(JSON.stringify(copy.claim)).not.toMatch(/already working for you|Pixel|Analytics/u);
     const anchored = view({...generatedOrganizerPage, claim: {...generatedOrganizerPage.claim, href: "/organizers/harbour-line-run-club/#claim"}});
     expect(anchored.claim?.href).toBe("/claim/?listing=harbour-line-run-club");
     const pending = view({...generatedOrganizerPage, claim: {...generatedOrganizerPage.claim, state: "claimPending"}}).claim;
@@ -212,6 +233,8 @@ describe("organizerPageView", () => {
   it("signs a claimed page off as made with Catch and a generated one with where it came from", () => {
     expect(view(claimedOrganizerPage).footer).toEqual({line: "Made with Catch", link: "Make a page like this", href: "/host/"});
     expect(view(generatedOrganizerPage).footer).toEqual({line: "Built by Catch from public Luma and Instagram pages.",
-      link: "Something wrong? Tell us", href: "/help/"});
+      link: "Something wrong? Tell us", href: "/listings/request/?organizer=harbour-line-run-club"});
+    expect(view(claimedOrganizerPage).report).toEqual({label: "Report or remove this listing",
+      href: `/listings/request/?organizer=${claimedOrganizerPage.organizerId}`});
   });
 });
