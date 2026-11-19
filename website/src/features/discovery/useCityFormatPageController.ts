@@ -11,6 +11,7 @@ import {cityPagePath} from "../home/sections/cityChrome";
 import {cityAlertInterests} from "./cityAlertsModel";
 import {discoveryOrganizerCard, discoveryPlanCard} from "./discoveryCards";
 import {
+  cityDiscoveryLinks,
   cityFormatModel,
   cityFormatPageStatus,
   cityFormatPath,
@@ -49,6 +50,8 @@ export function useCityFormatPageController(catalog: HomeCatalog, format: Discov
     fill(copy.faq.freeNone, {plans: words.planMany});
   return {
     status,
+    /** The city's new-to-the-city page and format pages that exist, for the header and footer. */
+    discovery: cityDiscoveryLinks(catalog),
     indexed: model.indexed,
     city,
     cities: catalog.cities,

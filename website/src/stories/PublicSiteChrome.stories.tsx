@@ -45,9 +45,21 @@ export const PublicSiteHeaderStory: Story = {
   render: () => <HeaderPage>Organiser profile</HeaderPage>,
 };
 
-/** The guest header: What's on and For hosts, then Get notified. */
+/** The guest header: What's on, Safety and For hosts, then Get notified. */
 export const GuestHeader1280: Story = {...at1280, name: "Guest header · 1280", render: () => <HeaderPage variant="guest">Guest page</HeaderPage>};
 export const GuestHeader390: Story = {...at390, name: "Guest header · 390", render: () => <HeaderPage variant="guest">Guest page</HeaderPage>};
+
+/** A city page's guest header: What's on for the city, then New to the city (the canvas's "New to Mumbai"). */
+export const GuestHeaderCity1280: Story = {
+  ...at1280,
+  name: "Guest header for a city · 1280",
+  render: () => <HeaderPage newToCity={{href: "/new-to-mumbai/", label: "New to Mumbai"}} variant="guest" whatsOnHref="/mumbai/">Mumbai</HeaderPage>,
+};
+export const GuestHeaderCity390: Story = {
+  ...at390,
+  name: "Guest header for a city · 390",
+  render: () => <HeaderPage newToCity={{href: "/new-to-mumbai/", label: "New to Mumbai"}} variant="guest" whatsOnHref="/mumbai/">Mumbai</HeaderPage>,
+};
 
 /** The guest header with the event page's breadcrumb: What's on, the city, the event. */
 export const GuestHeaderBreadcrumbs1280: Story = {
@@ -62,8 +74,9 @@ export const GuestHeaderBreadcrumbs390: Story = {
 };
 
 /**
- * The host header: What's on and Help, the For hosts dropdown, WhatsApp and
- * Start free trial. The play opens the dropdown and closes it with Escape.
+ * The host header: What's on, the For hosts menu, Pricing and Help, WhatsApp
+ * and Start free trial. The play opens the menu from the keyboard, checks its
+ * five columns, and closes it with Escape, focus back on its button.
  */
 export const HostHeader1280: Story = {
   ...at1280,
@@ -72,14 +85,44 @@ export const HostHeader1280: Story = {
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole("button", {name: "For hosts"});
-    await userEvent.click(trigger);
+    trigger.focus();
+    await userEvent.keyboard("{ArrowDown}");
     await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    for (const column of ["Product", "By format", "By organisation", "Programmes", "Where you are"]) await expect(canvas.getByRole("list", {name: column})).toBeVisible();
+    await expect(canvas.getByRole("link", {name: "Catch for hosts"})).toHaveFocus();
     await userEvent.keyboard("{Escape}");
     await expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await expect(trigger).toHaveFocus();
   },
 };
-/** Below 600px the dropdown draws nothing; its pages are in the phone menu. */
+
+/** The For hosts menu left open: the canvas's columns of product, format and organisation pages, the programmes and where you are. */
+export const HostHeaderMenuOpen1280: Story = {
+  ...at1280,
+  name: "Host header, For hosts open · 1280",
+  render: () => <HeaderPage variant="host">Host page</HeaderPage>,
+  play: async ({canvasElement}) => {
+    const trigger = within(canvasElement).getByRole("button", {name: "For hosts"});
+    await userEvent.click(trigger);
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  },
+};
+
+/** Below 600px the menu draws nothing; its pages are in the phone menu, a divider before each column. */
 export const HostHeader390: Story = {...at390, name: "Host header · 390", render: () => <HeaderPage variant="host">Host page</HeaderPage>};
+
+/** The phone menu open at 390: the bar's links, then each For hosts column's pages. */
+export const HostHeaderMenuOpen390: Story = {
+  ...at390,
+  name: "Host header, phone menu open · 390",
+  render: () => <HeaderPage variant="host">Host page</HeaderPage>,
+  play: async ({canvasElement}) => {
+    const menu = within(canvasElement).getByRole("button", {name: "Menu"});
+    await userEvent.click(menu);
+    await expect(menu).toHaveAttribute("aria-expanded", "true");
+    await expect(within(canvasElement.ownerDocument.body).getByRole("menuitem", {name: "Run and walk clubs"})).toBeVisible();
+  },
+};
 
 /** The host header over host billing, with its breadcrumb back to For hosts. */
 export const HostHeaderBreadcrumbs1280: Story = {
@@ -123,8 +166,9 @@ export const PublicSiteFooterStory: Story = {
 };
 
 /**
- * The guest footer with and without the help band, and the host footer with
- * it. A page holds one contentinfo landmark: each footer sits in its own
+ * The guest footer with and without the help band, a city page's guest
+ * footer with its new-to-the-city page and format pages, and the host footer
+ * with its five columns. A page holds one contentinfo landmark: each footer sits in its own
  * labelled section with its own navigation name.
  */
 function Footers() {
@@ -135,6 +179,12 @@ function Footers() {
       </section>
       <section aria-label="Guest footer without the help band">
         <PublicSiteFooter helpBand={false} navLabel="Footer, one-job flow" />
+      </section>
+      <section aria-label="A city page's guest footer">
+        <PublicSiteFooter cities={[{href: "/mumbai/", label: "Mumbai", soon: false}, {href: "/pune/", label: "Pune", soon: true}]} cityFormats={{
+          newToCity: {href: "/new-to-mumbai/", label: "New to Mumbai"}, title: "Things to do in Mumbai",
+          formats: [{href: "/mumbai/run-clubs/", label: "Run clubs"}, {href: "/mumbai/supper-clubs/", label: "Supper clubs"}, {href: "/mumbai/quiz-nights/", label: "Quiz nights"}],
+        }} exploreHref="/mumbai/" navLabel="Footer, city page" />
       </section>
       <section aria-label="Host footer with the help band">
         <PublicSiteFooter navLabel="Footer, host" variant="host" />

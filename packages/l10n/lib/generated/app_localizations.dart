@@ -47622,6 +47622,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Catch registration, a guest file, Luma, and forwarding the list'**
   String get hostEventsGuestSourcesBody;
+
+  /// Live console, run and crawl boards: opens the night's assistance tools (settings, departures, pace groups, help and delivery queues).
+  ///
+  /// In en, this message translates to:
+  /// **'Night tools'**
+  String get hostLiveTools;
 }
 
 class _AppLocalizationsDelegate

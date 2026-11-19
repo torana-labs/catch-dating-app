@@ -29,7 +29,7 @@ describe("public route navigation targets", () => {
     renderPage(<HomePage captures={marketingCaptures} catalog={mumbaiLiveCatalog} />);
     const nav = screen.getByRole("navigation", {name: "Primary"});
     expect(within(nav).getAllByRole("link").map((link) => link.getAttribute("href")))
-      .toEqual(["/mumbai/", "/host/"]);
+      .toEqual(["/mumbai/", "/new-to-mumbai/", "/safety/", "/host/"]);
     expect(within(screen.getByRole("banner")).getByRole("link", {name: guestAppActionLabel}).getAttribute("href")).toBe("#app");
     expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
   });
@@ -39,7 +39,7 @@ describe("public route navigation targets", () => {
     // The one public header, as on the homepage: the city's links, then the picker and Get the app on the right.
     const nav = screen.getByRole("navigation", {name: "Primary"});
     expect(within(nav).getAllByRole("link").map(link => link.getAttribute("href")))
-      .toEqual(["/mumbai/", "/host/"]);
+      .toEqual(["/mumbai/", "/new-to-mumbai/", "/safety/", "/host/"]);
     expect(within(screen.getByRole("banner")).getByRole("link", {name: guestAppActionLabel}).getAttribute("href")).toBe("/#app");
     expect(within(screen.getByRole("banner")).getByRole("button", {name: "Mumbai"})).toBeTruthy();
     expect(screen.getByRole("heading", {level: 1, name: "What’s on in Mumbai"})).toBeTruthy();

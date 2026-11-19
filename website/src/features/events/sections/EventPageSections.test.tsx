@@ -163,7 +163,7 @@ describe("EventDetailPage", () => {
   it("sits between the site header and the full site footer", () => {
     render(<EventDetailPage listing={listing} page={importedEventPage} />);
     const primary = within(screen.getByRole("navigation", {name: "Primary"}));
-    expect(primary.getAllByRole("link").map((link) => link.textContent)).toEqual(["What’s on", "For hosts"]);
+    expect(primary.getAllByRole("link").map((link) => link.textContent)).toEqual(["What’s on", "Safety", "For hosts"]);
     const footer = within(screen.getByRole("contentinfo"));
     expect(footer.getByRole("link", {name: "What’s on"}).getAttribute("href")).toBe("/explore/");
     // Help appears twice on guest pages: in the help band and in the legal column.

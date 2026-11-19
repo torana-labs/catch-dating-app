@@ -6,9 +6,15 @@ import {trackSiteCtaClick} from "./siteTracking";
 
 vi.mock("./siteTracking", () => ({slugForTracking: (value: string) => value, trackSiteCtaClick: vi.fn()}));
 afterEach(() => {cleanup(); vi.mocked(trackSiteCtaClick).mockReset();});
-// The main bar only opens pages: What's on (plans and organisers as tabs) and For hosts.
-const globalLabels = ["What’s on", "For hosts"];
-const destinations = ["/explore/", "/host/"];
+// The main bar only opens pages: What's on (plans and organisers as tabs), Safety and For hosts.
+const globalLabels = ["What’s on", "Safety", "For hosts"];
+const destinations = ["/explore/", "/safety/", "/host/"];
+// The For hosts menu's columns and pages, in reading order (the canvas's KitHeader menu).
+const forHostsColumns = siteHeaderCopy.host.nav.flatMap((entry) => "sections" in entry && entry.label === "For hosts" ? entry.sections ?? [] : []);
+const hostTypePages = ["run-clubs", "racket-sports", "supper-clubs", "quiz-nights", "venues", "studios", "nightlife", "workshops", "communities",
+  "creators", "teams", "outdoors", "facilities", "colleges", "brands"].map((type) => `/host/${type}/`);
+const productPages = ["/how-it-works/", "/product/your-page/", "/product/bookings-and-memberships/", "/product/messages-and-growth/", "/product/the-room/",
+  "/product/running-the-event/", "/product/guest-records/", "/product/reports-and-payouts/", "/product/forms/"];
 
 describe("canonical public chrome", () => {
   it("renders the site top bar for every general page: the wordmark home, the main site's links and Get the app", () => {
@@ -81,7 +87,17 @@ describe("canonical public chrome", () => {
     expect(within(screen.getByRole("navigation", {name: "Primary"})).getByRole("link", {name: "What’s on"}).getAttribute("href")).toBe("/mumbai/");
     unmount();
     render(<PublicSiteHeader showWhatsOn={false} />);
-    expect(within(screen.getByRole("navigation", {name: "Primary"})).getAllByRole("link").map((link) => link.textContent)).toEqual(["For hosts"]);
+    expect(within(screen.getByRole("navigation", {name: "Primary"})).getAllByRole("link").map((link) => link.textContent)).toEqual(["Safety", "For hosts"]);
+  });
+
+  it("puts a guest page's New to the city after What's on, and leaves it off host pages", () => {
+    const newToCity = {href: "/new-to-mumbai/", label: "New to Mumbai"};
+    const {unmount} = render(<PublicSiteHeader newToCity={newToCity} whatsOnHref="/mumbai/" />);
+    expect(within(screen.getByRole("navigation", {name: "Primary"})).getAllByRole("link").map((link) => [link.textContent, link.getAttribute("href")]))
+      .toEqual([["What’s on", "/mumbai/"], ["New to Mumbai", "/new-to-mumbai/"], ["Safety", "/safety/"], ["For hosts", "/host/"]]);
+    unmount();
+    render(<PublicSiteHeader newToCity={newToCity} variant="host" />);
+    expect(screen.queryByRole("link", {name: "New to Mumbai"})).toBeNull();
   });
 
   it("gives host pages What's on, Help, the For hosts dropdown, WhatsApp and the free trial", () => {
@@ -100,9 +116,22 @@ describe("canonical public chrome", () => {
     expect(banner.getByRole("navigation", {name: "Primary"}).contains(forHosts)).toBe(true);
     expect(forHosts.getAttribute("aria-expanded")).toBe("false");
     fireEvent.click(forHosts);
+    expect(forHosts.getAttribute("aria-expanded")).toBe("true");
     const panel = document.getElementById(forHosts.getAttribute("aria-controls")!)!;
-    expect(within(panel).getAllByRole("link").map((link) => [link.textContent, link.getAttribute("href")]))
-      .toEqual([["Catch for hosts", "/host/"], ["Weddings", "/weddings/"], ["Claim your page", "/claim/"]]);
+    // The canvas's columns, each list named by its title.
+    expect(within(panel).getAllByRole("list").map((list) => document.getElementById(list.getAttribute("aria-labelledby")!)?.textContent))
+      .toEqual(["Product", "By format", "By organisation", "Programmes", "Where you are"]);
+    const hrefs = within(panel).getAllByRole("link").map((link) => link.getAttribute("href"));
+    expect(hrefs).toEqual(forHostsColumns.flatMap((section) => section.links.map((link) => link.href)));
+    // Every product page and every organiser type page is one press away.
+    for (const page of [...productPages, ...hostTypePages]) expect(hrefs, page).toContain(page);
+    expect(within(within(panel).getByRole("list", {name: "Product"})).getAllByRole("link")[0].getAttribute("href")).toBe("/host/");
+    for (const page of ["/weddings/", "/programmes/", "/host/first-event/", "/host/switch/", "/host/demo/", "/claim/", "/host/walkthrough/"]) {
+      expect(hrefs, page).toContain(page);
+    }
+    fireEvent.keyDown(within(panel).getAllByRole("link")[0], {key: "Escape"});
+    expect(forHosts.getAttribute("aria-expanded")).toBe("false");
+    expect(document.activeElement).toBe(forHosts);
     const whatsapp = banner.getByRole("link", {name: siteHeaderCopy.host.whatsapp.label});
     expect(whatsapp.getAttribute("href")).toMatch(/^https:\/\/wa\.me\/\d+\?text=/u);
     expect(banner.getByRole("link", {name: "Start free trial"}).getAttribute("href")).toBe("/host/#start");
@@ -116,8 +145,12 @@ describe("canonical public chrome", () => {
       </SiteAccountActionProvider>,
     );
     fireEvent.click(screen.getByRole("button", {name: publicSiteCopy.menu.openLabel}));
-    expect(screen.getAllByRole("menuitem").map((item) => item.textContent))
-      .toEqual(["What’s on", "Pricing", "Help", "Catch for hosts", "Weddings", "Claim your page", "Sign in"]);
+    const items = screen.getAllByRole("menuitem");
+    const columns = forHostsColumns.map((section) => section.links.map((link) => link.label));
+    expect(items.map((item) => item.textContent)).toEqual(["What’s on", "Pricing", "Help", ...columns.flat(), "Sign in"]);
+    // A divider opens each of the menu's columns, and the account entry after them.
+    const starts = columns.reduce<number[]>((at, column, index) => [...at, index === 0 ? 3 : at[index - 1] + columns[index - 1].length], []);
+    expect(items.flatMap((item, index) => item.dataset.section ? [index] : [])).toEqual([...starts, items.length - 1]);
   });
 
   it("keeps a one-job flow's header to the wordmark: no links, menu, account or primary action", () => {
@@ -160,7 +193,7 @@ describe("canonical public chrome", () => {
     const nav = within(footer.getByRole("navigation", {name: "Footer"}));
     expect(nav.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent)).toEqual(["Explore", "Cities", "Hosts", "Help and legal"]);
     expect(nav.getAllByRole("link").map((link) => link.textContent)).toEqual([
-      "What’s on", guestAppActionLabel,
+      "What’s on", "Safety", guestAppActionLabel,
       ...siteFooterDefaultCities.map((city) => city.label),
       "Catch for hosts", "Pricing", "Start free trial", "Weddings", "Claim your page",
       "Help", "Privacy", "Terms", "Refunds", "Contact", "Report or remove a listing",
@@ -236,19 +269,56 @@ describe("canonical public chrome", () => {
     expect(screen.queryByRole("link", {name: siteFooterCopy.helpBand.whatsapp})).toBeNull();
   });
 
-  it("gives host pages the host columns: Product, Get started, the brand's column and Legal ending in Privacy choices", () => {
+  it("adds a city page's New to the city to Explore and its format pages as their own column", () => {
+    render(<PublicSiteFooter cities={[{href: "/mumbai/", label: "Mumbai", soon: false}]} exploreHref="/mumbai/" cityFormats={{
+      newToCity: {href: "/new-to-mumbai/", label: "New to Mumbai"}, title: "Things to do in Mumbai",
+      formats: [{href: "/mumbai/run-clubs/", label: "Run clubs"}, {href: "/mumbai/quiz-nights/", label: "Quiz nights"}],
+    }} />);
+    const nav = within(screen.getByRole("navigation", {name: "Footer"}));
+    expect(nav.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent))
+      .toEqual(["Explore", "Things to do in Mumbai", "Cities", "Hosts", "Help and legal"]);
+    expect(nav.getAllByRole("link").slice(0, 6).map((link) => [link.textContent, link.getAttribute("href")])).toEqual([
+      ["What’s on", "/mumbai/"], ["New to Mumbai", "/new-to-mumbai/"], ["Safety", "/safety/"], [guestAppActionLabel, "/#app"],
+      ["Run clubs", "/mumbai/run-clubs/"], ["Quiz nights", "/mumbai/quiz-nights/"],
+    ]);
+  });
+
+  it("leaves the city's column out when it has no format page", () => {
+    render(<PublicSiteFooter cityFormats={{title: "Things to do in Pune", formats: []}} />);
+    const nav = within(screen.getByRole("navigation", {name: "Footer"}));
+    expect(nav.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent)).toEqual(["Explore", "Cities", "Hosts", "Help and legal"]);
+  });
+
+  it("gives every host page the canvas's five host columns, ending in the legal links and Privacy choices", () => {
     render(<PublicSiteFooter footnotes={["1. A sample source."]} helpBand={false} variant="host" />);
     const footer = within(screen.getByRole("contentinfo"));
     const nav = within(footer.getByRole("navigation", {name: "Footer"}));
-    expect(nav.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent)).toEqual(["Product", "Get started", "Catch", "Legal"]);
+    expect(nav.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent)).toEqual(["Product", "Hosts by format", "Get started", "Resources", "Catch"]);
     expect(nav.getAllByRole("link").map((link) => [link.textContent, link.getAttribute("href")])).toEqual([
-      ["Catch for hosts", "/host/"], ["How Catch works", "/host/#night"], ["Ways to use Catch", "/host/#ways"], ["Weddings", "/weddings/"],
-      ["Start free trial", "/host/#start"], ["Pricing", "/pricing/"], ["Claim your page", "/claim/"],
-      ["What’s on", "/explore/"], ["Help", "/help/"], ["Contact", "/contact/"], ["Report or remove a listing", "/listings/request/"],
-      ["Privacy", "/privacy/"], ["Terms", "/terms/"], ["Refunds", "/refunds/"],
+      ["How Catch works", "/how-it-works/"], ["Your page", "/product/your-page/"], ["Bookings and memberships", "/product/bookings-and-memberships/"],
+      ["Messages and growth", "/product/messages-and-growth/"], ["The room", "/product/the-room/"], ["Running the event", "/product/running-the-event/"],
+      ["Guest records", "/product/guest-records/"], ["Reports and payouts", "/product/reports-and-payouts/"],
+      ["Run and walk clubs", "/host/run-clubs/"], ["Racket sports", "/host/racket-sports/"], ["Supper clubs", "/host/supper-clubs/"],
+      ["Quiz and game nights", "/host/quiz-nights/"], ["Studios", "/host/studios/"], ["Venues", "/host/venues/"], ["Communities", "/host/communities/"],
+      ["Mixers and pub crawls", "/host/nightlife/"], ["Teams", "/host/teams/"], ["Colleges and alumni", "/host/colleges/"],
+      ["Start free trial", "/host/start/"], ["Pricing", "/pricing/"], ["Your first event", "/host/first-event/"], ["Switch to Catch", "/host/switch/"],
+      ["Try a demo night", "/host/demo/"], ["Programmes", "/programmes/"],
+      ["Forms", "/product/forms/"], ["Book a walkthrough", "/host/walkthrough/"], ["Help", "/help/"],
+      ["What’s on", "/explore/"], ["About", "/about/"], ["Safety", "/safety/"], ["Contact", "/contact/"], ["Report or remove a listing", "/listings/request/"],
+      ["Terms", "/terms/"], ["Privacy", "/privacy/"], ["Refunds", "/refunds/"],
     ]);
     expect(nav.getByRole("button", {name: publicSiteCopy.privacyChoices})).toBeTruthy();
     expect(nav.queryByRole("link", {name: guestAppActionLabel})).toBeNull();
     expect(footer.getByText("1. A sample source.")).toBeTruthy();
+  });
+
+  it("points the host footer's What's on at a city's Explore, and lets a page pass its own columns", () => {
+    const {unmount} = render(<PublicSiteFooter exploreHref="/mumbai/" helpBand={false} variant="host" />);
+    expect(within(screen.getByRole("navigation", {name: "Footer"})).getByRole("link", {name: "What’s on"}).getAttribute("href")).toBe("/mumbai/");
+    unmount();
+    render(<PublicSiteFooter columns={[{title: "Own column", links: [{href: "/a/", label: "Own page"}]}]} helpBand={false} variant="host" />);
+    const nav = within(screen.getByRole("navigation", {name: "Footer"}));
+    expect(nav.getAllByRole("heading", {level: 2}).map((heading) => heading.textContent)).toEqual(["Own column"]);
+    expect(nav.getByRole("button", {name: publicSiteCopy.privacyChoices})).toBeTruthy();
   });
 });

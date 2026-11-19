@@ -2,9 +2,10 @@ import {CatchButton} from "@catch/web-ui";
 import {homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {countryName} from "@content/markets";
-import {siteFooterCopy} from "@content/site";
+import {siteFooterCopy, siteHeaderCopy} from "@content/site";
 import type {ReactNode} from "react";
-import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain, type SiteFooterCity} from "../../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain, type SiteFooterCity, type SiteFooterCityPages, type SiteNavItem} from "../../../shared/site";
+import type {CityDiscoveryLinks} from "../../discovery/discoveryModel";
 import {citiesHref, cityFooterNote, cityGroups} from "../homeModel";
 
 export {citiesHref};
@@ -33,17 +34,34 @@ export function footerCities(cities: readonly HomeCity[]): SiteFooterCity[] {
 }
 
 /**
+ * A city's discovery pages in the chrome: "New to <city>" for the header,
+ * after What's on, and for the footer's Explore column, then its format
+ * pages as the footer's "Things to do in <city>" column. Only pages that
+ * exist are linked (cityDiscoveryLinks).
+ */
+export function cityChromeLinks(city: HomeCity, discovery?: CityDiscoveryLinks): {newToCity?: SiteNavItem; cityFormats?: SiteFooterCityPages} {
+  if (!discovery) return {};
+  const newToCity = discovery.newToCity ? {href: discovery.newToCity, label: fill(siteHeaderCopy.guest.newToCity, {city: city.label})} : undefined;
+  return {
+    newToCity,
+    cityFormats: {newToCity, title: fill(siteFooterCopy.cityFormats, {city: city.label}), formats: discovery.formats.map(({href, label}) => ({href, label}))},
+  };
+}
+
+/**
  * The header and footer around a city's page (Explore and the city pages).
  * The header is the one public header, as on the homepage: the city picker
  * with each city's status sits left of Get the app. The footer lists every
  * city, the ones not open marked soon.
  */
-export function CitySiteChrome({appHref = "/#app", children, cities, city, dock, exploreHref, onChooseCity, showWhatsOn = true}: {
+export function CitySiteChrome({appHref = "/#app", children, cities, city, discovery, dock, exploreHref, onChooseCity, showWhatsOn = true}: {
   /** The get-the-app band: on the homepage itself, its own anchor. */
   appHref?: string;
   children: ReactNode;
   cities: readonly HomeCity[];
   city: HomeCity;
+  /** The city's new-to-the-city page and format pages that exist, linked from the header and footer. */
+  discovery?: CityDiscoveryLinks;
   /** The phone action bar, after the footer. */
   dock?: ReactNode;
   exploreHref: string;
@@ -54,18 +72,19 @@ export function CitySiteChrome({appHref = "/#app", children, cities, city, dock,
    */
   showWhatsOn?: boolean;
 }) {
+  const links = cityChromeLinks(city, discovery);
   return <>
     <PublicSiteHeader
       actions={<>
         <CityPicker cities={cities} onChoose={onChooseCity} selected={city} />
         <CatchButton href={appHref} label={copy.header.app} onPressed={follow} size="sm" />
       </>}
+      newToCity={links.newToCity}
       showWhatsOn={showWhatsOn}
       whatsOnHref={exploreHref}
     />
     <WebsitePageMain id="top">{children}</WebsitePageMain>
-    <PublicSiteFooter appHref={appHref} exploreHref={exploreHref}
-      cities={footerCities(cities)} />
+    <PublicSiteFooter appHref={appHref} cities={footerCities(cities)} cityFormats={links.cityFormats} exploreHref={exploreHref} />
     {dock}
   </>;
 }
