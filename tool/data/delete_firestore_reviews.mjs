@@ -128,7 +128,7 @@ Options:
 async function buildDeletionPlan(firestore, metadata) {
   const [reviewDocs, organizerDocs, eventDocs, userDocs] = await Promise.all([
     readCollection(firestore.collection("reviews")),
-    readCollection(firestore.collection("clubs")),
+    readCollection(firestore.collection("organizers")),
     readCollection(firestore.collection("events")),
     readCollection(firestore.collection("users")),
   ]);
