@@ -74,16 +74,20 @@ export const organizerTrackingPublicationPolicy:
       "ownerSettings", "testReceipts", "docs", "ownerPolicySignOff",
     ]),
     excludedActivityKinds: Object.freeze(
-      ["socialRun", "singlesMixer", "barCrawl", "dinner"]),
+      // socialRun and dinner were removed for native organisers (owner
+      // decision relayed 19 Nov 2026, #2063); the singles and crawl classes
+      // stay, as do the excluded interaction models below.
+      ["singlesMixer", "barCrawl"]),
     excludedInteractionModels: Object.freeze(
       ["pairedRotations", "seatedTable", "freeFormMixer", "routeStops"]),
     externalListingsCountAsUnknown: false,
     externalListingAllowance: Object.freeze({
-      // Supply intake labels every run "socialRun" and every dinner "dinner",
-      // both excluded classes above, so they are not allowed here until the
-      // owner decides otherwise.
-      activityKinds: Object.freeze(
-        ["pubQuiz", "yoga", "padel", "pickleball", "tennis", "cycling"]),
+      // Supply intake labels every run "socialRun" and every dinner "dinner".
+      // The owner allowed both for scraped listings (relayed 19 Nov 2026,
+      // #2063), still subject to the blocked words. barCrawl and openActivity
+      // stay unknown.
+      activityKinds: Object.freeze(["pubQuiz", "yoga", "padel", "pickleball",
+        "tennis", "cycling", "socialRun", "dinner"]),
       blockedWords: Object.freeze(["single", "singles", "dating", "date night",
         "speed date", "speed dating", "mixer", "matchmaking", "matchmaker"]),
     }),
