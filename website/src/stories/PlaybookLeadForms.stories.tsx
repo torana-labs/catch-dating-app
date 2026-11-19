@@ -1,12 +1,18 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import {useState} from "react";
 import {expect, userEvent, within} from "storybook/test";
 import {applyBrand} from "@content/brand";
 import runClubs from "@content/playbook/pages/host/run-clubs.json";
 import hostWalkthrough from "@content/playbook/pages/host/walkthrough.json";
+import refer from "@content/playbook/pages/resources/refer.json";
 import {playbookCopy} from "@content/playbook/playbookCopy";
 import {validatedPlaybookPage} from "@content/playbook/playbookContract";
+import {referralSignInCopy} from "@content/referral";
+import {signInCopy} from "@content/account";
 import {marketingCaptures} from "../app/marketingCaptures";
 import {PlaybookPage} from "../features/playbook/PlaybookPage";
+import type {ReferralAccountUser, ReferralOwnedOrganizer} from "../features/referral/referralAccountModel";
+import {provideReferralAccountDeps, type ReferralAccountDeps} from "../features/referral/useReferralAccountController";
 import {PageShell} from "../shared/site";
 
 const meta = {
@@ -22,6 +28,9 @@ const guideForm = runClubsPage.sections.flatMap((section) => section.type === "c
 const walkthroughPage = applyBrand(validatedPlaybookPage(hostWalkthrough));
 const walkthroughForm = walkthroughPage.sections.flatMap((section) => section.type === "split" && section.leadForm ? [section.leadForm] : [])[0];
 
+const referPage = applyBrand(validatedPlaybookPage(refer));
+const referralForm = referPage.sections.flatMap((section) => section.type === "cta" && section.leadForm ? [section.leadForm] : [])[0];
+
 function PlaybookAt({width, page = runClubsPage}: {width: 390 | 1280; page?: typeof runClubsPage}) {
   return (
     <div style={{margin: "0 auto", width}}>
@@ -31,6 +40,25 @@ function PlaybookAt({width, page = runClubsPage}: {width: 390 | 1280; page?: typ
     </div>
   );
 }
+
+/** A fictional host signed in on /refer/: their phone and the host page they own. */
+const signedInHost: ReferralAccountUser = {uid: "story-host", phoneNumber: "+919876543210", isAnonymous: false};
+const ownedPage: ReferralOwnedOrganizer = {organizerId: "story-organizer", name: "Kestrel Supper Club"};
+
+/** /refer/ with its sign-in answered by the story: signed out, or signed in owning the given host pages. */
+function ReferAt({width, owned}: {width: 390 | 1280; owned?: ReferralOwnedOrganizer[]}) {
+  const [deps] = useState<ReferralAccountDeps>(() => ({
+    seenSignedIn: () => Boolean(owned),
+    watchUser: (callback) => {
+      callback(owned ? signedInHost : null);
+      return () => undefined;
+    },
+    ownedOrganizers: async () => owned ?? [],
+  }));
+  return <>{provideReferralAccountDeps(deps, <PlaybookAt page={referPage} width={width} />)}</>;
+}
+
+const nominate = (canvasElement: HTMLElement) => within(canvasElement.querySelector<HTMLElement>("#nominate")!);
 
 /**
  * Storybook has no lead intake: the stories answer the site's lead posts
@@ -139,4 +167,64 @@ export const WalkthroughSent390: Story = {
   ...WalkthroughSent1280,
   name: "/host/walkthrough/ walkthrough form, sent · 390",
   render: () => <PlaybookAt page={walkthroughPage} width={390} />,
+};
+
+/** /refer/ signed out: what credit needs, the sign-in button, and the referral form, which still sends. */
+export const ReferSignedOut1280: Story = {
+  name: "/refer/ referral form, signed out · 1280",
+  render: () => <ReferAt width={1280} />,
+  play: async ({canvasElement}) => {
+    const band = nominate(canvasElement);
+    await expect(await band.findByText(referralSignInCopy.signedOut)).toBeInTheDocument();
+    await expect(band.getByRole("button", {name: referralSignInCopy.signIn})).toBeInTheDocument();
+    await expect(band.getByRole("form", {name: referralForm.submitLabel})).toBeInTheDocument();
+  },
+};
+
+export const ReferSignedOut390: Story = {
+  ...ReferSignedOut1280,
+  name: "/refer/ referral form, signed out · 390",
+  render: () => <ReferAt width={390} />,
+};
+
+/** "Sign in with your Catch Host number" opens the site's one sign-in sheet in place. */
+export const ReferSignInOpen1280: Story = {
+  name: "/refer/ referral form, sign-in open · 1280",
+  render: () => <ReferAt width={1280} />,
+  play: async ({canvasElement}) => {
+    await userEvent.click(await nominate(canvasElement).findByRole("button", {name: referralSignInCopy.signIn}));
+    await expect(await within(canvasElement.ownerDocument.body).findByRole("button", {name: signInCopy.sendCode})).toBeVisible();
+  },
+};
+
+export const ReferSignInOpen390: Story = {
+  ...ReferSignInOpen1280,
+  name: "/refer/ referral form, sign-in open · 390",
+  render: () => <ReferAt width={390} />,
+};
+
+/** Signed in as the owner of a live host page: named by that page, and the referral is credited to it. */
+export const ReferSignedIn1280: Story = {
+  name: "/refer/ referral form, signed in · 1280",
+  render: () => <ReferAt owned={[ownedPage]} width={1280} />,
+  play: async ({canvasElement}) => {
+    const band = nominate(canvasElement);
+    await expect(await band.findByText(`Signed in as ${ownedPage.name}`)).toBeInTheDocument();
+    await expect(band.getByText(referralSignInCopy.owner)).toBeInTheDocument();
+  },
+};
+
+export const ReferSignedIn390: Story = {
+  ...ReferSignedIn1280,
+  name: "/refer/ referral form, signed in · 390",
+  render: () => <ReferAt owned={[ownedPage]} width={390} />,
+};
+
+/** Signed in with a number that owns no live host page: the form sends, but says it won't be credited. */
+export const ReferSignedInNotOwner390: Story = {
+  name: "/refer/ referral form, signed in without a host page · 390",
+  render: () => <ReferAt owned={[]} width={390} />,
+  play: async ({canvasElement}) => {
+    await expect(await nominate(canvasElement).findByText(referralSignInCopy.notOwner)).toBeInTheDocument();
+  },
 };

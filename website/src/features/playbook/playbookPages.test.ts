@@ -9,6 +9,7 @@ import {publishedHostStories} from "@content/stories/hostStories";
 import {fixtureHostStoryPage} from "../../stories/fixtures/hostStories";
 import {websiteCities} from "@content/markets";
 import {hostPricingFacts} from "@content/pricing";
+import {referralSignInCopy} from "@content/referral";
 import {
   forEachAction,
   livePlaybookPage,
@@ -278,6 +279,9 @@ describe("playbook page indexes", () => {
     const form = raw.sections.flatMap((section) => section.type === "cta" && section.leadForm ? [section.leadForm] : [])[0];
     expect(form).toMatchObject({requestKind: "referral", id: "referral_host"});
     expect(form.fields?.map((field) => field.name)).toEqual(["name", "hostName", "hostLink", "relationship"]);
+    // Sign-in is on the page (features/referral), not a trip to Host billing; its words name no trial length of their own.
+    expect(text).not.toMatch(/host\/billing|Host billing/u);
+    expect(JSON.stringify(referralSignInCopy)).not.toMatch(/\d+ (?:free )?days?\b/u);
   });
 
   it("indexes The room and Running the event (owner approved, 19 Nov 2026)", async () => {

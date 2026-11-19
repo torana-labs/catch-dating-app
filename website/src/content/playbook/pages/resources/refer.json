@@ -53,7 +53,7 @@
         {
           "figure": "1",
           "title": "Sign in and tell us about them",
-          "body": "Signed in as the owner of your host page, send us their name, their Instagram or website, and how you know them."
+          "body": "Sign in on this page with your {{brand.stores.hostAppName}} number, then send us their name, their Instagram or website, and how you know them."
         },
         {
           "figure": "2",
@@ -73,7 +73,7 @@
       "ground": "paper",
       "kicker": "Refer a host",
       "title": "Who should we talk to?",
-      "lead": "Tell us the host’s name, their Instagram or website, and how you know them. We’ll reach out, say you sent us, and help them get set up. We never sign anyone up without their say-so. For your free month, sign in first: open Host billing at /host/billing/ in this browser, sign in with the phone number you use in {{brand.stores.hostAppName}}, then come back and send this form.",
+      "lead": "Tell us the host’s name, their Instagram or website, and how you know them. We’ll reach out, say you sent us, and help them get set up. We never sign anyone up without their say-so. For your free month, sign in above the form with the number you use in {{brand.stores.hostAppName}}.",
       "leadForm": {
         "id": "referral_host",
         "requestKind": "referral",
@@ -85,7 +85,7 @@
           {"name": "hostLink", "label": "Their Instagram or website", "placeholder": "Their handle or link"},
           {"name": "relationship", "label": "How you know them", "placeholder": "I go to their Sunday runs"}
         ],
-        "note": "Send it signed in as the owner of your host page, or it can’t be credited to you. We’ll message you on WhatsApp."
+        "note": "We’ll message you on WhatsApp."
       },
       "actions": [
         {
@@ -104,7 +104,7 @@
       "items": [
         {
           "title": "For hosts referring hosts",
-          "body": "You need to own a host page on {{brand.name}}, and be signed in as its owner when you send the referral."
+          "body": "You need to own a live host page on {{brand.name}}, and be signed in on this page as its owner when you send the referral."
         },
         {
           "title": "First referral counts",
@@ -145,7 +145,7 @@
       "items": [
         {
           "question": "How do I sign in?",
-          "answer": "Open Host billing at /host/billing/ in the browser you’ll use for this page, and sign in with the phone number you use in {{brand.stores.hostAppName}}. Then come back here and send the form. A referral sent signed out still reaches us, but it can’t be credited to you."
+          "answer": "Tap Sign in with your {{brand.stores.hostAppName}} number, just above the referral form, and enter the code we text you. Use the number you use in {{brand.stores.hostAppName}}. A referral sent signed out still reaches us, but it can’t be credited to you."
         },
         {
           "question": "Do I need to be a {{brand.name}} host?",
