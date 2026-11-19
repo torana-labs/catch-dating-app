@@ -176,7 +176,7 @@ async function apply(db: FirebaseFirestore.Firestore, deps: ImportEventFromLinkD
     const current = await readTryItWorkspace(tx, db, ctx.uid);
     await stageTryItWorkspace(tx, db, current, {uid: ctx.uid, now, commandId: COMMAND_ID, surface: data.surface,
       organizerName: typeof lookup.organizer.name === "string" ? lookup.organizer.name : "Organizer", marketId: "",
-      serverTimestamp: deps.serverTimestamp});
+      serverTimestamp: deps.serverTimestamp, draftEventId: setup.eventId});
     const applied = respond(ctx, "applied", {organizerId, events: [], proposal, reasons: [], hash: found.hash,
       receiptId, eventId: setup.eventId});
     recordCommand(tx, db, {commandId: COMMAND_ID, uid: ctx.uid, idempotencyKey: data.idempotencyKey, requestHash,
