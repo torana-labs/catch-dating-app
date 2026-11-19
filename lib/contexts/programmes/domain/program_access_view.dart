@@ -169,7 +169,13 @@ class ProgramAccessView {
 
   /// Null when the account holds authority at [now], otherwise the reason.
   ProgramAccessDenial? denialAt(DateTime now) {
-    if (!isActive) return ProgramAccessDenial.revoked;
+    if (!isActive) {
+      // An organiser manager's setup-only view (revision 0: no grant behind
+      // it) was never granted a duty, rather than had one removed.
+      return organizerManager && revision == 0
+          ? ProgramAccessDenial.notGranted
+          : ProgramAccessDenial.revoked;
+    }
     if (activeFrom.isAfter(now)) return ProgramAccessDenial.notYetActive;
     final end = expiresAt;
     if (end != null && !end.isAfter(now)) return ProgramAccessDenial.expired;

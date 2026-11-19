@@ -403,32 +403,34 @@ export async function readProgramAccessView(
     nowMillis);
 }
 
+/** The most programmes of one organizer a manager change rewrites, as many
+ * as the Host app's programme list shows. */
+export const organizerProgramLimit = 500;
+
 /**
- * Rewrites [uids]' views of every programme of [organizerId], a page of
- * programmes at a time, after their standing as organizer managers changed.
+ * Rewrites [uids]' views of every programme of [organizerId], up to
+ * [limit] of them, after their standing as organizer managers changed.
  * @param {FirebaseFirestore.Firestore} db Firestore.
  * @param {string} organizerId The organizer.
  * @param {string[]} uids The accounts whose standing changed.
  * @param {number} nowMillis The evaluation time.
- * @param {number} pageSize Programmes read per page.
+ * @param {number} limit Programmes read at most.
  * @return {Promise<void>} Resolves once every view matches its sources.
  */
 export async function reconcileOrganizerManagerViews(
   db: FirebaseFirestore.Firestore, organizerId: string, uids: string[],
-  nowMillis = Date.now(), pageSize = 200): Promise<void> {
+  nowMillis = Date.now(), limit = organizerProgramLimit): Promise<void> {
   if (uids.length === 0) return;
-  const programs = db.collection("organizerPrograms")
-    .where("organizerId", "==", organizerId).orderBy("__name__")
-    .limit(pageSize);
-  let page = await programs.get();
-  for (;;) {
-    for (const program of page.docs) {
-      for (const uid of uids) {
-        await reconcileProgramAccessView(db, program.id, uid, nowMillis);
-      }
+  const programs = await db.collection("organizerPrograms")
+    .where("organizerId", "==", organizerId).limit(limit).get();
+  if (programs.docs.length >= limit) {
+    logger.warn("Organizer manager views reached the programme limit.",
+      {organizerId, limit});
+  }
+  for (const program of programs.docs) {
+    for (const uid of uids) {
+      await reconcileProgramAccessView(db, program.id, uid, nowMillis);
     }
-    if (page.docs.length < pageSize) return;
-    page = await programs.startAfter(page.docs[page.docs.length - 1]).get();
   }
 }
 

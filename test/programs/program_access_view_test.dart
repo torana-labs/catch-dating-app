@@ -98,6 +98,7 @@ void main() {
         ...raw(status: 'inactive', duties: {}, pickupScoped: {}),
         'expiresAtMillis': null,
         'organizerManager': true,
+        'revision': 0,
       });
       expect(setupOnly.organizerManager, isTrue);
       expect(setupOnly.isLiveAt(at(1)), isFalse);
@@ -108,6 +109,7 @@ void main() {
       expect(setupOnly.holdsSetup(at(100000)), isTrue);
       expect(setupOnly.listsSetup(at(100000)), isTrue);
       expect(setupOnly.liveKeys(at(1)), {'organizerManager'});
+      expect(setupOnly.denialAt(at(1)), ProgramAccessDenial.notGranted);
       // Views written before the flag read as no organizer management.
       expect(view().organizerManager, isFalse);
       // A programme administration duty opens the detail but lists nothing.

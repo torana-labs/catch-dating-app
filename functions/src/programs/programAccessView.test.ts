@@ -318,7 +318,7 @@ test("reconcile gives an organizer manager a view and takes it back",
     assert.equal(store.getDoc(path), undefined, "no longer a manager");
   });
 
-test("a manager change reaches every programme of the organizer, by page",
+test("a manager change reaches every programme of the organizer",
   async () => {
     const store = new FakeFirestore(baseSeed());
     const db = store as unknown as FirebaseFirestore.Firestore;
@@ -330,7 +330,7 @@ test("a manager change reaches every programme of the organizer, by page",
       organizerId: "org-2"});
     store.setDoc("organizers/org-1", {...baseSeed()["organizers/org-1"],
       hostUserIds: ["manager-1", "host-2"]});
-    await reconcileOrganizerManagerViews(db, "org-1", ["host-2"], now, 2);
+    await reconcileOrganizerManagerViews(db, "org-1", ["host-2"], now);
     for (const id of ["program-1", "program-2", "program-3"]) {
       assert.equal((store.getDoc(`programAccessViews/${id}__host-2`) as
         {organizerManager: boolean}).organizerManager, true, id);
