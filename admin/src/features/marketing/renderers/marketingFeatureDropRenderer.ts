@@ -530,31 +530,14 @@ function drawPhone(
   ctx.stroke();
 }
 
+// App captures are the screen alone (tool/marketing/lib/capture_devices.mjs),
+// so the whole image fits the drawn phone's screen; this phone is its only frame.
 function drawPhoneImage(
   ctx: CanvasRenderingContext2D,
   image: HTMLImageElement,
   target: {x: number; y: number; width: number; height: number}
 ) {
-  const framedCrop = framedScreenshotCrop(image);
-  const source = framedCrop ?? {
-    x: 0,
-    y: 0,
-    width: image.naturalWidth,
-    height: image.naturalHeight,
-  };
-  drawImageContain(ctx, image, source, target);
-}
-
-function framedScreenshotCrop(image: HTMLImageElement) {
-  if (Math.abs(image.naturalWidth - 1020) <= 4 && Math.abs(image.naturalHeight - 1964) <= 4) {
-    return {
-      x: 216,
-      y: 216,
-      width: 804,
-      height: 1748,
-    };
-  }
-  return null;
+  drawImageContain(ctx, image, {x: 0, y: 0, width: image.naturalWidth, height: image.naturalHeight}, target);
 }
 
 function drawImageContain(
