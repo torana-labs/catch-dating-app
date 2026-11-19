@@ -90,8 +90,20 @@ const organizerFlowSegments: ReadonlySet<string> = new Set(["claim", "f", "form"
  * projection still decides whether that organiser and event are published,
  * active and non-dating. Private routes (`privateRoutes.ts`), claim, forms,
  * offers, OTP, booking receipts, account, demo and token links fail closed,
- * as does any address with a query or a non-anchor hash.
+ * as does a non-anchor hash. A query may carry only the ad-click keys
+ * `fbclid`, `gclid` and `utm_*` (owner decision, 19 Nov 2026, #2063), so
+ * visits from the organiser's own ads are measured; any other key, or a
+ * repeated key, fails closed.
  */
+/** The only query keys an organiser-tag page may carry: the ad platforms' click keys. */
+const organizerQueryKey = /^(?:fbclid|gclid|utm_(?:source|medium|campaign|content|term|id))$/u;
+
+function organizerQueryAllowed(search: string) {
+  if (search === "" || search === "?") return true;
+  const keys = [...new URLSearchParams(search).keys()];
+  return keys.length > 0 && new Set(keys).size === keys.length && keys.every((key) => organizerQueryKey.test(key));
+}
+
 /** A normalised organiser profile path, or null for the directory, a flow segment or anything else. */
 function organizerProfilePath(normalized: string): string | null {
   if (!organizerPagePattern.test(normalized)) return null;
@@ -101,7 +113,7 @@ function organizerProfilePath(normalized: string): string | null {
 
 export function organizerAdPage(path: string, search = "", hash = ""): OrganizerTagPage | null {
   if (typeof path !== "string" || typeof search !== "string" || typeof hash !== "string") return null;
-  if (search !== "" && search !== "?") return null;
+  if (!organizerQueryAllowed(search)) return null;
   if (!/^(?:#[A-Za-z0-9_-]*)?$/u.test(hash)) return null;
   if (isPrivateEventUpdatePath(path)) return null;
   const normalized = `${path.replace(/\/+$/u, "")}/`;

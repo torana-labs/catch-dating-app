@@ -31,9 +31,19 @@ describe("organiser tag eligible routes", () => {
     expect(organizerAdPage(path)).toBeNull();
   });
 
-  it("refuses any query and non-anchor hash, so nothing from the address reaches a tag", () => {
-    expect(organizerAdPage("/events/synthetic-run/", "?fbclid=abcdefghijkl")).toBeNull();
-    expect(organizerAdPage("/events/synthetic-run/", "?utm_source=meta")).toBeNull();
+  it("allows only the ad-click query keys fbclid, gclid and utm_* (owner decision, 19 Nov 2026)", () => {
+    for (const search of ["?fbclid=abcdefghijkl", "?gclid=abcdefghijkl", "?utm_source=meta&utm_medium=paid_social",
+      "?utm_campaign=autumn&utm_content=hero&utm_term=run&utm_id=7&fbclid=abcdefghijkl", "?"]) {
+      expect(organizerAdPage("/events/synthetic-run/", search)?.kind).toBe("event");
+      expect(organizerAdPage("/organizers/harbour-line-run-club/", search)?.kind).toBe("organizer");
+    }
+  });
+
+  it("refuses any other query key, a repeated key and a non-anchor hash", () => {
+    for (const search of ["?email=guest@example.com", "?fbclid=abcdefghijkl&phone=1", "?gbraid=abcdefghijkl", "?wbraid=abc",
+      "?utm_unknown=x", "?ref=partner", "?gclid=a&gclid=b", "?token=abc", "?q=run"]) {
+      expect(organizerAdPage("/events/synthetic-run/", search)).toBeNull();
+    }
     expect(organizerAdPage("/organizers/harbour-line-run-club/", "", "#a=b&c")).toBeNull();
     expect(organizerAdPage("/organizers/harbour-line-run-club/", "", "#events")?.kind).toBe("organizer");
   });
