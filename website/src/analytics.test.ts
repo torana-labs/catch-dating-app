@@ -78,7 +78,7 @@ test("analytics consent captures only campaign labels in 30-day public marketing
   expect(attribution()).toBeNull();
 });
 
-test.each(["/organizers/dating-host/", "/f/private-form/", "/offer/", "/booking/private-booking/", "/demo/private-demo/",
+test.each(["/organizers/", "/organizers/synthetic-club/claim/", "/organizers/synthetic-club/owner/", "/f/private-form/", "/offer/", "/booking/private-booking/", "/demo/private-demo/",
   "/invite/private-token/", "/rsvp/private-token/", "/join/private-runtime/", "/claim/private-listing/"])(
   "never captures campaign or click attribution on %s even after accepted consent", (path) => {
     window.history.replaceState(null, "", "/demo/start/");
@@ -89,6 +89,13 @@ test.each(["/organizers/dating-host/", "/f/private-form/", "/offer/", "/booking/
     expect(localStorage.getItem(ephemeralKey)).toBeNull();
     expect(localStorage.getItem(catchAttributionKey)).toBeNull();
   });
+
+test("organiser profile pages capture approved labels like any other public page (#2063)", () => {
+  window.history.replaceState(null, "", "/organizers/synthetic-club/?utm_source=meta&utm_medium=paid_social&utm_term=private");
+  setMarketingConsent("analytics");
+  expect(attribution()?.firstTouch).toMatchObject({landingPath: "/organizers/synthetic-club/",
+    values: {utm_source: "meta", utm_medium: "paid_social"}});
+});
 
 test("public event pages capture approved labels like any other public page", () => {
   window.history.replaceState(null, "", "/events/social-event/?utm_source=meta&utm_medium=paid_social&utm_term=private");

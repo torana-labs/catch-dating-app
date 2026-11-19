@@ -41,15 +41,22 @@ describe("consented 30-day attribution", () => {
     browserAttribution({...base, consent: {...consent, analytics: false}});
     expect(localStorage.getItem(catchAttributionKey)).toBeNull();
   });
-  it("neither reads nor clears the context on private, organiser and token pages", () => {
+  it("neither reads nor clears the context on private, organiser-flow and token pages", () => {
     browserAttribution(base);
     const stored = localStorage.getItem(catchAttributionKey);
-    for (const path of ["/booking/private/", "/f/private/", "/organizers/example/", "/claim/private/", "/invite/private/", "/account/"]) {
+    for (const path of ["/booking/private/", "/f/private/", "/organizers/", "/organizers/example/claim/", "/organizers/example/owner/",
+      "/claim/private/", "/invite/private/", "/account/"]) {
       expect(browserAttribution({...base, path, search: "?gclid=PrivatePageClick123"})).toBeNull();
       expect(localStorage.getItem(catchAttributionKey)).toBe(stored);
     }
     expect(browserAttribution({...base, path: "/events/example/", search: "", now: now + 1000}))
       .toMatchObject({gclid: "SyntheticGoogle123", fbclid: "SyntheticMeta123"});
+  });
+  it("captures click identifiers on organiser profile pages, as on any public page (#2063)", () => {
+    expect(browserAttribution({...base, path: "/organizers/example/", search: "?gclid=ProfilePageClick123"}))
+      .toMatchObject({gclid: "ProfilePageClick123"});
+    expect(browserAttribution({...base, path: "/organizers/mumbai/example/", search: "?fbclid=ProfilePageMeta123", now: now + 1000}))
+      .toMatchObject({gclid: "ProfilePageClick123", fbclid: "ProfilePageMeta123"});
   });
   it("records when each click was first seen and restarts the 30-day lifetime on a new click", () => {
     browserAttribution(base);

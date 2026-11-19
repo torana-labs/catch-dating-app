@@ -38,8 +38,9 @@ export function acquisitionRoute(path: string): AcquisitionRoute | null {
   return Object.hasOwn(routes, normalized) ? normalized as AcquisitionRoute : null;
 }
 
-// Pages whose path carries a private token, an organiser's own page or an
-// organiser's form. They never load, capture for or send to an advertising tag.
+// Pages whose path carries a private token or an organiser's form, and the
+// organiser directory and flows. They never load, capture for or send to an
+// advertising tag. Organiser profile pages are the exception (#2063).
 const tokenAndFormPrefixes = ["/join/", "/rehearse/", "/invite/", "/rsvp/", "/f/", "/claim/"];
 const nonPublicPrefixes = ["/organizers", ...tokenAndFormPrefixes];
 const eventPagePattern = /^\/events\/[A-Za-z0-9_:-]{1,180}\/$/u;
@@ -47,16 +48,22 @@ const publicPagePattern = /^\/(?:[a-z0-9][a-z0-9-]{0,80}\/){0,4}$/u;
 
 /**
  * The public page a path names, normalised with a trailing slash, or null.
- * Public pages are the static marketing, discovery, campaign and city pages
- * and public event pages (docs/ads_conversion_spec.md, Payload and
- * attribution). Private routes (`privateRoutes.ts`), organiser pages,
- * organiser forms, dynamic claim lookups and token links are never public.
+ * Public pages are the static marketing, discovery, campaign and city pages,
+ * public event pages and organiser profile pages (`/organizers/:slug/`,
+ * `/organizers/:citySlug/:slug/`; docs/ads_conversion_spec.md, Payload and
+ * attribution). Organiser profiles joined on the owner's #2063 condition that
+ * Catch keeps the holistic view whether or not an organiser tracks; they use
+ * the same flow exclusions as `organizerAdPage`. Private routes
+ * (`privateRoutes.ts`), the organiser directory, organiser flows, organiser
+ * forms, dynamic claim lookups and token links are never public.
  */
 export function publicAdPage(path: string): string | null {
   if (typeof path !== "string" || isPrivateEventUpdatePath(path)) return null;
   const normalized = path === "/" ? path : `${path.replace(/\/+$/u, "")}/`;
   if (normalized === "/claim/") return normalized;
-  if (isPrivateEventUpdatePath(normalized) || nonPublicPrefixes.some((prefix) => normalized.startsWith(prefix))) return null;
+  if (isPrivateEventUpdatePath(normalized)) return null;
+  if (normalized.startsWith("/organizers")) return organizerProfilePath(normalized);
+  if (nonPublicPrefixes.some((prefix) => normalized.startsWith(prefix))) return null;
   return eventPagePattern.test(normalized) || publicPagePattern.test(normalized) ? normalized : null;
 }
 
@@ -85,6 +92,13 @@ const organizerFlowSegments: ReadonlySet<string> = new Set(["claim", "f", "form"
  * offers, OTP, booking receipts, account, demo and token links fail closed,
  * as does any address with a query or a non-anchor hash.
  */
+/** A normalised organiser profile path, or null for the directory, a flow segment or anything else. */
+function organizerProfilePath(normalized: string): string | null {
+  if (!organizerPagePattern.test(normalized)) return null;
+  const segments = normalized.split("/").filter(Boolean).slice(1);
+  return segments.some((segment) => organizerFlowSegments.has(segment)) ? null : normalized;
+}
+
 export function organizerAdPage(path: string, search = "", hash = ""): OrganizerTagPage | null {
   if (typeof path !== "string" || typeof search !== "string" || typeof hash !== "string") return null;
   if (search !== "" && search !== "?") return null;
@@ -93,10 +107,8 @@ export function organizerAdPage(path: string, search = "", hash = ""): Organizer
   const normalized = `${path.replace(/\/+$/u, "")}/`;
   if (isPrivateEventUpdatePath(normalized) || tokenAndFormPrefixes.some((prefix) => normalized.startsWith(prefix))) return null;
   if (eventPagePattern.test(normalized)) return {kind: "event", path: normalized};
-  if (!organizerPagePattern.test(normalized)) return null;
-  const segments = normalized.split("/").filter(Boolean).slice(1);
-  if (segments.some((segment) => organizerFlowSegments.has(segment))) return null;
-  return {kind: "organizer", path: normalized};
+  const profile = organizerProfilePath(normalized);
+  return profile ? {kind: "organizer", path: profile} : null;
 }
 
 // Closed campaign vocabulary; expand only with a reviewed campaign, never query text.

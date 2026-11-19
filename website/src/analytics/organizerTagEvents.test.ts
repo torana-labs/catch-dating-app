@@ -38,9 +38,14 @@ describe("organiser tag eligible routes", () => {
     expect(organizerAdPage("/organizers/harbour-line-run-club/", "", "#events")?.kind).toBe("organizer");
   });
 
-  it("keeps Catch's own route class unchanged: organiser pages stay non-public for Catch tags", () => {
-    expect(publicAdPage("/organizers/harbour-line-run-club/")).toBeNull();
-    expect(publicAdPage("/events/synthetic-run/")).toBe("/events/synthetic-run/");
+  it("gives Catch's own tags the same organiser profile pages, never fewer (#2063 owner condition)", () => {
+    for (const path of ["/organizers/harbour-line-run-club/", "/organizers/mumbai/harbour-line-run-club/", "/events/synthetic-run/"]) {
+      expect(publicAdPage(path)).toBe(organizerAdPage(path)!.path);
+    }
+    for (const path of ["/organizers/", "/organizers/harbour-line-run-club/claim/", "/organizers/harbour-line-run-club/owner/",
+      "/organizers/a/b/c/", "/organizers/Harbour/"]) {
+      expect(publicAdPage(path)).toBeNull();
+    }
   });
 });
 
