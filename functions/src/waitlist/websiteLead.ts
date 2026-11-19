@@ -16,6 +16,7 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {canonicalMarkets} from "../locations/marketConfig";
 import {hasCurrentPartnerMembership} from "../partners/service";
 import {readCityAttribution} from "./cityAttribution";
+import {validMobileNumber} from "../shared/mobileNumber";
 
 /**
  * Website leads: the short forms on the redesigned pages (send me the guide,
@@ -257,10 +258,11 @@ export async function handleWebsiteLead(
 
   const normalized = normalizeLeadBody(body);
   const rawLead = isRecord(normalized.lead) ? normalized.lead : {};
-  if (typeof rawLead.phone !== "string" ||
-      !/^\+[1-9][0-9]{7,14}$/u.test(rawLead.phone)) {
+  const validPhone = validMobileNumber(rawLead.phone);
+  if (!validPhone) {
     return refused(400, "Please enter a valid WhatsApp number.");
   }
+  rawLead.phone = validPhone;
   if (!validateJoinWaitlistHTTPRequest(normalized)) {
     logger.warn("Website lead failed schema validation", {
       errors: schemaErrorMessages(validateJoinWaitlistHTTPRequest),

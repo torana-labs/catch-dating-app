@@ -371,11 +371,18 @@ function HomeProof({home}: {home: Home}) {
   );
 }
 
+/**
+ * The organisers band: only the organisers Settings → Discovery lets it show,
+ * left out while the city has fewer than its minimum, and "Claim your page"
+ * only when the setting offers it.
+ */
 function HomeOrganisers({home}: {home: Home}) {
   const city = home.city.label;
+  if (home.organizers.length === 0) return null;
   return (
     <CatchCardGrid
-      actions={[{label: copy.organisers.claimBandAction, href: "/claim/", variant: "secondary"}]}
+      actions={home.organisersClaimAction ?
+        [{label: copy.organisers.claimBandAction, href: "/claim/", variant: "secondary"}] : undefined}
       columns={4}
       id="organisers"
       items={home.organizers.map((organizer) => ({

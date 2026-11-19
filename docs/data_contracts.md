@@ -6463,6 +6463,33 @@ definitions in `contracts/shared/public_page_common.schema.json`.
   backfilled the website assembles a page without a read model from its
   sources under the same rules.
 
+### Discovery settings
+
+`discoverySettings/current` holds the owner's Settings → Discovery rules
+(`contracts/firestore/discovery_settings.schema.json`), edited through
+`adminUpdateDiscoverySettings`. Organisers not on Catch yet (`claimState`
+`unclaimed` or `claimPending`) exist to be found and claimed, so they must
+not appear where guests browse; organisers on Catch are `claimed` or
+`verified` (owner decision, 19 Nov 2026).
+
+- `surfaces` has a `{onCatch, notOnCatch}` rule for each place guests browse:
+  `homeOrganizers` (the homepage organisers band), `cityOrganizers` (city
+  pages and Explore's organisers tab), `plans` (their plans in This week and
+  Explore) and `totals` (organiser and upcoming event counts and the format
+  page indexing thresholds). `homeOrganizersMinimum` (1–24) is how many
+  organisers a city needs before the homepage shows its band;
+  `homeClaimAction` shows the claim-your-page button on the guest homepage.
+- A missing document, or a missing or malformed field, reads as the defaults
+  in `functions/src/discovery/discoveryPolicy.ts`: on Catch yes, not on Catch
+  no, on every surface; minimum 1; no claim button. Any other claim state
+  reads as not on Catch.
+- The rules only hide. A per-organiser switch can never make an organiser
+  appear where they hide it, and no rule shows an organiser a publication
+  rule hides. Search-engine indexing (unclaimed pages stay `noindex`) and the
+  app's Explore (`appVisibility`) are not governed here.
+- The collection is server-only in `firestore.rules`; each update writes an
+  `adminAuditLogs` entry with the rules before and after.
+
 ### City plans
 
 `cityPlans/{citySlug}` holds what the website shows for one city: the plans
@@ -6474,7 +6501,18 @@ organisers in the city and whether the city is `live` or `launchingSoon`
 
 - Every launched and planned market in `functions/src/locations/marketConfig.ts`
   has a document. A launched city is built only from its
-  `organizerPublicPage` documents, so it adds no publication rule of its own.
+  `organizerPublicPage` documents; the only rule it adds is Settings →
+  Discovery, which can only hide.
+- Each rebuild reads `discoverySettings/current`. Plans (and `planCount`,
+  `formatCounts`, `womenLedPlanCount`) come only from organisers its `plans`
+  rule allows; `organizers` lists those its `homeOrganizers` or
+  `cityOrganizers` rule allows, each with its `claimState`; the 30-day signal
+  and `formatPages` count only those its `totals` rule allows. A city that
+  has not launched applies the same rules to the organisers joining it by
+  their listing's `claimState`. The required `discovery` object copies the
+  two organiser rules, `homeOrganizersMinimum` and `homeClaimAction`, so the
+  website applies each surface's rule; `onDiscoverySettingsWritten` rebuilds
+  every city when the settings change.
 - A launched city is `live` however few plans it has; the website shows the
   honest count ("2 plans this week", or "new" before the first). Only a city
   that has not launched reads as `launchingSoon`.

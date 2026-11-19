@@ -210,10 +210,6 @@ export function eventRuntimeStageForParticipant(
   return "unavailable";
 }
 
-export function normalizeRuntimePhone(value: string): string {
-  return value.replace(/[\s()-]/gu, "");
-}
-
 export function eventRuntimeError(error: unknown): string {
   switch (errorCode(error)) {
     case "auth/invalid-verification-code":

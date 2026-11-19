@@ -10,7 +10,8 @@
     "enabled",
     "metaPixelId",
     "googleMeasurementId",
-    "policyReason"
+    "policyReason",
+    "profileTagsEligible"
   ],
   "properties": {
     "organizerId": {
@@ -41,6 +42,10 @@
         "sensitiveEvent",
         "eventClassificationUnavailable"
       ]
+    },
+    "profileTagsEligible": {
+      "type": "boolean",
+      "description": "Whether Catch's own tags may run on this organiser profile: true only for an organiser page read (eventId null) whose server classification is eligible under the current publication policy. Never says why not (#2063)."
     }
   }
 }

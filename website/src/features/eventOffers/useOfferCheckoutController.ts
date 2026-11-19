@@ -8,6 +8,8 @@ import {openRazorpayCheckout} from "../../shared/payments/razorpayCheckout";
 import type {FormStatus} from "../../shared/forms/types";
 import {rememberOfferPayment, rememberOfferGrant, type OfferCredential} from "./offerCredential";
 import {assertOfferResponse, type OfferGrant, type OfferPayment} from "./offerCheckoutModel";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 type Phase = "loading" | "phone" | "otp" | "ready" | "unavailable";
 type Challenge = Awaited<ReturnType<typeof beginPublicEventPhoneVerification>>;
@@ -193,13 +195,14 @@ export function useOfferCheckoutController(credential: OfferCredential | null) {
   const sendCode = async (event: FormEvent) => {
     event.preventDefault();
     return run(async () => {
-    if (!/^\+[1-9][0-9]{7,14}$/u.test(phone.trim())) {
+    const e164 = catchPhoneE164(phone, activePhoneCountry);
+    if (!e164) {
       setStatus({message: eventOfferCopy.phoneError, tone: "is-error"}); return;
     }
     const epoch = scope.current.epoch;
     try {
       challenge.current?.clear();
-      const next = await beginPublicEventPhoneVerification(phone.trim(), recaptchaId);
+      const next = await beginPublicEventPhoneVerification(e164, recaptchaId);
       if (!current(epoch)) {next.clear(); return;}
       challenge.current = next; setPhase("otp"); setStatus({message: "", tone: ""});
     } catch {

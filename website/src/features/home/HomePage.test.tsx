@@ -4,6 +4,7 @@ import {afterEach, describe, expect, it, vi} from "vitest";
 import {brand} from "@catch/brand";
 import {homeCatalogFixture, mumbaiLiveCatalog, mumbaiThinCatalog, puneLaunchingSoonCatalog} from "../../stories/fixtures/homeCatalogs";
 import type {HomeReview} from "./homeModel";
+import {defaultHomeDiscovery} from "./homeDiscovery";
 import {HomePage} from "./HomePage";
 import {mumbaiDiscoveryCatalog} from "../discovery/discoveryCatalogFixtures";
 
@@ -285,7 +286,7 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(screen.queryByText(/New in Mumbai|Launching soon in Mumbai/u)).toBeNull();
   });
 
-  it("links organisers to their pages, and an unclaimed listing to its claim", () => {
+  it("links organisers on Catch to their pages, and leaves out unclaimed listings and the claim button by default", () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const organisers = within(screen.getByRole("region", {name: "The people behind the plans."}));
     expect(organisers.getByText("Organisers in Mumbai")).toBeTruthy();
@@ -293,10 +294,24 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(runners.getAttribute("href")).toBe("/organizers/driftwood-bay-runners/");
     expect(runners.textContent).toContain("212 followers");
     expect(runners.textContent).toContain("Next: Fri 6:30 AM · Salt Air Social Run");
+    expect(organisers.queryByRole("link", {name: /Bandra Book Swap/})).toBeNull();
+    expect(organisers.queryByRole("link", {name: "Claim your page"})).toBeNull();
+  });
+
+  it("shows unclaimed listings with their claim link, and the claim button, when Settings → Discovery allows them", () => {
+    const discovery = {...defaultHomeDiscovery, homeOrganizers: {onCatch: true, notOnCatch: true}, homeClaimAction: true};
+    render(<HomePage captures={captures} catalog={{...mumbaiLiveCatalog, plans: {...mumbaiLiveCatalog.plans, discovery}}} />);
+    const organisers = within(screen.getByRole("region", {name: "The people behind the plans."}));
     const unclaimed = organisers.getByRole("link", {name: /Bandra Book Swap/});
     expect(unclaimed.getAttribute("href")).toBe("/organizers/bandra-book-swap/#claim");
     expect(unclaimed.textContent).toContain("Is this you? Claim it");
     expect(organisers.getByRole("link", {name: "Claim your page"}).getAttribute("href")).toBe("/claim/");
+  });
+
+  it("leaves the organisers band out while the city has fewer organisers than its minimum", () => {
+    const discovery = {...defaultHomeDiscovery, homeOrganizersMinimum: 24};
+    render(<HomePage captures={captures} catalog={{...mumbaiLiveCatalog, plans: {...mumbaiLiveCatalog.plans, discovery}}} />);
+    expect(screen.queryByRole("region", {name: "The people behind the plans."})).toBeNull();
   });
 
   it("moves to another city from the picker", () => {

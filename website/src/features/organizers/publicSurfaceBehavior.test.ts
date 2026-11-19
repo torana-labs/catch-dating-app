@@ -66,6 +66,11 @@ describe("public surface behavior contract", () => {
       verifyAuthorityBadge(configuration, policy.trustState);
       switch (surfaceId) {
       case "web.homeOrganizerDiscovery":
+        // Settings → Discovery's defaults (features/home/homeDiscovery.ts): the
+        // homepage shows only organizers on Catch, that is claimed or verified.
+        verifyDiscovery(configuration, policy.isPubliclyReadable &&
+          ["claimed", "verified"].includes(String(listing.authority.claimState)));
+        break;
       case "web.organizerSearch":
         verifyDiscovery(configuration, policy.isPubliclyReadable);
         break;

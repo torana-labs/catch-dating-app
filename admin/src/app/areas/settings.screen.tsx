@@ -8,6 +8,7 @@ const IntakeSettingsRouteScreen = lazy(() => import("../../features/intake/organ
 const SalesSettingsRouteScreen = lazy(() => import("../../features/sales/ui/SalesSettingsRouteScreen").then((m) => ({default: m.SalesSettingsRouteScreen})));
 const PaymentSettingsRouteScreen = lazy(() => import("../../features/settings/ui/PaymentSettingsRouteScreen").then((m) => ({default: m.PaymentSettingsRouteScreen})));
 const SafetySettingsRouteScreen = lazy(() => import("../../features/safety/ui/SafetySettingsRouteScreen").then((m) => ({default: m.SafetySettingsRouteScreen})));
+const DiscoverySettingsRouteScreen = lazy(() => import("../../features/discovery/ui/DiscoverySettingsRouteScreen").then((m) => ({default: m.DiscoverySettingsRouteScreen})));
 
 const render: AdminAreaRender = ({adminRoles: claims, canOpen, mode, navigate, route, setError, setNotice, userUid}) => {
   // Sample data signs in as the sample owner, who holds no claims.
@@ -55,6 +56,18 @@ const render: AdminAreaRender = ({adminRoles: claims, canOpen, mode, navigate, r
         id: "safety", title: "Safety", subtitle: "Account actions, deadlines, grievance contact",
         render: () => <SafetySettingsRouteScreen adminRoles={adminRoles} onError={setError} onNotice={setNotice} />,
       }] : []),
+      // Every Settings role reads Discovery; only the owner changes it.
+      {
+        id: "discovery", title: "Discovery", subtitle: "Where organisers appear",
+        render: () => (
+          <DiscoverySettingsRouteScreen
+            adminRoles={adminRoles}
+            currentUserUid={userUid ?? (mode === "sample" ? "sample-owner" : null)}
+            onError={setError}
+            onNotice={setNotice}
+          />
+        ),
+      },
     ]}
     selectedPage={route.params.teamMemberUid ? "team" : route.settingsPage ?? route.params.settingsPage ?? null}
     teamMemberUid={route.params.teamMemberUid ?? null}

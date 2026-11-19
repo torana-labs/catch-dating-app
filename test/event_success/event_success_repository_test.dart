@@ -65,7 +65,7 @@ void main() {
     });
 
     test(
-      'saves host setup and routes live steps through the fenced callable',
+      'saves host setup and live steps through the fenced callables',
       () async {
         final event = buildEvent();
         final plan = await repository.ensurePlanForEvent(event);
@@ -86,13 +86,42 @@ void main() {
           expectedRevision: 7,
         );
 
-        final saved = await repository.watchPlan(event.id).first;
-        expect(saved, isNotNull);
-        expect(saved!.activeStepIndex, 0);
-        expect(saved.hasModule('wingman_requests'), isTrue);
+        // The setup goes to the server with exactly the fields the plan
+        // screen used to write; the client no longer writes the plan.
+        final edited = plan.copyWithDraft(draft, updatedAt: plan.updatedAt);
+        final save =
+            functions.httpsCallable('saveEventSuccessPlanSetup')
+                as TestHttpsCallable;
+        expect(save.calls, [
+          {
+            'eventId': event.id,
+            'expectedUpdatedAtMicros': plan.updatedAt.microsecondsSinceEpoch,
+            'setup': {
+              'playbookId': edited.playbookId,
+              'selectedModuleIds': edited.selectedModuleIds,
+              'targetAttendeeCount': edited.targetAttendeeCount,
+              'structureConfig': edited.structureConfig.toJson(),
+              'hostGoal': edited.hostGoal,
+              'wingmanRequestsEnabled': edited.wingmanRequestsEnabled,
+              'contextualOpenersEnabled': edited.contextualOpenersEnabled,
+              'compatibilityAffectsRanking':
+                  edited.compatibilityAffectsRanking,
+              'questionnaireConfig': edited.questionnaireConfig.toJson(),
+              'conversationGraphConsentMode': 'optOut',
+              'attendeePrompt': edited.attendeePrompt,
+            },
+          },
+        ]);
         expect(
-          saved.conversationGraphConsentMode,
-          EventSuccessConversationGraphConsentMode.optOut,
+          (save.calls.single! as Map)['setup'],
+          eventSuccessPlanSetupFields(edited),
+        );
+        final stored = await repository.watchPlan(event.id).first;
+        expect(stored, isNotNull);
+        expect(stored!.activeStepIndex, 0);
+        expect(
+          stored.conversationGraphConsentMode,
+          plan.conversationGraphConsentMode,
         );
         final callable =
             functions.httpsCallable('controlEventSuccessLive')

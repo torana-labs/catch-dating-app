@@ -46,44 +46,32 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
         ),
       );
 
+  /// Saves the plan's setup fields through `saveEventSuccessPlanSetup`,
+  /// fenced on the plan's [expectedUpdatedAt]. The server refuses once the
+  /// event has started or has guests, or the plan is locked, and when the
+  /// plan changed on another device since it was read.
   Future<void> savePlan(
     EventSuccessPlan plan, {
     required DateTime expectedUpdatedAt,
   }) => withBackendErrorContext(
     () async {
-      final ref = _planRef(plan.eventId);
-      await _db.runTransaction((tx) async {
-        final snapshot = await tx.get(ref);
-        final current = snapshot.data();
-        if (!snapshot.exists || current == null) {
-          throw StateError('The live event guide no longer exists.');
-        }
-        if (current.status != EventSuccessPlanStatus.setup ||
-            current.frozenAt != null) {
-          throw StateError('The live event guide is already locked.');
-        }
-        if (!current.updatedAt.isAtSameMomentAs(expectedUpdatedAt)) {
-          throw StateError('The live event guide changed on another device.');
-        }
-        tx.update(ref, {
-          'playbookId': plan.playbookId,
-          'selectedModuleIds': plan.selectedModuleIds,
-          'targetAttendeeCount': plan.targetAttendeeCount,
-          'structureConfig': plan.structureConfig.toJson(),
-          'hostGoal': plan.hostGoal,
-          'wingmanRequestsEnabled': plan.wingmanRequestsEnabled,
-          'contextualOpenersEnabled': plan.contextualOpenersEnabled,
-          'compatibilityAffectsRanking': plan.compatibilityAffectsRanking,
-          'questionnaireConfig': plan.questionnaireConfig.toJson(),
-          'conversationGraphConsentMode':
-              plan.conversationGraphConsentMode.name,
-          'attendeePrompt': plan.attendeePrompt,
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
-      });
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      await functions
+          .httpsCallable('saveEventSuccessPlanSetup')
+          .call<Object?>(
+            SaveEventSuccessPlanSetupCallableRequest(
+              eventId: plan.eventId,
+              expectedUpdatedAtMicros:
+                  expectedUpdatedAt.microsecondsSinceEpoch,
+              setup: eventSuccessPlanSetupFields(plan),
+            ).toJson(),
+          );
     },
     context: const BackendErrorContext(
-      service: BackendService.firestore,
+      service: BackendService.functions,
       action: 'save live event guide',
       resource: _plansPath,
     ),
@@ -330,3 +318,19 @@ mixin _EventSuccessPlanRepository on _EventSuccessRepositoryCore {
         .call(request.toJson());
   }
 }
+
+/// The setup fields `saveEventSuccessPlanSetup` writes: the same set, in the
+/// same shapes, the plan screen wrote to the plan directly before.
+Map<String, Object?> eventSuccessPlanSetupFields(EventSuccessPlan plan) => {
+  'playbookId': plan.playbookId,
+  'selectedModuleIds': plan.selectedModuleIds,
+  'targetAttendeeCount': plan.targetAttendeeCount,
+  'structureConfig': plan.structureConfig.toJson(),
+  'hostGoal': plan.hostGoal,
+  'wingmanRequestsEnabled': plan.wingmanRequestsEnabled,
+  'contextualOpenersEnabled': plan.contextualOpenersEnabled,
+  'compatibilityAffectsRanking': plan.compatibilityAffectsRanking,
+  'questionnaireConfig': plan.questionnaireConfig.toJson(),
+  'conversationGraphConsentMode': plan.conversationGraphConsentMode.name,
+  'attendeePrompt': plan.attendeePrompt,
+};

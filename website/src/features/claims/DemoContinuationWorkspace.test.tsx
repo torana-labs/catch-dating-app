@@ -31,7 +31,7 @@ describe("private canonical organizer handoff", () => {
     fireEvent.change(screen.getByLabelText("Public proof links"), {target: {value: "https://first.example.test/ownership"}});
     const challenge = {confirm: vi.fn(), clear: vi.fn()};
     vi.mocked(f.auth.beginPhone).mockResolvedValue(challenge);
-    fireEvent.change(screen.getByLabelText("Verify invited phone (international format)"), {target: {value: "+15555550100"}});
+    fireEvent.change(screen.getByLabelText("Verify invited phone (international format)"), {target: {value: "+919876543210"}});
     fireEvent.click(screen.getByRole("button", {name: "Send verification code"}));
     await screen.findByLabelText("Verification code");
     const nextId = "d".repeat(64);

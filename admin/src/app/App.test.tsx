@@ -104,7 +104,8 @@ describe("App live deep-link ownership", () => {
       name: "Send verification code",
     }));
 
-    expect(mocks.requestPhoneSignInCode).toHaveBeenCalledWith("+919000000000");
+    // The number check loads on demand, so the request follows a moment later.
+    await waitFor(() => expect(mocks.requestPhoneSignInCode).toHaveBeenCalledWith("+919000000000"));
     await user.type(
       await screen.findByRole("textbox", {name: "Verification code"}),
       "123456"

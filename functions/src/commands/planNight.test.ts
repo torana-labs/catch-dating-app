@@ -113,8 +113,9 @@ test("apply saves the plan on the workspace draft and replays", async () => {
   assert.equal(plan.targetAttendeeCount, 24);
   assert.equal(plan.status, "setup");
   assert.equal(plan.organizerId, ORGANIZER_ID);
+  // The topology is kept, not dropped (C4 PR 3).
   assert.deepEqual(plan.structureConfig, {unitKind: "wholeGroup", unitSize: 24, unitCount: 1, rotationIntervalMinutes: null,
-    revealCountdownSeconds: (plan.structureConfig as {revealCountdownSeconds: number}).revealCountdownSeconds});
+    revealCountdownSeconds: (plan.structureConfig as {revealCountdownSeconds: number}).revealCountdownSeconds, topology: "set"});
   const again = await planNightHandler(call(envelope("apply", {}, {confirm})), h.deps);
   assert.equal(again.status, "replayed");
 });
@@ -128,7 +129,8 @@ test("apply updates a plan still in setup, and leaves a live one alone", async (
   const plan = h.db.read(`eventSuccessPlans/${EVENT_ID}`) as Record<string, unknown>;
   assert.equal(plan.playbookId, "social_run_light");
   assert.equal(plan.hostGoal, "Keep mine");
-  assert.deepEqual(plan.structureConfig, {unitKind: "wholeGroup", unitSize: 24, unitCount: 1, rotationIntervalMinutes: null, revealCountdownSeconds: 20});
+  assert.deepEqual(plan.structureConfig, {unitKind: "wholeGroup", unitSize: 24, unitCount: 1, rotationIntervalMinutes: null,
+    revealCountdownSeconds: 20, topology: "set"});
 
   h.db.write(`eventSuccessPlans/${EVENT_ID}`, {...plan, status: "live"});
   const locked = await planNightHandler(call({...envelope("apply"), idempotencyKey: "night-plan-request-0002"}), h.deps);
