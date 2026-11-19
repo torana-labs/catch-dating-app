@@ -86,4 +86,3 @@ export function useReferralAccountController() {
     closeSignIn: () => {sheet.reset(); setSignInOpen(false);},
   };
 }
-export type ReferralAccountController = ReturnType<typeof useReferralAccountController>;
