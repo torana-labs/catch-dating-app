@@ -2,6 +2,9 @@ import {describe, expect, it} from "vitest";
 import {websiteCities} from "@content/markets";
 import {playbookTryItTool, tryItCities, tryItEventWhen, tryItKitLinks, tryItKitLinksProblem, tryItLink, tryItLocalDate} from "./tryItModel";
 
+/** A kit link as the command takes it. */
+const kitLink = (name: string, kind: "channel" | "promoter", source?: string) => ({label: name, kind, ...(source ? {source} : {})});
+
 describe("try-it model", () => {
   it("takes a full link, one without https://, or an Instagram handle for the page tool", () => {
     expect(tryItLink("https://driftwoodbayrunners.example/runs", "organizer")).toBe("https://driftwoodbayrunners.example/runs");
@@ -19,10 +22,8 @@ describe("try-it model", () => {
 
   it("splits where the visitor promotes into labelled links, naming known channels and marked people", () => {
     expect(tryItKitLinks("Instagram,  run club WhatsApp\nKabir, Brindle Café poster", new Set(["kabir"]))).toEqual([
-      {label: "Instagram", kind: "channel", source: "instagram"},
-      {label: "run club WhatsApp", kind: "channel", source: "whatsapp"},
-      {label: "Kabir", kind: "promoter"},
-      {label: "Brindle Café poster", kind: "channel", source: "print"},
+      kitLink("Instagram", "channel", "instagram"), kitLink("run club WhatsApp", "channel", "whatsapp"),
+      kitLink("Kabir", "promoter"), kitLink("Brindle Café poster", "channel", "print"),
     ]);
     expect(tryItKitLinks(`${"x".repeat(90)}`)[0].label).toHaveLength(80);
   });

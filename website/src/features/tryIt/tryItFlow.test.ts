@@ -12,6 +12,8 @@ import {createTryItFlow, type TryItDraftEvent, type TryItFlowDeps} from "./tryIt
 import type {TryItToolKind} from "./tryItModel";
 
 const link = "https://www.instagram.example/driftwoodbayrunners/";
+/** A kit link as the command takes it. */
+const kitLink = (name: string, kind: "channel" | "promoter", source?: string) => ({label: name, kind, ...(source ? {source} : {})});
 const eventLink = "https://events.example/salt-air-social-run";
 
 function flowWith(tool: TryItToolKind, client: ReturnType<typeof scriptedTryItClient>, extra: Partial<TryItFlowDeps> = {}) {
@@ -302,9 +304,7 @@ describe("try-it flow: promotion kit (Messages and growth)", () => {
     expect(stage()).toMatchObject({name: "done", step: "kit", links: kitFixtures.applied.result.links});
     const kitCalls = client.calls.filter((call) => call.commandId === "promotion.create-kit");
     expect(kitCalls.map((call) => call.input)).toEqual([0, 1].map(() => ({eventId: fixtureEventId, links: [
-      {label: "Instagram", kind: "channel", source: "instagram"},
-      {label: "run club WhatsApp", kind: "channel", source: "whatsapp"},
-      {label: "Kabir", kind: "promoter"},
+      kitLink("Instagram", "channel", "instagram"), kitLink("run club WhatsApp", "channel", "whatsapp"), kitLink("Kabir", "promoter"),
     ]})));
     expect(kitCalls[1]).toMatchObject({mode: "apply", idempotencyKey: kitCalls[0].idempotencyKey, previewHash: kitFixtures.previewed.previewHash});
   });

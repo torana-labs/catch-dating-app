@@ -30,6 +30,10 @@ function validator(file: string) {
   if (!compiled.has(file)) compiled.set(file, ajv.compile(JSON.parse(readFileSync(path.join(contracts, "..", file), "utf8"))));
   return compiled.get(file)!;
 }
+/** A kit link as the command takes it. */
+const kitLink = (name: string, kind: "channel" | "promoter", source?: string) => ({label: name, kind, ...(source ? {source} : {})});
+/** A FunctionsError as the SDK throws it: its code and the server's words. */
+const callableError = (code: string, text: string) => Object.assign(new Error(text), {code});
 const entry = (commandId: TryItCommandId) => catalog.commands.find((command) => command.commandId === commandId)!;
 
 describe("try-it command client", () => {
@@ -64,7 +68,7 @@ describe("try-it command client", () => {
       "organizer.import-from-link": {mode: "preview", idempotencyKey: tryItIdempotencyKey(), input: {link: "https://www.instagram.example/driftwoodbayrunners/"}},
       "event.import-from-link": {mode: "preview", idempotencyKey: tryItIdempotencyKey(), input: {link: "https://events.example/salt-air", eventKey: "wiSaltAirSocialRun"}},
       "promotion.create-kit": {mode: "apply", idempotencyKey: tryItIdempotencyKey(), previewHash: "e".repeat(64),
-        input: {eventId: "evtSaltAirSocialRun01", links: [{label: "Instagram", source: "instagram", kind: "channel"}, {label: "Kabir", kind: "promoter"}]}},
+        input: {eventId: "evtSaltAirSocialRun01", links: [kitLink("Instagram", "channel", "instagram"), kitLink("Kabir", "promoter")]}},
     };
     for (const [commandId, sample] of Object.entries(samples) as [TryItCommandId, (typeof samples)[TryItCommandId]][]) {
       let sent: unknown;
@@ -92,16 +96,16 @@ describe("try-it command client", () => {
   it("names a thrown call's problem from its reason, then its code, and never throws", async () => {
     const fail = (error: unknown) => createTryItCommandClient({invoke: (async () => {throw error;}) as unknown as TryItInvoke})
       .call("workspace.ensure", {mode: "preview", idempotencyKey: "web_0123456789abcdef", input: {organizerName: "A", marketId: "in-mh-mumbai"}});
-    expect(await fail({code: "functions/resource-exhausted", message: "Rate limit exceeded"})).toEqual({ok: false, problem: "rate_limited", reason: null});
+    expect(await fail(callableError("functions/resource-exhausted", "Rate limit exceeded"))).toEqual({ok: false, problem: "rate_limited", reason: null});
     expect(await fail({code: "functions/failed-precondition", details: {reason: "market_not_open"}})).toEqual({ok: false, problem: "market_not_open", reason: "market_not_open"});
     expect(await fail({code: "functions/failed-precondition", details: {reason: "phone_not_verified"}})).toMatchObject({problem: "sign_in"});
     expect(await fail({code: "functions/unauthenticated"})).toMatchObject({problem: "sign_in"});
     expect(await fail({code: "functions/aborted", details: {reason: "changed_since_preview"}})).toMatchObject({problem: "changed"});
     expect(await fail({code: "functions/already-exists", details: {reason: "idempotency_key_reused"}})).toMatchObject({problem: "key_reused"});
     expect(await fail({code: "functions/failed-precondition", details: {reason: "existing_listing"}})).toMatchObject({problem: "existing_listing"});
-    expect(await fail({code: "functions/invalid-argument", message: "Send a public https link."})).toMatchObject({problem: "invalid"});
+    expect(await fail(callableError("functions/invalid-argument", "Send a public https link."))).toMatchObject({problem: "invalid"});
     expect(await fail({code: "functions/permission-denied"})).toMatchObject({problem: "not_allowed"});
-    expect(await fail({code: "functions/internal", message: "internal"})).toMatchObject({problem: "offline"});
+    expect(await fail(callableError("functions/internal", "internal"))).toMatchObject({problem: "offline"});
     expect(await fail(new Error("Try-it tools are not configured for this build."))).toMatchObject({problem: "not_configured"});
     expect(await fail(Object.assign(new Error("App Check could not start in this browser."), {name: "AppCheckDeadlineError"}))).toMatchObject({problem: "app_check"});
     expect(tryItProblemFor("nope")).toEqual({problem: "failed", reason: null});
