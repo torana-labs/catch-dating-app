@@ -556,6 +556,7 @@
     "OrganizerMomentRunDocument",
     "OrganizerPaymentConnectionDocument",
     "OrganizerPublicPageDocument",
+    "OrganizerReferralDocument",
     "OrganizerSenderConnectionActionCallablePayload",
     "OrganizerSenderConnectionDocument",
     "OrganizerTrackingSettingsCallableResponse",
