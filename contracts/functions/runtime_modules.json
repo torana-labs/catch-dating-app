@@ -819,7 +819,8 @@
     "SignProgramPhotoUrlsCallablePayload",
     "ProgramPhotoUrlsCallableResponse",
     "EnsureTryItWorkspaceCallablePayload",
-    "ImportOrganizerFromLinkCallablePayload"
+    "ImportOrganizerFromLinkCallablePayload",
+    "ImportEventFromLinkCallablePayload"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",
@@ -1052,6 +1053,7 @@
     "WithdrawOrganizerFormResponseCallableResponse",
     "WithdrawParticipantMessagingPermissionCallableResponse",
     "EnsureTryItWorkspaceCallableResponse",
-    "ImportOrganizerFromLinkCallableResponse"
+    "ImportOrganizerFromLinkCallableResponse",
+    "ImportEventFromLinkCallableResponse"
   ]
 }
