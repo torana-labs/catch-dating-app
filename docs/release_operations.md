@@ -3750,6 +3750,83 @@ instruction), an owner sets `active` to false on `listingSuppressions/<caseId>`.
 Self-created organisers that matched a case are listed in its `reviewFlags`;
 review them (they start private and unpublished).
 
+### Listing cohort withdraw
+
+When a whole programmatic listing cohort has to come down at once (a pilot
+is stopped, or a problem is found with how a batch was sourced), the owner
+withdraws it in one approved run. The tool is
+`tool/data/listing_cohort_withdraw.mjs`; it runs through the dispatch-only
+`Listing cohort withdraw` workflow
+(`.github/workflows/listing-cohort-withdraw.yml`). It selects organisers whose
+`listingProgram.cohortId` is the cohort (see
+[data contracts](data_contracts.md#programmatic-listings)), optionally only
+those whose page is in one city, and withdraws each one whose page is
+`published` and that no owner has claimed. It writes the same fields as the
+single-organiser suspend from a takedown request
+(`publicPage.publishStatus: suppressed`, `indexStatus: noindex`,
+`robots: noindex, follow`) and one `adminAuditLogs` row per organiser
+(`action: listingCohortWithdraw`, actor `workflow:listing-cohort-withdraw`,
+`after.cohortId`, `after.reason: cohortWithdrawal`, the manifest hash and the
+run id). The organiser triggers then rebuild the public page, city plans,
+`publicOrganizers` and search. A withdrawal deletes nothing; to stop new
+listings as well, also pause the programme (`adminManageListingProgram`).
+
+It skips, and counts: pages already `suppressed` or `removed`, pages not
+`published` (`draft`, `qa` or none), and claimed organisers (an owner or host
+user id, ownership `claimed` or `transferred`, or claim `claimed` or
+`verified`). A page with a claim still pending is withdrawn with the rest and
+counted on its own line.
+
+**Nothing about an organiser goes into GitHub.** The inputs are the
+environment, the mode, the cohort id (such as `pilot-indore-1`), an optional
+city slug, and for apply the manifest SHA-256. The tool prints counts only.
+Organiser ids can carry a name, so the manifest of ids is never printed or
+uploaded as an artifact; apply instead re-reads the cohort and proves it is
+the approved selection by recomputing the hash.
+
+Before the first prod run, check that the `prod-takedown` environment requires
+the owner as reviewer (see
+[Organiser takedown](#before-the-first-production-run-one-time), step 4).
+Only a prod apply waits there; prod plan and verify only read.
+
+Dispatch from `main`, one mode at a time, reading each summary before the
+next. Use the same `city` value (or none) for all three. Dev first when the
+cohort exists there.
+
+```bash
+gh workflow run listing-cohort-withdraw.yml --ref main -f environment=prod -f mode=plan -f cohort_id=pilot-indore-1
+gh workflow run listing-cohort-withdraw.yml --ref main -f environment=prod -f mode=apply -f cohort_id=pilot-indore-1 \
+  -f manifest_sha256=<the SHA-256 the plan run printed>
+gh workflow run listing-cohort-withdraw.yml --ref main -f environment=prod -f mode=verify -f cohort_id=pilot-indore-1
+```
+
+1. **plan** (the default, a dry run) prints: matched in the cohort, would
+   withdraw (and how many of those have a claim pending), already withdrawn by
+   this cohort withdrawal, skipped already suppressed or removed, skipped
+   claimed, skipped not published, matched and would withdraw by city, and
+   `Manifest: N organiser(s), SHA-256 <hash>`. The manifest is the cohort id,
+   the city filter and the sorted ids it would withdraw plus those an earlier
+   apply of this cohort already withdrew. Read the counts; if they are what
+   you expect, copy the hash.
+2. **apply** waits in `prod-takedown` until the owner approves the run. It
+   then re-reads the cohort and refuses, writing nothing, unless the manifest
+   hash equals `manifest_sha256`. If anything changed since the plan (a page
+   was claimed, published or taken down), run plan again and approve the new
+   hash; a refused apply never prints a hash to copy. It writes in
+   transactions of 100 organisers, re-reading each one and skipping (and
+   counting) any that is no longer in the cohort, no longer published or now
+   claimed. It ends with a re-check that should show `would withdraw 0`.
+   Re-running the same apply changes nothing: withdrawn pages stay in the
+   manifest through their audit rows, so the hash still matches, and there is
+   nothing left to write. An interrupted apply finishes the rest on a re-run.
+3. **verify** passes when nothing in the cohort (and city) is left to
+   withdraw.
+
+A withdrawn page comes back one organiser at a time through the audited Admin
+index review (`adminSetOrganizerIndexStatus`); there is no bulk undo. For a
+local run against the emulator, `--manifest-out <file>` on plan writes the
+manifest with its ids to a local file; never use it in CI.
+
 ## Smoke Tests
 
 After a backend deploy, smoke test:
