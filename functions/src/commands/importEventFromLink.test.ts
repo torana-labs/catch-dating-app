@@ -74,7 +74,7 @@ function finishRead(db: FakeFirestore, events = EVENTS) {
   for (const event of events) {
     db.write(`operationWorkItems/${event.id}`, {normalizedPayload: {intake: {event: {title: event.title,
       startAt: event.startAt, endAt: null, venue: (event as {venue?: string}).venue ?? null,
-      sourceUrl: `https://lu.ma/${event.id}`}}}});
+      sourceUrl: `https://lu.ma/driftwood-${event.id}`}}}});
   }
 }
 
@@ -117,7 +117,7 @@ test("the page's upcoming events are listed, and the chosen one previews as a pr
   assert.equal(preview.status, "previewed");
   assert.deepEqual(preview.result.proposal, {eventKey: "item-run", name: "Sunday sea-face run", localDate: "2026-11-23",
     localStartTime: "07:00", timezone: "Asia/Kolkata", cityId: preview.result.proposal?.cityId, marketId: "in-mh-mumbai",
-    venue: "Sea Face Promenade", sourceUrl: "https://lu.ma/item-run"});
+    venue: "Sea Face Promenade", sourceUrl: "https://lu.ma/driftwood-item-run"});
   assert.equal(drafts(db).length, 0, "a preview writes no event");
 });
 
