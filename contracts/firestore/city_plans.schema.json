@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/city_plans.schema.json",
   "title": "CityPlansDocument",
-  "description": "Read model holding what the website shows for one city, stored at cityPlans/{citySlug}: the plans starting in the next 14 days, how many there are of each format, the organisers behind them, whether the city is live or launching soon, whether it has any plan in the next 30 days (the header's What's on rule), and the counts and indexing decision of each city-by-format page (/<city>/<format>/). Functions build it from the published organizer page read models (and, for cities that have not launched, from published organizers), so it adds no publication rule of its own. It never holds contact details, owner identities, rosters or dating fields; the 30-day and format page fields are counts only. Only the Admin SDK reads it.",
+  "description": "Read model holding what the website shows for one city, stored at cityPlans/{citySlug}: the plans starting in the next 14 days, how many there are of each format, the organisers behind them, whether the city is live or launching soon, whether it has any plan in the next 30 days (the header's What's on rule), and the counts and indexing decision of each city-by-format page (/<city>/<format>/). Functions build it from the published organizer page read models (and, for cities that have not launched, from published organizers); the only rule it adds is the owner's Settings → Discovery (discoverySettings/current), which can hide organisers that are not on Catch yet, their plans and their counts, and never shows one a publication rule hides. It never holds contact details, owner identities, rosters or dating fields; the 30-day and format page fields are counts only. Only the Admin SDK reads it.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "cityPlans",
@@ -28,7 +28,8 @@
     "monthCountsComplete",
     "formatPages",
     "plans",
-    "organizers"
+    "organizers",
+    "discovery"
   ],
   "properties": {
     "schemaVersion": {
@@ -70,7 +71,7 @@
     "planCount": {
       "type": "integer",
       "minimum": 0,
-      "description": "Every plan in the window, which may be more than plans holds."
+      "description": "Every plan in the window that Settings → Discovery lets appear in plans, which may be more than plans holds."
     },
     "formatCounts": {
       "type": "object",
@@ -99,7 +100,7 @@
     "upcomingEvents30d": {
       "type": "integer",
       "minimum": 0,
-      "description": "Every listed plan in the city that starts before monthWindowEnd and has not ended, in any format. Not capped by plans."
+      "description": "Every listed plan in the city that starts before monthWindowEnd and has not ended, in any format, from organisers Settings → Discovery counts in totals. Not capped by plans."
     },
     "hasUpcomingMonth": {
       "type": "boolean",
@@ -140,10 +141,36 @@
     },
     "organizers": {
       "type": "array",
-      "description": "Organisers in the city: those with a plan in the window first, soonest plan first, then by followers.",
+      "description": "Organisers in the city that Settings → Discovery lets appear on the homepage band or on city pages (each carries its claimState, so the website applies discovery's per-surface rule): those with a plan in the window first, soonest plan first, then by followers.",
       "maxItems": 24,
       "items": {
         "$ref": "#/definitions/cityOrganizer"
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The Settings → Discovery rules the website applies to organizers per surface, copied at build time. plans and the counts are already filtered by the plans and totals rules.",
+      "required": ["homeOrganizers", "cityOrganizers", "homeOrganizersMinimum", "homeClaimAction"],
+      "properties": {
+        "homeOrganizers": {
+          "$ref": "../firestore/discovery_settings.schema.json#/definitions/surfaceRule",
+          "description": "Which organisers the homepage organisers band shows."
+        },
+        "cityOrganizers": {
+          "$ref": "../firestore/discovery_settings.schema.json#/definitions/surfaceRule",
+          "description": "Which organisers city pages and Explore's organisers tab show."
+        },
+        "homeOrganizersMinimum": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 24,
+          "description": "The homepage shows the organisers band only when at least this many organisers pass homeOrganizers."
+        },
+        "homeClaimAction": {
+          "type": "boolean",
+          "description": "Whether the guest homepage shows the claim-your-page button."
+        }
       }
     }
   },
@@ -177,12 +204,12 @@
         "organizerCount": {
           "type": "integer",
           "minimum": 0,
-          "description": "Organisers in the city that run the format, from their upcoming plans or their listed category and formats. Not capped by organizers. In a city that has not launched, the published organisers joining it."
+          "description": "Organisers in the city that run the format, from their upcoming plans or their listed category and formats, among those Settings → Discovery counts in totals. Not capped by organizers. In a city that has not launched, the published organisers joining it."
         },
         "upcomingEventCount": {
           "type": "integer",
           "minimum": 0,
-          "description": "Listed plans in the format that start before monthWindowEnd and have not ended."
+          "description": "Listed plans in the format that start before monthWindowEnd and have not ended, from organisers Settings → Discovery counts in totals."
         },
         "freeEventCount": {
           "type": "integer",

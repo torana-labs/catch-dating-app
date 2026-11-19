@@ -10,6 +10,11 @@ import {
 } from "../publicPages/pageModel";
 import type {HostListing} from "../publicPages/publicOrganizer";
 import {
+  allowedOn,
+  type DiscoveryRules,
+  type DiscoverySurfaceRule,
+} from "../discovery/discoveryPolicy";
+import {
   discoveryFormats,
   discoveryFormatsForEvent,
   discoveryFormatsForText,
@@ -21,8 +26,11 @@ import {
 /**
  * Assembles one city's plans read model. Pure: the caller reads the sources
  * and writes the result. Live cities are built only from organizer page read
- * models, which already passed every publication rule, so this module adds
- * no visibility logic; it picks the plans in the window and counts them.
+ * models, which already passed every publication rule. The one rule this
+ * module adds is the owner's Settings → Discovery, which can only hide: plans
+ * come from organisers its plans rule allows, organisers from those its
+ * homepage or city rule allows, and every count from those its totals rule
+ * allows. It never shows an organiser a publication rule hides.
  *
  * Two windows: plans and the homepage format counts cover 14 days; the
  * header's 30-day signal and the city-by-format page counts cover 30, and
@@ -65,6 +73,8 @@ export interface CityPlanSources {
    * public page until the city launches, so they carry no path.
    */
   joiningOrganizers: readonly HostListing[];
+  /** Settings → Discovery, read once per rebuild. */
+  discovery: DiscoveryRules;
 }
 
 export const cityPlanLimits = {
@@ -113,7 +123,8 @@ export function formatsForText(text: string): CityFormat[] {
 const day = 24 * 60 * 60 * 1000;
 
 export function buildCityPlans(sources: CityPlanSources): CityPlans {
-  const {market, now} = sources;
+  const {market, now, discovery} = sources;
+  const {surfaces} = discovery;
   const windowEnd = now + cityPlanLimits.windowDays * day;
   const monthWindowEnd = now + cityPlanLimits.monthWindowDays * day;
   const launched = market.launchStatus === "launched";
@@ -125,7 +136,8 @@ export function buildCityPlans(sources: CityPlanSources): CityPlans {
 
   const pageFormats = new Map(pages.map((page) =>
     [page.organizerId, discoveryFormatsForText(listedFormats(page))]));
-  const plans = pages.flatMap((page) => page.upcomingEvents
+  const plans = pages.filter((page) => allowedOn(surfaces.plans,
+    page.claim.state)).flatMap((page) => page.upcomingEvents
     .filter((item) => isUpcoming(item, now) && start(item) < windowEnd)
     .map((item) => cityPlan(item, page,
       pageFormats.get(page.organizerId) ?? [])))
@@ -138,11 +150,16 @@ export function buildCityPlans(sources: CityPlanSources): CityPlans {
   const womenLedPlanCount = plans.filter((plan) => plan.womenLed).length;
 
   const month = monthCounts(pages, pageFormats, joining, now,
-    monthWindowEnd);
+    monthWindowEnd, surfaces.totals);
+  const listed = (claimState: unknown) =>
+    allowedOn(surfaces.homeOrganizers, claimState) ||
+    allowedOn(surfaces.cityOrganizers, claimState);
   const organizers = launched ?
-    pages.map((page) => pageOrganizer(page, plans,
-      month.organizerFormats.get(page.organizerId) ?? [])) :
-    joining.map(joiningOrganizer);
+    pages.filter((page) => listed(page.claim.state))
+      .map((page) => pageOrganizer(page, plans,
+        month.organizerFormats.get(page.organizerId) ?? [])) :
+    joining.filter((listing) => listed(listing.authority.claimState))
+      .map(joiningOrganizer);
 
   return {
     schemaVersion: 1,
@@ -165,6 +182,12 @@ export function buildCityPlans(sources: CityPlanSources): CityPlans {
     plans: plans.slice(0, cityPlanLimits.plans),
     organizers: organizers.sort(byNextPlanThenFollowers)
       .slice(0, cityPlanLimits.organizers),
+    discovery: {
+      homeOrganizers: {...surfaces.homeOrganizers},
+      cityOrganizers: {...surfaces.cityOrganizers},
+      homeOrganizersMinimum: discovery.homeOrganizersMinimum,
+      homeClaimAction: discovery.homeClaimAction,
+    },
   };
 }
 
@@ -177,16 +200,19 @@ interface MonthCounts {
 
 /**
  * The 30-day signal and the city-by-format page counts. Every page in the
- * city counts, however many organizers and plans the document lists. A city
- * that has not launched has no pages, so it counts no plans; its organisers
- * are the published organisers joining it, each counted once per format its
- * listing names.
+ * city that the totals rule allows counts, however many organizers and plans
+ * the document lists. A city that has not launched has no pages, so it counts
+ * no plans; its organisers are the published organisers joining it that the
+ * totals rule allows, each counted once per format its listing names. Every
+ * page's formats are worked out, counted or not, because a listed organiser
+ * carries them.
  */
 function monthCounts(
   pages: readonly CityOrganizerPage[],
   pageFormats: ReadonlyMap<string, readonly DiscoveryFormat[]>,
   joining: readonly HostListing[],
-  now: number, monthWindowEnd: number
+  now: number, monthWindowEnd: number,
+  totals: DiscoverySurfaceRule
 ): MonthCounts {
   const organizers = new Map<DiscoveryFormat, Set<string>>();
   const events = new Map<DiscoveryFormat, Set<string>>();
@@ -202,6 +228,7 @@ function monthCounts(
   let complete = true;
 
   for (const page of pages) {
+    const counted = allowedOn(totals, page.claim.state);
     const listed = pageFormats.get(page.organizerId) ?? [];
     const runs = new Set<DiscoveryFormat>(listed);
     const upcoming = page.upcomingEvents.filter((item) =>
@@ -210,22 +237,24 @@ function monthCounts(
       const formats = discoveryFormatsForEvent(item.event.activityKind,
         listed);
       for (const format of formats) runs.add(format);
-      if (start(item) >= monthWindowEnd) continue;
+      if (!counted || start(item) >= monthWindowEnd) continue;
       monthEvents.add(item.eventId);
       for (const format of formats) {
         add(events, format, item.eventId);
         if (isFree(item)) add(free, format, item.eventId);
       }
     }
+    const formats = discoveryFormats.filter((format) => runs.has(format));
+    organizerFormats.set(page.organizerId, formats);
+    if (!counted) continue;
     // A full list may stop short of plans still inside the window.
     const last = page.upcomingEvents[page.upcomingEvents.length - 1];
     if (page.upcomingEvents.length >= pageLimits.upcomingEvents && last &&
         start(last) < monthWindowEnd) complete = false;
-    const formats = discoveryFormats.filter((format) => runs.has(format));
-    organizerFormats.set(page.organizerId, formats);
     for (const format of formats) add(organizers, format, page.organizerId);
   }
   for (const listing of joining) {
+    if (!allowedOn(totals, listing.authority.claimState)) continue;
     for (const format of discoveryFormatsForText(
       [listing.category, ...listing.formats])) {
       add(organizers, format, listing.id);
