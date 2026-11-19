@@ -23,17 +23,22 @@ import {validateSetEventAssistanceParticipationCallablePayload} from
   "../../shared/generated/validators/setEventAssistanceParticipationInput";
 import {validateEventAssistanceParticipationCallableResponse} from
   "../../shared/generated/validators/eventAssistanceParticipationOutput";
-import {validateEventAssistanceParticipationReceiptDocument} from
-  // eslint-disable-next-line max-len -- Canonical individual validator path.
-  "../../shared/generated/validators/eventAssistanceParticipationReceiptDocument";
 import {assertCommandContext, assertCommandRole} from "./commands";
 import {invalidSource, timestampEvidence} from "./groupProgressSource";
 import {
   Guest, guestCollections, guestIdentity, parseGuest, GuestSourceFacts,
   guestSourceFactsFromSnapshots,
 } from "./guestRecords";
+import {assistanceReceiptRef, isDigest, isMillis, isRevision,
+  replayAssistanceReceipt, writeAssistanceReceipt} from "./assistanceReceipts";
 
-export const PARTICIPATION_RECEIPTS = "eventAssistanceParticipationReceipts";
+export const PARTICIPATION_RECEIPT_COMMAND = "eventAssistanceParticipation";
+
+/** What a replay re-checks against the live guest record. */
+type ParticipationReceipt = {revision: number; createdAt: number;
+  sourceGeneration: string};
+const validReceipt = (r: Record<string, unknown>) => isRevision(r.revision) &&
+  isMillis(r.createdAt) && isDigest(r.sourceGeneration);
 
 /** Reported participation; never a check-in, placement or consent writer. */
 export class EventParticipationStore {
@@ -64,23 +69,22 @@ export class EventParticipationStore {
     }
     const scope: Scope = {context, attendeeId: payload.attendeeId};
     const requestHash = operationContentHash([actorUid, input]);
-    const receiptId = "participation-action:" + operationContentHash([
-      scope, command.operationId]);
+    const receiptRef = assistanceReceiptRef(this.db,
+      PARTICIPATION_RECEIPT_COMMAND, operationContentHash([
+        scope, command.operationId]));
     return transact(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, scope);
       assertCommandRole(command, [state.role]);
-      const receiptRef = this.db.collection(PARTICIPATION_RECEIPTS)
-        .doc(receiptId);
-      const receipt = (await tx.get(receiptRef)).data();
+      const stored = (await tx.get(receiptRef)).data();
       const now = this.clock();
       if (!Number.isSafeInteger(now) || now < state.now) throw invalidSource();
       state.now = now;
-      if (receipt !== undefined) {
-        if (!validateEventAssistanceParticipationReceiptDocument(receipt) ||
-            receipt.receiptId !== receiptId ||
-            receipt.guestId !== state.guestId ||
-            receipt.sourceGeneration !== state.source.sourceGeneration ||
-            receipt.requestHash !== requestHash || !state.guest ||
+      const receipt = replayAssistanceReceipt<ParticipationReceipt>(stored, {
+        command: PARTICIPATION_RECEIPT_COMMAND, requestHash, nowMillis: now,
+      }, validReceipt, conflict);
+      if (receipt !== null) {
+        if (receipt.sourceGeneration !== state.source.sourceGeneration ||
+            !state.guest ||
             receipt.revision > state.guest.revision ||
             receipt.createdAt > now) throw conflict();
         return response("replayed", state, receipt.revision);
@@ -114,16 +118,16 @@ export class EventParticipationStore {
           resumeAtUnit: payload.resumeAtUnit},
         intention: freshEpisode ? {kind: "unknown"} : previous!.intention,
         createdAt: previous?.createdAt ?? now, updatedAt: now});
-      const savedReceipt = {receiptId, guestId: guest.guestId, requestHash,
+      const savedReceipt: ParticipationReceipt = {
         sourceGeneration: guest.sourceGeneration, revision: guest.revision,
-        episodeId, createdAt: now};
-      if (!validateEventAssistanceParticipationReceiptDocument(savedReceipt)) {
-        throw invalidSource();
-      }
+        createdAt: now};
+      if (!validReceipt(savedReceipt)) throw invalidSource();
       const result = response("applied", {...state, guest}, guest.revision);
       tx.set(this.db.collection(guestCollections.guests).doc(guest.guestId),
         guest);
-      tx.create(receiptRef, savedReceipt);
+      writeAssistanceReceipt(tx, receiptRef, {
+        command: PARTICIPATION_RECEIPT_COMMAND, requestHash, nowMillis: now,
+        result: savedReceipt});
       return result;
     });
   }

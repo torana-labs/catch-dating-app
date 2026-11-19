@@ -128,11 +128,22 @@
         "adminRevokeOrganizerEntitlementGrant",
         "onEventAttendeeAudienceProjected",
         "onHostMembershipAudienceProjected",
-        "onOrganizerCommunicationPreferenceAudienceProjected"
+        "onOrganizerCommunicationPreferenceAudienceProjected",
+        "resolveEventAssistanceAccountability",
+        "resolveEventAssistanceCase",
+        "transferEventAssistanceGroup",
+        "setEventAssistanceParticipation",
+        "confirmEventAssistanceDeparture",
+        "changeEventAssistanceRoute",
+        "onEventAssistanceRcsCallbackCreated",
+        "setEventAssistanceRuntimeConfig",
+        "setEventAssistanceSetting",
+        "setEventAssistanceGroupStaff"
       ],
       "migrationNotes": [
         "One replay-receipt collection since L8 of the Firestore consolidation: commandReceipts/{command}_{id} with command, requestHash, result, createdAt and expiresAt, and expiresAt (seven days for triggers, thirty for requests and webhooks; the TTL policy is approved by the owner, 18 Nov 2026).",
         "functionEventReceipts, eventLiveCommandReceipts, eventChatAccessReceipts, organizerAudienceProjectionReceipts and organizerEntitlementReceipts stopped being written and keep their documents under the legal hold, with no client access; replay windows are short, so none were copied forward.",
+        "The event-assistance commands' replay receipts moved too (19 Nov 2026), reversing the 18 Nov keep: eventAssistanceAccountabilityReceipts, eventAssistanceCaseReceipts, eventAssistanceMembershipReceipts, eventAssistanceParticipationReceipts, eventAssistanceProgressReceipts (now two commands, departure and route), eventAssistanceRcsCallbackReceipts (trigger retention), eventAssistanceRuntimeConfigReceipts, eventAssistanceSettingReceipts and eventAssistanceStaffReceipts are read only by their own command's retry. Each result keeps the revision and live-state fences the replay re-checks; old documents stay and none were copied forward.",
         "Consent, money, safety and audit receipts stay in their own collections."
       ]
     },
@@ -3065,19 +3076,6 @@
       ]
     },
     {
-      "id": "eventAssistanceProgressReceipts",
-      "path": "eventAssistanceProgressReceipts/{receiptId}",
-      "rulesMatch": "/eventAssistanceProgressReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "event-assistance group progress commands",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "confirmEventAssistanceDeparture",
-        "changeEventAssistanceRoute"
-      ]
-    },
-    {
       "id": "eventAssistanceMemberships",
       "path": "eventAssistanceMemberships/{membershipId}",
       "rulesMatch": "/eventAssistanceMemberships/{membershipId}",
@@ -3088,30 +3086,6 @@
       "exportedFunctions": [
         "transferEventAssistanceGroup",
         "resolveEventAssistanceAccountability"
-      ]
-    },
-    {
-      "id": "eventAssistanceMembershipReceipts",
-      "path": "eventAssistanceMembershipReceipts/{receiptId}",
-      "rulesMatch": "/eventAssistanceMembershipReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "event group membership",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "transferEventAssistanceGroup"
-      ]
-    },
-    {
-      "id": "eventAssistanceStaffReceipts",
-      "path": "eventAssistanceStaffReceipts/{receiptId}",
-      "rulesMatch": "/eventAssistanceStaffReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "event staff group duties",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "setEventAssistanceGroupStaff"
       ]
     },
     {
@@ -3916,46 +3890,9 @@
       ]
     },
     {
-      "id": "eventAssistanceParticipationReceipts",
-      "path": "eventAssistanceParticipationReceipts/{receiptId}",
-      "rulesMatch": "/eventAssistanceParticipationReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "event-assistance participation command",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "setEventAssistanceParticipation"
-      ]
-    },
-    {
-      "id": "eventAssistanceSettingReceipts",
-      "path": "eventAssistanceSettingReceipts/{receiptId}",
-      "rulesMatch": "/eventAssistanceSettingReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "event-assistance policy configuration",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "setEventAssistanceSetting"
-      ]
-    },
-    {
       "id": "eventAssistanceRuntimeConfigs",
       "path": "eventAssistanceRuntimeConfigs/{runtimeId}",
       "rulesMatch": "/eventAssistanceRuntimeConfigs/{runtimeId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "event-assistance runtime configuration",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "getEventAssistanceRuntimeConfig",
-        "setEventAssistanceRuntimeConfig"
-      ]
-    },
-    {
-      "id": "eventAssistanceRuntimeConfigReceipts",
-      "path": "eventAssistanceRuntimeConfigReceipts/{receiptId}",
-      "rulesMatch": "/eventAssistanceRuntimeConfigReceipts/{receiptId}",
       "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
       "owner": "event-assistance runtime configuration",
       "read": "server only",
@@ -4047,18 +3984,6 @@
         "resolveEventAssistanceCase",
         "onHostEventCaseViewCaseChanged",
         "requestEventRuntimeHostHelp"
-      ]
-    },
-    {
-      "id": "eventAssistanceCaseReceipts",
-      "path": "eventAssistanceCaseReceipts/{receiptId}",
-      "rulesMatch": "/eventAssistanceCaseReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "event-assistance case handling",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "resolveEventAssistanceCase"
       ]
     },
     {
@@ -4521,18 +4446,6 @@
       ]
     },
     {
-      "id": "eventAssistanceAccountabilityReceipts",
-      "path": "eventAssistanceAccountabilityReceipts/{receiptId}",
-      "rulesMatch": "/eventAssistanceAccountabilityReceipts/{receiptId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "event-assistance accountability command",
-      "read": "server only",
-      "write": "server only",
-      "exportedFunctions": [
-        "resolveEventAssistanceAccountability"
-      ]
-    },
-    {
       "id": "eventAssistanceRcsDispatches",
       "path": "eventAssistanceRcsDispatches/{attemptId}",
       "rulesMatch": "/eventAssistanceRcsDispatches/{attemptId}",
@@ -4542,18 +4455,6 @@
       "write": "server only",
       "migrationNotes": [
         "Immutable claim evidence binds the exact payload, expiry, provider message ID, permission, capability observation and two budget debits. Acceptance or expiry alone does not prove non-delivery."
-      ]
-    },
-    {
-      "id": "eventAssistanceRcsCallbackReceipts",
-      "path": "eventAssistanceRcsCallbackReceipts/{callbackId}",
-      "rulesMatch": "/eventAssistanceRcsCallbackReceipts/{callbackId}",
-      "rulesTestFile": "functions/test/rules/safety_privacy_rules.rules.test.cjs",
-      "owner": "event-service RCS callback consumer",
-      "read": "server only",
-      "write": "server only",
-      "migrationNotes": [
-        "Immutable processing outcome commits with its delivery or guest action effect, bound to the authenticated inbox evidence."
       ]
     },
     {

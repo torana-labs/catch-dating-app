@@ -11,8 +11,9 @@ import type {EventAssistanceAccountabilityCallableResponse as Response} from
 import {accountabilityResolutionFields} from "../accountability";
 import {validateEventAssistanceCommand} from
   "../../shared/generated/validators/eventAssistanceCommand";
-import {EventAccountabilityStore, ACCOUNTABILITY_RECEIPTS} from
+import {EventAccountabilityStore, ACCOUNTABILITY_RECEIPT_COMMAND} from
   "./accountabilityStore";
+import {COMMAND_RECEIPTS} from "../../shared/commandReceipts";
 import {resolveEventAssistanceAccountabilityHandler} from
   "./accountabilityHandlers";
 import {ProgressFirestore, seedJoiningProgress, progressFixtureManager} from
@@ -22,6 +23,8 @@ import {EventMembershipStore} from "./membershipStore";
 import {EventGroupStaffStore} from "./groupStaffStore";
 import {guestCollections, guestIdentity} from "./guestRecords";
 import {eventStaffGrantId} from "../../shared/eventOperatorAuthority";
+
+const RECEIPT_PREFIX = `${COMMAND_RECEIPTS}/${ACCOUNTABILITY_RECEIPT_COMMAND}_`;
 
 const manager = progressFixtureManager;
 const start = 1_000_000;
@@ -123,7 +126,7 @@ test("accountability changes only the shared visit result, once", async () => {
       ?.[1])).map(([path]) => path);
   assert.equal(changed.length, 2);
   assert.ok(changed.includes(h.attendeePath));
-  assert.ok(changed.some((p) => p.startsWith(ACCOUNTABILITY_RECEIPTS + "/")));
+  assert.ok(changed.some((p) => p.startsWith(RECEIPT_PREFIX)));
   const saved = h.fake.entries();
   assert.equal((await h.store.resolve(manager, input)).outcome, "replayed");
   assert.deepEqual(h.fake.entries(), saved);
@@ -235,7 +238,7 @@ test("an expired or revoked duty cannot replay an earlier successful command",
         await h.put(path, {...(await h.read(path)), status: "revoked"});
       } else {
         h.fake.beforeRead = (path) => {
-          if (path.startsWith(ACCOUNTABILITY_RECEIPTS + "/")) {
+          if (path.startsWith(RECEIPT_PREFIX)) {
             h.clock.now = start + 100_000;
           }
         };

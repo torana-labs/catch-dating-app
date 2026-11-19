@@ -12,7 +12,8 @@ import {validateEventAssistanceCaseDocument} from
   "../../shared/generated/validators/eventAssistanceCaseDocument";
 import {validateEventAssistanceCaseCallableResponse} from
   "../../shared/generated/validators/eventAssistanceCaseOutput";
-import {CASE_RECEIPTS, EventAssistanceCasesStore} from "./hostCasesStore";
+import {CASE_RECEIPT_COMMAND, EventAssistanceCasesStore} from
+  "./hostCasesStore";
 import type {HostCaseView} from "./hostCaseRecords";
 import {resolveEventAssistanceCaseHandler} from "./hostCasesHandlers";
 import {eventCaseViewsCollection, reconcileEventCaseView} from
@@ -21,6 +22,9 @@ import {guestCollections} from "./guestRecords";
 import {assistanceMessageId} from "./messageOutbox";
 import {setup} from "./liveLateJoinTestHarness";
 import {keys} from "./whatsappTestHarness";
+import {COMMAND_RECEIPTS} from "../../shared/commandReceipts";
+
+const CASE_RECEIPT_PREFIX = `${COMMAND_RECEIPTS}/${CASE_RECEIPT_COMMAND}_`;
 
 const manager = "host-1";
 async function harness(realDb?: Firestore,
@@ -169,10 +173,10 @@ test("resolution and decline close the request with explicit outcomes",
         "replayed");
       assert.equal((await h.list()).cases.length, 0);
       const effects = h.sources().filter(([path]) =>
-        path === h.created.path || path.startsWith(CASE_RECEIPTS + "/"));
+        path === h.created.path || path.startsWith(CASE_RECEIPT_PREFIX));
       assert.equal(effects.length, 2);
       assert.deepEqual(h.sources().filter(([path]) =>
-        path !== h.created.path && !path.startsWith(CASE_RECEIPTS + "/")),
+        path !== h.created.path && !path.startsWith(CASE_RECEIPT_PREFIX)),
       before.filter(([path]) => path !== h.created.path));
       await assert.rejects(h.cases.resolve(manager, {...command, command: {
         ...command.command, operationId: "another-close"}}),

@@ -6,7 +6,7 @@ import {deleteApp, initializeApp} from "firebase-admin/app";
 import {Firestore, Timestamp} from "firebase-admin/firestore";
 import {rcsHarness} from "./rcsDispatchTestHarness";
 import {RcsCallbackStore} from "./rcsCallbackStore";
-import {RcsCallbackConsumer, RCS_CALLBACK_RECEIPTS} from
+import {RcsCallbackConsumer, RCS_CALLBACK_RECEIPT_COMMAND} from
   "./rcsCallbackConsumer";
 import {rcsCallbackId, rcsCallbackCollections} from "./rcsCallbackRecords";
 import {VerifiedRcsCallback, rcsNativeReplyId} from "./rcsWebhookProtocol";
@@ -14,6 +14,10 @@ import {parseRcsDispatch, RCS_DISPATCHES} from "./rcsDispatchRecords";
 import {guestCollections, guestIdentity, parseGuest} from "./guestRecords";
 import {EVENT_ASSISTANCE_MESSAGES} from "./firestoreMessageOutbox";
 import {MessageRecord, parseMessageRecord} from "./messageOutbox";
+import {COMMAND_RECEIPTS} from "../../shared/commandReceipts";
+
+const receiptPath = (callbackId: string) => `${COMMAND_RECEIPTS}/` +
+  `${RCS_CALLBACK_RECEIPT_COMMAND}_${callbackId.slice("rcs-event:".length)}`;
 
 type Harness = Awaited<ReturnType<typeof fixture>>;
 const token = "fixture-only-rcs-token-12345678901234567890";
@@ -81,8 +85,8 @@ test("RCS receipts advance delivery monotonically and replay atomically",
         attemptId: (await h.attempt()).attemptId,
         disposition: "duplicateOrOlder"});
     assert.deepEqual(await h.record(), record);
-    const path = RCS_CALLBACK_RECEIPTS + "/" + id;
-    await h.write(path, {...await h.read(path), callbackHash: "f".repeat(64)});
+    const path = receiptPath(id);
+    await h.write(path, {...await h.read(path), requestHash: "f".repeat(64)});
     await assert.rejects(h.consumer.consume(id), /inconsistent/);
   });
 
@@ -271,7 +275,7 @@ test("callback commit failures leave neither action nor processing receipt",
     h.fake.failNextCommit = true;
     await assert.rejects(h.consumer.consume(id));
     assert.deepEqual(await h.record(), before);
-    assert.equal(await h.read(RCS_CALLBACK_RECEIPTS + "/" + id), undefined);
+    assert.equal(await h.read(receiptPath(id)), undefined);
     assert.equal((await h.consumer.consume(id)).kind, "reply");
   });
 
@@ -310,7 +314,8 @@ test("Firestore RCS contention creates one request and receipt", {
     await Promise.all([h.consumer.consume(delivered),
       ...Array.from({length: 4}, () => h.consumer.consume(id))]);
     assert.equal((await db.collection(guestCollections.cases).get()).size, 1);
-    assert.equal((await db.collection(RCS_CALLBACK_RECEIPTS).get()).size, 2);
+    assert.equal((await db.collection(COMMAND_RECEIPTS)
+      .where("command", "==", RCS_CALLBACK_RECEIPT_COMMAND).get()).size, 2);
     assert.equal((await h.record()).lifecycle, "responded");
     assert.equal((await h.attempt()).state.kind, "delivered");
   } finally {
