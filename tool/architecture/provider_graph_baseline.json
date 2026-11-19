@@ -155,12 +155,6 @@
     },
     {
       "rule": "CACHE-INVALIDATE-001",
-      "path": "lib/hosts/presentation/widgets/host_event_participants_section.dart",
-      "symbol": "_HostEventParticipantsSectionState.build",
-      "detail": "retry-composition:attendanceSheetViewModelProvider"
-    },
-    {
-      "rule": "CACHE-INVALIDATE-001",
       "path": "lib/programs/presentation/program_hotel_rooms_screen.dart",
       "symbol": "ProgramHotelRoomsScreen.build",
       "detail": "invalidate:programHotelRoomsProvider",

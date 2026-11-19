@@ -3686,7 +3686,7 @@ rather than embedded in event-type logic.
 |---|---|
 | Domain/runtime/playbooks | `lib/contexts/live/domain/` (runtime), `lib/contexts/formats/domain/` (playbooks, structures, questionnaires, defaults) |
 | Repository/providers | `lib/contexts/live/data/event_success_repository.dart` |
-| Host provider and workspace boundaries | `lib/event_success/presentation/event_success_host_screen.dart` owns provider reads and mutation callbacks; `event_success_host_workspace_page_body.dart` owns tab selection, fixture callbacks and live-action debounce over explicit state. |
+| Host provider and workspace boundaries | The rehearsal screen (`lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart`) owns provider reads and mutation callbacks for practice; `event_success_host_workspace_page_body.dart` owns tab selection, fixture callbacks and live-action debounce over explicit state. Live nights run on the rebuilt console under `lib/hosts/live/`. |
 | Host setup and report components | `lib/event_success/presentation/host_setup/` owns setup editing, readiness and attendee target controls; `host_report/` owns the report, data-quality metrics, funnel and empty state. Host presentation has no handwritten part files. |
 | Host live control and shared components | `lib/event_success/presentation/host_live/` owns the live workspace, control room, step actions, accountability, presence, room summary and alerts; `host_components/` owns the tab chrome, plan/activity summaries, compatibility, help and resource errors. `event_success_host_keys.dart` and `event_success_control_room_state.dart` expose their shared plain contracts. |
 | Attendee companion UI | `lib/event_success/presentation/event_success_companion_screen.dart` and `companion_parts/` |

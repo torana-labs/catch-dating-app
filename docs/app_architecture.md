@@ -4867,39 +4867,17 @@ Current aligned adopters:
 
 Defined variant:
 
-- `ARCH-SCREEN-001C` covers host workspaces such as
-  `lib/hosts/presentation/host_event_manage_screen.dart`. Host Event Manage is
-  not a mechanical Event Detail copy because one canonical route owns legacy
-  Setup, Guests, Live, and Report aliases while rendering exactly one
-  lifecycle-owned workspace: Preparation before the attendance window, Live
-  Operations during the event, and Recap once the event ends or is cancelled.
-  `HostEventManageRouteScreen` keeps canonical route ids/aliases, uid/club/event
-  loading, missing-resource/error branches, host access gating, retry
-  invalidation, and initial alias/deep-link inputs. `HostEventManageScreenState`
-  resolves the phase from event time/status; the top bar exposes one durable
-  Guest roster action and the roster is a lazy, full-viewport-edge overlay that
-  preserves the bounded underlying workspace element and maps old Guests deep
-  links to an initially-open drawer. Preparation owns stable event details,
-  website registration, imported/manual/provider guest sources, private invite
-  access, temporary event-staff access, Event Success setup, and host actions.
-  The roster drawer owns guest status, search/filter, claims, attendance, and
-  reporting plus a route-owned handoff to the existing event-scoped Host Inbox;
-  setup-only import, forwarding, provider, registration, and staff controls
-  must not appear there. Live Operations may expose the single urgent Add
-  walk-in escape hatch, while Recap keeps the roster read-only. The compact
-  Live Now console remains one scrollable command flow with a pinned action.
-  At the named local supporting-pane breakpoint, the same typed state reflows
-  into a dominant command stage and one 360 px supporting-operations lane;
-  Guests, fallback help, exclusion warnings, and current-step controls move to
-  that lane while the revision-fenced Previous/Continue region stays attached
-  to the stage. Text scale 1.4 and above returns to the single-column flow.
-  The roster remains the existing viewport-edge overlay rather than becoming a
-  third persistent data pane. Provider-free
-  preparation, roster, private-access, invite-link, Event Success, recap, and
-  host-action sections retain explicit display state and typed callbacks. Do
-  not move solved route loading/access work into the workspace adapter, and do
-  not duplicate attendance or Event Success aliases as separate screen
-  contracts.
+- `ARCH-SCREEN-001C` covers the host event route,
+  `lib/hosts/presentation/host_event_manage_route_screen.dart`. One canonical
+  route owns the legacy Setup, Guests, Live and Report aliases and
+  `hostEventRouteDestination` resolves each to a rebuilt screen: the event
+  workspace and guest lists open without reading the event, and Live and
+  Report read uid, organizer and event, gate host access, then open the live
+  console, the run or crawl board, or the report by the event's lifecycle
+  phase (`hostEventWorkspacePhaseFor`). The route keeps canonical route ids,
+  loading, missing-resource and error branches, access gating and retry; the
+  rebuilt screens own their own chrome and data. Do not duplicate attendance
+  or Event Success aliases as separate screen contracts.
 
 ```dart
 @override
@@ -5178,13 +5156,10 @@ Current Host adopters:
 - `lib/hosts/events/presentation/widgets/host_events_list.dart`
 - `test/hosts/host_operations_screen_test.dart`
 
-Host Manage keeps lifecycle, event actions and summary state in
-`host_event_manage_screen_state.dart`. Invitation access and link display live
-in `host_invite_link_state.dart`; roster filtering, lookup and mutation
-snapshots live in `host_roster_display_state.dart`; setup/live/report row
-policy lives in `host_roster_row_state.dart`. These adapters receive plain
-data and callbacks. The booking controller owns single-versus-bulk mutation
-key selection; provider reads and route effects remain at their existing edges.
+The host event route keeps its section and lifecycle phase helpers in
+`host_event_manage_screen_state.dart`; they receive plain data. The booking
+controller owns single-versus-bulk mutation key selection; provider reads and
+route effects remain at their existing edges.
 
 `HostTodayState` and `HostTodayAttentionData` apply the boundary to the
 command-centre projection: `HostTodayScreen` translates provider snapshots at
