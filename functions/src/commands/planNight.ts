@@ -8,7 +8,13 @@ import {planNight as buildNightPlan, type NightPlan} from "../eventSuccess/night
 import {effectiveInteractionModelFor, eventSuccessPrimitivesFor} from "../eventSuccess/formatPrimitives";
 import {buildEventSuccessPlanDoc, type EventSuccessPlanDefaults} from "../events/mutateEvent";
 import {stagePlanSetupUpdate, type PlanSetupFields} from "../eventSuccess/planSetup";
-import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
+import {updatePrivateEventDetails, type UpdatePrivateEventDetailsCommand} from "../events/progressiveSetup/details";
+import {assertPrivateEventBasicsEditable} from "../events/progressiveSetup/commitments";
+import type {ProgressiveSetupDependencies} from "../events/progressiveSetup/service";
+import {projectManagerEventSetupDefaults} from "../organizers/eventSetupDefaults/service";
+import {eventSetupDefaultsDependencies} from "../organizers/eventSetupDefaults/dependencies";
+import {createHash} from "node:crypto";
+import type {EventDocument, OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
 import type {PlanNightCallablePayload} from "../shared/generated/planNightCallablePayload";
 import type {PlanNightCallableResponse} from "../shared/generated/planNightCallableResponse";
 import {validatePlanNightCallablePayload} from "../shared/generated/validators/planNightInput";
@@ -31,9 +37,11 @@ import {readTryItWorkspace, stageTryItWorkspace, type WorkspaceLookup} from "./w
 // three missions and a rehearsal setup the client can pass to
 // createEventRehearsal for a practice session. Nothing is written on
 // preview. Apply saves it as the event-success plan of the workspace's private
-// draft event, only while that plan is still in setup and only when the
-// event's activity already matches the format (set in the event's Details).
-// Catch Host keeps saving its own plans as it does today.
+// draft event, only while that plan is still in setup. A try-it draft the
+// caller's workspace made that has no activity yet first gets the format's
+// activity through private event setup (updatePrivateEventDetails), the path
+// the Host app's Details step takes; an event that already has an activity is
+// never changed, and one that doesn't match the format is refused.
 
 export const COMMAND_ID = "night.plan";
 const HOUR_MS = 60 * 60 * 1000;
@@ -49,6 +57,9 @@ export interface PlanNightDeps {
   checkRateLimit: typeof defaultCheckRateLimit;
   /** createEvent's plan builder; a seam for tests whose stored timestamps lose their methods. */
   buildPlanDoc: typeof buildEventSuccessPlanDoc;
+  /** Private event setup's details change, through which a try-it draft with no activity gets the plan's. */
+  updateDraftDetails: (db: FirebaseFirestore.Firestore, actorUid: string,
+    command: UpdatePrivateEventDetailsCommand) => Promise<unknown>;
 }
 
 const defaultDeps: PlanNightDeps = {
@@ -57,7 +68,14 @@ const defaultDeps: PlanNightDeps = {
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   checkRateLimit: defaultCheckRateLimit,
   buildPlanDoc: buildEventSuccessPlanDoc,
+  updateDraftDetails: (db, actorUid, command) => updatePrivateEventDetails({actorUid, command,
+    deps: setupService(db)}),
 };
+
+function setupService(db: FirebaseFirestore.Firestore): ProgressiveSetupDependencies {
+  return {db, timestampFromMillis: admin.firestore.Timestamp.fromMillis,
+    serverTimestamp: admin.firestore.FieldValue.serverTimestamp, assertBasicsEditable: assertPrivateEventBasicsEditable};
+}
 
 interface Context {
   uid: string;
@@ -104,6 +122,8 @@ async function apply(db: FirebaseFirestore.Firestore, deps: PlanNightDeps, ctx: 
   const organizerId = workspaceOrganizerId(lookup);
   const eventId = ctx.input.eventId ?? await currentTryItDraft(db, lookup, organizerId);
   if (!eventId) return respond(ctx, "refused", {organizerId, plan, hash, reasons: ["no_draft_event"]});
+  await setTryItDraftActivity(db, deps, {uid: ctx.uid, organizerId, eventId, plan, lookup,
+    requestId: `nightplan-${createHash("sha256").update(`${ctx.uid}\u0000${data.idempotencyKey}`).digest("hex").slice(0, 40)}`});
 
   return db.runTransaction(async (tx) => {
     const again = await replayCommand<Response>(tx, db, {commandId: COMMAND_ID, uid: ctx.uid,
@@ -138,6 +158,35 @@ async function apply(db: FirebaseFirestore.Firestore, deps: PlanNightDeps, ctx: 
       nowMillis: now.getTime(), response: applied});
     return applied;
   });
+}
+
+/**
+ * Gives a try-it draft with no activity the plan's format, through private
+ * event setup. Only for a private draft this workspace recorded as try-it
+ * (tryItEventIds) and owns; any other event, or one with an activity already,
+ * is left as it is and judged by refusalFor. The request id comes from the
+ * command key, so a retried apply replays the same setup change.
+ */
+async function setTryItDraftActivity(db: FirebaseFirestore.Firestore, deps: PlanNightDeps, params: {uid: string;
+  organizerId: string; eventId: string; plan: NightPlan; lookup: Exclude<WorkspaceLookup, {kind: "new"}>;
+  requestId: string}): Promise<void> {
+  const tryItIds = params.lookup.kind === "existing" ? params.lookup.pointer.tryItEventIds ?? [] : [];
+  if (!tryItIds.includes(params.eventId)) return;
+  const [eventSnap, organizerSnap, defaultsSnap] = await Promise.all([
+    db.collection("events").doc(params.eventId).get(),
+    db.collection("organizers").doc(params.organizerId).get(),
+    db.collection("organizerEventSetupDefaults").doc(params.organizerId).get(),
+  ]);
+  const event = eventSnap.data() as EventDocument | undefined;
+  if (!event || event.organizerId !== params.organizerId || event.publicationState !== "private" ||
+      event.eventFormat?.interactionModel || !organizerSnap.exists) return;
+  const defaults = projectManagerEventSetupDefaults(params.organizerId, organizerSnap.data() as OrganizerDocument,
+    defaultsSnap.data(), eventSetupDefaultsDependencies(db));
+  await deps.updateDraftDetails(db, params.uid, {
+    organizerId: params.organizerId, eventId: params.eventId, requestId: params.requestId,
+    expectedSetupRevision: event.setupRevision as number, reviewedDefaultsHash: defaults.preferencesHash,
+    details: {eventFormat: {mode: "set", value: {version: 1, activityKind: params.plan.activityKind as never,
+      interactionModel: params.plan.interactionModel as never, defaultPlaybookId: params.plan.playbookId}}}});
 }
 
 /** Why the plan can't be saved on this event, or null. */
