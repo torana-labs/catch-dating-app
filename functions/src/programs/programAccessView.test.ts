@@ -12,8 +12,12 @@ import type {
   ProgramStaffGrantDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
+  changedOrganizerManagers,
+  organizerManagers,
   ownerProgramAccessView,
+  programAccessViewFor,
   programWriteChangesStaffViews,
+  reconcileOrganizerManagerViews,
   reconcileProgramAccessView,
   staffProgramAccessView,
 } from "./programAccessView";
@@ -44,10 +48,64 @@ test("the owner is a manager with no expiry and no identity fields", () => {
     "activeFromMillis", "arrivalRoutes", "assignments", "duties",
     "expiresAtMillis", "functionAll",
     "functionScoped", "grantExpiresAtMillis", "hotelAll", "hotelScoped",
-    "organizerId", "ownerUid",
+    "organizerId", "organizerManager", "ownerUid",
     "pickupAll", "pickupScoped", "programId", "revision", "role", "status",
     "tripRoutes", "uid", "version", "workFunction", "workHotel",
     "workPickup"]);
+});
+
+test("an organizer manager without a grant gets setup authority only", () => {
+  const view = programAccessViewFor(program, "program-1", "host-2",
+    undefined, true, now)!;
+  assert.equal(view.organizerManager, true);
+  // No duty: rules and work screens deny an inactive view.
+  assert.equal(view.status, "inactive");
+  assert.equal(view.role, "staff");
+  assert.equal(view.expiresAtMillis, null);
+  assert.deepEqual(view.duties, {});
+  assert.deepEqual(view.workFunction, {});
+  assert.deepEqual(view.assignments, []);
+  assert.equal(view.ownerUid, "manager-1");
+  // Someone who manages nothing and holds no grant gets no view.
+  assert.equal(programAccessViewFor(program, "program-1", "host-2",
+    undefined, false, now), null);
+});
+
+test("an organizer manager keeps a live grant's duties beside the flag",
+  () => {
+    const staff = staffProgramAccessView(program, "program-1", grant(), now)!;
+    const both = programAccessViewFor(program, "program-1", "staff-1",
+      grant(), true, now)!;
+    assert.deepEqual(both, {...staff, organizerManager: true});
+    assert.equal(staff.organizerManager, false);
+    // A revoked grant leaves the setup flag, with no duty and its revision.
+    const revoked = programAccessViewFor(program, "program-1", "staff-1",
+      grant({status: "revoked", revokedBy: "manager-1", revokedAt: at(now)}),
+      true, now)!;
+    assert.equal(revoked.status, "inactive");
+    assert.equal(revoked.organizerManager, true);
+    assert.deepEqual(revoked.duties, {});
+    assert.equal(revoked.revision, 4);
+    // The owner stays the manager, flagged as they stand on the organizer.
+    assert.equal(programAccessViewFor(program, "program-1", "manager-1",
+      undefined, false, now)!.role, "manager");
+    assert.equal(programAccessViewFor(program, "program-1", "manager-1",
+      undefined, true, now)!.organizerManager, true);
+  });
+
+test("organizer writes name only the managers they add or remove", () => {
+  const organizer = {hostUserId: "owner-1", ownerUserId: "owner-1",
+    hostUserIds: ["owner-1", "host-2"]};
+  assert.deepEqual(organizerManagers(organizer), ["owner-1", "host-2"]);
+  assert.deepEqual(organizerManagers({hostUserIds: "owner-1"}), []);
+  assert.deepEqual(changedOrganizerManagers(organizer,
+    {...organizer, title: "Renamed"}), []);
+  assert.deepEqual(changedOrganizerManagers(organizer,
+    {...organizer, hostUserIds: ["owner-1", "host-3"]}), ["host-2", "host-3"]);
+  assert.deepEqual(changedOrganizerManagers(undefined, organizer),
+    ["host-2", "owner-1"]);
+  assert.deepEqual(changedOrganizerManagers(organizer, undefined),
+    ["host-2", "owner-1"]);
 });
 
 test("a station-scoped duty lists its station and no all-station key", () => {
@@ -236,6 +294,49 @@ test("reconcile writes the view, skips a no-op and deletes with the grant",
     store.deleteDoc("programStaffGrants/program-1__greeter-1");
     await reconcileProgramAccessView(db, "program-1", "greeter-1", now);
     assert.equal(store.getDoc(path), undefined);
+  });
+
+test("reconcile gives an organizer manager a view and takes it back",
+  async () => {
+    const store = new FakeFirestore(baseSeed());
+    const db = store as unknown as FirebaseFirestore.Firestore;
+    const path = "programAccessViews/program-1__host-2";
+    await reconcileProgramAccessView(db, "program-1", "host-2", now);
+    assert.equal(store.getDoc(path), undefined, "not yet a manager");
+    store.setDoc("organizers/org-1", {...baseSeed()["organizers/org-1"],
+      hostUserIds: ["manager-1", "host-2"]});
+    await reconcileProgramAccessView(db, "program-1", "host-2", now);
+    const view = store.getDoc(path) as {organizerManager: boolean,
+      status: string};
+    assert.equal(view.organizerManager, true);
+    assert.equal(view.status, "inactive");
+    await reconcileProgramAccessView(db, "program-1", "manager-1", now);
+    assert.equal((store.getDoc("programAccessViews/program-1__manager-1") as
+      {organizerManager: boolean}).organizerManager, true);
+    store.setDoc("organizers/org-1", {...baseSeed()["organizers/org-1"]});
+    await reconcileProgramAccessView(db, "program-1", "host-2", now);
+    assert.equal(store.getDoc(path), undefined, "no longer a manager");
+  });
+
+test("a manager change reaches every programme of the organizer, by page",
+  async () => {
+    const store = new FakeFirestore(baseSeed());
+    const db = store as unknown as FirebaseFirestore.Firestore;
+    const programme = baseSeed()["organizerPrograms/program-1"];
+    for (const id of ["program-2", "program-3"]) {
+      store.setDoc(`organizerPrograms/${id}`, {...programme});
+    }
+    store.setDoc("organizerPrograms/program-other", {...programme,
+      organizerId: "org-2"});
+    store.setDoc("organizers/org-1", {...baseSeed()["organizers/org-1"],
+      hostUserIds: ["manager-1", "host-2"]});
+    await reconcileOrganizerManagerViews(db, "org-1", ["host-2"], now, 2);
+    for (const id of ["program-1", "program-2", "program-3"]) {
+      assert.equal((store.getDoc(`programAccessViews/${id}__host-2`) as
+        {organizerManager: boolean}).organizerManager, true, id);
+    }
+    assert.equal(store.getDoc("programAccessViews/program-other__host-2"),
+      undefined);
   });
 
 test("only a new, removed or re-owned program rewrites staff views", () => {

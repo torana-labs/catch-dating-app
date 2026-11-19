@@ -758,7 +758,7 @@ export {
   revokeProgramStaff,
 } from "./programs/programStaff";
 export {onProgramAccessViewGrantChanged,
-  onProgramAccessViewProgramChanged} from
+  onProgramAccessViewProgramChanged, onProgramAccessViewOrganizerChanged} from
   "./programs/programAccessViewTriggers";
 export {onProgramWorkSummaryChanged, onProgramPickupPointViewChanged,
   onProgramHotelViewChanged, onProgramFunctionViewChanged} from

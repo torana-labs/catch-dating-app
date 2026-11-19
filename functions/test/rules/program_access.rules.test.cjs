@@ -11,7 +11,15 @@ const {
   assertSucceeds,
   initializeTestEnvironment,
 } = require("@firebase/rules-unit-testing");
-const {doc, getDoc, setDoc, collection, getDocs} = require("firebase/firestore");
+const {
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+} = require("firebase/firestore");
 
 const rules = fs.readFileSync(path.resolve(__dirname, "..", "..", "..",
   "firestore.rules"), "utf8");
@@ -104,6 +112,27 @@ describe("programme authority rules", () => {
     await assertFails(setDoc(doc(authed("greeter-1"),
       "programAccessViews", "program-1__greeter-1"), view("greeter-1")));
   });
+
+  it("lists an account's own views by a query naming its uid, and no others",
+    async () => {
+      await seedView("host-2", {status: "inactive", expiresAtMillis: null,
+        organizerManager: true});
+      await seedRaw(["programAccessViews", "program-2__host-2"],
+        view("host-2", {programId: "program-2", organizerManager: true}));
+      await seedView("greeter-1");
+      const own = (uid, asUid = uid) => getDocs(query(
+        collection(authed(asUid), "programAccessViews"),
+        where("uid", "==", uid), where("organizerId", "==", "org-1")));
+      const listed = await assertSucceeds(own("host-2"));
+      if (listed.size !== 2) {
+        throw new Error(`expected 2 views, got ${listed.size}`);
+      }
+      await assertFails(own("greeter-1", "host-2"));
+      await assertFails(getDocs(query(collection(authed("host-2"),
+        "programAccessViews"), where("organizerId", "==", "org-1"))));
+      await seedRaw(["deletedUsers", "host-2"], {deletedAt: new Date()});
+      await assertFails(own("host-2"));
+    });
 
   it("denies a stranger with no view, and the unauthenticated", async () => {
     await assertFails(probe("stranger", "manager"));

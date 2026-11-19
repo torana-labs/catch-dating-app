@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/program_access_views.schema.json",
   "title": "ProgramAccessViewDocument",
-  "description": "Server-maintained, rules-readable summary of one account's current authority over one program: the programme owner as manager, or a staff member's active duties with the owner-approval proof and every expiry already folded in. Security rules read it with one get() to authorize direct reads of programme read models; the phone shows it as work access. Written by triggers on programStaffGrants and organizerPrograms. Holds ids, duty names and expiry instants only: no name, phone number or free text. Never the grant's identity fields and never mutation authority; commands re-check authority from the source documents.",
+  "description": "Server-maintained, rules-readable summary of one account's current authority over one program: the programme owner as manager, or a staff member's active duties with the owner-approval proof and every expiry already folded in, and whether the account manages the programme's organizer. Security rules read it with one get() to authorize direct reads of programme read models; the phone shows it as work access and gates the programme list and detail on it offline. Written by triggers on programStaffGrants, organizerPrograms and organizers. Holds ids, duty names and expiry instants only: no name, phone number or free text. Never the grant's identity fields and never mutation authority; commands re-check authority from the source documents.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "programAccessViews",
@@ -32,6 +32,7 @@
     "grantExpiresAtMillis",
     "arrivalRoutes",
     "tripRoutes",
+    "organizerManager",
     "revision",
     "version"
   ],
@@ -68,7 +69,7 @@
         "active",
         "inactive"
       ],
-      "description": "inactive when the grant is revoked, unapproved by the owner, expired or malformed. Rules deny an inactive view; the phone treats it as no access."
+      "description": "inactive when the grant is revoked, unapproved by the owner, expired or malformed, and for an organizer manager who holds no live duty. Rules deny an inactive view; the phone treats it as no duty access."
     },
     "activeFromMillis": {
       "type": "integer",
@@ -149,6 +150,10 @@
       "minimum": 1,
       "maximum": 9007199254740991,
       "description": "The grant's own expiry, as getProgramWorkAccess returns it; null for the owner and for an inactive view."
+    },
+    "organizerManager": {
+      "type": "boolean",
+      "description": "True while the account manages the programme's organizer (its hostUserId, ownerUserId or hostUserIds, as requireProgramSetupAccess reads them): setup authority over the programme's list row and detail, independent of status and the expiries, and never a duty or guest access by itself. An organizer manager who neither created the programme nor holds a live grant gets a view with status inactive, role staff, empty maps and this flag; a manager who stops managing loses the flag, and the view when nothing else holds it. Views written before the flag read as false."
     },
     "revision": {
       "type": "integer",

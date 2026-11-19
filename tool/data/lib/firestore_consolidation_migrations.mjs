@@ -388,8 +388,26 @@ const programAccessViewFields = [
   "pickupScoped", "hotelAll", "hotelScoped", "functionAll", "functionScoped",
   "workPickup", "workHotel", "workFunction", "arrivalRoutes", "tripRoutes",
   "assignments",
-  "grantExpiresAtMillis", "revision", "version",
+  "grantExpiresAtMillis", "organizerManager", "revision", "version",
 ];
+
+/**
+ * Each current organizer manager of a programme's organizer who did not
+ * create it and has no view yet: the view the triggers would write now.
+ */
+async function newOrganizerManagerViewEntries(db, programId, program) {
+  if (!validId(programId) || !validId(program.organizerId)) return [];
+  const organizer = (await db.collection("organizers")
+    .doc(program.organizerId).get()).data();
+  const {organizerManagers} = functionsProgramAccessView();
+  const entries = [];
+  for (const uid of organizerManagers(organizer)) {
+    if (uid === program.createdBy || !validId(uid)) continue;
+    const row = await newProgramAccessViewRow(db, programId, uid);
+    if (row) entries.push({targetId: `${programId}__${uid}`, data: row});
+  }
+  return entries;
+}
 
 let programWorkViewModule = null;
 function functionsProgramWorkViews() {
@@ -1145,6 +1163,38 @@ export const MIGRATIONS = [
       "produce a view leaves its view untouched, and a rerun writes " +
       "nothing. Run after program-access-views. Build Functions first.",
     steps: [
+      {
+        kind: "fill",
+        collection: "programAccessViews",
+        refresh: programAccessViewFields,
+        fill: async (data, id, db) => {
+          if (!validId(data.programId) || typeof data.uid !== "string" ||
+              !validId(data.uid)) return null;
+          return programAccessViewRow(db, data.programId, data.uid);
+        },
+      },
+    ],
+  },
+  {
+    name: "program-access-views-organizer-managers",
+    description:
+      "The Host app gates the programme list and detail on programAccessViews " +
+      "offline, so organizer managers who did not create a programme need a " +
+      "view too (#2175). Every current manager of a programme's organizer " +
+      "without a view gets one: setup authority only (organizerManager true, " +
+      "status inactive, no duty), as the new organizer trigger writes it. " +
+      "Then every existing view that differs from what the triggers would " +
+      "compute now is rewritten under a last-update-time precondition, which " +
+      "adds the organizerManager flag to owner and staff views. Programmes, " +
+      "grants and organizers are never changed and nothing is deleted; a " +
+      "rerun writes nothing. Build Functions first.",
+    steps: [
+      {
+        source: "organizerPrograms",
+        target: "programAccessViews",
+        skipReason: "no organizer manager without a view, besides the creator",
+        expand: (data, id, db) => newOrganizerManagerViewEntries(db, id, data),
+      },
       {
         kind: "fill",
         collection: "programAccessViews",

@@ -57,16 +57,91 @@ const doorDuties: ReadonlySet<ProgramStaffDuty> = new Set([
  * stay empty.
  * @param {OrganizerProgramDocument} program The programme.
  * @param {string} programId The programme document id.
+ * @param {boolean} organizerManager Whether the owner also manages the
+ *   programme's organizer.
  * @return {ProgramAccessViewDocument|null} The view, or null without a
  *   creator.
  */
 export function ownerProgramAccessView(program: OrganizerProgramDocument,
-  programId: string): ProgramAccessViewDocument | null {
+  programId: string, organizerManager = false):
+  ProgramAccessViewDocument | null {
   if (typeof program.createdBy !== "string" || !program.createdBy) return null;
   return {programId, organizerId: program.organizerId,
     uid: program.createdBy, ownerUid: program.createdBy, role: "manager",
     status: "active", activeFromMillis: 0, expiresAtMillis: null,
-    ...emptyMaps(), revision: 0, version: 1};
+    ...emptyMaps(), organizerManager, revision: 0, version: 1};
+}
+
+/**
+ * Whether [uid] currently manages the organizer that owns [program], from the
+ * same id fields requireProgramSetupAccess and the organizerProgramViews
+ * rules read (hostUserId, ownerUserId, hostUserIds). An organizer that does
+ * not own the programme proves nothing.
+ * @param {OrganizerProgramDocument} program The programme.
+ * @param {FirebaseFirestore.DocumentData|undefined} organizer The organizer
+ *   document, or undefined when missing.
+ * @param {string} organizerId The organizer document id.
+ * @param {string} uid The account.
+ * @return {boolean} Whether the account manages the programme's organizer.
+ */
+export function managesProgramOrganizer(program: OrganizerProgramDocument,
+  organizer: FirebaseFirestore.DocumentData | undefined,
+  organizerId: string, uid: string): boolean {
+  return organizer !== undefined && organizerId === program.organizerId &&
+    organizerManagers(organizer).includes(uid);
+}
+
+/**
+ * The view of an organizer manager who neither created the programme nor
+ * holds a live grant on it: setup authority only (the programme's list row
+ * and detail, as requireProgramSetupAccess admits), and no duty. The duty
+ * status is inactive, so no rules helper and no work screen admits it; only
+ * the organizerManager flag says anything.
+ * @param {OrganizerProgramDocument} program The programme.
+ * @param {string} programId The programme document id.
+ * @param {string} uid The organizer manager.
+ * @param {number} revision The revision of a grant that carries no live
+ *   duty, or 0 without one.
+ * @return {ProgramAccessViewDocument|null} The view, or null without a
+ *   creator.
+ */
+export function organizerManagerProgramAccessView(
+  program: OrganizerProgramDocument, programId: string, uid: string,
+  revision = 0): ProgramAccessViewDocument | null {
+  if (typeof program.createdBy !== "string" || !program.createdBy) return null;
+  return {programId, organizerId: program.organizerId, uid,
+    ownerUid: program.createdBy, role: "staff", status: "inactive",
+    activeFromMillis: 0, expiresAtMillis: null, ...emptyMaps(),
+    organizerManager: true, revision, version: 1};
+}
+
+/**
+ * One account's view of one programme from its sources: the owner's, else
+ * the staff grant's, with the organizer manager flag beside either; an
+ * organizer manager with neither gets the setup-only view. Null when the
+ * account holds nothing.
+ * @param {OrganizerProgramDocument} program The programme.
+ * @param {string} programId The programme document id.
+ * @param {string} uid The account.
+ * @param {ProgramStaffGrantDocument|undefined} grant The account's grant.
+ * @param {boolean} organizerManager Whether the account manages the
+ *   programme's organizer.
+ * @param {number} nowMillis The evaluation time.
+ * @return {ProgramAccessViewDocument|null} The view.
+ */
+export function programAccessViewFor(program: OrganizerProgramDocument,
+  programId: string, uid: string,
+  grant: ProgramStaffGrantDocument | undefined, organizerManager: boolean,
+  nowMillis: number): ProgramAccessViewDocument | null {
+  if (program.createdBy === uid) {
+    return ownerProgramAccessView(program, programId, organizerManager);
+  }
+  const staff = grant ?
+    staffProgramAccessView(program, programId, grant, nowMillis) : null;
+  if (!organizerManager) return staff;
+  if (staff?.status === "active") return {...staff, organizerManager: true};
+  return organizerManagerProgramAccessView(program, programId, uid,
+    staff?.revision ?? 0);
 }
 
 /**
@@ -92,6 +167,7 @@ export function staffProgramAccessView(program: OrganizerProgramDocument,
       grant.organizerId !== program.organizerId) return null;
   const base = {programId, organizerId: program.organizerId, uid: grant.uid,
     ownerUid: program.createdBy, role: "staff" as const,
+    organizerManager: false,
     revision: Number.isSafeInteger(grant.revision) && grant.revision >= 0 ?
       grant.revision : 0, version: 1 as const};
   const inactive = (): ProgramAccessViewDocument => ({...base,
@@ -234,23 +310,11 @@ export async function reconcileProgramAccessView(
   await db.runTransaction(async (tx) => {
     const ref = db.collection(programAccessViewsCollection)
       .doc(programAccessViewId(programId, uid));
-    const programSnap = await tx.get(
-      db.collection("organizerPrograms").doc(programId));
-    const grantSnap = await tx.get(db.collection("programStaffGrants")
-      .doc(programStaffGrantId(programId, uid)));
+    const sources = await readProgramAccessSources(db, tx, programId, uid);
     const old = await tx.get(ref);
-    let next: ProgramAccessViewDocument | null = null;
+    let next: ProgramAccessViewDocument | null;
     try {
-      const program = programSnap.data() as OrganizerProgramDocument |
-        undefined;
-      if (program) {
-        if (program.createdBy === uid) {
-          next = ownerProgramAccessView(program, programId);
-        } else if (grantSnap.exists) {
-          next = staffProgramAccessView(program, programId,
-            grantSnap.data() as ProgramStaffGrantDocument, nowMillis);
-        }
-      }
+      next = projectProgramAccessView(sources, programId, uid, nowMillis);
     } catch (error) {
       logger.warn("Programme access view kept a source that fails its " +
         "contract.", {programId, uid,
@@ -278,23 +342,124 @@ export function programWriteChangesStaffViews(
     before.organizerId !== after.organizerId;
 }
 
-/** One view from current sources, read only, for the migration. */
+interface ProgramAccessSources {
+  program: OrganizerProgramDocument | undefined;
+  grant: ProgramStaffGrantDocument | undefined;
+  organizer: FirebaseFirestore.DocumentData | undefined;
+}
+
+/**
+ * The documents one account's view derives from: the programme, the
+ * account's grant and the programme's organizer.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {FirebaseFirestore.Transaction} tx The transaction to read in.
+ * @param {string} programId The programme document id.
+ * @param {string} uid The account.
+ * @return {Promise<ProgramAccessSources>} The sources.
+ */
+async function readProgramAccessSources(db: FirebaseFirestore.Firestore,
+  tx: FirebaseFirestore.Transaction, programId: string, uid: string):
+  Promise<ProgramAccessSources> {
+  const programSnap = await tx.get(
+    db.collection("organizerPrograms").doc(programId));
+  const program = programSnap.data() as OrganizerProgramDocument | undefined;
+  const grantSnap = await tx.get(db.collection("programStaffGrants")
+    .doc(programStaffGrantId(programId, uid)));
+  const organizerId = program?.organizerId;
+  const organizerSnap = typeof organizerId === "string" && organizerId ?
+    await tx.get(db.collection("organizers").doc(organizerId)) : null;
+  return {program,
+    grant: grantSnap.data() as ProgramStaffGrantDocument | undefined,
+    organizer: organizerSnap?.data()};
+}
+
+function projectProgramAccessView(sources: ProgramAccessSources,
+  programId: string, uid: string, nowMillis: number):
+  ProgramAccessViewDocument | null {
+  const {program, grant, organizer} = sources;
+  if (!program) return null;
+  return programAccessViewFor(program, programId, uid, grant,
+    managesProgramOrganizer(program, organizer, program.organizerId, uid),
+    nowMillis);
+}
+
+/**
+ * One view from current sources, read only, for the migration: what the
+ * trigger would write now.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {FirebaseFirestore.Transaction} tx The transaction to read in.
+ * @param {string} programId The programme document id.
+ * @param {string} uid The account.
+ * @param {number} nowMillis The evaluation time.
+ * @return {Promise<ProgramAccessViewDocument|null>} The view, or null when
+ *   the account holds nothing.
+ */
 export async function readProgramAccessView(
   db: FirebaseFirestore.Firestore, tx: FirebaseFirestore.Transaction,
   programId: string, uid: string, nowMillis: number
 ): Promise<ProgramAccessViewDocument | null> {
-  const programSnap = await tx.get(
-    db.collection("organizerPrograms").doc(programId));
-  const program = programSnap.data() as OrganizerProgramDocument | undefined;
-  if (!program) return null;
-  if (program.createdBy === uid) {
-    return ownerProgramAccessView(program,
-      programId);
-  }
-  const grantSnap = await tx.get(db.collection("programStaffGrants")
-    .doc(programStaffGrantId(programId, uid)));
-  if (!grantSnap.exists) return null;
-  return staffProgramAccessView(program, programId,
-    grantSnap.data() as ProgramStaffGrantDocument, nowMillis);
+  return projectProgramAccessView(
+    await readProgramAccessSources(db, tx, programId, uid), programId, uid,
+    nowMillis);
 }
 
+/**
+ * Rewrites [uids]' views of every programme of [organizerId], a page of
+ * programmes at a time, after their standing as organizer managers changed.
+ * @param {FirebaseFirestore.Firestore} db Firestore.
+ * @param {string} organizerId The organizer.
+ * @param {string[]} uids The accounts whose standing changed.
+ * @param {number} nowMillis The evaluation time.
+ * @param {number} pageSize Programmes read per page.
+ * @return {Promise<void>} Resolves once every view matches its sources.
+ */
+export async function reconcileOrganizerManagerViews(
+  db: FirebaseFirestore.Firestore, organizerId: string, uids: string[],
+  nowMillis = Date.now(), pageSize = 200): Promise<void> {
+  if (uids.length === 0) return;
+  const programs = db.collection("organizerPrograms")
+    .where("organizerId", "==", organizerId).orderBy("__name__")
+    .limit(pageSize);
+  let page = await programs.get();
+  for (;;) {
+    for (const program of page.docs) {
+      for (const uid of uids) {
+        await reconcileProgramAccessView(db, program.id, uid, nowMillis);
+      }
+    }
+    if (page.docs.length < pageSize) return;
+    page = await programs.startAfter(page.docs[page.docs.length - 1]).get();
+  }
+}
+
+/**
+ * The organizer manager ids an organizer write adds or removes, or none when
+ * the manager fields did not change.
+ * @param {FirebaseFirestore.DocumentData|undefined} before Old organizer.
+ * @param {FirebaseFirestore.DocumentData|undefined} after New organizer.
+ * @return {string[]} The accounts whose manager standing changed.
+ */
+export function changedOrganizerManagers(
+  before: FirebaseFirestore.DocumentData | undefined,
+  after: FirebaseFirestore.DocumentData | undefined): string[] {
+  const was = new Set(organizerManagers(before));
+  const is = new Set(organizerManagers(after));
+  return [...new Set([...was, ...is])]
+    .filter((uid) => was.has(uid) !== is.has(uid)).sort();
+}
+
+/**
+ * An organizer's current manager ids, from the same fields as
+ * organizerManagerUserIds (hostUserId, ownerUserId, hostUserIds), tolerating
+ * a malformed document by ignoring the fields that are not strings.
+ * @param {FirebaseFirestore.DocumentData|undefined} organizer The organizer.
+ * @return {string[]} The managers.
+ */
+export function organizerManagers(
+  organizer: FirebaseFirestore.DocumentData | undefined): string[] {
+  if (!organizer) return [];
+  const ids: unknown[] = [organizer.hostUserId, organizer.ownerUserId,
+    ...(Array.isArray(organizer.hostUserIds) ? organizer.hostUserIds : [])];
+  return [...new Set(ids.filter((id): id is string =>
+    typeof id === "string" && id.length > 0))];
+}
