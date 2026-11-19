@@ -15,7 +15,7 @@ async function handleRequest(request: NextRequest) {
   if (isPrivateShellPath(url.pathname)) return NextResponse.next();
   const privateFamily = privateShellFamily(url.pathname);
   const asset = /^\/(_next\/|_legacy\/|assets\/|fonts\/|\.well-known\/)/.test(url.pathname) ||
-    ["/favicon.ico", "/form-embed-resize.js", "/organizer-tracking-runtime.js", "/organizer-tracking-runtime.html"].includes(url.pathname);
+    ["/favicon.ico", "/form-embed-resize.js"].includes(url.pathname);
   const api = url.pathname.startsWith("/api/");
   // Link-preview cards and event maps draw public organiser and event records,
   // so like those pages they render only on Catch hosts.
