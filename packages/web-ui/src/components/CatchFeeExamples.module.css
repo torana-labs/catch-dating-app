@@ -7,14 +7,16 @@
  */
 .examples {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* Up to three across (two with data-columns="2"), each at least 12rem wide. */
+  --catch-fee-examples-columns: 3;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, max(12rem, (100% - (var(--catch-fee-examples-columns) - 1) * var(--catch-space-s3)) / var(--catch-fee-examples-columns))), 1fr));
   gap: var(--catch-space-s3);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.examples[data-columns="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.examples[data-columns="2"] { --catch-fee-examples-columns: 2; }
 
 .example {
   display: flex;
@@ -64,8 +66,3 @@
 }
 
 .examples[data-on="ink"] .body.body { font-size: var(--catch-typography-role-body-meta-size); }
-
-@media (max-width: 599px) {
-  .examples,
-  .examples[data-columns="2"] { grid-template-columns: minmax(0, 1fr); }
-}

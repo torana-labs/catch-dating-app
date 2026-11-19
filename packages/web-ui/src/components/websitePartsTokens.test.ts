@@ -58,6 +58,15 @@ const buttonTokens = read("../../../catch_tokens/lib/src/components/catch_button
 const spacingPx = (step: string) => Number(tokens.match(new RegExp(`--catch-space-${step}:\\s*([\\d.]+)px`))?.[1]);
 const buttonHeight = (name: string) => spacingPx(buttonTokens.match(new RegExp(`${name} = CatchSpacing\\.(\\w+);`))?.[1] ?? "");
 
+/**
+ * A part steps either on the page (`catch-page width < 840px`, the expanded
+ * window size) or on its own width: a container it declares in the same
+ * sheet (`container: <name> / inline-size`), queried with `width >= Npx`,
+ * where N follows from the part's minimum item width.
+ */
+const ownContainers = (css: string) => new Set([...css.matchAll(/container:\s*([\w-]+)\s*\/\s*inline-size/g)].map((match) => match[1]));
+const ownStep = (css: string, name: string, condition: string) => ownContainers(css).has(name) && /^width >= \d+px$/.test(condition);
+
 describe("CatchStoreButton heights", () => {
   it("are the D20 large and medium button heights", () => {
     expect(sheets.CatchStoreButton).toContain(`--catch-store-height: ${buttonHeight("largeHeight")}px;`);
@@ -90,6 +99,7 @@ describe("Website v2 part tokens", () => {
     const medium = tokens.match(/--catch-window-size-medium-min-width:\s*(\d+)px/)?.[1];
     for (const [name, css] of Object.entries(sheets)) {
       for (const query of css.matchAll(/@container\s+([\w-]+)\s*\(([^)]*)\)/g)) {
+        if (ownStep(css, query[1], query[2].trim())) continue;
         expect(`${query[1]} ${query[2].trim()}`, name).toBe(name === "CatchSiteFooter"
           ? `catch-site-footer width <= ${medium}px`
           : `catch-page width < ${expanded}px`);

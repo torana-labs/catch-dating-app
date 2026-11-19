@@ -1,12 +1,28 @@
 /*
- * Website v2 grid (CAT-248). Gaps read the CatchGaps tokens; the compact
- * column count applies when the `catch-page` container is narrower than the
- * expanded window size (840px; see CatchBand.module.css).
+ * Website v2 grid (CAT-248) for a fixed set of items (tiles, stats, route
+ * cards). Rows stay even: the grid steps from all items in one row to half
+ * of them (when the count is even) to one column, by its own width (the
+ * frame is the container, so a grid in a half-width column steps by that
+ * column). The component passes min(columns, item count) as data-columns,
+ * so fewer items than columns share the row rather than leaving a gap.
+ *
+ * Each step needs every item to be at least 15rem wide, or 9rem for items
+ * that read well small (compactColumns 2, which also keeps two to a row on
+ * a phone). Those minimums are a design choice, not a fit to any copy; the
+ * container widths below are their arithmetic with the related gap (12px):
+ * 15rem: 2 = 492px, 3 = 744px, 4 = 996px. 9rem: 3 = 456px, 4 = 612px.
+ * Gaps read the CatchGaps tokens.
  */
+.frame {
+  container: catch-grid / inline-size;
+  min-width: 0;
+}
+
 .grid {
-  --catch-grid-columns: 2;
+  --catch-grid-columns: 1;
   display: grid;
   grid-template-columns: repeat(var(--catch-grid-columns), minmax(0, 1fr));
+  gap: var(--catch-gap-related);
   box-sizing: border-box;
   min-width: 0;
   margin: 0;
@@ -19,10 +35,6 @@
   min-width: 0;
 }
 
-.grid[data-columns="2"] { --catch-grid-columns: 2; }
-.grid[data-columns="3"] { --catch-grid-columns: 3; }
-.grid[data-columns="4"] { --catch-grid-columns: 4; }
-
 .grid[data-align="stretch"] { align-items: stretch; }
 .grid[data-align="start"] { align-items: start; }
 
@@ -33,7 +45,30 @@
 .grid[data-gap="section"] { gap: var(--catch-gap-section); }
 .grid[data-gap="majorSection"] { gap: var(--catch-gap-major-section); }
 
-@container catch-page (width < 840px) {
-  .grid[data-compact-columns="1"] { --catch-grid-columns: 1; }
-  .grid[data-compact-columns="2"] { --catch-grid-columns: 2; }
+/* Items at least 15rem wide. */
+@container catch-grid (width >= 492px) {
+  .grid[data-columns="2"],
+  .grid[data-columns="4"] { --catch-grid-columns: 2; }
 }
+
+@container catch-grid (width >= 744px) {
+  .grid[data-columns="3"] { --catch-grid-columns: 3; }
+}
+
+@container catch-grid (width >= 996px) {
+  .grid[data-columns="4"] { --catch-grid-columns: 4; }
+}
+
+/* Items that read well small, at least 9rem wide: two to a row at the least. */
+.grid[data-compact-columns="2"][data-columns] { --catch-grid-columns: 2; }
+
+@container catch-grid (width >= 456px) {
+  .grid[data-compact-columns="2"][data-columns="3"] { --catch-grid-columns: 3; }
+}
+
+@container catch-grid (width >= 612px) {
+  .grid[data-compact-columns="2"][data-columns="4"] { --catch-grid-columns: 4; }
+}
+
+/* A single item is always one column. */
+.grid[data-columns="1"][data-compact-columns] { --catch-grid-columns: 1; }
