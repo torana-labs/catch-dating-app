@@ -6,7 +6,7 @@
     "title": "About {{brand.name}}",
     "description": "{{brand.name}} gives the hosts behind run clubs, supper clubs, quiz nights and courts better tools, so more nights happen and more people come back.",
     "socialDescription": "We help the people who bring strangers together.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

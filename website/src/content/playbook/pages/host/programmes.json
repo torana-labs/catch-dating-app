@@ -6,7 +6,7 @@
     "title": "Programmes: offsites, retreats and milestone weekends | {{brand.name}}",
     "description": "Itineraries per household, rooming lists and IDs for the hotel, trips for drivers and a run sheet for vendors. Priced per programme, quoted after a walkthrough.",
     "socialDescription": "A weekend away for eighty people, without eighty WhatsApp threads.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",

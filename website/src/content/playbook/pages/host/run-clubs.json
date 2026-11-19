@@ -6,7 +6,7 @@
     "title": "{{brand.name}} for run clubs | Pace groups, sign-ups and check-in",
     "description": "Sign-ups, pace pods, a first hello at the start line and every runner marked back at the finish, without the 200-message WhatsApp thread. Free runs stay free.",
     "socialDescription": "Every runner in a pace group before Sunday. {{brand.name}} for run clubs: free runs stay free.",
-    "noindex": true
+    "noindex": false
   },
   "header": {
     "variant": "host",
