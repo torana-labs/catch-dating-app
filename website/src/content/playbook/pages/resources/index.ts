@@ -20,6 +20,7 @@ export const resourcesPlaybookPages: PlaybookPageIndex = {
   "playbook_guide/supper-club": {file: "playbook-supper-club.json", load: () => import("./playbook-supper-club.json")},
   "playbook_guide/quiz-night": {file: "playbook-quiz-night.json", load: () => import("./playbook-quiz-night.json")},
   "playbook_guide/racket-sports": {file: "playbook-racket-sports.json", load: () => import("./playbook-racket-sports.json")},
+  refer: {file: "refer.json", load: () => import("./refer.json")},
 };
 
 /**

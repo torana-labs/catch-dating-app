@@ -34,13 +34,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -82,13 +82,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -176,13 +176,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -223,13 +223,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -270,13 +270,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -317,13 +317,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -364,13 +364,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -411,13 +411,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -458,13 +458,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -505,13 +505,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -552,13 +552,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -599,13 +599,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -646,13 +646,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -693,13 +693,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -740,13 +740,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -787,13 +787,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -834,13 +834,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -881,13 +881,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -932,13 +932,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -983,13 +983,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -1030,13 +1030,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -1081,13 +1081,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -1128,13 +1128,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -1175,13 +1175,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -1226,13 +1226,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -1273,13 +1273,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },
@@ -1324,13 +1324,13 @@
         },
         "frame": {
           "framedSize": {
-            "width": 980,
-            "height": 1924
+            "width": 804,
+            "height": 1748
           },
-          "canvasMargin": 64,
-          "frameInset": 24,
-          "outerRadius": 140,
-          "screenRadius": 116,
+          "canvasMargin": 0,
+          "frameInset": 0,
+          "outerRadius": 0,
+          "screenRadius": 0,
           "dynamicIsland": null
         }
       },

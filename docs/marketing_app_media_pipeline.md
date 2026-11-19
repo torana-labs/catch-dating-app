@@ -36,8 +36,13 @@ node tool/marketing/sync_website_media.mjs --check
 Pages ask for a capture by slot id and never name an image path:
 `website/src/shared/media/captureSlot.ts` resolves the record with that id to
 the props of `CatchAppCaptureImage` (`@catch/web-ui`, the website's T4
-component for a device-framed capture with its caption), which the page
-renders. Pages receive the records as their `captures` prop.
+component for a capture in its device frame with its caption), which the page
+renders. Pages receive the records as their `captures` prop. Every capture is
+the screen alone, so the website draws the only frame: `captureSlot` passes
+the record's device (`phone` for `generic-phone`, `tablet` for
+`generic-tablet`) and `CatchAppCaptureImage` draws the screen in
+`CatchDeviceFrame`. Playbook pages draw captures through `CatchScreenPreview`,
+which uses the same frame. A page never shows a frame inside a frame.
 
 ### Generic devices
 
@@ -46,13 +51,15 @@ Captures and website frames show generic devices only (owner decision,
 side buttons, in line with Apple's App Store marketing guidelines. The
 manifest's phone device is `generic-phone`: the 402×874 screen with a 62pt top
 and 34pt bottom safe area (`CaptureDevice.genericPhone`), which draws a clean
-status bar (9:41, full signal, Wi-Fi and battery) in the top safe area. The
-exporter frames it with a generic bezel of the same proportions as the
-website's `CatchDeviceFrame` kind `phone` (bezel 0.028 and outer radius 0.165
-of the frame width), giving a 980×1924 PNG. `tool/marketing/lib/capture_devices.mjs`
-is the one device table the exporter, provenance, website sync and web renderer
-read; `frame_device_capture.dart` draws the same frames. `iphone-17-pro`
-(1020×1964, drawn island) remains supported for existing renders only.
+status bar (9:41, full signal, Wi-Fi and battery) in the top safe area. Like
+the tablet and desktop devices it is unframed (owner decision, 19 Nov 2026):
+the PNG is the screen alone at 2x, 804×1748, and the website draws the phone
+in CSS. `tool/marketing/lib/capture_devices.mjs` is the one device table the
+exporter, provenance, website sync and web renderer read; each device has a
+`kind` (`phone`, `tablet` or `desktop`), and a phone web capture draws
+Safari's bars. `frame_device_capture.dart` holds the same table and passes
+unframed screens through. `iphone-17-pro` (1020×1964, drawn island) remains
+supported for existing renders only.
 `CatchDeviceFrame` (kind `phone`, `android` or `tablet`, optional tablet
 `orientation`, `tilt`) frames a screen in CSS from one spec per kind, every
 length a share of the frame width.
@@ -61,8 +68,8 @@ length a share of the frame width.
 `website/public/assets/app-screenshots/manifest.json` at build time, so
 server-rendered pages and link previews include the captures; nothing fetches
 the manifest in the browser. `tool/marketing/sync_website_media.mjs` writes that
-manifest from `capture_manifest.json`, adding each record's framed pixel size
-and the `pages` that show it.
+manifest from `capture_manifest.json`, adding each record's pixel size
+and the `pages` that show it. Each record's caption is its authored caption.
 
 In `capture_manifest.json`, `pages` and `scenario` (the demo world,
 event and moment a capture shows, checked against
@@ -85,15 +92,15 @@ placeholder until the macOS capture lane renders the real screen and the slot
 flips to `active`. A paused capture cannot name pages. Placeholders are drawn,
 not hand-made: `node tool/marketing/sync_website_media.mjs --placeholders`
 draws each pending capture's placeholder (a generic device with a neutral,
-loading-style screen at the device's framed size, so pages reserve the right
+loading-style screen at the device's PNG size, so pages reserve the right
 space) and writes the website manifest, leaving active records alone; `--check`
-fails when a placeholder is not a PNG of its device's framed size. The OG
+fails when a placeholder is not a PNG of its device's size. The OG
 cards for `/host/` and `/host/apply/` still read two retired captures'
 website PNGs directly (`host-live-console`, `host-create-basics`), and web-ui's
 device-frame stories read seven; those files stay until their readers move.
 
 `generic-tablet` (1194×834) and `desktop-browser` (1440×900) are unframed
-devices: the PNG is the screen alone, and the website draws the frame in CSS
+too: the PNG is the screen alone, and the website draws the frame in CSS
 (`CatchDeviceFrame` kind `tablet`, or kind `browser`). The Flutter render uses
 `CaptureDevice.genericTablet` and `CaptureDevice.desktopBrowser` (the same
 screens and safe areas; neither draws the phone status bar), and
@@ -107,7 +114,7 @@ owned by `node tool/design_tokens.mjs`.
 
 A `web-capture` record names `story.file`, `story.id`, the website `routeId`
 and the displayed `address` (`catchdates.com`) instead of an app `fixtureKey`.
-It uses the same manifest slots, framed size, sync and artifact-import protocol.
+It uses the same manifest slots, PNG size, sync and artifact-import protocol.
 The one slot, `guest-join-phone`, shows the synthetic Mumbai event's guest
 check-in story. No page lists it today.
 
@@ -118,8 +125,8 @@ descriptor (the screen `generic-phone` shares) with a viewport of the screen
 less the status bar (402×812 for `generic-phone`) at DPR 3, light mode, reduced motion,
 `Asia/Kolkata` time and `en-IN` locale, and waits for fonts and images. The
 renderer composes a clean Safari status bar (filling the device's top safe
-area) and address bar at 2x and passes the result to the frame tool for the
-capture's device. This is a rendered synthetic story, not proof
+area) and address bar at 2x and passes the result to the frame tool, which
+passes the unframed screen through. This is a rendered synthetic story, not proof
 of an authenticated flow or availability on the live website.
 
 `web_capture_inputs.mjs` follows the story and Storybook configuration through
@@ -168,8 +175,8 @@ release reads that binding.
 `node tool/marketing/export_app_screenshots.mjs --check` and
 `node tool/marketing/sync_website_media.mjs --check` run in the producer, after
 any rendering. Pending captures pass only if their placeholders exist and the generated
-website manifest is current. Active captures fail if the source image is missing, is not a framed
-PNG of its device's size (980×1924 for `generic-phone`), lacks canonical render provenance, has changed
+website manifest is current. Active captures fail if the source image is missing, is not a
+PNG of its device's size (804×1748 for `generic-phone`), lacks canonical render provenance, has changed
 image bytes or capture inputs, or differs from its website copy. The generated
 website manifest must also be current. Both sync commands run the exporter
 check before copying or accepting any active image. Every consumer that
@@ -177,7 +184,7 @@ publishes imports through `import_hosted_captures.mjs --import`, which applies
 the same per-image check to the bundle and refuses images whose capture inputs
 changed.
 
-The exporter embeds one `caPt` ancillary chunk in each framed PNG. For app
+The exporter embeds one `caPt` ancillary chunk in each PNG. For app
 captures it records
 the catalog id, fixture key, native iOS recipe/font hash, source revision, PNG
 byte hash, and capture input hash. For an app capture it also records the

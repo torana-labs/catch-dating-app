@@ -191,3 +191,33 @@ test("tool/ and operations/ read the admin action catalog through one reader", a
   assert.deepEqual(shared.readAdminActionCatalog(fixture),
     {catalogVersion: "fixture", actions: [], workflows: []});
 });
+
+test("callableUrl builds the deployed function address the probes used", async () => {
+  const {callableUrl} = await import("../../packages/command-client/src/transport.mjs");
+  assert.equal(callableUrl({projectId: "catch-project-123", region: "asia-south1", name: "getStatus"}),
+    "https://asia-south1-catch-project-123.cloudfunctions.net/getStatus");
+  assert.equal(callableBaseUrl({project: "catch-project-123", region: "asia-south1"}),
+    "https://asia-south1-catch-project-123.cloudfunctions.net");
+});
+
+test("token exchanges post to Google's REST endpoints and fail with a staged error", async () => {
+  const {exchangeAppCheckDebugToken, exchangeCustomToken} =
+    await import("../../packages/command-client/src/tokens.mjs");
+  const calls = [];
+  const token = await exchangeAppCheckDebugToken({
+    fetchImpl: async (url, options) => {
+      calls.push({url, body: JSON.parse(options.body)});
+      return new Response(JSON.stringify({token: "app-check"}), {status: 200});
+    },
+    apiKey: "key", appId: "1:123:web:abc", projectNumber: "123", debugToken: "debug",
+  });
+  assert.equal(token, "app-check");
+  assert.equal(calls[0].url, "https://firebaseappcheck.googleapis.com/v1/projects/123/apps/" +
+    "1%3A123%3Aweb%3Aabc:exchangeDebugToken?key=key");
+  assert.deepEqual(calls[0].body, {debugToken: "debug"});
+  await assert.rejects(exchangeCustomToken({
+    fetchImpl: async () => new Response("not json", {status: 500}),
+    apiKey: "key", customToken: "custom",
+  }), (error) => error instanceof OperationsError && error.code === "TOKEN_AUTH_FAILED" &&
+    error.message === "auth: HTTP 500" && error.details.stage === "auth");
+});

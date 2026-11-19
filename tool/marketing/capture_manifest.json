@@ -1,7 +1,6 @@
 {
   "version": 1,
   "updated": "2026-11-11",
-  "previewDisclosure": "Fictional app preview.",
   "description": "Marketing website image slots sourced from deterministic app UI captures. Active entries are regenerated from synthetic demo fixtures and synced into website assets. Pending entries name the pages that show them and render a drawn placeholder there (node tool/marketing/sync_website_media.mjs --placeholders) until the macOS capture lane renders them.",
   "captures": [
     {

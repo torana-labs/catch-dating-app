@@ -79,10 +79,18 @@
   margin-top: calc(var(--catch-space-micro6) - var(--catch-space-micro2));
 }
 
+/*
+ * The value side takes what it needs up to most of the row and wraps beyond
+ * that, so a long value (a venue, a date and time) never pushes the title
+ * out of the row or the row past its edge. Short values (prices, scores)
+ * keep their natural width.
+ */
 .trailing {
   display: flex;
-  flex: none;
+  flex: 0 1 auto;
   align-items: center;
+  min-width: 0;
+  max-width: 60%;
   margin-inline-start: var(--catch-space-s3);
 }
 
@@ -155,7 +163,8 @@
 .row[data-density] .leading { align-items: center; justify-content: center; }
 .row[data-catch-row-lead="marker"] .leading { width: 12px; }
 .row[data-catch-row-lead="time"] .leading { justify-content: flex-start; gap: var(--catch-space-s3); }
-.time { width: 40px; }
+/* At least the width of "9:30", and wider for "10:30 pm" or "+120 min" rather than breaking it. */
+.time { min-width: 40px; white-space: nowrap; }
 .rank { width: 28px; text-align: center; }
 
 .icon {
@@ -186,7 +195,8 @@
   font-size: 15px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+  text-align: end;
+  overflow-wrap: anywhere;
 }
 
 .row[data-density] .trailing { gap: var(--catch-space-s2); color: var(--catch-theme-ink2); }

@@ -28,7 +28,7 @@ const leadBody = (call: number) => JSON.parse(String(leadPost.mock.calls[call][1
 // The home page's capture slots, as the website manifest records them (their page bindings are
 // checked against capture_manifest.json in marketingCaptures.test.tsx).
 const captures: CaptureSlots = Object.fromEntries(["guest-explore", "guest-checked-in", "guest-after-event", "host-live-tablet"].map((id) => [id, {
-  id, webPath: `/captures/${id}.png`, width: 980, height: 1924, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Find a plan", pages: ["/"],
+  id, device: "generic-phone", webPath: `/captures/${id}.png`, width: 804, height: 1748, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Find a plan", pages: ["/"],
 }]));
 
 /** Each band's name, in page order. */
@@ -125,14 +125,14 @@ describe("homepage", {timeout: 20_000}, () => {
     ]);
   });
 
-  it("floats the soonest plan over the hero's phone with its date, and draws the phone in the canvas bezel", () => {
+  it("floats the soonest plan over the hero's phone with its date, and draws the phone in the device frame", () => {
     render(<HomePage captures={captures} catalog={mumbaiLiveCatalog} />);
     const hero = screen.getByRole("region", {name: "Find something worth showing up for."});
     const chip = hero.querySelector("[data-chip]") as HTMLElement;
     expect(chip.textContent).toContain("Thursday Evening Pub Quiz");
     expect(chip.textContent).toContain("Lantern Lane Tavern · 6 left");
     expect((chip.querySelector("time") as HTMLElement).dataset).toMatchObject({ground: "yellow", size: "sm"});
-    expect(within(hero).getByRole("figure").dataset).toMatchObject({bezel: "", size: "hero"});
+    expect(within(hero).getByRole("figure").dataset).toMatchObject({device: "phone", size: "hero"});
     // No proof line until real data stands behind it.
     expect(hero.textContent).not.toMatch(/verified|★/u);
   });

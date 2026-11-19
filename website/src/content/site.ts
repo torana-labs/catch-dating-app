@@ -83,6 +83,8 @@ const helpLink = {href: "/help/", label: "Help"} as const;
 const reportListingLink = {href: "/listings/request/", label: "Report or remove a listing"} as const;
 /** The walkthrough request page (/host/walkthrough/): a lead form staff answer on WhatsApp. */
 export const hostWalkthroughHref = "/host/walkthrough/";
+/** Refer a host (/refer/): the host-to-host referral page. */
+const referHref = "/refer/";
 const aboutLink = {href: "/about/", label: "About"} as const;
 const safetyLink = {href: "/safety/", label: "Safety"} as const;
 /** The free host tools and guides under Resources (the canvas's Resources menu and footer column). */
@@ -242,9 +244,9 @@ export const siteFooterCopy = {
    * host columns, as the product pages v2 drew them): the product pages,
    * the organiser type pages, the ways to start, resources and the brand's
    * column with the listing request and the legal links. Resources lists
-   * Forms, the host playbooks, the no-show calculator, the walkthrough and
-   * Help; pages the canvas names that are not built yet (host stories,
-   * compare, refer a host, event page from a link) join when they ship.
+   * Forms, the host playbooks, the no-show calculator, the walkthrough,
+   * Refer a host and Help; pages the canvas names that are not built yet
+   * (host stories, compare, event page from a link) join when they ship.
    */
   host: {
     columns: [
@@ -272,7 +274,10 @@ export const siteFooterCopy = {
         {href: hostDemoHref, label: "Try a demo night"},
         {href: programmesHref, label: "Programmes"},
       ]},
-      {title: "Resources", links: [productPageLinks.forms, hostPlaybooksLink, noShowCalculatorLink, {href: hostWalkthroughHref, label: "Book a walkthrough"}, helpLink]},
+      {title: "Resources", links: [
+        productPageLinks.forms, hostPlaybooksLink, noShowCalculatorLink, {href: hostWalkthroughHref, label: "Book a walkthrough"},
+        {href: referHref, label: "Refer a host"}, helpLink,
+      ]},
       {title: brand.name, links: [
         whatsOnLink, aboutLink, safetyLink, {href: "/contact/", label: "Contact"}, reportListingLink,
         {href: "/terms/", label: "Terms"}, {href: "/privacy/", label: "Privacy"}, {href: "/refunds/", label: "Refunds"},

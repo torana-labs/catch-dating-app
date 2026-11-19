@@ -1072,7 +1072,7 @@
       "status": "active",
       "description": "Generates flavor-specific native launcher and splash brand assets from the design context token cache, including Consumer responsive iOS launch geometry and Host-specific Archivo icon and centered splash assets.",
       "checks": [
-        "dart analyze tool/branding/generate_native_brand_assets.dart",
+        "dart compile kernel tool/branding/generate_native_brand_assets.dart -o \"$(mktemp -d)/native_brand_assets.dill\"",
         "flutter test test/tooling/consumer_launch_screen_test.dart test/tooling/host_native_branding_test.dart test/core/host_startup_branding_test.dart"
       ],
       "role": "generator"
@@ -2356,7 +2356,6 @@
       "status": "active",
       "description": "Validates marketing-owned structured domain copy and regenerates typed Event Success and event-policy catalogs from Dart structure templates.",
       "checks": [
-        "dart analyze tool/copy/sync_structured_domain_copy.dart",
         "dart run tool/copy/sync_structured_domain_copy.dart"
       ],
       "role": "generator"
@@ -4937,7 +4936,10 @@
       "alsoEnforces": [
         "APP-TARGET-IDENTITY-001"
       ],
-      "runbook": "tool/README.md#firebase-deploy-and-client-callable-gates"
+      "runbook": "tool/README.md#firebase-deploy-and-client-callable-gates",
+      "impactPaths": [
+        "packages/command-client/**"
+      ]
     },
     {
       "id": "firebase:create-config-brand",
@@ -5503,7 +5505,8 @@
         "tool/firebase/check_platform_availability.test.mjs",
         ".github/workflows/_backend-deploy.yml",
         ".github/workflows/_web-hosting-build.yml",
-        ".github/workflows/website-next-preview.yml"
+        ".github/workflows/website-next-preview.yml",
+        "packages/command-client/**"
       ],
       "runbook": "docs/release_operations.md#platform-unavailable-deploys-and-releases-defer"
     },
@@ -5524,7 +5527,10 @@
       "alsoEnforces": [
         "STORAGE-IAM-001"
       ],
-      "runbook": "docs/release_operations.md#storage-rules-cross-service-readiness"
+      "runbook": "docs/release_operations.md#storage-rules-cross-service-readiness",
+      "impactPaths": [
+        "packages/command-client/**"
+      ]
     },
     {
       "id": "firebase:project-resolver",
@@ -5694,7 +5700,10 @@
         "node --test tool/firebase/synthetic_backend_probe.test.mjs"
       ],
       "role": "operator",
-      "runbook": "tool/README.md"
+      "runbook": "tool/README.md",
+      "impactPaths": [
+        "packages/command-client/**"
+      ]
     },
     {
       "id": "functions:emulator-test-selection",
@@ -6287,7 +6296,6 @@
       "checks": [
         "node --check tool/marketing/export_app_screenshots.mjs",
         "node --test tool/marketing/capture_pipeline.test.mjs",
-        "dart analyze tool/marketing/frame_device_capture.dart",
         "dart run tool/marketing/frame_device_capture_test.dart",
         "node tool/marketing/export_app_screenshots.mjs --check-design-json",
         "node --test tool/marketing/web_captures.test.mjs"

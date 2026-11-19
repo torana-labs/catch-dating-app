@@ -24,7 +24,7 @@ const stepOne: WeddingsStepOneDraft = {
 const slots = ["wedding-rsvp", "wedding-itinerary", "wedding-whatsapp", "wedding-ids", "wedding-door", "wedding-departures", "wedding-driver",
   "wedding-message", "wedding-family", "wedding-guests", "wedding-rooms", "wedding-live", "wedding-reconcile", "wedding-hotel"];
 const captures: CaptureSlots = Object.fromEntries(slots.map((id) => [id, {
-  id, webPath: `/captures/${id}.png`, width: 980, height: 1924, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Set up", pages: ["/weddings/"],
+  id, device: "generic-phone", webPath: `/captures/${id}.png`, width: 804, height: 1748, alt: `Screen ${id}`, caption: `Caption ${id}`, walkthroughStep: "Set up", pages: ["/weddings/"],
 }]));
 
 function fillStepOne(scope: ReturnType<typeof within>) {
