@@ -3996,6 +3996,9 @@ service cloud.firestore {
     match /programStays/{privateDocument=**} {
       allow read, write: if false;
     }
+    match /guestImportHeaderShapes/{privateDocument=**} {
+      allow read, write: if false;
+    }
     match /tryItWorkspaces/{privateDocument=**} {
       allow read, write: if false;
     }

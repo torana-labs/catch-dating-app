@@ -5,6 +5,8 @@ import type {
   CanonicalGuestRead,
   CanonicalGuestRow,
   ExternalRosterProvider,
+  GuestColumnMapping,
+  GuestField,
   GuestListConverter,
   NormalizedRosterImportRow,
   PreparedRosterImport,
@@ -21,7 +23,12 @@ import {poshConverter} from "./converters/posh";
 import {townscriptConverter} from "./converters/townscript";
 import {typeformConverter} from "./converters/typeform";
 import {vcardConverter} from "./converters/vcard";
-import {guestFields, rosterStatus, suggestGuestMapping} from "./mapping";
+import {
+  guestFields,
+  reviewStatus,
+  rosterStatus,
+  suggestGuestMapping,
+} from "./mapping";
 import {
   normalizeHeader,
   nullableValueAt,
@@ -133,7 +140,17 @@ export function normalizeRosterMatrix(
 export function readGuestTable(
   matrix: string[][],
   options: {providerHint?: ExternalRosterProvider;
-    converterId?: RosterAdapterId} = {}
+    converterId?: RosterAdapterId;
+    /** The host's column choices; null unmaps a field. */
+    mapping?: Partial<GuestColumnMapping>;
+    /**
+     * Read status cells as the review stage does (reviewStatus): cancelled
+     * guests are skipped and unknown words flag the row. The forwarded
+     * roster keeps its original reading.
+     */
+    reviewStatuses?: boolean;
+    /** Columns used by fields outside the canonical row. */
+    reservedColumns?: number[]} = {}
 ): CanonicalGuestRead {
   if (matrix.length < 2) throw new Error("roster_missing_rows");
   if (matrix[0].length > MAX_GUEST_COLUMNS) {
@@ -150,7 +167,26 @@ export function readGuestTable(
     headers,
     rows: matrix.slice(1).filter((row) => row.some((value) => value.trim())),
   }, adapter);
-  const mapping = suggestGuestMapping(normalized.headers, converter);
+  const suggested = suggestGuestMapping(normalized.headers, converter);
+  const mapping = {...suggested};
+  const correctedFields: GuestField[] = [];
+  for (const field of guestFields) {
+    const chosen = options.mapping?.[field];
+    if (chosen === undefined) continue;
+    if (chosen !== null && (!Number.isSafeInteger(chosen) || chosen < 0 ||
+        chosen >= normalized.headers.length)) {
+      throw new Error("roster_invalid_mapping");
+    }
+    if (chosen !== suggested[field]) correctedFields.push(field);
+    mapping[field] = chosen;
+  }
+  const chosenColumns = [...Object.values(mapping),
+    ...(options.reservedColumns ?? [])]
+    .filter((column): column is number => column !== null);
+  if (options.mapping &&
+      new Set(chosenColumns).size !== chosenColumns.length) {
+    throw new Error("roster_duplicate_mapped_column");
+  }
   const nameIndex = mapping.displayName;
   if (nameIndex === null) throw new Error("roster_missing_name_column");
   const rows: CanonicalGuestRow[] = [];
@@ -168,12 +204,14 @@ export function readGuestTable(
       continue;
     }
     const statusCell = nullableValueAt(row, mapping.status);
-    const status = converter?.statusFor ? converter.statusFor(statusCell) :
-      rosterStatus(statusCell);
-    if (status === "excluded") {
+    const read = converter?.statusFor ? converter.statusFor(statusCell) :
+      options.reviewStatuses ? reviewStatus(statusCell) :
+        rosterStatus(statusCell);
+    if (read === "excluded") {
       skipped.push({sourceRowNumber, reason: "excluded-status", rawCells});
       continue;
     }
+    const status = read === "unknown" ? "registered" : read;
     const value: NormalizedRosterImportRow = {
       rowId: String(sourceRowNumber),
       displayName,
@@ -193,10 +231,11 @@ export function readGuestTable(
       }
       fields[field] = {column, header: normalized.headers[column]};
     }
-    rows.push({sourceRowNumber, value, fields, rawCells});
+    rows.push({sourceRowNumber, value, fields, rawCells,
+      ...(read === "unknown" ? {issues: ["unknown-status"]} : {})});
   }
-  return {adapter, headers: normalized.headers, mapping, rows, skipped,
-    truncatedCount: normalized.rows.length - index};
+  return {adapter, headers: normalized.headers, mapping, correctedFields,
+    rows, skipped, truncatedCount: normalized.rows.length - index};
 }
 
 /**

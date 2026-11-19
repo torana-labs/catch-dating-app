@@ -1025,6 +1025,7 @@ export {onInstantDraftOrganizerPublished} from "./instantDrafts/publishOnClaim";
 export {ensureTryItWorkspace} from "./commands/ensureTryItWorkspace";
 export {importOrganizerFromLink} from "./commands/importOrganizerFromLink";
 export {expireTryItWorkspaces} from "./commands/workspaceExpiry";
+export {importGuestList} from "./commands/importGuestList";
 
 export {
   getSalesDemoSetup, prepareSalesDemoFormDraft, getSalesDemoPreview,

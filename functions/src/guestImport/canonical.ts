@@ -63,6 +63,8 @@ export interface CanonicalGuestRow {
   value: NormalizedRosterImportRow;
   fields: Partial<Record<GuestField, GuestFieldSource>>;
   rawCells: string[];
+  /** Reasons the row needs a look before it can be saved. */
+  issues?: string[];
 }
 
 /** A source row the converter did not turn into a guest, and why. */
@@ -78,6 +80,8 @@ export interface CanonicalGuestRead {
   /** Headers after the converter's reshape (e.g. a joined name column). */
   headers: string[];
   mapping: GuestColumnMapping;
+  /** Fields whose column the host chose instead of the converter. */
+  correctedFields: GuestField[];
   rows: CanonicalGuestRow[];
   skipped: SkippedGuestRow[];
   /** Data rows beyond the row limit, not read. */
