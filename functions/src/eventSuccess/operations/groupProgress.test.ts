@@ -15,7 +15,8 @@ import {validateEventSuccessPlanDocument} from
   "../../shared/generated/validators/eventSuccessPlanDocument";
 import type {EventAssistanceGroupProgressCallableResponse as Response} from
   "../../shared/generated/eventAssistanceGroupProgressCallableResponse";
-import {EventGroupProgressStore, GROUP_PROGRESS} from "./groupProgressStore";
+import {DEPARTURE_RECEIPT_COMMAND, EventGroupProgressStore, GROUP_PROGRESS} from
+  "./groupProgressStore";
 import {progressIdentity} from "./groupProgressSource";
 import {evaluateLateJoin} from "./lateJoin";
 import {
@@ -23,6 +24,7 @@ import {
   confirmEventAssistanceDepartureHandler,
 } from "./groupProgressHandlers";
 import {contractFixture} from "../../shared/contractFixtures";
+import {COMMAND_RECEIPTS} from "../../shared/commandReceipts";
 
 const now = Date.parse("2026-09-07T12:00:00Z");
 const stamp = (at: number) => ({_seconds: Math.floor(at / 1000),
@@ -349,7 +351,8 @@ test("receipt reads cannot extend the event window or reverse the clock",
       const h = await harness();
       const input = command((await h.store.get(manager, h.scope)).view);
       h.fake.beforeRead = (path) => {
-        if (path.startsWith("eventAssistanceProgressReceipts/")) {
+        if (path.startsWith(
+          `${COMMAND_RECEIPTS}/${DEPARTURE_RECEIPT_COMMAND}_`)) {
           h.clock.now = later;
         }
       };

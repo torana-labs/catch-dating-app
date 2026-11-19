@@ -502,9 +502,10 @@ choices and a rehearsal name that differs from its actor. Guest-name changes alt
 the reviewed source hash, independently of the immutable retry binding.
 `resolveEventAssistanceCase` owns resolution, decline and manager handoff. The
 canonical command includes the expected case revision; its callable also
-requires the reviewed source hash. `eventAssistanceCaseReceipts` records exact
-request hashes, source binding, actor, outcome and committed revision for
-transactional retry safety. Both collections deny direct client access.
+requires the reviewed source hash. Its `eventAssistanceCase` command receipt
+(see Command Receipts) keeps the request hash, case binding hash and committed
+revision for transactional retry safety. The case collection denies direct
+client access.
 Comfort/safety requests remain excluded from the organizer queue. For Admin
 roles authorized to read safety detail, the safety overview reads their
 `authorizedSafetyOperator` rows into the event safety queue; finance and
@@ -731,9 +732,10 @@ provider time remains null. No automatic retention deletion is configured until
 pending-consumer and retry requirements have an implemented lifecycle. See
 `docs/event_success.md` for consumer behavior and remaining activation work.
 
-`eventAssistanceRcsCallbackReceipts/{callbackId}` is a third private collection.
-Its closed outcome (delivery, reply, ignored or rejected) binds the complete
-immutable callback hash and processing time. The inbox conflict identity, outbox
+The consumer's `eventAssistanceRcsCallback` command receipt (see Command
+Receipts; trigger retention, keyed by the callback digest) stores the closed
+outcome (delivery, reply, ignored or rejected) under the complete immutable
+callback hash as its request hash. The inbox conflict identity, outbox
 transition, typed guest action and receipt share one transaction; failed commits
 leave no partial effect and exact retries return the saved outcome. Missing or
 conflicted inbox evidence cannot create a consumer receipt or domain effect.
@@ -894,8 +896,9 @@ Cancellation, rejection and expiry preserve the prior group. Direct placement
 cannot bypass a pending assignment. Transfer deadlines cannot exceed 30 minutes
 or the event end. Sweeps have scoped reads but no transfer authority.
 
-`eventAssistanceMembershipReceipts` atomically preserves the actor, canonical
-command, request hash, source generation, episode and resulting revision. Current
+The `eventAssistanceMembership` command receipt (see Command Receipts)
+atomically preserves the request hash (actor and command included), source
+generation, episode and resulting revision. Current
 manager/scoped operator authority and reviewed source/revision/episode fences are
 checked in each transaction. Reads and retries never recreate an earlier effect.
 The membership store uses the shared bounded transaction callback adapter for
@@ -918,12 +921,11 @@ requires a new reviewed episode. Reads expose only participation, source/revisio
 fences, check-in status and return choices; they contain no contact information
 or reported joining intention.
 
-`eventAssistanceParticipationReceipts/{receiptId}` is a server-only immutable
-command receipt. Its identity binds event/guest/operation; its request hash
-includes the authenticated actor. State and receipt commit together. Exact
-retries return the original revision plus current state; changed reuse, source
-replacement and stale commands fail. No direct client access or TTL is enabled.
-Retention must cover executable commands and outstanding guest capabilities.
+Set keeps an `eventAssistanceParticipation` command receipt (see Command
+Receipts). Its identity binds event/guest/operation; its request hash includes
+the authenticated actor; its result keeps the revision and source generation.
+State and receipt commit together. Exact retries return the original revision
+plus current state; changed reuse, source replacement and stale commands fail.
 
 The get/set participation callables require Auth, App Check, rate limiting and
 current organizer-manager or linked-attendee authority. Set consumes the canonical
@@ -944,13 +946,13 @@ template are distinct wire states. Templates bind configuration to workflow
 kind without requiring a guest episode during setup; runtime policy binding
 supplies the concrete subject and the server-owned implementation version.
 
-`eventAssistanceSettingReceipts/{receiptId}` stores immutable request hashes
-and original committed revisions. Actor identity participates in the request
-hash; context/group/workflow/request identity determines the receipt ID. Both
-records commit together. Exact replay returns its original operation revision
-and the latest projected settings. Changed request reuse or an outdated
-revision/source hash fails. Neither collection has client access or a TTL;
-terminal retention must be decided before activation.
+The `eventAssistanceSetting` command receipt (see Command Receipts) stores the
+request hash and original committed revision. Actor identity participates in
+the request hash; context/group/workflow/request identity determines the
+receipt id. Setting and receipt commit together. Exact replay returns its
+original operation revision and the latest projected settings. Changed request
+reuse or an outdated revision/source hash fails. Settings have no client
+access.
 
 The two settings callables require Auth, App Check, rate limiting and current
 organizer-manager authority. They expose settings, source hashes and a bounded `setup` containing the
@@ -1123,16 +1125,14 @@ Each projected destination includes an opaque `alternativeId` derived from the
 typed target. A route-recovery write may add `routeDecisionId` to the current
 progress document; older departure records remain valid without it.
 
-`eventAssistanceProgressReceipts/{receiptId}` records the request hash, original
-committed revision and time. Departure receipt IDs bind context, group and
-operation ID; route-recovery receipt IDs additionally bind the command kind.
-actor identity is included in the request hash. Progress and receipt commit
-together. Route receipts retain their command kind and decision ID; those
-fields remain optional for existing departure receipts. Exact replay returns
-the original operation revision plus the latest
-view, including after a later departure; changed reuse fails. These records
-have no TTL: command deduplication must survive the executable event lifetime,
-and terminal retention/cleanup must be defined before activation.
+Departures and route recoveries keep `eventAssistanceDeparture` and
+`eventAssistanceRoute` command receipts (see Command Receipts) with the request
+hash, original committed revision and time. Departure receipt ids bind context,
+group and operation ID; route-recovery receipt ids additionally bind the
+command kind, and the decision ID is part of the request hash. Actor identity
+is included in the request hash. Progress and receipt commit together. Exact
+replay returns the original operation revision plus the latest view, including
+after a later departure; changed reuse fails.
 
 `confirmEventAssistanceDeparture` and `changeEventAssistanceRoute` are
 Auth/App-Check-protected and rate-limited. Canonical organizer management is
@@ -2031,8 +2031,13 @@ own collection and retention: consent (`organizerCommunicationPermissionReceipts
 `eventMessagingBudget*Receipts`, `publicEventAdmissionReceipts`), admission and
 conversion proofs other commands read (`organizerFormAdmissionReceipts`,
 `organizerFormConversionReceipts`), merges and publications kept for audit
-(`organizerContactMergeReceipts`, `externalEventPublicationReceipts`), and
-provider-delivery evidence (`organizerCampaignWebhookReceipts`).
+(`organizerContactMergeReceipts`, `externalEventPublicationReceipts`),
+provider-delivery evidence (`organizerCampaignWebhookReceipts`), checkpoint
+report, assignment and closeout history (`eventAssistanceCheckpointReceipts`:
+the host checkpoint view and the Operations worker read it, and Operations
+action receipts hash it), and assistant delegation grants
+(`assistantManagementReceipts`: read by the owner's receipt lookup and by the
+sales privacy inventory's erasure checks).
 
 Moved so far: `functionEventReceipts`, `eventLiveCommandReceipts`,
 `eventChatAccessReceipts` (the five event-room commands),
@@ -2044,6 +2049,26 @@ deletion still removes old chat receipts by uid. An entitlement grant keeps its
 own operation hash and result revision, so its identity outlives the receipt. Replay windows are short and an
 in-flight retry across the deploy only re-runs a revision-fenced or idempotent
 command, so nothing was copied forward.
+
+The event-assistance commands moved on 19 Nov 2026, reversing the 18 Nov
+decision to keep them: each receipt was read only by its own command's retry.
+`eventAssistanceAccountabilityReceipts` (`eventAssistanceAccountability`),
+`eventAssistanceCaseReceipts` (`eventAssistanceCase`),
+`eventAssistanceMembershipReceipts` (`eventAssistanceMembership`),
+`eventAssistanceParticipationReceipts` (`eventAssistanceParticipation`),
+`eventAssistanceProgressReceipts` (split into `eventAssistanceDeparture` and
+`eventAssistanceRoute`), `eventAssistanceRcsCallbackReceipts`
+(`eventAssistanceRcsCallback`, trigger retention, keyed by the callback digest
+with the callback's content hash as `requestHash`),
+`eventAssistanceRuntimeConfigReceipts` (`eventAssistanceRuntimeConfig`),
+`eventAssistanceSettingReceipts` (`eventAssistanceSetting`) and
+`eventAssistanceStaffReceipts` (`eventAssistanceStaff`). The id is the
+command's existing 64-hex operation digest and `requestHash` is the existing
+`[actor, input]` content hash. `result` holds the applied revision, the time it
+was applied and the live-state fences the replay re-checks (source and
+attendee generations, check-in, episode and checkpoint hashes, the case
+binding hash, the staff source hash); a replay whose fence no longer matches
+live state is still rejected. Old documents stay.
 
 ### Public HTTP And Admin Callable Boundaries
 
@@ -5476,8 +5501,9 @@ revokes every duty. Group-only staff have no event-wide permissions.
 `getEventAssistanceGroupStaff` and `setEventAssistanceGroupStaff` are manager-only
 callables. They authorize before resolving a phone to an existing Auth account,
 then re-read manager authority in the transaction. Changes require the reviewed
-UID, source hash and staff revision. `eventAssistanceStaffReceipts` makes exact
-retries return the original operation revision and latest state. Duties are
+UID, source hash and staff revision. The `eventAssistanceStaff` command receipt
+(see Command Receipts) makes exact retries return the original operation
+revision and latest state, fenced by the source hash it was applied under. Duties are
 limited to 20 groups per person, at most 14 days and the event's staff window.
 Event creation generation and saved group configuration bind authority; ordinary
 attendance/progress updates do not revoke it. Managers can remove obsolete
@@ -6876,18 +6902,19 @@ uses existing `eventAttendees.accountability*` fields rather than a second
 accountability state. All sweep writers advance `accountabilityRevision`,
 including clearing. Legacy missing revisions read as zero; overflow fails.
 
-`eventAssistanceAccountabilityReceipts` is server-only. A receipt binds the
-actor/request hash, source/attendee generations, visit hash, episode or absence,
-applied revision and disposition. It commits with the attendee write. Exact
+The `eventAssistanceAccountability` command receipt (see Command Receipts)
+binds the actor/request hash (disposition included), source/attendee
+generations, visit hash, episode or absence, checkpoint hash and applied
+revision. It commits with the attendee write. Exact
 replay returns the applied operation revision and current view; it never
 reapplies an old disposition. Current scoped authority remains necessary on
 replay; staff also require current accepted membership for a subgroup. Completion/cancellation do not imply a person
 returned. No messaging or participation state is created by this command.
-Receipt retention and Host/rehearsal adapters remain subsequent work.
+Host/rehearsal adapters remain subsequent work.
 
 The optional `checkpoint` on read/write scope and response supplies an exact
-checkpoint ID and positive departure revision. The receipt additionally freezes
-the original roster ID/hash. This branch resolves an original departure member
+checkpoint ID and positive departure revision. The receipt additionally binds
+the hash of the original checkpoint proof (roster ID/hash). This branch resolves an original departure member
 without requiring event-wide sweep configuration. The absence of this scope
 retains existing sweep applicability. Source/read hashes include the frozen
 checkpoint evidence; missing or changed receipt scope cannot replay as an event

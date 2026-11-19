@@ -920,35 +920,11 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    match /eventAssistanceMembershipReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceStaffReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceParticipationReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceAccountabilityReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
     match /eventAssistanceSettings/{settingId} {
       allow read, write: if false;
     }
 
     match /eventAssistanceRuntimeConfigs/{runtimeId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceRuntimeConfigReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceSettingReceipts/{receiptId} {
       allow read, write: if false;
     }
 
@@ -961,10 +937,6 @@ service cloud.firestore {
     }
 
     match /eventAssistanceDepartureRosters/{rosterId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceProgressReceipts/{receiptId} {
       allow read, write: if false;
     }
 
@@ -984,10 +956,6 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    match /eventAssistanceCaseReceipts/{receiptId} {
-      allow read, write: if false;
-    }
-
     match /eventAssistanceDeliveryRepairs/{receiptId} {
       allow read, write: if false;
     }
@@ -1001,10 +969,6 @@ service cloud.firestore {
     }
 
     match /eventAssistanceRcsSenders/{senderId} {
-      allow read, write: if false;
-    }
-
-    match /eventAssistanceRcsCallbackReceipts/{callbackId} {
       allow read, write: if false;
     }
 

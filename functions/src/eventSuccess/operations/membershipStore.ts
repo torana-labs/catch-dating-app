@@ -4,17 +4,25 @@ import {operationContentHash} from "../../operations/durableActions";
 import {runAssistanceTransaction} from "./transactionCallback";
 import {validateTransferEventAssistanceGroupCallablePayload} from
   "../../shared/generated/validators/transferEventAssistanceGroupInput";
-import {validateEventAssistanceMembershipReceiptDocument} from
-  "../../shared/generated/validators/eventAssistanceMembershipReceiptDocument";
 import {assertCommandContext, assertCommandRole} from "./commands";
 import {requireGroupPermission} from "./groupStaffAuthority";
 import {invalidSource} from "./groupProgressSource";
-import {MEMBERSHIPS, MEMBERSHIP_RECEIPTS, readMembership,
+import {MEMBERSHIPS, MEMBERSHIP_RECEIPT_COMMAND, readMembership,
   canReadMembership, membershipDenied, parseMembership, Scope} from
   "./membershipReader";
 import {membershipResponse, transitionMembership, membershipConflict} from
   "./membershipTransitions";
 import {readMembershipReceivers} from "./membershipReceivers";
+import {assistanceReceiptRef, hasAssistanceReceipt, isDigest, isMillis,
+  isRevision, replayAssistanceReceipt, writeAssistanceReceipt} from
+  "./assistanceReceipts";
+
+/** What a replay re-checks against the live membership and guest episode. */
+type MembershipReceipt = {revision: number; createdAt: number;
+  sourceGeneration: string; episodeId: string};
+const validReceipt = (r: Record<string, unknown>) => isRevision(r.revision) &&
+  isMillis(r.createdAt) && isDigest(r.sourceGeneration) &&
+  typeof r.episodeId === "string";
 
 export class EventMembershipStore {
   constructor(private readonly db: Firestore,
@@ -54,18 +62,22 @@ export class EventMembershipStore {
     const {payload} = command;
     const scope = {context, attendeeId: payload.attendeeId};
     const requestHash = operationContentHash([actorUid, input]);
-    const receiptId = "membership-action:" + operationContentHash([
-      scope, command.operationId]);
+    const receiptRef = assistanceReceiptRef(this.db,
+      MEMBERSHIP_RECEIPT_COMMAND, operationContentHash([
+        scope, command.operationId]));
     return runAssistanceTransaction(this.db, async (tx) => {
       const state = await readMembership(this.db, tx, scope, actorUid,
         this.clock);
       if (!canReadMembership(state)) throw membershipDenied();
       assertCommandRole(command, [state.manager ? "eventLead" : "groupLead"]);
-      const receiptRef = this.db.collection(MEMBERSHIP_RECEIPTS).doc(receiptId);
-      const receipt = (await tx.get(receiptRef)).data();
+      const stored = (await tx.get(receiptRef)).data();
+      // One clock reading decides expiry for both receipt checks below.
+      const lookup = {command: MEMBERSHIP_RECEIPT_COMMAND, requestHash,
+        nowMillis: state.now} as const;
       // Only a current target operator can be named as the receiving party.
       const decision = payload.decision;
-      const targetAccess = !receipt && decision.kind === "propose" ?
+      const targetAccess = !hasAssistanceReceipt(stored, lookup) &&
+        decision.kind === "propose" ?
         await requireGroupPermission(this.db, tx, context, decision.to,
           decision.receivingOperatorId, "transferGroup", this.clock) : null;
       const now = this.clock();
@@ -73,17 +85,12 @@ export class EventMembershipStore {
       state.now = now;
       if (!canReadMembership(state) || targetAccess &&
           now >= targetAccess.validUntil) throw membershipDenied();
-      if (receipt !== undefined) {
-        if (!validateEventAssistanceMembershipReceiptDocument(receipt) ||
-            receipt.receiptId !== receiptId ||
-            receipt.membershipId !== state.membershipId ||
-            receipt.actorUid !== actorUid ||
-            receipt.requestHash !== requestHash ||
-            receipt.sourceGeneration !== state.source.sourceGeneration ||
+      const receipt = replayAssistanceReceipt<MembershipReceipt>(stored,
+        lookup, validReceipt, membershipConflict);
+      if (receipt !== null) {
+        if (receipt.sourceGeneration !== state.source.sourceGeneration ||
             receipt.episodeId !== state.guest?.episodeId ||
             !state.membership || receipt.revision > state.membership.revision ||
-            operationContentHash([actorUid, {command: receipt.command,
-              expectedSourceHash: input.expectedSourceHash}]) !== requestHash ||
             receipt.createdAt > now) throw membershipConflict();
         return membershipResponse("replayed", state, receipt.revision);
       }
@@ -97,18 +104,18 @@ export class EventMembershipStore {
       }
       const membership = transitionMembership(state, input);
       parseMembership(membership, scope, now);
-      const savedReceipt = {receiptId, membershipId: state.membershipId,
+      const savedReceipt: MembershipReceipt = {
         sourceGeneration: state.source.sourceGeneration,
-        episodeId: membership.episodeId, actorUid, requestHash, command,
-        revision: membership.revision, createdAt: now};
-      if (!validateEventAssistanceMembershipReceiptDocument(savedReceipt)) {
-        throw invalidSource();
-      }
+        episodeId: membership.episodeId, revision: membership.revision,
+        createdAt: now};
+      if (!validReceipt(savedReceipt)) throw invalidSource();
       const response = membershipResponse("applied", {...state, membership},
         membership.revision);
       tx.set(this.db.collection(MEMBERSHIPS).doc(state.membershipId),
         membership);
-      tx.create(receiptRef, savedReceipt);
+      writeAssistanceReceipt(tx, receiptRef, {
+        command: MEMBERSHIP_RECEIPT_COMMAND, requestHash, nowMillis: now,
+        result: savedReceipt});
       return response;
     });
   }
