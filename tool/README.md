@@ -120,10 +120,10 @@ commands execute until their equivalence is verified.
 Active tools must define non-empty checks. This prevents a non-tool contract
 that selects the Tools lane from silently receiving guard checks only and
 prevents full mode from succeeding through a vacuous tool entry. The affected
-tool's `safety` describes its command. A remote-write tool may separately set
+tool's `surface` describes its command. A `remote-*` tool may separately set
 `checkSafety: local-readonly` when its declared checks are safe for Harness CI;
-that is the only accepted override, it requires executable checks, and local
-tools must omit the redundant field. Malformed overrides fail closed. The affected
+that is the only accepted override, it requires executable checks, and
+`local-*` tools must omit the redundant field. Malformed overrides fail closed. The affected
 planner unions each selected tool's optional `ciRequirements` only after
 mandatory and transitive `alsoCheckIds` expansion. A missing declaration keeps
 the conservative full repository view and all seven setup requirements;
@@ -1208,11 +1208,37 @@ ids, non-empty text, and exact generated output.
 5. Use `tool/lib/` helpers for repo paths, CLI flags, and Firebase project selection.
 6. Run `node tool/run.mjs check --manifest-only` before opening a PR.
 
-Remote write tools should default to dry-run/read-only behavior, require an
-explicit apply flag, and carry a `safety` label that reflects the blast radius.
-An active `operator` names its `runbook`: the document, optionally with a
-`#heading` anchor, that says when and how to run it. The validator checks that
-the file and the heading exist.
+Every open entry declares its `surface`, what running its command can touch:
+
+| Surface | Reaches |
+|---|---|
+| `local-read` | Reads the checkout only. |
+| `local-writes-repo` | Changes tracked files, such as a generator's committed output. |
+| `local-writes-scratch` | Writes only ignored or temporary files, such as build output. |
+| `remote-read` | Reads a live system (Firebase, BigQuery, GitHub, a provider API). |
+| `remote-write` | Changes a live system. |
+| `remote-destructive` | Can delete from a live system. |
+| `remote-deploy` | Ships code or configuration to a live system. |
+
+`tool:runner` is `local-read`: each tool it dispatches carries its own surface.
+A `remote-write`, `remote-destructive` or `remote-deploy` entry also records its
+`guard`, what stops an accidental run:
+
+| Guard | Meaning |
+|---|---|
+| `apply-flag` | Previews by default; writes only with `--apply` (or the opt-in flag `guardReason` names). |
+| `apply-and-prod-flag` | As `apply-flag`, and production also needs `--allow-prod`. |
+| `dispatch-workflow` | Runs only from the workflow in `guardWorkflow`, which must exist. |
+| `none` | Nothing gates it; `guardReason` says why and how it is meant to run. |
+
+New remote write tools should default to a dry run and take `apply-flag` or
+`apply-and-prod-flag`. An active `operator`, and every active `remote-*` tool,
+names its `runbook`: the document or workflow, optionally with a `#heading`
+anchor, that says when and how to run it. The validator checks that the file
+and the heading exist. Every `tool-id` entrypoint in
+`tool/remote_ops_manifest.json` must be an open tool, a `remote-*` tool it lists
+must be active, and an operation whose own safety is remote must list at least
+one active `remote-*` tool; `meta:tool-manifest` checks this too.
 
 ## Tool Lifecycle
 
@@ -1232,7 +1258,7 @@ A `completed` or `retired` entry records `retiredOn` (`YYYY-MM-DD`) and a
 contained its file, so `git show <lastCommit>:<path>` recovers it. Closed
 entries keep their id, category, path, role and description, and drop every
 field that only matters to a run (`checks`, `impactPaths`, `alsoCheckIds`,
-`ciRequirements` and the rest). Do not delete an entry when you delete its file:
+`ciRequirements`, `surface`, `guard` and the rest). Do not delete an entry when you delete its file:
 retire it, so the record stays.
 
 ```sh
@@ -1242,6 +1268,142 @@ node tool/run.mjs list --closed --json
 
 Retire a tool when its job is done or another check enforces the same rule.
 Name that check in the reason, and keep the evidence in the PR.
+
+## Operator Runbooks
+
+Runbooks for live-system tools that have no section elsewhere. Each tool's
+`runbook` field in `tool/tools_manifest.json` points at its heading here. Every
+command below previews by default unless the section says otherwise; read the
+preview before adding `--apply`.
+
+### Google Ads campaigns
+
+`node tool/ads/apply_google_campaigns.mjs [--apply] [--json]` (`ads:google-campaigns`,
+guard `apply-flag`).
+
+- **What it does:** plans the campaigns in `tool/ads/google_campaigns.json`.
+  Locations come from the city catalog (`contracts/catalogs/markets.json`, each
+  city's `ads` block). The default run reads the account and asks Google to
+  validate every create request without making anything.
+- **Apply:** `--apply` creates missing campaigns, always paused, and brings an
+  existing campaign's locations and negative keywords in line. It never changes
+  an existing campaign's ads, budget or bidding, and only touches names under
+  the policy's managed prefix. Enabling a campaign and any budget change after
+  launch are the owner's call in the Google Ads console.
+- **Credentials:** `GOOGLE_ADS_ACCESS_TOKEN`, or gcloud impersonating the ads
+  service account the script names. The token is never logged.
+- **Check afterwards:** re-run without `--apply`; every campaign should show
+  `keep`.
+
+### Storage media path hygiene
+
+`node tool/data/hygiene_media_paths.mjs --env <dev|staging|prod> [--apply [--allow-prod]] [--json]`
+(`data:hygiene-media-paths`, guard `apply-and-prod-flag`, surface
+`remote-destructive`).
+
+- **What it does:** audits club and event media still stored under the
+  retired `clubs/{organizerId}/…` paths, against the canonical
+  `users/{uid}/hostedMedia/{fileName}`. `--env` repeats; `--all` audits dev,
+  staging and prod.
+- **Apply:** `--apply` copies each referenced legacy object to its canonical
+  path, updates the documents that point at it and then deletes the retired
+  legacy objects. Production also needs `--allow-prod`.
+- **Before applying in production:** run the dry run for prod, save its
+  `--json` output with the change record, and apply to dev or staging first.
+  The delete step cannot be undone from this tool.
+
+### Firestore projection repairs
+
+These three recompute a denormalised projection from its source documents.
+Each takes `--env <dev|staging|prod>` (or `--project <id>`), `--emulator` or
+`--emulator-host <host>`, `--json`, and writes only with `--apply` (guard
+`apply-flag`; none of them has a separate production flag, so name the
+environment explicitly).
+
+| Tool | Command | Recomputes |
+|---|---|---|
+| `data:repair-club-hosts` | `node tool/data/recompute_organizer_host_profiles.mjs` | Club host fields (`ownerUserId`, `hostUserIds`, `hostProfiles`, `profileImageUrl`) from `hostProfiles/{uid}`, keeping a club's existing host snapshot when no host profile exists yet. |
+| `data:repair-event-aggregates` | `node tool/data/recompute_event_aggregate_counts.mjs` | `events/{eventId}` counts from `eventParticipations`: `bookedCount` and `genderCounts` (signed up plus attended), `checkedInCount` (attended), `waitlistedCount`. |
+| `data:repair-organizer-follower-counts` | `node tool/data/recompute_organizer_follower_counts.mjs` | `organizers/{organizerId}.followerCount` from active `organizerFollows` edges. |
+
+- **Run order:** emulator or dev first, then the target environment without
+  `--apply`. Read the summary of documents that would change, then re-run with
+  `--apply`.
+- **Credentials:** Application Default Credentials for the project, and the
+  Functions dependencies (`npm --prefix functions ci`).
+- **Check afterwards:** a second dry run reports no changes.
+
+### Brand config publish
+
+`node tool/firebase/create_config_brand.mjs [--env <env> | --all] [--apply [--allow-prod] | --verify]`
+(`firebase:create-config-brand`, guard `apply-and-prod-flag`).
+
+- **What it does:** publishes `packages/brand/brand.json` to the Firestore
+  document `config/brand`. The default run prints the plan and the document.
+  `--env` defaults to dev.
+- **Normally automatic:** `brand-config-publish.yml` publishes on every merge
+  to main that changes the brand record or its writer (dev, then prod, with the
+  backend deploy's environment protection). Dispatch it to publish on demand,
+  staging included, rather than running the tool by hand.
+- **Apply by hand:** `--apply` writes the document; production also needs
+  `--allow-prod`.
+- **Verify:** `--verify` reads the live document and fails if it differs from
+  `brand.json`; run it after a publish. `--write-schema` regenerates
+  `contracts/firestore/config_brand.schema.json` and touches nothing live.
+
+### Functions deploy wrapper
+
+`node tool/firebase_functions.mjs <deploy|logs> <dev|staging|prod> [firebase args...] [--print]`
+(`firebase:functions-environment-wrapper`, surface `remote-deploy`, guard
+`none`).
+
+- **What it does:** `deploy` runs `firebase deploy --only functions`, and
+  `logs` runs `firebase functions:log`, through `tool/firebase_with_env.sh`
+  for the named environment. Extra arguments pass through to the Firebase CLI.
+- **No gate:** nothing confirms the deploy. Use `--print` to see the exact
+  command first. Staging and production Functions ship through
+  `backend-deploy.yml`, which deploys the build CI tested (see
+  [Deploy Backend](../docs/release_operations.md#deploy-backend)); use this
+  wrapper for dev, for logs, or when that runbook says to.
+
+### User analytics BigQuery
+
+`analytics:deploy-user-bigquery` and `analytics:user-bigquery-live-status`
+keep the user analytics warehouse (`catch_user_analytics`) and report on it.
+
+- **Deploy:** `bash tool/analytics/deploy_user_analytics_bigquery.sh <env>`
+  renames pre-organizer columns, runs the DDL and refreshes the mart by
+  default (surface `remote-deploy`, guard `none`). Preview with `--dry-run`,
+  which prints the commands and dry-runs the refresh query only.
+  `--refresh-only` runs just the refresh, `--skip-refresh` just the DDL, and
+  `--create-schedule` creates or updates the daily scheduled query (idempotent
+  by display name).
+- **Status:** `node tool/analytics/user_analytics_live_status.mjs [--env <env>] [--json]`
+  (`remote-read`, default `--env prod`) checks the dataset, the
+  `mart_user_analytics_daily` and `user_profile_exposure_events` tables, the
+  scheduled query, and the deployed `getUserAnalytics` and
+  `adminGetUserAnalytics` functions. It exits non-zero and lists what is
+  missing.
+- **Order:** deploy the warehouse, then the Functions that read it, then run
+  the status check. Both need `bq` and `firebase` signed in to the project.
+
+### Organiser listings projection
+
+`npm --workspace catch-marketing run generate:organizer-listings`
+(`marketing:generate-organizer-listings`, surface `remote-read`).
+
+- **What it does:** projects approved organiser intake and seed organiser
+  records into `website/src/generated/hostListings.json`, a committed file.
+  Demo listings stay out of production; `generate:organizer-listings:demo`
+  writes the separate Storybook projection.
+- **Live read:** with `--firestore-project <project>` it reads canonical
+  content and readiness from one Firestore snapshot, using Application Default
+  Credentials and the Functions dependencies. `--check` validates the committed
+  output and, with `--firestore-project`, reports drift without writing.
+  `--readiness-receipt <path>` saves read-only evidence bound to that project
+  and projection; the receipt cannot be reused to enable anything.
+- **Writes:** only the output file in the checkout. Review its diff like any
+  generated change.
 
 ## PR validation and the merge queue
 

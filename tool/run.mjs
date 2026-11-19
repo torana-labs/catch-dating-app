@@ -25,10 +25,13 @@ import {
   validateToolPaths,
   validateToolRoles,
   validateToolRules,
+  validateToolSurfaces,
+  validateRemoteOpsEntrypoints,
 } from "./lib/tool_manifest_rules.mjs";
 
 const manifestPath = "tool/tools_manifest.json";
 const componentGraphPath = "tool/harness/component_graph.json";
+const remoteOpsManifestPath = "tool/remote_ops_manifest.json";
 let capturedRepositorySnapshot = null;
 
 const command = process.argv[2] ?? "help";
@@ -510,6 +513,13 @@ function validateManifest(manifest, componentGraph) {
     exists: (file) => repositorySnapshot().exists(file),
     read: readUnlessSparseOmitted,
   }));
+  errors.push(...validateToolSurfaces(manifest.tools, {
+    exists: (file) => repositorySnapshot().exists(file),
+  }));
+  if (repositorySnapshot().exists(remoteOpsManifestPath)) {
+    errors.push(...validateRemoteOpsEntrypoints(manifest.tools,
+      repositorySnapshot().readJson(remoteOpsManifestPath, {required: true})));
+  }
 
   const activeById = new Map(
     manifest.tools

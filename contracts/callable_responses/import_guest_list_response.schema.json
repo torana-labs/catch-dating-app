@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/import_guest_list_response.schema.json",
+  "title": "ImportGuestListCallableResponse",
+  "description": "Response of guests.import-list. status needs_input means no converter recognised the file's columns and the host maps them (result.headers, result.columnShapes); previewed carries the reviewed rows and counts; applied and replayed carry the import.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["commandId", "status", "previewHash", "summary", "effects", "result", "next", "receiptId"],
+  "properties": {
+    "commandId": {"const": "guests.import-list"},
+    "status": {"type": "string", "enum": ["previewed", "applied", "replayed", "needs_input"]},
+    "previewHash": {"$ref": "../shared/command_envelope.schema.json#/definitions/previewHash"},
+    "summary": {"$ref": "../shared/command_envelope.schema.json#/definitions/summary"},
+    "effects": {"type": "array", "maxItems": 8, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/effect"}},
+    "next": {"type": "array", "maxItems": 8, "items": {"$ref": "../shared/command_envelope.schema.json#/definitions/next"}},
+    "receiptId": {"type": ["string", "null"], "pattern": "^[a-z][A-Za-z0-9]{0,63}_[a-f0-9]{64}$", "description": "The commandReceipts document id of an applied command; null otherwise."},
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventId", "fileFormat", "converter", "headers", "columnShapes", "mapping", "mappedBy", "needsMapping", "sessionId", "revision", "reviewHash", "eligibleForApply", "counts", "rows", "skipped", "suggestions", "truncatedCount", "import"],
+      "properties": {
+        "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "fileFormat": {"type": "string", "enum": ["csv", "xlsx", "vcf"]},
+        "converter": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "support", "confidence"],
+          "description": "Which converter read the file. generic-v1 means no format was recognised and the shared column names were used.",
+          "properties": {
+            "id": {"type": "string", "pattern": "^[a-z][a-z-]*-v[0-9]+$|^sample-required$"},
+            "support": {"type": "string", "enum": ["verified", "generic", "sampleRequired"]},
+            "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+          }
+        },
+        "headers": {"type": "array", "maxItems": 41, "items": {"type": "string", "maxLength": 120}},
+        "columnShapes": {"type": "array", "maxItems": 41, "items": {"type": "string", "enum": ["empty", "phone-like", "email-like", "date-like", "number", "text"]},
+          "description": "What each column holds, without its values, to help the host map columns."},
+        "mapping": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["displayName", "phone", "email", "externalReference", "arrivalGroup", "ticketType", "status", "city", "revenueAmount", "revenueCurrency"],
+          "properties": {
+            "displayName": {"$ref": "#/definitions/column"},
+            "phone": {"$ref": "#/definitions/column"},
+            "email": {"$ref": "#/definitions/column"},
+            "externalReference": {"$ref": "#/definitions/column"},
+            "arrivalGroup": {"$ref": "#/definitions/column"},
+            "ticketType": {"$ref": "#/definitions/column"},
+            "status": {"$ref": "#/definitions/column"},
+            "city": {"$ref": "#/definitions/column"},
+            "revenueAmount": {"$ref": "#/definitions/column"},
+            "revenueCurrency": {"$ref": "#/definitions/column"}
+          }
+        },
+        "mappedBy": {"type": "string", "enum": ["converter", "host", "model"],
+          "description": "Who chose the columns: the converter for the file's format, the host's mapping, or the model fallback (off until go-live). Model-chosen fields are stored with origin modelProposal for review."},
+        "needsMapping": {"type": "boolean"},
+        "sessionId": {"type": ["string", "null"], "pattern": "^hri_[a-f0-9]{48}$"},
+        "revision": {"type": ["integer", "null"], "minimum": 1},
+        "reviewHash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+        "eligibleForApply": {"type": "boolean"},
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["add", "update", "unchanged", "excluded", "needsReview", "identityConflict", "skipped"],
+          "properties": {
+            "add": {"type": "integer", "minimum": 0},
+            "update": {"type": "integer", "minimum": 0},
+            "unchanged": {"type": "integer", "minimum": 0},
+            "excluded": {"type": "integer", "minimum": 0},
+            "needsReview": {"type": "integer", "minimum": 0},
+            "identityConflict": {"type": "integer", "minimum": 0},
+            "skipped": {"type": "integer", "minimum": 0}
+          }
+        },
+        "rows": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["rowId", "sourceRowNumber", "displayName", "kind", "issueCode", "changedFields"],
+            "properties": {
+              "rowId": {"type": "string", "minLength": 1, "maxLength": 120},
+              "sourceRowNumber": {"type": "integer", "minimum": 2},
+              "displayName": {"type": "string", "maxLength": 120},
+              "kind": {"type": "string", "enum": ["add", "update", "unchanged", "excluded", "needsReview", "identityConflict"]},
+              "issueCode": {"type": ["string", "null"], "maxLength": 80,
+                "description": "Why the row needs a look before apply, e.g. invalid-phone, shared-phone-identity, missing-stable-identity, contact-belongs-to-another-attendee."},
+              "changedFields": {"type": "array", "maxItems": 11, "items": {"type": "string", "maxLength": 40}}
+            }
+          }
+        },
+        "skipped": {
+          "type": "array",
+          "maxItems": 250,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["sourceRowNumber", "reason"],
+            "properties": {
+              "sourceRowNumber": {"type": "integer", "minimum": 2},
+              "reason": {"type": "string", "enum": ["missing-name", "excluded-status"]}
+            }
+          }
+        },
+        "suggestions": {
+          "type": "array",
+          "maxItems": 250,
+          "description": "Merges and tags worth making, each with its reason. Nothing is merged or tagged by this command: merges go through the merge review in Customers after import.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["rowId", "kind", "reason", "contactId", "otherRowId", "tag", "label"],
+            "properties": {
+              "rowId": {"type": "string", "minLength": 1, "maxLength": 120},
+              "kind": {"type": "string", "enum": ["merge", "tag"]},
+              "reason": {"type": "string", "enum": ["samePhone", "sameEmail", "sameEmailInFile", "ticketType", "seenBefore"]},
+              "contactId": {"type": ["string", "null"], "maxLength": 128},
+              "otherRowId": {"type": ["string", "null"], "maxLength": 120},
+              "tag": {"type": ["string", "null"], "maxLength": 40},
+              "label": {"type": "string", "minLength": 1, "maxLength": 300}
+            }
+          }
+        },
+        "truncatedCount": {"type": "integer", "minimum": 0, "description": "Data rows beyond the 250-row limit, not read."},
+        "import": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["importId", "status", "createdCount", "updatedCount", "skippedCount"],
+          "properties": {
+            "importId": {"type": "string", "minLength": 1, "maxLength": 120},
+            "status": {"type": "string", "enum": ["completed", "partial", "failed"]},
+            "createdCount": {"type": "integer", "minimum": 0},
+            "updatedCount": {"type": "integer", "minimum": 0},
+            "skippedCount": {"type": "integer", "minimum": 0}
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "column": {"type": ["integer", "null"], "minimum": 0, "maximum": 40}
+  }
+}

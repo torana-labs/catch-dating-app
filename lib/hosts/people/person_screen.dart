@@ -9,6 +9,7 @@ import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,7 +81,7 @@ class HostPersonScreen extends ConsumerWidget {
               },
               builder: (context, controller, _) => CatchIconAction(
                 tooltip: l10n.hostPeopleMoreActions,
-                variant: CatchIconActionVariant.plain,
+                size: GeneratedCatchSizeTokens.controlMd,
                 onPressed: () =>
                     controller.isOpen ? controller.close() : controller.open(),
                 child: CatchIcon(CatchIcons.more),
