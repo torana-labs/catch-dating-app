@@ -54,7 +54,7 @@ test("a web capture names its story and address instead of a catalog fixture", (
   assert.match(validateSourceManifest(manifestWith({fixtureKey: undefined})).join("\n"), /fixtureKey is required/);
 });
 
-test("a pending capture's placeholder is the drawn placeholder at its framed size", () => {
+test("a pending capture's placeholder is the drawn placeholder at its device's size", () => {
   // Every pending capture, and the sample record held pending above (the manifest may have none left).
   const pending = [...authored.captures.filter(capture => capture.status === "pending-fixture"), liveConsole];
   assert.deepEqual(validateSourceManifest(manifestWith({})), []);
@@ -63,5 +63,5 @@ test("a pending capture's placeholder is the drawn placeholder at its framed siz
     assert.deepEqual({width: header.readUInt32BE(16), height: header.readUInt32BE(20)}, framedSize(capture.device), capture.id);
   }
   const wrong = {...liveConsole, placeholderPath: authored.captures.find(capture => capture.device === "generic-tablet").placeholderPath};
-  assert.match(validateSourceManifest({...authored, captures: [wrong]}).join("\n"), /not the generic-phone size 980x1924/);
+  assert.match(validateSourceManifest({...authored, captures: [wrong]}).join("\n"), /not the generic-phone size 804x1748/);
 });

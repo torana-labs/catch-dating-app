@@ -290,7 +290,7 @@ export function buildWebsiteManifest(manifest) {
   };
 }
 
-// A placeholder is a PNG at its device's framed size, the space pages reserve for the capture.
+// A placeholder is a PNG at its device's size, the space pages reserve for the capture.
 function requirePlaceholder(errors, label, capture) {
   const repoPath = capture.placeholderPath;
   if (typeof repoPath !== "string" || !fs.existsSync(fromRepo(repoPath))) return;
