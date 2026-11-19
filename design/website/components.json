@@ -7098,6 +7098,33 @@
         ]
       },
       "notes": "'Who runs them' on Explore and the city-by-format pages (the kit's KitCards org band on the tint panel): CatchOrganizerCard on its white ground as the kit's Follow card, whose Follow opens the organiser's page (where following happens), then a mint CatchFeatureTile for an organiser who is not listed."
+    },
+    {
+      "id": "no_show_calculator",
+      "kind": "supporting-component",
+      "routeIds": [
+        "tools_no_show_calculator"
+      ],
+      "owner": "features/marketing",
+      "source": "website/src/features/marketing/NoShowCalculator.tsx",
+      "exportName": "NoShowCalculator",
+      "css": [
+        "packages/web-ui/src/components/CatchBandHeader.module.css",
+        "packages/web-ui/src/components/CatchBarIndicator.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchMetricTile.module.css",
+        "packages/web-ui/src/components/CatchRangeInput.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/NoShowCalculator.stories.tsx",
+        "exportName": "PaidEvent",
+        "states": [
+          "paid",
+          "free"
+        ]
+      },
+      "notes": "The no-show calculator on /tools/no-show-calculator/ (the playbook page's noShowCalculator custom section, PlaybookNoShow board): the host's own places or tickets, events a month, ticket price (or on a free event what each held place costs) and no-show rate, then what no-shows cost per event and per month and the same sums at a what-if rate the host slides to. Every figure is worked out from the host's inputs (noShowCalculatorModel.ts); the page states no rate, benchmark or result of its own. Its words come from the section's labels; the fee line is the shared fee model's (website/src/content/pricing.ts). It owns its state (useNoShowCalculator)."
     }
   ]
 }

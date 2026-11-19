@@ -1,0 +1,273 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "tools_no_show_calculator",
+  "route": "tools_no_show_calculator",
+  "meta": {
+    "title": "No-show calculator | {{brand.stores.hostAppName}}",
+    "description": "Put in your own numbers and see what people who book and don’t turn up cost you each event and each month, and what changes if your no-show rate falls.",
+    "socialDescription": "What do empty places cost you?",
+    "noindex": false
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          }
+        }
+      ],
+      "current": "No-show calculator"
+    }
+  },
+  "footer": {
+    "variant": "host"
+  },
+  "sections": [
+    {
+      "type": "hero",
+      "id": "top",
+      "ground": "paper",
+      "kicker": "No-show calculator",
+      "title": "What do empty places cost you?",
+      "lead": "Put in your numbers. See how many places go empty, and what people who say yes and don’t turn up cost you each event and each month.",
+      "actions": [
+        {
+          "label": "Work it out",
+          "to": {
+            "anchor": "calculator"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "How it works it out",
+          "to": {
+            "anchor": "sums"
+          },
+          "emphasis": "secondary"
+        }
+      ]
+    },
+    {
+      "type": "custom",
+      "id": "calculator",
+      "ground": "white",
+      "component": "noShowCalculator",
+      "kicker": "Your numbers, your rates",
+      "title": "Work out what no-shows cost you.",
+      "lead": "Every figure here comes from what you put in. Slide the second rate to see your own what-if.",
+      "labels": [
+        {
+          "key": "inputsTitle",
+          "text": "Your numbers"
+        },
+        {
+          "key": "places",
+          "text": "Places or tickets at each event"
+        },
+        {
+          "key": "events",
+          "text": "Events a month"
+        },
+        {
+          "key": "price",
+          "text": "Ticket price"
+        },
+        {
+          "key": "priceHelp",
+          "text": "Put 0 for a free event."
+        },
+        {
+          "key": "costPerHead",
+          "text": "What each place costs you"
+        },
+        {
+          "key": "costPerHeadHelp",
+          "text": "Food, drinks, kit or space you pay for per guest, whether they come or not."
+        },
+        {
+          "key": "rate",
+          "text": "Your no-show rate"
+        },
+        {
+          "key": "target",
+          "text": "If your no-show rate fell to"
+        },
+        {
+          "key": "startingNote",
+          "text": "The starting numbers only show how it works. Put in your own."
+        },
+        {
+          "key": "resultsTitle",
+          "text": "What no-shows cost you"
+        },
+        {
+          "key": "emptyPerEvent",
+          "text": "Empty places at each event"
+        },
+        {
+          "key": "emptyPerEventNote",
+          "text": "{rate} of {places} places"
+        },
+        {
+          "key": "emptyPerMonth",
+          "text": "Empty places a month"
+        },
+        {
+          "key": "emptyPerMonthNote",
+          "text": "of the {held} you hold"
+        },
+        {
+          "key": "costPerEvent",
+          "text": "Each event"
+        },
+        {
+          "key": "costPerMonth",
+          "text": "Each month"
+        },
+        {
+          "key": "costNoteTicket",
+          "text": "in tickets you don’t collect"
+        },
+        {
+          "key": "costNoteFree",
+          "text": "in places you paid for"
+        },
+        {
+          "key": "costPerHeadMissing",
+          "text": "add what each place costs you"
+        },
+        {
+          "key": "whatIfTitle",
+          "text": "If your no-show rate fell to {target}"
+        },
+        {
+          "key": "whatIfCost",
+          "text": "No-shows would cost you a month"
+        },
+        {
+          "key": "whatIfSaved",
+          "text": "The difference each month"
+        },
+        {
+          "key": "whatIfFewer",
+          "text": "{count} fewer empty places"
+        },
+        {
+          "key": "chartLabel",
+          "text": "Empty places a month, at your rate today and at your what-if rate"
+        },
+        {
+          "key": "today",
+          "text": "Today, {rate}"
+        },
+        {
+          "key": "whatIf",
+          "text": "What-if, {target}"
+        },
+        {
+          "key": "summary",
+          "text": "At {rate}, no-shows cost you {cost} a month."
+        },
+        {
+          "key": "paidNote",
+          "text": "If guests pay when they book, a no-show has already paid, and your cancellation policy decides what’s refunded. Paid booking, a waitlist that moves and a message before the day are what you can change; how far your rate falls is yours to judge."
+        },
+        {
+          "key": "freeNote",
+          "text": "A free event: the cost is the places you held, not the tickets."
+        },
+        {
+          "key": "estimate",
+          "text": "Your estimate, not a promise: you set both rates. {{brand.name}} doesn’t publish a no-show rate for its hosts."
+        }
+      ]
+    },
+    {
+      "type": "checklist",
+      "id": "sums",
+      "ground": "paper",
+      "kicker": "How it works it out",
+      "title": "The sums, in plain words.",
+      "lead": "Your estimate, not a promise: you set both rates. {{brand.name}} doesn’t publish a no-show rate for its hosts.",
+      "items": [
+        {
+          "title": "Empty places",
+          "body": "Places × events × your no-show rate."
+        },
+        {
+          "title": "What you don’t collect",
+          "body": "If people pay at the door or later, every no-show is a held place nobody paid for. That’s empty places × ticket price."
+        },
+        {
+          "title": "Free events",
+          "body": "Nothing to collect, but each empty place still costs you what you spent on it: empty places × what each place costs you."
+        },
+        {
+          "title": "Your what-if",
+          "body": "The same sums at the rate you slide to. The difference is what that rate would be worth to you, not a result anyone promises."
+        }
+      ]
+    },
+    {
+      "type": "tiles",
+      "id": "what-cuts-no-shows",
+      "ground": "white",
+      "kicker": "What you can change",
+      "title": "Four things to try, on {{brand.name}} or anywhere.",
+      "columns": 4,
+      "items": [
+        {
+          "title": "Pay to book",
+          "body": "A price, even a small one, asks people to decide when they book, not on the day.",
+          "fix": "On {{brand.name}}, guests pay by UPI or card when they book."
+        },
+        {
+          "title": "A clear policy",
+          "body": "Say what’s refunded and until when, before anyone books.",
+          "fix": "Set a cancellation policy for each event, and refunds follow it."
+        },
+        {
+          "title": "A message that helps",
+          "body": "Where to be, when, and who to look for, before the day.",
+          "fix": "Message everyone who booked from the app."
+        },
+        {
+          "title": "A waitlist that moves",
+          "body": "People who cancel ahead free a place for someone who wants it.",
+          "fix": "On a free event the next person moves up; on a paid one, send them an offer."
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Your next event",
+      "title": "Take payment when people book.",
+      "lead": "Start the free trial, or book a walkthrough and we’ll set it up with you.",
+      "actions": [
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Book a walkthrough",
+          "to": {
+            "route": "host_walkthrough"
+          },
+          "emphasis": "secondary"
+        }
+      ],
+      "media": {
+        "kind": "capture",
+        "slot": "host-today"
+      }
+    }
+  ]
+}

@@ -40,6 +40,7 @@ const pageAnchors = new Map(loaded.filter(({ref}) => !("path" in ref.match.route
   .map(({ref, raw}) => [ref.match.contentKey, new Set(raw.sections.map((section) => section.id))]));
 const context = {
   routeIds: new Set<string>([...Object.keys(siteRouteHrefs), ...playbookFixedRoutes.map((route) => route.id)]),
+  familyRouteIds: new Set<string>(playbookFamilyRoutes.map((route) => route.id)),
   captureSlots,
   alwaysNoindexRoutes: alwaysNoindexPlaybookRoutes,
   routeAnchors,
@@ -128,8 +129,8 @@ describe("playbook page indexes", () => {
 
   it("holds back a page whose custom section has no component yet", async () => {
     const page = (await loadPlaybookPage(resolvePlaybookPage("/host/run-clubs/")!))!;
-    const withTool = {...page, sections: [...page.sections, {type: "custom" as const, id: "tool", ground: "white" as const, component: "noShowCalculator" as const}]};
-    expect(pendingPlaybookBindings(withTool)).toEqual(["custom:noShowCalculator"]);
+    const withTool = {...page, sections: [...page.sections, {type: "custom" as const, id: "tool", ground: "white" as const, component: "eventPageFromLink" as const}]};
+    expect(pendingPlaybookBindings(withTool)).toEqual(["custom:eventPageFromLink"]);
   });
 
   it("renders /pricing/ from its content: the fee band, the cap and what is included bound, indexed (owner, 19 Nov 2026)", async () => {
@@ -155,9 +156,12 @@ describe("playbook page indexes", () => {
       "/about/", "/host/brands/", "/host/colleges/", "/host/communities/", "/host/creators/", "/host/demo/",
       "/host/facilities/", "/host/first-event/", "/host/nightlife/", "/host/outdoors/", "/host/quiz-nights/",
       "/host/racket-sports/", "/host/run-clubs/", "/host/start/", "/host/studios/", "/host/supper-clubs/", "/host/switch/",
-      "/host/teams/", "/host/venues/", "/host/workshops/", "/how-it-works/", "/pricing/", "/product/bookings-and-memberships/",
+      "/host/teams/", "/host/venues/", "/host/workshops/", "/how-it-works/",
+      "/playbooks/", "/playbooks/quiz-night/", "/playbooks/racket-sports/", "/playbooks/run-club/", "/playbooks/supper-club/",
+      "/pricing/", "/product/bookings-and-memberships/",
       "/product/forms/", "/product/guest-records/", "/product/messages-and-growth/", "/product/reports-and-payouts/",
       "/product/running-the-event/", "/product/the-room/", "/product/your-page/", "/programmes/", "/safety/",
+      "/tools/no-show-calculator/",
     ]);
   });
 

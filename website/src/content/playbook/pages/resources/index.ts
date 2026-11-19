@@ -13,4 +13,10 @@ export const resourcesPlaybookPages: PlaybookPageIndex = {
   safety: {file: "safety.json", load: () => import("./safety.json")},
   host_demo: {file: "host-demo.json", load: () => import("./host-demo.json")},
   about: {file: "about.json", load: () => import("./about.json")},
+  tools_no_show_calculator: {file: "tools-no-show-calculator.json", load: () => import("./tools-no-show-calculator.json")},
+  playbooks: {file: "playbooks.json", load: () => import("./playbooks.json")},
+  "playbook_guide/run-club": {file: "playbook-run-club.json", load: () => import("./playbook-run-club.json")},
+  "playbook_guide/supper-club": {file: "playbook-supper-club.json", load: () => import("./playbook-supper-club.json")},
+  "playbook_guide/quiz-night": {file: "playbook-quiz-night.json", load: () => import("./playbook-quiz-night.json")},
+  "playbook_guide/racket-sports": {file: "playbook-racket-sports.json", load: () => import("./playbook-racket-sports.json")},
 };

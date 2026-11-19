@@ -82,6 +82,9 @@ const reportListingLink = {href: "/listings/request/", label: "Report or remove 
 export const hostWalkthroughHref = "/host/walkthrough/";
 const aboutLink = {href: "/about/", label: "About"} as const;
 const safetyLink = {href: "/safety/", label: "Safety"} as const;
+/** The free host tools and guides under Resources (the canvas's Resources menu and footer column). */
+const noShowCalculatorLink = {href: "/tools/no-show-calculator/", label: "No-show calculator"} as const;
+const hostPlaybooksLink = {href: "/playbooks/", label: "Host playbooks"} as const;
 
 /**
  * The host product pages (product pages v2), in the canvas's order. Each is a
@@ -134,8 +137,9 @@ export const publicSiteCopy = {
  * The header variants (the playbook kit's KitHeader). Every variant starts
  * with the wordmark; What's on leads guest and host pages unless the page
  * hides it. Link only pages that exist in design/website/routes.json:
- * Resources gains host stories, host playbooks, compare, the no-show
- * calculator and the event page from a link once those pages ship.
+ * Resources holds the host playbooks, the no-show calculator and Help, and
+ * gains host stories, compare and the event page from a link once those
+ * pages ship.
  */
 export const siteHeaderCopy = {
   /** The breadcrumb row's accessible name. */
@@ -188,7 +192,7 @@ export const siteHeaderCopy = {
         ]},
       ]),
       hostPricingLink,
-      {label: "Resources", links: [helpLink]},
+      {label: "Resources", links: [hostPlaybooksLink, noShowCalculatorLink, helpLink]},
     ] as readonly (SiteLinkCopy | SiteNavGroupCopy)[],
     action: hostStartLink,
     /** The bar shows the short label beside the WhatsApp mark; the full one names the link. */
@@ -233,9 +237,10 @@ export const siteFooterCopy = {
    * The host footer's five columns on every host page (the canvas's KitFooter
    * host columns, as the product pages v2 drew them): the product pages,
    * the organiser type pages, the ways to start, resources and the brand's
-   * column with the listing request and the legal links. Pages the canvas
-   * names that are not built yet (host stories, compare, the no-show
-   * calculator, refer a host, event page from a link) join when they ship.
+   * column with the listing request and the legal links. Resources lists
+   * Forms, the host playbooks, the no-show calculator, the walkthrough and
+   * Help; pages the canvas names that are not built yet (host stories,
+   * compare, refer a host, event page from a link) join when they ship.
    */
   host: {
     columns: [
@@ -263,7 +268,7 @@ export const siteFooterCopy = {
         {href: hostDemoHref, label: "Try a demo night"},
         {href: programmesHref, label: "Programmes"},
       ]},
-      {title: "Resources", links: [productPageLinks.forms, {href: hostWalkthroughHref, label: "Book a walkthrough"}, helpLink]},
+      {title: "Resources", links: [productPageLinks.forms, hostPlaybooksLink, noShowCalculatorLink, {href: hostWalkthroughHref, label: "Book a walkthrough"}, helpLink]},
       {title: brand.name, links: [
         whatsOnLink, aboutLink, safetyLink, {href: "/contact/", label: "Contact"}, reportListingLink,
         {href: "/terms/", label: "Terms"}, {href: "/privacy/", label: "Privacy"}, {href: "/refunds/", label: "Refunds"},

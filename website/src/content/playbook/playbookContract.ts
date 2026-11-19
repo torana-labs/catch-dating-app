@@ -561,6 +561,8 @@ function walk(spec: Spec, value: unknown, label: string, errors: string[]) {
 export interface PlaybookValidationContext {
   /** Every route id an action or breadcrumb may name. */
   readonly routeIds: ReadonlySet<string>;
+  /** The family routes (`story_detail`, `playbook_guide`, …) a page may be on; an action names a family page by its content key instead. */
+  readonly familyRouteIds?: ReadonlySet<string>;
   /** Capture slot ids in the app-screenshot manifest. */
   readonly captureSlots: ReadonlySet<string>;
   /** Routes whose pages never enter search, such as ad landing pages. */
@@ -672,7 +674,7 @@ function pageErrors(page: PlaybookPageDocument, context: PlaybookValidationConte
     if (!referenced.has(id)) errors.push(`footer.footnotes: ${id} is not cited by any section`);
   }
   if (context) {
-    if (!context.routeIds.has(page.route)) errors.push(`route ${page.route} is not a registered route`);
+    if (!context.routeIds.has(page.route) && !context.familyRouteIds?.has(page.route)) errors.push(`route ${page.route} is not a registered route`);
     if (context.alwaysNoindexRoutes?.has(page.route) && !page.meta.noindex) errors.push(`meta.noindex must stay true on ${page.route} pages`);
 
   }

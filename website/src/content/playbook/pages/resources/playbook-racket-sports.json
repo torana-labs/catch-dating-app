@@ -1,0 +1,165 @@
+{
+  "$schema": "../../playbookPage.schema.json",
+  "id": "playbook_guide/racket-sports",
+  "route": "playbook_guide",
+  "meta": {
+    "title": "How to run a racket sports social | {{brand.name}} host playbooks",
+    "description": "How to run a racket sports social: courts, rotating doubles, capacity, the session itself, following up, and a checklist.",
+    "noindex": false,
+    "socialDescription": "How to run a racket sports social, step by step."
+  },
+  "header": {
+    "variant": "host",
+    "breadcrumbs": {
+      "links": [
+        {
+          "label": "For hosts",
+          "to": {
+            "route": "host"
+          }
+        },
+        {
+          "label": "Host playbooks",
+          "to": {
+            "route": "playbooks"
+          }
+        }
+      ],
+      "current": "Racket sports"
+    }
+  },
+  "footer": {
+    "variant": "host"
+  },
+  "sections": [
+    {
+      "type": "article",
+      "id": "guide",
+      "ground": "white",
+      "pageTitle": true,
+      "kicker": "Host playbook",
+      "title": "How to run a racket sports social",
+      "lead": "Who it’s for: pickleball, padel, badminton and tennis players who want a regular social session, coaches running group play, and courts or clubs filling off-peak slots.",
+      "meta": "2 minute read",
+      "sections": [
+        {
+          "heading": "Before the first session",
+          "paragraphs": [
+            "Venue. Book the courts before anything else. The number of courts and the length of the slot set your capacity. A space nearby to sit, drink water and chat between games makes the session feel social rather than a queue.",
+            "Format. Rotating doubles works for most socials. Play short timed games, change partners every round and keep the rotation moving so nobody sits out for long. Decide whether the session is for beginners, a mix of levels or one level, and say so up front.",
+            "Capacity. Plan around court time. Count courts, players per court and rounds, and add a little room for people sitting out. Too many players means long waits, and long waits mean people don’t come back.",
+            "Pricing. Court hire, balls and any coaching set your costs. Take payment at booking so the courts are covered.",
+            "Sign-up page. Put the courts, the slot, the level, what to bring (shoes, racket or paddle, water) and whether equipment can be borrowed. Ask players their level when they book. {{brand.name}} has a form for level, side and pairing, and can collect a signed waiver."
+          ]
+        },
+        {
+          "heading": "On the day",
+          "paragraphs": [
+            "What to get right on the day."
+          ],
+          "list": [
+            "Arrival. Ask people to arrive 15 minutes early to warm up. Anyone late joins the next round. Players check in at the door with {{brand.name}}.",
+            "Getting people talking. Rotating partners gets everyone playing with someone new. {{brand.name}} plans the rounds on your courts from players’ levels, so everyone gets about the same time on court. Between games, phones show each player their next court and partner, and nobody plays with the same partner twice until the rotation runs out. You can see each player’s minutes on court and on the bench, and point anyone sitting out to the common area.",
+            "Safety basics. Start with a proper warm-up, check that people have the right shoes, and make sure water and shade are nearby. Keep a first-aid kit courtside. Explain the court rules and how to call a ball for new players."
+          ]
+        },
+        {
+          "heading": "Afterwards",
+          "paragraphs": [
+            "Share the results and the next date that evening. Ask about the level mix and the waiting time, which are the two things most worth getting right. {{brand.name}} lets you record each round’s results and reveal the final standings at the end. Its report shows who came for the first time and who came back. Regulars who come every week are the people to offer a membership or early access to."
+          ]
+        },
+        {
+          "heading": "Checklist",
+          "paragraphs": [
+            "Tick these off before your first one."
+          ],
+          "list": [
+            "Courts booked, with a space to sit nearby",
+            "Level of the session stated up front",
+            "Capacity worked out from courts, rounds and players",
+            "Levels collected at booking, waiver if needed",
+            "Rotation planned, with a rule for latecomers",
+            "Warm-up, water, first-aid kit courtside",
+            "Results and next date shared that evening"
+          ]
+        }
+      ],
+      "aside": {
+        "ground": "paper",
+        "title": "What {{brand.name}} costs",
+        "body": "{{brand.name}} is free for 30 days from your first event, then a small share of paid tickets, capped each month. Free events stay free.",
+        "action": {
+          "label": "See pricing",
+          "to": {
+            "route": "pricing"
+          }
+        }
+      }
+    },
+    {
+      "type": "tiles",
+      "id": "keep-reading",
+      "ground": "paper",
+      "kicker": "Keep reading",
+      "title": "Where to go next.",
+      "columns": 3,
+      "items": [
+        {
+          "title": "Racket sports on {{brand.name}}",
+          "body": "What {{brand.name}} does for this kind of event, from booking to the day itself.",
+          "link": {
+            "label": "See the page",
+            "to": {
+              "route": "host_racket_sports"
+            }
+          }
+        },
+        {
+          "title": "Plan your first event",
+          "body": "A step-by-step plan for your first event on {{brand.name}}.",
+          "link": {
+            "label": "Plan it",
+            "to": {
+              "route": "host_first_event"
+            }
+          }
+        },
+        {
+          "title": "All the host playbooks",
+          "body": "The other guides: run clubs, supper clubs, quiz nights and racket sports.",
+          "link": {
+            "label": "See the playbooks",
+            "to": {
+              "route": "playbooks"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "id": "start",
+      "ground": "coral",
+      "kicker": "Your next event",
+      "title": "Run it on {{brand.name}}.",
+      "lead": "Start the free trial, or book a walkthrough and we’ll set it up with you.",
+      "actions": [
+        {
+          "label": "Start free trial",
+          "to": {
+            "route": "host_start"
+          },
+          "emphasis": "primary"
+        },
+        {
+          "label": "Book a walkthrough",
+          "to": {
+            "route": "host_walkthrough"
+          },
+          "emphasis": "secondary"
+        }
+      ]
+    }
+  ]
+}
