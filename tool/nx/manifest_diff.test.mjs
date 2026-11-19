@@ -44,7 +44,8 @@ test("a description edit to a check no lane names selects Tools and policy", () 
 
 test("every entry field marks the entry changed", () => {
   for (const [field, value] of [["command", "node --test x.test.mjs"], ["checks", []], ["path", "tool/x.mjs"],
-    ["status", "inactive"], ["role", "other"], ["safety", "mutating"]]) {
+    ["status", "inactive"], ["role", "other"], ["surface", "remote-write"], ["guard", "none"],
+    ["guardReason", "Runs only from its workflow."], ["guardWorkflow", ".github/workflows/ci.yml"]]) {
     const head = edit((manifest) => { tool(manifest, "meta:nx-shadow-plan")[field] = value; });
     assert.deepEqual(manifestChange(baseText, head).ids, ["meta:nx-shadow-plan"], field);
   }

@@ -13,7 +13,8 @@ export type ExternalRosterProvider =
 /** Every converter's id. The version suffix changes when its output does. */
 export type RosterAdapterId =
   "generic-v1" | "luma-v1" | "eventbrite-v1" | "partiful-v1" |
-  "posh-v1" | "sample-required";
+  "posh-v1" | "google-forms-v1" | "typeform-v1" | "townscript-v1" |
+  "instamojo-v1" | "vcard-v1" | "sample-required";
 
 export type RosterAdapterSupport = "verified" | "generic" | "sampleRequired";
 
@@ -50,6 +51,43 @@ export interface PreparedRosterImport {
   rows: NormalizedRosterImportRow[];
 }
 
+/** Where one field of a canonical row came from in the source file. */
+export interface GuestFieldSource {
+  column: number;
+  header: string;
+}
+
+/** One guest read from a file, with per-field provenance. */
+export interface CanonicalGuestRow {
+  sourceRowNumber: number;
+  value: NormalizedRosterImportRow;
+  fields: Partial<Record<GuestField, GuestFieldSource>>;
+  rawCells: string[];
+  /** Reasons the row needs a look before it can be saved. */
+  issues?: string[];
+}
+
+/** A source row the converter did not turn into a guest, and why. */
+export interface SkippedGuestRow {
+  sourceRowNumber: number;
+  reason: "missing-name" | "excluded-status";
+  rawCells: string[];
+}
+
+/** Everything one converter read from a table. */
+export interface CanonicalGuestRead {
+  adapter: RosterAdapterDetection;
+  /** Headers after the converter's reshape (e.g. a joined name column). */
+  headers: string[];
+  mapping: GuestColumnMapping;
+  /** Fields whose column the host chose instead of the converter. */
+  correctedFields: GuestField[];
+  rows: CanonicalGuestRow[];
+  skipped: SkippedGuestRow[];
+  /** Data rows beyond the row limit, not read. */
+  truncatedCount: number;
+}
+
 /**
  * A file-format converter. Detection scores the normalised headers against
  * [signature]; the shared mapper then reads the columns, using the
@@ -67,4 +105,19 @@ export interface GuestListConverter {
   arrivalGroupAliases?: ReadonlySet<string>;
   /** Reshapes the table before mapping, e.g. joins first and last names. */
   normalizeTable?(table: GuestTable): GuestTable;
+  /**
+   * Scores the headers when a signature alone cannot (0 to 1). Overrides
+   * signature scoring for this converter.
+   */
+  detect?(normalizedHeaders: string[]): number;
+  /** Extra exact aliases, tried before the shared ones. */
+  aliases?: Partial<Record<GuestField, ReadonlySet<string>>>;
+  /**
+   * Form exports name columns after questions ("What's your WhatsApp
+   * number?"). When set, a field with no exact column falls back to the
+   * first header containing one of these words.
+   */
+  questionWords?: Partial<Record<GuestField, readonly string[]>>;
+  /** Reads a status cell; "excluded" rows (failed payments) are skipped. */
+  statusFor?(value: string | null): GuestStatus | "excluded";
 }

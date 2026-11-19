@@ -441,3 +441,111 @@ test("an expired Luma code is not checked", async () => {
   assert.equal((await checkLuma(started.attemptId, deps)).status, "expired");
   assert.equal(lumaPages.reads.length, 0);
 });
+
+/**
+ * A try-it workspace the requester already owns, filled from a third
+ * party's public page: its importProvenance names the imported identities,
+ * and the owner has since pointed the editable fields at another account.
+ */
+function importedWorkspace(options: {verification?: string} = {}) {
+  const setup = fixture();
+  const organizer = setup.docs.get(`organizers/${organizerId}`)!;
+  Object.assign(organizer, {
+    ownerUserId: requesterUid,
+    ownership: {state: "claimed", ownerUserId: requesterUid},
+    claim: {state: "claimed", claimHref: null, lastClaimRequestId: null},
+    instagramHandle: "someoneelse",
+    publicSources: [{type: "instagram", label: "instagram page",
+      detail: "Public instagram page.",
+      href: "https://www.instagram.com/driftwoodbay/", confidence: "medium",
+      lastCheckedAt: null}],
+    importProvenance: {requestId: "tryit-0123456789abcdef0123",
+      listingId: "listing-1", contentHash: "b".repeat(64),
+      sourceUrls: [`https://www.instagram.com/${handle}/`, lumaUrl],
+      identities: [{platform: "instagram",
+        url: `https://www.instagram.com/${handle}/`},
+      {platform: "luma", url: "https://lu.ma/driftwood-bay-runners"}],
+      verification: options.verification ?? "unverified", importedAt: null},
+  });
+  return setup;
+}
+
+const importAttemptPath = (method: "instagramMessage" | "lumaDescription") =>
+  `organizerClaimVerifications/${organizerClaimAttemptId(organizerId,
+    requesterUid, method, "importVerification")}`;
+
+test("import verification targets only the imported identities",
+  async () => {
+    const {deps} = importedWorkspace();
+    const options = await getOrganizerClaimVerificationOptionsHandler(
+      callable({organizerId, purpose: "importVerification"}), deps);
+    assert.deepEqual(options.methods.map((entry) => entry.proofTarget),
+      [handle, lumaUrl]);
+    // The editable handle points elsewhere; a claim would read it, an
+    // import verification never does.
+    const started = await startOrganizerClaimVerificationHandler(callable({
+      organizerId, method: "instagramMessage",
+      purpose: "importVerification"}), deps);
+    assert.equal(started.proofTarget, handle);
+    assert.notEqual(importAttemptPath("instagramMessage"), attemptPath,
+      "an import verification never renews a claim attempt");
+  });
+
+test("the imported account's code verifies the import, and ownership stays",
+  async () => {
+    const {docs, deps, provider} = importedWorkspace();
+    await startOrganizerClaimVerificationHandler(callable({organizerId,
+      method: "instagramMessage", purpose: "importVerification"}), deps);
+    // A code from the account the owner typed in proves nothing.
+    await processInstagramClaimMessages(
+      [message("m1", "someoneelse", "482173")], deps);
+    assert.equal(((docs.get(`organizers/${organizerId}`)!
+      .importProvenance) as Data).verification, "unverified");
+    await processInstagramClaimMessages(
+      [message("m2", handle, "482173")], deps);
+    const organizer = docs.get(`organizers/${organizerId}`)!;
+    assert.equal(organizer["importProvenance.verification"] ??
+      (organizer.importProvenance as Data).verification, "verified");
+    assert.equal(organizer.ownerUserId, requesterUid);
+    const attempt = docs.get(importAttemptPath("instagramMessage"))!;
+    assert.equal(attempt.purpose, "importVerification");
+    assert.equal(attempt.status, "verified");
+    assert.equal(attempt.claimRequestId, null);
+    assert.equal(docs.has(requestPath), false, "no claim request is made");
+    assert.equal(provider.replies.length, 2);
+  });
+
+test("the Luma marker on the imported calendar verifies the import",
+  async () => {
+    const {docs, deps, lumaPages} = importedWorkspace();
+    const started = await startOrganizerClaimVerificationHandler(callable({
+      organizerId, method: "lumaDescription",
+      purpose: "importVerification"}), deps);
+    assert.equal(started.proofTarget, lumaUrl);
+    lumaPages.pages[lumaUrl] = `Runs every Saturday. ${started.proofText}`;
+    const verified = await checkLuma(started.attemptId, deps);
+    assert.equal(verified.status, "verified");
+    assert.equal(verified.claimRequestId, null);
+    const organizer = docs.get(`organizers/${organizerId}`)!;
+    assert.equal(organizer["importProvenance.verification"] ??
+      (organizer.importProvenance as Data).verification, "verified");
+  });
+
+test("import verification is only for the owner of an unverified import",
+  async () => {
+    for (const verification of ["verified", "not_needed"]) {
+      const {deps} = importedWorkspace({verification});
+      await assert.rejects(startOrganizerClaimVerificationHandler(callable({
+        organizerId, method: "instagramMessage",
+        purpose: "importVerification"}), deps),
+      {code: "failed-precondition"});
+    }
+    const {deps} = importedWorkspace();
+    await assert.rejects(getOrganizerClaimVerificationOptionsHandler(
+      callable({organizerId, purpose: "importVerification"}, "someone-else"),
+      deps), {code: "failed-precondition"});
+    // An unknown purpose is refused by the payload contract.
+    await assert.rejects(startOrganizerClaimVerificationHandler(callable({
+      organizerId, method: "instagramMessage", purpose: "takeover"}), deps),
+    {code: "invalid-argument"});
+  });

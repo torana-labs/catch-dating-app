@@ -21,6 +21,7 @@ class HostEventPlanBody extends StatelessWidget {
     this.onEditStep,
     this.onAddStep,
     this.onEditEvent,
+    this.setup = const <Widget>[],
   });
 
   final HostEventPlanState state;
@@ -40,6 +41,11 @@ class HostEventPlanBody extends StatelessWidget {
   /// Opens the event's editor, where a night without a plan picks its
   /// format; null hides the button.
   final VoidCallback? onEditEvent;
+
+  /// The setup the old event screen kept for before the night (what the
+  /// plan still lacks, how many guests it is set for and the room layout),
+  /// under the night's options.
+  final List<Widget> setup;
 
   @override
   Widget build(BuildContext context) {
@@ -202,6 +208,7 @@ class HostEventPlanBody extends StatelessWidget {
                 ),
             ],
           ),
+          ...setup,
         ],
       ),
     );

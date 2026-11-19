@@ -786,7 +786,7 @@ test("CI requirement declarations reject typos and unsafe dependency gaps", () =
 
 test("check safety is explicit, local-readonly, and non-redundant", () => {
   const splitSafety = {
-    safety: "remote-write-explicit",
+    surface: "remote-write",
     checkSafety: "local-readonly",
     checks: ["node --test tool/example.test.mjs"],
   };
@@ -794,9 +794,14 @@ test("check safety is explicit, local-readonly, and non-redundant", () => {
   assert.deepEqual(validateToolCheckSafety(splitSafety), []);
   assert.equal(toolChecksAreLocalReadonly(splitSafety), true);
   assert.equal(
-    toolChecksAreLocalReadonly({safety: "local-readonly", checks: ["node --check x.mjs"]}),
+    toolChecksAreLocalReadonly({surface: "local-read", checks: ["node --check x.mjs"]}),
     true,
   );
+  // Only the closed local-* surfaces count; an old safety label or a remote
+  // surface does not.
+  for (const tool of [{safety: "local-readonly"}, {surface: "remote-read"}, {surface: "local"}, {}]) {
+    assert.equal(toolChecksAreLocalReadonly({...tool, checks: ["node --check x.mjs"]}), false, JSON.stringify(tool));
+  }
   assert.equal(
     toolChecksAreLocalReadonly({...splitSafety, checkSafety: "local-readonly-typo"}),
     false,
@@ -824,11 +829,11 @@ test("check safety is explicit, local-readonly, and non-redundant", () => {
   );
   assert.match(
     validateToolCheckSafety({
-      safety: "local-readonly",
+      surface: "local-writes-scratch",
       checkSafety: "local-readonly",
       checks: ["node --check x.mjs"],
     }).join("\n"),
-    /must be omitted when safety already declares local-only behavior/u,
+    /must be omitted when surface already declares local-only behavior/u,
   );
 });
 

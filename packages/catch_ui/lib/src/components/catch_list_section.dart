@@ -32,7 +32,9 @@ class CatchSectionAction {
 /// the lines between rows ([dividers]), so system `CatchIndexRow` rows draw
 /// none of their own. With no [children] it shows the [empty] copy, or only
 /// its title when there is none. A [kicker] sits over the title in the
-/// muted label voice, as the system SectionHeader draws it.
+/// muted label voice, as the system SectionHeader draws it. With no title,
+/// the kicker alone is the section's small grey label: a group inside a
+/// screen, such as "Arriving" on live Needs.
 ///
 /// A [timeline] joins the rows' leading markers with a 2 px line, run of show
 /// style; put it on a section with no [dividers]. [columns] flows the rows
@@ -55,7 +57,8 @@ class CatchListSection extends StatelessWidget {
   final List<Widget> children;
   final String? title;
 
-  /// A muted line over the title: "Each person gets at most one a week."
+  /// A muted line over the title: "Each person gets at most one a week".
+  /// Without a title, the section's small label.
   final String? kicker;
 
   /// Muted text at the end of the title: "3 before doors".
@@ -96,6 +99,16 @@ class CatchListSection extends StatelessWidget {
     // baseline. At large text the action takes its own line under the title,
     // so the title wraps only between words.
     Widget? header;
+    if (title == null && kicker != null) {
+      header = Semantics(
+        header: true,
+        child: CatchText(
+          kicker!,
+          variant: CatchTextVariant.labelKicker,
+          tone: CatchTextTone.secondary,
+        ),
+      );
+    }
     if (title != null) {
       final kicker = this.kicker;
       final action = this.action;

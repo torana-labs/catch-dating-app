@@ -658,24 +658,6 @@ async function joinByWhatsapp(
       lastSubmittedAt: admin.firestore.FieldValue.serverTimestamp(),
       submissionCount: 1,
     });
-    transaction.set(firestore.collection("marketingConversionEvents")
-      .doc(noticeRef.id), {
-      analytics: marketingAnalytics,
-      attribution: marketingAttribution,
-      city,
-      consent: marketingAnalytics?.consent ?? null,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      eventId: marketingAnalytics?.eventId ??
-        `waitlist_${Date.now()}_${noticeRef.id}`,
-      eventName: "waitlist_submitted",
-      leadId: noticeRef.id,
-      leadPath: noticeRef.path,
-      hostApplication: null,
-      role: "member",
-      source: "catchdates.com",
-      status: "readyForReview",
-      standardEvent: "Lead",
-    });
   });
   // The number stays out of logs.
   logger.info("WhatsApp launch notice stored", {city,
@@ -824,19 +806,6 @@ export function createJoinWaitlistHandler(options: {
 
     const referrer = normalizeText(request.get("referer"));
     const userAgent = normalizeText(request.get("user-agent"));
-    const conversionEventId = marketingAnalytics?.eventId ??
-      `waitlist_${Date.now()}_${waitlistRef.id}`;
-    const conversionName =
-      marketingAnalytics?.formVariant === "host" || role === "host" ?
-        "host_lead_submitted" :
-        "waitlist_submitted";
-    // Key the conversion doc by the lead (email-derived waitlist id), not the
-    // client-supplied analytics eventId, so two leads sharing a client eventId
-    // can't clobber each other. The client eventId stays in the eventId field.
-    const conversionRef = admin
-      .firestore()
-      .collection("marketingConversionEvents")
-      .doc(waitlistRef.id);
     const intent = prepareHostSalesIntent({
       waitlistId: waitlistRef.id,
       requestId: marketingAnalytics?.eventId ?? null,
@@ -911,23 +880,6 @@ export function createJoinWaitlistHandler(options: {
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
           lastSubmittedAt: admin.firestore.FieldValue.serverTimestamp(),
           submissionCount: 1,
-        });
-
-        transaction.set(conversionRef, {
-          analytics: marketingAnalytics,
-          attribution: marketingAttribution,
-          city,
-          consent: marketingAnalytics?.consent ?? null,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-          eventId: conversionEventId,
-          eventName: conversionName,
-          leadId: waitlistRef.id,
-          leadPath: waitlistRef.path,
-          hostApplication,
-          role,
-          source: "catchdates.com",
-          status: "readyForReview",
-          standardEvent: "Lead",
         });
       });
     } catch (error) {

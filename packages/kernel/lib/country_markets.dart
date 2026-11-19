@@ -111,7 +111,10 @@ String formatMinorCurrency(
   final absolute = amountMinorUnits.abs();
   final whole = absolute ~/ factor;
   final remainder = absolute % factor;
-  final groupedWhole = _formatWholeCurrencyUnits(whole);
+  final groupedWhole = _formatWholeCurrencyUnits(
+    whole,
+    indian: currency.code == 'INR',
+  );
   final value = currency.minorUnitExponent == 0 || remainder == 0
       ? groupedWhole
       : '$groupedWhole.${remainder.toString().padLeft(currency.minorUnitExponent, '0')}';
@@ -165,19 +168,17 @@ String minorCurrencyAmountInputText(
   return '$sign$whole.${remainder.toString().padLeft(exponent, '0')}';
 }
 
-String _formatWholeCurrencyUnits(int value) {
+/// Thousands groups of three; rupees group the Indian way, so the last
+/// three digits stand alone and the rest pair up: 1,48,000.
+String _formatWholeCurrencyUnits(int value, {bool indian = false}) {
   final digits = value.toString();
-  final firstGroupLength = digits.length % 3;
-  final buffer = StringBuffer();
-
-  for (var index = 0; index < digits.length; index++) {
-    if (index > 0 &&
-        (index - firstGroupLength) % 3 == 0 &&
-        (firstGroupLength != 0 || index != 0)) {
-      buffer.write(',');
-    }
-    buffer.write(digits[index]);
+  if (digits.length <= 3) return digits;
+  final tail = digits.substring(digits.length - 3);
+  final head = digits.substring(0, digits.length - 3);
+  final size = indian ? 2 : 3;
+  final groups = <String>[];
+  for (var end = head.length; end > 0; end -= size) {
+    groups.insert(0, head.substring(end - size < 0 ? 0 : end - size, end));
   }
-
-  return buffer.toString();
+  return [...groups, tail].join(',');
 }

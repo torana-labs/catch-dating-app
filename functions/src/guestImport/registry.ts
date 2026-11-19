@@ -2,17 +2,33 @@
 // Adding a format means adding one converter file and listing it here.
 
 import type {
+  CanonicalGuestRead,
+  CanonicalGuestRow,
   ExternalRosterProvider,
+  GuestColumnMapping,
+  GuestField,
   GuestListConverter,
   NormalizedRosterImportRow,
   PreparedRosterImport,
   RosterAdapterDetection,
+  RosterAdapterId,
+  SkippedGuestRow,
 } from "./canonical";
 import {eventbriteConverter} from "./converters/eventbrite";
+import {googleFormsConverter} from "./converters/googleForms";
+import {instamojoConverter} from "./converters/instamojo";
 import {lumaConverter} from "./converters/luma";
 import {partifulConverter} from "./converters/partiful";
 import {poshConverter} from "./converters/posh";
-import {rosterStatus, suggestGuestMapping} from "./mapping";
+import {townscriptConverter} from "./converters/townscript";
+import {typeformConverter} from "./converters/typeform";
+import {vcardConverter} from "./converters/vcard";
+import {
+  guestFields,
+  reviewStatus,
+  rosterStatus,
+  suggestGuestMapping,
+} from "./mapping";
 import {
   normalizeHeader,
   nullableValueAt,
@@ -31,6 +47,11 @@ export const guestListConverters: readonly GuestListConverter[] = [
   eventbriteConverter,
   partifulConverter,
   poshConverter,
+  googleFormsConverter,
+  typeformConverter,
+  townscriptConverter,
+  instamojoConverter,
+  vcardConverter,
 ];
 
 /** Providers whose exports we have not reviewed a real sample of yet. */
@@ -45,6 +66,8 @@ const sampleRequiredProviders = new Set<ExternalRosterProvider>([
 export const DETECTION_THRESHOLD = 0.6;
 export const MAX_GUEST_COLUMNS = 40;
 export const MAX_GUEST_ROWS = 250;
+/** Matches the review session's raw cell bound. */
+export const MAX_CELL_LENGTH = 500;
 
 /** The converter for an id, or null for generic and sample-required. */
 export function guestListConverter(
@@ -78,11 +101,13 @@ export function detectRosterAdapter(
     return {adapterId: hinted.id, support: "verified", confidence: 1};
   }
 
-  const normalizedHeaders = new Set(headers.map(normalizeHeader));
+  const ordered = headers.map(normalizeHeader);
+  const normalizedHeaders = new Set(ordered);
   const candidates = guestListConverters.map((converter) => ({
     adapterId: converter.id,
-    confidence: converter.signature.filter((value) =>
-      normalizedHeaders.has(value)).length / converter.signature.length,
+    confidence: converter.detect ? converter.detect(ordered) :
+      converter.signature.filter((value) =>
+        normalizedHeaders.has(value)).length / converter.signature.length,
   })).sort((left, right) => right.confidence - left.confidence);
   const best = candidates[0];
   if (best && best.confidence >= DETECTION_THRESHOLD) {
@@ -106,47 +131,125 @@ export function normalizeRosterMatrix(
 }
 
 /**
- * Reads a table (header row first) with the detected converter into at most
- * 250 canonical rows. Rows without a name are skipped.
- * @return {PreparedRosterImport} The rows and the converter that read them.
+ * Reads a table (header row first) with the detected converter, or the
+ * converter [options.converterId] names, into at most 250 canonical rows
+ * with per-field provenance. Rows without a name, and rows the converter
+ * excludes (a failed payment), are reported in skipped.
+ * @return {CanonicalGuestRead} The rows, skips and the converter used.
  */
-export function prepareRosterTable(
+export function readGuestTable(
   matrix: string[][],
-  providerHint?: ExternalRosterProvider
-): PreparedRosterImport {
+  options: {providerHint?: ExternalRosterProvider;
+    converterId?: RosterAdapterId;
+    /** The host's column choices; null unmaps a field. */
+    mapping?: Partial<GuestColumnMapping>;
+    /**
+     * Read status cells as the review stage does (reviewStatus): cancelled
+     * guests are skipped and unknown words flag the row. The forwarded
+     * roster keeps its original reading.
+     */
+    reviewStatuses?: boolean;
+    /** Columns used by fields outside the canonical row. */
+    reservedColumns?: number[]} = {}
+): CanonicalGuestRead {
   if (matrix.length < 2) throw new Error("roster_missing_rows");
   if (matrix[0].length > MAX_GUEST_COLUMNS) {
     throw new Error("roster_too_many_columns");
   }
   const headers = uniqueHeaders(matrix[0]);
-  const adapter = detectRosterAdapter(headers, providerHint);
+  const forced = options.converterId ?
+    guestListConverter(options.converterId) : null;
+  const adapter: RosterAdapterDetection = forced ?
+    {adapterId: forced.id, support: "verified", confidence: 1} :
+    detectRosterAdapter(headers, options.providerHint);
+  const converter = guestListConverter(adapter.adapterId);
   const normalized = normalizeRosterMatrix({
     headers,
     rows: matrix.slice(1).filter((row) => row.some((value) => value.trim())),
   }, adapter);
-  const mapping = suggestGuestMapping(normalized.headers,
-    guestListConverter(adapter.adapterId));
+  const suggested = suggestGuestMapping(normalized.headers, converter);
+  const mapping = {...suggested};
+  const correctedFields: GuestField[] = [];
+  for (const field of guestFields) {
+    const chosen = options.mapping?.[field];
+    if (chosen === undefined) continue;
+    if (chosen !== null && (!Number.isSafeInteger(chosen) || chosen < 0 ||
+        chosen >= normalized.headers.length)) {
+      throw new Error("roster_invalid_mapping");
+    }
+    if (chosen !== suggested[field]) correctedFields.push(field);
+    mapping[field] = chosen;
+  }
+  const chosenColumns = [...Object.values(mapping),
+    ...(options.reservedColumns ?? [])]
+    .filter((column): column is number => column !== null);
+  if (options.mapping &&
+      new Set(chosenColumns).size !== chosenColumns.length) {
+    throw new Error("roster_duplicate_mapped_column");
+  }
   const nameIndex = mapping.displayName;
   if (nameIndex === null) throw new Error("roster_missing_name_column");
-  const rows: NormalizedRosterImportRow[] = [];
-  for (let index = 0; index < normalized.rows.length &&
-    rows.length < MAX_GUEST_ROWS; index += 1) {
+  const rows: CanonicalGuestRow[] = [];
+  const skipped: SkippedGuestRow[] = [];
+  let index = 0;
+  for (; index < normalized.rows.length && rows.length < MAX_GUEST_ROWS;
+    index += 1) {
     const row = normalized.rows[index];
+    const sourceRowNumber = index + 2;
+    const rawCells = row.slice(0, MAX_GUEST_COLUMNS)
+      .map((cell) => cell.slice(0, MAX_CELL_LENGTH));
     const displayName = valueAt(row, nameIndex);
-    if (!displayName) continue;
-    rows.push({
-      rowId: String(index + 2),
+    if (!displayName) {
+      skipped.push({sourceRowNumber, reason: "missing-name", rawCells});
+      continue;
+    }
+    const statusCell = nullableValueAt(row, mapping.status);
+    const read = converter?.statusFor ? converter.statusFor(statusCell) :
+      options.reviewStatuses ? reviewStatus(statusCell) :
+        rosterStatus(statusCell);
+    if (read === "excluded") {
+      skipped.push({sourceRowNumber, reason: "excluded-status", rawCells});
+      continue;
+    }
+    const status = read === "unknown" ? "registered" : read;
+    const value: NormalizedRosterImportRow = {
+      rowId: String(sourceRowNumber),
       displayName,
       phone: nullableValueAt(row, mapping.phone),
       email: nullableValueAt(row, mapping.email),
       externalReference: nullableValueAt(row, mapping.externalReference),
       arrivalGroup: nullableValueAt(row, mapping.arrivalGroup),
       ticketType: nullableValueAt(row, mapping.ticketType),
-      status: rosterStatus(nullableValueAt(row, mapping.status)),
-    });
+      status,
+    };
+    const fields: CanonicalGuestRow["fields"] = {};
+    for (const field of guestFields) {
+      const column = mapping[field];
+      if (column === null || field !== "status" && value[field] === null ||
+          field === "status" && statusCell === null) {
+        continue;
+      }
+      fields[field] = {column, header: normalized.headers[column]};
+    }
+    rows.push({sourceRowNumber, value, fields, rawCells,
+      ...(read === "unknown" ? {issues: ["unknown-status"]} : {})});
   }
-  if (rows.length === 0) throw new Error("roster_missing_guest_names");
-  return {adapter, rows};
+  return {adapter, headers: normalized.headers, mapping, correctedFields,
+    rows, skipped, truncatedCount: normalized.rows.length - index};
+}
+
+/**
+ * The forwarded-roster reader: canonical values only, and an error when no
+ * row has a name.
+ * @return {PreparedRosterImport} The rows and the converter that read them.
+ */
+export function prepareRosterTable(
+  matrix: string[][],
+  providerHint?: ExternalRosterProvider
+): PreparedRosterImport {
+  const read = readGuestTable(matrix, {providerHint});
+  if (read.rows.length === 0) throw new Error("roster_missing_guest_names");
+  return {adapter: read.adapter, rows: read.rows.map((row) => row.value)};
 }
 
 /** Reads a CSV file with the detected converter. */

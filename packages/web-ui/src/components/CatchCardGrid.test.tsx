@@ -136,4 +136,18 @@ describe("CatchCardGrid", () => {
     expect(heading.compareDocumentPosition(action) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(action.compareDocumentPosition(run) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
+
+  it("adds titled chip rows after the chips, each list named by its title, with a dot only where a chip names one", () => {
+    render(
+      <CatchCardGrid chipGroups={[{title: "By organisation", chips: [{label: "Venues", href: "/host/venues/"}]}, {title: "Empty row", chips: []}]}
+        chips={[{label: "Studios", href: "/host/studios/", dot: "indigo"}]}
+        items={[{id: "run", title: "Run clubs", body: "Pace groups.", more: "For run clubs", href: "/host/run-clubs/", ground: "coral", format: "run"}]}
+        kind="format" layout="rail" title="Find your page" />,
+    );
+    const row = screen.getByRole("list", {name: "By organisation"});
+    expect(within(row).getByRole("link", {name: "Venues"}).getAttribute("href")).toBe("/host/venues/");
+    expect(within(row).getByRole("link", {name: "Venues"}).querySelector("[data-ground]")).toBeNull();
+    expect(screen.getByRole("link", {name: "Studios"}).querySelector("[data-ground='indigo']")).toBeTruthy();
+    expect(screen.queryByText("Empty row")).toBeNull();
+  });
 });

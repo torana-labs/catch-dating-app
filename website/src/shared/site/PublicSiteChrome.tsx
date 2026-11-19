@@ -116,8 +116,18 @@ const trackNav = (link: SiteNavItem) => trackSiteCtaClick(`nav_${slugForTracking
 const withNavTracking = (link: SiteNavItem): CatchTopBarAction => ({...link, onPressed: () => trackNav(link)});
 const navAction = (item: SiteNavItem | SiteNavGroupCopy): CatchTopBarAction =>
   isGroup(item)
-    ? {label: item.label, menu: <CatchNavMenu appearance="link" label={item.label} links={item.links} onLinkPressed={trackNav} />}
+    ? {label: item.label, menu: item.sections
+      ? <CatchNavMenu appearance="link" label={item.label} onLinkPressed={trackNav} sections={item.sections} />
+      : <CatchNavMenu appearance="link" label={item.label} links={item.links} onLinkPressed={trackNav} />}
     : withNavTracking(item);
+
+/**
+ * A dropdown's pages for the phone menu, after the bar's links: a divider
+ * opens each dropdown and each of its titled columns.
+ */
+const phoneMenuLinks = (menu: SiteNavGroupCopy): CatchTopBarAction[] =>
+  (menu.sections ?? [{title: menu.label, links: menu.links}]).flatMap((section) =>
+    section.links.map((link, index) => ({...withNavTracking(link), ...(index === 0 ? {startsSection: true} : {})})));
 
 /**
  * The one public header, the system's site top bar, on every public route:
@@ -133,6 +143,7 @@ export function PublicSiteHeader({
   actions,
   breadcrumbs,
   links,
+  newToCity,
   offer,
   showWhatsOn = true,
   title = publicSiteCopy.wordmark,
@@ -144,6 +155,8 @@ export function PublicSiteHeader({
   breadcrumbs?: SiteBreadcrumbs;
   /** A product page's own sections in place of the variant's links. */
   links?: readonly SiteNavItem[];
+  /** A guest page's city's new-to-the-city page, after What's on (the canvas's "New to Mumbai"). */
+  newToCity?: SiteNavItem;
   /** The strip above the bar. No page shows one yet. */
   offer?: SiteOffer;
   /**
@@ -162,9 +175,10 @@ export function PublicSiteHeader({
   const whatsOn = showWhatsOn ? [{...publicSiteCopy.whatsOn, href: whatsOnHref ?? publicSiteCopy.whatsOn.href}] : [];
   const plan = minimal ? {items: [], menus: []}
     : links ? {items: [...links], menus: []}
-    : navPlan([...whatsOn, ...siteHeaderCopy[variant].nav]);
+    : navPlan([...whatsOn, ...(variant === "guest" && newToCity ? [newToCity] : []), ...siteHeaderCopy[variant].nav]);
   // Below 600px the dropdowns draw nothing, so the phone menu lists their pages after the links.
   const menuLinks = plan.menus.flatMap((menu) => menu.links);
+  const menuActions = plan.menus.flatMap(phoneMenuLinks);
   const plainLinks = plan.items.filter((item): item is SiteNavItem => !isGroup(item));
   const primary = actions ?? (minimal ? null : <PrimaryAction link={siteHeaderCopy[variant].action} />);
   return (
@@ -177,7 +191,7 @@ export function PublicSiteHeader({
         homeHref="/"
         links={plan.items.map(navAction)}
         linksLabel={publicSiteCopy.menu.navLabel}
-        menuExtras={minimal ? undefined : [...menuLinks.map(withNavTracking), ...(account ? [account.menu] : [])]}
+        menuExtras={minimal ? undefined : [...menuActions, ...(account ? [{...account.menu, startsSection: menuActions.length > 0}] : [])]}
         menuLabel={publicSiteCopy.menu.openLabel}
         siteMenu={minimal ? undefined : account?.phoneMenu?.([...plainLinks, ...menuLinks], publicSiteCopy.menu.openLabel)}
         subBrand={subBrand}
@@ -308,8 +322,9 @@ function FooterHelpActions({variant}: {variant: SiteFooterVariant}) {
  * columns, each link flush with its column title on one row rhythm, then
  * the wordmark with the tagline on its baseline and the operator line.
  * Guest pages carry Explore, Cities (the page's own list, or every live
- * city), Hosts and Help and legal; host pages carry Product, Get started, the brand's
- * column and Legal. The last column ends with Privacy choices. The help band
+ * city), Hosts and Help and legal; host pages carry the canvas's five:
+ * Product, Hosts by format, Get started, Resources and the brand's column.
+ * The last column ends with Privacy choices. The help band
  * leads the footer unless the page turns it off (ad landing pages, one-job
  * flows). A product page may name itself ("Catch for weddings") and give
  * its own line.
@@ -317,6 +332,7 @@ function FooterHelpActions({variant}: {variant: SiteFooterVariant}) {
 export function PublicSiteFooter({
   appHref,
   cities,
+  cityFormats,
   columns,
   exploreHref,
   footnotes,
@@ -331,9 +347,15 @@ export function PublicSiteFooter({
   appHref?: string;
   cities?: readonly SiteFooterCity[];
   /**
-   * The link columns in place of the variant's, such as the product pages'
-   * Product column (the kit's KitFooter `cols`). The last column ends with
-   * Privacy choices, as every footer's does.
+   * A guest page's city: its new-to-the-city page in Explore, and its format
+   * pages as their own column (the canvas's "Things to do"). Pass only pages
+   * that exist for the city.
+   */
+  cityFormats?: SiteFooterCityPages;
+  /**
+   * The link columns in place of the variant's (the kit's KitFooter `cols`),
+   * for a page that needs its own. The last column ends with Privacy
+   * choices, as every footer's does.
    */
   columns?: readonly SiteFooterColumn[];
   /** Where What's on goes: a city page links its own plans. */
@@ -352,7 +374,7 @@ export function PublicSiteFooter({
 }) {
   const {brand, subBrand} = wordmarkParts(wordmark);
   const groups = columns ? columnFooterGroups(columns) :
-    variant === "host" ? hostFooterGroups(exploreHref) : guestFooterGroups({appHref, cities: cities ?? siteFooterDefaultCities, exploreHref});
+    variant === "host" ? hostFooterGroups(exploreHref) : guestFooterGroups({appHref, cities: cities ?? siteFooterDefaultCities, cityFormats, exploreHref});
   return (
     <CatchSiteFooter
       brandHref="/"
@@ -372,14 +394,29 @@ export function PublicSiteFooter({
   );
 }
 
-function guestFooterGroups({appHref, cities, exploreHref}: {appHref?: string; cities?: readonly SiteFooterCity[]; exploreHref?: string}): CatchSiteFooterGroup[] {
+function guestFooterGroups({appHref, cities, cityFormats, exploreHref}: {appHref?: string; cities?: readonly SiteFooterCity[]; cityFormats?: SiteFooterCityPages; exploreHref?: string}): CatchSiteFooterGroup[] {
   const [whatsOn, app] = siteFooterCopy.explore;
+  const explore = [
+    {...whatsOn, href: exploreHref ?? whatsOn.href},
+    ...(cityFormats?.newToCity ? [cityFormats.newToCity] : []),
+    siteFooterCopy.safety,
+    {...app, href: appHref ?? app.href},
+  ];
   return [
-    {title: siteFooterCopy.groups.explore, links: [{...whatsOn, href: exploreHref ?? whatsOn.href}, {...app, href: appHref ?? app.href}]},
+    {title: siteFooterCopy.groups.explore, links: explore},
+    ...(cityFormats && cityFormats.formats.length > 0 ? [{title: cityFormats.title, links: cityFormats.formats}] : []),
     ...(cities ? [{title: siteFooterCopy.groups.cities, links: cities.map((city) => ({href: city.href, label: city.label, note: city.note ?? (city.soon ? siteFooterCopy.soon : undefined)}))}] : []),
     {title: siteFooterCopy.groups.hosts, links: siteFooterCopy.hosts},
     {title: siteFooterCopy.groups.help, links: siteLinks(siteFooterCopy.helpOrder), trailing: <PrivacyChoicesButton tone="link" />},
   ];
+}
+
+/** A guest page's city pages for the footer: its new-to-the-city page and the column of its format pages. */
+export interface SiteFooterCityPages {
+  newToCity?: SiteNavItem;
+  /** The column's title, such as "Things to do in Mumbai". */
+  title: string;
+  formats: readonly SiteNavItem[];
 }
 
 /** A page's own footer column: its title and links. */
@@ -397,12 +434,9 @@ function columnFooterGroups(columns: readonly SiteFooterColumn[]): CatchSiteFoot
 }
 
 function hostFooterGroups(exploreHref?: string): CatchSiteFooterGroup[] {
-  const {host, groups} = siteFooterCopy;
-  const brandLinks = siteLinks(host.brandOrder).map((link) => link.href === publicSiteCopy.whatsOn.href && exploreHref ? {...link, href: exploreHref} : link);
-  return [
-    {title: groups.product, links: host.product},
-    {title: groups.getStarted, links: host.getStarted},
-    {title: groups.brand, links: brandLinks},
-    {title: groups.legal, links: siteLinks(host.legalOrder), trailing: <PrivacyChoicesButton tone="link" />},
-  ];
+  const whatsOn = publicSiteCopy.whatsOn.href;
+  return columnFooterGroups(siteFooterCopy.host.columns.map((column) => ({
+    title: column.title,
+    links: column.links.map((link) => link.href === whatsOn && exploreHref ? {...link, href: exploreHref} : link),
+  })));
 }

@@ -108,6 +108,8 @@ void main() {
       ),
     );
     expect(find.text('Step 2 of 5'), findsOneWidget);
+    final counter = tester.widget<Text>(find.text('Step 2 of 5'));
+    expect(counter.textAlign, TextAlign.end);
     expect(
       find.byWidgetPredicate(
         (widget) =>

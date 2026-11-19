@@ -44253,7 +44253,7 @@ abstract class AppLocalizations {
   /// Create when-and-where directions field title.
   ///
   /// In en, this message translates to:
-  /// **'How to find you · optional'**
+  /// **'How to find you'**
   String get hostCreateHowToFindYou;
 
   /// Create when-and-where map semantic label.
@@ -44397,7 +44397,7 @@ abstract class AppLocalizations {
   /// Create plan step sheet note field.
   ///
   /// In en, this message translates to:
-  /// **'Note · optional'**
+  /// **'Note'**
   String get hostCreateStepNote;
 
   /// Create plan step sheet duration title.
@@ -47622,6 +47622,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Catch registration, a guest file, Luma, and forwarding the list'**
   String get hostEventsGuestSourcesBody;
+
+  /// Live console, run and crawl boards: opens the night's assistance tools (settings, departures, pace groups, help and delivery queues).
+  ///
+  /// In en, this message translates to:
+  /// **'Night tools'**
+  String get hostLiveTools;
 }
 
 class _AppLocalizationsDelegate

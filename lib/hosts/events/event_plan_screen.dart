@@ -1,8 +1,13 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_structure.dart';
 import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_room_setup_section.dart';
+import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_readiness_field.dart';
+import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_target_attendees_field.dart';
 import 'package:catch_dating_app/hosts/events/event_commands_controller.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_body.dart';
 import 'package:catch_dating_app/hosts/events/event_plan_controller.dart';
@@ -12,6 +17,7 @@ import 'package:catch_dating_app/hosts/events/event_workspace_controller.dart';
 import 'package:catch_dating_app/hosts/events/widgets/event_plan_step_sheet.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
+import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_platform/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -41,6 +47,11 @@ class HostEventPlanScreen extends ConsumerStatefulWidget {
 class _HostEventPlanScreenState extends ConsumerState<HostEventPlanScreen> {
   final Map<HostEventPlanOption, bool> _changed = {};
 
+  /// Guests the plan is set for and its room layout, as changed here and
+  /// not yet saved; null keeps the saved value.
+  int? _target;
+  String? _layoutId;
+
   /// The step in the editor sheet, and whether it is new; null when the
   /// sheet is down.
   ({EventSuccessPlanStep step, bool isNew, int index})? _editing;
@@ -63,15 +74,75 @@ class _HostEventPlanScreenState extends ConsumerState<HostEventPlanScreen> {
       mutations: [
         HostEventCommands.savePlanMutation,
         HostEventPlanCommands.saveStepMutation,
+        EventSuccessController.upsertLayoutMutation,
       ],
       errorContext: AppErrorContext.event,
     );
     final editing = _editing;
     final options = {...state.options, ..._changed};
-    final dirty = _changed.entries.any(
-      (entry) => state.options[entry.key] != entry.value,
-    );
     final plan = state.plan;
+    final target = _target ?? state.targetAttendees;
+    final layoutId = _layoutId ?? state.layoutId;
+    final dirty =
+        _changed.entries.any(
+          (entry) => state.options[entry.key] != entry.value,
+        ) ||
+        (_target != null && _target != state.targetAttendees) ||
+        (_layoutId != null && _layoutId != state.layoutId);
+    final organizerId = state.organizerId;
+    final layouts =
+        organizerId == null || state.unitKind == EventSuccessUnitKind.wholeGroup
+        ? null
+        : catchAsyncStateFromAsyncValue(
+            ref.watch(watchOrganizerEventSuccessLayoutsProvider(organizerId)),
+          );
+    final upsertLayout = ref.watch(EventSuccessController.upsertLayoutMutation);
+    // Before the night: what the plan still lacks, how many guests it is
+    // set for and, when guests sit at tables or in teams, the room layout,
+    // all as the old event screen's setup drew them.
+    final setup = <Widget>[
+      if (plan != null &&
+          (state.readinessIssues.isNotEmpty ||
+              (target != null &&
+                  state.capacityMin != null &&
+                  state.capacityMax != null)))
+        CatchSection(
+          key: const ValueKey<String>('host-event-plan-setup'),
+          title: l10n.eventSuccessEventSuccessSetupBodyTitleBeforeTheEvent,
+          dividers: CatchSectionPlacement.none,
+          children: [
+            if (state.readinessIssues.isNotEmpty)
+              EventSuccessReadinessField(issues: state.readinessIssues),
+            if (target != null &&
+                state.capacityMin != null &&
+                state.capacityMax != null)
+              EventSuccessTargetAttendeesField(
+                value: target,
+                recommendedMin: state.capacityMin!,
+                recommendedMax: state.capacityMax!,
+                enabled: state.editable,
+                onChanged: (value) => setState(() => _target = value),
+              ),
+          ],
+        ),
+      if (layouts != null)
+        EventSuccessRoomSetupSection(
+          key: const ValueKey<String>('host-event-plan-room'),
+          layoutsState: layouts,
+          selectedLayoutId: layoutId,
+          usesWholeGroup: false,
+          enabled: state.editable,
+          isSavingLayout: upsertLayout.isPending,
+          onSelected: (id) => setState(() => _layoutId = id),
+          onSaveLayout: (layout) =>
+              EventSuccessController.upsertLayoutMutation.run(
+                ref,
+                (tx) => tx
+                    .get(eventSuccessControllerProvider.notifier)
+                    .upsertLayout(organizerId: organizerId!, layout: layout),
+              ),
+        ),
+    ];
     return PopScope(
       canPop: editing == null,
       onPopInvokedWithResult: (didPop, _) {
@@ -98,6 +169,7 @@ class _HostEventPlanScreenState extends ConsumerState<HostEventPlanScreen> {
           body: HostEventPlanBody(
             state: state,
             options: options,
+            setup: setup,
             onOption: (option, on) => setState(() => _changed[option] = on),
             onRetry: () {
               ref.invalidate(watchEventProvider(request.eventId));
@@ -149,7 +221,13 @@ class _HostEventPlanScreenState extends ConsumerState<HostEventPlanScreen> {
                   ),
                   secondary: CatchDockAction(
                     label: l10n.hostEventsPlanUndo,
-                    onPressed: dirty ? () => setState(_changed.clear) : null,
+                    onPressed: dirty
+                        ? () => setState(() {
+                            _changed.clear();
+                            _target = null;
+                            _layoutId = null;
+                          })
+                        : null,
                   ),
                 ),
         ),
@@ -215,15 +293,26 @@ class _HostEventPlanScreenState extends ConsumerState<HostEventPlanScreen> {
     try {
       await HostEventCommands.savePlanMutation.run(
         ref,
-        (tx) =>
-            tx.get(hostEventCommandsProvider.notifier).savePlan(plan, options),
+        (tx) => tx
+            .get(hostEventCommandsProvider.notifier)
+            .savePlan(
+              plan.copyWith(
+                targetAttendeeCount: _target ?? plan.targetAttendeeCount,
+                layoutId: _layoutId ?? plan.layoutId,
+              ),
+              options,
+            ),
       );
     } on Object {
       // The mutation's error shows as a notice.
       return;
     }
     if (!mounted) return;
-    setState(_changed.clear);
+    setState(() {
+      _changed.clear();
+      _target = null;
+      _layoutId = null;
+    });
     showCatchNotice(context, saved);
   }
 }

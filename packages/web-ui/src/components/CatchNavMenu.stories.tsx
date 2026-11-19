@@ -58,3 +58,40 @@ export const Contract: Story = {
     await expect(trigger).toHaveFocus();
   },
 };
+
+/**
+ * A sectioned panel (the playbook's "For hosts" menu): titled columns side
+ * by side, each list named by its title. The play opens it from the
+ * keyboard, walks from the first column into the second, and closes it with
+ * Escape, focus back on its button.
+ */
+export const Sections: Story = {
+  render: () => (
+    <CatchRoot size="expanded" theme="day">
+      <CatchSurface aria-label="Sectioned menu" block="band">
+        <CatchNavMenu
+          appearance="link"
+          label="Sectioned group"
+          sections={[
+            {title: "First column", links: [{href: "#a", label: "Page A"}, {href: "#b", label: "Page B"}, {href: "#c", label: "Page C"}]},
+            {title: "Second column", links: [{href: "#d", label: "Page D"}, {href: "#e", label: "Page E"}]},
+            {title: "Third column", links: [{href: "#f", label: "Page F"}]},
+          ]}
+        />
+      </CatchSurface>
+    </CatchRoot>
+  ),
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole("button", {name: "Sectioned group"});
+    trigger.focus();
+    await userEvent.keyboard("{ArrowDown}");
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await expect(canvas.getByRole("link", {name: "Page A"})).toHaveFocus();
+    await userEvent.keyboard("{End}");
+    await expect(canvas.getByRole("link", {name: "Page F"})).toHaveFocus();
+    await expect(canvas.getByRole("list", {name: "Second column"})).toBeVisible();
+    await userEvent.keyboard("{Escape}");
+    await expect(trigger).toHaveFocus();
+  },
+};

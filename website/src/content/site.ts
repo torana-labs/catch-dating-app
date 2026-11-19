@@ -51,7 +51,22 @@ export interface SiteLinkCopy {
 export interface SiteNavGroupCopy {
   readonly label: string;
   readonly links: readonly SiteLinkCopy[];
+  /**
+   * Titled columns in place of one list (the playbook's "For hosts" menu).
+   * `links` then holds every column's links in order, for the phone menu.
+   */
+  readonly sections?: readonly SiteLinkColumnCopy[];
 }
+
+/** A titled column of page links: a header menu's column or a footer column. */
+export interface SiteLinkColumnCopy {
+  readonly title: string;
+  readonly links: readonly SiteLinkCopy[];
+}
+
+/** A header group drawn as titled columns: its links are the columns' links in order. */
+const sectionedGroup = (label: string, sections: readonly SiteLinkColumnCopy[]): SiteNavGroupCopy =>
+  ({label, sections, links: sections.flatMap((section) => section.links)});
 
 const whatsOnLink = {href: "/explore/", label: "What’s on"} as const;
 const forHostsLink = {href: "/host/", label: "For hosts"} as const;
@@ -65,6 +80,35 @@ const helpLink = {href: "/help/", label: "Help"} as const;
 const reportListingLink = {href: "/listings/request/", label: "Report or remove a listing"} as const;
 /** The walkthrough request page (/host/walkthrough/): a lead form staff answer on WhatsApp. */
 export const hostWalkthroughHref = "/host/walkthrough/";
+const aboutLink = {href: "/about/", label: "About"} as const;
+const safetyLink = {href: "/safety/", label: "Safety"} as const;
+
+/**
+ * The host product pages (product pages v2), in the canvas's order. Each is a
+ * playbook page (features/playbook/playbookRoutes.ts); the chrome test holds
+ * every link here to a route with content.
+ */
+const productPageLinks = {
+  howItWorks: {href: "/how-it-works/", label: `How ${brand.name} works`},
+  yourPage: {href: "/product/your-page/", label: "Your page"},
+  bookings: {href: "/product/bookings-and-memberships/", label: "Bookings and memberships"},
+  messages: {href: "/product/messages-and-growth/", label: "Messages and growth"},
+  room: {href: "/product/the-room/", label: "The room"},
+  event: {href: "/product/running-the-event/", label: "Running the event"},
+  guests: {href: "/product/guest-records/", label: "Guest records"},
+  reports: {href: "/product/reports-and-payouts/", label: "Reports and payouts"},
+  forms: {href: "/product/forms/", label: "Forms"},
+} as const satisfies Record<string, SiteLinkCopy>;
+
+/** The organiser type pages under /host/<type>/, by their path segment. */
+const hostTypeHref = (type: string) => `/host/${type}/`;
+
+/** The host's ways in beyond the landing (the host section's playbook pages). */
+const hostStartPageLink = {href: "/host/start/", label: "Start free trial"} as const;
+const firstEventHref = "/host/first-event/";
+const switchHref = "/host/switch/";
+const hostDemoHref = "/host/demo/";
+const programmesHref = "/programmes/";
 
 // One authored owner for the public header and footer on every route.
 export const publicSiteCopy = {
@@ -90,24 +134,59 @@ export const publicSiteCopy = {
  * The header variants (the playbook kit's KitHeader). Every variant starts
  * with the wordmark; What's on leads guest and host pages unless the page
  * hides it. Link only pages that exist in design/website/routes.json:
- * Resources gains host stories, the no-show calculator and refer a host, and
- * For hosts the demo night, nightlife and colleges, once those pages ship.
+ * Resources gains host stories, host playbooks, compare, the no-show
+ * calculator and the event page from a link once those pages ship.
  */
 export const siteHeaderCopy = {
   /** The breadcrumb row's accessible name. */
   breadcrumbLabel: "Breadcrumb",
-  /** Guest pages: What's on and For hosts, then the guest app. */
+  /**
+   * Guest pages: What's on, New to the city where the page has a city,
+   * Safety and For hosts, then the guest app.
+   */
   guest: {
-    nav: [forHostsLink] as readonly (SiteLinkCopy | SiteNavGroupCopy)[],
+    nav: [safetyLink, forHostsLink] as readonly (SiteLinkCopy | SiteNavGroupCopy)[],
+    /** The city's new-to-the-city page (/new-to-<city>/), after What's on. */
+    newToCity: "New to {city}",
     action: {href: "/#app", label: guestAppActionLabel},
   },
   /**
-   * Host pages: What's on, the For hosts pages, Pricing (/pricing/) and
-   * Resources, then WhatsApp and the free trial.
+   * Host pages: What's on, the For hosts menu (the canvas's columns:
+   * Product, By format, By organisation, Programmes and Where you are),
+   * Pricing (/pricing/) and Resources, then WhatsApp and the free trial.
    */
   host: {
     nav: [
-      {label: "For hosts", links: [hostLandingLink, weddingsLink, claimLink]},
+      sectionedGroup("For hosts", [
+        {title: "Product", links: [hostLandingLink, ...Object.values(productPageLinks)]},
+        {title: "By format", links: [
+          {href: hostTypeHref("run-clubs"), label: "Run and walk clubs"},
+          {href: hostTypeHref("racket-sports"), label: "Racket sports"},
+          {href: hostTypeHref("supper-clubs"), label: "Supper clubs"},
+          {href: hostTypeHref("quiz-nights"), label: "Quiz and game nights"},
+          {href: hostTypeHref("nightlife"), label: "Nightlife"},
+          {href: hostTypeHref("studios"), label: "Studios and fitness"},
+          {href: hostTypeHref("workshops"), label: "Workshops and classes"},
+          {href: hostTypeHref("communities"), label: "Communities"},
+          {href: hostTypeHref("outdoors"), label: "Outdoors and trips"},
+        ]},
+        {title: "By organisation", links: [
+          {href: hostTypeHref("venues"), label: "Cafés, bars and breweries"},
+          {href: hostTypeHref("facilities"), label: "Courts and clubhouses"},
+          {href: hostTypeHref("teams"), label: "Companies and shared spaces"},
+          {href: hostTypeHref("colleges"), label: "Colleges and alumni"},
+          {href: hostTypeHref("creators"), label: "Creators"},
+          {href: hostTypeHref("brands"), label: "Brands"},
+        ]},
+        {title: "Programmes", links: [weddingsLink, {href: programmesHref, label: "Offsites, retreats and birthdays"}]},
+        {title: "Where you are", links: [
+          {href: firstEventHref, label: "Plan your first event"},
+          {href: switchHref, label: "Switch from WhatsApp"},
+          {href: hostDemoHref, label: "Try a demo night"},
+          claimLink,
+          {href: hostWalkthroughHref, label: "Several chapters? Book a walkthrough"},
+        ]},
+      ]),
       hostPricingLink,
       {label: "Resources", links: [helpLink]},
     ] as readonly (SiteLinkCopy | SiteNavGroupCopy)[],
@@ -120,10 +199,10 @@ export const siteHeaderCopy = {
 /**
  * The one site footer on every public page (shared/site PublicSiteFooter).
  * Guest pages: Explore, Cities, Hosts and Help and legal; a page without its
- * own city list shows every live city and the all-cities page. Host pages: Product, Get started,
- * the brand's column and Legal (the playbook kit's KitFooter). Help and
- * legal, and Legal, end with Privacy choices, which reopens the consent
- * banner.
+ * own city list shows every live city and the all-cities page. Host pages:
+ * Product, Hosts by format, Get started, Resources and the brand's column
+ * (the playbook kit's KitFooter). Help and legal, and the brand's column,
+ * end with Privacy choices, which reopens the consent banner.
  */
 export const siteFooterCopy = {
   nav: "Footer",
@@ -133,34 +212,63 @@ export const siteFooterCopy = {
     cities: "Cities",
     hosts: "Hosts",
     help: "Help and legal",
-    product: "Product",
-    getStarted: "Get started",
-    brand: brand.name,
-    legal: "Legal",
   },
   explore: [
     whatsOnLink,
     {href: "/#app", label: guestAppActionLabel},
   ],
+  /** Explore's Safety link, after What's on and the page's New to the city. */
+  safety: safetyLink,
+  /** The column of the city's format pages (the canvas's guest "Things to do"), on pages that know the city. */
+  cityFormats: "Things to do in {city}",
   hosts: [hostLandingLink, hostPricingLink, hostStartLink, weddingsLink, claimLink],
   /**
    * The legal links in reading order: help first, then the policies, then
    * contact, then the quiet listing request link.
    */
   helpOrder: ["/help/", "/privacy/", "/terms/", "/refunds/", "/contact/", reportListingLink.href],
-  /** The footer's own links beyond the legal ones, which helpOrder and brandOrder may name. */
+  /** The footer's own links beyond the legal ones, which helpOrder may name. */
   extraLinks: [reportListingLink],
-  /** The host footer's columns. */
+  /**
+   * The host footer's five columns on every host page (the canvas's KitFooter
+   * host columns, as the product pages v2 drew them): the product pages,
+   * the organiser type pages, the ways to start, resources and the brand's
+   * column with the listing request and the legal links. Pages the canvas
+   * names that are not built yet (host stories, compare, the no-show
+   * calculator, refer a host, event page from a link) join when they ship.
+   */
   host: {
-    product: [
-      hostLandingLink,
-      {href: "/host/#night", label: `How ${brand.name} works`},
-      {href: "/host/#ways", label: `Ways to use ${brand.name}`},
-      weddingsLink,
-    ],
-    getStarted: [hostStartLink, hostPricingLink, claimLink],
-    brandOrder: ["/explore/", "/help/", "/contact/", reportListingLink.href],
-    legalOrder: ["/privacy/", "/terms/", "/refunds/"],
+    columns: [
+      {title: "Product", links: [
+        productPageLinks.howItWorks, productPageLinks.yourPage, productPageLinks.bookings, productPageLinks.messages,
+        productPageLinks.room, productPageLinks.event, productPageLinks.guests, productPageLinks.reports,
+      ]},
+      {title: "Hosts by format", links: [
+        {href: hostTypeHref("run-clubs"), label: "Run and walk clubs"},
+        {href: hostTypeHref("racket-sports"), label: "Racket sports"},
+        {href: hostTypeHref("supper-clubs"), label: "Supper clubs"},
+        {href: hostTypeHref("quiz-nights"), label: "Quiz and game nights"},
+        {href: hostTypeHref("studios"), label: "Studios"},
+        {href: hostTypeHref("venues"), label: "Venues"},
+        {href: hostTypeHref("communities"), label: "Communities"},
+        {href: hostTypeHref("nightlife"), label: "Mixers and pub crawls"},
+        {href: hostTypeHref("teams"), label: "Teams"},
+        {href: hostTypeHref("colleges"), label: "Colleges and alumni"},
+      ]},
+      {title: "Get started", links: [
+        hostStartPageLink,
+        hostPricingLink,
+        {href: firstEventHref, label: "Your first event"},
+        {href: switchHref, label: `Switch to ${brand.name}`},
+        {href: hostDemoHref, label: "Try a demo night"},
+        {href: programmesHref, label: "Programmes"},
+      ]},
+      {title: "Resources", links: [productPageLinks.forms, {href: hostWalkthroughHref, label: "Book a walkthrough"}, helpLink]},
+      {title: brand.name, links: [
+        whatsOnLink, aboutLink, safetyLink, {href: "/contact/", label: "Contact"}, reportListingLink,
+        {href: "/terms/", label: "Terms"}, {href: "/privacy/", label: "Privacy"}, {href: "/refunds/", label: "Refunds"},
+      ]},
+    ] satisfies readonly SiteLinkColumnCopy[],
   },
   /**
    * The help band across the top of the footer on guest and host pages, not

@@ -136,18 +136,6 @@ export const onHostApplicationEvidenceSummaryChanged = onDocumentWritten({
   }
 });
 
-export const onHostApplicationGrantSummaryChanged = onDocumentWritten({
-  ...options, document: "participantOrganizerDataGrants/{grantId}",
-}, async (event) => {
-  const ids = new Set([event.data?.before.get("applicationId"),
-    event.data?.after.get("applicationId")]);
-  for (const id of ids) {
-    if (typeof id === "string") {
-      await reconcileApplicationSummary(admin.firestore(), id);
-    }
-  }
-});
-
 export const onHostResponseConversionSummaryChanged = onDocumentWritten({
   ...options, document: "organizerFormConversionReceipts/{receiptId}",
 }, async (event) => {

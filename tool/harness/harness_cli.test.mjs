@@ -18,11 +18,11 @@ const graph = JSON.parse(
   fs.readFileSync(new URL("./component_graph.json", import.meta.url), "utf8"),
 );
 
-test("Harness check selection distinguishes command safety from check safety", () => {
+test("Harness check selection distinguishes command surface from check safety", () => {
   const remoteTool = {
     id: "remote-tool",
     status: "active",
-    safety: "remote-write-explicit",
+    surface: "remote-write",
     checks: ["node --check tool/example.mjs"],
   };
   assert.deepEqual([...collectKnownCheckIds({tools: [remoteTool]})], []);

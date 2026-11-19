@@ -12,6 +12,7 @@ import 'package:catch_dating_app/hosts/live/formats/formats_sweep_screen.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_sweep_state.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_ticker.dart';
 import 'package:catch_dating_app/hosts/live/formats/formats_top_bar.dart';
+import 'package:catch_dating_app/hosts/live/live_tools_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_field.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/errors/app_error_message.dart';
@@ -98,6 +99,7 @@ class _HostFormatsRunScreenState extends ConsumerState<HostFormatsRunScreen>
           onAccounted: (person) => unawaited(_markAccounted(person)),
           onCall: (phone) => callHostFormatsGuest(ref, phone),
           onGuests: widget.onOpenGuests,
+          onTools: () => openHostLiveTools(context, widget.event),
           onClose: () => unawaited(
             Navigator.of(context).push(
               MaterialPageRoute<void>(

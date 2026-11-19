@@ -3,11 +3,14 @@ import 'dart:math' as math;
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_button_content_row.dart';
 import 'package:catch_ui/src/components/catch_count_badge.dart';
+import 'package:catch_ui/src/foundations/catch_root.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_legacy_surface.dart';
 import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
 import 'package:flutter/material.dart';
+
+part 'catch_button_specs.dart';
 
 /// D20 variants. `quiet` is the unboxed action; `light` is primary on a dark
 /// ground until dark scopes carry their own primary.
@@ -539,12 +542,34 @@ class _CatchButtonState extends State<CatchButton> {
         border: Colors.transparent,
       );
     }
+    // On a tile or a format-colour spotlight the system draws a secondary
+    // button as a white pill with no outline; on a night tile, a faint
+    // cream fill. On the page it keeps its outline.
+    final ground = CatchRootScope.groundOf(context);
+    final filledSecondary =
+        widget.variant == CatchButtonVariant.secondary &&
+        (ground == CatchGround.tile ||
+            ground == CatchGround.colour ||
+            ground == CatchGround.nightTile);
+    if (filledSecondary) {
+      palette = ground == CatchGround.nightTile
+          ? palette.copyWith(
+              background: t.ink.withValues(alpha: CatchOpacity.tabBarPillFill),
+              border: Colors.transparent,
+            )
+          : palette.copyWith(
+              background: CatchTokens.editorialWhite,
+              foreground: CatchTokens.light.ink,
+              border: Colors.transparent,
+            );
+    }
     palette = palette.copyWith(
       background: widget.backgroundColor,
       foreground: widget.foregroundColor,
       border: widget.borderColor,
     );
-    final outlined = widget.variant == CatchButtonVariant.secondary;
+    final outlined =
+        widget.variant == CatchButtonVariant.secondary && !filledSecondary;
     final engaged = _enabled && (_hovered || _pressed);
     // Outlines share the control border and turn full ink while engaged.
     final border = CatchBorder.resolve(
@@ -702,98 +727,5 @@ class _CatchButtonState extends State<CatchButton> {
             child: interactive,
           )
         : interactive;
-  }
-}
-
-class _ButtonSizeSpec {
-  const _ButtonSizeSpec({
-    required this.height,
-    required this.padding,
-    required this.textStyle,
-  });
-
-  final double height;
-  final double padding;
-  final TextStyle Function(BuildContext context) textStyle;
-
-  // D20: S 32, M 40 and L 48; labels are 15/600, or 13/600 at S.
-  static _ButtonSizeSpec from(CatchButtonSize size) => switch (size) {
-    CatchButtonSize.sm => const _ButtonSizeSpec(
-      height: CatchButtonTokens.smallHeight,
-      padding: CatchButtonTokens.smallPaddingX,
-      textStyle: _smallLabel,
-    ),
-    CatchButtonSize.md => const _ButtonSizeSpec(
-      height: CatchButtonTokens.mediumHeight,
-      padding: CatchButtonTokens.mediumPaddingX,
-      textStyle: CatchTextStyles.buttonSm,
-    ),
-    CatchButtonSize.lg => const _ButtonSizeSpec(
-      height: CatchButtonTokens.largeHeight,
-      padding: CatchButtonTokens.largePaddingX,
-      textStyle: CatchTextStyles.buttonMd,
-    ),
-  };
-}
-
-TextStyle _smallLabel(BuildContext context) =>
-    CatchTextStyles.bodyS(context).copyWith(fontWeight: FontWeight.w600);
-
-class _ButtonPalette {
-  const _ButtonPalette({
-    required this.background,
-    required this.foreground,
-    required this.border,
-  });
-
-  final Color background;
-  final Color foreground;
-  final Color border;
-
-  _ButtonPalette copyWith({
-    Color? background,
-    Color? foreground,
-    Color? border,
-  }) {
-    return _ButtonPalette(
-      background: background ?? this.background,
-      foreground: foreground ?? this.foreground,
-      border: border ?? this.border,
-    );
-  }
-
-  static bool _isDarkTheme(CatchTokens t) =>
-      ThemeData.estimateBrightnessForColor(t.bg) == Brightness.dark;
-
-  static _ButtonPalette from(CatchButtonVariant variant, CatchTokens t) {
-    return switch (variant) {
-      CatchButtonVariant.primary => _ButtonPalette(
-        background: t.primary,
-        foreground: t.primaryInk,
-        border: Colors.transparent,
-      ),
-      CatchButtonVariant.secondary => _ButtonPalette(
-        background: Colors.transparent,
-        foreground: t.ink,
-        border: CatchBorder.resolve(t, CatchBorderRole.control).color,
-      ),
-      CatchButtonVariant.quiet => _ButtonPalette(
-        background: Colors.transparent,
-        foreground: t.ink,
-        border: Colors.transparent,
-      ),
-      CatchButtonVariant.danger => _ButtonPalette(
-        background: t.danger,
-        // White on the dark theme's lighter danger red is 3.6:1, under the
-        // 4.5:1 text floor; dark ink clears it. The web twin matches.
-        foreground: _isDarkTheme(t) ? t.primaryInk : CatchTokens.editorialWhite,
-        border: Colors.transparent,
-      ),
-      CatchButtonVariant.light => _ButtonPalette(
-        background: CatchTokens.editorialWhite,
-        foreground: CatchTokens.editorialLight.ink,
-        border: Colors.transparent,
-      ),
-    };
   }
 }

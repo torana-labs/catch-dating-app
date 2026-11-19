@@ -64,6 +64,17 @@ describe("City format page", {timeout: 20_000}, () => {
     expect(screen.queryByText("runs in the next 30 days")).toBeNull();
   });
 
+  it("links the city's new-to-the-city page from the header and its other format pages from the footer", () => {
+    show(mumbaiDiscoveryCatalog, "runClubs");
+    expect(within(screen.getByRole("banner")).getByRole("link", {name: "New to Mumbai"}).getAttribute("href")).toBe("/new-to-mumbai/");
+    const footer = within(screen.getByRole("navigation", {name: "Footer"}));
+    const column = within(footer.getByRole("heading", {level: 2, name: "Things to do in Mumbai"}).parentElement!);
+    const hrefs = column.getAllByRole("link").map((link) => link.getAttribute("href"));
+    expect(hrefs).toContain("/mumbai/nightlife/");
+    // Tennis has nothing in Mumbai, so it has no page and no link.
+    expect(hrefs).not.toContain("/mumbai/tennis/");
+  });
+
   it("drops What's on from the header when the city has nothing in the next 30 days", () => {
     show(mumbaiDiscoveryCatalog, "runClubs");
     // The header's link; the footer's Explore column keeps its own.

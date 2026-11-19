@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {spawnSync} from "node:child_process";
 import {
+  buildOutputRoots,
   checkPathArguments,
   markdownAnchors,
   sourceRulesFromManifest,
@@ -9,6 +11,9 @@ import {
   validateToolPaths,
   validateToolRoles,
   validateToolRules,
+  validateToolSurfaces,
+  validateRemoteOpsEntrypoints,
+  toolSurfaces,
 } from "./tool_manifest_rules.mjs";
 import {sortToolsManifestText} from "./sort_tools_manifest.mjs";
 
@@ -207,7 +212,7 @@ test("check arguments resolve node --test and node --check paths, following cd",
 
 test("a check or impactPath that names a missing file fails; build outputs and globs do not", () => {
   assert.deepEqual(paths([gate({impactPaths: ["tool/check_fixture.test.mjs", "lib/**/*.dart", "functions/src"]})]), []);
-  // functions/lib is a build output an earlier check creates: its directory is not tracked.
+  // functions/lib is a listed build output that an earlier check creates.
   assert.deepEqual(paths([gate({checks: ["npm --prefix functions run build", "node --test functions/lib/x.test.js",
     "node tool/check_fixture.mjs"]})]), []);
   assert.deepEqual(paths([gate({
@@ -219,4 +224,109 @@ test("a check or impactPath that names a missing file fails; build outputs and g
     "fixture:gate: impactPath functions/test/missing.test.cjs does not exist.",
   ]);
   assert.deepEqual(paths([retired({checks: undefined})]), []);
+});
+
+test("a path in a renamed or deleted folder fails; only listed build outputs are exempt", () => {
+  assert.deepEqual(paths([gate({
+    checks: ["node --test tool/moved_away/x.test.mjs", "node tool/check_fixture.mjs"],
+    impactPaths: ["tool/moved_away/helper.mjs", "packages/gone/lib/a.dart"],
+  })]), [
+    "fixture:gate: check names tool/moved_away/x.test.mjs, which does not exist.",
+    "fixture:gate: impactPath tool/moved_away/helper.mjs does not exist.",
+    "fixture:gate: impactPath packages/gone/lib/a.dart does not exist.",
+  ]);
+  assert.deepEqual(paths([gate({checks: ["node --test functions/lib/a/b.test.js", "node tool/check_fixture.mjs"],
+    impactPaths: ["functions/lib/a/b.js"]})]), []);
+});
+
+test("every exempt build-output root is ignored by Git, so it cannot hide source", () => {
+  assert.ok(buildOutputRoots.length > 0);
+  for (const root of buildOutputRoots) {
+    const probe = `${root}build-output-probe.js`;
+    const result = spawnSync("git", ["check-ignore", "-q", "--no-index", probe], {encoding: "utf8"});
+    assert.equal(result.status, 0, `${root} is not ignored by Git; only build outputs may be exempt`);
+    const tracked = spawnSync("git", ["ls-files", "--", root], {encoding: "utf8"});
+    assert.equal(tracked.stdout.trim(), "", `${root} holds tracked files`);
+  }
+});
+
+const surfaceTool = (extra = {}) => ({id: "fixture:op", status: "active", surface: "local-read", ...extra});
+const surfaceErrors = (tool, files = []) => validateToolSurfaces([tool], {exists: (file) => files.includes(file)});
+
+test("surface is one of the closed values, and safety is gone", () => {
+  assert.deepEqual(toolSurfaces, ["local-read", "local-writes-repo", "local-writes-scratch", "remote-read",
+    "remote-write", "remote-destructive", "remote-deploy"]);
+  for (const surface of toolSurfaces.filter((value) => value.startsWith("local-"))) {
+    assert.deepEqual(surfaceErrors(surfaceTool({surface})), [], surface);
+  }
+  assert.match(surfaceErrors(surfaceTool({surface: undefined})).join("\n"), /surface must be one of/u);
+  assert.match(surfaceErrors(surfaceTool({surface: "local"})).join("\n"), /surface must be one of/u);
+  assert.match(surfaceErrors(surfaceTool({safety: "local-readonly"})).join("\n"), /safety was replaced by surface/u);
+  // A closed tool never runs; validateToolLifecycle makes it drop surface.
+  assert.deepEqual(surfaceErrors({id: "fixture:old", status: "retired"}), []);
+  assert.match(validateToolLifecycle([{id: "fixture:old", status: "retired", retiredOn: "2026-11-18",
+    reason: "Superseded by fixture:new, which covers the same rule.", lastCommit: "0".repeat(40),
+    path: "tool/old.mjs", surface: "local-read"}], {exists: () => false}).join("\n"), /never runs, so drop surface/u);
+});
+
+test("a tool that changes a live system records its guard", () => {
+  const runbook = {runbook: "docs/ops.md"};
+  for (const surface of ["remote-write", "remote-destructive", "remote-deploy"]) {
+    assert.match(surfaceErrors(surfaceTool({surface, ...runbook}), ["docs/ops.md"]).join("\n"),
+      /needs guard, one of apply-flag, apply-and-prod-flag, dispatch-workflow, none/u, surface);
+    for (const guard of ["apply-flag", "apply-and-prod-flag"]) {
+      assert.deepEqual(surfaceErrors(surfaceTool({surface, guard, ...runbook}), ["docs/ops.md"]), [], guard);
+    }
+  }
+  const write = surfaceTool({surface: "remote-write", ...runbook});
+  const files = ["docs/ops.md", ".github/workflows/ops.yml"];
+  assert.match(surfaceErrors({...write, guard: "maybe"}, files).join("\n"), /needs guard/u);
+  assert.match(surfaceErrors({...write, guard: "none"}, files).join("\n"), /guard none needs guardReason/u);
+  assert.match(surfaceErrors({...write, guard: "none", guardReason: "CI only."}, files).join("\n"),
+    /guardReason must be a sentence/u);
+  assert.deepEqual(surfaceErrors({...write, guard: "none", guardReason: "Runs only from its scheduled workflow."}, files), []);
+  assert.match(surfaceErrors({...write, guard: "dispatch-workflow"}, files).join("\n"), /needs guardWorkflow/u);
+  assert.match(surfaceErrors({...write, guard: "dispatch-workflow", guardWorkflow: "tool/ops.mjs"}, files).join("\n"),
+    /needs guardWorkflow/u);
+  assert.match(surfaceErrors({...write, guard: "dispatch-workflow", guardWorkflow: ".github/workflows/gone.yml"}, files)
+    .join("\n"), /guardWorkflow \.github\/workflows\/gone\.yml does not exist/u);
+  assert.deepEqual(surfaceErrors({...write, guard: "dispatch-workflow", guardWorkflow: ".github/workflows/ops.yml"}, files), []);
+  assert.match(surfaceErrors({...write, guard: "apply-flag", guardWorkflow: ".github/workflows/ops.yml"}, files).join("\n"),
+    /guardWorkflow is only for guard dispatch-workflow/u);
+  // Reading a live system, or touching only the checkout, needs no guard.
+  for (const surface of ["remote-read", "local-writes-repo"]) {
+    assert.match(surfaceErrors(surfaceTool({surface, guard: "apply-flag", ...runbook}), files).join("\n"),
+      /guard is only for remote-write, remote-destructive, remote-deploy tools/u, surface);
+  }
+});
+
+test("every active tool that reaches a live system names its runbook", () => {
+  for (const surface of ["remote-read", "remote-write"]) {
+    const tool = surfaceTool({surface, guard: surface === "remote-write" ? "apply-flag" : undefined});
+    assert.match(surfaceErrors(tool).join("\n"), /an active remote-\w+ tool must name its runbook/u, surface);
+    assert.deepEqual(surfaceErrors({...tool, status: "internal"}), [], `${surface} internal`);
+    assert.deepEqual(surfaceErrors({...tool, runbook: ".github/workflows/ops.yml"}), [], `${surface} workflow runbook`);
+  }
+});
+
+test("remote ops tool entrypoints resolve to open tools, and remote operations to an active remote tool", () => {
+  const tools = [
+    {id: "env:select", status: "active", surface: "local-writes-repo"},
+    {id: "data:repair", status: "active", surface: "remote-write"},
+    {id: "data:helper", status: "internal", surface: "remote-read"},
+    {id: "data:old", status: "retired"},
+  ];
+  const ops = (safety, ...refs) => ({operations: [{id: "op", safety,
+    entrypoints: [...refs.map((ref) => ({kind: "tool-id", ref})), {kind: "doc", ref: "docs/ops.md"}]}]});
+  assert.deepEqual(validateRemoteOpsEntrypoints(tools, ops("remote-read-write-apply-guarded", "data:repair", "env:select")), []);
+  assert.deepEqual(validateRemoteOpsEntrypoints(tools, ops("local-writes-config", "env:select")), []);
+  assert.deepEqual(validateRemoteOpsEntrypoints(tools, ops("local-ci-remote-optional")), []);
+  assert.match(validateRemoteOpsEntrypoints(tools, ops("remote-deploy", "env:select")).join("\n"),
+    /a remote-deploy operation lists no active remote-\* tool/u);
+  assert.match(validateRemoteOpsEntrypoints(tools, ops("remote-deploy", "data:repair", "data:old")).join("\n"),
+    /entrypoint data:old is not an open tool/u);
+  assert.match(validateRemoteOpsEntrypoints(tools, ops("remote-deploy", "data:repair", "data:missing")).join("\n"),
+    /entrypoint data:missing is not an open tool/u);
+  assert.match(validateRemoteOpsEntrypoints(tools, ops("remote-deploy", "data:repair", "data:helper")).join("\n"),
+    /data:helper reaches a live system \(remote-read\) but is internal, not active/u);
 });

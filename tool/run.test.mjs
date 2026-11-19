@@ -350,7 +350,10 @@ for (const [ownerId, proofPath] of restoredProofOwners) {
     // get inert placeholders, and selection-only impactPaths are dropped, so the
     // manifest's path rule passes in this isolated fixture.
     delete owner.impactPaths;
-    const named = checkPathArguments(owner.checks);
+    // A live-system owner keeps its runbook; the fixture gets the file, not
+    // the heading.
+    if (owner.runbook) owner.runbook = owner.runbook.split("#")[0];
+    const named = [...checkPathArguments(owner.checks), ...(owner.runbook ? [owner.runbook] : [])];
     for (const [file, source] of [...named.map((file) => [file, "export {};"]), [owner.path, "export {};"],
       [proofPath, "throw new Error('owner-execution-sentinel');"]]) {
       fs.mkdirSync(path.dirname(path.join(fixture, file)), {recursive: true});
@@ -734,7 +737,7 @@ function fixtureManifest() {
         checks: ["node tool/check.mjs"],
         command: "node tool/check.mjs",
         role: "gate",
-        checkSafety: "local-readonly",
+        surface: "local-read",
         ciRequirements: requirements,
       },
       {
@@ -743,7 +746,7 @@ function fixtureManifest() {
         path: "tool/run.mjs",
         status: "active",
         checks: ["node --check tool/run.mjs"],
-        checkSafety: "local-readonly",
+        surface: "local-read",
         ciRequirements: requirements,
       },
       {
@@ -753,7 +756,7 @@ function fixtureManifest() {
         path: "tool/ci/ios_build_inputs.mjs",
         status: "active",
         checks: ["node --check tool/ci/ios_build_inputs.mjs"],
-        checkSafety: "local-readonly",
+        surface: "local-read",
         ciRequirements: requirements,
       },
       {
@@ -761,6 +764,7 @@ function fixtureManifest() {
         category: "fixture",
         path: "tool/check.mjs",
         status: "internal",
+        surface: "local-read",
         checks: ["node tool/check.mjs"],
       },
     ],
@@ -833,7 +837,7 @@ for (const extension of ["swift", "cjs", "mjs"]) {
     fs.unlinkSync(file);
     assertUnmanaged(); // omitted sparse file, still present in the index
     mutateFixtureManifest(fixture, manifest => manifest.tools.push({
-      id: "fixture:exact", category: "fixture", path: relative,
+      id: "fixture:exact", category: "fixture", path: relative, surface: "local-read",
       status: "internal", checks: [`node --check ${relative}`],
     }));
     const registered = run(["check", "--manifest-only"], {cwd: fixture});
@@ -922,7 +926,7 @@ test("a CJS helper requires exact registration while its active owner checks it"
     category: "demo",
     path: "tool/demo/fixture_demo/form_definition.mjs",
     command: `node ${helperPath}`,
-    safety: "local-writes-build-artifacts",
+    surface: "local-writes-scratch",
     status: "active",
     role: "generator",
     description: "Builds a synthetic fixture.",
@@ -933,7 +937,7 @@ test("a CJS helper requires exact registration while its active owner checks it"
     id: "demo:fixture-builder",
     category: "demo",
     path: helperPath,
-    safety: "local-writes-build-artifacts",
+    surface: "local-writes-scratch",
     status: "internal",
     description: "Internal fixture builder checked by demo:fixture-preview.",
     checks: [`node --check ${helperPath}`],
@@ -973,7 +977,7 @@ test("materialized inventories replace only exact drift commands with checked cu
   for (const file of [catalog, routes]) write(file, `console.log('drift-executed:' + process.argv.slice(2).join(' '));`);
   const ids = ["design:widget-catalog", "ui-capture:route-inventory", "design:parity-gate"];
   mutateFixtureManifest(root, doc => {
-    doc.tools.push({id: "fixture:inventory-proof", category: "fixture", status: "internal", path: "tool/ci/generated_inventories.mjs"});
+    doc.tools.push({id: "fixture:inventory-proof", category: "fixture", status: "internal", surface: "local-read", path: "tool/ci/generated_inventories.mjs"});
     for (const id of ids) {
       const file = id === "design:widget-catalog" ? catalog : routes;
       doc.tools.push({...fixtureCheck(doc), id, path: file, checks: [
@@ -1053,7 +1057,7 @@ test("verified generated inventories cannot expand the affected execution plan",
       impactPaths: [generated], checks: ["node tool/extra.mjs"],
       ciRequirements: {repositoryView: "full", setup: ["node", "root-npm"]}});
     doc.tools.push({id: "fixture:inventory-proof", category: "fixture", status: "internal",
-      path: "tool/ci/generated_inventories.mjs"});
+      surface: "local-read", path: "tool/ci/generated_inventories.mjs"});
   });
   runGit(root, ["add", "."]);
   runGit(root, ["commit", "-m", "source and inventory fixture"]);
@@ -1102,7 +1106,7 @@ test("sparse planner runs without loading or launching full-checkout producer ve
   }
   mutateFixtureManifest(root, doc => {
     for (const [i, helper] of helpers.entries()) doc.tools.push({id: `fixture:producer-${i}`,
-      category: "fixture", path: helper, status: "internal"});
+      category: "fixture", path: helper, status: "internal", surface: "local-read"});
   });
   runGit(root, ["add", "."]);
   runGit(root, ["update-index", "--skip-worktree", ...helpers]);

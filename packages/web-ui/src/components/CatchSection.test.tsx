@@ -26,6 +26,11 @@ describe("CatchSection", () => {
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
   });
 
+  it("makes a kicker with no title the section label", () => {
+    render(<CatchSection kicker="Arriving"><span>Asha</span></CatchSection>);
+    expect(screen.getByRole("heading", {level: 2, name: "Arriving"})).toBeTruthy();
+  });
+
   it("shows the empty slot without children", () => {
     render(<CatchSection empty="Nothing here yet" title="2 · You approve" />);
     expect(screen.getByText("Nothing here yet")).toBeTruthy();

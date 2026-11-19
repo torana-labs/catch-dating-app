@@ -158,7 +158,7 @@ describe("playbook page", () => {
     expect(band.getByRole("link", {name: "Book a 15-minute walkthrough"}).getAttribute("href")).toBe("/host/walkthrough/");
   });
 
-  it("draws a product page's live bands only: no try-it band or button, and the footer's own columns", async () => {
+  it("draws a product page's live bands only: no try-it band or button, and the host footer", async () => {
     const room = (await loadPlaybookPage(resolvePlaybookPage("/product/the-room/")!))!;
     render(<PlaybookPage captures={captures} page={room} />);
     expect(screen.getByRole("heading", {level: 1}).textContent).toBe("Nobody comes to stand by the wall.");
@@ -178,11 +178,16 @@ describe("playbook page", () => {
     expect(faq.mainEntity).toHaveLength(4);
   });
 
-  it("keeps the host footer's own columns on pages that pass none", () => {
+  it("gives an organiser type page the same host footer and For hosts menu as the product pages", () => {
     render(<PlaybookPage captures={captures} page={page} />);
     const footer = within(screen.getByRole("contentinfo"));
-    expect(footer.queryByRole("link", {name: "The room"})).toBeNull();
+    expect(footer.getByRole("link", {name: "The room"}).getAttribute("href")).toBe("/product/the-room/");
+    expect(footer.getByRole("link", {name: "Supper clubs"}).getAttribute("href")).toBe("/host/supper-clubs/");
+    expect(footer.getByRole("link", {name: "Report or remove a listing"}).getAttribute("href")).toBe("/listings/request/");
     expect(footer.getByRole("button", {name: /privacy choices/iu})).toBeTruthy();
+    const forHosts = within(screen.getByRole("banner")).getByRole("button", {name: "For hosts"});
+    const menu = within(document.getElementById(forHosts.getAttribute("aria-controls")!)!);
+    expect(menu.getByRole("link", {name: "Workshops and classes", hidden: true}).getAttribute("href")).toBe("/host/workshops/");
   });
 
   it("states its questions as FAQPage and its breadcrumb as BreadcrumbList", () => {

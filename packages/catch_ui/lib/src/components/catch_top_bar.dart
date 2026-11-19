@@ -392,11 +392,15 @@ class CatchTopBar extends StatelessWidget {
                   ?outlinedBack,
                   if (crumb != null)
                     Expanded(
+                      // The counter sits at the far edge, opposite Back.
                       child: CatchText(
                         crumb,
                         variant: CatchTextVariant.labelKicker,
                         tone: CatchTextTone.secondary,
                         maxLines: 1,
+                        align: trailingRow == null
+                            ? TextAlign.end
+                            : TextAlign.start,
                       ),
                     ),
                   ?trailingRow,
