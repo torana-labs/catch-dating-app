@@ -3,6 +3,7 @@ import 'package:catch_dating_app/contexts/audience/data/host_provider_repository
 import 'package:catch_dating_app/contexts/audience/data/host_roster_file_parser.dart';
 import 'package:catch_dating_app/contexts/audience/data/host_roster_file_service.dart';
 import 'package:catch_dating_app/contexts/audience/data/host_roster_intake_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/guest_list_import_preview.dart';
 import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.dart';
@@ -238,4 +239,25 @@ class HostOperationalRosterController {
     await providers.untilReflected(receipt);
     return receipt;
   }
+
+  /// Picks a guest-list file to send to guests.import-list as it is.
+  Future<PickedHostRosterFile?> pickGuestListFile() =>
+      _ref.read(hostRosterFileServiceProvider).pickRosterFile();
+
+  Future<GuestListImportPreview> previewGuestList({
+    required String eventId,
+    required PickedHostRosterFile file,
+    required String idempotencyKey,
+    Map<HostRosterField, int?>? mapping,
+    GuestListFallbackRevenue? fallbackRevenue,
+  }) => _ref
+      .read(hostRosterIntakeRepositoryProvider)
+      .previewGuestList(
+        eventId: eventId,
+        fileName: file.name,
+        bytes: file.bytes,
+        idempotencyKey: idempotencyKey,
+        mapping: mapping,
+        fallbackRevenue: fallbackRevenue,
+      );
 }
