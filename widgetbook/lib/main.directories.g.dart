@@ -10210,6 +10210,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostGuestListColumnsSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Read on the server, ready and missing name column',
+                    builder:
+                        _widgetbook_workspace_hosts_host_roster_import_use_cases
+                            .hostGuestListColumnsSheetStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostLumaConnectionSheet',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

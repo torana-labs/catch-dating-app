@@ -11054,6 +11054,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsOperationalRosterAddWalkIn => 'Add walk-in';
 
   @override
+  String get hostsGuestListColumnShapeEmpty => 'Empty column';
+
+  @override
+  String get hostsGuestListColumnShapePhone => 'Looks like phone numbers';
+
+  @override
+  String get hostsGuestListColumnShapeEmail => 'Looks like email addresses';
+
+  @override
+  String get hostsGuestListColumnShapeDate => 'Looks like dates';
+
+  @override
+  String get hostsGuestListColumnShapeNumber => 'Numbers';
+
+  @override
+  String get hostsGuestListColumnShapeText => 'Text';
+
+  @override
+  String get hostsGuestListNeedsName =>
+      'Choose the column that holds each guest’s name.';
+
+  @override
+  String get hostsGuestListReviewAction => 'Review guests';
+
+  @override
+  String get hostsGuestListChecking => 'Checking your columns…';
+
+  @override
   String get hostsDoorPosterAction => 'Door poster';
 
   @override

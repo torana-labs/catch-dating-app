@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/hosts/presentation/widgets/host_guest_list_columns_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_intake_review_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_mapping_field.dart';
@@ -16,6 +17,12 @@ void main() {
             'import sheet',
             hostRosterImportSheetStates,
             HostRosterImportSheet,
+            2,
+          ),
+          (
+            'guest list columns sheet',
+            hostGuestListColumnsSheetStates,
+            HostGuestListColumnsSheet,
             2,
           ),
           (

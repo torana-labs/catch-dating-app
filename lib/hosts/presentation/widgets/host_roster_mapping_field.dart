@@ -13,6 +13,7 @@ class HostRosterMappingField extends StatelessWidget {
     required this.rows,
     required this.value,
     required this.onChanged,
+    this.columnHints,
   });
 
   final HostRosterField field;
@@ -20,6 +21,10 @@ class HostRosterMappingField extends StatelessWidget {
   final List<List<String>> rows;
   final int? value;
   final ValueChanged<int?> onChanged;
+
+  /// What each column holds, shown under the choice when [rows] carries no
+  /// values (a file read on the server).
+  final List<String>? columnHints;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +57,11 @@ class HostRosterMappingField extends StatelessWidget {
         child: CatchField.nav(
           copy: catchFieldCopy(context.l10n),
           title: hostRosterFieldCopy(context, field),
-          body: samples.isEmpty ? null : samples.join(' · '),
+          body: samples.isNotEmpty
+              ? samples.join(' · ')
+              : selectedValue >= 0 && selectedValue < (columnHints?.length ?? 0)
+              ? columnHints![selectedValue]
+              : null,
           valueText: selectedValue == -1
               ? context.l10n.hostsOperationalRosterDoNotImport
               : headers[selectedValue],

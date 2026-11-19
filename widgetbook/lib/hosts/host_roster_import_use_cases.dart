@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/contexts/audience/data/host_roster_intake_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/guest_list_import_preview.dart';
 import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_guest_list_columns_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_intake_review_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_mapping_field.dart';
@@ -209,6 +211,62 @@ Widget hostRosterMappingFieldStates(BuildContext context) =>
                 rows: _rows,
                 value: mapped ? 0 : null,
                 onChanged: (_) {},
+              ),
+            ),
+          ),
+      ],
+    );
+
+GuestListImportPreview _guestListPreview({required bool needsMapping}) =>
+    GuestListImportPreview.fromCallableData({
+      'status': needsMapping ? 'needs_input' : 'previewed',
+      'summary': {
+        'headline': needsMapping
+            ? "We couldn't read this file's columns."
+            : 'This adds 2 guests and updates 0 guests.',
+        'lines': ['Read as a guest list (columns matched by name).'],
+      },
+      'result': {
+        'headers': _headers,
+        'columnShapes': ['text', 'email-like', 'text'],
+        'mapping': {
+          'displayName': needsMapping ? null : 0,
+          'email': 1,
+          'ticketType': 2,
+        },
+        'needsMapping': needsMapping,
+        'sessionId': needsMapping ? null : 'hri_${'a' * 48}',
+        'counts': {'add': needsMapping ? 0 : 2},
+        'rows': [
+          if (!needsMapping) ...[
+            {'displayName': 'Asha Shah'},
+            {'displayName': 'Ravi Rao'},
+          ],
+        ],
+        'truncatedCount': 0,
+      },
+    });
+
+@widgetbook.UseCase(
+  name: 'Read on the server, ready and missing name column',
+  type: HostGuestListColumnsSheet,
+  path: '[P1 product surfaces]/Host/Roster',
+)
+Widget hostGuestListColumnsSheetStates(BuildContext context) =>
+    WidgetbookScrollCatalogFrame(
+      title: 'HostGuestListColumnsSheet',
+      catalogId: 'host.guest_list_columns',
+      children: [
+        for (final needsMapping in [false, true])
+          WidgetbookPageStateCard(
+            label: needsMapping ? 'Guest name column required' : 'Ready',
+            child: WidgetbookViewportFrame.sheet(
+              size: const Size(390, 760),
+              child: HostGuestListColumnsSheet(
+                initial: _guestListPreview(needsMapping: needsMapping),
+                repreview: (_, _) async =>
+                    _guestListPreview(needsMapping: false),
+                suggestedRevenueAmountMinor: 150000,
               ),
             ),
           ),
