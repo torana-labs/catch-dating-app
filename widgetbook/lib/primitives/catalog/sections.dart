@@ -167,3 +167,58 @@ Widget catchDaySectionHeaderCountCatalogStates(BuildContext context) {
     ],
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchTimelineStepScope,
+  path: '[Core catalog]/Sections',
+)
+Widget catchTimelineStepScopeCatalogStates(BuildContext context) {
+  CatchIndexRow step(String time, String title, CatchMarker marker) =>
+      CatchIndexRow(
+        title: title,
+        subtitle: 'Durbar hall',
+        time: time,
+        leading: marker,
+        density: CatchIndexRowSize.compact,
+        onTap: null,
+      );
+  return WidgetbookCatalogFrame(
+    title: 'CatchTimelineStepScope',
+    catalogId: 'catch.index_row.timeline_step',
+    children: [
+      WidgetbookCatalogStateCard(
+        label: 'joins-next, last-step: a timeline section marks every row',
+        child: CatchListSection(
+          timeline: true,
+          dividers: CatchSectionPlacement.none,
+          children: [
+            step(
+              '7:30',
+              'Doors',
+              const CatchMarker(tone: CatchMarkerTone.muted),
+            ),
+            step(
+              '8:00',
+              'Round one',
+              const CatchMarker(tone: CatchMarkerTone.format, live: true),
+            ),
+            step(
+              '9:15',
+              'Reveal',
+              const CatchMarker(variant: CatchMarkerVariant.ring),
+            ),
+          ],
+        ),
+      ),
+      WidgetbookCatalogStateCard(
+        label: 'outside-timeline: the marker centres in the row',
+        child: step(
+          '7:30',
+          'Doors',
+          const CatchMarker(tone: CatchMarkerTone.muted),
+        ),
+      ),
+    ],
+  );
+}

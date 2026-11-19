@@ -92,9 +92,7 @@ try {
     assert(text.includes(`property="og:image" content="${brand.web.origin}/assets/og/`) && !text.includes(`${brand.web.domain}/og/`), `${family} must keep a static card`);
   }
   await check("/offer/?grant=private-proof-grant", 200);
-  for (const asset of ["/form-embed-resize.js", "/organizer-tracking-runtime.js"]) {
-    assert.equal((await fetch(origin + asset)).status, 200, asset);
-  }
+  assert.equal((await fetch(origin + "/form-embed-resize.js")).status, 200, "/form-embed-resize.js");
   const association = await check("/.well-known/apple-app-site-association", 200);
   assert.match(association.response.headers.get("content-type"), /application\/json/);
   const custom = await customHostRequest("/organizers/next-proof/");

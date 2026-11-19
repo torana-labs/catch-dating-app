@@ -84,7 +84,7 @@ void main() {
       expect(find.text('Yes'), findsOneWidget);
       expect(
         tester.getTopRight(find.text('6')).dx,
-        closeTo(tester.getTopRight(find.text('GUESTS')).dx, 1),
+        closeTo(tester.getTopRight(find.text('Guests')).dx, 1),
       );
       expect(
         find.bySemanticsLabel(RegExp('Guests by household')),

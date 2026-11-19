@@ -13,28 +13,29 @@ const _columns = [
 ];
 
 void main() {
-  testWidgets('renders uppercase headers and lays rows out against columns', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _host(
-        const CatchTable(
-          columns: _columns,
-          children: [
-            CatchTableRow(children: [Text('Venue deposit'), Text('Finance')]),
-          ],
+  testWidgets(
+    'renders sentence-case headers and lays rows out against columns',
+    (tester) async {
+      await tester.pumpWidget(
+        _host(
+          const CatchTable(
+            columns: _columns,
+            children: [
+              CatchTableRow(children: [Text('Venue deposit'), Text('Finance')]),
+            ],
+          ),
         ),
-      ),
-    );
-    expect(find.text('ITEM'), findsOneWidget);
-    expect(find.text('OWNER'), findsOneWidget);
-    final itemCell = tester.getRect(find.text('Venue deposit'));
-    final ownerCell = tester.getRect(find.text('Finance'));
-    expect(itemCell.left, lessThan(ownerCell.left));
-    // The end-placed column aligns its cell to the right edge of the row.
-    final table = tester.getRect(find.byType(CatchTable));
-    expect(table.right - ownerCell.right, lessThan(48));
-  });
+      );
+      expect(find.text('Item'), findsOneWidget);
+      expect(find.text('Owner'), findsOneWidget);
+      final itemCell = tester.getRect(find.text('Venue deposit'));
+      final ownerCell = tester.getRect(find.text('Finance'));
+      expect(itemCell.left, lessThan(ownerCell.left));
+      // The end-placed column aligns its cell to the right edge of the row.
+      final table = tester.getRect(find.byType(CatchTable));
+      expect(table.right - ownerCell.right, lessThan(48));
+    },
+  );
 
   testWidgets('the empty builder replaces rows below the header', (
     tester,
