@@ -2469,6 +2469,21 @@
       "runbook": "docs/backend_operation_catalog.md#organizer-owner-view-1109"
     },
     {
+      "id": "data:backfill-profile-thumbnails",
+      "category": "data",
+      "path": "functions/scripts/backfill-profile-thumbnails.cjs",
+      "command": "FIREBASE_STORAGE_BUCKET=<bucket> npm --prefix functions run backfill:profile-thumbnails -- [--apply]",
+      "surface": "remote-write",
+      "guard": "apply-flag",
+      "status": "active",
+      "role": "operator",
+      "description": "Repairs missing 160px profile photo thumbnails: scans users, generates a JPEG thumbnail for each profilePhotos entry that lacks one and writes it to Storage and back into the grouped profilePhotos. Dry run unless --apply; needs FIREBASE_STORAGE_BUCKET.",
+      "checks": [
+        "node --check functions/scripts/backfill-profile-thumbnails.cjs"
+      ],
+      "runbook": "docs/backend_operation_catalog.md#cloud-functions-inventory"
+    },
+    {
       "id": "data:backfill-program-whatsapp-endpoint-index",
       "category": "data",
       "path": "functions/scripts/backfill-program-whatsapp-endpoint-index.cjs",
