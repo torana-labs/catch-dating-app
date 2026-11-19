@@ -213,7 +213,7 @@ const SplitBinding: Binding<"split"> = ({section, context}) => (
     kicker={section.kicker}
     lead={section.lead}
     level={section.pageTitle ? 1 : 2}
-    media={section.leadForm ? context.controller.leadForm(section.leadForm, section.id) ?? undefined : media(section, context.captures)}
+    media={section.leadForm ? context.controller.leadForm(section.leadForm, section.id, "split") ?? undefined : media(section, context.captures)}
     metric={section.callout ? {value: section.callout.figure, label: section.callout.text} : undefined}
     steps={section.steps?.map((step) => ({marker: step.label, title: step.title, body: step.body}))}
     ticks={section.ticks}
@@ -280,7 +280,7 @@ const CtaBinding: Binding<"cta"> = ({section, context}) => {
   return (
     <CatchCtaSection
       actions={context.controller.actions(section.actions, section.id)}
-      capture={<CtaCapture form={context.controller.leadForm(section.leadForm, section.id)} whatsapp={opensWhatsApp(section.actions)} />}
+      capture={<CtaCapture form={context.controller.leadForm(section.leadForm, section.id, "cta")} whatsapp={opensWhatsApp(section.actions)} />}
       ground={section.ground}
       id={section.id}
       kicker={section.kicker}
