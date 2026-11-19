@@ -185,7 +185,7 @@ describe("useInboxController", () => {
     const {result} = renderHook(() => useInboxController({onError: vi.fn(), onNotice: vi.fn(),
       selectedItemId: "moonmoth", onSelect: vi.fn()}), {wrapper});
     await waitFor(() => expect(result.current.items).toHaveLength(2));
-    const details = {name: "Saffron Table", market: "Mumbai", urls: [], notes: null, categories: []};
+    const details = {name: "Saffron Table", market: "Mumbai", urls: [], notes: null, categories: [], formats: ["supper" as const]};
     await act(async () => {
       expect(await result.current.fillInByHand(details, "moonmoth")).toBe(false);
     });

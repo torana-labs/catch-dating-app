@@ -2,6 +2,7 @@ import {
   CatchBadge,
   CatchButton,
   CatchCheckboxInput,
+  CatchChoiceInput,
   CatchDock,
   CatchEmptyState,
   CatchField,
@@ -19,6 +20,14 @@ import {
 } from "@catch/web-ui";
 import {Fragment, useMemo, useState, type ReactNode} from "react";
 import {launchMarkets} from "../../../shared/config/launchMarkets";
+import {
+  defaultListingCohortId,
+  listingFormatLabel,
+  listingFormats,
+  listingFormatsFromCategories,
+  maxListingFormats,
+  type ListingFormat,
+} from "../../../shared/config/listingFormats";
 import type {
   ClaimEvidence,
   InboxItem,
@@ -366,6 +375,15 @@ const checklistItems: Array<[keyof Checklist, string]> = [
   ["takedownPathReviewed", "Takedown path is available"],
   ["impersonationReviewed", "Identity does not impersonate another organizer"],
 ];
+// What a reviewer also confirms for a listing Catch sourced itself (a nomination or discovery).
+const programmaticChecklistItems: Array<[keyof Checklist, string]> = [
+  ["cityEvidenceReviewed", "The city comes from their events or their own pages, not from the nomination"],
+  ["formatsReviewed", "The formats match what they run"],
+  ["datingFramingReviewed", "Nothing frames them as dating or singles"],
+  ["personalDataReviewed", "No personal data: no founder names or personal phone numbers"],
+];
+const formatFieldCopy = {optionalLabel: "Optional", optionalSuffix: "", optionalSemantics: (label: string) => label};
+const cohortPattern = /^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$/u;
 const possibleDuplicateGap = "possible_duplicate_organizer";
 const bandLabels: Record<string, string> = {
   match: "Likely the same", probable: "Probably the same", review: "Possibly the same", low: "Weak overlap",
@@ -399,7 +417,11 @@ function DuplicateCheck({review}: {review: ListingReview}) {
   );
 }
 
-/** Approving publishes the page unclaimed and noindex, hidden in the app, and opens its Sales work. */
+/**
+ * Approving publishes the page unclaimed and noindex, hidden in the app, and opens its Sales work. A listing Catch sourced
+ * (a nomination or discovery) is a programmatic listing: the reviewer picks its formats, confirms the programmatic checks,
+ * and tags it with a cohort, which opens no Sales work unless asked.
+ */
 function ListingApprovalSheet({controller, requestId, review, canApprove, onClose}: {
   controller: InboxScreenModel;
   requestId: string;
@@ -411,11 +433,19 @@ function ListingApprovalSheet({controller, requestId, review, canApprove, onClos
   const [publicSlug, setPublicSlug] = useState(review.suggestedSlug);
   const [marketId, setMarketId] = useState(review.market.open && review.market.marketId ? review.market.marketId : "");
   const [organizerType, setOrganizerType] = useState("community");
+  const programmatic = review.kind === "nomination" || review.kind === "discovery";
+  const items = programmatic ? [...checklistItems, ...programmaticChecklistItems] : checklistItems;
   const [checklist, setChecklist] = useState<Checklist>(
-    () => Object.fromEntries(checklistItems.map(([key]) => [key, false])) as never);
+    () => Object.fromEntries(items.map(([key]) => [key, false])) as never);
+  const [formats, setFormats] = useState<ReadonlySet<ListingFormat>>(() => new Set(listingFormatsFromCategories(review.listing.categories)));
+  const [cohortId, setCohortId] = useState(programmatic ? defaultListingCohortId : "");
+  const [openSales, setOpenSales] = useState(false);
   const [note, setNote] = useState("");
+  const cohort = cohortId.trim();
+  const formatsReady = programmatic ? formats.size >= 1 && formats.size <= maxListingFormats : formats.size <= maxListingFormats;
   const ready = Boolean(name.trim() && /^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$/u.test(publicSlug) && marketId &&
-    note.trim().length >= 10 && checklistItems.every(([key]) => checklist[key]));
+    note.trim().length >= 10 && items.every(([key]) => checklist[key]) && formatsReady && (!cohort || cohortPattern.test(cohort)));
+  const chosenFormats = listingFormats.filter((format) => formats.has(format));
   const markets = [{value: "", label: "Choose a launch market"},
     ...launchMarkets.map((market) => ({value: market.id as string, label: market.label as string}))];
   return (
@@ -423,7 +453,9 @@ function ListingApprovalSheet({controller, requestId, review, canApprove, onClos
       footer={canApprove ? <CatchButton label={controller.isApproving ? "Publishing" : "Approve and publish unclaimed"}
         onPressed={ready && !controller.isApproving ? () => void controller.approveListing({
           listingWorkItemId: review.listingWorkItemId, contentHash: review.listing.contentHash, name: name.trim(), publicSlug, marketId,
-          organizerType: organizerType as ListingApprovalInput["organizerType"], checklist, note: note.trim()}, requestId) : null} /> : undefined}>
+          organizerType: organizerType as ListingApprovalInput["organizerType"], checklist, note: note.trim(),
+          ...(chosenFormats.length ? {formats: chosenFormats} : {}),
+          ...(programmatic && cohort ? {cohortId: cohort, salesRecords: openSales} : {})}, requestId) : null} /> : undefined}>
       <CatchGap size="section">
         <CatchSection title="What Catch found" dividers="none">
           <CatchMetaRow columns={2} entries={[
@@ -449,7 +481,17 @@ function ListingApprovalSheet({controller, requestId, review, canApprove, onClos
             <CatchField recipe="select" title="Organizer type" value={organizerType} values={organizerTypes.map((entry) => entry.value)}
               itemLabelBuilder={(value) => organizerTypes.find((entry) => entry.value === value)?.label ?? value}
               onChanged={(value) => setOrganizerType(value ?? "community")} />
-            {checklistItems.map(([key, label]) => <CatchCheckboxInput key={key} label={label} value={checklist[key]}
+            <CatchChoiceInput<ListingFormat> recipe="form" label={programmatic ? "Formats (at least one)" : "Formats"} copy={formatFieldCopy}
+              mode="multiple" allowEmptySelection values={listingFormats} itemLabelBuilder={listingFormatLabel} selected={formats}
+              onChanged={setFormats} />
+            {programmatic ? <>
+              <CatchField recipe="input" title="Listing cohort" maxLength={64} value={cohortId}
+                onChanged={(value) => setCohortId(value.trim().toLowerCase())}
+                helperText={cohort && !cohortPattern.test(cohort) ? "Lowercase letters, numbers and hyphens, like pilot-indore-1." :
+                  "Tags the organizer for cohort reports and withdrawal. Leave empty for none."} />
+              {cohort ? <CatchCheckboxInput label="Open Sales work for it now" value={openSales} onChanged={setOpenSales} /> : null}
+            </> : null}
+            {items.map(([key, label]) => <CatchCheckboxInput key={key} label={label} value={checklist[key] === true}
               onChanged={(value) => setChecklist((current) => ({...current, [key]: value}))} />)}
             <CatchField recipe="input" title="Review note" maxLines={3} maxLength={500} value={note} onChanged={setNote}
               helperText="What you checked, in at least ten characters." />
@@ -470,11 +512,13 @@ function FillInSheet({controller, item, onClose}: {
   const [city, setCity] = useState(item.city ? cityLabel(item.city) : "");
   const [links, setLinks] = useState("");
   const [notes, setNotes] = useState("");
+  const [formats, setFormats] = useState<ReadonlySet<ListingFormat>>(new Set());
   const urls = [...new Set(links.split("\n").map((line) => line.trim()).filter(Boolean))];
   const badLink = urls.find((url) => !/^https?:\/\/\S+$/u.test(url));
-  const ready = Boolean(name.trim() && city.trim() && !badLink && urls.length <= 10);
+  const ready = Boolean(name.trim() && city.trim() && !badLink && urls.length <= 10 && formats.size >= 1 && formats.size <= maxListingFormats);
   const submit = async () => {
-    const done = await controller.fillInByHand({name: name.trim(), market: city.trim(), urls, notes: notes.trim() || null, categories: []}, item.itemId);
+    const done = await controller.fillInByHand({name: name.trim(), market: city.trim(), urls, notes: notes.trim() || null, categories: [],
+      formats: listingFormats.filter((format) => formats.has(format))}, item.itemId);
     if (done) onClose();
   };
   return (
@@ -484,6 +528,8 @@ function FillInSheet({controller, item, onClose}: {
       <CatchGap size="related">
         <CatchField recipe="input" title="Organizer name" maxLength={160} value={name} onChanged={setName} />
         <CatchField recipe="input" title="City" maxLength={80} value={city} onChanged={setCity} />
+        <CatchChoiceInput<ListingFormat> recipe="form" label="What do they run? (at least one)" copy={formatFieldCopy} mode="multiple"
+          allowEmptySelection values={listingFormats} itemLabelBuilder={listingFormatLabel} selected={formats} onChanged={setFormats} />
         <CatchField recipe="input" title="Links, one per line" maxLines={4} value={links} onChanged={setLinks}
           helperText={badLink ? `Links start with https://. Check "${badLink}".` : "Optional. Leave out any page Catch could not read."} />
         <CatchField recipe="input" title="What should the reviewer know?" maxLines={3} maxLength={2000} value={notes} onChanged={setNotes} />

@@ -1,5 +1,6 @@
-import {CatchButton, CatchField, CatchGap, CatchSheet, CatchLegacyText} from "@catch/web-ui";
+import {CatchButton, CatchChoiceInput, CatchField, CatchGap, CatchSheet, CatchLegacyText} from "@catch/web-ui";
 import {useState} from "react";
+import {listingFormatLabel, listingFormats, maxListingFormats, type ListingFormat} from "../../../shared/config/listingFormats";
 import {selectChoices} from "../controllers/salesLabels";
 import {useSalesAddHostController} from "../controllers/useSalesAddHostController";
 
@@ -10,18 +11,25 @@ function nominationLinks(text: string): string[] {
   return [...new Set(text.split("\n").map((line) => line.trim()).filter(Boolean))];
 }
 
-function nominationProblem(name: string, city: string, urls: string[]): string | null {
+/** Copy for the format picker's label; it is never optional. */
+const formatFieldCopy = {optionalLabel: "Optional", optionalSuffix: "", optionalSemantics: (label: string) => label};
+
+function nominationProblem(name: string, city: string, urls: string[], formats: ReadonlySet<ListingFormat>): string | null {
   if (!city.trim()) return "Add the city where they run events.";
   if (!name.trim() && !urls.length) return "Add their name, a link, or both.";
   const badLink = urls.find((url) => !/^https?:\/\/\S+$/u.test(url));
   if (badLink) return `Links start with https://. Check "${badLink}".`;
   if (urls.length > maxLinks) return `Add at most ${maxLinks} links.`;
+  if (!formats.size) return "Choose at least one format they run.";
+  if (formats.size > maxListingFormats) return `Choose at most ${maxListingFormats} formats.`;
   return null;
 }
 
 /**
  * Adds an organizer Catch already lists to Sales, or nominates one it doesn't. Adding creates a private record and
  * publishes nothing. A nomination builds a draft listing that staff review in the Inbox. A sales associate can only nominate.
+ * A nomination names at least one format, so the approved organizer counts toward its city's format pages; nightlife and
+ * singles are never offered.
  */
 export function SalesAddHostWorkspace({canAddExisting, onAdded, onClose, onError, onNotice}: {
   canAddExisting: boolean;
@@ -37,12 +45,14 @@ export function SalesAddHostWorkspace({canAddExisting, onAdded, onClose, onError
   const [city, setCity] = useState("");
   const [links, setLinks] = useState("");
   const [notes, setNotes] = useState("");
+  const [formats, setFormats] = useState<ReadonlySet<ListingFormat>>(new Set());
   const urls = nominationLinks(links);
-  const problem = nominationProblem(name, city, urls);
-  const touched = Boolean(name || city || links || notes);
+  const problem = nominationProblem(name, city, urls, formats);
+  const touched = Boolean(name || city || links || notes || formats.size);
   const nominate = async () => {
     if (problem) return;
-    if (await c.nominate({name: name.trim() || null, market: city.trim(), urls, notes: notes.trim() || null, categories: []})) onClose();
+    if (await c.nominate({name: name.trim() || null, market: city.trim(), urls, notes: notes.trim() || null, categories: [],
+      formats: listingFormats.filter((format) => formats.has(format))})) onClose();
   };
   const add = async () => {
     if (selectedId && await c.addExisting(selectedId)) onAdded(selectedId);
@@ -68,6 +78,9 @@ export function SalesAddHostWorkspace({canAddExisting, onAdded, onClose, onError
             upcoming events. Staff review the draft in the Inbox, and nothing is published before then.</CatchLegacyText>
           <CatchField recipe="input" title="Organizer name" maxLength={160} value={name} onChanged={setName} />
           <CatchField recipe="input" title="City" maxLength={80} value={city} onChanged={setCity} required />
+          <CatchChoiceInput<ListingFormat> recipe="form" label="What do they run?" copy={formatFieldCopy} mode="multiple" allowEmptySelection
+            values={listingFormats} itemLabelBuilder={listingFormatLabel} selected={formats} onChanged={setFormats} />
+          <CatchLegacyText as="p" variant="supporting">{`Pick up to ${maxListingFormats}. The approved page counts toward these formats' city pages.`}</CatchLegacyText>
           <CatchField recipe="input" title="Links, one per line" maxLines={4} value={links} onChanged={setLinks}
             helperText="Their website, Instagram, Luma, District or Urbanaut pages." />
           <CatchField recipe="input" title="What should the reviewer know?" maxLines={3} maxLength={2000} value={notes} onChanged={setNotes} />

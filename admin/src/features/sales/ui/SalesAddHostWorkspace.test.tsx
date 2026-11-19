@@ -31,10 +31,17 @@ it("lets a sales associate nominate, trimming and de-duplicating links, and sear
   expect(screen.getByRole("status").textContent).toContain('Check "lu.ma/thebrindle"');
   fireEvent.change(screen.getByLabelText(/^Links, one per line/u), {target: {value: "https://lu.ma/thebrindle\n https://thebrindle.example \nhttps://lu.ma/thebrindle"}});
   fireEvent.change(screen.getByLabelText(/^What should the reviewer know/u), {target: {value: "  Sunday long runs  "}});
+  // A nomination names at least one format; nightlife is never offered.
+  expect(screen.getByRole("status").textContent).toContain("Choose at least one format");
+  expect(nominate).toHaveProperty("disabled", true);
+  expect(screen.queryByRole("checkbox", {name: /Nights out|Nightlife/u})).toBeNull();
+  fireEvent.click(screen.getByRole("checkbox", {name: "Quiz nights"}));
+  fireEvent.click(screen.getByRole("checkbox", {name: "Run clubs"}));
   fireEvent.click(nominate);
   await waitFor(() => expect(props.onClose).toHaveBeenCalled());
   expect(repository.nominateSalesOrganizer.mock.calls[0]?.[0]).toMatchObject({
-    name: null, market: "Bengaluru", urls: ["https://lu.ma/thebrindle", "https://thebrindle.example"], notes: "Sunday long runs", categories: []});
+    name: null, market: "Bengaluru", urls: ["https://lu.ma/thebrindle", "https://thebrindle.example"], notes: "Sunday long runs", categories: [],
+    formats: ["runClubs", "quizNights"]});
   expect(repository.searchCanonicalOrganizers).not.toHaveBeenCalled();
 });
 
@@ -43,6 +50,7 @@ it("retries a failed nomination under the same request id, so the server replays
   const props = draw(false);
   fireEvent.change(screen.getByLabelText(/^Organizer name/u), {target: {value: "Brindle"}});
   fireEvent.change(screen.getByLabelText(/^City/u), {target: {value: "Mumbai"}});
+  fireEvent.click(screen.getByRole("checkbox", {name: "Run clubs"}));
   fireEvent.click(screen.getByRole("button", {name: "Nominate"}));
   await waitFor(() => expect(props.onError).toHaveBeenLastCalledWith("offline"));
   expect(props.onClose).not.toHaveBeenCalled();

@@ -6,7 +6,7 @@ import {useSalesAddHostController} from "./useSalesAddHostController";
 const repository = vi.hoisted(() => ({createSalesAccount: vi.fn(), nominateSalesOrganizer: vi.fn(), searchCanonicalOrganizers: vi.fn()}));
 vi.mock("../api/salesRepository", () => repository);
 
-const details = {name: "Brindle", market: "Mumbai", urls: [], notes: null, categories: []};
+const details = {name: "Brindle", market: "Mumbai", urls: [], notes: null, categories: [], formats: ["runClubs" as const]};
 
 describe("useSalesAddHostController", () => {
   afterEach(cleanup);
