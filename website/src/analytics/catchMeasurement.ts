@@ -38,9 +38,10 @@ export function acquisitionRoute(path: string): AcquisitionRoute | null {
   return Object.hasOwn(routes, normalized) ? normalized as AcquisitionRoute : null;
 }
 
-// Pages whose path carries a private token or an organiser's form, and the
-// organiser directory and flows. They never load, capture for or send to an
-// advertising tag. Organiser profile pages are the exception (#2063).
+// Pages whose path carries a private token, an organiser's page or an
+// organiser's form. They never load, capture for or send to an advertising
+// tag through `publicAdPage`. Organiser profiles reach Catch's own tags only
+// through `catchOrganizerProfilePage` plus a server classification (#2063).
 const tokenAndFormPrefixes = ["/join/", "/rehearse/", "/invite/", "/rsvp/", "/f/", "/claim/"];
 const nonPublicPrefixes = ["/organizers", ...tokenAndFormPrefixes];
 const eventPagePattern = /^\/events\/[A-Za-z0-9_:-]{1,180}\/$/u;
@@ -48,22 +49,16 @@ const publicPagePattern = /^\/(?:[a-z0-9][a-z0-9-]{0,80}\/){0,4}$/u;
 
 /**
  * The public page a path names, normalised with a trailing slash, or null.
- * Public pages are the static marketing, discovery, campaign and city pages,
- * public event pages and organiser profile pages (`/organizers/:slug/`,
- * `/organizers/:citySlug/:slug/`; docs/ads_conversion_spec.md, Payload and
- * attribution). Organiser profiles joined on the owner's #2063 condition that
- * Catch keeps the holistic view whether or not an organiser tracks; they use
- * the same flow exclusions as `organizerAdPage`. Private routes
- * (`privateRoutes.ts`), the organiser directory, organiser flows, organiser
- * forms, dynamic claim lookups and token links are never public.
+ * Public pages are the static marketing, discovery, campaign and city pages
+ * and public event pages (docs/ads_conversion_spec.md, Payload and
+ * attribution). Private routes (`privateRoutes.ts`), organiser pages,
+ * organiser forms, dynamic claim lookups and token links are never public.
  */
 export function publicAdPage(path: string): string | null {
   if (typeof path !== "string" || isPrivateEventUpdatePath(path)) return null;
   const normalized = path === "/" ? path : `${path.replace(/\/+$/u, "")}/`;
   if (normalized === "/claim/") return normalized;
-  if (isPrivateEventUpdatePath(normalized)) return null;
-  if (normalized.startsWith("/organizers")) return organizerProfilePath(normalized);
-  if (nonPublicPrefixes.some((prefix) => normalized.startsWith(prefix))) return null;
+  if (isPrivateEventUpdatePath(normalized) || nonPublicPrefixes.some((prefix) => normalized.startsWith(prefix))) return null;
   return eventPagePattern.test(normalized) || publicPagePattern.test(normalized) ? normalized : null;
 }
 
@@ -109,6 +104,23 @@ function organizerProfilePath(normalized: string): string | null {
   if (!organizerPagePattern.test(normalized)) return null;
   const segments = normalized.split("/").filter(Boolean).slice(1);
   return segments.some((segment) => organizerFlowSegments.has(segment)) ? null : normalized;
+}
+
+/**
+ * The route side of Catch's own tags on organiser profiles (owner decisions,
+ * 19 Nov 2026, #2063): the same profile paths and flow exclusions as
+ * `organizerAdPage`, or null. A route match alone never turns Catch's tags
+ * on: the owner also ruled that dating-classified organisers (canonical
+ * social, singles and mixer) and organisers with no classification are
+ * skipped, failing closed. The website cannot classify an organiser (public
+ * listings rewrite `singlesMixer`, CAT-247), so the tags need the server's
+ * classification for the profile before this path may send. Until that is
+ * wired, `publicAdPage` keeps every organiser page closed.
+ */
+export function catchOrganizerProfilePage(path: string): string | null {
+  if (typeof path !== "string" || isPrivateEventUpdatePath(path)) return null;
+  const normalized = `${path.replace(/\/+$/u, "")}/`;
+  return isPrivateEventUpdatePath(normalized) ? null : organizerProfilePath(normalized);
 }
 
 export function organizerAdPage(path: string, search = "", hash = ""): OrganizerTagPage | null {

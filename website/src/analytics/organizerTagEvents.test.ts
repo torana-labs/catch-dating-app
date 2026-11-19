@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {brand} from "@catch/brand";
 import type {AdBooking} from "./adTags";
-import {organizerAdPage, publicAdPage} from "./catchMeasurement";
+import {catchOrganizerProfilePage, organizerAdPage, publicAdPage} from "./catchMeasurement";
 import {newOrganizerTagEventId, organizerBeginCheckout, organizerPageView, organizerPurchase,
   organizerViewContent} from "./organizerTagEvents";
 
@@ -48,14 +48,19 @@ describe("organiser tag eligible routes", () => {
     expect(organizerAdPage("/organizers/harbour-line-run-club/", "", "#events")?.kind).toBe("organizer");
   });
 
-  it("gives Catch's own tags the same organiser profile pages, never fewer (#2063 owner condition)", () => {
-    for (const path of ["/organizers/harbour-line-run-club/", "/organizers/mumbai/harbour-line-run-club/", "/events/synthetic-run/"]) {
-      expect(publicAdPage(path)).toBe(organizerAdPage(path)!.path);
+  it("gives Catch's own tags the same organiser profile routes, never fewer (#2063 owner condition)", () => {
+    for (const path of ["/organizers/harbour-line-run-club/", "/organizers/mumbai/harbour-line-run-club/"]) {
+      expect(catchOrganizerProfilePage(path)).toBe(organizerAdPage(path)!.path);
     }
     for (const path of ["/organizers/", "/organizers/harbour-line-run-club/claim/", "/organizers/harbour-line-run-club/owner/",
-      "/organizers/a/b/c/", "/organizers/Harbour/"]) {
-      expect(publicAdPage(path)).toBeNull();
+      "/organizers/a/b/c/", "/organizers/Harbour/", "/events/synthetic-run/", "/claim/harbour-line-run-club/"]) {
+      expect(catchOrganizerProfilePage(path)).toBeNull();
     }
+  });
+
+  it("keeps organiser pages closed in publicAdPage until the server classifies the organiser (fail closed)", () => {
+    expect(publicAdPage("/organizers/harbour-line-run-club/")).toBeNull();
+    expect(publicAdPage("/events/synthetic-run/")).toBe("/events/synthetic-run/");
   });
 });
 
