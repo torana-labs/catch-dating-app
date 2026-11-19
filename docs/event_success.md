@@ -4481,6 +4481,12 @@ formats (#2062 C4). Copy text stays in `copy/structured_domain_copy_en.json`.
 const literals. `EventSuccessStructureConfig.defaultForInteractionModel` reads
 the generated `event_success_playbook_shapes.g.dart`, and Functions'
 `defaultEventSuccessPlaybookIdFor` reads `eventSuccessPlaybookShapes.ts`.
+In `night.plan`, run pace groups scale with head count, one per ten guests
+with no cap of their own. Each is named by its pace band, fastest first:
+"~m:ss/km" once its target pace is known (as `RoutePaceGroup.targetPaceSecondsPerKm`),
+otherwise "Pace group N". The only hard limits are the plan contract's bounds,
+1–1000 attendees and a `unitCount` of 1–200. Tables, teams or courts past 200
+stop there, flagged `countLimited`, with larger units or a longer bench.
 Web retains the metadata for parity and ships no per-attendee audio.
 
 - **Portable marquee assets.** Three checked-in Lottie vector documents under

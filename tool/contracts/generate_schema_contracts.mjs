@@ -1704,9 +1704,8 @@ function assertEventSuccessPlaybookShapeCatalog(catalog) {
     const groups = format.groups ?? {};
     if (!NIGHT_PLAN_GROUP_KINDS.includes(groups.kind) ||
         (groups.kind === "paceGroups" && (!positive(groups.guestsPerGroup) ||
-          !positive(groups.minGroups) || !positive(groups.maxGroups) ||
-          groups.minGroups > groups.maxGroups ||
-          !Array.isArray(groups.labels) || groups.labels.length === 0)) ||
+          !positive(groups.minGroups) || groups.naming !== "paceBand" ||
+          "maxGroups" in groups || "labels" in groups)) ||
         (groups.kind === "courts" && !positive(groups.seatsPerCourt))) {
       fail(`${format.format} has invalid groups.`);
     }
@@ -1772,8 +1771,7 @@ export interface NightPlanFormat {
   readonly playbookId: string;
   readonly groups:
     | {readonly kind: "paceGroups"; readonly guestsPerGroup: number;
-        readonly minGroups: number; readonly maxGroups: number;
-        readonly labels: readonly string[]}
+        readonly minGroups: number; readonly naming: "paceBand"}
     | {readonly kind: "courts"; readonly seatsPerCourt: number}
     | {readonly kind: "structureDefault"}
     | {readonly kind: "wholeGroup"};
