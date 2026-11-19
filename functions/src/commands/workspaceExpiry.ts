@@ -11,19 +11,28 @@ import {
   type StoredTryItWorkspace,
   type WorkspaceKeptReason,
 } from "./workspace";
+import {
+  deleteOrganizerContacts,
+  deleteTryItDrafts,
+  readWorkspaceEvents,
+} from "./workspaceDisposal";
 
 // An untouched try-it workspace is removed 30 days after its last command
 // (owner decision, 18 Nov 2026). Each command pushes expiresAt out; this
 // daily sweep reads only workspaces that are due, a bounded page per run,
 // and decides each in a transaction:
 //
-// - kept: the organizer was published, has an event, has a second team
-//   member, or no longer belongs to the account. The workspace stops
-//   expiring (expiresAt null) and its organizer is never touched.
-// - otherwise: the private organizer is deleted with its owner membership
-//   and growth facts, and its page address reservation is released. It was
+// - kept: the organizer was published, has an event the host made (any
+//   event that is not a private try-it draft the workspace recorded), has a
+//   second team member, or no longer belongs to the account. The workspace
+//   stops expiring (expiresAt null) and its organizer is never touched.
+// - otherwise: its try-it draft events go with their guests, then its
+//   contacts, then the private organizer with its owner membership and
+//   growth facts, and its page address reservation is released
+//   (workspaceDisposal.ts; owner decision on #2061, 19 Nov 2026). It was
 //   never public, so no page or link goes away. The account and its host
-//   profile stay.
+//   profile stay. Guest data is deleted in bounded batches, over more than
+//   one run when there is a lot of it ("disposing").
 //
 // Every step is idempotent: an expired or kept workspace is never read
 // again, because its expiresAt is null.
@@ -44,7 +53,7 @@ const defaultDeps: WorkspaceExpiryDeps = {
 };
 
 export type WorkspaceExpiryOutcome = "expired" | WorkspaceKeptReason |
-  "not_due" | "skipped";
+  "not_due" | "skipped" | "disposing";
 
 /** Decides due workspaces, oldest first, at most `limit` of them. */
 export async function expireDueTryItWorkspaces(
@@ -65,11 +74,17 @@ export async function expireDueTryItWorkspaces(
   return counts;
 }
 
-/** Removes one due, untouched workspace, or marks it kept. */
+/**
+ * Removes one due, untouched workspace, or marks it kept. Guest data in its
+ * try-it drafts and contacts goes first, outside the final transaction,
+ * because it can outgrow one; the final transaction checks everything again.
+ */
 export async function expireTryItWorkspace(deps: WorkspaceExpiryDeps,
   uid: string): Promise<WorkspaceExpiryOutcome> {
   const db = deps.firestore();
   const pointerRef = db.collection(TRY_IT_WORKSPACES).doc(uid);
+  const disposal = await disposeGuestData(deps, db, pointerRef, uid);
+  if (disposal === "disposing") return disposal;
   return db.runTransaction(async (tx) => {
     const pointerSnap = await tx.get(pointerRef);
     const pointer = pointerSnap.data() as StoredTryItWorkspace | undefined;
@@ -81,19 +96,20 @@ export async function expireTryItWorkspace(deps: WorkspaceExpiryDeps,
       return "not_due" as const;
     }
     const organizerRef = db.collection("organizers").doc(pointer.organizerId);
-    const [organizerSnap, eventsSnap] = await Promise.all([
+    const [organizerSnap, events] = await Promise.all([
       tx.get(organizerRef),
-      tx.get(db.collection("events")
-        .where("organizerId", "==", pointer.organizerId).limit(1)),
+      readWorkspaceEvents((query) => tx.get(query), db, pointer),
     ]);
     const organizer = organizerSnap.data();
     const keptReason = organizer ? reasonToKeep(organizer, uid,
-      !eventsSnap.empty) : null;
+      events.kind === "host_events") : null;
     if (keptReason) {
       tx.set(pointerRef, {...pointer, state: "kept", expiresAt: null,
         keptAt: at, keptReason});
       return keptReason;
     }
+    // A try-it draft made since the guest data went waits for the next run.
+    if (events.kind === "try_it_only") return "disposing" as const;
 
     const page = organizer?.publicPage as {canonicalPath?: unknown} |
       undefined;
@@ -137,6 +153,51 @@ export async function expireTryItWorkspace(deps: WorkspaceExpiryDeps,
       });
     return "expired" as const;
   });
+}
+
+/**
+ * Deletes a due, disposable workspace's guest data: its try-it drafts with
+ * their guests, then (on a later run when guests were deleted, so the
+ * audience projection has settled) its organizer-scoped contacts.
+ * @return {Promise<string>} "disposing" while data remains for a later run;
+ *   otherwise "ready", and the final transaction decides.
+ */
+async function disposeGuestData(deps: WorkspaceExpiryDeps,
+  db: FirebaseFirestore.Firestore,
+  pointerRef: FirebaseFirestore.DocumentReference,
+  uid: string): Promise<"ready" | "disposing"> {
+  const disposable = async () => {
+    const pointer = (await pointerRef.get()).data() as
+      StoredTryItWorkspace | undefined;
+    if (!pointer || pointer.state !== "active" ||
+        typeof pointer.expiresAt !== "string" ||
+        Date.parse(pointer.expiresAt) > deps.now().getTime()) return null;
+    const organizer = (await db.collection("organizers")
+      .doc(pointer.organizerId).get()).data();
+    if (organizer && reasonToKeep(organizer, uid, false)) return null;
+    return pointer;
+  };
+  const pointer = await disposable();
+  if (!pointer) return "ready";
+  const events = await readWorkspaceEvents((query) => query.get(), db,
+    pointer);
+  if (events.kind === "host_events") return "ready";
+  if (events.kind === "try_it_only") {
+    const pass = await deleteTryItDrafts(db, events.eventIds);
+    logger.info("Try-it drafts removed with their guests.",
+      {organizerId: pointer.organizerId, deleted: pass.deleted,
+        incomplete: pass.incomplete});
+    if (pass.incomplete || pass.guestsDeleted) return "disposing";
+  }
+  // Checked again: the account may have come back while drafts went.
+  if (!(await disposable())) return "ready";
+  const pass = await deleteOrganizerContacts(db, pointer.organizerId);
+  if (pass.deleted > 0) {
+    logger.info("Try-it workspace contacts removed.",
+      {organizerId: pointer.organizerId, deleted: pass.deleted,
+        incomplete: pass.incomplete});
+  }
+  return pass.incomplete ? "disposing" : "ready";
 }
 
 /**
