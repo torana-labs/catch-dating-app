@@ -220,9 +220,11 @@ own request, and the same id with different content is refused rather than
 overwritten. Every request records its `origin`.
 
 - **Admin nomination.** `adminNominateOrganizer` (roles `admin`, `adminOwner`,
-  `salesStaff`) takes a name and/or links, market, notes and categories. It is
-  audited and rate-limited, and the id is keyed on the nominator and their own
-  request id.
+  `salesStaff`) takes a name and/or links, market, notes, categories and at
+  least one format (never nightlife or singles), which travels as Supply Intake
+  categories (`run_clubs`). It is audited and rate-limited, the id is keyed on
+  the nominator and their own request id, and it is refused while programmatic
+  listings are paused (below).
 - **Website host applications and partner nominations.** Both already arrive
   as `salesInboundIntents`, which ad attribution, alerts and partner credit
   read. `onSalesInboundIntentForIntake` turns each intent that names an
@@ -452,6 +454,31 @@ An associate who nominated the organizer owns its Sales work; otherwise the
 approver does. Approval is idempotent per listing: an identical retry replays,
 and a different approval of the same listing is refused. Indexing and app
 discovery remain later decisions, after the organizer is verified.
+
+A listing Catch sourced (a nomination or discovery) is a programmatic listing
+(owner decisions, 19 Nov 2026; contract in
+[data_contracts.md](data_contracts.md#programmatic-listings)). Staff approving
+one pick its formats (written as page labels to `publicProfile.formats` and
+`publicCategoryLabel`, so the city-by-format pages count it), confirm city
+evidence, formats, no dating framing and no personal data, and may tag it with
+a cohort (`organizers.listingProgram`, suggested `pilot-indore-1`), which opens
+no Sales records unless they ask. The owner pauses or resumes programmatic
+listings in Admin Settings → Intake ("Programmatic listings"; ops may pause,
+only the owner resumes), or with the admin CLI:
+
+```sh
+node operations/src/admin-cli/main.mjs describe organizer-intake.manage-listing-program --pretty
+node operations/src/admin-cli/main.mjs run organizer-intake.manage-listing-program --input pause.json \
+  --apply --confirm organizer-intake.manage-listing-program --project PROJECT_ID
+```
+
+with `pause.json` holding `{"action": "set_pause", "paused": true, "reason":
+"...", "expectedRevision": N}` (read the revision first with
+`{"action": "read"}`). While paused, nominations and programmatic approvals
+are refused with the reason and nothing is written; pages already live stay
+up, and organizers' own submissions and website instant drafts are
+unaffected. `{"action": "format_report"}` counts live organizers by city with
+and without a format, counts only.
 
 A website instant draft never goes live before claim (owner decision, 16 Nov
 2026). The transaction reads `instantDraft` from the request, so whoever

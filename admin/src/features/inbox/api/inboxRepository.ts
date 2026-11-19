@@ -217,7 +217,7 @@ export async function getListingReview(requestId: string): Promise<ListingReview
     market: {slug: "mumbai", marketId: "in-mh-mumbai", label: "Mumbai · Maharashtra", open: true},
     suggestedSlug: (item?.title ?? "listing").toLowerCase().replace(/[^a-z0-9]+/gu, "-"),
     listing: {name: item?.title ?? "Listing", description: "Weekly social nights for people who would rather meet in person.",
-      categories: ["social"], links: [{platform: "luma", url: "https://lu.ma/moonmoth"}], gaps: [], eventCount: 3,
+      categories: ["run_clubs", "social"], links: [{platform: "luma", url: "https://lu.ma/moonmoth"}], gaps: [], eventCount: 3,
       researchNeeded: false, contentHash: "a".repeat(64), pageCount: 2, fetchedPageCount: 2},
     duplicateCheck: {verdict: "none", organizersCompared: 12, citySlug: "mumbai", truncated: false, candidates: []},
   }};

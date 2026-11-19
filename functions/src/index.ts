@@ -640,6 +640,9 @@ export {
   adminListSupplyIntakePolicies,
 } from "./admin/supplyIntakePolicies";
 export {
+  adminManageListingProgram,
+} from "./admin/listingProgram/settings";
+export {
   adminDecideOrganizerPolicyGap,
 } from "./admin/organizerPolicyGap";
 export {

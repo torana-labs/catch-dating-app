@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/listing_program_settings.schema.json",
+  "title": "ListingProgramSettingsDocument",
+  "description": "The programmatic listings pause switch (Settings → Intake). One document, listingProgramSettings/platform; absent means not paused. While paused, adminNominateOrganizer refuses every nomination and listing approval refuses any listing Catch sourced itself (a nomination or discovery); an organizer's own submission and website instant drafts are unaffected. A stored document that fails this contract also refuses. Server-only; written by adminManageListingProgram. Every write bumps revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "listingProgramSettings",
+  "x-firestore-path": "listingProgramSettings/{settingsId}",
+  "x-document-id-field": "settingsId",
+  "x-owner": "adminManageListingProgram",
+  "required": ["schemaVersion", "settingsId", "revision", "paused", "reason", "updatedAtMillis", "updatedByUid"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "settingsId": {"const": "platform"},
+    "revision": {"type": "integer", "minimum": 1},
+    "paused": {"type": "boolean"},
+    "reason": {"type": "string", "minLength": 10, "maxLength": 500, "description": "Why the switch was last flipped; shown with the refusal."},
+    "updatedAtMillis": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "updatedByUid": {"type": "string", "minLength": 1, "maxLength": 128}
+  }
+}
