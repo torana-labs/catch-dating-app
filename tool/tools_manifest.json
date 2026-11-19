@@ -6627,6 +6627,23 @@
       ]
     },
     {
+      "id": "marketing:website-imagery-audit",
+      "category": "marketing",
+      "path": "tool/marketing/audit_website_imagery.mjs",
+      "command": "node tool/marketing/audit_website_imagery.mjs --base-url <url>",
+      "surface": "local-writes-scratch",
+      "status": "active",
+      "description": "Opens every public website route on a running dev server at 390px and 1440px and flags large colour, pattern or empty blocks with no real media and little text, with a cropped screenshot of each, in ignored build/website-imagery-audit output. Reports only; it never edits the site or makes images.",
+      "checks": [
+        "node --check tool/marketing/audit_website_imagery.mjs",
+        "node --test tool/marketing/audit_website_imagery.test.mjs"
+      ],
+      "role": "finder",
+      "impactPaths": [
+        "tool/marketing/audit_website_imagery.test.mjs"
+      ]
+    },
+    {
       "id": "marketing:website-meta-contract",
       "category": "marketing",
       "path": "tool/marketing/website_meta_contract.mjs",

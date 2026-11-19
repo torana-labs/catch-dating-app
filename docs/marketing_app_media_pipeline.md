@@ -361,6 +361,33 @@ Re-render after editing those page titles or descriptions. Captures are hashed
 by id only, because CI re-imports their bytes; re-rendering picks up the newest
 capture.
 
+## Imagery Audit
+
+`tool/marketing/audit_website_imagery.mjs` finds the places on public pages
+that should carry imagery but draw a colour block, a pattern or empty space.
+Start the website (`npm --prefix website run dev -- --port 5311 --strictPort`),
+then run:
+
+```sh
+node tool/marketing/audit_website_imagery.mjs --base-url http://127.0.0.1:5311
+```
+
+It opens every static and content route in `design/website/routes.json` (the
+playbook families expanded through their page ids) at 390×844 and 1440×900.
+A block is flagged when it covers at least 4% of the phone viewport or 2.5% of
+the desktop one, paints its own colour, gradient or pattern (or is an empty
+reserved box), has no img, video, canvas, photo background or labelled SVG
+over more than 12% of it, and keeps an empty strip of at least 35% of its
+area and 80px on the short side. Only the innermost flagged block is kept, so
+an empty art slot wins over the card and section around it. The report
+(`candidates.json`, `summary.md` and a cropped PNG per block) goes to ignored
+`build/website-imagery-audit/`.
+
+It is a finder, not a gate: it also flags text tiles with a short line of
+copy, so a person classifies each block. City, organiser and event pages
+depend on read-model data; pass them with `--extra-paths` when the local
+data has them.
+
 ## Fixture Boundary
 
 Host slots use the named `host-marketing-india.json` scenario through the existing
