@@ -292,6 +292,9 @@ function measurePage({minArea, bandSource}) {
     const rect = docRect(el);
     if (rect.width * rect.height < minArea) continue;
     indexOf.set(el, elements.length);
+    // Tag the element so its crop can be taken by locator, which scrolls
+    // sideways rails into view.
+    el.setAttribute("data-imagery-audit", String(elements.length));
     elements.push({el, rect});
   }
   const describe = (el) => {
@@ -324,7 +327,7 @@ function measurePage({minArea, bandSource}) {
   // patterns are not, because they are the fallback this audit looks for.
   const contentRects = [...textRects, ...controlRects, ...mediaRects];
   const sumWithin = (rects, rect) => rects.reduce((total, r) => total + intersect(r, rect), 0);
-  return elements.map(({el, rect}) => {
+  return elements.map(({el, rect}, index) => {
     const style = getComputedStyle(el);
     const parentStyle = el.parentElement ? getComputedStyle(el.parentElement) : null;
     const ownColour = !isTransparent(style.backgroundColor) && style.backgroundColor !== parentStyle?.backgroundColor;
@@ -343,6 +346,7 @@ function measurePage({minArea, bandSource}) {
     const band = emptyBandOf(rect, contentRects);
     const text = (el.innerText || "").replace(/\s+/gu, " ").trim();
     return {
+      index,
       selector: describe(el),
       component: el.closest("[data-component]")?.getAttribute("data-component") ?? "",
       heading: nearestHeading(el),
@@ -456,8 +460,11 @@ export async function runAudit(args) {
         const y = Math.max(0, candidate.rect.y - pad);
         const clip = {x, y, width: Math.min(viewport.width - x, candidate.rect.width + pad * 2), height: Math.min(candidate.rect.height + pad * 2, 2400)};
         const file = `${slugForFile(target.path)}__${viewport.name}__${String(n + 1).padStart(2, "0")}.png`;
-        await page.screenshot({path: path.join(cropDir, file), clip, fullPage: true}).catch(() => {});
-        const {ancestors: _ancestors, ...rest} = candidate;
+        const cropPath = path.join(cropDir, file);
+        await page.locator(`[data-imagery-audit="${candidate.index}"]`).screenshot({path: cropPath, timeout: 5000})
+          .catch(() => page.screenshot({path: cropPath, clip, fullPage: true}))
+          .catch(() => {});
+        const {ancestors: _ancestors, index: _index, ...rest} = candidate;
         out.push({id: file.replace(/\.png$/u, ""), route: target.path, routeId: target.routeId, viewport: viewport.name, crop: `crops/${file}`, ...rest});
       }
       return {page: {...target, viewport: viewport.name, status, finalPath: new URL(page.url()).pathname, pageHeight, candidates: out.length}, candidates: out};
