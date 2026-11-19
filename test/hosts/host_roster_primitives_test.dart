@@ -30,7 +30,7 @@ void main() {
     );
 
     expect(find.byType(CatchField), findsOneWidget);
-    expect(find.text('GUEST'), findsNothing);
+    expect(find.text('Guest'), findsNothing);
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('Arrived'), findsOneWidget);
   });
@@ -59,9 +59,9 @@ void main() {
     );
 
     expect(find.byType(CatchField), findsNothing);
-    expect(find.text('GUEST'), findsOneWidget);
-    expect(find.text('STATUS'), findsOneWidget);
-    expect(find.text('ACTION'), findsOneWidget);
+    expect(find.text('Guest'), findsOneWidget);
+    expect(find.text('Status'), findsOneWidget);
+    expect(find.text('Action'), findsOneWidget);
   });
 }
 

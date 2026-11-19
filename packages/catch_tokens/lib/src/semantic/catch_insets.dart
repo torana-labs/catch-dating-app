@@ -631,22 +631,6 @@ abstract final class CatchInsets {
     vertical: CatchSpacing.micro10,
   );
 
-  /// Column-label header inside the Host roster board.
-  static const EdgeInsets tableHeaderContent = EdgeInsets.fromLTRB(
-    CatchSpacing.micro14,
-    CatchSpacing.s3,
-    CatchSpacing.micro14,
-    CatchSpacing.micro10,
-  );
-
-  /// Empty-row content inside the Host roster board.
-  static const EdgeInsets tableEmptyContent = EdgeInsets.fromLTRB(
-    CatchSpacing.micro14,
-    CatchSpacing.s4,
-    CatchSpacing.micro14,
-    CatchSpacing.s5,
-  );
-
   /// Top rhythm for Launch Access loading and application bodies.
   static const EdgeInsets launchAccessBodyTop = EdgeInsets.only(
     top: CatchSpacing.s4,
