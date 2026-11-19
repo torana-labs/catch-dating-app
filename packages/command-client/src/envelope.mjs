@@ -1,4 +1,4 @@
-import {asOperationsError} from "../platform/errors.mjs";
+import {asOperationsError} from "./errors.mjs";
 
 // The JSON envelope every operations CLI prints: one object on stdout for
 // success, one on stderr for failure, exit code from the error.

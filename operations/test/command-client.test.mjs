@@ -13,7 +13,7 @@ import {
   LocalReceiptStore,
   parseCommandLine,
   successEnvelope,
-} from "../src/command-client/index.mjs";
+} from "../../packages/command-client/src/index.mjs";
 import {hashValue} from "../src/platform/canonical-json.mjs";
 import {OperationsError} from "../src/platform/errors.mjs";
 
@@ -156,4 +156,19 @@ test("local receipt store is idempotent and refuses a different receipt", async 
   assert.equal(await store.put({...receipt}), first);
   await assert.rejects(store.put({...receipt, status: "failed"}),
     {code: "CATCH_RECEIPT_CONFLICT"});
+});
+
+test("operations and the shared package throw one error class", async () => {
+  const platform = await import("../src/platform/errors.mjs");
+  const shared = await import("../../packages/command-client/src/errors.mjs");
+  assert.equal(platform.OperationsError, shared.OperationsError);
+  const error = new shared.OperationsError("X_FAILED", "no");
+  assert.ok(error instanceof platform.OperationsError);
+  assert.equal(platform.asOperationsError(error), error);
+  const platformJson = await import("../src/platform/canonical-json.mjs");
+  const sharedJson = await import("../../packages/command-client/src/canonical-json.mjs");
+  assert.equal(platformJson.hashValue, sharedJson.hashValue);
+  // Pinned from the implementation before the move: stored hashes must not change.
+  assert.equal(platformJson.hashValue({b: 1, a: [2, {z: null, y: "é"}]}),
+    "ec16434fd977b8278695259ef46f4abb10fc5095b65acc000e1987bed40a04f9");
 });

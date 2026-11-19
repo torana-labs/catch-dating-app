@@ -630,7 +630,7 @@ operations/
   src/cli/                         stable JSON command surface
   src/admin-cli/                   catalog-driven admin callable client
   src/admin/                       action catalog, client, local receipts
-  src/command-client/              shared callable transport, receipts, argv, envelope
+  src/command-client/              product command catalog loader (Ajv)
   src/catch-cli/                   product command CLI over contracts/commands
   src/command-tools/               catalog commands as AI tools, preview-then-confirm
   src/platform/                    reusable execution and persistence ports
@@ -725,8 +725,9 @@ receipt path so an agent cannot safely retry as if nothing happened.
 `operations/src/catch-cli/main.mjs` (`catch`) is the CLI surface of the product
 commands in `contracts/commands/catalog.json`: the same callables, envelope and
 schemas the website try-it tools, Catch Host and later WhatsApp use. It shares
-`operations/src/command-client/` (transport, App Check, receipts, flags,
-envelope) with the admin action CLI and carries no business logic.
+`packages/command-client` (transport, App Check, receipts, flags, envelope,
+errors, canonical JSON) with the admin action CLI and carries no business
+logic. The package uses Node built-ins only, so `tool/` may import it too.
 
 ```sh
 node operations/src/catch-cli/main.mjs commands --pretty
@@ -740,7 +741,7 @@ node operations/src/catch-cli/main.mjs run workspace.ensure --input input.json -
 `idempotencyKey`, `surface: "cli"` and `confirm`. Every command previews unless
 `--apply` is set, and `--dry-run` validates locally without calling anything.
 What apply needs comes from the command's effect class, through
-`operations/src/command-client/confirmation-policy.mjs`: `publishes` needs
+`packages/command-client/src/confirmation-policy.mjs`: `publishes` needs
 `--confirm <commandId>`; `messages-guests` and `moves-money` also need
 `--preview-hash` from the reviewed preview. A preview hash is passed through as
 `confirm` whenever one is given, so apply refuses when the result changed since

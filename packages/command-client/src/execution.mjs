@@ -1,4 +1,4 @@
-import {asOperationsError, OperationsError} from "../platform/errors.mjs";
+import {asOperationsError, OperationsError} from "./errors.mjs";
 
 // Runs one live callable with receipts around it. The local receipt is always
 // written. An optional remote recorder (the admin catalog's

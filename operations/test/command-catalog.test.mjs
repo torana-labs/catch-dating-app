@@ -5,7 +5,7 @@ import path from "node:path";
 import test from "node:test";
 
 import {checkCommandCatalog} from "../scripts/check-command-catalog.mjs";
-import {EFFECT_CONFIRMATION_POLICY} from "../src/command-client/confirmation-policy.mjs";
+import {EFFECT_CONFIRMATION_POLICY} from "../../packages/command-client/src/confirmation-policy.mjs";
 
 const repoRoot = path.resolve(import.meta.dirname, "..", "..");
 const catalogFile = path.join(repoRoot, "contracts/commands/catalog.json");

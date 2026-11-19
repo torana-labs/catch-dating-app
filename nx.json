@@ -185,6 +185,10 @@
             }
           },
           {
+            "name": "command-client",
+            "root": "packages/command-client"
+          },
+          {
             "name": "lane-docs",
             "root": "tool/nx/lanes/docs",
             "targets": {
@@ -326,6 +330,7 @@
                   "{workspaceRoot}/packages/web-ui/**/*",
                   "{workspaceRoot}/packages/web-config/**/*",
                   "{workspaceRoot}/packages/brand/**/*",
+                  "{workspaceRoot}/packages/command-client/**/*",
                   "{workspaceRoot}/operations/**/*",
                   "{workspaceRoot}/functions/src/**/*",
                   "{workspaceRoot}/contracts/**/*",
@@ -651,7 +656,8 @@
           ],
           "@catch/operations": [
             "contracts",
-            "contracts-catalogs"
+            "contracts-catalogs",
+            "command-client"
           ],
           "catch_tokens": [
             "design-tokens"

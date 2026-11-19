@@ -1,6 +1,6 @@
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import {OperationsError} from "../platform/errors.mjs";
+import {OperationsError} from "./errors.mjs";
 
 // Splits `<command> [subject] [--flags]`. Flags are declared up front so an
 // unknown or misspelt flag is an error, never silently ignored.
