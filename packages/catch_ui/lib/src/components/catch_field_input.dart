@@ -26,8 +26,8 @@ class CatchFieldInput extends StatelessWidget {
     required this.headerTrailingReserve,
     this.expanded = false,
     this.inlineAddAtRest = false,
-    this.boxLeading,
-    this.boxTrailing,
+    this.leading,
+    this.trailing,
   });
 
   final CatchFieldInputConfiguration configuration;
@@ -47,8 +47,8 @@ class CatchFieldInput extends StatelessWidget {
   final bool inlineAddAtRest;
 
   /// Field-owned leading and trailing slots drawn inside an outlined box.
-  final Widget? boxLeading;
-  final Widget? boxTrailing;
+  final Widget? leading;
+  final Widget? trailing;
 
   bool get _explicitSave => mode == CatchFieldInputMode.explicitSave;
   bool get _hasRowActions => !_explicitSave && configuration.actions != null;
@@ -486,8 +486,8 @@ class CatchFieldInput extends StatelessWidget {
                       ? CrossAxisAlignment.start
                       : CrossAxisAlignment.center,
                   children: [
-                    if (boxLeading case final leading?) ...[
-                      leading,
+                    if (leading case final slot?) ...[
+                      slot,
                       const SizedBox(width: CatchFieldTokens.boxSlotGap),
                     ],
                     if (configuration.leadingUnit case final unit?) ...[
@@ -504,9 +504,9 @@ class CatchFieldInput extends StatelessWidget {
                       key: const ValueKey<String>('catch-field-text-input'),
                       child: input,
                     ),
-                    if (boxTrailing case final trailing?) ...[
+                    if (trailing case final slot?) ...[
                       const SizedBox(width: CatchFieldTokens.boxSlotGap),
-                      trailing,
+                      slot,
                     ],
                   ],
                 ),

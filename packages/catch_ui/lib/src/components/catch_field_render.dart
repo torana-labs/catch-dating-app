@@ -32,8 +32,8 @@ extension _CatchFieldRendering on _CatchFieldState {
             headerTrailingReserve: _contentTrailingReserve,
             expanded: _isOpen,
             inlineAddAtRest: _inlineTextAddAtRest,
-            boxLeading: boxLeading,
-            boxTrailing: boxTrailing,
+            leading: boxLeading,
+            trailing: boxTrailing,
           );
     final Widget field;
     switch (widget._config) {
