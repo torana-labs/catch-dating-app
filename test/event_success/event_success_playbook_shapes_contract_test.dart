@@ -26,7 +26,7 @@ void main() {
       shapes.keys.toSet(),
     );
     for (final playbook in EventSuccessPlaybookLibrary.all) {
-      final shape = shapes[playbook.id]! as Map<String, dynamic>;
+      final shape = shapes[playbook.id]!;
       final capacity = shape['capacity'] as Map<String, dynamic>;
       expect(playbook.capacity.min, capacity['min'], reason: playbook.id);
       expect(playbook.capacity.max, capacity['max'], reason: playbook.id);
