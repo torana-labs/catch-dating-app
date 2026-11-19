@@ -216,18 +216,6 @@ class _HostTodayStatRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    Widget tile(HostTodayStat stat) => HostAnalyticsMetricTile(
-      label: switch (stat.kind) {
-        HostTodayStatKind.bookings => l10n.hostTodayStatBookings,
-        HostTodayStatKind.ticketSales => l10n.hostTodayStatTicketSales,
-        HostTodayStatKind.cameBack => l10n.hostInsightsCameBack,
-        HostTodayStatKind.followers => l10n.hostOrganizerStatFollowers,
-      },
-      value: stat.value,
-      previousValue: stat.previousValue,
-      currencyCode: stat.currencyCode,
-      figure: stat.figure,
-    );
     return CatchStack(
       children: [
         for (var start = 0; start < stats.length; start += 2)
@@ -235,7 +223,21 @@ class _HostTodayStatRow extends StatelessWidget {
             direction: CatchStackDirection.row,
             equal: true,
             children: [
-              for (final stat in stats.skip(start).take(2)) tile(stat),
+              for (final stat in stats.skip(start).take(2))
+                HostAnalyticsMetricTile(
+                  label: switch (stat.kind) {
+                    HostTodayStatKind.bookings => l10n.hostTodayStatBookings,
+                    HostTodayStatKind.ticketSales =>
+                      l10n.hostTodayStatTicketSales,
+                    HostTodayStatKind.cameBack => l10n.hostInsightsCameBack,
+                    HostTodayStatKind.followers =>
+                      l10n.hostOrganizerStatFollowers,
+                  },
+                  value: stat.value,
+                  previousValue: stat.previousValue,
+                  currencyCode: stat.currencyCode,
+                  figure: stat.figure,
+                ),
             ],
           ),
       ],
