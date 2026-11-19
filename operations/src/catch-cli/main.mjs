@@ -214,7 +214,10 @@ function describeResult({command, payload, response, apply}) {
     warnings,
   };
   if (!apply && status === "previewed") {
+    // Apply reuses the preview's idempotency key: commands that read a page
+    // find that read by it, and the preview hash covers it.
     result.applyWith = [
+      "--idempotency-key", payload.idempotencyKey,
       "--apply",
       ...(policy.confirmCommandId ? ["--confirm", command.commandId] : []),
       ...(response.previewHash ? ["--preview-hash", response.previewHash] : []),
