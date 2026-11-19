@@ -13144,6 +13144,7 @@
             "symbol": "watchEvent"
           }
         ],
+        "mutationOwners": [],
         "notes": "Setup and guests open the rebuilt workspace and guest lists without reading the event. Live and report read the uid, organizer and event, gate access, then open the rebuilt live console, run or crawl board, or report. The old event screen and its live console are retired."
       },
       "designRefs": [

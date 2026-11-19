@@ -10936,6 +10936,10 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     id: 'host_live_room_workspace',
     routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
+    // Room is pushed over the console, so the capture includes overlays
+    // and holds animations still.
+    disableAnimations: true,
+    includeOverlays: true,
     providerOverrides: [
       uidProvider.overrideWith((ref) => Stream.value(captureViewerUid)),
       watchUserProfileProvider.overrideWith(
@@ -10998,10 +11002,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     drive: (tester) async {
       await tester.tap(find.text('Room'));
-      await pumpFeatureUi(tester);
-      await tester.tap(
-        find.byKey(const ValueKey<String>('event_success.room.unit.round-4')),
-      );
       await pumpFeatureUi(tester);
     },
   ),
