@@ -20,13 +20,30 @@ import {approvedCampaignLabels, currentConsentVersion, publicAdPage, type Measur
  *   denied, `fbq('consent', 'revoke')`) and removes their cookies; withdrawing
  *   everything also revokes Google Analytics and removes its cookies.
  *   Requests already sent cannot be recalled.
+ * - Catch's destinations are one frozen set (`catchAdDestinations`). Every
+ *   Google event names its `send_to` and every Meta event is
+ *   `trackSingle` to Catch's pixel, so another pixel or Google layer on the
+ *   page never receives Catch's events and never changes them (#2063).
  * - Every event carries an `event_id` the server delivery can share. Events
  *   carry only the closed parameters below: never answers, gender, age,
  *   orientation, matching or dating data, or who someone met.
  */
 
+/**
+ * One set of advertising destinations the transport sends to. Each set is
+ * frozen and addressed explicitly: every Google event names its `send_to`
+ * and every Meta event uses `trackSingle` with the set's own pixel, so a
+ * second pixel or tag on the page never receives this set's events.
+ */
+export interface CatchAdDestinationSet {
+  readonly googleAnalytics: string;
+  readonly googleAds: string;
+  readonly hostLeadConversion: string;
+  readonly metaPixel: string;
+}
+
 /** Catch's own advertising destinations: account configuration, not secrets. */
-const catchAdDestinations = Object.freeze({
+const catchAdDestinations: CatchAdDestinationSet = Object.freeze({
   /** GA4 property 559735544. */
   googleAnalytics: "G-HZFG0DL2DK",
   /** Google Ads tag for customer 1016806229. */
@@ -39,7 +56,8 @@ const catchAdDestinations = Object.freeze({
 
 /** gtag.js reads its own data layer, never the site's diagnostic `dataLayer`. */
 const tagLayerName = "catchTagLayer";
-const googleTagSource = `https://www.googletagmanager.com/gtag/js?id=${catchAdDestinations.googleAnalytics}&l=${tagLayerName}`;
+const googleTagSource = (googleAnalytics: string) =>
+  `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(googleAnalytics)}&l=${tagLayerName}`;
 const metaPixelSource = "https://connect.facebook.net/en_US/fbevents.js";
 /** The banner promises cookies for up to 30 days. */
 const googleCookieOptions = {cookie_expires: 30 * 24 * 60 * 60, cookie_flags: "SameSite=Lax;Secure"};
@@ -196,6 +214,8 @@ const validBooking = (booking: AdBooking) => booking?.mode === "live" && eventId
   Number.isSafeInteger(booking.places) && booking.places >= 1 && booking.places <= 20;
 
 interface AdTagOptions {
+  /** Catch's destination set; the production set by default. Frozen on use. */
+  destinations?: CatchAdDestinationSet;
   /** Which hostnames may load the tags; the production site by default. */
   hostAllowed?: (hostname: string) => boolean;
   /** A new opaque event id. */
@@ -206,6 +226,12 @@ interface AdTagOptions {
 export function createAdTags(options: AdTagOptions = {}) {
   const hostAllowed = options.hostAllowed ?? productionHost;
   const newId = options.newId ?? (() => `catch_${Date.now()}_${crypto.randomUUID()}`);
+  const source = options.destinations ?? catchAdDestinations;
+  const destinations: CatchAdDestinationSet = Object.freeze({googleAnalytics: source.googleAnalytics,
+    googleAds: source.googleAds, hostLeadConversion: source.hostLeadConversion, metaPixel: source.metaPixel});
+  /** A Catch Meta event, sent to Catch's pixel only, never to any other pixel on the page. */
+  const metaTrack = (event: string, parameters: Record<string, unknown>, eventID: string) =>
+    fbq("trackSingle", destinations.metaPixel, event, parameters, {eventID});
   let consent: MeasurementConsent | null = null;
   let googleLoaded = false;
   let adsConfigured = false;
@@ -234,9 +260,9 @@ export function createAdTags(options: AdTagOptions = {}) {
     gtag("consent", "default", deniedConsent);
     gtag("consent", "update", granted);
     gtag("js", new Date());
-    gtag("config", catchAdDestinations.googleAnalytics, {send_page_view: false, allow_google_signals: false,
+    gtag("config", destinations.googleAnalytics, {send_page_view: false, allow_google_signals: false,
       allow_ad_personalization_signals: false, ...googleCookieOptions});
-    appendScript(googleTagSource);
+    appendScript(googleTagSource(destinations.googleAnalytics));
     googleLoaded = true;
   }
 
@@ -244,16 +270,16 @@ export function createAdTags(options: AdTagOptions = {}) {
   function grantMarketing() {
     gtag("consent", "update", grantedConsent);
     if (!adsConfigured) {
-      gtag("config", catchAdDestinations.googleAds, {send_page_view: false, allow_enhanced_conversions: true,
+      gtag("config", destinations.googleAds, {send_page_view: false, allow_enhanced_conversions: true,
         ...googleCookieOptions});
       adsConfigured = true;
     }
     if (!metaLoaded) {
       const pixel = installPixelStub();
       pixel.disablePushState = true;
-      fbq("set", "autoConfig", false, catchAdDestinations.metaPixel);
+      fbq("set", "autoConfig", false, destinations.metaPixel);
       fbq("consent", "grant");
-      fbq("init", catchAdDestinations.metaPixel);
+      fbq("init", destinations.metaPixel);
       appendScript(metaPixelSource);
       metaLoaded = true;
     } else {
@@ -335,8 +361,8 @@ export function createAdTags(options: AdTagOptions = {}) {
       if (!sending()) return false;
       if (scope === "meta" && !marketingNow()) return false;
       const id = newId();
-      if (scope === "all") gtag("event", "page_view", {send_to: catchAdDestinations.googleAnalytics, event_id: id});
-      if (marketingNow()) fbq("track", "PageView", {}, {eventID: id});
+      if (scope === "all") gtag("event", "page_view", {send_to: destinations.googleAnalytics, event_id: id});
+      if (marketingNow()) metaTrack("PageView", {}, id);
       return true;
     },
 
@@ -347,11 +373,11 @@ export function createAdTags(options: AdTagOptions = {}) {
       const activity = /^[A-Za-z][A-Za-z0-9_]{0,40}$/u.test(facts.activityKind) ? facts.activityKind : undefined;
       const city = typeof facts.city === "string" && facts.city.trim() ? facts.city.trim().slice(0, 80) : undefined;
       const value = validAmount(facts.amountPaise, 0) ? {value: rupees(facts.amountPaise), currency: "INR"} : {};
-      gtag("event", "view_item", {send_to: catchAdDestinations.googleAnalytics, event_id: id,
+      gtag("event", "view_item", {send_to: destinations.googleAnalytics, event_id: id,
         content_category: "guest", ...(city ? {city} : {}), ...value,
         items: [{item_id: facts.eventId, ...(activity ? {item_category: activity} : {})}]});
-      if (marketingNow()) fbq("track", "ViewContent", {content_ids: [facts.eventId], content_type: "product", content_category: "guest",
-        ...(activity ? {activity_kind: activity} : {}), ...(city ? {city} : {}), ...value}, {eventID: id});
+      if (marketingNow()) metaTrack("ViewContent", {content_ids: [facts.eventId], content_type: "product", content_category: "guest",
+        ...(activity ? {activity_kind: activity} : {}), ...(city ? {city} : {}), ...value}, id);
       return true;
     },
 
@@ -361,10 +387,10 @@ export function createAdTags(options: AdTagOptions = {}) {
       const id = `checkout_${booking.paymentId}`;
       if (!once(`begin_checkout:${id}`)) return false;
       const value = rupees(booking.amountPaise);
-      gtag("event", "begin_checkout", {send_to: catchAdDestinations.googleAnalytics, event_id: id,
+      gtag("event", "begin_checkout", {send_to: destinations.googleAnalytics, event_id: id,
         content_category: "guest", value, currency: "INR", items: [{item_id: booking.eventId, quantity: booking.places}]});
-      if (marketingNow()) fbq("track", "InitiateCheckout", {content_ids: [booking.eventId], content_type: "product", content_category: "guest",
-        num_items: booking.places, value, currency: "INR"}, {eventID: id});
+      if (marketingNow()) metaTrack("InitiateCheckout", {content_ids: [booking.eventId], content_type: "product", content_category: "guest",
+        num_items: booking.places, value, currency: "INR"}, id);
       writeCheckouts([...readCheckouts().filter((paymentId) => paymentId !== booking.paymentId), booking.paymentId]);
       return true;
     },
@@ -378,11 +404,11 @@ export function createAdTags(options: AdTagOptions = {}) {
       if (!validBooking(booking) || !readCheckouts().includes(booking.paymentId) || !sending() ||
           !once(`purchase:${booking.paymentId}`)) return false;
       const value = rupees(booking.amountPaise);
-      gtag("event", "purchase", {send_to: catchAdDestinations.googleAnalytics, event_id: booking.paymentId,
+      gtag("event", "purchase", {send_to: destinations.googleAnalytics, event_id: booking.paymentId,
         transaction_id: booking.paymentId, content_category: "guest", value, currency: "INR",
         items: [{item_id: booking.eventId, quantity: booking.places}]});
-      if (marketingNow()) fbq("track", "Purchase", {content_ids: [booking.eventId], content_type: "product", content_category: "guest",
-        num_items: booking.places, value, currency: "INR"}, {eventID: booking.paymentId});
+      if (marketingNow()) metaTrack("Purchase", {content_ids: [booking.eventId], content_type: "product", content_category: "guest",
+        num_items: booking.places, value, currency: "INR"}, booking.paymentId);
       writeCheckouts(readCheckouts().filter((paymentId) => paymentId !== booking.paymentId));
       return true;
     },
@@ -401,17 +427,17 @@ export function createAdTags(options: AdTagOptions = {}) {
       const phone = lead.phone && /^\+[1-9][0-9]{7,14}$/u.test(lead.phone) ? lead.phone : null;
       const email = lead.email && /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,24}$/u.test(lead.email.trim()) ?
         lead.email.trim().toLowerCase() : null;
-      gtag("event", "generate_lead", {send_to: catchAdDestinations.googleAnalytics, event_id: id,
+      gtag("event", "generate_lead", {send_to: destinations.googleAnalytics, event_id: id,
         content_category: "host", audience: "organizer", lead_kind: lead.kind});
       // Contact data and the ad conversions go only with the marketing choice.
       if (!marketingNow()) return true;
       const googleUser = {...(phone ? {phone_number: phone} : {}), ...(email ? {email} : {})};
       if (phone || email) gtag("set", "user_data", googleUser);
-      gtag("event", "conversion", {send_to: catchAdDestinations.hostLeadConversion, transaction_id: id, event_id: id});
+      gtag("event", "conversion", {send_to: destinations.hostLeadConversion, transaction_id: id, event_id: id});
       if (phone || email) {
-        fbq("init", catchAdDestinations.metaPixel, {...(phone ? {ph: phone.slice(1)} : {}), ...(email ? {em: email} : {})});
+        fbq("init", destinations.metaPixel, {...(phone ? {ph: phone.slice(1)} : {}), ...(email ? {em: email} : {})});
       }
-      fbq("track", "Lead", {content_category: "host", lead_kind: lead.kind}, {eventID: id});
+      metaTrack("Lead", {content_category: "host", lead_kind: lead.kind}, id);
       return true;
     },
   };

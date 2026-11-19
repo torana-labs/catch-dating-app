@@ -579,7 +579,7 @@ a recorded receipt.
 
 | Item | State | Where |
 | --- | --- | --- |
-| Separation | Blocked: transport choice open on #2063 | `adTags.ts` cannot host an isolated set as it stands (see below) |
+| Separation | Option A chosen (owner, 19 Nov 2026); Catch side isolated, organiser set next | `adTags.ts` destination sets and `trackSingle`; `adTagsIsolation.test.ts` |
 | Consent gate | Blocked with separation | One v5 receipt (`catch_marketing_consent_v5`), via `adTags.sync` |
 | Eligible routes | Route class proposed (#2102); lifecycle wiring waits on separation | `organizerAdPage` beside `publicAdPage`; server projection checks publication |
 | Event map | Builders and payload tests proposed (#2102) | `website/src/analytics/organizerTagEvents.ts` |
@@ -596,10 +596,16 @@ a recorded receipt.
   diagnostic `dataLayer`, `catchTagLayer`, campaign labels, click identifiers or
   acquisition context. Catch events never reach an organiser destination, and
   organiser events never reach Catch's destinations.
-  - Today Catch's Meta calls use `fbq("track", …)`, which reaches every
-    initialised pixel, and Catch's `gtag("set", …)` applies to every tag on its
-    layer. The proposal on #2063 moves Catch to `trackSingle` and gives the
-    organiser GA4 its own layer and `cookie_prefix`.
+  - The owner chose Option A on #2063 (19 Nov 2026): one transport, two
+    isolated destination sets, the iframe retired, and organiser tags must
+    never reduce Catch's own tracking. `createAdTags` takes a frozen Catch
+    destination set and sends every Catch Meta event with
+    `fbq("trackSingle", catchPixel, …)`, never the broadcasting `track`.
+    `adTagsIsolation.test.ts` pins that Catch's Google and Meta commands are
+    identical with and without another pixel and Google layer on the page.
+    The organiser set will use `trackSingle` with its own pixel and its own
+    Google layer and `cookie_prefix`, so Catch's `gtag("set", …)` never
+    reaches it.
   - `_fbp` stays shared on the Catch domain whichever option is chosen. The
     owner sign-off decides whether that is acceptable.
   - The existing sandboxed iframe runtime (`website/public/organizer-tracking-runtime.*`,
