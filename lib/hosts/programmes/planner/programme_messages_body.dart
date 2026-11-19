@@ -91,18 +91,29 @@ class HostProgrammeMessageRow extends StatelessWidget {
     return CatchIndexRow(
       title: message.name,
       onTap: onTap,
-      marker: switch (message.state) {
-        ProgramMessageState.next => CatchIndexRowTone.info,
-        ProgramMessageState.sent ||
-        ProgramMessageState.done => CatchIndexRowTone.neutral,
-        ProgramMessageState.paused => CatchIndexRowTone.warning,
-        _ => null,
+      density: CatchIndexRowSize.regular,
+      // Every message keeps its place on the timeline: a ring for one still
+      // to go, the programme colour for the next, a muted dot once sent.
+      leading: switch (message.state) {
+        ProgramMessageState.next => const CatchMarker(
+          tone: CatchMarkerTone.format,
+          format: CatchFormat.nightsOut,
+        ),
+        ProgramMessageState.sent || ProgramMessageState.done =>
+          const CatchMarker(tone: CatchMarkerTone.muted),
+        ProgramMessageState.paused => const CatchMarker(
+          tone: CatchMarkerTone.warning,
+        ),
+        _ => const CatchMarker(variant: CatchMarkerVariant.ring),
       },
       badge: CatchIndexRowBadge(
         label: hostProgrammeMessageStateLabel(l10n, message.state),
-        tone: message.state == ProgramMessageState.next
-            ? CatchBadgeTone.info
-            : CatchBadgeTone.neutral,
+        tone: switch (message.state) {
+          ProgramMessageState.next => CatchBadgeTone.info,
+          ProgramMessageState.sent ||
+          ProgramMessageState.done => CatchBadgeTone.success,
+          _ => CatchBadgeTone.neutral,
+        },
         format: message.state == ProgramMessageState.next
             ? CatchFormat.nightsOut
             : null,
@@ -114,7 +125,6 @@ class HostProgrammeMessageRow extends StatelessWidget {
       meta: message.sentCount > 0
           ? l10n.hostProgrammeMessagesSent(count: message.sentCount)
           : hostProgrammeMessageAudienceLabel(l10n, message.audience),
-      chevron: onTap != null,
     );
   }
 }

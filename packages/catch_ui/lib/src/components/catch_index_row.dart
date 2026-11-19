@@ -215,6 +215,23 @@ class CatchIndexRow extends StatelessWidget {
   /// The date tile's width; its height is [CatchSpacing.s16].
   static const double dateTileWidth = 56;
 
+  /// Where the line sits from the start: centred under the 10 px marker, or
+  /// under a marker that follows a [time].
+  static const double _lineInset =
+      (CatchSpacing.micro10 - CatchStroke.focusRing) / 2;
+  static const double _lineInsetAfterTime =
+      timeWidth + CatchSpacing.s3 + _lineInset;
+
+  /// The height of the title's first line, which a timeline marker centres
+  /// on.
+  double _titleLineHeight(BuildContext context) {
+    final style =
+        titleStyle ??
+        CatchTextVariant.titleRow.style(CatchRootScope.sizeClassOf(context));
+    final size = style.fontSize ?? CatchSpacing.s4;
+    return MediaQuery.textScalerOf(context).scale(size) * (style.height ?? 1);
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
@@ -397,13 +414,27 @@ class CatchIndexRow extends StatelessWidget {
               ),
             ),
           );
-    final lead = timeText != null && main != null
+    final markerLead = timeText != null && main != null
         ? Row(
             mainAxisSize: MainAxisSize.min,
             spacing: CatchSpacing.s3,
             children: [timeText, main],
           )
         : timeText ?? main;
+    // On a timeline the marker centres on the title's first line, so every
+    // step's line meets its marker however many lines the row has.
+    final joinsNext = CatchTimelineStepScope.joinsNextOf(context);
+    final onTimeline = joinsNext != null;
+    final lead = markerLead != null && onTimeline
+        ? SizedBox(
+            height: _titleLineHeight(context),
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              widthFactor: 1,
+              child: markerLead,
+            ),
+          )
+        : markerLead;
     final value = this.value;
     final valueText = value == null
         ? null
@@ -441,7 +472,7 @@ class CatchIndexRow extends StatelessWidget {
         Icon(CatchIcons.disclosure, size: CatchIconSize.xs, color: t.ink2),
     ];
     final row = Row(
-      crossAxisAlignment: hasBody
+      crossAxisAlignment: hasBody || (onTimeline && lead != null)
           ? CrossAxisAlignment.start
           : CrossAxisAlignment.center,
       children: [
@@ -531,27 +562,56 @@ class CatchIndexRow extends StatelessWidget {
         ),
       ),
     );
-    if (action == null) return rowSemantics;
     // The action keeps its own button beside the row's one tap target.
-    final withAction = Row(
+    final withAction = action == null
+        ? null
+        : Row(
+            children: [
+              Expanded(child: rowSemantics),
+              gapW12,
+              CatchButton(
+                label: action.label,
+                onPressed: action.onPressed,
+                variant: switch (action.variant) {
+                  CatchIndexRowActionVariant.secondary =>
+                    CatchButtonVariant.secondary,
+                  CatchIndexRowActionVariant.primary =>
+                    CatchButtonVariant.primary,
+                },
+                size: CatchButtonSize.sm,
+              ),
+            ],
+          );
+    final Widget result = withAction == null
+        ? rowSemantics
+        : system
+        ? withAction
+        : DecoratedBox(decoration: line, child: withAction);
+    if (joinsNext != true) return result;
+    // The marker's top within the row's padding, centred on the title line;
+    // the next row, a step of the same kind, puts its marker at the same
+    // height, so the line runs 3 px clear of both.
+    final markerTop = (_titleLineHeight(context) - CatchSpacing.micro10) / 2;
+    final pad = padding.top;
+    return Stack(
+      clipBehavior: Clip.none,
       children: [
-        Expanded(child: rowSemantics),
-        gapW12,
-        CatchButton(
-          label: action.label,
-          onPressed: action.onPressed,
-          variant: switch (action.variant) {
-            CatchIndexRowActionVariant.secondary =>
-              CatchButtonVariant.secondary,
-            CatchIndexRowActionVariant.primary => CatchButtonVariant.primary,
-          },
-          size: CatchButtonSize.sm,
+        result,
+        PositionedDirectional(
+          start: time != null ? _lineInsetAfterTime : _lineInset,
+          top: pad + markerTop + CatchSpacing.micro10 + CatchSpacing.micro3,
+          bottom: -(pad + markerTop - CatchSpacing.micro3),
+          width: CatchStroke.focusRing,
+          child: DecoratedBox(
+            key: const ValueKey('catch-index-row-timeline-line'),
+            decoration: BoxDecoration(
+              color: t.line,
+              borderRadius: BorderRadius.circular(CatchStroke.hairline),
+            ),
+          ),
         ),
       ],
     );
-    return system
-        ? withAction
-        : DecoratedBox(decoration: line, child: withAction);
   }
 
   /// The leading part the row draws itself: the date tile, the icon tile,
@@ -652,4 +712,31 @@ class CatchIndexRow extends StatelessWidget {
     CatchIndexRowTone.danger => CatchTextTone.danger,
     CatchIndexRowTone.info => CatchTextTone.info,
   };
+}
+
+/// Marks its child as one step of a timeline, so the [CatchIndexRow] inside
+/// lines its marker up with its title and, when [joinsNext], draws the 2 px
+/// line from its marker down to the next step's. A timeline `CatchSection`
+/// puts one on every row; the row places the line from its own time, density
+/// and title size, so the line joins the markers even when a feature widget
+/// wraps the row.
+class CatchTimelineStepScope extends InheritedWidget {
+  const CatchTimelineStepScope({
+    super.key,
+    required this.joinsNext,
+    required super.child,
+  });
+
+  /// Whether a line runs on from this step to the next one.
+  final bool joinsNext;
+
+  /// Whether a line runs on from the nearest step, or null outside a
+  /// timeline.
+  static bool? joinsNextOf(BuildContext context) => context
+      .dependOnInheritedWidgetOfExactType<CatchTimelineStepScope>()
+      ?.joinsNext;
+
+  @override
+  bool updateShouldNotify(CatchTimelineStepScope oldWidget) =>
+      joinsNext != oldWidget.joinsNext;
 }
