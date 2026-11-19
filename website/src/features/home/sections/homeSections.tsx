@@ -33,7 +33,7 @@ import {useAppDownloadCtas} from "../../marketing/useAppDownloadCtas";
 import {useFoundingHostOffer} from "../../marketing/useFoundingHostOffer";
 import {CityPicker} from "./CityPicker";
 import type {HomeFilter, HomePageController} from "../useHomePageController";
-import {useAppNoticeController} from "../useAppNoticeController";
+import {useAppNoticeController} from "../../marketing/useAppNoticeController";
 import {useLaunchNoticeController} from "../useLaunchNoticeController";
 import {useCityAlertsController} from "../leads/useCityAlertsController";
 import {useHostReferralController, type HostReferralField} from "../leads/useHostReferralController";
