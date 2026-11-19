@@ -43,6 +43,18 @@
       "surfaces": ["catch_host", "cli"],
       "linkAllowance": null,
       "summary": "Read one guest-list file (CSV, XLSX or vCard) for an event with the converter for its format, show what would be added or updated, and save exactly the reviewed preview to the event's private guest list. The caller manages the event's organizer and has a phone verified by code."
+    },
+    {
+      "commandId": "event.import-from-link",
+      "version": 1,
+      "callable": "importEventFromLink",
+      "payloadSchema": "contracts/callables/import_event_from_link_payload.schema.json",
+      "responseSchema": "contracts/callable_responses/import_event_from_link_response.schema.json",
+      "effect": "draft",
+      "caller": "phone_verified",
+      "surfaces": ["website", "catch_host", "cli"],
+      "linkAllowance": "web_instant_draft",
+      "summary": "Read one public event page or calendar and create a private draft event in the caller's try-it workspace from the event they choose."
     }
   ]
 }
