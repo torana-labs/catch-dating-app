@@ -54,13 +54,14 @@ export const playbookFooterVariants = ["guest", "host", "minimal"] as const;
 
 /**
  * The site components a `custom` section may name: the no-show calculator,
- * the guest app's launch notice (/app/), and the try-it tools. The /pricing/ bands whose
+ * the guest app's launch notice (/app/), the try-it tools and the numbers-only
+ * report on Reports and payouts. The /pricing/ bands whose
  * figures the shared fee model works out, or whose canvas layout no kit
  * section draws, are custom: the fee band with its calculator, the worked
  * examples, the cap, what the plan includes and the organisations band.
  */
 export const playbookCustomComponents = [
-  "noShowCalculator", "eventPageFromLink", "walkthroughSlots", "appLaunchNotice",
+  "noShowCalculator", "eventPageFromLink", "walkthroughSlots", "appLaunchNotice", "lastEventReport",
   "pricingCalculator", "pricingExamples", "pricingCap", "pricingIncluded", "pricingOrganisations",
 ] as const;
 

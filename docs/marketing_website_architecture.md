@@ -288,7 +288,15 @@ that uses a section or option no kit component draws yet
   the host's own places, events a month, ticket price (or a free event's
   cost per head) and no-show rate, with a what-if rate they slide. It states
   no rate, benchmark or result of its own; its fee line is
-  `content/pricing.ts`'s. `/playbooks/` and the `playbook_guide` pages
+  `content/pricing.ts`'s. Reports and payouts' numbers band is the
+  `lastEventReport` custom section (`features/marketing/LastEventReport.tsx`),
+  the numbers-only path of its try-it tool (owner, #2062 C7 option c): the
+  host's tickets sold, ticket price and how many came, and the fee they say
+  their current tool charges (a percentage and/or an amount per ticket),
+  worked out in the page into ticket sales, show-up rate, the fee from
+  `hostFeeQuote` and the difference, with no sign-in, request or storage. The
+  export upload needs `sales.import-past` and the phone step, so the page's
+  `try` and `start-try` bands stay `tryIt` until it ships. `/playbooks/` and the `playbook_guide` pages
   (`run-club`, `supper-club`, `quiz-night`, `racket-sports`) are `article`
   pages with one pricing line linking `/pricing/` and no typed fee figures.
   `/app/` is the `appLaunchNotice` custom section: the homepage's launch

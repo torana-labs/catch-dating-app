@@ -16,7 +16,9 @@ export type TryItToolKind = keyof typeof tryItToolCommands;
  * visible only when its command is listed (playbookPages.test.ts); whether
  * one is visible is still the page's own `status`, flipped once its command
  * is in production. guests.import-list, plan a night, past sales and form
- * import have no website tool yet, so their bands stay hidden.
+ * import have no website tool yet, so their bands stay hidden. Reports'
+ * numbers-only path needs no command: it is the lastEventReport custom
+ * section, worked out in the page, beside the hidden past-sales band.
  */
 export const websiteReadyTryItCommands = [
   "organizer.import-from-link",
