@@ -148,9 +148,13 @@ class CatchFieldInput extends StatelessWidget {
             : inlineAddAtRest && addText != null
             ? addSemanticLabel!
             : _title;
+        // An outlined box keeps its visible label out of the semantics tree,
+        // so the native input names the field and its optional state once.
+        final announcesOptional = _outlined
+            ? configuration.labelMode.isOptional
+            : configuration.labelMode == CatchFieldLabelTextMode.hiddenOptional;
         final effectiveSemanticLabel =
-            configuration.labelMode == CatchFieldLabelTextMode.hiddenOptional &&
-                semanticLabel != null
+            announcesOptional && semanticLabel != null
             ? configuration.copy.label.optionalSemantics(semanticLabel)
             : semanticLabel;
 
@@ -389,7 +393,7 @@ class CatchFieldInput extends StatelessWidget {
               : null;
           final labelStyle = CatchTextStyles.supporting(
             context,
-            color: t.ink,
+            color: hasError ? t.danger : t.ink,
           ).copyWith(fontWeight: FontWeight.w600);
           final labelText = label == null || label.isEmpty
               ? null
@@ -433,20 +437,22 @@ class CatchFieldInput extends StatelessWidget {
                   padding: const EdgeInsets.only(
                     bottom: CatchFieldTokens.boxLabelGap,
                   ),
-                  child: badgeLabel == null || badgeLabel.isEmpty
-                      ? labelText
-                      : Row(
-                          children: [
-                            Flexible(child: labelText),
-                            const SizedBox(width: CatchSpacing.s2),
-                            CatchBadge(
-                              label: badgeLabel,
-                              tone:
-                                  configuration.badgeTone ??
-                                  CatchBadgeTone.neutral,
-                            ),
-                          ],
-                        ),
+                  child: ExcludeSemantics(
+                    child: badgeLabel == null || badgeLabel.isEmpty
+                        ? labelText
+                        : Row(
+                            children: [
+                              Flexible(child: labelText),
+                              const SizedBox(width: CatchSpacing.s2),
+                              CatchBadge(
+                                label: badgeLabel,
+                                tone:
+                                    configuration.badgeTone ??
+                                    CatchBadgeTone.neutral,
+                              ),
+                            ],
+                          ),
+                  ),
                 ),
               ],
               AnimatedContainer(
