@@ -144,4 +144,3 @@ export const tryItCopy = {
   },
 } as const;
 
-export type TryItProblemCopyKey = keyof typeof tryItCopy.problems;
