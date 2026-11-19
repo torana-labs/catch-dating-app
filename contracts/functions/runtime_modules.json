@@ -816,7 +816,8 @@
     "ImportEventFromLinkCallablePayload",
     "CreatePromotionKitCallablePayload",
     "ImportFormFromLinkCallablePayload",
-    "PlanNightCallablePayload"
+    "PlanNightCallablePayload",
+    "SaveEventSuccessPlanSetupCallablePayload"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",
@@ -1054,6 +1055,7 @@
     "ImportEventFromLinkCallableResponse",
     "CreatePromotionKitCallableResponse",
     "ImportFormFromLinkCallableResponse",
-    "PlanNightCallableResponse"
+    "PlanNightCallableResponse",
+    "SaveEventSuccessPlanSetupCallableResponse"
   ]
 }

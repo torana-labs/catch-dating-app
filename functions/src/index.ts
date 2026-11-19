@@ -1033,6 +1033,7 @@ export {importEventFromLink} from "./commands/importEventFromLink";
 export {createPromotionKit} from "./commands/createPromotionKit";
 export {importFormFromLink} from "./commands/importFormFromLink";
 export {planNight} from "./commands/planNight";
+export {saveEventSuccessPlanSetup} from "./eventSuccess/saveEventSuccessPlanSetup";
 export {expireTryItWorkspaces} from "./commands/workspaceExpiry";
 export {importGuestList} from "./commands/importGuestList";
 

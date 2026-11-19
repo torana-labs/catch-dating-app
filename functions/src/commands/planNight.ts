@@ -7,6 +7,7 @@ import {validateCallableWithAjv} from "../shared/validation";
 import {planNight as buildNightPlan, type NightPlan} from "../eventSuccess/nightPlan";
 import {effectiveInteractionModelFor, eventSuccessPrimitivesFor} from "../eventSuccess/formatPrimitives";
 import {buildEventSuccessPlanDoc, type EventSuccessPlanDefaults} from "../events/mutateEvent";
+import {stagePlanSetupUpdate, type PlanSetupFields} from "../eventSuccess/planSetup";
 import type {EventDocument} from "../shared/generated/firestoreAdminTypes";
 import type {PlanNightCallablePayload} from "../shared/generated/planNightCallablePayload";
 import type {PlanNightCallableResponse} from "../shared/generated/planNightCallableResponse";
@@ -122,9 +123,9 @@ async function apply(db: FirebaseFirestore.Firestore, deps: PlanNightDeps, ctx: 
       marketId: "", serverTimestamp: deps.serverTimestamp});
     if (planSnap.exists) {
       const existing = planSnap.data() as Data;
-      tx.update(planRef, {playbookId: plan.playbookId, targetAttendeeCount: plan.guestCount,
-        structureConfig: {...(existing.structureConfig as Data | undefined ?? {}), ...unitFields(plan)},
-        updatedAt: deps.serverTimestamp()});
+      stagePlanSetupUpdate(tx, planRef, {playbookId: plan.playbookId, targetAttendeeCount: plan.guestCount,
+        structureConfig: {...(existing.structureConfig as Data | undefined ?? {}),
+          ...unitFields(plan)} as PlanSetupFields["structureConfig"]}, deps.serverTimestamp);
     } else {
       tx.create(planRef, deps.buildPlanDoc({
         defaults: {enabled: true, playbookId: plan.playbookId,
@@ -151,11 +152,13 @@ function refusalFor(event: EventDocument | undefined, organizerId: string, plan:
   return null;
 }
 
-/** The structure fields a server-created plan stores (createEvent's shape). */
+/** The structure fields the plan stores, with its topology and resource capacity. */
 function unitFields(plan: NightPlan): Data {
   const config = plan.structureConfig;
   return {unitKind: config.unitKind, unitSize: config.unitSize, unitCount: config.unitCount ?? null,
-    rotationIntervalMinutes: config.rotationIntervalMinutes ?? null};
+    rotationIntervalMinutes: config.rotationIntervalMinutes ?? null,
+    ...(config.topology !== undefined ? {topology: config.topology} : {}),
+    ...(config.resourceCapacity !== undefined ? {resourceCapacity: config.resourceCapacity} : {})};
 }
 
 /** A setup createEventRehearsal accepts, for a practice run of this night. */
