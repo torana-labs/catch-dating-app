@@ -6972,11 +6972,12 @@
       "checks": [
         "node --check operations/src/catch-cli/main.mjs",
         "node operations/scripts/check-command-catalog.mjs",
-        "node --test operations/test/catch-cli.test.mjs operations/test/command-catalog.test.mjs operations/test/command-client.test.mjs"
+        "node --test operations/test/catch-cli.test.mjs operations/test/command-catalog.test.mjs operations/test/command-client.test.mjs operations/test/command-tools.test.mjs"
       ],
       "impactPaths": [
         "operations/src/catch-cli/**",
         "operations/src/command-client/**",
+        "operations/src/command-tools/**",
         "operations/src/platform/canonical-json.mjs",
         "operations/src/platform/errors.mjs",
         "operations/src/platform/schema-dependencies.mjs",
@@ -6987,7 +6988,8 @@
         "contracts/commands/**",
         "contracts/shared/command_envelope.schema.json",
         "contracts/callables/**",
-        "contracts/callable_responses/**"
+        "contracts/callable_responses/**",
+        "operations/test/command-tools.test.mjs"
       ],
       "ciRequirements": {
         "repositoryView": "full",

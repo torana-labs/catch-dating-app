@@ -19,8 +19,8 @@
       "workspaceRoute",
       "indexRoutes"
     ],
-    "imperativePageRouteCount": 32,
-    "imperativePageTargetCount": 27
+    "imperativePageRouteCount": 33,
+    "imperativePageTargetCount": 28
   },
   "routes": [
     {
@@ -2107,6 +2107,15 @@
       "ordinal": 1,
       "presentationExpression": "(_)=>HostFormatsMixScreen(event:event,now:now)",
       "presentationTarget": "HostFormatsMixScreen",
+      "fullscreenDialogExpression": null
+    },
+    {
+      "siteId": "material-page:lib/hosts/live/live_tools_screen.dart:10d6881e7dd0c9235e99a17b3353f93d5f3a0baff83a5a19a1f8f6fcd5f035d9:1",
+      "routeExpression": "MaterialPageRoute<void>(builder:(_)=>HostLiveToolsScreen(event:event))",
+      "sourcePath": "lib/hosts/live/live_tools_screen.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostLiveToolsScreen(event:event)",
+      "presentationTarget": "HostLiveToolsScreen",
       "fullscreenDialogExpression": null
     },
     {

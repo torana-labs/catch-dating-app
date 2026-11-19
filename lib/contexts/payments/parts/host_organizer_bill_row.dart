@@ -97,10 +97,14 @@ String hostOrganizerBillPeriodLabel(HostOrganizerBill bill, String locale) {
       '${DateFormat.y(locale).format(last)}';
 }
 
-/// Whole-rupee money as the bills print it, such as ₹7,400.
+/// Whole-rupee money as the bills print it, such as ₹7,400 or ₹1,60,000.
+/// Rupees in English group the Indian way.
 NumberFormat hostOrganizerMoney(String locale, String currencyCode) =>
     NumberFormat.simpleCurrency(
-      locale: locale,
+      locale:
+          currencyCode == 'INR' && locale.split(RegExp('[-_]')).first == 'en'
+          ? 'en_IN'
+          : locale,
       name: currencyCode,
       decimalDigits: 0,
     );

@@ -297,9 +297,9 @@ host-visible organizer metrics through `recordOrganizerAnalyticsEvent` in
   outbound clicks, and event views can be accepted by the App Check-protected
   callable and written to BigQuery.
 - The waitlist form sends attribution and an event ID to `/api/join-waitlist`.
-- The Cloud Function stores attribution on `launchWaitlist` and writes a
-  `marketingConversionEvents/{eventId}` record for later server-side conversion
-  review or CAPI wiring.
+- The Cloud Function stores attribution on `launchWaitlist`. It no longer writes
+  a separate conversion record; ad conversions come from the sales intents
+  (`adConversionContexts`).
 
 Primary web events:
 

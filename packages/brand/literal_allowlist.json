@@ -2,7 +2,7 @@
   "domain": {
     "functions/src/operations/supplyIntake/autoPublish.ts": 1,
     "functions/src/waitlist/joinWaitlist.test.ts": 7,
-    "functions/src/waitlist/joinWaitlist.ts": 7,
+    "functions/src/waitlist/joinWaitlist.ts": 5,
     "operations/src/workflows/supply-intake/config/event_publication_policy.json": 1,
     "operations/test/supply-intake-event-publication.test.mjs": 1,
     "packages/web-ui/src/components/CatchMenu.stories.tsx": 1,

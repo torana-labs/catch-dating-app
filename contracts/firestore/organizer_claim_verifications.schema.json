@@ -20,6 +20,12 @@
       "enum": ["instagramMessage", "lumaDescription"],
       "x-catch-ownership": "callable-owned"
     },
+    "purpose": {
+      "description": "What the proof is for. Absent or claim: claiming the listing. importVerification: the owner proving an identity imported from a third party's public page; the proof target comes from the organizer's importProvenance, and success marks it verified.",
+      "type": "string",
+      "enum": ["claim", "importVerification"],
+      "x-catch-ownership": "callable-owned"
+    },
     "status": {
       "description": "awaitingProof until the proof arrives. An attempt still awaitingProof after expiresAt has expired; readers treat it so.",
       "type": "string",

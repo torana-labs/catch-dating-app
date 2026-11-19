@@ -250,30 +250,26 @@ function isIsoDate(value) {
 
 // Paths a tool names must exist: every file argument of a `node --test` or
 // `node --check` check, and every literal (non-glob) impactPath. A renamed or
-// deleted test file otherwise passes the manifest check and fails only when CI
-// runs the tool. A `cd <dir>` earlier in the same command makes later paths
-// relative to it. A path whose directory is not in the repository at all is a
-// build output an earlier check creates (functions/lib), so only paths under
-// a tracked directory are required.
+// deleted test file or folder otherwise passes the manifest check and fails
+// only when CI runs the tool. A `cd <dir>` earlier in the same command makes
+// later paths relative to it. The only exemption is a build output an earlier
+// check creates; buildOutputRoots lists those roots, and a test proves Git
+// ignores each one, so the list cannot hide a source folder.
 const globCharacters = /[*?[\]{}]/u;
+export const buildOutputRoots = Object.freeze(["functions/lib/"]);
 
 export function validateToolPaths(tools, {exists, isTrackedFolder}) {
   const errors = [];
-  const required = (file) => {
-    const directory = path.posix.dirname(file);
-    return directory === "." || isTrackedFolder(directory);
-  };
+  const builtOutput = (file) => buildOutputRoots.some((root) => file.startsWith(root));
   for (const tool of tools) {
     if (closedToolStatuses.includes(tool.status)) continue;
     const id = tool.id ?? "<missing>";
     for (const file of checkPathArguments(tool.checks ?? [])) {
-      if (required(file) && !exists(file)) errors.push(`${id}: check names ${file}, which does not exist.`);
+      if (!builtOutput(file) && !exists(file)) errors.push(`${id}: check names ${file}, which does not exist.`);
     }
     for (const entry of tool.impactPaths ?? []) {
-      if (globCharacters.test(entry) || entry.endsWith("/")) continue;
-      if (!exists(entry) && !isTrackedFolder(entry) && required(entry)) {
-        errors.push(`${id}: impactPath ${entry} does not exist.`);
-      }
+      if (globCharacters.test(entry) || entry.endsWith("/") || builtOutput(entry)) continue;
+      if (!exists(entry) && !isTrackedFolder(entry)) errors.push(`${id}: impactPath ${entry} does not exist.`);
     }
   }
   return errors;

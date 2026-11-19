@@ -1094,7 +1094,7 @@ export {onHostContactSummaryChanged, onHostContactTraitsSummaryChanged,
   onHostFormSummaryChanged, onHostEventSummaryChanged,
   onHostAudienceSummaryCoverageChanged, onHostGroupSummaryChanged,
   onHostResponseSummaryChanged, onHostApplicationSummaryChanged,
-  onHostApplicationEvidenceSummaryChanged, onHostApplicationGrantSummaryChanged,
+  onHostApplicationEvidenceSummaryChanged,
   onHostResponseConversionSummaryChanged,
   onHostResponseSourceLabelSummaryChanged,
   onHostResponseContactOriginChanged} from

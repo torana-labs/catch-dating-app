@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {spawnSync} from "node:child_process";
 import {
+  buildOutputRoots,
   checkPathArguments,
   markdownAnchors,
   sourceRulesFromManifest,
@@ -207,7 +209,7 @@ test("check arguments resolve node --test and node --check paths, following cd",
 
 test("a check or impactPath that names a missing file fails; build outputs and globs do not", () => {
   assert.deepEqual(paths([gate({impactPaths: ["tool/check_fixture.test.mjs", "lib/**/*.dart", "functions/src"]})]), []);
-  // functions/lib is a build output an earlier check creates: its directory is not tracked.
+  // functions/lib is a listed build output that an earlier check creates.
   assert.deepEqual(paths([gate({checks: ["npm --prefix functions run build", "node --test functions/lib/x.test.js",
     "node tool/check_fixture.mjs"]})]), []);
   assert.deepEqual(paths([gate({
@@ -219,4 +221,28 @@ test("a check or impactPath that names a missing file fails; build outputs and g
     "fixture:gate: impactPath functions/test/missing.test.cjs does not exist.",
   ]);
   assert.deepEqual(paths([retired({checks: undefined})]), []);
+});
+
+test("a path in a renamed or deleted folder fails; only listed build outputs are exempt", () => {
+  assert.deepEqual(paths([gate({
+    checks: ["node --test tool/moved_away/x.test.mjs", "node tool/check_fixture.mjs"],
+    impactPaths: ["tool/moved_away/helper.mjs", "packages/gone/lib/a.dart"],
+  })]), [
+    "fixture:gate: check names tool/moved_away/x.test.mjs, which does not exist.",
+    "fixture:gate: impactPath tool/moved_away/helper.mjs does not exist.",
+    "fixture:gate: impactPath packages/gone/lib/a.dart does not exist.",
+  ]);
+  assert.deepEqual(paths([gate({checks: ["node --test functions/lib/a/b.test.js", "node tool/check_fixture.mjs"],
+    impactPaths: ["functions/lib/a/b.js"]})]), []);
+});
+
+test("every exempt build-output root is ignored by Git, so it cannot hide source", () => {
+  assert.ok(buildOutputRoots.length > 0);
+  for (const root of buildOutputRoots) {
+    const probe = `${root}build-output-probe.js`;
+    const result = spawnSync("git", ["check-ignore", "-q", "--no-index", probe], {encoding: "utf8"});
+    assert.equal(result.status, 0, `${root} is not ignored by Git; only build outputs may be exempt`);
+    const tracked = spawnSync("git", ["ls-files", "--", root], {encoding: "utf8"});
+    assert.equal(tracked.stdout.trim(), "", `${root} holds tracked files`);
+  }
 });

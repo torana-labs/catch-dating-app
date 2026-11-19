@@ -48,6 +48,7 @@ import {
 } from "./identityVerification/methods";
 import {
   verificationPurpose,
+  type VerificationPurposeId,
   type VerifiedProof,
 } from "./identityVerification/purposes";
 
@@ -160,13 +161,14 @@ export async function getOrganizerClaimVerificationOptionsHandler(
     throw new HttpsError("not-found", "Organizer listing not found.");
   }
   const organizer = requireDoc<OrganizerDocument>(snap, "OrganizerDocument");
-  verificationPurpose("claim").assertEligible(organizer, uid);
+  const purpose = verificationPurpose(data.purpose);
+  purpose.assertEligible(organizer, uid);
   const config = deps.config();
   const env = methodEnvironment(deps);
   const methods = await Promise.all(VERIFICATION_METHODS.map(
     async (method) => {
       const offered = await method.offered(env);
-      const proofTarget = method.proofTarget(organizer);
+      const proofTarget = purpose.proofTarget(method, organizer);
       return {
         method: method.id,
         available: offered && proofTarget !== null,
@@ -194,7 +196,7 @@ export async function startOrganizerClaimVerificationHandler(
     normalizePayload);
   const config = deps.config();
   const method = verificationMethod(data.method);
-  const purpose = verificationPurpose("claim");
+  const purpose = verificationPurpose(data.purpose);
   const instagram = method.reservesCode;
   if (!(await method.startable(methodEnvironment(deps)))) {
     throw new HttpsError("failed-precondition",
@@ -205,7 +207,7 @@ export async function startOrganizerClaimVerificationHandler(
   await deps.checkRateLimit?.(db, requesterUid,
     "startOrganizerClaimVerification", startLimit);
   const attemptId = organizerClaimAttemptId(data.organizerId, requesterUid,
-    data.method);
+    data.method, purpose.id);
   const attemptRef = db.collection(collections.attempts).doc(attemptId);
   // Several candidates make a clash with another live code a non-event.
   const candidates = [...new Set(Array.from({length: 4}, deps.randomCode))];
@@ -232,9 +234,9 @@ export async function startOrganizerClaimVerificationHandler(
     if (!userSnap.exists || !isAccountReadyUserProfile(
       requireDoc<UserProfileDocument>(userSnap, "UserProfileDocument"))) {
       throw new HttpsError("failed-precondition",
-        "Finish your Catch account before you claim a page.");
+        purpose.accountNotReadyMessage);
     }
-    const proofTarget = method.proofTarget(organizer);
+    const proofTarget = purpose.proofTarget(method, organizer);
     if (!proofTarget) {
       throw new HttpsError("failed-precondition", method.noTargetMessage);
     }
@@ -273,6 +275,8 @@ export async function startOrganizerClaimVerificationHandler(
       organizerId: data.organizerId,
       requesterUid,
       method: data.method,
+      // A claim attempt is stored as before; another purpose names itself.
+      ...(purpose.id === "claim" ? {} : {purpose: purpose.id}),
       status: "awaitingProof",
       code,
       proofTarget,
@@ -677,14 +681,20 @@ function startResponse(
   };
 }
 
-/** One attempt per listing, account and method; starting again renews it. */
+/**
+ * One attempt per listing, account, method and purpose; starting again
+ * renews it. A claim keeps the id it always had.
+ */
 export function organizerClaimAttemptId(
   organizerId: string,
   uid: string,
-  method: ClaimMethod
+  method: ClaimMethod,
+  purpose: VerificationPurposeId = "claim"
 ): string {
+  const key = purpose === "claim" ? `${organizerId}:${uid}:${method}` :
+    `${organizerId}:${uid}:${method}:${purpose}`;
   const hash = crypto.createHash("sha256")
-    .update(`${organizerId}:${uid}:${method}`).digest("hex").slice(0, 24);
+    .update(key).digest("hex").slice(0, 24);
   return `claim_attempt_${hash}`;
 }
 

@@ -38,6 +38,7 @@ class HostLiveBody extends StatelessWidget {
     this.changingStep = false,
     this.alerts = const HostLiveNightAlerts(),
     this.seats = false,
+    this.onTools,
   });
 
   final HostLiveState state;
@@ -66,6 +67,10 @@ class HostLiveBody extends StatelessWidget {
   /// The night seats guests by a saved layout, so the Room view (and its
   /// seat moves) shows on a phone too.
   final bool seats;
+
+  /// Opens night tools: settings, departures, pace groups and the full
+  /// help and delivery queues; null hides it.
+  final VoidCallback? onTools;
 
   /// Guests left out and open intro requests; each kind shows as one row
   /// in Needs you now that opens the full list.
@@ -205,13 +210,30 @@ class HostLiveBody extends StatelessWidget {
           ),
       ],
     );
-    final message = CatchButton(
+    final messageButton = CatchButton(
       label: l10n.hostLiveMessageEveryone,
       leading: CatchIcon(CatchIcons.chat, size: CatchIconSize.md),
       variant: CatchButtonVariant.secondary,
       fullWidth: true,
       onPressed: onMessage,
     );
+    final tools = onTools;
+    final message = tools == null
+        ? messageButton
+        : CatchStack(
+            gap: CatchStackGap.g8,
+            children: [
+              messageButton,
+              CatchButton(
+                key: const ValueKey<String>('host-live-tools'),
+                label: l10n.hostLiveTools,
+                leading: CatchIcon(CatchIcons.settings, size: CatchIconSize.md),
+                variant: CatchButtonVariant.secondary,
+                fullWidth: true,
+                onPressed: tools,
+              ),
+            ],
+          );
 
     if (expanded) {
       final scores = state.scores

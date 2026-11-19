@@ -31661,7 +31661,7 @@
   "@hostCreatePlaceNeeded": {"description": "Create when-and-where place validation.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.create"},
   "hostCreateChange": "Change",
   "@hostCreateChange": {"description": "Create when-and-where action that changes the place.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.create"},
-  "hostCreateHowToFindYou": "How to find you · optional",
+  "hostCreateHowToFindYou": "How to find you",
   "@hostCreateHowToFindYou": {"description": "Create when-and-where directions field title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.create"},
   "hostCreateOnTheMap": "{place} on the map",
   "@hostCreateOnTheMap": {"description": "Create when-and-where map semantic label.", "placeholders": {"place": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.create"},
@@ -31709,7 +31709,7 @@
   "@hostCreateEditStepLabel": {"description": "Create plan step row edit semantic label.", "placeholders": {"title": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.create"},
   "hostCreateStepWhat": "What happens",
   "@hostCreateStepWhat": {"description": "Create plan step sheet title field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.create"},
-  "hostCreateStepNote": "Note · optional",
+  "hostCreateStepNote": "Note",
   "@hostCreateStepNote": {"description": "Create plan step sheet note field.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.create"},
   "hostCreateMinutes": "Minutes",
   "@hostCreateMinutes": {"description": "Create plan step sheet duration title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.create"},
@@ -32772,5 +32772,7 @@
   "hostEventsGuestSourcesTitle": "Guest sources",
   "@hostEventsGuestSourcesTitle": {"description": "Workspace row and screen title: where an event's guests come from.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
   "hostEventsGuestSourcesBody": "Catch registration, a guest file, Luma, and forwarding the list",
-  "@hostEventsGuestSourcesBody": {"description": "Workspace guest sources row subtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"}
+  "@hostEventsGuestSourcesBody": {"description": "Workspace guest sources row subtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.events"},
+  "hostLiveTools": "Night tools",
+  "@hostLiveTools": {"description": "Live console, run and crawl boards: opens the night's assistance tools (settings, departures, pace groups, help and delivery queues).", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.live"}
 }
