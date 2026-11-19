@@ -135,7 +135,6 @@ export const tryItCopy = {
       confirm: "Make my links",
       done: {
         title: "Your tracked links",
-        lead: "Each link counts its own visits, sign-ups and check-ins. Nothing has been sent to anyone.",
         channel: "Place",
         promoter: "Person",
         /** The QR code's accessible name: {label} is the link's name. */

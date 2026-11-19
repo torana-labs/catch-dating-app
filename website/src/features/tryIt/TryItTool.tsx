@@ -50,7 +50,7 @@ function claimHref(organizerId: string): string {
 }
 
 /** What the organiser import read from the page: the parts it found, as rows. */
-function OrganizerFound({proposal}: {proposal: TryItOrganizerProposal}) {
+function OrganizerFound({proposal, verifyNote = false}: {proposal: TryItOrganizerProposal; verifyNote?: boolean}) {
   const found = copy.tools.organizer.found;
   const rows: {title: string; value: string}[] = [];
   if (proposal.name) rows.push({title: found.name, value: proposal.name});
@@ -63,14 +63,14 @@ function OrganizerFound({proposal}: {proposal: TryItOrganizerProposal}) {
         <CatchSection container="tile" title={found.title}>
           {rows.map((row) => <CatchIndexRow density="compact" key={row.title} subtitle={row.value} title={row.title} wrap />)}
           {proposal.description ? <CatchIndexRow body={proposal.description} density="compact" title={found.about} wrap /> : null}
-          {proposal.eventCount ? (
-            <CatchIndexRow density="compact" title={fill(found.events, {count: String(proposal.eventCount)})} wrap
-              body={proposal.events.length ? proposal.events.slice(0, 3).map((event) =>
-                [event.title ?? copy.choose.noTitle, tryItEventWhen(event.startAt)].join(" · ")).join("\n") : undefined} />
-          ) : null}
+          {proposal.eventCount ? <CatchIndexRow density="compact" title={fill(found.events, {count: String(proposal.eventCount)})} wrap /> : null}
+          {proposal.events.slice(0, 3).map((event) => (
+            <CatchIndexRow density="compact" key={`${event.sourceUrl}-${event.startAt}`} subtitle={tryItEventWhen(event.startAt)}
+              title={event.title ?? copy.choose.noTitle} wrap />
+          ))}
         </CatchSection>
       ) : null}
-      {proposal.verificationNeeded ? <CatchText as="p" tone="secondary" variant="body-small">{found.verify}</CatchText> : null}
+      {verifyNote && proposal.verificationNeeded ? <CatchText as="p" tone="secondary" variant="body-small">{found.verify}</CatchText> : null}
     </CatchStack>
   );
 }
@@ -289,7 +289,7 @@ function StageBody({controller, form, tool, placement, analyticsPlacement}: TryI
       return (
         <CatchStack gap={16}>
           <SummaryText live summary={stage.summary} />
-          {stage.step === "organizer" && stage.proposal ? <OrganizerFound proposal={stage.proposal} /> : null}
+          {stage.step === "organizer" && stage.proposal ? <OrganizerFound proposal={stage.proposal} verifyNote /> : null}
           {stage.step === "event" ? (
             <CatchSection container="tile" title={copy.tools.event.draft.title}>
               <CatchIndexRow density="compact" status={copy.tools.event.draft.status} title={stage.draft.name} wrap
@@ -299,7 +299,6 @@ function StageBody({controller, form, tool, placement, analyticsPlacement}: TryI
           {stage.step === "event" ? <CatchText as="p" tone="secondary" variant="body">{copy.tools.event.draft.lead}</CatchText> : null}
           {stage.step === "kit" ? (
             <CatchStack gap={12}>
-              <CatchText as="p" tone="secondary" variant="body">{copy.tools.kit.done.lead}</CatchText>
               <CatchSection container="tile" title={copy.tools.kit.done.title}>
                 {stage.links.map((link) => (
                   <CatchIndexRow density="compact" key={link.label} title={link.label} wrap
