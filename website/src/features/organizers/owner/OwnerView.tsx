@@ -1,4 +1,6 @@
+import {useEffect} from "react";
 import {CatchButton, CatchPageTabBar, CatchStack, CatchSurface, CatchText} from "@catch/web-ui";
+import {holdAdTagsForPrivateSurface} from "../../../analytics";
 import {ownerViewCopy} from "../../../content/ownerView";
 import {SignInButton} from "../../account/SignInSheet";
 import type {OrganizerEventView} from "../organizerPageView";
@@ -24,7 +26,11 @@ export function OwnerView({controller, displayUrl, events, name, readAt}: {
   name: string;
   readAt: number;
 }) {
-  if (controller.hidden || !controller.data || !controller.role) return null;
+  const visible = !controller.hidden && !!controller.data && !!controller.role;
+  // The owner view is an account surface on a public path: no advertising tag
+  // (Catch's or the organiser's) sends while it is shown (#2063).
+  useEffect(() => visible ? holdAdTagsForPrivateSurface() : undefined, [visible]);
+  if (!visible || !controller.role) return null;
   const {tab, tabs, open} = controller;
   return (
     <CatchSurface aria-label={copy.bar.label} as="section" block="tile">
