@@ -1,7 +1,7 @@
 import {describe, expect, it} from "vitest";
 import {brand} from "@catch/brand";
 import type {AdBooking} from "./adTags";
-import {organizerAdPage, publicAdPage} from "./catchMeasurement";
+import {catchOrganizerProfilePage, organizerAdPage, publicAdPage} from "./catchMeasurement";
 import {newOrganizerTagEventId, organizerBeginCheckout, organizerPageView, organizerPurchase,
   organizerViewContent} from "./organizerTagEvents";
 
@@ -31,14 +31,34 @@ describe("organiser tag eligible routes", () => {
     expect(organizerAdPage(path)).toBeNull();
   });
 
-  it("refuses any query and non-anchor hash, so nothing from the address reaches a tag", () => {
-    expect(organizerAdPage("/events/synthetic-run/", "?fbclid=abcdefghijkl")).toBeNull();
-    expect(organizerAdPage("/events/synthetic-run/", "?utm_source=meta")).toBeNull();
+  it("allows only the ad-click query keys fbclid, gclid and utm_* (owner decision, 19 Nov 2026)", () => {
+    for (const search of ["?fbclid=abcdefghijkl", "?gclid=abcdefghijkl", "?utm_source=meta&utm_medium=paid_social",
+      "?utm_campaign=autumn&utm_content=hero&utm_term=run&utm_id=7&fbclid=abcdefghijkl", "?"]) {
+      expect(organizerAdPage("/events/synthetic-run/", search)?.kind).toBe("event");
+      expect(organizerAdPage("/organizers/harbour-line-run-club/", search)?.kind).toBe("organizer");
+    }
+  });
+
+  it("refuses any other query key, a repeated key and a non-anchor hash", () => {
+    for (const search of ["?email=guest@example.com", "?fbclid=abcdefghijkl&phone=1", "?gbraid=abcdefghijkl", "?wbraid=abc",
+      "?utm_unknown=x", "?ref=partner", "?gclid=a&gclid=b", "?token=abc", "?q=run"]) {
+      expect(organizerAdPage("/events/synthetic-run/", search)).toBeNull();
+    }
     expect(organizerAdPage("/organizers/harbour-line-run-club/", "", "#a=b&c")).toBeNull();
     expect(organizerAdPage("/organizers/harbour-line-run-club/", "", "#events")?.kind).toBe("organizer");
   });
 
-  it("keeps Catch's own route class unchanged: organiser pages stay non-public for Catch tags", () => {
+  it("gives Catch's own tags the same organiser profile routes, never fewer (#2063 owner condition)", () => {
+    for (const path of ["/organizers/harbour-line-run-club/", "/organizers/mumbai/harbour-line-run-club/"]) {
+      expect(catchOrganizerProfilePage(path)).toBe(organizerAdPage(path)!.path);
+    }
+    for (const path of ["/organizers/", "/organizers/harbour-line-run-club/claim/", "/organizers/harbour-line-run-club/owner/",
+      "/organizers/a/b/c/", "/organizers/Harbour/", "/events/synthetic-run/", "/claim/harbour-line-run-club/"]) {
+      expect(catchOrganizerProfilePage(path)).toBeNull();
+    }
+  });
+
+  it("keeps organiser pages closed in publicAdPage until the server classifies the organiser (fail closed)", () => {
     expect(publicAdPage("/organizers/harbour-line-run-club/")).toBeNull();
     expect(publicAdPage("/events/synthetic-run/")).toBe("/events/synthetic-run/");
   });
