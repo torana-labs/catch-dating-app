@@ -18,6 +18,15 @@ const tokenNames = declared(tokens);
 // passes down to the layouts inside it.
 const layoutVariables = new Set(Object.values(sheets).flatMap((css) => [...declared(css)]));
 
+/**
+ * A part steps either on the page (`catch-page width < 840px`, the expanded
+ * window size) or on its own width: a container it declares in the same
+ * sheet (`container: <name> / inline-size`), queried with `width >= Npx`,
+ * where N follows from the part's minimum item width.
+ */
+const ownContainers = (css: string) => new Set([...css.matchAll(/container:\s*([\w-]+)\s*\/\s*inline-size/g)].map((match) => match[1]));
+const ownStep = (css: string, name: string, condition: string) => ownContainers(css).has(name) && /^width >= \d+px$/.test(condition);
+
 describe("Website v2 layout tokens", () => {
   for (const [name, css] of Object.entries(sheets)) {
     it(`${name} reads only generated tokens and layout variables`, () => {
@@ -32,6 +41,7 @@ describe("Website v2 layout tokens", () => {
     expect(expanded).toBe("840");
     for (const css of Object.values(sheets)) {
       for (const query of css.matchAll(/@container\s+([\w-]+)\s*\(([^)]*)\)/g)) {
+        if (ownStep(css, query[1], query[2].trim())) continue;
         expect(query[1]).toBe("catch-page");
         expect(query[2].trim()).toBe(`width < ${expanded}px`);
       }
