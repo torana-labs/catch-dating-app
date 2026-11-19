@@ -8,6 +8,7 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_attention_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
+import 'package:catch_dating_app/contexts/insights/parts/host_analytics_metric_tile.dart';
 import 'package:catch_dating_app/hosts/today/host_today_state.dart';
 import 'package:catch_kernel/city_catalog.dart';
 import 'package:catch_platform/cache/app_clock.dart';
@@ -219,6 +220,7 @@ List<HostTodayStat>? _stats(Ref ref, HostTodayRequest request) {
     String id,
     HostTodayStatKind kind, {
     String? currencyCode,
+    HostAnalyticsFigure? figure,
   }) {
     final card = cards.where((card) => card.id == id).firstOrNull;
     if (card == null || card.status == HostAnalyticsMetricStatus.missing) {
@@ -229,6 +231,7 @@ List<HostTodayStat>? _stats(Ref ref, HostTodayRequest request) {
       value: card.value,
       previousValue: card.previousValue,
       currencyCode: currencyCode,
+      figure: figure,
     );
   }
 
@@ -239,6 +242,12 @@ List<HostTodayStat>? _stats(Ref ref, HostTodayRequest request) {
       HostTodayStatKind.ticketSales,
       currencyCode: currencyCodeForCityName(request.cityName),
     ),
+    ?stat(
+      HostAnalyticsMetricIds.cameBackRate,
+      HostTodayStatKind.cameBack,
+      figure: HostAnalyticsFigure.percent,
+    ),
+    ?stat(HostAnalyticsMetricIds.followers, HostTodayStatKind.followers),
   ]);
 }
 
