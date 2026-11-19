@@ -144,14 +144,18 @@ describe("a listing Catch sourced, in review", () => {
     render(<InboxScreen canFillIn={false} model={inbox} onSelect={vi.fn()} selectedItemId={listing.itemId} uid="uid-1" />);
     return approveListing;
   };
-  const checkAll = () => screen.getAllByRole("checkbox").filter((box) => box.getAttribute("type") === "checkbox")
-    .forEach((box) => { if (!(box as HTMLInputElement).checked) fireEvent.click(box); });
+  const formatLabels = new Set(["Run clubs", "Racket sports", "Pickleball", "Padel", "Tennis", "Badminton", "Supper clubs",
+    "Quiz nights", "Yoga and fitness", "Workshops", "Book clubs", "Outdoors"]);
+  // Ticks every checklist item, leaving the format choices alone.
+  const checkAll = () => screen.getAllByRole<HTMLInputElement>("checkbox")
+    .filter((box) => !formatLabels.has(box.closest("label")?.textContent?.trim() ?? ""))
+    .forEach((box) => { if (!box.checked) fireEvent.click(box); });
 
   it("needs its formats and the programmatic checks, and tags the pilot cohort without Sales work", async () => {
     const approveListing = open("nomination");
     const approve = () => screen.getByRole<HTMLButtonElement>("button", {name: "Approve and publish unclaimed"});
     // The nomination's format comes pre-picked; nightlife is never offered.
-    expect(screen.getByRole("checkbox", {name: "Run clubs"}).getAttribute("aria-checked")).toBe("true");
+    expect(screen.getByRole<HTMLInputElement>("checkbox", {name: "Run clubs"}).checked).toBe(true);
     expect(screen.queryByRole("checkbox", {name: /Nights out|Nightlife/u})).toBeNull();
     expect((screen.getByRole("textbox", {name: /Listing cohort/u}) as HTMLInputElement).value).toBe("pilot-indore-1");
     for (const label of ["The city comes from their events or their own pages, not from the nomination",

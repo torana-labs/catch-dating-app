@@ -1,4 +1,4 @@
-import {CatchButton, CatchChoiceInput, CatchField, CatchGap, CatchSheet, CatchLegacyText} from "@catch/web-ui";
+import {CatchButton, CatchCheckboxInput, CatchField, CatchGap, CatchSheet, CatchLegacyText} from "@catch/web-ui";
 import {useState} from "react";
 import {listingFormatLabel, listingFormats, maxListingFormats, type ListingFormat} from "../../../shared/config/listingFormats";
 import {selectChoices} from "../controllers/salesLabels";
@@ -11,8 +11,11 @@ function nominationLinks(text: string): string[] {
   return [...new Set(text.split("\n").map((line) => line.trim()).filter(Boolean))];
 }
 
-/** Copy for the format picker's label; it is never optional. */
-const formatFieldCopy = {optionalLabel: "Optional", optionalSuffix: "", optionalSemantics: (label: string) => label};
+function toggled(current: ReadonlySet<ListingFormat>, format: ListingFormat, on: boolean): ReadonlySet<ListingFormat> {
+  const next = new Set(current);
+  if (on) next.add(format); else next.delete(format);
+  return next;
+}
 
 function nominationProblem(name: string, city: string, urls: string[], formats: ReadonlySet<ListingFormat>): string | null {
   if (!city.trim()) return "Add the city where they run events.";
@@ -78,8 +81,11 @@ export function SalesAddHostWorkspace({canAddExisting, onAdded, onClose, onError
             upcoming events. Staff review the draft in the Inbox, and nothing is published before then.</CatchLegacyText>
           <CatchField recipe="input" title="Organizer name" maxLength={160} value={name} onChanged={setName} />
           <CatchField recipe="input" title="City" maxLength={80} value={city} onChanged={setCity} required />
-          <CatchChoiceInput<ListingFormat> recipe="form" label="What do they run?" copy={formatFieldCopy} mode="multiple" allowEmptySelection
-            values={listingFormats} itemLabelBuilder={listingFormatLabel} selected={formats} onChanged={setFormats} />
+          <CatchLegacyText as="span" variant="fieldLabel" color="ink2">What do they run?</CatchLegacyText>
+          <CatchGap size="inline" direction="horizontal" wrap>
+            {listingFormats.map((format) => <CatchCheckboxInput key={format} label={listingFormatLabel(format)} value={formats.has(format)}
+              onChanged={(on) => setFormats((current) => toggled(current, format, on))} />)}
+          </CatchGap>
           <CatchLegacyText as="p" variant="supporting">{`Pick up to ${maxListingFormats}. The approved page counts toward these formats' city pages.`}</CatchLegacyText>
           <CatchField recipe="input" title="Links, one per line" maxLines={4} value={links} onChanged={setLinks}
             helperText="Their website, Instagram, Luma, District or Urbanaut pages." />

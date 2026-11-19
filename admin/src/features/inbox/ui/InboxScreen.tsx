@@ -2,12 +2,12 @@ import {
   CatchBadge,
   CatchButton,
   CatchCheckboxInput,
-  CatchChoiceInput,
   CatchDock,
   CatchEmptyState,
   CatchField,
   CatchGap,
   CatchIndexRow,
+  CatchLegacyText,
   CatchMetaRow,
   CatchPaneLayout,
   CatchSection,
@@ -382,7 +382,21 @@ const programmaticChecklistItems: Array<[keyof Checklist, string]> = [
   ["datingFramingReviewed", "Nothing frames them as dating or singles"],
   ["personalDataReviewed", "No personal data: no founder names or personal phone numbers"],
 ];
-const formatFieldCopy = {optionalLabel: "Optional", optionalSuffix: "", optionalSemantics: (label: string) => label};
+
+/** One checkbox per format a listing Catch sources may carry; nightlife is never offered. */
+function formatChoices(label: string, formats: ReadonlySet<ListingFormat>, onChanged: (next: ReadonlySet<ListingFormat>) => void) {
+  return <>
+    <CatchLegacyText as="span" variant="fieldLabel" color="ink2">{label}</CatchLegacyText>
+    <CatchGap size="inline" direction="horizontal" wrap>
+      {listingFormats.map((format) => <CatchCheckboxInput key={format} label={listingFormatLabel(format)} value={formats.has(format)}
+        onChanged={(on) => {
+          const next = new Set(formats);
+          if (on) next.add(format); else next.delete(format);
+          onChanged(next);
+        }} />)}
+    </CatchGap>
+  </>;
+}
 const cohortPattern = /^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$/u;
 const possibleDuplicateGap = "possible_duplicate_organizer";
 const bandLabels: Record<string, string> = {
@@ -481,9 +495,8 @@ function ListingApprovalSheet({controller, requestId, review, canApprove, onClos
             <CatchField recipe="select" title="Organizer type" value={organizerType} values={organizerTypes.map((entry) => entry.value)}
               itemLabelBuilder={(value) => organizerTypes.find((entry) => entry.value === value)?.label ?? value}
               onChanged={(value) => setOrganizerType(value ?? "community")} />
-            <CatchChoiceInput<ListingFormat> recipe="form" label={programmatic ? "Formats (at least one)" : "Formats"} copy={formatFieldCopy}
-              mode="multiple" allowEmptySelection values={listingFormats} itemLabelBuilder={listingFormatLabel} selected={formats}
-              onChanged={setFormats} />
+            {formatChoices(programmatic ? `Formats (at least one, at most ${maxListingFormats})` : `Formats (at most ${maxListingFormats})`,
+              formats, setFormats)}
             {programmatic ? <>
               <CatchField recipe="input" title="Listing cohort" maxLength={64} value={cohortId}
                 onChanged={(value) => setCohortId(value.trim().toLowerCase())}
@@ -528,8 +541,7 @@ function FillInSheet({controller, item, onClose}: {
       <CatchGap size="related">
         <CatchField recipe="input" title="Organizer name" maxLength={160} value={name} onChanged={setName} />
         <CatchField recipe="input" title="City" maxLength={80} value={city} onChanged={setCity} />
-        <CatchChoiceInput<ListingFormat> recipe="form" label="What do they run? (at least one)" copy={formatFieldCopy} mode="multiple"
-          allowEmptySelection values={listingFormats} itemLabelBuilder={listingFormatLabel} selected={formats} onChanged={setFormats} />
+        {formatChoices(`What do they run? (at least one, at most ${maxListingFormats})`, formats, setFormats)}
         <CatchField recipe="input" title="Links, one per line" maxLines={4} value={links} onChanged={setLinks}
           helperText={badLink ? `Links start with https://. Check "${badLink}".` : "Optional. Leave out any page Catch could not read."} />
         <CatchField recipe="input" title="What should the reviewer know?" maxLines={3} maxLength={2000} value={notes} onChanged={setNotes} />
