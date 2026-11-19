@@ -348,7 +348,7 @@ test("function params report live values, mixed deployments and pending GitHub v
   };
   const result = compareFunctionParams({
     envs: ["dev", "prod"],
-    githubVariables: {byEnvironment: {dev: {GATE_ENABLED: "true"}, "prod-backend": {KEY_ID: "rzp_live_other"}}},
+    githubVariables: {byEnvironment: {dev: {GATE_ENABLED: "true"}, prod: {KEY_ID: "rzp_live_other"}}},
     liveParams,
     policy: policy(),
     repo: repoState(),
@@ -468,7 +468,7 @@ test("the CLI collects only read-only metadata, survives an unavailable source a
       return {status: 0, stdout: JSON.stringify({result: {parameters: {}, version: {versionNumber: "1"}}, status: "success"})};
     }
     if (command === "gh" && args[0] === "api") {
-      return {status: 0, stdout: JSON.stringify({environments: [{name: "dev"}, {name: "prod-backend"}]})};
+      return {status: 0, stdout: JSON.stringify({environments: [{name: "dev"}, {name: "prod"}]})};
     }
     if (command === "gh") {
       return {status: 0, stdout: JSON.stringify([{name: "KEY_ID", value: secretLookingIdentity}])};
@@ -501,7 +501,7 @@ test("the CLI collects only read-only metadata, survives an unavailable source a
     }
   }
   assert.ok(commands.includes("firebase functions:list --project catchdates-dev --json"));
-  assert.ok(commands.includes("gh variable list --env prod-backend --json name,value"));
+  assert.ok(commands.includes("gh variable list --env prod --json name,value"));
 });
 
 test("policy-only mode reads a real repository layout offline and fails closed on a new switch", async () => {

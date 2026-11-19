@@ -2,7 +2,7 @@ import {acquisitionRoute, approvedCampaignLabels, createCatchMeasurementControll
   type CatchAcquisitionEvent, type AcquisitionForm, type MeasurementConsent} from "./analytics/catchMeasurement.ts";
 import {browserAttribution, catchAttributionKey, catchMeasurementMode, currentConsentVersion, publicAdPage,
   type CatchMeasurementMode} from "./analytics/catchMeasurement.ts";
-import {adTags, type AdBooking, type AdEventPageFacts, type AdHostLead} from "./analytics/adTags.ts";
+import {adTags, type AdBooking, type AdEventPageFacts, type AdHostLead, type OrganizerAdDestinations} from "./analytics/adTags.ts";
 import {isPrivateEventUpdatePath} from "./analytics/privateRoutes.ts";
 import type {JoinWaitlistHTTPRequest} from "./shared/contracts/generated/joinWaitlistHttpRequest";
 import {brand} from "@catch/brand";
@@ -227,22 +227,48 @@ export function trackHostLeadAccepted(lead: AdHostLead, submissionConsent: Marke
   return adTags.hostLead(lead);
 }
 
-/** A public event page was shown (`adTags.viewItem`). */
+/**
+ * A public event page was shown (`adTags.viewItem`). The organiser set, when
+ * one is published for this event, gets its own `view_item` / `ViewContent`;
+ * the return value is Catch's alone.
+ */
 export function trackEventPageViewed(facts: AdEventPageFacts) {
   refreshMeasurementContext();
-  return adTags.viewItem(facts);
+  const sent = adTags.viewItem(facts);
+  adTags.organizerViewItem(facts);
+  return sent;
 }
 
-/** A live paid checkout opened (`adTags.beginCheckout`). */
+/** A live paid checkout opened (`adTags.beginCheckout`, and the organiser set's twin). */
 export function trackCheckoutOpened(booking: AdBooking) {
   refreshMeasurementContext();
-  return adTags.beginCheckout(booking);
+  const sent = adTags.beginCheckout(booking);
+  adTags.organizerBeginCheckout(booking);
+  return sent;
 }
 
-/** A booking this browser checked out was confirmed (`adTags.purchase`). */
+/** A booking this browser checked out was confirmed (`adTags.purchase`, and the organiser set's twin). */
 export function trackBookingConfirmed(booking: AdBooking) {
   refreshMeasurementContext();
-  return adTags.purchase(booking);
+  const sent = adTags.purchase(booking);
+  adTags.organizerPurchase(booking);
+  return sent;
+}
+
+/**
+ * Sets or clears the organiser destination set for the current page (#2063).
+ * Only `observeOrganizerProviders` calls it, with a set the public tracking
+ * projection published; under publication policy v1 there is none.
+ */
+export function setOrganizerAdDestinations(set: OrganizerAdDestinations | null) {
+  refreshMeasurementContext();
+  adTags.setOrganizer(set);
+}
+
+/** The organiser set's `page_view` / `PageView` for the current eligible page. */
+export function trackOrganizerPageViewed() {
+  refreshMeasurementContext();
+  return adTags.organizerPageView();
 }
 
 export function trackCatchAcquisitionEvent(event: CatchAcquisitionEvent) {

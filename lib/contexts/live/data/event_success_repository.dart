@@ -38,6 +38,7 @@ import 'package:catch_platform/schema_contracts/generated/callable_request_dtos.
         ChangeEventCrawlStopCallableRequest,
         ResolveEventSuccessLateArrivalCallableRequest,
         SaveEventPlanStepCallableRequest,
+        SaveEventSuccessPlanSetupCallableRequest,
         SetEventSuccessAccountabilityResolutionCallableRequest,
         StartEventSuccessFirstHelloMissionCallableRequest,
         SubmitEventSuccessWingmanRequestCallableRequest,

@@ -305,6 +305,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `generateEventSuccessRotations` / `overrideEventSuccessRotations` | `src/eventSuccess/` | Generate or override revision-fenced Host-only rotation drafts |
 | `controlEventSuccessLive` / `publishEventSuccessRotationRound` | `src/eventSuccess/liveControl.ts` | Revision-fenced live state (incl. pause/resume of the active step) and confirmed, idempotent prepared-round publication |
 | `saveEventPlanStep` | `src/eventSuccess/planSteps.ts` | Revision-fenced, replay-safe run-of-show step edit (add, edit, remove, reorder) into the plan's `stepOverrides` |
+| `saveEventSuccessPlanSetup` | `src/eventSuccess/saveEventSuccessPlanSetup.ts` | Catch Host's plan setup save: the setup fields, fenced on `updatedAt`, through the shared plan-setup write in `src/eventSuccess/planSetup.ts` |
 | `setEventCloseOut` | `src/eventSuccess/closeOut.ts` | Saves the night's close-out on `eventCloseOuts`; arms or pauses the event-scope thank-you moment |
 | `changeEventCrawlStop` | `src/eventSuccess/crawlStop.ts` | Changes one crawl stop on the plan and sends one event broadcast under one requestId |
 | `onEventSuccessStandingsWritten` | `src/eventSuccess/guestHistory.ts` | Projects each guest's game history from the standings into `eventSuccessGuestHistory` |
@@ -326,6 +327,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminTakeAccountSafetyAction` / `adminLiftAccountSafetyAction` / `adminListAccountSafetyActions` / `expireAccountSafetyActions` | `src/safety/accountActions.ts` | Warn and restrict (ops), suspend and ban (owner), enforced at sign-in, messaging and booking; suspensions and bans cancel future bookings; expiry every 15 minutes |
 | `submitSafetyAppeal` / `adminDecideSafetyAppeal` | `src/safety/safetyAppeals.ts` | One appeal per action, reviewed by someone who did not decide |
 | `adminGetSafetySettings` / `adminUpdateSafetySettings` | `src/safety/safetySettings.ts` | Settings → Safety: configurable reasons and rules (owner edits) |
+| `adminGetDiscoverySettings` / `adminUpdateDiscoverySettings` | `src/discovery/discoverySettings.ts` | Settings → Discovery: where organisers on Catch and not on Catch yet appear to guests (owner edits, audited) |
 | `manageOrganizerGuestBlock` / `listOrganizerGuestBlocks` | `src/safety/organizerGuestBlocks.ts` | An organizer's own block list, enforced by every booking path |
 | `onUserCreatedSafetyScreen` / `onPushInstallationSafetyScreen` / `reconcileBannedIdentityScreens` | `src/safety/bannedIdentities.ts` | Stop new accounts on a banned phone or device and record the attempt; the triggers do not retry, so a nightly pass re-screens the last two days |
 | `purgeRetainedSafetyRecords` | `src/safety/safetyRetention.ts` | Delete case records 180 days after account deletion |
@@ -403,6 +405,7 @@ enter previews.
 | `syncExternalEventVisibility` | `src/organizers/externalEventVisibility.ts` | `organizers/{organizerId}` onWrite — when the organizer's app visibility changes (or it is deleted), sets `discovery.appVisibility` on its `externalEvents` to match, so app discovery never shows an event whose organizer is hidden |
 | `onPublicPageOrganizerWritten` / `onPublicPageEventWritten` / `onPublicPageExternalEventWritten` / `onPublicPageReviewWritten` | `src/publicPages/triggers.ts` | `organizers`, `events`, `externalEvents` and `reviews` onWrite — when the changed document's public projection differs, rebuilds its organizer's `organizerPublicPage` and `eventPublicPage` read models (CAT-250); follower-only changes wait for the batched refresh |
 | `onCityPlansOrganizerPageWritten` | `src/cityPlans/triggers.ts` | `organizerPublicPage` onWrite — rebuilds the `cityPlans` read model of the city the page left and the city it is in (CAT-260) |
+| `onDiscoverySettingsWritten` | `src/cityPlans/triggers.ts` | `discoverySettings` onWrite — rebuilds every city's `cityPlans` read model under the new Settings → Discovery rules |
 | `onSupplyIntakeRequestWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `supplyIntakeRequests` onWrite — projects the request's listing or stuck item and journey steps into `adminInboxItems` and `adminInboxJourney` |
 | `onOrganizerClaimRequestWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `organizerClaimRequests` onWrite — projects the claim's inbox item and journey steps |
 | `onSalesInboundIntentWrittenSyncInbox` | `src/admin/inbox/triggers.ts` | `salesInboundIntents` onWrite — projects the enquiry's inbox item and journey steps |

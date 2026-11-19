@@ -38,7 +38,7 @@ describe("Partner phone sign-in", () => {
   });
   it("rejects invalid input before SMS or verification calls", async () => {
     const user = userEvent.setup(); render(<PartnerRouteApp />);
-    await user.type(screen.getByRole("textbox", {name: "Phone number"}), "9000000000");
+    await user.type(screen.getByRole("textbox", {name: "Phone number"}), "90000");
     await user.click(screen.getByRole("button", {name: "Send verification code"}));
     expect(mocks.request).not.toHaveBeenCalled();
     await user.clear(screen.getByRole("textbox", {name: "Phone number"}));

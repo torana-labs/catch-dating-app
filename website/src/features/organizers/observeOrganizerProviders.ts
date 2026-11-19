@@ -1,64 +1,68 @@
-import {getMarketingConsent, marketingConsentChangedEvent} from "../../analytics";
+import {currentConsentVersion, organizerAdPage} from "../../analytics/catchMeasurement";
+import {getMarketingConsent, marketingConsentChangedEvent, setOrganizerAdDestinations, trackOrganizerPageViewed}
+  from "../../analytics";
 import {organizerPolicyForListing} from "./organizerPolicy";
 import {isPublicApiEnabled} from "./selectors";
 import {readOrganizerProviderSettings} from "./trackingProvidersRepository";
-import {createOrganizerTrackingController, type OrganizerTrackingSettings, type ProviderTransport} from "./trackingProviders";
 import type {HostListing} from "./types";
+
+/** The public tracking projection for one organiser page or event page. */
+export interface OrganizerTrackingSettings {
+  organizerId: string;
+  eventId: string | null;
+  enabled: boolean;
+  metaPixelId: string | null;
+  googleMeasurementId: string | null;
+}
 
 interface ProviderObserverDependencies {
   readSettings?: (payload: {organizerId: string; eventId: string | null}) => Promise<OrganizerTrackingSettings>;
-  transport?: ProviderTransport;
 }
-const active = new Map<object, {organizerId: string; eventId: string | null;
-  publicPath: string; controller: ReturnType<typeof createOrganizerTrackingController>}>();
 
-// Lifecycle is owned by existing public page effects. A fresh epoch fences every
-// async response after navigation/revocation; failed settings never load a tag.
+const marketingNow = () => {
+  const consent = getMarketingConsent();
+  return consent?.version === currentConsentVersion && consent.marketing === true;
+};
+
+/**
+ * Organiser-owned tags for a public organiser page or event page (#2063,
+ * Option A). The organiser's IDs go into the first-party transport's separate
+ * organiser destination set (`adTags.setOrganizer`); there is no other loader.
+ * Settings are read only under a current marketing choice, and only a set the
+ * public projection published (`enabled: true`) is used: under publication
+ * policy v1 there is none, so nothing loads. A fresh epoch fences every async
+ * response after navigation or a consent change; leaving the page clears the
+ * set, and the transport itself stops on any ineligible route.
+ */
 export function observeOrganizerProviders(
   listing: HostListing,
   eventId: string | null = null,
   dependencies: ProviderObserverDependencies = {}
 ): () => void {
-  const controller = createOrganizerTrackingController(dependencies.transport);
   const publicPath = window.location.pathname;
-  const identity = {};
   const eligible = isPublicApiEnabled(listing) && organizerPolicyForListing(listing).isPubliclyReadable &&
-    /^\/(?:organizers|events)\/[A-Za-z0-9_-]{1,160}\/$/u.test(publicPath);
+    organizerAdPage(publicPath, window.location.search, window.location.hash) !== null;
   let epoch = 0;
   let stopped = false;
   const refresh = async () => {
     const generation = ++epoch;
-    controller.destroy();
-    active.delete(identity);
-    const consent = getMarketingConsent();
-    if (stopped || !eligible || window.location.pathname !== publicPath ||
-      (!consent?.analytics && !consent?.marketing)) return;
+    setOrganizerAdDestinations(null);
+    if (stopped || !eligible || window.location.pathname !== publicPath || !marketingNow()) return;
     try {
       const settings = await (dependencies.readSettings ?? readOrganizerProviderSettings)({organizerId: listing.id, eventId});
-      const latest = getMarketingConsent();
-      if (stopped || generation !== epoch || window.location.pathname !== publicPath ||
-        (!latest?.analytics && !latest?.marketing)) return;
-      controller.update({organizerId: listing.id, eventId, publicPath, eligible, settings,
-        consent: {analytics: latest.analytics === true, marketing: latest.marketing === true}});
-      active.set(identity, {organizerId: listing.id, eventId, publicPath, controller});
-      controller.track("page_view");
-    } catch { /* Provider settings are optional; a denied/missing owner is silent. */ }
+      if (stopped || generation !== epoch || window.location.pathname !== publicPath || !marketingNow()) return;
+      if (settings.enabled !== true || settings.organizerId !== listing.id || settings.eventId !== eventId) return;
+      setOrganizerAdDestinations({organizerId: settings.organizerId, eventId: settings.eventId,
+        metaPixelId: settings.metaPixelId, googleMeasurementId: settings.googleMeasurementId});
+      trackOrganizerPageViewed();
+    } catch { /* Provider settings are optional; a denied or missing owner is silent. */ }
   };
   void refresh();
   window.addEventListener(marketingConsentChangedEvent, refresh);
   return () => {
-    stopped = true; ++epoch; active.delete(identity); controller.destroy();
+    stopped = true;
+    ++epoch;
+    setOrganizerAdDestinations(null);
     window.removeEventListener(marketingConsentChangedEvent, refresh);
   };
-}
-
-export function trackOrganizerProviderOutboundClick(organizerId: string, eventId: string) {
-  const consent = getMarketingConsent();
-  if (!consent?.analytics && !consent?.marketing) return;
-  for (const session of active.values()) {
-    // Event-specific approval must match. Listing-page event cards do not imply
-    // approval for the clicked event and therefore are first-party only.
-    if (session.organizerId === organizerId && session.eventId === eventId &&
-      session.publicPath === window.location.pathname) session.controller.track("outbound_booking_click");
-  }
 }

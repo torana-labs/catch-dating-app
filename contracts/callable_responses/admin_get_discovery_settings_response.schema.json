@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_get_discovery_settings_response.schema.json",
+  "title": "AdminGetDiscoverySettingsCallableResponse",
+  "description": "Settings → Discovery as stored (or the defaults when nothing is stored, with updatedAtMillis and updatedByUid null), and the defaults in code so Admin can show what changed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "settings",
+    "defaults"
+  ],
+  "properties": {
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surfaces",
+        "homeOrganizersMinimum",
+        "homeClaimAction",
+        "updatedAtMillis",
+        "updatedByUid"
+      ],
+      "properties": {
+        "surfaces": {
+          "$ref": "../firestore/discovery_settings.schema.json#/definitions/surfaces"
+        },
+        "homeOrganizersMinimum": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 24
+        },
+        "homeClaimAction": {
+          "type": "boolean"
+        },
+        "updatedAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "updatedByUid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        }
+      }
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surfaces",
+        "homeOrganizersMinimum",
+        "homeClaimAction"
+      ],
+      "properties": {
+        "surfaces": {
+          "$ref": "../firestore/discovery_settings.schema.json#/definitions/surfaces"
+        },
+        "homeOrganizersMinimum": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 24
+        },
+        "homeClaimAction": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

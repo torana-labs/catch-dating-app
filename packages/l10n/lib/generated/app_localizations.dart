@@ -784,6 +784,30 @@ abstract class AppLocalizations {
   /// **'New event'**
   String get hostNavigationNewEvent;
 
+  /// Screen reader name of a weddings company's rail and sidebar navigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Weddings'**
+  String get hostPlannerNavigationLabel;
+
+  /// Weddings company navigation destination: the planner home listing its weddings.
+  ///
+  /// In en, this message translates to:
+  /// **'Weddings'**
+  String get hostPlannerNavigationWeddings;
+
+  /// Weddings company navigation destination: the organiser's team.
+  ///
+  /// In en, this message translates to:
+  /// **'Crew'**
+  String get hostPlannerNavigationCrew;
+
+  /// Weddings company rail and sidebar primary action that starts creating a wedding.
+  ///
+  /// In en, this message translates to:
+  /// **'New wedding'**
+  String get hostPlannerNavigationNewWedding;
+
   /// Host sign-in kicker above the stats.
   ///
   /// In en, this message translates to:
@@ -17105,6 +17129,108 @@ abstract class AppLocalizations {
   /// **'Add walk-in'**
   String get hostsOperationalRosterAddWalkIn;
 
+  /// Hint under a guest-list column choice: the column has no values.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty column'**
+  String get hostsGuestListColumnShapeEmpty;
+
+  /// Hint under a guest-list column choice: the column holds phone numbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks like phone numbers'**
+  String get hostsGuestListColumnShapePhone;
+
+  /// Hint under a guest-list column choice: the column holds email addresses.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks like email addresses'**
+  String get hostsGuestListColumnShapeEmail;
+
+  /// Hint under a guest-list column choice: the column holds dates.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks like dates'**
+  String get hostsGuestListColumnShapeDate;
+
+  /// Hint under a guest-list column choice: the column holds numbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Numbers'**
+  String get hostsGuestListColumnShapeNumber;
+
+  /// Hint under a guest-list column choice: the column holds text.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get hostsGuestListColumnShapeText;
+
+  /// Shown when the server could not tell which guest-list column holds names.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the column that holds each guest’s name.'**
+  String get hostsGuestListNeedsName;
+
+  /// Button that opens the review of a guest list read on the server.
+  ///
+  /// In en, this message translates to:
+  /// **'Review guests'**
+  String get hostsGuestListReviewAction;
+
+  /// Shown while the server reads the guest list again after a column change.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking your columns…'**
+  String get hostsGuestListChecking;
+
+  /// Button next to the live check-in QR that opens the printable, join-only door poster.
+  ///
+  /// In en, this message translates to:
+  /// **'Door poster'**
+  String get hostsDoorPosterAction;
+
+  /// Title of the door poster sheet, and the subject when the poster image is shared.
+  ///
+  /// In en, this message translates to:
+  /// **'Door poster'**
+  String get hostsDoorPosterTitle;
+
+  /// Explains that the poster cannot check guests in by itself.
+  ///
+  /// In en, this message translates to:
+  /// **'Print it or show it at the entrance. Guests get ready while they queue; you still check them in with your live code or by hand.'**
+  String get hostsDoorPosterSubtitle;
+
+  /// Poster headline shown to guests above the QR code.
+  ///
+  /// In en, this message translates to:
+  /// **'On the guest list? Get ready here'**
+  String get hostsDoorPosterHeadline;
+
+  /// Poster line: what scanning the QR does for a guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan to confirm your phone and find your name.'**
+  String get hostsDoorPosterStepJoin;
+
+  /// Poster line: check-in still needs the host's live QR.
+  ///
+  /// In en, this message translates to:
+  /// **'At the door, scan the host’s live code to check in.'**
+  String get hostsDoorPosterStepCheckIn;
+
+  /// File name of the shared door poster image.
+  ///
+  /// In en, this message translates to:
+  /// **'catch-door-poster.png'**
+  String get hostsDoorPosterFileName;
+
+  /// Sheet button that shares the poster as an image to print or save.
+  ///
+  /// In en, this message translates to:
+  /// **'Share poster'**
+  String get hostsDoorPosterShare;
+
   /// CTA to create secure per-event email or WhatsApp roster-forwarding instructions.
   ///
   /// In en, this message translates to:
@@ -17120,7 +17246,7 @@ abstract class AppLocalizations {
   /// Security and usage guidance for roster forwarding.
   ///
   /// In en, this message translates to:
-  /// **'Forward one CSV from the email address or phone number on your Catch Host account. The private address and code expire after 30 days.'**
+  /// **'Forward one CSV from the email address or phone number on your Catch Host account. It waits here for you to review before any guest is added. The private address and code expire after 30 days.'**
   String get hostsOperationalRosterForwardSubtitle;
 
   /// Email roster forwarding row title.

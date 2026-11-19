@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_live_models.dart';
+import 'package:catch_dating_app/contexts/programmes/parts/staff_function_row.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programme_state.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/widgets/programme_state_body.dart';
 import 'package:catch_dating_app/hosts/programmes/staff/staff_alerts_body.dart';
@@ -95,10 +96,22 @@ class HostProgrammeLiveBoardBody extends StatelessWidget {
                 ),
                 title: function.name,
                 subtitle: function.venueName,
-                time: AppTimeFormatters.time(function.startsAt),
-                marker: function.phase == ProgramLivePhase.now
-                    ? CatchIndexRowTone.info
-                    : null,
+                time: staffClock(function.startsAt),
+                density: CatchIndexRowSize.compact,
+                // A muted dot once done, the programme colour for the one
+                // on now, a ring for what is still to come.
+                leading: switch (function.phase) {
+                  ProgramLivePhase.done => const CatchMarker(
+                    tone: CatchMarkerTone.muted,
+                  ),
+                  ProgramLivePhase.now => const CatchMarker(
+                    tone: CatchMarkerTone.format,
+                    format: CatchFormat.nightsOut,
+                    live: true,
+                  ),
+                  ProgramLivePhase.next || ProgramLivePhase.later =>
+                    const CatchMarker(variant: CatchMarkerVariant.ring),
+                },
                 emphasis: function.phase == ProgramLivePhase.done
                     ? CatchIndexRowEmphasis.done
                     : CatchIndexRowEmphasis.regular,

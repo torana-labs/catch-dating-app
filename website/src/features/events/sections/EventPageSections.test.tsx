@@ -14,8 +14,7 @@ import {EventBookingCard, EventPageHeader, EventPageMain} from "./EventPageSecti
 const observeOrganizerPageView = vi.hoisted(() => vi.fn(() => vi.fn()));
 const trackOrganizerAnalytics = vi.hoisted(() => vi.fn());
 const observeOrganizerProviders = vi.hoisted(() => vi.fn(() => vi.fn()));
-const trackOrganizerProviderOutboundClick = vi.hoisted(() => vi.fn());
-vi.mock("../../organizers/observeOrganizerProviders", () => ({observeOrganizerProviders, trackOrganizerProviderOutboundClick}));
+vi.mock("../../organizers/observeOrganizerProviders", () => ({observeOrganizerProviders}));
 vi.mock("../../organizers/analytics", () => ({trackOrganizerAnalytics, observeOrganizerPageView}));
 vi.mock("../GuestEventEntry", () => ({GuestEventEntry: ({eventId}: {eventId: string}) => <p>{`Guest entry for ${eventId}`}</p>}));
 const recordEventInviteLinkOpen = vi.hoisted(() => vi.fn(() => Promise.resolve()));
@@ -157,7 +156,6 @@ describe("EventDetailPage", () => {
     render(<EventDetailPage listing={listing} page={importedEventPage} />);
     fireEvent.click(screen.getAllByRole("link", {name: /Get tickets on Luma/})[0]);
     expect(trackOrganizerAnalytics).toHaveBeenCalledWith(listing, "outboundClick", "external_event_booking", importedEventPage.eventId);
-    expect(trackOrganizerProviderOutboundClick).toHaveBeenCalledWith(listing.id, importedEventPage.eventId);
   });
 
   it("sits between the site header and the full site footer", () => {

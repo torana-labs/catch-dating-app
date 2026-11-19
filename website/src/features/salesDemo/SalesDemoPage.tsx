@@ -25,6 +25,8 @@ import {grantFromSalesDemoFragment, salesDemoActionTitle,
   type SalesDemoAction, type SalesDemoApi, type SalesDemoSession} from
   "./salesDemoModel";
 import {useSalesDemoController} from "./useSalesDemoController";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 export function SalesDemoPage({api, auth = websiteSalesDemoAuth}: {
   api: SalesDemoApi; auth?: SalesDemoAuth;
@@ -166,9 +168,10 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
     } finally {setAuthPending(false);}
   };
   const sendCode = async () => {
-    if (authPending || !/^\+[1-9][0-9]{7,14}$/u.test(phone.trim())) return;
+    const e164 = catchPhoneE164(phone, activePhoneCountry);
+    if (authPending || !e164) return;
     setAuthPending(true); setAuthError("");
-    try {setChallenge(await auth.beginPhone(phone.trim(), "sales-demo-recaptcha"));}
+    try {setChallenge(await auth.beginPhone(e164, "sales-demo-recaptcha"));}
     catch (error) {setAuthError(claimAccountLinkingErrorMessage(error, salesDemoCopy.phoneVerificationCouldNotStartCheck));}
     finally {setAuthPending(false);}
   };
@@ -187,7 +190,7 @@ function DemoAccessView({controller, auth, hasGrant, cta, interactiveAvailable}:
     <Line>{salesDemoCopy.thisPreviewIsSafeToView}</Line>
   </Module>;
   const busy = authPending || controller.pending;
-  const phoneValid = /^\+[1-9][0-9]{7,14}$/u.test(phone.trim());
+  const phoneValid = catchPhoneE164(phone, activePhoneCountry) !== null;
   return <Module title={salesDemoCopy.tryTheSampleWorkflow}>
     <Line>{cta}</Line>
     {!controller.authReady ? <CatchLoadingIndicator label={salesDemoCopy.checkingSignin} /> :

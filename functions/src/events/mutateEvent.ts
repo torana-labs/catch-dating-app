@@ -1212,6 +1212,10 @@ function normalizeEventSuccessStructureConfig(
       source?.rotationIntervalMinutes ?? fallback.rotationIntervalMinutes,
     revealCountdownSeconds:
       source?.revealCountdownSeconds ?? fallback.revealCountdownSeconds,
+    // The host's topology and court or table capacity are kept, not dropped.
+    ...(source?.topology !== undefined ? {topology: source.topology} : {}),
+    ...(source?.resourceCapacity !== undefined ?
+      {resourceCapacity: source.resourceCapacity} : {}),
   };
 }
 

@@ -345,6 +345,11 @@ creates it when missing.
   through `/{audience_id}/usersreplace` in one session of 10,000-row batches,
   so removals and opt-outs leave Meta within a day. When no one qualifies, the
   job deletes the audience, since a replace needs at least one row.
+- **Use.** The host lead campaign excludes the audience, so existing hosts
+  stop seeing host ads: `tool/ads/meta_campaigns.json` names it under
+  `targeting.excludeAudiences`, and `apply_meta_campaigns.mjs` adds it to the ad
+  set's `excluded_custom_audiences` once the audience exists, keeping any
+  exclusion added in Ads Manager.
 - **Never uploaded.** Gender, age, orientation, matching, dating or
   attendance-pairing data; date of birth is read only to exclude under-18s.
 - **Receipt.** `adAudienceRuns/meta_active_hosts` keeps the latest run's
@@ -352,7 +357,7 @@ creates it when missing.
   members, rows received and invalid, exclusions by reason). It never holds an
   identifier or digest.
 - **Gate.** `AD_AUDIENCES_MODE` is `off` (the default, and the setting in every
-  environment until the owner turns it on) or `live`. Off, the job only
+  environment but prod, which the owner set to `live` on 2026-11-19) or `live`. Off, the job only
   deletes an audience an earlier live run left (the receipt names it), so a
   list that would miss later opt-outs never lingers; otherwise it reads the
   receipt and sends nothing. Live needs `AD_CONVERSIONS_META_TOKEN_VERSION`,
@@ -579,14 +584,14 @@ a recorded receipt.
 
 | Item | State | Where |
 | --- | --- | --- |
-| Separation | Option A chosen (owner, 19 Nov 2026); Catch side isolated, organiser set next | `adTags.ts` destination sets and `trackSingle`; `adTagsIsolation.test.ts` |
-| Consent gate | Blocked with separation | One v5 receipt (`catch_marketing_consent_v5`), via `adTags.sync` |
-| Eligible routes | Route class proposed (#2102); lifecycle wiring waits on separation | `organizerAdPage` beside `publicAdPage`; server projection checks publication |
-| Event map | Builders and payload tests proposed (#2102) | `website/src/analytics/organizerTagEvents.ts` |
-| Publication policy | Built, disabled | `organizerTrackingPublicationPolicy.ts` |
-| Owner settings | Saved IDs shown; live state and reason pending | Catch Host tracking section; website owner view settings |
+| Separation | Built: one transport, two isolated sets; iframe retired | `adTags.ts` (#2138, #2193); `adTagsIsolation.test.ts`, `adTagsOrganizer.test.ts` |
+| Consent gate | Built in the transport; banner line pending (#2194) | One v5 marketing receipt (`catch_marketing_consent_v5`), via `adTags.sync` |
+| Eligible routes | Built | `organizerAdPage` (#2102, ad-click keys #2139) plus the set's own scope in `adTags.ts` (#2193) |
+| Event map | Built | `organizerTagEvents.ts` (#2102), sent only by the organiser set (#2193) |
+| Publication policy | Built, disabled | `organizerTrackingPublicationPolicy.ts` (#2097); profile classification (#2192) |
+| Owner settings | Built | Website owner view live state (#2105); Catch Host policy-blocked line |
 | Test receipts | Plan below; not run | [Staging test plan](#organiser-tag-staging-test-plan) |
-| Owner policy sign-off | Owner only | #2063 |
+| Owner policy sign-off | Signed off 19 Nov 2026 | #2063 |
 
 ### Rules the adapter must keep
 
@@ -603,14 +608,16 @@ a recorded receipt.
     `fbq("trackSingle", catchPixel, …)`, never the broadcasting `track`.
     `adTagsIsolation.test.ts` pins that Catch's Google and Meta commands are
     identical with and without another pixel and Google layer on the page.
-    The organiser set will use `trackSingle` with its own pixel and its own
-    Google layer and `cookie_prefix`, so Catch's `gtag("set", …)` never
-    reaches it.
-  - `_fbp` stays shared on the Catch domain whichever option is chosen. The
-    owner sign-off decides whether that is acceptable.
-  - The existing sandboxed iframe runtime (`website/public/organizer-tracking-runtime.*`,
-    `trackingProviders.ts`) is a second loader that predates this rule. It stays
-    inert behind the disabled policy until the owner chooses.
+    The organiser set (`adTags.setOrganizer`) uses `trackSingle` with its own
+    pixel and its own Google layer (`catchOrganizerTagLayer`) with the
+    `catch_org` cookie prefix, so Catch's `gtag("set", …)` never reaches it.
+    `observeOrganizerProviders` feeds it only a set the public projection
+    published.
+  - `_fbp` is shared on the Catch domain between Catch's and an organiser's
+    pixel; the owner accepted this in the policy sign-off (19 Nov 2026).
+  - The sandboxed iframe runtime that predated Option A
+    (`organizer-tracking-runtime.*`, `trackingProviders.ts`) was removed;
+    the first-party transport is the only loader.
 - **Consent.** The only basis is a current version-5 *marketing* choice. An
   analytics-only choice loads nothing for organiser destinations. Legacy,
   downgraded and unknown receipts fail closed. Withdrawal revokes and stops
@@ -622,9 +629,22 @@ a recorded receipt.
   server's public projection.
   - Never claim, `/f/` forms, offers, OTP, booking receipts, account, demo or
     token links. Never while the owner view is open on the organiser page.
-  - Any query string or non-anchor hash fails closed, because the Pixel reports
-    the page address itself.
+  - A query may carry only the ad-click keys `fbclid`, `gclid` and
+    `utm_source`/`medium`/`campaign`/`content`/`term`/`id` (owner decision,
+    19 Nov 2026), so visits from the organiser's own ads are measured. Any
+    other key, a repeated key or a non-anchor hash fails closed, because the
+    Pixel reports the page address itself. Organiser events still report the
+    path only.
   - Single-page navigation to any other page stops sending.
+- **Catch's own tags on organiser profiles.** Organiser tags must never
+  reduce Catch's own tracking (owner condition, 19 Nov 2026), so Catch's tags
+  are meant to cover organiser profiles too, through
+  `catchOrganizerProfilePage` (the same profile routes and flow exclusions as
+  `organizerAdPage`). They skip dating-classified and unclassified organisers,
+  failing closed: the server's `profileTagsEligible` (#2192) answers whether a
+  profile qualifies, and the excluded classes come from the publication policy
+  version. Until that answer is wired into the page lifecycle, `publicAdPage`
+  keeps every organiser page closed for Catch's tags, as before.
 - **Event map.** The table shows the event pairs. Every page field is the fixed
   Catch origin plus path, with a fixed title and an empty referrer. Catch
   payment, request and organiser ids, guest data, answers, dating words, campaign
@@ -685,7 +705,8 @@ it against production, a live organiser or real IDs.**
    - Navigate in-app from the organiser page to `/claim/`, an `/f/` form,
      `/offer/`, `/account/`, `/demo/…`, a `/booking/` receipt, a token link and
      the open owner view. Each must send nothing.
-   - The same page with `?fbclid=…` or `?utm_source=…` must send nothing.
+   - The same page with `?fbclid=…`, `?gclid=…` or `?utm_source=…` sends;
+     with any other key (for example `?ref=…` or `?gbraid=…`) it sends nothing.
 6. **Dedupe and separation.** On the same page view, Catch's own events reach
    only Catch's destinations with their own ids. Organiser events use `org_…`
    ids. A reload does not repeat `Purchase`.

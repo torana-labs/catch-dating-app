@@ -1,7 +1,7 @@
 name: catch_host_app
 description: Installable Catch Host product with a host-only native graph.
 publish_to: none
-version: 1.0.4+6
+version: 1.0.5+7
 resolution: workspace
 
 environment:

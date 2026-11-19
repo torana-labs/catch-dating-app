@@ -4,6 +4,7 @@ import {interpolateContent as fill} from "@content/interpolate";
 import {websiteCities} from "@content/markets";
 import {comingFormats, homeCityState, organizerCard, planCard, proofReview, upcomingPlans, weekPlans, type HomeReview} from "./homeModel";
 import type {CitySource} from "./cityChoice";
+import {homeDiscoveryOf, homeOrganizers} from "./homeDiscovery";
 import type {HomeCatalog, HomeFormat} from "./homeTypes";
 import {cityPagePath} from "./sections/cityChrome";
 import {cityDiscoveryLinks} from "../discovery/discoveryModel";
@@ -70,7 +71,10 @@ export function useHomePageController(catalog: HomeCatalog, navigate: (href: str
     /** True when the band shows the next two weeks: a quiet week, or a thin city. */
     upcoming,
     note,
-    organizers: plans.organizers.slice(0, live ? 8 : 4).map((organizer) => organizerCard(organizer, city)),
+    /** Only the organisers Settings → Discovery lets the band show, and none below its minimum. */
+    organizers: homeOrganizers(plans).slice(0, live ? 8 : 4).map((organizer) => organizerCard(organizer, city)),
+    /** Whether the organisers band offers "Claim your page". */
+    organisersClaimAction: homeDiscoveryOf(plans).homeClaimAction,
     coming: comingFormats(plans),
     /** The one review the proof band quotes, only when a guest who booked has left one. */
     review: proofReview(reviews),

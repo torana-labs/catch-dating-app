@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/discovery_settings.schema.json",
+  "title": "DiscoverySettingsDocument",
+  "description": "Where guests can find organisers, edited by the owner in Settings → Discovery: for each place guests browse, whether organisers on Catch (claimState claimed or verified) and organisers not on Catch yet (unclaimed or claimPending) appear; how many organisers a city needs before the homepage shows its organisers band; and whether the guest homepage offers the claim-your-page button. These rules only hide: no per-organiser switch can bring back an organiser they hide. Search-engine indexing and the app's Explore are not governed here. Absent means the defaults in functions/src/discovery/discoveryPolicy.ts.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "discoverySettings",
+  "x-firestore-path": "discoverySettings/{settingsId}",
+  "x-document-id-field": "settingsId",
+  "x-owner": "Admin discovery settings callables",
+  "required": ["schemaVersion", "surfaces", "homeOrganizersMinimum", "homeClaimAction", "updatedAt", "updatedByUid"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "surfaces": {"$ref": "#/definitions/surfaces"},
+    "homeOrganizersMinimum": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 24,
+      "description": "The homepage shows a city's organisers band only when at least this many of its organisers may appear there."
+    },
+    "homeClaimAction": {
+      "type": "boolean",
+      "description": "Whether the guest homepage shows the claim-your-page button."
+    },
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedByUid": {"type": "string", "minLength": 1, "maxLength": 128}
+  },
+  "definitions": {
+    "surfaceRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["onCatch", "notOnCatch"],
+      "properties": {
+        "onCatch": {
+          "type": "boolean",
+          "description": "Organisers whose claimState is claimed or verified appear here."
+        },
+        "notOnCatch": {
+          "type": "boolean",
+          "description": "Organisers whose claimState is unclaimed or claimPending appear here."
+        }
+      }
+    },
+    "surfaces": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["homeOrganizers", "cityOrganizers", "plans", "totals"],
+      "properties": {
+        "homeOrganizers": {
+          "$ref": "#/definitions/surfaceRule",
+          "description": "The homepage organisers band."
+        },
+        "cityOrganizers": {
+          "$ref": "#/definitions/surfaceRule",
+          "description": "City pages and Explore's organisers tab."
+        },
+        "plans": {
+          "$ref": "#/definitions/surfaceRule",
+          "description": "Their plans in This week and Explore."
+        },
+        "totals": {
+          "$ref": "#/definitions/surfaceRule",
+          "description": "City and format totals: organiser counts, upcoming event counts and the format-page indexing thresholds."
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,6 @@
 import type {PublicOrganizerForm} from "../../firebase";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 export type PublicFormDefinition = PublicOrganizerForm["definition"];
 export type PublicFormQuestion =
@@ -185,7 +187,7 @@ function validateQuestion(
        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(answer))) return invalid;
   if (question.kind === "phone" &&
       (typeof answer !== "string" ||
-       !/^\+[1-9][0-9]{7,14}$/u.test(answer.replace(/[\s()-]/gu, "")))) {
+       catchPhoneE164(answer, activePhoneCountry) === null)) {
     return invalid;
   }
   if (question.kind === "url" && typeof answer === "string") {

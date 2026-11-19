@@ -1,8 +1,9 @@
-import {activeMarket} from "@content/markets";
 import {playbookCopy} from "@content/playbook/playbookCopy";
 import {websiteLeadCopy} from "@content/websiteLead";
 import type {PlaybookLeadForm} from "../../content/playbook/playbookContract.ts";
-import {websiteLeadPhone, type WebsiteLeadForm} from "../../shared/api/websiteLead";
+import {type WebsiteLeadForm} from "../../shared/api/websiteLead";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 /**
  * The setup guides the lead intake names (contracts/http/
@@ -105,7 +106,7 @@ export function playbookLeadProblems(form: PlaybookLeadForm, answers: PlaybookLe
     const name = field.name as PlaybookLeadField;
     if (typed(answers[name]).length < (name === "name" ? 2 : 1)) problems[name] = playbookCopy.leadForm.required[name];
   }
-  if (!websiteLeadPhone(answers.phone ?? "", activeMarket.dialCode)) problems.phone = websiteLeadCopy.problems.invalid_phone;
+  if (!catchPhoneE164(answers.phone ?? "", activePhoneCountry)) problems.phone = websiteLeadCopy.problems.invalid_phone;
   return problems;
 }
 

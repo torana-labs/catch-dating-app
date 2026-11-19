@@ -127,7 +127,8 @@
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
         ]
       },
       "runbook": "tool/README.md#google-ads-campaigns"
@@ -154,7 +155,8 @@
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
         ]
       },
       "runbook": "docs/ads_conversion_spec.md"
@@ -2520,6 +2522,21 @@
       "runbook": "docs/backend_operation_catalog.md#organizer-owner-view-1109"
     },
     {
+      "id": "data:backfill-profile-thumbnails",
+      "category": "data",
+      "path": "functions/scripts/backfill-profile-thumbnails.cjs",
+      "command": "FIREBASE_STORAGE_BUCKET=<bucket> npm --prefix functions run backfill:profile-thumbnails -- [--apply]",
+      "surface": "remote-write",
+      "guard": "apply-flag",
+      "status": "active",
+      "role": "operator",
+      "description": "Repairs missing 160px profile photo thumbnails: scans users, generates a JPEG thumbnail for each profilePhotos entry that lacks one and writes it to Storage and back into the grouped profilePhotos. Dry run unless --apply; needs FIREBASE_STORAGE_BUCKET.",
+      "checks": [
+        "node --check functions/scripts/backfill-profile-thumbnails.cjs"
+      ],
+      "runbook": "docs/backend_operation_catalog.md#cloud-functions-inventory"
+    },
+    {
       "id": "data:backfill-program-whatsapp-endpoint-index",
       "category": "data",
       "path": "functions/scripts/backfill-program-whatsapp-endpoint-index.cjs",
@@ -2626,6 +2643,17 @@
       },
       "role": "operator",
       "runbook": "docs/release_operations.md#listing-cohort-withdraw"
+    },
+    {
+      "id": "data:migrate-crawls-to-route-stops",
+      "category": "data",
+      "path": "functions/scripts/migrate-crawls-to-route-stops.cjs",
+      "status": "retired",
+      "role": "operator",
+      "description": "One-off migration that moved future bar crawl events still saved with the freeFormMixer interaction model onto routeStops, leaving past events, started events and the demo crawl unchanged; its planning logic was functions/src/eventSuccess/crawlRouteStopsMigration.ts.",
+      "retiredOn": "2026-11-19",
+      "reason": "Nothing left to migrate. On 19 Nov 2026 the owner ran its dry run against catchdates-dev and catch-dating-app-64e51: both returned no events to migrate and none skipped, and a count by eventFormat.activityKind found no barCrawl events in either project. routeStops is a first-class interaction model in contracts/shared/event_common.schema.json and the event runtime. The planning module and its test went with it, since this script was their only caller.",
+      "lastCommit": "b5a30bc69730fa0cb5d8c15d0ee82bd9563063a8"
     },
     {
       "id": "data:migrate-firestore-consolidation",

@@ -1,5 +1,7 @@
+import 'package:catch_dating_app/contexts/organizers/data/organizer_entitlement_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/data/program_planner_repository.dart';
 import 'package:catch_dating_app/hosts/programmes/planner/programmes_home_body.dart';
+import 'package:catch_dating_app/routing/shell/host_shell_navigation.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/cache/app_clock.dart';
 import 'package:catch_platform/riverpod_ui/catch_async_value_adapter.dart';
@@ -21,6 +23,16 @@ class HostProgrammesHomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    // Inside the weddings navigation this is the root: it reads Weddings
+    // and has no way back.
+    final plannerRoot = hostShowsPlannerNavigation(
+      size: CatchWindowSize.fromWidth(MediaQuery.sizeOf(context).width),
+      hasWeddingsPlan:
+          catchAsyncStateFromAsyncValue(
+            ref.watch(organizerEntitlementProvider(organizerId)),
+          ).value?.hasWeddingsPlan ??
+          false,
+    );
     final page = catchAsyncStateFromAsyncValue(
       ref.watch(programmesOverviewProvider(organizerId)),
     );
@@ -34,11 +46,17 @@ class HostProgrammesHomeScreen extends ConsumerWidget {
         key: const ValueKey<String>('host-programmes-home-screen'),
         topBar: CatchTopBar(
           variant: CatchTopBarVariant.tool,
-          back: CatchTopBarBack(label: l10n.hostProgrammeBack),
-          title: l10n.hostProgrammesHomeTitle,
+          back: plannerRoot
+              ? null
+              : CatchTopBarBack(label: l10n.hostProgrammeBack),
+          title: plannerRoot
+              ? l10n.hostPlannerNavigationWeddings
+              : l10n.hostProgrammesHomeTitle,
           actions: [
             CatchButton(
-              label: l10n.hostProgrammesHomeNew,
+              label: plannerRoot
+                  ? l10n.hostPlannerNavigationNewWedding
+                  : l10n.hostProgrammesHomeNew,
               size: CatchButtonSize.sm,
               leading: CatchIcon(CatchIcons.add),
               onPressed: create,

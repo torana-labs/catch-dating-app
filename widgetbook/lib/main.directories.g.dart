@@ -199,6 +199,8 @@ import 'package:widgetbook_workspace/host_memberships/host_membership_use_cases.
     as _widgetbook_workspace_host_memberships_host_membership_use_cases;
 import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart'
     as _widgetbook_workspace_hosts_host_booking_provider_use_cases;
+import 'package:widgetbook_workspace/hosts/host_door_poster_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_door_poster_use_cases;
 import 'package:widgetbook_workspace/hosts/host_event_gaps_use_cases.dart'
     as _widgetbook_workspace_hosts_host_event_gaps_use_cases;
 import 'package:widgetbook_workspace/hosts/host_event_offer_use_cases.dart'
@@ -2119,6 +2121,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_catalog_sections
                     .catchSectionHeaderCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchTimelineStepScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_catalog_sections
+                    .catchTimelineStepScopeCatalogStates,
               ),
             ],
           ),
@@ -10165,6 +10177,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostDoorPoster',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Join-only door poster',
+                    builder:
+                        _widgetbook_workspace_hosts_host_door_poster_use_cases
+                            .hostDoorPosterState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostGuestIntakeField',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10183,6 +10206,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_booking_provider_use_cases
                             .hostGuestIntakeSettingsFieldStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostGuestListColumnsSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Read on the server, ready and missing name column',
+                    builder:
+                        _widgetbook_workspace_hosts_host_roster_import_use_cases
+                            .hostGuestListColumnsSheetStates,
                   ),
                 ],
               ),

@@ -179,24 +179,40 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
       _mutationError = null;
     });
     try {
-      final table = await ref
-          .read(hostOperationalRosterControllerProvider)
-          .pickRosterFile(providerHint: widget.bookingProvider);
-      if (table == null || !sameScope() || !mounted) return;
-      final plan = await showHostRosterMapping(
+      // The file goes to guests.import-list as it is: the server reads it
+      // and holds its rows in the review session the review sheet opens
+      // (owner decision on #2061, question 6).
+      final controller = ref.read(hostOperationalRosterControllerProvider);
+      final file = await controller.pickGuestListFile();
+      if (file == null || !sameScope() || !mounted) return;
+      final idempotencyKey = _guestListImportKey();
+      Future<GuestListImportPreview> preview({
+        Map<HostRosterField, int?>? mapping,
+        GuestListFallbackRevenue? fallbackRevenue,
+      }) {
+        if (!sameScope()) throw StateError('Host event scope changed.');
+        return controller.previewGuestList(
+          eventId: eventId,
+          file: file,
+          idempotencyKey: idempotencyKey,
+          mapping: mapping,
+          fallbackRevenue: fallbackRevenue,
+        );
+      }
+
+      final first = await preview();
+      if (!sameScope() || !mounted) return;
+      final chosen = await showHostGuestListColumns(
         context,
-        table,
+        initial: first,
+        repreview: (mapping, fallbackRevenue) =>
+            preview(mapping: mapping, fallbackRevenue: fallbackRevenue),
         suggestedRevenueAmountMinor: widget.suggestedRevenueAmountMinor,
         defaultRevenueCurrency: widget.revenueCurrency,
       );
-      if (plan == null || !sameScope() || !mounted) return;
-      final initial = await ref
-          .read(hostOperationalRosterControllerProvider)
-          .startRosterIntake(
-            eventId: eventId,
-            organizerId: organizerId,
-            plan: plan,
-          );
+      final sessionId = chosen?.sessionId;
+      if (sessionId == null || !sameScope() || !mounted) return;
+      final initial = await controller.resumeRosterIntake(sessionId);
       if (!sameScope() || !mounted) return;
       await _rosterIntakeJournal.save(
         userId: accountId,
@@ -230,16 +246,37 @@ extension _HostOperationalRosterActions on _HostOperationalRosterSectionState {
     }
   }
 
+  /// One key per file the host picks, as the command envelope asks.
+  String _guestListImportKey() {
+    final random = Random.secure();
+    return 'guestimport-${List.generate(24, (_) => random.nextInt(16).toRadixString(16)).join()}';
+  }
+
   Future<void> _loadRosterIntakeDraft() async {
     final eventId = widget.eventId;
     final organizerId = widget.organizerId;
     final accountId = ref.read(uidProvider).asData?.value;
     if (accountId == null) return;
-    final sessionId = await _rosterIntakeJournal.load(
+    // A draft saved on this device first; otherwise one waiting on the
+    // server, such as a guest list forwarded by email or WhatsApp.
+    var sessionId = await _rosterIntakeJournal.load(
       userId: accountId,
       organizerId: organizerId,
       eventId: eventId,
     );
+    if (sessionId == null) {
+      try {
+        sessionId = await ref
+            .read(hostOperationalRosterControllerProvider)
+            .latestRosterIntakeInReview(
+              eventId: eventId,
+              organizerId: organizerId,
+            );
+      } on Object {
+        // Resume stays hidden; importing a file still works.
+        sessionId = null;
+      }
+    }
     if (!mounted ||
         widget.eventId != eventId ||
         widget.organizerId != organizerId ||

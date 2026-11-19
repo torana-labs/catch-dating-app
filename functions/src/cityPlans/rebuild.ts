@@ -6,10 +6,13 @@ import {validateCityPlansDocument} from
 import {collections as publicPageCollections} from "../publicPages/rebuild";
 import {projectPublicOrganizer, type HostListing} from
   "../publicPages/publicOrganizer";
+import {discoveryRulesOf, readDiscoverySettings} from
+  "../discovery/discoveryPolicy";
 import {
   buildCityPlans,
   type CityMarket,
   type CityOrganizerPage,
+  type CityPlanSources,
   type CityPlans,
 } from "./cityPlansModel";
 import {
@@ -45,10 +48,15 @@ export function cityMarket(slug: unknown): CityMarket | null {
 const pageFields = ["organizerId", "path", "identity", "upcomingEvents",
   "followerCount", "claim", "womenLed"] as const;
 
-/** Reads what one city shows: its organizer pages, or who is joining. */
+/**
+ * Reads what one city shows: its organizer pages, or who is joining, and
+ * Settings → Discovery. Every read starts after `now`, so a rebuild with a
+ * later `now` never read older settings than one with an earlier `now`.
+ */
 export async function readCityPlanSources(
   db: Firestore, market: CityMarket, now: number
-) {
+): Promise<CityPlanSources> {
+  const discovery = discoveryRulesOf(await readDiscoverySettings(db));
   if (market.launchStatus === "launched") {
     const snapshot = await db.collection(publicPageCollections.organizerPages)
       .where("identity.citySlug", "==", market.slug)
@@ -58,7 +66,7 @@ export async function readCityPlanSources(
     if (snapshot.size > organizerPageReadBound) {
       throw new CityPlansReadBoundError("organizerPublicPage", market.slug);
     }
-    return {market, now, joiningOrganizers: [],
+    return {market, now, joiningOrganizers: [], discovery,
       organizerPages: snapshot.docs.map((doc) =>
         doc.data() as CityOrganizerPage)};
   }
@@ -77,7 +85,7 @@ export async function readCityPlanSources(
     const listing = projectPublicOrganizer(doc.id, doc.data(), eligible);
     return listing ? [listing] : [];
   });
-  return {market, now, organizerPages: [], joiningOrganizers};
+  return {market, now, organizerPages: [], joiningOrganizers, discovery};
 }
 
 /** A city document that breaks its contract is never stored. */

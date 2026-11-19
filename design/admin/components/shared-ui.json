@@ -219,8 +219,8 @@
           "unchecked"
         ]
       },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Admin adapter of CheckboxControl, the one-boolean input.",
-      "componentId": "catch.toggle"
+      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Admin adapter of CatchCheckboxInput for acknowledgements and checklist items; settings use CatchField's toggle recipe.",
+      "componentId": "catch.checkbox"
     },
     {
       "id": "shared_empty_state",

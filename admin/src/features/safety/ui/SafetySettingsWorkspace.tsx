@@ -1,6 +1,6 @@
 import {
   CatchButton,
-  CatchCheckboxInput,
+  CatchField,
   CatchGap,
   CatchIndexRow,
   CatchLegacyText,
@@ -93,27 +93,30 @@ export function SafetySettingsWorkspace({
           </CatchLegacyText>
         </Section>
         <Section title="Rules">
-          <CatchCheckboxInput
-            description={"Assault, stalking, threats, intimate images, " +
+          <CatchField
+            body={"Assault, stalking, threats, intimate images, " +
               "anything involving a minor, fraud. The account is restricted " +
               "while someone reviews it."}
-            label="Restrict at once on a severe report"
             onChanged={edit && ((value) =>
               edit({restrictOnSevereReport: value}))}
+            recipe="toggle"
+            title="Restrict at once on a severe report"
             value={current.restrictOnSevereReport}
           />
-          <CatchCheckboxInput
-            description={"They can stop someone booking their events " +
+          <CatchField
+            body={"They can stop someone booking their events " +
               "without a reason or a review. It affects no one else."}
-            label="Organizers keep their own block list"
             onChanged={edit && ((value) =>
               edit({organizerBlockLists: value}))}
+            recipe="toggle"
+            title="Organizers keep their own block list"
             value={current.organizerBlockLists}
           />
-          <CatchCheckboxInput
-            description="It lands in the Safety queue."
-            label="Organizers and their team can report guests"
+          <CatchField
+            body="It lands in the Safety queue."
             onChanged={edit && ((value) => edit({organizerReports: value}))}
+            recipe="toggle"
+            title="Organizers and their team can report guests"
             value={current.organizerReports}
           />
         </Section>
@@ -128,15 +131,16 @@ export function SafetySettingsWorkspace({
         </Section>
         <Section title="Report reasons">
           {current.reasons.map((reason, index) => (
-            <CatchCheckboxInput
-              description={[reason.severe ? "Severe" : "Standard",
+            <CatchField
+              body={[reason.severe ? "Severe" : "Standard",
                 reason.takedown ? "taken down within 24 hours" : null]
                 .filter(Boolean).join(" · ")}
               key={reason.code}
-              label={reason.label}
               onChanged={edit && ((value) => edit({reasons:
                 current.reasons.map((item, at) => at === index ?
                   {...item, active: value} : item)}))}
+              recipe="toggle"
+              title={reason.label}
               value={reason.active}
             />
           ))}

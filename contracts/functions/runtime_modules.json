@@ -36,6 +36,7 @@
     "AdminGetOrganizerOverviewCallablePayload",
     "AdminGetOverviewCallablePayload",
     "AdminGetSafetySettingsCallablePayload",
+    "AdminGetDiscoverySettingsCallablePayload",
     "AdminGetSalesDemoPartnerReviewCallablePayload",
     "AdminGetSupportConversationCallablePayload",
     "AdminGrantOrganizerEntitlementCallablePayload",
@@ -98,6 +99,7 @@
     "AdminUpdateTakedownRequestCallablePayload",
     "AdminUpdateOrganizerDetailsCallablePayload",
     "AdminUpdateSafetySettingsCallablePayload",
+    "AdminUpdateDiscoverySettingsCallablePayload",
     "AdminUpdateSupportConversationCallablePayload",
     "AdminUpsertSupportSavedReplyCallablePayload",
     "ApplyProgramFunctionInvitationsCallablePayload",
@@ -816,7 +818,8 @@
     "ImportEventFromLinkCallablePayload",
     "CreatePromotionKitCallablePayload",
     "ImportFormFromLinkCallablePayload",
-    "PlanNightCallablePayload"
+    "PlanNightCallablePayload",
+    "SaveEventSuccessPlanSetupCallablePayload"
   ],
   "types": [
     "ActOnEventChatMessageCallableResponse",
@@ -833,6 +836,7 @@
     "AdminGetOrganizerOverviewCallableResponse",
     "AdminGetOverviewCallableResponse",
     "AdminGetSafetySettingsCallableResponse",
+    "AdminGetDiscoverySettingsCallableResponse",
     "AdminGetSupportConversationCallableResponse",
     "AdminLiftAccountSafetyActionCallableResponse",
     "AdminListAccountSafetyActionsCallableResponse",
@@ -1054,6 +1058,7 @@
     "ImportEventFromLinkCallableResponse",
     "CreatePromotionKitCallableResponse",
     "ImportFormFromLinkCallableResponse",
-    "PlanNightCallableResponse"
+    "PlanNightCallableResponse",
+    "SaveEventSuccessPlanSetupCallableResponse"
   ]
 }

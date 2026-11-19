@@ -229,7 +229,7 @@
         "nightsOut"
       ],
       "followerCount": 7,
-      "claimState": "unclaimed",
+      "claimState": "claimed",
       "upcomingPlanCount": 4,
       "nextPlan": {
         "eventId": "indore-run-1",
@@ -247,6 +247,18 @@
       "womenLed": true
     }
   ],
+  "discovery": {
+    "homeOrganizers": {
+      "onCatch": true,
+      "notOnCatch": false
+    },
+    "cityOrganizers": {
+      "onCatch": true,
+      "notOnCatch": false
+    },
+    "homeOrganizersMinimum": 1,
+    "homeClaimAction": false
+  },
   "builtAt": {
     "_seconds": 1778716800,
     "_nanoseconds": 0

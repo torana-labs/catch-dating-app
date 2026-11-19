@@ -98,6 +98,9 @@ export const adminQueryKeys = {
       [...adminQueryKeys.all, "safety", "actions", view, uid] as const,
     settings: () => [...adminQueryKeys.all, "safety", "settings"] as const,
   },
+  discovery: {
+    settings: () => [...adminQueryKeys.all, "discovery", "settings"] as const,
+  },
   people: {
     search: (query: string) =>
       [...adminQueryKeys.all, "people", "search", query] as const,

@@ -47,7 +47,8 @@
       "targeting": {
         "adProgramme": "host",
         "ageMin": 21,
-        "advantageAudience": true
+        "advantageAudience": true,
+        "excludeAudiences": ["Catch | Active hosts"]
       },
       "ads": [
         {

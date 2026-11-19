@@ -112,7 +112,7 @@ export function auditBranches({
         isAncestor(repo, mergeCommit, baseCommit)
       );
     });
-    const mergeBase = runGit(repo, ["merge-base", baseCommit, tipCommit]).trim();
+    const mergeBase = readMergeBase(repo, baseCommit, tipCommit);
     const changedPaths = readChangedPaths(repo, mergeBase, tipCommit);
     const changedPathsMatchBase = changedPaths.every((filePath) =>
       pathMatches(repo, baseCommit, tipCommit, filePath),
@@ -295,6 +295,19 @@ function readBaseTreeWitnesses(repo, baseCommit) {
   return new Set(output.split("\n").map((value) => value.trim()).filter(Boolean));
 }
 
+// A branch with no history in common with the base (an orphan branch, such
+// as one that only hosts PR screenshots) is compared with the empty tree, so
+// every file it holds counts as changed instead of the audit failing.
+function readMergeBase(repo, baseCommit, tipCommit) {
+  const result = spawnSync("git", ["merge-base", baseCommit, tipCommit],
+    {cwd: repo, encoding: "utf8"});
+  if (result.status === 0) return result.stdout.trim();
+  if (result.status === 1) {
+    return runGit(repo, ["hash-object", "-t", "tree", "--stdin"], "").trim();
+  }
+  throw gitError(result, ["merge-base", baseCommit, tipCommit]);
+}
+
 function readChangedPaths(repo, mergeBase, tipCommit) {
   const output = runGit(repo, [
     "diff",
@@ -343,8 +356,8 @@ function isAncestor(repo, ancestor, descendant) {
   throw gitError(result, ["merge-base", "--is-ancestor", ancestor, descendant]);
 }
 
-function runGit(repo, args) {
-  const result = spawnSync("git", args, {cwd: repo, encoding: "utf8"});
+function runGit(repo, args, input) {
+  const result = spawnSync("git", args, {cwd: repo, encoding: "utf8", input});
   if (result.status !== 0) throw gitError(result, args);
   return result.stdout;
 }

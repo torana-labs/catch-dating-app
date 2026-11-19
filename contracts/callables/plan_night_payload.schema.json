@@ -17,7 +17,7 @@
       "required": ["format", "guestCount"],
       "properties": {
         "format": {"type": "string", "enum": ["run", "dinner", "quiz", "courts", "crawl"]},
-        "guestCount": {"type": "integer", "minimum": 2, "maximum": 200},
+        "guestCount": {"type": "integer", "minimum": 2, "maximum": 1000, "description": "Up to 1000, the plan contract's targetAttendeeCount bound."},
         "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId",
           "description": "A draft event in the caller's try-it workspace to plan. Defaults to the workspace's newest private try-it draft."}
       }

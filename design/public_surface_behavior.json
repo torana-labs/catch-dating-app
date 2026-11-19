@@ -4982,7 +4982,7 @@
       "id": "web.homeOrganizerDiscovery",
       "platform": "web",
       "coverageKind": "matrix",
-      "coverageRationale": "Home exposes provenance-aware public organizer cards and listing navigation. Claim, follow, and review actions belong to detail routes.",
+      "coverageRationale": "Home exposes provenance-aware public organizer cards and listing navigation, filtered by Settings → Discovery (functions/src/discovery): by default only organizers on Catch (claimed or verified) appear, so a crawled, unclaimed listing is hidden here while it stays published, searchable and claimable on its own page. Claim, follow, and review actions belong to detail routes.",
       "routeIds": [
         "home"
       ],
@@ -5028,14 +5028,13 @@
           },
           "expectations": {
             "organizer.card": {
-              "disposition": "visibleReadOnly"
+              "disposition": "hidden"
             },
             "organizer.provenanceBadge": {
-              "disposition": "visibleReadOnly",
-              "variant": "crawled-source-backed"
+              "disposition": "hidden"
             },
             "organizer.openDetail": {
-              "disposition": "visibleWeb"
+              "disposition": "hidden"
             }
           },
           "implementationStatus": "verified",

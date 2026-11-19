@@ -81,10 +81,10 @@
   },
   "src/shared/ui/AdminPrimitives/forms.tsx": {
     "react/forbid-dom-props": {
-      "count": 2
+      "count": 1
     },
     "react/forbid-elements": {
-      "count": 8
+      "count": 6
     }
   },
   "src/shared/ui/AdminPrimitives/marketing-composer.tsx": {

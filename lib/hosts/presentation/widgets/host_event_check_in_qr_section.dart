@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/contexts/bookings/domain/event_check_in_qr_payload.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_door_poster_sheet.dart';
 import 'package:catch_l10n/l10n.dart';
 import 'package:catch_platform/device/external_share.dart';
 import 'package:catch_platform/riverpod_ui/catch_localized_error_state.dart';
@@ -12,7 +15,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 /// The venue check-in QR for a night that runs on the web runtime, with a
-/// button that shares the runtime link.
+/// button that shares the runtime link and one that opens the join-only door
+/// poster.
 class HostEventCheckInQrSection extends ConsumerStatefulWidget {
   const HostEventCheckInQrSection({super.key, required this.event});
 
@@ -115,6 +119,22 @@ class _HostEventCheckInQrSectionState
                   ? CatchButtonStatus.loading
                   : CatchButtonStatus.idle,
               onPressed: _sharing ? null : () => _shareRuntimeLink(runtimeLink),
+            ),
+            gapH10,
+            CatchButton(
+              key: const ValueKey('host_event_door_poster'),
+              label: context.l10n.hostsDoorPosterAction,
+              leading: Icon(CatchIcons.qrCode),
+              size: CatchButtonSize.md,
+              variant: CatchButtonVariant.secondary,
+              onPressed: () => unawaited(
+                showHostDoorPoster(
+                  context,
+                  eventName: widget.event.name,
+                  joinLink: runtimeLink,
+                  share: ref.read(externalShareControllerProvider),
+                ),
+              ),
             ),
           ],
         ],

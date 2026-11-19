@@ -71,7 +71,8 @@ export interface HostRosterIntakeManageDeps extends
   Omit<HostRosterIntakeApplyDeps, "store"> {
   rateLimit(hostUid: string): Promise<void>;
   store: HostRosterIntakeApplyStore & Pick<HostRosterIntakeSessionStore,
-    "createOrResume" | "revise">;
+    "createOrResume" | "revise"> &
+    Partial<Pick<HostRosterIntakeSessionStore, "latestInReview">>;
 }
 
 /** Runs one reviewed approval through the canonical roster transaction. */
@@ -162,7 +163,7 @@ export async function manageHostRosterIntakeHandler(
     validateManageHostRosterIntakeCallablePayload) as unknown as
     Record<string, unknown>;
   const action = data.action;
-  if (!["start", "get", "revise", "preview", "apply"].includes(
+  if (!["start", "get", "latest", "revise", "preview", "apply"].includes(
     typeof action === "string" ? action : "")) {
     throw new HttpsError("invalid-argument", "Invalid roster intake action.");
   }
@@ -180,6 +181,21 @@ export async function manageHostRosterIntakeHandler(
         HostRosterIntakeRow[],
     });
     return reviewResponse(draft, deps);
+  }
+  if (action === "latest") {
+    // The newest draft waiting in review for this event, such as a roster
+    // the host forwarded by email or WhatsApp.
+    if (!deps.store.latestInReview) {
+      throw new HttpsError("internal", "Roster intake lookup is missing.");
+    }
+    const latest = await deps.store.latestInReview({hostUid,
+      organizerId: stringValue(data.organizerId, "organizerId"),
+      eventId: stringValue(data.eventId, "eventId")}, deps.authorize);
+    if (!latest) {
+      throw new HttpsError("not-found", "No guest list is waiting for review.",
+        {reason: "no_draft_in_review"});
+    }
+    return reviewResponse(latest, deps);
   }
   const sessionId = stringValue(data.sessionId, "sessionId");
   const draft = await deps.store.get({sessionId, hostUid}, deps.authorize);

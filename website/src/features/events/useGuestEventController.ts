@@ -5,6 +5,8 @@ import {beginPublicEventPhoneVerification, watchGuestEventDocuments,
 import {guestEventCopy as copy} from "../../content/events";
 import {activeCommunityMemberships, guestEventState, nextGuestEventChangeMillis, parseEventGuestEntry,
   parseGuestEventStatus, type GuestEventSources} from "./guestEventState";
+import {catchPhoneE164} from "@catch/web-ui/phone";
+import {activePhoneCountry} from "@content/markets";
 
 type GuestEventFeed = {phase: "waiting"} | {phase: "ready"; sources: GuestEventSources} | {phase: "failed"};
 const waiting: GuestEventFeed = {phase: "waiting"};
@@ -93,8 +95,8 @@ export function useGuestEventController(eventId: string) {
     try {
       await mutation.mutateAsync(async () => {
         if (!codeSent) {
-          const normalized = phone.replace(/[\s()-]/gu, "");
-          if (!/^\+[1-9][0-9]{7,14}$/u.test(normalized)) throw new Error(copy.invalidPhone);
+          const normalized = catchPhoneE164(phone, activePhoneCountry);
+          if (!normalized) throw new Error(copy.invalidPhone);
           challenge.current?.clear();
           const next = await beginPublicEventPhoneVerification(normalized, recaptchaId);
           if (!current()) { next.clear(); return; }

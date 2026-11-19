@@ -1087,6 +1087,10 @@ service cloud.firestore {
     match /safetySettings/{settingsId} {
       allow read, write: if false;
     }
+    // Settings → Discovery: owner-edited through Admin callables only.
+    match /discoverySettings/{settingsId} {
+      allow read, write: if false;
+    }
 
     // Message nominators are managed through Admin callables only; the
     // registry holds account ids and number hashes.

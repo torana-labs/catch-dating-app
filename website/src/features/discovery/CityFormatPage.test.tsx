@@ -3,6 +3,7 @@ import {MemoryRouter} from "react-router";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {mumbaiLiveCatalog} from "../../stories/fixtures/homeCatalogs";
+import {defaultHomeDiscovery} from "../home/homeDiscovery";
 import type {HomeCatalog} from "../home/homeTypes";
 import {CityFormatPage} from "./CityFormatPage";
 import {mumbaiDiscoveryCatalog, mumbaiEmptyMonthCatalog, puneDiscoveryCatalog} from "./discoveryCatalogFixtures";
@@ -24,6 +25,12 @@ const withClaimStates = (catalog: HomeCatalog, states: Record<string, HomeCatalo
   ...catalog,
   plans: {...catalog.plans, organizers: catalog.plans.organizers.map((organizer) =>
     organizer.organizerId in states ? {...organizer, claimState: states[organizer.organizerId]} : organizer)},
+});
+
+/** Settings → Discovery set to show organisers not on Catch yet on the city pages. */
+const listedOnCityPages = (catalog: HomeCatalog): HomeCatalog => ({
+  ...catalog,
+  plans: {...catalog.plans, discovery: {...defaultHomeDiscovery, cityOrganizers: {onCatch: true, notOnCatch: true}}},
 });
 
 // Each test renders the whole page, which a loaded CI runner can take seconds over.
@@ -52,7 +59,7 @@ describe("City format page", {timeout: 20_000}, () => {
   });
 
   it("labels each unclaimed organiser's card in words with a report link carrying its id, and a claimed one with neither", () => {
-    show(withClaimStates(mumbaiDiscoveryCatalog, {"night-shift-socials": "unclaimed"}), "runClubs");
+    show(listedOnCityPages(withClaimStates(mumbaiDiscoveryCatalog, {"night-shift-socials": "unclaimed"})), "runClubs");
     const organisers = band("Who runs them");
     const cards = within(organisers).getAllByRole("article");
     const card = (name: string) => cards.find((item) => within(item).queryByRole("heading", {name}))!;
@@ -70,8 +77,15 @@ describe("City format page", {timeout: 20_000}, () => {
     expect(within(organisers).getAllByRole("link", {name: /^Report or remove/u})).toHaveLength(1);
   });
 
+  it("leaves unclaimed organisers off the city pages while Settings → Discovery hides them, as by default", () => {
+    show(withClaimStates(mumbaiDiscoveryCatalog, {"night-shift-socials": "unclaimed"}), "runClubs");
+    const organisers = within(band("Who runs them"));
+    expect(organisers.queryByRole("heading", {name: "Night Shift Socials"})).toBeNull();
+    expect(organisers.getByRole("heading", {name: "Driftwood Bay Runners"})).toBeTruthy();
+  });
+
   it("labels a joining organiser with no page yet, and one whose claim is under review, the same way", () => {
-    show(withClaimStates(puneDiscoveryCatalog, {"jacaranda-park-runners": "unclaimed"}), "runClubs", "/pune/run-clubs/");
+    show(listedOnCityPages(withClaimStates(puneDiscoveryCatalog, {"jacaranda-park-runners": "unclaimed"})), "runClubs", "/pune/run-clubs/");
     const organisers = band("Who runs them");
     const joining = within(within(organisers).getAllByRole("article")
       .find((item) => within(item).queryByRole("heading", {name: "Jacaranda Park Runners"}))!);
@@ -81,7 +95,7 @@ describe("City format page", {timeout: 20_000}, () => {
     expect(joining.getByRole("link", {name: "Report or remove the listing for Jacaranda Park Runners"}).getAttribute("href"))
       .toBe("/listings/request/?organizer=jacaranda-park-runners");
     cleanup();
-    show(withClaimStates(mumbaiDiscoveryCatalog, {"driftwood-bay-runners": "claimPending"}), "runClubs");
+    show(listedOnCityPages(withClaimStates(mumbaiDiscoveryCatalog, {"driftwood-bay-runners": "claimPending"})), "runClubs");
     expect(within(band("Who runs them")).getByRole("link", {name: "Report or remove the listing for Driftwood Bay Runners"}).getAttribute("href"))
       .toBe("/listings/request/?organizer=driftwood-bay-runners");
   });
@@ -100,7 +114,7 @@ describe("City format page", {timeout: 20_000}, () => {
     expect(screen.queryByRole("region", {name: "Upcoming sessions"})).toBeNull();
     cleanup();
     // An unclaimed organiser named on the thin page carries the same label.
-    show(withClaimStates(mumbaiDiscoveryCatalog, {"dink-and-drink": "unclaimed"}), "pickleball", "/mumbai/pickleball/");
+    show(listedOnCityPages(withClaimStates(mumbaiDiscoveryCatalog, {"dink-and-drink": "unclaimed"})), "pickleball", "/mumbai/pickleball/");
     expect(screen.getByText("Dink and Drink · next: Sat 5:00 PM · Unclaimed · Not affiliated")).toBeTruthy();
   });
 

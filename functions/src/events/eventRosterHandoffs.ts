@@ -29,14 +29,16 @@ import {
 } from "../shared/eventOrganizers";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {guestIntakeInput} from "../guestImport/intakeRows";
+import {suggestExtraMapping} from "../guestImport/mapping";
+import {readGuestTable} from "../guestImport/registry";
+import {parseCsvMatrix, uniqueHeaders} from "../guestImport/table";
 import {
-  EventAttendeeImportResult,
-  importEventAttendeesForHost,
-} from "./eventAttendees";
-import {
-  ExternalRosterProvider,
-  prepareCsvRosterImport,
-} from "./rosterAdapters";
+  defaultHostRosterIntakeApplyDeps,
+  startHostRosterIntake,
+  type HostRosterIntakeManageDeps,
+} from "./hostRosterIntakeApply";
+import {ExternalRosterProvider} from "./rosterAdapters";
 
 export const rosterIngestionWebhookSecret = defineSecret(
   "ROSTER_INGESTION_WEBHOOK_SECRET"
@@ -55,7 +57,8 @@ interface RosterHandoffDeps {
   randomToken: () => string;
   emailDomain: () => string;
   whatsappNumber: () => string;
-  importAttendees: typeof importEventAttendeesForHost;
+  /** The host's saved review session (hostRosterIntake). */
+  intake: () => HostRosterIntakeManageDeps;
 }
 
 const defaultDeps: RosterHandoffDeps = {
@@ -68,7 +71,7 @@ const defaultDeps: RosterHandoffDeps = {
   randomToken: () => randomBytes(24).toString("base64url"),
   emailDomain: () => process.env.ROSTER_INBOUND_EMAIL_DOMAIN ?? "",
   whatsappNumber: () => process.env.ROSTER_INBOUND_WHATSAPP_NUMBER ?? "",
-  importAttendees: importEventAttendeesForHost,
+  intake: () => defaultHostRosterIntakeApplyDeps(),
 };
 
 /** Creates an expiring capability for forwarding one event roster. */
@@ -153,13 +156,27 @@ export interface InboundRosterWebhookPayload {
   };
 }
 
-/** Processes one HMAC-authenticated, provider-normalized inbound CSV. */
+/** What a forwarded roster became: a review draft the host approves. */
+export interface ForwardedRosterResult {
+  status: "review";
+  sessionId: string;
+  rowCount: number;
+  skippedCount: number;
+}
+
+/**
+ * Processes one HMAC-authenticated, provider-normalized inbound CSV. The
+ * rows become a review draft in the host's saved review session; nothing
+ * reaches the guest list until the host approves it in Catch Host (owner
+ * decision on #2061, 19 Nov 2026, question 3 (b)). Forwarding the same file
+ * again resumes the same draft.
+ */
 export async function ingestEventRosterWebhookHandler(
   rawBody: Buffer,
   signature: string | undefined,
   secret: string,
   deps: RosterHandoffDeps = defaultDeps
-): Promise<EventAttendeeImportResult> {
+): Promise<ForwardedRosterResult> {
   if (rawBody.byteLength > maxInboundBodyBytes) {
     throw new Error("inbound_body_too_large");
   }
@@ -187,18 +204,30 @@ export async function ingestEventRosterWebhookHandler(
   await requireMatchingHostSender(payload, handoff.hostUid, deps.auth());
 
   const attachmentBytes = decodeAttachment(payload.attachment);
-  const source = attachmentBytes.toString("utf8");
-  const prepared = prepareCsvRosterImport(source, handoff.provider);
-  return deps.importAttendees({
-    hostUid: handoff.hostUid,
-    payload: {
-      eventId: handoff.eventId,
-      importKey: `inbound-${sha256(payload.providerMessageId)}`,
-      fileName: safeFileName(payload.attachment.fileName),
-      format: "csv",
-      rows: prepared.rows,
-    },
+  const eventSnap = await db.collection("events").doc(handoff.eventId).get();
+  const organizerId = eventSnap.data()?.organizerId;
+  if (!eventSnap.exists || typeof organizerId !== "string") {
+    throw new Error("handoff_event_missing");
+  }
+  const matrix = parseCsvMatrix(attachmentBytes.toString("utf8"));
+  // City and revenue are read as Catch Host's import sheet reads them, and
+  // statuses as the review stage does: the host sees the same review either
+  // way they send the file.
+  const extraMapping = suggestExtraMapping(uniqueHeaders(matrix[0] ?? []));
+  const read = readGuestTable(matrix, {providerHint: handoff.provider,
+    reviewStatuses: true, reservedColumns: Object.values(extraMapping)
+      .filter((column): column is number => column !== null)});
+  if (read.rows.length === 0) throw new Error("roster_missing_guest_names");
+  const intake = guestIntakeInput(read, {extraMapping});
+  const draft = await startHostRosterIntake(deps.intake(), {
+    hostUid: handoff.hostUid, organizerId, eventId: handoff.eventId,
+    fileFingerprint: createHash("sha256").update(attachmentBytes)
+      .digest("hex"),
+    fileName: safeFileName(payload.attachment.fileName), format: "csv",
+    headers: intake.headers, mapping: intake.mapping, rows: intake.rows,
   });
+  return {status: "review", sessionId: draft.sessionId,
+    rowCount: draft.rows.length, skippedCount: read.skipped.length};
 }
 
 export function verifyRosterWebhookSignature(

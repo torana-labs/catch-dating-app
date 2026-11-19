@@ -3705,7 +3705,7 @@ rather than embedded in event-type logic.
 
 | Collection | Owner and visibility |
 |---|---|
-| `eventSuccessPlans/{eventId}` | Host-owned setup plus backend-owned live state. `liveControlRevision`, draft revision, and published rotation/reveal indexes are callable-owned. Setup fields freeze once participant activity/start/live status begins; active participants can read through event-success rules. |
+| `eventSuccessPlans/{eventId}` | Host-owned setup plus backend-owned live state. Catch Host saves setup fields through `saveEventSuccessPlanSetup`, which shares one write with `night.plan` (`functions/src/eventSuccess/planSetup.ts`). `liveControlRevision`, draft revision, and published rotation/reveal indexes are callable-owned. Setup fields freeze once participant activity/start/live status begins; active participants can read through event-success rules. |
 | `eventSuccessFeedback/{eventId_uid}` | Attendee-owned decomposed post-event feedback. Raw notes and safety details are private to attendee/backend. |
 | `eventSuccessConversationGraphs/{eventId_uid}` | Server-written post-event conversation edges. Only the subject attendee may get the deterministic document; Hosts, other attendees, lists, and every direct client write are denied. |
 | `eventSafetyReports/{feedbackId}` | Backend-owned Catch-private safety mirror for concerning feedback. |
@@ -4205,9 +4205,14 @@ an inbound vendor is live:
   verifies an exact-body HMAC from `ROSTER_INGESTION_WEBHOOK_SECRET`, requires
   provider-confirmed sender identity, and matches that identity to the Host's
   Firebase Auth email or phone;
-- the endpoint accepts one CSV up to 4 MiB, maps at most 250 attendees through
-  the backend adapter engine, and reuses `importEventAttendeesForHost`; the
-  provider message id becomes the retry-safe import key; and
+- the endpoint accepts one CSV up to 4 MiB and maps at most 250 attendees
+  through the guest import converters (`functions/src/guestImport`). Since
+  19 Nov 2026 (owner decision on #2061, question 3) it writes no guest: the
+  rows become a draft in the host's saved review session
+  (`hostRosterIntakeSessions`), keyed by the file, and Catch Host's guest
+  intake offers to resume it (`manageHostRosterIntake` action `latest`).
+  Approving it applies through `importEventAttendeesForHost` as any reviewed
+  import does; and
 - raw attachment bytes are processed in memory and not retained. XLSX
   forwarding, files above 250 rows, temporary Storage, progress UI and
   conflict-aware undo still belong to the asynchronous job tranche.
@@ -4476,6 +4481,12 @@ formats (#2062 C4). Copy text stays in `copy/structured_domain_copy_en.json`.
 const literals. `EventSuccessStructureConfig.defaultForInteractionModel` reads
 the generated `event_success_playbook_shapes.g.dart`, and Functions'
 `defaultEventSuccessPlaybookIdFor` reads `eventSuccessPlaybookShapes.ts`.
+In `night.plan`, run pace groups scale with head count, one per ten guests
+with no cap of their own. Each is named by its pace band, fastest first:
+"~m:ss/km" once its target pace is known (as `RoutePaceGroup.targetPaceSecondsPerKm`),
+otherwise "Pace group N". The only hard limits are the plan contract's bounds,
+1–1000 attendees and a `unitCount` of 1–200. Tables, teams or courts past 200
+stop there, flagged `countLimited`, with larger units or a longer bench.
 Web retains the metadata for parity and ships no per-attendee audio.
 
 - **Portable marquee assets.** Three checked-in Lottie vector documents under

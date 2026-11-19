@@ -36,7 +36,7 @@
                 "mixingMoment", "runOfShow", "durationMinutes", "stops", "missions"],
               "properties": {
                 "format": {"type": "string", "enum": ["run", "dinner", "quiz", "courts", "crawl"]},
-                "guestCount": {"type": "integer", "minimum": 2, "maximum": 200},
+                "guestCount": {"type": "integer", "minimum": 2, "maximum": 1000},
                 "playbookId": {"type": "string", "minLength": 1, "maxLength": 120},
                 "activityKind": {"type": "string", "minLength": 1, "maxLength": 80},
                 "interactionModel": {"type": "string", "minLength": 1, "maxLength": 80},
@@ -49,14 +49,21 @@
                 },
                 "groups": {
                   "type": "object", "additionalProperties": false,
-                  "required": ["kind", "count", "size", "unitKind", "labels", "benchCount"],
+                  "required": ["kind", "count", "size", "unitKind", "labels", "paceBands", "benchCount", "countLimited"],
                   "properties": {
                     "kind": {"type": "string", "enum": ["paceGroups", "courts", "units", "wholeGroup"]},
                     "count": {"type": "integer", "minimum": 1, "maximum": 200},
                     "size": {"type": ["integer", "null"], "minimum": 1, "maximum": 1000},
                     "unitKind": {"type": ["string", "null"], "enum": [null, "wholeGroup", "pods", "pairs", "teams", "tables"]},
-                    "labels": {"type": "array", "maxItems": 8, "items": {"type": "string", "pattern": "^[a-z][a-z_]{0,39}$"}},
-                    "benchCount": {"type": "integer", "minimum": 0, "maximum": 200}
+                    "labels": {"description": "Display labels, one per pace group, fastest first: \"~m:ss/km\" once a pace is set, else \"Pace group N\". Empty for other kinds.",
+                      "type": "array", "maxItems": 200, "items": {"type": "string", "minLength": 1, "maxLength": 40}},
+                    "paceBands": {"description": "Pace groups, fastest first. targetPaceSecondsPerKm is null until the host sets it (as RoutePaceGroup.targetPaceSecondsPerKm). Empty for other kinds.",
+                      "type": "array", "maxItems": 200, "items": {"type": "object", "additionalProperties": false,
+                        "required": ["label", "targetPaceSecondsPerKm"], "properties": {
+                          "label": {"type": "string", "minLength": 1, "maxLength": 40},
+                          "targetPaceSecondsPerKm": {"type": ["integer", "null"], "minimum": 60, "maximum": 3600}}}},
+                    "benchCount": {"type": "integer", "minimum": 0, "maximum": 1000},
+                    "countLimited": {"type": "boolean", "description": "True when the count stopped at the plan contract's limit of 200 units (structureConfig.unitCount); larger groups take the rest."}
                   }
                 },
                 "mixingMoment": {
