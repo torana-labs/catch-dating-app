@@ -5,8 +5,10 @@
  * on phones), the text keeps 88px under it (8px on phones) and the media
  * meets the band's foot. The timeline runs 32px under the header down a 2px
  * line in the night ink at 16%; each moment is 12px above and below and 24px
- * in, its time in an 84px column (64px on phones) 12px from its title, at
- * 14px in the secondary night ink. The chosen moment is a translucent row
+ * in, its time 12px from its title, at 14px in the secondary night ink. The
+ * times share one column as wide as the widest of them (up to 40% of the
+ * row, wrapping beyond that): the list is the grid and each moment a subgrid
+ * row, so "Sunday evening" sits on one line and every title stays aligned. The chosen moment is a translucent row
  * rounded on its right with a 2px coral edge, its title at 18px and its line
  * under it.
  */
@@ -26,17 +28,25 @@
 .picker { margin-top: var(--catch-space-s6); }
 
 .timeline {
+  display: grid;
+  grid-template-columns: fit-content(40%) minmax(0, 1fr);
   margin: var(--catch-space-s8) 0 0;
   padding: 0;
   border-left: var(--catch-stroke-focus) solid var(--catch-website-color-timeline-line);
   list-style: none;
 }
 
-.moment { position: relative; }
+.moment {
+  position: relative;
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+}
 
 .row {
   display: grid;
-  grid-template-columns: var(--catch-website-timeline-time-width) minmax(0, 1fr);
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   gap: var(--catch-space-s3);
   box-sizing: border-box;
   width: 100%;
@@ -115,5 +125,4 @@ button.row:focus-visible {
 @media (max-width: 599px) {
   .columns[data-flush] { padding-top: var(--catch-space-s10); }
   .columns[data-flush] .text { padding-bottom: var(--catch-space-s2); }
-  .row { grid-template-columns: var(--catch-website-timeline-compact-time-width) minmax(0, 1fr); }
 }
