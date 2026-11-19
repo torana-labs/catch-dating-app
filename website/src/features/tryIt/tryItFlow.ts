@@ -134,6 +134,9 @@ export interface TryItFlow {
   retry(): Promise<void>;
   /** Back to the link, keeping what was typed; the next try is a new request. */
   startOver(): void;
+  /** Takes updates again after dispose, when the same component mounts again. */
+  resume(): void;
+  /** Stops updates and drops any call in flight. */
   dispose(): void;
 }
 
@@ -538,10 +541,14 @@ export function createTryItFlow(tool: TryItToolKind, deps: TryItFlowDeps): TryIt
       draft = null;
       set({busy: false, signIn: false, fields: {}, stage: {name: "start"}});
     },
+    resume() {
+      disposed = false;
+    },
     dispose() {
+      // React may unmount and mount the same component again (StrictMode), so
+      // a disposed flow can resume; a call still in flight is dropped either way.
       disposed = true;
       run += 1;
-      listeners.clear();
     },
   };
 }

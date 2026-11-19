@@ -45,7 +45,10 @@ export function provideTryItDeps(deps: TryItToolDeps, children: ReactNode): Reac
 export function useTryItToolController(tool: TryItToolKind) {
   const deps = useContext(tryItDepsContext);
   const [flow] = useState<TryItFlow>(() => createTryItFlow(tool, {...deps, client: deps.client ?? createTryItCommandClient()}));
-  useEffect(() => () => flow.dispose(), [flow]);
+  useEffect(() => {
+    flow.resume();
+    return () => flow.dispose();
+  }, [flow]);
   const state: TryItFlowState = useSyncExternalStore(flow.subscribe, flow.getState, flow.getState);
   const submitWith = (work: () => Promise<void>) => (event?: FormEvent) => {
     event?.preventDefault();

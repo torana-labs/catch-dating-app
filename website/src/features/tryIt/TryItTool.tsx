@@ -1,4 +1,5 @@
 import {
+  CatchBadge,
   CatchButton,
   CatchChip,
   CatchField,
@@ -361,9 +362,9 @@ function TryItTool(props: TryItToolProps) {
     <CatchGroundCard ground="white" outlined>
       <CatchStack gap={16}>
         {props.placement === "split" ? (
-          <CatchStack gap={4}>
-            <CatchText tone="secondary" variant="label-kicker">{copy.kicker}</CatchText>
-            <CatchText as="h3" variant="display-sm">{card.title}</CatchText>
+          <CatchStack align="start" gap={8}>
+            <CatchBadge label={copy.kicker} size="sm" tone="gold" />
+            <CatchText as="h3" variant="title-bar">{card.title}</CatchText>
           </CatchStack>
         ) : null}
         {body}

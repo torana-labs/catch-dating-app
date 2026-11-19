@@ -340,3 +340,15 @@ describe("try-it flow: promotion kit (Messages and growth)", () => {
     expect(flow.getState().remembered).toBeNull();
   });
 });
+
+describe("try-it flow: lifetime", () => {
+  it("resumes after a dispose, as React's StrictMode mounts a component twice, and drops calls from before", async () => {
+    const client = scriptedTryItClient({"organizer.import-from-link": {preview: [organizerFixtures.previewed]}});
+    const {flow, stage} = flowWith("organizer", client);
+    flow.dispose();
+    flow.resume();
+    flow.setLink(link);
+    await flow.submit();
+    expect(stage().name).toBe("review");
+  });
+});

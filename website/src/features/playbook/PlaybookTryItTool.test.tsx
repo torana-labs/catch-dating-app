@@ -1,6 +1,6 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {cleanup, fireEvent, render as renderInto, screen, waitFor, within} from "@testing-library/react";
-import type {ReactNode} from "react";
+import {StrictMode, type ReactNode} from "react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {tryItCopy} from "@content/tryIt";
 import {organizerFixtures, scriptedTryItClient} from "../../stories/fixtures/tryItCommands";
@@ -12,8 +12,8 @@ vi.mock("../../firebase", () => ({getWebsiteAppCheckToken: vi.fn(async () => "si
 
 afterEach(cleanup);
 
-/** Both site shells mount the query client the sign-in sheet's controller uses. */
-const render = (node: ReactNode) => renderInto(<QueryClientProvider client={new QueryClient()}>{node}</QueryClientProvider>);
+/** Both site shells mount the query client the sign-in sheet's controller uses; StrictMode mounts each tool twice, as in development. */
+const render = (node: ReactNode) => renderInto(<StrictMode><QueryClientProvider client={new QueryClient()}>{node}</QueryClientProvider></StrictMode>);
 
 const yourPage = (await loadPlaybookPage(resolvePlaybookPage("/product/your-page/")!))!;
 const bookings = (await loadPlaybookPage(resolvePlaybookPage("/product/bookings-and-memberships/")!))!;
