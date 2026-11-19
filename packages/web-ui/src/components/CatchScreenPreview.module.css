@@ -121,16 +121,22 @@
   border-radius: var(--catch-radius-sm);
 }
 
+/*
+ * The bars share their columns: the labels as wide as the widest label (up
+ * to 40%, wrapping beyond), the values as wide as the widest value, and the
+ * track takes the rest, at least 4rem.
+ */
 .bars {
-  display: flex;
-  flex-direction: column;
-  gap: var(--catch-space-s2);
+  display: grid;
+  grid-template-columns: fit-content(40%) minmax(4rem, 1fr) max-content;
+  gap: var(--catch-space-s2) var(--catch-space-micro10);
   margin: var(--catch-space-s2) 0;
 }
 
 .bar {
   display: grid;
-  grid-template-columns: 110px minmax(0, 1fr) 80px;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   align-items: center;
   gap: var(--catch-space-micro10);
 }
@@ -322,6 +328,5 @@
 }
 
 @container catch-page (width < 840px) {
-  .bar { grid-template-columns: 84px minmax(0, 1fr) 64px; }
   .tiles { grid-template-columns: minmax(0, 1fr); }
 }

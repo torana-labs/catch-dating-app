@@ -33,21 +33,21 @@
 
 .action {
   display: inline-flex;
-  flex: 1 1 0;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
   min-width: 0;
-  height: var(--catch-size-touch-min);
+  min-height: var(--catch-size-touch-min);
   padding: 0 var(--catch-space-s4);
   border: var(--catch-stroke-control) solid transparent;
   border-radius: var(--catch-radius-pill);
   font-family: var(--catch-font-stack-sans);
   font-size: var(--catch-typography-role-label-button-size);
   font-weight: var(--catch-typography-role-label-button-weight);
-  line-height: 1;
+  line-height: 1.15;
+  text-align: center;
   text-decoration: none;
-  white-space: nowrap;
 }
 
 .action[data-kind="primary"] {
